@@ -20,14 +20,14 @@
     },
     "same_cell_structural": {
       "max": 0.580033,
-      "median": 0.386794,
+      "median": 0.379829,
       "min": 0.000469,
-      "n_pairs": 79,
-      "p05": 0.187716,
-      "p25": 0.312968
+      "n_pairs": 91,
+      "p05": 0.162541,
+      "p25": 0.304707
     }
   },
   "tau_cell": 0.05,
   "tau_state": 0.5,
-  "tau_struct": 0.312968
+  "tau_struct": 0.304707
 }

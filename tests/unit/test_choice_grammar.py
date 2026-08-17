@@ -229,16 +229,12 @@ class TestOptionsVarianceAllowance:
 
     def test_one_step_variance_inside_the_allowance_is_silent(self) -> None:
         # 10 decision nodes at 8-11 (target exactly 3); two may vary by one.
-        report = check_options_per_choice(
-            _mixed_fan_story("8-11", [3] * 8 + [2, 4])
-        )
+        report = check_options_per_choice(_mixed_fan_story("8-11", [3] * 8 + [2, 4]))
         assert [f for f in report.findings if f.rule_id == "CG-2"] == []
 
     def test_variance_above_the_allowance_fires_once(self) -> None:
         # 3 of 10 vary, against an allowance of 2.
-        report = check_options_per_choice(
-            _mixed_fan_story("8-11", [3] * 7 + [2, 2, 4])
-        )
+        report = check_options_per_choice(_mixed_fan_story("8-11", [3] * 7 + [2, 2, 4]))
         cg2 = [f for f in report.findings if f.rule_id == "CG-2"]
         assert len(cg2) == 1
         assert "above the 20% allowance of 2" in cg2[0].message
@@ -252,9 +248,7 @@ class TestOptionsVarianceAllowance:
         more choices, so a one-choice node is CG-1's subject (a choiceless
         corridor) and never reaches CG-2 at all.
         """
-        report = check_options_per_choice(
-            _mixed_fan_story("13-16", [3] * 19 + [fan])
-        )
+        report = check_options_per_choice(_mixed_fan_story("13-16", [3] * 19 + [fan]))
         cg2 = [f for f in report.findings if f.rule_id == "CG-2"]
         assert len(cg2) == 1
         assert "outside the global envelope" in cg2[0].message
@@ -279,9 +273,7 @@ class TestOptionsVarianceAllowance:
         """
         fans = [3] * 7 + [2, 2, 4]  # 3 of 10 vary, one over the allowance of 2
         bare = check_options_per_choice(_mixed_fan_story("8-11", fans))
-        padded = check_options_per_choice(
-            _mixed_fan_story("8-11", fans, corridors=40)
-        )
+        padded = check_options_per_choice(_mixed_fan_story("8-11", fans, corridors=40))
         bare_cg2 = [f for f in bare.findings if f.rule_id == "CG-2"]
         padded_cg2 = [f for f in padded.findings if f.rule_id == "CG-2"]
         assert len(bare_cg2) == 1

@@ -1,0 +1,598 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_seedling_thief",
+ "version": 1,
+ "title": "The Seedling Thief",
+ "metadata": {
+  "age_band": "5-8",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.0
+  },
+  "tier": 1,
+  "themes": [
+   "growing things",
+   "patience",
+   "neighbours",
+   "curiosity"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  },
+  "topology": "open_map",
+  "length": "short",
+  "narrative_style": "prose",
+  "production_eligible": true
+ },
+ "variables": [],
+ "start_node": "n_monday",
+ "nodes": [
+  {
+   "id": "n_monday",
+   "body": "<<FILL role=setup words=60 beats='on Monday the bean row had eleven seedlings and on Tuesday it has eight; nobody has walked on the bed, the netting is still pegged, and Mr Achebe who keeps the plot next door says he has not seen a thing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_monday_0",
+     "label": "Go down to the allotment.",
+     "target": "n_gate"
+    }
+   ]
+  },
+  {
+   "id": "n_gate",
+   "body": "<<FILL role=setup words=70 beats='the allotment gate is the meeting place, with the water butt on one side and the noticeboard on the other; from here the whole site is visible, the bean bed, the compost corner, and the wild end where the brambles are; everything worth checking is a short walk away'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_gate_0",
+     "label": "Look closely at the bean bed.",
+     "target": "n_bed"
+    },
+    {
+     "id": "c_n_gate_1",
+     "label": "Check the compost corner.",
+     "target": "n_compost"
+    },
+    {
+     "id": "c_n_gate_2",
+     "label": "Walk to the wild end.",
+     "target": "n_wild"
+    }
+   ]
+  },
+  {
+   "id": "n_bed",
+   "body": "<<FILL role=rising words=70 beats='close up, the bean bed tells a story: the missing three were not pulled, they were bitten through low down and the tops are gone entirely; there are no footprints, and the soil is scuffed in small patches'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_bed_0",
+     "label": "Study how the stems were cut.",
+     "target": "n_bite"
+    },
+    {
+     "id": "c_n_bed_1",
+     "label": "Follow the little tracks.",
+     "target": "n_tracks"
+    },
+    {
+     "id": "c_n_bed_2",
+     "label": "Follow the run through the grass.",
+     "target": "n_run"
+    }
+   ]
+  },
+  {
+   "id": "n_compost",
+   "body": "<<FILL role=rising words=70 beats='the compost corner steams gently and smells of grass; there are tracks in the soft stuff around it, small and star-shaped, and a tunnel-ish gap under the pallet wall that something has clearly been using'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_compost_0",
+     "label": "Study how the stems were cut.",
+     "target": "n_bite"
+    },
+    {
+     "id": "c_n_compost_1",
+     "label": "Follow the little tracks.",
+     "target": "n_tracks"
+    },
+    {
+     "id": "c_n_compost_2",
+     "label": "Follow the run through the grass.",
+     "target": "n_run"
+    }
+   ]
+  },
+  {
+   "id": "n_wild",
+   "body": "<<FILL role=rising words=70 beats='the wild end is brambles and nettles and an old cold frame with no glass; it is the part of the site nobody weeds, on purpose, because things live in it; there is a flattened run through the long grass'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_wild_0",
+     "label": "Study how the stems were cut.",
+     "target": "n_bite"
+    },
+    {
+     "id": "c_n_wild_1",
+     "label": "Follow the little tracks.",
+     "target": "n_tracks"
+    },
+    {
+     "id": "c_n_wild_2",
+     "label": "Follow the run through the grass.",
+     "target": "n_run"
+    }
+   ]
+  },
+  {
+   "id": "n_bite",
+   "body": "<<FILL role=rising words=70 beats='the bitten stems are cut at an angle, cleanly, the way scissors would do it; slugs do not cut like that and neither do birds; whatever it was came in low and left the netting pegged'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_bite_0",
+     "label": "Come back at dawn and watch.",
+     "target": "n_watch"
+    },
+    {
+     "id": "c_n_bite_1",
+     "label": "Ask the other plotholders.",
+     "target": "n_ask"
+    },
+    {
+     "id": "c_n_bite_2",
+     "label": "Just fix the gaps instead.",
+     "target": "n_fix"
+    }
+   ]
+  },
+  {
+   "id": "n_tracks",
+   "body": "<<FILL role=rising words=70 beats='the star-shaped tracks go from the gap under the pallets toward the bean bed and back again, and they are fresher going back; something is making this trip regularly and at a time nobody is here'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_tracks_0",
+     "label": "Borrow the humane trap.",
+     "target": "n_trap"
+    },
+    {
+     "id": "c_n_tracks_1",
+     "label": "Come back at dawn and watch.",
+     "target": "n_watch"
+    },
+    {
+     "id": "c_n_tracks_2",
+     "label": "Ask the other plotholders.",
+     "target": "n_ask"
+    }
+   ]
+  },
+  {
+   "id": "n_run",
+   "body": "<<FILL role=rising words=70 beats='the flattened run leads from the brambles along the fence and stops at a loose board; on the other side is the lane, which means whatever uses it is not living on the site at all'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_run_0",
+     "label": "Just fix the gaps instead.",
+     "target": "n_fix"
+    },
+    {
+     "id": "c_n_run_1",
+     "label": "Borrow the humane trap.",
+     "target": "n_trap"
+    },
+    {
+     "id": "c_n_run_2",
+     "label": "Come back at dawn and watch.",
+     "target": "n_watch"
+    }
+   ]
+  },
+  {
+   "id": "n_watch",
+   "body": "<<FILL role=rising words=70 beats='the only way to know is to be here when it happens, and the only time that works is early, before school, with a flask and a fold-up chair and an adult who agrees to come'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_watch_0",
+     "label": "Sit still and wait.",
+     "target": "n_dawn"
+    },
+    {
+     "id": "c_n_watch_1",
+     "label": "Do the work as a group.",
+     "target": "n_together"
+    },
+    {
+     "id": "c_n_watch_2",
+     "label": "Go and check the trap.",
+     "target": "n_caught"
+    }
+   ]
+  },
+  {
+   "id": "n_ask",
+   "body": "<<FILL role=rising words=70 beats='the other plotholders turn out to know a great deal between them: two have lost lettuces, one has lost nothing at all, and the one who has lost nothing has chicken wire pinned flat on the soil'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_ask_0",
+     "label": "Give it three more mornings.",
+     "target": "n_nothing"
+    },
+    {
+     "id": "c_n_ask_1",
+     "label": "Sit still and wait.",
+     "target": "n_dawn"
+    },
+    {
+     "id": "c_n_ask_2",
+     "label": "Do the work as a group.",
+     "target": "n_together"
+    }
+   ]
+  },
+  {
+   "id": "n_fix",
+   "body": "<<FILL role=rising words=70 beats='the practical answer does not need the culprit named: wire pinned down, the loose board nailed, the gap under the pallets blocked; it takes an afternoon and it is not as satisfying as knowing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_fix_0",
+     "label": "Go and check the trap.",
+     "target": "n_caught"
+    },
+    {
+     "id": "c_n_fix_1",
+     "label": "Give it three more mornings.",
+     "target": "n_nothing"
+    },
+    {
+     "id": "c_n_fix_back",
+     "label": "Go back to the gate and start again.",
+     "target": "n_gate"
+    }
+   ]
+  },
+  {
+   "id": "n_trap",
+   "body": "<<FILL role=rising words=70 beats='a humane trap is borrowed from Mr Achebe, baited with a bit of apple, and set where the tracks are freshest; the rule that comes with it is that it gets checked first thing, every single morning, without fail'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_trap_0",
+     "label": "Do the work as a group.",
+     "target": "n_together"
+    },
+    {
+     "id": "c_n_trap_1",
+     "label": "Go and check the trap.",
+     "target": "n_caught"
+    },
+    {
+     "id": "c_n_trap_2",
+     "label": "Give it three more mornings.",
+     "target": "n_nothing"
+    }
+   ]
+  },
+  {
+   "id": "n_dawn",
+   "body": "<<FILL role=rising words=70 beats='at ten past six the site is grey and completely quiet, and then it is not: something moves along the fence line without hurrying, stops, and sits up to look around exactly like it owns the place'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_dawn_0",
+     "label": "Decide what to do about it.",
+     "target": "n_decide"
+    },
+    {
+     "id": "c_n_dawn_1",
+     "label": "Tell the rest of the site.",
+     "target": "n_tell"
+    },
+    {
+     "id": "c_n_dawn_2",
+     "label": "Let it go somewhere.",
+     "target": "n_release"
+    }
+   ]
+  },
+  {
+   "id": "n_together",
+   "body": "<<FILL role=rising words=70 beats='four plotholders and one bag of chicken wire turn out to be much faster than one person and a plan; the beans get their wire, the lettuces get theirs, and the lane board gets nailed by someone with a proper hammer'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_together_0",
+     "label": "Put the wire down and leave it.",
+     "target": "e_beans_hold"
+    },
+    {
+     "id": "c_n_together_1",
+     "label": "Stop looking and grow beans.",
+     "target": "e_still_unknown"
+    },
+    {
+     "id": "c_n_together_2",
+     "label": "Decide what to do about it.",
+     "target": "n_decide"
+    }
+   ]
+  },
+  {
+   "id": "n_caught",
+   "body": "<<FILL role=rising words=70 beats='the trap is shut in the morning and something inside it is extremely cross; it is a rabbit, young, with one ear that does not stand up, and it has clearly been eating well all week'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_caught_0",
+     "label": "Tell the rest of the site.",
+     "target": "n_tell"
+    },
+    {
+     "id": "c_n_caught_1",
+     "label": "Let it go somewhere.",
+     "target": "n_release"
+    },
+    {
+     "id": "c_n_caught_2",
+     "label": "Put the wire down and leave it.",
+     "target": "e_beans_hold"
+    }
+   ]
+  },
+  {
+   "id": "n_nothing",
+   "body": "<<FILL role=rising words=70 beats='three mornings running, the trap is empty and the beans are untouched; whatever it was has moved on, or is waiting, and there is no way to tell which from here'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_nothing_0",
+     "label": "Stop looking and grow beans.",
+     "target": "e_still_unknown"
+    },
+    {
+     "id": "c_n_nothing_1",
+     "label": "Decide what to do about it.",
+     "target": "n_decide"
+    },
+    {
+     "id": "c_n_nothing_back",
+     "label": "Go back to the gate and start again.",
+     "target": "n_gate"
+    }
+   ]
+  },
+  {
+   "id": "n_decide",
+   "body": "<<FILL role=rising words=70 beats='knowing what it is turns the question from a mystery into a decision, and the decision is not obvious: the site is its home too, and the beans are the beans'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_decide_0",
+     "label": "Get on with the summer.",
+     "target": "n_summer"
+    },
+    {
+     "id": "c_n_decide_1",
+     "label": "Write it on the noticeboard.",
+     "target": "n_board"
+    },
+    {
+     "id": "c_n_decide_2",
+     "label": "Protect the beds and keep the wild end.",
+     "target": "e_wire_and_welcome"
+    }
+   ]
+  },
+  {
+   "id": "n_tell",
+   "body": "<<FILL role=rising words=70 beats='the noticeboard by the gate is how this site talks to itself, and what goes on it now will decide what everybody else does about it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_tell_0",
+     "label": "Leave the lane board loose.",
+     "target": "e_lane_door"
+    },
+    {
+     "id": "c_n_tell_1",
+     "label": "Keep what you learned about tracks.",
+     "target": "e_learned_tracks"
+    },
+    {
+     "id": "c_n_tell_2",
+     "label": "Finish the wire tomorrow.",
+     "target": "e_lost_three_more"
+    }
+   ]
+  },
+  {
+   "id": "n_release",
+   "body": "<<FILL role=rising words=70 beats='the trap has to be emptied somewhere, and where is the whole question; the lane, the far side of the wood, or right here with the wire now down'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_release_0",
+     "label": "Get on with the summer.",
+     "target": "n_summer"
+    },
+    {
+     "id": "c_n_release_1",
+     "label": "Write it on the noticeboard.",
+     "target": "n_board"
+    },
+    {
+     "id": "c_n_release_2",
+     "label": "Protect the beds and keep the wild end.",
+     "target": "e_wire_and_welcome"
+    }
+   ]
+  },
+  {
+   "id": "e_beans_hold",
+   "body": "<<FILL role=completion words=70 beats='the wire holds and the remaining eight seedlings come through the week untouched, then start to climb; by Friday there are proper leaves and the row looks like a row again'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_beans_hold",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Eight Beans Climbing"
+   }
+  },
+  {
+   "id": "e_still_unknown",
+   "body": "<<FILL role=discovery words=70 beats='the beans are safe and the culprit is never identified, which is a real outcome and an annoying one; the wire works, the row grows, and the question stays open all summer'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_still_unknown",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Safe and Still Unknown"
+   }
+  },
+  {
+   "id": "n_summer",
+   "body": "<<FILL role=rising words=70 beats='by July the row is over the top of its canes and the question of who ate the first three has stopped being urgent; what happened next is the part worth telling'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_summer_0",
+     "label": "Enter two beans in the village show.",
+     "target": "e_show_bench"
+    },
+    {
+     "id": "c_n_summer_1",
+     "label": "Share the crop round the site.",
+     "target": "e_shared_out"
+    },
+    {
+     "id": "c_n_summer_2",
+     "label": "Say yes to the half plot.",
+     "target": "e_new_plot"
+    }
+   ]
+  },
+  {
+   "id": "n_board",
+   "body": "<<FILL role=rising words=70 beats='what gets written on the noticeboard turns into what the whole site does, which is a surprising amount of power for one index card'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_board_0",
+     "label": "Leave the card up all season.",
+     "target": "e_notice_stays"
+    },
+    {
+     "id": "c_n_board_1",
+     "label": "Enter two beans in the village show.",
+     "target": "e_show_bench"
+    },
+    {
+     "id": "c_n_board_2",
+     "label": "Share the crop round the site.",
+     "target": "e_shared_out"
+    }
+   ]
+  },
+  {
+   "id": "e_wire_and_welcome",
+   "body": "<<FILL role=success words=70 beats='the answer turns out to be both: wire on the beds and the wild end left exactly as it is, brambles and all; the rabbit stays, the beans stay, and nobody has to lose'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_wire_and_welcome",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Wire and Welcome"
+   }
+  },
+  {
+   "id": "e_lane_door",
+   "body": "<<FILL role=completion words=70 beats='the loose board is left loose on purpose, with wire on every bed instead; it feels wrong for about a day and then it feels obviously right'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_lane_door",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Board Left Loose"
+   }
+  },
+  {
+   "id": "e_learned_tracks",
+   "body": "<<FILL role=discovery words=70 beats='the lasting thing is not the beans at all, it is being able to read the ground: star-shaped tracks, a cut stem, a run through long grass, fresher one way than the other'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_learned_tracks",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Reading the Ground"
+   }
+  },
+  {
+   "id": "e_lost_three_more",
+   "body": "<<FILL role=setback words=70 beats='three more go before the wire is finished, which stings more than the first three did because this time it was preventable; the wire goes down that evening and nothing is lost after it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_lost_three_more",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Three More First"
+   }
+  },
+  {
+   "id": "e_show_bench",
+   "body": "<<FILL role=success words=70 beats='two of the beans go to the village show in September and do not win anything at all, and the card in the tin says GROWN AT THE ALLOTMENT BY THE BEAN PATROL, which is better than winning'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_show_bench",
+    "valence": "positive",
+    "kind": "success",
+    "title": "On the Show Bench"
+   }
+  },
+  {
+   "id": "e_shared_out",
+   "body": "<<FILL role=completion words=70 beats='there are far more beans than one family can eat, so they go round the site in ice cream tubs, including next door to Mr Achebe, who taught the trap rule in the first place'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_shared_out",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Beans in Ice Cream Tubs"
+   }
+  },
+  {
+   "id": "e_new_plot",
+   "body": "<<FILL role=success words=70 beats='the reward for a good summer is a bigger question: a whole half plot going spare next spring, and first refusal on it, which is a much larger thing than eleven seedlings'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_new_plot",
+    "valence": "positive",
+    "kind": "success",
+    "title": "First Refusal on the Half Plot"
+   }
+  },
+  {
+   "id": "e_notice_stays",
+   "body": "<<FILL role=discovery words=70 beats='the index card stays pinned by the gate all season, gets rained on, and is still readable in October: CHECK YOUR WIRE, THE RABBIT IS REAL AND IT IS ALLOWED TO BE HERE'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_notice_stays",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Card by the Gate"
+   }
+  }
+ ]
+}

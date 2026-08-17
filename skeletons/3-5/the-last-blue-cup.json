@@ -1,0 +1,284 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_last_blue_cup",
+ "version": 1,
+ "title": "The Last Blue Cup",
+ "metadata": {
+  "age_band": "3-5",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 1.0,
+   "tolerance": 1.0
+  },
+  "tier": 1,
+  "themes": [
+   "nursery",
+   "looking after things",
+   "sharing",
+   "patience"
+  ],
+  "estimated_minutes": 2,
+  "ending_count": 6,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  },
+  "topology": "loop_and_grow",
+  "length": "short",
+  "narrative_style": "prose",
+  "production_eligible": true
+ },
+ "variables": [],
+ "start_node": "n_snack",
+ "nodes": [
+  {
+   "id": "n_snack",
+   "body": "<<FILL role=setup words=34 beats='the snack trolley squeaks in and everyone finds their place at the low table; on the shelf the cups are lined up in a row, red, green, yellow, and the space where the blue one goes is empty'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_snack_0",
+     "label": "Go and look for it.",
+     "target": "n_gap"
+    }
+   ]
+  },
+  {
+   "id": "n_gap",
+   "body": "<<FILL role=setup words=40 beats='the blue cup is the one with the little chip on the handle and it is not on the shelf and not in the sink; Meena the helper says it will be somewhere, cups do not walk; there are two good places to start'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_gap_0",
+     "label": "Dig in the sand tray.",
+     "target": "n_sand"
+    },
+    {
+     "id": "c_n_gap_1",
+     "label": "Look in the book corner.",
+     "target": "n_books"
+    }
+   ]
+  },
+  {
+   "id": "n_sand",
+   "body": "<<FILL role=rising words=40 beats='the sand tray still has yesterday's castle in it and a lot of buried things; digging is allowed as long as the sand stays in the tray, which is a rule everybody knows and nobody quite manages'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_sand_0",
+     "label": "Dig down where the castle is.",
+     "target": "n_dig"
+    },
+    {
+     "id": "c_n_sand_1",
+     "label": "Lift up the big cushion.",
+     "target": "n_cushion"
+    }
+   ]
+  },
+  {
+   "id": "n_books",
+   "body": "<<FILL role=rising words=40 beats='the book corner is all cushions and a low shelf, and things do get left in there; under the big cushion is warm and dark and full of crumbs and one sock'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_books_0",
+     "label": "Dig down where the castle is.",
+     "target": "n_dig"
+    },
+    {
+     "id": "c_n_books_1",
+     "label": "Lift up the big cushion.",
+     "target": "n_cushion"
+    }
+   ]
+  },
+  {
+   "id": "n_dig",
+   "body": "<<FILL role=rising words=40 beats='the digging turns up a spoon, a small plastic sheep, and a lid; the lid is blue and for one whole second it looks exactly right, and then it is only a lid'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_dig_0",
+     "label": "Ask everybody at the table.",
+     "target": "n_ask"
+    },
+    {
+     "id": "c_n_dig_1",
+     "label": "Go out to the water tray.",
+     "target": "n_water"
+    }
+   ]
+  },
+  {
+   "id": "n_cushion",
+   "body": "<<FILL role=rising words=40 beats='under the cushions there is no cup, but there is a puddle-shaped dry patch on the carpet, the kind a cup leaves when it has been standing somewhere a while'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_cushion_0",
+     "label": "Sit down and have snack anyway.",
+     "target": "n_wait"
+    },
+    {
+     "id": "c_n_cushion_1",
+     "label": "Ask everybody at the table.",
+     "target": "n_ask"
+    }
+   ]
+  },
+  {
+   "id": "n_ask",
+   "body": "<<FILL role=rising words=40 beats='asking out loud who has seen the blue cup makes the whole table think at once, which is loud; two people say the water tray and one person says the moon'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_ask_0",
+     "label": "Look behind the big jug.",
+     "target": "n_found"
+    },
+    {
+     "id": "c_n_ask_1",
+     "label": "Take the red cup instead.",
+     "target": "n_share"
+    }
+   ]
+  },
+  {
+   "id": "n_water",
+   "body": "<<FILL role=rising words=40 beats='the water tray is out in the corridor since this morning, with its jugs and its funnels and its one small boat; everything in it is wet and everything in it is blue-ish in this light'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_water_0",
+     "label": "Put everything back where it goes.",
+     "target": "e_tidied"
+    },
+    {
+     "id": "c_n_water_1",
+     "label": "Go and tell Meena.",
+     "target": "e_helper"
+    }
+   ]
+  },
+  {
+   "id": "n_wait",
+   "body": "<<FILL role=rising words=40 beats='sitting back down at the table is allowed too; the snack is apple slices and there is a red cup free, and Meena does not make a fuss about it either way'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_wait_0",
+     "label": "Take the red cup instead.",
+     "target": "n_share"
+    },
+    {
+     "id": "c_n_wait_1",
+     "label": "Go back and think again.",
+     "target": "n_gap"
+    }
+   ]
+  },
+  {
+   "id": "n_found",
+   "body": "<<FILL role=rising words=40 beats='there it is, standing in the water tray behind the big jug with the chip on the handle facing away, which is why nobody saw it; it is full of water and a small plastic fish'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_found_0",
+     "label": "Wash it at the sink.",
+     "target": "e_washed"
+    },
+    {
+     "id": "c_n_found_1",
+     "label": "Take it to the table.",
+     "target": "e_juice"
+    }
+   ]
+  },
+  {
+   "id": "n_share",
+   "body": "<<FILL role=rising words=40 beats='the red cup turns out to be fine, and the apple slices taste the same out of any colour; from here the blue cup is still missing and the snack is still happening'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_share_0",
+     "label": "Let somebody else have it.",
+     "target": "e_swap"
+    },
+    {
+     "id": "c_n_share_1",
+     "label": "Leave it for tomorrow.",
+     "target": "e_tomorrow"
+    }
+   ]
+  },
+  {
+   "id": "e_tidied",
+   "body": "<<FILL role=discovery words=40 beats='the looking turns into tidying without anybody deciding to: the spoon goes back, the sheep goes back, the sock goes in the basket, and the room is better than it was even though the cup is not found'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_tidied",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Tidying Instead"
+   }
+  },
+  {
+   "id": "e_helper",
+   "body": "<<FILL role=completion words=40 beats='Meena is told exactly where it is not, which turns out to be worth a lot; she says that is proper helping, and they go and look at the last place together'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_helper",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Telling Meena"
+   }
+  },
+  {
+   "id": "e_washed",
+   "body": "<<FILL role=completion words=40 beats='the cup gets carried very carefully to the sink with both hands, tipped out, washed, and put on the shelf in its own space; the row of cups is right again and the fish goes back in the water tray'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_washed",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Back in Its Space"
+   }
+  },
+  {
+   "id": "e_juice",
+   "body": "<<FILL role=success words=40 beats='the blue cup arrives at the table at exactly the right moment and gets filled, and drinking out of it is as good as it always is; the chip on the handle sits under one thumb the way it always does'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_juice",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Blue Cup at Last"
+   }
+  },
+  {
+   "id": "e_swap",
+   "body": "<<FILL role=discovery words=40 beats='someone else at the table likes blue best too, and the cup goes to them instead; giving it away turns out to feel surprisingly good, and the red cup is still perfectly fine'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_swap",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Someone Else's Turn"
+   }
+  },
+  {
+   "id": "e_tomorrow",
+   "body": "<<FILL role=setback words=40 beats='snack finishes before the cup is found, and that is that for today; Meena writes BLUE CUP on the whiteboard so tomorrow starts with everybody already looking'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_tomorrow",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "On the Whiteboard"
+   }
+  }
+ ]
+}

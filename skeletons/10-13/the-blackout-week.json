@@ -1,0 +1,1819 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_blackout_week",
+ "version": 1,
+ "title": "The Blackout Week",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "community",
+   "responsibility",
+   "improvising",
+   "trust"
+  ],
+  "estimated_minutes": 7,
+  "ending_count": 19,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "length": "short",
+  "narrative_style": "prose",
+  "production_eligible": true
+ },
+ "variables": [],
+ "start_node": "n_out",
+ "nodes": [
+  {
+   "id": "n_out",
+   "body": "<<FILL role=setup words=65 beats='the lights go at twenty past four on a Tuesday and do not come back; the street is suddenly loud with everyone's front doors opening at once, and the sky over the moor is the colour of a bruise'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_out_0",
+     "label": "Go down to the village hall.",
+     "target": "n_hall"
+    }
+   ]
+  },
+  {
+   "id": "n_hall",
+   "body": "<<FILL role=setup words=80 beats='the village hall becomes the place people go, because it has a gas ring and a landline; the notice on the door by six says SEVEN DAYS, WORST CASE, and three separate problems have already found their way to the same table'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_hall_0",
+     "label": "Take on the shop's freezers.",
+     "target": "t_shop"
+    },
+    {
+     "id": "c_n_hall_1",
+     "label": "Take on Mrs Petrakis's power.",
+     "target": "t_nan"
+    },
+    {
+     "id": "c_n_hall_2",
+     "label": "Take on the school's server.",
+     "target": "t_school"
+    }
+   ]
+  },
+  {
+   "id": "t_shop",
+   "body": "<<FILL role=rising words=100 beats='the shop's freezers hold everything frozen for four streets and are already going soft at the edges; Rina who runs it is doing sums out loud about a generator she does not have'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_t_shop_0",
+     "label": "Work out what is actually in there.",
+     "target": "s_stock"
+    },
+    {
+     "id": "c_t_shop_1",
+     "label": "Chase the garage generator.",
+     "target": "s_gen"
+    },
+    {
+     "id": "c_t_shop_2",
+     "label": "Count the cylinder hours.",
+     "target": "p_cyl"
+    }
+   ]
+  },
+  {
+   "id": "t_nan",
+   "body": "<<FILL role=rising words=100 beats='Mrs Petrakis two doors down runs an oxygen concentrator that needs mains power, and her backup cylinder is rated for hours rather than days; she is completely calm about this, which is somehow worse'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_t_nan_0",
+     "label": "Find out who is responsible.",
+     "target": "p_calls"
+    },
+    {
+     "id": "c_t_nan_1",
+     "label": "Get it enough power to shut down.",
+     "target": "c_power"
+    },
+    {
+     "id": "c_t_nan_2",
+     "label": "Argue for extensions instead.",
+     "target": "c_paper"
+    }
+   ]
+  },
+  {
+   "id": "t_school",
+   "body": "<<FILL role=rising words=100 beats='the school's server holds every Year 8 coursework file, due Friday, and it went down hard mid-write; the caretaker has keys and no idea what a UPS is'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_t_school_0",
+     "label": "Work out what is actually in there.",
+     "target": "s_stock"
+    },
+    {
+     "id": "c_t_school_1",
+     "label": "Chase the garage generator.",
+     "target": "s_gen"
+    },
+    {
+     "id": "c_t_school_2",
+     "label": "Count the cylinder hours.",
+     "target": "p_cyl"
+    }
+   ]
+  },
+  {
+   "id": "s_stock",
+   "body": "<<FILL role=rising words=100 beats='the freezers can be triaged: what must be eaten today, what can be moved, what is already gone; nobody has written a list and everybody has an opinion'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_stock_0",
+     "label": "Write the list up where people can see it.",
+     "target": "s_list"
+    },
+    {
+     "id": "c_s_stock_1",
+     "label": "Get it eaten before it spoils.",
+     "target": "s_share"
+    },
+    {
+     "id": "c_s_stock_2",
+     "label": "Go and get fuel.",
+     "target": "s_fuel"
+    }
+   ]
+  },
+  {
+   "id": "s_gen",
+   "body": "<<FILL role=rising words=100 beats='there is a generator at the garage, on loan, with no fuel and a starter cord that needs a knack; it would run one freezer or the hall, not both'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_gen_0",
+     "label": "Do the arithmetic properly.",
+     "target": "p_hours"
+    },
+    {
+     "id": "c_s_gen_1",
+     "label": "Wait on the helpline.",
+     "target": "p_hold"
+    },
+    {
+     "id": "c_s_gen_2",
+     "label": "Go and sit with her.",
+     "target": "p_sit"
+    }
+   ]
+  },
+  {
+   "id": "p_cyl",
+   "body": "<<FILL role=rising words=100 beats='the cylinder question is a counting problem with a very hard edge: hours left, hours until power, and no way to make the second number smaller from here'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_cyl_0",
+     "label": "Look at the UPS in the cupboard.",
+     "target": "c_ups"
+    },
+    {
+     "id": "c_p_cyl_1",
+     "label": "Get the caretaker to open up.",
+     "target": "c_keys"
+    },
+    {
+     "id": "c_p_cyl_2",
+     "label": "Go and fetch the IT teacher.",
+     "target": "c_ask"
+    }
+   ]
+  },
+  {
+   "id": "p_calls",
+   "body": "<<FILL role=rising words=100 beats='somebody has to work out who is officially responsible, which means the landline, a list of numbers, and the patience to be put on hold from a village hall'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_calls_0",
+     "label": "Write the list up where people can see it.",
+     "target": "s_list"
+    },
+    {
+     "id": "c_p_calls_1",
+     "label": "Get it eaten before it spoils.",
+     "target": "s_share"
+    },
+    {
+     "id": "c_p_calls_2",
+     "label": "Go and get fuel.",
+     "target": "s_fuel"
+    }
+   ]
+  },
+  {
+   "id": "c_power",
+   "body": "<<FILL role=rising words=100 beats='the server needs clean power for long enough to shut down properly, which is a much smaller ask than keeping it running'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_power_0",
+     "label": "Do the arithmetic properly.",
+     "target": "p_hours"
+    },
+    {
+     "id": "c_c_power_1",
+     "label": "Wait on the helpline.",
+     "target": "p_hold"
+    },
+    {
+     "id": "c_c_power_2",
+     "label": "Go and sit with her.",
+     "target": "p_sit"
+    }
+   ]
+  },
+  {
+   "id": "c_paper",
+   "body": "<<FILL role=rising words=100 beats='there is a paper answer nobody likes: extensions, handwriting, and trusting that the files are still on the disk when it all comes back'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_paper_0",
+     "label": "Look at the UPS in the cupboard.",
+     "target": "c_ups"
+    },
+    {
+     "id": "c_c_paper_1",
+     "label": "Get the caretaker to open up.",
+     "target": "c_keys"
+    },
+    {
+     "id": "c_c_paper_2",
+     "label": "Go and fetch the IT teacher.",
+     "target": "c_ask"
+    }
+   ]
+  },
+  {
+   "id": "s_list",
+   "body": "<<FILL role=rising words=100 beats='the list gets made on the back of a poster and pinned up, and the arguing stops the moment it is visible; it turns out people mostly wanted to know'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_list_0",
+     "label": "Triage it cold and honestly.",
+     "target": "s_triage"
+    },
+    {
+     "id": "c_s_list_1",
+     "label": "Put it on every barbecue in the street.",
+     "target": "s_bbq"
+    },
+    {
+     "id": "c_s_list_2",
+     "label": "Get the generator running.",
+     "target": "s_run"
+    }
+   ]
+  },
+  {
+   "id": "s_share",
+   "body": "<<FILL role=rising words=100 beats='the softening stuff has to go somewhere, and the answer is everyone's barbecues at once, which is either a crisis or the best evening of the year'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_share_0",
+     "label": "Have someone check your numbers.",
+     "target": "p_maths"
+    },
+    {
+     "id": "c_s_share_1",
+     "label": "Escalate it as medical.",
+     "target": "p_esc"
+    },
+    {
+     "id": "c_s_share_2",
+     "label": "Organise the street around the house.",
+     "target": "p_neigh"
+    }
+   ]
+  },
+  {
+   "id": "s_fuel",
+   "body": "<<FILL role=rising words=100 beats='fuel for the generator means the garage, a jerrycan, and an adult with a card that works offline; two of those three are easy'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_fuel_0",
+     "label": "Find the shutdown command.",
+     "target": "c_shut"
+    },
+    {
+     "id": "c_s_fuel_1",
+     "label": "Ring the head teacher.",
+     "target": "c_perm"
+    },
+    {
+     "id": "c_s_fuel_2",
+     "label": "Cycle out in the dark.",
+     "target": "c_ride"
+    }
+   ]
+  },
+  {
+   "id": "p_hours",
+   "body": "<<FILL role=rising words=100 beats='counting properly gives a number and the number is not enough; it is close, which is the worst kind, because close makes people hope instead of act'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_hours_0",
+     "label": "Triage it cold and honestly.",
+     "target": "s_triage"
+    },
+    {
+     "id": "c_p_hours_1",
+     "label": "Put it on every barbecue in the street.",
+     "target": "s_bbq"
+    },
+    {
+     "id": "c_p_hours_2",
+     "label": "Get the generator running.",
+     "target": "s_run"
+    }
+   ]
+  },
+  {
+   "id": "p_hold",
+   "body": "<<FILL role=rising words=100 beats='the helpline is real and answers in forty minutes; the person on it is kind, writes it down, and cannot promise a time'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_hold_0",
+     "label": "Have someone check your numbers.",
+     "target": "p_maths"
+    },
+    {
+     "id": "c_p_hold_1",
+     "label": "Escalate it as medical.",
+     "target": "p_esc"
+    },
+    {
+     "id": "c_p_hold_2",
+     "label": "Organise the street around the house.",
+     "target": "p_neigh"
+    }
+   ]
+  },
+  {
+   "id": "p_sit",
+   "body": "<<FILL role=rising words=100 beats='sitting with Mrs Petrakis turns out to be a job in itself; she talks about the winter of '63 and does not once mention the cylinder'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_sit_0",
+     "label": "Find the shutdown command.",
+     "target": "c_shut"
+    },
+    {
+     "id": "c_p_sit_1",
+     "label": "Ring the head teacher.",
+     "target": "c_perm"
+    },
+    {
+     "id": "c_p_sit_2",
+     "label": "Cycle out in the dark.",
+     "target": "c_ride"
+    }
+   ]
+  },
+  {
+   "id": "c_ups",
+   "body": "<<FILL role=rising words=100 beats='the UPS in the cupboard has been beeping unnoticed for two years and its battery is long dead; it would have bought nine minutes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_ups_0",
+     "label": "Triage it cold and honestly.",
+     "target": "s_triage"
+    },
+    {
+     "id": "c_c_ups_1",
+     "label": "Put it on every barbecue in the street.",
+     "target": "s_bbq"
+    },
+    {
+     "id": "c_c_ups_2",
+     "label": "Get the generator running.",
+     "target": "s_run"
+    }
+   ]
+  },
+  {
+   "id": "c_keys",
+   "body": "<<FILL role=rising words=100 beats='the caretaker has keys to everything and no authority to use them for this; getting permission takes longer than the job would'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_keys_0",
+     "label": "Have someone check your numbers.",
+     "target": "p_maths"
+    },
+    {
+     "id": "c_c_keys_1",
+     "label": "Escalate it as medical.",
+     "target": "p_esc"
+    },
+    {
+     "id": "c_c_keys_2",
+     "label": "Organise the street around the house.",
+     "target": "p_neigh"
+    }
+   ]
+  },
+  {
+   "id": "c_ask",
+   "body": "<<FILL role=rising words=100 beats='the IT teacher lives eleven miles away and has no phone signal either; reaching her means somebody cycling, in the dark, on a road with trees down'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_ask_0",
+     "label": "Find the shutdown command.",
+     "target": "c_shut"
+    },
+    {
+     "id": "c_c_ask_1",
+     "label": "Ring the head teacher.",
+     "target": "c_perm"
+    },
+    {
+     "id": "c_c_ask_2",
+     "label": "Cycle out in the dark.",
+     "target": "c_ride"
+    }
+   ]
+  },
+  {
+   "id": "s_triage",
+   "body": "<<FILL role=rising words=100 beats='triaged properly, two thirds of it keeps for another day and a third has to move now; the third that has to move is exactly the expensive third'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_triage_0",
+     "label": "Move it into neighbours' freezers.",
+     "target": "s_cold"
+    },
+    {
+     "id": "c_s_triage_1",
+     "label": "Keep a written record of everything.",
+     "target": "s_books"
+    },
+    {
+     "id": "c_s_triage_2",
+     "label": "Choose between the shop and the hall.",
+     "target": "s_choice"
+    }
+   ]
+  },
+  {
+   "id": "s_bbq",
+   "body": "<<FILL role=rising words=100 beats='by eight there are six barbecues going along one street and a lot of food that would otherwise be binned; nobody planned it and everybody came'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_bbq_0",
+     "label": "Take the answer when it comes.",
+     "target": "p_answer"
+    },
+    {
+     "id": "c_s_bbq_1",
+     "label": "Drive for the spare cylinder.",
+     "target": "p_drive"
+    },
+    {
+     "id": "c_s_bbq_2",
+     "label": "Set up a watch rota.",
+     "target": "p_watch"
+    }
+   ]
+  },
+  {
+   "id": "s_run",
+   "body": "<<FILL role=rising words=100 beats='the generator runs, badly, and only after somebody who knows the knack is found; it makes a noise like a lawnmower having an argument'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_run_0",
+     "label": "Use the command on the cupboard door.",
+     "target": "c_cmd"
+    },
+    {
+     "id": "c_s_run_1",
+     "label": "Buy four minutes off the kettle.",
+     "target": "c_four"
+    },
+    {
+     "id": "c_s_run_2",
+     "label": "Bring her back on the bike.",
+     "target": "c_teacher"
+    }
+   ]
+  },
+  {
+   "id": "p_maths",
+   "body": "<<FILL role=rising words=100 beats='redoing the maths with someone else checking finds an error in the hopeful direction, which is a relief and also means the first count was wishful'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_maths_0",
+     "label": "Move it into neighbours' freezers.",
+     "target": "s_cold"
+    },
+    {
+     "id": "c_p_maths_1",
+     "label": "Keep a written record of everything.",
+     "target": "s_books"
+    },
+    {
+     "id": "c_p_maths_2",
+     "label": "Choose between the shop and the hall.",
+     "target": "s_choice"
+    }
+   ]
+  },
+  {
+   "id": "p_esc",
+   "body": "<<FILL role=rising words=100 beats='escalating means saying the word 'medical' to the right person, and the moment it is said the whole tone of the call changes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_esc_0",
+     "label": "Take the answer when it comes.",
+     "target": "p_answer"
+    },
+    {
+     "id": "c_p_esc_1",
+     "label": "Drive for the spare cylinder.",
+     "target": "p_drive"
+    },
+    {
+     "id": "c_p_esc_2",
+     "label": "Set up a watch rota.",
+     "target": "p_watch"
+    }
+   ]
+  },
+  {
+   "id": "p_neigh",
+   "body": "<<FILL role=rising words=100 beats='the street organises itself around one house without being asked: someone always in, kettle on the gas ring, door on the latch'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_neigh_0",
+     "label": "Use the command on the cupboard door.",
+     "target": "c_cmd"
+    },
+    {
+     "id": "c_p_neigh_1",
+     "label": "Buy four minutes off the kettle.",
+     "target": "c_four"
+    },
+    {
+     "id": "c_p_neigh_2",
+     "label": "Bring her back on the bike.",
+     "target": "c_teacher"
+    }
+   ]
+  },
+  {
+   "id": "c_shut",
+   "body": "<<FILL role=rising words=100 beats='a clean shutdown needs about four minutes of power and a command nobody in the building knows how to type'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_shut_0",
+     "label": "Move it into neighbours' freezers.",
+     "target": "s_cold"
+    },
+    {
+     "id": "c_c_shut_1",
+     "label": "Keep a written record of everything.",
+     "target": "s_books"
+    },
+    {
+     "id": "c_c_shut_2",
+     "label": "Choose between the shop and the hall.",
+     "target": "s_choice"
+    }
+   ]
+  },
+  {
+   "id": "c_perm",
+   "body": "<<FILL role=rising words=100 beats='permission arrives by landline from a head teacher on holiday, who says yes in about nine seconds and sounds baffled to have been asked'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_perm_0",
+     "label": "Take the answer when it comes.",
+     "target": "p_answer"
+    },
+    {
+     "id": "c_c_perm_1",
+     "label": "Drive for the spare cylinder.",
+     "target": "p_drive"
+    },
+    {
+     "id": "c_c_perm_2",
+     "label": "Set up a watch rota.",
+     "target": "p_watch"
+    }
+   ]
+  },
+  {
+   "id": "c_ride",
+   "body": "<<FILL role=rising words=100 beats='the ride out is eleven miles of unlit lane and takes fifty minutes; it is genuinely the most frightened anyone gets all week, and it works'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_ride_0",
+     "label": "Use the command on the cupboard door.",
+     "target": "c_cmd"
+    },
+    {
+     "id": "c_c_ride_1",
+     "label": "Buy four minutes off the kettle.",
+     "target": "c_four"
+    },
+    {
+     "id": "c_c_ride_2",
+     "label": "Bring her back on the bike.",
+     "target": "c_teacher"
+    }
+   ]
+  },
+  {
+   "id": "s_cold",
+   "body": "<<FILL role=rising words=100 beats='cold stores in three houses with chest freezers still holding temperature take the expensive third between them, labelled in marker'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_cold_0",
+     "label": "Check the temperatures twice a day.",
+     "target": "s_hold"
+    },
+    {
+     "id": "c_s_cold_1",
+     "label": "Accept what has already gone.",
+     "target": "s_lost"
+    },
+    {
+     "id": "c_s_cold_2",
+     "label": "Keep the hall lit instead.",
+     "target": "s_hall"
+    }
+   ]
+  },
+  {
+   "id": "s_books",
+   "body": "<<FILL role=rising words=100 beats='Rina writes down what went where, which nobody asks her to do and which turns out to matter enormously eight days later'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_books_0",
+     "label": "Wait for the engineer.",
+     "target": "p_engineer"
+    },
+    {
+     "id": "c_s_books_1",
+     "label": "Keep the spare cylinder unused.",
+     "target": "p_spare"
+    },
+    {
+     "id": "c_s_books_2",
+     "label": "Listen to her properly.",
+     "target": "p_talk"
+    }
+   ]
+  },
+  {
+   "id": "s_choice",
+   "body": "<<FILL role=rising words=100 beats='the generator can run the shop's one good freezer or the hall's lights and kettle, and both are defensible; the hall is where people are'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_choice_0",
+     "label": "Bring it down cleanly.",
+     "target": "c_saved"
+    },
+    {
+     "id": "c_s_choice_1",
+     "label": "Get the whole year an extension.",
+     "target": "c_ext"
+    },
+    {
+     "id": "c_s_choice_2",
+     "label": "Make the missing backup visible.",
+     "target": "c_backup"
+    }
+   ]
+  },
+  {
+   "id": "p_answer",
+   "body": "<<FILL role=rising words=100 beats='the answer comes back: an engineer, tomorrow, and a spare cylinder tonight from the hospital thirty miles off if somebody can drive'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_answer_0",
+     "label": "Check the temperatures twice a day.",
+     "target": "s_hold"
+    },
+    {
+     "id": "c_p_answer_1",
+     "label": "Accept what has already gone.",
+     "target": "s_lost"
+    },
+    {
+     "id": "c_p_answer_2",
+     "label": "Keep the hall lit instead.",
+     "target": "s_hall"
+    }
+   ]
+  },
+  {
+   "id": "p_drive",
+   "body": "<<FILL role=rising words=100 beats='somebody can drive, and does, and is back by midnight; the cylinder is the size of a fire extinguisher and changes the whole shape of the week'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_drive_0",
+     "label": "Wait for the engineer.",
+     "target": "p_engineer"
+    },
+    {
+     "id": "c_p_drive_1",
+     "label": "Keep the spare cylinder unused.",
+     "target": "p_spare"
+    },
+    {
+     "id": "c_p_drive_2",
+     "label": "Listen to her properly.",
+     "target": "p_talk"
+    }
+   ]
+  },
+  {
+   "id": "p_watch",
+   "body": "<<FILL role=rising words=100 beats='the rota that forms has no name and no organiser and covers every hour until Sunday, which is not how anybody expected this to go'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_watch_0",
+     "label": "Bring it down cleanly.",
+     "target": "c_saved"
+    },
+    {
+     "id": "c_p_watch_1",
+     "label": "Get the whole year an extension.",
+     "target": "c_ext"
+    },
+    {
+     "id": "c_p_watch_2",
+     "label": "Make the missing backup visible.",
+     "target": "c_backup"
+    }
+   ]
+  },
+  {
+   "id": "c_cmd",
+   "body": "<<FILL role=rising words=100 beats='the command is found written inside the server cupboard door, in the handwriting of whoever set it up in 2011'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_cmd_0",
+     "label": "Check the temperatures twice a day.",
+     "target": "s_hold"
+    },
+    {
+     "id": "c_c_cmd_1",
+     "label": "Accept what has already gone.",
+     "target": "s_lost"
+    },
+    {
+     "id": "c_c_cmd_2",
+     "label": "Keep the hall lit instead.",
+     "target": "s_hall"
+    }
+   ]
+  },
+  {
+   "id": "c_four",
+   "body": "<<FILL role=rising words=100 beats='four minutes of generator time is negotiated against the hall's kettle, and the kettle loses, and everybody agrees it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_four_0",
+     "label": "Wait for the engineer.",
+     "target": "p_engineer"
+    },
+    {
+     "id": "c_c_four_1",
+     "label": "Keep the spare cylinder unused.",
+     "target": "p_spare"
+    },
+    {
+     "id": "c_c_four_2",
+     "label": "Listen to her properly.",
+     "target": "p_talk"
+    }
+   ]
+  },
+  {
+   "id": "c_teacher",
+   "body": "<<FILL role=rising words=100 beats='the IT teacher comes back on the crossbar of the bike for the last mile, which she will mention at every parents' evening for years'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_teacher_0",
+     "label": "Bring it down cleanly.",
+     "target": "c_saved"
+    },
+    {
+     "id": "c_c_teacher_1",
+     "label": "Get the whole year an extension.",
+     "target": "c_ext"
+    },
+    {
+     "id": "c_c_teacher_2",
+     "label": "Make the missing backup visible.",
+     "target": "c_backup"
+    }
+   ]
+  },
+  {
+   "id": "s_hold",
+   "body": "<<FILL role=rising words=100 beats='the cold stores hold, checked twice a day with a thermometer borrowed from the school science lab'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_hold_0",
+     "label": "Keep the shop open on the list.",
+     "target": "s_thurs"
+    },
+    {
+     "id": "c_s_hold_1",
+     "label": "Let people pay later in a notebook.",
+     "target": "s_credit"
+    },
+    {
+     "id": "c_s_hold_2",
+     "label": "Do the jobs anyway.",
+     "target": "s_tired"
+    }
+   ]
+  },
+  {
+   "id": "s_lost",
+   "body": "<<FILL role=rising words=100 beats='some of it goes anyway; there is a bin bag by Thursday and Rina is very matter-of-fact about it in a way that does not quite convince'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_lost_0",
+     "label": "Let it become a routine.",
+     "target": "p_rhythm"
+    },
+    {
+     "id": "c_s_lost_1",
+     "label": "Ask the same question about everyone.",
+     "target": "p_others"
+    },
+    {
+     "id": "c_s_lost_2",
+     "label": "Put the names up in the hall.",
+     "target": "p_list"
+    }
+   ]
+  },
+  {
+   "id": "s_hall",
+   "body": "<<FILL role=rising words=100 beats='the hall keeps its lights and its kettle, and becomes the place the whole village is at eight every evening'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_hall_0",
+     "label": "Hand the files round on memory sticks.",
+     "target": "c_files"
+    },
+    {
+     "id": "c_s_hall_1",
+     "label": "Teach the caretaker the kit.",
+     "target": "c_lesson"
+    },
+    {
+     "id": "c_s_hall_2",
+     "label": "Start writing down what happened.",
+     "target": "c_survey"
+    }
+   ]
+  },
+  {
+   "id": "p_engineer",
+   "body": "<<FILL role=rising words=100 beats='the engineer arrives Wednesday, looks at the concentrator, and says the thing everybody needed to hear, which is that this is now a solved problem'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_engineer_0",
+     "label": "Keep the shop open on the list.",
+     "target": "s_thurs"
+    },
+    {
+     "id": "c_p_engineer_1",
+     "label": "Let people pay later in a notebook.",
+     "target": "s_credit"
+    },
+    {
+     "id": "c_p_engineer_2",
+     "label": "Do the jobs anyway.",
+     "target": "s_tired"
+    }
+   ]
+  },
+  {
+   "id": "p_spare",
+   "body": "<<FILL role=rising words=100 beats='the spare cylinder sits in the hall cupboard untouched all week and is the reason nobody panics; unused is exactly what it was for'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_spare_0",
+     "label": "Let it become a routine.",
+     "target": "p_rhythm"
+    },
+    {
+     "id": "c_p_spare_1",
+     "label": "Ask the same question about everyone.",
+     "target": "p_others"
+    },
+    {
+     "id": "c_p_spare_2",
+     "label": "Put the names up in the hall.",
+     "target": "p_list"
+    }
+   ]
+  },
+  {
+   "id": "p_talk",
+   "body": "<<FILL role=rising words=100 beats='Mrs Petrakis talks, and it turns out she was a district nurse for thirty years and has done this from the other side more times than anyone'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_talk_0",
+     "label": "Hand the files round on memory sticks.",
+     "target": "c_files"
+    },
+    {
+     "id": "c_p_talk_1",
+     "label": "Teach the caretaker the kit.",
+     "target": "c_lesson"
+    },
+    {
+     "id": "c_p_talk_2",
+     "label": "Start writing down what happened.",
+     "target": "c_survey"
+    }
+   ]
+  },
+  {
+   "id": "c_saved",
+   "body": "<<FILL role=rising words=100 beats='the server comes down cleanly and every file is exactly where it was; the disk was never the risk, the ungraceful stop was'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_saved_0",
+     "label": "Keep the shop open on the list.",
+     "target": "s_thurs"
+    },
+    {
+     "id": "c_c_saved_1",
+     "label": "Let people pay later in a notebook.",
+     "target": "s_credit"
+    },
+    {
+     "id": "c_c_saved_2",
+     "label": "Do the jobs anyway.",
+     "target": "s_tired"
+    }
+   ]
+  },
+  {
+   "id": "c_ext",
+   "body": "<<FILL role=rising words=100 beats='the extension is granted for the whole year group before anyone asks for it, which removes the panic and, oddly, most of the excuses'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_ext_0",
+     "label": "Let it become a routine.",
+     "target": "p_rhythm"
+    },
+    {
+     "id": "c_c_ext_1",
+     "label": "Ask the same question about everyone.",
+     "target": "p_others"
+    },
+    {
+     "id": "c_c_ext_2",
+     "label": "Put the names up in the hall.",
+     "target": "p_list"
+    }
+   ]
+  },
+  {
+   "id": "c_backup",
+   "body": "<<FILL role=rising words=100 beats='the absence of any offsite backup becomes visible to people who can fix it, which is the most useful thing to come out of the week'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_backup_0",
+     "label": "Hand the files round on memory sticks.",
+     "target": "c_files"
+    },
+    {
+     "id": "c_c_backup_1",
+     "label": "Teach the caretaker the kit.",
+     "target": "c_lesson"
+    },
+    {
+     "id": "c_c_backup_2",
+     "label": "Start writing down what happened.",
+     "target": "c_survey"
+    }
+   ]
+  },
+  {
+   "id": "s_thurs",
+   "body": "<<FILL role=rising words=100 beats='by Thursday the shop is running on a list, a generator, and three neighbours' freezers, and is somehow busier than usual'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_thurs_0",
+     "label": "Get to Sunday.",
+     "target": "s_sun"
+    },
+    {
+     "id": "c_s_thurs_1",
+     "label": "Count the cost properly.",
+     "target": "s_count"
+    },
+    {
+     "id": "c_s_thurs_2",
+     "label": "Ask what happens next time.",
+     "target": "s_next"
+    }
+   ]
+  },
+  {
+   "id": "s_credit",
+   "body": "<<FILL role=rising words=100 beats='with no card machine, everything goes in a notebook on trust; not one person fails to come back and settle up, which Rina expects and still finds moving'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_credit_0",
+     "label": "Spend Sunday there.",
+     "target": "p_sunday"
+    },
+    {
+     "id": "c_s_credit_1",
+     "label": "Take the thanks badly.",
+     "target": "p_thanks"
+    },
+    {
+     "id": "c_s_credit_2",
+     "label": "Keep the rota going anyway.",
+     "target": "p_rota"
+    }
+   ]
+  },
+  {
+   "id": "s_tired",
+   "body": "<<FILL role=rising words=100 beats='four days in, everyone is short-tempered and slightly cold, and the jobs still get done, which is what the week is actually about'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_tired_0",
+     "label": "Get every file in by Friday.",
+     "target": "c_friday"
+    },
+    {
+     "id": "c_s_tired_1",
+     "label": "Open up the server room properly.",
+     "target": "c_room"
+    },
+    {
+     "id": "c_s_tired_2",
+     "label": "Read the account out at the hall.",
+     "target": "c_write"
+    }
+   ]
+  },
+  {
+   "id": "p_rhythm",
+   "body": "<<FILL role=rising words=100 beats='the house settles into a rhythm: cylinder checked, kettle on, someone always there; it stops being an emergency and becomes a routine'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_rhythm_0",
+     "label": "Get to Sunday.",
+     "target": "s_sun"
+    },
+    {
+     "id": "c_p_rhythm_1",
+     "label": "Count the cost properly.",
+     "target": "s_count"
+    },
+    {
+     "id": "c_p_rhythm_2",
+     "label": "Ask what happens next time.",
+     "target": "s_next"
+    }
+   ]
+  },
+  {
+   "id": "p_others",
+   "body": "<<FILL role=rising words=100 beats='the same question is asked about everyone else on the street, properly, for the first time, and turns up two more people nobody had thought about'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_others_0",
+     "label": "Spend Sunday there.",
+     "target": "p_sunday"
+    },
+    {
+     "id": "c_p_others_1",
+     "label": "Take the thanks badly.",
+     "target": "p_thanks"
+    },
+    {
+     "id": "c_p_others_2",
+     "label": "Keep the rota going anyway.",
+     "target": "p_rota"
+    }
+   ]
+  },
+  {
+   "id": "p_list",
+   "body": "<<FILL role=rising words=100 beats='a list of who needs what goes up in the hall with names on it, which is either sensible or a breach of privacy depending on who is asked'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_list_0",
+     "label": "Get every file in by Friday.",
+     "target": "c_friday"
+    },
+    {
+     "id": "c_p_list_1",
+     "label": "Open up the server room properly.",
+     "target": "c_room"
+    },
+    {
+     "id": "c_p_list_2",
+     "label": "Read the account out at the hall.",
+     "target": "c_write"
+    }
+   ]
+  },
+  {
+   "id": "c_files",
+   "body": "<<FILL role=rising words=100 beats='the coursework files come back on memory sticks handed round like contraband, and the year group finishes on paper by lamplight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_files_0",
+     "label": "Get to Sunday.",
+     "target": "s_sun"
+    },
+    {
+     "id": "c_c_files_1",
+     "label": "Count the cost properly.",
+     "target": "s_count"
+    },
+    {
+     "id": "c_c_files_2",
+     "label": "Ask what happens next time.",
+     "target": "s_next"
+    }
+   ]
+  },
+  {
+   "id": "c_lesson",
+   "body": "<<FILL role=rising words=100 beats='the caretaker learns what a UPS is and becomes, without any warning, the person who cares most about it in the building'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_lesson_0",
+     "label": "Spend Sunday there.",
+     "target": "p_sunday"
+    },
+    {
+     "id": "c_c_lesson_1",
+     "label": "Take the thanks badly.",
+     "target": "p_thanks"
+    },
+    {
+     "id": "c_c_lesson_2",
+     "label": "Keep the rota going anyway.",
+     "target": "p_rota"
+    }
+   ]
+  },
+  {
+   "id": "c_survey",
+   "body": "<<FILL role=rising words=100 beats='somebody starts writing down what actually happened, hour by hour, because it is obvious already that nobody will remember it accurately'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_survey_0",
+     "label": "Get every file in by Friday.",
+     "target": "c_friday"
+    },
+    {
+     "id": "c_c_survey_1",
+     "label": "Open up the server room properly.",
+     "target": "c_room"
+    },
+    {
+     "id": "c_c_survey_2",
+     "label": "Read the account out at the hall.",
+     "target": "c_write"
+    }
+   ]
+  },
+  {
+   "id": "s_sun",
+   "body": "<<FILL role=rising words=100 beats='Sunday, and the freezers are still holding and the notebook is four pages long; the power is still off and nobody is frightened of that any more'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_sun_0",
+     "label": "Watch the forecast turn.",
+     "target": "n_storm"
+    },
+    {
+     "id": "c_s_sun_1",
+     "label": "Get ready properly this time.",
+     "target": "n_ready"
+    },
+    {
+     "id": "c_s_sun_2",
+     "label": "Deal with the people from town.",
+     "target": "n_town"
+    }
+   ]
+  },
+  {
+   "id": "s_count",
+   "body": "<<FILL role=rising words=100 beats='counting the cost properly is a grown-up job that a twelve year old ends up doing, because they are the one who kept the list'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_count_0",
+     "label": "Wait for the lights to come back.",
+     "target": "n_after"
+    },
+    {
+     "id": "c_s_count_1",
+     "label": "Hold everything together again.",
+     "target": "e_held"
+    },
+    {
+     "id": "c_s_count_2",
+     "label": "Notice what the week made visible.",
+     "target": "e_seen"
+    }
+   ]
+  },
+  {
+   "id": "s_next",
+   "body": "<<FILL role=rising words=100 beats='the question of what happens next time gets asked out loud in the shop, which is where things in this village actually get decided'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_next_0",
+     "label": "Get through a night that goes wrong.",
+     "target": "e_tired_out"
+    },
+    {
+     "id": "c_s_next_1",
+     "label": "Square up what you wrote down.",
+     "target": "e_notebook"
+    },
+    {
+     "id": "c_s_next_2",
+     "label": "Let it stop without marking it.",
+     "target": "e_quiet"
+    }
+   ]
+  },
+  {
+   "id": "p_sunday",
+   "body": "<<FILL role=rising words=100 beats='Sunday at Mrs Petrakis's is four people, a gas ring, and a very long story about 1963 that everybody now wants to hear properly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_sunday_0",
+     "label": "Watch the forecast turn.",
+     "target": "n_storm"
+    },
+    {
+     "id": "c_p_sunday_1",
+     "label": "Get ready properly this time.",
+     "target": "n_ready"
+    },
+    {
+     "id": "c_p_sunday_2",
+     "label": "Deal with the people from town.",
+     "target": "n_town"
+    }
+   ]
+  },
+  {
+   "id": "p_thanks",
+   "body": "<<FILL role=rising words=100 beats='being thanked for it is unexpectedly hard to take, and the right answer turns out to be to say nothing much and put the kettle on'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_thanks_0",
+     "label": "Wait for the lights to come back.",
+     "target": "n_after"
+    },
+    {
+     "id": "c_p_thanks_1",
+     "label": "Hold everything together again.",
+     "target": "e_held"
+    },
+    {
+     "id": "c_p_thanks_2",
+     "label": "Notice what the week made visible.",
+     "target": "e_seen"
+    }
+   ]
+  },
+  {
+   "id": "p_rota",
+   "body": "<<FILL role=rising words=100 beats='the rota is still going on Sunday night, past the point of necessity, because stopping it would mean admitting it is over'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p_rota_0",
+     "label": "Get through a night that goes wrong.",
+     "target": "e_tired_out"
+    },
+    {
+     "id": "c_p_rota_1",
+     "label": "Square up what you wrote down.",
+     "target": "e_notebook"
+    },
+    {
+     "id": "c_p_rota_2",
+     "label": "Let it stop without marking it.",
+     "target": "e_quiet"
+    }
+   ]
+  },
+  {
+   "id": "c_friday",
+   "body": "<<FILL role=rising words=100 beats='Friday's deadline passes with every single piece of coursework in, which nobody outside the village will ever understand the size of'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_friday_0",
+     "label": "Watch the forecast turn.",
+     "target": "n_storm"
+    },
+    {
+     "id": "c_c_friday_1",
+     "label": "Get ready properly this time.",
+     "target": "n_ready"
+    },
+    {
+     "id": "c_c_friday_2",
+     "label": "Deal with the people from town.",
+     "target": "n_town"
+    }
+   ]
+  },
+  {
+   "id": "c_room",
+   "body": "<<FILL role=rising words=100 beats='the server room gets opened up and looked at properly for the first time in a decade, with three people in it who now care'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_room_0",
+     "label": "Wait for the lights to come back.",
+     "target": "n_after"
+    },
+    {
+     "id": "c_c_room_1",
+     "label": "Hold everything together again.",
+     "target": "e_held"
+    },
+    {
+     "id": "c_c_room_2",
+     "label": "Notice what the week made visible.",
+     "target": "e_seen"
+    }
+   ]
+  },
+  {
+   "id": "c_write",
+   "body": "<<FILL role=rising words=100 beats='the account of the week runs to eleven pages and gets read out at the hall, badly, to a room that keeps interrupting with corrections'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_write_0",
+     "label": "Get through a night that goes wrong.",
+     "target": "e_tired_out"
+    },
+    {
+     "id": "c_c_write_1",
+     "label": "Square up what you wrote down.",
+     "target": "e_notebook"
+    },
+    {
+     "id": "c_c_write_2",
+     "label": "Let it stop without marking it.",
+     "target": "e_quiet"
+    }
+   ]
+  },
+  {
+   "id": "n_storm",
+   "body": "<<FILL role=rising words=100 beats='the forecast turns on Sunday night and the storm that started this is coming back over the moor; everything held together this week is about to be tested again, with everyone already tired'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_storm_0",
+     "label": "Go to the village meeting.",
+     "target": "n_meet"
+    },
+    {
+     "id": "c_n_storm_1",
+     "label": "Argue about what to buy.",
+     "target": "n_kit"
+    },
+    {
+     "id": "c_n_storm_2",
+     "label": "Let them put your name forward.",
+     "target": "n_you"
+    }
+   ]
+  },
+  {
+   "id": "n_ready",
+   "body": "<<FILL role=rising words=100 beats='getting ready the second time is completely different, because this time there is a list, a rota, a generator that starts, and a spare cylinder'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_ready_0",
+     "label": "Take the seat.",
+     "target": "e_committee"
+    },
+    {
+     "id": "c_n_ready_1",
+     "label": "Build the cupboard.",
+     "target": "e_cupboard"
+    },
+    {
+     "id": "c_n_ready_2",
+     "label": "Put the account in the archive.",
+     "target": "e_paper_record"
+    }
+   ]
+  },
+  {
+   "id": "n_town",
+   "body": "<<FILL role=rising words=100 beats='the wider town finally notices the village exists, which arrives as a van, a press photographer, and a man with a clipboard asking questions already answered'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_town_0",
+     "label": "Watch it fade by the spring.",
+     "target": "e_forgotten"
+    },
+    {
+     "id": "c_n_town_1",
+     "label": "Stand for the photograph.",
+     "target": "e_thanked"
+    },
+    {
+     "id": "c_n_town_2",
+     "label": "Go to the village meeting.",
+     "target": "n_meet"
+    }
+   ]
+  },
+  {
+   "id": "n_after",
+   "body": "<<FILL role=rising words=100 beats='on Monday the lights come back at ten past six in the morning and the whole street's appliances start beeping at once, which is very funny and then, unexpectedly, is not'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_after_0",
+     "label": "Argue about what to buy.",
+     "target": "n_kit"
+    },
+    {
+     "id": "c_n_after_1",
+     "label": "Let them put your name forward.",
+     "target": "n_you"
+    },
+    {
+     "id": "c_n_after_2",
+     "label": "Take the seat.",
+     "target": "e_committee"
+    }
+   ]
+  },
+  {
+   "id": "e_held",
+   "body": "<<FILL role=completion words=95 beats='the second night is worse and nothing breaks; the freezers hold, the cylinder is not needed, the hall stays lit, and by Tuesday it is simply over'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_held",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "It Holds the Second Time"
+   }
+  },
+  {
+   "id": "e_seen",
+   "body": "<<FILL role=discovery words=95 beats='what stays is not the week but what became visible during it: who checks on whom, which cupboards have what in them, and how thin the normal arrangements were all along'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_seen",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "What the Week Made Visible"
+   }
+  },
+  {
+   "id": "e_tired_out",
+   "body": "<<FILL role=setback words=95 beats='the second storm arrives and this time something does go, in whichever corner of it you were holding; a night nobody sleeps, and a Monday where it is hard to feel proud of anything'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_tired_out",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Night It Goes Wrong"
+   }
+  },
+  {
+   "id": "e_notebook",
+   "body": "<<FILL role=completion words=95 beats='every scrappy record kept during the week gets squared up by the end of the month, the notebook and the temperature log and the rota sheet alike, and they end up kept rather than binned where people can see them'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_notebook",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Kept Rather Than Binned"
+   }
+  },
+  {
+   "id": "e_quiet",
+   "body": "<<FILL role=discovery words=95 beats='whatever you had been doing every day for a week stops being needed, and nobody marks the last time you do it; that is the correct way for it to end and it still takes some getting used to'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_quiet",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Last Time You Do It"
+   }
+  },
+  {
+   "id": "n_meet",
+   "body": "<<FILL role=rising words=100 beats='the village meeting about next time is packed, badly chaired, and gets further in ninety minutes than the parish council has in nine years'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_meet_0",
+     "label": "See how the next one goes.",
+     "target": "e_next_winter"
+    },
+    {
+     "id": "c_n_meet_1",
+     "label": "Teach it to the year below.",
+     "target": "e_taught"
+    },
+    {
+     "id": "c_n_meet_2",
+     "label": "Put Mrs Petrakis in the chair.",
+     "target": "e_mrs_p"
+    }
+   ]
+  },
+  {
+   "id": "n_kit",
+   "body": "<<FILL role=rising words=100 beats='the question of what to actually buy comes down to a generator, a UPS, and a cupboard with a list on the door, which is unglamorous and completely correct'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_kit_0",
+     "label": "Say goodbye to the shop.",
+     "target": "e_moved"
+    },
+    {
+     "id": "c_n_kit_1",
+     "label": "Keep the habit rather than the plan.",
+     "target": "e_habit"
+    },
+    {
+     "id": "c_n_kit_2",
+     "label": "Notice the line you crossed.",
+     "target": "e_grown"
+    }
+   ]
+  },
+  {
+   "id": "n_you",
+   "body": "<<FILL role=rising words=100 beats='somebody proposes, out loud and in public, that the twelve year old who kept the list should be on whatever committee does this next, and means it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_you_0",
+     "label": "Let it become ordinary.",
+     "target": "e_ordinary"
+    },
+    {
+     "id": "c_n_you_1",
+     "label": "Frame it all in the hall.",
+     "target": "e_wall"
+    },
+    {
+     "id": "c_n_you_2",
+     "label": "Move away in the summer.",
+     "target": "e_left"
+    }
+   ]
+  },
+  {
+   "id": "e_committee",
+   "body": "<<FILL role=success words=95 beats='the seat on the emergency planning group turns out to be real, dull, and worth having; three meetings a year and an actual say in what gets bought'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_committee",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Seat at the Table"
+   }
+  },
+  {
+   "id": "e_cupboard",
+   "body": "<<FILL role=completion words=95 beats='the cupboard gets built, stocked, and labelled, with the list on the inside of the door in the same marker pen as the first poster'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_cupboard",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Cupboard by the Door"
+   }
+  },
+  {
+   "id": "e_paper_record",
+   "body": "<<FILL role=discovery words=95 beats='the eleven-page account goes in the parish archive and is the only reason anyone can settle an argument about that week ten years later'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_paper_record",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "In the Archive"
+   }
+  },
+  {
+   "id": "e_forgotten",
+   "body": "<<FILL role=setback words=95 beats='within four months the enthusiasm is gone, the generator is unserviced and the cupboard is where the Christmas decorations live; the week meant everything and changed almost nothing'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_forgotten",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "By the Spring"
+   }
+  },
+  {
+   "id": "e_thanked",
+   "body": "<<FILL role=success words=95 beats='there is a thing in the local paper with a photograph everybody hates, and it is cut out and put on three different fridges'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_thanked",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Photograph on the Fridge"
+   }
+  },
+  {
+   "id": "e_next_winter",
+   "body": "<<FILL role=success words=95 beats='the following November the power goes for six hours and it is a non-event: the cupboard opens, the rota runs, and the hall is lit inside twenty minutes'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_next_winter",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Six Hours the Next November"
+   }
+  },
+  {
+   "id": "e_taught",
+   "body": "<<FILL role=completion words=95 beats='the account gets taught, badly and enthusiastically, to the year below, who are unimpressed in the way only Year 7 can be and remember every word of it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_taught",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Taught to Year Seven"
+   }
+  },
+  {
+   "id": "e_mrs_p",
+   "body": "<<FILL role=success words=95 beats='Mrs Petrakis is at the table for every meeting for the next three years and is the only person there who has ever done it from the other side'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_mrs_p",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Mrs Petrakis Chairs It"
+   }
+  },
+  {
+   "id": "e_moved",
+   "body": "<<FILL role=setback words=95 beats='Rina sells the shop in the spring and the notebook goes with her; the new people are perfectly nice and would not know what it was'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_moved",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "When the Shop Changes Hands"
+   }
+  },
+  {
+   "id": "e_habit",
+   "body": "<<FILL role=completion words=95 beats='the lasting change is a habit rather than a plan: an eye kept on two houses, a torch that lives in a known drawer, a phone number learned by heart'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_habit",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Torch in a Known Drawer"
+   }
+  },
+  {
+   "id": "e_grown",
+   "body": "<<FILL role=discovery words=95 beats='somewhere in the week the distance between being looked after and being useful got crossed, and it does not get crossed back'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_grown",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Line That Got Crossed"
+   }
+  },
+  {
+   "id": "e_ordinary",
+   "body": "<<FILL role=discovery words=95 beats='the strangest part afterwards is how ordinary it becomes: a week people mention in passing, the way they mention a wedding or a bad winter'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_ordinary",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Week People Mention"
+   }
+  },
+  {
+   "id": "e_wall",
+   "body": "<<FILL role=completion words=95 beats='the photograph, the eleven pages and the marker-pen list end up framed in the hall together, which is embarrassing and also exactly right'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_wall",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Framed in the Hall"
+   }
+  },
+  {
+   "id": "e_left",
+   "body": "<<FILL role=setback words=95 beats='the family moves away in the summer for reasons that have nothing to do with any of it, and the week becomes a thing that happened somewhere else'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_left",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Moving Away in the Summer"
+   }
+  }
+ ]
+}
