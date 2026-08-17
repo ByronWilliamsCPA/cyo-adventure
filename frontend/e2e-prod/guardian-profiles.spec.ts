@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 
 import { GUARDIAN_CONSOLE_PATH, GUARDIAN_LOGIN_PATH } from '../src/routes'
 import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/auth'
+import { expectConsoleHeading } from './support/diagnostics'
 import { gotoResilient } from '../e2e-support/rate-limit'
 import { LOGIN_HEADLINE } from '../src/guardian/loginHeadline'
 
@@ -43,18 +44,14 @@ test.describe('guardian auth and profile management (read-only)', () => {
     // alone is the thing to assert.
     await gotoResilient(page, GUARDIAN_CONSOLE_PATH)
     await expect(page).toHaveURL(new RegExp(`${GUARDIAN_LOGIN_PATH}$`))
-    await expect(
-      page.getByRole('heading', { name: LOGIN_HEADLINE, level: 1 })
-    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: LOGIN_HEADLINE, level: 1 })).toBeVisible()
   })
 
   test('the login page never offers Apple sign-in (ADR-009: gated behind an unset flag)', async ({
     page,
   }) => {
     await gotoResilient(page, GUARDIAN_LOGIN_PATH)
-    await expect(
-      page.getByRole('heading', { name: LOGIN_HEADLINE, level: 1 })
-    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: LOGIN_HEADLINE, level: 1 })).toBeVisible()
     // Apple sign-in is hidden behind VITE_ENABLE_APPLE_OAUTH (LoginPage.tsx),
     // unset in this build because Apple's provider needs a paid Apple
     // Developer account and a signed, expiring client secret that Supabase is
@@ -84,7 +81,7 @@ test.describe('guardian auth and profile management (read-only)', () => {
     // Positive control: a page that failed to render (error boundary,
     // ErrorBanner, or a stuck loading state) also shows zero profile cards, so
     // the heading must be visible before the count below means anything.
-    await expect(sharedPage.getByRole('heading', { name: 'Profiles', level: 1 })).toBeVisible()
+    await expectConsoleHeading(sharedPage, 'Profiles')
     // ProfilesPage.tsx renders one <li class="profiles__card"> per profile
     // inside a single <ul class="profiles__list">; the E2E Test Family
     // (84b96700) has exactly one child profile.
@@ -119,8 +116,6 @@ test.describe('guardian auth and profile management (read-only)', () => {
     // guardian console still lands on sign-in, proving the session is gone,
     // not merely hidden by transient React state that a reload would undo.
     await gotoResilient(sharedPage, GUARDIAN_CONSOLE_PATH)
-    await expect(
-      sharedPage.getByRole('heading', { name: LOGIN_HEADLINE, level: 1 })
-    ).toBeVisible()
+    await expect(sharedPage.getByRole('heading', { name: LOGIN_HEADLINE, level: 1 })).toBeVisible()
   })
 })

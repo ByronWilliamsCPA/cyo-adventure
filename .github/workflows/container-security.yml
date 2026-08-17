@@ -11,7 +11,9 @@ on:
       - 'Dockerfile'
       - 'docker-compose*.yml'
       - '.dockerignore'
-      - '.trivyignore'
+      - '.trivyignore.yaml'
+      - '.trivy/**'
+      - 'trivy.yaml'
       - 'pyproject.toml'
       - 'uv.lock'
   pull_request:
@@ -20,9 +22,15 @@ on:
       - 'Dockerfile'
       - 'docker-compose*.yml'
       - '.dockerignore'
-      - '.trivyignore'
+      - '.trivyignore.yaml'
+      - '.trivy/**'
+      - 'trivy.yaml'
       - 'pyproject.toml'
       - 'uv.lock'
+  # No path filter: the merge queue re-checks the merged result, and a
+  # suppression that expired since the pull request was opened changes the
+  # outcome without any file in the diff changing.
+  merge_group:
   schedule:
     # Weekly scan on Wednesdays at 7 AM UTC
     - cron: '0 7 * * 3'
@@ -83,7 +91,7 @@ jobs:
     name: Container Security Scan
     needs: detect-release-pr
     if: needs.detect-release-pr.outputs.release_pr != 'true'
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-container-security.yml@7d12f5486ab5c856397ebaa4acd3c99ca385227c  # main
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-container-security.yml@07f56c2821f88d531826cc524211be9387591a09  # v10.1.0
     with:
       dockerfile-path: 'Dockerfile'
       build-context: '.'
@@ -91,6 +99,27 @@ jobs:
       build-image: true
       severity-threshold: 'CRITICAL,HIGH'
       fail-on-vulnerabilities: true
+      # Scan scope by trigger (org pattern, .github PR #293). A base-image CVE
+      # with no upstream patch gives a pull-request author nothing to act on, so
+      # only fixable findings gate a merge. Push, schedule and manual runs keep
+      # the full inventory: the SARIF upload replaces results per category and
+      # ref, so a reduced-scope scan on the default branch would retire the
+      # unfixed alerts under `trivy-container` until the next full run.
+      ignore-unfixed: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+      # Set explicitly rather than inherited. 90 is currently also the upstream
+      # default, but this repository's own Release Gate Policy fixes the number
+      # (docs/known-vulnerabilities.md), and scripts/check_known_vulnerabilities.py
+      # enforces the same 90 on the written entries. Pinning it here means an
+      # upstream default change cannot silently widen or narrow a window this
+      # repository has committed to in writing.
+      ignore-expiry-horizon-days: 90
+      # #CRITICAL: security: this job checks out ByronWilliamsCPA/.github and
+      # EXECUTES a Python script from it inside our CI. The input defaults to
+      # `main`, a moving ref, which would hand a floating third party arbitrary
+      # code execution in this workflow and give back most of the assurance the
+      # SHA-pinned `uses:` above buys. Pinned to the same commit as that pin.
+      # #VERIFY: this SHA must match the `uses:` ref above on every bump.
+      central-checker-ref: 07f56c2821f88d531826cc524211be9387591a09
       run-hadolint: true
       hadolint-failure-threshold: 'warning'
       generate-sbom: true

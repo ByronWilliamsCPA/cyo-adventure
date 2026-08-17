@@ -59,7 +59,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 
 import type { ReaderEvent } from '../player/machine'
-import { composeStop, type Stop } from '../player/stops'
+import { composeStopWithHistory, type Stop } from '../player/stops'
 import type { ReadingState, Storybook } from '../player/types'
 
 export interface FlowedStopResult {
@@ -107,12 +107,15 @@ export function useFlowedStop(
         setTracked({ ...tracked, forReading: reading })
       } else {
         // A genuine new stop origin: a fresh read, RESTART, a real tap on a
-        // visible choice, or a Go back landing. composeStop's own
-        // precondition (only ever called on a genuine origin) holds here by
-        // construction.
+        // visible choice, a Go back landing -- or a RESUME, where `reading` is
+        // the persisted TERMINAL of a flowed stop rather than its origin.
+        // `composeStopWithHistory` covers the resume case by re-deriving the
+        // already-walked prefix from `reading.path`; on every other entry the
+        // predecessor is a real branch (or there is no predecessor) so the
+        // prefix is empty and this is exactly `composeStop`.
         setTracked({
           forReading: reading,
-          stop: composeStop(story, reading),
+          stop: composeStopWithHistory(story, reading),
           originReading: reading,
         })
       }
@@ -149,8 +152,23 @@ export function useFlowedStop(
       // silently walk through.
       return
     }
+    // #CRITICAL: data-integrity: walk forward from where the ENGINE actually
+    // is, not from the stop's first node. Since composeStopWithHistory, a
+    // stop's `nodeIds` can begin with hops the engine already took on an
+    // earlier mount and then persisted (ADR-026 decision 2). Starting at 0
+    // would re-send CHOOSE for each of those, re-applying their `on_enter`
+    // effects and walking the engine past the choice the child is looking at
+    // -- the exact double-apply `advancedForRef` guards for StrictMode, via a
+    // different door. `originReading` is the state this stop was composed
+    // from, so its node is the engine's true position within the stop: index
+    // 0 on a fresh tap (walk every hop), the last index on a resume (walk
+    // none).
+    // #VERIFY: useFlowedStop.test.ts "sends no CHOOSE when the stop was
+    // reconstructed from a resumed terminal".
+    const startIndex = originReading === null ? 0 : stop.nodeIds.indexOf(originReading.current_node)
+    if (startIndex < 0) return
     const nodesById = new Map(story.nodes.map((node) => [node.id, node]))
-    for (let i = 0; i < stop.nodeIds.length - 1; i += 1) {
+    for (let i = startIndex; i < stop.nodeIds.length - 1; i += 1) {
       const hop = nodesById.get(stop.nodeIds[i])
       const choiceId = hop?.choices[0]?.id
       // #EDGE: data-integrity: unreachable given composeStop's own contract
@@ -161,7 +179,7 @@ export function useFlowedStop(
       if (choiceId === undefined) break
       send({ type: 'CHOOSE', choiceId })
     }
-  }, [stop, story, send])
+  }, [stop, originReading, story, send])
 
   return { stop, originReading }
 }

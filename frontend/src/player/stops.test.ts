@@ -5,7 +5,13 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 
 import { choose, currentEndingId, start, startContinuation, visibleChoices } from './engine'
-import { backOneStop, canGoBackOneStop, composeStop } from './stops'
+import {
+  backOneStop,
+  canGoBackOneStop,
+  composeStop,
+  composeStopWithHistory,
+  flowedPrefix,
+} from './stops'
 import type { Stop, StopTerminalReason } from './stops'
 import type { ReadingState, Storybook, VarState } from './types'
 
@@ -188,5 +194,222 @@ describe('go-back-by-stop on a seeded read (ADR-028 Task 9)', () => {
     // and must never differ between Reader.tsx and machine.ts.
     expect(canGoBackOneStop(seededFlowStory, stop)).toBe(false)
     expect(backOneStop(seededFlowStory, stop)).toBeNull()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// UW-F38: resuming a flowed stop from its persisted terminal.
+//
+// A flowed run persists its TERMINAL (ADR-026 decision 2 applies each hop's
+// effects for real), so a resumed read hands composition a state mid-stop.
+// composeStop walks forward only and cannot see the prefix, so the stop
+// collapsed to length 1: the flowed prose vanished and backOneStop rewound
+// into the middle of the flow instead of to the previous stop's terminal.
+// ---------------------------------------------------------------------------
+
+/** A reading state as it comes back from storage: a position plus the path
+ * that reached it, with no in-memory composition history. */
+function resumedAt(currentNode: string, nodePath: string[], varState: VarState = {}): ReadingState {
+  return {
+    current_node: currentNode,
+    var_state: varState,
+    path: nodePath,
+    visit_set: [...nodePath],
+    version: 1,
+    state_revision: 1,
+    save_slots: {},
+  }
+}
+
+/** The state storage really holds after the child tapped c_a at n_start and
+ * the flowed run walked n_a -> n_mid: produced by the engine, so its path,
+ * visit_set and var_state are all internally consistent and `back()` can
+ * replay it (a hand-built var_state cannot, and back() fails closed). */
+function playedToFlowedTerminal(): ReadingState {
+  return choose(seededFlowStory, choose(seededFlowStory, start(seededFlowStory), 'c_a'), 'c_go')
+}
+
+describe('composeStopWithHistory (UW-F38)', () => {
+  it('reconstructs the flowed prefix when resuming at a stop terminal', () => {
+    const resumed = playedToFlowedTerminal()
+    expect(resumed.current_node).toBe('n_mid')
+    expect(resumed.path).toEqual(['n_start', 'n_a', 'n_mid'])
+
+    // What the bug looked like: forward-only composition sees one node.
+    expect(composeStop(seededFlowStory, resumed).nodeIds).toEqual(['n_mid'])
+
+    const stop = composeStopWithHistory(seededFlowStory, resumed)
+    expect(stop.nodeIds).toEqual(['n_a', 'n_mid'])
+    expect(stop.originNode).toBe('n_a')
+    // Forward results are composeStop's, untouched.
+    expect(stop.terminalReason).toBe('branch')
+    expect(stop.state.current_node).toBe('n_mid')
+  })
+
+  it('rewinds a resumed stop to the previous stop terminal, not into its own flow', () => {
+    const stop = composeStopWithHistory(seededFlowStory, playedToFlowedTerminal())
+    // backOneStop calls back() once per node in the stop; with the prefix
+    // restored that is 2, landing on n_start. Truncated to ['n_mid'] it was
+    // 1, landing mid-flow on n_a.
+    expect(backOneStop(seededFlowStory, stop)?.current_node).toBe('n_start')
+  })
+
+  it('stops the walk-back at a branch, never crossing into the previous stop', () => {
+    // n_start offers two choices, so it terminated the PREVIOUS stop and must
+    // not be absorbed into this one.
+    expect(flowedPrefix(seededFlowStory, resumedAt('n_mid', ['n_start', 'n_a', 'n_mid']))).toEqual([
+      'n_a',
+    ])
+  })
+
+  it('adds nothing on a genuine tap origin, matching composeStop exactly', () => {
+    const origin = choose(seededFlowStory, start(seededFlowStory), 'c_a')
+    const plain = composeStop(seededFlowStory, origin)
+    const withHistory = composeStopWithHistory(seededFlowStory, origin)
+    expect(withHistory.nodeIds).toEqual(plain.nodeIds)
+    expect(withHistory.originNode).toBe(plain.originNode)
+  })
+
+  it('adds nothing at the first node of a read', () => {
+    expect(flowedPrefix(seededFlowStory, start(seededFlowStory))).toEqual([])
+  })
+
+  it('ends a resumed cycle where it originally ended, without repeating a node', () => {
+    // A two-node cycle: n_a's only choice targets n_b, n_b's only choice
+    // targets n_a. Composed fresh from n_a the stop is [n_a, n_b], closing on
+    // the loop guard; it is persisted at its terminal, n_b.
+    const cycle: Storybook = {
+      schema_version: '2.0',
+      id: 's_cycle',
+      version: 1,
+      title: 'Cycle',
+      metadata: {},
+      variables: [],
+      start_node: 'n_a',
+      nodes: [
+        {
+          id: 'n_a',
+          body: 'Around again.',
+          is_ending: false,
+          choices: [{ id: 'c_ab', label: 'On', target: 'n_b' }],
+        },
+        {
+          id: 'n_b',
+          body: 'And back.',
+          is_ending: false,
+          choices: [{ id: 'c_ba', label: 'Back', target: 'n_a' }],
+        },
+      ],
+    }
+    const fresh = composeStop(cycle, start(cycle))
+    expect(fresh.nodeIds).toEqual(['n_a', 'n_b'])
+    expect(fresh.terminalReason).toBe('loop')
+
+    // Resuming at that terminal must reproduce the SAME stop. Without the
+    // prefix participating in loop detection the forward pass retakes
+    // n_b -> n_a and returns [n_a, n_b, n_a]: the node's prose renders twice
+    // and backOneStop calls back() three times instead of two.
+    const resumed = resumedAt('n_b', ['n_a', 'n_b'])
+    const stop = composeStopWithHistory(cycle, resumed)
+    expect(stop.nodeIds).toEqual(['n_a', 'n_b'])
+    expect(stop.originNode).toBe('n_a')
+    // The stop TYPE has to survive reconstruction too, not just its node list:
+    // terminalReason drives real behavior downstream (an 'ending' renders the
+    // ending screen, a 'branch' renders choices), so a regression that kept the
+    // right nodes while returning the wrong reason would pass every other
+    // assertion here.
+    expect(stop.terminalReason).toBe('loop')
+    expect(new Set(stop.nodeIds).size).toBe(stop.nodeIds.length)
+    // The engine is already at the terminal, so nothing remains to walk.
+    expect(stop.state.current_node).toBe('n_b')
+  })
+
+  it('fails closed when the path does not end where the state says it is', () => {
+    // A truncated or foreign path describes some other position, so nothing
+    // may be inferred from it; the result is today's behavior, not a guess.
+    expect(flowedPrefix(seededFlowStory, resumedAt('n_mid', ['n_start', 'n_a']))).toEqual([])
+    expect(flowedPrefix(seededFlowStory, resumedAt('n_mid', []))).toEqual([])
+  })
+
+  it('infers nothing when the state was recorded against a different story version', () => {
+    // Greptile flagged this on PR #724: ReaderPage keys reading state on
+    // (profileId, storybookId) with no version, while loading the story at a
+    // route-selected version, so a republish can pair a path with a topology
+    // it never described. The structural guards would still refuse a missing
+    // edge, but a republish that happens to preserve this single-choice edge
+    // would let the stale path look walkable.
+    const resumed = { ...playedToFlowedTerminal(), version: 2 }
+    expect(seededFlowStory.version).toBe(1)
+    expect(flowedPrefix(seededFlowStory, resumed)).toEqual([])
+    // ...and the composed stop falls back to forward-only, which is exactly
+    // the pre-reconstruction behavior rather than a wrong one.
+    expect(composeStopWithHistory(seededFlowStory, resumed).nodeIds).toEqual(['n_mid'])
+  })
+
+  it('infers nothing for a state carrying no usable version', () => {
+    // A legacy or hand-built row reads 0 and must not be treated as matching.
+    const resumed = { ...playedToFlowedTerminal(), version: 0 }
+    expect(flowedPrefix(seededFlowStory, resumed)).toEqual([])
+  })
+
+  it('fails closed on an unknown node in the recorded path', () => {
+    expect(flowedPrefix(seededFlowStory, resumedAt('n_mid', ['n_gone', 'n_mid']))).toEqual([])
+  })
+
+  it('stops at a repeat rather than walking a cycle in the path', () => {
+    // A path that revisits the stop's own terminal is the cycle composeStop's
+    // loop guard refuses to walk; the walk-back refuses it symmetrically.
+    expect(flowedPrefix(seededFlowStory, resumedAt('n_mid', ['n_mid', 'n_a', 'n_mid']))).toEqual([
+      'n_a',
+    ])
+  })
+
+  it('refuses a predecessor whose single choice does not lead where the path went', () => {
+    // The one structural guard the other fail-closed cases never reach: every
+    // one of them trips an EARLIER check (unknown node, repeat, path not
+    // ending at current_node), so deleting the target comparison left all of
+    // them green. This is the guard that catches a republish which kept a
+    // node's id and its single-choice shape but re-pointed the edge, which is
+    // the exact class the version check above is a coarser backstop for.
+    //
+    // n_a is a real single-choice node, but c_go targets n_mid, not n_b, so
+    // this path never happened in this topology and nothing may be inferred.
+    expect(flowedPrefix(seededFlowStory, resumedAt('n_b', ['n_a', 'n_b']))).toEqual([])
+  })
+
+  it('refuses an ending as a flowed predecessor even when it carries a choice', () => {
+    // composeStop's forward walk tests is_ending BEFORE counting choices, so
+    // the walk-back must too. An ending with an onward choice is schema-
+    // invalid, which is the point: this function's contract is to fail closed
+    // on inconsistent data rather than assume it is consistent. Without the
+    // is_ending check the choices.length === 1 test passes and the ending is
+    // absorbed into the stop, so the two directions disagree about where the
+    // stop begins.
+    const endingWithChoice: Storybook = {
+      ...seededFlowStory,
+      id: 's_ending_with_choice',
+      start_node: 'n_finish',
+      nodes: [
+        {
+          id: 'n_finish',
+          body: 'An ending that should not flow onward.',
+          is_ending: true,
+          ending: { id: 'e_f', valence: 'positive', kind: 'success', title: 'Fin' },
+          choices: [{ id: 'c_onward', label: 'On', target: 'n_after' }],
+        },
+        {
+          id: 'n_after',
+          body: 'Past the ending.',
+          is_ending: false,
+          choices: [
+            { id: 'c_p', label: 'Up', target: 'n_finish' },
+            { id: 'c_q', label: 'Down', target: 'n_finish' },
+          ],
+        },
+      ],
+    }
+    expect(flowedPrefix(endingWithChoice, resumedAt('n_after', ['n_finish', 'n_after']))).toEqual(
+      []
+    )
   })
 })

@@ -1,0 +1,152 @@
+# Trivy suppressions for the CYO Adventure container image.
+#
+# Migrated from the plain-text `.trivyignore` on 2026-08-17. The plain format
+# cannot carry an expiry, so a suppression written in it was permanent by
+# construction: the finding left every scan and nothing forced a second look.
+# `expired_at` fixes that at the mechanism level rather than by documentation
+# discipline, because Trivy STOPS HONOURING an entry once the date passes. An
+# expired acceptance puts its finding back in the gate on its own.
+#
+# Scope: base-image (Debian trixie) OS-package CVEs with no fixed version on the
+# trixie track, EXCEPT `linux-libc-dev`. That package is accepted at package
+# scope in `.trivy/ignore-policy.rego` instead, because the judgment there is a
+# property of the package rather than of any individual CVE; see
+# docs/known-vulnerabilities.md, "linux-libc-dev kernel UAPI headers".
+#
+# Two rules govern every entry here, both machine-enforced:
+#
+#   1. `expired_at` must be present and within the 90-day horizon. Enforced by
+#      the `Suppression Revisit Dates` job in the org reusable workflow
+#      (ByronWilliamsCPA/.github PR #293) via check_trivy_ignore_expiry.py.
+#   2. Every id must have a matching entry in docs/known-vulnerabilities.md, and
+#      its `expired_at` must equal that entry's `Reassessment Due`. Enforced by
+#      scripts/check_known_vulnerabilities.py, so the operative date and the
+#      written assessment cannot drift apart.
+#
+# The `statement` below each id is a summary. The assessment that justifies the
+# suppression, including reachability, lives in docs/known-vulnerabilities.md
+# and is the thing to read before renewing a date.
+#
+# IMPORTANT: Trivy does NOT auto-detect this filename. Its built-in default is
+# the plain-text `.trivyignore`, so this file is only honoured because it is
+# passed explicitly: the reusable workflow resolves it and passes `trivyignores`,
+# and `trivy.yaml` sets `ignorefile` for local runs. Renaming this file without
+# updating both is a silent, total loss of suppression.
+
+vulnerabilities:
+  # --- perl-base (perl source package); no Debian fix on the trixie track ---
+  # CVE-2026-42496, CVE-2026-42497 and CVE-2026-9538 carry Debian's
+  # `fix_deferred` status: an explicit decision not to fix in stable.
+  # Nothing in the image invokes perl; the application never shells out at all.
+  - id: CVE-2026-8376
+    statement: >-
+      perl regex heap overflow, 32-bit builds only; this image and its base are
+      linux/amd64 only, so it is not applicable by architecture. Critical.
+    expired_at: 2026-11-08
+  - id: CVE-2026-42496
+    statement: >-
+      Archive::Tar path traversal via crafted symlinks. Critical, fix_deferred
+      in Debian. The application never invokes perl or feeds it tar archives.
+    expired_at: 2026-11-08
+  - id: CVE-2026-42497
+    statement: >-
+      Archive::Tar arbitrary file modification via crafted hardlinks.
+      fix_deferred in Debian. Same non-reachability as CVE-2026-42496.
+    expired_at: 2026-11-08
+  - id: CVE-2026-9538
+    statement: >-
+      Archive::Tar denial of service via a crafted large entry size.
+      fix_deferred in Debian. Same non-reachability as CVE-2026-42496.
+    expired_at: 2026-11-08
+  - id: CVE-2026-48962
+    statement: >-
+      IO::Compress arbitrary code execution via an attacker-controlled output
+      glob. The application never invokes perl, so it supplies no glob.
+    expired_at: 2026-11-08
+
+  # --- libsqlite3-0 (sqlite3 source package); no Debian fix on the trixie track ---
+  # Both are Medium, below the workflow's CRITICAL,HIGH threshold, so these two
+  # entries suppress nothing today. Kept because the threshold is a caller input
+  # that could widen, and an undocumented entry going live later is exactly the
+  # failure this file's rules exist to prevent.
+  - id: CVE-2026-11822
+    statement: >-
+      SQLite < 3.53.2 memory corruption. This project uses PostgreSQL via
+      asyncpg and never imports sqlite3, so the parser is handed no input.
+    expired_at: 2026-11-08
+  - id: CVE-2026-11824
+    statement: >-
+      SQLite < 3.53.2 heap buffer overflow. Same non-reachability as
+      CVE-2026-11822.
+    expired_at: 2026-11-08
+
+  # --- ncurses family; no Debian fix on the trixie track ---
+  - id: CVE-2025-69720
+    statement: >-
+      ncurses buffer overflow reachable only through attacker-controlled
+      terminfo data. The runtime image has no shell, no TUI and no controlling
+      terminal; nothing links or calls ncurses.
+    expired_at: 2026-11-08
+
+  # --- libuuid1 (util-linux source package); no Debian fix on the trixie track ---
+  - id: CVE-2026-53615
+    statement: >-
+      Integer overflow in libblkid's DOS partition-table parser. The container
+      has no raw block-device access and never probes partition tables.
+    expired_at: 2026-09-06
+
+  # --- gawk; no Debian fix on the trixie track ---
+  # The application does not install gawk and never invokes it.
+  - id: CVE-2026-40467
+    statement: >-
+      gawk io.c use-after-free. The image ships gawk from the base layer but
+      the application never shells out, so it is never executed.
+    expired_at: 2026-09-12
+  - id: CVE-2026-40468
+    statement: >-
+      gawk builtin.c integer overflow (Critical). Same non-reachability as
+      CVE-2026-40467.
+    expired_at: 2026-09-12
+  - id: CVE-2026-40469
+    statement: >-
+      gawk builtin.c integer overflow (Critical). Same non-reachability as
+      CVE-2026-40467.
+    expired_at: 2026-09-12
+  - id: CVE-2026-40553
+    statement: >-
+      gawk buffer overflow. Same non-reachability as CVE-2026-40467.
+    expired_at: 2026-09-12
+
+  # --- libexpat1, libexpat1-dev; no Debian fix on the trixie track ---
+  # A mirror-wide Debian 13 base-layer regression, independently reproduced on
+  # dhi-python:3.12-debian13, so not specific to the Python version in use.
+  - id: CVE-2025-59375
+    statement: >-
+      libexpat denial of service. No runtime code path parses untrusted XML;
+      the API speaks JSON only.
+    expired_at: 2026-09-17
+  - id: CVE-2026-25210
+    statement: >-
+      libexpat defect in the same base-layer regression as CVE-2025-59375.
+      Same non-reachability.
+    expired_at: 2026-09-17
+  - id: CVE-2026-45186
+    statement: >-
+      libexpat defect in the same base-layer regression as CVE-2025-59375.
+      Same non-reachability.
+    expired_at: 2026-09-17
+  - id: CVE-2026-56131
+    statement: >-
+      libexpat defect in the same base-layer regression as CVE-2025-59375.
+      Same non-reachability.
+    expired_at: 2026-09-17
+  - id: CVE-2026-56407
+    statement: >-
+      libexpat defect in the same base-layer regression as CVE-2025-59375.
+      Same non-reachability.
+    expired_at: 2026-09-17
+  - id: CVE-2026-56408
+    statement: >-
+      libexpat defect in the same base-layer regression as CVE-2025-59375.
+      Same non-reachability.
+    expired_at: 2026-09-17

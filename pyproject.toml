@@ -3,7 +3,7 @@
 # UV uses standard PEP 621 pyproject.toml format with uv.lock for reproducible builds.
 [project]
 name = "cyo-adventure"
-version = "0.81.0"
+version = "0.81.1"
 description = "A choose-your-own-adventure reading app for kids"
 authors = [
     {name = "Byron Williams", email = "byronawilliams@gmail.com"}
@@ -800,7 +800,7 @@ markers = [
     "regression: Regression tests for previously fixed bugs",
     "llm_eval: Tier 3 behavioral LLM evaluation (scheduled, not run in CI PRs)",
     "ai_security: adversarial AI security tests",
-    "mutation_deselect: excluded under mutation testing (mutmut's trampoline cannot forward athrow into async generators)",
+    "mutation_deselect: excluded under mutation testing; the marked test says why (reasons so far: mutmut's trampoline cannot forward athrow into async generators; the test asserts a property of the real git worktree, which the generated mutants/ copy is not)",
 ]
 
 # Coverage Configuration
@@ -918,10 +918,26 @@ also_copy = [
     #     | sort -u | while read -r m; do [ -e "$m" ] && echo "$m"; done
     # (`tests/` itself is copied by mutmut and needs no entry.)
     #
+    # That command finds IMPORTS only, and an import is not the only way a unit
+    # test depends on a repo-root path. `.github/` was missed for exactly that
+    # reason: `test_ci_gate_contract.py` and `test_pr_validation_gate_contract.py`
+    # OPEN workflow YAML rather than importing anything, so the derivation above
+    # was clean while every run since 2026-07-19 died on
+    # `FileNotFoundError: mutants/.github/workflows/ci.yml` (issue #302). Run
+    # this second command too, which finds root-relative path literals:
+    #   grep -rhoP '(?:REPO_ROOT|ROOT|_ROOT|parents\[\d+\])\s*/\s*"\K[^"]+' \
+    #     tests/unit/*.py | sort -u | while read -r m; do [ -e "$m" ] && echo "$m"; done
+    #
     # fuzz/  -> tests/unit/test_fuzz_harnesses.py; exercises the condition
     #           evaluator and storybook validation, both inside only_mutate, so
     #           these are real mutant killers rather than dead weight here.
     # tools/ -> tests/unit/test_generate_diagram_svgs.py.
+    # .github/ -> tests/unit/test_ci_gate_contract.py and
+    #             test_pr_validation_gate_contract.py, which parse workflow YAML
+    #             straight from the tree. The whole directory, not just the two
+    #             files they name: test_ci_gate_contract.py also resolves other
+    #             workflows by name at runtime.
+    ".github/",
     "fuzz/",
     "tools/",
     "schema/",

@@ -16,7 +16,7 @@ Copy the block below and fill in all fields.
 | **Severity** | Critical / High / Medium / Low |
 | **CVSS Score** | 0.0 |
 | **Discovered** | YYYY-MM-DD |
-| **Reassessment Due** | YYYY-MM-DD (must be within 60 days of Discovered) |
+| **Reassessment Due** | YYYY-MM-DD (must be within 90 days of Discovered) |
 | **Blocking Release** | Yes / No |
 
 ### Description

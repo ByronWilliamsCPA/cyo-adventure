@@ -94,9 +94,36 @@ import {
 const STORYBOOK_ID = 's_clockwork_garden'
 const DEV_GUARDIAN_BEARER = 'dev-guardian'
 
-const CHOICE_SEQUENCE = ['c_hedge', 'c_squeeze', 'c_to_gate2', 'c_climb', 'c_wind'] as const
+// The full edge sequence the ENGINE takes, which is not the sequence the child
+// taps: `c_n_open` (n_open -> n_start) and `c_wind` (n_tower -> the ending) are
+// flowed rather than tapped at this band, but the Python engine replays every
+// edge and rejects a path that skips one. `c_n_open` was missing here, so this
+// cross-check replayed from n_open with n_start's choice and 422'd on the very
+// first edge.
+const CHOICE_SEQUENCE = [
+  'c_n_open',
+  'c_hedge',
+  'c_squeeze',
+  'c_to_gate2',
+  'c_climb',
+  'c_wind',
+] as const
 const FINAL_NODE = 'n_clock_end'
-const FINAL_PATH = ['n_start', 'n_hedge', 'n_clearing', 'n_gate', 'n_tower', 'n_clock_end']
+// Begins at n_open, the story's declared `start_node`, not at n_start. This
+// constant omitted it and so described a read that never happened: n_open is
+// the single-choice prelude PL-25 requires ahead of the first real decision,
+// and the engine records it like any other node. It is invisible as a TAP at
+// this band (ADR-026 flows it into n_start's stop), which is exactly why the
+// omission survived: the walk below never clicks it.
+const FINAL_PATH = [
+  'n_open',
+  'n_start',
+  'n_hedge',
+  'n_clearing',
+  'n_gate',
+  'n_tower',
+  'n_clock_end',
+]
 const FINAL_VAR_STATE = { has_key: false, courage: 2 }
 const ENDING_ID = 'e_clock'
 
@@ -114,7 +141,12 @@ async function createAssignedProfile(displayName: string): Promise<string> {
   const createRes = await fetch(`${BACKEND}/api/v1/profiles`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${DEV_GUARDIAN_BEARER}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ display_name: displayName, age_band: '8-11' }),
+    body: JSON.stringify({ display_name: displayName, age_band: '10-13' }),
+    // Must match (or exceed) s_clockwork_garden's own 10-13 band. The H1
+    // ceiling in api/assignments.py refuses to assign a book banded ABOVE the
+    // target profile, so the '8-11' this previously sent made the very next
+    // POST /assignments a deterministic 400 and the whole describe block
+    // failed in beforeAll. The gate is correct; the fixture was not.
   })
   expect(createRes.ok, `POST /profiles failed (HTTP ${createRes.status})`).toBe(true)
   const { id } = (await createRes.json()) as { id: string }
@@ -271,14 +303,29 @@ test.describe.serial('G3: offline reading reaches the same branch as the real ba
     await expect(page.getByTestId('choice-c_climb')).toBeVisible()
     await expect(page.getByTestId('choice-c_wait')).toBeVisible()
 
-    for (const choiceId of ['c_climb', 'c_wind'] as const) {
+    // One click, not two. This book is band 10-13, a flowed band (ADR-026), so
+    // n_tower's single onward choice (c_wind) is never rendered as a button:
+    // tapping c_climb enters n_tower and the stop flows straight through it
+    // into the ending. The engine still takes that edge, so FINAL_PATH and
+    // FINAL_VAR_STATE below are unchanged; only the tap disappears.
+    {
       const saved = waitForReadingStatePut(page)
-      await page.getByTestId(`choice-${choiceId}`).click()
+      await page.getByTestId('choice-c_climb').click()
       await saved
     }
 
     await expect(page.getByTestId('ending-screen')).toBeVisible()
     await expect(page.getByTestId('ending-id')).toHaveText(ENDING_ID)
+
+    // Poll rather than read once. A flowed stop (ADR-026) lands TWO engine
+    // transitions off the single c_climb tap -- into n_tower, then through it
+    // into the ending -- so the PUT awaited above is the first of two and the
+    // row is still at n_tower when it resolves. The ending screen is already
+    // on display at this point, so this is waiting for persistence to catch up
+    // with the UI, not for the read to finish.
+    await expect
+      .poll(async () => (await fetchServerRow(onlineProfileId)).current_node, { timeout: 10_000 })
+      .toBe(FINAL_NODE)
 
     onlineFinalRow = await fetchServerRow(onlineProfileId)
     expect(onlineFinalRow.current_node).toBe(FINAL_NODE)
@@ -330,8 +377,10 @@ test.describe.serial('G3: offline reading reaches the same branch as the real ba
     await expect(page.getByTestId('choice-c_climb')).toBeVisible()
     await expect(page.getByTestId('choice-c_wait')).toBeVisible()
 
+    // Same single click as the online walk above: the client-side player
+    // flows n_tower for the same ADR-026 reason, which is precisely the
+    // parity this test exists to prove.
     await page.getByTestId('choice-c_climb').click()
-    await page.getByTestId('choice-c_wind').click()
 
     await expect(page.getByTestId('ending-screen')).toBeVisible()
     await expect(page.getByTestId('ending-id')).toHaveText(ENDING_ID)
@@ -345,6 +394,13 @@ test.describe.serial('G3: offline reading reaches the same branch as the real ba
     await expect(page.getByText('All caught up! Your reading is saved.')).toBeVisible({
       timeout: 15_000,
     })
+
+    // Poll for the same reason as the online walk: the flowed stop queues two
+    // transitions off one tap, and the "All caught up!" toast fires when the
+    // queue drains, which can be the moment before the last of them lands.
+    await expect
+      .poll(async () => (await fetchServerRow(offlineProfileId)).current_node, { timeout: 10_000 })
+      .toBe(FINAL_NODE)
 
     offlineFinalRow = await fetchServerRow(offlineProfileId)
     expect(offlineFinalRow.current_node).toBe(FINAL_NODE)

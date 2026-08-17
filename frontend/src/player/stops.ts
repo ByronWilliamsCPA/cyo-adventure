@@ -3,17 +3,28 @@
  *
  * At bands 8-11 and up the reader flows consecutive single-choice, non-ending
  * nodes into one scrollable "stop" instead of stopping at every node, so
- * every stop a reader makes ends at a real choice (or an ending). This
- * mirrors `src/cyo_adventure/player/stops.py` exactly: it introduces no new
- * traversal semantics, it only decides where one stop ends and the next
- * begins. Every node-to-node transition inside a stop is delegated to
- * `choose()` from `./engine`, so a flowed run applies `on_enter` effects,
- * appends to `path`, and adds to `visit_set` exactly as if the reader had
- * tapped that single choice (ADR-026 decision 2).
+ * every stop a reader makes ends at a real choice (or an ending). It
+ * introduces no new traversal semantics, it only decides where one stop ends
+ * and the next begins. Every node-to-node transition inside a stop is
+ * delegated to `choose()` from `./engine`, so a flowed run applies `on_enter`
+ * effects, appends to `path`, and adds to `visit_set` exactly as if the reader
+ * had tapped that single choice (ADR-026 decision 2).
  *
- * The shared conformance corpus at `schema/conformance/stop_traces.json` (run
+ * `composeStop` mirrors `src/cyo_adventure/player/stops.py::compose_stop`, and
+ * the shared conformance corpus at `schema/conformance/stop_traces.json` (run
  * by both `stops.test.ts` here and `tests/unit/test_stop_conformance.py`)
- * proves this stays in lock-step with the Python side.
+ * proves THAT function stays in lock-step with the Python side.
+ *
+ * Scope of that guarantee, precisely: `flowedPrefix` and
+ * `composeStopWithHistory` have no Python counterpart, and the corpus cannot
+ * cover them, because every corpus case composes from a freshly-tapped state
+ * (`engine.start()` plus `prefix_choices`) and so never exercises a resumed
+ * one. They are frontend-only reader concerns (UW-F38) and the Python
+ * `compose_stop` has no production caller today: its only consumers are
+ * `test_stop_conformance.py` and the structural walk documented in
+ * `validator/choice_grammar.py`. A green corpus therefore attests that
+ * `composeStop` parity is UNCHANGED, not that resumed-stop behaviour is
+ * cross-verified. Port both functions before relying on it for that.
  *
  * AL-030: composing a stop walks every node in the run, so a caller (the
  * reader) MUST NOT call `composeStop` again on every render of an
@@ -93,10 +104,22 @@ function nodeIndex(story: Storybook): Map<string, StoryNode> {
  * `choose()` as a free function this module imports directly. Both delegate
  * every transition to the engine identically.
  */
-export function composeStop(story: Storybook, state: ReadingState): Stop {
+export function composeStop(
+  story: Storybook,
+  state: ReadingState,
+  alreadyInStop: readonly string[] = []
+): Stop {
   const nodes = nodeIndex(story)
   const nodeIds = [state.current_node]
-  const seen = new Set(nodeIds)
+  // `alreadyInStop` is the flowed prefix `composeStopWithHistory` re-derived
+  // from history, and it participates in loop detection without being walked
+  // again. A resumed cycle is why: for a persisted `n_a -> n_b -> n_a` stop
+  // resumed at `n_b`, a forward pass with a fresh `seen` retakes the
+  // `n_b -> n_a` edge and yields `[n_a, n_b, n_a]`, duplicating that node's
+  // prose and making `backOneStop` call `back()` once too often. The stop must
+  // end at `n_b`, exactly where it ended before the read was persisted.
+  // Default empty, so a direct `composeStop` call behaves as it always has.
+  const seen = new Set([...alreadyInStop, ...nodeIds])
   let current = state
   for (;;) {
     const node = nodes.get(current.current_node)
@@ -142,6 +165,117 @@ export function composeStop(story: Storybook, state: ReadingState): Stop {
     current = choose(story, current, choice.id)
     nodeIds.push(current.current_node)
     seen.add(current.current_node)
+  }
+}
+
+/**
+ * The already-traversed node ids that flowed INTO `state.current_node`, oldest
+ * first, or `[]` when `current_node` is a genuine stop origin.
+ *
+ * `composeStop` only walks forward, by design (see its doc). That is complete
+ * for a state produced by a real tap, and incomplete for a state RESUMED from
+ * storage: a flowed run persists its terminal (ADR-026 decision 2 requires the
+ * hops' effects to apply for real), so re-entering a book, or any remount of
+ * the reader, hands `composeStop` the terminal of a stop whose earlier nodes
+ * it cannot see. Composed forward from there the stop is length 1 and the
+ * flowed prose is silently dropped: the child resumes at the fork and never
+ * reads the passage that set it up (UW-F38).
+ *
+ * This re-derives that missing prefix from `state.path`, which already records
+ * the real traversal, so nothing is re-simulated and no effect is re-applied.
+ * A predecessor belongs to the same stop exactly when it has one choice
+ * targeting the next node in the path, which is the same boundary rule
+ * `composeStop` applies walking the other way.
+ *
+ * Deliberately structural, with no condition re-evaluation: `var_state` has
+ * moved on since those hops were taken, so re-evaluating a hop's condition now
+ * could answer a different question than the one the traversal already
+ * answered. The recorded path is the authority on what happened.
+ *
+ * Fails closed. Any ambiguity (a path that does not end at `current_node`, an
+ * unknown node, a repeat) stops the walk and yields the shorter prefix, so the
+ * worst case is today's behavior rather than a wrong one.
+ */
+export function flowedPrefix(story: Storybook, state: ReadingState): string[] {
+  // #CRITICAL: data-integrity: the recorded path describes a traversal of the
+  // story version the state was made against; `engine.ts` stamps
+  // `version: story.version` on every transition precisely so that is
+  // knowable. `ReaderPage` loads the story at a route-selected version and the
+  // reading state by `(profileId, storybookId)` alone, with no version in the
+  // key and no check between them, so a republish CAN hand this function a
+  // path recorded against a different topology.
+  //
+  // The structural guards below already refuse to walk an edge the loaded
+  // story does not have, so a mismatch degrades rather than corrupts. This is
+  // stricter on purpose: a republish that happens to preserve a single-choice
+  // edge would otherwise let a path from another version look walkable, and
+  // "it coincidentally still fits" is not a basis for re-rendering prose a
+  // child already read or for sizing a Go back rewind.
+  //
+  // Fails closed for a state that carries no usable version too (a legacy or
+  // hand-built row reads 0), which yields today's un-reconstructed behavior.
+  // #VERIFY: stops.test.ts "infers nothing when the state was recorded against
+  // a different story version".
+  if (state.version !== story.version) return []
+
+  const nodes = nodeIndex(story)
+  const path = state.path
+  let i = path.length - 1
+  // The path must actually end where we are, or it is not describing this
+  // position and nothing may be inferred from it.
+  if (i < 0 || path[i] !== state.current_node) return []
+
+  const prefix: string[] = []
+  const seen = new Set<string>([state.current_node])
+  while (i > 0) {
+    const predecessorId = path[i - 1]
+    const predecessor = nodes.get(predecessorId)
+    // A node the story no longer contains, or one already inside this stop
+    // (the same cycle `composeStop`'s loop guard refuses to walk), ends it.
+    if (predecessor === undefined || seen.has(predecessorId)) break
+    // `composeStop`'s forward walk tests `is_ending` BEFORE it counts choices,
+    // so the walk-back has to as well or the two disagree on an ending that
+    // carries a choice. That shape is schema-invalid, which is exactly why it
+    // is checked here: this function's contract is to fail closed on
+    // inconsistent data, not to assume the data is consistent.
+    if (predecessor.is_ending) break
+    // 2+ choices is the previous stop's terminal (a real decision the child
+    // stopped at); 0 is an ending. Only a single-choice node ever flows.
+    if (predecessor.choices.length !== 1) break
+    if (predecessor.choices[0].target !== path[i]) break
+    prefix.unshift(predecessorId)
+    seen.add(predecessorId)
+    i -= 1
+  }
+  return prefix
+}
+
+/**
+ * `composeStop`, plus any flowed prefix already recorded in `state.path`.
+ *
+ * Use this wherever a stop is composed from a state that may have been resumed
+ * rather than freshly tapped into (the reader's mount path). Forward behavior
+ * is `composeStop`'s, unchanged: the terminal `state` and `terminalReason` are
+ * taken from it verbatim, and only `nodeIds`/`originNode` widen to include
+ * nodes the reader already walked.
+ *
+ * Widening `nodeIds` also repairs Go back on a resumed read: `backOneStop`
+ * calls `back()` once per node in the stop, so a stop truncated to its
+ * terminal rewound into the middle of its own flow instead of to the previous
+ * stop's terminal.
+ */
+export function composeStopWithHistory(story: Storybook, state: ReadingState): Stop {
+  // Prefix first, then compose forward with it already counted as part of this
+  // stop, so a resumed cycle closes where it originally closed instead of
+  // retaking an edge the reader already took.
+  const prefix = flowedPrefix(story, state)
+  const forward = composeStop(story, state, prefix)
+  if (prefix.length === 0) return forward
+  return {
+    originNode: prefix[0],
+    nodeIds: [...prefix, ...forward.nodeIds],
+    state: forward.state,
+    terminalReason: forward.terminalReason,
   }
 }
 

@@ -79,7 +79,12 @@ async function createAssignedProfile(displayName: string): Promise<string> {
   const createRes = await fetch(`${BACKEND}/api/v1/profiles`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${DEV_GUARDIAN_BEARER}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ display_name: displayName, age_band: '8-11' }),
+    body: JSON.stringify({ display_name: displayName, age_band: '10-13' }),
+    // Must match (or exceed) s_clockwork_garden's own 10-13 band. The H1
+    // ceiling in api/assignments.py refuses to assign a book banded ABOVE the
+    // target profile, so the '8-11' this previously sent made the very next
+    // POST /assignments a deterministic 400 and the whole describe block
+    // failed in beforeAll. The gate is correct; the fixture was not.
     signal: AbortSignal.timeout(5000),
   })
   expect(createRes.ok, `POST /profiles failed (HTTP ${createRes.status})`).toBe(true)
