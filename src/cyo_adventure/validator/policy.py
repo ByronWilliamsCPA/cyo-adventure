@@ -3,16 +3,18 @@
 Runs after Layer 1 passes and the Storybook parses, on the typed model plus the
 choice graph. Most findings are ERROR-severity and blocking; the PL-19 story-mean
 words-per-node check, the PL-20 arc ceiling, PL-25's *ceiling* short of its hard
-limit, and all of PL-26 are advisory (WARNING). PL-25's floor is an unconditional
-ERROR. These rules convert age-safety, shape, and story-scale judgments into
-deterministic invariants.
+limit, and all of PL-26 are advisory (WARNING). PL-25's floor is an ERROR. These
+rules convert age-safety, shape, and story-scale judgments into deterministic
+invariants.
 
 Path-length rules grade in two tiers on purpose. A *floor* violation (PL-20: too
 short to be a story) is a correctness failure and blocks. A *ceiling* violation
 (PL-20's long arc, PL-25's buried first choice) is a craft failure and warns,
 because the ERROR tier means unpublishable. PL-25 keeps one blocking tier past
 ``ARC_CEILING_MULTIPLE`` times the band ceiling, where the shape has left the
-observed genre rather than merely run slow.
+observed genre rather than merely run slow. Both of PL-25's bounds are measured
+in nodes *or* in the words those nodes stand for, because its source corpus
+counts pages rather than authoring units; see ``_opening_in_word_window``.
 
 Two axes are in play and are easy to confuse. PL-17 measures *breadth*: how many
 decision and ending nodes exist anywhere in the graph. PL-20, PL-25, and PL-26
@@ -569,16 +571,20 @@ def _check_first_decision_depth(story: Storybook, report: ValidationReport) -> N
       slow. This is the long unbranching prologue the rule exists to catch, and
       the shape an LLM generator produces most readily.
 
-    Under the floor is an **ERROR**, and unlike the ceiling it grades in one
-    tier. A story that opens on its first choice asks the reader to pick before
-    any situation exists, which is a correctness failure in the same sense as
-    PL-20's floor rather than a matter of pacing degree: there is no "slightly
-    too little establishing" the way there is a slightly-too-long prologue. The
-    drafting guide states the same constraint from the other side (max choiceless
-    stops in a row is at least 1 in every band), and the whole committed catalog
-    satisfies it, so the tier costs no legitimate work. It was introduced as a
-    WARNING only because 20 skeletons predated the rule; those were fixed first
-    (AL-086), and the escalation followed a clean sweep.
+    Under the floor is an **ERROR**, graded in one tier. A story that opens on
+    its first choice asks the reader to pick before any situation exists, which
+    is a correctness failure in the same sense as PL-20's floor rather than a
+    matter of pacing degree: there is no "slightly too little establishing" the
+    way there is a slightly-too-long prologue. The drafting guide states the same
+    constraint from the other side (max choiceless stops in a row is at least 1
+    in every band). It was introduced as a WARNING only because 20 skeletons
+    predated the rule; those were fixed first (AL-086), and the escalation
+    followed a clean sweep.
+
+    **Both bounds also admit a word-equivalent reading**, so a story that is
+    outside the node window but inside the prose window it stands for passes.
+    See :func:`_opening_in_word_window` for why the units differ and for the
+    proof that the relaxation is one-way.
 
     Applies to every story with a configured band, scale-classified or not,
     because a buried first choice is a band-level pacing defect rather than a
@@ -593,13 +599,16 @@ def _check_first_decision_depth(story: Storybook, report: ValidationReport) -> N
     decisions = _decision_node_ids(story)
     if not decisions:
         return
-    depth = _shortest_path_nodes(_build_graph(story), story.start_node, decisions)
-    if depth is None:
+    extent = _opening_extent(story, _build_graph(story), decisions)
+    if extent is None:
         return
+    depth = extent.depth
     band = story.metadata.age_band.value
     hard_ceiling = int(ceiling * ARC_CEILING_MULTIPLE)
-    if depth > ceiling:
-        blocking = depth > hard_ceiling
+    if depth > ceiling and not _opening_in_word_window(story, extent, high=ceiling):
+        blocking = depth > hard_ceiling and not _opening_in_word_window(
+            story, extent, high=hard_ceiling
+        )
         limits = (
             f"ceiling {ceiling} and its hard limit {hard_ceiling}"
             if blocking
@@ -612,11 +621,12 @@ def _check_first_decision_depth(story: Storybook, report: ValidationReport) -> N
                 story_id=story.id,
                 message=(
                     f"PL-25 opening: first decision is {depth} node(s) in, past the "
-                    f"band '{band}' {limits} in story '{story.id}'"
+                    f"band '{band}' {limits}, and the prose before it runs past the "
+                    f"words those nodes stand for, in story '{story.id}'"
                 ),
             )
         )
-    elif depth < floor:
+    elif depth < floor and not _opening_in_word_window(story, extent, low=floor):
         report.add(
             ValidationFinding(
                 rule_id="PL-25",
@@ -624,10 +634,151 @@ def _check_first_decision_depth(story: Storybook, report: ValidationReport) -> N
                 story_id=story.id,
                 message=(
                     f"PL-25 opening: first decision is {depth} node(s) in, under the "
-                    f"band '{band}' floor {floor} in story '{story.id}'"
+                    f"band '{band}' floor {floor}, and the prose before it does not "
+                    f"cover the ground those nodes stand for, in story '{story.id}'"
                 ),
             )
         )
+
+
+@dataclass(frozen=True, slots=True)
+class _OpeningExtent:
+    """How far the reader travels before the first decision, three ways.
+
+    ``fewest_words`` and ``most_words`` bracket the prose over *equally short*
+    openings, which is what keeps PL-25's word reading a property of the graph
+    rather than of the node ids. Equally short paths can carry very different
+    word counts, so reading one arbitrarily chosen path would let a rename flip
+    the verdict. PL-26 hit the same trap and fixed it a different way; see
+    :func:`_fewest_decision_shortest_path`.
+    """
+
+    depth: int
+    fewest_words: int
+    most_words: int
+
+
+def _opening_extent(
+    story: Storybook, graph: nx.DiGraph[str], decisions: set[str]
+) -> _OpeningExtent | None:
+    """Measure the opening's node depth and its word range over equally short walks.
+
+    Runs the same layered dynamic program as :func:`_fewest_decision_shortest_path`
+    over the shortest-path DAG, in O(V+E), carrying a running minimum and maximum
+    word sum instead of a decision count. Enumerating the shortest paths would be
+    exponential in the worst case and this sits in the gate's request path.
+
+    No tie-break is needed and none is taken: the result is the min and the max
+    over a set of numbers, so it cannot depend on visit order, on node ids, or on
+    ``PYTHONHASHSEED``.
+
+    Args:
+        story: The parsed Storybook, read for its start node and node bodies.
+        graph: The story's directed choice graph.
+        decisions: Ids of the nodes that count as a decision.
+
+    Returns:
+        The :class:`_OpeningExtent`, or ``None`` when the start node is absent
+        from the graph or no decision is reachable from it.
+    """
+    start = story.start_node
+    if start not in graph:
+        return None
+    level, by_level = _breadth_first_levels(graph, start)
+    reachable = [level[target] for target in decisions if target in level]
+    if not reachable:
+        return None
+    distance = min(reachable)
+    words = {node.id: node_word_count(node.body) for node in story.nodes}
+    fewest: dict[str, int] = {start: words.get(start, 0)}
+    most: dict[str, int] = {start: words.get(start, 0)}
+    for depth in range(distance):
+        for node in by_level[depth]:
+            if node not in fewest:
+                continue
+            for successor in graph.successors(node):
+                if level.get(successor) != depth + 1:
+                    continue
+                carried = words.get(successor, 0)
+                low = fewest[node] + carried
+                high = most[node] + carried
+                if successor not in fewest or low < fewest[successor]:
+                    fewest[successor] = low
+                if successor not in most or high > most[successor]:
+                    most[successor] = high
+    arrivals = [target for target in decisions if level.get(target) == distance]
+    return _OpeningExtent(
+        depth=distance + 1,
+        fewest_words=min(fewest[target] for target in arrivals),
+        most_words=max(most[target] for target in arrivals),
+    )
+
+
+def _opening_in_word_window(
+    story: Storybook,
+    extent: _OpeningExtent,
+    *,
+    low: int | None = None,
+    high: int | None = None,
+) -> bool:
+    """Report whether the opening satisfies a PL-25 bound counted in words.
+
+    RULED 2026-08-17 (owner). PL-25's anchor is JHM 2019 Table 4, which measures
+    **pages** to the first decision (median 4, range 2 to 8.25). A CYOA page is a
+    quantity of prose; a node in this framework is an authoring unit that may
+    hold anywhere from a fifth of a page to two pages. Implementing the rule
+    against raw node count therefore graded a story on where its node boundaries
+    happened to fall rather than on how much situation the reader had been given.
+    Both bounds inverted under that reading:
+
+    - The floor failed a single 530-word opening scene while passing two 40-word
+      stubs, though the long opening is the one that establishes more. That is
+      the shape a story-first author produces, and it is the case the owner
+      raised: at the start especially, ground has to be covered before a choice
+      means anything.
+    - The ceiling failed an opening told in eight 40-word beats (320 words) while
+      passing five 200-word pages (1,000 words), though the second buries the
+      choice three times as deep in reading time.
+
+    So each bound is also tested in words, against itself times the band's mean
+    words per node. The conversion factor is the same table PL-19 grades against,
+    so the two rules cannot drift apart on what a node's worth of prose is.
+
+    **The relaxation is one-way by construction.** A bound is violated only when
+    *both* the node count and the word count are outside it, so no story that
+    passes today can start failing. Each bound is read against the extreme that
+    favours the story (the longest equally short opening for the floor, the
+    shortest for the ceiling), which keeps the one-way property true for every
+    story rather than only for those with a single shortest opening.
+
+    The defect each bound exists to catch is untouched: a story that truly opens
+    cold has almost no words before its first choice, and a genuine unbranching
+    prologue runs long in words as well as in nodes. A tiny-node corridor that
+    slips under the word ceiling still meets CG-1's consecutive-single-choice run
+    cap, which bounds that shape directly.
+
+    Args:
+        story: The parsed Storybook, read for its band and narrative style.
+        extent: The measured opening, from :func:`_opening_extent`.
+        low: A node floor to test as ``words >= low * mean``, or ``None``.
+        high: A node ceiling to test as ``words <= high * mean``, or ``None``.
+
+    Returns:
+        bool: True when the opening's word count satisfies the given bound.
+            False when the band has no words-per-node profile, so an
+            unconfigured band falls back to the node-count verdict.
+    """
+    profile = words_per_node_profile(
+        story.metadata.age_band.value, story.metadata.narrative_style.value
+    )
+    if profile is None:
+        return False
+    mean_words = profile[0]
+    if low is not None:
+        return extent.most_words >= low * mean_words
+    if high is not None:
+        return extent.fewest_words <= high * mean_words
+    return False
 
 
 def _check_min_to_complete(story: Storybook, report: ValidationReport) -> None:
@@ -1096,55 +1247,6 @@ def _check_ending_mix(story: Storybook, report: ValidationReport) -> None:
         )
 
 
-def _shortest_path_to(
-    graph: nx.DiGraph[str], start: str, targets: set[str]
-) -> list[str] | None:
-    """Return the fewest-node path from ``start`` to any of ``targets``.
-
-    Ties between equally short paths are broken by target id and then by
-    successor id, so the chosen path is stable under ``PYTHONHASHSEED``. That
-    tie-break is safe for a caller that reads only the path *length*, because
-    every fewest-node path has the same length by definition; PL-25 (through
-    :func:`_shortest_path_nodes`) is such a caller.
-
-    It is NOT safe for a caller that reads a per-node property of the walk.
-    Equally short paths can carry different decision counts, so PL-26 deliberately
-    consumes a different result derived from the same breadth-first search:
-    :func:`_fewest_decision_shortest_path` picks, among the equally fast walks,
-    the one with the fewest decisions on it. Sharing this function's arbitrary
-    tie-break with PL-26 made its verdict flip on node renaming alone.
-
-    Args:
-        graph: The story's directed choice graph.
-        start: The start node id.
-        targets: Candidate destination node ids; unreachable ones are ignored.
-
-    Returns:
-        The node-id path including both endpoints, or ``None`` when no target is
-        reachable from ``start``.
-    """
-    if start not in graph:
-        return None
-    parents: dict[str, str] = {}
-    seen: set[str] = {start}
-    frontier: list[str] = [start]
-    while frontier:
-        # A whole breadth-first level is settled before any of it is inspected,
-        # so the nearest target wins and equal-distance targets tie-break by id.
-        reached = sorted(node for node in frontier if node in targets)
-        if reached:
-            return _walk_back(parents, start, reached[0])
-        following: list[str] = []
-        for node in frontier:
-            for successor in sorted(graph.successors(node)):
-                if successor not in seen:
-                    seen.add(successor)
-                    parents[successor] = node
-                    following.append(successor)
-        frontier = following
-    return None
-
-
 def _walk_back(parents: dict[str, str], start: str, target: str) -> list[str]:
     """Rebuild the ``start`` to ``target`` path from a BFS parent map.
 
@@ -1247,9 +1349,10 @@ def _fewest_decision_shortest_path(
 
     Ties are broken deterministically: candidate targets by ``(decisions, id)``
     and predecessors by id, so the chosen walk is stable under
-    ``PYTHONHASHSEED``. Unlike :func:`_shortest_path_to`'s tie-break, the choice
-    here is semantic first (fewest decisions) and lexical only to settle a
-    genuine tie, so renaming nodes cannot change the reported density.
+    ``PYTHONHASHSEED``. The choice here is semantic first (fewest decisions) and
+    lexical only to settle a genuine tie, so renaming nodes cannot change the
+    reported density. An earlier version shared a purely lexical breadth-first
+    tie-break and its verdict flipped on node renaming alone.
 
     Args:
         graph: The story's directed choice graph.
@@ -1291,15 +1394,3 @@ def _fewest_decision_shortest_path(
         key=lambda target: (fewest[target], target),
     )
     return _walk_back(parents, start, chosen)
-
-
-def _shortest_path_nodes(
-    graph: nx.DiGraph[str], start: str, targets: set[str]
-) -> int | None:
-    """Return the fewest nodes on any path from ``start`` to a target.
-
-    Path length is measured in nodes (hops + 1). Unreachable targets are
-    ignored; returns ``None`` when no target is reachable from ``start``.
-    """
-    path = _shortest_path_to(graph, start, targets)
-    return None if path is None else len(path)

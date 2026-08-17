@@ -323,7 +323,7 @@ def _shortest_satisfying_nodes(
     """Return the fewest nodes on any path from start to a satisfying ending.
 
     Path length is measured in nodes (hops + 1), matching
-    ``validator.policy._shortest_path_nodes``. Returns None when no satisfying
+    ``validator.policy._opening_extent``. Returns None when no satisfying
     ending is reachable.
     """
     if start is None:
@@ -397,7 +397,7 @@ def _pl25_opening_reason(
         return None
     if not nx.has_path(graph, start, host_decision):
         return None
-    # Nodes, not hops, matching validator.policy._shortest_path_nodes.
+    # Nodes, not hops, matching validator.policy._opening_extent.
     depth = int(nx.shortest_path_length(graph, start, host_decision)) + 1
     floor = window[0]
     if depth >= floor:

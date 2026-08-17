@@ -377,7 +377,14 @@ def min_complete_floor(age_band: str, length: str, narrative_style: str) -> int 
 # of 4 and a range of 2 to 8.25. That corpus sits in the 8-11/10-13 reading
 # range, so those bands take the measured window directly; the outer bands are
 # product-defined scalings and are tunable, like the ADR-011 3-5/16+ budgets.
-#   - Below the floor is an unconditional ERROR, graded in one tier: a story
+#
+# The anchor's unit is a PAGE and this table's unit is a NODE, which are not the
+# same quantity: a node may hold a fifth of a page or two pages. RULED 2026-08-17
+# (owner), ``policy._opening_in_word_window`` therefore also admits each bound
+# converted to words through _WORDS_PER_NODE above, one-way, so a story outside
+# the node window but inside the prose window it stands for passes. The numbers
+# here are unchanged; only the unit they are read in widened.
+#   - Below the floor is an ERROR, graded in one tier: a story
 #     that opens on its first choice asks the reader to pick before any
 #     situation exists, a correctness failure rather than a matter of pacing
 #     degree. No book in the JHM corpus branches before page 2, which is what
