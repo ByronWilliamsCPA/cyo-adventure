@@ -1,0 +1,912 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_bridge_of_stones",
+  "version": 1,
+  "title": "The Bridge of Stones",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "water",
+      "testing before trusting",
+      "asking for help",
+      "looking after an animal"
+    ],
+    "estimated_minutes": 11,
+    "ending_count": 12,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "mild"
+    },
+    "topology": "open_map",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_dawn",
+  "nodes": [
+    {
+      "id": "n_dawn",
+      "body": "<<FILL role=setup words=66 beats='the rain stopped some time in the night and the beck is loud enough to hear from inside the house; down at the gate the noise is enormous and brown and moving fast, and the planks of the footbridge are simply not there any more'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_dawn_0",
+          "label": "Go down to the water.",
+          "target": "n_bank"
+        }
+      ]
+    },
+    {
+      "id": "n_bank",
+      "body": "<<FILL role=setup words=68 beats='two stone piers stand in the beck with nothing at all on top of them; on the far bank Nell the old dog is sitting exactly where she sat yesterday, waiting to be told what to do, and Nell has never once gone into water on purpose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_bank_0",
+          "label": "Look at the stepping stones.",
+          "target": "n_stones"
+        },
+        {
+          "id": "c_n_bank_1",
+          "label": "Look at the ash that came down.",
+          "target": "n_ash"
+        },
+        {
+          "id": "c_n_bank_2",
+          "label": "Go and find Mr Bhandari.",
+          "target": "n_mender"
+        }
+      ]
+    },
+    {
+      "id": "n_stones",
+      "body": "<<FILL role=rising words=68 beats='the old stepping stones sit downstream of the piers, seven flat rocks put there long before anyone can remember; four of them are showing this morning and the rest are somewhere under all that brown water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_stones_0",
+          "label": "Test the first stone.",
+          "target": "n_st_first"
+        },
+        {
+          "id": "c_n_stones_1",
+          "label": "Count what is still showing.",
+          "target": "n_st_count"
+        }
+      ]
+    },
+    {
+      "id": "n_st_first",
+      "body": "<<FILL role=rising words=66 beats='the first stone is dry on top and does not shift at all when Tam leans on it with one hand, which is the whole test and takes about two seconds to do'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_st_first_0",
+          "label": "Step on and look at the next.",
+          "target": "n_st_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_st_count",
+      "body": "<<FILL role=rising words=64 beats='counting out from the bank: one, two, three, then a gap where a stone ought to be, then a stone sitting at a funny angle, then nothing but the pull of the water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_st_count_0",
+          "label": "Go out as far as the third.",
+          "target": "n_st_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_st_mid",
+      "body": "<<FILL role=rising words=70 beats='standing on the second stone the beck sounds different, less like weather and more like something with an opinion; the third stone is close enough to reach and the water going over it is only a finger deep'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_st_mid_0",
+          "label": "Try the far stones.",
+          "target": "n_st_far"
+        },
+        {
+          "id": "c_n_st_mid_1",
+          "label": "Go back to the grass.",
+          "target": "n_st_back"
+        }
+      ]
+    },
+    {
+      "id": "n_st_far",
+      "body": "<<FILL role=rising words=68 beats='the fourth stone tips when it takes any weight at all, only slightly, like a loose tooth; a loose stone in fast water is a thing Grandad has an entire speech about'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_st_far_0",
+          "label": "Leave the loose one alone.",
+          "target": "n_hub_two"
+        },
+        {
+          "id": "c_n_st_far_1",
+          "label": "Get back to the bank.",
+          "target": "n_st_back"
+        }
+      ]
+    },
+    {
+      "id": "n_st_back",
+      "body": "<<FILL role=rising words=66 beats='back on the grass with two wet socks and one good piece of news: the stones go two thirds of the way across and then stop being stones and start being a gamble'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_st_back_0",
+          "label": "Tell Ivy what the stones do.",
+          "target": "n_hub_two"
+        },
+        {
+          "id": "c_n_st_back_1",
+          "label": "Start again at the piers.",
+          "target": "n_bank"
+        }
+      ]
+    },
+    {
+      "id": "n_ash",
+      "body": "<<FILL role=rising words=68 beats='an ash came down in the night above the bend and lies clean across the beck with its roots in the air and a wall of soil still stuck to them; it is greasy with rain and full of little snapped branches'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ash_0",
+          "label": "Try the bark with a hand.",
+          "target": "n_ash_bark"
+        },
+        {
+          "id": "c_n_ash_1",
+          "label": "Reach for the big side branch.",
+          "target": "n_ash_reach"
+        }
+      ]
+    },
+    {
+      "id": "n_ash_bark",
+      "body": "<<FILL role=rising words=66 beats='the bark is loose in patches and comes away in the hand like crust off a loaf, and underneath it is pale and slippery and smells of wet cupboards'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ash_bark_0",
+          "label": "Sit down on the trunk.",
+          "target": "n_ash_sit"
+        }
+      ]
+    },
+    {
+      "id": "n_ash_reach",
+      "body": "<<FILL role=rising words=64 beats='from the root end there is a side branch thicker than an arm that does not move at all when it is pulled, which makes it a handrail if it is anything'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ash_reach_0",
+          "label": "Sit down and hold on.",
+          "target": "n_ash_sit"
+        }
+      ]
+    },
+    {
+      "id": "n_ash_sit",
+      "body": "<<FILL role=rising words=70 beats='sitting astride the trunk and shuffling forward is slow and undignified and completely steady, and Ivy says that is exactly how her uncle crosses this beck and he is a fully grown man with a job'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ash_sit_0",
+          "label": "Shuffle out over the water.",
+          "target": "n_ash_far"
+        },
+        {
+          "id": "c_n_ash_sit_1",
+          "label": "Get off at the root end.",
+          "target": "n_ash_back"
+        }
+      ]
+    },
+    {
+      "id": "n_ash_far",
+      "body": "<<FILL role=rising words=68 beats='over the middle the trunk narrows and the branches thin out, and there is nothing to hold at all on the last stretch, which is exactly the stretch that crosses the deep part'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ash_far_0",
+          "label": "Note where the holding stops.",
+          "target": "n_hub_two"
+        },
+        {
+          "id": "c_n_ash_far_1",
+          "label": "Shuffle backwards to the roots.",
+          "target": "n_ash_back"
+        }
+      ]
+    },
+    {
+      "id": "n_ash_back",
+      "body": "<<FILL role=rising words=66 beats='back at the root end with bark in both sleeves, the ash looks a good deal less like a bridge and a good deal more like a tree that has fallen over, which is what it is'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ash_back_0",
+          "label": "Go and compare it with the stones.",
+          "target": "n_hub_two"
+        },
+        {
+          "id": "c_n_ash_back_1",
+          "label": "Walk back down to the piers.",
+          "target": "n_bank"
+        }
+      ]
+    },
+    {
+      "id": "n_mender",
+      "body": "<<FILL role=rising words=68 beats='Mr Bhandari mends the walls along this whole valley and is already down at the piers with a barrow, a bag of nails and the expression of a man who has seen this exact thing happen twice before'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_mender_0",
+          "label": "Ask him straight out.",
+          "target": "n_m_ask"
+        },
+        {
+          "id": "c_n_mender_1",
+          "label": "Watch what he does first.",
+          "target": "n_m_watch"
+        }
+      ]
+    },
+    {
+      "id": "n_m_ask",
+      "body": "<<FILL role=rising words=66 beats='asking straight out gets a straight answer: the planks are downstream somewhere, the piers themselves are sound, and what he is short of is two long boards and a second pair of hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_m_ask_0",
+          "label": "Look in the barrow.",
+          "target": "n_m_barrow"
+        }
+      ]
+    },
+    {
+      "id": "n_m_watch",
+      "body": "<<FILL role=rising words=64 beats='watching is its own kind of asking; he lays a level on the near pier, taps a wedge in twice, and never once looks at the water as though it worried him'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_m_watch_0",
+          "label": "Go over to the barrow.",
+          "target": "n_m_barrow"
+        }
+      ]
+    },
+    {
+      "id": "n_m_barrow",
+      "body": "<<FILL role=rising words=70 beats='in the barrow there is a coil of blue rope, a hammer, one board that is plainly too short, and a flask that is not for sharing with children under any circumstances at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_m_barrow_0",
+          "label": "Ask about the blue rope.",
+          "target": "n_m_rope"
+        },
+        {
+          "id": "c_n_m_barrow_1",
+          "label": "Ask how long the mending takes.",
+          "target": "n_m_back"
+        }
+      ]
+    },
+    {
+      "id": "n_m_rope",
+      "body": "<<FILL role=rising words=68 beats='the rope goes across easily enough when it is thrown, and it makes a fine line to hang a coat on, but a rope is not a bridge and Mr Bhandari says so before anybody can suggest that it might be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_m_rope_0",
+          "label": "Ask what he actually needs.",
+          "target": "n_hub_two"
+        },
+        {
+          "id": "c_n_m_rope_1",
+          "label": "Coil the rope back up.",
+          "target": "n_m_back"
+        }
+      ]
+    },
+    {
+      "id": "n_m_back",
+      "body": "<<FILL role=rising words=66 beats='on his own the mending will take him until Friday, and Friday is a very long way away from a fourteen year old dog sitting on the wrong bank in the rain'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_m_back_0",
+          "label": "Go and think about Friday.",
+          "target": "n_hub_two"
+        },
+        {
+          "id": "c_n_m_back_1",
+          "label": "Go back and look at the beck.",
+          "target": "n_bank"
+        }
+      ]
+    },
+    {
+      "id": "n_hub_two",
+      "body": "<<FILL role=rising words=70 beats='by the middle of the morning the beck has stopped rising, which everybody notices at the same moment; Nell has moved once, as far as the hawthorn, and is still watching the near bank without blinking'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_hub_two_0",
+          "label": "See what Nell will do.",
+          "target": "n_nell"
+        },
+        {
+          "id": "c_n_hub_two_1",
+          "label": "Try the ford by the sheep gate.",
+          "target": "n_ford"
+        },
+        {
+          "id": "c_n_hub_two_2",
+          "label": "Go and look for the planks.",
+          "target": "n_planks"
+        }
+      ]
+    },
+    {
+      "id": "n_nell",
+      "body": "<<FILL role=rising words=68 beats='Nell is fourteen and deaf on one side and has never gone into water on purpose in her life; she stands up when Tam shouts across at her and then sits straight back down again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_nell_0",
+          "label": "Call her low and slow.",
+          "target": "n_nell_call"
+        },
+        {
+          "id": "c_n_nell_1",
+          "label": "Try the sausage in Ivy's pocket.",
+          "target": "n_nell_bone"
+        }
+      ]
+    },
+    {
+      "id": "n_nell_call",
+      "body": "<<FILL role=rising words=66 beats='calling works better low and slow than loud; her ears come forward, she walks down to the water, puts one foot in and takes it straight out again, twice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_nell_call_0",
+          "label": "Watch where she stops.",
+          "target": "n_nell_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_nell_bone",
+      "body": "<<FILL role=rising words=66 beats='Ivy has half a sausage left from breakfast, which is either a plan or a bribe depending entirely on who is telling the story afterwards'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_nell_bone_0",
+          "label": "Hold it up where she can see.",
+          "target": "n_nell_mid"
+        },
+        {
+          "id": "c_n_nell_bone_1",
+          "label": "Put it on a flat stone at the edge.",
+          "target": "n_nell_side"
+        }
+      ]
+    },
+    {
+      "id": "n_nell_side",
+      "body": "<<FILL role=rising words=64 beats='waving it about does nothing at all; leaving it on the stone does something, and Nell comes right down to the very edge of the water and stops there'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_nell_side_0",
+          "label": "Measure the gap she will not cross.",
+          "target": "n_nell_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_nell_mid",
+      "body": "<<FILL role=rising words=70 beats='the gap Nell will not cross is about three of her own lengths of fast shallow water, and no amount of calling is going to change that; what might change it is something solid to put her feet on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_nell_mid_0",
+          "label": "Go and find something to build with.",
+          "target": "n_hub_three"
+        },
+        {
+          "id": "c_n_nell_mid_1",
+          "label": "Go back to the piers first.",
+          "target": "n_hub_two"
+        }
+      ]
+    },
+    {
+      "id": "n_ford",
+      "body": "<<FILL role=rising words=68 beats='below the sheep gate the beck spreads out wide and shallow over grey gravel, and in summer this is the place where everybody crosses without ever thinking about it once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ford_0",
+          "label": "Put one boot in.",
+          "target": "n_ford_wade"
+        },
+        {
+          "id": "c_n_ford_1",
+          "label": "Poke about with a hazel stick.",
+          "target": "n_ford_stick"
+        }
+      ]
+    },
+    {
+      "id": "n_ford_wade",
+      "body": "<<FILL role=rising words=66 beats='one boot in as far as the ankle, then as far as the shin, and the push of it sideways against the leg is a great deal stronger than it looked from the bank'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ford_wade_0",
+          "label": "Get out and think again.",
+          "target": "n_ford_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_ford_stick",
+      "body": "<<FILL role=rising words=66 beats='a hazel stick pushed in at arm's length finds gravel, then finds nothing at all, then finds gravel again, which is the whole map of the ford in three pokes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ford_stick_0",
+          "label": "Work out where the nothing is.",
+          "target": "n_ford_mid"
+        },
+        {
+          "id": "c_n_ford_stick_1",
+          "label": "Poke along the top end too.",
+          "target": "n_ford_side"
+        }
+      ]
+    },
+    {
+      "id": "n_ford_side",
+      "body": "<<FILL role=rising words=64 beats='the nothing is a scour hole the winter dug out, and it sits exactly where the summer path runs, which is the sort of thing water does while nobody is watching'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ford_side_0",
+          "label": "Mark it with the stick.",
+          "target": "n_ford_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_ford_mid",
+      "body": "<<FILL role=rising words=70 beats='the ford is crossable at the top end and not crossable at the bottom end, and telling those two apart from the bank is impossible, which makes it a place to bring an adult rather than a place to try'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ford_mid_0",
+          "label": "Go and get something built instead.",
+          "target": "n_hub_three"
+        },
+        {
+          "id": "c_n_ford_mid_1",
+          "label": "Head back up to the piers.",
+          "target": "n_hub_two"
+        }
+      ]
+    },
+    {
+      "id": "n_planks",
+      "body": "<<FILL role=rising words=68 beats='planks do not vanish, they travel; the beck runs on for a mile past the meadow and there are three bends in it where things always fetch up sooner or later'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_planks_0",
+          "label": "Try the willow roots at the bend.",
+          "target": "n_plank_snag"
+        },
+        {
+          "id": "c_n_planks_1",
+          "label": "Look in the shallows further down.",
+          "target": "n_plank_drag"
+        }
+      ]
+    },
+    {
+      "id": "n_plank_snag",
+      "body": "<<FILL role=rising words=66 beats='at the second bend a plank is jammed upright in the willow roots like a fence post, and it is the right length, and it still has the old bridge nail holes in the end of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_plank_snag_0",
+          "label": "Work it loose.",
+          "target": "n_plank_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_plank_drag",
+      "body": "<<FILL role=rising words=66 beats='the second plank lies flat in the shallows with silt over one end of it, and it takes both of them leaning right back to shift it a single hand span up the gravel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_plank_drag_0",
+          "label": "Keep hauling together.",
+          "target": "n_plank_mid"
+        },
+        {
+          "id": "c_n_plank_drag_1",
+          "label": "Take turns and rest between.",
+          "target": "n_plank_side"
+        }
+      ]
+    },
+    {
+      "id": "n_plank_side",
+      "body": "<<FILL role=rising words=64 beats='taking turns works if they stop arguing about whose turn it is, and the plank comes up the meadow in stages with a proper sit down between each one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_plank_side_0",
+          "label": "Get it as far as the piers.",
+          "target": "n_plank_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_plank_mid",
+      "body": "<<FILL role=rising words=70 beats='two planks lying on the grass beside the piers is not a bridge either, but it is the whole difference between Friday and today, and every single person there can see that it is'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_plank_mid_0",
+          "label": "Go and find Mr Bhandari.",
+          "target": "n_hub_three"
+        },
+        {
+          "id": "c_n_plank_mid_1",
+          "label": "Go back for anything else useful.",
+          "target": "n_hub_two"
+        }
+      ]
+    },
+    {
+      "id": "n_hub_three",
+      "body": "<<FILL role=rising words=70 beats='the light has gone low and yellow, the beck is a whole hand lower than it was at breakfast, and there is time to do exactly one thing properly before somebody calls them in for tea'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_hub_three_0",
+          "label": "Go back to the stepping stones.",
+          "target": "n_way_stones"
+        },
+        {
+          "id": "c_n_hub_three_1",
+          "label": "Go back to the fallen ash.",
+          "target": "n_way_ash"
+        },
+        {
+          "id": "c_n_hub_three_2",
+          "label": "Go back to the piers.",
+          "target": "n_way_mender"
+        }
+      ]
+    },
+    {
+      "id": "n_way_stones",
+      "body": "<<FILL role=rising words=68 beats='the stones are showing five now instead of four, and the loose one is still loose, and the last gap is still a gap with the water going hard through the middle of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_way_stones_0",
+          "label": "Cross on them.",
+          "target": "n_ws_go"
+        },
+        {
+          "id": "c_n_way_stones_1",
+          "label": "Make the gap into a stone.",
+          "target": "n_ws_nell"
+        }
+      ]
+    },
+    {
+      "id": "n_way_ash",
+      "body": "<<FILL role=rising words=68 beats='the ash has not moved and will not move until somebody comes with a saw; it is greasy along the top of the trunk and quite dry along the underside of the big branch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_way_ash_0",
+          "label": "Shuffle the whole way over.",
+          "target": "n_wa_cross"
+        },
+        {
+          "id": "c_n_way_ash_1",
+          "label": "Use the branch as a handrail.",
+          "target": "n_wa_rail"
+        }
+      ]
+    },
+    {
+      "id": "n_way_mender",
+      "body": "<<FILL role=rising words=68 beats='Mr Bhandari has the first plank up on the piers and is holding it steady with one knee, which is not a thing that any person can go on doing for very long'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_way_mender_0",
+          "label": "Hold the far end for him.",
+          "target": "n_wm_build"
+        },
+        {
+          "id": "c_n_way_mender_1",
+          "label": "Run for the long bar.",
+          "target": "n_wm_fetch"
+        }
+      ]
+    },
+    {
+      "id": "n_ws_go",
+      "body": "<<FILL role=rising words=66 beats='every stone tested with a hand before any foot goes on it, the loose one taken right at the flat bank side edge, and then the gap, with the beck pushing hard through it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ws_go_0",
+          "label": "Jump the gap.",
+          "target": "e_stones_across"
+        },
+        {
+          "id": "c_n_ws_go_1",
+          "label": "Stop at the gap.",
+          "target": "e_stones_turnback"
+        }
+      ]
+    },
+    {
+      "id": "n_ws_nell",
+      "body": "<<FILL role=rising words=66 beats='a rolled stone in the gap makes a fifth stone, low and wet but solid, and Nell watches the entire operation from the far side with her head tipped over on one side'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ws_nell_0",
+          "label": "Call her across the new stone.",
+          "target": "e_nell_across"
+        },
+        {
+          "id": "c_n_ws_nell_1",
+          "label": "Leave her to make her own mind up.",
+          "target": "e_nell_waits"
+        }
+      ]
+    },
+    {
+      "id": "n_wa_cross",
+      "body": "<<FILL role=rising words=66 beats='astride the trunk with both hands flat, shuffling, the bark coming away in strips and the deep part sliding past underneath at a speed that is difficult to look at'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_wa_cross_0",
+          "label": "Keep going to the far roots.",
+          "target": "e_ash_crawl"
+        },
+        {
+          "id": "c_n_wa_cross_1",
+          "label": "Take one hand off to steady.",
+          "target": "e_ash_wet"
+        }
+      ]
+    },
+    {
+      "id": "n_wa_rail",
+      "body": "<<FILL role=rising words=66 beats='the big side branch sits exactly at hand height above the trunk for the first half of the crossing and then it does not, and what to do about the second half is the whole question'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_wa_rail_0",
+          "label": "Tie the blue rope on for the rest.",
+          "target": "e_ash_rail"
+        },
+        {
+          "id": "c_n_wa_rail_1",
+          "label": "Say it is not a bridge yet.",
+          "target": "e_ash_left"
+        }
+      ]
+    },
+    {
+      "id": "n_wm_build",
+      "body": "<<FILL role=rising words=66 beats='holding the far end of a plank dead steady while somebody else drives a nail through it is a proper job, and it is extremely obvious to everyone when it has been done badly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_wm_build_0",
+          "label": "Hold it until the last nail.",
+          "target": "e_bridge_built"
+        },
+        {
+          "id": "c_n_wm_build_1",
+          "label": "Let go to look at the water.",
+          "target": "e_bridge_tomorrow"
+        }
+      ]
+    },
+    {
+      "id": "n_wm_fetch",
+      "body": "<<FILL role=rising words=66 beats='what is needed is the long iron bar from the wall beside his gate, and the gate is eleven minutes away at a walk and a good deal less than that at a run'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_wm_fetch_0",
+          "label": "Run for it.",
+          "target": "e_fetch_run"
+        },
+        {
+          "id": "c_n_wm_fetch_1",
+          "label": "Ask if it can wait.",
+          "target": "e_mender_says"
+        }
+      ]
+    },
+    {
+      "id": "e_stones_across",
+      "body": "<<FILL role=success words=68 beats='the jump is shorter than it looked and the landing stone is flat and rough and holds; from the far bank the beck looks like something that has been crossed rather than something that cannot be, and Nell arrives at a run'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_stones_across",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Across on the Stones"
+      }
+    },
+    {
+      "id": "e_stones_turnback",
+      "body": "<<FILL role=discovery words=66 beats='standing at the gap and deciding not to jump it turns out to be a decision rather than a failure, and the useful thing learned is exactly which stone is wrong and exactly how wrong it is'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_stones_turnback",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Middle Stone Was Wrong"
+      }
+    },
+    {
+      "id": "e_nell_across",
+      "body": "<<FILL role=completion words=68 beats='Nell puts one foot on the new stone, then all four, then comes over in a rush with her ears flat, and stands shaking herself over everybody, which is the price of getting a dog back'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_nell_across",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Nell Comes Over"
+      }
+    },
+    {
+      "id": "e_nell_waits",
+      "body": "<<FILL role=setback words=66 beats='Nell will not use the new stone today and no argument moves her; she goes back to the hawthorn and Mr Bhandari says he will feed her over the wall until the bridge is done, which is not the same as having her home'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_nell_waits",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Nell Waits It Out"
+      }
+    },
+    {
+      "id": "e_ash_crawl",
+      "body": "<<FILL role=success words=68 beats='the last stretch takes about nine seconds and feels like a great deal more than that, and then there are roots to grab and soil to stand on and a whole bank that was on the other side of the water a minute ago'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_ash_crawl",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Over on the Ash"
+      }
+    },
+    {
+      "id": "e_ash_wet",
+      "body": "<<FILL role=setback words=66 beats='one hand comes off, the trunk turns, and one leg goes in up to the knee before the other hand catches; the way back along the trunk is short and cold and extremely carefully done'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_ash_wet",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "One Wet Boot"
+      }
+    },
+    {
+      "id": "e_ash_rail",
+      "body": "<<FILL role=completion words=68 beats='the blue rope makes the second half into the same crossing as the first half, and by teatime three people have gone over it, and Mr Bhandari inspects the knot and says nothing at all, which from him is a great deal'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_ash_rail",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Handrail Made of Tree"
+      }
+    },
+    {
+      "id": "e_ash_left",
+      "body": "<<FILL role=discovery words=66 beats='saying out loud that the ash is not a bridge yet is harder than crossing would have been, and it is the sentence that gets a saw and two grown ups down to the bend before dark'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_ash_left",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Leave the Ash Where It Fell"
+      }
+    },
+    {
+      "id": "e_bridge_built",
+      "body": "<<FILL role=completion words=70 beats='two planks, eleven nails and one small pair of hands holding the far end absolutely still; the first person over is Mr Bhandari, the second is Nell going the other way, and the third and fourth are Tam and Ivy at a run'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_bridge_built",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Two Planks and a Nail"
+      }
+    },
+    {
+      "id": "e_bridge_tomorrow",
+      "body": "<<FILL role=discovery words=66 beats='the plank slips, the nail bends, and the job goes over to the morning; what gets learned is that the holding was the job, and that a bent nail is a much smaller disaster than it sounds like at the time'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_bridge_tomorrow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Finished by Friday"
+      }
+    },
+    {
+      "id": "e_fetch_run",
+      "body": "<<FILL role=success words=68 beats='eleven minutes each way turns into rather less, and the bar arrives before the light goes; the pier stone comes true under it with one long groan, and the whole thing is level enough to build on in the morning'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_fetch_run",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Fastest Fetcher in the Dale"
+      }
+    },
+    {
+      "id": "e_mender_says",
+      "body": "<<FILL role=setback words=66 beats='it can wait, he says, and it will have to, because nobody crosses a beck this high on a Thursday for a dog that is perfectly dry under a hawthorn; the bar stays where it is and so does everybody else'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_mender_says",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Nobody Crosses Today"
+      }
+    }
+  ]
+}
