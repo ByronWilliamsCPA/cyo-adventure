@@ -164,11 +164,18 @@ def _slot(
 
 
 def _valid_contract() -> ThemeContract:
-    """A contract declaring exactly the plan's five slot ids, at a floor-free band."""
+    """A contract declaring exactly the plan's five slot ids.
+
+    The band matches the fixture skeleton's own `metadata.age_band`. It used to
+    declare 13-16 for a floor-free band while the skeleton declared 3-5, which
+    `check_theme_contract.py` now rejects: the contract's band selects the
+    band-mandatory denylist floor, so a contract free to disagree with its
+    skeleton could pick a weaker floor than its readers' band (`UW-C285`).
+    """
     return ThemeContract(
         contract_version=1,
         skeleton_slug="s_test_param",
-        age_band=AgeBand.BAND_13_16,
+        age_band=AgeBand.BAND_3_5,
         legacy_lexicon=[],
         default_binding=dict(_DEFAULT_BINDINGS),
         slots=[

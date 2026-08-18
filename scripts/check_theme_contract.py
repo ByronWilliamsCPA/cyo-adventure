@@ -180,6 +180,53 @@ def _pick_probe(contract: ThemeContract) -> tuple[SlotSpec, str] | None:
     return None
 
 
+def _band_mismatch_detail(
+    contract: ThemeContract, skeleton: dict[str, object]
+) -> str | None:
+    """Return a failure detail when a contract's band disagrees with its skeleton's.
+
+    #CRITICAL: security: ``validator.slots`` picks the band-mandatory denylist
+    floor (lethal/weapon/toxic/capture/graphic/despair at the young bands) by
+    ``contract.age_band``, and that field is sidecar DATA that this gate did not
+    check. Retyping a committed 3-5 contract's band to ``16+`` emptied the floor:
+    "a deadly poisoned blade" then bound with zero violations where it had
+    previously raised three, and this script still exited 0 with all seven checks
+    PASS. The ``#CRITICAL`` note on ``slots._BAND_MANDATORY`` claims "nothing in
+    contract data can remove or shrink it", which was true of the bundle LIST and
+    false of the band field selecting which floor applies (``UW-C285``).
+
+    The check lives here rather than in ``binding.load_contract_for`` on purpose.
+    The threat is a repo edit, and this script is the CI gate for ``skeletons/**``,
+    so this is where the demonstrated bypass happened and where closing it costs
+    nothing at runtime. Putting it in the runtime loader would add a new
+    hard-failure mode on the generation path for a class of defect that review
+    and CI already own.
+
+    A skeleton that declares no band at all is PL-22's fail-closed case, checked
+    by check 1's ``run_gate`` call above, so this returns None rather than
+    duplicating that rule.
+
+    Args:
+        contract: The loaded, schema-valid theme contract.
+        skeleton: The decoded skeleton the contract sits beside.
+
+    Returns:
+        str | None: A human-readable mismatch detail, or None when the bands
+            agree or the skeleton declares none.
+    """
+    metadata = skeleton.get("metadata")
+    skeleton_band = metadata.get("age_band") if isinstance(metadata, dict) else None
+    contract_band = contract.age_band.value
+    if skeleton_band is None or skeleton_band == contract_band:
+        return None
+    return (
+        f"contract declares age_band '{contract_band}' but its skeleton declares "
+        f"'{skeleton_band}'; the contract's band selects the band-mandatory "
+        f"denylist floor, so a mismatch can silently widen what may be bound "
+        f"into a younger-band story"
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     """Run every migration acceptance check for one skeleton/contract pair.
 
@@ -302,7 +349,18 @@ def main(argv: list[str] | None = None) -> int:
                 detail=str(exc),
             )
         else:
-            _report("2", "contract loads and schema-validates", passed=True)
+            band_detail = _band_mismatch_detail(contract, skeleton)
+            if band_detail is None:
+                _report("2", "contract loads and schema-validates", passed=True)
+            else:
+                all_passed = False
+                contract = None
+                _report(
+                    "2",
+                    "contract loads and schema-validates",
+                    passed=False,
+                    detail=band_detail,
+                )
 
     if contract is None:
         _report(
