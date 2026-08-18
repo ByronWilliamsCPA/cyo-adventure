@@ -8,6 +8,81 @@ shown rather than cited.
 Three findings resolved already and not repeated here: `UW-C285(a)` (pronoun vocabulary, closed
 2026-08-18), PL-25's unit error (`AL-456`), and CG-1's average-versus-maximum error (`AL-455`).
 
+## REVISED 2026-08-18 after adversarial review
+
+An adversarial review (fable subagent, full text in the session scratchpad) attacked the reasoning
+below and landed four times. Every claim in this section was re-verified locally before being
+accepted. The original text is kept in place with markers rather than rewritten, because the
+reasoning that was wrong is the useful part of the record.
+
+**Withdrawn outright:**
+
+1. **The series-handoff table in `UW-C283`.** It was headed "positive endings at ~40%", derived from
+   PL-24. PL-24 caps the dominant ending **KIND** at 60 percent; its positive-**VALENCE** floor is
+   gamebook-only (5 percent share, count of 3). Nothing implies 40 percent positive. That figure was
+   the catalog's authoring habit, not a rule. So the table, the "structurally opposed" conclusion,
+   and the gate on authoring at 10-13/long and above are all withdrawn. This is the same
+   kind-versus-valence conflation this document recommends fixing elsewhere, committed inside the
+   argument for fixing it.
+2. **The kind switch on the walk floor (`UW-C284d`).** Verified locally: teen gamebooks carry 2 to 7
+   satisfying-KIND endings out of 74 to 209 total (`the-tenfold-siege` 6 of 209,
+   `the-ashfall-expedition` 3 of 143). ADR-011 section 5 defines the gamebook as "few wins plus many
+   fails", so a kind reading makes the genre's defining shape fail by construction and no new teen
+   gamebook could be authored. Worse, the floors were **owner-ruled 2026-08-09** and the ruling's own
+   text defines satisfying as "positive- or neutral-valence"; recommending the switch was
+   recommending a silent override of a dated ruling without noticing one existed. If the concern
+   (161 neutral-valence setbacks counting as satisfying) is worth acting on, the surgical form is
+   excluding `(setback, neutral)` only, and it needs the floors re-ratified.
+3. **The `TAU_STRUCT` ratchet (`UW-C273`).** `diversity/incell.py` records `TAU_STRUCT` as
+   "**documentation only** as of that same amendment" (ADR-020 Amendment 1). The live floor is
+   `TAU_CELL`, a fixed 0.05 that cannot fall. Ratcheting a retired quantity is precisely the defect
+   class this document's closing line names.
+4. **The PL-20 one-way word transfer (`UW-C277`).** PL-25's one-way reading fires only when node
+   count AND word count are both out of bounds. The motivating defect is a nine-node, 180-word
+   hollow win, and nine clears the cell's floor of seven, so the node test passes and the rule never
+   fires. The fix cannot catch its own worked example. Catching it needs a tightening word test with
+   grandfathering, which is a different and more expensive recommendation.
+
+**Revised, not withdrawn:**
+
+5. **`UW-C283`'s replacement rule.** Taking ADR section 5's column as STATIC per-cell ranges drops
+   scaling the column itself encodes (within `8-11/long` its implied fraction is 0.175 at the bottom
+   and 0.167 at the top, so it is a fraction times an envelope). Static ranges would admit a 340-node
+   book with 32 endings at a 9.4 percent share, below ADR section 6's own 15 to 22 percent band, so
+   the fix would trade a section-5-versus-code conflict for a section-5-versus-section-6 one. **Use
+   per-cell fraction PAIRS (a floor fraction and a ceiling fraction per cell) instead**, one step from
+   the table already shown. Grandfathering is required either way and was not mentioned: the review
+   reports the proposed ceiling failing seven committed books.
+6. **`UW-C280`'s CG-4 fix.** `enforce_grammar` is a single early return gating all four CG rules, so
+   the "one flag, low risk, it is a WARNING" framing is wrong: flipping it on the fill path enables
+   CG-1, CG-2 and CG-3 there too. The right fix is per-rule enablement. The review measured 375 CG
+   findings across eight filled books under the flag flip; I have not re-verified that number.
+7. **`UW-C281`'s reading-level argument.** The conclusion (adopt column E) survives; the argument does
+   not. Arguing from achievability is circular, since the books were written and repaired to their own
+   declarations. There is an external anchor and it was never cited:
+   `research/cyoa-research-reconciliation.md` item 4 sets the gate by age band and places core CYOA at
+   roughly 500-710L with teen gamebooks at middle-grade prose, which favours E over C at exactly the
+   bands where they diverge. Cite the anchor, note E sits slightly above it at 8-11, and route it to
+   the owner as a decision rather than presenting it as settled.
+8. **The can-it-fire test.** All three dead rules were dead in the WIRING, not the rule bodies. A
+   registry-level test invoking each rule directly would have caught none of them, and the M2 floor
+   is not in the validator registry at all. The valuable form is entry-point level: a violating
+   artifact at each production call path must yield a finding. That is a materially harder spec and
+   the "highest leverage" claim should be restated against it.
+
+**One review claim I checked and falsified.** The review states `the-winter-of-the-wolf-queen` and
+`the-tricameral-city` "pass `check_skeleton.py --strict` today with zero findings". They do not: 90
+and 52 blocking lines respectively, on CG-1 and CG-2. Its underlying point survives and is what
+matters, though: no rule floors satisfying-KIND endings, so those books do carry 40 and 42 endings
+with only 8 and 7 satisfying-kind, which is the setback-and-discovery remedy already in use without
+new architecture.
+
+**Unchanged and unrefuted:** Wave 0 (`UW-C282`), `UW-C285(b)`, `UW-C279`, `UW-C278`, `UW-C284`'s
+other three items, `UW-C272`, `UW-C274`, `UW-C276`, `UW-C275`. The review attempted the `UW-C282`
+normalization collapse through the orchestrator, import path, `makeFetchStory`, IndexedDB, and the
+vitest fixtures and could not make it land, with one narrowing: all 31 filled artifacts do carry
+top-level `variables`, so only the `choices` leg is supported by committed evidence.
+
 ## The organizing observation
 
 The 14 open items are not 14 problems. They are four, and the sequencing below follows them:
@@ -120,7 +195,7 @@ authoring brief and the skeleton brief. No decision, no risk.
 
 ## Wave 3: the calibration decisions
 
-### `UW-C283` + the endings balance. **Recommendation: take PL-17's floor AND ceiling from ADR-011 section 5's own per-cell column, and add a separate positive-ending ceiling for series books.**
+### `UW-C283` + the endings balance. **PARTLY WITHDRAWN, see revision 1 and 5 above. The series table below is unsound and the replacement rule should use per-cell fraction pairs, not static ranges.**
 
 The measurement that settles it. PL-17 applies a flat 0.15 to node count; the ADR's own per-cell
 numbers imply a fraction that is not constant and cannot be reproduced by any single value:
@@ -166,7 +241,7 @@ endings, which need no start state. A standalone book keeps the ADR range. This 
 that is genuinely an architecture decision rather than a calibration, and it should be decided
 before any authoring at 10-13/long or above.
 
-### `UW-C277` remaining unit errors. **Recommendation: give PL-20 the treatment PL-25 just got; re-derive PL-26 per band.**
+### `UW-C277` remaining unit errors. **PL-20 HALF WITHDRAWN, see revision 4 above. PL-26 and the `_MIN_COMPLETE` comment fix stand.**
 
 - **PL-20** counts nodes where its budget is words: rewriting only the `words=` hints on a nine-node
   path to 20 each leaves the gate clean at 180 words, less prose than the two-node hollow win the
@@ -190,7 +265,7 @@ before any authoring at 10-13/long or above.
 - **Cyclic branch depth unchecked** (19 skeletons, one carrying a real 87-hop path against a cap of
   43): condense the strongly connected components and take the longest path on the condensation.
   Well defined on a cyclic graph and cheap; today the check returns `None` and emits nothing.
-- **Two definitions of "satisfying"**: pick **kind**, aligning the walk floor to PL-20 rather than
+- **Two definitions of "satisfying"**: **WITHDRAWN, see revision 2 above.** Original text: pick **kind**, aligning the walk floor to PL-20 rather than
   the reverse. Kind describes what happened; valence describes tone, and 161 neutral-valence
   SETBACKS currently count as satisfying outcomes. **This tightens the bar**: 19 of 68 skeletons
   clear the walk floor only on the broader reading, so it needs the CG family's grandfathering
@@ -201,7 +276,7 @@ before any authoring at 10-13/long or above.
 - **`UW-C272`** PL-29 offers unbuildable topologies in 15 of 18 cells. Narrow the rows to the
   reachable set per cell. The durable fix is the test: assert the intersection of PL-18-admissible
   and PL-29-permitted is non-empty for every offered cell.
-- **`UW-C273`** `TAU_STRUCT` can fall as skeletons are added. **Ratchet it.** A floor that the
+- **`UW-C273`** **WITHDRAWN, see revision 3 above: the quantity is retired.** Original text: `TAU_STRUCT` can fall as skeletons are added. **Ratchet it.** A floor that the
   authoring meant to strengthen the catalog can lower is not a floor. Cheap, and the alternative
   reading (a falling floor tracks a more varied catalog) does not survive the fact that it fell
   three times in one authoring session.
