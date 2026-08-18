@@ -654,10 +654,46 @@ ARC_CEILING_MULTIPLE = 2.5
 # the cell's own stated maximum from ADR-011 section 5, and that cap is the
 # binding constraint in every prose cell, so the 0.15 here is a floor the cell
 # bounds already dominate. The ADR gives the gamebook cells no ending numbers, so
-# 0.25 is the only value still deciding a verdict on its own. Two mechanisms that
-# looked co-equal were not, and the gamebook figure is the one to argue about;
-# see `docs/planning/gamebook-thresholds-options.md` and `UW-C291`.
-_ENDINGS_FRACTION: dict[str, float] = {"prose": 0.15, "gamebook": 0.25}
+# the gamebook entry is the only value still deciding a verdict on its own.
+#
+# The gamebook fraction was 0.25 until 2026-08-18, implementing ADR-011 section
+# 5's ASSERTION that gamebook terminals run 25-35% of nodes. RULED 2026-08-18
+# (owner): 0.12, from the only measurement taken in the units the floor is
+# expressed in.
+#
+# Three floor-independent corpus points exist and they span fifteen-fold:
+# Fighting Fantasy's *Warlock of Firetop Mountain* at ~0.8% (3 of 400,
+# REPORTED), Project Aon's Lone Wolf #1 at 4.9% (17 of 350, our own 2026-08-02
+# crawl), and a story-first gamebook drafted without the floor stated at 12.4%
+# (31 of 250). The two published books are NOT commensurable with this rule:
+# both kill the reader mainly through dice, so their graphs carry only the
+# failures their authors chose to make structural. This format has no dice, so
+# every failure it wants must be a terminal node. Their shares are a lower bound
+# on what a diceless book needs, not a target. That leaves the diceless draft.
+#
+# A second measurement agrees on the direction. Our committed prose median is
+# 20.1% over 54 skeletons, matching the breadth-form corpus (CYOA #53 at 19
+# endings in 115 pages; JHM 2019's median 20 endings over ~90-120 nodes) it was
+# calibrated against. Our committed gamebook median is 29.8% over 14, six times
+# the length-form corpus this style is modelled on. Quest books end rarely and
+# time-cave books end often, so 0.25 sitting ABOVE the prose fraction had the
+# genre relationship backwards.
+#
+# PROVISIONAL, and the register row says so: the draft clears 0.12 by a single
+# ending, so this is calibrated to the edge of an n=1 sample. A second diceless
+# gamebook is what would settle it. Lowering the floor cannot break committed
+# content (all 14 gamebooks sit at 27.6% or above, clearing 0.12 by at least 15
+# points); the question it answers is only what ELSE to admit.
+# #ASSUME: data-integrity: one number reaches six callers, including the
+# generation prompt's "EXACTLY N endings" instruction via
+# `story_requests/brief.py`. Two-tier grading (block low, advise high) was
+# considered and rejected for exactly that reason: it would force each caller to
+# pick a tier and reopen the prompt-versus-gate divergence `UW-C278`/`UW-C279`
+# closed.
+# #VERIFY: test_band_profile.py::test_gamebook_endings_fraction_admits_the_
+# diceless_corpus_point and ::test_breadth_scaled_floors_gamebook_endings_higher.
+# See `docs/planning/gamebook-thresholds-options.md` and `UW-C291`.
+_ENDINGS_FRACTION: dict[str, float] = {"prose": 0.15, "gamebook": 0.12}
 _DECISIONS_FRACTION = 0.08
 
 

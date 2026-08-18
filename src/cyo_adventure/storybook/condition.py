@@ -318,6 +318,72 @@ def _collect_ordering_var_refs(node: object, out: set[str]) -> None:
                     out.add(name)
 
 
+def _collect_compared_int_literals(node: object, out: dict[str, set[int]]) -> None:
+    """Collect the int literals each variable is compared against.
+
+    Assumes ``node`` is already shape-validated (see ``validate_condition``): a
+    comparison operand is a literal or a ``{"var": name}`` reference, never a
+    nested condition, so only ``!``/``and``/``or`` need recursion.
+
+    Args:
+        node (object): A shape-validated condition node.
+        out (dict[str, set[int]]): The accumulator to populate, variable name to
+            the int literals it is compared against.
+    """
+    if not isinstance(node, dict):
+        return
+    typed = cast("_JsonObject", node)
+    operator, operand = next(iter(typed.items()))
+    if operator == "!":
+        _collect_compared_int_literals(operand, out)
+        return
+    if operator in BOOLEAN_NARY_OPERATORS:
+        for clause in cast("list[object]", operand):
+            _collect_compared_int_literals(clause, out)
+        return
+    if operator not in COMPARISON_OPERATORS:
+        return
+    items = cast("list[object]", operand)
+    names = {
+        cast("_JsonObject", item)["var"]
+        for item in items
+        if isinstance(item, dict)
+        and isinstance(cast("_JsonObject", item).get("var"), str)
+    }
+    # `bool` is a subclass of int in Python, and `{"==": [{"var": "seen"}, true]}`
+    # is a boolean test rather than a magnitude one. Excluding bools here keeps
+    # this a report about integer RANGES.
+    literals = {
+        item for item in items if isinstance(item, int) and not isinstance(item, bool)
+    }
+    if not literals:
+        return
+    for name in names:
+        out.setdefault(cast("str", name), set()).update(literals)
+
+
+def compared_int_literals(condition: dict[str, JsonValue]) -> dict[str, set[int]]:
+    """Return the int literals each variable is compared against in a condition.
+
+    Used by L2-15 to tell a declared integer range apart from the range a story
+    actually exercises. A variable declared ``0..99`` whose conditions only ever
+    compare it against ``1``, ``2`` and ``3`` costs 25x its necessary share of
+    the reachable configuration space, and nothing said so until the walk blew
+    L2-12's ceiling thousands of nodes later (`UW-C294`).
+
+    Args:
+        condition (dict[str, JsonValue]): A shape-validated condition object.
+
+    Returns:
+        dict[str, set[int]]: Variable name to the int literals it is compared
+            against anywhere in the condition tree. Booleans are excluded: they
+            are a truth test, not a magnitude one.
+    """
+    found: dict[str, set[int]] = {}
+    _collect_compared_int_literals(condition, found)
+    return found
+
+
 def ordering_var_refs(condition: dict[str, JsonValue]) -> set[str]:
     """Return variable names compared with an ordering operator.
 

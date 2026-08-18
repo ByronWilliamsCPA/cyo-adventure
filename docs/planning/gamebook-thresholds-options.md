@@ -1,5 +1,7 @@
 # Two threshold decisions: the gamebook endings floor and the configuration ceiling
 
+> **RULED 2026-08-18 (owner): both revised recommendations accepted.** `_ENDINGS_FRACTION["gamebook"]` is 0.12, provisional pending a second diceless data point. The L2-12 ceiling stays at 100,000, the state budget is published (measured, not derived) and `L2-15` ships as an advisory rule. What landing them turned up, including a third correction to the headroom arithmetic, is in "After the ruling" at the end.
+
 Written 2026-08-18 for owner ruling on `UW-C291` and `UW-C293`. Every number is measured, and each
 row states which command or file produced it.
 
@@ -244,3 +246,70 @@ opposite directions: once to claim the ceiling was too low, once to claim it had
 of headroom. Both times the derived number was available instantly and the measured one took a
 30-second script. The rule this earns: **a threshold document may not quote a bound it did not
 execute.**
+
+
+## After the ruling: what landing it changed
+
+### The endings floor
+
+`_ENDINGS_FRACTION["gamebook"]` is 0.12. All 14 committed gamebooks clear it by at least 15 points, as
+predicted, and the draft clears PL-17 at 31 against a floor of 30. **The draft now has zero blocking
+errors**: the two defects it exposed, PL-20's condition-blind measurement and this floor, are both
+resolved.
+
+**One consequence I did not surface before the ruling.** `scripts/check_skeleton.py` carries a second,
+depth-qualified endings floor from a separate dated ruling (2026-08-09, review Part 4 R2): endings
+that sit shallower than a third of the arc floor do not count as breadth. It reads the same
+`breadth_scaled_floors` number, so it moved with this ruling too, from 63 to 30. The draft has 26 of
+its 31 endings at depth >= 8, so it went from short by 37 to **short by 4**, and it is still not
+`--strict` clean. I reported PL-17 as the only remaining blocker, which was true of blocking errors
+and not of `--strict`. That rule is untouched here: it is a different ruling about depth
+qualification, not about the fraction.
+
+### The state budget, and a third correction to my own arithmetic
+
+The instruction was to publish a *measured* budget. Measuring it broke the model I had been correcting
+toward.
+
+I said in the withdrawal that reachable configurations are 4.9% of the `nodes x var-space` product, so
+a derived budget over-predicts by ~20x. Measured across all 15 stateful stories, that ratio runs from
+**4.9% to 735%**. It does not over-predict; it is not a bound at all.
+
+The cause: a configuration key is `(node, var_state, once-effect visit set)`, and I had left the third
+component out. Every node carrying a `once: true` on_enter effect doubles the space, because the walk
+must tell a reader who has fired it from one who has not. Correcting the bound to
+`nodes x var_product x 2 ** once_effect_nodes` brings the corpus into a usable range:
+
+| | reachable / bound |
+| --- | ---: |
+| minimum (the 250-node gamebook draft) | 4.9% |
+| median | 22.0% |
+| maximum (`the-serpent-vaults`) | 52.6% |
+
+So this is the third time I have quoted a figure for this quantity and the second time it was wrong,
+each time because the derived number was available and the measured one was a short script away.
+
+**What that means for the budget, and it is not what "publish a budget" implied.** A tenfold spread
+cannot be turned into a predicted configuration count, so no formula gets published. What ships
+instead:
+
+1. **A guarantee, not a prediction.** A bound at or under 100,000 is certainly inside L2-12. Above it a
+   story may still fit, but only measurement answers, and the draft is the proof: bound 2,048,000,
+   reachable 99,423.
+2. **The factor authors cannot see.** `once: true` is the expensive keyword, not the variable count.
+   `the-longwinter-station` reaches 51,241 configurations on **three** variables and six once-effects;
+   `the-sunken-temple` reaches 3,669 on **four** variables and none, at more than twice the node count.
+3. **The measurement itself, in the authoring loop.** `check_skeleton.py --headroom` now prints the
+   declared state, the bound, and the reachable count against the cap, so an author reads their own
+   number rather than a corpus average. `generate_drafting_brief.py` carries the same budget before a
+   word is written.
+
+### L2-15
+
+Ships advisory, as specified, with one correction found by running it against the catalog. The first
+implementation measured the *spread between tested literals*, which read a counter declared `0..6` and
+tested at `>= 3` as exercising a single value, and it fired on two correctly authored committed
+skeletons. A counter climbs to its threshold, so every value below the threshold is a distinct step
+toward it; the span is measured from the declared floor to the highest tested literal. It is now
+**silent on all 68 committed skeletons** and still names both over-declared variables on the draft,
+with the multiplier and the fix, before the walk runs.

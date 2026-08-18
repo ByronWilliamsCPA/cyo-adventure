@@ -158,9 +158,26 @@ def test_breadth_scaled_floors_prose():
 
 
 def test_breadth_scaled_floors_gamebook_endings_higher():
-    """Gamebook floors scale endings at 25% (few wins, many fail terminals)."""
-    # 200 nodes: ceil(200*0.25)=50 endings, ceil(200*0.08)=16 decisions.
-    assert breadth_scaled_floors(200, "gamebook") == (50, 16)
+    """Gamebook floors scale endings at 12% (few wins, many fail terminals)."""
+    # 200 nodes: ceil(200*0.12)=24 endings, ceil(200*0.08)=16 decisions.
+    assert breadth_scaled_floors(200, "gamebook") == (24, 16)
+
+
+def test_gamebook_endings_fraction_admits_the_diceless_corpus_point():
+    """0.12 must admit the one gamebook measured in this rule's own units.
+
+    RULED 2026-08-18 (owner). The published gamebooks in the research note push
+    failure into dice, so their terminal shares measure a quantity a diceless
+    format cannot produce and cannot calibrate this floor. The story-first draft
+    at 31 terminals in 250 nodes is the only commensurable point, and the floor
+    exists to admit it. It clears by exactly one ending, which is why the ruling
+    is provisional; if that stops being true, the constant moved.
+    """
+    assert breadth_scaled_floors(250, "gamebook")[0] == 30
+
+    # Every committed gamebook sits at 27.6% or above, so none of them was ever
+    # at risk from lowering the floor: the ruling decided what else to admit.
+    assert breadth_scaled_floors(551, "gamebook")[0] <= 152
 
 
 def test_breadth_scaled_floors_unknown_style_uses_prose():

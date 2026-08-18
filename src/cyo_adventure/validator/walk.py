@@ -54,6 +54,14 @@ if TYPE_CHECKING:
 # Public types
 # ---------------------------------------------------------------------------
 
+DEFAULT_CONFIG_CAP = 100_000
+"""The default ceiling on distinct configurations a walk will enumerate.
+
+L2-12 reports a breach of this number, `validate_layer2` defaults to it, and the
+author-facing headroom report measures against it, so it lives here rather than
+as a literal repeated at each of them.
+"""
+
 ConfigKey = tuple[str, tuple[tuple[str, bool | int | str], ...], frozenset[str]]
 """Configuration deduplication key.
 
@@ -104,7 +112,7 @@ class WalkResult:
 def walk_configurations(
     story: Storybook,
     *,
-    cap: int = 100_000,
+    cap: int = DEFAULT_CONFIG_CAP,
     carried: VarState | None = None,
 ) -> WalkResult:
     """Enumerate every reachable configuration in *story* via BFS.
@@ -121,7 +129,7 @@ def walk_configurations(
     Args:
         story: The parsed, schema-valid :class:`~cyo_adventure.storybook.models.Storybook`.
         cap: Maximum number of distinct configurations to enumerate before
-            aborting.  Defaults to 100 000.
+            aborting.  Defaults to :data:`DEFAULT_CONFIG_CAP`.
         carried: Carried variable values to seed the start configuration with,
             for walking a series continuation entry instead of a fresh read.
             ``None`` walks the ordinary declared-initial start. Seeding uses

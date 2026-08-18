@@ -51,6 +51,7 @@ from cyo_adventure.mutation.identity import recompute_estimated_minutes
 from cyo_adventure.storybook.models import (
     SATISFYING_ENDING_VALENCES,
     Storybook,
+    VariableType,
 )
 from cyo_adventure.validator.band_profile import (
     breadth_scaled_floors,
@@ -60,6 +61,7 @@ from cyo_adventure.validator.band_profile import (
     words_per_node_profile,
 )
 from cyo_adventure.validator.policy import node_word_count, read_time_drift
+from cyo_adventure.validator.walk import DEFAULT_CONFIG_CAP, walk_configurations
 
 if TYPE_CHECKING:
     from cyo_adventure.validator.gate import GateResult
@@ -209,7 +211,82 @@ def _headroom(story: dict[str, Any], metadata: dict[str, Any]) -> str:
         lines.append(
             f"headroom arc floor  fastest satisfying finish must be >= {floor}"
         )
+    lines.extend(_state_headroom_lines(story))
     return "".join(f"{line}\n" for line in lines)
+
+
+def _state_headroom_lines(story: dict[str, Any]) -> list[str]:
+    """Report configuration-space headroom against the L2-12 cap.
+
+    Measured, not predicted, and that distinction is the whole point of this
+    block. The reachable set cannot be derived from a story's declared state:
+    across the 15 stateful stories measured on 2026-08-18 it ran from 4.9% to
+    52.6% of its own bound, a tenfold spread. So the bound is reported as a
+    guarantee (under the cap means certainly safe) and the reachable count is
+    reported as the answer (`UW-C293`).
+
+    The bound is ``nodes x (product of declared ranges) x 2 ** once-effect
+    nodes``. That last factor is the one an author's intuition misses: every
+    ``once: true`` on_enter effect DOUBLES the space, because the walk must
+    distinguish readers who have already fired it from those who have not. Six
+    of them cost 64x, which is why a 3-variable 248-node prose story reaches
+    51,241 configurations while a 4-variable 551-node gamebook reaches 3,669.
+
+    Args:
+        story: The decoded skeleton dict.
+
+    Returns:
+        A list of report lines, empty for a story that declares no variables.
+    """
+    raw_variables = story.get("variables")
+    if not isinstance(raw_variables, list) or not raw_variables:
+        return []
+    try:
+        parsed = Storybook.model_validate(story)
+    except PydanticValidationError:
+        # A story that does not parse is Layer 1's problem, and it has already
+        # been reported; this block simply has nothing to say about it.
+        return []
+    product = 1
+    for variable in parsed.variables:
+        if variable.type is VariableType.BOOL:
+            product *= 2
+        elif isinstance(variable.min, int) and isinstance(variable.max, int):
+            product *= variable.max - variable.min + 1
+        else:
+            # An unbounded int has no finite declared range, so no bound can be
+            # stated; the measured walk below still answers.
+            product = 0
+            break
+    once_nodes = sum(
+        1 for node in parsed.nodes if any(effect.once for effect in node.on_enter)
+    )
+    walk = walk_configurations(parsed)
+    lines = [
+        (
+            f"state variables     {len(parsed.variables)} declared, "
+            f"{once_nodes} node(s) carrying a once-effect (each doubles the bound)"
+        )
+    ]
+    if product:
+        bound = len(parsed.nodes) * product * (2**once_nodes)
+        lines.append(
+            f"state bound         {bound:,} configurations "
+            f"({len(parsed.nodes)} nodes x {product} var-states x 2^{once_nodes}); "
+            f"at or under {DEFAULT_CONFIG_CAP:,} is certainly inside L2-12"
+        )
+    if walk.capped:
+        lines.append(
+            f"state reachable     OVER the {DEFAULT_CONFIG_CAP:,} cap; L2-12 blocks "
+            f"(reduce variable count or tighten bounds, and see L2-15)"
+        )
+    else:
+        reached = len(walk.configs)
+        lines.append(
+            f"state reachable     {reached:,} of the {DEFAULT_CONFIG_CAP:,} cap "
+            f"({DEFAULT_CONFIG_CAP - reached:+,} spare, {reached / DEFAULT_CONFIG_CAP:.1%} used)"
+        )
+    return lines
 
 
 def _declared_words(node: dict[str, Any]) -> int:

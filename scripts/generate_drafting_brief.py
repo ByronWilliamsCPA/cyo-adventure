@@ -45,6 +45,7 @@ from cyo_adventure.validator.policy import (
     _POSITIVE_ENDING_SHARE_FLOOR_GAMEBOOK,
     _POSITIVE_VALENCE_SHARE_FLOOR_PROSE,
 )
+from cyo_adventure.validator.walk import DEFAULT_CONFIG_CAP
 
 try:
     from scripts.check_skeleton import (
@@ -129,6 +130,36 @@ def build_brief(band: str, length: str, style: str) -> dict[str, object]:
                 "declare the derived fastest-finish clock; check_skeleton "
                 "--headroom prints declared vs derived (PL-23 tolerance 25%)"
             ),
+        },
+        "state_budget": {
+            "configuration_cap": DEFAULT_CONFIG_CAP,
+            "bound": (
+                "nodes x (product of declared variable ranges) x 2 ** "
+                "(nodes carrying a once:true on_enter effect)"
+            ),
+            "guarantee": (
+                f"a bound at or under {DEFAULT_CONFIG_CAP:,} is certainly inside "
+                f"L2-12; above it a story may still fit, but only measurement "
+                f"answers"
+            ),
+            "measured_range": (
+                "across the 15 stateful stories measured 2026-08-18, the "
+                "reachable set ran from 4.9% to 52.6% of its own bound, so the "
+                "bound cannot be turned into a predicted count"
+            ),
+            "watch_once_effects": (
+                "every once:true on_enter effect DOUBLES the bound, because the "
+                "walk must tell a reader who has fired it from one who has not; "
+                "six of them cost 64x, which is why a 3-variable 248-node prose "
+                "story reaches 51,241 configurations while a 4-variable 551-node "
+                "gamebook reaches 3,669"
+            ),
+            "declare_ranges_tightly": (
+                "declare an int variable's range as what the story tests, not "
+                "what it could hold; L2-15 warns past 4x, and a 0..99 counter "
+                "tested at 3 cost one draft a 25x inflation per variable"
+            ),
+            "measure_it": "check_skeleton.py --headroom prints the measured count",
         },
         "outcome_economy": {
             "ending_kind_share_ceiling": _ENDING_KIND_SHARE_CEILING,
