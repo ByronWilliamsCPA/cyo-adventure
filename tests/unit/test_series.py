@@ -800,3 +800,185 @@ def test_sr8_is_silent_on_an_episodic_chain() -> None:
         _book(book_index=2, carries_state=False),
     ]
     assert not [f for f in validate_series(books).findings if f.rule_id == "SR-8"]
+
+
+# ---------------------------------------------------------------------------
+# SR-9 must walk the node the reader enters (UW-C296)
+# ---------------------------------------------------------------------------
+
+
+def _sender_that_always_wins_without_the_key() -> Storybook:
+    """A one-decision book whose only satisfying ending leaves `key` false."""
+    return Storybook(
+        id="s_send",
+        version=1,
+        title="Sender",
+        start_node="a_start",
+        nodes=[
+            Node(
+                id="a_start",
+                body="A short road.",
+                choices=[
+                    Choice(id="a_c1", label="Walk on.", target="a_win"),
+                    Choice(id="a_c2", label="Turn back.", target="a_lose"),
+                ],
+            ),
+            Node(
+                id="a_win",
+                body="Arrived.",
+                is_ending=True,
+                ending=Ending(
+                    id="a_e1",
+                    valence=Valence.POSITIVE,
+                    kind=EndingKind.SUCCESS,
+                    title="Arrived",
+                ),
+            ),
+            Node(
+                id="a_lose",
+                body="Home again.",
+                is_ending=True,
+                ending=Ending(
+                    id="a_e2",
+                    valence=Valence.NEGATIVE,
+                    kind=EndingKind.SETBACK,
+                    title="Home",
+                ),
+            ),
+        ],
+        variables=[Variable(name="key", type=VariableType.BOOL, initial=False)],
+        metadata=StoryMetadata(
+            age_band=AgeBand.BAND_10_13,
+            reading_level=ReadingLevel(target=5.5),
+            tier=2,
+            estimated_minutes=5,
+            ending_count=2,
+            topology=Topology.GAUNTLET,
+            series=Series(
+                series_id="entry", book_index=1, is_final=False, carries_state=True
+            ),
+        ),
+    )
+
+
+def _receiver_whose_prologue_grants_the_key(*, entry: str) -> Storybook:
+    """A receiver whose only win needs `key`, granted solely by its prologue.
+
+    ``b_open`` is the story's ``start_node`` and sets ``key`` on entry.
+    ``b_gate`` is the declared ``series_entry_node``. A reader entering at
+    ``b_gate`` never runs the prologue, so the win is unreachable for them; a
+    walk seeded at ``b_open`` sees it as reachable. The two entries therefore
+    give SR-9 opposite verdicts on one graph, which is what makes this a test of
+    which node is walked rather than of the reachability logic.
+    """
+    return Storybook(
+        id="s_recv",
+        version=1,
+        title="Receiver",
+        start_node="b_open",
+        nodes=[
+            Node(
+                id="b_open",
+                body="The prologue, where the key is handed over.",
+                on_enter=[Effect(op=EffectOp.SET, var="key", value=True)],
+                choices=[Choice(id="b_c0", label="Go on.", target="b_gate")],
+            ),
+            Node(
+                id="b_gate",
+                body="The gate.",
+                choices=[
+                    Choice(
+                        id="b_c1",
+                        label="Unlock it.",
+                        target="b_win",
+                        condition={"var": "key"},
+                    ),
+                    Choice(id="b_c2", label="Give up.", target="b_lose"),
+                ],
+            ),
+            Node(
+                id="b_win",
+                body="Through.",
+                is_ending=True,
+                ending=Ending(
+                    id="b_e1",
+                    valence=Valence.POSITIVE,
+                    kind=EndingKind.SUCCESS,
+                    title="Through",
+                ),
+            ),
+            Node(
+                id="b_lose",
+                body="Turned away.",
+                is_ending=True,
+                ending=Ending(
+                    id="b_e2",
+                    valence=Valence.NEGATIVE,
+                    kind=EndingKind.SETBACK,
+                    title="Turned away",
+                ),
+            ),
+        ],
+        variables=[Variable(name="key", type=VariableType.BOOL, initial=False)],
+        metadata=StoryMetadata(
+            age_band=AgeBand.BAND_10_13,
+            reading_level=ReadingLevel(target=5.5),
+            tier=2,
+            estimated_minutes=5,
+            ending_count=2,
+            topology=Topology.GAUNTLET,
+            series=Series(
+                series_id="entry",
+                book_index=2,
+                series_entry_node=entry,
+                is_final=True,
+                carries_state=True,
+            ),
+        ),
+    )
+
+
+def test_sr9_walks_the_declared_series_entry_node() -> None:
+    """A non-start entry must change SR-9's carried reachability.
+
+    SR-9 seeded the receiver from ``start_node`` until `UW-C296`, justified by an
+    assumption that a continuation's ``series_entry_node`` always equals its
+    ``start_node``. Both committed brass-lantern books already broke that, and a
+    receiver whose prologue grants what its win requires is the case where it
+    stops being harmless: the reader enters past the prologue and can never win,
+    while the old walk entered at the prologue and reported the chain sound.
+    """
+    sender = _sender_that_always_wins_without_the_key()
+    report = validate_series(
+        [sender, _receiver_whose_prologue_grants_the_key(entry="b_gate")]
+    )
+    sr9 = [f for f in report.errors if f.rule_id == "SR-9"]
+    assert sr9, "entering past the prologue leaves no satisfying ending reachable"
+    assert "b_gate" in str(report.findings) or "no satisfying" in sr9[0].message.lower()
+
+
+def test_the_same_chain_is_sound_when_the_entry_is_the_start_node() -> None:
+    """The control. Only the declared entry differs between the two books.
+
+    Without this, the test above would pass for any reason that makes the
+    receiver unwinnable, rather than because SR-9 now reads the entry node.
+    """
+    sender = _sender_that_always_wins_without_the_key()
+    report = validate_series(
+        [sender, _receiver_whose_prologue_grants_the_key(entry="b_open")]
+    )
+    assert [f for f in report.errors if f.rule_id == "SR-9"] == []
+
+
+def test_an_entry_node_absent_from_the_story_falls_back_to_the_start_node() -> None:
+    """Mirrors the client's existence guard rather than trusting the declaration.
+
+    ``frontend/src/player/engine.ts`` starts at ``story.start_node`` when the
+    declared entry names no node, so a stale or misspelled entry degrades the
+    same way on both sides instead of diverging.
+    """
+    sender = _sender_that_always_wins_without_the_key()
+    report = validate_series(
+        [sender, _receiver_whose_prologue_grants_the_key(entry="b_nonexistent")]
+    )
+    assert [f for f in report.errors if f.rule_id == "SR-9"] == []

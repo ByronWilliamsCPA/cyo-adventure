@@ -55,16 +55,31 @@ class StoryEngine:
         """
         return self.start_continuation(None)
 
-    def start_continuation(self, carried: VarState | None) -> ReadingState:
-        """Begin a read, optionally seeding name-matched carried variables.
+    def start_continuation(
+        self, carried: VarState | None, entry_node: str | None = None
+    ) -> ReadingState:
+        """Begin a read at ``entry_node``, seeding name-matched carried variables.
 
         Mirrors the client's ``startContinuation``
         (``frontend/src/player/engine.ts``) exactly, including the order of
         operations: carried values are merged into the declared initials
-        **before** the start node's ``on_enter`` effects run. Seeding afterwards
+        **before** the entry node's ``on_enter`` effects run. Seeding afterwards
         would let a carried value overwrite an effect the entry node applied,
         which the client does not do, and player/validator divergence here is a
         conformance failure under runtime-semantics.md section 1.
+
+        The entry-node parameter closes a real divergence rather than adding a
+        feature (`UW-C296`). The client has taken an ``entryNode`` since WS-G and
+        ``reader/ContinueSeries.tsx`` passes the receiving book's
+        ``series_entry_node``; this method did not, so SR-9 validated a reader
+        path that begins at ``start_node`` while the reader begins somewhere
+        else. A comment here previously justified that by asserting the two are
+        equal for every book, which is false on committed content: both
+        brass-lantern books declare ``start_node: n_open`` against
+        ``series_entry_node: n_start``.
+
+        Fallback matches the client exactly: an entry node of ``None``, or one no
+        node in the story carries, starts at ``start_node``.
 
         Carry rules (WS-G G3, identical to the client): a carried value is used
         only when its name matches a declared variable and its type matches;
@@ -74,6 +89,8 @@ class StoryEngine:
         Args:
             carried: Carried variable values from a predecessor book, or
                 ``None`` for an ordinary read.
+            entry_node: The node id to begin at, or ``None`` for ``start_node``.
+                An id absent from the story falls back to ``start_node``.
 
         Returns:
             ReadingState: The initial reading state pinned to the story version.
@@ -92,14 +109,29 @@ class StoryEngine:
                     and not isinstance(value, bool)
                 ):
                     var_state[var.name] = self._clamp(var.name, value)
+        # #CRITICAL: data integrity: the node entered here must be the node the
+        # reader enters, or every state-seeded rule validates a path nobody
+        # walks. The existence guard mirrors the client's
+        # `story.nodes.some(n => n.id === entryNode)` rather than trusting the
+        # declaration, so a stale or misspelled entry node degrades to the start
+        # node on both sides instead of diverging.
+        # #VERIFY: test_series.py::test_sr9_walks_the_declared_series_entry_node
+        # pins that a non-start entry changes SR-9's carried reachability, and
+        # test_player_conformance.py covers the client parity.
+        node_id = (
+            entry_node
+            if entry_node is not None
+            and any(node.id == entry_node for node in self._story.nodes)
+            else self._story.start_node
+        )
         state = ReadingState(
-            current_node=self._story.start_node,
+            current_node=node_id,
             var_state=var_state,
-            path=[self._story.start_node],
+            path=[node_id],
             visit_set=set(),
             version=self._story.version,
         )
-        self._enter_node(state, self._story.start_node, first_entry=True)
+        self._enter_node(state, node_id, first_entry=True)
         return state
 
     def visible_choices(self, state: ReadingState) -> list[Choice]:

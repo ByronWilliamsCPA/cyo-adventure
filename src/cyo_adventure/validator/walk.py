@@ -114,6 +114,7 @@ def walk_configurations(
     *,
     cap: int = DEFAULT_CONFIG_CAP,
     carried: VarState | None = None,
+    entry_node: str | None = None,
 ) -> WalkResult:
     """Enumerate every reachable configuration in *story* via BFS.
 
@@ -135,6 +136,11 @@ def walk_configurations(
             ``None`` walks the ordinary declared-initial start. Seeding uses
             :meth:`~cyo_adventure.player.engine.StoryEngine.start_continuation`,
             so the walk sees exactly the state a real continuation reader would.
+        entry_node: The node the walk begins at, or ``None`` for the story's
+            ``start_node``. A series continuation must pass the receiving book's
+            ``series_entry_node``: the reader enters there, so a walk seeded at
+            ``start_node`` explores a path nobody takes (`UW-C296`). An id absent
+            from the story falls back to ``start_node``, matching the client.
 
     Returns:
         WalkResult: The (possibly partial) configuration closure.
@@ -147,7 +153,7 @@ def walk_configurations(
     # #VERIFY: StoryEngine._clone() copies every mutable container on each choose();
     # no containers are shared between a parent state and its child.
     engine = StoryEngine(story)
-    initial = engine.start_continuation(carried)
+    initial = engine.start_continuation(carried, entry_node)
 
     configs: dict[ConfigKey, ReadingState] = {}
     edges: dict[ConfigKey, list[ConfigKey]] = {}

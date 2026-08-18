@@ -25,6 +25,9 @@ import json
 import math
 import sys
 
+from cyo_adventure.storybook.character_vocabulary import (
+    CANONICAL_CHARACTER_VARIABLES,
+)
 from cyo_adventure.validator.band_profile import (
     _NODES_PER_DECISION_CEILING,
     breadth_scaled_floors,
@@ -189,11 +192,41 @@ def build_brief(band: str, length: str, style: str) -> dict[str, object]:
             "max_indegree_cap": _MAX_INDEGREE_CAPS.get(band),
             "exempt": "open_map and loop_and_grow (hub re-entry is by design)",
         },
-        "gate_commands": [
-            "uv run python scripts/check_skeleton.py <path> --strict --headroom",
-            "uv run python scripts/check_incell_clones.py",
-            "uv run python scripts/check_outcome_spread.py",
-        ],
+        "gate_commands": {
+            "on_your_draft": [
+                "uv run python scripts/check_skeleton.py <path> --strict --headroom"
+            ],
+            "on_the_whole_catalog": {
+                "note": (
+                    "these take no path argument and audit the committed catalog; "
+                    "they say nothing about the file you are drafting"
+                ),
+                "commands": [
+                    "uv run python scripts/check_incell_clones.py",
+                    "uv run python scripts/check_outcome_spread.py",
+                ],
+            },
+            "if_this_book_is_part_of_a_series": {
+                "note": (
+                    "check_skeleton.py does NOT run the SR family. A book with a "
+                    "foreign series_id, a wrong book_index, no series_entry_node, or "
+                    "carries_state disagreeing with its chain passes --strict with "
+                    "exit 0. Run the chain checker over every book in the series"
+                ),
+                "commands": [
+                    "uv run python scripts/build_series_book.py --series <book1> <book2> ..."
+                ],
+            },
+        },
+        "reserved_variable_names": {
+            "names": sorted(CANONICAL_CHARACTER_VARIABLES),
+            "note": (
+                "the canonical persistent-character vocabulary (ADR-028). Declaring "
+                "one of these as an ordinary story variable is a BLOCKING CH-6, so "
+                "pick another word for the trait: 'nerve' in particular reads as an "
+                "ordinary noun and has already cost an author a rebuild cycle"
+            ),
+        },
     }
     return brief
 

@@ -96,6 +96,7 @@ def validate_layer2(
     *,
     cap: int = DEFAULT_CONFIG_CAP,
     carried: VarState | None = None,
+    entry_node: str | None = None,
 ) -> ValidationReport:
     """Run every Layer-2 rule over a Tier-2 story's reachable configuration space.
 
@@ -113,6 +114,10 @@ def validate_layer2(
             this to ask whether a predecessor's win state leaves the receiving
             book sound, which is a question no other rule can pose because every
             other walk begins at the declared initials.
+        entry_node: The node the walk begins at, or ``None`` for the story's
+            ``start_node``. SR-9 passes the receiving book's
+            ``series_entry_node`` so the Layer-2 delta it measures is taken from
+            the node the continuation reader actually enters (`UW-C296`).
 
     Returns:
         ValidationReport: All findings from the Layer-2 rules. ``report.ok``
@@ -129,7 +134,7 @@ def validate_layer2(
     # would silence it in exactly the case it exists for.
     _check_over_declared_int_ranges(story, report)
 
-    result = walk_configurations(story, cap=cap, carried=carried)
+    result = walk_configurations(story, cap=cap, carried=carried, entry_node=entry_node)
 
     # L2-12: configuration space too large. Return immediately -- partial results
     # are unreliable for the remaining rules.

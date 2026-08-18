@@ -781,8 +781,23 @@ def main(argv: list[str] | None = None) -> int:
                     )
     if args.headroom:
         sys.stdout.write(_headroom(skeleton, metadata))
+    # A series book's chain rules are NOT run here, and saying "ok" without
+    # saying that let a book with a foreign series_id, a wrong book_index, no
+    # entry node and a disagreeing carries_state pass with exit 0 (`UW-C299`).
+    # This command validates one story; SR-1..SR-9 need the whole chain.
+    series_block = metadata.get("series")
+    if isinstance(series_block, dict):
+        sys.stdout.write(
+            "series: this book declares metadata.series, and the SR family is NOT "
+            "checked by this command. Run the chain checker over every book:\n"
+            "  uv run python scripts/build_series_book.py --series <book1> <book2> ...\n"
+        )
     if not failed:
-        sys.stdout.write("ok: skeleton passes gate and brief checks\n")
+        sys.stdout.write(
+            "ok: skeleton passes gate and brief checks"
+            + (" (series chain unchecked, see above)" if series_block else "")
+            + "\n"
+        )
     return 1 if failed else 0
 
 
