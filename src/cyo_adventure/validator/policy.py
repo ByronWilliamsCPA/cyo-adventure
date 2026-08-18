@@ -38,11 +38,12 @@ import heapq
 import math
 import re
 from dataclasses import dataclass
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import networkx as nx
 
 from cyo_adventure.storybook.models import (
+    SATISFYING_ENDING_KINDS,
     EndingKind,
     NarrativeStyle,
     Storybook,
@@ -71,6 +72,10 @@ from cyo_adventure.validator.topology import (
     BAND_TOPOLOGIES,
     admissible_topologies,
 )
+from cyo_adventure.validator.walk import config_dag, walk_configurations
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
 
 # A skeleton node body is a ``<<FILL role=... words=N ...>>`` directive carrying
 # the author's declared word target; a filled node body is prose. The
@@ -83,8 +88,16 @@ _FILL_WORDS_RE = re.compile(r"\bwords=(\d+)")
 
 # Endings that count as a *satisfying* completion for the PL-20 arc floor. A
 # fail-fast negative ending (setback/death/capture) may be reached quickly; only
-# a win must be earned over the cell's minimum node count.
-_SATISFYING_KINDS = frozenset({EndingKind.SUCCESS, EndingKind.COMPLETION})
+# a win must be earned over the cell's minimum node count. The set itself is
+# `storybook.models.SATISFYING_ENDING_KINDS`, shared with SR-9 and the mutation
+# module rather than re-declared here; the local alias keeps this module's own
+# call sites unchanged.
+_SATISFYING_KINDS = SATISFYING_ENDING_KINDS
+
+# What makes a stop a decision: two or more choices in front of the reader. The
+# same threshold `_decision_node_ids` applies to declared choices, applied to
+# visible ones when the rules run over the configuration graph.
+_MIN_CHOICES_FOR_DECISION = 2
 
 
 def check_fill_residue(story: Storybook) -> ValidationReport:
@@ -281,8 +294,11 @@ def validate_policy(story: Storybook) -> ValidationReport:
     _check_floors(story, profile, report)
     _check_topology(story, report)
     _check_words_per_node(story, report)
-    _check_min_to_complete(story, report)
-    _check_first_decision_depth(story, report)
+    # One traversal for both path rules: building it can mean walking the
+    # configuration space, which is far too expensive to do twice.
+    traversal = _traversal_for(story)
+    _check_min_to_complete(story, traversal, report)
+    _check_first_decision_depth(story, traversal, report)
     _check_declared_read_time(story, report)
     _check_ending_mix(story, report)
     _check_off_matrix_cell(story, report)
@@ -353,6 +369,123 @@ def _build_graph(story: Storybook) -> nx.DiGraph[str]:
         for choice in node.choices:
             graph.add_edge(node.id, choice.target)
     return graph
+
+
+@dataclass(frozen=True, slots=True)
+class _Traversal:
+    """The graph PL-20, PL-25 and PL-26 measure a reader's journey over.
+
+    The story's choice graph is the wrong graph whenever a choice carries a
+    condition. ``_build_graph`` adds an edge per declared choice and never reads
+    ``choice.condition``, so a path through it can use an edge no reader can
+    take. All three rules measure *how far the reader travels*, so all three were
+    wrong on any story with state (`UW-C292`). The first gamebook draft was
+    reported as reaching a win in 16 nodes along a route that needed an item the
+    route itself never picks up; the state-aware answer was 24, which is exactly
+    its cell floor.
+
+    So a story that conditions any choice is measured over its configuration
+    graph instead, where a vertex is a reachable ``(node, state)`` configuration
+    and an edge is a choice a reader at that configuration can actually see. A
+    story without conditions is measured over the choice graph exactly as before:
+    the two graphs are isomorphic there, and walking the state space to learn
+    that would be pure cost.
+
+    Attributes:
+        adjacency: The graph to traverse, as each vertex id to its successor
+            vertex ids. Vertices are node ids under the plain view and synthetic
+            configuration ids under the state-aware one. Every vertex has an
+            entry, so membership in this mapping is membership in the graph.
+        start: The vertex the reader starts at.
+        node_of: Vertex id to story node id. The identity map under the plain
+            view; many-to-one under the state-aware one, since one node appears
+            once per reachable configuration of it.
+        decisions: The vertices that offer the reader two or more choices.
+        state_aware: Whether the configuration graph was used. False for a story
+            with no conditions (where it makes no difference) and for one whose
+            walk hit its cap (where the closure is incomplete, so a shortest path
+            over it would be measured on a fragment).
+    """
+
+    adjacency: Mapping[str, Sequence[str]]
+    start: str
+    node_of: Mapping[str, str]
+    decisions: set[str]
+    state_aware: bool
+
+
+def _adjacency_of(graph: nx.DiGraph[str]) -> dict[str, list[str]]:
+    """Flatten a choice graph into the adjacency mapping the path rules walk.
+
+    The path rules take a plain mapping rather than a ``networkx`` graph so the
+    same code walks the story's choice graph and the configuration graph, where
+    building a ``networkx`` object over ~100 000 vertices cost more than the
+    traversal it feeds (2.3s against 0.6s, measured). See :class:`_Traversal`.
+
+    Args:
+        graph: The story's directed choice graph.
+
+    Returns:
+        Each node id to its successor node ids. Every node has an entry.
+    """
+    return {node_id: list(graph.successors(node_id)) for node_id in graph.nodes}
+
+
+def _story_has_conditions(story: Storybook) -> bool:
+    """Report whether any choice in the story is gated on state."""
+    return any(
+        choice.condition is not None for node in story.nodes for choice in node.choices
+    )
+
+
+def _traversal_for(story: Storybook) -> _Traversal | None:
+    """Choose the graph the path rules measure over.
+
+    Falls back to the plain choice graph when the story conditions nothing, and
+    also when the configuration walk hits its cap: a capped walk holds a fragment
+    of the state space, and a shortest path measured on a fragment is not the
+    story's shortest path. The fallback is the pre-`UW-C292` behaviour rather
+    than a skip, so a huge stateful story keeps the coverage it had.
+
+    #ASSUME: timing-dependencies: this walks the configuration space for any
+    story that conditions a choice, at the same cap Layer 2 uses. 119 of the 133
+    committed skeletons declare no variables at all and pay nothing; the largest
+    that does bounds at ~31k configurations.
+    #VERIFY: test_state_aware_paths.py::test_conditionless_story_is_not_walked
+    asserts the walk is not entered for a story with no conditions, and
+    ::test_the_two_readings_disagree_on_this_story pins the case where it is.
+
+    Args:
+        story: The parsed story.
+
+    Returns:
+        The traversal, or None when the start node is absent from the graph.
+    """
+    if _story_has_conditions(story):
+        walk = walk_configurations(story)
+        dag = None if walk.capped else config_dag(walk)
+        if dag is not None:
+            return _Traversal(
+                adjacency=dag.adjacency,
+                start=dag.start,
+                node_of=dag.node_of,
+                decisions={
+                    vertex
+                    for vertex, count in dag.choice_count.items()
+                    if count >= _MIN_CHOICES_FOR_DECISION
+                },
+                state_aware=True,
+            )
+    graph = _build_graph(story)
+    if story.start_node not in graph:
+        return None
+    return _Traversal(
+        adjacency=_adjacency_of(graph),
+        start=story.start_node,
+        node_of={node_id: node_id for node_id in graph},
+        decisions=_decision_node_ids(story),
+        state_aware=False,
+    )
 
 
 def _effective_floors(story: Storybook, profile: BandProfile) -> tuple[int, int, bool]:
@@ -611,7 +744,9 @@ def _check_words_per_node(story: Storybook, report: ValidationReport) -> None:
             )
 
 
-def _check_first_decision_depth(story: Storybook, report: ValidationReport) -> None:
+def _check_first_decision_depth(
+    story: Storybook, traversal: _Traversal | None, report: ValidationReport
+) -> None:
     """PL-25: the first decision must arrive inside the band's depth window.
 
     Measures nodes on the shortest path from ``start_node`` up to and including
@@ -655,10 +790,9 @@ def _check_first_decision_depth(story: Storybook, report: ValidationReport) -> N
     if window is None:
         return
     floor, ceiling = window
-    decisions = _decision_node_ids(story)
-    if not decisions:
+    if traversal is None or not traversal.decisions:
         return
-    extent = _opening_extent(story, _build_graph(story), decisions)
+    extent = _opening_extent(story, traversal)
     if extent is None:
         return
     depth = extent.depth
@@ -717,9 +851,7 @@ class _OpeningExtent:
     most_words: int
 
 
-def _opening_extent(
-    story: Storybook, graph: nx.DiGraph[str], decisions: set[str]
-) -> _OpeningExtent | None:
+def _opening_extent(story: Storybook, traversal: _Traversal) -> _OpeningExtent | None:
     """Measure the opening's node depth and its word range over equally short walks.
 
     Runs the same layered dynamic program as :func:`_fewest_decision_shortest_path`
@@ -732,30 +864,34 @@ def _opening_extent(
     ``PYTHONHASHSEED``.
 
     Args:
-        story: The parsed Storybook, read for its start node and node bodies.
-        graph: The story's directed choice graph.
-        decisions: Ids of the nodes that count as a decision.
+        story: The parsed Storybook, read for its node bodies.
+        traversal: The graph to measure over, its start vertex, and its decision
+            vertices. See :class:`_Traversal` for why this is not always the
+            story's choice graph.
 
     Returns:
-        The :class:`_OpeningExtent`, or ``None`` when the start node is absent
-        from the graph or no decision is reachable from it.
+        The :class:`_OpeningExtent`, or ``None`` when no decision is reachable
+        from the start.
     """
-    start = story.start_node
-    if start not in graph:
-        return None
-    level, by_level = _breadth_first_levels(graph, start)
-    reachable = [level[target] for target in decisions if target in level]
+    adjacency = traversal.adjacency
+    start = traversal.start
+    level, by_level = _breadth_first_levels(adjacency, start)
+    reachable = [level[target] for target in traversal.decisions if target in level]
     if not reachable:
         return None
     distance = min(reachable)
-    words = {node.id: node_word_count(node.body) for node in story.nodes}
+    node_words = {node.id: node_word_count(node.body) for node in story.nodes}
+    words = {
+        vertex: node_words.get(node_id, 0)
+        for vertex, node_id in traversal.node_of.items()
+    }
     fewest: dict[str, int] = {start: words.get(start, 0)}
     most: dict[str, int] = {start: words.get(start, 0)}
     for depth in range(distance):
         for node in by_level[depth]:
             if node not in fewest:
                 continue
-            for successor in graph.successors(node):
+            for successor in adjacency.get(node, ()):
                 if level.get(successor) != depth + 1:
                     continue
                 carried = words.get(successor, 0)
@@ -765,7 +901,9 @@ def _opening_extent(
                     fewest[successor] = low
                 if successor not in most or high > most[successor]:
                     most[successor] = high
-    arrivals = [target for target in decisions if level.get(target) == distance]
+    arrivals = [
+        target for target in traversal.decisions if level.get(target) == distance
+    ]
     return _OpeningExtent(
         depth=distance + 1,
         fewest_words=min(fewest[target] for target in arrivals),
@@ -840,7 +978,9 @@ def _opening_in_word_window(
     return False
 
 
-def _check_min_to_complete(story: Storybook, report: ValidationReport) -> None:
+def _check_min_to_complete(
+    story: Storybook, traversal: _Traversal | None, report: ValidationReport
+) -> None:
     """PL-20 arc length and PL-26 decision density on the fastest-finish path.
 
     Only a scale-classified production story (one that declares a ``length``) has
@@ -875,15 +1015,24 @@ def _check_min_to_complete(story: Storybook, report: ValidationReport) -> None:
     floor = min_complete_floor(band, length.value, style)
     if floor is None:
         return
-    satisfying = {
+    if traversal is None:
+        return
+    satisfying_nodes = {
         node.id
         for node in story.nodes
         if node.ending is not None and node.ending.kind in _SATISFYING_KINDS
     }
-    if not satisfying:
+    if not satisfying_nodes:
+        return
+    targets = {
+        vertex
+        for vertex, node_id in traversal.node_of.items()
+        if node_id in satisfying_nodes
+    }
+    if not targets:
         return
     path = _fewest_decision_shortest_path(
-        _build_graph(story), story.start_node, satisfying, _decision_node_ids(story)
+        traversal.adjacency, traversal.start, targets, traversal.decisions
     )
     if path is None:
         return
@@ -918,11 +1067,14 @@ def _check_min_to_complete(story: Storybook, report: ValidationReport) -> None:
                 ),
             )
         )
-    _check_decision_density(story, path, report)
+    _check_decision_density(story, traversal, path, report)
 
 
 def _check_decision_density(
-    story: Storybook, path: list[str], report: ValidationReport
+    story: Storybook,
+    traversal: _Traversal,
+    path: list[str],
+    report: ValidationReport,
 ) -> None:
     """PL-26: nodes per decision along the fastest-finish path (WARNING).
 
@@ -938,15 +1090,13 @@ def _check_decision_density(
 
     Args:
         story: The parsed story.
-        path: The fewest-decision fastest-finish node path.
+        traversal: The graph the path was found in, read for its decision
+            vertices so density counts the decisions the reader actually meets
+            rather than the ones the node declares.
+        path: The fewest-decision fastest-finish vertex path.
         report: The report to append findings to.
     """
-    on_path = set(path)
-    decisions = sum(
-        1
-        for node in story.nodes
-        if node.id in on_path and not node.is_ending and len(node.choices) >= 2
-    )
+    decisions = sum(1 for vertex in path if vertex in traversal.decisions)
     if decisions == 0:
         report.add(
             ValidationFinding(
@@ -1345,7 +1495,7 @@ def _decision_node_ids(story: Storybook) -> set[str]:
 
 
 def _breadth_first_levels(
-    graph: nx.DiGraph[str], start: str
+    adjacency: Mapping[str, Sequence[str]], start: str
 ) -> tuple[dict[str, int], list[list[str]]]:
     """Return each reachable node's hop distance from ``start``, and by-level ids.
 
@@ -1355,8 +1505,9 @@ def _breadth_first_levels(
     while the DP's every choice is a tie-break that has to be justified.
 
     Args:
-        graph: The story's directed choice graph; ``start`` must be a node in it.
-        start: The node to measure from.
+        adjacency: The graph as vertex id to successor vertex ids; ``start`` must
+            be a vertex in it.
+        start: The vertex to measure from.
 
     Returns:
         ``(level, by_level)`` where ``level[node]`` is the fewest hops from
@@ -1369,7 +1520,7 @@ def _breadth_first_levels(
     while frontier:
         following: list[str] = []
         for node in frontier:
-            for successor in graph.successors(node):
+            for successor in adjacency.get(node, ()):
                 if successor not in level:
                     level[successor] = level[node] + 1
                     following.append(successor)
@@ -1381,7 +1532,7 @@ def _breadth_first_levels(
 
 
 def _fewest_decision_shortest_path(
-    graph: nx.DiGraph[str],
+    adjacency: Mapping[str, Sequence[str]],
     start: str,
     targets: set[str],
     decisions: set[str],
@@ -1416,18 +1567,18 @@ def _fewest_decision_shortest_path(
     tie-break and its verdict flipped on node renaming alone.
 
     Args:
-        graph: The story's directed choice graph.
-        start: The start node id.
-        targets: Candidate destination node ids; unreachable ones are ignored.
-        decisions: Ids of the nodes that count as a decision.
+        adjacency: The graph as vertex id to successor vertex ids.
+        start: The start vertex id.
+        targets: Candidate destination vertex ids; unreachable ones are ignored.
+        decisions: Vertex ids that count as a decision.
 
     Returns:
         The node-id path including both endpoints, or ``None`` when no target is
         reachable from ``start``.
     """
-    if start not in graph:
+    if start not in adjacency:
         return None
-    level, by_level = _breadth_first_levels(graph, start)
+    level, by_level = _breadth_first_levels(adjacency, start)
     depths = [level[target] for target in targets if target in level]
     if not depths:
         return None
@@ -1441,7 +1592,7 @@ def _fewest_decision_shortest_path(
         for node in by_level[depth]:
             if node not in fewest:
                 continue
-            for successor in sorted(graph.successors(node)):
+            for successor in sorted(adjacency.get(node, ())):
                 if level.get(successor) != depth + 1:
                     continue
                 cost = fewest[node] + int(successor in decisions)

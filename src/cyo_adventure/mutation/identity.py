@@ -38,7 +38,7 @@ from cyo_adventure.mutation._raw import (
     str_field as _str_field,
 )
 from cyo_adventure.mutation.subtree import adjacency, node_ids
-from cyo_adventure.storybook.models import Topology
+from cyo_adventure.storybook.models import SATISFYING_ENDING_KINDS, Topology
 from cyo_adventure.validator.band_profile import reading_pace_wpm
 from cyo_adventure.validator.topology import (
     BAND_TOPOLOGIES,
@@ -49,8 +49,11 @@ if TYPE_CHECKING:
     from collections.abc import Iterable, Mapping
 
 # The satisfying-ending kinds (a full-arc completion), per ADR-011 section 4's
-# fastest-finish clock; used to target the estimated-minutes computation.
-_SATISFYING_KINDS = frozenset({"success", "completion"})
+# fastest-finish clock; used to target the estimated-minutes computation. Read
+# from an unparsed story dict, so the members are compared against raw JSON
+# strings; ``EndingKind`` is a ``StrEnum``, so the shared set answers both
+# (`UW-C292`).
+_SATISFYING_KINDS = SATISFYING_ENDING_KINDS
 
 # Matches the ``words=<int>`` field of a ``<<FILL ...>>`` directive, so a shell
 # node's word budget is read from its directive rather than its placeholder

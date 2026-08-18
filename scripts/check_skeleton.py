@@ -48,7 +48,10 @@ from pydantic import ValidationError as PydanticValidationError
 from cyo_adventure.core.exceptions import ProjectBaseError
 from cyo_adventure.generation.skeleton import FILL_MARKER, load_skeleton
 from cyo_adventure.mutation.identity import recompute_estimated_minutes
-from cyo_adventure.storybook.models import Storybook
+from cyo_adventure.storybook.models import (
+    SATISFYING_ENDING_VALENCES,
+    Storybook,
+)
 from cyo_adventure.validator.band_profile import (
     breadth_scaled_floors,
     is_offered_cell,
@@ -84,7 +87,9 @@ STRICT_BLOCKING_WARNINGS: frozenset[str] = frozenset(
 
 # Random-walk outcome floors by band (and, at the teen bands, narrative
 # style): the minimum probability that a reader choosing uniformly at random
-# reaches a satisfying (positive- or neutral-valence) ending. Grounding: the
+# reaches a satisfying ending, read by VALENCE
+# (`storybook.models.SATISFYING_ENDING_VALENCES`), not by the ending-kind
+# predicate PL-20 uses. Grounding: the
 # 2026-08-09 review measured the current catalog at medians of 100% (3-5),
 # 71% (5-8), 43% (8-11), 29% (10-13), 0.3% (13-16) and 1.2% (16+); the teen
 # gamebook floor of 2% forces a graded-setback economy without banning the
@@ -267,8 +272,11 @@ def satisfying_walk_probability(story: dict[str, Any]) -> float:
         ending = node.get("ending")
         if isinstance(ending, dict):
             ending_ids.add(node_id)
+            # The valence reading, not the kind reading: see
+            # `storybook.models.SATISFYING_ENDING_VALENCES` for why the two are
+            # named separately and why this one must not be switched to kind.
             prob[node_id] = (
-                1.0 if ending.get("valence") in ("positive", "neutral") else 0.0
+                1.0 if ending.get("valence") in SATISFYING_ENDING_VALENCES else 0.0
             )
         else:
             prob[node_id] = 0.0

@@ -147,7 +147,7 @@ damage: the flip would turn on four rules nobody had written down.
 
 | Rule ID | Layer | Description | Failure Message Template |
 |---------|-------|-------------|--------------------------|
-| SAFE-14 | Safety | **Safety moderation**: moderation runs over all `body` and `label` text against the age-band policy. Any hit flags the specific nodes and forces mandatory human review. A safety flag does not auto-reject the story; it routes the generation job to `needs_review` (not `passed`), so the story cannot reach `published` until a global admin clears or escalates the flag. No auto-publish path exists when a SAFE-14 flag is set. | `SAFE-14 safety: node '{node_id}' flagged by moderation for age band '{age_band}' in story '{story_id}': {flag_detail} (requires human review)` |
+| SAFE-14 | Safety | **NOT IMPLEMENTED IN THE GATE** (`validator/safety.py` is a stub returning an empty report; the live screening is `moderation/pipeline.py`, outside the gate). Specified behaviour: **safety moderation**: moderation runs over all `body` and `label` text against the age-band policy. Any hit flags the specific nodes and forces mandatory human review. A safety flag does not auto-reject the story; it routes the generation job to `needs_review` (not `passed`), so the story cannot reach `published` until a global admin clears or escalates the flag. No auto-publish path exists when a SAFE-14 flag is set. | `SAFE-14 safety: node '{node_id}' flagged by moderation for age band '{age_band}' in story '{story_id}': {flag_detail} (requires human review)` |
 
 ---
 
@@ -295,6 +295,13 @@ The validator applies rules in this order:
 6. CG-1 through CG-4 (advisory; all stories) **only when `run_gate` is called with
    `enforce_grammar=True`**, which no production caller does today. Log warnings; continue.
 7. SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.
+   **NOT IMPLEMENTED IN THE GATE.** `validator/safety.py::check_safety` is a Phase-2 stub
+   that returns an empty report for every story, so this step cannot produce a finding and
+   listing it here as a live step read as coverage the gate does not have (`UW-C292`). The
+   safety coverage that does exist runs OUTSIDE the gate, in `moderation/pipeline.py`,
+   which screens every node body and routes a story to `needs_review`. Keep this entry so
+   the intended order survives, but do not count it when reasoning about what the gate
+   enforces today.
 8. SR-1 through SR-9 (series chain; series stories only) run **later and elsewhere**, at
    publish time over the whole chain rather than inside `run_gate` over one story. A book
    can clear steps 1-7 at generation time and still be refused at publish by an SR error.

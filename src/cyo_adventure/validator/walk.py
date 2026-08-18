@@ -9,6 +9,14 @@ state-space validator rules (L2-9..L2-12) are built.
 Transition semantics remain in the engine; this module only orchestrates the
 BFS closure over the reachable state space.
 
+Beyond Layer 2, :func:`config_dag` projects that closure into a node-labelled
+graph and :func:`fastest_satisfying_finish` measures the clock over it, because
+PL-20, PL-25 and PL-26 all ask how far the reader travels and the story's choice
+graph cannot answer that for a story with conditions (`UW-C292`). Both live here
+rather than in ``policy`` so the offline mutation module can call the same
+measurement the gate does: ADR-020 forbids the validator importing ``mutation``,
+so the shared code has to sit on this side of that line.
+
 ConfigKey soundness (once-effects)
 -----------------------------------
 The naive deduplication key ``(node_id, var_state)`` is UNSOUND when a story
@@ -35,6 +43,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from cyo_adventure.player.engine import StoryEngine
+from cyo_adventure.storybook.models import SATISFYING_ENDING_KINDS
 
 if TYPE_CHECKING:
     from cyo_adventure.player.state import ReadingState
@@ -223,3 +232,127 @@ def _config_key(state: ReadingState, once_node_ids: frozenset[str]) -> ConfigKey
     # same node must NOT collapse into one configuration.
     once_intersection = frozenset(state.visit_set & once_node_ids)
     return (state.current_node, sorted_vars, once_intersection)
+
+
+# ---------------------------------------------------------------------------
+# Node-labelled view of the closure (UW-C292)
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True, slots=True)
+class ConfigDag:
+    """The configuration closure as a node-labelled graph over synthetic ids.
+
+    Rules that measure *how far a reader travels* have to walk this graph rather
+    than the story's choice graph. The choice graph adds an edge for every
+    declared choice and ignores ``choice.condition``, so a path through it may
+    use an edge no reachable configuration can traverse. PL-20, PL-25 and PL-26
+    each measured such paths until `UW-C292`; the gamebook that exposed it was
+    reported as finishing in 16 nodes on a route the reader could not walk, when
+    the state-aware answer was 24.
+
+    Vertices are synthetic zero-padded ids assigned in the walk's own BFS
+    discovery order, not story node ids, because one story node appears once per
+    reachable configuration of it. Discovery order derives from choice
+    declaration order, so the ids are stable under node renaming: a lexical
+    tie-break taken on them cannot flip a verdict the way a tie-break on node ids
+    could.
+
+    Held as a plain adjacency mapping rather than a ``networkx`` graph. At the
+    walk's cap the graph carries ~100 000 vertices, where building the
+    ``networkx`` object cost 2.3s against 3.8s for the walk that produced it: a
+    60% surcharge on a rule that already sits in the gate's request path, bought
+    for an interface the two consumers do not use.
+
+    Attributes:
+        adjacency: Each synthetic vertex id to its successor vertex ids, one per
+            visible choice. Every vertex has an entry, so membership testing on
+            this mapping is membership in the graph.
+        start: The synthetic id of the initial configuration.
+        node_of: Synthetic vertex id to the story node id it sits at.
+        choice_count: Synthetic vertex id to the number of *visible* choices at
+            that configuration. Two choices leading to the same successor
+            configuration count as two, matching how the story-graph rules count
+            a node's declared choices.
+    """
+
+    adjacency: dict[str, list[str]]
+    start: str
+    node_of: dict[str, str]
+    choice_count: dict[str, int]
+
+
+def config_dag(walk: WalkResult) -> ConfigDag | None:
+    """Build the node-labelled configuration graph from a completed walk.
+
+    Args:
+        walk: The configuration closure to project.
+
+    Returns:
+        ConfigDag | None: The projected graph, or None when the walk recorded no
+            configuration at all (a cap of zero, or a story the engine could not
+            start).
+    """
+    if not walk.configs:
+        return None
+    # Zero-padded so lexical order matches discovery order; the walk's cap is
+    # 100 000 by default, three orders of magnitude inside this width.
+    vertex_of = {key: f"c{index:07d}" for index, key in enumerate(walk.configs)}
+    node_of = {vertex: key[0] for key, vertex in vertex_of.items()}
+    choice_count: dict[str, int] = {}
+    adjacency: dict[str, list[str]] = {}
+    for key, vertex in vertex_of.items():
+        successors = walk.edges.get(key, [])
+        choice_count[vertex] = len(successors)
+        # A capped walk can list a successor it refused to record; those have no
+        # vertex and are dropped rather than left as dangling ids.
+        adjacency[vertex] = [
+            vertex_of[successor] for successor in successors if successor in vertex_of
+        ]
+    return ConfigDag(
+        adjacency=adjacency,
+        start=next(iter(vertex_of.values())),
+        node_of=node_of,
+        choice_count=choice_count,
+    )
+
+
+def fastest_satisfying_finish(story: Storybook, walk: WalkResult) -> int | None:
+    """Return the fewest configuration-path nodes to a satisfying finish.
+
+    The state-aware reading of PL-20's clock: the minimum number of nodes on a
+    *configuration* path from the initial configuration to any configuration at a
+    ``success``/``completion`` ending. A shorter route through the story's choice
+    graph does not count if no reader can hold the state that opens it.
+
+    Args:
+        story: The parsed story, read for its ending kinds.
+        walk: The configuration closure to measure over.
+
+    Returns:
+        int | None: The minimum configuration-path node count (hops + 1), or None
+            when no satisfying finish is reachable in any configuration.
+    """
+    dag = config_dag(walk)
+    if dag is None:
+        return None
+    satisfying = {
+        node.id
+        for node in story.nodes
+        if node.is_ending
+        and node.ending is not None
+        and node.ending.kind in SATISFYING_ENDING_KINDS
+    }
+    if not satisfying:
+        return None
+    seen: set[str] = {dag.start}
+    queue: deque[tuple[str, int]] = deque([(dag.start, 1)])
+    while queue:
+        vertex, nodes = queue.popleft()
+        if dag.node_of[vertex] in satisfying:
+            return nodes
+        for successor in dag.adjacency[vertex]:
+            if successor not in seen:
+                seen.add(successor)
+                queue.append((successor, nodes + 1))
+    return None

@@ -130,61 +130,117 @@ register row should say so rather than pretending one draft settled it.
 **If C is rejected**, B is the honest minimum-defensible floor and D the honest minimalist. A should
 not ship: it rejects the only book anyone has written in our own format by a factor of two.
 
-## Decision 2: L2-12's reachable-configuration ceiling: WITHDRAWN
+## Decision 2: L2-12's reachable-configuration ceiling, currently 100,000
 
-There is no decision here. The finding was mine.
+**Twice-corrected. Read the correction before the options.** The first version of this document said
+the draft blew the ceiling and offered five ways to move it. The first correction said the finding
+was entirely my converter's and withdrew the decision. **The second correction is that the withdrawal
+over-corrected**, and the number I withdrew it on was wrong in the same way as the number I withdrew.
 
-My converter emitted this for both integer variables:
+### What is actually true
+
+My converter did emit this for both integer variables:
 
 ```json
 {"name": "wounds", "type": "int", "initial": 0, "min": 0, "max": 99}
 ```
 
-The writer never specified bounds. Measuring what the story's conditions actually compare against:
-
-```
-wounds: [1, 2, 3]      seen: [1, 2, 3]      (all nine booleans: [true])
-```
-
-No condition tests either integer above 3. The declared range was 25x the used range on each of two
-variables, inflating the state space by 625x: 512 x 100 x 100 = 5,120,000 against 512 x 4 x 4 = 8,192.
-
-Re-running the gate with `"max": 3` on both, changing nothing else:
+The writer never specified bounds, and the story's conditions compare `wounds` and `seen` against
+`[1, 2, 3]` and nothing higher. So the declared range was 25x the used range on each of two
+variables. Re-running the gate with `"max": 3` and changing nothing else:
 
 | | blocking findings |
 | --- | --- |
 | `gamebook.json` (`max: 99`) | L2-12, PL-17, PL-20 |
 | `gamebook_bounded.json` (`max: 3`) | PL-17, PL-20 |
 
-L2-12 does not merely pass, it disappears. **The 100,000 ceiling was never exceeded by the story.**
-It was exceeded by my declaration of the story.
+L2-12 does not merely pass, it disappears. **The claim "a gamebook using ordinary state exceeds the
+ceiling" is false.**
 
-Worse, the gate's own message named the fix and I did not read it: *"state space too large; reduce
-variable count **or tighten bounds**"*. All five options I offered varied the ceiling or the
-validation method. None of them was the remedy the error prints. The lesson is not about the ceiling;
-it is that I proposed changing a threshold before checking whether the input that tripped it was
-correct, which is precisely the "reproduce a register row's claim before acting on it" trap.
+But then I wrote that the bounded story fits "with three orders of magnitude to spare", from
+`512 x 4 x 4 = 8,192`. That is the *variable* product bound. A configuration is `(node, var_state,
+once-visit-set)`, so the node count multiplies in, and reachability decides the rest. Measured, not
+derived:
 
-Two consequential corrections follow:
+| | configurations |
+| --- | ---: |
+| variable product bound (2^9 x 4 x 4) | 8,192 |
+| product bound x 250 nodes | 2,048,000 |
+| **actually reachable** | **99,423** |
+| the ceiling | 100,000 |
 
-- **"9 independent booleans at gamebook scale" was wrong too.** That figure divided the ceiling by
-  node count, which conflates a product bound with reachable configurations. The draft declares 11
-  variables and its reachable set fits under the ceiling with three orders of magnitude to spare once
-  the bounds are honest. The ceiling is not close to binding for realistic gamebook state.
-- **The tension I recorded in `AL-468(c)` between state richness and validatability is not
-  demonstrated.** It should be marked as not reproduced rather than left standing as a finding.
+**The bounded draft fits by 577 configurations, 0.58%.** One more boolean roughly doubles the
+reachable set and puts it at ~199,000, over the ceiling.
 
-### The real defect this exposed, and a cheap fix
+Two consequences, and neither is what either earlier version said:
 
-An author (or a converter) can declare `max: 99` on a variable used as a 0-3 counter and pay a 625x
-validation cost for nothing, with no signal until the exhaustive walk blows a ceiling thousands of
-nodes later. The gate has the information to say so much earlier.
+- `AL-468(c)`'s tension between state richness and validatability **is real**. It was simply never
+  demonstrated by the failure that was offered as its evidence, which was a typo.
+- Reachable configurations are **4.9%** of the `nodes x var-space` product here. A budget derived
+  from the product bound over-predicts by a factor of ~20, so any variable budget we publish has to
+  be measured on real stories, not multiplied out. That cuts against the "just publish the budget"
+  option below more than it supports it.
 
-**Proposed new advisory rule (call it L2-15):** when a declared integer variable's range is more than
-4x the widest span of any literal its conditions compare against, warn, naming the variable, the
-declared range, and the observed thresholds. On this draft it would have fired on `wounds` and `seen`
-before the walk ran and pointed straight at the typo. It is a static scan of the condition tree, so it
-costs nothing.
+### The cost of raising the ceiling, measured
 
-This is the same shape as the charter's first principle: the cheapest fix to a limit is usually to tell
-the author about it at the moment they cross it, not to move it.
+This is the number the first version guessed at ("up to 10x worst-case gate latency") and it is worth
+having exactly, because it decides the question:
+
+| step, on the 99,423-configuration draft | time |
+| --- | ---: |
+| `walk_configurations` | 4.2s |
+| `config_dag` projection (`UW-C292`) | 0.6s |
+| `validate_policy` end to end | 7.7s |
+
+And the gate walks the state space **twice** for a story with conditions: once in Layer 2, once in the
+policy layer now that PL-20 is state-aware. A 1,000,000 ceiling therefore does not cost "up to 10x
+latency" in the abstract; it costs roughly **40 seconds per walk, 80 seconds per gate run**, on the
+rule whose entire value is that it is exhaustive.
+
+### The options
+
+| # | Option | Effect | Cost |
+| --- | --- | --- | --- |
+| A | Keep 100,000 | Gamebook state capped near 11 variables at 250 nodes | None. The draft passes with 0.58% to spare, and the next one that wants one more flag does not |
+| B | Raise to 1,000,000 | ~1 more boolean per doubling, ~3 more | ~40s per walk, ~80s per gate run. Not viable in the request path |
+| C | Style-key it: 100k prose, 1M gamebook | Same headroom, confined to the style that needs it | Same 80s, confined to gamebooks. Still not viable |
+| D | Sample above a threshold | Any variable count validates | **Retires the proof.** An unexplored state space is an unproven story; a sampled L2-12 reports a number that no longer supports the claim it exists to make |
+| E | **Keep 100,000, publish a measured budget, and warn on over-declared ranges** | An author learns the limit before writing, and a typo costs a warning instead of 16,000 words | One static check plus a table. Does not raise the ceiling: an author who genuinely needs 12 variables at 250 nodes still cannot have them |
+
+### Recommendation: E, with the limitation stated rather than hidden
+
+The latency measurement rules out B and C: an 80-second exhaustive walk in the gate's request path is
+not a trade this project should make for three more booleans. D is off the table for the reason it
+was always off the table.
+
+That leaves A and E, and E is A plus the two things that would have saved this draft:
+
+1. **Publish the measured variable budget per cell.** Measured, not multiplied: the 250-node gamebook
+   with 9 booleans and two 0-3 counters reaches 99,423 configurations, so "about 11 variables of this
+   shape at this scale" is the honest budget. It has to come from walking real stories, because the
+   product bound over-predicts by 20x.
+2. **Add L2-15 (advisory): warn when a declared integer range exceeds 4x the widest span of any
+   literal its conditions compare against**, naming the variable, the declared range and the observed
+   thresholds. It is a static scan of the condition tree, it fires before the walk runs, and on this
+   draft it would have pointed straight at `wounds` and `seen`. The gate's own L2-12 message already
+   says "reduce variable count **or tighten bounds**"; L2-15 says it early and says which variable.
+
+**What E does not fix, stated plainly:** a gamebook author who wants a twelfth variable is still
+told no, and the honest reason is that we cannot prove the state space in acceptable time, not that
+twelve variables is bad craft. If that becomes a real constraint on real books, the question to
+reopen is not the ceiling but whether L2-12 can be made incremental, which is a design question and
+not a threshold one.
+
+### The lesson under this, which outlives the decision
+
+`AL-008` recorded exactly this on 2026-07-25: *"declare a carried integer variable's range as what
+the continuation can actually reach, not what the variable could theoretically hold"*, against this
+same 100,000 cap. Its proposed change was a corrected prose rule. No check was ever built, so 24 days
+later the log's own maintainer made the identical mistake. **A lesson whose proposed change is prose
+is not yet a lesson learned**, and L2-15 is the check `AL-008` should have produced.
+
+The second-order lesson is about this document. I quoted a derived bound as a measurement twice, in
+opposite directions: once to claim the ceiling was too low, once to claim it had orders of magnitude
+of headroom. Both times the derived number was available instantly and the measured one took a
+30-second script. The rule this earns: **a threshold document may not quote a bound it did not
+execute.**

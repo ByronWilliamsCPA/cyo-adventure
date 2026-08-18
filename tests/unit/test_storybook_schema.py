@@ -22,6 +22,7 @@ from cyo_adventure.storybook import (
     referenced_vars,
     validate_condition,
 )
+from cyo_adventure.storybook.models import SATISFYING_ENDING_KINDS, EndingKind
 from cyo_adventure.storybook.schema_export import build_schema, export_schema
 
 
@@ -665,3 +666,38 @@ def test_committed_schema_is_current() -> None:
         "schema/storybook.schema.json is stale; regenerate via "
         "`python -m cyo_adventure.storybook.schema_export`"
     )
+
+
+def test_satisfying_kinds_accept_raw_strings() -> None:
+    """The shared set answers for unparsed JSON as well as for enum members.
+
+    The mutation module (ADR-020) reads unparsed story dicts, so its ending-kind
+    pre-checks compare raw strings. `EndingKind` is a `StrEnum`, so one frozenset
+    of enum members serves both callers; this is the property that let five
+    hand-maintained copies of the set collapse into one (`UW-C292`).
+    """
+    assert "success" in SATISFYING_ENDING_KINDS
+    assert "completion" in SATISFYING_ENDING_KINDS
+    assert EndingKind.SUCCESS in SATISFYING_ENDING_KINDS
+    assert EndingKind.COMPLETION in SATISFYING_ENDING_KINDS
+    for kind in ("setback", "death", "capture", "discovery"):
+        assert kind not in SATISFYING_ENDING_KINDS
+
+
+def test_every_satisfying_kind_consumer_reads_this_one_set() -> None:
+    """No consumer may re-declare the satisfying kinds.
+
+    Identity, not equality: five equal-but-separate copies is exactly the state
+    this test exists to prevent, and an equality assertion passes in that state.
+    """
+    from cyo_adventure.mutation import identity, operators
+    from cyo_adventure.validator import policy, series
+
+    consumers = (
+        policy._SATISFYING_KINDS,
+        series.SATISFYING_ENDING_KINDS,
+        identity._SATISFYING_KINDS,
+        operators._SATISFYING_KINDS,
+    )
+    for consumer in consumers:
+        assert consumer is SATISFYING_ENDING_KINDS

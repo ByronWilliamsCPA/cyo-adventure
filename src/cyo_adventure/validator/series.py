@@ -19,7 +19,10 @@ from __future__ import annotations
 from itertools import pairwise
 from typing import TYPE_CHECKING
 
-from cyo_adventure.storybook.models import EndingKind, VariableType
+from cyo_adventure.storybook.models import (
+    SATISFYING_ENDING_KINDS as _MODEL_SATISFYING_ENDING_KINDS,
+)
+from cyo_adventure.storybook.models import VariableType
 from cyo_adventure.validator.layer2 import validate_layer2
 from cyo_adventure.validator.report import (
     Severity,
@@ -37,19 +40,16 @@ if TYPE_CHECKING:
 # A satisfying continuation ending: a win the reader carries into the next book.
 # A fail-fast negative ending does not continue the campaign, matching PL-20.
 #
-# Public: characters/progression.py (via api/reading.py) imports this same
-# definition to decide whether a completed book grows a persistent character's
-# stats, so the runtime consumer reuses SR-9's answer instead of adding a sixth
-# copy of it. This is not a single source of truth, and the promotion did not
-# make it one: ``validator/policy.py::_SATISFYING_KINDS`` already holds an
-# independent set with the same membership, and the offline mutation module
-# (ADR-020) holds three more: ``mutation/state_ops.py`` as ``EndingKind``
-# values, ``mutation/identity.py`` and ``mutation/operators.py`` as bare
-# strings. Unifying those five is pre-existing work and out of scope here.
-# Exported under a public name for
-# the same reason as ``MAX_ENTRY_STATES`` and ``satisfying_ending_reachable``
-# below; ``_SATISFYING_KINDS`` keeps this module's own callers unchanged.
-SATISFYING_ENDING_KINDS = frozenset({EndingKind.SUCCESS, EndingKind.COMPLETION})
+# Public: characters/progression.py (via api/reading.py) imports this name to
+# decide whether a completed book grows a persistent character's stats, so the
+# runtime consumer reuses SR-9's answer.
+#
+# The five independent copies this comment used to enumerate are gone. The set
+# now lives once, in ``storybook.models.SATISFYING_ENDING_KINDS``, and PL-20,
+# SR-9, the character runtime, the mutation clock re-proof and the two mutation
+# pre-checks all read that one definition (`UW-C292`). This module re-exports it
+# under the name its callers already import.
+SATISFYING_ENDING_KINDS = _MODEL_SATISFYING_ENDING_KINDS
 _SATISFYING_KINDS = SATISFYING_ENDING_KINDS
 
 # Bands that must run episodic (no state carry) series, per ADR-011 section 8.

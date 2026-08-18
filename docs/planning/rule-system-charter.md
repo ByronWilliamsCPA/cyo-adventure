@@ -58,21 +58,51 @@ Both are tests. Neither constrains a story.
 
 ## REMOVE: four things, none of them a rule's substance
 
+**All four landed on 2026-08-18.** What each turned out to need is recorded under it; item 1 in
+particular did not resolve the way this section proposed.
+
 1. **One property, three definitions.** "Satisfying" means ending KIND to PL-20, ending VALENCE to
    the strict walk floor, and both to PL-24. Catalog-wide that is 472 endings against 968, with 500
    satisfying one reading and not the other. Consolidate to a single named predicate that all three
    import, with the difference stated once if a difference is genuinely wanted. Do NOT resolve it by
    switching the walk floor to kind: that was tried and would make the teen gamebook cells
    unauthorable (`AL-460`).
+
+   **DONE, but not by consolidating to one predicate.** Two things were tangled here. The first was
+   real duplication: the KIND reading existed as **five** hand-maintained copies of
+   `frozenset({"success", "completion"})` across `validator/policy.py`, `validator/series.py`,
+   `mutation/state_ops.py`, `mutation/identity.py` and `mutation/operators.py`, all equal by
+   value and by comment convention rather than by construction. Those collapsed into
+   `storybook.models.SATISFYING_ENDING_KINDS`, with an identity (not equality) test so a sixth
+   copy fails. The second was NOT duplication: the kind and valence readings are a deliberate
+   difference, protected by a dated owner ruling, and the catalog shows them disagreeing on 500 of
+   968 endings. Collapsing them was never available. So the valence reading got a name too,
+   `SATISFYING_ENDING_VALENCES`, next to the first, with the difference and the ruling stated once
+   in the comment between them. The defect was that the three readings were unnamed and had to be
+   discovered; naming them fixes that without pretending they are one thing.
 2. **SAFE-14's phantom entry.** `validator-rules.md` lists it in the live application order;
    `validator/safety.py` returns an empty report and says so. Either implement it or take it out of
    the order. A catalogued rule that cannot fire is worse than no rule, because it reads as coverage.
+
+   **DONE by annotation, not removal.** Implementing it means wiring the moderation pipeline into
+   the gate, which is a real piece of work and not a documentation fix. Both the rule row and the
+   application-order entry in `validator-rules.md` now say NOT IMPLEMENTED IN THE GATE and point at
+   `moderation/pipeline.py`, which does screen every node body and route a story to `needs_review`,
+   outside the gate. The entry stays so the intended order survives; it no longer reads as coverage.
 3. **The flat prose density ceiling as a value.** After the Wave 3 per-band derivation,
    `_NODES_PER_DECISION_CEILING["prose"]` is reachable only as a fallback for an unconfigured band.
    Keep it as that fallback; stop describing it as the ceiling.
+
+   **DONE.** The table carries a scope note saying the gamebook entry is a ceiling and the prose
+   entry is a fallback, and `nodes_per_decision_ceiling`'s docstring says which value a caller
+   actually gets.
 4. **`_ENDINGS_FRACTION` as the prose endings floor.** It is now capped by the cell bounds in every
    prose cell, so it binds only in the four gamebook cells the ADR gives no numbers for. Say that,
    rather than leaving two mechanisms that look co-equal.
+
+   **DONE.** The constant carries a scope note saying the cell bounds dominate it in every prose
+   cell, so 0.25 is the only entry still deciding a verdict on its own, and pointing at the open
+   decision on that number (`UW-C291`).
 
 ## MODIFY: the tier, by a rule that already earned its keep
 

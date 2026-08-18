@@ -535,13 +535,20 @@ def first_decision_window(age_band: str) -> tuple[int, int] | None:
 # 340-node long-form world and a 23-node picture book are judged on one axis.
 # This is the density companion to PL-20, which bounds the same path's length but
 # says nothing about how often the reader actually steers along it.
-# #ASSUME: data-integrity: this table is the single source for the PL-26
-# nodes-per-decision ceiling, keyed on narrative_style, anchored on Adams,
-# Beckelhymer and Marr, Journal of Humanistic Mathematics 9(2), 2019, Table 4
-# (mean 3.28 pages between decisions). An unrecognized narrative_style is not
-# an error: nodes_per_decision_ceiling below silently falls back to the prose
-# value, so a typo'd or new style is graded against the wrong genre convention
-# rather than failing loudly.
+# SCOPE, since this used to describe itself as the ceiling and no longer is.
+# The gamebook entry IS the gamebook ceiling. The prose entry is a FALLBACK
+# only: since the Wave 3 per-band derivation, every configured band reads
+# `_BAND_NODES_PER_DECISION_CEILING` below, so `["prose"]` is reachable solely
+# for a band that table does not configure, or for an unrecognized
+# narrative_style. Do not read 6.0 as "the prose ceiling"; read
+# `_BAND_NODES_PER_DECISION_CEILING` for that.
+# #ASSUME: data-integrity: this table is the single source for the gamebook PL-26
+# ceiling and for the unconfigured-band fallback, keyed on narrative_style,
+# anchored on Adams, Beckelhymer and Marr, Journal of Humanistic Mathematics
+# 9(2), 2019, Table 4 (mean 3.28 pages between decisions). An unrecognized
+# narrative_style is not an error: nodes_per_decision_ceiling below silently
+# falls back to the prose value, so a typo'd or new style is graded against the
+# wrong genre convention rather than failing loudly.
 # #VERIFY: test_band_profile.py::
 # test_prose_density_ceiling_sits_above_the_measured_anchor,
 # ::test_gamebook_density_ceiling_is_tighter_than_prose, and
@@ -600,7 +607,9 @@ def nodes_per_decision_ceiling(
             band-blind behaviour.
 
     Returns:
-        The advisory ceiling; an unknown style falls back to the prose ceiling.
+        The advisory ceiling. A prose story with a configured band gets the
+        per-band value; the flat prose entry is reached only for an unconfigured
+        band or an unknown style, which is the whole of its remaining role.
     """
     if narrative_style == "gamebook":
         return _NODES_PER_DECISION_CEILING["gamebook"]
@@ -640,6 +649,14 @@ ARC_CEILING_MULTIPLE = 2.5
 # and decisions-per-PATH constant): it bounds total decision *breadth*, not path
 # depth, so it catches an almost-linear large story without inflating decisions.
 # Both are tunable, like the ADR's product-defined budgets.
+# SCOPE: this binds in the four gamebook cells and essentially nowhere else.
+# Since Wave 3 (`UW-C283`) `breadth_scaled_floors` caps the scaled prose floor by
+# the cell's own stated maximum from ADR-011 section 5, and that cap is the
+# binding constraint in every prose cell, so the 0.15 here is a floor the cell
+# bounds already dominate. The ADR gives the gamebook cells no ending numbers, so
+# 0.25 is the only value still deciding a verdict on its own. Two mechanisms that
+# looked co-equal were not, and the gamebook figure is the one to argue about;
+# see `docs/planning/gamebook-thresholds-options.md` and `UW-C291`.
 _ENDINGS_FRACTION: dict[str, float] = {"prose": 0.15, "gamebook": 0.25}
 _DECISIONS_FRACTION = 0.08
 

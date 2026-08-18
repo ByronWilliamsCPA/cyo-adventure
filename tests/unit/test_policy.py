@@ -25,6 +25,7 @@ from cyo_adventure.storybook.models import (
 )
 from cyo_adventure.validator.band_profile import ARC_CEILING_MULTIPLE
 from cyo_adventure.validator.policy import (
+    _adjacency_of,
     _build_graph,
     _decision_node_ids,
     _fewest_decision_shortest_path,
@@ -1611,7 +1612,9 @@ def test_decision_node_ids_and_density_handle_a_story_with_no_decisions():
     story = _linear_scale_story(middles=3)
     assert _decision_node_ids(story) == set()
     graph = _build_graph(story)
-    path = _fewest_decision_shortest_path(graph, story.start_node, {"n_end"}, set())
+    path = _fewest_decision_shortest_path(
+        _adjacency_of(graph), story.start_node, {"n_end"}, set()
+    )
     assert path is not None
     assert path[-1] == "n_end"
     # A real run through the public gate must not raise, and must report the
@@ -1632,7 +1635,9 @@ def test_fewest_decision_shortest_path_returns_none_for_unreachable_targets():
     graph: nx.DiGraph[str] = nx.DiGraph()
     graph.add_nodes_from(["a", "b", "isolated"])
     graph.add_edge("a", "b")
-    result = _fewest_decision_shortest_path(graph, "a", {"isolated"}, set())
+    result = _fewest_decision_shortest_path(
+        _adjacency_of(graph), "a", {"isolated"}, set()
+    )
     assert result is None
 
 
@@ -1645,7 +1650,9 @@ def test_fewest_decision_shortest_path_returns_none_when_start_is_absent():
     """
     graph: nx.DiGraph[str] = nx.DiGraph()
     graph.add_node("only")
-    result = _fewest_decision_shortest_path(graph, "missing", {"only"}, set())
+    result = _fewest_decision_shortest_path(
+        _adjacency_of(graph), "missing", {"only"}, set()
+    )
     assert result is None
 
 
@@ -1711,7 +1718,9 @@ def test_fewest_decision_shortest_path_includes_an_unavoidable_decision():
     graph.add_edge("start", "mid")
     graph.add_edge("mid", "target")
     graph.add_edge("mid", "dead_end")
-    path = _fewest_decision_shortest_path(graph, "start", {"target"}, {"mid"})
+    path = _fewest_decision_shortest_path(
+        _adjacency_of(graph), "start", {"target"}, {"mid"}
+    )
     assert path == ["start", "mid", "target"]
 
 
@@ -1775,7 +1784,9 @@ def _cross_check(
         ``None`` on agreement, or a failure message describing the mismatch.
     """
     best = _brute_force_best(graph, start, targets, decisions)
-    got = _fewest_decision_shortest_path(graph, start, targets, decisions)
+    got = _fewest_decision_shortest_path(
+        _adjacency_of(graph), start, targets, decisions
+    )
     if best is None:
         return None if got is None else f"unreachable but DP returned {got}"
     if got is None:
