@@ -77,7 +77,7 @@ _READING_CAP_SENTINEL = 99.0
 # unconfigured band, which `_reading_target_for` below turns into a loud failure
 # rather than a silent default, since a wrong FK target reaches a child as prose
 # at the wrong difficulty.
-# #VERIFY: test_band_profile.py::test_reading_level_target_covers_every_band.
+# #VERIFY: test_reading_level_sources.py::test_reading_level_target_covers_every_band.
 
 # #ASSUME: data-integrity: band lower-bound protagonist age, mirroring the
 # frontend default; a fictional character age, not a real child's age.

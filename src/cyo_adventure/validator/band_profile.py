@@ -297,8 +297,8 @@ def production_cell_budget(
 # targets. `reading_level_target_for` below is the only reader; a story's own
 # `metadata.reading_level.target` still governs RL-13, and this is the default
 # it should be authored from.
-# #VERIFY: test_band_profile.py::test_reading_level_target_covers_every_band and
-# ::test_declared_catalog_targets_agree_with_the_band_table.
+# #VERIFY: test_reading_level_sources.py::test_reading_level_target_covers_every_band
+# and ::test_declared_catalog_targets_sit_inside_their_band_window.
 _READING_LEVEL_TARGET: dict[str, float] = {
     "3-5": 1.0,
     "5-8": 2.5,
