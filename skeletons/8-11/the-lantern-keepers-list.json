@@ -1,0 +1,2513 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_lantern_keepers_list",
+  "version": 1,
+  "title": "The Lantern Keepers' List",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "community",
+      "responsibility",
+      "wayfinding",
+      "autumn",
+      "care"
+    ],
+    "estimated_minutes": 10,
+    "ending_count": 24,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "mild"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "<<FILL role=setup words=55 beats='the lantern shed behind the village hall smells of paraffin and damp rope; eighty paper lanterns stacked in crates, a coil of fencing wire, and a clipboard on a nail with THE LIST written across the top in marker; outside, the ridge path climbs into low cloud and the church clock says quarter past two'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_open_0",
+          "label": "Take the list and pick a section.",
+          "target": "n_list"
+        }
+      ]
+    },
+    {
+      "id": "n_list",
+      "body": "<<FILL role=setup words=78 beats='Mrs Trewin sits on an upturned crate with her wrist strapped and reads the list out loud, and half of it is already wrong: the Hunters moved away two winters ago, the paraffin is not where the page says, and the path above the landslip is not the path in the margin; the walking party comes down off the moor at half past five, the list has three sections, and there is one afternoon for all of them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_list_0",
+          "label": "Start at the Beacon Steps.",
+          "target": "bs_hub"
+        },
+        {
+          "id": "c_n_list_1",
+          "label": "Start at the Sheepfold Turn.",
+          "target": "sf_hub"
+        },
+        {
+          "id": "c_n_list_2",
+          "label": "Start at the Orchard Gate.",
+          "target": "og_hub"
+        }
+      ]
+    },
+    {
+      "id": "bs_hub",
+      "body": "<<FILL role=setup words=100 beats='the Beacon Steps are ninety-one stone stairs cut into the ridge with a lantern bracket every fourth step; frost has lifted three brackets clean out of the stone, the seventh step from the bottom has gone entirely, and every crate has to come up by hand because nothing wheels here'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_hub_0",
+          "label": "Look at the loose brackets first.",
+          "target": "bs_brackets"
+        },
+        {
+          "id": "c_bs_hub_1",
+          "label": "Deal with the missing step.",
+          "target": "bs_step"
+        },
+        {
+          "id": "c_bs_hub_2",
+          "label": "Carry the crates up while it is dry.",
+          "target": "bs_carry"
+        }
+      ]
+    },
+    {
+      "id": "sf_hub",
+      "body": "<<FILL role=setup words=100 beats='the Sheepfold Turn is where the path was moved after the landslip, so the list names a stretch of hillside that walkers no longer use and says nothing at all about the one they do; Mr Ovens keeps his ewes in the field the new path crosses and has wired the gate shut with three turns of wire'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_hub_0",
+          "label": "Look at the wired gate.",
+          "target": "sf_gate"
+        },
+        {
+          "id": "c_sf_hub_1",
+          "label": "Walk the landslip and see what is left.",
+          "target": "sf_slip"
+        },
+        {
+          "id": "c_sf_hub_2",
+          "label": "Go and find Mr Ovens.",
+          "target": "sf_ovens"
+        }
+      ]
+    },
+    {
+      "id": "og_hub",
+      "body": "<<FILL role=setup words=100 beats='the Orchard Gate is the bottom of the route, twelve lanterns hung in old apple trees where the path leaves the lane; the branches are heavy with unpicked fruit, the gate drags a groove in the mud, and last autumn somebody hung them low enough for a walker to put a shoulder through one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_hub_0",
+          "label": "See to the dragging gate.",
+          "target": "og_hinge"
+        },
+        {
+          "id": "c_og_hub_1",
+          "label": "Sort out the low branches.",
+          "target": "og_low"
+        },
+        {
+          "id": "c_og_hub_2",
+          "label": "Deal with the fallen fruit.",
+          "target": "og_fruit"
+        }
+      ]
+    },
+    {
+      "id": "bs_brackets",
+      "body": "<<FILL role=rising words=100 beats='three brackets lie in the wet grass with their screws still in them, and the holes left in the stone are now wider than the screws that came out; a fourth turns in its hole like a loose tooth, and the frost that did all this is forecast again tonight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_brackets_0",
+          "label": "Hunt down the jar of wall plugs.",
+          "target": "bs_plugs"
+        },
+        {
+          "id": "c_bs_brackets_1",
+          "label": "Wire the brackets in instead.",
+          "target": "bs_wire"
+        },
+        {
+          "id": "c_bs_brackets_2",
+          "label": "Ask Dot Mallow what the shop has.",
+          "target": "bs_dot"
+        }
+      ]
+    },
+    {
+      "id": "bs_step",
+      "body": "<<FILL role=rising words=100 beats='the seventh step from the bottom is gone and the gap drops a knee height onto loose scree; in afternoon light anybody can see it, and after dusk it sits exactly where a tired walker puts a foot; behind the shed there is one scaffold plank, four bricks and half a bag of rained-on cement'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_step_0",
+          "label": "Hunt down the jar of wall plugs.",
+          "target": "bs_plugs"
+        },
+        {
+          "id": "c_bs_step_1",
+          "label": "Wire the brackets in instead.",
+          "target": "bs_wire"
+        },
+        {
+          "id": "c_bs_step_2",
+          "label": "Ask Dot Mallow what the shop has.",
+          "target": "bs_dot"
+        }
+      ]
+    },
+    {
+      "id": "bs_carry",
+      "body": "<<FILL role=rising words=100 beats='eighty lanterns weigh nothing on their own and a great deal together, the crates need two hands each, and the forecast chalked outside the shop says rain after four; Rafi can pull his bike trailer as far as the stile and the last two hundred steps belong to whoever is carrying'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_carry_0",
+          "label": "Hunt down the jar of wall plugs.",
+          "target": "bs_plugs"
+        },
+        {
+          "id": "c_bs_carry_1",
+          "label": "Wire the brackets in instead.",
+          "target": "bs_wire"
+        },
+        {
+          "id": "c_bs_carry_2",
+          "label": "Ask Dot Mallow what the shop has.",
+          "target": "bs_dot"
+        }
+      ]
+    },
+    {
+      "id": "sf_gate",
+      "body": "<<FILL role=rising words=100 beats='the gate onto the new path is wired shut with three turns of fencing wire and a note in biro that says SHUT MEANS SHUT; the ewes stand in the top corner with their backs to the wind, and the stile beside the gate has one plank missing and one plank green with moss'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_gate_0",
+          "label": "Work out where the lanterns go now.",
+          "target": "sf_reroute"
+        },
+        {
+          "id": "c_sf_gate_1",
+          "label": "Find something to hang the new ones on.",
+          "target": "sf_posts"
+        },
+        {
+          "id": "c_sf_gate_2",
+          "label": "Make the turn obvious in the dark.",
+          "target": "sf_sign"
+        }
+      ]
+    },
+    {
+      "id": "sf_slip",
+      "body": "<<FILL role=rising words=100 beats='the old path stops at a lip of raw earth where the hillside came away in February, and below it the ground is clay and heather roots that nobody should cross in the dark; the list still has nine lanterns hung along the stretch that is no longer there'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_slip_0",
+          "label": "Work out where the lanterns go now.",
+          "target": "sf_reroute"
+        },
+        {
+          "id": "c_sf_slip_1",
+          "label": "Find something to hang the new ones on.",
+          "target": "sf_posts"
+        },
+        {
+          "id": "c_sf_slip_2",
+          "label": "Make the turn obvious in the dark.",
+          "target": "sf_sign"
+        }
+      ]
+    },
+    {
+      "id": "sf_ovens",
+      "body": "<<FILL role=rising words=100 beats='Mr Ovens is somewhere between the barn and the top field and has said twice this year that the village treats his land like a corridor; he is also the only person with a quad bike and a spare roll of wire, and he has never once let a walker come to harm on his hill'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_ovens_0",
+          "label": "Work out where the lanterns go now.",
+          "target": "sf_reroute"
+        },
+        {
+          "id": "c_sf_ovens_1",
+          "label": "Find something to hang the new ones on.",
+          "target": "sf_posts"
+        },
+        {
+          "id": "c_sf_ovens_2",
+          "label": "Make the turn obvious in the dark.",
+          "target": "sf_sign"
+        }
+      ]
+    },
+    {
+      "id": "og_hinge",
+      "body": "<<FILL role=rising words=100 beats='the orchard gate ploughs a groove in the mud and takes two hands and a shoulder to move, which is fine at two in the afternoon and unkind at half past five to somebody with a pack on; the hinge pin is worn to a shine and the post itself is leaning downhill'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_hinge_0",
+          "label": "Rehang the hooks where they belong.",
+          "target": "og_hooks"
+        },
+        {
+          "id": "c_og_hinge_1",
+          "label": "Light the last stretch into the lane.",
+          "target": "og_lane"
+        },
+        {
+          "id": "c_og_hinge_2",
+          "label": "Take the twins up on their offer.",
+          "target": "og_twins"
+        }
+      ]
+    },
+    {
+      "id": "og_low",
+      "body": "<<FILL role=rising words=100 beats='last autumn somebody hung the orchard lanterns at eye height under branches heavy with fruit, and a walker put a shoulder through one and got a face full of paraffin smell; the trees have grown since, the fruit is still on, and the same hooks now sit lower still'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_low_0",
+          "label": "Rehang the hooks where they belong.",
+          "target": "og_hooks"
+        },
+        {
+          "id": "c_og_low_1",
+          "label": "Light the last stretch into the lane.",
+          "target": "og_lane"
+        },
+        {
+          "id": "c_og_low_2",
+          "label": "Take the twins up on their offer.",
+          "target": "og_twins"
+        }
+      ]
+    },
+    {
+      "id": "og_fruit",
+      "body": "<<FILL role=rising words=100 beats='windfalls lie three deep under the two old trees nearest the lane and the wasps in them are slow and cross in the cold; nobody wants to be reaching up into a tree above that, there is a barrow behind the wall, and clearing it costs about twenty minutes of the good light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_fruit_0",
+          "label": "Rehang the hooks where they belong.",
+          "target": "og_hooks"
+        },
+        {
+          "id": "c_og_fruit_1",
+          "label": "Light the last stretch into the lane.",
+          "target": "og_lane"
+        },
+        {
+          "id": "c_og_fruit_2",
+          "label": "Take the twins up on their offer.",
+          "target": "og_twins"
+        }
+      ]
+    },
+    {
+      "id": "bs_plugs",
+      "body": "<<FILL role=rising words=100 beats='the jar of wall plugs is not on the shelf the list says it lives on; Mrs Trewin remembers it going up the steps last October and never coming down, which puts it either in the heather at the top or in the back of a garage in the lane'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_plugs_0",
+          "label": "Set the whole flight before the light goes.",
+          "target": "bs_flight"
+        },
+        {
+          "id": "c_bs_plugs_1",
+          "label": "Hang one lantern and watch it in the wind.",
+          "target": "bs_test"
+        },
+        {
+          "id": "c_bs_plugs_2",
+          "label": "Go down and tell Mrs Trewin what the steps need.",
+          "target": "bs_report"
+        }
+      ]
+    },
+    {
+      "id": "bs_wire",
+      "body": "<<FILL role=rising words=100 beats='there are two arm lengths of fencing wire in the crate and a way of holding a bracket that Mrs Trewin shows with her good hand: twist, tuck the sharp end down, never leave a loop where a sleeve can catch; it holds for a season, and everybody who has done it says so with a face'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_wire_0",
+          "label": "Measure the steps and write them up properly.",
+          "target": "bs_page"
+        },
+        {
+          "id": "c_bs_wire_1",
+          "label": "Set the whole flight before the light goes.",
+          "target": "bs_flight"
+        },
+        {
+          "id": "c_bs_wire_2",
+          "label": "Hang one lantern and watch it in the wind.",
+          "target": "bs_test"
+        }
+      ]
+    },
+    {
+      "id": "bs_dot",
+      "body": "<<FILL role=rising words=100 beats='the shop keeps a drawer of oddments under the till and Dot Mallow will find a use for anything in it once somebody explains the job properly; she also has firm opinions about the ridge, a spare kettle, and the only paraffin funnel in the village that does not leak'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_dot_0",
+          "label": "Go down and tell Mrs Trewin what the steps need.",
+          "target": "bs_report"
+        },
+        {
+          "id": "c_bs_dot_1",
+          "label": "Measure the steps and write them up properly.",
+          "target": "bs_page"
+        },
+        {
+          "id": "c_bs_dot_2",
+          "label": "Set the whole flight before the light goes.",
+          "target": "bs_flight"
+        }
+      ]
+    },
+    {
+      "id": "sf_reroute",
+      "body": "<<FILL role=rising words=100 beats='the new path runs forty paces higher than the old one and turns twice where the old one ran straight, so nine lanterns in the old places would light a route that ends at a drop; the new line needs seven, and two of those have nothing to hang on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_reroute_0",
+          "label": "Walk the new line carrying a crate.",
+          "target": "sf_walk"
+        },
+        {
+          "id": "c_sf_reroute_1",
+          "label": "Get the gate question settled properly.",
+          "target": "sf_permission"
+        },
+        {
+          "id": "c_sf_reroute_2",
+          "label": "Mark the drop above the slip.",
+          "target": "sf_mark"
+        }
+      ]
+    },
+    {
+      "id": "sf_posts",
+      "body": "<<FILL role=rising words=100 beats='there are no trees on the turn and no wall for a hundred paces, and the fence posts belong to Mr Ovens; the shed can offer three bamboo canes, a bundle of stakes meant for tomato plants and a mallet with a split handle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_posts_0",
+          "label": "Leave the turn for the grown-ups and go back down.",
+          "target": "sf_dark"
+        },
+        {
+          "id": "c_sf_posts_1",
+          "label": "Walk the new line carrying a crate.",
+          "target": "sf_walk"
+        },
+        {
+          "id": "c_sf_posts_2",
+          "label": "Get the gate question settled properly.",
+          "target": "sf_permission"
+        }
+      ]
+    },
+    {
+      "id": "sf_sign",
+      "body": "<<FILL role=rising words=100 beats='a walker coming down in low cloud follows the ground that looks most walked, and that is still the old line; whatever else happens on this hill, the place where the path turns has to be unmistakable at dusk to somebody tired who has stopped reading the ground'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_sign_0",
+          "label": "Mark the drop above the slip.",
+          "target": "sf_mark"
+        },
+        {
+          "id": "c_sf_sign_1",
+          "label": "Leave the turn for the grown-ups and go back down.",
+          "target": "sf_dark"
+        },
+        {
+          "id": "c_sf_sign_2",
+          "label": "Walk the new line carrying a crate.",
+          "target": "sf_walk"
+        }
+      ]
+    },
+    {
+      "id": "og_hooks",
+      "body": "<<FILL role=rising words=100 beats='the right height for an orchard lantern is above the tallest walker with a pack on and below the branch that whips in a gust, and finding it means standing where the walkers walk and looking up, rather than standing where the ladder happens to be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_hooks_0",
+          "label": "Hang the orchard through before dusk.",
+          "target": "og_hang"
+        },
+        {
+          "id": "c_og_hooks_1",
+          "label": "Walk the orchard the way a walker would.",
+          "target": "og_check"
+        },
+        {
+          "id": "c_og_hooks_2",
+          "label": "Take the spare lanterns up the ridge.",
+          "target": "og_spare"
+        }
+      ]
+    },
+    {
+      "id": "og_lane",
+      "body": "<<FILL role=rising words=100 beats='the last forty paces before the lane are the piece everybody forgets, because the village lights are already visible from there; it is also where the ground is worst, with a rut, a drain grating and the corner where the orchard wall hides the turn'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_lane_0",
+          "label": "Finish the orchard beautifully and stop there.",
+          "target": "og_bottom"
+        },
+        {
+          "id": "c_og_lane_1",
+          "label": "Hang the orchard through before dusk.",
+          "target": "og_hang"
+        },
+        {
+          "id": "c_og_lane_2",
+          "label": "Walk the orchard the way a walker would.",
+          "target": "og_check"
+        }
+      ]
+    },
+    {
+      "id": "og_twins",
+      "body": "<<FILL role=rising words=100 beats='Kit and Row are nine and have been standing at the gate for ten minutes waiting to be given something, and they are entirely capable of carrying, counting and telling the truth about how many lanterns are left; they are not capable of being quiet or of being trusted with the mallet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_twins_0",
+          "label": "Take the spare lanterns up the ridge.",
+          "target": "og_spare"
+        },
+        {
+          "id": "c_og_twins_1",
+          "label": "Finish the orchard beautifully and stop there.",
+          "target": "og_bottom"
+        },
+        {
+          "id": "c_og_twins_2",
+          "label": "Hang the orchard through before dusk.",
+          "target": "og_hang"
+        }
+      ]
+    },
+    {
+      "id": "bs_flight",
+      "body": "<<FILL role=rising words=105 beats='the steps take one lantern every fourth bracket, twenty-two in all, and hanging from the bottom up means carrying past everything already hung, while hanging from the top down means walking back through the dark with nothing lit behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_flight_0",
+          "label": "Get the paraffin sorted first.",
+          "target": "gt_oil"
+        },
+        {
+          "id": "c_bs_flight_1",
+          "label": "Get more hands onto the ridge.",
+          "target": "gt_hands"
+        },
+        {
+          "id": "c_bs_flight_2",
+          "label": "Walk the whole route once, end to end.",
+          "target": "gt_walk"
+        }
+      ]
+    },
+    {
+      "id": "bs_test",
+      "body": "<<FILL role=rising words=105 beats='one lantern goes up on the third bracket and sits there swinging, and the way it swings says everything about how the other twenty-one will behave; the wind on the steps comes across the ridge rather than up it, which the list does not mention anywhere on the page'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_test_0",
+          "label": "Get ahead of the wind.",
+          "target": "gt_wind"
+        },
+        {
+          "id": "c_bs_test_1",
+          "label": "Send word up to the walking party.",
+          "target": "gt_word"
+        },
+        {
+          "id": "c_bs_test_2",
+          "label": "Light the bottom of the route now.",
+          "target": "gt_bottom"
+        }
+      ]
+    },
+    {
+      "id": "bs_report",
+      "body": "<<FILL role=rising words=105 beats='there is a version of this afternoon where somebody walks back down and says plainly what the steps need and how long that really takes, and a version where nobody says it until dark; Mrs Trewin is at the hall with her wrist propped up and the kettle on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_report_0",
+          "label": "Get the paraffin sorted first.",
+          "target": "gt_oil"
+        },
+        {
+          "id": "c_bs_report_1",
+          "label": "Get more hands onto the ridge.",
+          "target": "gt_hands"
+        },
+        {
+          "id": "c_bs_report_2",
+          "label": "Walk the whole route once, end to end.",
+          "target": "gt_walk"
+        }
+      ]
+    },
+    {
+      "id": "sf_walk",
+      "body": "<<FILL role=rising words=105 beats='carrying a crate along the new line is the only way to learn it, and it takes eleven minutes at a working pace with the wind pushing from the left; the light on the hill has already gone amber and the cloud is coming down rather than lifting'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_walk_0",
+          "label": "Get ahead of the wind.",
+          "target": "gt_wind"
+        },
+        {
+          "id": "c_sf_walk_1",
+          "label": "Send word up to the walking party.",
+          "target": "gt_word"
+        },
+        {
+          "id": "c_sf_walk_2",
+          "label": "Light the bottom of the route now.",
+          "target": "gt_bottom"
+        }
+      ]
+    },
+    {
+      "id": "sf_permission",
+      "body": "<<FILL role=rising words=105 beats='there is a difference between cutting the wire and being handed the wire, and that difference lasts a great deal longer than tonight; Mr Ovens is at the barn until milking, and the lantern rota has needed his field every autumn for as long as the list has existed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_permission_0",
+          "label": "Get the paraffin sorted first.",
+          "target": "gt_oil"
+        },
+        {
+          "id": "c_sf_permission_1",
+          "label": "Get more hands onto the ridge.",
+          "target": "gt_hands"
+        },
+        {
+          "id": "c_sf_permission_2",
+          "label": "Walk the whole route once, end to end.",
+          "target": "gt_walk"
+        }
+      ]
+    },
+    {
+      "id": "sf_mark",
+      "body": "<<FILL role=rising words=105 beats='the lip of the landslip is the one place on the whole route where being wrong costs more than a wet foot; two lanterns and a cane will say stop here to somebody who has stopped thinking, and there are two lanterns spare only if the steps turn out not to need them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sf_mark_0",
+          "label": "Get ahead of the wind.",
+          "target": "gt_wind"
+        },
+        {
+          "id": "c_sf_mark_1",
+          "label": "Send word up to the walking party.",
+          "target": "gt_word"
+        },
+        {
+          "id": "c_sf_mark_2",
+          "label": "Light the bottom of the route now.",
+          "target": "gt_bottom"
+        }
+      ]
+    },
+    {
+      "id": "og_hang",
+      "body": "<<FILL role=rising words=105 beats='twelve lanterns in eleven trees with one tree taking two, and each of them lit by hand from a taper, because the orchard is the one place on the route where the wind cannot reach and the matches somehow can'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_hang_0",
+          "label": "Get the paraffin sorted first.",
+          "target": "gt_oil"
+        },
+        {
+          "id": "c_og_hang_1",
+          "label": "Get more hands onto the ridge.",
+          "target": "gt_hands"
+        },
+        {
+          "id": "c_og_hang_2",
+          "label": "Walk the whole route once, end to end.",
+          "target": "gt_walk"
+        }
+      ]
+    },
+    {
+      "id": "og_check",
+      "body": "<<FILL role=rising words=105 beats='walking the orchard from the ridge end at a tired pace shows the hanging from the direction it is used, which is the opposite of the direction it was hung in; from that side two lanterns turn out to be behind branches and one is behind a trunk'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_check_0",
+          "label": "Get ahead of the wind.",
+          "target": "gt_wind"
+        },
+        {
+          "id": "c_og_check_1",
+          "label": "Send word up to the walking party.",
+          "target": "gt_word"
+        },
+        {
+          "id": "c_og_check_2",
+          "label": "Light the bottom of the route now.",
+          "target": "gt_bottom"
+        }
+      ]
+    },
+    {
+      "id": "og_spare",
+      "body": "<<FILL role=rising words=105 beats='the orchard needs twelve and the crate holds sixteen, and four spare lanterns at the top of the ridge are worth a great deal more than four spare lanterns in a crate at the bottom of it; carrying them up now costs the last of the easy light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_og_spare_0",
+          "label": "Get the paraffin sorted first.",
+          "target": "gt_oil"
+        },
+        {
+          "id": "c_og_spare_1",
+          "label": "Get more hands onto the ridge.",
+          "target": "gt_hands"
+        },
+        {
+          "id": "c_og_spare_2",
+          "label": "Walk the whole route once, end to end.",
+          "target": "gt_walk"
+        }
+      ]
+    },
+    {
+      "id": "bs_page",
+      "body": "<<FILL role=discovery words=92 beats='the brackets get measured, the gap gets drawn to scale and the whole of the Beacon Steps becomes one honest page pinned to the shed door; the lanterns go up a week later on proper fixings with somebody else carrying, which is not the afternoon anybody planned and is not nothing'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bs_page",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Steps Get Their Own Page"
+      }
+    },
+    {
+      "id": "sf_dark",
+      "body": "<<FILL role=setback words=92 beats='the wire stays on the gate and the new line stays unlit, so at four the rota gets phoned round the village and two adults walk the turn with head torches all evening; nobody comes to harm and nobody thanks anybody, and the list goes back into its envelope exactly as wrong as it came out'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_sf_dark",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Turn Left Dark"
+      }
+    },
+    {
+      "id": "og_bottom",
+      "body": "<<FILL role=discovery words=92 beats='the orchard ends up lit properly and prettily and the ridge above it does not, so the walkers come down off the moor by torchlight and meet the lanterns only in the last five minutes of the way home; it looks like a welcome, and it was meant to be a route'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_og_bottom",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Bottom Half Lit"
+      }
+    },
+    {
+      "id": "gt_oil",
+      "body": "<<FILL role=rising words=100 beats='the list says the paraffin lives in the hall cupboard and the hall cupboard now holds folding chairs; there are four litres in a can behind the shop and the rest is wherever last autumn left it, and eighty lanterns hold rather more than four litres between them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gt_oil_0",
+          "label": "Track down the rest of the paraffin.",
+          "target": "oil_can"
+        },
+        {
+          "id": "c_gt_oil_1",
+          "label": "Set up somewhere to fill them.",
+          "target": "oil_bench"
+        },
+        {
+          "id": "c_gt_oil_2",
+          "label": "Go through the wicks before filling anything.",
+          "target": "oil_wick"
+        }
+      ]
+    },
+    {
+      "id": "gt_hands",
+      "body": "<<FILL role=rising words=100 beats='eleven people in the village have hung lanterns before and about six of them are in on a Tuesday afternoon; asking costs time now and buys time later, and the names column on the list has not been true since the autumn before last'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gt_hands_0",
+          "label": "Knock on the doors that used to say yes.",
+          "target": "pp_doors"
+        },
+        {
+          "id": "c_gt_hands_1",
+          "label": "Catch people at the school gate.",
+          "target": "pp_gate"
+        },
+        {
+          "id": "c_gt_hands_2",
+          "label": "Put the word out through the shop.",
+          "target": "pp_shop"
+        }
+      ]
+    },
+    {
+      "id": "gt_walk",
+      "body": "<<FILL role=rising words=100 beats='nobody has walked the full route today, and the list describes a route that has changed in two places since it was written; forty minutes of walking would answer more questions than an hour of standing in the shed guessing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gt_walk_0",
+          "label": "Walk the route with the list and a pencil.",
+          "target": "pa_survey"
+        },
+        {
+          "id": "c_gt_walk_1",
+          "label": "Find the dark gaps between lanterns.",
+          "target": "pa_gaps"
+        },
+        {
+          "id": "c_gt_walk_2",
+          "label": "Look at what the rain has made of the ground.",
+          "target": "pa_ground"
+        }
+      ]
+    },
+    {
+      "id": "gt_wind",
+      "body": "<<FILL role=rising words=100 beats='the wind that came across the ridge at two is now bending the top of the ash tree by the hall, and paper lanterns and wind have a long and expensive history in this village; the shed has a box of storm shades that fit rather less than half the lanterns'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gt_wind_0",
+          "label": "Track down the rest of the paraffin.",
+          "target": "oil_can"
+        },
+        {
+          "id": "c_gt_wind_1",
+          "label": "Set up somewhere to fill them.",
+          "target": "oil_bench"
+        },
+        {
+          "id": "c_gt_wind_2",
+          "label": "Go through the wicks before filling anything.",
+          "target": "oil_wick"
+        }
+      ]
+    },
+    {
+      "id": "gt_word",
+      "body": "<<FILL role=rising words=100 beats='Priya Shah is bringing fourteen people down off the moor and expects a lit ridge at half past five; there is one bar of signal at the top of the steps and none at all in the orchard, and the message she needs is not the one that says everything is fine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gt_word_0",
+          "label": "Knock on the doors that used to say yes.",
+          "target": "pp_doors"
+        },
+        {
+          "id": "c_gt_word_1",
+          "label": "Catch people at the school gate.",
+          "target": "pp_gate"
+        },
+        {
+          "id": "c_gt_word_2",
+          "label": "Put the word out through the shop.",
+          "target": "pp_shop"
+        }
+      ]
+    },
+    {
+      "id": "gt_bottom",
+      "body": "<<FILL role=rising words=100 beats='lighting from the bottom up keeps the finished work behind you all afternoon and shows the walkers the best of it last; it also means that when something goes wrong at five, the lit part is the part nearest the village, the phone and the kettle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gt_bottom_0",
+          "label": "Walk the route with the list and a pencil.",
+          "target": "pa_survey"
+        },
+        {
+          "id": "c_gt_bottom_1",
+          "label": "Find the dark gaps between lanterns.",
+          "target": "pa_gaps"
+        },
+        {
+          "id": "c_gt_bottom_2",
+          "label": "Look at what the rain has made of the ground.",
+          "target": "pa_ground"
+        }
+      ]
+    },
+    {
+      "id": "oil_can",
+      "body": "<<FILL role=rising words=100 beats='four litres behind the shop, a half can in the church boiler room that may be paraffin and may be lamp oil, and a full can that Mrs Trewin swears went to the school for the harvest lanterns and never came back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_can_0",
+          "label": "Go to the school for the missing can.",
+          "target": "oil_school"
+        },
+        {
+          "id": "c_oil_can_1",
+          "label": "Ration what there is across the route.",
+          "target": "oil_ration"
+        },
+        {
+          "id": "c_oil_can_2",
+          "label": "Burn one for twenty minutes and watch it.",
+          "target": "oil_burn"
+        }
+      ]
+    },
+    {
+      "id": "oil_bench",
+      "body": "<<FILL role=rising words=100 beats='filling eighty lanterns needs a funnel, a rag, a flat surface and a firm rule about where the full ones go; doing it off a tailgate in the wind is how a village ends up with paraffin down the inside of every crate it owns'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_bench_0",
+          "label": "Ask the village for anything that burns.",
+          "target": "oil_borrow"
+        },
+        {
+          "id": "c_oil_bench_1",
+          "label": "Fill fast and get the crates moving.",
+          "target": "oil_spill"
+        },
+        {
+          "id": "c_oil_bench_2",
+          "label": "Go to the school for the missing can.",
+          "target": "oil_school"
+        }
+      ]
+    },
+    {
+      "id": "oil_wick",
+      "body": "<<FILL role=rising words=100 beats='a wick that has sat in a shed for a year burns for twenty minutes and then goes out sulking; there are two boxes of new wick in the drawer cut to the wrong length, and trimming eighty of them is an hour nobody has when half of them do not need it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_wick_0",
+          "label": "Ration what there is across the route.",
+          "target": "oil_ration"
+        },
+        {
+          "id": "c_oil_wick_1",
+          "label": "Burn one for twenty minutes and watch it.",
+          "target": "oil_burn"
+        },
+        {
+          "id": "c_oil_wick_2",
+          "label": "Ask the village for anything that burns.",
+          "target": "oil_borrow"
+        }
+      ]
+    },
+    {
+      "id": "pp_doors",
+      "body": "<<FILL role=rising words=100 beats='the names column is three years out of date and reads like a map of who has moved away; four of the doors are still the right doors, and two of those open onto somebody who has been waiting a long while to be asked again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_doors_0",
+          "label": "Split whoever comes into teams.",
+          "target": "pp_teams"
+        },
+        {
+          "id": "c_pp_doors_1",
+          "label": "Show the new ones how a bracket holds.",
+          "target": "pp_teach"
+        },
+        {
+          "id": "c_pp_doors_2",
+          "label": "Bring Mr Ovens in properly.",
+          "target": "pp_quad"
+        }
+      ]
+    },
+    {
+      "id": "pp_gate",
+      "body": "<<FILL role=rising words=100 beats='the school gate at half past three holds more of the village in one place than anywhere else all week, and nobody standing at it is in a hurry to be anywhere for the next ten minutes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_gate_0",
+          "label": "Give the twins a job that is really theirs.",
+          "target": "pp_twins"
+        },
+        {
+          "id": "c_pp_gate_1",
+          "label": "Ask everybody and sort it out when they arrive.",
+          "target": "pp_crowd"
+        },
+        {
+          "id": "c_pp_gate_2",
+          "label": "Split whoever comes into teams.",
+          "target": "pp_teams"
+        }
+      ]
+    },
+    {
+      "id": "pp_shop",
+      "body": "<<FILL role=rising words=100 beats='anything said across the counter at the shop is in eleven kitchens by teatime, and the version that arrives is the version Dot Mallow repeats, so the wording matters a good deal more than the asking'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_shop_0",
+          "label": "Show the new ones how a bracket holds.",
+          "target": "pp_teach"
+        },
+        {
+          "id": "c_pp_shop_1",
+          "label": "Bring Mr Ovens in properly.",
+          "target": "pp_quad"
+        },
+        {
+          "id": "c_pp_shop_2",
+          "label": "Give the twins a job that is really theirs.",
+          "target": "pp_twins"
+        }
+      ]
+    },
+    {
+      "id": "pa_survey",
+      "body": "<<FILL role=rising words=100 beats='the list and the ground disagree in nine places and only walking it finds them; the whole route takes thirty-eight minutes at a working pace, rather longer with a crate, and a pencil beats a memory every single time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_survey_0",
+          "label": "Respace the lanterns for the real path.",
+          "target": "pa_spacing"
+        },
+        {
+          "id": "c_pa_survey_1",
+          "label": "Make the drop above the slip safe.",
+          "target": "pa_drop"
+        },
+        {
+          "id": "c_pa_survey_2",
+          "label": "Mark the turns with something better than light.",
+          "target": "pa_paint"
+        }
+      ]
+    },
+    {
+      "id": "pa_gaps",
+      "body": "<<FILL role=rising words=100 beats='a lit route is not eighty lanterns, it is eighty gaps, and the gap that matters is the one where a walker cannot see the next light from the last one; there are three of those on this hill and none of them are marked'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_gaps_0",
+          "label": "Find the sheltered hanging points.",
+          "target": "pa_shelter"
+        },
+        {
+          "id": "c_pa_gaps_1",
+          "label": "Finish the survey properly before hanging anything.",
+          "target": "pa_map"
+        },
+        {
+          "id": "c_pa_gaps_2",
+          "label": "Respace the lanterns for the real path.",
+          "target": "pa_spacing"
+        }
+      ]
+    },
+    {
+      "id": "pa_ground",
+      "body": "<<FILL role=rising words=100 beats='the clay above the sheepfold turn is already greasy and the forecast promises more after four, and a lantern that shows a walker the wrong side of that slope is worse than no lantern there at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_ground_0",
+          "label": "Make the drop above the slip safe.",
+          "target": "pa_drop"
+        },
+        {
+          "id": "c_pa_ground_1",
+          "label": "Mark the turns with something better than light.",
+          "target": "pa_paint"
+        },
+        {
+          "id": "c_pa_ground_2",
+          "label": "Find the sheltered hanging points.",
+          "target": "pa_shelter"
+        }
+      ]
+    },
+    {
+      "id": "oil_school",
+      "body": "<<FILL role=rising words=105 beats='the school kitchen door stands open until four and the caretaker knows exactly where the harvest lanterns went and what came back with them; the walk home with a full can is uphill and takes both hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_school_0",
+          "label": "Run a filling line with the twins.",
+          "target": "oil_line"
+        },
+        {
+          "id": "c_oil_school_1",
+          "label": "Fit the storm shades to the filled ones.",
+          "target": "oil_shades"
+        },
+        {
+          "id": "c_oil_school_2",
+          "label": "Get the filled crates to the top first.",
+          "target": "oil_top"
+        }
+      ]
+    },
+    {
+      "id": "oil_ration",
+      "body": "<<FILL role=rising words=105 beats='four litres will fill about fifty lanterns properly or eighty badly, and a badly filled lantern does not fail at seven in the evening, it fails at ten past five with the whole village watching the ridge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_ration_0",
+          "label": "Hold a reserve back at the hall.",
+          "target": "oil_reserve"
+        },
+        {
+          "id": "c_oil_ration_1",
+          "label": "Run a filling line with the twins.",
+          "target": "oil_line"
+        },
+        {
+          "id": "c_oil_ration_2",
+          "label": "Fit the storm shades to the filled ones.",
+          "target": "oil_shades"
+        }
+      ]
+    },
+    {
+      "id": "oil_burn",
+      "body": "<<FILL role=rising words=105 beats='one filled lantern on the shed step with a watch beside it answers the only question that actually matters, which is whether the thing burns from now until the walkers are down; it costs twenty minutes to find out and rather more not to'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_burn_0",
+          "label": "Get the filled crates to the top first.",
+          "target": "oil_top"
+        },
+        {
+          "id": "c_oil_burn_1",
+          "label": "Hold a reserve back at the hall.",
+          "target": "oil_reserve"
+        },
+        {
+          "id": "c_oil_burn_2",
+          "label": "Run a filling line with the twins.",
+          "target": "oil_line"
+        }
+      ]
+    },
+    {
+      "id": "oil_borrow",
+      "body": "<<FILL role=rising words=105 beats='between the pub, the chapel and three kitchens there are storm lanterns, a camping lamp and a box of stubby candles in jam jars, none of which match the route and all of which make light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_borrow_0",
+          "label": "Fit the storm shades to the filled ones.",
+          "target": "oil_shades"
+        },
+        {
+          "id": "c_oil_borrow_1",
+          "label": "Get the filled crates to the top first.",
+          "target": "oil_top"
+        },
+        {
+          "id": "c_oil_borrow_2",
+          "label": "Hold a reserve back at the hall.",
+          "target": "oil_reserve"
+        }
+      ]
+    },
+    {
+      "id": "pp_teams",
+      "body": "<<FILL role=rising words=105 beats='two on the steps, two in the orchard, one on the turn and one running between them is a plan; six people all starting at the shed and talking is not, and the difference between them is whoever says the first sentence'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_teams_0",
+          "label": "Write the rota where people can see it.",
+          "target": "pp_rota"
+        },
+        {
+          "id": "c_pp_teams_1",
+          "label": "Set up a runner between the two ends.",
+          "target": "pp_runner"
+        },
+        {
+          "id": "c_pp_teams_2",
+          "label": "Get the kettle going at the hall.",
+          "target": "pp_kettle"
+        }
+      ]
+    },
+    {
+      "id": "pp_teach",
+      "body": "<<FILL role=rising words=105 beats='everybody who has never hung a lantern hangs the first one badly and the second one well, and the ten minutes spent on that are the cheapest ten minutes of the entire afternoon'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_teach_0",
+          "label": "Put Mrs Trewin where she can see the ridge.",
+          "target": "pp_trewin"
+        },
+        {
+          "id": "c_pp_teach_1",
+          "label": "Write the rota where people can see it.",
+          "target": "pp_rota"
+        },
+        {
+          "id": "c_pp_teach_2",
+          "label": "Set up a runner between the two ends.",
+          "target": "pp_runner"
+        }
+      ]
+    },
+    {
+      "id": "pp_quad",
+      "body": "<<FILL role=rising words=105 beats='a quad bike carries four crates to the top of the ridge in the time a person carries one, and the price of asking is standing in a yard being told about gates for five minutes first, with your hands behind your back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_quad_0",
+          "label": "Get the kettle going at the hall.",
+          "target": "pp_kettle"
+        },
+        {
+          "id": "c_pp_quad_1",
+          "label": "Put Mrs Trewin where she can see the ridge.",
+          "target": "pp_trewin"
+        },
+        {
+          "id": "c_pp_quad_2",
+          "label": "Write the rota where people can see it.",
+          "target": "pp_rota"
+        }
+      ]
+    },
+    {
+      "id": "pp_twins",
+      "body": "<<FILL role=rising words=105 beats='Kit and Row will do a dull job well for an hour if it is genuinely theirs and badly for four minutes if it was invented to keep them busy, and there is exactly one job on this route that fits them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_twins_0",
+          "label": "Set up a runner between the two ends.",
+          "target": "pp_runner"
+        },
+        {
+          "id": "c_pp_twins_1",
+          "label": "Get the kettle going at the hall.",
+          "target": "pp_kettle"
+        },
+        {
+          "id": "c_pp_twins_2",
+          "label": "Put Mrs Trewin where she can see the ridge.",
+          "target": "pp_trewin"
+        }
+      ]
+    },
+    {
+      "id": "pa_spacing",
+      "body": "<<FILL role=rising words=105 beats='the list spaces them evenly and the ground does not want them evenly: it wants them at the turns, at the drop, and at the two places where the path looks convincingly like it goes somewhere it does not'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_spacing_0",
+          "label": "Hang the top section to the new plan.",
+          "target": "pa_hang"
+        },
+        {
+          "id": "c_pa_spacing_1",
+          "label": "Walk it in the half dark and look.",
+          "target": "pa_dim"
+        },
+        {
+          "id": "c_pa_spacing_2",
+          "label": "Keep four lanterns for whatever is wrong.",
+          "target": "pa_bag"
+        }
+      ]
+    },
+    {
+      "id": "pa_drop",
+      "body": "<<FILL role=rising words=105 beats='two lanterns, a cane and a length of tape will say stop here in a way a tired person reads without thinking about it, and every one of those lanterns comes out of the count the top of the route was relying on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_drop_0",
+          "label": "Get a light onto the sheepfold gate.",
+          "target": "pa_post"
+        },
+        {
+          "id": "c_pa_drop_1",
+          "label": "Hang the top section to the new plan.",
+          "target": "pa_hang"
+        },
+        {
+          "id": "c_pa_drop_2",
+          "label": "Walk it in the half dark and look.",
+          "target": "pa_dim"
+        }
+      ]
+    },
+    {
+      "id": "pa_paint",
+      "body": "<<FILL role=rising words=105 beats='paint on a stone outlasts any lantern and the village has half a tin of white gate paint in the shed, and the argument about painting stones on a hill has been running since long before Mrs Trewin took the list'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_paint_0",
+          "label": "Keep four lanterns for whatever is wrong.",
+          "target": "pa_bag"
+        },
+        {
+          "id": "c_pa_paint_1",
+          "label": "Get a light onto the sheepfold gate.",
+          "target": "pa_post"
+        },
+        {
+          "id": "c_pa_paint_2",
+          "label": "Hang the top section to the new plan.",
+          "target": "pa_hang"
+        }
+      ]
+    },
+    {
+      "id": "pa_shelter",
+      "body": "<<FILL role=rising words=105 beats='the wind comes across the ridge and not up it, which makes the leeward side of every wall, post and thorn on the route worth a lantern that will still be burning at seven'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_shelter_0",
+          "label": "Walk it in the half dark and look.",
+          "target": "pa_dim"
+        },
+        {
+          "id": "c_pa_shelter_1",
+          "label": "Keep four lanterns for whatever is wrong.",
+          "target": "pa_bag"
+        },
+        {
+          "id": "c_pa_shelter_2",
+          "label": "Get a light onto the sheepfold gate.",
+          "target": "pa_post"
+        }
+      ]
+    },
+    {
+      "id": "oil_spill",
+      "body": "<<FILL role=setback words=92 beats='a can goes over on the shed step and takes the afternoon with it: the smell is everywhere, the sand goes down, the crate has to be washed out twice, and by the time the yard is safe the light is going; the ridge gets walked with head torches, and the lanterns go up on Saturday'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_oil_spill",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Paraffin on the Path"
+      }
+    },
+    {
+      "id": "pp_crowd",
+      "body": "<<FILL role=setback words=92 beats='nine people turn up at ten past four and stand in the shed asking what to do while the light goes, and by the time there is a list of who is doing what the ridge has gone blue; the lanterns go up by torchlight, crookedly, and everybody agrees it was lovely to see everyone out'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pp_crowd",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Too Many Hands, Too Late"
+      }
+    },
+    {
+      "id": "pa_map",
+      "body": "<<FILL role=setback words=92 beats='the survey is finished at ten past five and it is honest and complete and genuinely useful, and the hill is not lit; the list gets rewritten that evening at the kitchen table into something true, and the lanterns go up on Saturday in daylight with everybody knowing where they belong'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pa_map",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Very Good Map of a Dark Hill"
+      }
+    },
+    {
+      "id": "oil_line",
+      "body": "<<FILL role=rising words=100 beats='one fills, one wipes, one carries, and the queue moves at the speed of the slowest job, which is always the wiping; Kit and Row will hold that line for exactly as long as somebody keeps counting out loud'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_line_0",
+          "label": "Plan for the ones that go out.",
+          "target": "oil_relight"
+        },
+        {
+          "id": "c_oil_line_1",
+          "label": "Get the tapers and matches sorted.",
+          "target": "oil_taper"
+        },
+        {
+          "id": "c_oil_line_2",
+          "label": "Count what is actually lit.",
+          "target": "oil_count"
+        }
+      ]
+    },
+    {
+      "id": "oil_shades",
+      "body": "<<FILL role=rising words=100 beats='the storm shades fit forty of the eighty and go on easily before a lantern is hung and horribly afterwards in the wind; the ones without shades will have to hang where the ridge shelters them, which is a different plan for the whole top half'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_shades_0",
+          "label": "Get a message to Priya about the timing.",
+          "target": "oil_message"
+        },
+        {
+          "id": "c_oil_shades_1",
+          "label": "Fill fifty properly and leave the rest empty.",
+          "target": "oil_fifty"
+        },
+        {
+          "id": "c_oil_shades_2",
+          "label": "Plan for the ones that go out.",
+          "target": "oil_relight"
+        }
+      ]
+    },
+    {
+      "id": "oil_top",
+      "body": "<<FILL role=rising words=100 beats='the top of the route is the furthest from the shed and the last place anybody wants to be carrying at five o clock, and the argument for doing it first gets harder to make with every ten minutes that passes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_top_0",
+          "label": "Get the tapers and matches sorted.",
+          "target": "oil_taper"
+        },
+        {
+          "id": "c_oil_top_1",
+          "label": "Count what is actually lit.",
+          "target": "oil_count"
+        },
+        {
+          "id": "c_oil_top_2",
+          "label": "Get a message to Priya about the timing.",
+          "target": "oil_message"
+        }
+      ]
+    },
+    {
+      "id": "oil_reserve",
+      "body": "<<FILL role=rising words=100 beats='six filled lanterns and a can kept at the hall are either the most sensible thing anybody does today or six lanterns of ridge left dark, and which one it turns out to be depends entirely on what goes wrong later'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_reserve_0",
+          "label": "Fill fifty properly and leave the rest empty.",
+          "target": "oil_fifty"
+        },
+        {
+          "id": "c_oil_reserve_1",
+          "label": "Plan for the ones that go out.",
+          "target": "oil_relight"
+        },
+        {
+          "id": "c_oil_reserve_2",
+          "label": "Get the tapers and matches sorted.",
+          "target": "oil_taper"
+        }
+      ]
+    },
+    {
+      "id": "pp_rota",
+      "body": "<<FILL role=rising words=100 beats='a rota on a page in somebody pocket is a rumour and a rota chalked on the shed door is a fact, and the shed door carries a faint chalk mark from every autumn back to when the lanterns were tin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_rota_0",
+          "label": "Have somebody check the top pair.",
+          "target": "pp_top"
+        },
+        {
+          "id": "c_pp_rota_1",
+          "label": "Keep the top half with the team that knows it.",
+          "target": "pp_keep"
+        },
+        {
+          "id": "c_pp_rota_2",
+          "label": "Send two people up for the signal.",
+          "target": "pp_pair"
+        }
+      ]
+    },
+    {
+      "id": "pp_runner",
+      "body": "<<FILL role=rising words=100 beats='the top of the steps cannot see the orchard and neither end can hear the other, so a runner who knows both is worth more than a phone with no signal; it is also the coldest job on the hill and the one nobody volunteers for'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_runner_0",
+          "label": "Get everyone off the hill by six.",
+          "target": "pp_count"
+        },
+        {
+          "id": "c_pp_runner_1",
+          "label": "Let the village finish it however it likes.",
+          "target": "pp_village"
+        },
+        {
+          "id": "c_pp_runner_2",
+          "label": "Have somebody check the top pair.",
+          "target": "pp_top"
+        }
+      ]
+    },
+    {
+      "id": "pp_kettle",
+      "body": "<<FILL role=rising words=100 beats='a kettle at the hall at half past four is not a luxury, it is the thing that stops six people going home at five, and Mrs Trewin can manage it one handed if somebody else carries the water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_kettle_0",
+          "label": "Keep the top half with the team that knows it.",
+          "target": "pp_keep"
+        },
+        {
+          "id": "c_pp_kettle_1",
+          "label": "Send two people up for the signal.",
+          "target": "pp_pair"
+        },
+        {
+          "id": "c_pp_kettle_2",
+          "label": "Get everyone off the hill by six.",
+          "target": "pp_count"
+        }
+      ]
+    },
+    {
+      "id": "pp_trewin",
+      "body": "<<FILL role=rising words=100 beats='she cannot carry and she cannot climb, and she can look at the ridge from the hall steps and say which lantern is wrong from four hundred paces away, which is the one skill everybody else on the hill is missing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_trewin_0",
+          "label": "Let the village finish it however it likes.",
+          "target": "pp_village"
+        },
+        {
+          "id": "c_pp_trewin_1",
+          "label": "Have somebody check the top pair.",
+          "target": "pp_top"
+        },
+        {
+          "id": "c_pp_trewin_2",
+          "label": "Keep the top half with the team that knows it.",
+          "target": "pp_keep"
+        }
+      ]
+    },
+    {
+      "id": "pa_hang",
+      "body": "<<FILL role=rising words=100 beats='the top section takes nineteen lanterns under the new spacing and the crate that reached the stile holds sixteen, so either somebody goes back down the steps or the last three gaps stay gaps'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_hang_0",
+          "label": "Close the last gap on the ridge.",
+          "target": "pa_ninety"
+        },
+        {
+          "id": "c_pa_hang_1",
+          "label": "Go back for the two that blew out.",
+          "target": "pa_blown"
+        },
+        {
+          "id": "c_pa_hang_2",
+          "label": "Go up and meet the party at the top.",
+          "target": "pa_meet"
+        }
+      ]
+    },
+    {
+      "id": "pa_dim",
+      "body": "<<FILL role=rising words=100 beats='by half past four the ridge is already dim enough to test, and walking it downhill in that light is the only way to see it as the walkers will; two things that looked fine at two are invisible from above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_dim_0",
+          "label": "Hold the bottom and let them come down.",
+          "target": "pa_hold"
+        },
+        {
+          "id": "c_pa_dim_1",
+          "label": "Leave the shoulder and light everything else.",
+          "target": "pa_gap"
+        },
+        {
+          "id": "c_pa_dim_2",
+          "label": "Close the last gap on the ridge.",
+          "target": "pa_ninety"
+        }
+      ]
+    },
+    {
+      "id": "pa_bag",
+      "body": "<<FILL role=rising words=100 beats='every autumn something is wrong at the last minute that nobody predicted, and four lanterns in a bag at the top of the steps is the cheapest insurance this village has ever bought itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_bag_0",
+          "label": "Go back for the two that blew out.",
+          "target": "pa_blown"
+        },
+        {
+          "id": "c_pa_bag_1",
+          "label": "Go up and meet the party at the top.",
+          "target": "pa_meet"
+        },
+        {
+          "id": "c_pa_bag_2",
+          "label": "Hold the bottom and let them come down.",
+          "target": "pa_hold"
+        }
+      ]
+    },
+    {
+      "id": "pa_post",
+      "body": "<<FILL role=rising words=100 beats='the new gate is the one place on the route where a walker has to do something rather than keep walking, and doing something in the dark without a light is where every argument about this path has started'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_post_0",
+          "label": "Leave the shoulder and light everything else.",
+          "target": "pa_gap"
+        },
+        {
+          "id": "c_pa_post_1",
+          "label": "Close the last gap on the ridge.",
+          "target": "pa_ninety"
+        },
+        {
+          "id": "c_pa_post_2",
+          "label": "Go back for the two that blew out.",
+          "target": "pa_blown"
+        }
+      ]
+    },
+    {
+      "id": "oil_relight",
+      "body": "<<FILL role=rising words=105 beats='some of them will go out, which is what the list means by the word ROUND written three times in the margin, and somebody has to be the person who walks the whole route again at seven with a taper in a jar'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_relight_0",
+          "label": "Wait at the top of the steps.",
+          "target": "fn_wait"
+        },
+        {
+          "id": "c_oil_relight_1",
+          "label": "Get the phone up to the signal.",
+          "target": "fn_signal"
+        },
+        {
+          "id": "c_oil_relight_2",
+          "label": "Walk the route counting what is lit.",
+          "target": "fn_count"
+        }
+      ]
+    },
+    {
+      "id": "oil_taper",
+      "body": "<<FILL role=rising words=105 beats='there are two boxes of matches, one of them damp, and a bundle of tapers Mrs Trewin cut from a broom handle years ago; lighting eighty lanterns in wind is not a match job, it is a taper job, and the difference is about forty minutes of standing still'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_taper_0",
+          "label": "Fetch the head torches from the hall.",
+          "target": "fn_torch"
+        },
+        {
+          "id": "c_oil_taper_1",
+          "label": "Go up the ridge to meet them.",
+          "target": "fn_up"
+        },
+        {
+          "id": "c_oil_taper_2",
+          "label": "Get the hall ready for fourteen cold people.",
+          "target": "fn_hall"
+        }
+      ]
+    },
+    {
+      "id": "oil_count",
+      "body": "<<FILL role=rising words=105 beats='the only honest number is one somebody has walked out and counted, and the list has a tally box at the bottom that has been filled in in pencil every autumn since before anybody here was born'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_count_0",
+          "label": "Ask Mr Ovens for the quad bike.",
+          "target": "fn_ovens"
+        },
+        {
+          "id": "c_oil_count_1",
+          "label": "Take a taper to the shoulder.",
+          "target": "fn_taper"
+        },
+        {
+          "id": "c_oil_count_2",
+          "label": "Hold the plan and trust the route.",
+          "target": "fn_hold"
+        }
+      ]
+    },
+    {
+      "id": "oil_message",
+      "body": "<<FILL role=rising words=105 beats='the party is coming down whether or not the ridge is lit, so the useful message is a number and a time rather than a promise; the signal at the top of the steps holds for about a minute at a stretch and then thinks about it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oil_message_0",
+          "label": "Wait at the top of the steps.",
+          "target": "fn_wait"
+        },
+        {
+          "id": "c_oil_message_1",
+          "label": "Get the phone up to the signal.",
+          "target": "fn_signal"
+        },
+        {
+          "id": "c_oil_message_2",
+          "label": "Walk the route counting what is lit.",
+          "target": "fn_count"
+        }
+      ]
+    },
+    {
+      "id": "pp_top",
+      "body": "<<FILL role=rising words=105 beats='the two highest lanterns are the ones the walkers see first from the moor and the ones nobody walks back to check, and they hang in the worst of the wind with the least shelter on the route'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_top_0",
+          "label": "Fetch the head torches from the hall.",
+          "target": "fn_torch"
+        },
+        {
+          "id": "c_pp_top_1",
+          "label": "Go up the ridge to meet them.",
+          "target": "fn_up"
+        },
+        {
+          "id": "c_pp_top_2",
+          "label": "Get the hall ready for fourteen cold people.",
+          "target": "fn_hall"
+        }
+      ]
+    },
+    {
+      "id": "pp_keep",
+      "body": "<<FILL role=rising words=105 beats='the steps team has learned the steps in one afternoon and knows exactly which brackets turn in their holes, and handing that away at five to somebody fresh costs more than the fresh legs are worth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_keep_0",
+          "label": "Ask Mr Ovens for the quad bike.",
+          "target": "fn_ovens"
+        },
+        {
+          "id": "c_pp_keep_1",
+          "label": "Take a taper to the shoulder.",
+          "target": "fn_taper"
+        },
+        {
+          "id": "c_pp_keep_2",
+          "label": "Hold the plan and trust the route.",
+          "target": "fn_hold"
+        }
+      ]
+    },
+    {
+      "id": "pp_pair",
+      "body": "<<FILL role=rising words=105 beats='the phone signal at the top of the steps is one bar and one person alone up there at dusk is how the rota rule about pairs came to be written in the first place, in capital letters, twice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_pair_0",
+          "label": "Wait at the top of the steps.",
+          "target": "fn_wait"
+        },
+        {
+          "id": "c_pp_pair_1",
+          "label": "Get the phone up to the signal.",
+          "target": "fn_signal"
+        },
+        {
+          "id": "c_pp_pair_2",
+          "label": "Walk the route counting what is lit.",
+          "target": "fn_count"
+        }
+      ]
+    },
+    {
+      "id": "pp_count",
+      "body": "<<FILL role=rising words=105 beats='the rule that matters most has nothing to do with lanterns: everybody who went up comes down and is counted before the walkers arrive, and the counting is the part that gets forgotten on a good afternoon'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pp_count_0",
+          "label": "Fetch the head torches from the hall.",
+          "target": "fn_torch"
+        },
+        {
+          "id": "c_pp_count_1",
+          "label": "Go up the ridge to meet them.",
+          "target": "fn_up"
+        },
+        {
+          "id": "c_pp_count_2",
+          "label": "Get the hall ready for fourteen cold people.",
+          "target": "fn_hall"
+        }
+      ]
+    },
+    {
+      "id": "pa_ninety",
+      "body": "<<FILL role=rising words=105 beats='the gap between the top of the steps and the first ridge lantern is ninety paces of nothing at all, and it is the piece of the route a walker meets first and meets tired'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_ninety_0",
+          "label": "Ask Mr Ovens for the quad bike.",
+          "target": "fn_ovens"
+        },
+        {
+          "id": "c_pa_ninety_1",
+          "label": "Take a taper to the shoulder.",
+          "target": "fn_taper"
+        },
+        {
+          "id": "c_pa_ninety_2",
+          "label": "Hold the plan and trust the route.",
+          "target": "fn_hold"
+        }
+      ]
+    },
+    {
+      "id": "pa_blown",
+      "body": "<<FILL role=rising words=105 beats='two lanterns on the exposed shoulder have gone out once already and will do it again, and the real question is whether somebody stands there with them or moves them somewhere the wind is not'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_blown_0",
+          "label": "Wait at the top of the steps.",
+          "target": "fn_wait"
+        },
+        {
+          "id": "c_pa_blown_1",
+          "label": "Get the phone up to the signal.",
+          "target": "fn_signal"
+        },
+        {
+          "id": "c_pa_blown_2",
+          "label": "Walk the route counting what is lit.",
+          "target": "fn_count"
+        }
+      ]
+    },
+    {
+      "id": "pa_meet",
+      "body": "<<FILL role=rising words=105 beats='walking up to meet fourteen people coming off the moor turns a lit route into a welcome, and it means being out on the hill in the dark on purpose rather than by accident, which is a different thing to explain afterwards'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_meet_0",
+          "label": "Fetch the head torches from the hall.",
+          "target": "fn_torch"
+        },
+        {
+          "id": "c_pa_meet_1",
+          "label": "Go up the ridge to meet them.",
+          "target": "fn_up"
+        },
+        {
+          "id": "c_pa_meet_2",
+          "label": "Get the hall ready for fourteen cold people.",
+          "target": "fn_hall"
+        }
+      ]
+    },
+    {
+      "id": "pa_hold",
+      "body": "<<FILL role=rising words=105 beats='standing at the orchard gate with a lamp and letting the hill do its own work is the harder choice and the one the rota was written around; the route is either good enough now or it is not'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pa_hold_0",
+          "label": "Ask Mr Ovens for the quad bike.",
+          "target": "fn_ovens"
+        },
+        {
+          "id": "c_pa_hold_1",
+          "label": "Take a taper to the shoulder.",
+          "target": "fn_taper"
+        },
+        {
+          "id": "c_pa_hold_2",
+          "label": "Hold the plan and trust the route.",
+          "target": "fn_hold"
+        }
+      ]
+    },
+    {
+      "id": "oil_fifty",
+      "body": "<<FILL role=discovery words=92 beats='fifty go up filled properly and thirty stay in the crate, and the moon does more of the work than anybody expected; the walkers come down easily and never know there was a plan at all, and the tally box gets a fifty in it with a note beside it about the missing can'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_oil_fifty",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Fifty Lanterns and a Rising Moon"
+      }
+    },
+    {
+      "id": "pp_village",
+      "body": "<<FILL role=discovery words=92 beats='the ridge gets lit by fourteen people who mostly did not know each other at two o clock, and half the lanterns hang at slightly wrong heights because of it; the list goes back in the envelope with eleven new names written into the column and one of them underlined'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pp_village",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Village That Turned Up"
+      }
+    },
+    {
+      "id": "pa_gap",
+      "body": "<<FILL role=discovery words=92 beats='the route is lit end to end except for one stretch on the shoulder that swallows two lanterns twice over, and the walkers come down chattering and never notice the dark they crossed; the tally box says seventy-eight and the note beside it says shoulder, again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pa_gap",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Ninety Paces of Dark"
+      }
+    },
+    {
+      "id": "fn_wait",
+      "body": "<<FILL role=climax words=110 beats='half past five goes by with the ridge lit and nobody on it, and the moor above is a flat grey where fourteen people ought to be; ten minutes late off a moor means nothing at all and forty minutes means something'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_wait_0",
+          "label": "Move the six to the leeward side.",
+          "target": "fx_leeward"
+        },
+        {
+          "id": "c_fn_wait_1",
+          "label": "Send a pair up with the spare bag.",
+          "target": "fx_bag"
+        },
+        {
+          "id": "c_fn_wait_2",
+          "label": "Put a lamp at the orchard corner.",
+          "target": "fx_corner"
+        }
+      ]
+    },
+    {
+      "id": "fn_signal",
+      "body": "<<FILL role=climax words=110 beats='one bar at the top step, and a message Priya sent twenty minutes ago arrives all at once: they are down off the tops, one of them has turned an ankle, and they are moving slower than the light is going'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_signal_0",
+          "label": "Set a relay along the lit stretch.",
+          "target": "fx_relay"
+        },
+        {
+          "id": "c_fn_signal_1",
+          "label": "Keep the signal watch at the top step.",
+          "target": "fx_watch"
+        },
+        {
+          "id": "c_fn_signal_2",
+          "label": "Get help to the walker with the ankle.",
+          "target": "fx_ankle"
+        }
+      ]
+    },
+    {
+      "id": "fn_count",
+      "body": "<<FILL role=climax words=110 beats='seventy-one lit, six out and three never hung, and the six that are out sit inside the same two hundred paces on the exposed shoulder where the wind comes across the ridge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_count_0",
+          "label": "Wait at the sheepfold gate with a light.",
+          "target": "fx_gate"
+        },
+        {
+          "id": "c_fn_count_1",
+          "label": "Finish the tally and write it down.",
+          "target": "fx_tally"
+        },
+        {
+          "id": "c_fn_count_2",
+          "label": "Go round once more with the taper.",
+          "target": "fx_round"
+        }
+      ]
+    },
+    {
+      "id": "fn_torch",
+      "body": "<<FILL role=climax words=110 beats='the hall cupboard holds four head torches and two of them have batteries in, which is exactly the sort of fact the list exists to record and does not record anywhere'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_torch_0",
+          "label": "Stand where you are and let the ridge do its work.",
+          "target": "fx_hold_end"
+        },
+        {
+          "id": "c_fn_torch_1",
+          "label": "Get them down before the weather closes in.",
+          "target": "fx_early_end"
+        },
+        {
+          "id": "c_fn_torch_2",
+          "label": "Count them in and check the tally.",
+          "target": "fx_count_end"
+        }
+      ]
+    },
+    {
+      "id": "fn_up",
+      "body": "<<FILL role=climax words=110 beats='going up means walking away from every light on the route into the part of the hill that has never had a lantern on it, and it means somebody at the bottom knowing precisely where you have gone and when'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_up_0",
+          "label": "Rewrite the list while it is all still fresh.",
+          "target": "fx_list_end"
+        },
+        {
+          "id": "c_fn_up_1",
+          "label": "Stay on the shoulder and watch what the wind does.",
+          "target": "fx_wind_end"
+        },
+        {
+          "id": "c_fn_up_2",
+          "label": "Give the turn the last two lanterns.",
+          "target": "fx_short_end"
+        }
+      ]
+    },
+    {
+      "id": "fn_hall",
+      "body": "<<FILL role=climax words=110 beats='the hall has a kettle, a radiator that works and the wrong number of chairs, and fourteen people off a moor at six on an October evening want all three of those more than they want a beautiful ridge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_hall_0",
+          "label": "Move the six to the leeward side.",
+          "target": "fx_leeward"
+        },
+        {
+          "id": "c_fn_hall_1",
+          "label": "Send a pair up with the spare bag.",
+          "target": "fx_bag"
+        },
+        {
+          "id": "c_fn_hall_2",
+          "label": "Put a lamp at the orchard corner.",
+          "target": "fx_corner"
+        }
+      ]
+    },
+    {
+      "id": "fn_ovens",
+      "body": "<<FILL role=climax words=110 beats='the quad will get up the track to the sheepfold turn in four minutes with a person and a bag on the back, and asking for it a second time in one afternoon is a different sort of asking than the first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_ovens_0",
+          "label": "Set a relay along the lit stretch.",
+          "target": "fx_relay"
+        },
+        {
+          "id": "c_fn_ovens_1",
+          "label": "Keep the signal watch at the top step.",
+          "target": "fx_watch"
+        },
+        {
+          "id": "c_fn_ovens_2",
+          "label": "Get help to the walker with the ankle.",
+          "target": "fx_ankle"
+        }
+      ]
+    },
+    {
+      "id": "fn_taper",
+      "body": "<<FILL role=climax words=110 beats='six lanterns out in one stretch is not bad luck, it is the wind finding the one place nobody thought hard enough about, and relighting them where they hang means doing it all again in twenty minutes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_taper_0",
+          "label": "Wait at the sheepfold gate with a light.",
+          "target": "fx_gate"
+        },
+        {
+          "id": "c_fn_taper_1",
+          "label": "Finish the tally and write it down.",
+          "target": "fx_tally"
+        },
+        {
+          "id": "c_fn_taper_2",
+          "label": "Go round once more with the taper.",
+          "target": "fx_round"
+        }
+      ]
+    },
+    {
+      "id": "fn_hold",
+      "body": "<<FILL role=climax words=110 beats='the route is lit, the rota is written, the tally is counted, and the temptation now is to keep changing things; there is a version of this evening where the best thing anybody does is nothing at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_hold_0",
+          "label": "Stand where you are and let the ridge do its work.",
+          "target": "fx_hold_end"
+        },
+        {
+          "id": "c_fn_hold_1",
+          "label": "Get them down before the weather closes in.",
+          "target": "fx_early_end"
+        },
+        {
+          "id": "c_fn_hold_2",
+          "label": "Count them in and check the tally.",
+          "target": "fx_count_end"
+        }
+      ]
+    },
+    {
+      "id": "fx_leeward",
+      "body": "<<FILL role=climax words=115 beats='moving a lantern in the dark means unhooking, carrying and rehanging with cold hands, and the leeward line is nine paces off the path, which is nine paces of light the walkers will not get'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_leeward_0",
+          "label": "Walk them down and get the door open.",
+          "target": "z_warm"
+        },
+        {
+          "id": "c_fx_leeward_1",
+          "label": "See them safely round the turn.",
+          "target": "z_turn"
+        },
+        {
+          "id": "c_fx_leeward_2",
+          "label": "Get the top pair lit before they clear the tops.",
+          "target": "z_seen"
+        }
+      ]
+    },
+    {
+      "id": "fx_bag",
+      "body": "<<FILL role=climax words=115 beats='four spare lanterns, a taper, a jar and two people who know the shoulder can close the dark stretch in twelve minutes, and the pair have to be back down before the party reaches the turn'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_bag_0",
+          "label": "Send the quad up with the last crate.",
+          "target": "z_quad"
+        },
+        {
+          "id": "c_fx_bag_1",
+          "label": "Fill in the tally box and hang the list back up.",
+          "target": "z_tally"
+        },
+        {
+          "id": "c_fx_bag_2",
+          "label": "Hand the list back to Mrs Trewin.",
+          "target": "z_hand"
+        }
+      ]
+    },
+    {
+      "id": "fx_corner",
+      "body": "<<FILL role=climax words=115 beats='the orchard corner is where the wall hides the turn and where a tired party with a hurt ankle will make its one mistake of the evening, and a storm lantern on the gatepost fixes it outright'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_corner_0",
+          "label": "Write down what the list should have said.",
+          "target": "z_page"
+        },
+        {
+          "id": "c_fx_corner_1",
+          "label": "Light what is left after they are down.",
+          "target": "z_late"
+        },
+        {
+          "id": "c_fx_corner_2",
+          "label": "Leave the shoulder to the wind and go down.",
+          "target": "z_shoulder"
+        }
+      ]
+    },
+    {
+      "id": "fx_relay",
+      "body": "<<FILL role=climax words=115 beats='three people spaced along the lit stretch can pass a message from the moor to the hall in under two minutes without any signal at all, and it uses the three people who were going to walk up anyway'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_relay_0",
+          "label": "Walk them down and get the door open.",
+          "target": "z_warm"
+        },
+        {
+          "id": "c_fx_relay_1",
+          "label": "See them safely round the turn.",
+          "target": "z_turn"
+        },
+        {
+          "id": "c_fx_relay_2",
+          "label": "Get the top pair lit before they clear the tops.",
+          "target": "z_seen"
+        }
+      ]
+    },
+    {
+      "id": "fx_watch",
+      "body": "<<FILL role=climax words=115 beats='one pair on the top step with the phone held at the exact angle that works is how the village hears what is happening on the moor, and it is twenty minutes of standing still in the wind doing apparently nothing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_watch_0",
+          "label": "Send the quad up with the last crate.",
+          "target": "z_quad"
+        },
+        {
+          "id": "c_fx_watch_1",
+          "label": "Fill in the tally box and hang the list back up.",
+          "target": "z_tally"
+        },
+        {
+          "id": "c_fx_watch_2",
+          "label": "Hand the list back to Mrs Trewin.",
+          "target": "z_hand"
+        }
+      ]
+    },
+    {
+      "id": "fx_ankle",
+      "body": "<<FILL role=climax words=115 beats='a turned ankle three hundred paces above the sheepfold gate needs a shoulder, a light and somebody who does not fuss, and the quad can meet them at the turn if the gate is open and somebody is standing at it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_ankle_0",
+          "label": "Write down what the list should have said.",
+          "target": "z_page"
+        },
+        {
+          "id": "c_fx_ankle_1",
+          "label": "Light what is left after they are down.",
+          "target": "z_late"
+        },
+        {
+          "id": "c_fx_ankle_2",
+          "label": "Leave the shoulder to the wind and go down.",
+          "target": "z_shoulder"
+        }
+      ]
+    },
+    {
+      "id": "fx_gate",
+      "body": "<<FILL role=climax words=115 beats='the gate is the pinch point of the whole evening: fourteen people, one hurt one, a wired hinge and a field of ewes, and whoever stands there with a lamp decides how the next ten minutes go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_gate_0",
+          "label": "Walk them down and get the door open.",
+          "target": "z_warm"
+        },
+        {
+          "id": "c_fx_gate_1",
+          "label": "See them safely round the turn.",
+          "target": "z_turn"
+        },
+        {
+          "id": "c_fx_gate_2",
+          "label": "Get the top pair lit before they clear the tops.",
+          "target": "z_seen"
+        }
+      ]
+    },
+    {
+      "id": "fx_tally",
+      "body": "<<FILL role=climax words=115 beats='the tally box wants a number and the margin wants the truth, and the truth this year includes a missing can, a gate, a landslip and six lanterns that will not stay lit on the shoulder'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_tally_0",
+          "label": "Send the quad up with the last crate.",
+          "target": "z_quad"
+        },
+        {
+          "id": "c_fx_tally_1",
+          "label": "Fill in the tally box and hang the list back up.",
+          "target": "z_tally"
+        },
+        {
+          "id": "c_fx_tally_2",
+          "label": "Hand the list back to Mrs Trewin.",
+          "target": "z_hand"
+        }
+      ]
+    },
+    {
+      "id": "fx_round",
+      "body": "<<FILL role=climax words=115 beats='one more round of the whole route at ten to six, relighting whatever has gone out, is the oldest instruction on the list and the one written in the steadiest hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fx_round_0",
+          "label": "Write down what the list should have said.",
+          "target": "z_page"
+        },
+        {
+          "id": "c_fx_round_1",
+          "label": "Light what is left after they are down.",
+          "target": "z_late"
+        },
+        {
+          "id": "c_fx_round_2",
+          "label": "Leave the shoulder to the wind and go down.",
+          "target": "z_shoulder"
+        }
+      ]
+    },
+    {
+      "id": "fx_hold_end",
+      "body": "<<FILL role=success words=95 beats='the party comes off the moor into a line of lights that runs unbroken from the top of the steps to the orchard gate, and fourteen people walk down talking about the view; nothing dramatic happens anywhere on the hill, which is what the list has been trying to achieve since 1953'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fx_hold_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Ridge Holds"
+      }
+    },
+    {
+      "id": "fx_early_end",
+      "body": "<<FILL role=success words=95 beats='the last of the party reaches the orchard gate at twenty-five past six, ten minutes ahead of the rain, and the lanterns are still burning behind them all the way up the hill; Priya counts fourteen twice and then stops counting'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fx_early_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Down Before the Rain"
+      }
+    },
+    {
+      "id": "fx_count_end",
+      "body": "<<FILL role=completion words=95 beats='seventy-eight lit, fourteen walkers in, six people off the hill and all of it written in the tally box in pencil before anybody sits down; it is the first year in three that the numbers on the page and the numbers on the hill are the same numbers'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fx_count_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Every Lantern Counted"
+      }
+    },
+    {
+      "id": "fx_list_end",
+      "body": "<<FILL role=completion words=95 beats='the list gets rewritten on the hall table with the mud still on everybody, and the new one has the landslip in it, the gate in it, the shoulder in it and eleven names that are true; Mrs Trewin signs the bottom with her left hand and it is barely readable'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fx_list_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The List Made True"
+      }
+    },
+    {
+      "id": "fx_wind_end",
+      "body": "<<FILL role=discovery words=95 beats='twenty minutes on the shoulder with a taper teaches more about that stretch than nine autumns of hanging lanterns on it: the gusts come in threes across the ridge and nothing hung on the path side survives the second one; the walk goes on without you and the notebook fills up'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fx_wind_end",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Wind Does on the Shoulder"
+      }
+    },
+    {
+      "id": "fx_short_end",
+      "body": "<<FILL role=setback words=95 beats='the turn is lit and the top of the steps is not, and the party comes down the steps in the dark with one head torch between fourteen; nobody falls and everybody notices, and the steps get talked about at the hall in the voice the village keeps for near misses'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fx_short_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Two Lanterns Short at the Steps"
+      }
+    },
+    {
+      "id": "z_warm",
+      "body": "<<FILL role=success words=95 beats='fourteen people, one strapped ankle and six lantern keepers come through the hall door at twenty to seven into a room with a working radiator and the wrong number of chairs, and the ridge behind them is still burning end to end in the rain'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_warm",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Fourteen In and Warm"
+      }
+    },
+    {
+      "id": "z_turn",
+      "body": "<<FILL role=success words=95 beats='the new line above the sheepfold does exactly what it was rehung to do: fourteen people walk the turn without a single one of them drifting onto the old ground above the slip, and not one of them notices there was ever a choice to make there'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_turn",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Turn Nobody Missed"
+      }
+    },
+    {
+      "id": "z_seen",
+      "body": "<<FILL role=success words=95 beats='from the moor the ridge shows as a line of small warm dots a mile off, and Priya says afterwards that the party stopped walking for a moment when they came over the last rise and saw it; that is the whole point of the lanterns and it is not written down anywhere on the list'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_seen",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Ridge You Could See From the Moor"
+      }
+    },
+    {
+      "id": "z_quad",
+      "body": "<<FILL role=success words=95 beats='the quad takes the last crate and two people to the sheepfold turn in four minutes, the gate stands open with a lamp on the post, and Mr Ovens stands beside it in the rain telling everybody who passes that this is his field'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_quad",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Gate Stood Open"
+      }
+    },
+    {
+      "id": "z_tally",
+      "body": "<<FILL role=completion words=95 beats='the tally box gets its number, the margin gets four lines of truth about the shoulder, and the clipboard goes back on its nail in the shed with the pencil on the string; next autumn starts from a page that is not lying'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_tally",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Tally Box Filled In"
+      }
+    },
+    {
+      "id": "z_hand",
+      "body": "<<FILL role=completion words=95 beats='the list comes back with a mended fixing, a rewritten section, a new name in the column and paraffin on the corner of page two, and Mrs Trewin reads it with her wrist on the table and says only that it will do, which from her is a great deal'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_hand",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Handed Back Better Than It Came"
+      }
+    },
+    {
+      "id": "z_page",
+      "body": "<<FILL role=discovery words=95 beats='the evening ends with the ridge half lit and a page of notes that nobody asked for: where the path really goes, what the wind does, which brackets turn, and how long the steps take with a crate; it is the most useful thing written about this hill in years and it lit nothing at all tonight'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_page",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Page That Should Have Been There"
+      }
+    },
+    {
+      "id": "z_late",
+      "body": "<<FILL role=setback words=95 beats='the party is home before the ridge is finished, so the last eleven lanterns go up at seven in the rain for nobody, and they burn beautifully over an empty hill until the wind takes three of them at nine'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_late",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Lit Late, Lit Anyway"
+      }
+    },
+    {
+      "id": "z_shoulder",
+      "body": "<<FILL role=setback words=95 beats='the shoulder goes dark for the third time and stays dark, and fourteen people cross two hundred paces of it on one head torch with the rain coming in sideways; everybody gets down, nobody is hurt, and nobody says the ridge was lit this year'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_z_shoulder",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Shoulder Went Dark Again"
+      }
+    }
+  ]
+}

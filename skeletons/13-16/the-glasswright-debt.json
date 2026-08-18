@@ -1,0 +1,2729 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_glasswright_debt",
+ "version": 1,
+ "title": "The Glasswright's Debt",
+ "metadata": {
+  "age_band": "13-16",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 7.0,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "inheritance",
+   "obligation",
+   "craft and apprenticeship",
+   "money and honesty",
+   "grief"
+  ],
+  "estimated_minutes": 11,
+  "ending_count": 23,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "length": "medium",
+  "narrative_style": "prose",
+  "production_eligible": true
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "<<FILL role=setup words=60 beats='the solicitor hands over one key and one brown envelope; Vashti Aitchison has left her great-niece Nell the glass workshop on Fossgate, the half-built Saint Barnabas window for the cathedral, and forty-one thousand pounds secured against the building; eleven weeks until the feast, and two apprentices who have not been told'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_open_0",
+     "label": "Open the workshop on Fossgate.",
+     "target": "d01_0"
+    }
+   ]
+  },
+  {
+   "id": "d01_0",
+   "body": "<<FILL role=setup words=137 beats='the workshop smells of putty and cold iron and Vashti has been dead nine days; three of five lancets leaded and racked, two of them still only cartoon on the bench; Idris and Marguerite let themselves in at eight as if nothing has changed, because nobody has told them anything yet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d01_0_0",
+     "label": "Tell Idris and Marguerite exactly where things stand.",
+     "target": "d02_0"
+    },
+    {
+     "id": "c_d01_0_1",
+     "label": "Take the ledger to the bank before anyone else does.",
+     "target": "d02_1"
+    },
+    {
+     "id": "c_d01_0_2",
+     "label": "Say nothing yet and get the fourth lancet cut.",
+     "target": "d02_2"
+    }
+   ]
+  },
+  {
+   "id": "d02_0",
+   "body": "<<FILL role=choice words=154 beats='Nell says the figure out loud in the glass store and it is worse spoken than written; Idris works out his own back wages in his head without being asked; Marguerite asks the only useful question, which is whether the cathedral has paid anything at all yet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d02_0_0",
+     "label": "Ask the cathedral what it has actually paid.",
+     "target": "d03_0"
+    },
+    {
+     "id": "c_d02_0_1",
+     "label": "Follow the second tranche out of the account.",
+     "target": "d03_1"
+    },
+    {
+     "id": "c_d02_0_2",
+     "label": "Put Idris's wages ahead of the glass order.",
+     "target": "d03_2"
+    }
+   ]
+  },
+  {
+   "id": "d02_1",
+   "body": "<<FILL role=rising words=137 beats='Miss Tarrant at the bank is kind and completely immovable; the loan against the building was drawn in two tranches and the second went out last October, and nobody in the workshop has ever heard of a second tranche'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d02_1_0",
+     "label": "Hand the fourth lancet to Marguerite.",
+     "target": "d03_3"
+    },
+    {
+     "id": "c_d02_1_1",
+     "label": "Take Cauldwell's call.",
+     "target": "d03_4"
+    },
+    {
+     "id": "c_d02_1_2",
+     "label": "Ask the cathedral what it has actually paid.",
+     "target": "d03_0"
+    }
+   ]
+  },
+  {
+   "id": "d02_2",
+   "body": "<<FILL role=rising words=120 beats='work is the only thing in the building still behaving; Nell breaks the border glass twice and cuts it clean on the third go, and learns in that hour that grief and concentration draw on exactly the same part of a person'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d02_2_0",
+     "label": "Follow the second tranche out of the account.",
+     "target": "d03_1"
+    },
+    {
+     "id": "c_d02_2_1",
+     "label": "Put Idris's wages ahead of the glass order.",
+     "target": "d03_2"
+    },
+    {
+     "id": "c_d02_2_2",
+     "label": "Hand the fourth lancet to Marguerite.",
+     "target": "d03_3"
+    }
+   ]
+  },
+  {
+   "id": "d03_0",
+   "body": "<<FILL role=rising words=125 beats='Canon Aldred is apologetic in the manner of a man reading from a schedule; the fabric committee pays on installation and not on progress, so the estate is owed nothing until glass is in stone, and the contract names Saint Barnabas or nothing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d03_0_0",
+     "label": "Read the completion clause properly.",
+     "target": "d04_0"
+    },
+    {
+     "id": "c_d03_0_1",
+     "label": "Find out who D P is.",
+     "target": "d04_1"
+    },
+    {
+     "id": "c_d03_0_2",
+     "label": "Pay Idris from the cathedral deposit.",
+     "target": "d04_2"
+    }
+   ]
+  },
+  {
+   "id": "d03_1",
+   "body": "<<FILL role=rising words=154 beats='the money left in four payments across the winter, none of them to a glass merchant, all of them to an account carrying only initials; Vashti kept a receipt for everything she ever bought and kept none at all for these'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d03_1_0",
+     "label": "Cost the last two lancets honestly.",
+     "target": "d04_3"
+    },
+    {
+     "id": "c_d03_1_1",
+     "label": "Ask Cauldwell what he actually wants.",
+     "target": "d04_4"
+    },
+    {
+     "id": "c_d03_1_2",
+     "label": "Tell your mother the whole of it.",
+     "target": "d04_5"
+    }
+   ]
+  },
+  {
+   "id": "d03_2",
+   "body": "<<FILL role=rising words=137 beats='Idris has carried his own rent on a credit card since February and has told nobody in the building; Nell finds his hours written on the back of a cutline sheet in his careful draughtsman hand, and the total is not a number anyone should have to ask for'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d03_2_0",
+     "label": "Open the bottom drawer of the plan chest.",
+     "target": "d04_6"
+    },
+    {
+     "id": "c_d03_2_1",
+     "label": "Read the completion clause properly.",
+     "target": "d04_0"
+    },
+    {
+     "id": "c_d03_2_2",
+     "label": "Find out who D P is.",
+     "target": "d04_1"
+    },
+    {
+     "id": "c_d03_2_3",
+     "label": "Pay Idris from the cathedral deposit.",
+     "target": "d04_2"
+    }
+   ]
+  },
+  {
+   "id": "d03_3",
+   "body": "<<FILL role=rising words=120 beats='Marguerite has cut to Vashti's cartoons for a year and holds a line better than Nell does on her best day; she asks, without any heat in it, whether she is being trusted with something or given a share of a sinking'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d03_3_0",
+     "label": "Cost the last two lancets honestly.",
+     "target": "d04_3"
+    },
+    {
+     "id": "c_d03_3_1",
+     "label": "Ask Cauldwell what he actually wants.",
+     "target": "d04_4"
+    },
+    {
+     "id": "c_d03_3_2",
+     "label": "Tell your mother the whole of it.",
+     "target": "d04_5"
+    }
+   ]
+  },
+  {
+   "id": "d03_4",
+   "body": "<<FILL role=branch words=149 beats='Fenwick Cauldwell rings before the funeral flowers are off the step; he will take the commission at cost, keep both apprentices on trial, and have the Aitchison name off the north aisle by Whitsun, and he says all of it pleasantly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d03_4_0",
+     "label": "Open the bottom drawer of the plan chest.",
+     "target": "d04_6"
+    },
+    {
+     "id": "c_d03_4_1",
+     "label": "Read the completion clause properly.",
+     "target": "d04_0"
+    },
+    {
+     "id": "c_d03_4_2",
+     "label": "Find out who D P is.",
+     "target": "d04_1"
+    }
+   ]
+  },
+  {
+   "id": "d04_0",
+   "body": "<<FILL role=rising words=142 beats='the clause runs four lines and every line of it belongs to the cathedral; late delivery forfeits the fee but not the work, and the fabric committee may appoint another firm and bill the estate for the difference'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d04_0_0",
+     "label": "Go to the address on the payments.",
+     "target": "d05_0"
+    },
+    {
+     "id": "c_d04_0_1",
+     "label": "Get the ruby glass ordered on credit.",
+     "target": "d05_1"
+    },
+    {
+     "id": "c_d04_0_2",
+     "label": "Sign Cauldwell's letter of intent and be done.",
+     "target": "e04_0"
+    }
+   ]
+  },
+  {
+   "id": "d04_1",
+   "body": "<<FILL role=rising words=125 beats='the initials in the ledger are D P and there is exactly one D P in Vashti's world; Dov Prosser, eighty-one, who taught her to lead a panel in 1979 and has not been in the workshop since before Christmas'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d04_1_0",
+     "label": "Sit down with the ledger and Marguerite.",
+     "target": "d05_2"
+    },
+    {
+     "id": "c_d04_1_1",
+     "label": "Ask Idris what he thinks the window needs.",
+     "target": "d05_3"
+    },
+    {
+     "id": "c_d04_1_2",
+     "label": "Go to the fabric committee meeting.",
+     "target": "d05_4"
+    }
+   ]
+  },
+  {
+   "id": "d04_2",
+   "body": "<<FILL role=rising words=154 beats='the deposit is the only clean money in the account and spending it on wages means the ruby glass waits another month; Idris refuses twice and takes it the third time, and neither of them looks at the other while he signs'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d04_2_0",
+     "label": "Take stock of the tools.",
+     "target": "d05_5"
+    },
+    {
+     "id": "c_d04_2_1",
+     "label": "Let your mother do the arithmetic out loud.",
+     "target": "d05_6"
+    },
+    {
+     "id": "c_d04_2_2",
+     "label": "Work the night through on the fifth lancet.",
+     "target": "d05_7"
+    }
+   ]
+  },
+  {
+   "id": "d04_3",
+   "body": "<<FILL role=rising words=137 beats='antique flashed ruby at nine hundred the square metre, lead came, cement, firing, and Marguerite's hours at the rate Vashti was paying her, which turns out on inspection to be under the rate she should have been paying her'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d04_3_0",
+     "label": "Go to the address on the payments.",
+     "target": "d05_0"
+    },
+    {
+     "id": "c_d04_3_1",
+     "label": "Get the ruby glass ordered on credit.",
+     "target": "d05_1"
+    },
+    {
+     "id": "c_d04_3_2",
+     "label": "Sign Cauldwell's letter of intent and be done.",
+     "target": "e04_0"
+    }
+   ]
+  },
+  {
+   "id": "d04_4",
+   "body": "<<FILL role=branch words=120 beats='not the fee, as it turns out; Cauldwell wants the north aisle on his firm's board and the Aitchison cartoons in his plan chest, and he is honest enough about both that Nell nearly likes him for it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d04_4_0",
+     "label": "Sit down with the ledger and Marguerite.",
+     "target": "d05_2"
+    },
+    {
+     "id": "c_d04_4_1",
+     "label": "Ask Idris what he thinks the window needs.",
+     "target": "d05_3"
+    },
+    {
+     "id": "c_d04_4_2",
+     "label": "Go to the fabric committee meeting.",
+     "target": "d05_4"
+    },
+    {
+     "id": "c_d04_4_3",
+     "label": "Take stock of the tools.",
+     "target": "d05_5"
+    }
+   ]
+  },
+  {
+   "id": "d04_5",
+   "body": "<<FILL role=rising words=149 beats='Sally already has an estate agent's number in her phone and is not wrong about a single figure; she uses the word sentimental twice and means it kindly, which is somehow the worst part of the afternoon'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d04_5_0",
+     "label": "Let your mother do the arithmetic out loud.",
+     "target": "d05_6"
+    },
+    {
+     "id": "c_d04_5_1",
+     "label": "Work the night through on the fifth lancet.",
+     "target": "d05_7"
+    },
+    {
+     "id": "c_d04_5_2",
+     "label": "Go to the address on the payments.",
+     "target": "d05_0"
+    }
+   ]
+  },
+  {
+   "id": "d04_6",
+   "body": "<<FILL role=discovery words=132 beats='six drawers of cartoons going back to 1979, and in the last one a folder of drawings in a hand that is not Vashti's at all, older and steadier, initialled D P in the corner of every single sheet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d04_6_0",
+     "label": "Get the ruby glass ordered on credit.",
+     "target": "d05_1"
+    },
+    {
+     "id": "c_d04_6_1",
+     "label": "Sit down with the ledger and Marguerite.",
+     "target": "d05_2"
+    },
+    {
+     "id": "c_d04_6_2",
+     "label": "Ask Idris what he thinks the window needs.",
+     "target": "d05_3"
+    }
+   ]
+  },
+  {
+   "id": "d05_0",
+   "body": "<<FILL role=rising words=159 beats='the account belongs to a care home on the Malton road, forty minutes out, and the payments are the top-up between what the county pays for a bed and what a room there actually costs'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d05_0_0",
+     "label": "Visit Dov Prosser.",
+     "target": "d06_0"
+    },
+    {
+     "id": "c_d05_0_1",
+     "label": "Cut the rejected fourth cartoon instead.",
+     "target": "d06_1"
+    },
+    {
+     "id": "c_d05_0_2",
+     "label": "Hand the contract back to the cathedral.",
+     "target": "e05_0"
+    }
+   ]
+  },
+  {
+   "id": "d05_1",
+   "body": "<<FILL role=rising words=142 beats='the merchant in Sunderland knew Vashti for thirty years and gives Nell sixty days on nine hundred pounds of flashed ruby on nothing but that; the debt is now in two places instead of one and both of them are hers'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d05_1_0",
+     "label": "Ask Miss Tarrant for a payment holiday.",
+     "target": "d06_2"
+    },
+    {
+     "id": "c_d05_1_1",
+     "label": "Put Marguerite on the books properly.",
+     "target": "d06_3"
+    },
+    {
+     "id": "c_d05_1_2",
+     "label": "Let Idris take the lead on installation.",
+     "target": "d06_4"
+    },
+    {
+     "id": "c_d05_1_3",
+     "label": "Go through the second drawer.",
+     "target": "d06_5"
+    }
+   ]
+  },
+  {
+   "id": "d05_2",
+   "body": "<<FILL role=rising words=125 beats='Marguerite reads a column faster than Nell reads a sentence and finds inside ten minutes the thing Nell has looked at four times without seeing, which is that the workshop has run at a loss since the year before last'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d05_2_0",
+     "label": "Open the workshop to the street.",
+     "target": "d06_6"
+    },
+    {
+     "id": "c_d05_2_1",
+     "label": "Talk to the other glaziers in the county.",
+     "target": "d06_7"
+    },
+    {
+     "id": "c_d05_2_2",
+     "label": "Visit Dov Prosser.",
+     "target": "d06_0"
+    }
+   ]
+  },
+  {
+   "id": "d05_3",
+   "body": "<<FILL role=rising words=154 beats='Idris has opinions nobody has ever asked him for, and one of them is that Vashti drew the fourth lancet twice and preferred the version she did not use, and he knows exactly where the rejected cartoon is'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d05_3_0",
+     "label": "Cut the rejected fourth cartoon instead.",
+     "target": "d06_1"
+    },
+    {
+     "id": "c_d05_3_1",
+     "label": "Ask Miss Tarrant for a payment holiday.",
+     "target": "d06_2"
+    },
+    {
+     "id": "c_d05_3_2",
+     "label": "Put Marguerite on the books properly.",
+     "target": "d06_3"
+    }
+   ]
+  },
+  {
+   "id": "d05_4",
+   "body": "<<FILL role=rising words=137 beats='six people around a table in the chapter house, four of them sympathetic and two of them counting; Canon Aldred asks for a date and Nell gives him one that she does not yet know how to keep'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d05_4_0",
+     "label": "Let Idris take the lead on installation.",
+     "target": "d06_4"
+    },
+    {
+     "id": "c_d05_4_1",
+     "label": "Go through the second drawer.",
+     "target": "d06_5"
+    },
+    {
+     "id": "c_d05_4_2",
+     "label": "Hand the contract back to the cathedral.",
+     "target": "e05_0"
+    }
+   ]
+  },
+  {
+   "id": "d05_5",
+   "body": "<<FILL role=rising words=120 beats='Vashti's bench, her grozing irons, the diamond wheel, the lathekin worn to the shape of her thumb; an auctioneer would give perhaps two thousand for the lot, which is five weeks of interest and no window'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d05_5_0",
+     "label": "Open the workshop to the street.",
+     "target": "d06_6"
+    },
+    {
+     "id": "c_d05_5_1",
+     "label": "Talk to the other glaziers in the county.",
+     "target": "d06_7"
+    },
+    {
+     "id": "c_d05_5_2",
+     "label": "Visit Dov Prosser.",
+     "target": "d06_0"
+    }
+   ]
+  },
+  {
+   "id": "d05_6",
+   "body": "<<FILL role=rising words=149 beats='Sally lays it out at the kitchen table with a pen and every line of it is correct, and at the end she says she is not trying to take anything away from Nell, and that is true as well'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d05_6_0",
+     "label": "Cut the rejected fourth cartoon instead.",
+     "target": "d06_1"
+    },
+    {
+     "id": "c_d05_6_1",
+     "label": "Ask Miss Tarrant for a payment holiday.",
+     "target": "d06_2"
+    },
+    {
+     "id": "c_d05_6_2",
+     "label": "Put Marguerite on the books properly.",
+     "target": "d06_3"
+    },
+    {
+     "id": "c_d05_6_3",
+     "label": "Let Idris take the lead on installation.",
+     "target": "d06_4"
+    }
+   ]
+  },
+  {
+   "id": "d05_7",
+   "body": "<<FILL role=rising words=132 beats='Nell cuts until two in the morning and gets it wrong in a way she cannot see until daylight, and there is nobody in the building to tell her, which is the whole shape of the year in one night'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d05_7_0",
+     "label": "Go through the second drawer.",
+     "target": "d06_5"
+    },
+    {
+     "id": "c_d05_7_1",
+     "label": "Open the workshop to the street.",
+     "target": "d06_6"
+    },
+    {
+     "id": "c_d05_7_2",
+     "label": "Talk to the other glaziers in the county.",
+     "target": "d06_7"
+    }
+   ]
+  },
+  {
+   "id": "d06_0",
+   "body": "<<FILL role=rising words=130 beats='he is smaller than the photographs and entirely himself; he asks after the fourth lancet before he asks after Vashti, and when Nell tells him she is dead he says he knows, and that she came every second Thursday until the second Thursday she did not'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_0_0",
+     "label": "Ask Dov what the second tranche was for.",
+     "target": "d07_0"
+    },
+    {
+     "id": "c_d06_0_1",
+     "label": "Cut the ruby before the credit runs out.",
+     "target": "d07_1"
+    },
+    {
+     "id": "c_d06_0_2",
+     "label": "Let the county paper run the sad version.",
+     "target": "e06_0"
+    }
+   ]
+  },
+  {
+   "id": "d06_1",
+   "body": "<<FILL role=branch words=159 beats='the drawing Vashti threw out is better and harder, a saint with his back half turned, and cutting it will cost eleven extra days the calendar does not contain'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_1_0",
+     "label": "Sit at Marguerite's bench for a day.",
+     "target": "d07_2"
+    },
+    {
+     "id": "c_d06_1_1",
+     "label": "Draw up a realistic programme to the feast.",
+     "target": "d07_3"
+    },
+    {
+     "id": "c_d06_1_2",
+     "label": "Ask the fabric committee for staged payment.",
+     "target": "d07_4"
+    }
+   ]
+  },
+  {
+   "id": "d06_2",
+   "body": "<<FILL role=rising words=142 beats='the bank can offer three months at a higher rate or nothing, and Miss Tarrant explains, not unkindly, that the building is worth more to them empty than the workshop is worth to them working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_2_0",
+     "label": "Find out who else Vashti was carrying.",
+     "target": "d07_5"
+    },
+    {
+     "id": "c_d06_2_1",
+     "label": "Get Idris to teach you the lead.",
+     "target": "d07_6"
+    },
+    {
+     "id": "c_d06_2_2",
+     "label": "Take the bank's three months at the higher rate.",
+     "target": "e06_1"
+    }
+   ]
+  },
+  {
+   "id": "d06_3",
+   "body": "<<FILL role=rising words=125 beats='a real contract, a real rate, the hours she has actually been doing; it is money the workshop does not have, and Marguerite reads it twice and asks whether Nell understands what she has just committed to'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_3_0",
+     "label": "Answer your mother.",
+     "target": "d07_7"
+    },
+    {
+     "id": "c_d06_3_1",
+     "label": "Go back to the plan chest.",
+     "target": "d07_8"
+    },
+    {
+     "id": "c_d06_3_2",
+     "label": "Ask Dov what the second tranche was for.",
+     "target": "d07_0"
+    },
+    {
+     "id": "c_d06_3_3",
+     "label": "Cut the ruby before the credit runs out.",
+     "target": "d07_1"
+    }
+   ]
+  },
+  {
+   "id": "d06_4",
+   "body": "<<FILL role=rising words=154 beats='Idris has fixed glass in stone twice and watched it done a dozen times; he wants the north aisle scaffold and the responsibility, and he wants to be asked rather than told'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_4_0",
+     "label": "Sit at Marguerite's bench for a day.",
+     "target": "d07_2"
+    },
+    {
+     "id": "c_d06_4_1",
+     "label": "Draw up a realistic programme to the feast.",
+     "target": "d07_3"
+    },
+    {
+     "id": "c_d06_4_2",
+     "label": "Let the county paper run the sad version.",
+     "target": "e06_0"
+    }
+   ]
+  },
+  {
+   "id": "d06_5",
+   "body": "<<FILL role=discovery words=137 beats='invoices going back years, and among them a run of letters from a solicitor in 2019 about a debt that was not Vashti's at all, with a note in her hand on the back of one of them reading, simply, paid'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_5_0",
+     "label": "Ask the fabric committee for staged payment.",
+     "target": "d07_4"
+    },
+    {
+     "id": "c_d06_5_1",
+     "label": "Find out who else Vashti was carrying.",
+     "target": "d07_5"
+    },
+    {
+     "id": "c_d06_5_2",
+     "label": "Get Idris to teach you the lead.",
+     "target": "d07_6"
+    }
+   ]
+  },
+  {
+   "id": "d06_6",
+   "body": "<<FILL role=rising words=120 beats='Nell props the double doors and works where the town can see; three people come in on the first day and one of them is a journalist from the county paper who wants the sad version of the story'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_6_0",
+     "label": "Answer your mother.",
+     "target": "d07_7"
+    },
+    {
+     "id": "c_d06_6_1",
+     "label": "Go back to the plan chest.",
+     "target": "d07_8"
+    },
+    {
+     "id": "c_d06_6_2",
+     "label": "Take the bank's three months at the higher rate.",
+     "target": "e06_1"
+    }
+   ]
+  },
+  {
+   "id": "d06_7",
+   "body": "<<FILL role=rising words=149 beats='four firms, three of them sympathetic and none of them able to lend a hand for nothing; the fourth says a thing about Vashti that Nell has never heard before and does not much like'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_7_0",
+     "label": "Ask Dov what the second tranche was for.",
+     "target": "d07_0"
+    },
+    {
+     "id": "c_d06_7_1",
+     "label": "Cut the ruby before the credit runs out.",
+     "target": "d07_1"
+    },
+    {
+     "id": "c_d06_7_2",
+     "label": "Sit at Marguerite's bench for a day.",
+     "target": "d07_2"
+    }
+   ]
+  },
+  {
+   "id": "d07_0",
+   "body": "<<FILL role=revelation words=147 beats='he does not pretend not to know; the county rate covers a bed and not the room he is in, and Vashti made up the difference every month for two years and forbade him to say so to anyone in the trade'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_0_0",
+     "label": "Put the whole thing to Idris and Marguerite together.",
+     "target": "d08_0"
+    },
+    {
+     "id": "c_d07_0_1",
+     "label": "Push the fifth lancet through in a week.",
+     "target": "d08_1"
+    },
+    {
+     "id": "c_d07_0_2",
+     "label": "Meet Pargeter about the fabric fund.",
+     "target": "d08_2"
+    },
+    {
+     "id": "c_d07_0_3",
+     "label": "Sell the cartoons to Cauldwell and keep the building.",
+     "target": "e07_0"
+    }
+   ]
+  },
+  {
+   "id": "d07_1",
+   "body": "<<FILL role=rising words=130 beats='nine hundred pounds of glass on the bench and sixty days on the clock; Nell cuts the hardest borders first on the theory that if she is going to waste it she had better waste it early'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_1_0",
+     "label": "Write to the chapel in Ripon.",
+     "target": "d08_3"
+    },
+    {
+     "id": "c_d07_1_1",
+     "label": "Let Marguerite take Cauldwell's offer.",
+     "target": "d08_4"
+    },
+    {
+     "id": "c_d07_1_2",
+     "label": "Check the insurance on the racked panels.",
+     "target": "d08_5"
+    }
+   ]
+  },
+  {
+   "id": "d07_2",
+   "body": "<<FILL role=rising words=159 beats='Marguerite works in silence and to a system, and about four in the afternoon says, without looking up, that she has an offer from Cauldwell and has not answered it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_2_0",
+     "label": "Take Dov to see the window.",
+     "target": "d08_6"
+    },
+    {
+     "id": "c_d07_2_1",
+     "label": "Do the sums on selling the tools.",
+     "target": "d08_7"
+    },
+    {
+     "id": "c_d07_2_2",
+     "label": "Tell Dov to stop paying it back.",
+     "target": "e07_1"
+    }
+   ]
+  },
+  {
+   "id": "d07_3",
+   "body": "<<FILL role=rising words=142 beats='eleven weeks, two lancets, one installation window in the cathedral calendar, and the honest version of the programme has no slack anywhere in it at all'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_3_0",
+     "label": "Put the whole thing to Idris and Marguerite together.",
+     "target": "d08_0"
+    },
+    {
+     "id": "c_d07_3_1",
+     "label": "Push the fifth lancet through in a week.",
+     "target": "d08_1"
+    },
+    {
+     "id": "c_d07_3_2",
+     "label": "Meet Pargeter about the fabric fund.",
+     "target": "d08_2"
+    }
+   ]
+  },
+  {
+   "id": "d07_4",
+   "body": "<<FILL role=rising words=125 beats='Canon Aldred takes it to the committee and comes back with a maybe that depends on a man called Pargeter who audits the fabric fund and has never yet said yes to anything'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_4_0",
+     "label": "Write to the chapel in Ripon.",
+     "target": "d08_3"
+    },
+    {
+     "id": "c_d07_4_1",
+     "label": "Let Marguerite take Cauldwell's offer.",
+     "target": "d08_4"
+    },
+    {
+     "id": "c_d07_4_2",
+     "label": "Sell the cartoons to Cauldwell and keep the building.",
+     "target": "e07_0"
+    }
+   ]
+  },
+  {
+   "id": "d07_5",
+   "body": "<<FILL role=discovery words=154 beats='not only Dov; a former apprentice invoiced at half rate for four years, a chapel in Ripon never billed at all, and a bench in the corner kept clear for a boy who stopped coming in 2016'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_5_0",
+     "label": "Check the insurance on the racked panels.",
+     "target": "d08_5"
+    },
+    {
+     "id": "c_d07_5_1",
+     "label": "Take Dov to see the window.",
+     "target": "d08_6"
+    },
+    {
+     "id": "c_d07_5_2",
+     "label": "Do the sums on selling the tools.",
+     "target": "d08_7"
+    },
+    {
+     "id": "c_d07_5_3",
+     "label": "Put the whole thing to Idris and Marguerite together.",
+     "target": "d08_0"
+    }
+   ]
+  },
+  {
+   "id": "d07_6",
+   "body": "<<FILL role=rising words=137 beats='Nell has never leaded a panel end to end and Idris is a patient and slightly merciless teacher; by the third evening her hands know a thing her head does not, which is that this will take longer than she has'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_6_0",
+     "label": "Push the fifth lancet through in a week.",
+     "target": "d08_1"
+    },
+    {
+     "id": "c_d07_6_1",
+     "label": "Meet Pargeter about the fabric fund.",
+     "target": "d08_2"
+    },
+    {
+     "id": "c_d07_6_2",
+     "label": "Tell Dov to stop paying it back.",
+     "target": "e07_1"
+    }
+   ]
+  },
+  {
+   "id": "d07_7",
+   "body": "<<FILL role=rising words=120 beats='Sally has stopped arguing, which is worse; she asks Nell to say out loud what she wants, and Nell finds that she can say it and cannot yet defend it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_7_0",
+     "label": "Write to the chapel in Ripon.",
+     "target": "d08_3"
+    },
+    {
+     "id": "c_d07_7_1",
+     "label": "Let Marguerite take Cauldwell's offer.",
+     "target": "d08_4"
+    },
+    {
+     "id": "c_d07_7_2",
+     "label": "Check the insurance on the racked panels.",
+     "target": "d08_5"
+    }
+   ]
+  },
+  {
+   "id": "d07_8",
+   "body": "<<FILL role=rising words=149 beats='the D P drawings are not studies, they are finished designs, and two of them are windows Nell has stood under in churches with the Aitchison name on the plaque'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_8_0",
+     "label": "Take Dov to see the window.",
+     "target": "d08_6"
+    },
+    {
+     "id": "c_d07_8_1",
+     "label": "Do the sums on selling the tools.",
+     "target": "d08_7"
+    },
+    {
+     "id": "c_d07_8_2",
+     "label": "Put the whole thing to Idris and Marguerite together.",
+     "target": "d08_0"
+    }
+   ]
+  },
+  {
+   "id": "d08_0",
+   "body": "<<FILL role=rising words=164 beats='Nell lays out the debt, the calendar, Cauldwell's offer and Dov, and asks them to decide with her rather than for her; it takes two hours and nobody leaves the room'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_0_0",
+     "label": "Run the site visit with Pargeter.",
+     "target": "d09_0"
+    },
+    {
+     "id": "c_d08_0_1",
+     "label": "Cut the saint with his back turned.",
+     "target": "d09_1"
+    },
+    {
+     "id": "c_d08_0_2",
+     "label": "Let the insurance lapse and hope.",
+     "target": "e08_0"
+    }
+   ]
+  },
+  {
+   "id": "d08_1",
+   "body": "<<FILL role=rising words=147 beats='a week of eleven hour days and a kiln that has to be coaxed through every firing; the panel comes out on the Friday and is good, and Nell sits down on the floor of the store and does not get up for some time'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_1_0",
+     "label": "Get the three finished lancets insured.",
+     "target": "d09_2"
+    },
+    {
+     "id": "c_d08_1_1",
+     "label": "Ask Cauldwell for a loan instead of a sale.",
+     "target": "d09_3"
+    },
+    {
+     "id": "c_d08_1_2",
+     "label": "Go back through Vashti's letters.",
+     "target": "d09_4"
+    }
+   ]
+  },
+  {
+   "id": "d08_2",
+   "body": "<<FILL role=rising words=130 beats='Pargeter is not the obstacle everyone described; he is a man who has never been given a straight schedule, is astonished to be handed one, and asks for a site visit before he will commit to anything'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_2_0",
+     "label": "Set a real rate for yourself.",
+     "target": "d09_5"
+    },
+    {
+     "id": "c_d08_2_1",
+     "label": "Bring the fabric committee to the workshop.",
+     "target": "d09_6"
+    },
+    {
+     "id": "c_d08_2_2",
+     "label": "Ask Idris to stay past the feast.",
+     "target": "d09_7"
+    },
+    {
+     "id": "c_d08_2_3",
+     "label": "Price the bench with everything else.",
+     "target": "e08_1"
+    }
+   ]
+  },
+  {
+   "id": "d08_3",
+   "body": "<<FILL role=rising words=159 beats='the chapel never received an invoice for a 2014 restoration and, on being asked, pays it within a fortnight with an apology, which is four thousand pounds arriving from a direction nobody was watching'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_3_0",
+     "label": "Take a week off.",
+     "target": "d09_8"
+    },
+    {
+     "id": "c_d08_3_1",
+     "label": "Run the site visit with Pargeter.",
+     "target": "d09_0"
+    },
+    {
+     "id": "c_d08_3_2",
+     "label": "Cut the saint with his back turned.",
+     "target": "d09_1"
+    }
+   ]
+  },
+  {
+   "id": "d08_4",
+   "body": "<<FILL role=rising words=142 beats='Nell tells her to take it, and means it, and Marguerite is angry in a way that neither of them expects and that takes three days to turn into a conversation'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_4_0",
+     "label": "Get the three finished lancets insured.",
+     "target": "d09_2"
+    },
+    {
+     "id": "c_d08_4_1",
+     "label": "Ask Cauldwell for a loan instead of a sale.",
+     "target": "d09_3"
+    },
+    {
+     "id": "c_d08_4_2",
+     "label": "Let the insurance lapse and hope.",
+     "target": "e08_0"
+    }
+   ]
+  },
+  {
+   "id": "d08_5",
+   "body": "<<FILL role=rising words=125 beats='three finished lancets in the store, uninsured since the policy lapsed in January, worth rather more than the two Nell has left to build'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_5_0",
+     "label": "Go back through Vashti's letters.",
+     "target": "d09_4"
+    },
+    {
+     "id": "c_d08_5_1",
+     "label": "Set a real rate for yourself.",
+     "target": "d09_5"
+    },
+    {
+     "id": "c_d08_5_2",
+     "label": "Bring the fabric committee to the workshop.",
+     "target": "d09_6"
+    }
+   ]
+  },
+  {
+   "id": "d08_6",
+   "body": "<<FILL role=rising words=154 beats='he has not been inside the cathedral in four years; he stands under the empty north aisle for a long time and then tells Nell the one thing about the fourth lancet that fixes it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_6_0",
+     "label": "Ask Idris to stay past the feast.",
+     "target": "d09_7"
+    },
+    {
+     "id": "c_d08_6_1",
+     "label": "Take a week off.",
+     "target": "d09_8"
+    },
+    {
+     "id": "c_d08_6_2",
+     "label": "Price the bench with everything else.",
+     "target": "e08_1"
+    }
+   ]
+  },
+  {
+   "id": "d08_7",
+   "body": "<<FILL role=rising words=137 beats='two thousand at auction, or four thousand privately to three firms who all knew Vashti, and every one of those firms would want the bench, and the bench is the thing Nell cannot sell'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_7_0",
+     "label": "Run the site visit with Pargeter.",
+     "target": "d09_0"
+    },
+    {
+     "id": "c_d08_7_1",
+     "label": "Cut the saint with his back turned.",
+     "target": "d09_1"
+    },
+    {
+     "id": "c_d08_7_2",
+     "label": "Get the three finished lancets insured.",
+     "target": "d09_2"
+    },
+    {
+     "id": "c_d08_7_3",
+     "label": "Ask Cauldwell for a loan instead of a sale.",
+     "target": "d09_3"
+    }
+   ]
+  },
+  {
+   "id": "d09_0",
+   "body": "<<FILL role=rising words=135 beats='Nell walks him through the north aisle with the programme in her hand, answers every question she can and says I do not know to the two she cannot, and it is the not knowing that he approves of'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_0_0",
+     "label": "Install the first three lancets early.",
+     "target": "d10_0"
+    },
+    {
+     "id": "c_d09_0_1",
+     "label": "Refuse Cauldwell for the last time.",
+     "target": "d10_1"
+    },
+    {
+     "id": "c_d09_0_2",
+     "label": "Take Cauldwell's loan.",
+     "target": "e09_0"
+    }
+   ]
+  },
+  {
+   "id": "d09_1",
+   "body": "<<FILL role=rising words=164 beats='the rejected cartoon, eleven extra days, and a face that has to be got right in glass a millimetre at a time; Marguerite says it is the best thing anyone in the building has done and then goes back to her own bench'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_1_0",
+     "label": "Bring Dov into the workshop.",
+     "target": "d10_2"
+    },
+    {
+     "id": "c_d09_1_1",
+     "label": "Renegotiate with the glass merchant.",
+     "target": "d10_3"
+    },
+    {
+     "id": "c_d09_1_2",
+     "label": "Deal with the auditor's conditions.",
+     "target": "d10_4"
+    }
+   ]
+  },
+  {
+   "id": "d09_2",
+   "body": "<<FILL role=rising words=147 beats='four hundred pounds Nell does not have for a policy she will need for six weeks, and Idris pays the first month out of the wages he has just been given, which is a thing the two of them never discuss again'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_2_0",
+     "label": "Tell Marguerite what her name will be on.",
+     "target": "d10_5"
+    },
+    {
+     "id": "c_d09_2_1",
+     "label": "Keep the fifth lancet moving at night.",
+     "target": "d10_6"
+    },
+    {
+     "id": "c_d09_2_2",
+     "label": "Stop and write the whole thing down.",
+     "target": "e09_1"
+    }
+   ]
+  },
+  {
+   "id": "d09_3",
+   "body": "<<FILL role=branch words=130 beats='he laughs and then does not laugh; he will lend against the cartoons at a rate that is not friendly and is not predatory either, and he wants an answer inside a week'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_3_0",
+     "label": "Face the arithmetic one more time.",
+     "target": "d10_7"
+    },
+    {
+     "id": "c_d09_3_1",
+     "label": "Install the first three lancets early.",
+     "target": "d10_0"
+    },
+    {
+     "id": "c_d09_3_2",
+     "label": "Refuse Cauldwell for the last time.",
+     "target": "d10_1"
+    }
+   ]
+  },
+  {
+   "id": "d09_4",
+   "body": "<<FILL role=discovery words=159 beats='the 2019 solicitor's letters were about a debt of Dov's, not hers, and she cleared it and never told him whose money it was; the pattern is now visible in four places and is the same pattern every time'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_4_0",
+     "label": "Bring Dov into the workshop.",
+     "target": "d10_2"
+    },
+    {
+     "id": "c_d09_4_1",
+     "label": "Renegotiate with the glass merchant.",
+     "target": "d10_3"
+    },
+    {
+     "id": "c_d09_4_2",
+     "label": "Deal with the auditor's conditions.",
+     "target": "d10_4"
+    },
+    {
+     "id": "c_d09_4_3",
+     "label": "Take Cauldwell's loan.",
+     "target": "e09_0"
+    }
+   ]
+  },
+  {
+   "id": "d09_5",
+   "body": "<<FILL role=rising words=142 beats='Nell has been working for nothing on the assumption that it is her building; Marguerite points out that this is precisely how the workshop got into the habit of running at a loss in the first place'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_5_0",
+     "label": "Tell Marguerite what her name will be on.",
+     "target": "d10_5"
+    },
+    {
+     "id": "c_d09_5_1",
+     "label": "Keep the fifth lancet moving at night.",
+     "target": "d10_6"
+    },
+    {
+     "id": "c_d09_5_2",
+     "label": "Face the arithmetic one more time.",
+     "target": "d10_7"
+    }
+   ]
+  },
+  {
+   "id": "d09_6",
+   "body": "<<FILL role=rising words=125 beats='six people in a cold store looking at three lancets on the racks, and something in the room changes when they are shown the glass instead of the schedule'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_6_0",
+     "label": "Install the first three lancets early.",
+     "target": "d10_0"
+    },
+    {
+     "id": "c_d09_6_1",
+     "label": "Refuse Cauldwell for the last time.",
+     "target": "d10_1"
+    },
+    {
+     "id": "c_d09_6_2",
+     "label": "Stop and write the whole thing down.",
+     "target": "e09_1"
+    }
+   ]
+  },
+  {
+   "id": "d09_7",
+   "body": "<<FILL role=rising words=154 beats='he has an offer in Leeds and a family who would like him to take it; Nell asks anyway, badly, and he says he will tell her after the installation and not before'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_7_0",
+     "label": "Bring Dov into the workshop.",
+     "target": "d10_2"
+    },
+    {
+     "id": "c_d09_7_1",
+     "label": "Renegotiate with the glass merchant.",
+     "target": "d10_3"
+    },
+    {
+     "id": "c_d09_7_2",
+     "label": "Deal with the auditor's conditions.",
+     "target": "d10_4"
+    }
+   ]
+  },
+  {
+   "id": "d09_8",
+   "body": "<<FILL role=rising words=137 beats='Nell does not touch glass for six days and comes back able to see the fifth lancet properly for the first time, and the week costs her exactly the eleven days the rejected cartoon was going to need'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_8_0",
+     "label": "Tell Marguerite what her name will be on.",
+     "target": "d10_5"
+    },
+    {
+     "id": "c_d09_8_1",
+     "label": "Keep the fifth lancet moving at night.",
+     "target": "d10_6"
+    },
+    {
+     "id": "c_d09_8_2",
+     "label": "Face the arithmetic one more time.",
+     "target": "d10_7"
+    }
+   ]
+  },
+  {
+   "id": "d10_0",
+   "body": "<<FILL role=rising words=152 beats='glass in stone means money from the fabric fund under the contract, and Idris and Nell get three panels into the north aisle in two days with a hired scaffold and a great deal of care'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_0_0",
+     "label": "Get the certificate signed.",
+     "target": "d11_0"
+    },
+    {
+     "id": "c_d10_0_1",
+     "label": "Put both names on the plaque.",
+     "target": "d11_1"
+    },
+    {
+     "id": "c_d10_0_2",
+     "label": "Ask the town.",
+     "target": "e10_0"
+    }
+   ]
+  },
+  {
+   "id": "d10_1",
+   "body": "<<FILL role=rising words=135 beats='Nell says no on the telephone in eleven words and then has to build a plan that justifies them, which takes the rest of the week and does not entirely succeed'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_1_0",
+     "label": "Bring the fourth lancet to the kiln.",
+     "target": "d11_2"
+    },
+    {
+     "id": "c_d10_1_1",
+     "label": "Settle with Idris.",
+     "target": "d11_3"
+    },
+    {
+     "id": "c_d10_1_2",
+     "label": "Take Dov home for the last time.",
+     "target": "d11_4"
+    },
+    {
+     "id": "c_d10_1_3",
+     "label": "Check the stonework in the aisle.",
+     "target": "d11_5"
+    }
+   ]
+  },
+  {
+   "id": "d10_2",
+   "body": "<<FILL role=rising words=164 beats='he cannot cut any more and can still see; two days a week in the chair by the light bench, telling Marguerite things that take twenty seconds to say and four years to learn'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_2_0",
+     "label": "Call the whole team in for the last fortnight.",
+     "target": "d11_6"
+    },
+    {
+     "id": "c_d10_2_1",
+     "label": "Look at the loan one final time.",
+     "target": "d11_7"
+    },
+    {
+     "id": "c_d10_2_2",
+     "label": "Miss the feast.",
+     "target": "e10_1"
+    }
+   ]
+  },
+  {
+   "id": "d10_3",
+   "body": "<<FILL role=rising words=147 beats='sixty days becomes ninety on a handshake and a promise of the next three jobs, and Nell understands that she has just spent credit she has not earned, on a firm that no longer has a reputation of its own'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_3_0",
+     "label": "Let Marguerite finish the face.",
+     "target": "d11_8"
+    },
+    {
+     "id": "c_d10_3_1",
+     "label": "Get the certificate signed.",
+     "target": "d11_0"
+    },
+    {
+     "id": "c_d10_3_2",
+     "label": "Put both names on the plaque.",
+     "target": "d11_1"
+    }
+   ]
+  },
+  {
+   "id": "d10_4",
+   "body": "<<FILL role=rising words=130 beats='Pargeter will release staged payment against certified progress, which means a certificate, which means an independent glazier, which means asking a rival firm to sign off on her work'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_4_0",
+     "label": "Bring the fourth lancet to the kiln.",
+     "target": "d11_2"
+    },
+    {
+     "id": "c_d10_4_1",
+     "label": "Settle with Idris.",
+     "target": "d11_3"
+    },
+    {
+     "id": "c_d10_4_2",
+     "label": "Ask the town.",
+     "target": "e10_0"
+    }
+   ]
+  },
+  {
+   "id": "d10_5",
+   "body": "<<FILL role=rising words=159 beats='if the fifth lancet is Marguerite's work then the plaque should say so, and Vashti never once put another name on a plaque in forty years, and Nell has to decide what kind of workshop this is going to be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_5_0",
+     "label": "Take Dov home for the last time.",
+     "target": "d11_4"
+    },
+    {
+     "id": "c_d10_5_1",
+     "label": "Check the stonework in the aisle.",
+     "target": "d11_5"
+    },
+    {
+     "id": "c_d10_5_2",
+     "label": "Call the whole team in for the last fortnight.",
+     "target": "d11_6"
+    }
+   ]
+  },
+  {
+   "id": "d10_6",
+   "body": "<<FILL role=rising words=142 beats='the last panel is built between nine at night and one in the morning across nineteen days, and the quality of it is uneven in a way that Idris spots and does not mention until afterwards'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_6_0",
+     "label": "Look at the loan one final time.",
+     "target": "d11_7"
+    },
+    {
+     "id": "c_d10_6_1",
+     "label": "Let Marguerite finish the face.",
+     "target": "d11_8"
+    },
+    {
+     "id": "c_d10_6_2",
+     "label": "Get the certificate signed.",
+     "target": "d11_0"
+    },
+    {
+     "id": "c_d10_6_3",
+     "label": "Miss the feast.",
+     "target": "e10_1"
+    }
+   ]
+  },
+  {
+   "id": "d10_7",
+   "body": "<<FILL role=rising words=125 beats='even with Ripon, even with staged payment, even with everything working, the fifth of June arrives four thousand pounds short and there is nothing left to sell that Nell is willing to sell'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_7_0",
+     "label": "Put both names on the plaque.",
+     "target": "d11_1"
+    },
+    {
+     "id": "c_d10_7_1",
+     "label": "Bring the fourth lancet to the kiln.",
+     "target": "d11_2"
+    },
+    {
+     "id": "c_d10_7_2",
+     "label": "Settle with Idris.",
+     "target": "d11_3"
+    }
+   ]
+  },
+  {
+   "id": "d11_0",
+   "body": "<<FILL role=rising words=123 beats='the only independent glazier within forty miles is a woman who trained under Cauldwell and dislikes him considerably, and she goes over Nell's work for six hours before she signs anything at all'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_0_0",
+     "label": "Get the mason on to the rebate.",
+     "target": "d12_0"
+    },
+    {
+     "id": "c_d11_0_1",
+     "label": "Fire the third paint layer.",
+     "target": "d12_1"
+    },
+    {
+     "id": "c_d11_0_2",
+     "label": "Sell the building and keep the trade.",
+     "target": "e11_0"
+    }
+   ]
+  },
+  {
+   "id": "d11_1",
+   "body": "<<FILL role=rising words=152 beats='Aitchison and Okonkwo, cut into brass; Marguerite reads it and says nothing for about a minute, then gets her coat and goes for a walk'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_1_0",
+     "label": "Do the final costing.",
+     "target": "d12_2"
+    },
+    {
+     "id": "c_d11_1_1",
+     "label": "Tell Canon Aldred about Dov.",
+     "target": "d12_3"
+    },
+    {
+     "id": "c_d11_1_2",
+     "label": "Rehearse the installation.",
+     "target": "d12_4"
+    }
+   ]
+  },
+  {
+   "id": "d11_2",
+   "body": "<<FILL role=rising words=135 beats='the paint has to be fired three times and the third firing is the one that can lose everything; Nell stays with the kiln for eleven hours and does not open it until it has come down on its own'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_2_0",
+     "label": "Decide about the partnership.",
+     "target": "d12_5"
+    },
+    {
+     "id": "c_d11_2_1",
+     "label": "Take one afternoon off for the funeral tea.",
+     "target": "d12_6"
+    },
+    {
+     "id": "c_d11_2_2",
+     "label": "Write to Cauldwell.",
+     "target": "d12_7"
+    }
+   ]
+  },
+  {
+   "id": "d11_3",
+   "body": "<<FILL role=branch words=164 beats='his wages are clear, his Leeds offer is still open, and the installation is in nine days; Nell offers him something she cannot really afford, which is a partnership in a workshop that owes forty thousand pounds'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_3_0",
+     "label": "Get the mason on to the rebate.",
+     "target": "d12_0"
+    },
+    {
+     "id": "c_d11_3_1",
+     "label": "Fire the third paint layer.",
+     "target": "d12_1"
+    },
+    {
+     "id": "c_d11_3_2",
+     "label": "Do the final costing.",
+     "target": "d12_2"
+    },
+    {
+     "id": "c_d11_3_3",
+     "label": "Tell Canon Aldred about Dov.",
+     "target": "d12_3"
+    }
+   ]
+  },
+  {
+   "id": "d11_4",
+   "body": "<<FILL role=rising words=147 beats='the Malton road in the evening light, and he asks her to stop paying the top-up and put it into the glass, and she says no, and he lets her'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_4_0",
+     "label": "Rehearse the installation.",
+     "target": "d12_4"
+    },
+    {
+     "id": "c_d11_4_1",
+     "label": "Decide about the partnership.",
+     "target": "d12_5"
+    },
+    {
+     "id": "c_d11_4_2",
+     "label": "Sell the building and keep the trade.",
+     "target": "e11_0"
+    }
+   ]
+  },
+  {
+   "id": "d11_5",
+   "body": "<<FILL role=rising words=130 beats='the medieval rebate is out of true by nine millimetres across the third lancet and nobody has measured it since 1911, which is a problem that belongs to the mason and now belongs to Nell'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_5_0",
+     "label": "Take one afternoon off for the funeral tea.",
+     "target": "d12_6"
+    },
+    {
+     "id": "c_d11_5_1",
+     "label": "Write to Cauldwell.",
+     "target": "d12_7"
+    },
+    {
+     "id": "c_d11_5_2",
+     "label": "Get the mason on to the rebate.",
+     "target": "d12_0"
+    }
+   ]
+  },
+  {
+   "id": "d11_6",
+   "body": "<<FILL role=rising words=159 beats='four people, a kettle and a wall calendar with fourteen boxes on it, and Nell finds that running a workshop is mostly deciding what not to do today'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_6_0",
+     "label": "Fire the third paint layer.",
+     "target": "d12_1"
+    },
+    {
+     "id": "c_d11_6_1",
+     "label": "Do the final costing.",
+     "target": "d12_2"
+    },
+    {
+     "id": "c_d11_6_2",
+     "label": "Tell Canon Aldred about Dov.",
+     "target": "d12_3"
+    }
+   ]
+  },
+  {
+   "id": "d11_7",
+   "body": "<<FILL role=rising words=142 beats='the debt does not care about the window; whatever happens at the feast, forty-one thousand pounds is still charged against a building on Fossgate and there are eleven weeks of interest on it now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_7_0",
+     "label": "Rehearse the installation.",
+     "target": "d12_4"
+    },
+    {
+     "id": "c_d11_7_1",
+     "label": "Decide about the partnership.",
+     "target": "d12_5"
+    },
+    {
+     "id": "c_d11_7_2",
+     "label": "Take one afternoon off for the funeral tea.",
+     "target": "d12_6"
+    }
+   ]
+  },
+  {
+   "id": "d11_8",
+   "body": "<<FILL role=rising words=125 beats='the saint's face is four square inches of glass and the hardest thing in the window; Nell hands it over, and Marguerite is at the bench until two and gets it right the first time'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_8_0",
+     "label": "Write to Cauldwell.",
+     "target": "d12_7"
+    },
+    {
+     "id": "c_d11_8_1",
+     "label": "Get the mason on to the rebate.",
+     "target": "d12_0"
+    },
+    {
+     "id": "c_d11_8_2",
+     "label": "Fire the third paint layer.",
+     "target": "d12_1"
+    },
+    {
+     "id": "c_d11_8_3",
+     "label": "Do the final costing.",
+     "target": "d12_2"
+    }
+   ]
+  },
+  {
+   "id": "d12_0",
+   "body": "<<FILL role=rising words=140 beats='the cathedral mason has a nine millimetre problem, a fortnight and no budget line for it, and the solution turns out to be a strip of lead and an agreement that nobody writes down'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_0_0",
+     "label": "Lift the fourth lancet into the aisle.",
+     "target": "d13_0"
+    },
+    {
+     "id": "c_d12_0_1",
+     "label": "Get the fifth panel cemented and racked.",
+     "target": "d13_1"
+    },
+    {
+     "id": "c_d12_0_2",
+     "label": "Deal with the interest bill.",
+     "target": "d13_2"
+    },
+    {
+     "id": "c_d12_0_3",
+     "label": "Let the dedication be about Vashti.",
+     "target": "e12_0"
+    }
+   ]
+  },
+  {
+   "id": "d12_1",
+   "body": "<<FILL role=climax words=123 beats='the kiln comes down slowly overnight and Nell opens it at six in the morning with Idris standing behind her, and the face is there, and it is Dov's face, which nobody had planned'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_1_0",
+     "label": "Ask Dov to come to the feast.",
+     "target": "d13_3"
+    },
+    {
+     "id": "c_d12_1_1",
+     "label": "Settle Marguerite's rate for good.",
+     "target": "d13_4"
+    },
+    {
+     "id": "c_d12_1_2",
+     "label": "Sign the Cauldwell subcontract.",
+     "target": "d13_5"
+    }
+   ]
+  },
+  {
+   "id": "d12_2",
+   "body": "<<FILL role=rising words=152 beats='staged payment, Ripon, the merchant's ninety days and the wages: the column comes out eight hundred pounds to the good, which after eleven weeks reads like a fortune and is not one'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_2_0",
+     "label": "Clean the store.",
+     "target": "d13_6"
+    },
+    {
+     "id": "c_d12_2_1",
+     "label": "Write the plaque.",
+     "target": "d13_7"
+    },
+    {
+     "id": "c_d12_2_2",
+     "label": "Lose the fifth lancet.",
+     "target": "e12_1"
+    }
+   ]
+  },
+  {
+   "id": "d12_3",
+   "body": "<<FILL role=rising words=135 beats='the story of what the second tranche paid for lands in the chapter house rather differently than Nell expected, and the fabric committee asks whether Prosser might be at the dedication'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_3_0",
+     "label": "Walk the aisle at night.",
+     "target": "d13_8"
+    },
+    {
+     "id": "c_d12_3_1",
+     "label": "Lift the fourth lancet into the aisle.",
+     "target": "d13_0"
+    },
+    {
+     "id": "c_d12_3_2",
+     "label": "Get the fifth panel cemented and racked.",
+     "target": "d13_1"
+    }
+   ]
+  },
+  {
+   "id": "d12_4",
+   "body": "<<FILL role=rising words=164 beats='the scaffold goes up on the Monday and they lift the first panel dry, with nobody watching, to find out what will go wrong before it can go wrong with the dean in the aisle'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_4_0",
+     "label": "Deal with the interest bill.",
+     "target": "d13_2"
+    },
+    {
+     "id": "c_d12_4_1",
+     "label": "Ask Dov to come to the feast.",
+     "target": "d13_3"
+    },
+    {
+     "id": "c_d12_4_2",
+     "label": "Let the dedication be about Vashti.",
+     "target": "e12_0"
+    }
+   ]
+  },
+  {
+   "id": "d12_5",
+   "body": "<<FILL role=rising words=147 beats='Idris has not answered and Nell has not withdrawn it; the conversation happens in the van on the way back from the cathedral, lasts three minutes and settles everything'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_5_0",
+     "label": "Settle Marguerite's rate for good.",
+     "target": "d13_4"
+    },
+    {
+     "id": "c_d12_5_1",
+     "label": "Sign the Cauldwell subcontract.",
+     "target": "d13_5"
+    },
+    {
+     "id": "c_d12_5_2",
+     "label": "Clean the store.",
+     "target": "d13_6"
+    },
+    {
+     "id": "c_d12_5_3",
+     "label": "Write the plaque.",
+     "target": "d13_7"
+    }
+   ]
+  },
+  {
+   "id": "d12_6",
+   "body": "<<FILL role=rising words=130 beats='nine days late, the workshop shut for four hours, and forty people in the store among the racks telling Nell things about Vashti that she is only now able to hear'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_6_0",
+     "label": "Walk the aisle at night.",
+     "target": "d13_8"
+    },
+    {
+     "id": "c_d12_6_1",
+     "label": "Lift the fourth lancet into the aisle.",
+     "target": "d13_0"
+    },
+    {
+     "id": "c_d12_6_2",
+     "label": "Lose the fifth lancet.",
+     "target": "e12_1"
+    }
+   ]
+  },
+  {
+   "id": "d12_7",
+   "body": "<<FILL role=rising words=159 beats='not a refusal this time but a proposal: subcontract work at a fair rate, no cartoons, no name on the aisle, and he replies in two lines that he will think about it, which from him is a yes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_7_0",
+     "label": "Get the fifth panel cemented and racked.",
+     "target": "d13_1"
+    },
+    {
+     "id": "c_d12_7_1",
+     "label": "Deal with the interest bill.",
+     "target": "d13_2"
+    },
+    {
+     "id": "c_d12_7_2",
+     "label": "Ask Dov to come to the feast.",
+     "target": "d13_3"
+    }
+   ]
+  },
+  {
+   "id": "d13_0",
+   "body": "<<FILL role=rising words=157 beats='a Tuesday morning, the scaffold, Idris on the rope and Marguerite on the tell, and a panel that has been eleven weeks on a bench meeting stone that has been waiting since 1911'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_0_0",
+     "label": "Install the fifth lancet.",
+     "target": "d14_0"
+    },
+    {
+     "id": "c_d13_0_1",
+     "label": "Hang the plaque.",
+     "target": "d14_1"
+    },
+    {
+     "id": "c_d13_0_2",
+     "label": "Stop at four lights and take the fee.",
+     "target": "e13_0"
+    }
+   ]
+  },
+  {
+   "id": "d13_1",
+   "body": "<<FILL role=rising words=140 beats='the last lancet is finished on a Thursday at half past four and Nell tells nobody for an hour, because she wants the building to herself first'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_1_0",
+     "label": "Bring Dov to see it finished.",
+     "target": "d14_2"
+    },
+    {
+     "id": "c_d13_1_1",
+     "label": "Do the final account for the fabric committee.",
+     "target": "d14_3"
+    },
+    {
+     "id": "c_d13_1_2",
+     "label": "Decide what to say at the dedication.",
+     "target": "d14_4"
+    }
+   ]
+  },
+  {
+   "id": "d13_2",
+   "body": "<<FILL role=rising words=123 beats='the quarterly charge lands in the week of the installation, as it was always going to, and Nell pays it out of the staged payment and is exactly where she started with one fewer thing to sell'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_2_0",
+     "label": "Answer the bank.",
+     "target": "d14_5"
+    },
+    {
+     "id": "c_d13_2_1",
+     "label": "Ask Idris and Marguerite what happens next.",
+     "target": "d14_6"
+    },
+    {
+     "id": "c_d13_2_2",
+     "label": "Sit with the ledger one last time.",
+     "target": "d14_7"
+    },
+    {
+     "id": "c_d13_2_3",
+     "label": "Install the fifth lancet.",
+     "target": "d14_0"
+    }
+   ]
+  },
+  {
+   "id": "d13_3",
+   "body": "<<FILL role=rising words=152 beats='he has not been in a congregation since his wife died, says no three times, and then asks what he ought to wear'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_3_0",
+     "label": "Hang the plaque.",
+     "target": "d14_1"
+    },
+    {
+     "id": "c_d13_3_1",
+     "label": "Bring Dov to see it finished.",
+     "target": "d14_2"
+    },
+    {
+     "id": "c_d13_3_2",
+     "label": "Do the final account for the fabric committee.",
+     "target": "d14_3"
+    }
+   ]
+  },
+  {
+   "id": "d13_4",
+   "body": "<<FILL role=rising words=135 beats='the proper rate from the proper date, backdated eleven months, which costs the workshop everything the Ripon money bought and is not, in the end, a decision Nell has to think about'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_4_0",
+     "label": "Decide what to say at the dedication.",
+     "target": "d14_4"
+    },
+    {
+     "id": "c_d13_4_1",
+     "label": "Answer the bank.",
+     "target": "d14_5"
+    },
+    {
+     "id": "c_d13_4_2",
+     "label": "Stop at four lights and take the fee.",
+     "target": "e13_0"
+    }
+   ]
+  },
+  {
+   "id": "d13_5",
+   "body": "<<FILL role=rising words=164 beats='three jobs at a fair rate over eighteen months, enough to service the loan and not to clear it, and the first honest piece of future the workshop has had since March'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_5_0",
+     "label": "Ask Idris and Marguerite what happens next.",
+     "target": "d14_6"
+    },
+    {
+     "id": "c_d13_5_1",
+     "label": "Sit with the ledger one last time.",
+     "target": "d14_7"
+    },
+    {
+     "id": "c_d13_5_2",
+     "label": "Install the fifth lancet.",
+     "target": "d14_0"
+    }
+   ]
+  },
+  {
+   "id": "d13_6",
+   "body": "<<FILL role=discovery words=147 beats='Nell and Idris empty forty years of offcuts and find, behind the racks, the boy's bench from 2016 with a half cut panel still on it and a name inked on the apron'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_6_0",
+     "label": "Hang the plaque.",
+     "target": "d14_1"
+    },
+    {
+     "id": "c_d13_6_1",
+     "label": "Bring Dov to see it finished.",
+     "target": "d14_2"
+    },
+    {
+     "id": "c_d13_6_2",
+     "label": "Do the final account for the fabric committee.",
+     "target": "d14_3"
+    }
+   ]
+  },
+  {
+   "id": "d13_7",
+   "body": "<<FILL role=rising words=130 beats='twenty-two words in brass, and the argument about them takes longer than the fifth lancet did, and the version that goes up is Marguerite's'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_7_0",
+     "label": "Decide what to say at the dedication.",
+     "target": "d14_4"
+    },
+    {
+     "id": "c_d13_7_1",
+     "label": "Answer the bank.",
+     "target": "d14_5"
+    },
+    {
+     "id": "c_d13_7_2",
+     "label": "Ask Idris and Marguerite what happens next.",
+     "target": "d14_6"
+    },
+    {
+     "id": "c_d13_7_3",
+     "label": "Sit with the ledger one last time.",
+     "target": "d14_7"
+    }
+   ]
+  },
+  {
+   "id": "d13_8",
+   "body": "<<FILL role=rising words=159 beats='the north aisle with four lights in and one gap, no scaffold, no committee, and the streetlamp outside making the ruby look like something that is not quite a colour'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_8_0",
+     "label": "Install the fifth lancet.",
+     "target": "d14_0"
+    },
+    {
+     "id": "c_d13_8_1",
+     "label": "Hang the plaque.",
+     "target": "d14_1"
+    },
+    {
+     "id": "c_d13_8_2",
+     "label": "Bring Dov to see it finished.",
+     "target": "d14_2"
+    }
+   ]
+  },
+  {
+   "id": "d14_0",
+   "body": "<<FILL role=climax words=128 beats='the last panel goes into the rebate on the Friday before the feast with a lead strip taking up nine millimetres of medieval error, and Idris says the only thing he says all morning, which is that it is in'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_0_0",
+     "label": "Stand at the back for the dedication.",
+     "target": "d15_0"
+    },
+    {
+     "id": "c_d14_0_1",
+     "label": "Say the thing about Dov out loud.",
+     "target": "d15_1"
+    },
+    {
+     "id": "c_d14_0_2",
+     "label": "Let the feast come without you.",
+     "target": "e14_0"
+    }
+   ]
+  },
+  {
+   "id": "d14_1",
+   "body": "<<FILL role=rising words=157 beats='brass, twenty-two words, two names, screwed into the stone at shoulder height where a person can actually read it, which was Vashti's rule and the only one she ever wrote down'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_1_0",
+     "label": "Open the workshop the Monday after.",
+     "target": "d15_2"
+    },
+    {
+     "id": "c_d14_1_1",
+     "label": "Settle everything with the bank.",
+     "target": "d15_3"
+    },
+    {
+     "id": "c_d14_1_2",
+     "label": "Give Marguerite the fourth drawer.",
+     "target": "d15_4"
+    }
+   ]
+  },
+  {
+   "id": "d14_2",
+   "body": "<<FILL role=rising words=140 beats='the Malton road on a Thursday, a wheelchair over cathedral flags, and an old man under five lights saying nothing whatever for four minutes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_2_0",
+     "label": "Take the fifth lancet cartoon down off the wall.",
+     "target": "d15_5"
+    },
+    {
+     "id": "c_d14_2_1",
+     "label": "Stand at the back for the dedication.",
+     "target": "d15_0"
+    },
+    {
+     "id": "c_d14_2_2",
+     "label": "Say the thing about Dov out loud.",
+     "target": "d15_1"
+    }
+   ]
+  },
+  {
+   "id": "d14_3",
+   "body": "<<FILL role=rising words=123 beats='every figure certified and every stage signed, and Pargeter goes through it line by line, finds one error of eleven pounds in the cathedral's favour, and looks almost happy'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_3_0",
+     "label": "Open the workshop the Monday after.",
+     "target": "d15_2"
+    },
+    {
+     "id": "c_d14_3_1",
+     "label": "Settle everything with the bank.",
+     "target": "d15_3"
+    },
+    {
+     "id": "c_d14_3_2",
+     "label": "Give Marguerite the fourth drawer.",
+     "target": "d15_4"
+    }
+   ]
+  },
+  {
+   "id": "d14_4",
+   "body": "<<FILL role=rising words=152 beats='Nell writes a short thing about what the workshop owed and to whom, reads it over four times, and does not know until she is standing up whether she is going to say it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_4_0",
+     "label": "Take the fifth lancet cartoon down off the wall.",
+     "target": "d15_5"
+    },
+    {
+     "id": "c_d14_4_1",
+     "label": "Stand at the back for the dedication.",
+     "target": "d15_0"
+    },
+    {
+     "id": "c_d14_4_2",
+     "label": "Say the thing about Dov out loud.",
+     "target": "d15_1"
+    },
+    {
+     "id": "c_d14_4_3",
+     "label": "Let the feast come without you.",
+     "target": "e14_0"
+    }
+   ]
+  },
+  {
+   "id": "d14_5",
+   "body": "<<FILL role=rising words=135 beats='Miss Tarrant wants a plan and now there is one: the subcontract, the rate card, the staged fee, and a repayment that runs to 2038 and is, for the first time, arithmetic rather than hope'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_5_0",
+     "label": "Open the workshop the Monday after.",
+     "target": "d15_2"
+    },
+    {
+     "id": "c_d14_5_1",
+     "label": "Settle everything with the bank.",
+     "target": "d15_3"
+    },
+    {
+     "id": "c_d14_5_2",
+     "label": "Give Marguerite the fourth drawer.",
+     "target": "d15_4"
+    }
+   ]
+  },
+  {
+   "id": "d14_6",
+   "body": "<<FILL role=rising words=164 beats='the three of them in the store with the racks empty for the first time in months, working out whether there is a workshop here or only a year that happened to end well'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_6_0",
+     "label": "Take the fifth lancet cartoon down off the wall.",
+     "target": "d15_5"
+    },
+    {
+     "id": "c_d14_6_1",
+     "label": "Stand at the back for the dedication.",
+     "target": "d15_0"
+    },
+    {
+     "id": "c_d14_6_2",
+     "label": "Say the thing about Dov out loud.",
+     "target": "d15_1"
+    }
+   ]
+  },
+  {
+   "id": "d14_7",
+   "body": "<<FILL role=rising words=147 beats='Nell rules off Vashti's last page and starts a new one in her own hand, and the first entry in it is a name and a monthly sum and no receipt, because some things do not get one'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_7_0",
+     "label": "Open the workshop the Monday after.",
+     "target": "d15_2"
+    },
+    {
+     "id": "c_d14_7_1",
+     "label": "Settle everything with the bank.",
+     "target": "d15_3"
+    },
+    {
+     "id": "c_d14_7_2",
+     "label": "Give Marguerite the fourth drawer.",
+     "target": "d15_4"
+    }
+   ]
+  },
+  {
+   "id": "d15_0",
+   "body": "<<FILL role=climax words=145 beats='the north aisle full of people, five lights in stone, and the ruby doing what ruby does at eleven in the morning in June'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_0_0",
+     "label": "Let it be finished.",
+     "target": "e15_0"
+    },
+    {
+     "id": "c_d15_0_1",
+     "label": "Keep both sets of books.",
+     "target": "e15_1"
+    },
+    {
+     "id": "c_d15_0_2",
+     "label": "Hand it on.",
+     "target": "e15_2"
+    }
+   ]
+  },
+  {
+   "id": "d15_1",
+   "body": "<<FILL role=climax words=128 beats='Nell stands up in the chapter house afterwards and tells the fabric committee and the dean exactly what the second tranche paid for, and watches the room decide what to do with it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_1_0",
+     "label": "Say it in the chapter house.",
+     "target": "e15_3"
+    },
+    {
+     "id": "c_d15_1_1",
+     "label": "Understand what she was doing.",
+     "target": "e15_4"
+    },
+    {
+     "id": "c_d15_1_2",
+     "label": "Let the building go and keep the rest.",
+     "target": "e15_5"
+    }
+   ]
+  },
+  {
+   "id": "d15_2",
+   "body": "<<FILL role=resolution words=157 beats='the doors at eight, the kettle, the Cauldwell subcontract on the bench, and the ordinary enormous question of what a workshop does on the first day of the rest of its life'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_2_0",
+     "label": "Let it be finished.",
+     "target": "e15_0"
+    },
+    {
+     "id": "c_d15_2_1",
+     "label": "Keep both sets of books.",
+     "target": "e15_1"
+    },
+    {
+     "id": "c_d15_2_2",
+     "label": "Hand it on.",
+     "target": "e15_2"
+    }
+   ]
+  },
+  {
+   "id": "d15_3",
+   "body": "<<FILL role=resolution words=140 beats='the plan, the schedule, the signature, and a debt that has stopped being a threat and become a very long series of Tuesdays'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_3_0",
+     "label": "Say it in the chapter house.",
+     "target": "e15_3"
+    },
+    {
+     "id": "c_d15_3_1",
+     "label": "Understand what she was doing.",
+     "target": "e15_4"
+    },
+    {
+     "id": "c_d15_3_2",
+     "label": "Let the building go and keep the rest.",
+     "target": "e15_5"
+    }
+   ]
+  },
+  {
+   "id": "d15_4",
+   "body": "<<FILL role=resolution words=123 beats='her own drawer in the plan chest, which in this building is not a gesture but a fact about what she now is'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_4_0",
+     "label": "Let it be finished.",
+     "target": "e15_0"
+    },
+    {
+     "id": "c_d15_4_1",
+     "label": "Keep both sets of books.",
+     "target": "e15_1"
+    },
+    {
+     "id": "c_d15_4_2",
+     "label": "Hand it on.",
+     "target": "e15_2"
+    }
+   ]
+  },
+  {
+   "id": "d15_5",
+   "body": "<<FILL role=resolution words=152 beats='the drawing has been pinned above the bench since March, and Nell rolls it, ties it, and puts it in the chest with the D P folder, which is where it belongs'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_5_0",
+     "label": "Say it in the chapter house.",
+     "target": "e15_3"
+    },
+    {
+     "id": "c_d15_5_1",
+     "label": "Understand what she was doing.",
+     "target": "e15_4"
+    },
+    {
+     "id": "c_d15_5_2",
+     "label": "Let the building go and keep the rest.",
+     "target": "e15_5"
+    }
+   ]
+  },
+  {
+   "id": "e04_0",
+   "body": "<<FILL role=setback words=120 beats='Nell signs before she has understood anything and the relief lasts about four days; Cauldwell finishes the window well and quickly, Idris goes to a firm in Leeds, Marguerite stops answering, and the north aisle carries a name that is not the one on the drawings'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e04_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Sold in the First Fortnight"
+   }
+  },
+  {
+   "id": "e05_0",
+   "body": "<<FILL role=setback words=143 beats='the fabric committee accepts the surrender without argument and appoints Cauldwell inside a week; the estate is billed the difference, the building goes, and three finished lancets are lifted out of the racks by men Nell has never met'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e05_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Returned Unfinished"
+   }
+  },
+  {
+   "id": "e06_0",
+   "body": "<<FILL role=discovery words=125 beats='the piece runs on a Thursday with a photograph of Nell in the doorway and the word tragedy in the headline; donations arrive, the window does not, and Vashti is remembered as somebody who was owed rather than somebody who owed'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e06_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Story Everyone Preferred"
+   }
+  },
+  {
+   "id": "e06_1",
+   "body": "<<FILL role=setback words=148 beats='the holiday buys twelve weeks and costs eighteen months; Nell finishes nothing in the twelve weeks except the paperwork, and when the payments restart the workshop is exactly where it began with less of everything'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e06_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Three Months at a Worse Rate"
+   }
+  },
+  {
+   "id": "e07_0",
+   "body": "<<FILL role=setback words=130 beats='it clears the debt to within four thousand and it is the only clean solution anyone has offered; the plan chest goes out on a Tuesday in six trips, and Nell keeps a building full of tools and nothing to draw from'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e07_0",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Drawings Go, the Building Stays"
+   }
+  },
+  {
+   "id": "e07_1",
+   "body": "<<FILL role=discovery words=153 beats='Dov has been sending back what he can out of a pension that cannot spare it; Nell finds the standing order and stops it, and he is furious for a fortnight and grateful for the rest of his life'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e07_1",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "What He Tried to Return"
+   }
+  },
+  {
+   "id": "e08_0",
+   "body": "<<FILL role=setback words=135 beats='a pipe goes in the store on the coldest night of April and takes the corner of the third lancet with it; the panel is repairable, the money is not there to repair it, and that is the whole of the ending'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e08_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Uninsured Fortnight"
+   }
+  },
+  {
+   "id": "e08_1",
+   "body": "<<FILL role=discovery words=158 beats='four thousand pounds for the tools and a workshop with the shape of Vashti taken out of it; Nell puts a figure on the bench, looks at it, and finds out in that moment which of the things in the building were ever really for sale'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e08_1",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Everything but the Bench"
+   }
+  },
+  {
+   "id": "e09_0",
+   "body": "<<FILL role=setback words=140 beats='the window is finished on time and the cartoons sit as security in a plan chest on the other side of the city; Nell pays it down over nine years and gets them back, and the nine years are the ending'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e09_0",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Borrowed Against the Drawings"
+   }
+  },
+  {
+   "id": "e09_1",
+   "body": "<<FILL role=discovery words=122 beats='Nell writes out what Vashti was actually doing with the money, every name and every sum, and gives a copy to Dov and one to the fabric committee; the window is still unfinished and the record is not, and the record turns out to matter'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e09_1",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Account She Never Kept"
+   }
+  },
+  {
+   "id": "e10_0",
+   "body": "<<FILL role=discovery words=145 beats='a list in the workshop window and an account number, and the town puts in four thousand pounds in nine days in amounts between two and three hundred; the window is finished and the workshop belongs, in a way it did not before, to more people than Nell'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e10_0",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Two Hundred and Six Names"
+   }
+  },
+  {
+   "id": "e10_1",
+   "body": "<<FILL role=setback words=127 beats='the fifth lancet is a fortnight late and the fee is forfeit under a clause four lines long; the window goes in during August to no ceremony at all, and it is beautiful, and the debt is still exactly where it was'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e10_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Saint Barnabas Without the Light"
+   }
+  },
+  {
+   "id": "e11_0",
+   "body": "<<FILL role=setback words=150 beats='Nell sells Fossgate, clears the debt with eleven thousand left, and rents two rooms above a joiner on the other side of the river; the window is finished from there and the light in those rooms is wrong and always will be'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e11_0",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "A Workshop Without a Roof"
+   }
+  },
+  {
+   "id": "e12_0",
+   "body": "<<FILL role=discovery words=132 beats='the dean speaks about a great craftswoman of the city and says nothing about the care home on the Malton road, because Nell decides not to tell him; the window is beautiful and the truest thing about it stays in the workshop'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e12_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Version Without Her Debts"
+   }
+  },
+  {
+   "id": "e12_1",
+   "body": "<<FILL role=setback words=155 beats='the panel goes off the bench in the second week of June and takes eleven weeks of work with it; the cathedral accepts four lancets and a boarded fifth, the fee is paid in part, and the gap is still there'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e12_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Four Lights and a Gap"
+   }
+  },
+  {
+   "id": "e13_0",
+   "body": "<<FILL role=setback words=137 beats='the cathedral will take four lancets and pay four fifths, and the fifth opening is glazed in plain quarries by a firm from York; the debt is survivable, the window is not the window, and Nell learns to walk past it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e13_0",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Enough, and Not the Window"
+   }
+  },
+  {
+   "id": "e14_0",
+   "body": "<<FILL role=discovery words=160 beats='the window is in and Nell cannot make herself walk into the cathedral for the dedication; she opens the workshop instead and works, and hears the bells from Fossgate, and finds out something about herself that takes years to sit comfortably'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e14_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Morning She Did Not Go"
+   }
+  },
+  {
+   "id": "e15_0",
+   "body": "<<FILL role=success words=142 beats='the window is dedicated on the feast of Saint Barnabas with both names on the brass and Dov Prosser in the second row; the debt is not gone and the workshop is not safe, and the light comes through anyway and will go on doing it for four hundred years'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e15_0",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Five Lights at Eleven in the Morning"
+   }
+  },
+  {
+   "id": "e15_1",
+   "body": "<<FILL role=completion words=124 beats='the accounts balance to eight hundred pounds and the real account never balances at all: a care home, a chapel in Ripon, a rate backdated eleven months, a bench kept clear since 2016; Nell keeps both books from now on and knows which one is the workshop'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e15_1",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "What the Ledger Could Not Hold"
+   }
+  },
+  {
+   "id": "e15_2",
+   "body": "<<FILL role=completion words=147 beats='Idris takes the partnership, Marguerite takes the drawer, and the three of them carry a debt and a rate card and a subcontract into a second year; nothing is resolved and everything is now shared, which is the difference'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e15_2",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Workshop That Owed People"
+   }
+  },
+  {
+   "id": "e15_3",
+   "body": "<<FILL role=success words=129 beats='Nell tells the whole story of the money in a cold room to eleven people, the fabric committee votes to name Prosser on the plaque and the dean writes to him; none of it fixes the loan and all of it fixes something'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e15_3",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Second Tranche, Read Aloud"
+   }
+  },
+  {
+   "id": "e15_4",
+   "body": "<<FILL role=discovery words=152 beats='the pattern is complete and Nell can finally read it: a workshop that was never a business, run by a woman who counted in people and left the arithmetic to whoever came next; that is the inheritance, and it is not a kind one'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e15_4",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Forty Years of Not Sending the Invoice"
+   }
+  },
+  {
+   "id": "e15_5",
+   "body": "<<FILL role=setback words=134 beats='the window stands and the workshop does not; Nell sells in September, clears everything, and takes the bench and the plan chest to two rented rooms with the wrong light, and starts again owing nobody'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e15_5",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Fossgate Sold in September"
+   }
+  }
+ ]
+}
