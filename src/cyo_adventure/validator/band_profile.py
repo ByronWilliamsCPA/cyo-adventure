@@ -119,9 +119,16 @@ MVP_MAX_NODES = 45
 # node). That stop costs one node of branch depth, and the two depth budgets
 # account for it differently:
 #   - A production cell's max_depth is ~2.5x its min_complete floor, and those
-#     floors are JHM *page* counts for a whole playthrough, which already
-#     include the pages before the first decision (corpus median 4). The
-#     establishing stop is therefore inside the cell budget already.
+#     floors already account for the opening, so the establishing stop is inside
+#     the cell budget.
+#     CORRECTED 2026-08-18: this comment used to call the `_MIN_COMPLETE` values
+#     "JHM *page* counts for a whole playthrough". They are not. The audit that
+#     went looking for exactly that unit error checked and REFUTED it: for all 18
+#     cells, `min_complete x mean words/node / band pace` reproduces the ADR's own
+#     "fastest finish" minutes column, so they are node counts derived from the
+#     section 3 table. The mis-citation had no downstream effect, since nothing
+#     read it as pages, but it is the kind of wrong provenance note that seeds a
+#     real unit error later (`UW-C277`).
 #   - The band-level max_depth triple predates ADR-011 and derives from nothing
 #     measured. ``mvp_node_budget`` below is the ONLY consumer that grants it
 #     the establishing-stop allowance: ``resolve_node_budget``'s step-3
@@ -544,19 +551,64 @@ _NODES_PER_DECISION_CEILING: dict[str, float] = {
     "gamebook": 4.0,
 }
 
+# PL-26 per BAND, because the anchor is a page count and a node is not a page.
+#
+# The flat prose ceiling above is 6.0 NODES per decision against an anchor of
+# 3.28 PAGES between decisions. Measured 2026-08-18, converting each band's
+# ceiling into the anchor's own unit through _WORDS_PER_NODE at ~100 words to a
+# CYOA page, one flat number spans 4.4x in the quantity it claims to bound:
+#
+#   3-5    240 words between decisions   0.73x the anchor
+#   8-11   600 words                     1.83x
+#   16+   1050 words                     3.20x
+#
+# So the same rule is tighter than the research at 3-5 and three times looser at
+# 16+, and the ordering inverts on the real corpus (`UW-C277`).
+#
+# The fix holds the bound constant in WORDS rather than in nodes, which is the
+# reader-facing quantity the rule is about: how much prose you meet between two
+# choices. 8-11 keeps exactly its current value because the JHM corpus sits in
+# the 8-11/10-13 reading range, so that is the calibrated band; every other band
+# is derived from it. That preserves the deliberate looseness the flat value was
+# chosen for (1.83x the anchor, "above the 3.28 anchor with room") instead of
+# snapping every band onto the raw anchor, which would have tightened 16+ from
+# 6.0 to 1.87 on one corpus in one band cluster.
+# #ASSUME: data-integrity: derived, not transcribed; changing _WORDS_PER_NODE
+# moves these. The gamebook style keeps its flat 4.0, which is product-defined
+# and has no page anchor to convert.
+# #VERIFY: test_band_profile.py::test_band_density_ceilings_hold_the_bound_in_words.
+_BAND_NODES_PER_DECISION_CEILING: dict[str, float] = {
+    "3-5": 15.0,
+    "5-8": 8.57,
+    "8-11": 6.0,
+    "10-13": 6.0,
+    "13-16": 4.29,
+    "16+": 3.43,
+}
 
-def nodes_per_decision_ceiling(narrative_style: str) -> float:
+
+def nodes_per_decision_ceiling(
+    narrative_style: str, age_band: str | None = None
+) -> float:
     """Return the PL-26 maximum nodes-per-decision for a narrative style.
 
     Args:
         narrative_style: ``"prose"`` or ``"gamebook"``.
+        age_band: The story's band. When given and configured, a prose story is
+            graded against the per-band ceiling that holds the bound constant in
+            words; without it the flat prose value applies, which is the old
+            band-blind behaviour.
 
     Returns:
         The advisory ceiling; an unknown style falls back to the prose ceiling.
     """
-    return _NODES_PER_DECISION_CEILING.get(
-        narrative_style, _NODES_PER_DECISION_CEILING["prose"]
-    )
+    if narrative_style == "gamebook":
+        return _NODES_PER_DECISION_CEILING["gamebook"]
+    if age_band is not None:
+        band_ceiling = _BAND_NODES_PER_DECISION_CEILING.get(age_band)
+        if band_ceiling is not None:
+            return band_ceiling
+    return _NODES_PER_DECISION_CEILING["prose"]
 
 
 # PL-20 companion ceiling: how far the shortest satisfying path may exceed the
@@ -592,7 +644,75 @@ _ENDINGS_FRACTION: dict[str, float] = {"prose": 0.15, "gamebook": 0.25}
 _DECISIONS_FRACTION = 0.08
 
 
-def breadth_scaled_floors(node_count: int, narrative_style: str) -> tuple[int, int]:
+# ADR-011 section 5's own per-cell endings column, as ``(min, max)`` counts.
+# Prose cells only: the four gamebook cells state "many fails" and give no
+# numbers, so they keep the fraction-only treatment.
+#
+# This exists because section 5 and section 6 disagree and PL-17 implemented only
+# section 6. Measured 2026-08-18, PL-17's flat 0.15 floor applied at the TOP of a
+# cell's node range against that cell's own stated maximum endings:
+#
+#   3-5/short     floor 4 vs ceiling 4   DEGENERATE (exactly one legal count)
+#   3-5/medium    floor 7 vs ceiling 6   INVERTED
+#   10-13/medium  floor 33 vs ceiling 32 INVERTED
+#   10-13/long    floor 51 vs ceiling 48 INVERTED
+#
+# So a story authored to the top of three cells' own node envelopes could not
+# satisfy the gate at all. The floor is now capped by this ceiling, which removes
+# the inversion at zero cost to the catalog (measured: no committed skeleton
+# changes verdict on the floor).
+#
+# The ceiling itself is NEW capability, not a tightening of an existing rule: the
+# owner named "too many endings" as a real failure mode and no rule expressed it.
+# It is advisory for now because these numbers are themselves suspect at the
+# young bands: applying them fails 7 committed skeletons, 5 of them at 3-5,
+# including `the-last-blue-cup` which was authored to the strict bar. A ceiling
+# that a fresh strict-bar skeleton violates is more likely miscalibrated than the
+# skeleton is (`UW-C283`).
+# #ASSUME: data-integrity: transcribed from ADR-011 section 5's table; the
+# gamebook rows are deliberately absent rather than zero.
+# #VERIFY: test_band_profile.py::test_cell_ending_bounds_match_the_adr_table and
+# ::test_scaled_floor_never_exceeds_the_cell_ceiling.
+_CELL_ENDING_BOUNDS: dict[tuple[str, str], tuple[int, int]] = {
+    ("3-5", "short"): (2, 4),
+    ("3-5", "medium"): (4, 6),
+    ("5-8", "short"): (6, 10),
+    ("5-8", "medium"): (10, 16),
+    ("8-11", "short"): (12, 18),
+    ("8-11", "medium"): (18, 28),
+    ("8-11", "long"): (28, 40),
+    ("10-13", "short"): (14, 22),
+    ("10-13", "medium"): (22, 32),
+    ("10-13", "long"): (32, 48),
+    ("13-16", "medium"): (20, 32),
+    ("13-16", "long"): (30, 48),
+    ("16+", "medium"): (24, 40),
+    ("16+", "long"): (36, 60),
+}
+
+
+def cell_ending_bounds(
+    age_band: str, length: str | None, narrative_style: str
+) -> tuple[int, int] | None:
+    """Return ADR-011 section 5's ``(min, max)`` endings for a prose cell.
+
+    Args:
+        age_band: The story age band value.
+        length: The declared length, or ``None`` for an unclassified story.
+        narrative_style: ``"prose"`` or ``"gamebook"``.
+
+    Returns:
+        The cell's stated endings range, or ``None`` for a gamebook cell, an
+        off-matrix cell, or a story with no declared length.
+    """
+    if length is None or narrative_style != "prose":
+        return None
+    return _CELL_ENDING_BOUNDS.get((age_band, length))
+
+
+def breadth_scaled_floors(
+    node_count: int, narrative_style: str, cell_ceiling: int | None = None
+) -> tuple[int, int]:
     """Return ``(min_endings, min_decisions)`` scaled to a story's node count.
 
     Only a scale-classified production story uses these; the caller takes the
@@ -603,6 +723,9 @@ def breadth_scaled_floors(node_count: int, narrative_style: str) -> tuple[int, i
     Args:
         node_count: The total number of nodes in the story.
         narrative_style: ``"prose"`` or ``"gamebook"``.
+        cell_ceiling: The cell's stated maximum endings, from
+            :func:`cell_ending_bounds`. When given, the scaled endings floor is
+            capped by it so the floor can never exceed the ceiling.
 
     Returns:
         The breadth-scaled ``(min_endings, min_decisions)`` floor pair.
@@ -612,4 +735,10 @@ def breadth_scaled_floors(node_count: int, narrative_style: str) -> tuple[int, i
     )
     min_endings = math.ceil(node_count * endings_fraction)
     min_decisions = math.ceil(node_count * _DECISIONS_FRACTION)
+    if cell_ceiling is not None:
+        # Never demand more endings than the cell's own stated maximum. Without
+        # this the floor exceeded the ceiling in three cells and equalled it in a
+        # fourth, so a story authored to the top of its own node envelope could
+        # not pass. Capping costs the catalog nothing (measured).
+        min_endings = min(min_endings, cell_ceiling)
     return min_endings, min_decisions

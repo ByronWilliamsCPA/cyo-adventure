@@ -1,14 +1,19 @@
 """Unit tests for the per-band policy profile."""
 
+import pytest
+
 from cyo_adventure.storybook.models import AgeBand, ContentFlagLevel, EndingKind
 from cyo_adventure.validator.band_profile import (
-    _PROFILES,
+    _PRODUCTION_CELLS,  # pyright: ignore[reportPrivateUsage]
+    _PROFILES,  # pyright: ignore[reportPrivateUsage]
+    _WORDS_PER_NODE,  # pyright: ignore[reportPrivateUsage]
     ARC_CEILING_MULTIPLE,
     ESTABLISHING_STOP_DEPTH,
     MVP_MAX_NODES,
     MVP_MIN_NODES,
     BandProfile,
     breadth_scaled_floors,
+    cell_ending_bounds,
     first_decision_window,
     is_offered_cell,
     min_complete_floor,
@@ -276,3 +281,94 @@ def test_unknown_style_density_falls_back_to_prose():
 def test_arc_ceiling_multiple_matches_the_measured_playthrough_ratio():
     """JHM records a longest playthrough of 27.5 pages against a shortest of 11."""
     assert ARC_CEILING_MULTIPLE == 27.5 / 11
+
+
+def test_cell_ending_bounds_match_the_adr_table() -> None:
+    """Every prose cell's endings range is transcribed from ADR-011 section 5.
+
+    Gamebook cells are deliberately absent: the ADR states "many fails" for them
+    and gives no numbers, so they keep the fraction-only treatment rather than
+    being assigned an invented bound.
+    """
+    assert cell_ending_bounds("10-13", "long", "prose") == (32, 48)
+    assert cell_ending_bounds("3-5", "short", "prose") == (2, 4)
+    assert cell_ending_bounds("16+", "long", "gamebook") is None
+    assert cell_ending_bounds("8-11", None, "prose") is None
+
+    for band, length, style in _PRODUCTION_CELLS:
+        bounds = cell_ending_bounds(band, length, style)
+        if style == "gamebook":
+            assert bounds is None, f"{band}/{length}/{style} should carry no bound"
+        else:
+            assert bounds is not None, f"{band}/{length}/{style} is missing its bound"
+            assert bounds[0] < bounds[1]
+
+
+def test_scaled_floor_never_exceeds_the_cell_ceiling() -> None:
+    """PL-17's floor must be satisfiable at every node count the cell allows.
+
+    Measured before the cap, the flat 0.15 floor applied at the TOP of a cell's
+    node range exceeded that cell's own stated maximum endings in three cells
+    and exactly equalled it in a fourth:
+
+        3-5/short     floor 4 vs ceiling 4   degenerate
+        3-5/medium    floor 7 vs ceiling 6   inverted
+        10-13/medium  floor 33 vs ceiling 32 inverted
+        10-13/long    floor 51 vs ceiling 48 inverted
+
+    So a story authored to the top of three cells' own node envelopes could not
+    satisfy the gate at all. This sweeps every node count in every prose cell
+    rather than checking the endpoints, because an inversion anywhere inside the
+    range is just as unsatisfiable as one at the edge.
+    """
+    for (band, length, style), (
+        min_nodes,
+        max_nodes,
+        _depth,
+    ) in _PRODUCTION_CELLS.items():
+        bounds = cell_ending_bounds(band, length, style)
+        if bounds is None:
+            continue
+        ceiling = bounds[1]
+        for node_count in range(min_nodes, max_nodes + 1):
+            floor, _decisions = breadth_scaled_floors(node_count, style, ceiling)
+            assert floor <= ceiling, (
+                f"{band}/{length}/{style} at {node_count} nodes: floor {floor} "
+                f"exceeds the cell ceiling {ceiling}"
+            )
+
+
+def test_band_density_ceilings_hold_the_bound_in_words() -> None:
+    """PL-26's per-band ceilings bound the same prose quantity at every band.
+
+    The rule's anchor is 3.28 PAGES between decisions and its ceiling counted
+    NODES, so one flat 6.0 spanned 4.4x in the quantity it claims to bound:
+    240 words between decisions at 3-5, 600 at 8-11, 1050 at 16+. The per-band
+    values hold that constant instead, in the reader-facing unit.
+
+    8-11 is pinned to the flat value because the JHM corpus sits in the
+    8-11/10-13 reading range, so it is the calibrated band and every other band
+    is derived from it.
+    """
+    reference = nodes_per_decision_ceiling("prose", "8-11")
+    reference_words = reference * _WORDS_PER_NODE[("8-11", "prose")][0]
+
+    for band in ("3-5", "5-8", "8-11", "10-13", "13-16", "16+"):
+        ceiling = nodes_per_decision_ceiling("prose", band)
+        words = ceiling * _WORDS_PER_NODE[(band, "prose")][0]
+        assert words == pytest.approx(reference_words, rel=0.02), (
+            f"{band} bounds {words:.0f} words between decisions, "
+            f"reference band 8-11 bounds {reference_words:.0f}"
+        )
+
+
+def test_gamebook_density_ceiling_is_not_band_scaled() -> None:
+    """The gamebook ceiling is product-defined and has no page anchor to convert."""
+    for band in ("13-16", "16+"):
+        assert nodes_per_decision_ceiling("gamebook", band) == pytest.approx(4.0)
+
+
+def test_density_ceiling_without_a_band_keeps_the_flat_prose_value() -> None:
+    """An unconfigured or omitted band falls back rather than failing."""
+    assert nodes_per_decision_ceiling("prose") == pytest.approx(6.0)
+    assert nodes_per_decision_ceiling("prose", "not-a-band") == pytest.approx(6.0)

@@ -1172,13 +1172,20 @@ def test_pl26_does_not_bound_density_from_below():
 def test_pl26_gamebook_ceiling_is_tighter_than_prose():
     """One density, two verdicts: fine as prose, a corridor as a gamebook.
 
-    26-node fastest finish over 5 decisions is 5.2, under the prose ceiling of
-    6.0 and over the gamebook ceiling of 4.0. A gamebook that steers this rarely
-    has abandoned the genre's own section-by-section pacing.
+    21-node fastest finish over 5 decisions is 4.2, under the 13-16 prose ceiling
+    of 4.29 and over the gamebook ceiling of 4.0. A gamebook that steers this
+    rarely has abandoned the genre's own section-by-section pacing.
+
+    The window is narrow, and deliberately measured at 13-16. PL-26's prose
+    ceiling is now derived per band so it bounds the same number of WORDS between
+    decisions at every band; the gamebook ceiling stays a flat, product-defined
+    4.0 with no page anchor to convert. The two therefore CROSS: gamebook is
+    tighter than prose at 13-16 (4.0 vs 4.29) and looser at 16+ (4.0 vs 3.43), so
+    this property is band-specific rather than universal (`UW-C287`).
     """
     kwargs = {
-        "spine": 25,
-        "decision_every": 5,
+        "spine": 20,
+        "decision_every": 4,
         "age_band": AgeBand.BAND_13_16,
         "length": Length.MEDIUM,
         "words": 65,
@@ -1249,7 +1256,9 @@ def test_pl20_ceiling_is_advisory_not_blocking():
 # ---------------------------------------------------------------------------
 
 
-def _tiebreak_story(*, corridor: str, branchy: str) -> Storybook:
+def _tiebreak_story(
+    *, corridor: str, branchy: str, age_band: AgeBand = AgeBand.BAND_8_11
+) -> Storybook:
     """Two equally-short (7-node) routes from a fork to the same win.
 
     ``corridor`` and ``branchy`` are id prefixes for the two routes: the
@@ -1338,7 +1347,7 @@ def _tiebreak_story(*, corridor: str, branchy: str) -> Storybook:
         start_node="p0",
         nodes=nodes,
         metadata=StoryMetadata(
-            age_band=AgeBand.BAND_3_5,
+            age_band=age_band,
             reading_level=ReadingLevel(target=2.0),
             tier=1,
             estimated_minutes=5,
@@ -1377,7 +1386,7 @@ def test_pl26_reports_the_worst_equally_fast_walk_not_its_average():
     Two 7-node routes reach the win: one with one decision (density 7.0) and
     one with two (density 3.5). ``branchy`` sorts first here, so a naive
     alphabetical tie-break would have picked the *denser-in-decisions* route
-    and reported 3.5 (silent, under the 6.0 ceiling); an averaging
+    and reported 3.5 (silent, under the 8-11 ceiling of 6.0); an averaging
     implementation would report 5.25. Only 7.0, the deliberate worst case, is
     correct.
     """

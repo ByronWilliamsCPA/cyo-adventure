@@ -45,13 +45,22 @@ def admissible_topologies(graph: nx.DiGraph[str]) -> set[Topology]:
     if reconverging == 0:
         # A pure branching tree: many leaves, no merges.
         admissible.add(Topology.TIME_CAVE)
-        if branching == 0:
-            # A pure linear spine with no choices is the canonical gauntlet shape.
-            admissible.add(Topology.GAUNTLET)
-        else:
-            # A branching acyclic tree with no cross-track bottleneck is exactly
-            # the sorting_hat shape: an early sort into parallel tracks that never
-            # reconverge. It coexists with time_cave (both are branching trees).
+        # A gauntlet is admissible with or without branching. ADR-011 section 7
+        # builds it from "linear spine, branch-to-fail, terminal (many),
+        # restart-on-fail" and pointedly does NOT list `bottleneck`, so the
+        # deadly gamebook gauntlet is a spine whose side branches END rather than
+        # rejoin. This used to admit GAUNTLET only for a graph with zero
+        # branching or with reconvergence, so the shape the ADR itself specifies
+        # classified as `sorting_hat`/`time_cave` and drew a blocking PL-18 error
+        # at 13-16 gamebook: only Ashwell's FRIENDLY gauntlet was expressible and
+        # the deadly one was not (`UW-C284`).
+        admissible.add(Topology.GAUNTLET)
+        if branching > 0:
+            # A branching acyclic tree with no cross-track bottleneck is also the
+            # sorting_hat shape: an early sort into parallel tracks that never
+            # reconverge. It coexists with time_cave and gauntlet, which is fine:
+            # this function answers what a shape COULD be called, and PL-29's
+            # per-band rows narrow that to what a band may declare.
             admissible.add(Topology.SORTING_HAT)
     else:
         # Reconvergence means bottlenecks where paths merge. A gauntlet IS a

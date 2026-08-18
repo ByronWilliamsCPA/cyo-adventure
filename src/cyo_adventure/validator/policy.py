@@ -53,6 +53,7 @@ from cyo_adventure.validator.band_profile import (
     ARC_CEILING_MULTIPLE,
     BandProfile,
     breadth_scaled_floors,
+    cell_ending_bounds,
     first_decision_window,
     is_offered_cell,
     min_complete_floor,
@@ -374,8 +375,15 @@ def _effective_floors(story: Storybook, profile: BandProfile) -> tuple[int, int,
     """
     if story.metadata.length is None or not story.metadata.production_eligible:
         return profile.min_endings, profile.min_decisions, False
+    bounds = cell_ending_bounds(
+        story.metadata.age_band.value,
+        story.metadata.length.value,
+        story.metadata.narrative_style.value,
+    )
     scaled_endings, scaled_decisions = breadth_scaled_floors(
-        len(story.nodes), story.metadata.narrative_style.value
+        len(story.nodes),
+        story.metadata.narrative_style.value,
+        None if bounds is None else bounds[1],
     )
     return (
         max(profile.min_endings, scaled_endings),
@@ -418,6 +426,57 @@ def _check_floors(
                 ),
             )
         )
+    _check_ending_ceiling(story, endings, report)
+
+
+def _check_ending_ceiling(
+    story: Storybook, endings: int, report: ValidationReport
+) -> None:
+    """PL-17: warn when a story exceeds ADR-011 section 5's endings maximum.
+
+    NEW capability rather than a tightening. PL-17 floored endings and nothing
+    ceilinged them, yet "too many endings" is a real failure mode: paths become
+    individual, and in a series every satisfying ending has to hand off to the
+    next book. This reads the ceiling off ADR-011 section 5's own per-cell
+    column, so it states the ADR rather than inventing a number.
+
+    **Advisory on purpose.** Applying these numbers fails 7 committed skeletons,
+    5 of them at 3-5, and one of those (`the-last-blue-cup`) was authored to the
+    strict bar. A ceiling a fresh strict-bar skeleton violates is more likely
+    miscalibrated than the skeleton is, and the same table is degenerate at
+    3-5/short (its floor and ceiling meet at the top of the node range) and was
+    inverted in three more cells before the floor was capped. So this reports
+    rather than blocks until the owner rules on ADR section 5 versus section 6
+    (`UW-C283`).
+
+    Args:
+        story: The parsed Storybook.
+        endings: The story's ending-node count, already computed by the caller.
+        report: The report to append to.
+    """
+    if story.metadata.length is None or not story.metadata.production_eligible:
+        return
+    bounds = cell_ending_bounds(
+        story.metadata.age_band.value,
+        story.metadata.length.value,
+        story.metadata.narrative_style.value,
+    )
+    if bounds is None or endings <= bounds[1]:
+        return
+    report.add(
+        ValidationFinding(
+            rule_id="PL-17",
+            severity=Severity.WARNING,
+            story_id=story.id,
+            message=(
+                f"PL-17 ceiling: {endings} ending(s) above the ADR-011 section 5 "
+                f"maximum {bounds[1]} for cell "
+                f"'{story.metadata.age_band.value}/{story.metadata.length.value}/"
+                f"{story.metadata.narrative_style.value}' in story '{story.id}' "
+                f"(advisory only, pending the section 5 versus section 6 ruling)"
+            ),
+        )
+    )
 
 
 def _check_topology(story: Storybook, report: ValidationReport) -> None:
@@ -901,7 +960,9 @@ def _check_decision_density(
             )
         )
         return
-    ceiling = nodes_per_decision_ceiling(story.metadata.narrative_style.value)
+    ceiling = nodes_per_decision_ceiling(
+        story.metadata.narrative_style.value, story.metadata.age_band.value
+    )
     density = len(path) / decisions
     if density > ceiling:
         report.add(
