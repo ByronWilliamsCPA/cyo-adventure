@@ -184,6 +184,23 @@ _OPTIONS_BOUNDS: dict[str, tuple[int, int]] = {
 # Words-per-stop ceiling (the upper bound of the ADR-011 section 10 "Words
 # per stop" column), flowed bands only.
 _WORDS_PER_STOP_CEILING: dict[str, int] = {
+    # 3-5 and 5-8 added 2026-08-18 from ADR-011 section 10's own column, which
+    # rules a words-per-stop range for all SIX bands where this table carried
+    # four. At those bands a node IS a stop (ADR-026 decision 4 renders one node
+    # per page), so the substitute was `words_per_node_profile`, about 2.2x more
+    # permissive at the top: 90 and 155 hard against the ADR's 40 and 70
+    # (`AL-454`, `UW-C276`).
+    #
+    # Cost measured before adding them: 160 findings across the committed young
+    # bands. Kept anyway, because the two skeletons authored to the strict bar in
+    # this workstream (`the-last-blue-cup` at 3-5, `the-seedling-thief` at 5-8)
+    # sit EXACTLY at these ceilings with zero violations, so the bound is
+    # demonstrably achievable and the findings are legacy content. That is the
+    # opposite conclusion from PL-17's new endings ceiling, which a fresh
+    # strict-bar skeleton did violate and which therefore ships advisory-only;
+    # the same test gave opposite answers and both were followed.
+    "3-5": 40,
+    "5-8": 70,
     "8-11": 135,
     "10-13": 150,
     "13-16": 200,
@@ -520,10 +537,9 @@ def check_words_per_stop(story: Storybook) -> ValidationReport:
         run_length = len(run.node_ids)
         head_id = run.node_ids[0]
         if run_length < 2 and run.terminal_id is None:
-            # A trivial single-node, no-terminal shape (a loop of length 1,
-            # or a dangling reference) carries no composed word budget of its
-            # own; the per-node ceiling (PL-19/words_per_node_profile) already
-            # covers a single node.
+            # A trivial single-node, no-terminal shape (a loop of length 1, or a
+            # dangling reference) has no composed stop to measure; the standalone
+            # sweep below covers the node on its own.
             continue
         member_ids = list(run.node_ids)
         if run.terminal_id is not None:
@@ -548,7 +564,58 @@ def check_words_per_stop(story: Storybook) -> ValidationReport:
                 ),
             )
         )
+    _check_standalone_stops(story, band, ceiling, report)
     return report
+
+
+def _check_standalone_stops(
+    story: Storybook, band: str, ceiling: int, report: ValidationReport
+) -> None:
+    """CG-3 for a node that is a rendered stop all by itself.
+
+    ``_find_runs`` yields runs of consecutive SINGLE-CHOICE nodes, so a decision
+    or ending node with nothing in front of it heads no run and was never
+    measured. That inverted the rule's own incentive: at 8-11 a single 200-word
+    decision node drew no finding, while the same material split into a 70-word
+    no-decision node plus a 70-word decision, **60 words fewer in total**, fired
+    CG-3. An author could silence the rule by MERGING nodes, which is the
+    opposite of what it wants, and up to PL-19's per-node max went unmeasured at
+    every band (`AL-452`, `UW-C276`).
+
+    A node the reader meets on its own IS a stop of one, so it is measured
+    against the same ceiling. This is the same rule, not a second one; it is
+    split out only because the run sweep above cannot express it.
+
+    Args:
+        story: The parsed Storybook.
+        band: The story's age band value.
+        ceiling: The band's words-per-stop ceiling.
+        report: The report to append to.
+    """
+    composed: set[str] = set()
+    for run in _find_runs(story):
+        composed.update(run.node_ids)
+        if run.terminal_id is not None:
+            composed.add(run.terminal_id)
+    for node in story.nodes:
+        if node.id in composed:
+            continue
+        words = _word_count(node.body)
+        if words <= ceiling:
+            continue
+        report.add(
+            ValidationFinding(
+                rule_id="CG-3",
+                severity=Severity.WARNING,
+                story_id=story.id,
+                node_id=node.id,
+                message=(
+                    f"CG-3 grammar: node '{node.id}' is a rendered stop on its "
+                    f"own at ~{words} words, above band '{band}' words-per-stop "
+                    f"ceiling {ceiling} in story '{story.id}' (advisory only)"
+                ),
+            )
+        )
 
 
 def check_fill_gate_acknowledgment(story: Storybook) -> ValidationReport:

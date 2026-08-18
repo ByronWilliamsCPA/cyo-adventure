@@ -469,11 +469,22 @@ class TestWordsPerStop:
         assert cg3[0].severity is Severity.WARNING
         assert "words-per-stop" in cg3[0].message
 
-    def test_discrete_band_never_fires(self) -> None:
-        """3-5/5-8 have no words-per-stop ceiling (discrete pages, not flowed)."""
+    def test_discrete_band_is_measured_per_node(self) -> None:
+        """3-5 and 5-8 ARE covered now, and a node there is a stop by itself.
+
+        These bands render one node per page (ADR-026 decision 4), so a node is
+        a rendered stop and ADR-011 section 10 rules a range for them like every
+        other band: 40 words at 3-5, 70 at 5-8. The table carried four bands and
+        this test pinned the two-band gap as intentional (`AL-454`, `UW-C276`).
+
+        The substitute at those bands was `words_per_node_profile`, roughly 2.2x
+        more permissive at the top (90 and 155 hard against 40 and 70), so a
+        200-word 3-5 node drew nothing at all.
+        """
         story = _chain_story("3-5", run_length=2, extra_words=200)
         report = check_words_per_stop(story)
-        assert report.findings == []
+        assert report.findings, "a 200-word 3-5 stop must be reported"
+        assert all(f.rule_id == "CG-3" for f in report.findings)
 
     def test_unfilled_skeleton_uses_declared_words(self) -> None:
         """A skeleton body (``<<FILL ... words=N ...>>``) is sized from its
@@ -823,8 +834,9 @@ class TestWordsPerStopBoundary:
         assert findings[0].severity is Severity.WARNING
 
     @pytest.mark.parametrize("band", ["3-5", "5-8"])
-    def test_a_discrete_band_has_no_composed_stop_to_cap(self, band: str) -> None:
-        # No ceiling entry means the rule returns before walking any run, so
-        # even a very wordy chain stays quiet.
+    def test_a_discrete_band_is_capped_per_node(self, band: str) -> None:
+        # These bands now carry ADR-011 section 10's own ceilings (40 at 3-5, 70
+        # at 5-8). A node is a rendered stop there, so a wordy chain is reported
+        # per node rather than ignored for having no composed stop (`UW-C276`).
         story = _chain_story(band, 4, extra_words=300)
-        assert check_words_per_stop(story).findings == []
+        assert check_words_per_stop(story).findings
