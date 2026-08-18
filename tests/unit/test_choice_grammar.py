@@ -840,3 +840,49 @@ class TestWordsPerStopBoundary:
         # per node rather than ignored for having no composed stop (`UW-C276`).
         story = _chain_story(band, 4, extra_words=300)
         assert check_words_per_stop(story).findings
+
+
+# ---------------------------------------------------------------------------
+# CG-3: what counts as one stop depends on whether the band flows
+# ---------------------------------------------------------------------------
+
+
+class TestWordsPerStopRespectsTheRenderedPage:
+    """CG-3 must measure the page the reader actually meets.
+
+    ADR-026 decision 4 renders one node per page at 3-5 and 5-8, and composes a
+    single-choice run into one scrolling stop only at the flowed bands. Adding
+    the two young bands to the ceiling table on 2026-08-18 gave them the flowed
+    composition by accident, which summed pages a child never sees together and
+    knocked seven strict-clean skeletons out of the catalog, two of them authored
+    to the strict bar. These tests pin the distinction rather than the symptom.
+    """
+
+    def test_a_young_band_measures_each_node_on_its_own(self) -> None:
+        """Two 30-word pages at 3-5 are two stops, not one 60-word stop.
+
+        The 3-5 ceiling is 40. Composed the pair reads 60 and fires; rendered as
+        the child meets them, each is comfortably inside.
+        """
+        story = _chain_story("3-5", run_length=2, extra_words=27)
+        report = check_words_per_stop(story)
+        assert [f.message for f in report.findings if f.rule_id == "CG-3"] == []
+
+    def test_a_young_band_still_catches_a_single_over_long_page(self) -> None:
+        """Per-node measurement is not a licence to write a 100-word page at 3-5."""
+        story = _chain_story("3-5", run_length=2, extra_words=100)
+        cg3 = [f for f in check_words_per_stop(story).findings if f.rule_id == "CG-3"]
+        assert cg3
+        assert all("on its own" in f.message for f in cg3)
+
+    def test_a_flowed_band_still_composes_the_run(self) -> None:
+        """8-11 flows, so the same shape is one stop and the sum is the quantity.
+
+        The 8-11 ceiling is 135. Three 60-word nodes are each fine alone and
+        must still fire once composed, which is the behaviour the young-band fix
+        must not disturb.
+        """
+        story = _chain_story("8-11", run_length=3, extra_words=57)
+        cg3 = [f for f in check_words_per_stop(story).findings if f.rule_id == "CG-3"]
+        assert cg3
+        assert any("composed stop" in f.message for f in cg3)

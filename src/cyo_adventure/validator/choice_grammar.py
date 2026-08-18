@@ -511,27 +511,52 @@ def check_options_per_choice(story: Storybook) -> ValidationReport:
 
 
 def check_words_per_stop(story: Storybook) -> ValidationReport:
-    """CG-3: cap a composed stop's word count for the flowed bands.
+    """CG-3: cap a rendered stop's word count.
 
-    Mirrors ``player/stops.py::compose_stop``'s node sequence: a run's
-    consecutive single-choice nodes plus the branch/ending node it flows
-    into. Skips a run whose word count cannot be determined (any member body
-    still carries a ``<<FILL`` directive but the story is not otherwise
-    unfilled -- see :func:`_word_count`, which handles the pre-fill case by
-    reading the declared target, so this only truly skips a mixed
-    filled/unfilled body, which should not occur in practice).
+    What counts as one stop depends on the band, because the reader's page does.
+
+    At a **flowed** band the player composes a run's consecutive single-choice
+    nodes with the branch/ending node it flows into and renders the result as
+    one scrolling stop, so the ceiling applies to the sum. This mirrors
+    ``player/stops.py::compose_stop``'s node sequence. Skips a run whose word
+    count cannot be determined (any member body still carries a ``<<FILL``
+    directive but the story is not otherwise unfilled -- see :func:`_word_count`,
+    which handles the pre-fill case by reading the declared target, so this only
+    truly skips a mixed filled/unfilled body, which should not occur in
+    practice).
+
+    At **3-5 and 5-8 there is no flowing**: ADR-026 decision 4 renders one node
+    per page, so a node IS a stop and each is measured on its own.
+
+    That distinction was the bug this function shipped with. The two young bands
+    were added to ``_WORDS_PER_STOP_CEILING`` on 2026-08-18 and silently
+    inherited the flowed-band composition, which summed pages a child never sees
+    together. It knocked seven strict-clean skeletons out of the catalog,
+    including the two authored to the strict bar in this workstream, and the
+    justification for shipping the ceilings blocking had been measured on the
+    per-node figure that is in fact the right one for these bands: at 3-5
+    `the-last-blue-cup`'s `n_gap` is exactly 40 against a ceiling of 40, but
+    composed with the 34-word `n_snack` in front of it the run read 74. The
+    ceiling values are the ADR's own and are not at issue; the quantity they were
+    applied to was.
 
     Args:
         story: The parsed Storybook to check.
 
     Returns:
-        ValidationReport: WARNING findings, one per over-ceiling composed
-            stop.
+        ValidationReport: WARNING findings, one per over-ceiling rendered stop.
     """
     report = ValidationReport()
     band = story.metadata.age_band.value
     ceiling = _WORDS_PER_STOP_CEILING.get(band)
     if ceiling is None:
+        return report
+    flowed = band in _FLOWED_BANDS
+    if not flowed:
+        # One node, one page: every node is a stop of one, so the standalone
+        # sweep below does the whole job and composing runs would measure a
+        # rendering that never happens.
+        _check_standalone_stops(story, report, composed=set())
         return report
     nodes_by_id = {node.id: node for node in story.nodes}
     for run in _find_runs(story):
@@ -565,12 +590,20 @@ def check_words_per_stop(story: Storybook) -> ValidationReport:
                 ),
             )
         )
-    _check_standalone_stops(story, band, ceiling, report)
+    composed: set[str] = set()
+    for run in _find_runs(story):
+        composed.update(run.node_ids)
+        if run.terminal_id is not None:
+            composed.add(run.terminal_id)
+    _check_standalone_stops(story, report, composed=composed)
     return report
 
 
 def _check_standalone_stops(
-    story: Storybook, band: str, ceiling: int, report: ValidationReport
+    story: Storybook,
+    report: ValidationReport,
+    *,
+    composed: set[str],
 ) -> None:
     """CG-3 for a node that is a rendered stop all by itself.
 
@@ -587,17 +620,19 @@ def _check_standalone_stops(
     against the same ceiling. This is the same rule, not a second one; it is
     split out only because the run sweep above cannot express it.
 
+    At a non-flowed band (3-5, 5-8) the caller passes an empty ``composed`` set,
+    because there every node is a stop of one and this sweep is the whole rule.
+
     Args:
-        story: The parsed Storybook.
-        band: The story's age band value.
-        ceiling: The band's words-per-stop ceiling.
+        story: The parsed Storybook; read for its band and node bodies.
         report: The report to append to.
+        composed: Node ids already measured as part of a composed stop, and so
+            not measured again here. Empty at a non-flowed band.
     """
-    composed: set[str] = set()
-    for run in _find_runs(story):
-        composed.update(run.node_ids)
-        if run.terminal_id is not None:
-            composed.add(run.terminal_id)
+    band = story.metadata.age_band.value
+    ceiling = _WORDS_PER_STOP_CEILING.get(band)
+    if ceiling is None:
+        return
     for node in story.nodes:
         if node.id in composed:
             continue
