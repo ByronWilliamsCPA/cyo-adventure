@@ -47,8 +47,10 @@ from cyo_adventure.storybook.models import (
     level_rank,
 )
 from cyo_adventure.validator.band_profile import (
+    BandProfile,
     breadth_scaled_floors,
     clamp_target_to_cap,
+    production_cell_budget,
     profile_for,
     reading_level_target_for,
 )
@@ -193,6 +195,62 @@ def _content_controls(
     return content_nogo, constraints
 
 
+def _budget_for(
+    request: StoryRequest,
+    age_band: AgeBand,
+    band: BandProfile | None,
+    narrative_style: str,
+) -> tuple[int, int]:
+    """Return the ``(node_count, ending_count)`` the prompt should ask for.
+
+    #CRITICAL: data-integrity: this must derive from the SAME envelope PL-17
+    grades against, or the prompt asks for a story the gate rejects. It used to
+    take the midpoint of the BAND envelope while PL-17 floors from the CELL
+    envelope, and `generation/prompts.py` renders the result as "produce EXACTLY
+    N ending node(s) ... Not more, not fewer" in the same block that states the
+    cell's node range. In 17 of the 18 offered cells the two disagreed, often by
+    an order of magnitude: 8-11/long asked for 4 endings where the gate needs 24,
+    13-16/long/gamebook asked 7 where it needs 93. A generator obeying the prompt
+    exactly could not pass, and one passing the gate was disobeying an
+    instruction marked EXACTLY (`UW-C279`).
+    #VERIFY: test_story_requests.py::test_brief_ending_count_satisfies_the_gate_in_every_cell
+    renders the number for all 18 cells and checks it against the floor the gate
+    will apply.
+
+    Both counts are derived rather than restated, so a future change to
+    `breadth_scaled_floors` (see `UW-C283`) moves the prompt with it instead of
+    reopening the same gap.
+
+    Args:
+        request: The story request, read for its declared length.
+        age_band: The resolved age band.
+        band: The band profile, or None when the band is unconfigured.
+        narrative_style: The resolved narrative style.
+
+    Returns:
+        The ``(node_count, ending_count)`` pair for the brief.
+    """
+    if band is None:
+        return _FALLBACK_NODES, _FALLBACK_ENDINGS
+
+    length = cast("str | None", request.length)
+    cell = (
+        production_cell_budget(age_band.value, length, narrative_style)
+        if length is not None
+        else None
+    )
+    if cell is not None:
+        min_nodes, max_nodes, _max_depth = cell
+    else:
+        # Off-matrix or length-less: the band envelope is what L1-7 falls back
+        # to as well, so prompt and gate still agree.
+        min_nodes, max_nodes = band.min_nodes, band.max_nodes
+
+    node_count = round((min_nodes + max_nodes) / 2)
+    scaled_min_endings, _ = breadth_scaled_floors(node_count, narrative_style)
+    return node_count, max(band.min_endings, scaled_min_endings)
+
+
 def brief_from_request(
     request: StoryRequest,
     profile: ChildProfile | None,
@@ -230,21 +288,7 @@ def brief_from_request(
     # ``str | None`` here to match the real pre-flush runtime shape.
     narrative_style_value = cast("str | None", request.narrative_style)
     narrative_style_str = narrative_style_value or NarrativeStyle.PROSE.value
-    # W2.2 unforce (design review finding 2.5): target the middle of the
-    # band's node envelope rather than its floor (band.min_nodes), and scale
-    # the ending count with it via the same node-count-proportional formula
-    # the validator itself uses for a scale-classified story
-    # (band_profile.breadth_scaled_floors, ADR-011 section 6: endings are
-    # reconvergent leaves scaling with node count). ``max`` with the band's
-    # absolute floor keeps a small band (e.g. 3-5) from ever requesting fewer
-    # endings than PL-17 would accept.
-    if band is not None:
-        node_count = round((band.min_nodes + band.max_nodes) / 2)
-        scaled_min_endings, _ = breadth_scaled_floors(node_count, narrative_style_str)
-        ending_count = max(band.min_endings, scaled_min_endings)
-    else:
-        node_count = _FALLBACK_NODES
-        ending_count = _FALLBACK_ENDINGS
+    node_count, ending_count = _budget_for(request, age_band, band, narrative_style_str)
     reading_target = _reading_target_for(age_band, profile)
     content_nogo, content_flag_constraints = _content_controls(profile, age_band)
     return ConceptBrief(

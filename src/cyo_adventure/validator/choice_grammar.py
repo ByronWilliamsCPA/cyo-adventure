@@ -191,6 +191,27 @@ _WORDS_PER_STOP_CEILING: dict[str, int] = {
 }
 
 
+def words_per_stop_ceiling(age_band: str) -> int | None:
+    """Return the CG-3 words-per-rendered-stop ceiling for a band.
+
+    Public so the generation prompt can STATE the bound the gate will grade
+    against. Four story-first drafts measured a median scene length of 246, 439,
+    400 and 279 words at 5-8, 8-11, 10-13 and 13-16: no trend, so the model does
+    not infer the range from the age band and the brief has to say it
+    (`UW-C278`).
+
+    Args:
+        age_band: The story age band value (for example ``"8-11"``).
+
+    Returns:
+        The band's ceiling, or ``None`` at a band CG-3 does not cover. 3-5 and
+        5-8 render one node per page (ADR-026 decision 4), so a stop is a node
+        there and PL-19 bounds it instead; the two missing entries are tracked
+        by ``UW-C276``.
+    """
+    return _WORDS_PER_STOP_CEILING.get(age_band)
+
+
 def _word_count(body: str) -> int:
     """Return a body's word count, pre- or post-fill.
 

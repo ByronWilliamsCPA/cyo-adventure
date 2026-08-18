@@ -37,6 +37,7 @@ from cyo_adventure.validator.band_profile import (
     min_complete_floor,
     words_per_node_profile,
 )
+from cyo_adventure.validator.choice_grammar import words_per_stop_ceiling
 from cyo_adventure.validator.layer1 import Scale, ScalePlacement, resolve_node_budget
 
 if TYPE_CHECKING:
@@ -324,6 +325,15 @@ def _scale_cell_block(brief: ConceptBrief) -> str:
             f"\n- Words per node: aim for a story-mean of about {mean} words per "
             f"node, and keep every single node at or under {per_node_max} words "
             f"(rule PL-19). A one-line beat is fine; no node may exceed the max."
+        )
+    stop_ceiling = words_per_stop_ceiling(band)
+    if stop_ceiling is not None:
+        lines.append(
+            f"\n- Words per rendered stop: at this band consecutive no-decision "
+            f"nodes are flowed into ONE scrollable stop for the reader, so keep "
+            f"the prose between two decisions at or under {stop_ceiling} words "
+            f"(rule CG-3). This is a pacing bound on what the reader meets "
+            f"between choices, not a bound on any single node."
         )
     floor = min_complete_floor(band, brief.length.value, style)
     if floor is not None:

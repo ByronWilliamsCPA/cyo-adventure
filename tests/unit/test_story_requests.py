@@ -40,7 +40,11 @@ from cyo_adventure.story_requests.interpretation import build_general_interpreta
 from cyo_adventure.story_requests.screening import screen_request_text
 from cyo_adventure.story_requests.service import ApprovalConfirmation
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
-from cyo_adventure.validator.band_profile import reading_level_target_for
+from cyo_adventure.validator.band_profile import (
+    _PRODUCTION_CELLS,  # pyright: ignore[reportPrivateUsage]
+    breadth_scaled_floors,
+    reading_level_target_for,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -103,11 +107,16 @@ def test_brief_from_request_uses_band_budget_and_generic_protagonist() -> None:
     assert brief.age_band == AgeBand.BAND_8_11
     assert brief.length == Length.SHORT
     assert brief.narrative_style == NarrativeStyle.PROSE
-    # band_profile 8-11 is min_nodes=15, max_nodes=30; round(midpoint) == 22.
-    assert brief.target_node_count == 22
-    # breadth_scaled_floors(22, "prose") == ceil(22 * 0.15) == 4, above the
-    # band's absolute min_endings floor of 3.
-    assert brief.ending_count == 4
+    # Derived from the CELL envelope, not the band's. 8-11/short/prose is
+    # 60-100 nodes, so the midpoint is 80 and the endings floor scales with it.
+    # This used to read the band envelope (15-30, midpoint 22, 4 endings) while
+    # PL-17 floored from the cell, so the prompt demanded exactly 4 endings
+    # where the gate required 9 (`UW-C279`).
+    cell = _PRODUCTION_CELLS[("8-11", "short", "prose")]
+    expected_nodes = round((cell[0] + cell[1]) / 2)
+    expected_endings, _ = breadth_scaled_floors(expected_nodes, "prose")
+    assert brief.target_node_count == expected_nodes
+    assert brief.ending_count == expected_endings
     assert brief.protagonist.name == "Explorer"  # never a real child name
     assert brief.tier == 1
 
@@ -1464,3 +1473,40 @@ def test_a_reading_cap_above_the_band_target_does_not_raise_it() -> None:
     brief = brief_from_request(request, cast("Any", profile))
 
     assert brief.reading_level_target == pytest.approx(band_target)
+
+
+def test_brief_ending_count_satisfies_the_gate_in_every_cell() -> None:
+    """The prompt must never demand an ending count PL-17 will reject.
+
+    `UW-C279`. `generation/prompts.py` renders the brief's `ending_count` as
+    "produce EXACTLY N ending node(s) ... Not more, not fewer" in the same block
+    that states the cell's node range. The brief derived N from the BAND
+    envelope while PL-17 floors from the CELL envelope, so in 17 of 18 offered
+    cells the two disagreed, sometimes by an order of magnitude (8-11/long asked
+    for 4 where the gate needs 24; 13-16/long/gamebook asked 7 where it needs
+    93). A generator obeying the prompt exactly could not pass, and one that
+    passed was disobeying an instruction marked EXACTLY.
+
+    This sweeps every offered cell rather than sampling, because the defect was
+    not in one cell's arithmetic but in which table was consulted, and a
+    single-cell test would have passed on the one cell that happened to agree.
+    """
+    for (band, length, style), (min_nodes, _max, _depth) in _PRODUCTION_CELLS.items():
+        request = StoryRequest(
+            family_id=uuid.uuid4(),
+            request_text="a story",
+            status="pending",
+            age_band=band,
+            length=length,
+            narrative_style=style,
+        )
+        brief = brief_from_request(request, None)
+
+        # The gate applies the floor to the story's ACTUAL node count. The
+        # cell minimum is the least favourable case a compliant generator can
+        # land on, so satisfying it there satisfies it everywhere in the cell.
+        floor_at_min, _ = breadth_scaled_floors(min_nodes, style)
+        assert brief.ending_count >= floor_at_min, (
+            f"{band}/{length}/{style}: prompt asks for exactly "
+            f"{brief.ending_count} endings, PL-17 floors at {floor_at_min}"
+        )
