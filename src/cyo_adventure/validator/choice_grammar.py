@@ -68,7 +68,7 @@ plan's W2.1); mirrors how PL-22 shipped ahead of its catalog row.
 from __future__ import annotations
 
 import re
-from collections import Counter
+from collections import Counter, deque
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -76,9 +76,11 @@ from cyo_adventure.diversity.normalize import STOPWORDS, tokenize
 from cyo_adventure.storybook.sentinels import strip_sentinels
 from cyo_adventure.utils.sentences import split_sentences
 from cyo_adventure.validator.report import Severity, ValidationFinding, ValidationReport
+from cyo_adventure.validator.walk import config_dag, walk_configurations
 
 if TYPE_CHECKING:
     from cyo_adventure.storybook.models import Node, Storybook
+    from cyo_adventure.validator.walk import ConfigDag
 
 # A skeleton body is a ``<<FILL role=... words=N ...>>`` directive, not prose;
 # mirrors reading_level.py's and policy.py's identical constant (each
@@ -114,6 +116,10 @@ _FILL_WORDS_RE = re.compile(r"\bwords=(\d+)")
 # #VERIFY: UW-C10 tracks implementing the stop-level rule; until it lands,
 # CG-1's own message says "advisory only".
 _DISCRETE_RUN_CAP: dict[str, int] = {"3-5": 3, "5-8": 3}
+
+# What "one option in front of the reader" means, named so CG-5 and the
+# single-choice predicates cannot drift on it.
+_SINGLE_CHOICE = 1
 _FLOWED_RUN_CAP = 6
 
 # Share of a story's non-ending nodes that may be single-choice, per band.
@@ -654,6 +660,209 @@ def _check_standalone_stops(
         )
 
 
+# ---------------------------------------------------------------------------
+# CG-5: the corridor the reader walks, not the one the graph declares
+# ---------------------------------------------------------------------------
+
+
+def _longest_visible_run(dag: ConfigDag) -> list[str] | None:
+    """Return the longest chain of consecutive one-option configurations.
+
+    Runs over the subgraph induced on configurations offering exactly one
+    visible choice. A chain there IS a run of consecutive one-option stops, so
+    the longest such chain is the worst corridor any reader walks.
+
+    Solved by longest path over a topological order in O(V+E) rather than by
+    path enumeration, which is exponential in the worst case, and rather than by
+    memoised recursion, which a ~100,000-vertex configuration graph would
+    overflow. A cycle inside the induced subgraph means an unbounded corridor;
+    it is reported as the cycle's own length rather than looping forever, since
+    L2-10's loop-escape rule owns unescapable loops and this rule should not
+    race it.
+
+    Args:
+        dag: The story's configuration graph.
+
+    Returns:
+        The vertex chain, longest first, or None when no configuration offers
+        exactly one visible choice.
+    """
+    single = {v for v, count in dag.choice_count.items() if count == _SINGLE_CHOICE}
+    if not single:
+        return None
+    # Successors sorted so the reconstructed chain is stable; vertex ids are
+    # zero-padded discovery order, so this is a story-derived order rather than
+    # a node-id-derived one and cannot flip on a rename.
+    succ = {
+        v: sorted(s for s in dag.adjacency.get(v, ()) if s in single) for v in single
+    }
+    order = _topological_order(single, succ)
+    if order is None:
+        # A cycle of one-option configurations: the reader can walk it forever.
+        # Report its members rather than iterating it. L2-10 owns unescapable
+        # loops, so this rule names the shape and does not race that finding.
+        return sorted(single)
+    return _longest_chain(single, succ, order)
+
+
+def _topological_order(
+    vertices: set[str], succ: dict[str, list[str]]
+) -> list[str] | None:
+    """Return a topological order of ``vertices``, or None when they cycle.
+
+    Args:
+        vertices: The induced subgraph's vertex set.
+        succ: Each vertex to its successors inside that set.
+
+    Returns:
+        The order, or None if the subgraph contains a cycle.
+    """
+    indegree = dict.fromkeys(vertices, 0)
+    for vertex in vertices:
+        for successor in succ[vertex]:
+            indegree[successor] += 1
+    queue = deque(sorted(v for v in vertices if indegree[v] == 0))
+    order: list[str] = []
+    while queue:
+        vertex = queue.popleft()
+        order.append(vertex)
+        for successor in succ[vertex]:
+            indegree[successor] -= 1
+            if indegree[successor] == 0:
+                queue.append(successor)
+    return order if len(order) == len(vertices) else None
+
+
+def _longest_chain(
+    vertices: set[str], succ: dict[str, list[str]], order: list[str]
+) -> list[str]:
+    """Return the longest path through an acyclic induced subgraph.
+
+    Args:
+        vertices: The subgraph's vertex set.
+        succ: Each vertex to its successors inside that set.
+        order: A topological order of ``vertices``.
+
+    Returns:
+        The vertex chain, from its head.
+    """
+    best = dict.fromkeys(vertices, 1)
+    nxt: dict[str, str] = {}
+    for vertex in reversed(order):
+        for successor in succ[vertex]:
+            if best[successor] + 1 > best[vertex]:
+                best[vertex] = best[successor] + 1
+                nxt[vertex] = successor
+    chain = [min(vertices, key=lambda v: (-best[v], v))]
+    while chain[-1] in nxt:
+        chain.append(nxt[chain[-1]])
+    return chain
+
+
+def run_cap_for_band(age_band: str) -> int | None:
+    """Return the choiceless-run cap CG-1 and CG-5 both apply to a band.
+
+    Public so the authoring report can print the bound the gate will grade
+    against, rather than restating it (`UW-C279`'s rule, applied here).
+
+    Args:
+        age_band: The story's age band value.
+
+    Returns:
+        The run cap, or None for a band with neither a discrete nor a flowed cap.
+    """
+    if age_band in _DISCRETE_RUN_CAP:
+        return _DISCRETE_RUN_CAP[age_band]
+    return _FLOWED_RUN_CAP if age_band in _FLOWED_BANDS else None
+
+
+def check_visible_run_cap(story: Storybook) -> ValidationReport:
+    """CG-5: cap the choiceless run the READER walks, not the declared one.
+
+    CG-1 counts ``len(node.choices)`` and never reads ``choice.condition``, so a
+    node declaring four options is a decision to it even when every reader
+    standing there sees one. That makes CG-1's run cap a bound on the declared
+    graph rather than on any reading of the story. Measured across the catalog,
+    two committed books walk a reader past CG-1's own cap while CG-1 reports
+    them compliant; the worst is a ten-stop corridor CG-1 scores as three,
+    because three nodes inside it declare 4, 4 and 2 choices (`UW-C297`).
+
+    This is a separate rule rather than a repair of CG-1, deliberately. Forty
+    nodes in the catalog show one option in some configuration, and nearly all
+    of them are an ordinary closed gate, which is what conditions are FOR;
+    grading those would fire on the feature. CG-1's other bound, the choiceless
+    *share*, also has no well-defined reading in configuration space, where one
+    node appears once per reachable state of it. The run length does have one,
+    so that is the quantity this rule takes and the only one.
+
+    Fires only when the reader's run exceeds the band cap AND the declared run
+    does not. A story whose declared run is already over the cap is CG-1's
+    finding, and repeating it here would be noise; what this rule adds is a
+    corridor CG-1 cannot see at all.
+
+    Walks the configuration space, so it runs only for a story that conditions
+    something. A story with no conditions has an identical declared and visible
+    graph, and paying for a walk to learn that is waste. A capped walk is
+    skipped: a corridor found in a fragment of the state space is not proof of
+    one in the story.
+
+    #ASSUME: timing-dependencies: this adds one configuration walk to an
+    OFFLINE command. CG-1, CG-2, CG-3 and this rule all sit behind
+    ``enforce_grammar``, which ``run_gate`` defaults False and only
+    ``scripts/check_skeleton.py --strict`` passes True, so no request path pays
+    it. Measured on the largest conditioned committed skeleton
+    (``the-tenfold-siege``, 9,832 configurations): 0.169s against a ~3.6s
+    end-to-end strict run dominated by interpreter startup.
+    #VERIFY: test_choice_grammar.py::TestVisibleRunCap covers the conditioned
+    breach, the unconditioned no-op, and the CG-1-overlap suppression.
+
+    Args:
+        story: The parsed Storybook to check.
+
+    Returns:
+        ValidationReport: WARNING findings, at most one per story.
+    """
+    report = ValidationReport()
+    band = story.metadata.age_band.value
+    cap = run_cap_for_band(band)
+    if cap is None:
+        return report
+    if not any(
+        choice.condition is not None for node in story.nodes for choice in node.choices
+    ):
+        return report
+    walk = walk_configurations(story)
+    dag = None if walk.capped else config_dag(walk)
+    chain = None if dag is None else _longest_visible_run(dag)
+    if dag is None or chain is None:
+        return report
+    visible = len(chain)
+    declared = max((len(run.node_ids) for run in _find_runs(story)), default=0)
+    # Defer to CG-1 whenever CG-1 already fires. What this rule adds is a
+    # corridor CG-1 CANNOT see; when the declared run is over the cap the author
+    # already has the signal, and a second finding under a second id is noise.
+    if visible <= cap or declared > cap:
+        return report
+    node_chain = [dag.node_of[vertex] for vertex in chain]
+    report.add(
+        ValidationFinding(
+            rule_id="CG-5",
+            severity=Severity.WARNING,
+            story_id=story.id,
+            node_id=node_chain[0],
+            message=(
+                f"CG-5 grammar: a reader can walk {visible} consecutive stops "
+                f"offering one option, above band '{band}'s run cap {cap}, in "
+                f"story '{story.id}'. CG-1 sees a longest run of {declared} "
+                f"because it counts declared choices and this corridor is held "
+                f"open by conditions: {node_chain} (advisory only; the nodes in "
+                f"the middle of the chain may declare several choices each)"
+            ),
+        )
+    )
+    return report
+
+
 def check_fill_gate_acknowledgment(story: Storybook) -> ValidationReport:
     """CG-4: flag a decision-child whose opening sentence shares no content word with its choice label.
 
@@ -778,7 +987,8 @@ def check_choice_grammar(
 
     Args:
         story: The parsed Storybook to check.
-        enforce_grammar: Run the structural advisories CG-1, CG-2 and CG-3.
+        enforce_grammar: Run the structural advisories CG-1, CG-2, CG-3 and
+            CG-5.
             ``False`` (the default) keeps the grandfathered catalog silent.
         is_fill_result: Run CG-4. Set by the gate when ``context`` is
             ``"fill_result"``, the only posture where node bodies hold prose.
@@ -794,6 +1004,8 @@ def check_choice_grammar(
         for finding in check_options_per_choice(story).findings:
             report.add(finding)
         for finding in check_words_per_stop(story).findings:
+            report.add(finding)
+        for finding in check_visible_run_cap(story).findings:
             report.add(finding)
     if is_fill_result:
         for finding in check_fill_gate_acknowledgment(story).findings:

@@ -60,8 +60,21 @@ from cyo_adventure.validator.band_profile import (
     production_cell_budget,
     words_per_node_profile,
 )
+from cyo_adventure.validator.choice_grammar import (
+    _find_runs as find_runs,
+)
+from cyo_adventure.validator.choice_grammar import (
+    _longest_visible_run as longest_visible_run,
+)
+from cyo_adventure.validator.choice_grammar import (
+    run_cap_for_band as discrete_run_cap,
+)
 from cyo_adventure.validator.policy import node_word_count, read_time_drift
-from cyo_adventure.validator.walk import DEFAULT_CONFIG_CAP, walk_configurations
+from cyo_adventure.validator.walk import (
+    DEFAULT_CONFIG_CAP,
+    config_dag,
+    walk_configurations,
+)
 
 if TYPE_CHECKING:
     from cyo_adventure.validator.gate import GateResult
@@ -212,7 +225,48 @@ def _headroom(story: dict[str, Any], metadata: dict[str, Any]) -> str:
             f"headroom arc floor  fastest satisfying finish must be >= {floor}"
         )
     lines.extend(_state_headroom_lines(story))
+    lines.extend(_visible_run_lines(story))
     return "".join(f"{line}\n" for line in lines)
+
+
+def _visible_run_lines(story: dict[str, Any]) -> list[str]:
+    """Report the choiceless run the reader walks beside the declared one.
+
+    The gap between them is the thing an author cannot otherwise see: a corridor
+    can be assembled from nodes that each declare several choices, so the graph
+    reads as well paced while the reader presses one button for ten stops. CG-5
+    caps it; this prints it whether or not the cap is breached (`UW-C297`).
+
+    Args:
+        story: The decoded skeleton dict.
+
+    Returns:
+        A list of report lines, empty for a story that conditions nothing.
+    """
+    try:
+        parsed = Storybook.model_validate(story)
+    except PydanticValidationError:
+        return []
+    if not any(
+        choice.condition is not None for node in parsed.nodes for choice in node.choices
+    ):
+        return []
+    walk = walk_configurations(parsed)
+    if walk.capped:
+        return []
+    dag = config_dag(walk)
+    chain = None if dag is None else longest_visible_run(dag)
+    visible = 0 if chain is None else len(chain)
+    declared = max((len(run.node_ids) for run in find_runs(parsed)), default=0)
+    band = parsed.metadata.age_band.value
+    cap = discrete_run_cap(band)
+    gap = "" if visible <= declared else f"  <- {visible - declared} the graph hides"
+    return [
+        (
+            f"headroom runs       choiceless run: {declared} declared, {visible} "
+            f"as the reader walks it, cap {cap}{gap}"
+        )
+    ]
 
 
 def _state_headroom_lines(story: dict[str, Any]) -> list[str]:

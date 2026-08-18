@@ -21,6 +21,7 @@ from cyo_adventure.validator.choice_grammar import (
     check_choiceless_run_cap,
     check_fill_gate_acknowledgment,
     check_options_per_choice,
+    check_visible_run_cap,
     check_words_per_stop,
 )
 from cyo_adventure.validator.gate import run_gate
@@ -74,6 +75,37 @@ def _story(
             "title": "Test Story",
             "metadata": metadata,
             "variables": [],
+            "start_node": start_node,
+            "nodes": nodes,
+        }
+    )
+
+
+def _stateful_story(
+    band: str, nodes: list[dict[str, object]], start_node: str
+) -> Storybook:
+    """Build a Tier-2 story declaring one `has_key` bool, validated in one pass.
+
+    The variable has to be present when the document is validated: a condition
+    naming an undeclared variable is a schema error, so it cannot be patched on
+    afterwards with ``model_copy``.
+    """
+    metadata = {
+        **_BASE_METADATA,
+        "age_band": band,
+        "ending_count": 1,
+        "tier": 2,
+    }
+    return Storybook.model_validate(
+        {
+            "schema_version": "2.0",
+            "id": "test_story",
+            "version": 1,
+            "title": "Test Story",
+            "metadata": metadata,
+            "variables": [
+                {"name": "has_key", "type": "bool", "initial": False},
+            ],
             "start_node": start_node,
             "nodes": nodes,
         }
@@ -886,3 +918,143 @@ class TestWordsPerStopRespectsTheRenderedPage:
         cg3 = [f for f in check_words_per_stop(story).findings if f.rule_id == "CG-3"]
         assert cg3
         assert any("composed stop" in f.message for f in cg3)
+
+
+# ---------------------------------------------------------------------------
+# CG-5: the corridor the reader walks, not the one the graph declares
+# ---------------------------------------------------------------------------
+
+
+class TestVisibleRunCap:
+    """CG-5 measures the run a reader meets, which CG-1 structurally cannot.
+
+    CG-1 counts `len(node.choices)`, so a node declaring four options is a
+    decision to it even when every reader standing there sees one. Two committed
+    books walk a reader past CG-1's own cap while CG-1 reports them compliant;
+    the worst is a ten-stop corridor CG-1 scores as three (`UW-C297`).
+    """
+
+    @staticmethod
+    def _gated_corridor(band: str, length: int) -> Storybook:
+        """A chain of `length` nodes, each declaring two choices, one gated off.
+
+        Every node offers "press on" plus a second option conditioned on a flag
+        the story never sets, so a reader sees exactly one option at each. CG-1
+        sees a graph of two-choice decisions and no run at all.
+        """
+        nodes: list[dict[str, object]] = []
+        for i in range(length):
+            target = f"n{i + 1}" if i + 1 < length else "n_end"
+            nodes.append(
+                {
+                    "id": f"n{i}",
+                    "body": "A beat.",
+                    "is_ending": False,
+                    "choices": [
+                        {"id": f"c{i}a", "label": "Press on.", "target": target},
+                        {
+                            "id": f"c{i}b",
+                            "label": "Use the key.",
+                            "target": "n_end",
+                            "condition": {"var": "has_key"},
+                        },
+                    ],
+                }
+            )
+        nodes.append(
+            {
+                "id": "n_end",
+                "body": "Done.",
+                "is_ending": True,
+                "choices": [],
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "Done",
+                },
+            }
+        )
+        return _stateful_story(band, nodes, "n0")
+
+    def _cg5(self, story: Storybook) -> list[str]:
+        return [
+            f.message
+            for f in check_visible_run_cap(story).findings
+            if f.rule_id == "CG-5"
+        ]
+
+    def test_a_conditioned_corridor_past_the_cap_fires(self) -> None:
+        """Ten two-choice nodes, one option each: CG-1 sees no run, CG-5 sees ten."""
+        story = self._gated_corridor("16+", 10)
+        assert check_choiceless_run_cap(story).findings == [], (
+            "CG-1 must see nothing here; if it does, this test no longer covers "
+            "the gap CG-5 exists for"
+        )
+        findings = self._cg5(story)
+        assert len(findings) == 1
+        assert "10 consecutive stops" in findings[0]
+        assert "run cap 6" in findings[0]
+
+    def test_a_conditioned_corridor_inside_the_cap_is_silent(self) -> None:
+        """The rule is a cap, not a report of every conditioned corridor."""
+        assert self._cg5(self._gated_corridor("16+", 4)) == []
+
+    def test_a_story_with_no_conditions_is_never_walked(self) -> None:
+        """An unconditioned story's visible graph IS its declared graph.
+
+        Paying for a configuration walk to learn that is waste, and CG-1 already
+        covers the declared reading.
+        """
+        story = _chain_story("16+", run_length=10)
+        assert self._cg5(story) == []
+
+    def test_a_declared_run_already_over_the_cap_is_left_to_cg1(self) -> None:
+        """No duplicate finding: what CG-5 adds is the excess CG-1 cannot see.
+
+        Here the corridor is declared as single-choice nodes, so CG-1 reports it.
+        CG-5 defers whenever CG-1 already fires, because the author already has
+        the signal and a second finding under a second rule id is noise.
+        """
+        nodes: list[dict[str, object]] = [
+            {
+                "id": f"n{i}",
+                "body": "A beat.",
+                "is_ending": False,
+                "choices": [
+                    {
+                        "id": f"c{i}",
+                        "label": "On.",
+                        "target": f"n{i + 1}" if i < 9 else "n_end",
+                    }
+                ],
+            }
+            for i in range(10)
+        ]
+        nodes.append(
+            {
+                "id": "n_end",
+                "body": "Done.",
+                "is_ending": True,
+                "choices": [],
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "Done",
+                },
+            }
+        )
+        # One conditioned choice elsewhere, so the walk is entered at all.
+        nodes[0]["choices"] = [
+            *nodes[0]["choices"],  # type: ignore[misc]
+            {
+                "id": "c_alt",
+                "label": "Shortcut.",
+                "target": "n_end",
+                "condition": {"var": "has_key"},
+            },
+        ]
+        story = _stateful_story("16+", nodes, "n0")
+        assert check_choiceless_run_cap(story).findings, "CG-1 must own this one"
+        assert self._cg5(story) == []
