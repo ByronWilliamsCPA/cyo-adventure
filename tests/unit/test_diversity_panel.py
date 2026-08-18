@@ -15,6 +15,7 @@ from typing import cast
 
 import pytest
 
+from cyo_adventure.diversity import panel as panel_module
 from cyo_adventure.diversity.panel import (
     compare_to_baseline,
     load_panel,
@@ -261,3 +262,33 @@ async def test_scored_pair_cache_round_trip_hits_cache_on_second_call() -> None:
     assert first == 5
     assert second == 5
     assert len(provider.calls) == 1
+
+
+def test_known_recall_gaps_are_still_failing() -> None:
+    """Every recorded recall gap must still be a real production failure.
+
+    `_KNOWN_PRODUCTION_RECALL_GAPS` records brief pairs a human curated as
+    similar that production's live metric scores at 0.000, so R4 skips them
+    rather than failing the gate. That is only honest while each one is still
+    broken: a pair that starts passing is a FIXED defect, and leaving it listed
+    turns the record into a blanket suppression that would hide the next
+    regression on that pair.
+
+    So this asserts the list is exactly the set of curated-similar pairs
+    production currently misses. It fails in both directions: if production
+    improves, delete the entry; if production regresses on a new pair, R4
+    itself fails and this list must not be extended to silence it without a
+    register row saying why.
+    """
+    manifest = load_panel(_PANEL_PATH)
+    result = run_panel(manifest, _REPO_ROOT)
+    actually_failing = {
+        outcome.key
+        for spec, outcome in zip(manifest.brief_pairs, result.brief_pairs, strict=True)
+        if outcome.similar != spec.expected_similar
+    }
+
+    assert actually_failing == panel_module._KNOWN_PRODUCTION_RECALL_GAPS, (
+        "the recorded recall gaps no longer match what production actually "
+        "misses; delete the fixed entries or file the new ones"
+    )

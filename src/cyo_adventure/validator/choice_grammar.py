@@ -603,32 +603,57 @@ def check_fill_gate_acknowledgment(story: Storybook) -> ValidationReport:
 
 
 def check_choice_grammar(
-    story: Storybook, *, enforce_grammar: bool = False
+    story: Storybook,
+    *,
+    enforce_grammar: bool = False,
+    is_fill_result: bool = False,
 ) -> ValidationReport:
-    """Run every CG-* advisory, gated behind ``enforce_grammar`` (D3/D11).
+    """Run the CG-* advisories, each behind the flag that actually fits it.
+
+    The two flags gate different rules on purpose, because CG-1 through CG-3
+    and CG-4 need opposite inputs:
+
+    - **CG-1/2/3 read STRUCTURE** (run lengths, fan widths, declared word
+      targets), which a skeleton has, so they run behind ``enforce_grammar``
+      per the D3/D11 grandfathering.
+    - **CG-4 reads PROSE.** It compares a decision-child's opening sentence
+      with its choice label, and skips any node whose body still holds a
+      ``<<FILL`` directive. So it needs a fill RESULT and gets its own flag.
+
+    Until 2026-08-18 one flag gated all four, and the only callers that set it
+    (``scripts/check_skeleton.py --strict`` and ``generation.skeleton``) pass
+    skeletons, where every body is a directive. **CG-4 therefore could not
+    produce a finding anywhere**: across 70 skeletons the counts were CG-1 80,
+    CG-2 344, CG-3 1617, CG-4 zero, so ADR-011 section 10's one explicit
+    fill-gate rule ran at no gate at all (``UW-C280``). ``check_skeleton.py``'s
+    own header said "CG-4 needs filled prose" while nothing ran it on filled
+    prose.
+
+    Splitting rather than flipping the single flag is deliberate: flipping it
+    on the fill path would also switch CG-1/2/3 on there, which is a separate
+    calibration decision with its own volume, not a side effect to take by
+    accident.
 
     Args:
         story: The parsed Storybook to check.
-        enforce_grammar: When ``False`` (the default), returns an empty
-            report unconditionally -- the grandfathered catalog and any
-            caller that has not opted in produce no CG-* findings. When
-            ``True``, runs CG-1 through CG-4 and merges their findings. A
-            future promotion-path caller for genuinely new skeletons is
-            expected to pass ``True``.
+        enforce_grammar: Run the structural advisories CG-1, CG-2 and CG-3.
+            ``False`` (the default) keeps the grandfathered catalog silent.
+        is_fill_result: Run CG-4. Set by the gate when ``context`` is
+            ``"fill_result"``, the only posture where node bodies hold prose.
 
     Returns:
-        ValidationReport: All CG-* WARNING findings; ``report.ok`` is always
-            ``True`` (advisory only, never blocks).
+        ValidationReport: The enabled CG-* WARNING findings; ``report.ok`` is
+            always ``True`` (advisory only, never blocks).
     """
     report = ValidationReport()
-    if not enforce_grammar:
-        return report
-    for finding in check_choiceless_run_cap(story).findings:
-        report.add(finding)
-    for finding in check_options_per_choice(story).findings:
-        report.add(finding)
-    for finding in check_words_per_stop(story).findings:
-        report.add(finding)
-    for finding in check_fill_gate_acknowledgment(story).findings:
-        report.add(finding)
+    if enforce_grammar:
+        for finding in check_choiceless_run_cap(story).findings:
+            report.add(finding)
+        for finding in check_options_per_choice(story).findings:
+            report.add(finding)
+        for finding in check_words_per_stop(story).findings:
+            report.add(finding)
+    if is_fill_result:
+        for finding in check_fill_gate_acknowledgment(story).findings:
+            report.add(finding)
     return report
