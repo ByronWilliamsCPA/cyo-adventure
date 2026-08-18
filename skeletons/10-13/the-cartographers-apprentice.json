@@ -1,0 +1,4481 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_cartographers_apprentice",
+ "version": 1,
+ "title": "The Cartographer's Apprentice",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "public record",
+   "precision",
+   "persistence",
+   "belonging"
+  ],
+  "estimated_minutes": 9,
+  "ending_count": 43,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "length": "long",
+  "narrative_style": "prose",
+  "production_eligible": true
+ },
+ "variables": [],
+ "start_node": "n00c0",
+ "nodes": [
+  {
+   "id": "n00c0",
+   "body": "<<FILL role=setup words=36 beats='the new basemap arrives on a Tuesday as a single file, and Wren Ashgar opens it, looks at Hallowgate Hill for eleven seconds, and says the word gone in a completely level voice'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n00c0_0",
+     "label": "Ask Wren what is missing.",
+     "target": "n01d0"
+    }
+   ]
+  },
+  {
+   "id": "n01d0",
+   "body": "<<FILL role=setup words=100 beats='the Sixty Steps are not on it, nor is the cut between Marsh Row and the tannery yard, nor eleven other ways that people in this city have used since before there was a council to record them'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n01d0_0",
+     "label": "Compare the new sheet to the old plate.",
+     "target": "n02c0"
+    },
+    {
+     "id": "c_n01d0_1",
+     "label": "Go out and walk the Sixty Steps.",
+     "target": "n02c1"
+    },
+    {
+     "id": "c_n01d0_2",
+     "label": "Read the note that came with the file.",
+     "target": "n02c2"
+    }
+   ]
+  },
+  {
+   "id": "n02c0",
+   "body": "<<FILL role=bridge words=36 beats='the 1971 engraved plate is still in the chest, and laid beside the new file it is like comparing a face to a passport photograph taken from too far away'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n02c0_0",
+     "label": "Start from the difference between the maps.",
+     "target": "n03d0"
+    }
+   ]
+  },
+  {
+   "id": "n02c1",
+   "body": "<<FILL role=bridge words=36 beats='the Sixty Steps run from Marsh Row up to Hallowgate in four flights, are worn into curves in the middle of every tread, and carry about ninety people before nine in the morning'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n02c1_0",
+     "label": "Start from the steps themselves.",
+     "target": "n03d1"
+    }
+   ]
+  },
+  {
+   "id": "n02c2",
+   "body": "<<FILL role=bridge words=36 beats='the covering note says the basemap has been simplified for clarity and consistency, and that any omission may be reported through the standard feedback channel'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n02c2_0",
+     "label": "Start from the rule underneath it.",
+     "target": "n03d2"
+    }
+   ]
+  },
+  {
+   "id": "n03d0",
+   "body": "<<FILL role=rising words=112 beats='somebody has to lay every old sheet against every new one and list what has gone, and Wren says that is a month of work and there is no month'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n03d0_0",
+     "label": "Find out who made the simplification.",
+     "target": "n04d0"
+    },
+    {
+     "id": "c_n03d0_1",
+     "label": "Find out how many ways are gone.",
+     "target": "n04d1"
+    },
+    {
+     "id": "c_n03d0_2",
+     "label": "Find out what the seven years mean.",
+     "target": "n04d2"
+    }
+   ]
+  },
+  {
+   "id": "n03d1",
+   "body": "<<FILL role=rising words=112 beats='a path that is walked is a path that can be proved, and proving it means counting people, which means standing at the bottom of four flights in February'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n03d1_0",
+     "label": "Pull every sheet out of the chest.",
+     "target": "n04c0"
+    },
+    {
+     "id": "c_n03d1_1",
+     "label": "Stand at the bottom of the steps and count.",
+     "target": "n04c1"
+    },
+    {
+     "id": "c_n03d1_2",
+     "label": "Read the rule twice.",
+     "target": "n04c2"
+    }
+   ]
+  },
+  {
+   "id": "n03d2",
+   "body": "<<FILL role=rising words=112 beats='there is a rule and it is short: a way that is off the record and unmaintained for seven years may be extinguished, and the clock started when the file was published'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n03d2_0",
+     "label": "Watch Wren cut a correction by hand.",
+     "target": "n04c3"
+    },
+    {
+     "id": "c_n03d2_1",
+     "label": "Take the file home on a stick.",
+     "target": "n04c4"
+    },
+    {
+     "id": "c_n03d2_2",
+     "label": "Find out who made the simplification.",
+     "target": "n04d0"
+    }
+   ]
+  },
+  {
+   "id": "n04d0",
+   "body": "<<FILL role=rising words=100 beats='the basemap is bought in, the simplification was a setting, and the setting was chosen by Odell Trant, who is neither careless nor hiding'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04d0_0",
+     "label": "Go and see Odell Trant.",
+     "target": "n05d0"
+    },
+    {
+     "id": "c_n04d0_1",
+     "label": "Go and see Basim at the record office.",
+     "target": "n05d1"
+    },
+    {
+     "id": "c_n04d0_2",
+     "label": "Go and find Kestrel Dowie.",
+     "target": "n05d2"
+    }
+   ]
+  },
+  {
+   "id": "n04d1",
+   "body": "<<FILL role=rising words=100 beats='the first honest count takes a whole evening and comes to three hundred and forty, of which about ninety are footpaths that people actually use'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04d1_0",
+     "label": "Go and talk to Nan Perrott.",
+     "target": "n05d3"
+    },
+    {
+     "id": "c_n04d1_1",
+     "label": "Go and ask Devi about measuring.",
+     "target": "n05d4"
+    },
+    {
+     "id": "c_n04d1_2",
+     "label": "Go and read what a modification order is.",
+     "target": "n05d5"
+    }
+   ]
+  },
+  {
+   "id": "n04d2",
+   "body": "<<FILL role=rising words=100 beats='off the record means unmaintained, unmaintained means the handrail is not repaired and the gully is not cleared, and after seven winters a set of steps is not a set of steps'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04d2_0",
+     "label": "Go and see Odell Trant.",
+     "target": "n05d0"
+    },
+    {
+     "id": "c_n04d2_1",
+     "label": "Go and see Basim at the record office.",
+     "target": "n05d1"
+    },
+    {
+     "id": "c_n04d2_2",
+     "label": "Go and find Kestrel Dowie.",
+     "target": "n05d2"
+    }
+   ]
+  },
+  {
+   "id": "n04c0",
+   "body": "<<FILL role=bridge words=36 beats='the plan chest holds sheets from 1888 to 1994 in eleven drawers, and the bottom drawer sticks and has to be lifted rather than pulled'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04c0_0",
+     "label": "Go and talk to Nan Perrott.",
+     "target": "n05d3"
+    }
+   ]
+  },
+  {
+   "id": "n04c1",
+   "body": "<<FILL role=bridge words=36 beats='you count ninety one people going up the Sixty Steps between seven and nine on a Wednesday, and forty of them are carrying something heavy'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04c1_0",
+     "label": "Go and ask Devi about measuring.",
+     "target": "n05d4"
+    }
+   ]
+  },
+  {
+   "id": "n04c2",
+   "body": "<<FILL role=bridge words=36 beats='you read the seven year rule twice because the first reading seems too simple, and the second reading is worse, because it is exactly that simple'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04c2_0",
+     "label": "Go and read what a modification order is.",
+     "target": "n05d5"
+    }
+   ]
+  },
+  {
+   "id": "n04c3",
+   "body": "<<FILL role=bridge words=36 beats='Wren cuts a correction into a spare plate with a burin, and the line goes in at the fourth attempt, and the first three are ground out'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04c3_0",
+     "label": "Go and see Odell Trant.",
+     "target": "n05d0"
+    }
+   ]
+  },
+  {
+   "id": "n04c4",
+   "body": "<<FILL role=bridge words=36 beats='the new basemap goes home on a memory stick and sits on the kitchen table all evening like something that ought to be apologised to'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04c4_0",
+     "label": "Go and see Basim at the record office.",
+     "target": "n05d1"
+    }
+   ]
+  },
+  {
+   "id": "n05d0",
+   "body": "<<FILL role=rising words=106 beats='Trant runs the basemap and believes in it, and has a good reason for every single thing she has done, and all of the reasons are about the ninety per cent'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n05d0_0",
+     "label": "Work out what evidence of use looks like.",
+     "target": "n06d0"
+    },
+    {
+     "id": "c_n05d0_1",
+     "label": "Work out how many ways you can defend.",
+     "target": "n06d1"
+    },
+    {
+     "id": "c_n05d0_2",
+     "label": "Work out who will actually sign.",
+     "target": "n06d2"
+    }
+   ]
+  },
+  {
+   "id": "n05d1",
+   "body": "<<FILL role=rising words=106 beats='Basim Rahmani has the deposited plans, the tithe map, the 1904 survey and a handwritten list of every path enquiry made since 1962'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n05d1_0",
+     "label": "Work out what the old maps prove.",
+     "target": "n06d3"
+    },
+    {
+     "id": "c_n05d1_1",
+     "label": "Work out what Trant would accept.",
+     "target": "n06d4"
+    },
+    {
+     "id": "c_n05d1_2",
+     "label": "Work out how long you have.",
+     "target": "n06d5"
+    }
+   ]
+  },
+  {
+   "id": "n05d2",
+   "body": "<<FILL role=rising words=106 beats='Kestrel has couriered in this city for nine years, knows every cut through by feel, and has never once looked at a map to do it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n05d2_0",
+     "label": "Sit in the record office reading room.",
+     "target": "n06c0"
+    },
+    {
+     "id": "c_n05d2_1",
+     "label": "Walk the tannery cut with Kestrel.",
+     "target": "n06c1"
+    },
+    {
+     "id": "c_n05d2_2",
+     "label": "Sit in the kitchen of Nan Perrott.",
+     "target": "n06c2"
+    }
+   ]
+  },
+  {
+   "id": "n05d3",
+   "body": "<<FILL role=rising words=106 beats='Nan Perrott has gone up the Sixty Steps twice a day for forty one years and can tell you which tread was replaced in 2003 and why'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n05d3_0",
+     "label": "Draw up the shortlist.",
+     "target": "n06c3"
+    },
+    {
+     "id": "c_n05d3_1",
+     "label": "Let Devi set the ground rules.",
+     "target": "n06c4"
+    },
+    {
+     "id": "c_n05d3_2",
+     "label": "Look at the eleven week calendar.",
+     "target": "n06c5"
+    }
+   ]
+  },
+  {
+   "id": "n05d4",
+   "body": "<<FILL role=rising words=106 beats='Devi has a phone, a step counter and an opinion about what counts as data, and the opinion is a great deal stricter than yours'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n05d4_0",
+     "label": "Read the 1904 survey field book.",
+     "target": "n06c6"
+    },
+    {
+     "id": "c_n05d4_1",
+     "label": "Try to save all three hundred and forty.",
+     "target": "e06_0"
+    },
+    {
+     "id": "c_n05d4_2",
+     "label": "Work out what evidence of use looks like.",
+     "target": "n06d0"
+    }
+   ]
+  },
+  {
+   "id": "n05d5",
+   "body": "<<FILL role=rising words=106 beats='there is a process for putting a way back on the record, it is called a modification order, and what it wants is evidence of use over twenty years'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n05d5_0",
+     "label": "Work out how many ways you can defend.",
+     "target": "n06d1"
+    },
+    {
+     "id": "c_n05d5_1",
+     "label": "Work out who will actually sign.",
+     "target": "n06d2"
+    },
+    {
+     "id": "c_n05d5_2",
+     "label": "Work out what the old maps prove.",
+     "target": "n06d3"
+    }
+   ]
+  },
+  {
+   "id": "n06d0",
+   "body": "<<FILL role=rising words=112 beats='twenty years of use by the public, without force, without secrecy and without permission, proved by people who will put it in writing and sign it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06d0_0",
+     "label": "Take the nine ways with the most users.",
+     "target": "n07d0"
+    },
+    {
+     "id": "c_n06d0_1",
+     "label": "Take the nine with the oldest records.",
+     "target": "n07d1"
+    },
+    {
+     "id": "c_n06d0_2",
+     "label": "Take the Sixty Steps alone and do it properly.",
+     "target": "n07d2"
+    }
+   ]
+  },
+  {
+   "id": "n06d1",
+   "body": "<<FILL role=rising words=112 beats='you cannot save three hundred and forty, you might save nine, and choosing which nine is the first genuinely hard thing anybody asks you to do'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06d1_0",
+     "label": "Ask Nan to write her statement.",
+     "target": "n07d3"
+    },
+    {
+     "id": "c_n06d1_1",
+     "label": "Ask Kestrel to log a fortnight of runs.",
+     "target": "n07d4"
+    },
+    {
+     "id": "c_n06d1_2",
+     "label": "Ask Devi to run the counts.",
+     "target": "n07d5"
+    }
+   ]
+  },
+  {
+   "id": "n06d2",
+   "body": "<<FILL role=rising words=112 beats='a signed statement is a real thing that a real person has to sit down and write, and most people will say yes and then not do it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06d2_0",
+     "label": "Ask Basim for the deposited plans.",
+     "target": "n07d6"
+    },
+    {
+     "id": "c_n06d2_1",
+     "label": "Ask Wren to engrave the shortlist.",
+     "target": "n07d7"
+    },
+    {
+     "id": "c_n06d2_2",
+     "label": "Ask Trant what she would do in your place.",
+     "target": "n07d8"
+    }
+   ]
+  },
+  {
+   "id": "n06d3",
+   "body": "<<FILL role=rising words=112 beats='an old map proves the way existed, which nobody is disputing, and what is disputed is whether the public used it as of right, which maps cannot show'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06d3_0",
+     "label": "Report it through the feedback channel and wait.",
+     "target": "e07_0"
+    },
+    {
+     "id": "c_n06d3_1",
+     "label": "Rely on the old maps alone.",
+     "target": "e07_1"
+    },
+    {
+     "id": "c_n06d3_2",
+     "label": "Take the nine ways with the most users.",
+     "target": "n07d0"
+    }
+   ]
+  },
+  {
+   "id": "n06d4",
+   "body": "<<FILL role=rising words=112 beats='Trant will restore anything she is shown to be a recorded public right of way, and will not restore anything on the grounds that it is nice'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06d4_0",
+     "label": "Take the nine with the oldest records.",
+     "target": "n07d1"
+    },
+    {
+     "id": "c_n06d4_1",
+     "label": "Take the Sixty Steps alone and do it properly.",
+     "target": "n07d2"
+    },
+    {
+     "id": "c_n06d4_2",
+     "label": "Ask Nan to write her statement.",
+     "target": "n07d3"
+    }
+   ]
+  },
+  {
+   "id": "n06d5",
+   "body": "<<FILL role=rising words=112 beats='the printed edition goes to plate in eleven weeks, and the seven year clock is running in the background of every single one of those days'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06d5_0",
+     "label": "Ask Kestrel to log a fortnight of runs.",
+     "target": "n07d4"
+    },
+    {
+     "id": "c_n06d5_1",
+     "label": "Ask Devi to run the counts.",
+     "target": "n07d5"
+    },
+    {
+     "id": "c_n06d5_2",
+     "label": "Ask Basim for the deposited plans.",
+     "target": "n07d6"
+    }
+   ]
+  },
+  {
+   "id": "n06c0",
+   "body": "<<FILL role=bridge words=36 beats='the reading room has six desks, a pencils only rule, and a window that looks out at the back of the Corn Exchange'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06c0_0",
+     "label": "Ask Wren to engrave the shortlist.",
+     "target": "n07d7"
+    }
+   ]
+  },
+  {
+   "id": "n06c1",
+   "body": "<<FILL role=bridge words=36 beats='Kestrel goes through the tannery cut without slowing down and you lose eleven seconds at the gatepost, which Kestrel finds genuinely funny'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06c1_0",
+     "label": "Ask Trant what she would do in your place.",
+     "target": "n07d8"
+    }
+   ]
+  },
+  {
+   "id": "n06c2",
+   "body": "<<FILL role=bridge words=36 beats='Nan makes tea, gets out a shoebox, and produces a bus pass from 1994, a hospital appointment card and a photograph of the steps under snow'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06c2_0",
+     "label": "Report it through the feedback channel and wait.",
+     "target": "e07_0"
+    }
+   ]
+  },
+  {
+   "id": "n06c3",
+   "body": "<<FILL role=bridge words=36 beats='the shortlist goes on the back of a proof sheet: the Sixty Steps, the tannery cut, Marsh Row alley, the school path, and five more that keep changing places'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06c3_0",
+     "label": "Rely on the old maps alone.",
+     "target": "e07_1"
+    }
+   ]
+  },
+  {
+   "id": "n06c4",
+   "body": "<<FILL role=bridge words=36 beats='Devi says a phone log is worth nothing without a method, then writes the method out on one side of paper, and it is unarguable'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06c4_0",
+     "label": "Take the nine ways with the most users.",
+     "target": "n07d0"
+    }
+   ]
+  },
+  {
+   "id": "n06c5",
+   "body": "<<FILL role=bridge words=36 beats='the eleven weeks go up on the wall of the map office in squares, and Wren looks at it once and does not look at it again'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06c5_0",
+     "label": "Take the nine with the oldest records.",
+     "target": "n07d1"
+    }
+   ]
+  },
+  {
+   "id": "n06c6",
+   "body": "<<FILL role=bridge words=36 beats='the 1904 field book records the Sixty Steps as sixty two steps, in a surveyor hand, with a note about the handrail being new'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06c6_0",
+     "label": "Take the Sixty Steps alone and do it properly.",
+     "target": "n07d2"
+    }
+   ]
+  },
+  {
+   "id": "e06_0",
+   "body": "<<FILL role=setback words=112 beats='you fight for everything, the submission is enormous and unreadable, and it comes back with a request to prioritise, and by then it is week nine'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e06_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Everything, Therefore Nothing"
+   }
+  },
+  {
+   "id": "n07d0",
+   "body": "<<FILL role=rising words=100 beats='the nine busiest are the ones you can prove fastest, and two of them are the two that Pentrell needs gone, which is either luck or is not luck'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d0_0",
+     "label": "Set the counting method and stick to it.",
+     "target": "n08d0"
+    },
+    {
+     "id": "c_n07d0_1",
+     "label": "Collect statements door to door on Marsh Row.",
+     "target": "n08d1"
+    },
+    {
+     "id": "c_n07d0_2",
+     "label": "Photograph the wear on the treads.",
+     "target": "n08d2"
+    }
+   ]
+  },
+  {
+   "id": "n07d1",
+   "body": "<<FILL role=rising words=100 beats='the oldest records are unarguable and the ways they cover are quiet, and quiet ways are exactly the ones nobody will sign a statement about'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d1_0",
+     "label": "Go through the deposited plans properly.",
+     "target": "n08d3"
+    },
+    {
+     "id": "c_n07d1_1",
+     "label": "Find out what Pentrell is building.",
+     "target": "n08d4"
+    },
+    {
+     "id": "c_n07d1_2",
+     "label": "Find out who maintains the steps now.",
+     "target": "n08d5"
+    }
+   ]
+  },
+  {
+   "id": "n07d2",
+   "body": "<<FILL role=rising words=100 beats='one way, done to the standard the process actually wants, is a test case, and a test case that wins makes the next eight much cheaper'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d2_0",
+     "label": "Find out how the printed edition works.",
+     "target": "n08d6"
+    },
+    {
+     "id": "c_n07d2_1",
+     "label": "Stand at the top of the steps at seven.",
+     "target": "n08c0"
+    },
+    {
+     "id": "c_n07d2_2",
+     "label": "Knock on the first door.",
+     "target": "n08c1"
+    }
+   ]
+  },
+  {
+   "id": "n07d3",
+   "body": "<<FILL role=rising words=100 beats='Nan will write it if somebody sits with her while she does, because she says her handwriting has gone and she will not have it laughed at'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d3_0",
+     "label": "Kneel down and photograph a tread.",
+     "target": "n08c2"
+    },
+    {
+     "id": "c_n07d3_1",
+     "label": "Talk to Ivo about the gully.",
+     "target": "n08c3"
+    },
+    {
+     "id": "c_n07d3_2",
+     "label": "Look at the tannery site plan.",
+     "target": "n08c4"
+    }
+   ]
+  },
+  {
+   "id": "n07d4",
+   "body": "<<FILL role=rising words=100 beats='Kestrel will log every cut through used for two weeks, on condition that nobody uses it to work out how fast Kestrel goes down Marsh Row'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d4_0",
+     "label": "Watch the plate go on the press.",
+     "target": "n08c5"
+    },
+    {
+     "id": "c_n07d4_1",
+     "label": "Reconcile the counts with Devi.",
+     "target": "n08c6"
+    },
+    {
+     "id": "c_n07d4_2",
+     "label": "Count on your own without a method.",
+     "target": "e08_0"
+    }
+   ]
+  },
+  {
+   "id": "n07d5",
+   "body": "<<FILL role=rising words=100 beats='Devi will count at three sites, at fixed times, with a stated method and a stated error, and will not round anything in your favour'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d5_0",
+     "label": "Ask people to sign a form they have not read.",
+     "target": "e08_1"
+    },
+    {
+     "id": "c_n07d5_1",
+     "label": "Set the counting method and stick to it.",
+     "target": "n08d0"
+    },
+    {
+     "id": "c_n07d5_2",
+     "label": "Collect statements door to door on Marsh Row.",
+     "target": "n08d1"
+    }
+   ]
+  },
+  {
+   "id": "n07d6",
+   "body": "<<FILL role=rising words=100 beats='the deposited plans for the 1904 improvement scheme show the steps in section, with a gradient, which is the single most official object anybody has produced'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d6_0",
+     "label": "Photograph the wear on the treads.",
+     "target": "n08d2"
+    },
+    {
+     "id": "c_n07d6_1",
+     "label": "Go through the deposited plans properly.",
+     "target": "n08d3"
+    },
+    {
+     "id": "c_n07d6_2",
+     "label": "Find out what Pentrell is building.",
+     "target": "n08d4"
+    }
+   ]
+  },
+  {
+   "id": "n07d7",
+   "body": "<<FILL role=rising words=100 beats='Wren will cut the nine ways onto a proof plate by hand, which will take four evenings and produce something no committee can ignore'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d7_0",
+     "label": "Find out who maintains the steps now.",
+     "target": "n08d5"
+    },
+    {
+     "id": "c_n07d7_1",
+     "label": "Find out how the printed edition works.",
+     "target": "n08d6"
+    },
+    {
+     "id": "c_n07d7_2",
+     "label": "Stand at the top of the steps at seven.",
+     "target": "n08c0"
+    }
+   ]
+  },
+  {
+   "id": "n07d8",
+   "body": "<<FILL role=rising words=100 beats='Trant thinks for a while and says she would find one way, prove it beyond argument, and make the council explain why the other eighty nine are different'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d8_0",
+     "label": "Knock on the first door.",
+     "target": "n08c1"
+    },
+    {
+     "id": "c_n07d8_1",
+     "label": "Kneel down and photograph a tread.",
+     "target": "n08c2"
+    },
+    {
+     "id": "c_n07d8_2",
+     "label": "Talk to Ivo about the gully.",
+     "target": "n08c3"
+    }
+   ]
+  },
+  {
+   "id": "e07_0",
+   "body": "<<FILL role=discovery words=100 beats='the standard feedback channel returns a reference number, an acknowledgement, and after five weeks a note explaining that the omission has been logged for the next review cycle'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e07_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Logged for the Next Cycle"
+   }
+  },
+  {
+   "id": "e07_1",
+   "body": "<<FILL role=setback words=100 beats='the old sheets prove the ways existed and the objection comes back in one line, which is that existence is not the question, and you have answered a question nobody asked'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e07_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Existence Is Not the Question"
+   }
+  },
+  {
+   "id": "n08d0",
+   "body": "<<FILL role=rising words=106 beats='three sites, two hours each, Tuesday and Saturday, for six weeks, counted by two people independently and reconciled the same evening'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08d0_0",
+     "label": "Get the statements witnessed properly.",
+     "target": "n09d0"
+    },
+    {
+     "id": "c_n08d0_1",
+     "label": "Get Ivo to write about the gully.",
+     "target": "n09d1"
+    },
+    {
+     "id": "c_n08d0_2",
+     "label": "Get the wear survey done properly.",
+     "target": "n09d2"
+    }
+   ]
+  },
+  {
+   "id": "n08d1",
+   "body": "<<FILL role=rising words=106 beats='forty two doors on Marsh Row and the tannery side, and a form that takes eleven minutes to fill in properly if somebody helps'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08d1_0",
+     "label": "Get a copy of the tannery site plan.",
+     "target": "n09d3"
+    },
+    {
+     "id": "c_n08d1_1",
+     "label": "Get Trant to state her criteria in writing.",
+     "target": "n09d4"
+    },
+    {
+     "id": "c_n08d1_2",
+     "label": "Get Wren to cut the Sixty Steps plate.",
+     "target": "n09d5"
+    }
+   ]
+  },
+  {
+   "id": "n08d2",
+   "body": "<<FILL role=rising words=106 beats='the treads are hollowed by two centimetres in the middle and nowhere else, which is a hundred years of feet and cannot be faked'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08d2_0",
+     "label": "Get the school to say it uses the path.",
+     "target": "n09d6"
+    },
+    {
+     "id": "c_n08d2_1",
+     "label": "Get a solicitor to read the submission.",
+     "target": "n09d7"
+    },
+    {
+     "id": "c_n08d2_2",
+     "label": "Get the eleven week deadline moved.",
+     "target": "n09d8"
+    }
+   ]
+  },
+  {
+   "id": "n08d3",
+   "body": "<<FILL role=rising words=106 beats='the 1904 plans, the 1938 sewer scheme and the 1971 traffic order all show the steps, and one of them shows a handrail that the council paid to install'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08d3_0",
+     "label": "Take the case straight to Pentrell.",
+     "target": "e09_0"
+    },
+    {
+     "id": "c_n08d3_1",
+     "label": "Let the deadline pass on the printed edition.",
+     "target": "e09_1"
+    },
+    {
+     "id": "c_n08d3_2",
+     "label": "Get the statements witnessed properly.",
+     "target": "n09d0"
+    }
+   ]
+  },
+  {
+   "id": "n08d4",
+   "body": "<<FILL role=rising words=106 beats='Pentrell has the tannery site, the tannery cut runs through the middle of it, and a cut through a site is worth a great deal of money to remove'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08d4_0",
+     "label": "Get Ivo to write about the gully.",
+     "target": "n09d1"
+    },
+    {
+     "id": "c_n08d4_1",
+     "label": "Get the wear survey done properly.",
+     "target": "n09d2"
+    },
+    {
+     "id": "c_n08d4_2",
+     "label": "Get a copy of the tannery site plan.",
+     "target": "n09d3"
+    }
+   ]
+  },
+  {
+   "id": "n08d5",
+   "body": "<<FILL role=rising words=106 beats='nobody does, formally, and the gully is cleared by a man called Ivo who lives at the bottom and has done it for nineteen years for nothing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08d5_0",
+     "label": "Get Trant to state her criteria in writing.",
+     "target": "n09d4"
+    },
+    {
+     "id": "c_n08d5_1",
+     "label": "Get Wren to cut the Sixty Steps plate.",
+     "target": "n09d5"
+    },
+    {
+     "id": "c_n08d5_2",
+     "label": "Get the school to say it uses the path.",
+     "target": "n09d6"
+    }
+   ]
+  },
+  {
+   "id": "n08d6",
+   "body": "<<FILL role=rising words=106 beats='the printed edition is what the council actually uses on site, so what is on the plate is what gets maintained, and the plate goes down in eleven weeks'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08d6_0",
+     "label": "Get a solicitor to read the submission.",
+     "target": "n09d7"
+    },
+    {
+     "id": "c_n08d6_1",
+     "label": "Get the eleven week deadline moved.",
+     "target": "n09d8"
+    },
+    {
+     "id": "c_n08d6_2",
+     "label": "Take the case straight to Pentrell.",
+     "target": "e09_0"
+    }
+   ]
+  },
+  {
+   "id": "n08c0",
+   "body": "<<FILL role=bridge words=36 beats='at seven in the morning the steps are a queue and at half past nine they are empty, and both facts are true and only one of them is ever seen by anybody from the council'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08c0_0",
+     "label": "Let the deadline pass on the printed edition.",
+     "target": "e09_1"
+    }
+   ]
+  },
+  {
+   "id": "n08c1",
+   "body": "<<FILL role=bridge words=36 beats='the first door is answered by a man who has lived on Marsh Row for thirty years and has never once been asked anything by anybody official'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08c1_0",
+     "label": "Get the statements witnessed properly.",
+     "target": "n09d0"
+    }
+   ]
+  },
+  {
+   "id": "n08c2",
+   "body": "<<FILL role=bridge words=36 beats='the photograph of the third tread with a rule laid across the hollow is the picture that ends up on the front of the submission'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08c2_0",
+     "label": "Get Ivo to write about the gully.",
+     "target": "n09d1"
+    }
+   ]
+  },
+  {
+   "id": "n08c3",
+   "body": "<<FILL role=bridge words=36 beats='Ivo clears the gully every autumn with a garden trowel and a bucket, and says that if he stopped the steps would be a waterfall by the third winter'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08c3_0",
+     "label": "Get the wear survey done properly.",
+     "target": "n09d2"
+    }
+   ]
+  },
+  {
+   "id": "n08c4",
+   "body": "<<FILL role=bridge words=36 beats='the site plan shows a courtyard exactly where the cut runs, and the cut is not drawn, and the omission is neat rather than careless'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08c4_0",
+     "label": "Get a copy of the tannery site plan.",
+     "target": "n09d3"
+    }
+   ]
+  },
+  {
+   "id": "n08c5",
+   "body": "<<FILL role=bridge words=36 beats='the proof press takes the plate, the paper and eleven seconds, and what comes off it is a map that somebody made rather than a map that happened'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08c5_0",
+     "label": "Get Trant to state her criteria in writing.",
+     "target": "n09d4"
+    }
+   ]
+  },
+  {
+   "id": "n08c6",
+   "body": "<<FILL role=bridge words=36 beats='the two independent counts differ by six per cent and Devi will not publish either until you have found out why, which takes an entire Sunday'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08c6_0",
+     "label": "Get Wren to cut the Sixty Steps plate.",
+     "target": "n09d5"
+    }
+   ]
+  },
+  {
+   "id": "e08_0",
+   "body": "<<FILL role=setback words=106 beats='your counts are honest and unrepeatable, and Trant cannot use them, and she says so kindly, which somehow makes it worse'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e08_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Honest and Unrepeatable"
+   }
+  },
+  {
+   "id": "e08_1",
+   "body": "<<FILL role=setback words=106 beats='forty two signatures arrive quickly, three of the signatories later say they did not understand what they had signed, and all forty two are set aside'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e08_1",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Forty Two Set Aside"
+   }
+  },
+  {
+   "id": "n09d0",
+   "body": "<<FILL role=rising words=112 beats='each statement is signed, dated, and states how long the person has used the way and whether anybody ever stopped them, which is the whole test in one sentence'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d0_0",
+     "label": "Submit the Sixty Steps as a test case.",
+     "target": "n10d0"
+    },
+    {
+     "id": "c_n09d0_1",
+     "label": "Submit all nine at once.",
+     "target": "n10d1"
+    },
+    {
+     "id": "c_n09d0_2",
+     "label": "Answer the permissive path offer.",
+     "target": "n10d2"
+    }
+   ]
+  },
+  {
+   "id": "n09d1",
+   "body": "<<FILL role=rising words=112 beats='nineteen years of clearing a gully for nothing is not maintenance by the council, and Ivo says he will write it down but wants to know if it will get him in trouble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d1_0",
+     "label": "Deal with the four overstatements.",
+     "target": "n10d3"
+    },
+    {
+     "id": "c_n09d1_1",
+     "label": "Deal with the printer.",
+     "target": "n10d4"
+    },
+    {
+     "id": "c_n09d1_2",
+     "label": "Deal with the objection from Pentrell.",
+     "target": "n10d5"
+    }
+   ]
+  },
+  {
+   "id": "n09d2",
+   "body": "<<FILL role=rising words=112 beats='measuring the hollow on every tread with a straight edge and a rule takes two people four hours and produces a table that nobody can argue with'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d2_0",
+     "label": "Deal with what Ivo is worried about.",
+     "target": "n10d6"
+    },
+    {
+     "id": "c_n09d2_1",
+     "label": "Bind the submission properly.",
+     "target": "n10c0"
+    },
+    {
+     "id": "c_n09d2_2",
+     "label": "Carry it to the council office.",
+     "target": "n10c1"
+    }
+   ]
+  },
+  {
+   "id": "n09d3",
+   "body": "<<FILL role=rising words=112 beats='the site plan is public, costs three pounds to print, and shows the courtyard where the cut is, which is a fact you now have on paper'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d3_0",
+     "label": "Sit with Nan while she signs.",
+     "target": "n10c2"
+    },
+    {
+     "id": "c_n09d3_1",
+     "label": "Walk the cut with the solicitor.",
+     "target": "n10c3"
+    },
+    {
+     "id": "c_n09d3_2",
+     "label": "Watch Pentrell file the objection.",
+     "target": "n10c4"
+    }
+   ]
+  },
+  {
+   "id": "n09d4",
+   "body": "<<FILL role=rising words=112 beats='if the criteria are written down then meeting them is a task rather than a favour, and Trant understands exactly why you are asking'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d4_0",
+     "label": "Explain the risk to Ivo honestly.",
+     "target": "n10c5"
+    },
+    {
+     "id": "c_n09d4_1",
+     "label": "Check the numbered pages twice.",
+     "target": "n10c6"
+    },
+    {
+     "id": "c_n09d4_2",
+     "label": "Accept the permissive path.",
+     "target": "e10_0"
+    }
+   ]
+  },
+  {
+   "id": "n09d5",
+   "body": "<<FILL role=rising words=112 beats='Wren cuts the steps in section and in plan on one plate, with the gradient from 1904 and the tread wear from last week, and it is beautiful and it is evidence'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d5_0",
+     "label": "Discover why the simplification happened.",
+     "target": "e10_1"
+    },
+    {
+     "id": "c_n09d5_1",
+     "label": "Submit the Sixty Steps as a test case.",
+     "target": "n10d0"
+    },
+    {
+     "id": "c_n09d5_2",
+     "label": "Submit all nine at once.",
+     "target": "n10d1"
+    }
+   ]
+  },
+  {
+   "id": "n09d6",
+   "body": "<<FILL role=rising words=112 beats='the school path carries a hundred and ten children twice a day and the head teacher will say so on headed paper, which is worth forty statements'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d6_0",
+     "label": "Answer the permissive path offer.",
+     "target": "n10d2"
+    },
+    {
+     "id": "c_n09d6_1",
+     "label": "Deal with the four overstatements.",
+     "target": "n10d3"
+    },
+    {
+     "id": "c_n09d6_2",
+     "label": "Deal with the printer.",
+     "target": "n10d4"
+    }
+   ]
+  },
+  {
+   "id": "n09d7",
+   "body": "<<FILL role=rising words=112 beats='a solicitor will read it for nothing in an hour and tell you the four places where you have said more than you can prove'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d7_0",
+     "label": "Deal with the objection from Pentrell.",
+     "target": "n10d5"
+    },
+    {
+     "id": "c_n09d7_1",
+     "label": "Deal with what Ivo is worried about.",
+     "target": "n10d6"
+    },
+    {
+     "id": "c_n09d7_2",
+     "label": "Bind the submission properly.",
+     "target": "n10c0"
+    }
+   ]
+  },
+  {
+   "id": "n09d8",
+   "body": "<<FILL role=rising words=112 beats='the plate date can move by three weeks if the printer agrees, and the printer will agree if the council asks, and the council will ask if Trant asks'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d8_0",
+     "label": "Carry it to the council office.",
+     "target": "n10c1"
+    },
+    {
+     "id": "c_n09d8_1",
+     "label": "Sit with Nan while she signs.",
+     "target": "n10c2"
+    },
+    {
+     "id": "c_n09d8_2",
+     "label": "Walk the cut with the solicitor.",
+     "target": "n10c3"
+    }
+   ]
+  },
+  {
+   "id": "e09_0",
+   "body": "<<FILL role=discovery words=112 beats='Halloran Pentrell listens for twenty minutes, agrees that the cut is old, and offers a permissive path across the courtyard, which is a path that can be closed at any time by the person who granted it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e09_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Permissive, Therefore Closeable"
+   }
+  },
+  {
+   "id": "e09_1",
+   "body": "<<FILL role=setback words=112 beats='the plate goes down without the nine ways, the printed edition is what the maintenance teams carry, and from that month nobody is sent to clear anything'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e09_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "What the Plate Says"
+   }
+  },
+  {
+   "id": "n10d0",
+   "body": "<<FILL role=rising words=100 beats='one modification order, fully evidenced: ninety one users counted, twenty two signed statements, a wear table, three deposited plans and a hand cut plate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10d0_0",
+     "label": "Answer the permission argument.",
+     "target": "n11d0"
+    },
+    {
+     "id": "c_n10d0_1",
+     "label": "Answer it for the tannery cut too.",
+     "target": "n11d1"
+    },
+    {
+     "id": "c_n10d0_2",
+     "label": "Look for the annual closure record.",
+     "target": "n11d2"
+    }
+   ]
+  },
+  {
+   "id": "n10d1",
+   "body": "<<FILL role=rising words=100 beats='nine orders together is one hearing instead of nine and one refusal instead of nine, and Wren says that is either efficient or reckless and will not say which'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10d1_0",
+     "label": "Look for a sign in an old photograph.",
+     "target": "n11d3"
+    },
+    {
+     "id": "c_n10d1_1",
+     "label": "Look at what Trant has restored already.",
+     "target": "n11d4"
+    },
+    {
+     "id": "c_n10d1_2",
+     "label": "Ask for the hearing to be public.",
+     "target": "n11d5"
+    }
+   ]
+  },
+  {
+   "id": "n10d2",
+   "body": "<<FILL role=rising words=100 beats='accepting a permissive path saves the walking and loses the right, and Nan Perrott has a view about that which she gives at some length'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10d2_0",
+     "label": "Ask Wren about 1988.",
+     "target": "n11d6"
+    },
+    {
+     "id": "c_n10d2_1",
+     "label": "Ask the school to bring the children.",
+     "target": "n11d7"
+    },
+    {
+     "id": "c_n10d2_2",
+     "label": "Ask what happens if you lose.",
+     "target": "n11d8"
+    }
+   ]
+  },
+  {
+   "id": "n10d3",
+   "body": "<<FILL role=rising words=100 beats='the solicitor found four places where the submission claims more than the evidence carries, and cutting them makes the document weaker and true'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10d3_0",
+     "label": "Argue that Pentrell is acting in bad faith.",
+     "target": "e11_0"
+    },
+    {
+     "id": "c_n10d3_1",
+     "label": "Drop the tannery cut to save the rest.",
+     "target": "e11_1"
+    },
+    {
+     "id": "c_n10d3_2",
+     "label": "Answer the permission argument.",
+     "target": "n11d0"
+    }
+   ]
+  },
+  {
+   "id": "n10d4",
+   "body": "<<FILL role=rising words=100 beats='three more weeks means a different paper allocation and a rescheduled press, and the printer wants to hear it from somebody with authority'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10d4_0",
+     "label": "Answer it for the tannery cut too.",
+     "target": "n11d1"
+    },
+    {
+     "id": "c_n10d4_1",
+     "label": "Look for the annual closure record.",
+     "target": "n11d2"
+    },
+    {
+     "id": "c_n10d4_2",
+     "label": "Look for a sign in an old photograph.",
+     "target": "n11d3"
+    }
+   ]
+  },
+  {
+   "id": "n10d5",
+   "body": "<<FILL role=rising words=100 beats='Pentrell objects formally and reasonably, and the objection is that use has been by permission, which is the one argument that would end this'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10d5_0",
+     "label": "Look at what Trant has restored already.",
+     "target": "n11d4"
+    },
+    {
+     "id": "c_n10d5_1",
+     "label": "Ask for the hearing to be public.",
+     "target": "n11d5"
+    },
+    {
+     "id": "c_n10d5_2",
+     "label": "Ask Wren about 1988.",
+     "target": "n11d6"
+    }
+   ]
+  },
+  {
+   "id": "n10d6",
+   "body": "<<FILL role=rising words=100 beats='Ivo is worried that saying he clears the gully will make him responsible for it, and the honest answer is that it might'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10d6_0",
+     "label": "Ask the school to bring the children.",
+     "target": "n11d7"
+    },
+    {
+     "id": "c_n10d6_1",
+     "label": "Ask what happens if you lose.",
+     "target": "n11d8"
+    },
+    {
+     "id": "c_n10d6_2",
+     "label": "Argue that Pentrell is acting in bad faith.",
+     "target": "e11_0"
+    }
+   ]
+  },
+  {
+   "id": "n10c0",
+   "body": "<<FILL role=bridge words=36 beats='the submission is bound with numbered pages, a contents sheet and a map on the inside cover, and it weighs more than a brick'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10c0_0",
+     "label": "Drop the tannery cut to save the rest.",
+     "target": "e11_1"
+    }
+   ]
+  },
+  {
+   "id": "n10c1",
+   "body": "<<FILL role=bridge words=36 beats='you carry it in on a wet Tuesday, the counter clerk stamps two copies and gives one back, and the stamp is the first irreversible thing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10c1_0",
+     "label": "Answer the permission argument.",
+     "target": "n11d0"
+    }
+   ]
+  },
+  {
+   "id": "n10c2",
+   "body": "<<FILL role=bridge words=36 beats='Nan writes her statement in eleven lines, dates it, signs it, and then reads it back out loud to check that it is true'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10c2_0",
+     "label": "Answer it for the tannery cut too.",
+     "target": "n11d1"
+    }
+   ]
+  },
+  {
+   "id": "n10c3",
+   "body": "<<FILL role=bridge words=36 beats='the solicitor walks the tannery cut once, looks at the gatepost, and says the words without let or hindrance in a tone that means something specific'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10c3_0",
+     "label": "Look for the annual closure record.",
+     "target": "n11d2"
+    }
+   ]
+  },
+  {
+   "id": "n10c4",
+   "body": "<<FILL role=bridge words=36 beats='the objection arrives on headed paper, four pages, courteous throughout, and the courteous parts are the ones that will be quoted at the hearing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10c4_0",
+     "label": "Look for a sign in an old photograph.",
+     "target": "n11d3"
+    }
+   ]
+  },
+  {
+   "id": "n10c5",
+   "body": "<<FILL role=bridge words=36 beats='you tell Ivo the truth about what his statement might mean, and he thinks about it for a day and then writes it anyway'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10c5_0",
+     "label": "Look at what Trant has restored already.",
+     "target": "n11d4"
+    }
+   ]
+  },
+  {
+   "id": "n10c6",
+   "body": "<<FILL role=bridge words=36 beats='the page numbers are checked twice because a submission with a missing page is a submission that gets returned, and returned means three weeks'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10c6_0",
+     "label": "Ask for the hearing to be public.",
+     "target": "n11d5"
+    }
+   ]
+  },
+  {
+   "id": "e10_0",
+   "body": "<<FILL role=setback words=100 beats='the courtyard route opens with a sign that says private land, no public right of way, and it is pleasant and well lit and it is gone in nine years'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e10_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Pleasant, Well Lit, and Gone"
+   }
+  },
+  {
+   "id": "e10_1",
+   "body": "<<FILL role=discovery words=100 beats='the setting was chosen because the old basemap held four thousand unverified lines with no way to tell a right of way from a desire path, and nobody had ever been asked to check'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e10_1",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Four Thousand Unverified Lines"
+   }
+  },
+  {
+   "id": "n11d0",
+   "body": "<<FILL role=rising words=106 beats='permission has to be shown and not assumed, and nobody can produce a single sign, gate, closure or letter in a hundred years of the Sixty Steps'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d0_0",
+     "label": "Go through the nine boxes of tannery records.",
+     "target": "n12d0"
+    },
+    {
+     "id": "c_n11d0_1",
+     "label": "Go through the four thousand photographs.",
+     "target": "n12d1"
+    },
+    {
+     "id": "c_n11d0_2",
+     "label": "Prepare Nan for the hearing.",
+     "target": "n12d2"
+    }
+   ]
+  },
+  {
+   "id": "n11d1",
+   "body": "<<FILL role=rising words=106 beats='the tannery cut is harder, because there was a gate, it was shut on one day a year until 1988, and one day a year is exactly how permission is preserved'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d1_0",
+     "label": "Prepare Ivo for the hearing.",
+     "target": "n12d3"
+    },
+    {
+     "id": "c_n11d1_1",
+     "label": "Prepare yourself for the permission argument.",
+     "target": "n12d4"
+    },
+    {
+     "id": "c_n11d1_2",
+     "label": "Decide what to do about the plate date.",
+     "target": "n12d5"
+    }
+   ]
+  },
+  {
+   "id": "n11d2",
+   "body": "<<FILL role=rising words=106 beats='if the gate was shut one day a year then somebody wrote it down, and the tannery company records went to the record office in 1991 in nine boxes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d2_0",
+     "label": "Decide whether to keep the tannery cut in.",
+     "target": "n12d6"
+    },
+    {
+     "id": "c_n11d2_1",
+     "label": "Open the first box.",
+     "target": "n12c0"
+    },
+    {
+     "id": "c_n11d2_2",
+     "label": "Sit at the light table on Thursday.",
+     "target": "n12c1"
+    }
+   ]
+  },
+  {
+   "id": "n11d3",
+   "body": "<<FILL role=rising words=106 beats='the local history group has four thousand photographs and eleven of them show the tannery gate, and somebody has to look at all four thousand'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d3_0",
+     "label": "Rehearse the questions with Nan.",
+     "target": "n12c2"
+    },
+    {
+     "id": "c_n11d3_1",
+     "label": "Walk the route with Ivo one more time.",
+     "target": "n12c3"
+    },
+    {
+     "id": "c_n11d3_2",
+     "label": "Write out the argument against yourself.",
+     "target": "n12c4"
+    }
+   ]
+  },
+  {
+   "id": "n11d4",
+   "body": "<<FILL role=rising words=106 beats='Trant has restored sixteen ways since the file was published, all on documentary evidence and none on evidence of use, which is a pattern'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d4_0",
+     "label": "Ring the printer yourself.",
+     "target": "n12c5"
+    },
+    {
+     "id": "c_n11d4_1",
+     "label": "Find the works magazine for 1971.",
+     "target": "n12c6"
+    },
+    {
+     "id": "c_n11d4_2",
+     "label": "Miss the closure record in the boxes.",
+     "target": "e12_0"
+    }
+   ]
+  },
+  {
+   "id": "n11d5",
+   "body": "<<FILL role=rising words=106 beats='a public hearing means Nan and Ivo and the head teacher in a room, and it means Pentrell making the permission argument out loud to their faces'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d5_0",
+     "label": "Understand what one day a year means.",
+     "target": "e12_1"
+    },
+    {
+     "id": "c_n11d5_1",
+     "label": "Go through the nine boxes of tannery records.",
+     "target": "n12d0"
+    },
+    {
+     "id": "c_n11d5_2",
+     "label": "Go through the four thousand photographs.",
+     "target": "n12d1"
+    }
+   ]
+  },
+  {
+   "id": "n11d6",
+   "body": "<<FILL role=rising words=106 beats='Wren was cutting plates in 1988 and remembers the tannery gate, and remembers it being shut, and will not say for certain which day'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d6_0",
+     "label": "Prepare Nan for the hearing.",
+     "target": "n12d2"
+    },
+    {
+     "id": "c_n11d6_1",
+     "label": "Prepare Ivo for the hearing.",
+     "target": "n12d3"
+    },
+    {
+     "id": "c_n11d6_2",
+     "label": "Prepare yourself for the permission argument.",
+     "target": "n12d4"
+    }
+   ]
+  },
+  {
+   "id": "n11d7",
+   "body": "<<FILL role=rising words=106 beats='a hundred and ten children is a fact and forty of them in a room is a tactic, and the head teacher is willing to do one and not the other'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d7_0",
+     "label": "Decide what to do about the plate date.",
+     "target": "n12d5"
+    },
+    {
+     "id": "c_n11d7_1",
+     "label": "Decide whether to keep the tannery cut in.",
+     "target": "n12d6"
+    },
+    {
+     "id": "c_n11d7_2",
+     "label": "Open the first box.",
+     "target": "n12c0"
+    }
+   ]
+  },
+  {
+   "id": "n11d8",
+   "body": "<<FILL role=rising words=106 beats='if the order is refused the way is not extinguished immediately, it is unrecorded, unmaintained, and on a seven year clock that has already run one year'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d8_0",
+     "label": "Sit at the light table on Thursday.",
+     "target": "n12c1"
+    },
+    {
+     "id": "c_n11d8_1",
+     "label": "Rehearse the questions with Nan.",
+     "target": "n12c2"
+    },
+    {
+     "id": "c_n11d8_2",
+     "label": "Walk the route with Ivo one more time.",
+     "target": "n12c3"
+    }
+   ]
+  },
+  {
+   "id": "e11_0",
+   "body": "<<FILL role=setback words=106 beats='you say it at the pre hearing meeting and cannot support it, the inspector notes it, and afterwards every true thing you say has that sentence standing behind it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e11_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Sentence Standing Behind"
+   }
+  },
+  {
+   "id": "e11_1",
+   "body": "<<FILL role=setback words=106 beats='dropping the hardest way makes the other eight simple and quick, the tannery cut closes in the spring, and Kestrel does not say anything about it at all'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e11_1",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The One You Traded"
+   }
+  },
+  {
+   "id": "n12d0",
+   "body": "<<FILL role=rising words=112 beats='nine boxes, no index, wage books and delivery notes and forty years of a works magazine, and somewhere in it either a closure record or nothing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12d0_0",
+     "label": "Use the 1971 photograph honestly.",
+     "target": "n13d0"
+    },
+    {
+     "id": "c_n12d0_1",
+     "label": "Show that the closure stopped in 1988.",
+     "target": "n13d1"
+    },
+    {
+     "id": "c_n12d0_2",
+     "label": "Find the last closure.",
+     "target": "n13d2"
+    }
+   ]
+  },
+  {
+   "id": "n12d1",
+   "body": "<<FILL role=rising words=112 beats='the history group will let you look on Thursdays, and there are four thousand, and eleven of them show the gate, and you do not know which eleven'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12d1_0",
+     "label": "Ask the last employees.",
+     "target": "n13d3"
+    },
+    {
+     "id": "c_n12d1_1",
+     "label": "Put the tannery cut back in the order.",
+     "target": "n13d4"
+    },
+    {
+     "id": "c_n12d1_2",
+     "label": "Send the whole file to Pentrell first.",
+     "target": "n13d5"
+    }
+   ]
+  },
+  {
+   "id": "n12d2",
+   "body": "<<FILL role=rising words=112 beats='Nan will be asked whether anybody ever stopped her and the answer is no, and being asked that in a room by a stranger is not the same as being asked it in a kitchen'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12d2_0",
+     "label": "Give Trant the closure evidence early.",
+     "target": "n13d6"
+    },
+    {
+     "id": "c_n12d2_1",
+     "label": "Set the plate date with Ferris.",
+     "target": "n13d7"
+    },
+    {
+     "id": "c_n12d2_2",
+     "label": "Decide what the order is really for.",
+     "target": "n13d8"
+    }
+   ]
+  },
+  {
+   "id": "n12d3",
+   "body": "<<FILL role=rising words=112 beats='Ivo will be asked whether the council ever asked him to clear the gully and the answer is no, and that answer helps you and exposes him'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12d3_0",
+     "label": "Hold the closure evidence back for the hearing.",
+     "target": "e13_0"
+    },
+    {
+     "id": "c_n12d3_1",
+     "label": "Let the plate go down unchanged.",
+     "target": "e13_1"
+    },
+    {
+     "id": "c_n12d3_2",
+     "label": "Use the 1971 photograph honestly.",
+     "target": "n13d0"
+    }
+   ]
+  },
+  {
+   "id": "n12d4",
+   "body": "<<FILL role=rising words=112 beats='you write out the permission argument in its strongest form, in the words of Pentrell, and then find that you cannot answer the third paragraph'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12d4_0",
+     "label": "Show that the closure stopped in 1988.",
+     "target": "n13d1"
+    },
+    {
+     "id": "c_n12d4_1",
+     "label": "Find the last closure.",
+     "target": "n13d2"
+    },
+    {
+     "id": "c_n12d4_2",
+     "label": "Ask the last employees.",
+     "target": "n13d3"
+    }
+   ]
+  },
+  {
+   "id": "n12d5",
+   "body": "<<FILL role=rising words=112 beats='the press is rescheduled or it is not, and if it is not then whatever the hearing decides arrives after the maintenance teams have stopped coming'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12d5_0",
+     "label": "Put the tannery cut back in the order.",
+     "target": "n13d4"
+    },
+    {
+     "id": "c_n12d5_1",
+     "label": "Send the whole file to Pentrell first.",
+     "target": "n13d5"
+    },
+    {
+     "id": "c_n12d5_2",
+     "label": "Give Trant the closure evidence early.",
+     "target": "n13d6"
+    }
+   ]
+  },
+  {
+   "id": "n12d6",
+   "body": "<<FILL role=rising words=112 beats='keeping it in risks the whole order on the weakest way, and taking it out abandons the only way that anybody is actually trying to remove'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12d6_0",
+     "label": "Set the plate date with Ferris.",
+     "target": "n13d7"
+    },
+    {
+     "id": "c_n12d6_1",
+     "label": "Decide what the order is really for.",
+     "target": "n13d8"
+    },
+    {
+     "id": "c_n12d6_2",
+     "label": "Hold the closure evidence back for the hearing.",
+     "target": "e13_0"
+    }
+   ]
+  },
+  {
+   "id": "n12c0",
+   "body": "<<FILL role=bridge words=36 beats='the first box is wage books, 1952 to 1961, smells of damp cardboard, and takes an hour and forty minutes to be sure about'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12c0_0",
+     "label": "Let the plate go down unchanged.",
+     "target": "e13_1"
+    }
+   ]
+  },
+  {
+   "id": "n12c1",
+   "body": "<<FILL role=bridge words=36 beats='the history group light table is in a church hall and the photographs come in sleeves of twenty, and by the second Thursday you can date a coat to a decade'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12c1_0",
+     "label": "Use the 1971 photograph honestly.",
+     "target": "n13d0"
+    }
+   ]
+  },
+  {
+   "id": "n12c2",
+   "body": "<<FILL role=bridge words=36 beats='Nan practises saying nobody ever stopped me until it stops sounding like a line and starts sounding like the plain fact that it is'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12c2_0",
+     "label": "Show that the closure stopped in 1988.",
+     "target": "n13d1"
+    }
+   ]
+  },
+  {
+   "id": "n12c3",
+   "body": "<<FILL role=bridge words=36 beats='Ivo shows you where the water comes off the roof of the old bonded store and why the gully is where it is, and it has been where it is since 1904'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12c3_0",
+     "label": "Find the last closure.",
+     "target": "n13d2"
+    }
+   ]
+  },
+  {
+   "id": "n12c4",
+   "body": "<<FILL role=bridge words=36 beats='writing the other side properly takes two evenings and is the most useful thing you do, because it finds the hole before anybody else does'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12c4_0",
+     "label": "Ask the last employees.",
+     "target": "n13d3"
+    }
+   ]
+  },
+  {
+   "id": "n12c5",
+   "body": "<<FILL role=bridge words=36 beats='the printer is called Ferris, has done the city plate for twenty two years, and asks one question, which is whether the map will be right'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12c5_0",
+     "label": "Put the tannery cut back in the order.",
+     "target": "n13d4"
+    }
+   ]
+  },
+  {
+   "id": "n12c6",
+   "body": "<<FILL role=bridge words=36 beats='the works magazine for August 1971 carries a photograph captioned the yearly closing of the gate, and it is dated, and it is in a box in a public archive'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12c6_0",
+     "label": "Send the whole file to Pentrell first.",
+     "target": "n13d5"
+    }
+   ]
+  },
+  {
+   "id": "e12_0",
+   "body": "<<FILL role=setback words=112 beats='you stop at box six because there are eleven days left, and the closure record is in box eight, and Pentrell finds it in March'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e12_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Box Eight"
+   }
+  },
+  {
+   "id": "e12_1",
+   "body": "<<FILL role=discovery words=112 beats='one day a year of closure is how a landowner keeps a way permissive, and it is a hundred years of a company caring enough to send somebody out with a padlock'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e12_1",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Somebody With a Padlock"
+   }
+  },
+  {
+   "id": "n13d0",
+   "body": "<<FILL role=rising words=100 beats='the photograph proves the gate was closed annually until at least 1971, and it also proves the practice existed, and both of those facts go in'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d0_0",
+     "label": "Track down the last two tannery workers.",
+     "target": "n14d0"
+    },
+    {
+     "id": "c_n13d0_1",
+     "label": "Reconcile the two accounts.",
+     "target": "n14d1"
+    },
+    {
+     "id": "c_n13d0_2",
+     "label": "Look in the insurance schedules.",
+     "target": "n14d2"
+    }
+   ]
+  },
+  {
+   "id": "n13d1",
+   "body": "<<FILL role=rising words=100 beats='if the closures stopped in 1988 then twenty years of use as of right runs from then, and 1988 plus twenty is 2008, which is comfortably past'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d1_0",
+     "label": "Prepare the bundle for the inspector.",
+     "target": "n14d3"
+    },
+    {
+     "id": "c_n13d1_1",
+     "label": "Prepare the witnesses.",
+     "target": "n14d4"
+    },
+    {
+     "id": "c_n13d1_2",
+     "label": "Prepare the plate with Wren.",
+     "target": "n14d5"
+    }
+   ]
+  },
+  {
+   "id": "n13d2",
+   "body": "<<FILL role=rising words=100 beats='somebody has to show the last year the gate was shut, and the works magazine stops in 1986 when the company was sold'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d2_0",
+     "label": "Prepare for the possibility of losing.",
+     "target": "n14d6"
+    },
+    {
+     "id": "c_n13d2_1",
+     "label": "Sit in a front room in Coley Bank.",
+     "target": "n14c0"
+    },
+    {
+     "id": "c_n13d2_2",
+     "label": "Ring the insurance broker.",
+     "target": "n14c1"
+    }
+   ]
+  },
+  {
+   "id": "n13d3",
+   "body": "<<FILL role=rising words=100 beats='eleven people who worked at the tannery are still in the city, four of them will talk to you, and two of them remember the gate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d3_0",
+     "label": "Tab the bundle at the kitchen table.",
+     "target": "n14c2"
+    },
+    {
+     "id": "c_n13d3_1",
+     "label": "Walk the nine ways in one afternoon.",
+     "target": "n14c3"
+    },
+    {
+     "id": "c_n13d3_2",
+     "label": "Watch Wren cut the margin.",
+     "target": "n14c4"
+    }
+   ]
+  },
+  {
+   "id": "n13d4",
+   "body": "<<FILL role=rising words=100 beats='with the closure history documented the cut becomes the strongest way rather than the weakest, and the order goes in with all nine'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d4_0",
+     "label": "Read the bundle straight through.",
+     "target": "n14c5"
+    },
+    {
+     "id": "c_n13d4_1",
+     "label": "Sleep badly the night before.",
+     "target": "n14c6"
+    },
+    {
+     "id": "c_n13d4_2",
+     "label": "Coach the witnesses too hard.",
+     "target": "e14_0"
+    }
+   ]
+  },
+  {
+   "id": "n13d5",
+   "body": "<<FILL role=rising words=100 beats='sending it in advance means no surprises at the hearing, which loses an ambush and gains an inspector who trusts you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d5_0",
+     "label": "Leave the insurance schedules unchecked.",
+     "target": "e14_1"
+    },
+    {
+     "id": "c_n13d5_1",
+     "label": "Track down the last two tannery workers.",
+     "target": "n14d0"
+    },
+    {
+     "id": "c_n13d5_2",
+     "label": "Reconcile the two accounts.",
+     "target": "n14d1"
+    }
+   ]
+  },
+  {
+   "id": "n13d6",
+   "body": "<<FILL role=rising words=100 beats='Trant is not the enemy and never was, and if she can restore the cut administratively then the hearing is about the other eight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d6_0",
+     "label": "Look in the insurance schedules.",
+     "target": "n14d2"
+    },
+    {
+     "id": "c_n13d6_1",
+     "label": "Prepare the bundle for the inspector.",
+     "target": "n14d3"
+    },
+    {
+     "id": "c_n13d6_2",
+     "label": "Prepare the witnesses.",
+     "target": "n14d4"
+    }
+   ]
+  },
+  {
+   "id": "n13d7",
+   "body": "<<FILL role=rising words=100 beats='Ferris moves the press by three weeks on one condition, which is that whatever goes on the plate is checked by Wren and by you and by nobody else'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d7_0",
+     "label": "Prepare the plate with Wren.",
+     "target": "n14d5"
+    },
+    {
+     "id": "c_n13d7_1",
+     "label": "Prepare for the possibility of losing.",
+     "target": "n14d6"
+    },
+    {
+     "id": "c_n13d7_2",
+     "label": "Sit in a front room in Coley Bank.",
+     "target": "n14c0"
+    }
+   ]
+  },
+  {
+   "id": "n13d8",
+   "body": "<<FILL role=rising words=100 beats='the order is for nine ways, the nine ways are for the ninety people at seven in the morning, and it helps to say that out loud before a hearing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d8_0",
+     "label": "Ring the insurance broker.",
+     "target": "n14c1"
+    },
+    {
+     "id": "c_n13d8_1",
+     "label": "Tab the bundle at the kitchen table.",
+     "target": "n14c2"
+    },
+    {
+     "id": "c_n13d8_2",
+     "label": "Walk the nine ways in one afternoon.",
+     "target": "n14c3"
+    }
+   ]
+  },
+  {
+   "id": "e13_0",
+   "body": "<<FILL role=setback words=100 beats='you keep the photograph for the moment it will land hardest, the inspector asks why it was not disclosed, and after that it lands like nothing at all'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e13_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Card You Kept"
+   }
+  },
+  {
+   "id": "e13_1",
+   "body": "<<FILL role=setback words=100 beats='the printed edition goes out without the nine ways because nobody rang Ferris in time, and the hearing happens anyway, three weeks into a map that is already wrong'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e13_1",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Three Weeks Into a Wrong Map"
+   }
+  },
+  {
+   "id": "n14d0",
+   "body": "<<FILL role=rising words=106 beats='two people remember the gate being shut, one says it stopped when the company went, and the other says it stopped years before that'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14d0_0",
+     "label": "Produce the insurance schedule.",
+     "target": "n15d0"
+    },
+    {
+     "id": "c_n14d0_1",
+     "label": "Set the twenty years from 1987.",
+     "target": "n15d1"
+    },
+    {
+     "id": "c_n14d0_2",
+     "label": "Take the inspector through the wear table.",
+     "target": "n15d2"
+    }
+   ]
+  },
+  {
+   "id": "n14d1",
+   "body": "<<FILL role=rising words=106 beats='two honest memories that disagree is normal and is not evidence, the way through it is a document, and there is one more place to look'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14d1_0",
+     "label": "Take the inspector through the counts.",
+     "target": "n15d3"
+    },
+    {
+     "id": "c_n14d1_1",
+     "label": "Let Nan answer in her own words.",
+     "target": "n15d4"
+    },
+    {
+     "id": "c_n14d1_2",
+     "label": "Let Ivo answer about the gully.",
+     "target": "n15d5"
+    }
+   ]
+  },
+  {
+   "id": "n14d2",
+   "body": "<<FILL role=rising words=106 beats='an annual closure is a liability arrangement, liability arrangements are insured, and insurance schedules are kept forever by somebody'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14d2_0",
+     "label": "Let the head teacher speak for the school path.",
+     "target": "n15d6"
+    },
+    {
+     "id": "c_n14d2_1",
+     "label": "Answer the courteous objection.",
+     "target": "n15d7"
+    },
+    {
+     "id": "c_n14d2_2",
+     "label": "Ask the inspector to see the ways.",
+     "target": "n15d8"
+    }
+   ]
+  },
+  {
+   "id": "n14d3",
+   "body": "<<FILL role=rising words=106 beats='the bundle is tabbed, indexed, paginated and duplicated four times, and putting it together takes a weekend and no thought at all, which is a relief'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14d3_0",
+     "label": "Watch how the inspector reads a map.",
+     "target": "e15_0"
+    },
+    {
+     "id": "c_n14d3_1",
+     "label": "Overrun your time at the hearing.",
+     "target": "e15_1"
+    },
+    {
+     "id": "c_n14d3_2",
+     "label": "Produce the insurance schedule.",
+     "target": "n15d0"
+    }
+   ]
+  },
+  {
+   "id": "n14d4",
+   "body": "<<FILL role=rising words=106 beats='six witnesses, each told the same three things: answer the question that is asked, say you do not know when you do not, and do not argue with anybody'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14d4_0",
+     "label": "Set the twenty years from 1987.",
+     "target": "n15d1"
+    },
+    {
+     "id": "c_n14d4_1",
+     "label": "Take the inspector through the wear table.",
+     "target": "n15d2"
+    },
+    {
+     "id": "c_n14d4_2",
+     "label": "Take the inspector through the counts.",
+     "target": "n15d3"
+    }
+   ]
+  },
+  {
+   "id": "n14d5",
+   "body": "<<FILL role=rising words=106 beats='the plate carries all nine ways, engraved by hand, with the sources cut into the margin in six point, which nobody will read and everybody will see'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14d5_0",
+     "label": "Let Nan answer in her own words.",
+     "target": "n15d4"
+    },
+    {
+     "id": "c_n14d5_1",
+     "label": "Let Ivo answer about the gully.",
+     "target": "n15d5"
+    },
+    {
+     "id": "c_n14d5_2",
+     "label": "Let the head teacher speak for the school path.",
+     "target": "n15d6"
+    }
+   ]
+  },
+  {
+   "id": "n14d6",
+   "body": "<<FILL role=rising words=106 beats='if it goes badly the fallback is the seven year clock and a second attempt, and knowing that makes it possible to be calm on the day'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14d6_0",
+     "label": "Answer the courteous objection.",
+     "target": "n15d7"
+    },
+    {
+     "id": "c_n14d6_1",
+     "label": "Ask the inspector to see the ways.",
+     "target": "n15d8"
+    },
+    {
+     "id": "c_n14d6_2",
+     "label": "Watch how the inspector reads a map.",
+     "target": "e15_0"
+    }
+   ]
+  },
+  {
+   "id": "n14c0",
+   "body": "<<FILL role=bridge words=36 beats='the first tannery worker is eighty seven, makes tea, and talks for an hour about the yard before saying one useful sentence about the gate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14c0_0",
+     "label": "Overrun your time at the hearing.",
+     "target": "e15_1"
+    }
+   ]
+  },
+  {
+   "id": "n14c1",
+   "body": "<<FILL role=bridge words=36 beats='the broker is now three companies removed from the original, takes nine days to find anything, and then finds everything'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14c1_0",
+     "label": "Produce the insurance schedule.",
+     "target": "n15d0"
+    }
+   ]
+  },
+  {
+   "id": "n14c2",
+   "body": "<<FILL role=bridge words=36 beats='four bundles, ninety tabs each, and Devi does two of them while explaining exactly why the counting method matters more than the counts'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14c2_0",
+     "label": "Set the twenty years from 1987.",
+     "target": "n15d1"
+    }
+   ]
+  },
+  {
+   "id": "n14c3",
+   "body": "<<FILL role=bridge words=36 beats='the nine ways can be walked in a single afternoon if you do them in the right order, and doing that once makes the whole thing feel finite'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14c3_0",
+     "label": "Take the inspector through the wear table.",
+     "target": "n15d2"
+    }
+   ]
+  },
+  {
+   "id": "n14c4",
+   "body": "<<FILL role=bridge words=36 beats='the six point margin lettering takes Wren an entire evening and comes out even, and Wren says that the margin is where a map tells the truth about itself'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14c4_0",
+     "label": "Take the inspector through the counts.",
+     "target": "n15d3"
+    }
+   ]
+  },
+  {
+   "id": "n14c5",
+   "body": "<<FILL role=bridge words=36 beats='reading it end to end takes four hours, and there is one page you would take out and you leave it in, and you are still not sure that was right'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14c5_0",
+     "label": "Let Nan answer in her own words.",
+     "target": "n15d4"
+    }
+   ]
+  },
+  {
+   "id": "n14c6",
+   "body": "<<FILL role=bridge words=36 beats='the night before the hearing is four hours of sleep and a list, written at two in the morning, of things that turn out not to matter'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14c6_0",
+     "label": "Let Ivo answer about the gully.",
+     "target": "n15d5"
+    }
+   ]
+  },
+  {
+   "id": "e14_0",
+   "body": "<<FILL role=setback words=106 beats='the statements start to sound the same, the inspector notices that three people used the same unusual phrase, and asks who wrote it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e14_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Same Unusual Phrase"
+   }
+  },
+  {
+   "id": "e14_1",
+   "body": "<<FILL role=setback words=106 beats='the schedules would have settled the closure date in one line, and nobody looks, and the hearing spends two hours on it instead'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e14_1",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Two Hours on a Line"
+   }
+  },
+  {
+   "id": "n15d0",
+   "body": "<<FILL role=rising words=112 beats='the schedule lists an annual closure of the yard gate until 1987 and then stops, which dates the last closure to a year, in writing, from a disinterested source'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d0_0",
+     "label": "Do the accompanied site visit.",
+     "target": "n16d0"
+    },
+    {
+     "id": "c_n15d0_1",
+     "label": "Answer the final written round.",
+     "target": "n16d1"
+    },
+    {
+     "id": "c_n15d0_2",
+     "label": "Decide what to concede.",
+     "target": "n16d2"
+    }
+   ]
+  },
+  {
+   "id": "n15d1",
+   "body": "<<FILL role=rising words=112 beats='1987 plus twenty is 2007 and the claim is made now, so the period is complete with sixteen years to spare, and that is the whole case in one line'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d1_0",
+     "label": "Decide what to say about the basemap.",
+     "target": "n16d3"
+    },
+    {
+     "id": "c_n15d1_1",
+     "label": "Decide what to do while you wait.",
+     "target": "n16d4"
+    },
+    {
+     "id": "c_n15d1_2",
+     "label": "Decide what to do about Trant.",
+     "target": "n16d5"
+    }
+   ]
+  },
+  {
+   "id": "n15d2",
+   "body": "<<FILL role=rising words=112 beats='the wear table is dull and unanswerable, and the inspector reads it for a long time and then asks one question about the straight edge'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d2_0",
+     "label": "Decide what to tell the ninety people.",
+     "target": "n16d6"
+    },
+    {
+     "id": "c_n15d2_1",
+     "label": "Stand on the third tread in the rain.",
+     "target": "n16c0"
+    },
+    {
+     "id": "c_n15d2_2",
+     "label": "Write the closing statement four times.",
+     "target": "n16c1"
+    }
+   ]
+  },
+  {
+   "id": "n15d3",
+   "body": "<<FILL role=rising words=112 beats='the counts have a method, an error and two independent counters, and Devi wrote the method, and Devi is in the room'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d3_0",
+     "label": "Post the two weak ways.",
+     "target": "n16c2"
+    },
+    {
+     "id": "c_n15d3_1",
+     "label": "Put a notice at the bottom of the steps.",
+     "target": "n16c3"
+    },
+    {
+     "id": "c_n15d3_2",
+     "label": "Start the Ferrisgate survey.",
+     "target": "n16c4"
+    }
+   ]
+  },
+  {
+   "id": "n15d4",
+   "body": "<<FILL role=rising words=112 beats='Nan is asked whether anybody ever stopped her and says no, and is asked whether she ever sought permission and says it never once occurred to her'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d4_0",
+     "label": "Wait through eight weeks.",
+     "target": "n16c5"
+    },
+    {
+     "id": "c_n15d4_1",
+     "label": "Read the decision when it comes.",
+     "target": "n16c6"
+    },
+    {
+     "id": "c_n15d4_2",
+     "label": "Use the closing statement to attack the basemap.",
+     "target": "e16_0"
+    }
+   ]
+  },
+  {
+   "id": "n15d5",
+   "body": "<<FILL role=rising words=112 beats='Ivo says the council has never asked him to do it and has never thanked him for it, and that he will keep doing it either way'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d5_0",
+     "label": "Concede nothing at all.",
+     "target": "e16_1"
+    },
+    {
+     "id": "c_n15d5_1",
+     "label": "Do the accompanied site visit.",
+     "target": "n16d0"
+    },
+    {
+     "id": "c_n15d5_2",
+     "label": "Answer the final written round.",
+     "target": "n16d1"
+    }
+   ]
+  },
+  {
+   "id": "n15d6",
+   "body": "<<FILL role=rising words=112 beats='a hundred and ten children twice a day for nineteen years, on headed paper, read out in a level voice, takes ninety seconds'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d6_0",
+     "label": "Decide what to concede.",
+     "target": "n16d2"
+    },
+    {
+     "id": "c_n15d6_1",
+     "label": "Decide what to say about the basemap.",
+     "target": "n16d3"
+    },
+    {
+     "id": "c_n15d6_2",
+     "label": "Decide what to do while you wait.",
+     "target": "n16d4"
+    }
+   ]
+  },
+  {
+   "id": "n15d7",
+   "body": "<<FILL role=rising words=112 beats='Pentrell argues permission, and you answer with the insurance schedule, the 1971 photograph and the twenty year period, in that order, and then stop'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d7_0",
+     "label": "Decide what to do about Trant.",
+     "target": "n16d5"
+    },
+    {
+     "id": "c_n15d7_1",
+     "label": "Decide what to tell the ninety people.",
+     "target": "n16d6"
+    },
+    {
+     "id": "c_n15d7_2",
+     "label": "Stand on the third tread in the rain.",
+     "target": "n16c0"
+    }
+   ]
+  },
+  {
+   "id": "n15d8",
+   "body": "<<FILL role=rising words=112 beats='an accompanied site visit means the inspector stands on the third tread and looks at the hollow, which no bundle can do'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d8_0",
+     "label": "Write the closing statement four times.",
+     "target": "n16c1"
+    },
+    {
+     "id": "c_n15d8_1",
+     "label": "Post the two weak ways.",
+     "target": "n16c2"
+    },
+    {
+     "id": "c_n15d8_2",
+     "label": "Put a notice at the bottom of the steps.",
+     "target": "n16c3"
+    }
+   ]
+  },
+  {
+   "id": "e15_0",
+   "body": "<<FILL role=discovery words=112 beats='the inspector reads the plate of Wren the way Wren reads it, from the margin inwards, and asks who cut it, and something in the room changes'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e15_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "From the Margin Inwards"
+   }
+  },
+  {
+   "id": "e15_1",
+   "body": "<<FILL role=setback words=112 beats='you speak for fifty minutes of an allotted twenty, and the last three witnesses are heard quickly at the end of a long afternoon'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e15_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Fifty Minutes of Twenty"
+   }
+  },
+  {
+   "id": "n16d0",
+   "body": "<<FILL role=rising words=100 beats='the inspector walks all nine ways in three hours in the rain, with Pentrell present, and says almost nothing except once at the gatepost'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16d0_0",
+     "label": "Read the operative part carefully.",
+     "target": "n17d0"
+    },
+    {
+     "id": "c_n16d0_1",
+     "label": "Get the seven onto the definitive map.",
+     "target": "n17d1"
+    },
+    {
+     "id": "c_n16d0_2",
+     "label": "Get the seven onto the printed plate.",
+     "target": "n17d2"
+    }
+   ]
+  },
+  {
+   "id": "n16d1",
+   "body": "<<FILL role=rising words=100 beats='there are ten working days for closing statements, Pentrell will use all ten, and yours should be four pages and no more'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16d1_0",
+     "label": "Get the maintenance restarted.",
+     "target": "n17d3"
+    },
+    {
+     "id": "c_n16d1_1",
+     "label": "Deal with the two that were refused.",
+     "target": "n17d4"
+    },
+    {
+     "id": "c_n16d1_2",
+     "label": "Deal with the other three hundred and thirty one.",
+     "target": "n17d5"
+    }
+   ]
+  },
+  {
+   "id": "n16d2",
+   "body": "<<FILL role=rising words=100 beats='two of the nine are genuinely weak and conceding them makes the other seven look honest, and Wren thinks that is a trick and Devi thinks it is the truth'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16d2_0",
+     "label": "Tell the ninety people what happened.",
+     "target": "n17d6"
+    },
+    {
+     "id": "c_n16d2_1",
+     "label": "Ask Trant to change the setting.",
+     "target": "n17d7"
+    },
+    {
+     "id": "c_n16d2_2",
+     "label": "Ask what Wren wants to do next.",
+     "target": "n17d8"
+    }
+   ]
+  },
+  {
+   "id": "n16d3",
+   "body": "<<FILL role=rising words=100 beats='the order is about nine ways, the underlying problem is three hundred and forty, and the closing statement can raise that or keep clean'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16d3_0",
+     "label": "Take the seven and get them recorded.",
+     "target": "e17_0"
+    },
+    {
+     "id": "c_n16d3_1",
+     "label": "See the plate through the press.",
+     "target": "e17_1"
+    },
+    {
+     "id": "c_n16d3_2",
+     "label": "Work out what actually won it.",
+     "target": "e17_2"
+    }
+   ]
+  },
+  {
+   "id": "n16d4",
+   "body": "<<FILL role=rising words=100 beats='the decision takes eight to twelve weeks, the seven year clock does not pause, and there is another set of steps in Ferrisgate in the same position'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16d4_0",
+     "label": "Read the operative part carefully.",
+     "target": "n17d0"
+    },
+    {
+     "id": "c_n16d4_1",
+     "label": "Get the seven onto the definitive map.",
+     "target": "n17d1"
+    },
+    {
+     "id": "c_n16d4_2",
+     "label": "Get the seven onto the printed plate.",
+     "target": "n17d2"
+    }
+   ]
+  },
+  {
+   "id": "n16d5",
+   "body": "<<FILL role=rising words=100 beats='Trant has restored two of the nine administratively during the hearing, which is either helping or narrowing the order, and is probably both'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16d5_0",
+     "label": "Get the maintenance restarted.",
+     "target": "n17d3"
+    },
+    {
+     "id": "c_n16d5_1",
+     "label": "Deal with the two that were refused.",
+     "target": "n17d4"
+    },
+    {
+     "id": "c_n16d5_2",
+     "label": "Deal with the other three hundred and thirty one.",
+     "target": "n17d5"
+    }
+   ]
+  },
+  {
+   "id": "n16d6",
+   "body": "<<FILL role=rising words=100 beats='the ninety people who use the steps at seven in the morning have not been told any of this, and telling them is either a courtesy or a campaign'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16d6_0",
+     "label": "Tell the ninety people what happened.",
+     "target": "n17d6"
+    },
+    {
+     "id": "c_n16d6_1",
+     "label": "Ask Trant to change the setting.",
+     "target": "n17d7"
+    },
+    {
+     "id": "c_n16d6_2",
+     "label": "Ask what Wren wants to do next.",
+     "target": "n17d8"
+    }
+   ]
+  },
+  {
+   "id": "n16c0",
+   "body": "<<FILL role=bridge words=36 beats='the inspector puts a straight edge across the third tread without being asked, looks at the gap underneath it, and writes something down'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16c0_0",
+     "label": "Take the seven and get them recorded.",
+     "target": "e17_0"
+    }
+   ]
+  },
+  {
+   "id": "n16c1",
+   "body": "<<FILL role=bridge words=36 beats='the closing statement goes from eleven pages to four to two and back to four, and the four page version is the one that says only what was proved'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16c1_0",
+     "label": "See the plate through the press.",
+     "target": "e17_1"
+    }
+   ]
+  },
+  {
+   "id": "n16c2",
+   "body": "<<FILL role=bridge words=36 beats='conceding two ways is a paragraph that takes an hour to write and is read in nine seconds, and it is the most difficult paragraph in the document'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16c2_0",
+     "label": "Work out what actually won it.",
+     "target": "e17_2"
+    }
+   ]
+  },
+  {
+   "id": "n16c3",
+   "body": "<<FILL role=bridge words=36 beats='a laminated notice explaining the order goes up at the bottom of the Sixty Steps, and by the second morning somebody has written thank you on it in pencil'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16c3_0",
+     "label": "Read the operative part carefully.",
+     "target": "n17d0"
+    }
+   ]
+  },
+  {
+   "id": "n16c4",
+   "body": "<<FILL role=bridge words=36 beats='the Ferrisgate steps get the same treatment from the first day, which is counting, and this time you know exactly what to count and why'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16c4_0",
+     "label": "Get the seven onto the definitive map.",
+     "target": "n17d1"
+    }
+   ]
+  },
+  {
+   "id": "n16c5",
+   "body": "<<FILL role=bridge words=36 beats='eight weeks of nothing, in which the plate is cut, the counts continue, and Nan goes up and down the steps twice a day as she has for forty one years'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16c5_0",
+     "label": "Get the seven onto the printed plate.",
+     "target": "n17d2"
+    }
+   ]
+  },
+  {
+   "id": "n16c6",
+   "body": "<<FILL role=bridge words=36 beats='the decision arrives as a file on a Thursday afternoon, runs to twenty two pages, and the operative part is on page nineteen'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16c6_0",
+     "label": "Get the maintenance restarted.",
+     "target": "n17d3"
+    }
+   ]
+  },
+  {
+   "id": "e16_0",
+   "body": "<<FILL role=setback words=100 beats='the closing statement widens into everything wrong with the whole file, and the inspector answers only the nine ways and notes that the rest was not before the inquiry'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e16_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Not Before the Inquiry"
+   }
+  },
+  {
+   "id": "e16_1",
+   "body": "<<FILL role=setback words=100 beats='you defend all nine including the two you know are weak, and the two are refused with reasons that get quoted at you for the next three years'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e16_1",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Two You Should Have Let Go"
+   }
+  },
+  {
+   "id": "n17d0",
+   "body": "<<FILL role=rising words=106 beats='seven of the nine ways confirmed as public rights of way, two refused, and a paragraph about the wear table that Wren cuts out and pins above the bench'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n17d0_0",
+     "label": "Resubmit the two refused ways.",
+     "target": "n18d0"
+    },
+    {
+     "id": "c_n17d0_1",
+     "label": "Write the method down for other people.",
+     "target": "n18d1"
+    },
+    {
+     "id": "c_n17d0_2",
+     "label": "Take on Ferrisgate properly.",
+     "target": "n18d2"
+    }
+   ]
+  },
+  {
+   "id": "n17d1",
+   "body": "<<FILL role=rising words=106 beats='confirmation is not recording, somebody has to make the entry, the entry is made by the council, and the council is busy'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n17d1_0",
+     "label": "Train somebody else to do this.",
+     "target": "n18d3"
+    },
+    {
+     "id": "c_n17d1_1",
+     "label": "Answer the basemap question at source.",
+     "target": "n18d4"
+    },
+    {
+     "id": "c_n17d1_2",
+     "label": "Decide about the apprenticeship.",
+     "target": "n18d5"
+    }
+   ]
+  },
+  {
+   "id": "n17d2",
+   "body": "<<FILL role=rising words=106 beats='Ferris has held the press for three weeks and Wren has the plate cut, and the seven ways go down in metal on a Tuesday morning'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n17d2_0",
+     "label": "Decide what to do with the shortlist.",
+     "target": "n18d6"
+    },
+    {
+     "id": "c_n17d2_1",
+     "label": "Go back to the photograph archive.",
+     "target": "n18c0"
+    },
+    {
+     "id": "c_n17d2_2",
+     "label": "Print the method as a pamphlet.",
+     "target": "n18c1"
+    }
+   ]
+  },
+  {
+   "id": "n17d3",
+   "body": "<<FILL role=rising words=106 beats='a recorded way is a maintained way, which means the gully is cleared by the council and Ivo can stop, and Ivo says he will carry on anyway'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n17d3_0",
+     "label": "Walk Ferrisgate at seven in the morning.",
+     "target": "n18c2"
+    },
+    {
+     "id": "c_n17d3_1",
+     "label": "Sit in the map office in the evening.",
+     "target": "n18c3"
+    },
+    {
+     "id": "c_n17d3_2",
+     "label": "Look at the pinned shortlist.",
+     "target": "n18c4"
+    }
+   ]
+  },
+  {
+   "id": "n17d4",
+   "body": "<<FILL role=rising words=106 beats='the two refused ways can be resubmitted with better evidence, and the evidence that was missing is known exactly, which is the useful part of losing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n17d4_0",
+     "label": "Watch Nan go up the steps.",
+     "target": "n18c5"
+    },
+    {
+     "id": "c_n17d4_1",
+     "label": "Try to do Ferrisgate and the resubmission at once.",
+     "target": "e18_0"
+    },
+    {
+     "id": "c_n17d4_2",
+     "label": "Let the method stay in your head.",
+     "target": "e18_1"
+    }
+   ]
+  },
+  {
+   "id": "n17d5",
+   "body": "<<FILL role=rising words=106 beats='the method now exists and is written down, and three hundred and thirty one is a number a city could work through in ten years if it decided to'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n17d5_0",
+     "label": "Resubmit the two refused ways.",
+     "target": "n18d0"
+    },
+    {
+     "id": "c_n17d5_1",
+     "label": "Write the method down for other people.",
+     "target": "n18d1"
+    },
+    {
+     "id": "c_n17d5_2",
+     "label": "Take on Ferrisgate properly.",
+     "target": "n18d2"
+    }
+   ]
+  },
+  {
+   "id": "n17d6",
+   "body": "<<FILL role=rising words=106 beats='the notice at the bottom of the steps is replaced with one saying the Sixty Steps are recorded, and somebody writes on it again, and this time it is a name and a date'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n17d6_0",
+     "label": "Train somebody else to do this.",
+     "target": "n18d3"
+    },
+    {
+     "id": "c_n17d6_1",
+     "label": "Answer the basemap question at source.",
+     "target": "n18d4"
+    },
+    {
+     "id": "c_n17d6_2",
+     "label": "Decide about the apprenticeship.",
+     "target": "n18d5"
+    }
+   ]
+  },
+  {
+   "id": "n17d7",
+   "body": "<<FILL role=rising words=106 beats='the simplification setting can be turned off for the next release if somebody accepts responsibility for four thousand unverified lines, and Trant now knows who would help'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n17d7_0",
+     "label": "Decide what to do with the shortlist.",
+     "target": "n18d6"
+    },
+    {
+     "id": "c_n17d7_1",
+     "label": "Go back to the photograph archive.",
+     "target": "n18c0"
+    },
+    {
+     "id": "c_n17d7_2",
+     "label": "Print the method as a pamphlet.",
+     "target": "n18c1"
+    }
+   ]
+  },
+  {
+   "id": "n17d8",
+   "body": "<<FILL role=rising words=106 beats='Wren is sixty three, the map office has one engraver and no apprentice except you, and that arithmetic has been sitting in the room for a year'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n17d8_0",
+     "label": "Walk Ferrisgate at seven in the morning.",
+     "target": "n18c2"
+    },
+    {
+     "id": "c_n17d8_1",
+     "label": "Sit in the map office in the evening.",
+     "target": "n18c3"
+    },
+    {
+     "id": "c_n17d8_2",
+     "label": "Look at the pinned shortlist.",
+     "target": "n18c4"
+    }
+   ]
+  },
+  {
+   "id": "e17_0",
+   "body": "<<FILL role=success words=106 beats='the seven ways go onto the definitive map with dates and reference numbers, and from that entry they cannot be simplified away by any setting ever again'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e17_0",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Seven, With Reference Numbers"
+   }
+  },
+  {
+   "id": "e17_1",
+   "body": "<<FILL role=completion words=106 beats='the plate goes down with all seven ways and the sources in the margin, and the printed edition that the maintenance teams carry is, for the first time in years, correct'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e17_1",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Correct on the Plate"
+   }
+  },
+  {
+   "id": "e17_2",
+   "body": "<<FILL role=discovery words=106 beats='not the photographs, not the plate, not the counts, but an insurance schedule from 1987 kept by a company that no longer exists, found because somebody kept looking after box six'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e17_2",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "An Insurance Schedule"
+   }
+  },
+  {
+   "id": "n18d0",
+   "body": "<<FILL role=rising words=112 beats='the two refusals name exactly what was missing, and one of the two is fixable with eleven statements and a Thursday in the photograph archive'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n18d0_0",
+     "label": "Get the second resubmission confirmed.",
+     "target": "n19d0"
+    },
+    {
+     "id": "c_n18d0_1",
+     "label": "Get the pamphlet into other hands.",
+     "target": "n19d1"
+    },
+    {
+     "id": "c_n18d0_2",
+     "label": "Get Ferrisgate onto the list.",
+     "target": "n19d2"
+    }
+   ]
+  },
+  {
+   "id": "n18d1",
+   "body": "<<FILL role=rising words=112 beats='eleven pages: how to count, how to take a statement, where the deposited plans are, and what an insurance schedule can tell you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n18d1_0",
+     "label": "Get the basemap setting reviewed.",
+     "target": "n19d3"
+    },
+    {
+     "id": "c_n18d1_1",
+     "label": "Take the apprenticeship.",
+     "target": "n19d4"
+    },
+    {
+     "id": "c_n18d1_2",
+     "label": "Take a different road.",
+     "target": "n19d5"
+    }
+   ]
+  },
+  {
+   "id": "n18d2",
+   "body": "<<FILL role=rising words=112 beats='the Ferrisgate steps are the same case in a different postcode, and the survey is already six weeks old and running'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n18d2_0",
+     "label": "Take stock of what the year cost.",
+     "target": "n19d6"
+    },
+    {
+     "id": "c_n18d2_1",
+     "label": "Take Nan up the steps one more time.",
+     "target": "n19d7"
+    },
+    {
+     "id": "c_n18d2_2",
+     "label": "Finish the nine.",
+     "target": "e19_0"
+    }
+   ]
+  },
+  {
+   "id": "n18d3",
+   "body": "<<FILL role=rising words=112 beats='Devi can run counts, Kestrel can walk routes and Basim can find documents, and none of them can do all three, and neither can you yet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n18d3_0",
+     "label": "Hand the method on.",
+     "target": "e19_1"
+    },
+    {
+     "id": "c_n18d3_1",
+     "label": "Let the seven year clock beat you at Ferrisgate.",
+     "target": "e19_2"
+    },
+    {
+     "id": "c_n18d3_2",
+     "label": "Get the second resubmission confirmed.",
+     "target": "n19d0"
+    }
+   ]
+  },
+  {
+   "id": "n18d4",
+   "body": "<<FILL role=rising words=112 beats='four thousand unverified lines can be checked by four thousand people once or by four people over ten years, and the first of those is a campaign'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n18d4_0",
+     "label": "Get the pamphlet into other hands.",
+     "target": "n19d1"
+    },
+    {
+     "id": "c_n18d4_1",
+     "label": "Get Ferrisgate onto the list.",
+     "target": "n19d2"
+    },
+    {
+     "id": "c_n18d4_2",
+     "label": "Get the basemap setting reviewed.",
+     "target": "n19d3"
+    }
+   ]
+  },
+  {
+   "id": "n18d5",
+   "body": "<<FILL role=rising words=112 beats='Wren offers the full apprenticeship, five years, hand engraving, at exactly the moment the city has decided it does not need hand engraving'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n18d5_0",
+     "label": "Take the apprenticeship.",
+     "target": "n19d4"
+    },
+    {
+     "id": "c_n18d5_1",
+     "label": "Take a different road.",
+     "target": "n19d5"
+    },
+    {
+     "id": "c_n18d5_2",
+     "label": "Take stock of what the year cost.",
+     "target": "n19d6"
+    }
+   ]
+  },
+  {
+   "id": "n18d6",
+   "body": "<<FILL role=rising words=112 beats='the original shortlist on the back of a proof sheet has nine ways on it, seven are done, and the sheet is still pinned to the wall'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n18d6_0",
+     "label": "Take Nan up the steps one more time.",
+     "target": "n19d7"
+    },
+    {
+     "id": "c_n18d6_1",
+     "label": "Finish the nine.",
+     "target": "e19_0"
+    },
+    {
+     "id": "c_n18d6_2",
+     "label": "Hand the method on.",
+     "target": "e19_1"
+    }
+   ]
+  },
+  {
+   "id": "n18c0",
+   "body": "<<FILL role=bridge words=36 beats='the Thursday light table again, four thousand photographs again, and this time you know what a gatepost looks like in 1963'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n18c0_0",
+     "label": "Let the seven year clock beat you at Ferrisgate.",
+     "target": "e19_2"
+    }
+   ]
+  },
+  {
+   "id": "n18c1",
+   "body": "<<FILL role=bridge words=36 beats='the eleven pages become a stapled pamphlet that costs forty pence to print and turns up in three other cities within a year'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n18c1_0",
+     "label": "Get the second resubmission confirmed.",
+     "target": "n19d0"
+    }
+   ]
+  },
+  {
+   "id": "n18c2",
+   "body": "<<FILL role=bridge words=36 beats='the Ferrisgate steps carry sixty people before nine, and one of them is a woman with a shopping trolley who does it twice'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n18c2_0",
+     "label": "Get the pamphlet into other hands.",
+     "target": "n19d1"
+    }
+   ]
+  },
+  {
+   "id": "n18c3",
+   "body": "<<FILL role=bridge words=36 beats='the map office in the evening is the smell of ink and white spirit, the plan chest, and one bulb over the bench'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n18c3_0",
+     "label": "Get Ferrisgate onto the list.",
+     "target": "n19d2"
+    }
+   ]
+  },
+  {
+   "id": "n18c4",
+   "body": "<<FILL role=bridge words=36 beats='seven of the nine have a line through them in pencil and the other two do not, and nobody has taken the sheet down'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n18c4_0",
+     "label": "Get the basemap setting reviewed.",
+     "target": "n19d3"
+    }
+   ]
+  },
+  {
+   "id": "n18c5",
+   "body": "<<FILL role=bridge words=36 beats='Nan goes up the Sixty Steps at half past seven the way she has for forty one years, does not know that anybody is watching, and would not care'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n18c5_0",
+     "label": "Take the apprenticeship.",
+     "target": "n19d4"
+    }
+   ]
+  },
+  {
+   "id": "e18_0",
+   "body": "<<FILL role=setback words=112 beats='two cases at once with one method and one person means both are late, and the Ferrisgate clock is nineteen months further on than you thought'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e18_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Two Clocks, One Person"
+   }
+  },
+  {
+   "id": "e18_1",
+   "body": "<<FILL role=setback words=112 beats='nothing is written down, and when you are ill for a fortnight the Ferrisgate survey stops completely and has to begin again from the counting'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e18_1",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Nothing Written Down"
+   }
+  },
+  {
+   "id": "n19d0",
+   "body": "<<FILL role=rising words=100 beats='eleven new statements, the 1963 photograph and the wear table method, and the second order is confirmed without a hearing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n19d0_0",
+     "label": "Take the flagging proposal to committee.",
+     "target": "n20d0"
+    },
+    {
+     "id": "c_n19d0_1",
+     "label": "Build a way for the public to check.",
+     "target": "n20d1"
+    },
+    {
+     "id": "c_n19d0_2",
+     "label": "Keep the plate tradition going.",
+     "target": "n20d2"
+    }
+   ]
+  },
+  {
+   "id": "n19d1",
+   "body": "<<FILL role=rising words=100 beats='three cities, then eleven, and a version with the forms in the back, and none of it is anything that anybody is paid to do'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n19d1_0",
+     "label": "Keep the counts running.",
+     "target": "n20d3"
+    },
+    {
+     "id": "c_n19d1_1",
+     "label": "Keep Nan and Ivo in the record.",
+     "target": "n20d4"
+    },
+    {
+     "id": "c_n19d1_2",
+     "label": "Keep going after the other three hundred.",
+     "target": "n20d5"
+    }
+   ]
+  },
+  {
+   "id": "n19d2",
+   "body": "<<FILL role=rising words=100 beats='the Ferrisgate steps go in as a full order with the method applied from the first day, which takes seven months instead of eighteen'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n19d2_0",
+     "label": "Present to the committee.",
+     "target": "n20c0"
+    },
+    {
+     "id": "c_n19d2_1",
+     "label": "Build the reporting form.",
+     "target": "n20c1"
+    },
+    {
+     "id": "c_n19d2_2",
+     "label": "Cost the plate properly.",
+     "target": "n20c2"
+    }
+   ]
+  },
+  {
+   "id": "n19d3",
+   "body": "<<FILL role=rising words=100 beats='Trant puts the simplification setting to review with a proposal that unverified lines are flagged rather than deleted, which is the whole argument in one word'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n19d3_0",
+     "label": "Set the ten year count schedule.",
+     "target": "n20c3"
+    },
+    {
+     "id": "c_n19d3_1",
+     "label": "Deposit the statements formally.",
+     "target": "n20c4"
+    },
+    {
+     "id": "c_n19d3_2",
+     "label": "Look at the map on the wall.",
+     "target": "n20c5"
+    }
+   ]
+  },
+  {
+   "id": "n19d4",
+   "body": "<<FILL role=rising words=100 beats='five years of hand engraving in a city that prints from files, learning a thing so that the thing does not stop, which is either sentiment or infrastructure'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n19d4_0",
+     "label": "Get the flagging change adopted.",
+     "target": "e20_0"
+    },
+    {
+     "id": "c_n19d4_1",
+     "label": "Win the seven and stop there.",
+     "target": "e20_1"
+    },
+    {
+     "id": "c_n19d4_2",
+     "label": "Take the flagging proposal to committee.",
+     "target": "n20d0"
+    }
+   ]
+  },
+  {
+   "id": "n19d5",
+   "body": "<<FILL role=rising words=100 beats='there is a job at the record office and a course in surveying, both of them use everything you have learned, and neither of them is Wren'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n19d5_0",
+     "label": "Build a way for the public to check.",
+     "target": "n20d1"
+    },
+    {
+     "id": "c_n19d5_1",
+     "label": "Keep the plate tradition going.",
+     "target": "n20d2"
+    },
+    {
+     "id": "c_n19d5_2",
+     "label": "Keep the counts running.",
+     "target": "n20d3"
+    }
+   ]
+  },
+  {
+   "id": "n19d6",
+   "body": "<<FILL role=rising words=100 beats='a year, two friendships strained, one sentence you should not have said at a pre hearing meeting, and a much clearer idea of what you are for'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n19d6_0",
+     "label": "Keep Nan and Ivo in the record.",
+     "target": "n20d4"
+    },
+    {
+     "id": "c_n19d6_1",
+     "label": "Keep going after the other three hundred.",
+     "target": "n20d5"
+    },
+    {
+     "id": "c_n19d6_2",
+     "label": "Present to the committee.",
+     "target": "n20c0"
+    }
+   ]
+  },
+  {
+   "id": "n19d7",
+   "body": "<<FILL role=rising words=100 beats='Nan is slower than she was in February and still goes twice a day, and asks whether the steps are safe now, and the honest answer is yes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n19d7_0",
+     "label": "Build the reporting form.",
+     "target": "n20c1"
+    },
+    {
+     "id": "c_n19d7_1",
+     "label": "Cost the plate properly.",
+     "target": "n20c2"
+    },
+    {
+     "id": "c_n19d7_2",
+     "label": "Set the ten year count schedule.",
+     "target": "n20c3"
+    }
+   ]
+  },
+  {
+   "id": "e19_0",
+   "body": "<<FILL role=success words=100 beats='all nine ways are recorded, the two refusals reversed on better evidence, and the shortlist on the back of the proof sheet has nine pencil lines through it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e19_0",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Nine Pencil Lines"
+   }
+  },
+  {
+   "id": "e19_1",
+   "body": "<<FILL role=completion words=100 beats='the pamphlet, the forms and the counting method go to eleven cities and to anybody who asks, and the work stops depending on any one person being available'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e19_1",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "It Stops Depending on You"
+   }
+  },
+  {
+   "id": "e19_2",
+   "body": "<<FILL role=setback words=100 beats='Ferrisgate is nineteen months further on than the Sixty Steps were, the survey is thorough and slow, and the steps are gone before the order is heard'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e19_2",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Nineteen Months Ahead"
+   }
+  },
+  {
+   "id": "n20d0",
+   "body": "<<FILL role=rising words=106 beats='flagged rather than deleted means four thousand lines stay visible and marked as unverified, and the committee wants to know who is going to verify them'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n20d0_0",
+     "label": "Look at what the flagging change did.",
+     "target": "n21d0"
+    },
+    {
+     "id": "c_n20d0_1",
+     "label": "Look at what the pamphlet did.",
+     "target": "n21d1"
+    },
+    {
+     "id": "c_n20d0_2",
+     "label": "Look at what the apprenticeship is.",
+     "target": "n21d2"
+    }
+   ]
+  },
+  {
+   "id": "n20d1",
+   "body": "<<FILL role=rising words=106 beats='anybody who walks a line can say so with a date and a photograph, and the checking becomes a thing a city does rather than a thing a department has time for'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n20d1_0",
+     "label": "Look at what Nan asked for.",
+     "target": "n21d3"
+    },
+    {
+     "id": "c_n20d1_1",
+     "label": "Look at the Ferrisgate result.",
+     "target": "n21d4"
+    },
+    {
+     "id": "c_n20d1_2",
+     "label": "Look at the tannery cut.",
+     "target": "n21d5"
+    }
+   ]
+  },
+  {
+   "id": "n20d2",
+   "body": "<<FILL role=rising words=106 beats='the hand cut plate costs more than it saves and is the only version anybody trusts, and defending that is a budget argument rather than an art argument'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n20d2_0",
+     "label": "Look at what you would do differently.",
+     "target": "n21d6"
+    },
+    {
+     "id": "c_n20d2_1",
+     "label": "Finish the apprenticeship.",
+     "target": "e21_0"
+    },
+    {
+     "id": "c_n20d2_2",
+     "label": "See the whole city checked.",
+     "target": "e21_1"
+    }
+   ]
+  },
+  {
+   "id": "n20d3",
+   "body": "<<FILL role=rising words=106 beats='counts at three sites twice a year for ten years is a series, and a series is the thing that answers the next simplification before it happens'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n20d3_0",
+     "label": "Understand what a map is for.",
+     "target": "e21_2"
+    },
+    {
+     "id": "c_n20d3_1",
+     "label": "Look at what the flagging change did.",
+     "target": "n21d0"
+    },
+    {
+     "id": "c_n20d3_2",
+     "label": "Look at what the pamphlet did.",
+     "target": "n21d1"
+    }
+   ]
+  },
+  {
+   "id": "n20d4",
+   "body": "<<FILL role=rising words=106 beats='the statements are archived with names and dates, and in fifty years they will be the evidence somebody else needs, which is the point of a record office'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n20d4_0",
+     "label": "Look at what the apprenticeship is.",
+     "target": "n21d2"
+    },
+    {
+     "id": "c_n20d4_1",
+     "label": "Look at what Nan asked for.",
+     "target": "n21d3"
+    },
+    {
+     "id": "c_n20d4_2",
+     "label": "Look at the Ferrisgate result.",
+     "target": "n21d4"
+    }
+   ]
+  },
+  {
+   "id": "n20d5",
+   "body": "<<FILL role=rising words=106 beats='three hundred and twenty two ways remain, and the method takes seven months each unless several people are running it at once'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n20d5_0",
+     "label": "Look at the tannery cut.",
+     "target": "n21d5"
+    },
+    {
+     "id": "c_n20d5_1",
+     "label": "Look at what you would do differently.",
+     "target": "n21d6"
+    },
+    {
+     "id": "c_n20d5_2",
+     "label": "Finish the apprenticeship.",
+     "target": "e21_0"
+    }
+   ]
+  },
+  {
+   "id": "n20c0",
+   "body": "<<FILL role=bridge words=36 beats='eleven minutes, four slides and one photograph of a hollowed tread with a rule across it, and the committee asks about cost for nine of the eleven minutes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n20c0_0",
+     "label": "See the whole city checked.",
+     "target": "e21_1"
+    }
+   ]
+  },
+  {
+   "id": "n20c1",
+   "body": "<<FILL role=bridge words=36 beats='Devi builds the form in a weekend and it asks four questions, and the fourth question is the one that makes the answer usable'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n20c1_0",
+     "label": "Understand what a map is for.",
+     "target": "e21_2"
+    }
+   ]
+  },
+  {
+   "id": "n20c2",
+   "body": "<<FILL role=bridge words=36 beats='the plate costs eleven hundred pounds and lasts eleven years, the file costs nothing and was wrong, and putting that on one sheet takes an afternoon'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n20c2_0",
+     "label": "Look at what the flagging change did.",
+     "target": "n21d0"
+    }
+   ]
+  },
+  {
+   "id": "n20c3",
+   "body": "<<FILL role=bridge words=36 beats='three sites, twice a year, the same method, written down and signed off, and a note about who does it when nobody does it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n20c3_0",
+     "label": "Look at what the pamphlet did.",
+     "target": "n21d1"
+    }
+   ]
+  },
+  {
+   "id": "n20c4",
+   "body": "<<FILL role=bridge words=36 beats='the statements go to Basim with a covering note and get a reference, and Basim files them the way he files everything, which is properly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n20c4_0",
+     "label": "Look at what the apprenticeship is.",
+     "target": "n21d2"
+    }
+   ]
+  },
+  {
+   "id": "n20c5",
+   "body": "<<FILL role=bridge words=36 beats='the printed edition on the office wall has seven new lines on it and nobody who walks past it knows what any of them cost'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n20c5_0",
+     "label": "Look at what Nan asked for.",
+     "target": "n21d3"
+    }
+   ]
+  },
+  {
+   "id": "e20_0",
+   "body": "<<FILL role=success words=106 beats='the setting changes, four thousand lines come back marked unverified, and no way in this city can be deleted again without a person deciding to delete it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e20_0",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Marked, Not Deleted"
+   }
+  },
+  {
+   "id": "e20_1",
+   "body": "<<FILL role=setback words=106 beats='seven ways are safe and three hundred and thirty three are not, and the file is republished the following year with the same setting and eleven fewer lines'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e20_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Same Setting Again"
+   }
+  },
+  {
+   "id": "n21d0",
+   "body": "<<FILL role=rising words=112 beats='in the first year eleven hundred flagged lines are confirmed by members of the public and ninety are deleted properly, with a reason, by a named person'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n21d0_0",
+     "label": "Take on an apprentice yourself.",
+     "target": "n22d0"
+    },
+    {
+     "id": "c_n21d0_1",
+     "label": "Write the second edition of the pamphlet.",
+     "target": "n22d1"
+    },
+    {
+     "id": "c_n21d0_2",
+     "label": "Keep walking the ways.",
+     "target": "n22d2"
+    }
+   ]
+  },
+  {
+   "id": "n21d1",
+   "body": "<<FILL role=rising words=112 beats='the pamphlet is in eleven cities, two of them have modification orders running, and one of them has already lost a case in a way that teaches you something'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n21d1_0",
+     "label": "Keep the counts going after ten years.",
+     "target": "n22d3"
+    },
+    {
+     "id": "c_n21d1_1",
+     "label": "Cut a plate for the Sixty Steps.",
+     "target": "n22c0"
+    },
+    {
+     "id": "c_n21d1_2",
+     "label": "Walk the nine ways in the spring.",
+     "target": "n22c1"
+    }
+   ]
+  },
+  {
+   "id": "n21d2",
+   "body": "<<FILL role=rising words=112 beats='five years, a burin, a plan chest, and a trade that exists only because somebody in every generation decided that it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n21d2_0",
+     "label": "Show somebody the plan chest.",
+     "target": "n22c2"
+    },
+    {
+     "id": "c_n21d2_1",
+     "label": "Read the first pamphlet again.",
+     "target": "n22c3"
+    },
+    {
+     "id": "c_n21d2_2",
+     "label": "Leave the record better than you found it.",
+     "target": "e22_0"
+    }
+   ]
+  },
+  {
+   "id": "n21d3",
+   "body": "<<FILL role=rising words=112 beats='Nan asked whether the steps were safe now, and safe means recorded, maintained and on the plate, and all three of those are true'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n21d3_0",
+     "label": "Stop walking them.",
+     "target": "e22_1"
+    },
+    {
+     "id": "c_n21d3_1",
+     "label": "Take on an apprentice yourself.",
+     "target": "n22d0"
+    },
+    {
+     "id": "c_n21d3_2",
+     "label": "Write the second edition of the pamphlet.",
+     "target": "n22d1"
+    }
+   ]
+  },
+  {
+   "id": "n21d4",
+   "body": "<<FILL role=rising words=112 beats='Ferrisgate is confirmed in seven months using the method, and the steps are cleared for the first time in nine years the following November'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n21d4_0",
+     "label": "Keep walking the ways.",
+     "target": "n22d2"
+    },
+    {
+     "id": "c_n21d4_1",
+     "label": "Keep the counts going after ten years.",
+     "target": "n22d3"
+    },
+    {
+     "id": "c_n21d4_2",
+     "label": "Cut a plate for the Sixty Steps.",
+     "target": "n22c0"
+    }
+   ]
+  },
+  {
+   "id": "n21d5",
+   "body": "<<FILL role=rising words=112 beats='the cut runs through the middle of the Pentrell courtyard with a paved surface, a light, and a small metal plate in the ground giving its reference number'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n21d5_0",
+     "label": "Walk the nine ways in the spring.",
+     "target": "n22c1"
+    },
+    {
+     "id": "c_n21d5_1",
+     "label": "Show somebody the plan chest.",
+     "target": "n22c2"
+    },
+    {
+     "id": "c_n21d5_2",
+     "label": "Read the first pamphlet again.",
+     "target": "n22c3"
+    }
+   ]
+  },
+  {
+   "id": "n21d6",
+   "body": "<<FILL role=rising words=112 beats='all of it the same except box six, the sentence at the pre hearing meeting and the fifty minutes, and none of those three were about the evidence'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n21d6_0",
+     "label": "Leave the record better than you found it.",
+     "target": "e22_0"
+    },
+    {
+     "id": "c_n21d6_1",
+     "label": "Stop walking them.",
+     "target": "e22_1"
+    },
+    {
+     "id": "c_n21d6_2",
+     "label": "Take on an apprentice yourself.",
+     "target": "n22d0"
+    }
+   ]
+  },
+  {
+   "id": "e21_0",
+   "body": "<<FILL role=completion words=112 beats='five years later you cut a correction into a plate at the fourth attempt and grind out the first three, and Wren watches and says nothing, which is the highest praise available'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e21_0",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Fourth Attempt"
+   }
+  },
+  {
+   "id": "e21_1",
+   "body": "<<FILL role=success words=112 beats='ten years, four thousand lines, several hundred people, and a definitive map that is definitive because a great many people walked somewhere and said so'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e21_1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Because People Walked and Said So"
+   }
+  },
+  {
+   "id": "e21_2",
+   "body": "<<FILL role=discovery words=112 beats='a map is not a picture of a place but a list of the things a city has agreed to look after, and anything left off the list stops being looked after, quietly, in about seven years'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e21_2",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A List of What Gets Looked After"
+   }
+  },
+  {
+   "id": "n22d0",
+   "body": "<<FILL role=rising words=100 beats='the arithmetic that sat in the room for a year arrives again from the other side, and this time you are the one who has to make the offer'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n22d0_0",
+     "label": "Look at the city from the top of the steps.",
+     "target": "n23d0"
+    },
+    {
+     "id": "c_n22d0_1",
+     "label": "Look at what is still missing.",
+     "target": "n23d1"
+    },
+    {
+     "id": "c_n22d0_2",
+     "label": "Look at the margin of the plate.",
+     "target": "n23d2"
+    }
+   ]
+  },
+  {
+   "id": "n22d1",
+   "body": "<<FILL role=rising words=100 beats='the second edition has the things that were learned the hard way in eleven cities, and a page at the front about box six'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n22d1_0",
+     "label": "Look at the first count sheet.",
+     "target": "n23d3"
+    },
+    {
+     "id": "c_n22d1_1",
+     "label": "Hand the burin on.",
+     "target": "e23_0"
+    },
+    {
+     "id": "c_n22d1_2",
+     "label": "Keep the count sheet.",
+     "target": "e23_1"
+    }
+   ]
+  },
+  {
+   "id": "n22d2",
+   "body": "<<FILL role=rising words=100 beats='a recorded way still has to be walked, because a way nobody walks becomes obstructed and an obstructed way becomes an argument all over again'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n22d2_0",
+     "label": "Look at the city from the top of the steps.",
+     "target": "n23d0"
+    },
+    {
+     "id": "c_n22d2_1",
+     "label": "Look at what is still missing.",
+     "target": "n23d1"
+    },
+    {
+     "id": "c_n22d2_2",
+     "label": "Look at the margin of the plate.",
+     "target": "n23d2"
+    }
+   ]
+  },
+  {
+   "id": "n22d3",
+   "body": "<<FILL role=rising words=100 beats='the ten year series ends, and a twenty year series is only a decision to carry on, made once, in exactly the same way as the first one'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n22d3_0",
+     "label": "Look at the first count sheet.",
+     "target": "n23d3"
+    },
+    {
+     "id": "c_n22d3_1",
+     "label": "Hand the burin on.",
+     "target": "e23_0"
+    },
+    {
+     "id": "c_n22d3_2",
+     "label": "Keep the count sheet.",
+     "target": "e23_1"
+    }
+   ]
+  },
+  {
+   "id": "n22c0",
+   "body": "<<FILL role=bridge words=36 beats='the plate for the Sixty Steps takes nine evenings and shows sixty two treads, the gradient, the gully, and the hollow in the third step'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n22c0_0",
+     "label": "Look at the city from the top of the steps.",
+     "target": "n23d0"
+    }
+   ]
+  },
+  {
+   "id": "n22c1",
+   "body": "<<FILL role=bridge words=36 beats='the nine ways in April take an afternoon, and the tannery cut smells of nothing at all now, which is the strangest part'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n22c1_0",
+     "label": "Look at what is still missing.",
+     "target": "n23d1"
+    }
+   ]
+  },
+  {
+   "id": "n22c2",
+   "body": "<<FILL role=bridge words=36 beats='the bottom drawer still sticks and still has to be lifted rather than pulled, and you tell the new person that on the first day'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n22c2_0",
+     "label": "Look at the margin of the plate.",
+     "target": "n23d2"
+    }
+   ]
+  },
+  {
+   "id": "n22c3",
+   "body": "<<FILL role=bridge words=36 beats='the first pamphlet is eleven pages and slightly wrong in two places, and it has been used by more people than anything else you will ever make'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n22c3_0",
+     "label": "Look at the first count sheet.",
+     "target": "n23d3"
+    }
+   ]
+  },
+  {
+   "id": "e22_0",
+   "body": "<<FILL role=completion words=100 beats='the definitive map carries three hundred and nine ways that were not there before, each with a date, a reference and a person who walked it, and none of them can be simplified away'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e22_0",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Three Hundred and Nine"
+   }
+  },
+  {
+   "id": "e22_1",
+   "body": "<<FILL role=discovery words=100 beats='the ways stay on the record and are not walked, and in fifteen years four are obstructed and nobody notices until somebody tries to get through'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e22_1",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "On the Record, Not Walked"
+   }
+  },
+  {
+   "id": "n23d0",
+   "body": "<<FILL role=rising words=106 beats='from the top of the Sixty Steps you can see the tannery courtyard, the Ferrisgate flights, the school path, and about forty roofs of people who use them'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n23d0_0",
+     "label": "Finish what the file started.",
+     "target": "e24_0"
+    },
+    {
+     "id": "c_n23d0_1",
+     "label": "See the Sixty Steps repaired.",
+     "target": "e24_1"
+    },
+    {
+     "id": "c_n23d0_2",
+     "label": "Watch the seven in the morning queue.",
+     "target": "e24_2"
+    }
+   ]
+  },
+  {
+   "id": "n23d1",
+   "body": "<<FILL role=rising words=106 beats='there are ways nobody has claimed because nobody uses them any more, and they are the ones that will be gone in a generation, and that may be correct'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n23d1_0",
+     "label": "Ask who the map was ever for.",
+     "target": "e24_3"
+    },
+    {
+     "id": "c_n23d1_1",
+     "label": "Let the plate chest be cleared.",
+     "target": "e24_4"
+    },
+    {
+     "id": "c_n23d1_2",
+     "label": "Finish what the file started.",
+     "target": "e24_0"
+    }
+   ]
+  },
+  {
+   "id": "n23d2",
+   "body": "<<FILL role=rising words=106 beats='the margin carries the sources in six point, and Wren was right that the margin is where a map tells the truth about itself'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n23d2_0",
+     "label": "See the Sixty Steps repaired.",
+     "target": "e24_1"
+    },
+    {
+     "id": "c_n23d2_1",
+     "label": "Watch the seven in the morning queue.",
+     "target": "e24_2"
+    },
+    {
+     "id": "c_n23d2_2",
+     "label": "Ask who the map was ever for.",
+     "target": "e24_3"
+    }
+   ]
+  },
+  {
+   "id": "n23d3",
+   "body": "<<FILL role=rising words=106 beats='the first count sheet is a page of tally marks in your own handwriting from a Wednesday in February, and it says ninety one at the bottom'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n23d3_0",
+     "label": "Let the plate chest be cleared.",
+     "target": "e24_4"
+    },
+    {
+     "id": "c_n23d3_1",
+     "label": "Finish what the file started.",
+     "target": "e24_0"
+    },
+    {
+     "id": "c_n23d3_2",
+     "label": "See the Sixty Steps repaired.",
+     "target": "e24_1"
+    }
+   ]
+  },
+  {
+   "id": "e23_0",
+   "body": "<<FILL role=success words=106 beats='the plan chest, the press, the plates and the method go to somebody who will use them, and the map office has two engravers for the first time since 1979'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e23_0",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Two Engravers"
+   }
+  },
+  {
+   "id": "e23_1",
+   "body": "<<FILL role=discovery words=106 beats='the first count sheet goes into the plan chest with the plates, and it is the least impressive object in the building and the one that everything else came from'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e23_1",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Least Impressive Object"
+   }
+  },
+  {
+   "id": "e24_0",
+   "body": "<<FILL role=completion words=112 beats='the simplification that removed three hundred and forty ways is reversed line by line over eleven years by several hundred people, and the last one is entered on an ordinary Tuesday'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e24_0",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Last One, on a Tuesday"
+   }
+  },
+  {
+   "id": "e24_1",
+   "body": "<<FILL role=success words=112 beats='the council rebuilds the third flight, the gully is culverted properly, and the hollow in the third tread is left exactly as it is at the request of eleven residents'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e24_1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Hollow Left As It Is"
+   }
+  },
+  {
+   "id": "e24_2",
+   "body": "<<FILL role=success words=112 beats='ninety one people go up the Sixty Steps between seven and nine on a Wednesday in February, which is the same number as the first count, and not one of them looks down'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e24_2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Same Ninety One"
+   }
+  },
+  {
+   "id": "e24_3",
+   "body": "<<FILL role=discovery words=112 beats='the answer that took a year to arrive is that a map is for the people who have to walk somewhere at seven in the morning, and that they are almost never asked'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e24_3",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Almost Never Asked"
+   }
+  },
+  {
+   "id": "e24_4",
+   "body": "<<FILL role=setback words=112 beats='the map office closes, the plates go into storage and then to a museum, and the file becomes the only map, and it is accurate, and nobody can now check it by hand'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e24_4",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Accurate and Unchecked"
+   }
+  }
+ ]
+}
