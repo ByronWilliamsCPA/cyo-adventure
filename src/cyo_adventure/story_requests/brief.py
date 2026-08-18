@@ -31,6 +31,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
+from cyo_adventure.core.exceptions import ConfigurationError
 from cyo_adventure.generation.concept import (
     AnchorContext,
     ConceptBrief,
@@ -45,7 +46,12 @@ from cyo_adventure.storybook.models import (
     NarrativeStyle,
     level_rank,
 )
-from cyo_adventure.validator.band_profile import breadth_scaled_floors, profile_for
+from cyo_adventure.validator.band_profile import (
+    breadth_scaled_floors,
+    clamp_target_to_cap,
+    profile_for,
+    reading_level_target_for,
+)
 
 if TYPE_CHECKING:
     from cyo_adventure.db.models import ChildProfile, StoryRequest
@@ -58,20 +64,18 @@ _CONTENT_FLAG_NAMES = ("violence", "scariness", "peril")
 # at or above this sentinel the band-default FK target applies.
 _READING_CAP_SENTINEL = 99.0
 
-# #ASSUME: data-integrity: band_profile.py carries no per-band reading-level
-# values, so these FK targets mirror frontend intakeApi.ts BAND_DEFAULTS
-# (monotonic with band). Used only when the child's reading_level_cap is the
-# unset 99 sentinel.
-# #VERIFY: revisit when validator policy grows per-band reading-level values;
-# test_story_requests covers the sentinel path.
-_BAND_FK_TARGET: dict[AgeBand, float] = {
-    AgeBand.BAND_3_5: 1.0,
-    AgeBand.BAND_5_8: 2.0,
-    AgeBand.BAND_8_11: 4.0,
-    AgeBand.BAND_10_13: 6.0,
-    AgeBand.BAND_13_16: 8.0,
-    AgeBand.BAND_16_PLUS: 10.0,
-}
+# FK targets now come from `band_profile._READING_LEVEL_TARGET`, the single
+# source of record ruled 2026-08-18. This table used to restate them and drifted:
+# it said 4.0 at 8-11 and 6.0 at 10-13 where the catalog declares 4.5 and 5.5,
+# and 8.0/10.0 at the teen bands where the catalog declares 7.0/9.0. Three other
+# sites carried three more sets; see `docs/planning/reading-level-source-table.md`
+# (`UW-C281`).
+# #ASSUME: data-integrity: every band this function can be called with is
+# configured in that table. `reading_level_target_for` returns None for an
+# unconfigured band, which `_reading_target_for` below turns into a loud failure
+# rather than a silent default, since a wrong FK target reaches a child as prose
+# at the wrong difficulty.
+# #VERIFY: test_band_profile.py::test_reading_level_target_covers_every_band.
 
 # #ASSUME: data-integrity: band lower-bound protagonist age, mirroring the
 # frontend default; a fictional character age, not a real child's age.
@@ -90,6 +94,38 @@ _DEFAULT_PROTAGONIST_ROLE = "a curious young adventurer"
 # Band-independent structural fallbacks when profile_for returns None.
 _FALLBACK_NODES = 8
 _FALLBACK_ENDINGS = 2
+
+
+def _reading_target_for(age_band: AgeBand, profile: object) -> float:
+    """Return the FK target for a band, tightened by a guardian's cap.
+
+    A `reading_level_cap` is a CEILING (`api/schemas.py`: "can only ever
+    tighten"), and RL-13 reads a target as the CENTRE of a plus-or-minus window.
+    Substituting the cap for the target therefore admitted prose a full grade
+    ABOVE the maximum a guardian asked for: a cap of 2.0 passed FK 3.00. Clamping
+    keeps a cap from ever raising a band's target and from becoming a target in
+    its own right (`UW-C281`).
+
+    Args:
+        age_band: The story's age band.
+        profile: The child's personalization profile, or None.
+
+    Returns:
+        The band target, lowered to the cap when the guardian set one.
+
+    Raises:
+        ConfigurationError: When the band has no configured FK target. Failing
+            closed beats defaulting: a wrong target reaches a child as prose at
+            the wrong difficulty, which no later gate re-derives.
+    """
+    target = reading_level_target_for(age_band.value)
+    if target is None:
+        msg = f"no reading-level target configured for age band '{age_band.value}'"
+        raise ConfigurationError(msg)
+    cap = getattr(profile, "reading_level_cap", None)
+    if cap is not None and cap < _READING_CAP_SENTINEL:
+        return clamp_target_to_cap(target, cap)
+    return target
 
 
 def _content_controls(
@@ -209,11 +245,7 @@ def brief_from_request(
     else:
         node_count = _FALLBACK_NODES
         ending_count = _FALLBACK_ENDINGS
-    reading_target = (
-        profile.reading_level_cap
-        if profile is not None and profile.reading_level_cap < _READING_CAP_SENTINEL
-        else _BAND_FK_TARGET[age_band]
-    )
+    reading_target = _reading_target_for(age_band, profile)
     content_nogo, content_flag_constraints = _content_controls(profile, age_band)
     return ConceptBrief(
         premise=request.request_text,

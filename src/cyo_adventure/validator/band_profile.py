@@ -263,6 +263,77 @@ def production_cell_budget(
 # (checked as an ERROR for every story). There is no hard per-node minimum: a
 # one-line beat is legitimate. Only 13-16/16+ have a gamebook entry; lower bands
 # are prose, so a young-band gamebook falls back to the band's prose envelope.
+# Per-band Flesch-Kincaid grade target, the SINGLE source of record.
+#
+# RULED 2026-08-18 (owner). Four sites stated per-band FK targets and disagreed:
+# `story_requests/brief.py`, `frontend/src/guardian/intakeApi.ts`,
+# `generation/templates/drafting_guide.md` (which is spliced into every
+# structure, prose and fill prompt and calls ITSELF "the FK-target source of
+# record"), and `docs/planning/drafting-guide.md`. See
+# `docs/planning/reading-level-source-table.md` for the full comparison.
+#
+# The values are what the committed catalog DECLARES, because that is what RL-13
+# actually grades each story against, and because they are demonstrably
+# achievable: 31 committed books sit near them. The injected prompt guide asked
+# for 8.0 at 13-16 and 10.0 at 16+ against declared 7.0 and 8.0-9.0, so prose
+# written to its own centre landed a full grade outside the window the validator
+# measures, and four of five 13-16 books fell below its stated floor.
+#
+# Achievability alone would be a circular argument (books written to their own
+# declarations cannot refute those declarations), so the external anchor is
+# `docs/planning/research/cyoa-research-reconciliation.md` item 4: it sets the
+# gate by age band, places core CYOA at roughly 500-710L, and puts teen
+# gamebooks at middle-grade prose. That favours these values over the injected
+# guide's at exactly the bands where the two diverge.
+#
+# #ASSUME: data-integrity: this table is the single source for per-band FK
+# targets. `reading_level_target_for` below is the only reader; a story's own
+# `metadata.reading_level.target` still governs RL-13, and this is the default
+# it should be authored from.
+# #VERIFY: test_band_profile.py::test_reading_level_target_covers_every_band and
+# ::test_declared_catalog_targets_agree_with_the_band_table.
+_READING_LEVEL_TARGET: dict[str, float] = {
+    "3-5": 1.0,
+    "5-8": 2.5,
+    "8-11": 4.5,
+    "10-13": 5.5,
+    "13-16": 7.0,
+    "16+": 9.0,
+}
+
+
+def reading_level_target_for(age_band: str) -> float | None:
+    """Return the band's default Flesch-Kincaid grade target.
+
+    Args:
+        age_band: The story age band value (for example ``"8-11"``).
+
+    Returns:
+        The band's FK target, or ``None`` when the band is not configured.
+    """
+    return _READING_LEVEL_TARGET.get(age_band)
+
+
+def clamp_target_to_cap(target: float, reading_level_cap: float) -> float:
+    """Return the FK target a guardian's ceiling allows.
+
+    A cap is a CEILING (``api/schemas.py``: "can only ever tighten"), and RL-13
+    reads its target as the CENTRE of a plus-or-minus window. Feeding the cap in
+    as the target therefore admitted prose a full grade ABOVE the maximum the
+    guardian asked for: a cap of 2.0 passed FK 3.00. Clamping instead of
+    substituting keeps a cap from ever raising a band's target, and keeps it
+    from silently becoming a target in its own right.
+
+    Args:
+        target: The band's default target.
+        reading_level_cap: The guardian's ceiling.
+
+    Returns:
+        The lower of the two, so a cap can only tighten.
+    """
+    return min(target, reading_level_cap)
+
+
 _WORDS_PER_NODE: dict[tuple[str, str], tuple[int, int, int, int]] = {
     ("3-5", "prose"): (40, 28, 55, 90),
     ("5-8", "prose"): (70, 50, 95, 155),

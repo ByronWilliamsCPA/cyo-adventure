@@ -53,21 +53,28 @@ from typing import Any, NamedTuple, cast
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
+from cyo_adventure.validator.band_profile import reading_level_target_for
 from cyo_adventure.validator.reading_level import BookReadingLevel, measure_book
 
-_MAX_GRADE = 7.0
-# Arbitrary, and advisory for that reason. Only _MAX_GRADE gates, and it is
-# derived from the product's own band rather than chosen here.
+# Fallbacks for a book that declares neither a reading level nor a configured
+# band. These are the old hardcoded values, kept only so an undeclared book is
+# still graded rather than skipped; a declared book never reaches them.
+_FALLBACK_TARGET = 5.5
+_FALLBACK_TOLERANCE = 1.5
+# How far past a book's own upper bound counts as "too hard for its band". One
+# grade, so the blocking tier sits clear of the advisory window rather than on
+# its edge.
+_CEILING_HEADROOM = 1.0
+# Arbitrary, and advisory for that reason. Only the grade ceiling gates.
 _MIN_IN_BAND = 0.5
-_TARGET = 5.5
-_TOLERANCE = 1.5
 
 
 class Score(NamedTuple):
-    """One book's aggregate reading level, plus the book's name."""
+    """One book's aggregate reading level, its name, and its own grade ceiling."""
 
     book: str
     level: BookReadingLevel
+    max_grade: float
 
 
 def score(path: Path) -> Score | None:
@@ -94,8 +101,56 @@ def score(path: Path) -> Score | None:
         str(n.get("body") or "")
         for n in cast("list[dict[str, Any]]", story.get("nodes") or [])
     ]
-    level = measure_book(bodies, target=_TARGET, tolerance=_TOLERANCE)
-    return None if level is None else Score(path.stem, level)
+    target, tolerance, max_grade = _thresholds_for(story)
+    level = measure_book(bodies, target=target, tolerance=tolerance)
+    return None if level is None else Score(path.stem, level, max_grade)
+
+
+def _thresholds_for(story: dict[str, Any]) -> tuple[float, float, float]:
+    """Return this book's own ``(target, tolerance, max_grade)``.
+
+    This script is listed in ``run_guard_battery.py`` as "is the whole book too
+    hard for its band", gating yes, and it never read the band. It graded all six
+    bands against a hardcoded 5.5 plus or minus 1.5 with a 7.0 ceiling, which is
+    effectively the 10-13 target. Over the 31 committed books every one it marked
+    OVER was INSIDE its own declared window (``the-last-train-north``, 16+,
+    window 7.5-10.5, FK 9.33, failed as "too hard for its age band"), while
+    ``the-sunken-signal`` sat a full grade BELOW its 16+ window and passed. A 3-5
+    book had 5.0 grades of headroom before the gate fired (``UW-C281``).
+
+    Precedence matches RL-13's: the story's own declared
+    ``metadata.reading_level`` governs, since that is what the node-level rule
+    grades against, and the band table is the default it should have been
+    authored from. The ceiling scales with the target so it stays a ceiling
+    rather than a second, band-blind target.
+
+    Args:
+        story: The decoded storybook.
+
+    Returns:
+        The ``(target, tolerance, max_grade)`` triple for this book.
+    """
+    metadata = story.get("metadata")
+    metadata = metadata if isinstance(metadata, dict) else {}
+    declared = metadata.get("reading_level")
+    declared = declared if isinstance(declared, dict) else {}
+
+    band = metadata.get("age_band")
+    band_target = reading_level_target_for(str(band)) if band is not None else None
+
+    raw_target = declared.get("target")
+    target = (
+        float(cast("float", raw_target))
+        if isinstance(raw_target, (int, float))
+        else (band_target if band_target is not None else _FALLBACK_TARGET)
+    )
+    raw_tolerance = declared.get("tolerance")
+    tolerance = (
+        float(cast("float", raw_tolerance))
+        if isinstance(raw_tolerance, (int, float))
+        else _FALLBACK_TOLERANCE
+    )
+    return target, tolerance, target + tolerance + _CEILING_HEADROOM
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -109,7 +164,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--max-grade",
         type=float,
-        default=_MAX_GRADE,
+        default=None,
         help="Ceiling on whole-book Flesch-Kincaid. Default is the band's edge.",
     )
     parser.add_argument(
@@ -134,7 +189,8 @@ def main(argv: list[str] | None = None) -> int:
             sys.stdout.write(f"{Path(raw).stem:34s} too little prose to score\n")
             continue
         level = scored.level
-        over = level.grade > args.max_grade
+        ceiling = args.max_grade if args.max_grade is not None else scored.max_grade
+        over = level.grade > ceiling
         breached = breached or over
         sys.stdout.write(
             f"{scored.book:34s} {level.nodes:5d} {level.words:6d} "
@@ -168,7 +224,7 @@ def main(argv: list[str] | None = None) -> int:
         )
     if breached:
         sys.stderr.write(
-            f"FAIL reading level: whole-book grade above {args.max_grade}, which is "
+            f"FAIL reading level: whole-book grade above {ceiling:.1f}, which is "
             f"the band's own upper edge. Per-node RL-13 findings are advisory and "
             f"will not catch this; the book is too hard for its age band\n"
         )

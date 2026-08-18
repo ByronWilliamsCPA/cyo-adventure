@@ -1,5 +1,12 @@
 # Reading level: what each source says
 
+> **RESOLVED 2026-08-18.** `validator/band_profile.py`'s `_READING_LEVEL_TARGET` is now the single
+> source of record; `brief.py`, the injected prompt guide, and the frontend derive from it, and
+> `tests/unit/test_reading_level_sources.py` parses the two non-Python surfaces and compares them, so
+> they cannot drift again. The whole-book gate reads each book's own band. The
+> `reading_level_cap` ceiling now clamps rather than substitutes, on both stacks. The tables below
+> are kept as the record of what disagreed.
+
 Built 2026-08-18 in response to the owner's request during the `AL-458` audit sweep, which found
 that four sites state per-band Flesch-Kincaid targets and they do not agree. Every number below was
 read out of the named source, not transcribed from another table. Cited by `UW-C281`.

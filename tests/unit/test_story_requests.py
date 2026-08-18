@@ -5,6 +5,8 @@ from __future__ import annotations
 import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from types import SimpleNamespace
+from typing import Any, cast
 
 import httpx
 import pytest
@@ -38,6 +40,7 @@ from cyo_adventure.story_requests.interpretation import build_general_interpreta
 from cyo_adventure.story_requests.screening import screen_request_text
 from cyo_adventure.story_requests.service import ApprovalConfirmation
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
+from cyo_adventure.validator.band_profile import reading_level_target_for
 
 
 @dataclass(frozen=True, slots=True)
@@ -131,7 +134,12 @@ def test_brief_from_request_without_profile_uses_band_reading_target() -> None:
         age_band="8-11",
     )
     brief = brief_from_request(request, None)
-    assert brief.reading_level_target == pytest.approx(4.0)  # _BAND_FK_TARGET[8-11]
+    # Derived from the single source of record rather than restated, which is
+    # how the old literal (4.0) drifted from the catalog's declared 4.5
+    # (`UW-C281`).
+    expected = reading_level_target_for("8-11")
+    assert expected is not None
+    assert brief.reading_level_target == pytest.approx(expected)
 
 
 def test_brief_from_request_uses_reading_cap_when_below_sentinel() -> None:
@@ -1426,3 +1434,33 @@ class TestCanAutoApprove:
             await service.can_auto_approve(session, profile, family)  # type: ignore[arg-type]
             is False
         )
+
+
+def test_a_reading_cap_above_the_band_target_does_not_raise_it() -> None:
+    """A cap is a ceiling, so it may lower a band's FK target and never raise it.
+
+    `api/schemas.py` documents `reading_level_cap` as a ceiling that "can only
+    ever tighten", but the brief substituted it for the target, and RL-13 reads
+    a target as the CENTRE of a plus-or-minus window. A guardian cap of 2.0 on a
+    band targeting 4.5 therefore produced a window centred on 2.0, and,
+    separately, a cap ABOVE the band target silently RAISED it. Clamping fixes
+    both directions; this pins the direction the old code got backwards
+    (`UW-C281`).
+    """
+    band_target = reading_level_target_for("3-5")
+    assert band_target is not None
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        request_text="a gentle story",
+        status="pending",
+        age_band="3-5",
+    )
+
+    profile = SimpleNamespace(
+        reading_level_cap=9.0,
+        banned_themes=None,
+        allowed_content_flags={},
+    )
+    brief = brief_from_request(request, cast("Any", profile))
+
+    assert brief.reading_level_target == pytest.approx(band_target)
