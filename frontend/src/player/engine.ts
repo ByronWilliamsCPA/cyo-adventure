@@ -28,7 +28,7 @@ function nodeIndex(story: Storybook): Map<string, StoryNode> {
 
 function intBounds(story: Storybook): Map<string, [number | null, number | null]> {
   const bounds = new Map<string, [number | null, number | null]>()
-  for (const v of story.variables) {
+  for (const v of story.variables ?? []) {
     if (v.type === 'int') {
       bounds.set(v.name, [v.min ?? null, v.max ?? null])
     }
@@ -97,7 +97,7 @@ function enterNode(
 /** Begin a new read at start_node with initial variable values. */
 export function start(story: Storybook): ReadingState {
   const varState: VarState = {}
-  for (const v of story.variables) {
+  for (const v of story.variables ?? []) {
     varState[v.name] = v.initial
   }
   const state: ReadingState = {
@@ -135,7 +135,7 @@ export function startContinuation(
 ): ReadingState {
   const bounds = intBounds(story)
   const varState: VarState = {}
-  for (const v of story.variables) {
+  for (const v of story.variables ?? []) {
     varState[v.name] = v.initial
     const carried = carriedVarState?.[v.name]
     if (carried === undefined) continue
@@ -164,7 +164,9 @@ export function startContinuation(
 export function visibleChoices(story: Storybook, state: ReadingState): Choice[] {
   const node = nodeIndex(story).get(state.current_node)
   if (!node) return []
-  return node.choices.filter((c) => c.condition == null || evaluate(c.condition, state.var_state))
+  return (node.choices ?? []).filter(
+    (c) => c.condition == null || evaluate(c.condition, state.var_state)
+  )
 }
 
 /** Whether the current node is an ending. */
@@ -190,7 +192,7 @@ export function choose(story: Storybook, state: ReadingState, choiceId: string):
     throw new Error(`cannot choose from ending node '${state.current_node}'`)
   }
   const node = nodeIndex(story).get(state.current_node)
-  const choice = node?.choices.find((c) => c.id === choiceId)
+  const choice = node?.choices?.find((c) => c.id === choiceId)
   if (!choice) {
     throw new Error(`choice '${choiceId}' does not exist on the current node`)
   }
