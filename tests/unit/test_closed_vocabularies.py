@@ -185,11 +185,16 @@ def test_favorite_hobby_vocabulary_matches_the_accepted_list() -> None:
     assert CLOSED_VOCABULARIES["favorite_hobby"] == expected
 
 
-def test_closed_vocabularies_has_exactly_the_seven_seeded_keys() -> None:
+def test_closed_vocabularies_has_exactly_the_eight_closed_keys() -> None:
     """No stray key was added or dropped alongside the seeded lists.
 
     Guards against a copy-paste key typo (e.g. `favorite_colour`) that would
     otherwise pass every per-key test above by simply never being checked.
+
+    Seven keys were seeded by the 2026-07-29 vocabulary review; `pronoun_set`
+    joined them on 2026-08-18 by owner ruling, closing the last free-text
+    channel into child-facing prose (`AL-459`, `UW-C285`). This guard caught
+    that addition when it landed, which is the behaviour it exists for.
     """
     assert set(CLOSED_VOCABULARIES) == {
         "pet_species",
@@ -199,6 +204,7 @@ def test_closed_vocabularies_has_exactly_the_seven_seeded_keys() -> None:
         "favorite_color",
         "favorite_food",
         "favorite_hobby",
+        "pronoun_set",
     }
 
 

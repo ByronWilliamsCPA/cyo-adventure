@@ -71,13 +71,17 @@ _RING1_ONLY_FIELDS = frozenset({"pronoun_set", "dedication", "character_name"})
 # EITHER a `CLOSED_VOCABULARIES` entry OR a name in this set, which records
 # WHY each one is deliberately free-text/reference-shaped rather than an
 # enum: `protagonist_first_name`/`pet_name` are guardian-authored free text
-# (a real name), `pronoun_set` is free text with no design-stated shape
-# (`personalization_values.py`'s own
-# `test_pronoun_set_shape_is_deliberately_unconstrained` pins that), and
-# `SIBLING_SLOT_TYPE` (`sibling_name`) is a `value_profile_id` reference, not
-# text or an enum, so it was never eligible for `CLOSED_VOCABULARIES` at all.
+# (a real name), and `SIBLING_SLOT_TYPE` (`sibling_name`) is a
+# `value_profile_id` reference, not text or an enum, so it was never eligible
+# for `CLOSED_VOCABULARIES` at all.
+#
+# `pronoun_set` LEFT this set on 2026-08-18: it was exempted on the reasoning
+# that no design document stated its shape, which was false (ADR-023 row 2 and
+# OD-2 both scope it), and the exemption was the last free-text channel into
+# child-facing prose. It is now a `CLOSED_VOCABULARIES` entry, so this guard
+# covers it by the normal route (AL-459, UW-C285).
 _FREE_TEXT_OR_REFERENCE_EXEMPT_FIELDS = frozenset(
-    {"protagonist_first_name", "pet_name", "pronoun_set", SIBLING_SLOT_TYPE}
+    {"protagonist_first_name", "pet_name", SIBLING_SLOT_TYPE}
 )
 
 # ADR-028: character_name carries NO value in this table at all (its value

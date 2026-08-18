@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import uuid
 
+import pytest
+
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.personalization_values import (
     CHARACTER_NAME_SLOT_TYPE,
@@ -237,19 +239,55 @@ def test_enum_membership_message_never_contains_the_candidate() -> None:
     assert all("kinship_label" in v.message for v in membership)
 
 
-def test_pronoun_set_shape_is_deliberately_unconstrained() -> None:
-    """`pronoun_set` keeps accepting free text; no design doc states its shape.
+def test_pronoun_set_is_closed_to_the_adr_v1_vocabulary() -> None:
+    """`pronoun_set` accepts exactly ADR-023 row 2's v1 scope and nothing else.
 
-    Pinned so the omission reads as a decision rather than an oversight. The
-    existing fixtures (`measurement/fixtures.py`) use free text.
+    Owner ruling 2026-08-18 closed the slot. The members are the ADR's own
+    ("Include, v1 scoped to she/her and he/him; they/them deferred"), so this
+    asserts the shipped vocabulary against the document that ruled it rather
+    than against a list chosen in the test.
     """
-    violations = validate_personalization_value(
-        "pronoun_set",
-        AgeBand.BAND_8_11,
-        value_text="they/them",
-    )
+    for accepted in ("she/her", "he/him"):
+        assert (
+            validate_personalization_value(
+                "pronoun_set", AgeBand.BAND_8_11, value_enum=accepted
+            )
+            == []
+        ), f"{accepted!r} is in ADR-023's v1 scope and must be accepted"
 
-    assert violations == []
+    assert CLOSED_VOCABULARIES["pronoun_set"] == frozenset({"she/her", "he/him"})
+
+    # Closing the vocabulary also moves the slot from `value_text` to
+    # `value_enum`, which is the shape every other closed slot already uses.
+    # Pinned because it is an API payload change, not only a validation change.
+    text_shaped = validate_personalization_value(
+        "pronoun_set", AgeBand.BAND_8_11, value_text="she/her"
+    )
+    assert any(v.rule == "value_shape" for v in text_shaped)
+
+
+@pytest.mark.parametrize(
+    "rejected",
+    [
+        "they/them",
+        "xe/xir",
+        "ze/zir/zirs/zirself and please always call me Captain",
+        "She/Her",
+    ],
+)
+def test_pronoun_set_rejects_free_text(rejected: str) -> None:
+    """Every value that passed before the closure now fails, at every band.
+
+    These four are the exact strings the 2026-08-17 audit drove through the
+    validator to zero violations (`AL-459`): a deferred pronoun set, an
+    unlisted one, a whole sentence, and a case variant. The last one pins the
+    module's no-case-normalization rule for this slot alongside the others.
+    """
+    for band in AgeBand:
+        violations = validate_personalization_value(
+            "pronoun_set", band, value_enum=rejected
+        )
+        assert violations, f"{rejected!r} must be rejected at band {band.value}"
 
 
 def test_payload_rejection_reports_rules_through_on_reject() -> None:

@@ -177,6 +177,29 @@ _KINSHIP_VOCABULARY: frozenset[str] = frozenset(
 # (storybook/theme_contract.py) should grow a rule rejecting a slot whose
 # `max_words` is below the longest member of its field's vocabulary.
 CLOSED_VOCABULARIES: dict[str, frozenset[str]] = {
+    # ADR-023 row 2, closed by owner ruling 2026-08-18: "set it at this point,
+    # consider expansions in the future; no free text at this point". The two
+    # members are exactly ADR-023's v1 scope ("Include, v1 scoped to she/her and
+    # he/him; they/them deferred"), so this closes the slot to the shape the ADR
+    # ruled rather than to a shape invented here.
+    #
+    # This was the last free-text channel into child-facing prose: before the
+    # closure `validate_personalization_value` returned zero violations at every
+    # band for "they/them", "xe/xir", and a 60-character sentence, while the
+    # module docstring asserted "no design document states its shape" and ADR-023
+    # stated it twice (AL-459, UW-C285).
+    #
+    # Deliberately NOT case-normalized and carrying no sentinel member, matching
+    # every other entry in this dict; a value is matched exactly as listed.
+    #
+    # #ASSUME: security: this vocabulary is the only thing standing between a
+    # guardian-supplied string and reader-facing prose for this slot; the
+    # structural and denylist checks run first but neither bounds the value's
+    # shape, which is what let a whole sentence through.
+    # #VERIFY: test_personalization_values.py::
+    # test_pronoun_set_is_closed_to_the_adr_v1_vocabulary and
+    # ::test_pronoun_set_rejects_free_text.
+    "pronoun_set": frozenset({"she/her", "he/him"}),
     # 16 common kid-household and small-farm pets, lowercase common nouns
     # (interpolated mid-sentence, e.g. "a pet {PET_SPECIES}").
     "pet_species": frozenset(
@@ -315,10 +338,14 @@ def _shape_violations(
       reference), leaving a caller-supplied value that the resolver never
       reads but that would sit in the row looking authoritative.
 
-    `pronoun_set` is deliberately unconstrained here: no design document
-    states its shape, and the existing fixtures use free text
-    (`measurement/fixtures.py`). Constraining it would be inventing product
-    policy rather than closing a hole.
+    `pronoun_set` WAS deliberately unconstrained here on the reasoning that no
+    design document stated its shape. That reasoning was wrong: ADR-023 row 2
+    and OD-2 both scope it to she/her and he/him with they/them deferred. It is
+    now a `CLOSED_VOCABULARIES` entry like any other enum slot (owner ruling
+    2026-08-18). The `measurement/fixtures.py` values cited as evidence of free
+    text are non-identity placeholders that sit outside every closed vocabulary
+    in this module (`pet_species` there is "the pup"), so they never spoke to
+    this slot's shape either way.
 
     #VERIFY: tests/unit/test_personalization_values.py asserts each of the
     three rules rejects, and that a correctly-shaped value still passes;
