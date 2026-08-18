@@ -1,0 +1,2610 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_quarantine_ledger",
+  "version": 1,
+  "title": "The Quarantine Ledger",
+  "metadata": {
+    "age_band": "16+",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 9.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "biosecurity",
+      "livelihoods under a standstill",
+      "duty of care",
+      "the limits of enforcement"
+    ],
+    "estimated_minutes": 14,
+    "ending_count": 38,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n00_0",
+  "nodes": [
+    {
+      "id": "n00_0",
+      "body": "<<FILL role=setup words=55 beats='the duty phone goes at 04:40 and it is a dairy at the head of the Ardvane valley; eleven cows off their feed, drooling, blistered at the gum, and the herdsman on the line says the word notifiable before Ines Kollar can'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n00_0_0",
+          "label": "Get moving.",
+          "target": "n01_0"
+        }
+      ]
+    },
+    {
+      "id": "n01_0",
+      "body": "<<FILL role=setup words=170 beats='Ines Kollar, district veterinary officer for Ardvane, dresses in the dark and runs a sequence she has rehearsed for eleven years and never used; forty holdings, one market, one abattoir road, and whatever she does in the next hour sets the shape of the next month for all of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n01_0_0",
+          "label": "Go straight in and look at the animals.",
+          "target": "n02_0"
+        },
+        {
+          "id": "c_n01_0_1",
+          "label": "Ask for the movement book before anything else.",
+          "target": "n02_1"
+        },
+        {
+          "id": "c_n01_0_2",
+          "label": "Walk the boundary first and see how the place leaks.",
+          "target": "n02_2"
+        }
+      ]
+    },
+    {
+      "id": "n02_0",
+      "body": "<<FILL role=setup words=185 beats='the milking parlour at Halberd Farm at ten past six, lights on, nothing being milked; Tom Rennick standing at the pit rail with his hands flat on it, and eleven animals in the collecting yard that will not lift a foot without lifting it badly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n02_0_0",
+          "label": "Draw the three kilometre line.",
+          "target": "n03_0"
+        },
+        {
+          "id": "c_n02_0_1",
+          "label": "Draw the wider surveillance line.",
+          "target": "n03_1"
+        },
+        {
+          "id": "c_n02_0_2",
+          "label": "Decide which roads to close.",
+          "target": "n03_2"
+        }
+      ]
+    },
+    {
+      "id": "n02_1",
+      "body": "<<FILL role=setup words=185 beats='the farm office, a plywood desk under a strip light, the movement book open on it because Rennick has already got it out; fourteen days of entries in three different pens, and one of them is not his hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n02_1_0",
+          "label": "Draw the wider surveillance line.",
+          "target": "n03_1"
+        },
+        {
+          "id": "c_n02_1_1",
+          "label": "Decide which roads to close.",
+          "target": "n03_2"
+        },
+        {
+          "id": "c_n02_1_2",
+          "label": "Start with the people inside the line.",
+          "target": "n03_3"
+        }
+      ]
+    },
+    {
+      "id": "n02_2",
+      "body": "<<FILL role=setup words=185 beats='the boundary walk in half dark: the roadside gate, the tanker turning circle, the gap where the hedge was grubbed out for the new shed, and a public footpath that runs within thirty metres of the collecting yard'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n02_2_0",
+          "label": "Decide which roads to close.",
+          "target": "n03_2"
+        },
+        {
+          "id": "c_n02_2_1",
+          "label": "Start with the people inside the line.",
+          "target": "n03_3"
+        },
+        {
+          "id": "c_n02_2_2",
+          "label": "Draw the three kilometre line.",
+          "target": "n03_0"
+        }
+      ]
+    },
+    {
+      "id": "n03_0",
+      "body": "<<FILL role=setup words=185 beats='the protection zone: three kilometres drawn on a paper map with a chinagraph pencil, which in this valley means eleven holdings, two of them across a river with no bridge inside the line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n03_0_0",
+          "label": "Open the ledger.",
+          "target": "n04_0"
+        },
+        {
+          "id": "c_n03_0_1",
+          "label": "Start the phone tree.",
+          "target": "n04_1"
+        },
+        {
+          "id": "c_n03_0_2",
+          "label": "Set up in the hall.",
+          "target": "n04_2"
+        }
+      ]
+    },
+    {
+      "id": "n03_1",
+      "body": "<<FILL role=setup words=185 beats='the surveillance zone at ten kilometres, which takes in Anvers market, the Dunmore abattoir road, and most of the people who will be angry about it by lunchtime'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n03_1_0",
+          "label": "Start the phone tree.",
+          "target": "n04_1"
+        },
+        {
+          "id": "c_n03_1_1",
+          "label": "Set up in the hall.",
+          "target": "n04_2"
+        },
+        {
+          "id": "c_n03_1_2",
+          "label": "Deal with the tanker.",
+          "target": "n04_3"
+        }
+      ]
+    },
+    {
+      "id": "n03_2",
+      "body": "<<FILL role=setup words=185 beats='road closures: four lanes and a ford, none of which can be shut without cutting somebody off from a doctor or a school, and the police liaison wants a list in twenty minutes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n03_2_0",
+          "label": "Set up in the hall.",
+          "target": "n04_2"
+        },
+        {
+          "id": "c_n03_2_1",
+          "label": "Deal with the tanker.",
+          "target": "n04_3"
+        },
+        {
+          "id": "c_n03_2_2",
+          "label": "Get the signs out.",
+          "target": "n04_4"
+        }
+      ]
+    },
+    {
+      "id": "n03_3",
+      "body": "<<FILL role=setup words=185 beats='the people rather than the animals: who lives inside the line, who works across it, which of them milk twice a day for somebody else, and how many of them will hear this first from a neighbour'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n03_3_0",
+          "label": "Deal with the tanker.",
+          "target": "n04_3"
+        },
+        {
+          "id": "c_n03_3_1",
+          "label": "Get the signs out.",
+          "target": "n04_4"
+        },
+        {
+          "id": "c_n03_3_2",
+          "label": "Open the ledger.",
+          "target": "n04_0"
+        }
+      ]
+    },
+    {
+      "id": "n04_0",
+      "body": "<<FILL role=rising words=55 beats='the first page of the movement ledger, ruled by hand in the Ardvane village hall at nine at night: date, holding, species, number, reason, decision, signature, and a column she adds herself for what she was told'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04_0_0",
+          "label": "Open the door to the queue.",
+          "target": "n05_0"
+        }
+      ]
+    },
+    {
+      "id": "n04_1",
+      "body": "<<FILL role=rising words=55 beats='the phone tree: forty holdings, two people calling, and the awkward truth that the fastest route through the valley is gossip and she is choosing to use it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04_1_0",
+          "label": "Deal with the milk first.",
+          "target": "n05_1"
+        }
+      ]
+    },
+    {
+      "id": "n04_2",
+      "body": "<<FILL role=rising words=55 beats='the hall itself, trestle tables and a hot water urn and a caretaker who unlocked it without being asked, becoming a control centre in the time it takes to move the badminton nets'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04_2_0",
+          "label": "Brief the team.",
+          "target": "n05_2"
+        }
+      ]
+    },
+    {
+      "id": "n04_3",
+      "body": "<<FILL role=rising words=55 beats='the milk tanker that has already run its route this morning, three holdings deep before anybody thought to stop it, its driver now sitting in a lay-by waiting to be told what he is'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04_3_0",
+          "label": "Take the first application.",
+          "target": "n05_3"
+        }
+      ]
+    },
+    {
+      "id": "n04_4",
+      "body": "<<FILL role=rising words=55 beats='the sign: laminated, wrong font, cable-tied to the gate at the valley mouth, and somehow the most real thing that has happened all day'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04_4_0",
+          "label": "Take the call from the regional director.",
+          "target": "n05_4"
+        }
+      ]
+    },
+    {
+      "id": "n05_0",
+      "body": "<<FILL role=rising words=170 beats='a queue at the hall door by half seven, twenty deep, most of it holding paperwork and none of it holding the right paperwork'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05_0_0",
+          "label": "Go up to Cowl Hill.",
+          "target": "n06_0"
+        },
+        {
+          "id": "c_n05_0_1",
+          "label": "Go to the pig unit at Tarn Foot.",
+          "target": "n06_1"
+        },
+        {
+          "id": "c_n05_0_2",
+          "label": "Go to the beef unit.",
+          "target": "n06_2"
+        },
+        {
+          "id": "c_n05_0_3",
+          "label": "Order the milk destroyed and stop there.",
+          "target": "e_m01"
+        }
+      ]
+    },
+    {
+      "id": "n05_1",
+      "body": "<<FILL role=rising words=170 beats='Halberd is producing four thousand litres a day that can go nowhere; the bulk tank is full, the next milking is in six hours, and the only lawful destination for it is a slurry pit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05_1_0",
+          "label": "Go to the pig unit at Tarn Foot.",
+          "target": "n06_1"
+        },
+        {
+          "id": "c_n05_1_1",
+          "label": "Go to the beef unit.",
+          "target": "n06_2"
+        },
+        {
+          "id": "c_n05_1_2",
+          "label": "Go to the smallholding at Lowfield.",
+          "target": "n06_3"
+        }
+      ]
+    },
+    {
+      "id": "n05_2",
+      "body": "<<FILL role=rising words=170 beats='the team briefing: two vets seconded from two counties, one of whom has done this before in another country and is quietly certain everything here is a week behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05_2_0",
+          "label": "Go to the beef unit.",
+          "target": "n06_2"
+        },
+        {
+          "id": "c_n05_2_1",
+          "label": "Go to the smallholding at Lowfield.",
+          "target": "n06_3"
+        },
+        {
+          "id": "c_n05_2_2",
+          "label": "Look at the shared water.",
+          "target": "n06_4"
+        },
+        {
+          "id": "c_n05_2_3",
+          "label": "Stay with the queue and let the day go.",
+          "target": "e_m02"
+        }
+      ]
+    },
+    {
+      "id": "n05_3",
+      "body": "<<FILL role=rising words=170 beats='the first licence she refuses, to a man who wants to move two bulls he has already sold, and who is not wrong that the sale will not survive the delay'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05_3_0",
+          "label": "Go to the smallholding at Lowfield.",
+          "target": "n06_3"
+        },
+        {
+          "id": "c_n05_3_1",
+          "label": "Look at the shared water.",
+          "target": "n06_4"
+        },
+        {
+          "id": "c_n05_3_2",
+          "label": "Look at the footpath.",
+          "target": "n06_5"
+        }
+      ]
+    },
+    {
+      "id": "n05_4",
+      "body": "<<FILL role=rising words=170 beats='Solveig Bett, regional director, on a bad line from a car, wanting the zone smaller and the language calmer and the numbers by ten'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05_4_0",
+          "label": "Look at the shared water.",
+          "target": "n06_4"
+        },
+        {
+          "id": "c_n05_4_1",
+          "label": "Look at the footpath.",
+          "target": "n06_5"
+        },
+        {
+          "id": "c_n05_4_2",
+          "label": "Find the contractor machine.",
+          "target": "n06_6"
+        }
+      ]
+    },
+    {
+      "id": "n06_0",
+      "body": "<<FILL role=rising words=185 beats='Cowl Hill, six hundred ewes on the fell above Halberd, the Faw family gathering for scanning next week and now not gathering at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06_0_0",
+          "label": "Look at the feed problem on the fell.",
+          "target": "n07_0"
+        },
+        {
+          "id": "c_n06_0_1",
+          "label": "Do the arithmetic at the pig unit.",
+          "target": "n07_1"
+        },
+        {
+          "id": "c_n06_0_2",
+          "label": "Decide what happens to the milk.",
+          "target": "n07_2"
+        }
+      ]
+    },
+    {
+      "id": "n06_1",
+      "body": "<<FILL role=rising words=185 beats='Tarn Foot, an indoor pig unit run to the week by Mahesh Ubaid, where stopping movement does not stop growth and the pens have four days of slack in them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06_1_0",
+          "label": "Do the arithmetic at the pig unit.",
+          "target": "n07_1"
+        },
+        {
+          "id": "c_n06_1_1",
+          "label": "Decide what happens to the milk.",
+          "target": "n07_2"
+        },
+        {
+          "id": "c_n06_1_2",
+          "label": "Sort out fallen stock collection.",
+          "target": "n07_3"
+        },
+        {
+          "id": "c_n06_1_3",
+          "label": "Get the paperwork right before anything moves.",
+          "target": "e_m03"
+        }
+      ]
+    },
+    {
+      "id": "n06_2",
+      "body": "<<FILL role=rising words=185 beats='the Brayne beef finishing unit, four hundred cattle bought in from six counties, which is either the most exposed holding in the valley or the best record of where the disease has already been'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06_2_0",
+          "label": "Decide what happens to the milk.",
+          "target": "n07_2"
+        },
+        {
+          "id": "c_n06_2_1",
+          "label": "Sort out fallen stock collection.",
+          "target": "n07_3"
+        },
+        {
+          "id": "c_n06_2_2",
+          "label": "Go and see the lame heifer.",
+          "target": "n07_4"
+        }
+      ]
+    },
+    {
+      "id": "n06_3",
+      "body": "<<FILL role=rising words=185 beats='Lowfield, four goats and a pony and a polytunnel, belonging to Otto Sarre who did not know he was a livestock keeper until this morning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06_3_0",
+          "label": "Sort out fallen stock collection.",
+          "target": "n07_3"
+        },
+        {
+          "id": "c_n06_3_1",
+          "label": "Go and see the lame heifer.",
+          "target": "n07_4"
+        },
+        {
+          "id": "c_n06_3_2",
+          "label": "Deal with the pony at Lowfield.",
+          "target": "n07_5"
+        }
+      ]
+    },
+    {
+      "id": "n06_4",
+      "body": "<<FILL role=rising words=185 beats='the shared water: a spring-fed trough on the parish boundary that three holdings have drawn from since before any of them were registered'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06_4_0",
+          "label": "Go and see the lame heifer.",
+          "target": "n07_4"
+        },
+        {
+          "id": "c_n06_4_1",
+          "label": "Deal with the pony at Lowfield.",
+          "target": "n07_5"
+        },
+        {
+          "id": "c_n06_4_2",
+          "label": "Talk to the feed lorry driver.",
+          "target": "n07_6"
+        },
+        {
+          "id": "c_n06_4_3",
+          "label": "Let the valley tell you what it knows.",
+          "target": "e_m04"
+        }
+      ]
+    },
+    {
+      "id": "n06_5",
+      "body": "<<FILL role=rising words=185 beats='the footpath that runs the length of the valley, waymarked, popular, and legally very difficult to close'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06_5_0",
+          "label": "Deal with the pony at Lowfield.",
+          "target": "n07_5"
+        },
+        {
+          "id": "c_n06_5_1",
+          "label": "Talk to the feed lorry driver.",
+          "target": "n07_6"
+        },
+        {
+          "id": "c_n06_5_2",
+          "label": "Look at the feed problem on the fell.",
+          "target": "n07_0"
+        }
+      ]
+    },
+    {
+      "id": "n06_6",
+      "body": "<<FILL role=rising words=185 beats='a contractor telehandler that has worked on nine holdings in twelve days and is currently parked, unwashed, at the tenth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06_6_0",
+          "label": "Talk to the feed lorry driver.",
+          "target": "n07_6"
+        },
+        {
+          "id": "c_n06_6_1",
+          "label": "Look at the feed problem on the fell.",
+          "target": "n07_0"
+        },
+        {
+          "id": "c_n06_6_2",
+          "label": "Do the arithmetic at the pig unit.",
+          "target": "n07_1"
+        }
+      ]
+    },
+    {
+      "id": "n07_0",
+      "body": "<<FILL role=rising words=185 beats='silage at Cowl Hill runs out in nine days and the clamp that would feed them is on rented ground on the far side of the closed lane'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07_0_0",
+          "label": "Sleep four hours at the hall and carry on.",
+          "target": "n08_0"
+        },
+        {
+          "id": "c_n07_0_1",
+          "label": "Go and confirm the second case yourself.",
+          "target": "n08_1"
+        },
+        {
+          "id": "c_n07_0_2",
+          "label": "Drive up to the fell before the light goes.",
+          "target": "n08_2"
+        },
+        {
+          "id": "c_n07_0_3",
+          "label": "Leave the fell to sort its own feed.",
+          "target": "e_m05"
+        }
+      ]
+    },
+    {
+      "id": "n07_1",
+      "body": "<<FILL role=rising words=185 beats='Tarn Foot is filling: weaners coming through behind finishers that cannot leave, and Ubaid doing arithmetic on a feed bag that ends in a number of days rather than a plan'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07_1_0",
+          "label": "Go and confirm the second case yourself.",
+          "target": "n08_1"
+        },
+        {
+          "id": "c_n07_1_1",
+          "label": "Drive up to the fell before the light goes.",
+          "target": "n08_2"
+        },
+        {
+          "id": "c_n07_1_2",
+          "label": "Go down to the boundary and see the watchers.",
+          "target": "n08_3"
+        },
+        {
+          "id": "c_n07_1_3",
+          "label": "Hold the line on the pig unit and move nothing.",
+          "target": "e_m06"
+        }
+      ]
+    },
+    {
+      "id": "n07_2",
+      "body": "<<FILL role=rising words=185 beats='the milk: nine holdings now, tankers idle, and a proposal from the processor that would take it out of the zone under seal, which is either sensible or the exact mechanism that spread it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07_2_0",
+          "label": "Drive up to the fell before the light goes.",
+          "target": "n08_2"
+        },
+        {
+          "id": "c_n07_2_1",
+          "label": "Go down to the boundary and see the watchers.",
+          "target": "n08_3"
+        },
+        {
+          "id": "c_n07_2_2",
+          "label": "Take the morning calls from the other counties.",
+          "target": "n08_4"
+        }
+      ]
+    },
+    {
+      "id": "n07_3",
+      "body": "<<FILL role=rising words=185 beats='fallen stock collection has stopped at the zone boundary and there are already animals that need collecting, in August'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07_3_0",
+          "label": "Go down to the boundary and see the watchers.",
+          "target": "n08_3"
+        },
+        {
+          "id": "c_n07_3_1",
+          "label": "Take the morning calls from the other counties.",
+          "target": "n08_4"
+        },
+        {
+          "id": "c_n07_3_2",
+          "label": "Follow up the anonymous report.",
+          "target": "n08_5"
+        }
+      ]
+    },
+    {
+      "id": "n07_4",
+      "body": "<<FILL role=rising words=185 beats='a lame heifer at Brayne that needs a vet with a crush and a hoof knife, and every vet in the valley is doing surveillance visits'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07_4_0",
+          "label": "Take the morning calls from the other counties.",
+          "target": "n08_4"
+        },
+        {
+          "id": "c_n07_4_1",
+          "label": "Follow up the anonymous report.",
+          "target": "n08_5"
+        },
+        {
+          "id": "c_n07_4_2",
+          "label": "Sit down with the ledger and read it back.",
+          "target": "n08_6"
+        }
+      ]
+    },
+    {
+      "id": "n07_5",
+      "body": "<<FILL role=rising words=185 beats='the Lowfield pony, which is not a susceptible species, belongs to nobody and is standing in a paddock its owner may not legally cross'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07_5_0",
+          "label": "Follow up the anonymous report.",
+          "target": "n08_5"
+        },
+        {
+          "id": "c_n07_5_1",
+          "label": "Sit down with the ledger and read it back.",
+          "target": "n08_6"
+        },
+        {
+          "id": "c_n07_5_2",
+          "label": "Sleep four hours at the hall and carry on.",
+          "target": "n08_0"
+        }
+      ]
+    },
+    {
+      "id": "n07_6",
+      "body": "<<FILL role=rising words=185 beats='a feed lorry driver at the roadblock who has eleven drops booked and a tachograph that will not forgive an argument'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07_6_0",
+          "label": "Sit down with the ledger and read it back.",
+          "target": "n08_6"
+        },
+        {
+          "id": "c_n07_6_1",
+          "label": "Sleep four hours at the hall and carry on.",
+          "target": "n08_0"
+        },
+        {
+          "id": "c_n07_6_2",
+          "label": "Go and confirm the second case yourself.",
+          "target": "n08_1"
+        },
+        {
+          "id": "c_n07_6_3",
+          "label": "Follow the machine and nothing else.",
+          "target": "e_m07"
+        }
+      ]
+    },
+    {
+      "id": "n08_0",
+      "body": "<<FILL role=rising words=55 beats='day four: the hall smells of wet coats and instant coffee, the ledger is on its ninth page, and nobody has been home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08_0_0",
+          "label": "Get the market ledger.",
+          "target": "n09_0"
+        }
+      ]
+    },
+    {
+      "id": "n08_1",
+      "body": "<<FILL role=rising words=55 beats='day four in the pens: the second clinical case at Halberd, confirmed by somebody who did not want to be the one to confirm it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08_1_0",
+          "label": "Pull the abattoir consignments.",
+          "target": "n09_1"
+        }
+      ]
+    },
+    {
+      "id": "n08_2",
+      "body": "<<FILL role=rising words=55 beats='day four on the fell: the Faw family have started feeding by hand what they would normally leave to graze'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08_2_0",
+          "label": "Track the insemination round.",
+          "target": "n09_2"
+        }
+      ]
+    },
+    {
+      "id": "n08_3",
+      "body": "<<FILL role=rising words=55 beats='day four at the boundary: two lay-bys have become car parks for people who want to look'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08_3_0",
+          "label": "Find the shearing gang.",
+          "target": "n09_3"
+        }
+      ]
+    },
+    {
+      "id": "n08_4",
+      "body": "<<FILL role=rising words=55 beats='day four in the office: three counties now want the Ardvane numbers before their own morning calls'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08_4_0",
+          "label": "Reconstruct the tanker route.",
+          "target": "n09_4"
+        }
+      ]
+    },
+    {
+      "id": "n08_5",
+      "body": "<<FILL role=rising words=55 beats='day four on the phone: the first anonymous report of a movement, and it names somebody'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08_5_0",
+          "label": "Chase the walker.",
+          "target": "n09_5"
+        }
+      ]
+    },
+    {
+      "id": "n08_6",
+      "body": "<<FILL role=rising words=55 beats='day four in the ledger: the column she added for what she was told is now the most interesting column in the book'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08_6_0",
+          "label": "Ask the question about wind and vermin.",
+          "target": "n09_6"
+        }
+      ]
+    },
+    {
+      "id": "n09_0",
+      "body": "<<FILL role=rising words=170 beats='the Anvers market ledger for the last three sale days, thirty pages of carbon copy, half of it in a hand that abbreviates holdings by the name of a farmer who died in 2009'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09_0_0",
+          "label": "Go to the market office.",
+          "target": "n10_0"
+        },
+        {
+          "id": "c_n09_0_1",
+          "label": "Find the dealer.",
+          "target": "n10_1"
+        },
+        {
+          "id": "c_n09_0_2",
+          "label": "Trace the outward buyer.",
+          "target": "n10_2"
+        }
+      ]
+    },
+    {
+      "id": "n09_1",
+      "body": "<<FILL role=rising words=170 beats='the Dunmore abattoir consignment records, which are clean, complete, digital, and cover only the animals that arrived'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09_1_0",
+          "label": "Find the dealer.",
+          "target": "n10_1"
+        },
+        {
+          "id": "c_n09_1_1",
+          "label": "Trace the outward buyer.",
+          "target": "n10_2"
+        },
+        {
+          "id": "c_n09_1_2",
+          "label": "Get the haulier tachograph.",
+          "target": "n10_3"
+        }
+      ]
+    },
+    {
+      "id": "n09_2",
+      "body": "<<FILL role=rising words=170 beats='the artificial insemination technician who did a round of six dairies in two days and keeps his diary in his head'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09_2_0",
+          "label": "Trace the outward buyer.",
+          "target": "n10_2"
+        },
+        {
+          "id": "c_n09_2_1",
+          "label": "Get the haulier tachograph.",
+          "target": "n10_3"
+        },
+        {
+          "id": "c_n09_2_2",
+          "label": "Chase the unlicensed move.",
+          "target": "n10_4"
+        }
+      ]
+    },
+    {
+      "id": "n09_3",
+      "body": "<<FILL role=rising words=170 beats='the shearing gang, five men and a trailer, who worked the fell holdings in the last fortnight and are now on a different fell in a different county'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09_3_0",
+          "label": "Get the haulier tachograph.",
+          "target": "n10_3"
+        },
+        {
+          "id": "c_n09_3_1",
+          "label": "Chase the unlicensed move.",
+          "target": "n10_4"
+        },
+        {
+          "id": "c_n09_3_2",
+          "label": "Look at the summer fair.",
+          "target": "n10_5"
+        }
+      ]
+    },
+    {
+      "id": "n09_4",
+      "body": "<<FILL role=rising words=170 beats='the milk tanker route, which is a documented list of gates opened in a documented order and is the best evidence in the valley if it can be trusted'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09_4_0",
+          "label": "Chase the unlicensed move.",
+          "target": "n10_4"
+        },
+        {
+          "id": "c_n09_4_1",
+          "label": "Look at the summer fair.",
+          "target": "n10_5"
+        },
+        {
+          "id": "c_n09_4_2",
+          "label": "Work the paperwork that does not match.",
+          "target": "n10_6"
+        }
+      ]
+    },
+    {
+      "id": "n09_5",
+      "body": "<<FILL role=rising words=170 beats='a walker who posted photographs of the Halberd collecting yard eight days ago, geotagged, and who has since walked four other valleys'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09_5_0",
+          "label": "Look at the summer fair.",
+          "target": "n10_5"
+        },
+        {
+          "id": "c_n09_5_1",
+          "label": "Work the paperwork that does not match.",
+          "target": "n10_6"
+        },
+        {
+          "id": "c_n09_5_2",
+          "label": "Go to the market office.",
+          "target": "n10_0"
+        },
+        {
+          "id": "c_n09_5_3",
+          "label": "Accept that the footpath cannot be closed.",
+          "target": "e_m08"
+        }
+      ]
+    },
+    {
+      "id": "n09_6",
+      "body": "<<FILL role=rising words=170 beats='the question nobody wants asked out loud: birds, rats, and wind, which would mean the lines on the map are decoration'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09_6_0",
+          "label": "Work the paperwork that does not match.",
+          "target": "n10_6"
+        },
+        {
+          "id": "c_n09_6_1",
+          "label": "Go to the market office.",
+          "target": "n10_0"
+        },
+        {
+          "id": "c_n09_6_2",
+          "label": "Find the dealer.",
+          "target": "n10_1"
+        },
+        {
+          "id": "c_n09_6_3",
+          "label": "Keep writing down what people tell you.",
+          "target": "e_m09"
+        }
+      ]
+    },
+    {
+      "id": "n10_0",
+      "body": "<<FILL role=rising words=185 beats='the Anvers market office, where the manager is helpful, frightened, and in possession of a second book he has not mentioned'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_0_0",
+          "label": "Meet the enforcement officer.",
+          "target": "n11_0"
+        },
+        {
+          "id": "c_n10_0_1",
+          "label": "Go to the roadblock.",
+          "target": "n11_1"
+        },
+        {
+          "id": "c_n10_0_2",
+          "label": "Decide about prosecution.",
+          "target": "n11_2"
+        },
+        {
+          "id": "c_n10_0_3",
+          "label": "Trust the market book.",
+          "target": "e_m10"
+        }
+      ]
+    },
+    {
+      "id": "n10_1",
+      "body": "<<FILL role=rising words=185 beats='Wick, a dealer, who bought and sold within the same hour on the last sale day and whose lorry has been to places his paperwork has not'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_1_0",
+          "label": "Go to the roadblock.",
+          "target": "n11_1"
+        },
+        {
+          "id": "c_n10_1_1",
+          "label": "Decide about prosecution.",
+          "target": "n11_2"
+        },
+        {
+          "id": "c_n10_1_2",
+          "label": "Inspect the disinfectant point.",
+          "target": "n11_3"
+        }
+      ]
+    },
+    {
+      "id": "n10_2",
+      "body": "<<FILL role=rising words=185 beats='a buyer two counties away who took forty store lambs out of Anvers and has since sold half of them on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_2_0",
+          "label": "Decide about prosecution.",
+          "target": "n11_2"
+        },
+        {
+          "id": "c_n10_2_1",
+          "label": "Inspect the disinfectant point.",
+          "target": "n11_3"
+        },
+        {
+          "id": "c_n10_2_2",
+          "label": "Go and see the farmer who refuses.",
+          "target": "n11_4"
+        },
+        {
+          "id": "c_n10_2_3",
+          "label": "Hand the outward trail to the neighbouring county.",
+          "target": "e_m11"
+        }
+      ]
+    },
+    {
+      "id": "n10_3",
+      "body": "<<FILL role=rising words=185 beats='the haulier tachograph, which is a legal record of exactly where a lorry stood still and for how long'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_3_0",
+          "label": "Inspect the disinfectant point.",
+          "target": "n11_3"
+        },
+        {
+          "id": "c_n10_3_1",
+          "label": "Go and see the farmer who refuses.",
+          "target": "n11_4"
+        },
+        {
+          "id": "c_n10_3_2",
+          "label": "Sit down with the police liaison.",
+          "target": "n11_5"
+        },
+        {
+          "id": "c_n10_3_3",
+          "label": "Put the tachograph next to the fair dates.",
+          "target": "e_m12"
+        }
+      ]
+    },
+    {
+      "id": "n10_4",
+      "body": "<<FILL role=rising words=185 beats='an unlicensed move: eight cattle walked half a mile down a lane at dusk, seen by two people, admitted by nobody'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_4_0",
+          "label": "Go and see the farmer who refuses.",
+          "target": "n11_4"
+        },
+        {
+          "id": "c_n10_4_1",
+          "label": "Sit down with the police liaison.",
+          "target": "n11_5"
+        },
+        {
+          "id": "c_n10_4_2",
+          "label": "Meet the enforcement officer.",
+          "target": "n11_0"
+        }
+      ]
+    },
+    {
+      "id": "n10_5",
+      "body": "<<FILL role=rising words=185 beats='the Dunmore summer fair, held nine days before the first case, with a livestock class and no records at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_5_0",
+          "label": "Sit down with the police liaison.",
+          "target": "n11_5"
+        },
+        {
+          "id": "c_n10_5_1",
+          "label": "Meet the enforcement officer.",
+          "target": "n11_0"
+        },
+        {
+          "id": "c_n10_5_2",
+          "label": "Go to the roadblock.",
+          "target": "n11_1"
+        }
+      ]
+    },
+    {
+      "id": "n10_6",
+      "body": "<<FILL role=rising words=185 beats='paperwork that does not match: the same batch of ear tags in two ledgers on two different days'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_6_0",
+          "label": "Meet the enforcement officer.",
+          "target": "n11_0"
+        },
+        {
+          "id": "c_n10_6_1",
+          "label": "Go to the roadblock.",
+          "target": "n11_1"
+        },
+        {
+          "id": "c_n10_6_2",
+          "label": "Decide about prosecution.",
+          "target": "n11_2"
+        }
+      ]
+    },
+    {
+      "id": "n11_0",
+      "body": "<<FILL role=rising words=185 beats='Cray, enforcement officer, arrives with a clipboard and a manner that turns every conversation into a statement'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11_0_0",
+          "label": "Start the second week.",
+          "target": "n12_0"
+        },
+        {
+          "id": "c_n11_0_1",
+          "label": "Total up the book before going on.",
+          "target": "n12_1"
+        },
+        {
+          "id": "c_n11_0_2",
+          "label": "Walk the queue at the hall and listen.",
+          "target": "n12_2"
+        }
+      ]
+    },
+    {
+      "id": "n11_1",
+      "body": "<<FILL role=rising words=185 beats='the roadblock at Brack Bridge, staffed by two constables who have been told to be firm and not told what to do about the school bus'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11_1_0",
+          "label": "Total up the book before going on.",
+          "target": "n12_1"
+        },
+        {
+          "id": "c_n11_1_1",
+          "label": "Walk the queue at the hall and listen.",
+          "target": "n12_2"
+        },
+        {
+          "id": "c_n11_1_2",
+          "label": "Go back to Halberd and open the gate with him.",
+          "target": "n12_3"
+        }
+      ]
+    },
+    {
+      "id": "n11_2",
+      "body": "<<FILL role=rising words=185 beats='the prosecution question: whether to build a file on the unlicensed move now, which will end the cooperation she is currently living on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11_2_0",
+          "label": "Walk the queue at the hall and listen.",
+          "target": "n12_2"
+        },
+        {
+          "id": "c_n11_2_1",
+          "label": "Go back to Halberd and open the gate with him.",
+          "target": "n12_3"
+        },
+        {
+          "id": "c_n11_2_2",
+          "label": "Read what the papers are printing.",
+          "target": "n12_4"
+        },
+        {
+          "id": "c_n11_2_3",
+          "label": "Build the prosecution file now.",
+          "target": "e_m13"
+        }
+      ]
+    },
+    {
+      "id": "n11_3",
+      "body": "<<FILL role=rising words=185 beats='the disinfectant point at the valley mouth, where the mats have gone sour and nobody has changed the drum in three days'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11_3_0",
+          "label": "Go back to Halberd and open the gate with him.",
+          "target": "n12_3"
+        },
+        {
+          "id": "c_n11_3_1",
+          "label": "Read what the papers are printing.",
+          "target": "n12_4"
+        },
+        {
+          "id": "c_n11_3_2",
+          "label": "Go home for four hours.",
+          "target": "n12_5"
+        }
+      ]
+    },
+    {
+      "id": "n11_4",
+      "body": "<<FILL role=rising words=185 beats='a farmer who will not comply, who says the line is drawn wrong, and who is right about the line and wrong about what follows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11_4_0",
+          "label": "Read what the papers are printing.",
+          "target": "n12_4"
+        },
+        {
+          "id": "c_n11_4_1",
+          "label": "Go home for four hours.",
+          "target": "n12_5"
+        },
+        {
+          "id": "c_n11_4_2",
+          "label": "Start the second week.",
+          "target": "n12_0"
+        }
+      ]
+    },
+    {
+      "id": "n11_5",
+      "body": "<<FILL role=rising words=185 beats='the police liaison, who wants to know exactly which of her instructions are law and which are advice, and will act only on the first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11_5_0",
+          "label": "Go home for four hours.",
+          "target": "n12_5"
+        },
+        {
+          "id": "c_n11_5_1",
+          "label": "Start the second week.",
+          "target": "n12_0"
+        },
+        {
+          "id": "c_n11_5_2",
+          "label": "Total up the book before going on.",
+          "target": "n12_1"
+        },
+        {
+          "id": "c_n11_5_3",
+          "label": "Separate the law from the advice.",
+          "target": "e_m14"
+        }
+      ]
+    },
+    {
+      "id": "n12_0",
+      "body": "<<FILL role=rising words=55 beats='the second week begins with a frost, which everybody says is good for it and nobody can say why'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12_0_0",
+          "label": "Sit in on the valuation.",
+          "target": "n13_0"
+        }
+      ]
+    },
+    {
+      "id": "n12_1",
+      "body": "<<FILL role=rising words=55 beats='the second week in the ledger: forty-one licences granted, nineteen refused, and two she is no longer sure about'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12_1_0",
+          "label": "Be there for the slaughter team.",
+          "target": "n13_1"
+        }
+      ]
+    },
+    {
+      "id": "n12_2",
+      "body": "<<FILL role=rising words=55 beats='the second week in the valley: the queue at the hall is shorter and quieter, which is worse'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12_2_0",
+          "label": "Decide on disposal.",
+          "target": "n13_2"
+        }
+      ]
+    },
+    {
+      "id": "n12_3",
+      "body": "<<FILL role=rising words=55 beats='the second week at Halberd: the yard scraped, limed, and empty, and Rennick still coming out to open the gate'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12_3_0",
+          "label": "Hear the case for the pedigree line.",
+          "target": "n13_3"
+        }
+      ]
+    },
+    {
+      "id": "n12_4",
+      "body": "<<FILL role=rising words=55 beats='the second week in the press: a photograph of a pyre that is not in this county running above a story that is'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12_4_0",
+          "label": "Face the contiguous cull argument.",
+          "target": "n13_4"
+        }
+      ]
+    },
+    {
+      "id": "n12_5",
+      "body": "<<FILL role=rising words=55 beats='the second week at home: her own kitchen at one in the morning, boots on newspaper by the door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12_5_0",
+          "label": "Go up to the refusal at Cowl Hill.",
+          "target": "n13_5"
+        }
+      ]
+    },
+    {
+      "id": "n13_0",
+      "body": "<<FILL role=rising words=170 beats='the valuation: a valuer, a farmer, and a number that has to stand up in eighteen months when somebody appeals it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13_0_0",
+          "label": "Read the Mereford result.",
+          "target": "n14_0"
+        },
+        {
+          "id": "c_n13_0_1",
+          "label": "Look at the fell serology.",
+          "target": "n14_1"
+        },
+        {
+          "id": "c_n13_0_2",
+          "label": "Weigh the inconclusive negative.",
+          "target": "n14_2"
+        }
+      ]
+    },
+    {
+      "id": "n13_1",
+      "body": "<<FILL role=rising words=170 beats='the slaughter team, competent, unhurried, and unbearable to watch, working through a shed in an order they will not deviate from'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13_1_0",
+          "label": "Look at the fell serology.",
+          "target": "n14_1"
+        },
+        {
+          "id": "c_n13_1_1",
+          "label": "Weigh the inconclusive negative.",
+          "target": "n14_2"
+        },
+        {
+          "id": "c_n13_1_2",
+          "label": "Follow up the second strain question.",
+          "target": "n14_3"
+        }
+      ]
+    },
+    {
+      "id": "n13_2",
+      "body": "<<FILL role=rising words=170 beats='burial or incineration: a water table, a licence, a wind direction, and a village that will remember whichever is chosen'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13_2_0",
+          "label": "Weigh the inconclusive negative.",
+          "target": "n14_2"
+        },
+        {
+          "id": "c_n13_2_1",
+          "label": "Follow up the second strain question.",
+          "target": "n14_3"
+        },
+        {
+          "id": "c_n13_2_2",
+          "label": "Audit the sample chain.",
+          "target": "n14_4"
+        }
+      ]
+    },
+    {
+      "id": "n13_3",
+      "body": "<<FILL role=rising words=170 beats='the Halberd pedigree line, sixty years of breeding in one shed, and a case for saving semen and embryos that is both sentimental and sound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13_3_0",
+          "label": "Follow up the second strain question.",
+          "target": "n14_3"
+        },
+        {
+          "id": "c_n13_3_1",
+          "label": "Audit the sample chain.",
+          "target": "n14_4"
+        },
+        {
+          "id": "c_n13_3_2",
+          "label": "Take on the vaccination question.",
+          "target": "n14_5"
+        },
+        {
+          "id": "c_n13_3_3",
+          "label": "Write up the disinfectant failure exactly as it was.",
+          "target": "e_m15"
+        }
+      ]
+    },
+    {
+      "id": "n13_4",
+      "body": "<<FILL role=rising words=170 beats='the contiguous cull argument: take out three neighbouring herds now on risk alone, which is either the end of it or the worst thing she will ever sign'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13_4_0",
+          "label": "Audit the sample chain.",
+          "target": "n14_4"
+        },
+        {
+          "id": "c_n13_4_1",
+          "label": "Take on the vaccination question.",
+          "target": "n14_5"
+        },
+        {
+          "id": "c_n13_4_2",
+          "label": "Read the Mereford result.",
+          "target": "n14_0"
+        },
+        {
+          "id": "c_n13_4_3",
+          "label": "Sign the contiguous cull.",
+          "target": "e_m16"
+        }
+      ]
+    },
+    {
+      "id": "n13_5",
+      "body": "<<FILL role=rising words=170 beats='a refusal: the Faw family standing in their own gateway, and six hundred ewes behind them, and no version of the next hour that anybody wants'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13_5_0",
+          "label": "Take on the vaccination question.",
+          "target": "n14_5"
+        },
+        {
+          "id": "c_n13_5_1",
+          "label": "Read the Mereford result.",
+          "target": "n14_0"
+        },
+        {
+          "id": "c_n13_5_2",
+          "label": "Look at the fell serology.",
+          "target": "n14_1"
+        },
+        {
+          "id": "c_n13_5_3",
+          "label": "Read the fell serology properly.",
+          "target": "e_m17"
+        }
+      ]
+    },
+    {
+      "id": "n14_0",
+      "body": "<<FILL role=rising words=185 beats='the Mereford laboratory result, which comes in as a table rather than an answer and needs reading twice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14_0_0",
+          "label": "Talk to the reporter.",
+          "target": "n15_0"
+        },
+        {
+          "id": "c_n14_0_1",
+          "label": "Hold the public meeting.",
+          "target": "n15_1"
+        },
+        {
+          "id": "c_n14_0_2",
+          "label": "Deal with the rumour.",
+          "target": "n15_2"
+        }
+      ]
+    },
+    {
+      "id": "n14_1",
+      "body": "<<FILL role=rising words=185 beats='serology on the Cowl Hill flock: antibody without clinical signs, which means either old exposure or a fortnight of silent spread'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14_1_0",
+          "label": "Hold the public meeting.",
+          "target": "n15_1"
+        },
+        {
+          "id": "c_n14_1_1",
+          "label": "Deal with the rumour.",
+          "target": "n15_2"
+        },
+        {
+          "id": "c_n14_1_2",
+          "label": "Answer the school and the footpath.",
+          "target": "n15_3"
+        },
+        {
+          "id": "c_n14_1_3",
+          "label": "Push the second strain question to the lab.",
+          "target": "e_m18"
+        }
+      ]
+    },
+    {
+      "id": "n14_2",
+      "body": "<<FILL role=rising words=185 beats='a negative that is not conclusive, on the holding where a negative would have let eleven people go home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14_2_0",
+          "label": "Deal with the rumour.",
+          "target": "n15_2"
+        },
+        {
+          "id": "c_n14_2_1",
+          "label": "Answer the school and the footpath.",
+          "target": "n15_3"
+        },
+        {
+          "id": "c_n14_2_2",
+          "label": "Face the tourist trade.",
+          "target": "n15_4"
+        }
+      ]
+    },
+    {
+      "id": "n14_3",
+      "body": "<<FILL role=rising words=185 beats='a second strain question raised quietly by the seconded vet, which if true means two introductions and not one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14_3_0",
+          "label": "Answer the school and the footpath.",
+          "target": "n15_3"
+        },
+        {
+          "id": "c_n14_3_1",
+          "label": "Face the tourist trade.",
+          "target": "n15_4"
+        },
+        {
+          "id": "c_n14_3_2",
+          "label": "Handle the ministerial visit.",
+          "target": "n15_5"
+        }
+      ]
+    },
+    {
+      "id": "n14_4",
+      "body": "<<FILL role=rising words=185 beats='chain of custody on the samples: a cool box, a courier, and a gap of four hours nobody can account for'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14_4_0",
+          "label": "Face the tourist trade.",
+          "target": "n15_4"
+        },
+        {
+          "id": "c_n14_4_1",
+          "label": "Handle the ministerial visit.",
+          "target": "n15_5"
+        },
+        {
+          "id": "c_n14_4_2",
+          "label": "Talk to the reporter.",
+          "target": "n15_0"
+        },
+        {
+          "id": "c_n14_4_3",
+          "label": "Audit the four hours and write it up.",
+          "target": "e_m19"
+        }
+      ]
+    },
+    {
+      "id": "n14_5",
+      "body": "<<FILL role=rising words=185 beats='the vaccination question, which is a policy decision taken elsewhere and which everybody in the valley will believe she made'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14_5_0",
+          "label": "Handle the ministerial visit.",
+          "target": "n15_5"
+        },
+        {
+          "id": "c_n14_5_1",
+          "label": "Talk to the reporter.",
+          "target": "n15_0"
+        },
+        {
+          "id": "c_n14_5_2",
+          "label": "Hold the public meeting.",
+          "target": "n15_1"
+        }
+      ]
+    },
+    {
+      "id": "n15_0",
+      "body": "<<FILL role=rising words=185 beats='Dev Antrobus of the county paper on the hall step, accurate so far, and asking the one question she has been avoiding answering to herself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15_0_0",
+          "label": "Count the days since the last case.",
+          "target": "n16_0"
+        },
+        {
+          "id": "c_n15_0_1",
+          "label": "Read the reasons column back to yourself.",
+          "target": "n16_1"
+        },
+        {
+          "id": "c_n15_0_2",
+          "label": "Go and stand at the roadblock a while.",
+          "target": "n16_2"
+        }
+      ]
+    },
+    {
+      "id": "n15_1",
+      "body": "<<FILL role=rising words=185 beats='a public meeting in the same hall, chairs turned round, two hundred people, and a microphone that does not work'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15_1_0",
+          "label": "Read the reasons column back to yourself.",
+          "target": "n16_1"
+        },
+        {
+          "id": "c_n15_1_1",
+          "label": "Go and stand at the roadblock a while.",
+          "target": "n16_2"
+        },
+        {
+          "id": "c_n15_1_2",
+          "label": "Go up for the gathering in the rain.",
+          "target": "n16_3"
+        },
+        {
+          "id": "c_n15_1_3",
+          "label": "Stand up and take the meeting.",
+          "target": "e_m21"
+        }
+      ]
+    },
+    {
+      "id": "n15_2",
+      "body": "<<FILL role=rising words=185 beats='a rumour running the valley faster than any tanker: that the disease came in with the imported cattle at Brayne, which is plausible, unproven, and already costing the Brayne family customers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15_2_0",
+          "label": "Go and stand at the roadblock a while.",
+          "target": "n16_2"
+        },
+        {
+          "id": "c_n15_2_1",
+          "label": "Go up for the gathering in the rain.",
+          "target": "n16_3"
+        },
+        {
+          "id": "c_n15_2_2",
+          "label": "Answer the question about a day off.",
+          "target": "n16_4"
+        },
+        {
+          "id": "c_n15_2_3",
+          "label": "Decline to comment on the rumour.",
+          "target": "e_m20"
+        }
+      ]
+    },
+    {
+      "id": "n15_3",
+      "body": "<<FILL role=rising words=185 beats='the school and the footpath: a headteacher who needs a straight answer about the walking route and a rambling association that has already written to the county'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15_3_0",
+          "label": "Go up for the gathering in the rain.",
+          "target": "n16_3"
+        },
+        {
+          "id": "c_n15_3_1",
+          "label": "Answer the question about a day off.",
+          "target": "n16_4"
+        },
+        {
+          "id": "c_n15_3_2",
+          "label": "Count the days since the last case.",
+          "target": "n16_0"
+        }
+      ]
+    },
+    {
+      "id": "n15_4",
+      "body": "<<FILL role=rising words=185 beats='the tourist trade: three holiday lets, a campsite and a tea room, none of them keeping animals and all of them shut'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15_4_0",
+          "label": "Answer the question about a day off.",
+          "target": "n16_4"
+        },
+        {
+          "id": "c_n15_4_1",
+          "label": "Count the days since the last case.",
+          "target": "n16_0"
+        },
+        {
+          "id": "c_n15_4_2",
+          "label": "Read the reasons column back to yourself.",
+          "target": "n16_1"
+        }
+      ]
+    },
+    {
+      "id": "n15_5",
+      "body": "<<FILL role=rising words=185 beats='a ministerial visit, ninety minutes, with a photographer, on the day the valuations are being done'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15_5_0",
+          "label": "Count the days since the last case.",
+          "target": "n16_0"
+        },
+        {
+          "id": "c_n15_5_1",
+          "label": "Read the reasons column back to yourself.",
+          "target": "n16_1"
+        },
+        {
+          "id": "c_n15_5_2",
+          "label": "Go and stand at the roadblock a while.",
+          "target": "n16_2"
+        },
+        {
+          "id": "c_n15_5_3",
+          "label": "Give the visit the day it wants.",
+          "target": "e_m22"
+        }
+      ]
+    },
+    {
+      "id": "n16_0",
+      "body": "<<FILL role=climax words=55 beats='day fifteen: no new clinical case for six days, which is not yet a sentence anybody will say out loud'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16_0_0",
+          "label": "Take the welfare movement licence.",
+          "target": "n17_0"
+        }
+      ]
+    },
+    {
+      "id": "n16_1",
+      "body": "<<FILL role=climax words=55 beats='day fifteen in the ledger: the entries are shorter, and the reasons column has started to read like a diary'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16_1_0",
+          "label": "Hear the pedigree exemption.",
+          "target": "n17_1"
+        }
+      ]
+    },
+    {
+      "id": "n16_2",
+      "body": "<<FILL role=climax words=55 beats='day fifteen at the roadblock: the constables know the cars now and wave half of them through, which is how it ends badly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16_2_0",
+          "label": "Decide about the abattoir slot.",
+          "target": "n17_2"
+        }
+      ]
+    },
+    {
+      "id": "n16_3",
+      "body": "<<FILL role=climax words=55 beats='day fifteen on the fell: the Faw family gathering after all, under licence, in the rain'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16_3_0",
+          "label": "Deal with the Sarre goats.",
+          "target": "n17_3"
+        }
+      ]
+    },
+    {
+      "id": "n16_4",
+      "body": "<<FILL role=climax words=55 beats='day fifteen in the office: somebody from the region asks, gently, when she last had a day off'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16_4_0",
+          "label": "Deal with the funeral.",
+          "target": "n17_4"
+        }
+      ]
+    },
+    {
+      "id": "n17_0",
+      "body": "<<FILL role=climax words=170 beats='a welfare movement licence: cattle that must move or suffer, to a place that must accept them, along a road that must be washed after'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17_0_0",
+          "label": "Settle the thirty day clock.",
+          "target": "n18_0"
+        },
+        {
+          "id": "c_n17_0_1",
+          "label": "Do the last surveillance round.",
+          "target": "n18_1"
+        },
+        {
+          "id": "c_n17_0_2",
+          "label": "Take the pressure from the region.",
+          "target": "n18_2"
+        },
+        {
+          "id": "c_n17_0_3",
+          "label": "Grant the welfare movement and trust the conditions.",
+          "target": "e_m24"
+        }
+      ]
+    },
+    {
+      "id": "n17_1",
+      "body": "<<FILL role=climax words=170 beats='an exemption asked for a pedigree flock with bloodlines that exist nowhere else, which is a good argument and the wrong precedent'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17_1_0",
+          "label": "Do the last surveillance round.",
+          "target": "n18_1"
+        },
+        {
+          "id": "c_n17_1_1",
+          "label": "Take the pressure from the region.",
+          "target": "n18_2"
+        },
+        {
+          "id": "c_n17_1_2",
+          "label": "Write the risk assessment.",
+          "target": "n18_3"
+        }
+      ]
+    },
+    {
+      "id": "n17_2",
+      "body": "<<FILL role=climax words=170 beats='an abattoir slot at Dunmore, one day only, for animals that will be unsaleable and unfeedable by the time another comes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17_2_0",
+          "label": "Take the pressure from the region.",
+          "target": "n18_2"
+        },
+        {
+          "id": "c_n17_2_1",
+          "label": "Write the risk assessment.",
+          "target": "n18_3"
+        },
+        {
+          "id": "c_n17_2_2",
+          "label": "Review the ledger.",
+          "target": "n18_4"
+        }
+      ]
+    },
+    {
+      "id": "n17_3",
+      "body": "<<FILL role=climax words=170 beats='the Sarre goats, four animals, no commercial value, and a keeper who has read every page of the guidance and found the sentence that helps him'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17_3_0",
+          "label": "Write the risk assessment.",
+          "target": "n18_3"
+        },
+        {
+          "id": "c_n17_3_1",
+          "label": "Review the ledger.",
+          "target": "n18_4"
+        },
+        {
+          "id": "c_n17_3_2",
+          "label": "Settle the thirty day clock.",
+          "target": "n18_0"
+        },
+        {
+          "id": "c_n17_3_3",
+          "label": "Grant the smallholder his sentence.",
+          "target": "e_m23"
+        }
+      ]
+    },
+    {
+      "id": "n17_4",
+      "body": "<<FILL role=climax words=170 beats='a funeral: a family from inside the line who need to cross it to bury somebody, and the rules that do not mention this at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17_4_0",
+          "label": "Review the ledger.",
+          "target": "n18_4"
+        },
+        {
+          "id": "c_n17_4_1",
+          "label": "Settle the thirty day clock.",
+          "target": "n18_0"
+        },
+        {
+          "id": "c_n17_4_2",
+          "label": "Do the last surveillance round.",
+          "target": "n18_1"
+        }
+      ]
+    },
+    {
+      "id": "n18_0",
+      "body": "<<FILL role=climax words=185 beats='the thirty day clock, which everybody in the valley is counting and which starts from a date two people disagree about'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n18_0_0",
+          "label": "Sign it off.",
+          "target": "n19_0"
+        },
+        {
+          "id": "c_n18_0_1",
+          "label": "Face the disputed entry.",
+          "target": "n19_1"
+        },
+        {
+          "id": "c_n18_0_2",
+          "label": "Write the report.",
+          "target": "n19_2"
+        },
+        {
+          "id": "c_n18_0_3",
+          "label": "Settle the clock on the entry as it was first written.",
+          "target": "e_m26"
+        }
+      ]
+    },
+    {
+      "id": "n18_1",
+      "body": "<<FILL role=climax words=185 beats='the last surveillance visit: eleven holdings, one day, and the standing instruction to look properly rather than to look quickly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n18_1_0",
+          "label": "Face the disputed entry.",
+          "target": "n19_1"
+        },
+        {
+          "id": "c_n18_1_1",
+          "label": "Write the report.",
+          "target": "n19_2"
+        },
+        {
+          "id": "c_n18_1_2",
+          "label": "Do the handover.",
+          "target": "n19_3"
+        }
+      ]
+    },
+    {
+      "id": "n18_2",
+      "body": "<<FILL role=climax words=185 beats='Bett wants the zone lifted on the earliest defensible date and has started using the word defensible in every sentence'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n18_2_0",
+          "label": "Write the report.",
+          "target": "n19_2"
+        },
+        {
+          "id": "c_n18_2_1",
+          "label": "Do the handover.",
+          "target": "n19_3"
+        },
+        {
+          "id": "c_n18_2_2",
+          "label": "Sign it off.",
+          "target": "n19_0"
+        }
+      ]
+    },
+    {
+      "id": "n18_3",
+      "body": "<<FILL role=climax words=185 beats='the risk assessment as written down: five lines of probability and one line of consequence, and the consequence line is the whole document'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n18_3_0",
+          "label": "Do the handover.",
+          "target": "n19_3"
+        },
+        {
+          "id": "c_n18_3_1",
+          "label": "Sign it off.",
+          "target": "n19_0"
+        },
+        {
+          "id": "c_n18_3_2",
+          "label": "Face the disputed entry.",
+          "target": "n19_1"
+        }
+      ]
+    },
+    {
+      "id": "n18_4",
+      "body": "<<FILL role=climax words=185 beats='a review of her own ledger, cover to cover, for the entries she would not make again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n18_4_0",
+          "label": "Sign it off.",
+          "target": "n19_0"
+        },
+        {
+          "id": "c_n18_4_1",
+          "label": "Face the disputed entry.",
+          "target": "n19_1"
+        },
+        {
+          "id": "c_n18_4_2",
+          "label": "Write the report.",
+          "target": "n19_2"
+        },
+        {
+          "id": "c_n18_4_3",
+          "label": "Let the funeral cross the line.",
+          "target": "e_m25"
+        }
+      ]
+    },
+    {
+      "id": "n19_0",
+      "body": "<<FILL role=climax words=185 beats='the sign-off itself: one signature, one date, and the legal fact that everything after it is hers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n19_0_0",
+          "label": "Lift it on the evidence.",
+          "target": "e_f01"
+        },
+        {
+          "id": "c_n19_0_1",
+          "label": "Let it end quietly.",
+          "target": "e_f02"
+        },
+        {
+          "id": "c_n19_0_2",
+          "label": "Sign off on the record as written.",
+          "target": "e_f03"
+        }
+      ]
+    },
+    {
+      "id": "n19_1",
+      "body": "<<FILL role=climax words=185 beats='the disputed entry: day six, a movement she authorised on a phone call and wrote up afterwards, which is now the only line anybody will read'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n19_1_0",
+          "label": "Close the book.",
+          "target": "e_f04"
+        },
+        {
+          "id": "c_n19_1_1",
+          "label": "Stay until the restocking.",
+          "target": "e_f05"
+        },
+        {
+          "id": "c_n19_1_2",
+          "label": "Hand over what the valley learned.",
+          "target": "e_f06"
+        }
+      ]
+    },
+    {
+      "id": "n19_2",
+      "body": "<<FILL role=climax words=185 beats='the report she has to write, in which the difference between what happened and what is defensible has to be chosen once and lived with'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n19_2_0",
+          "label": "Take the earliest defensible date.",
+          "target": "e_f07"
+        },
+        {
+          "id": "c_n19_2_1",
+          "label": "Keep pulling the thread afterwards.",
+          "target": "e_f08"
+        },
+        {
+          "id": "c_n19_2_2",
+          "label": "Write the finding about the records.",
+          "target": "e_f09"
+        }
+      ]
+    },
+    {
+      "id": "n19_3",
+      "body": "<<FILL role=climax words=185 beats='the handover to whoever comes next, and the question of what to say about the valley rather than the disease'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n19_3_0",
+          "label": "Lift it on the date the region wants.",
+          "target": "e_f10"
+        },
+        {
+          "id": "c_n19_3_1",
+          "label": "Accept what it costs and finish it.",
+          "target": "e_f11"
+        },
+        {
+          "id": "c_n19_3_2",
+          "label": "Let the disputed entry stand as it was written.",
+          "target": "e_f12"
+        }
+      ]
+    },
+    {
+      "id": "e_m01",
+      "body": "<<FILL role=setback words=185 beats='the tank is emptied into the slurry lagoon in front of the man who produced it, lawfully, with a licence number written in the ledger, and the whole standstill is that afternoon in miniature for everybody who watches it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m01",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Milk Goes to the Pit"
+      }
+    },
+    {
+      "id": "e_m02",
+      "body": "<<FILL role=discovery words=185 beats='the queue at the hall was never about licences; it was about being told something by somebody with a name, and once she understands that, the queue changes shape and so does the rest of the month'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m02",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Queue Was For"
+      }
+    },
+    {
+      "id": "e_m03",
+      "body": "<<FILL role=setback words=185 beats='the hours spent getting the paperwork right are the hours in which two loads leave the valley legally under the old rules; nothing she did was wrong and the outbreak is now in two districts'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m03",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Too Slow at the Gate"
+      }
+    },
+    {
+      "id": "e_m04",
+      "body": "<<FILL role=discovery words=185 beats='the phone tree tells her more in four hours than the database has in four years, and what it tells her is that the valley already knew, and had already started deciding for itself'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m04",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Forty Holdings, Two Phones"
+      }
+    },
+    {
+      "id": "e_m05",
+      "body": "<<FILL role=setback words=185 beats='the Faw family solve the silage problem privately, by an arrangement across a boundary she has closed, and she finds out in a way that leaves her no move that helps anyone'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m05",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Fell Feeds Itself"
+      }
+    },
+    {
+      "id": "e_m06",
+      "body": "<<FILL role=setback words=185 beats='the pig unit runs out of space before it runs out of feed, and the welfare case that follows is the one that makes the county news; a foreseeable outcome, foreseen, and not prevented'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m06",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Pens Fill Up"
+      }
+    },
+    {
+      "id": "e_m07",
+      "body": "<<FILL role=discovery words=185 beats='the contractor telehandler map, drawn out on the back of a feed bag, is the first thing anybody has produced that looks like an explanation, and it does not point at Halberd at all'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m07",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Machine That Went Everywhere"
+      }
+    },
+    {
+      "id": "e_m08",
+      "body": "<<FILL role=setback words=185 beats='the closure order fails on a technicality that takes nine days to argue, and in those nine days the path carries what it always carries'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m08",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Footpath Stays Open"
+      }
+    },
+    {
+      "id": "e_m09",
+      "body": "<<FILL role=discovery words=185 beats='the column for what she was told, which no form requires and no system will accept, becomes the only account of the outbreak that anybody afterwards actually reads'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m09",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Column She Invented"
+      }
+    },
+    {
+      "id": "e_m10",
+      "body": "<<FILL role=setback words=185 beats='the Anvers ledger is complete and useless: it records sales and not animals, and the two have not matched at that market since anybody can remember'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m10",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Market Book Is Not the Market"
+      }
+    },
+    {
+      "id": "e_m11",
+      "body": "<<FILL role=setback words=185 beats='the outward trail runs into another authority with another priority list, and by the time it is picked up the lambs are in six flocks'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m11",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Trail Goes Cold at the County Line"
+      }
+    },
+    {
+      "id": "e_m12",
+      "body": "<<FILL role=discovery words=185 beats='the tachograph and the fair, laid side by side, put the introduction nine days earlier than the first clinical case, which rewrites every line she has drawn and every zone she has defended'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m12",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Nine Days Before Anyone Looked"
+      }
+    },
+    {
+      "id": "e_m13",
+      "body": "<<FILL role=setback words=185 beats='the prosecution file is sound and the valley closes to her the day it is served; the remaining tracing is done by letter and arrives too late to matter'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m13",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The File Ends the Cooperation"
+      }
+    },
+    {
+      "id": "e_m14",
+      "body": "<<FILL role=discovery words=185 beats='sitting down with the police liaison forces her to separate the instructions that carry force from the ones that carry only her, and the second list is much the longer of the two'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m14",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What Was Law and What Was Not"
+      }
+    },
+    {
+      "id": "e_m15",
+      "body": "<<FILL role=setback words=185 beats='the disinfectant point had been decorative for three days, which she records honestly in the ledger and which will be quoted back to her twice'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m15",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Mats Went Sour"
+      }
+    },
+    {
+      "id": "e_m16",
+      "body": "<<FILL role=setback words=185 beats='the contiguous cull is signed, carried out, and afterwards not supported by a single positive result; three families lose everything to a decision that was reasonable at the time and is unforgivable in hindsight'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m16",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Signed on Risk Alone"
+      }
+    },
+    {
+      "id": "e_m17",
+      "body": "<<FILL role=discovery words=185 beats='the fell serology says the flock met this a fortnight before the first blister at Halberd, which means the zone was drawn behind the disease rather than around it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m17",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Line Was Already Behind It"
+      }
+    },
+    {
+      "id": "e_m18",
+      "body": "<<FILL role=setback words=185 beats='the second strain is confirmed, which means the valley was unlucky twice and that no line drawn anywhere would have held; a vindication that helps nobody and comforts no one'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m18",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Two Introductions"
+      }
+    },
+    {
+      "id": "e_m19",
+      "body": "<<FILL role=discovery words=185 beats='the chain of custody gap is real, the samples are sound anyway, and the audit she writes about it changes how three counties courier a cool box'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m19",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Four Unaccounted Hours"
+      }
+    },
+    {
+      "id": "e_m20",
+      "body": "<<FILL role=setback words=185 beats='the Brayne family are still losing customers a year later on the strength of a rumour she declined to contradict in public because contradicting it would have named the holding that was actually first'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m20",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Rumour Wins"
+      }
+    },
+    {
+      "id": "e_m21",
+      "body": "<<FILL role=discovery words=185 beats='the meeting goes badly for ninety minutes and then somebody asks a question that is not rhetorical, and the last half hour is the most useful thing that happens in the whole standstill'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m21",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Two Hundred Chairs"
+      }
+    },
+    {
+      "id": "e_m22",
+      "body": "<<FILL role=setback words=185 beats='the ministerial visit takes a day out of the valuations, produces one photograph, and delivers precisely the resource that was promised, which is none'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m22",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Ninety Minutes and a Photographer"
+      }
+    },
+    {
+      "id": "e_m23",
+      "body": "<<FILL role=discovery words=185 beats='Sarre has found a real sentence in the guidance and he is right; she grants it, and the precedent she has just set will be quoted at her eleven times before the month is out'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m23",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Sentence That Helps Him"
+      }
+    },
+    {
+      "id": "e_m24",
+      "body": "<<FILL role=setback words=185 beats='the welfare movement is granted, made, and followed three days later by a case on the receiving holding; the licence conditions were correct and the road was not washed'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m24",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Road Nobody Washed"
+      }
+    },
+    {
+      "id": "e_m25",
+      "body": "<<FILL role=setback words=185 beats='she writes the crossing into the ledger as a movement of persons, which no column was designed for, and defends it afterwards to people who have never had to'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m25",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Funeral Crosses"
+      }
+    },
+    {
+      "id": "e_m26",
+      "body": "<<FILL role=discovery words=185 beats='the thirty day clock turns out to hang on which of two entries counts as the start, one written at the time and one written properly the next morning, and the difference is nine days of other people lives'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m26",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Date Two People Disagree About"
+      }
+    },
+    {
+      "id": "e_f01",
+      "body": "<<FILL role=success words=185 beats='thirty days clear from the last case, the zone lifted on a date she can defend line by line, and one holding lost out of forty; the valley says it was luck and the ledger says otherwise'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f01",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Line Held"
+      }
+    },
+    {
+      "id": "e_f02",
+      "body": "<<FILL role=completion words=185 beats='the standstill ends the way these things end, without an announcement, with a man driving cattle up a lane in the ordinary way while somebody takes down a laminated sign'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f02",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Thirty Clear Days"
+      }
+    },
+    {
+      "id": "e_f03",
+      "body": "<<FILL role=success words=185 beats='the sign-off survives the audit, the appeal and the inquiry, because every line in it was written on the day it happened by somebody who knew it would be read'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f03",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Signed Off Clean"
+      }
+    },
+    {
+      "id": "e_f04",
+      "body": "<<FILL role=completion words=185 beats='granted and refused, reason by reason, the book closes with no entry she would take back and two she would write differently, and it goes to the county archive rather than a shredder'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f04",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Ledger Balances"
+      }
+    },
+    {
+      "id": "e_f05",
+      "body": "<<FILL role=success words=185 beats='Halberd takes delivery of thirty heifers in October, Rennick counts them off the lorry twice, and the valley turns out for it in the way it turns out for a funeral or a wedding'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f05",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Restocked by Autumn"
+      }
+    },
+    {
+      "id": "e_f06",
+      "body": "<<FILL role=completion words=185 beats='what remains is not the disease but the arrangements made around it: a phone tree that still works, a shared trough that is now fenced, and a hall that everybody now knows how to open'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f06",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "What the Valley Keeps"
+      }
+    },
+    {
+      "id": "e_f07",
+      "body": "<<FILL role=success words=185 beats='the valley is declared free of it on the earliest defensible date, with four herds gone, two farms sold within the year, and a technically excellent outcome that nobody in Ardvane describes that way'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f07",
+        "valence": "neutral",
+        "kind": "success",
+        "title": "Cleared, and Emptied"
+      }
+    },
+    {
+      "id": "e_f08",
+      "body": "<<FILL role=discovery words=185 beats='the introduction is finally traced eleven months later to a consignment that passed through the fair, which nobody was recording and which no zone she could have drawn would have contained'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f08",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Source, Found Late"
+      }
+    },
+    {
+      "id": "e_f09",
+      "body": "<<FILL role=discovery words=185 beats='the outbreak is closed and the real finding is about the records: two systems, neither wrong, that between them could not say where an animal had been, and a recommendation that takes six years to implement'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f09",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Records Never Said"
+      }
+    },
+    {
+      "id": "e_f10",
+      "body": "<<FILL role=setback words=185 beats='the zone comes off on the defensible date and goes back on eleven days later for a case that was incubating on the day she signed; nothing she did was outside the guidance and the second standstill is twice as long'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f10",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lifted Too Soon"
+      }
+    },
+    {
+      "id": "e_f11",
+      "body": "<<FILL role=completion words=185 beats='it is over, it worked, and the valley will not forgive it; she stays in post for two more years and is never again asked into a farmhouse kitchen without an appointment'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f11",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "A Standstill Nobody Forgives"
+      }
+    },
+    {
+      "id": "e_f12",
+      "body": "<<FILL role=setback words=185 beats='eighteen months of inquiry turn on the entry made from a phone call on day six; she is criticised for the record and not for the decision, which is either the whole point or entirely beside it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f12",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Inquiry"
+      }
+    }
+  ]
+}

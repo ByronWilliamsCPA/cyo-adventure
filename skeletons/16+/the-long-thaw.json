@@ -1,0 +1,4106 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_long_thaw",
+  "version": 1,
+  "title": "The Long Thaw",
+  "metadata": {
+    "age_band": "16+",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 9.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "clearing what a war leaves behind",
+      "trust between former enemies",
+      "the patience of survey work",
+      "certifying land safe"
+    ],
+    "estimated_minutes": 18,
+    "ending_count": 45,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "moderate",
+      "peril": "intense"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "long",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n00_0",
+  "nodes": [
+    {
+      "id": "n00_0",
+      "body": "<<FILL role=setup words=55 beats='the Sevret valley comes out from under the snow for the ninth spring since the guns stopped, and a shepherd walking the Krast pasture finds a green plastic disc sitting on top of the mud where nothing was in October'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n00_0_0",
+          "label": "Open the season.",
+          "target": "n01_0"
+        }
+      ]
+    },
+    {
+      "id": "n01_0",
+      "body": "<<FILL role=setup words=170 beats='Anka Tesar has led survey teams for six years and has never had a season like the one in front of her: four hundred hectares to hand back, one melt to work in, two armies worth of records that do not agree, and a village that has already started sowing the edges'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n01_0_0",
+          "label": "Start at the pasture.",
+          "target": "n02_0"
+        },
+        {
+          "id": "c_n01_0_1",
+          "label": "Start with the record book.",
+          "target": "n02_1"
+        },
+        {
+          "id": "c_n01_0_2",
+          "label": "Start in the village.",
+          "target": "n02_2"
+        }
+      ]
+    },
+    {
+      "id": "n02_0",
+      "body": "<<FILL role=setup words=185 beats='the Krast pasture itself, forty hectares of tussock above the treeline, with one confirmed item on the surface and a slope that has been moving quietly downhill for nine years'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n02_0_0",
+          "label": "Draw the polygons.",
+          "target": "n03_0"
+        },
+        {
+          "id": "c_n02_0_1",
+          "label": "Sort out the team.",
+          "target": "n03_1"
+        },
+        {
+          "id": "c_n02_0_2",
+          "label": "Count the weeks.",
+          "target": "n03_2"
+        }
+      ]
+    },
+    {
+      "id": "n02_1",
+      "body": "<<FILL role=setup words=185 beats='the record book: Major Kovan, retired, sitting in a kitchen in the next valley with a canvas-covered ledger on the table between them and no obligation whatsoever to open it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n02_1_0",
+          "label": "Sort out the team.",
+          "target": "n03_1"
+        },
+        {
+          "id": "c_n02_1_1",
+          "label": "Count the weeks.",
+          "target": "n03_2"
+        },
+        {
+          "id": "c_n02_1_2",
+          "label": "Deal with the agency.",
+          "target": "n03_3"
+        }
+      ]
+    },
+    {
+      "id": "n02_2",
+      "body": "<<FILL role=setup words=185 beats='Hovka village, ninety-one people returned out of four hundred, a school with eleven children, and a village head who has been waiting nine years to be told which of her fields are hers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n02_2_0",
+          "label": "Count the weeks.",
+          "target": "n03_2"
+        },
+        {
+          "id": "c_n02_2_1",
+          "label": "Deal with the agency.",
+          "target": "n03_3"
+        },
+        {
+          "id": "c_n02_2_2",
+          "label": "Draw the polygons.",
+          "target": "n03_0"
+        }
+      ]
+    },
+    {
+      "id": "n03_0",
+      "body": "<<FILL role=setup words=185 beats='the survey plan on paper: which polygons are suspected, which are confirmed, and which are neither and will therefore be worked last or never'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n03_0_0",
+          "label": "Set up the base.",
+          "target": "n04_0"
+        },
+        {
+          "id": "c_n03_0_1",
+          "label": "Hold the first briefing.",
+          "target": "n04_1"
+        },
+        {
+          "id": "c_n03_0_2",
+          "label": "Walk the evacuation route.",
+          "target": "n04_2"
+        }
+      ]
+    },
+    {
+      "id": "n03_1",
+      "body": "<<FILL role=setup words=185 beats='the team: Bogdan on the lane, Lira on the map, Nadia and the dog Fen waiting for ground dry enough to scent, Petar with a machine that cannot climb what needs climbing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n03_1_0",
+          "label": "Hold the first briefing.",
+          "target": "n04_1"
+        },
+        {
+          "id": "c_n03_1_1",
+          "label": "Walk the evacuation route.",
+          "target": "n04_2"
+        },
+        {
+          "id": "c_n03_1_2",
+          "label": "Read the accreditation file.",
+          "target": "n04_3"
+        }
+      ]
+    },
+    {
+      "id": "n03_2",
+      "body": "<<FILL role=setup words=185 beats='the season itself, which is not a plan but a shape: eleven weeks of workable ground between the melt and the first hard frost, and no way to buy a twelfth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n03_2_0",
+          "label": "Walk the evacuation route.",
+          "target": "n04_2"
+        },
+        {
+          "id": "c_n03_2_1",
+          "label": "Read the accreditation file.",
+          "target": "n04_3"
+        },
+        {
+          "id": "c_n03_2_2",
+          "label": "Start the first morning.",
+          "target": "n04_4"
+        }
+      ]
+    },
+    {
+      "id": "n03_3",
+      "body": "<<FILL role=setup words=185 beats='the agency in the capital, which needs a work plan by Friday and reads hectares cleared rather than hectares surveyed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n03_3_0",
+          "label": "Read the accreditation file.",
+          "target": "n04_3"
+        },
+        {
+          "id": "c_n03_3_1",
+          "label": "Start the first morning.",
+          "target": "n04_4"
+        },
+        {
+          "id": "c_n03_3_2",
+          "label": "Set up the base.",
+          "target": "n04_0"
+        }
+      ]
+    },
+    {
+      "id": "n04_0",
+      "body": "<<FILL role=rising words=55 beats='the base goes in on the old co-operative yard at the edge of Hovka: containers, a generator, a flag, and a water bowser that leaks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04_0_0",
+          "label": "Do the survey properly first.",
+          "target": "n05_0"
+        }
+      ]
+    },
+    {
+      "id": "n04_1",
+      "body": "<<FILL role=rising words=55 beats='the first briefing under a tarpaulin in the rain, with the map taped to a container door and the wind taking a corner of it every few minutes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04_1_0",
+          "label": "Start the interviews.",
+          "target": "n05_1"
+        }
+      ]
+    },
+    {
+      "id": "n04_2",
+      "body": "<<FILL role=rising words=55 beats='the medical plan: Mirek walks the evacuation route himself, twice, and times it, because a route that has only been driven on a map is not a route'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04_2_0",
+          "label": "Read the ground itself.",
+          "target": "n05_2"
+        }
+      ]
+    },
+    {
+      "id": "n04_3",
+      "body": "<<FILL role=rising words=55 beats='the accreditation paperwork from the national centre, which is four pages of standards and one page of things that will be inspected without warning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04_3_0",
+          "label": "Study the accident record.",
+          "target": "n05_3"
+        }
+      ]
+    },
+    {
+      "id": "n04_4",
+      "body": "<<FILL role=rising words=55 beats='the first morning of actual work, which begins ninety minutes late because a lane is under water and ends with eleven metres of lane cleared'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n04_4_0",
+          "label": "Sit down with the mapper.",
+          "target": "n05_4"
+        }
+      ]
+    },
+    {
+      "id": "n05_0",
+      "body": "<<FILL role=rising words=170 beats='non-technical survey: the slow work of asking, walking and looking, which produces no cleared metres and decides where every cleared metre will be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05_0_0",
+          "label": "Look at the treeline belt.",
+          "target": "n06_0"
+        },
+        {
+          "id": "c_n05_0_1",
+          "label": "Look at the bridge approaches.",
+          "target": "n06_1"
+        },
+        {
+          "id": "c_n05_0_2",
+          "label": "Look at the quarry.",
+          "target": "n06_2"
+        }
+      ]
+    },
+    {
+      "id": "n05_1",
+      "body": "<<FILL role=rising words=170 beats='the interview list: forty-one people who were here, or nearby, or told something by somebody who was'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05_1_0",
+          "label": "Look at the bridge approaches.",
+          "target": "n06_1"
+        },
+        {
+          "id": "c_n05_1_1",
+          "label": "Look at the quarry.",
+          "target": "n06_2"
+        },
+        {
+          "id": "c_n05_1_2",
+          "label": "Look at the orchard terraces.",
+          "target": "n06_3"
+        }
+      ]
+    },
+    {
+      "id": "n05_2",
+      "body": "<<FILL role=rising words=170 beats='the ground evidence: a fence line that stops for no reason, a track that detours around nothing, a plum orchard nobody has pruned'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05_2_0",
+          "label": "Look at the quarry.",
+          "target": "n06_2"
+        },
+        {
+          "id": "c_n05_2_1",
+          "label": "Look at the orchard terraces.",
+          "target": "n06_3"
+        },
+        {
+          "id": "c_n05_2_2",
+          "label": "Look at what the river moved.",
+          "target": "n06_4"
+        }
+      ]
+    },
+    {
+      "id": "n05_3",
+      "body": "<<FILL role=rising words=170 beats='the accident record: three incidents in nine years, two of them with children, all three in places the maps say are clean'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05_3_0",
+          "label": "Look at the orchard terraces.",
+          "target": "n06_3"
+        },
+        {
+          "id": "c_n05_3_1",
+          "label": "Look at what the river moved.",
+          "target": "n06_4"
+        },
+        {
+          "id": "c_n05_3_2",
+          "label": "Look at the school field.",
+          "target": "n06_5"
+        }
+      ]
+    },
+    {
+      "id": "n05_4",
+      "body": "<<FILL role=rising words=170 beats='Lira and the map, layering nine years of contradictory data and refusing to draw a line she cannot source'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n05_4_0",
+          "label": "Look at what the river moved.",
+          "target": "n06_4"
+        },
+        {
+          "id": "c_n05_4_1",
+          "label": "Look at the school field.",
+          "target": "n06_5"
+        },
+        {
+          "id": "c_n05_4_2",
+          "label": "Look at the treeline belt.",
+          "target": "n06_0"
+        }
+      ]
+    },
+    {
+      "id": "n06_0",
+      "body": "<<FILL role=rising words=185 beats='the Ribbon: a treeline belt above the orchard terraces that both armies mention and neither describes the same way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06_0_0",
+          "label": "Sit down with the village head.",
+          "target": "n07_0"
+        },
+        {
+          "id": "c_n06_0_1",
+          "label": "Go and see the Ilic family.",
+          "target": "n07_1"
+        },
+        {
+          "id": "c_n06_0_2",
+          "label": "Go with the liaison to a session.",
+          "target": "n07_2"
+        }
+      ]
+    },
+    {
+      "id": "n06_1",
+      "body": "<<FILL role=rising words=185 beats='the Hovka bridge approaches, mined and demined twice by two different units with two different intentions'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06_1_0",
+          "label": "Go and see the Ilic family.",
+          "target": "n07_1"
+        },
+        {
+          "id": "c_n06_1_1",
+          "label": "Go with the liaison to a session.",
+          "target": "n07_2"
+        },
+        {
+          "id": "c_n06_1_2",
+          "label": "Find the scrap collector.",
+          "target": "n07_3"
+        }
+      ]
+    },
+    {
+      "id": "n06_2",
+      "body": "<<FILL role=rising words=185 beats='the quarry, used as a firing position and then as a dump, where the hazard is not a pattern but a heap'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06_2_0",
+          "label": "Go with the liaison to a session.",
+          "target": "n07_2"
+        },
+        {
+          "id": "c_n06_2_1",
+          "label": "Find the scrap collector.",
+          "target": "n07_3"
+        },
+        {
+          "id": "c_n06_2_2",
+          "label": "Go to the school.",
+          "target": "n07_4"
+        }
+      ]
+    },
+    {
+      "id": "n06_3",
+      "body": "<<FILL role=rising words=185 beats='the orchard terraces, the best land in the valley, worked by hand for two centuries and now nine years into thorn'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06_3_0",
+          "label": "Find the scrap collector.",
+          "target": "n07_3"
+        },
+        {
+          "id": "c_n06_3_1",
+          "label": "Go to the school.",
+          "target": "n07_4"
+        },
+        {
+          "id": "c_n06_3_2",
+          "label": "Get the returnee list.",
+          "target": "n07_5"
+        }
+      ]
+    },
+    {
+      "id": "n06_4",
+      "body": "<<FILL role=rising words=185 beats='the river Mala, which has moved forty metres since the war and has carried whatever was on its banks somewhere else'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06_4_0",
+          "label": "Go to the school.",
+          "target": "n07_4"
+        },
+        {
+          "id": "c_n06_4_1",
+          "label": "Get the returnee list.",
+          "target": "n07_5"
+        },
+        {
+          "id": "c_n06_4_2",
+          "label": "Look at the grazing agreement.",
+          "target": "n07_6"
+        }
+      ]
+    },
+    {
+      "id": "n06_5",
+      "body": "<<FILL role=rising words=185 beats='the school field, which the children already use and which appears on no hazard map'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n06_5_0",
+          "label": "Get the returnee list.",
+          "target": "n07_5"
+        },
+        {
+          "id": "c_n06_5_1",
+          "label": "Look at the grazing agreement.",
+          "target": "n07_6"
+        },
+        {
+          "id": "c_n06_5_2",
+          "label": "Sit down with the village head.",
+          "target": "n07_0"
+        }
+      ]
+    },
+    {
+      "id": "n07_0",
+      "body": "<<FILL role=rising words=185 beats='Vesna Dolic, village head, who is polite, exact, and entirely unwilling to pretend that nine years of waiting were reasonable'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07_0_0",
+          "label": "Let the first week close and see what is left.",
+          "target": "n08_0"
+        },
+        {
+          "id": "c_n07_0_1",
+          "label": "Redraw the polygons with the week behind you.",
+          "target": "n08_1"
+        },
+        {
+          "id": "c_n07_0_2",
+          "label": "Sit at the base and let the village come to you.",
+          "target": "n08_2"
+        },
+        {
+          "id": "c_n07_0_3",
+          "label": "Do the survey and release nothing.",
+          "target": "e_m01"
+        }
+      ]
+    },
+    {
+      "id": "n07_1",
+      "body": "<<FILL role=rising words=185 beats='Marta Ilic, who came back last autumn with her son Davor and has already put a plough through the bottom of a field that is not yet released'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07_1_0",
+          "label": "Redraw the polygons with the week behind you.",
+          "target": "n08_1"
+        },
+        {
+          "id": "c_n07_1_1",
+          "label": "Sit at the base and let the village come to you.",
+          "target": "n08_2"
+        },
+        {
+          "id": "c_n07_1_2",
+          "label": "Write off the rain days and re-plan.",
+          "target": "n08_3"
+        }
+      ]
+    },
+    {
+      "id": "n07_2",
+      "body": "<<FILL role=rising words=185 beats='Suja and the risk education sessions, which are well attended by everybody except the people who work the ground'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07_2_0",
+          "label": "Sit at the base and let the village come to you.",
+          "target": "n08_2"
+        },
+        {
+          "id": "c_n07_2_1",
+          "label": "Write off the rain days and re-plan.",
+          "target": "n08_3"
+        },
+        {
+          "id": "c_n07_2_2",
+          "label": "Wait for ground dry enough to scent.",
+          "target": "n08_4"
+        }
+      ]
+    },
+    {
+      "id": "n07_3",
+      "body": "<<FILL role=rising words=185 beats='Gabor, who collects scrap in the valley illegally, knows the ground better than anyone alive, and has every reason not to talk to her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07_3_0",
+          "label": "Write off the rain days and re-plan.",
+          "target": "n08_3"
+        },
+        {
+          "id": "c_n07_3_1",
+          "label": "Wait for ground dry enough to scent.",
+          "target": "n08_4"
+        },
+        {
+          "id": "c_n07_3_2",
+          "label": "Do the double recording and get it right.",
+          "target": "n08_5"
+        },
+        {
+          "id": "c_n07_3_3",
+          "label": "Follow Gabor and ask nothing.",
+          "target": "e_m02"
+        }
+      ]
+    },
+    {
+      "id": "n07_4",
+      "body": "<<FILL role=rising words=185 beats='the school: eleven children, one teacher, and a lesson she is asked to give that she has given a hundred times and never in a room this small'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07_4_0",
+          "label": "Wait for ground dry enough to scent.",
+          "target": "n08_4"
+        },
+        {
+          "id": "c_n07_4_1",
+          "label": "Do the double recording and get it right.",
+          "target": "n08_5"
+        },
+        {
+          "id": "c_n07_4_2",
+          "label": "Lie awake in the container and listen.",
+          "target": "n08_6"
+        }
+      ]
+    },
+    {
+      "id": "n07_5",
+      "body": "<<FILL role=rising words=185 beats='the returnee list at the district office, which will double by autumn and which nobody has matched against the hazard map'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07_5_0",
+          "label": "Do the double recording and get it right.",
+          "target": "n08_5"
+        },
+        {
+          "id": "c_n07_5_1",
+          "label": "Lie awake in the container and listen.",
+          "target": "n08_6"
+        },
+        {
+          "id": "c_n07_5_2",
+          "label": "Let the first week close and see what is left.",
+          "target": "n08_0"
+        }
+      ]
+    },
+    {
+      "id": "n07_6",
+      "body": "<<FILL role=rising words=185 beats='the grazing agreement: three families using the Krast pasture under an arrangement that predates the war and survived it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n07_6_0",
+          "label": "Lie awake in the container and listen.",
+          "target": "n08_6"
+        },
+        {
+          "id": "c_n07_6_1",
+          "label": "Let the first week close and see what is left.",
+          "target": "n08_0"
+        },
+        {
+          "id": "c_n07_6_2",
+          "label": "Redraw the polygons with the week behind you.",
+          "target": "n08_1"
+        }
+      ]
+    },
+    {
+      "id": "n08_0",
+      "body": "<<FILL role=rising words=55 beats='end of the first week: eleven hundred square metres, four items, and a team that has stopped talking during breaks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08_0_0",
+          "label": "Read the Kovan ledger.",
+          "target": "n09_0"
+        }
+      ]
+    },
+    {
+      "id": "n08_1",
+      "body": "<<FILL role=rising words=55 beats='end of the first week on the map: two polygons shrunk, one grown, and a new one nobody expected'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08_1_0",
+          "label": "Read the official records.",
+          "target": "n09_1"
+        }
+      ]
+    },
+    {
+      "id": "n08_2",
+      "body": "<<FILL role=rising words=55 beats='end of the first week in the village: the base is now where people come to ask about things that are not mines'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08_2_0",
+          "label": "Lay the two records side by side.",
+          "target": "n09_2"
+        }
+      ]
+    },
+    {
+      "id": "n08_3",
+      "body": "<<FILL role=rising words=55 beats='end of the first week in the rain: three days lost, and the melt does not pause for it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08_3_0",
+          "label": "Solve the grid problem.",
+          "target": "n09_3"
+        }
+      ]
+    },
+    {
+      "id": "n08_4",
+      "body": "<<FILL role=rising words=55 beats='end of the first week with the dog: Fen works ninety minutes a day and the ground is only now dry enough to hold scent'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08_4_0",
+          "label": "Push on what Kovan will not say.",
+          "target": "n09_4"
+        }
+      ]
+    },
+    {
+      "id": "n08_5",
+      "body": "<<FILL role=rising words=55 beats='end of the first week of paperwork: every metre recorded twice, once for the agency and once for the national centre'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08_5_0",
+          "label": "Read the pattern as a document.",
+          "target": "n09_5"
+        }
+      ]
+    },
+    {
+      "id": "n08_6",
+      "body": "<<FILL role=rising words=55 beats='end of the first week at night: the valley absolutely quiet, and Anka awake in a container listening to it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n08_6_0",
+          "label": "Consider that the ledger lies.",
+          "target": "n09_6"
+        }
+      ]
+    },
+    {
+      "id": "n09_0",
+      "body": "<<FILL role=rising words=170 beats='the Kovan ledger, opened at last on a kitchen table: rows, grid references, dates, and a hand that got tireder as the war went on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09_0_0",
+          "label": "Work the moving slope.",
+          "target": "n10_0"
+        },
+        {
+          "id": "c_n09_0_1",
+          "label": "Work into the treeline.",
+          "target": "n10_1"
+        },
+        {
+          "id": "c_n09_0_2",
+          "label": "Work the terrace walls.",
+          "target": "n10_2"
+        }
+      ]
+    },
+    {
+      "id": "n09_1",
+      "body": "<<FILL role=rising words=170 beats='the other army records, held digitally by the national centre, complete, authoritative, and derived from a survey done in a hurry in 1996'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09_1_0",
+          "label": "Work into the treeline.",
+          "target": "n10_1"
+        },
+        {
+          "id": "c_n09_1_1",
+          "label": "Work the terrace walls.",
+          "target": "n10_2"
+        },
+        {
+          "id": "c_n09_1_2",
+          "label": "Clear the access lane.",
+          "target": "n10_3"
+        },
+        {
+          "id": "c_n09_1_3",
+          "label": "Let the ploughing go unchallenged.",
+          "target": "e_m03"
+        }
+      ]
+    },
+    {
+      "id": "n09_2",
+      "body": "<<FILL role=rising words=170 beats='the two sets side by side, agreeing on four minefields, disagreeing on six, and silent together on the one that killed a child in 2019'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09_2_0",
+          "label": "Work the terrace walls.",
+          "target": "n10_2"
+        },
+        {
+          "id": "c_n09_2_1",
+          "label": "Clear the access lane.",
+          "target": "n10_3"
+        },
+        {
+          "id": "c_n09_2_2",
+          "label": "Work the river bank.",
+          "target": "n10_4"
+        }
+      ]
+    },
+    {
+      "id": "n09_3",
+      "body": "<<FILL role=rising words=170 beats='the grid problem: two armies, two datums, and a systematic offset of about sixty metres that nobody documented'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09_3_0",
+          "label": "Clear the access lane.",
+          "target": "n10_3"
+        },
+        {
+          "id": "c_n09_3_1",
+          "label": "Work the river bank.",
+          "target": "n10_4"
+        },
+        {
+          "id": "c_n09_3_2",
+          "label": "Work the quarry floor.",
+          "target": "n10_5"
+        },
+        {
+          "id": "c_n09_3_3",
+          "label": "Prove the sixty metre offset.",
+          "target": "e_m04"
+        }
+      ]
+    },
+    {
+      "id": "n09_4",
+      "body": "<<FILL role=rising words=170 beats='what Kovan will not say, which is not a fact but a reason, and which he signals by turning a page slowly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09_4_0",
+          "label": "Work the river bank.",
+          "target": "n10_4"
+        },
+        {
+          "id": "c_n09_4_1",
+          "label": "Work the quarry floor.",
+          "target": "n10_5"
+        },
+        {
+          "id": "c_n09_4_2",
+          "label": "Work the easy ground first.",
+          "target": "n10_6"
+        }
+      ]
+    },
+    {
+      "id": "n09_5",
+      "body": "<<FILL role=rising words=170 beats='the mines themselves as a document: what was laid, in what pattern, by people with what training and how much time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09_5_0",
+          "label": "Work the quarry floor.",
+          "target": "n10_5"
+        },
+        {
+          "id": "c_n09_5_1",
+          "label": "Work the easy ground first.",
+          "target": "n10_6"
+        },
+        {
+          "id": "c_n09_5_2",
+          "label": "Work the polygon boundaries.",
+          "target": "n10_7"
+        }
+      ]
+    },
+    {
+      "id": "n09_6",
+      "body": "<<FILL role=rising words=170 beats='the possibility that the ledger is wrong on purpose, written to be found and to protect somebody'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n09_6_0",
+          "label": "Work the easy ground first.",
+          "target": "n10_6"
+        },
+        {
+          "id": "c_n09_6_1",
+          "label": "Work the polygon boundaries.",
+          "target": "n10_7"
+        },
+        {
+          "id": "c_n09_6_2",
+          "label": "Work the ground nobody asked about.",
+          "target": "n10_8"
+        },
+        {
+          "id": "c_n09_6_3",
+          "label": "Treat the ledger as an argument, not a record.",
+          "target": "e_m05"
+        }
+      ]
+    },
+    {
+      "id": "n10_0",
+      "body": "<<FILL role=rising words=185 beats='the upper Krast slope, where nine years of freeze and thaw have moved the surface downhill and taken items with it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_0_0",
+          "label": "Do it by hand.",
+          "target": "n11_0"
+        },
+        {
+          "id": "c_n10_0_1",
+          "label": "Bring in the flail.",
+          "target": "n11_1"
+        },
+        {
+          "id": "c_n10_0_2",
+          "label": "Use the dogs.",
+          "target": "n11_2"
+        }
+      ]
+    },
+    {
+      "id": "n10_1",
+      "body": "<<FILL role=rising words=185 beats='the treeline itself, where roots have grown through and around and the detector reads iron in the soil at every step'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_1_0",
+          "label": "Bring in the flail.",
+          "target": "n11_1"
+        },
+        {
+          "id": "c_n10_1_1",
+          "label": "Use the dogs.",
+          "target": "n11_2"
+        },
+        {
+          "id": "c_n10_1_2",
+          "label": "Prove the ground instead of clearing it.",
+          "target": "n11_3"
+        }
+      ]
+    },
+    {
+      "id": "n10_2",
+      "body": "<<FILL role=rising words=185 beats='the terraces, where the retaining walls are the hazard: dry stone, nine years unmaintained, and full of voids'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_2_0",
+          "label": "Use the dogs.",
+          "target": "n11_2"
+        },
+        {
+          "id": "c_n10_2_1",
+          "label": "Prove the ground instead of clearing it.",
+          "target": "n11_3"
+        },
+        {
+          "id": "c_n10_2_2",
+          "label": "Run the large loop over the terraces.",
+          "target": "n11_4"
+        },
+        {
+          "id": "c_n10_2_3",
+          "label": "Trust the satellite image.",
+          "target": "e_m06"
+        }
+      ]
+    },
+    {
+      "id": "n10_3",
+      "body": "<<FILL role=rising words=185 beats='the lane to the upper pasture, one metre wide, which must be cleared before anything else can be cleared'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_3_0",
+          "label": "Prove the ground instead of clearing it.",
+          "target": "n11_3"
+        },
+        {
+          "id": "c_n10_3_1",
+          "label": "Run the large loop over the terraces.",
+          "target": "n11_4"
+        },
+        {
+          "id": "c_n10_3_2",
+          "label": "Excavate the heap.",
+          "target": "n11_5"
+        }
+      ]
+    },
+    {
+      "id": "n10_4",
+      "body": "<<FILL role=rising words=185 beats='the river bank, which is a different problem every hundred metres and the same problem underneath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_4_0",
+          "label": "Run the large loop over the terraces.",
+          "target": "n11_4"
+        },
+        {
+          "id": "c_n10_4_1",
+          "label": "Excavate the heap.",
+          "target": "n11_5"
+        },
+        {
+          "id": "c_n10_4_2",
+          "label": "Run the combined approach.",
+          "target": "n11_6"
+        }
+      ]
+    },
+    {
+      "id": "n10_5",
+      "body": "<<FILL role=rising words=185 beats='the quarry floor, where a metal detector is useless and the only method left is excavation by hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_5_0",
+          "label": "Excavate the heap.",
+          "target": "n11_5"
+        },
+        {
+          "id": "c_n10_5_1",
+          "label": "Run the combined approach.",
+          "target": "n11_6"
+        },
+        {
+          "id": "c_n10_5_2",
+          "label": "Settle which standard applies.",
+          "target": "n11_7"
+        }
+      ]
+    },
+    {
+      "id": "n10_6",
+      "body": "<<FILL role=rising words=185 beats='the flat ground below the village, which is easy, safe, quick, and not where the hazard is'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_6_0",
+          "label": "Run the combined approach.",
+          "target": "n11_6"
+        },
+        {
+          "id": "c_n10_6_1",
+          "label": "Settle which standard applies.",
+          "target": "n11_7"
+        },
+        {
+          "id": "c_n10_6_2",
+          "label": "Consider cancelling the polygon.",
+          "target": "n11_8"
+        },
+        {
+          "id": "c_n10_6_3",
+          "label": "Spend the season on the easy ground.",
+          "target": "e_m07"
+        }
+      ]
+    },
+    {
+      "id": "n10_7",
+      "body": "<<FILL role=rising words=185 beats='the boundary of every polygon, which is the one place where being wrong is both likely and unforgivable'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_7_0",
+          "label": "Settle which standard applies.",
+          "target": "n11_7"
+        },
+        {
+          "id": "c_n10_7_1",
+          "label": "Consider cancelling the polygon.",
+          "target": "n11_8"
+        },
+        {
+          "id": "c_n10_7_2",
+          "label": "Do it by hand.",
+          "target": "n11_0"
+        }
+      ]
+    },
+    {
+      "id": "n10_8",
+      "body": "<<FILL role=rising words=185 beats='the ground that nobody has asked about, between the orchard and the school, which is on no list and is walked across every day'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n10_8_0",
+          "label": "Consider cancelling the polygon.",
+          "target": "n11_8"
+        },
+        {
+          "id": "c_n10_8_1",
+          "label": "Do it by hand.",
+          "target": "n11_0"
+        },
+        {
+          "id": "c_n10_8_2",
+          "label": "Bring in the flail.",
+          "target": "n11_1"
+        },
+        {
+          "id": "c_n10_8_3",
+          "label": "Test the ground nobody asked about.",
+          "target": "e_m08"
+        }
+      ]
+    },
+    {
+      "id": "n11_0",
+      "body": "<<FILL role=rising words=185 beats='manual clearance: a metre of frontage a day per deminer, absolute, unarguable, and the only method that produces certainty'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11_0_0",
+          "label": "Take stock at midsummer.",
+          "target": "n12_0"
+        },
+        {
+          "id": "c_n11_0_1",
+          "label": "Count the released hectares out loud.",
+          "target": "n12_1"
+        },
+        {
+          "id": "c_n11_0_2",
+          "label": "Go and see who has moved back already.",
+          "target": "n12_2"
+        },
+        {
+          "id": "c_n11_0_3",
+          "label": "Commit to manual clearance and accept the arithmetic.",
+          "target": "e_m09"
+        }
+      ]
+    },
+    {
+      "id": "n11_1",
+      "body": "<<FILL role=rising words=185 beats='the flail: fast, expensive, and unable to promise anything below twenty centimetres on stony ground'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11_1_0",
+          "label": "Count the released hectares out loud.",
+          "target": "n12_1"
+        },
+        {
+          "id": "c_n11_1_1",
+          "label": "Go and see who has moved back already.",
+          "target": "n12_2"
+        },
+        {
+          "id": "c_n11_1_2",
+          "label": "Look at what forty days has done to Bogdan.",
+          "target": "n12_3"
+        },
+        {
+          "id": "c_n11_1_3",
+          "label": "Rely on the flail and release on its depth.",
+          "target": "e_m10"
+        }
+      ]
+    },
+    {
+      "id": "n11_2",
+      "body": "<<FILL role=rising words=185 beats='the dog team: quick over large areas, unreliable in wind, and requiring ground conditions the valley provides for about six weeks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11_2_0",
+          "label": "Go and see who has moved back already.",
+          "target": "n12_2"
+        },
+        {
+          "id": "c_n11_2_1",
+          "label": "Look at what forty days has done to Bogdan.",
+          "target": "n12_3"
+        },
+        {
+          "id": "c_n11_2_2",
+          "label": "Open the inspection notice.",
+          "target": "n12_4"
+        }
+      ]
+    },
+    {
+      "id": "n11_3",
+      "body": "<<FILL role=rising words=185 beats='technical survey rather than clearance: proving ground is not contaminated, which releases far more land per day and satisfies almost nobody'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11_3_0",
+          "label": "Look at what forty days has done to Bogdan.",
+          "target": "n12_3"
+        },
+        {
+          "id": "c_n11_3_1",
+          "label": "Open the inspection notice.",
+          "target": "n12_4"
+        },
+        {
+          "id": "c_n11_3_2",
+          "label": "Get down to the river while the water is low.",
+          "target": "n12_5"
+        }
+      ]
+    },
+    {
+      "id": "n11_4",
+      "body": "<<FILL role=rising words=185 beats='large loop detection over the terraces, which finds the deep items and produces four hundred false positives a day'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11_4_0",
+          "label": "Open the inspection notice.",
+          "target": "n12_4"
+        },
+        {
+          "id": "c_n11_4_1",
+          "label": "Get down to the river while the water is low.",
+          "target": "n12_5"
+        },
+        {
+          "id": "c_n11_4_2",
+          "label": "Drive over to Kovan unannounced.",
+          "target": "n12_6"
+        }
+      ]
+    },
+    {
+      "id": "n11_5",
+      "body": "<<FILL role=rising words=185 beats='excavation of the quarry heap, which will take five weeks and may find nothing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11_5_0",
+          "label": "Get down to the river while the water is low.",
+          "target": "n12_5"
+        },
+        {
+          "id": "c_n11_5_1",
+          "label": "Drive over to Kovan unannounced.",
+          "target": "n12_6"
+        },
+        {
+          "id": "c_n11_5_2",
+          "label": "Find out who has been pruning inside the tape.",
+          "target": "n12_7"
+        }
+      ]
+    },
+    {
+      "id": "n11_6",
+      "body": "<<FILL role=rising words=185 beats='a combination approach that is correct on paper and requires two assets to be in the valley in the same fortnight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11_6_0",
+          "label": "Drive over to Kovan unannounced.",
+          "target": "n12_6"
+        },
+        {
+          "id": "c_n11_6_1",
+          "label": "Find out who has been pruning inside the tape.",
+          "target": "n12_7"
+        },
+        {
+          "id": "c_n11_6_2",
+          "label": "Open the satellite imagery on the laptop.",
+          "target": "n12_8"
+        }
+      ]
+    },
+    {
+      "id": "n11_7",
+      "body": "<<FILL role=rising words=185 beats='the question of standards: the national standard, the agency standard, and the donor standard, which are not the same document'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11_7_0",
+          "label": "Find out who has been pruning inside the tape.",
+          "target": "n12_7"
+        },
+        {
+          "id": "c_n11_7_1",
+          "label": "Open the satellite imagery on the laptop.",
+          "target": "n12_8"
+        },
+        {
+          "id": "c_n11_7_2",
+          "label": "Take stock at midsummer.",
+          "target": "n12_0"
+        }
+      ]
+    },
+    {
+      "id": "n11_8",
+      "body": "<<FILL role=rising words=185 beats='cancellation: writing down that a polygon was never contaminated, which is the cheapest, fastest and most frightening thing she can sign'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n11_8_0",
+          "label": "Open the satellite imagery on the laptop.",
+          "target": "n12_8"
+        },
+        {
+          "id": "c_n11_8_1",
+          "label": "Take stock at midsummer.",
+          "target": "n12_0"
+        },
+        {
+          "id": "c_n11_8_2",
+          "label": "Count the released hectares out loud.",
+          "target": "n12_1"
+        }
+      ]
+    },
+    {
+      "id": "n12_0",
+      "body": "<<FILL role=rising words=55 beats='midsummer: the valley green, the work half done, and the light lasting until nearly ten'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12_0_0",
+          "label": "Deal with the near miss.",
+          "target": "n13_0"
+        }
+      ]
+    },
+    {
+      "id": "n12_1",
+      "body": "<<FILL role=rising words=55 beats='midsummer on the map: eighty-one hectares released, and the released ones are the ones nobody wanted'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12_1_0",
+          "label": "Run the internal investigation.",
+          "target": "n13_1"
+        }
+      ]
+    },
+    {
+      "id": "n12_2",
+      "body": "<<FILL role=rising words=55 beats='midsummer in the lanes: two families have moved back on the strength of work that is not finished'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12_2_0",
+          "label": "Stand the team down.",
+          "target": "n13_2"
+        }
+      ]
+    },
+    {
+      "id": "n12_3",
+      "body": "<<FILL role=rising words=55 beats='midsummer in the team: Bogdan has worked forty days without a full one off and will not discuss it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12_3_0",
+          "label": "Deal with Bogdan.",
+          "target": "n13_3"
+        }
+      ]
+    },
+    {
+      "id": "n12_4",
+      "body": "<<FILL role=rising words=55 beats='midsummer at the base: an inspection notice arrives with three days notice, which is two more than the standard requires'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12_4_0",
+          "label": "Write the incident report.",
+          "target": "n13_4"
+        }
+      ]
+    },
+    {
+      "id": "n12_5",
+      "body": "<<FILL role=rising words=55 beats='midsummer at the river: the water down, the banks exposed, and a window of about three weeks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12_5_0",
+          "label": "Face the village about the near miss.",
+          "target": "n13_5"
+        }
+      ]
+    },
+    {
+      "id": "n12_6",
+      "body": "<<FILL role=rising words=55 beats='midsummer with Kovan: a second visit, unannounced, and a second ledger he did not mention the first time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12_6_0",
+          "label": "Take the news from the next district.",
+          "target": "n13_6"
+        }
+      ]
+    },
+    {
+      "id": "n12_7",
+      "body": "<<FILL role=rising words=55 beats='midsummer in the orchard: somebody has been pruning inside the tape'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12_7_0",
+          "label": "Run the medical drill again.",
+          "target": "n13_7"
+        }
+      ]
+    },
+    {
+      "id": "n12_8",
+      "body": "<<FILL role=rising words=55 beats='midsummer at night: the generator, the moths, and a satellite image on a laptop that shows a track that is not on any map'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n12_8_0",
+          "label": "Sit with the fear.",
+          "target": "n13_8"
+        }
+      ]
+    },
+    {
+      "id": "n13_0",
+      "body": "<<FILL role=rising words=170 beats='the near miss: a deminer puts a trowel through a plastic body and stops his hand at the exact distance training says he will and nobody believes he will'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13_0_0",
+          "label": "Take on the handback ceremony.",
+          "target": "n14_0"
+        },
+        {
+          "id": "c_n13_0_1",
+          "label": "Host the donor monitor.",
+          "target": "n14_1"
+        },
+        {
+          "id": "c_n13_0_2",
+          "label": "Deal with the inspector.",
+          "target": "n14_2"
+        }
+      ]
+    },
+    {
+      "id": "n13_1",
+      "body": "<<FILL role=rising words=170 beats='the investigation that follows, which is internal, mandatory, and will find that the procedure was correct and the ground was not'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13_1_0",
+          "label": "Host the donor monitor.",
+          "target": "n14_1"
+        },
+        {
+          "id": "c_n13_1_1",
+          "label": "Deal with the inspector.",
+          "target": "n14_2"
+        },
+        {
+          "id": "c_n13_1_2",
+          "label": "Confront the district office.",
+          "target": "n14_3"
+        }
+      ]
+    },
+    {
+      "id": "n13_2",
+      "body": "<<FILL role=rising words=170 beats='the stand-down: two days of no work, which costs four hundred square metres and is the only sane response'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13_2_0",
+          "label": "Deal with the inspector.",
+          "target": "n14_2"
+        },
+        {
+          "id": "c_n13_2_1",
+          "label": "Confront the district office.",
+          "target": "n14_3"
+        },
+        {
+          "id": "c_n13_2_2",
+          "label": "Answer for the neighbouring valley.",
+          "target": "n14_4"
+        },
+        {
+          "id": "c_n13_2_3",
+          "label": "Stand the team down for two days.",
+          "target": "e_m13"
+        }
+      ]
+    },
+    {
+      "id": "n13_3",
+      "body": "<<FILL role=rising words=170 beats='Bogdan, who wants to go back on the lane the next morning and is the person she most needs and least wants there'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13_3_0",
+          "label": "Confront the district office.",
+          "target": "n14_3"
+        },
+        {
+          "id": "c_n13_3_1",
+          "label": "Answer for the neighbouring valley.",
+          "target": "n14_4"
+        },
+        {
+          "id": "c_n13_3_2",
+          "label": "Handle the television crew.",
+          "target": "n14_5"
+        },
+        {
+          "id": "c_n13_3_3",
+          "label": "Put Bogdan back on the lane.",
+          "target": "e_m15"
+        }
+      ]
+    },
+    {
+      "id": "n13_4",
+      "body": "<<FILL role=rising words=170 beats='the incident report to the national centre, which will be read by people who were not there and quoted by people who were not born'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13_4_0",
+          "label": "Answer for the neighbouring valley.",
+          "target": "n14_4"
+        },
+        {
+          "id": "c_n13_4_1",
+          "label": "Handle the television crew.",
+          "target": "n14_5"
+        },
+        {
+          "id": "c_n13_4_2",
+          "label": "Decide about inviting Kovan.",
+          "target": "n14_6"
+        },
+        {
+          "id": "c_n13_4_3",
+          "label": "Write the incident report without protecting anybody.",
+          "target": "e_m16"
+        }
+      ]
+    },
+    {
+      "id": "n13_5",
+      "body": "<<FILL role=rising words=170 beats='the village, which hears about it within an hour and takes it as proof of whichever thing they already believed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13_5_0",
+          "label": "Handle the television crew.",
+          "target": "n14_5"
+        },
+        {
+          "id": "c_n13_5_1",
+          "label": "Decide about inviting Kovan.",
+          "target": "n14_6"
+        },
+        {
+          "id": "c_n13_5_2",
+          "label": "Face the funding calendar.",
+          "target": "n14_7"
+        }
+      ]
+    },
+    {
+      "id": "n13_6",
+      "body": "<<FILL role=rising words=170 beats='a real casualty, elsewhere in the district, on ground somebody else released three years ago'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13_6_0",
+          "label": "Decide about inviting Kovan.",
+          "target": "n14_6"
+        },
+        {
+          "id": "c_n13_6_1",
+          "label": "Face the funding calendar.",
+          "target": "n14_7"
+        },
+        {
+          "id": "c_n13_6_2",
+          "label": "Take the call from the country director.",
+          "target": "n14_8"
+        }
+      ]
+    },
+    {
+      "id": "n13_7",
+      "body": "<<FILL role=rising words=170 beats='the medical run itself, rehearsed for weeks, executed for a sprained ankle, and now the only thing anybody trusts'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13_7_0",
+          "label": "Face the funding calendar.",
+          "target": "n14_7"
+        },
+        {
+          "id": "c_n13_7_1",
+          "label": "Take the call from the country director.",
+          "target": "n14_8"
+        },
+        {
+          "id": "c_n13_7_2",
+          "label": "Take on the handback ceremony.",
+          "target": "n14_0"
+        }
+      ]
+    },
+    {
+      "id": "n13_8",
+      "body": "<<FILL role=rising words=170 beats='the fear, which arrives late, at night, a week after, and is entirely reasonable'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n13_8_0",
+          "label": "Take the call from the country director.",
+          "target": "n14_8"
+        },
+        {
+          "id": "c_n13_8_1",
+          "label": "Take on the handback ceremony.",
+          "target": "n14_0"
+        },
+        {
+          "id": "c_n13_8_2",
+          "label": "Host the donor monitor.",
+          "target": "n14_1"
+        }
+      ]
+    },
+    {
+      "id": "n14_0",
+      "body": "<<FILL role=rising words=185 beats='the handback ceremony that the district wants in August, with a ribbon, on ground that will not be finished in August'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14_0_0",
+          "label": "Work the dog while it lasts.",
+          "target": "n15_0"
+        },
+        {
+          "id": "c_n14_0_1",
+          "label": "Get the machine into the valley.",
+          "target": "n15_1"
+        },
+        {
+          "id": "c_n14_0_2",
+          "label": "Assess the bridge.",
+          "target": "n15_2"
+        },
+        {
+          "id": "c_n14_0_3",
+          "label": "Give the district its August ceremony.",
+          "target": "e_m17"
+        }
+      ]
+    },
+    {
+      "id": "n14_1",
+      "body": "<<FILL role=rising words=185 beats='Ms Ferrand, the donor monitor, three days in the valley, reading hectares per euro and asking why the quarry is taking five weeks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14_1_0",
+          "label": "Get the machine into the valley.",
+          "target": "n15_1"
+        },
+        {
+          "id": "c_n14_1_1",
+          "label": "Assess the bridge.",
+          "target": "n15_2"
+        },
+        {
+          "id": "c_n14_1_2",
+          "label": "Put the machine on the terraces.",
+          "target": "n15_3"
+        },
+        {
+          "id": "c_n14_1_3",
+          "label": "Give the donor the metric it wants.",
+          "target": "e_m18"
+        }
+      ]
+    },
+    {
+      "id": "n14_2",
+      "body": "<<FILL role=rising words=185 beats='the national centre and Inspector Dubec, who will accredit or refuse the release and who has refused before'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14_2_0",
+          "label": "Assess the bridge.",
+          "target": "n15_2"
+        },
+        {
+          "id": "c_n14_2_1",
+          "label": "Put the machine on the terraces.",
+          "target": "n15_3"
+        },
+        {
+          "id": "c_n14_2_2",
+          "label": "Work through the false positives.",
+          "target": "n15_4"
+        }
+      ]
+    },
+    {
+      "id": "n14_3",
+      "body": "<<FILL role=rising words=185 beats='the district office, which has already issued land titles inside a polygon and would prefer not to discuss it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14_3_0",
+          "label": "Put the machine on the terraces.",
+          "target": "n15_3"
+        },
+        {
+          "id": "c_n14_3_1",
+          "label": "Work through the false positives.",
+          "target": "n15_4"
+        },
+        {
+          "id": "c_n14_3_2",
+          "label": "Chase the detector calibration.",
+          "target": "n15_5"
+        },
+        {
+          "id": "c_n14_3_3",
+          "label": "Force the district office on the titles.",
+          "target": "e_m20"
+        }
+      ]
+    },
+    {
+      "id": "n14_4",
+      "body": "<<FILL role=rising words=185 beats='the neighbouring valley, which is not funded this year and knows why'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14_4_0",
+          "label": "Work through the false positives.",
+          "target": "n15_4"
+        },
+        {
+          "id": "c_n14_4_1",
+          "label": "Chase the detector calibration.",
+          "target": "n15_5"
+        },
+        {
+          "id": "c_n14_4_2",
+          "label": "Consider night work.",
+          "target": "n15_6"
+        }
+      ]
+    },
+    {
+      "id": "n14_5",
+      "body": "<<FILL role=rising words=185 beats='the press: a national television crew who want the moment a mine is destroyed and not the eleven weeks that precede it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14_5_0",
+          "label": "Chase the detector calibration.",
+          "target": "n15_5"
+        },
+        {
+          "id": "c_n14_5_1",
+          "label": "Consider night work.",
+          "target": "n15_6"
+        },
+        {
+          "id": "c_n14_5_2",
+          "label": "Take the second dog team.",
+          "target": "n15_7"
+        }
+      ]
+    },
+    {
+      "id": "n14_6",
+      "body": "<<FILL role=rising words=185 beats='Kovan invited to the handback, which half the village would welcome and half would walk out of'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14_6_0",
+          "label": "Consider night work.",
+          "target": "n15_6"
+        },
+        {
+          "id": "c_n14_6_1",
+          "label": "Take the second dog team.",
+          "target": "n15_7"
+        },
+        {
+          "id": "c_n14_6_2",
+          "label": "Tighten the quality system.",
+          "target": "n15_8"
+        }
+      ]
+    },
+    {
+      "id": "n14_7",
+      "body": "<<FILL role=rising words=185 beats='the money running out in September on a plan that needs November'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14_7_0",
+          "label": "Take the second dog team.",
+          "target": "n15_7"
+        },
+        {
+          "id": "c_n14_7_1",
+          "label": "Tighten the quality system.",
+          "target": "n15_8"
+        },
+        {
+          "id": "c_n14_7_2",
+          "label": "Work the dog while it lasts.",
+          "target": "n15_0"
+        }
+      ]
+    },
+    {
+      "id": "n14_8",
+      "body": "<<FILL role=rising words=185 beats='the agency country director on a call, offering more money for a faster method'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n14_8_0",
+          "label": "Tighten the quality system.",
+          "target": "n15_8"
+        },
+        {
+          "id": "c_n14_8_1",
+          "label": "Work the dog while it lasts.",
+          "target": "n15_0"
+        },
+        {
+          "id": "c_n14_8_2",
+          "label": "Get the machine into the valley.",
+          "target": "n15_1"
+        }
+      ]
+    },
+    {
+      "id": "n15_0",
+      "body": "<<FILL role=rising words=185 beats='Fen the dog, eight years old, working shorter and shorter mornings, and a handler who knows exactly what that means'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15_0_0",
+          "label": "Work through the hard, dry weeks.",
+          "target": "n16_0"
+        },
+        {
+          "id": "c_n15_0_1",
+          "label": "Take the slope in the dust and the wind.",
+          "target": "n16_1"
+        },
+        {
+          "id": "c_n15_0_2",
+          "label": "Go and watch the first hay cut.",
+          "target": "n16_2"
+        },
+        {
+          "id": "c_n15_0_3",
+          "label": "Give the dog the mornings.",
+          "target": "e_m21"
+        }
+      ]
+    },
+    {
+      "id": "n15_1",
+      "body": "<<FILL role=rising words=185 beats='the flail arriving on a low loader that cannot get past the Hovka bridge weight limit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15_1_0",
+          "label": "Take the slope in the dust and the wind.",
+          "target": "n16_1"
+        },
+        {
+          "id": "c_n15_1_1",
+          "label": "Go and watch the first hay cut.",
+          "target": "n16_2"
+        },
+        {
+          "id": "c_n15_1_2",
+          "label": "Read the three inspection findings.",
+          "target": "n16_3"
+        }
+      ]
+    },
+    {
+      "id": "n15_2",
+      "body": "<<FILL role=rising words=185 beats='the bridge itself, which is either strong enough or the end of the machine plan, and which nobody has assessed since 1988'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15_2_0",
+          "label": "Go and watch the first hay cut.",
+          "target": "n16_2"
+        },
+        {
+          "id": "c_n15_2_1",
+          "label": "Read the three inspection findings.",
+          "target": "n16_3"
+        },
+        {
+          "id": "c_n15_2_2",
+          "label": "Work the banks while the water stays down.",
+          "target": "n16_4"
+        }
+      ]
+    },
+    {
+      "id": "n15_3",
+      "body": "<<FILL role=rising words=185 beats='the machine on the terraces, throwing stone, breaking a wall that took somebody a winter to build in 1911'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15_3_0",
+          "label": "Read the three inspection findings.",
+          "target": "n16_3"
+        },
+        {
+          "id": "c_n15_3_1",
+          "label": "Work the banks while the water stays down.",
+          "target": "n16_4"
+        },
+        {
+          "id": "c_n15_3_2",
+          "label": "Look at how much red is left.",
+          "target": "n16_5"
+        },
+        {
+          "id": "c_n15_3_3",
+          "label": "Send the machine onto the terraces.",
+          "target": "e_m22"
+        }
+      ]
+    },
+    {
+      "id": "n15_4",
+      "body": "<<FILL role=rising words=185 beats='the false positive rate, four hundred a day, each one excavated by hand because there is no other way to be sure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15_4_0",
+          "label": "Work the banks while the water stays down.",
+          "target": "n16_4"
+        },
+        {
+          "id": "c_n15_4_1",
+          "label": "Look at how much red is left.",
+          "target": "n16_5"
+        },
+        {
+          "id": "c_n15_4_2",
+          "label": "Deal with the two resignations.",
+          "target": "n16_6"
+        }
+      ]
+    },
+    {
+      "id": "n15_5",
+      "body": "<<FILL role=rising words=185 beats='the detector calibration, which drifts in this soil and which two people check and one records'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15_5_0",
+          "label": "Look at how much red is left.",
+          "target": "n16_5"
+        },
+        {
+          "id": "c_n15_5_1",
+          "label": "Deal with the two resignations.",
+          "target": "n16_6"
+        },
+        {
+          "id": "c_n15_5_2",
+          "label": "Release the school field first.",
+          "target": "n16_7"
+        }
+      ]
+    },
+    {
+      "id": "n15_6",
+      "body": "<<FILL role=rising words=185 beats='night work, proposed to catch the cool hours, and rejected for reasons she has to be able to state'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15_6_0",
+          "label": "Deal with the two resignations.",
+          "target": "n16_6"
+        },
+        {
+          "id": "c_n15_6_1",
+          "label": "Release the school field first.",
+          "target": "n16_7"
+        },
+        {
+          "id": "c_n15_6_2",
+          "label": "Go back to the kitchen table while there is time.",
+          "target": "n16_8"
+        }
+      ]
+    },
+    {
+      "id": "n15_7",
+      "body": "<<FILL role=rising words=185 beats='a second dog team offered from another province for two weeks only'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15_7_0",
+          "label": "Release the school field first.",
+          "target": "n16_7"
+        },
+        {
+          "id": "c_n15_7_1",
+          "label": "Go back to the kitchen table while there is time.",
+          "target": "n16_8"
+        },
+        {
+          "id": "c_n15_7_2",
+          "label": "Work through the hard, dry weeks.",
+          "target": "n16_0"
+        }
+      ]
+    },
+    {
+      "id": "n15_8",
+      "body": "<<FILL role=rising words=185 beats='the quality management system, which is a folder, a habit, and the only thing standing between her and a release she cannot defend'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n15_8_0",
+          "label": "Go back to the kitchen table while there is time.",
+          "target": "n16_8"
+        },
+        {
+          "id": "c_n15_8_1",
+          "label": "Work through the hard, dry weeks.",
+          "target": "n16_0"
+        },
+        {
+          "id": "c_n15_8_2",
+          "label": "Take the slope in the dust and the wind.",
+          "target": "n16_1"
+        }
+      ]
+    },
+    {
+      "id": "n16_0",
+      "body": "<<FILL role=climax words=55 beats='high summer: the grass gone brown, the ground hard, and the detector hitting stone all day'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16_0_0",
+          "label": "Work the hard ground.",
+          "target": "n17_0"
+        }
+      ]
+    },
+    {
+      "id": "n16_1",
+      "body": "<<FILL role=climax words=55 beats='high summer on the slope: dust, and a wind that makes the dog useless after nine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16_1_0",
+          "label": "Chase the deep items.",
+          "target": "n17_1"
+        }
+      ]
+    },
+    {
+      "id": "n16_2",
+      "body": "<<FILL role=climax words=55 beats='high summer in the village: the first hay cut inside released land, and everybody watching the tractor'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16_2_0",
+          "label": "Deal with the void.",
+          "target": "n17_2"
+        }
+      ]
+    },
+    {
+      "id": "n16_3",
+      "body": "<<FILL role=climax words=55 beats='high summer in the base: the inspection came and went and left three findings'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16_3_0",
+          "label": "Find the true edge of the Ribbon.",
+          "target": "n17_3"
+        }
+      ]
+    },
+    {
+      "id": "n16_4",
+      "body": "<<FILL role=climax words=55 beats='high summer on the river: the banks worked and the water lower than anyone remembers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16_4_0",
+          "label": "Deal with the item that should not exist.",
+          "target": "n17_4"
+        }
+      ]
+    },
+    {
+      "id": "n16_5",
+      "body": "<<FILL role=climax words=55 beats='high summer with the map: forty-one hectares still red and eleven weeks gone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16_5_0",
+          "label": "Reconcile the count.",
+          "target": "n17_5"
+        }
+      ]
+    },
+    {
+      "id": "n16_6",
+      "body": "<<FILL role=climax words=55 beats='high summer with the team: two people leaving in September for jobs that pay more'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16_6_0",
+          "label": "Decide about the missing ninety.",
+          "target": "n17_6"
+        }
+      ]
+    },
+    {
+      "id": "n16_7",
+      "body": "<<FILL role=climax words=55 beats='high summer at the school: the field taped, tested, and released, which took four days and mattered more than four weeks elsewhere'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16_7_0",
+          "label": "Run the demolition day.",
+          "target": "n17_7"
+        }
+      ]
+    },
+    {
+      "id": "n16_8",
+      "body": "<<FILL role=climax words=55 beats='high summer at the kitchen table: Kovan is ill, and knows it, and has started answering questions he refused in April'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n16_8_0",
+          "label": "Face the ground you cannot finish.",
+          "target": "n17_8"
+        }
+      ]
+    },
+    {
+      "id": "n17_0",
+      "body": "<<FILL role=climax words=170 beats='the hard ground: baked, stony, and slower per metre than anything in the plan allowed for'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17_0_0",
+          "label": "Go back to the Ilic family.",
+          "target": "n18_0"
+        },
+        {
+          "id": "c_n17_0_1",
+          "label": "Deal with the grazing families.",
+          "target": "n18_1"
+        },
+        {
+          "id": "c_n17_0_2",
+          "label": "Deal with Gabor.",
+          "target": "n18_2"
+        }
+      ]
+    },
+    {
+      "id": "n17_1",
+      "body": "<<FILL role=climax words=170 beats='the deep items, below detector range, found only by the fact that something else was near them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17_1_0",
+          "label": "Deal with the grazing families.",
+          "target": "n18_1"
+        },
+        {
+          "id": "c_n17_1_1",
+          "label": "Deal with Gabor.",
+          "target": "n18_2"
+        },
+        {
+          "id": "c_n17_1_2",
+          "label": "Argue for a real fence.",
+          "target": "n18_3"
+        }
+      ]
+    },
+    {
+      "id": "n17_2",
+      "body": "<<FILL role=climax words=170 beats='the void under the terrace wall, which cannot be excavated safely and cannot be left'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17_2_0",
+          "label": "Deal with Gabor.",
+          "target": "n18_2"
+        },
+        {
+          "id": "c_n17_2_1",
+          "label": "Argue for a real fence.",
+          "target": "n18_3"
+        },
+        {
+          "id": "c_n17_2_2",
+          "label": "Go back to the school.",
+          "target": "n18_4"
+        }
+      ]
+    },
+    {
+      "id": "n17_3",
+      "body": "<<FILL role=climax words=170 beats='the boundary of the Ribbon, which does not stop where either record says it stops'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17_3_0",
+          "label": "Argue for a real fence.",
+          "target": "n18_3"
+        },
+        {
+          "id": "c_n17_3_1",
+          "label": "Go back to the school.",
+          "target": "n18_4"
+        },
+        {
+          "id": "c_n17_3_2",
+          "label": "Prepare for the September returnees.",
+          "target": "n18_5"
+        },
+        {
+          "id": "c_n17_3_3",
+          "label": "Release the Ribbon edge on the records.",
+          "target": "e_m26"
+        }
+      ]
+    },
+    {
+      "id": "n17_4",
+      "body": "<<FILL role=climax words=170 beats='the item that should not be there: a type neither army is recorded as having used'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17_4_0",
+          "label": "Go back to the school.",
+          "target": "n18_4"
+        },
+        {
+          "id": "c_n17_4_1",
+          "label": "Prepare for the September returnees.",
+          "target": "n18_5"
+        },
+        {
+          "id": "c_n17_4_2",
+          "label": "Answer the village head about the date.",
+          "target": "n18_6"
+        },
+        {
+          "id": "c_n17_4_3",
+          "label": "Report the item that should not exist.",
+          "target": "e_m25"
+        }
+      ]
+    },
+    {
+      "id": "n17_5",
+      "body": "<<FILL role=climax words=170 beats='the count: two hundred and eleven items destroyed and a ledger that predicted three hundred'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17_5_0",
+          "label": "Prepare for the September returnees.",
+          "target": "n18_5"
+        },
+        {
+          "id": "c_n17_5_1",
+          "label": "Answer the village head about the date.",
+          "target": "n18_6"
+        },
+        {
+          "id": "c_n17_5_2",
+          "label": "Chase the compensation question.",
+          "target": "n18_7"
+        }
+      ]
+    },
+    {
+      "id": "n17_6",
+      "body": "<<FILL role=climax words=170 beats='the missing ninety, which are either somewhere in the valley or were never laid'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17_6_0",
+          "label": "Answer the village head about the date.",
+          "target": "n18_6"
+        },
+        {
+          "id": "c_n17_6_1",
+          "label": "Chase the compensation question.",
+          "target": "n18_7"
+        },
+        {
+          "id": "c_n17_6_2",
+          "label": "Hold the village meeting.",
+          "target": "n18_8"
+        },
+        {
+          "id": "c_n17_6_3",
+          "label": "Write the missing ninety into the record.",
+          "target": "e_m24"
+        }
+      ]
+    },
+    {
+      "id": "n17_7",
+      "body": "<<FILL role=climax words=170 beats='the demolition day: everything found this month destroyed at once, in one pit, with the village standing on the road above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17_7_0",
+          "label": "Chase the compensation question.",
+          "target": "n18_7"
+        },
+        {
+          "id": "c_n17_7_1",
+          "label": "Hold the village meeting.",
+          "target": "n18_8"
+        },
+        {
+          "id": "c_n17_7_2",
+          "label": "Go back to the Ilic family.",
+          "target": "n18_0"
+        }
+      ]
+    },
+    {
+      "id": "n17_8",
+      "body": "<<FILL role=climax words=170 beats='the ground she cannot finish, however the season goes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n17_8_0",
+          "label": "Hold the village meeting.",
+          "target": "n18_8"
+        },
+        {
+          "id": "c_n17_8_1",
+          "label": "Go back to the Ilic family.",
+          "target": "n18_0"
+        },
+        {
+          "id": "c_n17_8_2",
+          "label": "Deal with the grazing families.",
+          "target": "n18_1"
+        }
+      ]
+    },
+    {
+      "id": "n18_0",
+      "body": "<<FILL role=climax words=185 beats='Marta Ilic ploughing again, closer, and telling Anka to her face that the family will starve waiting for a certificate'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n18_0_0",
+          "label": "Go through the budget.",
+          "target": "n19_0"
+        },
+        {
+          "id": "c_n18_0_1",
+          "label": "Argue about cost per square metre.",
+          "target": "n19_1"
+        },
+        {
+          "id": "c_n18_0_2",
+          "label": "Face the September cliff.",
+          "target": "n19_2"
+        }
+      ]
+    },
+    {
+      "id": "n18_1",
+      "body": "<<FILL role=climax words=185 beats='the grazing families, who have moved sheep onto Krast under the old agreement without asking anybody'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n18_1_0",
+          "label": "Argue about cost per square metre.",
+          "target": "n19_1"
+        },
+        {
+          "id": "c_n18_1_1",
+          "label": "Face the September cliff.",
+          "target": "n19_2"
+        },
+        {
+          "id": "c_n18_1_2",
+          "label": "Write the bridging proposal.",
+          "target": "n19_3"
+        }
+      ]
+    },
+    {
+      "id": "n18_2",
+      "body": "<<FILL role=climax words=185 beats='Gabor, arrested and released, who has been working the quarry at night for the metal and has not been hurt yet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n18_2_0",
+          "label": "Face the September cliff.",
+          "target": "n19_2"
+        },
+        {
+          "id": "c_n18_2_1",
+          "label": "Write the bridging proposal.",
+          "target": "n19_3"
+        },
+        {
+          "id": "c_n18_2_2",
+          "label": "Choose what to drop.",
+          "target": "n19_4"
+        }
+      ]
+    },
+    {
+      "id": "n18_3",
+      "body": "<<FILL role=climax words=185 beats='a fence: tape lasts a season, fence lasts a decade, and neither is in the budget'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n18_3_0",
+          "label": "Write the bridging proposal.",
+          "target": "n19_3"
+        },
+        {
+          "id": "c_n18_3_1",
+          "label": "Choose what to drop.",
+          "target": "n19_4"
+        },
+        {
+          "id": "c_n18_3_2",
+          "label": "Write the honest report.",
+          "target": "n19_5"
+        }
+      ]
+    },
+    {
+      "id": "n18_4",
+      "body": "<<FILL role=climax words=185 beats='the children, who now know exactly what the tape means and have therefore made a game of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n18_4_0",
+          "label": "Choose what to drop.",
+          "target": "n19_4"
+        },
+        {
+          "id": "c_n18_4_1",
+          "label": "Write the honest report.",
+          "target": "n19_5"
+        },
+        {
+          "id": "c_n18_4_2",
+          "label": "Write the optimistic report.",
+          "target": "n19_6"
+        }
+      ]
+    },
+    {
+      "id": "n18_5",
+      "body": "<<FILL role=climax words=185 beats='the returnees arriving in September, sixty of them, to houses inside polygons that will not be released this year'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n18_5_0",
+          "label": "Write the honest report.",
+          "target": "n19_5"
+        },
+        {
+          "id": "c_n18_5_1",
+          "label": "Write the optimistic report.",
+          "target": "n19_6"
+        },
+        {
+          "id": "c_n18_5_2",
+          "label": "Take the national centre view seriously.",
+          "target": "n19_7"
+        }
+      ]
+    },
+    {
+      "id": "n18_6",
+      "body": "<<FILL role=climax words=185 beats='Vesna Dolic asking for the one thing Anka cannot give: a date'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n18_6_0",
+          "label": "Write the optimistic report.",
+          "target": "n19_6"
+        },
+        {
+          "id": "c_n18_6_1",
+          "label": "Take the national centre view seriously.",
+          "target": "n19_7"
+        },
+        {
+          "id": "c_n18_6_2",
+          "label": "Go through the budget.",
+          "target": "n19_0"
+        },
+        {
+          "id": "c_n18_6_3",
+          "label": "Give the village head a date.",
+          "target": "e_m27"
+        }
+      ]
+    },
+    {
+      "id": "n18_7",
+      "body": "<<FILL role=climax words=185 beats='the compensation question, which belongs to a ministry that has not answered a letter in two years'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n18_7_0",
+          "label": "Take the national centre view seriously.",
+          "target": "n19_7"
+        },
+        {
+          "id": "c_n18_7_1",
+          "label": "Go through the budget.",
+          "target": "n19_0"
+        },
+        {
+          "id": "c_n18_7_2",
+          "label": "Argue about cost per square metre.",
+          "target": "n19_1"
+        }
+      ]
+    },
+    {
+      "id": "n18_8",
+      "body": "<<FILL role=climax words=185 beats='the meeting in the school hall, all ninety-one of them, and a map on the wall with the red still on it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n18_8_0",
+          "label": "Go through the budget.",
+          "target": "n19_0"
+        },
+        {
+          "id": "c_n18_8_1",
+          "label": "Argue about cost per square metre.",
+          "target": "n19_1"
+        },
+        {
+          "id": "c_n18_8_2",
+          "label": "Face the September cliff.",
+          "target": "n19_2"
+        },
+        {
+          "id": "c_n18_8_3",
+          "label": "Put the map on the wall and take the meeting.",
+          "target": "e_m28"
+        }
+      ]
+    },
+    {
+      "id": "n19_0",
+      "body": "<<FILL role=climax words=185 beats='the budget line by line, in which the quarry is eleven percent of the cost and two percent of the land'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n19_0_0",
+          "label": "Work into the first cold nights.",
+          "target": "n20_0"
+        },
+        {
+          "id": "c_n19_0_1",
+          "label": "Take the slope in frost and thaw.",
+          "target": "n20_1"
+        },
+        {
+          "id": "c_n19_0_2",
+          "label": "Start packing the base down.",
+          "target": "n20_2"
+        }
+      ]
+    },
+    {
+      "id": "n19_1",
+      "body": "<<FILL role=climax words=185 beats='the cost per square metre, which is the number the donor reads and the worst possible measure of this valley'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n19_1_0",
+          "label": "Take the slope in frost and thaw.",
+          "target": "n20_1"
+        },
+        {
+          "id": "c_n19_1_1",
+          "label": "Start packing the base down.",
+          "target": "n20_2"
+        },
+        {
+          "id": "c_n19_1_2",
+          "label": "Argue over the three shapes that are left.",
+          "target": "n20_3"
+        }
+      ]
+    },
+    {
+      "id": "n19_2",
+      "body": "<<FILL role=climax words=185 beats='the September cliff: contracts ending, staff leaving, and a machine going to another country on the fifteenth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n19_2_0",
+          "label": "Start packing the base down.",
+          "target": "n20_2"
+        },
+        {
+          "id": "c_n19_2_1",
+          "label": "Argue over the three shapes that are left.",
+          "target": "n20_3"
+        },
+        {
+          "id": "c_n19_2_2",
+          "label": "Go into the village and talk about spring.",
+          "target": "n20_4"
+        }
+      ]
+    },
+    {
+      "id": "n19_3",
+      "body": "<<FILL role=climax words=185 beats='a bridging proposal written in two nights for money that runs to December'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n19_3_0",
+          "label": "Argue over the three shapes that are left.",
+          "target": "n20_3"
+        },
+        {
+          "id": "c_n19_3_1",
+          "label": "Go into the village and talk about spring.",
+          "target": "n20_4"
+        },
+        {
+          "id": "c_n19_3_2",
+          "label": "Open the book he left you.",
+          "target": "n20_5"
+        }
+      ]
+    },
+    {
+      "id": "n19_4",
+      "body": "<<FILL role=climax words=185 beats='the choice of what to drop: the quarry, the river bank, or the upper slope, and each of them is an entire livelihood for somebody'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n19_4_0",
+          "label": "Go into the village and talk about spring.",
+          "target": "n20_4"
+        },
+        {
+          "id": "c_n19_4_1",
+          "label": "Open the book he left you.",
+          "target": "n20_5"
+        },
+        {
+          "id": "c_n19_4_2",
+          "label": "Take the photograph outside the container.",
+          "target": "n20_6"
+        }
+      ]
+    },
+    {
+      "id": "n19_5",
+      "body": "<<FILL role=climax words=185 beats='the honest report to the donor, which says the plan was wrong in April and says who wrote it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n19_5_0",
+          "label": "Open the book he left you.",
+          "target": "n20_5"
+        },
+        {
+          "id": "c_n19_5_1",
+          "label": "Take the photograph outside the container.",
+          "target": "n20_6"
+        },
+        {
+          "id": "c_n19_5_2",
+          "label": "Walk the lane once more before the machines go.",
+          "target": "n20_7"
+        },
+        {
+          "id": "c_n19_5_3",
+          "label": "Send the honest report.",
+          "target": "e_m32"
+        }
+      ]
+    },
+    {
+      "id": "n19_6",
+      "body": "<<FILL role=climax words=185 beats='the optimistic report, which is defensible, and which she would have to believe by next spring'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n19_6_0",
+          "label": "Take the photograph outside the container.",
+          "target": "n20_6"
+        },
+        {
+          "id": "c_n19_6_1",
+          "label": "Walk the lane once more before the machines go.",
+          "target": "n20_7"
+        },
+        {
+          "id": "c_n19_6_2",
+          "label": "Work into the first cold nights.",
+          "target": "n20_0"
+        },
+        {
+          "id": "c_n19_6_3",
+          "label": "Send the optimistic report.",
+          "target": "e_m31"
+        }
+      ]
+    },
+    {
+      "id": "n19_7",
+      "body": "<<FILL role=climax words=185 beats='the national centre view, which is that a partial release is worse than none'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n19_7_0",
+          "label": "Walk the lane once more before the machines go.",
+          "target": "n20_7"
+        },
+        {
+          "id": "c_n19_7_1",
+          "label": "Work into the first cold nights.",
+          "target": "n20_0"
+        },
+        {
+          "id": "c_n19_7_2",
+          "label": "Take the slope in frost and thaw.",
+          "target": "n20_1"
+        },
+        {
+          "id": "c_n19_7_3",
+          "label": "Release it in pieces.",
+          "target": "e_m33"
+        }
+      ]
+    },
+    {
+      "id": "n20_0",
+      "body": "<<FILL role=climax words=55 beats='late season: the first cold night, and the ground closing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n20_0_0",
+          "label": "Finish the terraces.",
+          "target": "n21_0"
+        }
+      ]
+    },
+    {
+      "id": "n20_1",
+      "body": "<<FILL role=climax words=55 beats='late season on the slope: frost in the shadows by seven and thaw by ten, which is the worst possible ground'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n20_1_0",
+          "label": "Finish the lane.",
+          "target": "n21_1"
+        }
+      ]
+    },
+    {
+      "id": "n20_2",
+      "body": "<<FILL role=climax words=55 beats='late season at the base: two containers already packed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n20_2_0",
+          "label": "Finish the school verges.",
+          "target": "n21_2"
+        }
+      ]
+    },
+    {
+      "id": "n20_3",
+      "body": "<<FILL role=climax words=55 beats='late season on the map: the red reduced to three shapes, each of them argued over'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n20_3_0",
+          "label": "Finish the river bank.",
+          "target": "n21_3"
+        }
+      ]
+    },
+    {
+      "id": "n20_4",
+      "body": "<<FILL role=climax words=55 beats='late season in the village: wood stacked, and people asking about spring'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n20_4_0",
+          "label": "Close the quarry down for the year.",
+          "target": "n21_4"
+        }
+      ]
+    },
+    {
+      "id": "n20_5",
+      "body": "<<FILL role=climax words=55 beats='late season with the ledger: Kovan died in September and left the second book to her by name'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n20_5_0",
+          "label": "Finish the Ribbon edge.",
+          "target": "n21_5"
+        }
+      ]
+    },
+    {
+      "id": "n20_6",
+      "body": "<<FILL role=climax words=55 beats='late season with the team: a photograph taken outside the container that everybody will keep'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n20_6_0",
+          "label": "Finish the pasture.",
+          "target": "n21_6"
+        }
+      ]
+    },
+    {
+      "id": "n20_7",
+      "body": "<<FILL role=climax words=55 beats='late season alone: the last walk up the lane before the machines go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n20_7_0",
+          "label": "Cancel what can honestly be cancelled.",
+          "target": "n21_7"
+        }
+      ]
+    },
+    {
+      "id": "n21_0",
+      "body": "<<FILL role=climax words=170 beats='the last hectares of the orchard terraces, which are the ones the village actually wanted in April'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n21_0_0",
+          "label": "Assemble the completion documents.",
+          "target": "n22_0"
+        },
+        {
+          "id": "c_n21_0_1",
+          "label": "Walk the land with the inspector.",
+          "target": "n22_1"
+        },
+        {
+          "id": "c_n21_0_2",
+          "label": "Agree the sampling regime.",
+          "target": "n22_2"
+        }
+      ]
+    },
+    {
+      "id": "n21_1",
+      "body": "<<FILL role=climax words=170 beats='the last of the access lane, which nobody will use until spring and which unlocks everything above it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n21_1_0",
+          "label": "Walk the land with the inspector.",
+          "target": "n22_1"
+        },
+        {
+          "id": "c_n21_1_1",
+          "label": "Agree the sampling regime.",
+          "target": "n22_2"
+        },
+        {
+          "id": "c_n21_1_2",
+          "label": "Write the residual risk statement.",
+          "target": "n22_3"
+        }
+      ]
+    },
+    {
+      "id": "n21_2",
+      "body": "<<FILL role=climax words=170 beats='the school field verges, which take a day and end an argument'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n21_2_0",
+          "label": "Agree the sampling regime.",
+          "target": "n22_2"
+        },
+        {
+          "id": "c_n21_2_1",
+          "label": "Write the residual risk statement.",
+          "target": "n22_3"
+        },
+        {
+          "id": "c_n21_2_2",
+          "label": "Argue the certificate wording.",
+          "target": "n22_4"
+        }
+      ]
+    },
+    {
+      "id": "n21_3",
+      "body": "<<FILL role=climax words=170 beats='the river bank before the water rises'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n21_3_0",
+          "label": "Write the residual risk statement.",
+          "target": "n22_3"
+        },
+        {
+          "id": "c_n21_3_1",
+          "label": "Argue the certificate wording.",
+          "target": "n22_4"
+        },
+        {
+          "id": "c_n21_3_2",
+          "label": "Get the land records changed.",
+          "target": "n22_5"
+        }
+      ]
+    },
+    {
+      "id": "n21_4",
+      "body": "<<FILL role=climax words=170 beats='the quarry, unfinished, and the decision to tape it properly and leave it for a season'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n21_4_0",
+          "label": "Argue the certificate wording.",
+          "target": "n22_4"
+        },
+        {
+          "id": "c_n21_4_1",
+          "label": "Get the land records changed.",
+          "target": "n22_5"
+        },
+        {
+          "id": "c_n21_4_2",
+          "label": "Make the map for the village hall.",
+          "target": "n22_6"
+        },
+        {
+          "id": "c_n21_4_3",
+          "label": "Leave the quarry to enforcement.",
+          "target": "e_m29"
+        }
+      ]
+    },
+    {
+      "id": "n21_5",
+      "body": "<<FILL role=climax words=170 beats='the Ribbon edge, which is now known and is exactly where neither record said'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n21_5_0",
+          "label": "Get the land records changed.",
+          "target": "n22_5"
+        },
+        {
+          "id": "c_n21_5_1",
+          "label": "Make the map for the village hall.",
+          "target": "n22_6"
+        },
+        {
+          "id": "c_n21_5_2",
+          "label": "Settle where the archive lives.",
+          "target": "n22_7"
+        },
+        {
+          "id": "c_n21_5_3",
+          "label": "Prove the ground rather than clear it.",
+          "target": "e_m11"
+        }
+      ]
+    },
+    {
+      "id": "n21_6",
+      "body": "<<FILL role=climax words=170 beats='the Krast pasture, where it started, with one disc on the surface in April and eighty-eight items since'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n21_6_0",
+          "label": "Make the map for the village hall.",
+          "target": "n22_6"
+        },
+        {
+          "id": "c_n21_6_1",
+          "label": "Settle where the archive lives.",
+          "target": "n22_7"
+        },
+        {
+          "id": "c_n21_6_2",
+          "label": "Assemble the completion documents.",
+          "target": "n22_0"
+        }
+      ]
+    },
+    {
+      "id": "n21_7",
+      "body": "<<FILL role=climax words=170 beats='the polygons to be cancelled on evidence rather than cleared on schedule'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n21_7_0",
+          "label": "Settle where the archive lives.",
+          "target": "n22_7"
+        },
+        {
+          "id": "c_n21_7_1",
+          "label": "Assemble the completion documents.",
+          "target": "n22_0"
+        },
+        {
+          "id": "c_n21_7_2",
+          "label": "Walk the land with the inspector.",
+          "target": "n22_1"
+        },
+        {
+          "id": "c_n21_7_3",
+          "label": "Cancel the polygon on the evidence.",
+          "target": "e_m12"
+        }
+      ]
+    },
+    {
+      "id": "n22_0",
+      "body": "<<FILL role=climax words=185 beats='the completion documentation: every metre, every item, every date, signed by the person who worked it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n22_0_0",
+          "label": "Hold the handover.",
+          "target": "n23_0"
+        },
+        {
+          "id": "c_n22_0_1",
+          "label": "Give the speech.",
+          "target": "n23_1"
+        },
+        {
+          "id": "c_n22_0_2",
+          "label": "Walk the field with Marta Ilic.",
+          "target": "n23_2"
+        }
+      ]
+    },
+    {
+      "id": "n22_1",
+      "body": "<<FILL role=climax words=185 beats='Dubec walking the released land with a detector of his own, which is his right and which nobody enjoys'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n22_1_0",
+          "label": "Give the speech.",
+          "target": "n23_1"
+        },
+        {
+          "id": "c_n22_1_1",
+          "label": "Walk the field with Marta Ilic.",
+          "target": "n23_2"
+        },
+        {
+          "id": "c_n22_1_2",
+          "label": "Keep the risk education running.",
+          "target": "n23_3"
+        },
+        {
+          "id": "c_n22_1_3",
+          "label": "Let the inspector choose his own sample.",
+          "target": "e_m19"
+        }
+      ]
+    },
+    {
+      "id": "n22_2",
+      "body": "<<FILL role=climax words=185 beats='the sampling regime: how much of a cleared field a sane inspector digs before he believes the rest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n22_2_0",
+          "label": "Walk the field with Marta Ilic.",
+          "target": "n23_2"
+        },
+        {
+          "id": "c_n22_2_1",
+          "label": "Keep the risk education running.",
+          "target": "n23_3"
+        },
+        {
+          "id": "c_n22_2_2",
+          "label": "Leave the tape where it must stay.",
+          "target": "n23_4"
+        },
+        {
+          "id": "c_n22_2_3",
+          "label": "Accept the false positives as the work itself.",
+          "target": "e_m23"
+        }
+      ]
+    },
+    {
+      "id": "n22_3",
+      "body": "<<FILL role=climax words=185 beats='the residual risk statement, which is the only honest document in the whole file and the one nobody wants signed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n22_3_0",
+          "label": "Keep the risk education running.",
+          "target": "n23_3"
+        },
+        {
+          "id": "c_n22_3_1",
+          "label": "Leave the tape where it must stay.",
+          "target": "n23_4"
+        },
+        {
+          "id": "c_n22_3_2",
+          "label": "Send the team home.",
+          "target": "n23_5"
+        }
+      ]
+    },
+    {
+      "id": "n22_4",
+      "body": "<<FILL role=climax words=185 beats='the handover certificate wording, argued over for two days by three organisations'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n22_4_0",
+          "label": "Leave the tape where it must stay.",
+          "target": "n23_4"
+        },
+        {
+          "id": "c_n22_4_1",
+          "label": "Send the team home.",
+          "target": "n23_5"
+        },
+        {
+          "id": "c_n22_4_2",
+          "label": "Hold the handover.",
+          "target": "n23_0"
+        }
+      ]
+    },
+    {
+      "id": "n22_5",
+      "body": "<<FILL role=climax words=185 beats='the land records, which must change at the district office or the release means nothing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n22_5_0",
+          "label": "Send the team home.",
+          "target": "n23_5"
+        },
+        {
+          "id": "c_n22_5_1",
+          "label": "Hold the handover.",
+          "target": "n23_0"
+        },
+        {
+          "id": "c_n22_5_2",
+          "label": "Give the speech.",
+          "target": "n23_1"
+        }
+      ]
+    },
+    {
+      "id": "n22_6",
+      "body": "<<FILL role=climax words=185 beats='the map that will hang in the village hall, which is the document people will actually use'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n22_6_0",
+          "label": "Hold the handover.",
+          "target": "n23_0"
+        },
+        {
+          "id": "c_n22_6_1",
+          "label": "Give the speech.",
+          "target": "n23_1"
+        },
+        {
+          "id": "c_n22_6_2",
+          "label": "Walk the field with Marta Ilic.",
+          "target": "n23_2"
+        }
+      ]
+    },
+    {
+      "id": "n22_7",
+      "body": "<<FILL role=climax words=185 beats='the archive: two copies, one in the capital and one in a village hall that has flooded twice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n22_7_0",
+          "label": "Give the speech.",
+          "target": "n23_1"
+        },
+        {
+          "id": "c_n22_7_1",
+          "label": "Walk the field with Marta Ilic.",
+          "target": "n23_2"
+        },
+        {
+          "id": "c_n22_7_2",
+          "label": "Keep the risk education running.",
+          "target": "n23_3"
+        }
+      ]
+    },
+    {
+      "id": "n23_0",
+      "body": "<<FILL role=climax words=185 beats='the handover day itself: cold, bright, ninety-one people and a ribbon across a farm gate'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n23_0_0",
+          "label": "Strike the base.",
+          "target": "n24_0"
+        },
+        {
+          "id": "c_n23_0_1",
+          "label": "Close the file, all four kilograms of it.",
+          "target": "n24_1"
+        },
+        {
+          "id": "c_n23_0_2",
+          "label": "Go and look at what the children drew.",
+          "target": "n24_2"
+        }
+      ]
+    },
+    {
+      "id": "n23_1",
+      "body": "<<FILL role=climax words=185 beats='the speech she has to give, in which every true sentence is also a sentence about what is not finished'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n23_1_0",
+          "label": "Close the file, all four kilograms of it.",
+          "target": "n24_1"
+        },
+        {
+          "id": "c_n23_1_1",
+          "label": "Go and look at what the children drew.",
+          "target": "n24_2"
+        },
+        {
+          "id": "c_n23_1_2",
+          "label": "Screw the final map to the hall wall.",
+          "target": "n24_3"
+        },
+        {
+          "id": "c_n23_1_3",
+          "label": "Follow the investigation wherever it goes.",
+          "target": "e_m14"
+        }
+      ]
+    },
+    {
+      "id": "n23_2",
+      "body": "<<FILL role=climax words=185 beats='Marta Ilic walking her own bottom field for the first time in nine years, slowly, in a straight line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n23_2_0",
+          "label": "Go and look at what the children drew.",
+          "target": "n24_2"
+        },
+        {
+          "id": "c_n23_2_1",
+          "label": "Screw the final map to the hall wall.",
+          "target": "n24_3"
+        },
+        {
+          "id": "c_n23_2_2",
+          "label": "Put the ledger on the passenger seat and drive.",
+          "target": "n24_4"
+        }
+      ]
+    },
+    {
+      "id": "n23_3",
+      "body": "<<FILL role=climax words=185 beats='the risk education that continues after the ceremony, because released does not mean empty'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n23_3_0",
+          "label": "Screw the final map to the hall wall.",
+          "target": "n24_3"
+        },
+        {
+          "id": "c_n23_3_1",
+          "label": "Put the ledger on the passenger seat and drive.",
+          "target": "n24_4"
+        },
+        {
+          "id": "c_n23_3_2",
+          "label": "Strike the base.",
+          "target": "n24_0"
+        }
+      ]
+    },
+    {
+      "id": "n23_4",
+      "body": "<<FILL role=climax words=185 beats='the tape that stays up, on three shapes, through a winter of people looking at it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n23_4_0",
+          "label": "Put the ledger on the passenger seat and drive.",
+          "target": "n24_4"
+        },
+        {
+          "id": "c_n23_4_1",
+          "label": "Strike the base.",
+          "target": "n24_0"
+        },
+        {
+          "id": "c_n23_4_2",
+          "label": "Close the file, all four kilograms of it.",
+          "target": "n24_1"
+        },
+        {
+          "id": "c_n23_4_3",
+          "label": "Cost the fence and put it in writing.",
+          "target": "e_m30"
+        }
+      ]
+    },
+    {
+      "id": "n23_5",
+      "body": "<<FILL role=climax words=185 beats='the team leaving, one van at a time, over four days'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n23_5_0",
+          "label": "Strike the base.",
+          "target": "n24_0"
+        },
+        {
+          "id": "c_n23_5_1",
+          "label": "Close the file, all four kilograms of it.",
+          "target": "n24_1"
+        },
+        {
+          "id": "c_n23_5_2",
+          "label": "Go and look at what the children drew.",
+          "target": "n24_2"
+        }
+      ]
+    },
+    {
+      "id": "n24_0",
+      "body": "<<FILL role=climax words=55 beats='the last week: containers gone, the yard a rectangle of dead grass, and the flag down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n24_0_0",
+          "label": "Sign the completion report.",
+          "target": "n25_0"
+        }
+      ]
+    },
+    {
+      "id": "n24_1",
+      "body": "<<FILL role=climax words=55 beats='the last week in the file: eleven weeks compressed into a folder that weighs four kilograms'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n24_1_0",
+          "label": "Sign the risk statement.",
+          "target": "n25_1"
+        }
+      ]
+    },
+    {
+      "id": "n24_2",
+      "body": "<<FILL role=climax words=55 beats='the last week at the school: the children draw the valley and nobody draws the tape'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n24_2_0",
+          "label": "File the recommendation.",
+          "target": "n25_2"
+        }
+      ]
+    },
+    {
+      "id": "n24_3",
+      "body": "<<FILL role=climax words=55 beats='the last week with Lira: the final map, printed, laminated, and screwed to the wall of the hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n24_3_0",
+          "label": "Decide about the ledger.",
+          "target": "n25_3"
+        }
+      ]
+    },
+    {
+      "id": "n24_4",
+      "body": "<<FILL role=climax words=55 beats='the last week on the road out, with the second ledger in a box on the passenger seat'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n24_4_0",
+          "label": "Answer the question that will be asked in ten years.",
+          "target": "n25_4"
+        }
+      ]
+    },
+    {
+      "id": "n25_0",
+      "body": "<<FILL role=climax words=170 beats='the signature on the completion report, which transfers the land and the responsibility in the same stroke'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n25_0_0",
+          "label": "Finish the valley.",
+          "target": "e_f01"
+        },
+        {
+          "id": "c_n25_0_1",
+          "label": "Hand it back.",
+          "target": "e_f02"
+        },
+        {
+          "id": "c_n25_0_2",
+          "label": "Hold out for the only measure that matters.",
+          "target": "e_f03"
+        }
+      ]
+    },
+    {
+      "id": "n25_1",
+      "body": "<<FILL role=climax words=170 beats='the residual risk statement signed separately, deliberately, so that nobody can say later that it was buried'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n25_1_0",
+          "label": "Leave them the map.",
+          "target": "e_f04"
+        },
+        {
+          "id": "c_n25_1_1",
+          "label": "Sign it exactly as it was done.",
+          "target": "e_f05"
+        },
+        {
+          "id": "c_n25_1_2",
+          "label": "Give the second ledger to the archive.",
+          "target": "e_f06"
+        }
+      ]
+    },
+    {
+      "id": "n25_2",
+      "body": "<<FILL role=climax words=170 beats='the recommendation for next season, which is either a plan or a confession depending on who reads it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n25_2_0",
+          "label": "Sign what can be signed and tape the rest.",
+          "target": "e_f07"
+        },
+        {
+          "id": "c_n25_2_1",
+          "label": "Publish the offset.",
+          "target": "e_f08"
+        },
+        {
+          "id": "c_n25_2_2",
+          "label": "Write down what the ground said.",
+          "target": "e_f09"
+        }
+      ]
+    },
+    {
+      "id": "n25_3",
+      "body": "<<FILL role=climax words=170 beats='what to do with the Kovan ledger, which is evidence, inheritance and accusation at the same time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n25_3_0",
+          "label": "Release on the schedule.",
+          "target": "e_f10"
+        },
+        {
+          "id": "c_n25_3_1",
+          "label": "Sign the residual risk statement in the open.",
+          "target": "e_f11"
+        },
+        {
+          "id": "c_n25_3_2",
+          "label": "Leave it for next season.",
+          "target": "e_f12"
+        }
+      ]
+    },
+    {
+      "id": "n25_4",
+      "body": "<<FILL role=climax words=170 beats='the thing she will actually be asked in ten years, which is not how much was cleared but whether anyone was hurt afterwards'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n25_4_0",
+          "label": "Finish the valley.",
+          "target": "e_f01"
+        },
+        {
+          "id": "c_n25_4_1",
+          "label": "Hand it back.",
+          "target": "e_f02"
+        },
+        {
+          "id": "c_n25_4_2",
+          "label": "Hold out for the only measure that matters.",
+          "target": "e_f03"
+        }
+      ]
+    },
+    {
+      "id": "e_m01",
+      "body": "<<FILL role=setback words=185 beats='the survey is honest, thorough and slow, and at the end of it the polygons are smaller and none of them are released; a correct season that leaves ninety-one people exactly where they were'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m01",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Village Waits Another Year"
+      }
+    },
+    {
+      "id": "e_m02",
+      "body": "<<FILL role=discovery words=185 beats='the scrap collector will not give evidence and will walk a route, and the route he walks is a map of nine years of not being killed, worth more than either ledger'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m02",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What Gabor Knows"
+      }
+    },
+    {
+      "id": "e_m03",
+      "body": "<<FILL role=setback words=185 beats='the Ilic family plough the bottom field before release; nothing detonates, the field is later found clean, and the lesson the valley takes from it is the worst possible one'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m03",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Plough Goes Through"
+      }
+    },
+    {
+      "id": "e_m04",
+      "body": "<<FILL role=discovery words=185 beats='the datum offset is confirmed to the metre, which moves six recorded minefields sixty metres east and explains three of the accidents that the maps said were impossible'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m04",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Sixty Metres East"
+      }
+    },
+    {
+      "id": "e_m05",
+      "body": "<<FILL role=setback words=185 beats='Kovan wrote it after the fact, carefully, for a tribunal that never sat; every row is true and the book as a whole is an argument, and telling those two things apart takes the rest of the season'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m05",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Ledger Was Written to Be Found"
+      }
+    },
+    {
+      "id": "e_m06",
+      "body": "<<FILL role=discovery words=185 beats='a track visible only in the 2003 imagery runs straight through a polygon that two records call impassable, which means somebody drove it, which means it was cleared and never written down'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m06",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Track on the Satellite Image"
+      }
+    },
+    {
+      "id": "e_m07",
+      "body": "<<FILL role=setback words=185 beats='eleven weeks of excellent work on the flat ground below the village, all of it clean, all of it certified, and none of it the land anybody needed'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m07",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Cleared Where the Hazard Was Not"
+      }
+    },
+    {
+      "id": "e_m08",
+      "body": "<<FILL role=discovery words=185 beats='the strip between the orchard and the school, on no list and crossed daily, holds four items in the first afternoon, and the whole planning method has to be rebuilt around the question of what was never asked'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m08",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Ground Nobody Asked About"
+      }
+    },
+    {
+      "id": "e_m09",
+      "body": "<<FILL role=setback words=185 beats='manual clearance, correctly done, delivers exactly what it promises, and what it promises is a fraction of the valley; nothing is wrong and the arithmetic is merciless'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m09",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Metre a Day"
+      }
+    },
+    {
+      "id": "e_m10",
+      "body": "<<FILL role=setback words=185 beats='the flail is fast and the ground is stony and something sits below the depth the machine can honestly claim; the release is later withdrawn and the withdrawal is the story'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m10",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Twenty Centimetres"
+      }
+    },
+    {
+      "id": "e_m11",
+      "body": "<<FILL role=discovery words=185 beats='technical survey releases four times the land in a third of the time, on evidence that is genuinely sufficient and that no one in the village will ever find as convincing as a man on his knees with a trowel'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m11",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Proving the Negative"
+      }
+    },
+    {
+      "id": "e_m12",
+      "body": "<<FILL role=setback words=185 beats='the polygon is cancelled on good evidence, released, farmed for two years, and then a boy finds something in a hedge bottom; the paperwork is impeccable and that is the whole horror of it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m12",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Cancelled and Wrong"
+      }
+    },
+    {
+      "id": "e_m13",
+      "body": "<<FILL role=setback words=185 beats='the stand-down after the near miss costs four hundred square metres and buys back a team that will still be functioning in September; nobody thanks her and the season survives on it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m13",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Two Days of Nothing"
+      }
+    },
+    {
+      "id": "e_m14",
+      "body": "<<FILL role=discovery words=185 beats='the investigation finds the drill correct, the deminer correct, and the ground different from the survey, which is the finding nobody wanted and the only one that improves anything'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m14",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Procedure Held"
+      }
+    },
+    {
+      "id": "e_m15",
+      "body": "<<FILL role=setback words=185 beats='he is on the lane the next morning because she cannot spare him and because he insists, and eight days later he makes the kind of mistake he has never made in fourteen years'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m15",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Bogdan Goes Back Too Soon"
+      }
+    },
+    {
+      "id": "e_m16",
+      "body": "<<FILL role=discovery words=185 beats='the incident report is written plainly, without protection, and turns up four years later in a national standard as the reason a paragraph exists'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m16",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Report Somebody Reads"
+      }
+    },
+    {
+      "id": "e_m17",
+      "body": "<<FILL role=setback words=185 beats='the ceremony happens in August because the district needs it to; the ribbon is cut across a gate to a field that is genuinely safe and is photographed as though the valley were'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m17",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Ribbon on Unfinished Ground"
+      }
+    },
+    {
+      "id": "e_m18",
+      "body": "<<FILL role=setback words=185 beats='the donor gets the metric it asked for and the next year of funding follows the metric, into flat valleys with light contamination, away from every place that is difficult'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m18",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Hectares Per Euro"
+      }
+    },
+    {
+      "id": "e_m19",
+      "body": "<<FILL role=discovery words=185 beats='the inspector takes his own detector to a released field and finds nothing, twice, and then explains for an hour exactly how he chose where to dig; it is the best training anyone on the team receives all year'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m19",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Dubec Digs"
+      }
+    },
+    {
+      "id": "e_m20",
+      "body": "<<FILL role=setback words=185 beats='the district office has issued land titles inside contaminated ground and will not withdraw them; the release becomes a negotiation between two authorities with one valley underneath it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m20",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Titles Inside the Polygon"
+      }
+    },
+    {
+      "id": "e_m21",
+      "body": "<<FILL role=discovery words=185 beats='the dog gets six good weeks and covers in them what the team would have taken the season to prove, and is retired in October with a certificate nobody outside the sector would understand'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m21",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Fen Works the Morning"
+      }
+    },
+    {
+      "id": "e_m22",
+      "body": "<<FILL role=setback words=185 beats='the machine breaks a terrace wall that took a man a winter to build, and the village stops cooperating for eleven days over a metre of dry stone, which is not really what it is about'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m22",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Wall from 1911"
+      }
+    },
+    {
+      "id": "e_m23",
+      "body": "<<FILL role=discovery words=185 beats='the false positive rate is the work; understanding that changes the plan, the rota and the way she talks about progress for the rest of her career'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m23",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Four Hundred a Day"
+      }
+    },
+    {
+      "id": "e_m24",
+      "body": "<<FILL role=setback words=185 beats='the count never reconciles; ninety items are either in the valley or were never laid, and the residual risk statement has to say so in a sentence that takes four days to write'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m24",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Missing Ninety"
+      }
+    },
+    {
+      "id": "e_m25",
+      "body": "<<FILL role=discovery words=185 beats='a type neither army admits to using turns up in the Ribbon, which reopens a question about a third party that nobody in the valley wants reopened and that she reports anyway'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m25",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Item That Should Not Exist"
+      }
+    },
+    {
+      "id": "e_m26",
+      "body": "<<FILL role=setback words=185 beats='the true edge of the Ribbon is forty metres beyond both records, in ground released in July, and the withdrawal notice goes out in August to people who had already planted'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m26",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Edge Was Somewhere Else"
+      }
+    },
+    {
+      "id": "e_m27",
+      "body": "<<FILL role=setback words=185 beats='she gives Vesna Dolic a date because refusing again is unbearable, and misses it by seven weeks, and it is the broken date rather than the seven weeks that the village remembers'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m27",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Date She Should Not Give"
+      }
+    },
+    {
+      "id": "e_m28",
+      "body": "<<FILL role=discovery words=185 beats='the meeting in the school hall does what no report has done: the red shapes stop being a bureaucratic obstruction and become three specific arguments that can be had'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m28",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Ninety-One People and a Map"
+      }
+    },
+    {
+      "id": "e_m29",
+      "body": "<<FILL role=setback words=185 beats='the quarry is taped, watched and worked anyway, and the thing that finally stops him is not enforcement'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m29",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Gabor at Night"
+      }
+    },
+    {
+      "id": "e_m30",
+      "body": "<<FILL role=discovery words=185 beats='a proper fence around three shapes costs less than eleven days of clearance and is refused by three budgets in turn because it is not clearance'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m30",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Fence Costs"
+      }
+    },
+    {
+      "id": "e_m31",
+      "body": "<<FILL role=setback words=185 beats='the optimistic report is accepted, funded and believed, and by March she is the person who has to explain it, having written every word herself'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m31",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Optimistic Report"
+      }
+    },
+    {
+      "id": "e_m32",
+      "body": "<<FILL role=discovery words=185 beats='the honest report costs her the bridging money and the plan for the following season is built on it anyway, by somebody else, correctly'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m32",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Honest Report"
+      }
+    },
+    {
+      "id": "e_m33",
+      "body": "<<FILL role=setback words=185 beats='the land goes back in three pieces with two ends of tape between them, which is legally sound, operationally normal, and reads to everyone who lives there as a valley still full of mines'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m33",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Partial Release"
+      }
+    },
+    {
+      "id": "e_f01",
+      "body": "<<FILL role=success words=185 beats='the whole valley released inside two seasons, the second one funded on the strength of the first, and a completion report that survives an inspection nobody warned her about'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f01",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Four Hundred Hectares"
+      }
+    },
+    {
+      "id": "e_f02",
+      "body": "<<FILL role=completion words=185 beats='cold, bright, ninety-one people, and Marta Ilic walking her own bottom field in a straight line while everybody watches and pretends not to'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f02",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Ribbon Across the Gate"
+      }
+    },
+    {
+      "id": "e_f03",
+      "body": "<<FILL role=success words=185 beats='eleven years later the valley has had no accident on released land, which is the only measure that was ever worth anything and the one nothing in the funding system records'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f03",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Nobody Afterwards"
+      }
+    },
+    {
+      "id": "e_f04",
+      "body": "<<FILL role=completion words=185 beats='the laminated map screwed to the wall of the village hall becomes the document the valley actually uses, corrected in pencil by people who work the ground, and is still there'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f04",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Map on the Hall Wall"
+      }
+    },
+    {
+      "id": "e_f05",
+      "body": "<<FILL role=success words=185 beats='every metre worked by hand where hand was needed and proved where proof was enough, signed by the people who did it, accredited without a finding'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f05",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Cleared and Certified"
+      }
+    },
+    {
+      "id": "e_f06",
+      "body": "<<FILL role=completion words=185 beats='the Kovan book goes to the national archive with a note about what it is and what it is not, and it releases four hundred hectares in three other valleys over the following decade'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f06",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Second Ledger"
+      }
+    },
+    {
+      "id": "e_f07",
+      "body": "<<FILL role=success words=185 beats='the certificate is signed on ground she can defend, with three taped shapes left inside it, and the valley calls that finished because there is no other word available'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f07",
+        "valence": "neutral",
+        "kind": "success",
+        "title": "Released, and Still Taped"
+      }
+    },
+    {
+      "id": "e_f08",
+      "body": "<<FILL role=discovery words=185 beats='the finding that outlives the season is a systematic sixty metre error in national records, which nobody asked her to look for and which changes the survey method of a whole country'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f08",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Two Armies, One Offset"
+      }
+    },
+    {
+      "id": "e_f09",
+      "body": "<<FILL role=discovery words=185 beats='the valley is handed back and the honest conclusion is that both ledgers were written by people telling the truth about different things, and that the ground was the only reliable witness'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f09",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What Neither Record Said"
+      }
+    },
+    {
+      "id": "e_f10",
+      "body": "<<FILL role=setback words=185 beats='the release is withdrawn in March after an item is found in a released field; no one is hurt, the procedure is found sound, and the valley does not sow that year'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f10",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Withdrawn in Spring"
+      }
+    },
+    {
+      "id": "e_f11",
+      "body": "<<FILL role=completion words=185 beats='the document nobody wanted signed is signed, separately and visibly, and it is the sentence about the missing ninety that people quote back at her for the rest of her career'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f11",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Residual Risk Statement"
+      }
+    },
+    {
+      "id": "e_f12",
+      "body": "<<FILL role=setback words=185 beats='the season ends with three shapes still red, a bridging proposal on a desk in the capital, and a team that will mostly not be the same team; the work continues without her'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_f12",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Next Season"
+      }
+    }
+  ]
+}
