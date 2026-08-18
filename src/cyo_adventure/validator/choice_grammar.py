@@ -68,6 +68,7 @@ plan's W2.1); mirrors how PL-22 shipped ahead of its catalog row.
 from __future__ import annotations
 
 import re
+from collections import Counter
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -636,12 +637,30 @@ def check_fill_gate_acknowledgment(story: Storybook) -> ValidationReport:
     """
     report = ValidationReport()
     nodes_by_id = {node.id: node for node in story.nodes}
+    parents = Counter(choice.target for node in story.nodes for choice in node.choices)
     for node in story.nodes:
         if not _is_decision(node):
             continue
         for choice in node.choices:
             target = nodes_by_id.get(choice.target)
             if target is None or _FILL_MARKER in target.body:
+                continue
+            if parents[choice.target] > 1:
+                # A reconvergent target cannot acknowledge the specific choice
+                # that reached it: its opening has to follow ANY of its parents.
+                # Measured over 12 committed filled books, CG-4 findings per node
+                # rise 0.16 at one parent, 0.55 at two or three, 1.56 at four or
+                # more, and the busiest hub in the 16+ story-first draft has 15
+                # parents. `UW-C272` establishes that above 3-5 the only
+                # achievable topologies are the reconverging ones, so the gate
+                # was pushing authors toward exactly the shape this rule
+                # punished (`UW-C289`).
+                #
+                # Restricted rather than loosened: at in-degree 1 the rule
+                # measures something real, and raising a threshold would have
+                # blunted it there to buy silence at the hubs. Two story-first
+                # writers reported the craft side unprompted, the 16+ one saying
+                # it "paid for reconvergence in acknowledgment sharpness".
                 continue
             body = strip_sentinels(target.body).strip()
             if not body:
