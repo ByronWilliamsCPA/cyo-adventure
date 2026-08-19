@@ -54,7 +54,7 @@ from cyo_adventure.storybook.models import Storybook
 from cyo_adventure.validator.walk import walk_configurations
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Mapping, Sequence
 
 # The repository-root-relative catalog and baseline paths. Resolved from this
 # file so the script behaves identically regardless of the invoking cwd.
@@ -382,13 +382,84 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.write(ok_msg)
         return 0
 
+    previous = _previous_baseline()
     _BASELINE_PATH.write_text(text, encoding="utf-8")
     wrote_msg = (
         f"Wrote {_BASELINE_PATH}: TAU_STRUCT={baseline['tau_struct']} "
         f"TAU_CELL={baseline['tau_cell']} TAU_STATE={baseline['tau_state']}\n"
     )
     sys.stdout.write(wrote_msg)
+    sys.stdout.write(_distribution_report(previous, baseline))
     return 0
+
+
+def _previous_baseline() -> dict[str, object]:
+    """Return the baseline being replaced, or an empty dict if there is none.
+
+    Args:
+        None.
+
+    Returns:
+        The decoded previous baseline, empty when absent or unreadable.
+    """
+    if not _BASELINE_PATH.is_file():
+        return {}
+    try:
+        loaded = json.loads(_BASELINE_PATH.read_text(encoding="utf-8"))
+    except (ValueError, OSError):
+        return {}
+    return loaded if isinstance(loaded, dict) else {}
+
+
+def _distribution_report(
+    previous: Mapping[str, object], current: Mapping[str, object]
+) -> str:
+    """Report the distribution a moved threshold was drawn from.
+
+    TAU_STRUCT is the 25th percentile of same-cell pairwise structural distance,
+    so its movement describes the shape of that distribution's lower tail and
+    nothing else. Printing the threshold alone invites reading a fall as "the
+    catalog got less varied", which on 2026-08-19 it was not: fourteen new books
+    moved p25 down 6.9 percent while the MEDIAN stayed flat and the MAXIMUM rose
+    (`AL-478`). The operator had to diff the JSON by hand to see that, and the
+    baseline already stores every statistic needed to say it here.
+
+    Args:
+        previous: The baseline being replaced, possibly empty.
+        current: The baseline just written.
+
+    Returns:
+        A report block, or an empty string when there is nothing to compare.
+    """
+    old_stats = previous.get("stats")
+    new_stats = current.get("stats")
+    if not isinstance(old_stats, dict) or not isinstance(new_stats, dict):
+        return ""
+    lines: list[str] = []
+    for key in sorted(new_stats):
+        before, after = old_stats.get(key), new_stats.get(key)
+        if not isinstance(before, dict) or not isinstance(after, dict):
+            continue
+        if before == after:
+            continue
+        lines.append(f"  {key}:")
+        for stat in sorted(after):
+            was, now = before.get(stat), after.get(stat)
+            if not isinstance(was, (int, float)) or not isinstance(now, (int, float)):
+                continue
+            move = (
+                "" if was == now else f"  {(now - was) / was:+.2%}" if was else "  new"
+            )
+            fmt = "{:>12,}" if isinstance(now, int) else "{:>12.6f}"
+            lines.append(f"    {stat:8} {fmt.format(was)} -> {fmt.format(now)}{move}")
+    if not lines:
+        return ""
+    return (
+        "distribution the thresholds are drawn from (a percentile threshold "
+        "describes its own tail,\nnot the health of the population):\n"
+        + "\n".join(lines)
+        + "\n"
+    )
 
 
 if __name__ == "__main__":
