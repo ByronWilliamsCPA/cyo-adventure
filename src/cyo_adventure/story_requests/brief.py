@@ -49,6 +49,7 @@ from cyo_adventure.storybook.models import (
 from cyo_adventure.validator.band_profile import (
     BandProfile,
     breadth_scaled_floors,
+    cell_ending_bounds,
     clamp_target_to_cap,
     production_cell_budget,
     profile_for,
@@ -247,7 +248,27 @@ def _budget_for(
         min_nodes, max_nodes = band.min_nodes, band.max_nodes
 
     node_count = round((min_nodes + max_nodes) / 2)
-    scaled_min_endings, _ = breadth_scaled_floors(node_count, narrative_style)
+    # The ending floor is derived from the TOP of the node range, not from the
+    # midpoint the brief suggests as a node count. `generation/prompts.py`
+    # authorises the whole range ("produce between {min_nodes} and {max_nodes}
+    # nodes total") while rendering this number as "produce EXACTLY N ending
+    # node(s) ... Not more, not fewer", and PL-17 floors from the story's ACTUAL
+    # `len(story.nodes)`. `breadth_scaled_floors` is monotonically increasing in
+    # node count, so the least favourable case a compliant generator can land on
+    # is `max_nodes`, not `min_nodes`: deriving from the midpoint left the ask
+    # below the floor in 17 of the 18 offered cells, by 1 to 16 endings.
+    #
+    # `cell_ceiling` is passed for the same reason `_effective_floors` passes it
+    # (`policy.py`): PL-17 caps the scaled floor at the cell's ending ceiling, so
+    # omitting it here would over-ask where a ceiling binds.
+    bounds = (
+        None
+        if length is None
+        else cell_ending_bounds(age_band.value, length, narrative_style)
+    )
+    scaled_min_endings, _ = breadth_scaled_floors(
+        max_nodes, narrative_style, None if bounds is None else bounds[1]
+    )
     return node_count, max(band.min_endings, scaled_min_endings)
 
 

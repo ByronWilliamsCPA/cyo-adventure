@@ -43,6 +43,7 @@ from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 from cyo_adventure.validator.band_profile import (
     _PRODUCTION_CELLS,  # pyright: ignore[reportPrivateUsage]
     breadth_scaled_floors,
+    cell_ending_bounds,
     reading_level_target_for,
 )
 
@@ -108,15 +109,27 @@ def test_brief_from_request_uses_band_budget_and_generic_protagonist() -> None:
     assert brief.length == Length.SHORT
     assert brief.narrative_style == NarrativeStyle.PROSE
     # Derived from the CELL envelope, not the band's. 8-11/short/prose is
-    # 60-100 nodes, so the midpoint is 80 and the endings floor scales with it.
-    # This used to read the band envelope (15-30, midpoint 22, 4 endings) while
-    # PL-17 floored from the cell, so the prompt demanded exactly 4 endings
-    # where the gate required 9 (`UW-C279`).
+    # 60-100 nodes. This used to read the band envelope (15-30, midpoint 22, 4
+    # endings) while PL-17 floored from the cell, so the prompt demanded exactly
+    # 4 endings where the gate required 9 (`UW-C279`).
+    #
+    # The suggested node count is the midpoint, but the ending floor comes from
+    # the TOP of the range: the prompt authorises the whole range while marking
+    # the ending count EXACTLY, PL-17 floors from the story's ACTUAL node count,
+    # and `breadth_scaled_floors` rises with that count. Deriving the floor from
+    # the midpoint too left the ask short in 17 of the 18 offered cells.
     cell = _PRODUCTION_CELLS[("8-11", "short", "prose")]
-    expected_nodes = round((cell[0] + cell[1]) / 2)
-    expected_endings, _ = breadth_scaled_floors(expected_nodes, "prose")
-    assert brief.target_node_count == expected_nodes
+    assert brief.target_node_count == round((cell[0] + cell[1]) / 2)
+
+    bounds = cell_ending_bounds("8-11", "short", "prose")
+    expected_endings, _ = breadth_scaled_floors(
+        cell[1], "prose", None if bounds is None else bounds[1]
+    )
     assert brief.ending_count == expected_endings
+    midpoint_endings, _ = breadth_scaled_floors(round((cell[0] + cell[1]) / 2), "prose")
+    assert brief.ending_count > midpoint_endings, (
+        "the midpoint derivation is the defect; this must not silently return to it"
+    )
     assert brief.protagonist.name == "Explorer"  # never a real child name
     assert brief.tier == 1
 
@@ -1491,7 +1504,7 @@ def test_brief_ending_count_satisfies_the_gate_in_every_cell() -> None:
     not in one cell's arithmetic but in which table was consulted, and a
     single-cell test would have passed on the one cell that happened to agree.
     """
-    for (band, length, style), (min_nodes, _max, _depth) in _PRODUCTION_CELLS.items():
+    for (band, length, style), (_min, max_nodes, _depth) in _PRODUCTION_CELLS.items():
         request = StoryRequest(
             family_id=uuid.uuid4(),
             request_text="a story",
@@ -1502,11 +1515,23 @@ def test_brief_ending_count_satisfies_the_gate_in_every_cell() -> None:
         )
         brief = brief_from_request(request, None)
 
-        # The gate applies the floor to the story's ACTUAL node count. The
-        # cell minimum is the least favourable case a compliant generator can
-        # land on, so satisfying it there satisfies it everywhere in the cell.
-        floor_at_min, _ = breadth_scaled_floors(min_nodes, style)
-        assert brief.ending_count >= floor_at_min, (
+        # The gate applies the floor to the story's ACTUAL node count, and
+        # `breadth_scaled_floors` is monotonically increasing in that count, so
+        # the least favourable case a compliant generator can land on is the
+        # cell MAXIMUM. This assertion read `min_nodes` and described it as the
+        # least favourable case, which is backwards; it passed while the ask sat
+        # below the floor in 17 of the 18 cells, because the prompt authorises
+        # the whole range while marking the ending count EXACTLY.
+        #
+        # `cell_ending_bounds(...)[1]` is passed because `_effective_floors`
+        # passes it: PL-17 caps the scaled floor at the cell's ending ceiling,
+        # so omitting it here would assert against a floor the gate never applies.
+        bounds = cell_ending_bounds(band, length, style)
+        floor_at_max, _ = breadth_scaled_floors(
+            max_nodes, style, None if bounds is None else bounds[1]
+        )
+        assert brief.ending_count >= floor_at_max, (
             f"{band}/{length}/{style}: prompt asks for exactly "
-            f"{brief.ending_count} endings, PL-17 floors at {floor_at_min}"
+            f"{brief.ending_count} endings, PL-17 floors at {floor_at_max} "
+            f"for a compliant {max_nodes}-node story"
         )
