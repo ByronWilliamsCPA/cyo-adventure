@@ -75,7 +75,7 @@ def test_aggregate_overall_and_per_provider_rates() -> None:
         )
     )
     trials.extend(
-        TrialRecord(specimen_slug=f"story-{i}", provider="ollama", record=_clean())
+        TrialRecord(specimen_slug=f"story-{i}", provider="openrouter", record=_clean())
         for i in range(10)
     )
     data = aggregate(trials)
@@ -90,9 +90,9 @@ def test_aggregate_overall_and_per_provider_rates() -> None:
     assert by_provider["mock"].total == 10
     assert by_provider["mock"].clean == 9
     assert by_provider["mock"].clean_pass_rate == pytest.approx(0.9)
-    assert by_provider["ollama"].total == 10
-    assert by_provider["ollama"].clean == 10
-    assert by_provider["ollama"].clean_pass_rate == pytest.approx(1.0)
+    assert by_provider["openrouter"].total == 10
+    assert by_provider["openrouter"].clean == 10
+    assert by_provider["openrouter"].clean_pass_rate == pytest.approx(1.0)
 
 
 @pytest.mark.unit
@@ -153,9 +153,9 @@ def test_render_markdown_dry_run_banner_present_for_mock_only() -> None:
 @pytest.mark.unit
 def test_render_markdown_no_banner_for_non_mock_providers() -> None:
     """No dry-run banner when a non-mock provider is among those requested."""
-    trials = [TrialRecord(specimen_slug="s0", provider="ollama", record=_clean())]
+    trials = [TrialRecord(specimen_slug="s0", provider="openrouter", record=_clean())]
     data = aggregate(trials)
-    markdown = render_markdown(data, providers=["ollama"])
+    markdown = render_markdown(data, providers=["openrouter"])
     assert "PLUMBING DRY-RUN" not in markdown
 
 
@@ -169,7 +169,7 @@ def test_render_json_dry_run_flag_and_banner() -> None:
     assert mock_only["dry_run"] is True
     assert mock_only["dry_run_banner"] == "PLUMBING DRY-RUN, not a survival number."
 
-    mixed = render_json(data, providers=["mock", "ollama"])
+    mixed = render_json(data, providers=["mock", "openrouter"])
     assert mixed["dry_run"] is False
     assert "dry_run_banner" not in mixed
 

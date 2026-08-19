@@ -37,21 +37,21 @@ describe('makeProviderAllowlistApi', () => {
   it('create posts the new entry', async () => {
     const created = {
       id: 'a1',
-      provider: 'ollama',
-      model_id: 'qwen2.5:14b',
+      provider: 'modal',
+      model_id: 'google/gemma-4-26b-a4b-it',
       enabled: true,
-      display_name: 'Ollama local default',
+      display_name: 'Modal endpoint default',
     }
     const { api, post } = fakeAxios(created)
     const result = await makeProviderAllowlistApi(api).create({
-      provider: 'ollama',
-      model_id: 'qwen2.5:14b',
-      display_name: 'Ollama local default',
+      provider: 'modal',
+      model_id: 'google/gemma-4-26b-a4b-it',
+      display_name: 'Modal endpoint default',
     })
     expect(post).toHaveBeenCalledWith('/v1/admin/provider-allowlist', {
-      provider: 'ollama',
-      model_id: 'qwen2.5:14b',
-      display_name: 'Ollama local default',
+      provider: 'modal',
+      model_id: 'google/gemma-4-26b-a4b-it',
+      display_name: 'Modal endpoint default',
     })
     expect(result).toEqual(created)
   })
@@ -59,19 +59,19 @@ describe('makeProviderAllowlistApi', () => {
   it('update puts the enabled/display_name change', async () => {
     const updated = {
       id: 'a1',
-      provider: 'ollama',
-      model_id: 'qwen2.5:14b',
+      provider: 'modal',
+      model_id: 'google/gemma-4-26b-a4b-it',
       enabled: false,
-      display_name: 'Ollama local default',
+      display_name: 'Modal endpoint default',
     }
     const { api, put } = fakeAxios(updated)
     const result = await makeProviderAllowlistApi(api).update('a1', {
       enabled: false,
-      display_name: 'Ollama local default',
+      display_name: 'Modal endpoint default',
     })
     expect(put).toHaveBeenCalledWith('/v1/admin/provider-allowlist/a1', {
       enabled: false,
-      display_name: 'Ollama local default',
+      display_name: 'Modal endpoint default',
     })
     expect(result).toEqual(updated)
   })

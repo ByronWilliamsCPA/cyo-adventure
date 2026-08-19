@@ -75,7 +75,9 @@ class TokenUsage:
 
     Attributes:
         provider: The backend that served the call, as a bare backend name
-            (``"anthropic"``, ``"openrouter"``, ``"modal"``, ``"ollama"``).
+            (``"anthropic"``, ``"openrouter"``, ``"modal"``). Historical rows
+            may also carry ``"ollama"``, retired as a live backend but still
+            priced in ``core/pricing.py`` so past runs stay costable.
             It never embeds the model: this string is half of the
             ``(provider, model)`` key ``core.pricing.PRICES`` is looked up by,
             so a combined label would miss every price entry and silently

@@ -1199,7 +1199,7 @@ AuthoringMechanism = Literal["skill", "automated_provider"]
 # generation.allowlist.ALLOWLIST_PROVIDERS (mock is a CI-only double, never
 # allowlistable). Typed here so AuthoringPlanRequest.provider rejects an
 # unknown backend at the schema boundary (422) instead of at the DB query.
-ProviderName = Literal["anthropic", "openrouter", "modal", "ollama"]
+ProviderName = Literal["anthropic", "openrouter", "modal"]
 
 
 class AlternativeView(BaseModel):

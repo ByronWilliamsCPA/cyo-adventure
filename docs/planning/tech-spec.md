@@ -78,10 +78,10 @@ Supabase OIDC, all deployable to the homelab behind Pangolin.
 - **Graph analysis**: networkx (reachability, cycle, termination).
 - **Readability**: textstat (Flesch-Kincaid grade, advisory).
 - **LLM**: OpenRouter primary (reaching Claude models: `anthropic/claude-haiku-4.5`, with
-  `anthropic/claude-sonnet-4.6` as the OpenRouter fallback), then local Ollama as the final
-  fallback, behind a provider-agnostic interface. A `mock` provider is the default in CI.
-  Direct Anthropic SDK access is deferred. See
-  [ADR-003](./adr/adr-003-frontier-llm-generation.md) (amended 2026-06-22).
+  `anthropic/claude-sonnet-4.6` as the OpenRouter fallback), then Modal as the final fallback,
+  behind a provider-agnostic interface. A `mock` provider is the default in CI. Direct Anthropic
+  SDK access ships as a per-job-selectable leg. The local Ollama leg was retired; see
+  [ADR-003](./adr/adr-003-frontier-llm-generation.md) (amended 2026-06-22 and 2026-08-18).
 - **Moderation**: provider moderation API + an independent LLM-reviewer pass.
 
 ### Infrastructure
@@ -135,7 +135,7 @@ provider-specific services in the core.
         │     ▼              ▼                        ▼                      │
         │  Validator    Moderation             Provider interface           │
         │  (schema,     (API + LLM             (OpenRouter/                  │
-        │  graph,       reviewer)              Ollama/mock)                  │
+        │  graph,       reviewer)              Modal/mock)                   │
         │  state-space) │                            │                      │
         └───────────────┼────────────────────────────┼──────────────────────┘
                  │       │                            │

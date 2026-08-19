@@ -97,7 +97,7 @@ _VERDICT_RANK: dict[str, int] = {"pass": 0, "advisory": 1, "flag": 2, "block": 3
 ItemStatus = Literal[
     "caught", "missed", "gap", "skipped", "control_ok", "control_over_block"
 ]
-ReviewProviderName = Literal["mock", "openrouter", "ollama"]
+ReviewProviderName = Literal["mock", "openrouter"]
 
 _PROBE_MAX_TOKENS = 1024
 
@@ -1421,7 +1421,7 @@ def _print_report(report: CorpusReport) -> None:
         print("The mock review provider returns fail-safe verdicts (Stage 1 -> FLAG,")
         print("soft stages -> PASS), so results are deterministic artifacts of that")
         print("fail-safe mapping, not real classifier discrimination.")
-        print("Re-run with --review-provider openrouter (or ollama) for a real result.")
+        print("Re-run with --review-provider openrouter for a real result.")
         print()
     print(f"Items: {len(report.outcomes)}")
     print()
@@ -1531,7 +1531,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--review-provider",
         default="mock",
-        choices=("mock", "openrouter", "ollama"),
+        choices=("mock", "openrouter"),
         help=(
             "Review provider for the LLM stages (default: mock, not evidence). "
             "A live provider also needs the Stage-0 classifier credential "
@@ -1600,7 +1600,7 @@ def _build_review_provider_for_cli(
     # a live-provider run), even though this harness never claims the mock
     # run is a real safety evaluation.
     # #VERIFY: only set for provider_name == "mock"; a live-provider run
-    # (openrouter/ollama) is unaffected and still requires a real
+    # (openrouter) is unaffected and still requires a real
     # environment=local or a genuinely configured non-mock backend.
     settings = Settings.model_validate(
         {
@@ -1736,7 +1736,7 @@ def _run_sweep_cli(
         print("Every size's Stage-1 calls hit the mock provider's fail-safe")
         print("mapping, so this comparison measures nothing about real")
         print("classifier discrimination. Re-run with --review-provider")
-        print("openrouter (or ollama) for a real recall comparison.")
+        print("openrouter for a real recall comparison.")
         print()
 
     _print_sweep_report(sweep)

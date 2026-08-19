@@ -24,7 +24,7 @@ def test_modal_review_provider_is_deferred() -> None:
     settings = Settings(review_provider="modal", openai_api_key="k")
     with pytest.raises(ConfigurationError):
         build_review_provider(
-            settings, generator_provider="ollama", generator_model="y"
+            settings, generator_provider="anthropic", generator_model="y"
         )
 
 
@@ -44,11 +44,15 @@ def test_same_backend_same_model_is_not_independent() -> None:
 
 
 def test_different_backend_is_independent() -> None:
+    # Reviewing on openrouter while the story was generated on the direct
+    # anthropic leg is the surviving cross-backend pairing now that the ollama
+    # review backend is retired.
     settings = Settings(
-        review_provider="ollama",
+        review_provider="openrouter",
+        openrouter_api_key="k",
         openai_api_key="k",
     )
     _provider, independent = build_review_provider(
-        settings, generator_provider="openrouter", generator_model="anything"
+        settings, generator_provider="anthropic", generator_model="anything"
     )
     assert independent is True

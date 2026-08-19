@@ -685,8 +685,8 @@ const POPULATED_ALLOWLIST = {
     },
     {
       id: 'a2',
-      provider: 'ollama',
-      model_id: 'qwen2.5:14b',
+      provider: 'modal',
+      model_id: 'google/gemma-4-26b-a4b-it',
       enabled: false,
       display_name: null,
     },

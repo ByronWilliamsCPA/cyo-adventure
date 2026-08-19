@@ -523,7 +523,7 @@ code paths that can reach `submit`/`approve`, or the band policy profile MUST:
 - [ADR-010: Modal review and gated generation](../adr/adr-010-modal-review-and-gated-generation.md)
   (adds `review_provider = "modal"`, an independent open-weight reviewer; the credentialed
   harness run should gain a `modal` provider choice once P9-12 lands, alongside the existing
-  `openrouter` and `ollama` choices).
+  `openrouter` choice; the `ollama` choice was removed with the 2026-08-18 retirement).
 - Evaluator-runtime equivalence (PR #50, under
   [ADR-006](../adr/adr-006-conditions-inhouse-evaluator.md)): the sibling
   model-independent correctness argument for the condition evaluator.

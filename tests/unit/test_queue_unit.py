@@ -90,7 +90,7 @@ def test_enqueue_generation_returns_rq_id(monkeypatch: pytest.MonkeyPatch) -> No
 def test_enqueue_generation_passes_job_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     """enqueue_generation always sets job_timeout from settings (D2 Finding 4).
 
-    RQ's own default job_timeout is 180s, far shorter than a live Ollama run;
+    RQ's own default job_timeout is 180s, far shorter than a live generation run;
     an unset value would let RQ SIGALRM-kill a still-healthy job.
     """
     captured: dict[str, _FakeQueue] = {}

@@ -117,7 +117,7 @@ in the same repository.
   `docs/planning/adr/adr-009-supabase-platform.md`
 - **Story generation**: staged LLM pipeline behind a deterministic
   validation/moderation gate (`generation/`, `validator/`, `moderation/`),
-  with pluggable providers for Anthropic, OpenRouter, Ollama, and Modal
+  with pluggable providers for Anthropic, OpenRouter, and Modal
   (`google-genai` for cover art via nano banana)
 - **Background jobs**: Redis + RQ (`generation/queue.py`, `covers/worker.py`)
 - **Graph/condition logic**: networkx (skeleton/story graph), jsonschema
@@ -649,7 +649,7 @@ FastAPI backend (src/cyo_adventure/)
                       ratings, moderation reports, events)
    - storybook/      Storybook/Node/Choice/Ending domain model + condition evaluator
    - story_requests/ intake: brief, screening, authoring plan, anchoring
-   - generation/     staged LLM pipeline; providers/{anthropic,modal,ollama,openrouter,
+   - generation/     staged LLM pipeline; providers/{anthropic,modal,openrouter,
                       fallback}; RQ queue.py + worker.py; skeleton catalog/matching
    - validator/      deterministic two-layer validation gate (topology, safety,
                       reading level, band profile) before anything reaches a human

@@ -423,7 +423,7 @@ Source: [Tech Spec](./tech-spec.md) sections "Architecture" and "Data Model".
 | Graph analysis | networkx | Reachability, cycle detection, termination |
 | Readability | textstat | Flesch-Kincaid grade (advisory) |
 | LLM primary | OpenRouter (`anthropic/claude-haiku-4.5`) | Behind `GenerationProvider` interface; amended 2026-06-22 (ADR-003) |
-| LLM fallback | OpenRouter (`anthropic/claude-sonnet-4.6`), then Ollama (local P40); `mock` default in CI | Same interface; direct Anthropic SDK deferred |
+| LLM fallback | OpenRouter (`anthropic/claude-sonnet-4.6`), then Modal; `mock` default in CI. The Ollama/P40 leg was retired 2026-08-18 | Same interface; direct Anthropic SDK now shipped, not deferred |
 | Moderation | Provider moderation API + independent LLM-reviewer | |
 | Auth | Supabase Auth (OIDC), guardians only ([ADR-009](./adr/adr-009-supabase-platform.md)) | Current app auth (pulled forward into C4a-1); children are backend-scoped profile sessions, never IdP identities. The homelab/family-tier deployment still uses Authentik (OIDC) per [ADR-004](./adr/adr-004-homelab-first-deployment.md) |
 | Ingress | Pangolin (zero-trust) | HTTPS; child sessions scoped to reader/library; homelab/family tier |
@@ -676,7 +676,7 @@ from Phase 0 are preconditions. See [ADR-003](./adr/adr-003-frontier-llm-generat
   - Stage C (Repair): named failing node IDs and specific violations; cap at 3 attempts;
     no-progress abort (report or output hash unchanged); on exhaustion route to full regeneration
     or human review. Never auto-publish.
-- **Provider interface** (`GenerationProvider`): OpenRouter primary (Claude reached via OpenRouter); Ollama local fallback; direct Anthropic SDK deferred (ADR-003, amended 2026-06-22)
+- **Provider interface** (`GenerationProvider`): OpenRouter primary (Claude reached via OpenRouter); Modal as cascade leg 3; direct Anthropic SDK shipped as a per-job leg (ADR-003, amended 2026-06-22 and 2026-08-18; the Ollama leg is retired)
   ([ADR-003](./adr/adr-003-frontier-llm-generation.md)).
 - **Concept intake**: concept brief fields as defined in [Tech Spec](./tech-spec.md#authoring-pipeline-staged-generation);
   no real child PII in prompts.
@@ -707,6 +707,8 @@ provider. Both are now met:
 2. **Concrete provider adapters** shipped: OpenRouter (primary, in-provider fallback) and
    Ollama (homelab final fallback), selectable by config. A direct Anthropic SDK adapter
    stays deferred (Claude is reached via OpenRouter).
+   **Superseded 2026-08-18**: Ollama is retired and Modal is cascade leg 3; the direct
+   Anthropic adapter shipped in WS-C PR1. See ADR-003's 2026-08-18 amendment.
 
 Full scope and the residual lever are in
 [`docs/planning/phase-2b-live-provider.md`](./phase-2b-live-provider.md).
@@ -984,7 +986,7 @@ in the phase named):
 |------|-------------|-------|
 | Dev auth stub (`_extract_subject` + import-time guard in `api/deps.py`) | ✅ Done (2026-07-02, pulled forward into C4a-1). Retired from all non-local paths; stub survives only under `environment == "local"` for tests and local dev | 6 (P6-01) |
 | `localStorage` bearer token in `frontend/src/hooks/useApi.ts` | Confirmed still not done as of 2026-07-20: `useApi.ts` still calls `localStorage.setItem/getItem/removeItem` directly. A 401-retry-with-refresh path was since added (P6-06 partial), but the storage-abstraction replacement itself, and the CSP `connect-src` update, remain open | 6 (P6-06) |
-| Homelab Ollama leg as a production generation fallback (`ollama_base_url`, `ollama_auth`, `ollama_ca_bundle` in prod config) | Demoted to dev/family-tier only; public tier is OpenRouter-only | 9 (P9-11) |
+| Homelab Ollama leg as a production generation fallback (`ollama_base_url`, `ollama_auth`, `ollama_ca_bundle` in prod config) | ✅ Resolved ahead of schedule (2026-08-18): the leg is **removed entirely**, not demoted, and Modal takes leg 3 (ADR-003 amendment). P9-11 below is satisfied by deletion rather than by configuration | 9 (P9-11) |
 | `redis_url`, `generation/queue.py` (RQ), and the commented Redis service in `docker-compose.yml` | Removed if the pgmq evaluation passes; retained unchanged if the Upstash fallback is taken | 9 (P9-03) |
 | `utils/financial.py` (unused template scaffolding; no imports anywhere) | Remove in a standalone chore before Phase 8 so the entitlements/credits work (integer credits, Apple handles money) is not built near dead Decimal helpers; log template feedback per the repo requirement | pre-8 chore |
 | `docker-compose.prod.yml` as the production deployment definition | Superseded by the P9-03 container-host infra-as-code; compose files remain for local dev | 9 (P9-03) |
@@ -1228,7 +1230,7 @@ successful App Store submission.
 | P9-08 | App Store listing | Screenshots, description, age rating from P7-07, privacy nutrition labels from P7-06, review notes from `docs/planning/app-store-review-notes.md` |
 | P9-09 | TestFlight beta | At least a small set of external families through onboarding, subscription, and reading before submission; **upgrade the production Supabase project to Pro at TestFlight start** (free projects pause when inactive and lack daily backups) |
 | P9-10 | Submission and launch | Submit; respond to review; post-launch monitoring runbook (review queue, spend alarms, Sentry triage rota) |
-| P9-11 | Public-tier generation provider configuration | Production config uses OpenRouter only (primary model + in-provider fallback per ADR-003, reaffirmed by [ADR-010](./adr/adr-010-modal-review-and-gated-generation.md)); the homelab Ollama leg is **not** a public-tier fallback (availability and provider-terms posture): set `provider_fallback_enabled` accordingly and leave `ollama_*` settings unset in production; Ollama remains a dev/family-tier leg only; the Modal generation leg (post-launch backlog) joins the public path only via the ADR-010 promotion gate |
+| P9-11 | Public-tier generation provider configuration | **Largely satisfied 2026-08-18 by the Ollama retirement**: there is no `ollama_*` config to leave unset and no dev/family-tier Ollama leg to keep out of the public path, because the adapter is deleted. What remains of this item is the Modal leg's posture: Modal is now cascade leg 3 in every tier rather than an offline experiment, so the [ADR-010](./adr/adr-010-modal-review-and-gated-generation.md) promotion gate needs restating for a leg that is already on the production path (ADR-003 amendment, 2026-08-18) |
 | P9-12 | Modal moderation review backend ([ADR-010](./adr/adr-010-modal-review-and-gated-generation.md), executes deferred slice 2b) | Implement `review_provider = "modal"` in `moderation/review_provider.py` (currently raises as deferred) against a Modal-served open-weight reviewer, weights prestaged on a Modal volume; reviewer independence from the generation provider is the point; Stage-0 deterministic classifiers stay mandatory; OpenRouter reviewer remains the fallback; can start any time in the public rungs R2/R3 (independent of Phases 6-8) |
 | P9-13 | Load testing and capacity baseline | Before P9-09 upgrades the production Supabase project to Pro, run a load test against the P9-03 hosted infra with `core/database.py` pool sizing and RQ worker replica count actually tuned (not left at the unsized/single-replica defaults inherited from Phase 5): measure sustained concurrent-family capacity, DB connection headroom against the plan tier's direct-vs-pooler connection limits, and generation-worker throughput under a queued-job backlog; exercise the transaction-mode pooler fallback (`CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE`, ADR-009 Task 1.7) at least once as a documented escape valve if the direct-connection budget is the binding constraint; record the measured ceiling and the exact config used to reach it in `docs/planning/capacity-baseline.md`, so a future scale-up phase starts from a measured number instead of an architectural estimate |
 

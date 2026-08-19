@@ -12,7 +12,7 @@ import type { AllowlistListView } from '../client/types.gen'
 
 // Mirrors generation.allowlist.ALLOWLIST_PROVIDERS / ProviderName in
 // api/schemas.py ('mock' is a CI-only double, never allowlistable).
-const PROVIDERS = ['anthropic', 'openrouter', 'modal', 'ollama'] as const
+const PROVIDERS = ['anthropic', 'openrouter', 'modal'] as const
 export type ProviderValue = (typeof PROVIDERS)[number]
 
 type LoadState =

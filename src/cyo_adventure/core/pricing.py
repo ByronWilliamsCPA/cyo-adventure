@@ -276,6 +276,13 @@ _PRICES: dict[tuple[str, str], ModelPrice] = {
         source=_OPENROUTER_API,
         note="read live from https://openrouter.ai/api/v1/models",
     ),
+    # RETIRED BACKEND, RETAINED PRICE. Ollama is no longer a live generation
+    # leg (the adapter, config surface, and allowlist row are all gone), but
+    # generation_job/token-usage rows written before the retirement still carry
+    # provider="ollama". Deleting this entry would not remove a cost, it would
+    # make every one of those historical rows unpriceable and silently flip
+    # CostEstimate.complete to False for any report spanning that period.
+    # Do not remove it; there is no live code path that can add a new one.
     ("ollama", "qwen2.5:14b"): ModelPrice(
         input_usd_per_mtok=Decimal(0),
         output_usd_per_mtok=Decimal(0),
@@ -284,7 +291,8 @@ _PRICES: dict[tuple[str, str], ModelPrice] = {
         note=(
             "zero VENDOR cost, not zero cost. Hardware, power and the operator's "
             "time are real and are not modelled here, so an all-Ollama run "
-            "reporting $0.00 means 'nothing was billed', not 'this was free'"
+            "reporting $0.00 means 'nothing was billed', not 'this was free'. "
+            "Historical only: the Ollama leg was retired ahead of the Vultr move"
         ),
     ),
 }

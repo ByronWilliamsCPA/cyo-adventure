@@ -11,7 +11,7 @@
 '     is a separate, not-yet-diagrammed path used for skeleton-matched jobs
 '     -- see component-generation.puml for both methods at component level.)
 '   src/cyo_adventure/generation/provider.py      (build_provider(): resolves
-'     mock|ollama|anthropic|openrouter[+3-leg cascade]|modal, with optional
+'     mock|anthropic|openrouter[+3-leg cascade]|modal, with optional
 '     per-job provider_override/model_override, WS-C PR1)
 '   src/cyo_adventure/generation/reading_level_loop.py  (Stage D:
 '     run_reading_level_loop(). Runs on BOTH methods, so it is the one part of
@@ -42,7 +42,7 @@ participant "PiiGuardedProvider\nguarded.py + pii.py" as pii
 participant "FallbackProvider\nfallback.py" as fallback
 participant "OpenRouter\n[leg 1: primary,\nclaude-haiku-4.5]" as or_provider
 participant "OpenRouter\n[leg 2: fallback,\nclaude-sonnet-4.6]" as or_provider_fb
-participant "Ollama\n[leg 3: local fallback]" as ol_provider
+participant "Modal\n[leg 3: backstop]" as modal_leg
 participant "Reading-Level Loop\nreading_level_loop.py\n[Stage D]" as rl
 participant "Validator Gate\ngate.py" as gate
 database "PostgreSQL\nGenerationJob" as pg
@@ -75,7 +75,7 @@ else leg-fatal failure (401/400)
   alt leg 2 also leg-fatal
     or_provider_fb --> fallback : "HTTP 401/400"
     fallback -> fallback : "mark leg 2 dead\nfail over to leg 3"
-    fallback -> ol_provider : "attempt leg 3 (Ollama)"
+    fallback -> modal_leg : "attempt leg 3 (Modal)"
     ol_provider --> fallback : "raw text"
   else leg 2 succeeds
     or_provider_fb --> fallback : "raw text"

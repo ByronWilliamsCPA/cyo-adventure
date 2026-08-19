@@ -213,7 +213,7 @@ erDiagram
         timestamptz published_at "NULL"
         varchar(120) model "NULL; LLM model id"
         varchar(120) prompt_version "NULL"
-        varchar(120) provider "NULL; mock, anthropic, openrouter, modal, ollama, import"
+        varchar(120) provider "NULL; mock, anthropic, openrouter, modal, import (ollama on pre-retirement rows)"
         varchar(120) skeleton_slug "NULL; WS-C PR2 provenance"
         timestamptz created_at
         varchar(512) cover_image_url "NULL"
@@ -427,7 +427,7 @@ erDiagram
 
     provider_model_allowlist {
         uuid id PK
-        varchar(32) provider "anthropic, openrouter, modal, or ollama"
+        varchar(32) provider "anthropic, openrouter, or modal"
         varchar(120) model_id
         boolean enabled "default true"
         varchar(120) display_name "NULL"
@@ -1118,7 +1118,7 @@ double, never a real generation backend.
 | Column | Type | Notes |
 | -------- | ------ | ------- |
 | id | UUID PK | |
-| provider | VARCHAR(32) | One of `anthropic`, `openrouter`, `modal`, `ollama` |
+| provider | VARCHAR(32) | One of `anthropic`, `openrouter`, `modal` (`ollama` was removed from the CHECK constraint by the Ollama retirement) |
 | model_id | VARCHAR(120) | Provider-native model id (e.g. `claude-sonnet-4-6`) |
 | enabled | BOOLEAN | Whether this pair is currently selectable; default true |
 | display_name | VARCHAR(120) NULL | Optional human label for a future admin UI |

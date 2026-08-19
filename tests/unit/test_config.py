@@ -80,87 +80,154 @@ class TestSettingsDefaults:
         assert s.database_url == _DEV_DB_URL
 
 
-class TestOllamaProviderSettings:
-    """Ollama endpoint/credential settings: defaults and unprefixed env aliases."""
+class TestRetiredOllamaSettings:
+    """The OLLAMA_* config surface is gone and must not come back silently."""
 
     @pytest.mark.unit
-    def test_ollama_model_default_is_fast_valid_model(
-        self, monkeypatch: pytest.MonkeyPatch
+    @pytest.mark.parametrize(
+        "field",
+        [
+            "ollama_model",
+            "ollama_base_url",
+            "ollama_auth",
+            "ollama_ca_bundle",
+            "ollama_timeout_seconds",
+            "review_ollama_model",
+        ],
+    )
+    def test_ollama_settings_are_removed(self, field: str) -> None:
+        """No Ollama field survives on Settings.
+
+        A stale OLLAMA_* entry in a deploy's env is now inert rather than
+        half-wired, and reintroducing one of these names by accident (say by
+        reviving a deleted block during a merge) fails here instead of
+        shipping a setting nothing reads.
+        """
+        from cyo_adventure.core.config import Settings
+
+        assert field not in Settings.model_fields
+
+    @pytest.mark.unit
+    def test_ollama_is_not_a_valid_generation_provider(self) -> None:
+        """The retired backend is rejected at the Settings boundary."""
+        from pydantic import ValidationError as PydanticValidationError
+
+        from cyo_adventure.core.config import Settings
+
+        with pytest.raises(PydanticValidationError):
+            Settings(generation_provider="ollama")  # type: ignore[arg-type]
+
+    @pytest.mark.unit
+    def test_ollama_is_not_a_valid_review_provider(self) -> None:
+        """The retired review backend is rejected at the Settings boundary."""
+        from pydantic import ValidationError as PydanticValidationError
+
+        from cyo_adventure.core.config import Settings
+
+        with pytest.raises(PydanticValidationError):
+            Settings(review_provider="ollama")  # type: ignore[arg-type]
+
+
+class TestModalLegConfigured:
+    """modal_leg_configured gates whether the cascade gets its third leg."""
+
+    @pytest.mark.unit
+    def test_both_fields_set_is_configured(self) -> None:
+        """The predicate is true only when a leg could actually be built."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(
+            modal_base_url="https://example--cyo.modal.run/v1",
+            modal_model="google/gemma-4-26b-a4b-it",
+        )
+        assert settings.modal_leg_configured is True
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        ("base_url", "model"),
+        [
+            (None, None),
+            ("https://example--cyo.modal.run/v1", None),
+            (None, "google/gemma-4-26b-a4b-it"),
+            ("", "google/gemma-4-26b-a4b-it"),
+            ("https://example--cyo.modal.run/v1", ""),
+        ],
+    )
+    def test_missing_or_empty_half_is_not_configured(
+        self, base_url: str | None, model: str | None
     ) -> None:
-        """The default ollama_model is qwen2.5:14b (fast and structurally valid live)."""
+        """Anything build_modal_leg would reject must read as unconfigured.
+
+        The two must agree exactly: if this predicate said "configured" for a
+        state build_modal_leg raises on, build_provider would raise inside the
+        cascade path and take down generation in every such environment.
+        """
         from cyo_adventure.core.config import Settings
 
-        monkeypatch.delenv("CYO_ADVENTURE_OLLAMA_MODEL", raising=False)
-        assert Settings().ollama_model == "qwen2.5:14b"
+        settings = Settings(modal_base_url=base_url, modal_model=model)
+        assert settings.modal_leg_configured is False
+
+
+class TestModalProxyCredentialPairing:
+    """A half-set Modal proxy pair is rejected at startup, not at job time."""
 
     @pytest.mark.unit
-    def test_ollama_timeout_seconds_default(
-        self, monkeypatch: pytest.MonkeyPatch
+    @pytest.mark.parametrize(
+        ("key", "secret"),
+        [
+            ("only-key", None),
+            (None, "only-secret"),
+            ("only-key", ""),
+            ("", "only-secret"),
+        ],
+    )
+    def test_half_set_pair_is_rejected(
+        self, key: str | None, secret: str | None
     ) -> None:
-        """The Ollama leg gets its own longer default timeout (cold start + queue)."""
-        from cyo_adventure.core.config import Settings
+        """Either half alone fails fast.
 
-        monkeypatch.delenv("CYO_ADVENTURE_OLLAMA_TIMEOUT_SECONDS", raising=False)
-        assert Settings().ollama_timeout_seconds == 300
+        build_modal_leg would also reject this, but only once a job actually
+        built the leg. Since Modal became the default cascade's third leg that
+        raise would fire on every generation job, so catching it at startup is
+        what keeps the misconfiguration from reaching a serving deploy.
+        """
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError, match="MODAL_PROXY"):
+            Settings(modal_proxy_key=key, modal_proxy_secret=secret)
 
     @pytest.mark.unit
-    def test_ollama_auth_default_is_none(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """With no OLLAMA_AUTH set, ollama_auth is None (no credential sent)."""
-        from cyo_adventure.core.config import Settings
-
-        monkeypatch.delenv("OLLAMA_AUTH", raising=False)
-        assert Settings().ollama_auth is None
-
-    @pytest.mark.unit
-    def test_ollama_ca_bundle_default_is_none(
-        self, monkeypatch: pytest.MonkeyPatch
+    @pytest.mark.parametrize(
+        ("key", "secret"),
+        [(None, None), ("a-key", "a-secret")],
+    )
+    def test_coherent_pair_is_accepted(
+        self, key: str | None, secret: str | None
     ) -> None:
-        """With no OLLAMA_CA_BUNDLE set, ollama_ca_bundle is None (system CAs)."""
+        """Neither set (no proxy auth) and both set are both valid states."""
         from cyo_adventure.core.config import Settings
 
-        monkeypatch.delenv("OLLAMA_CA_BUNDLE", raising=False)
-        assert Settings().ollama_ca_bundle is None
+        settings = Settings(modal_proxy_key=key, modal_proxy_secret=secret)
+        assert settings.modal_proxy_key == key
 
     @pytest.mark.unit
-    def test_ollama_ca_bundle_reads_unprefixed_env(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        """ollama_ca_bundle is read from the unprefixed OLLAMA_CA_BUNDLE var."""
+    def test_pairing_does_not_affect_modal_leg_configured(self) -> None:
+        """The credential check is separate from the "can a leg be built" check.
+
+        modal_leg_configured must not treat a credential problem as "no leg":
+        that would silently drop the cascade's backstop for an operator typo,
+        which is the opposite of the loud failure this pairing rule exists for.
+        """
         from cyo_adventure.core.config import Settings
 
-        monkeypatch.setenv("OLLAMA_CA_BUNDLE", "certs/homelab-ca.pem")
-        assert Settings().ollama_ca_bundle == "certs/homelab-ca.pem"
-
-    @pytest.mark.unit
-    def test_ollama_base_url_default_is_localhost(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        """With no override, ollama_base_url is the local-dev default."""
-        from cyo_adventure.core.config import Settings
-
-        monkeypatch.delenv("OLLAMA_BASE_URL", raising=False)
-        monkeypatch.delenv("CYO_ADVENTURE_OLLAMA_BASE_URL", raising=False)
-        assert Settings().ollama_base_url == "http://localhost:11434"
-
-    @pytest.mark.unit
-    def test_ollama_base_url_reads_unprefixed_env(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        """ollama_base_url is read from the unprefixed OLLAMA_BASE_URL var."""
-        from cyo_adventure.core.config import Settings
-
-        monkeypatch.setenv("OLLAMA_BASE_URL", "https://ollama.williamshome.family")
-        assert Settings().ollama_base_url == "https://ollama.williamshome.family"
-
-    @pytest.mark.unit
-    def test_ollama_auth_reads_unprefixed_env(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        """ollama_auth is read from the unprefixed OLLAMA_AUTH var."""
-        from cyo_adventure.core.config import Settings
-
-        monkeypatch.setenv("OLLAMA_AUTH", "testservice:testcred")
-        assert Settings().ollama_auth == "testservice:testcred"
+        settings = Settings(
+            modal_base_url="https://example--cyo.modal.run/v1",
+            modal_model="google/gemma-4-26b-a4b-it",
+            modal_proxy_key="a-key",
+            modal_proxy_secret="a-secret",
+        )
+        assert settings.modal_leg_configured is True
 
 
 class TestValidatorRejectDevUrlOutsideLocal:

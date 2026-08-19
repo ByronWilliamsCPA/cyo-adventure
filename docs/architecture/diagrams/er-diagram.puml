@@ -201,7 +201,7 @@ entity "storybook_version" as storybook_version #F3E5F5 {
   published_at : TIMESTAMPTZ NULL
   model : VARCHAR(120) NULL [LLM model id]
   prompt_version : VARCHAR(120) NULL
-  provider : VARCHAR(120) NULL [mock|anthropic|openrouter|modal|ollama|import]
+  provider : VARCHAR(120) NULL [mock|anthropic|openrouter|modal|import] (ollama pre-retirement)
   skeleton_slug : VARCHAR(120) NULL [WS-C PR2 provenance]
   created_at : TIMESTAMPTZ
   cover_image_url : VARCHAR(512) NULL
@@ -458,7 +458,7 @@ entity "security_event" as security_event #ECEFF1 {
 entity "provider_model_allowlist" as provider_model_allowlist #D1C4E9 {
   * id : UUID <<PK>>
   --
-  provider : VARCHAR(32) [anthropic|openrouter|modal|ollama]
+  provider : VARCHAR(32) [anthropic|openrouter|modal]
   model_id : VARCHAR(120)
   enabled : BOOLEAN [default true]
   display_name : VARCHAR(120) NULL

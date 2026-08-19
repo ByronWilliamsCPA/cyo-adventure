@@ -27,7 +27,7 @@
 '                                                   call is PII-screened at entry)
 '   src/cyo_adventure/generation/provider.py      (GenerationProvider protocol,
 '                                                   build_provider(): resolves
-'                                                   mock|ollama|anthropic|
+'                                                   mock|anthropic|
 '                                                   openrouter[+cascade]|modal,
 '                                                   with per-job provider_override/
 '                                                   model_override, WS-C PR1)
@@ -67,7 +67,6 @@
 '   src/cyo_adventure/generation/providers/openrouter.py
 '   src/cyo_adventure/generation/providers/anthropic.py
 '   src/cyo_adventure/generation/providers/modal.py
-'   src/cyo_adventure/generation/providers/ollama.py
 '   src/cyo_adventure/generation/providers/fallback.py  (FallbackProvider cascade)
 '   src/cyo_adventure/core/config.py  (openrouter_model, openrouter_fallback_model)
 '   src/cyo_adventure/generation/concept.py       (ConceptBrief)
@@ -153,11 +152,9 @@ package "Generation Pipeline" #FFF3E0 {
 
     component "OpenRouterProvider [fallback]\ngeneration/providers/openrouter.py\nmodel: anthropic/claude-sonnet-4.6\nsame adapter, second leg" as openrouter_fb #F3E5F5
 
-    component "OllamaProvider\ngeneration/providers/ollama.py\nLayer 1: transient retry\nlocal fallback (3rd leg)" as ollama_prov #F3E5F5
-
     component "AnthropicProvider\ngeneration/providers/anthropic.py\ndirect-Anthropic leg (no cascade)\nadmin-selectable per job" as anthropic_prov #F3E5F5
 
-    component "ModalProvider\ngeneration/providers/modal.py\nexperimental Modal-hosted leg\nadmin-selectable per job" as modal_prov #F3E5F5
+    component "ModalProvider\ngeneration/providers/modal.py\nLayer 1: transient retry\ncascade leg 3 (non-OpenRouter backstop)\nand admin-selectable per job" as modal_prov #F3E5F5
   }
 
   component "Validator Gate\nvalidator/gate.py\nrun_gate() -> GateResult\n(blocked, safety_flagged)" as gate #E8F5E9
@@ -176,9 +173,8 @@ package "Generation Pipeline" #FFF3E0 {
 
 package "External LLM APIs" #E0E0E0 {
   component "OpenRouter API\nhttps://openrouter.ai" as or_api #E0E0E0
-  component "Ollama API\nhttp://localhost:11434" as ol_api #E0E0E0
   component "Anthropic API\nhttps://api.anthropic.com" as anthropic_api #E0E0E0
-  component "Modal-hosted endpoint\nMODAL_BASE_URL" as modal_api #E0E0E0
+  component "Modal Auto Endpoint\nMODAL_BASE_URL" as modal_api #E0E0E0
 }
 
 database "PostgreSQL\nGenerationJob row\nstatus: queued->running->\npassed|needs_review|failed|\nawaiting_manual_fill" as pg #FFF8E1
@@ -197,14 +193,13 @@ build_provider --> pii : "resolved provider,\nwrapped by the orchestrator\nin Pi
 pii --> fallback : "default cascade\n(provider=openrouter, fallback enabled)"
 fallback --> openrouter : "leg 1 (primary)"
 fallback ..> openrouter_fb : "leg 2\n(failover, ADR-003 amended)"
-fallback ..> ollama_prov : "leg 3\n(failover)"
+fallback ..> modal_prov : "leg 3\n(failover, when configured)"
 pii ..> anthropic_prov : "provider=anthropic\n(no cascade, admin-selected)"
 pii ..> modal_prov : "provider=modal\n(no cascade, admin-selected)"
 openrouter --> or_api : "POST /chat/completions\n(httpx, retries)"
 openrouter_fb --> or_api : "POST /chat/completions\n(httpx, retries)"
-ollama_prov --> ol_api : "POST /api/generate\n(httpx, retries)"
+modal_prov --> modal_api : "POST /v1/chat/completions\n(httpx, retries)"
 anthropic_prov --> anthropic_api : "POST /v1/messages\n(httpx, retries)"
-modal_prov --> modal_api : "POST (httpx, retries)"
 fallback --> orchestrator : "raw text"
 orchestrator --> gate : "parsed JSON doc\nrun_gate(doc)"
 gate --> orchestrator : "GateResult\n(blocked, safety_flagged)"

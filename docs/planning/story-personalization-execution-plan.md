@@ -128,8 +128,9 @@ Owner decisions recorded 2026-07-29 (post-Stage-C review of draft PR #489):
   injects `.env`, and non-local guard families trip otherwise). Note `Settings` in
   `core/config.py` declares **no `env_file`**: it reads the process environment only, so in a
   bare shell or a worktree you must source the env yourself
-  (`set -a; . ./.env; set +a`) and symlink `certs/` (relative `OLLAMA_CA_BUNDLE` paths resolve
-  against the cwd). Worktrees share git, not untracked files.
+  (`set -a; . ./.env; set +a`). The `certs/` symlink this step used to require is no longer
+  needed: `OLLAMA_CA_BUNDLE` was the only cwd-relative file-path setting and it went away with
+  the 2026-08-18 Ollama retirement. Worktrees share git, not untracked files.
 
 ---
 
@@ -177,8 +178,9 @@ credentials come from `core.config.settings`, which reads the **process environm
 (`Settings` has no `env_file`); `.env` reaches it via VS Code terminal injection or
 docker-compose, never directly. In a worktree, source it explicitly:
 `bash -c 'set -a; . ./.env; set +a; export ENVIRONMENT=local; exec uv run python scripts/measure_sentinel_survival.py ...'`
-and symlink `certs/` into the worktree (`ln -s ../../certs certs`) because `OLLAMA_CA_BUNDLE`
-is a cwd-relative path. A missing key surfaces as `ConfigurationError`.
+The `certs/` symlink this step used to require is obsolete since the 2026-08-18 Ollama
+retirement removed `OLLAMA_CA_BUNDLE`, the only cwd-relative path setting. A missing key
+surfaces as `ConfigurationError`.
 
 - [ ] **Step 1: mock smoke run (free, proves the harness)**
 

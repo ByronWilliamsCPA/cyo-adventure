@@ -121,8 +121,8 @@ test.describe('admin CRUD tab touch targets (Task A7)', () => {
           rows: [
             {
               id: 'a1',
-              provider: 'ollama',
-              model_id: 'qwen2.5:14b',
+              provider: 'modal',
+              model_id: 'google/gemma-4-26b-a4b-it',
               enabled: true,
               display_name: null,
             },
