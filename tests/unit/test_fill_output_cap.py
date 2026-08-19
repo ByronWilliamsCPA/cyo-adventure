@@ -93,18 +93,20 @@ def test_every_configured_default_model_has_a_cap() -> None:
     ceilings of 64,000 and 128,000, so `fill_skeleton` over-asked and
     `is_fill_feasible` never refused anything (`AL-428`).
 
-    `ollama_model` is exempt on purpose: a locally-served model's output ceiling
-    is set by the deployment's runtime configuration, not by a vendor, so there
-    is no value to look up. Adding any new default to `core/config.py` fails
-    this test until it is either given a row or added here deliberately.
+    The `ollama_model` exemption this test used to carry is gone with the
+    Ollama retirement: a locally-served model had no vendor ceiling to look up,
+    and no configured default has that property any more. Adding any new default
+    to `core/config.py` fails this test until it is given a row.
+
+    `modal_model` needs no exemption either. It defaults to None rather than to
+    a model id, so the isinstance guard below skips it; a deployment that pins
+    a real Modal model supplies its own cap through the same table.
     """
-    exempt = {"ollama_model"}
     fields = ("openrouter_model", "openrouter_fallback_model", "anthropic_model")
     missing = [
         (name, default)
         for name in fields
-        if name not in exempt
-        and isinstance(default := Settings.model_fields[name].default, str)
+        if isinstance(default := Settings.model_fields[name].default, str)
         and default not in MODEL_OUTPUT_CAPS
     ]
 
@@ -185,7 +187,7 @@ def test_an_unknown_model_gets_the_default() -> None:
     ("provider", "field", "model"),
     [
         ("openrouter", "openrouter_model", "deepseek/deepseek-v4-pro"),
-        ("ollama", "ollama_model", "qwen2.5:14b"),
+        ("modal", "modal_model", "google/gemma-4-26b-a4b-it"),
         ("anthropic", "anthropic_model", "claude-sonnet-4-6"),
     ],
 )

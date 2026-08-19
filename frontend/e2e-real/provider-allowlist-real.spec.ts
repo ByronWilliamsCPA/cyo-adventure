@@ -45,7 +45,7 @@ test('an admin adds, disables, and removes a real provider-allowlist entry, all 
   await page.goto('/admin/provider-allowlist')
   await expect(page.getByRole('heading', { name: 'Provider allowlist' })).toBeVisible()
 
-  await page.getByLabel('Provider').selectOption('ollama')
+  await page.getByLabel('Provider').selectOption('modal')
   await page.getByLabel('Model id').fill(modelId)
   await page.getByRole('button', { name: 'Add to allowlist' }).click()
 

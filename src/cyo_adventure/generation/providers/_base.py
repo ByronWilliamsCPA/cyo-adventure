@@ -1,6 +1,6 @@
 """Shared retry/backoff driver for live ``GenerationProvider`` adapters.
 
-Both the OpenRouter and Ollama adapters own **Layer 1** of the failure model:
+Every live adapter (OpenRouter, Anthropic, Modal) owns **Layer 1** of the failure model:
 retry TRANSIENT failures against the same model with exponential backoff, and
 let leg-fatal failures propagate immediately so the cascade (Layer 2) can fail
 over. This module factors that loop out so each adapter only supplies its own

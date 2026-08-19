@@ -29,7 +29,6 @@ from cyo_adventure.generation.provider import MockProvider, build_provider
 from cyo_adventure.generation.providers import (
     FallbackProvider,
     ModalProvider,
-    OllamaProvider,
 )
 from cyo_adventure.storybook.models import AgeBand
 from scripts.yield_harness import (
@@ -345,19 +344,30 @@ class TestLiveHarnessHelpers:
     def test_live_factory_openrouter_cascade(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """openrouter + fallback builds the three-leg cascade."""
+        """openrouter + fallback builds the full three-leg cascade."""
         monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
+        monkeypatch.setenv("MODAL_BASE_URL", "https://example--cyo.modal.run/v1")
+        monkeypatch.setenv("MODAL_MODEL", "google/gemma-4-26b-a4b-it")
         factory = _build_live_factory("openrouter", model=None, fallback=True)
         provider = factory()
         assert isinstance(provider, FallbackProvider)
         assert len(provider.legs) == 3
 
-    def test_live_factory_ollama(self) -> None:
-        """ollama builds the local Ollama leg with the override model."""
-        factory = _build_live_factory("ollama", model="llama3", fallback=True)
+    def test_live_factory_openrouter_cascade_without_modal(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """With no Modal endpoint the harness still builds, on two legs.
+
+        A yield run must not require a Modal deployment just to measure the
+        OpenRouter legs, which is the common case for this harness.
+        """
+        monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
+        monkeypatch.delenv("MODAL_BASE_URL", raising=False)
+        monkeypatch.delenv("MODAL_MODEL", raising=False)
+        factory = _build_live_factory("openrouter", model=None, fallback=True)
         provider = factory()
-        assert isinstance(provider, OllamaProvider)
-        assert provider.name == "ollama:llama3"
+        assert isinstance(provider, FallbackProvider)
+        assert len(provider.legs) == 2
 
     def test_live_factory_modal(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """modal builds the Modal leg with the override model."""
@@ -423,9 +433,9 @@ class TestLiveHarnessHelpers:
     ) -> None:
         """Quoted dotenv values are unquoted so the literal quotes do not leak.
 
-        .env.example documents OLLAMA_AUTH="<username>:<app-password>" with double
-        quotes; without unquoting, the quotes would become part of the credential
-        and break Basic auth.
+        .env.example documents quoted credential values (e.g.
+        MODAL_PROXY_SECRET="<secret>"); without unquoting, the quotes would
+        become part of the credential and break auth.
         """
         env = tmp_path / ".env"
         env.write_text(

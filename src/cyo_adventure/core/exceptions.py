@@ -509,7 +509,7 @@ class ProviderError(ExternalServiceError):
         Args:
             message: Description of the provider failure (never include the
                 prompt text or any PII; the prompt may contain story content).
-            provider: The provider/leg name (e.g. ``"openrouter"``, ``"ollama"``).
+            provider: The provider/leg name (e.g. ``"openrouter"``, ``"modal"``).
             model: The model id that failed, when known.
             status_code: HTTP status code from the provider, when applicable.
             leg_fatal: ``True`` when the leg should be marked dead by the

@@ -1,7 +1,9 @@
 """The review-provider abstraction for the LLM moderation stages.
 
 ``ReviewProvider`` mirrors ``GenerationProvider`` exactly so the same backend
-adapters (OpenRouter, Ollama) and the same ``PiiGuardedProvider`` wrapper apply.
+adapters and the same ``PiiGuardedProvider`` wrapper apply. OpenRouter is the
+only live review backend: the Ollama leg was retired, and Modal review is still
+deferred to slice 2b.
 ``build_review_provider`` enforces reviewer independence: a model must not review
 its own output without that being recorded.
 """
@@ -13,7 +15,6 @@ from typing import TYPE_CHECKING, Protocol, cast
 from cyo_adventure.core.exceptions import ConfigurationError
 from cyo_adventure.generation.provider import (
     MockProvider,
-    build_ollama_leg,
     build_openrouter_leg,
 )
 from cyo_adventure.generation.usage import Completion
@@ -109,27 +110,21 @@ def build_review_provider(
     # #CRITICAL: security: a model reviewing its own output is not an independent
     # check; tier 3 must surface as not-independent, never silently pass.
     # #VERIFY: test_same_backend_same_model_is_not_independent.
-    # #CRITICAL: external-resource: openrouter/ollama legs are network-backed HTTP
-    # clients; a missing credential raises ConfigurationError at build time rather
+    # #CRITICAL: external-resource: the openrouter leg is a network-backed HTTP
+    # client; a missing credential raises ConfigurationError at build time rather
     # than failing mid-pipeline.
-    # #VERIFY: build_openrouter_leg/build_ollama_leg raise on absent credentials.
+    # #VERIFY: build_openrouter_leg raises on absent credentials.
     backend = settings.review_provider
 
     if backend == "mock":
         return MockProvider(responses=["{}"] * _MOCK_RESPONSE_BUDGET), True
 
     if backend == "modal":
-        msg = (
-            "review_provider 'modal' is deferred to slice 2b; use openrouter or ollama"
-        )
+        msg = "review_provider 'modal' is deferred to slice 2b; use openrouter"
         raise ConfigurationError(msg)
 
-    if backend == "openrouter":
-        provider = build_openrouter_leg(settings, settings.review_openrouter_model)
-        review_model: str | None = settings.review_openrouter_model
-    else:  # "ollama"
-        provider = build_ollama_leg(settings, settings.review_ollama_model)
-        review_model = settings.review_ollama_model
+    provider = build_openrouter_leg(settings, settings.review_openrouter_model)
+    review_model: str | None = settings.review_openrouter_model
 
     independent = backend != generator_provider or review_model != generator_model
     return provider, independent
@@ -150,15 +145,12 @@ def resolve_review_settings(settings: Settings, model_override: str | None) -> S
 
     Returns:
         The original ``settings`` object unchanged when ``model_override`` is
-        None; otherwise a copy with ``review_openrouter_model`` or
-        ``review_ollama_model`` overridden, matching whichever backend
-        ``settings.review_provider`` selects. The mock backend has no
-        configurable model, so the override is a no-op for it.
+        None; otherwise a copy with ``review_openrouter_model`` overridden.
+        The mock backend has no configurable model and the modal backend is
+        still deferred, so the override is a no-op for both.
     """
     if model_override is None:
         return settings
     if settings.review_provider == "openrouter":
         return settings.model_copy(update={"review_openrouter_model": model_override})
-    if settings.review_provider == "ollama":
-        return settings.model_copy(update={"review_ollama_model": model_override})
     return settings

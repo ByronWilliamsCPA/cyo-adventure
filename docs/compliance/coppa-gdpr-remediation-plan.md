@@ -45,7 +45,7 @@ specific, fixable gaps. Verified directly at commit `66fe320`:
 ### "OpenRouter, Anthropic, and OpenAI never receive user data, they are stories only."
 
 **Mostly true for the primary generation path, with one real gap.** Every call to OpenRouter,
-Anthropic, and Ollama for story text generation is wrapped by `PiiGuardedProvider`
+Anthropic, and Modal for story text generation is wrapped by `PiiGuardedProvider`
 (`generation/guarded.py`), which calls `assert_prompt_pii_safe` (`generation/pii.py`) on the
 fully assembled prompt before it goes out. That guard checks the prompt against the family's
 *registered* real child display names (exact match, word-boundary anchored, evasion-resistant

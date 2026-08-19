@@ -34,8 +34,12 @@ Adventure system depends on.
   model, claude-haiku-4.5) then leg 2 (fallback model, claude-sonnet-4.6). Stories are
   generated through a three-stage pipeline (Structure, Prose, Repair) with a provider
   fallback cascade.
-- **Ollama** is the local fallback LLM (leg 3). If both OpenRouter legs fail
-  (leg-fatal errors), the `FallbackProvider` cascade tries Ollama before giving up.
+- **Modal** is the non-OpenRouter backstop (leg 3), replacing the retired local
+  Ollama leg. If both OpenRouter legs fail (leg-fatal errors), the
+  `FallbackProvider` cascade tries Modal before giving up. The leg is included
+  only when `MODAL_BASE_URL` and `MODAL_MODEL` are set; with them unset the
+  cascade is two OpenRouter legs on one vendor and one account, and
+  `build_provider` logs `generation.cascade_single_vendor` at WARNING.
 - **Supabase Auth** provides OIDC identity (ADR-009). The guardian identity and child
   session are encoded in the token; the local dev environment uses a token-as-subject
   seam, while non-local environments verify the JWT via `jwt.PyJWKClient` (see `api/deps.py`).

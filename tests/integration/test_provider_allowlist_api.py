@@ -97,7 +97,7 @@ async def test_add_then_list_with_audit(
 
 async def test_add_duplicate_pair_is_409(client: AsyncClient, seed: Seed) -> None:
     """A second POST for the same (provider, model_id) is a conflict, not a second row."""
-    body = {"provider": "ollama", "model_id": "qwen2.5:14b"}
+    body = {"provider": "modal", "model_id": "google/gemma-4-26b-a4b-it"}
     first = await client.post(_URL, json=body, headers=auth(seed.admin_token))
     assert first.status_code == 201
     second = await client.post(_URL, json=body, headers=auth(seed.admin_token))
@@ -148,7 +148,7 @@ async def test_delete_removes_row_with_audit(
     """DELETE removes the row and audits it before deleting."""
     created = await client.post(
         _URL,
-        json={"provider": "ollama", "model_id": "qwen3:30b"},
+        json={"provider": "modal", "model_id": "google/gemma-4-26b-a4b-it"},
         headers=auth(seed.admin_token),
     )
     entry_id = created.json()["id"]

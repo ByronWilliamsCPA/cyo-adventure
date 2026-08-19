@@ -88,9 +88,6 @@ already in the feature-flag table below.
 | `CYO_ADVENTURE_REDIS_URL` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `ANTHROPIC_API_KEY` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `OPENROUTER_API_KEY` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `OLLAMA_BASE_URL` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `OLLAMA_AUTH` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
-| `OLLAMA_CA_BUNDLE` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `MODAL_BASE_URL` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `MODAL_PROXY_KEY` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |
 | `MODAL_PROXY_SECRET` | backend, worker | _(unfilled)_ | _(unfilled)_ | _(unfilled)_ |

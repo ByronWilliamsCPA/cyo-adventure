@@ -59,8 +59,8 @@ class OpenRouterProvider:
     """A ``GenerationProvider`` that calls the OpenRouter chat-completions API.
 
     Satisfies the ``GenerationProvider`` protocol structurally. Construct one per
-    model id; the composite cascade holds several (primary, fallback model) plus
-    a local Ollama leg.
+    model id; the composite cascade holds two of these (primary, fallback model)
+    plus the Modal backstop leg.
 
     Args:
         api_key: OpenRouter API key (Bearer credential). Never logged.
