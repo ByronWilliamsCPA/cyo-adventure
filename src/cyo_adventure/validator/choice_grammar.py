@@ -709,45 +709,84 @@ def _longest_visible_run(dag: ConfigDag) -> list[str] | None:
     order = _topological_order(single, succ)
     if order is None:
         # A cycle of one-option configurations: the reader can walk it forever.
-        # Report that cycle's members rather than iterating it. L2-10 owns
-        # unescapable loops, so this rule names the shape and does not race it.
-        return _largest_cycle(single, succ)
+        # Measure over the SCC condensation rather than reporting the cycle
+        # alone. `_topological_order` reports None for a cycle ANYWHERE in the
+        # induced subgraph, so answering with just that cycle discards every
+        # acyclic corridor in the same story: a 2-vertex loop beside a twelve-
+        # stop corridor answered 2, fell under every band cap, and CG-5 emitted
+        # nothing at all for the corridor it exists to catch (`UW-C307`, second
+        # pass). Condensing keeps the cycle's own contribution (a cycle
+        # component weighs its member count, and L2-10 still owns the
+        # unescapable-loop finding) while letting a longer chain elsewhere win.
+        return _longest_run_over_condensation(single, succ)
     return _longest_chain(single, succ, order)
 
 
-def _largest_cycle(vertices: set[str], succ: dict[str, list[str]]) -> list[str]:
-    """Return the members of the largest one-option cycle in the subgraph.
+def _longest_run_over_condensation(
+    vertices: set[str], succ: dict[str, list[str]]
+) -> list[str]:
+    """Return the longest choiceless run when the subgraph contains a cycle.
 
-    Reached only when :func:`_topological_order` reports a cycle, so at least one
-    exists. Uses strongly connected components: a component of more than one
-    vertex is a cycle, and a single vertex is one only when it carries a
-    self-edge (a choice returning to its own node in the same variable state,
-    which ``loop_and_grow`` can produce).
+    Reached only when :func:`_topological_order` reports a cycle. Condenses the
+    strongly connected components into a DAG and takes the longest path through
+    it, weighting each component by its member count. That answers both shapes
+    with one measurement: a cycle contributes its own size (the reader can lap
+    it forever, and L2-10 owns the unescapable-loop finding, so this rule sizes
+    the shape rather than racing it), while a longer acyclic corridor elsewhere
+    in the same subgraph wins on its own length instead of being discarded.
+
+    The previous two revisions of this branch each answered with one shape only:
+    first every one-option configuration in the story (an over-report that named
+    stops no reader walks consecutively), then the largest cycle alone (an
+    under-report that missed every acyclic corridor whenever any loop existed,
+    so a 2-vertex loop beside a twelve-stop corridor emitted no finding at all).
+
+    Deterministic by construction. Component membership and the head tie-break
+    are both resolved lexically, so the reported run does not vary with
+    ``PYTHONHASHSEED``: iterating the ``set`` that
+    :func:`networkx.strongly_connected_components` yields would otherwise let
+    ``max`` break equal-size ties differently from run to run, and CG-5's
+    ``node_id`` and message with it.
 
     Args:
         vertices: The induced subgraph's vertex set.
         succ: Each vertex to its successors inside that set.
 
     Returns:
-        The largest cycle's vertices, sorted. Falls back to the whole vertex set
-        only if no component qualifies, which the caller's own precondition makes
-        unreachable; it is kept so a future change to that precondition degrades
-        to the old over-report rather than to an empty finding.
+        The vertex chain, from its head, with each component's members in
+        lexical order.
     """
     graph: nx.DiGraph[str] = nx.DiGraph()
-    graph.add_nodes_from(vertices)
-    for vertex, successors in succ.items():
-        for successor in successors:
+    graph.add_nodes_from(sorted(vertices))
+    for vertex in sorted(succ):
+        for successor in succ[vertex]:
             graph.add_edge(vertex, successor)
-    cycles = [
-        component
-        for component in nx.strongly_connected_components(graph)
-        if len(component) > 1
-        or next(iter(component)) in succ.get(next(iter(component)), ())
-    ]
-    if not cycles:
-        return sorted(vertices)
-    return sorted(max(cycles, key=len))
+
+    condensed = nx.condensation(graph)
+    members: dict[int, list[str]] = {
+        component: sorted(condensed.nodes[component]["members"])
+        for component in condensed.nodes
+    }
+
+    best: dict[int, int] = {}
+    nxt: dict[int, int] = {}
+    for component in reversed(list(nx.topological_sort(condensed))):
+        weight = len(members[component])
+        score = weight
+        for successor in sorted(condensed.successors(component)):
+            if best[successor] + weight > score:
+                score = best[successor] + weight
+                nxt[component] = successor
+        best[component] = score
+
+    head = min(best, key=lambda c: (-best[c], members[c][0]))
+    chain: list[str] = []
+    current = head
+    while True:
+        chain.extend(members[current])
+        if current not in nxt:
+            return chain
+        current = nxt[current]
 
 
 def _topological_order(

@@ -1115,3 +1115,70 @@ class TestVisibleRunCap:
         story = _stateful_story("16+", nodes, "n0")
         assert check_choiceless_run_cap(story).findings, "CG-1 must own this one"
         assert self._cg5(story) == []
+
+
+class TestVisibleRunCycleMeasurement:
+    """`_longest_visible_run` must not lose a corridor to an unrelated loop."""
+
+    def test_a_loop_does_not_hide_a_longer_corridor_elsewhere(self) -> None:
+        """A cycle anywhere must not suppress the acyclic run measurement.
+
+        `_topological_order` returns None for a cycle ANYWHERE in the induced
+        one-option subgraph, and the first fix for `UW-C307` answered that branch
+        with the largest cycle alone. That corrected the original over-report but
+        introduced an under-report: a 2-vertex loop beside a ten-stop corridor
+        answered 2, which is under every band cap, so CG-5 emitted nothing at all
+        for the corridor the rule exists to catch.
+
+        Measured over the SCC condensation, the cycle contributes its own size
+        and the longer chain wins on its length.
+        """
+        adjacency: dict[str, list[str]] = {"c0": ["c1"], "c1": ["c0"]}
+        for index in range(2, 12):
+            adjacency[f"c{index:02d}"] = [f"c{index + 1:02d}"] if index < 11 else []
+        adjacency["c99"] = ["c0", "c02"]
+        choice_count = dict.fromkeys(adjacency, 1)
+        choice_count["c99"] = 2
+
+        dag = ConfigDag(
+            adjacency=adjacency,
+            start="c99",
+            node_of={vertex: f"n{vertex}" for vertex in adjacency},
+            choice_count=choice_count,
+        )
+
+        run = choice_grammar._longest_visible_run(dag)  # pyright: ignore[reportPrivateUsage]
+
+        assert run is not None
+        assert len(run) == 10, f"the ten-stop corridor must win, got {run}"
+        assert "c0" not in run
+        assert "c1" not in run
+
+    def test_the_reported_run_is_stable_across_hash_seeds(self) -> None:
+        """Two equal-size cycles must not swap places run to run.
+
+        `strongly_connected_components` yields `set` objects in hash order, so
+        breaking an equal-size tie with a bare `max` made CG-5's `node_id` and
+        message vary with `PYTHONHASHSEED`. The head tie-break is lexical on the
+        component's smallest member, which is derived from the story's own
+        discovery order rather than from a node id.
+        """
+        dag = ConfigDag(
+            adjacency={
+                "c0": ["c1"],
+                "c1": ["c0"],
+                "c2": ["c3"],
+                "c3": ["c2"],
+                "c9": ["c0", "c2"],
+            },
+            start="c9",
+            node_of={f"c{i}": f"n{i}" for i in (0, 1, 2, 3, 9)},
+            choice_count={"c0": 1, "c1": 1, "c2": 1, "c3": 1, "c9": 2},
+        )
+
+        runs = {
+            tuple(choice_grammar._longest_visible_run(dag) or ())  # pyright: ignore[reportPrivateUsage]
+            for _ in range(8)
+        }
+
+        assert runs == {("c0", "c1")}, f"unstable across repeats: {runs}"
