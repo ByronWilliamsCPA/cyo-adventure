@@ -60,7 +60,7 @@ from cyo_adventure.validator.reading_level import BookReadingLevel, measure_book
 # band. These are the old hardcoded values, kept only so an undeclared book is
 # still graded rather than skipped; a declared book never reaches them.
 _FALLBACK_TARGET = 5.5
-_FALLBACK_TOLERANCE = 1.5
+_FALLBACK_TOLERANCE = 1.0
 # How far past a book's own upper bound counts as "too hard for its band". One
 # grade, so the blocking tier sits clear of the advisory window rather than on
 # its edge.
@@ -177,6 +177,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     breached = False
+    breaches: list[tuple[str, float, float]] = []
     unscorable: list[str] = []
     sys.stdout.write(
         f"{'book':34s} {'nodes':>5s} {'words':>6s} {'FK grade':>9s} {'in band':>8s}\n"
@@ -191,6 +192,8 @@ def main(argv: list[str] | None = None) -> int:
         level = scored.level
         ceiling = args.max_grade if args.max_grade is not None else scored.max_grade
         over = level.grade > ceiling
+        if over:
+            breaches.append((scored.book, level.grade, ceiling))
         breached = breached or over
         sys.stdout.write(
             f"{scored.book:34s} {level.nodes:5d} {level.words:6d} "
@@ -222,10 +225,23 @@ def main(argv: list[str] | None = None) -> int:
             f"to score, so this guard cannot say whether they sit in band: "
             f"{', '.join(sorted(unscorable))}\n"
         )
-    if breached:
+    if breaches:
+        # Each breaching book is named with ITS OWN ceiling. `ceiling` is
+        # assigned inside the scoring loop, so reading it here reported whichever
+        # book happened to be scored LAST, which since `scored.max_grade` became
+        # per-book is usually not a book that breached at all. It also called the
+        # value "the band's own upper edge" even under an explicit --max-grade
+        # override, which is a different thing.
+        detail = ", ".join(
+            f"{book} at {grade:.1f} against {limit:.1f}"
+            for book, grade, limit in sorted(breaches)
+        )
+        source = (
+            "--max-grade" if args.max_grade is not None else "the band's own upper edge"
+        )
         sys.stderr.write(
-            f"FAIL reading level: whole-book grade above {ceiling:.1f}, which is "
-            f"the band's own upper edge. Per-node RL-13 findings are advisory and "
+            f"FAIL reading level: {len(breaches)} book(s) score above their ceiling "
+            f"({source}): {detail}. Per-node RL-13 findings are advisory and "
             f"will not catch this; the book is too hard for its age band\n"
         )
     failed = breached or bool(unscorable)

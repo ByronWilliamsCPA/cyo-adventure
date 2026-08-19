@@ -308,18 +308,31 @@ def _check_state_carry(series_books: list[_Book], report: ValidationReport) -> N
 MAX_ENTRY_STATES = 64
 
 
-def _satisfying_exit_states(book: Storybook) -> tuple[list[VarState], bool]:
+def _satisfying_exit_states(
+    book: Storybook, entry_node: str | None = None
+) -> tuple[list[VarState], bool]:
     """Return the distinct variable states at ``book``'s satisfying endings.
+
+    The sender is walked from the node ITS reader enters, not unconditionally
+    from ``start_node``. A middle book of a chain is both a receiver and a
+    sender: its reader arrives at its own ``series_entry_node``, so exit states
+    computed from ``start_node`` describe a read of a prologue that reader skips,
+    and the states handed to the next book are the wrong ones. This is the same
+    `UW-C296` defect the receiver side of SR-9 already fixes; the sender side was
+    missed in that pass.
 
     Args:
         book: The sending book.
+        entry_node: The node the sending book's own reader enters at, or ``None``
+            for its ``start_node``. ``None`` is correct for the first book in a
+            chain, which nobody enters mid-way.
 
     Returns:
         tuple: The distinct exit states (deduplicated, deterministically
             ordered), and whether the walk capped or the state list was
             truncated at :data:`MAX_ENTRY_STATES`.
     """
-    result = walk_configurations(book)
+    result = walk_configurations(book, entry_node=entry_node)
     endings = {
         node.id: node.ending
         for node in book.nodes
@@ -464,7 +477,7 @@ def _check_continuation_entry_states(
         # None is a valid value and means the ordinary start node, which is
         # the same fallback the client takes.
         receiver_entry = receiver_series.series_entry_node
-        exit_states, truncated = _satisfying_exit_states(book)
+        exit_states, truncated = _satisfying_exit_states(book, series.series_entry_node)
         if truncated:
             report.add(
                 ValidationFinding(
