@@ -55,6 +55,7 @@ from cyo_adventure.storybook.models import (
 )
 from cyo_adventure.validator.band_profile import (
     breadth_scaled_floors,
+    cell_ending_bounds,
     is_offered_cell,
     min_complete_floor,
     production_cell_budget,
@@ -819,7 +820,20 @@ def main(argv: list[str] | None = None) -> int:
             if arc_floor is not None:
                 min_depth = math.ceil(arc_floor * _ENDING_DEPTH_QUALIFICATION_FRACTION)
                 qualified, total_endings = depth_qualified_endings(skeleton, min_depth)
-                ending_floor, _ = breadth_scaled_floors(node_count, style or "prose")
+                # Cap by the cell's own stated maximum, exactly as PL-17 does.
+                # Without it this floor demanded more endings than ADR-011
+                # section 5 permits the cell to have: at 3-5/medium with 45 nodes
+                # it asked for 7 against a ceiling of 4, so the top of the
+                # declared node envelope was unbuildable at zero findings and the
+                # usable range was 23-40 rather than 23-45. `UW-C283` fixed this
+                # floor-above-ceiling inversion in `policy.py` and this second
+                # call site was missed (`UW-C300`).
+                cell_bounds = cell_ending_bounds(band, length_raw, style or "prose")
+                ending_floor, _ = breadth_scaled_floors(
+                    node_count,
+                    style or "prose",
+                    None if cell_bounds is None else cell_bounds[1],
+                )
                 sys.stdout.write(
                     f"endings depth-qualified: {qualified} of {total_endings} at "
                     f"depth >= {min_depth} against floor {ending_floor}\n"

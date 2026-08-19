@@ -29,10 +29,11 @@ from cyo_adventure.storybook.character_vocabulary import (
     CANONICAL_CHARACTER_VARIABLES,
 )
 from cyo_adventure.validator.band_profile import (
-    _NODES_PER_DECISION_CEILING,
     breadth_scaled_floors,
+    cell_ending_bounds,
     is_offered_cell,
     min_complete_floor,
+    nodes_per_decision_ceiling,
     production_cell_budget,
     reading_pace_wpm,
     words_per_node_profile,
@@ -89,13 +90,24 @@ def build_brief(band: str, length: str, style: str) -> dict[str, object]:
         raise ValueError(msg)
     min_nodes, max_nodes, depth_cap = budget
     words = words_per_node_profile(band, style)
+    _cell_bounds = cell_ending_bounds(band, length, style)
     arc_floor = min_complete_floor(band, length, style)
-    density_key = "gamebook" if style == "gamebook" else "prose"
     brief: dict[str, object] = {
         "cell": {"age_band": band, "length": length, "narrative_style": style},
         "nodes": {"min": min_nodes, "max": max_nodes, "depth_cap": depth_cap},
+        # The ADR section 5 per-cell MAXIMUM, which the brief never printed. It
+        # is advisory in PL-17 so it does not block, but under the authoring
+        # bar of zero findings at any severity it binds, and `the-last-blue-cup`
+        # is the proof that a strict-bar book can cross it (`UW-C300`).
+        "endings_ceiling_for_cell": (None if _cell_bounds is None else _cell_bounds[1]),
+        "endings_range_for_cell": _cell_bounds,
+        # Capped by the cell ceiling, as PL-17 caps it. Printing the uncapped
+        # figure made the brief demand more endings than the same brief's own
+        # ceiling permits at the top of a node envelope.
         "endings_floor_by_node_count": {
-            str(n): breadth_scaled_floors(n, style)[0]
+            str(n): breadth_scaled_floors(
+                n, style, None if _cell_bounds is None else _cell_bounds[1]
+            )[0]
             for n in (min_nodes, (min_nodes + max_nodes) // 2, max_nodes)
         },
         "decisions_floor_by_node_count": {
@@ -125,8 +137,18 @@ def build_brief(band: str, length: str, style: str) -> dict[str, object]:
             ),
         },
         "pacing": {
+            # Read through the accessor, not the flat by-style table. PL-26
+            # grades `nodes_per_decision_ceiling(style, band)`, and since the
+            # Wave 3 per-band derivation the flat entry is a fallback for an
+            # unconfigured band only. Printing it here made the brief disagree
+            # with the rule it describes at every band, and the error flipped
+            # direction across the range: 6.0 printed against 15.0 and 8.57
+            # enforced at the young bands, against 4.29 and 3.43 at the teen
+            # ones, so a teen-band author designed to a budget 40 to 75 percent
+            # looser than the gate allows. Three of the seven authoring agents
+            # on 2026-08-18 reproduced it independently (`UW-C300`).
             "nodes_per_decision_ceiling_fastest_finish": (
-                _NODES_PER_DECISION_CEILING[density_key]
+                nodes_per_decision_ceiling(style, band)
             ),
             "reading_pace_wpm": reading_pace_wpm(band),
             "estimated_minutes_rule": (

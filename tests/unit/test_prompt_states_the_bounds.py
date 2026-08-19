@@ -20,6 +20,7 @@ being consulted on one side and not the other.
 from __future__ import annotations
 
 import uuid
+from typing import cast
 
 import pytest
 
@@ -31,7 +32,10 @@ from cyo_adventure.story_requests.brief import brief_from_request
 from cyo_adventure.validator.band_profile import (
     _PRODUCTION_CELLS,  # pyright: ignore[reportPrivateUsage]
     breadth_scaled_floors,
+    cell_ending_bounds,
     min_complete_floor,
+    nodes_per_decision_ceiling,
+    offered_cells,
     words_per_node_profile,
 )
 from cyo_adventure.validator.choice_grammar import words_per_stop_ceiling
@@ -99,3 +103,71 @@ def test_the_brief_asks_for_an_ending_count_the_gate_accepts(
         f"{cell}: prompt asks for exactly {brief.ending_count} endings, "
         f"PL-17 floors at {floor}"
     )
+
+
+# ---------------------------------------------------------------------------
+# The drafting brief must agree with the rules it publishes (UW-C300)
+# ---------------------------------------------------------------------------
+
+
+def test_brief_publishes_the_pl26_ceiling_the_rule_grades() -> None:
+    """The brief's pacing ceiling must be the one PL-26 applies, per band.
+
+    This drifted twice. `generate_drafting_brief.py` exists because a
+    hand-copied brief mis-stated PL-26's gamebook ceiling as 6.0 against the
+    enforced 4.0 (`AL-149`), and the script then reproduced the same defect by
+    reading the flat by-style table directly while PL-26 graded the per-band
+    one. Three of seven authoring agents hit it independently on 2026-08-18. The
+    error flipped direction across the band range, so a single spot check would
+    not have caught it.
+    """
+    from scripts.generate_drafting_brief import build_brief
+
+    for band, length, style in sorted(offered_cells()):
+        brief = build_brief(band, length, style)
+        pacing = cast("dict[str, object]", brief["pacing"])
+        assert pacing["nodes_per_decision_ceiling_fastest_finish"] == (
+            nodes_per_decision_ceiling(style, band)
+        ), f"brief disagrees with PL-26 at {band}/{length}/{style}"
+
+
+def test_brief_publishes_the_cell_endings_ceiling() -> None:
+    """The ADR section 5 per-cell maximum must appear in the brief.
+
+    PL-17's ceiling is advisory so it does not block, but under the authoring
+    bar of zero findings at any severity it binds, and `the-last-blue-cup` is
+    the proof that a book authored to the strict bar can cross it.
+    """
+    from scripts.generate_drafting_brief import build_brief
+
+    for band, length, style in sorted(offered_cells()):
+        brief = build_brief(band, length, style)
+        assert "endings_ceiling_for_cell" in brief
+        assert brief["endings_ceiling_for_cell"] == (
+            None
+            if cell_ending_bounds(band, length, style) is None
+            else cell_ending_bounds(band, length, style)[1]
+        )
+
+
+def test_no_brief_floor_ever_exceeds_the_brief_own_ceiling() -> None:
+    """A floor above the ceiling is unsatisfiable, and the brief printed one.
+
+    At 3-5/medium with 45 nodes the uncapped floor asked for 7 endings against a
+    cell ceiling of 4, so the top of the declared node envelope could not be
+    authored. `UW-C283` fixed this inversion in PL-17 and two other call sites
+    kept the uncapped reading.
+    """
+    from scripts.generate_drafting_brief import build_brief
+
+    for band, length, style in sorted(offered_cells()):
+        brief = build_brief(band, length, style)
+        ceiling = brief["endings_ceiling_for_cell"]
+        if ceiling is None:
+            continue
+        floors = cast("dict[str, int]", brief["endings_floor_by_node_count"])
+        for node_count, floor in floors.items():
+            assert floor <= cast("int", ceiling), (
+                f"{band}/{length}/{style} at {node_count} nodes: floor {floor} "
+                f"exceeds the cell ceiling {ceiling}"
+            )
