@@ -4588,7 +4588,7 @@
        "script": {
         "exec": [
          "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
-         "var schema = {\"properties\": {\"rows\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"provider\": {\"type\": \"string\", \"enum\": [\"anthropic\", \"openrouter\", \"modal\", \"ollama\"]}, \"model_id\": {\"type\": \"string\"}, \"enabled\": {\"type\": \"boolean\"}, \"display_name\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"provider\", \"model_id\", \"enabled\", \"display_name\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"rows\"]};",
+         "var schema = {\"properties\": {\"rows\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"provider\": {\"type\": \"string\", \"enum\": [\"anthropic\", \"openrouter\", \"modal\"]}, \"model_id\": {\"type\": \"string\"}, \"enabled\": {\"type\": \"boolean\"}, \"display_name\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"provider\", \"model_id\", \"enabled\", \"display_name\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"rows\"]};",
          "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });"
         ],
         "type": "text/javascript"
@@ -4627,7 +4627,7 @@
        "script": {
         "exec": [
          "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
-         "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"provider\": {\"type\": \"string\", \"enum\": [\"anthropic\", \"openrouter\", \"modal\", \"ollama\"]}, \"model_id\": {\"type\": \"string\"}, \"enabled\": {\"type\": \"boolean\"}, \"display_name\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"provider\", \"model_id\", \"enabled\", \"display_name\"]};",
+         "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"provider\": {\"type\": \"string\", \"enum\": [\"anthropic\", \"openrouter\", \"modal\"]}, \"model_id\": {\"type\": \"string\"}, \"enabled\": {\"type\": \"boolean\"}, \"display_name\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"provider\", \"model_id\", \"enabled\", \"display_name\"]};",
          "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
          "pm.test(\"entry created enabled\", function () { var body = pm.response.json(); pm.expect(body.provider).to.eql(\"anthropic\"); pm.expect(body.enabled).to.eql(true); pm.collectionVariables.set(\"allowlist_entry_id\", body.id); });"
         ],
@@ -4680,7 +4680,7 @@
        "script": {
         "exec": [
          "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
-         "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"provider\": {\"type\": \"string\", \"enum\": [\"anthropic\", \"openrouter\", \"modal\", \"ollama\"]}, \"model_id\": {\"type\": \"string\"}, \"enabled\": {\"type\": \"boolean\"}, \"display_name\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"provider\", \"model_id\", \"enabled\", \"display_name\"]};",
+         "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"provider\": {\"type\": \"string\", \"enum\": [\"anthropic\", \"openrouter\", \"modal\"]}, \"model_id\": {\"type\": \"string\"}, \"enabled\": {\"type\": \"boolean\"}, \"display_name\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"provider\", \"model_id\", \"enabled\", \"display_name\"]};",
          "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
          "pm.test(\"entry disabled\", function () { var body = pm.response.json(); pm.expect(body.enabled).to.eql(false); });"
         ],
@@ -4734,7 +4734,7 @@
        "script": {
         "exec": [
          "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
-         "var schema = {\"properties\": {\"rows\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"provider\": {\"type\": \"string\", \"enum\": [\"anthropic\", \"openrouter\", \"modal\", \"ollama\"]}, \"model_id\": {\"type\": \"string\"}, \"enabled\": {\"type\": \"boolean\"}, \"display_name\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"provider\", \"model_id\", \"enabled\", \"display_name\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"rows\"]};",
+         "var schema = {\"properties\": {\"rows\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"provider\": {\"type\": \"string\", \"enum\": [\"anthropic\", \"openrouter\", \"modal\"]}, \"model_id\": {\"type\": \"string\"}, \"enabled\": {\"type\": \"boolean\"}, \"display_name\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"provider\", \"model_id\", \"enabled\", \"display_name\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"rows\"]};",
          "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
          "pm.test(\"entry no longer listed\", function () { var body = pm.response.json(); var row = body.rows.find(function (r) { return r.id === pm.collectionVariables.get(\"allowlist_entry_id\"); }); pm.expect(row).to.be.undefined; });"
         ],

@@ -2389,7 +2389,7 @@ class ModerationSetting(UpdatedAtMixin, Base):
     )
 
 
-_ALLOWLIST_PROVIDER_VALUES = "'anthropic', 'openrouter', 'modal', 'ollama'"
+_ALLOWLIST_PROVIDER_VALUES = "'anthropic', 'openrouter', 'modal'"
 
 
 class ProviderModelAllowlist(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):

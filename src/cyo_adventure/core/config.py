@@ -4,7 +4,7 @@ Most settings are loaded from environment variables under the 'CYO_ADVENTURE_'
 prefix. Several operator-facing names are also honored unprefixed via
 validation_alias, matching what docker-compose*.yml and
 docs/guides/configuration.md already set: ENVIRONMENT, LOG_LEVEL, JSON_LOGS,
-DATABASE_URL, WORKER_DATABASE_URL, and the OLLAMA_*, OPENROUTER_*,
+DATABASE_URL, WORKER_DATABASE_URL, and the OPENROUTER_*, MODAL_*,
 OPENAI_API_KEY, and PERSPECTIVE_API_KEY credentials. Pydantic-settings
 handles the parsing and validation.
 """
@@ -236,7 +236,7 @@ class Settings(BaseSettings):
     # log_level and json_logs are read from their UNPREFIXED names: both
     # docker-compose*.yml and docs/guides/configuration.md set LOG_LEVEL /
     # JSON_LOGS with no cyo_adventure_ prefix (same operator-facing convention as
-    # ENVIRONMENT and OLLAMA_* above). AliasChoices keeps the prefixed form
+    # ENVIRONMENT and OPENROUTER_*/MODAL_* above). AliasChoices keeps the prefixed form
     # working too and, listed first, wins if both are set. Without this, a
     # compose-injected LOG_LEVEL/JSON_LOGS was silently ignored at runtime.
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
@@ -392,25 +392,27 @@ class Settings(BaseSettings):
         ge=0.0,
         validation_alias="CYO_ADVENTURE_RATE_LIMIT_REDIS_COOLDOWN_SECONDS",
     )
-    # #CRITICAL: timing: RQ's own default job_timeout is 180s; a live Ollama run
-    # (see ollama_timeout_seconds's cold-start note) routinely exceeds that, so an
-    # unset job_timeout lets RQ SIGALRM-kill a still-healthy generation job and
-    # strand its row. 1800s (30 min) comfortably covers a cold-start plus the
-    # full three-stage pipeline (structure, prose, up to 3 repairs) against the
-    # slowest configured leg.
+    # #CRITICAL: timing: RQ's own default job_timeout is 180s; a live multi-stage
+    # run routinely exceeds that, so an unset job_timeout lets RQ SIGALRM-kill a
+    # still-healthy generation job and strand its row. 1800s (30 min) comfortably
+    # covers the full three-stage pipeline (structure, prose, up to 3 repairs)
+    # against the slowest configured leg, walking the whole cascade if every leg
+    # fails over. Since the Ollama retirement the slowest leg is Modal
+    # (modal_timeout_seconds=180, cold-starting a vLLM server), well inside this
+    # bound; the 300s Ollama leg this figure was originally sized around is gone.
     # #VERIFY: generation/queue.py::enqueue_generation passes this as
     # job_timeout= on every enqueue call (both the guardian-triggered enqueue and
     # the stranded-job reclaim sweep's re-enqueue).
     generation_job_timeout_seconds: int = 1800
     # Provider selection. "mock" remains the default so CI and local runs never
     # make live LLM calls; production sets this to "openrouter" (the primary
-    # per ADR-003 as amended 2026-06-22), while staging defaults to "ollama"
-    # so staging test runs place no billed LLM calls (see .env.staging.example).
+    # per ADR-003 as amended 2026-06-22). Staging also sets "openrouter" but
+    # pins a cheap model rather than the production pair, so staging exercises
+    # the real adapter path at bounded cost (see .env.staging.example); before
+    # the Ollama retirement it ran the free local leg instead.
     # Live adapters are constructed lazily in build_provider(), so an unset
     # live key fails at call time, not startup.
-    generation_provider: Literal[
-        "mock", "anthropic", "ollama", "openrouter", "modal"
-    ] = "mock"
+    generation_provider: Literal["mock", "anthropic", "openrouter", "modal"] = "mock"
 
     # DEV/TEST-ONLY: which canned fixture the deterministic mock provider serves.
     # "safe" (default) is the gate-clean canned story ("The Forest Path") the
@@ -458,15 +460,6 @@ class Settings(BaseSettings):
     # #VERIFY: Phase 2b adapter raises ProviderError on HTTP 400/404 invalid-model.
     openrouter_model: str = "anthropic/claude-haiku-4.5"
     openrouter_fallback_model: str = "anthropic/claude-sonnet-4.6"
-    # Default to qwen2.5:14b: a ~9GB general instruct model that, in live testing
-    # (2026-06-23), was both fast and produced a valid, gate-passing story graph
-    # (the repair loop converged). The larger 30B tags are too slow on the
-    # single-parallel host (~1hr/story), and the reasoning models (`qwen3:30b`,
-    # `qwen-assistant:latest`) waste the num_predict budget on thinking tokens and
-    # can return empty content; the prose-tuned `story-assistant:latest` was fast
-    # but produced structurally invalid graphs (over-depth, dangling refs). Override
-    # via CYO_ADVENTURE_OLLAMA_MODEL for a locally-pulled tag.
-    ollama_model: str = "qwen2.5:14b"
     # Direct-Anthropic credential and defaults (WS-C PR1). Read from the
     # UNPREFIXED ANTHROPIC_API_KEY env var, matching the openrouter_api_key
     # precedent. Optional and None by default: only generation_provider=anthropic
@@ -506,41 +499,20 @@ class Settings(BaseSettings):
     # #VERIFY: Phase 2b adapter passes this to httpx.AsyncClient(timeout=...).
     llm_timeout_seconds: int = 120
 
-    # Dedicated timeout for the Ollama leg, separate from the cloud llm_timeout
-    # because the homelab host has very different latency: it runs
-    # OLLAMA_NUM_PARALLEL=1 (one request at a time, others queue) with a ~28s cold
-    # start after OLLAMA_KEEP_ALIVE expires. With streaming this bounds the per-read
-    # gap (time-to-first-byte), not total generation time, so it mainly needs to
-    # cover a cold start plus waiting behind one queued request.
-    # #ASSUME: external-resources: time-to-first-byte can be minutes when a prior
-    # request holds the single execution slot; too short a timeout fails healthy calls.
-    # #VERIFY: build_ollama_leg passes this (not llm_timeout_seconds) to the adapter.
-    ollama_timeout_seconds: int = 300
-
     # Cascade switch. True (default) lets FallbackProvider fail over across legs.
     # The yield/leg-comparison runs set this False to measure each leg in
     # isolation (no failover masking a leg's true yield).
     provider_fallback_enabled: bool = True
 
-    # Provider endpoints. OpenRouter's base url is stable; Ollama defaults to the
-    # local host. The homelab Ollama is fronted by Traefik+Authentik, so
-    # production points this at the HTTPS vhost WITHOUT a port (TLS terminates on
-    # :443, so an explicit :11434 is wrong for that path) and supplies the
-    # Basic-auth credential below. Read from the UNPREFIXED ``OLLAMA_BASE_URL`` to
-    # match the operator's existing .env naming (same pattern as
-    # ``openrouter_api_key``); ``populate_by_name`` keeps the field settable by
-    # name in tests/DI.
+    # Provider endpoint. OpenRouter's base url is stable.
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
-    ollama_base_url: str = Field(
-        default="http://localhost:11434", validation_alias="OLLAMA_BASE_URL"
-    )
 
     # OpenRouter credential. Read from the UNPREFIXED ``OPENROUTER_API_KEY`` env
     # var (validation_alias bypasses the cyo_adventure_ prefix) to match the
     # operator's existing key naming. Optional and None by default: only the
     # openrouter provider needs it, and the mock default never does, so a missing
     # key surfaces as a ConfigurationError in build_provider at call time rather
-    # than blocking startup. Ollama (local) needs no credential.
+    # than blocking startup.
     # #CRITICAL: security: this is a secret; never log its value or echo it in an
     # error message. build_provider checks presence only.
     # #VERIFY: ProviderError/ConfigurationError messages reference the key by name
@@ -549,39 +521,20 @@ class Settings(BaseSettings):
         default=None, validation_alias="OPENROUTER_API_KEY"
     )
 
-    # Ollama HTTP Basic-auth credential, as a single ``user:password`` string to
-    # match the operator's ``OLLAMA_AUTH`` .env entry (and the native HTTP Basic
-    # shape). Read from the UNPREFIXED ``OLLAMA_AUTH``. The local-dev default
-    # (http://localhost:11434) needs none, so it is optional and None by default;
-    # the Traefik+Authentik-fronted homelab host requires it and answers an
-    # unauthenticated request with a 302 redirect to the login flow (which the
-    # adapter maps to a leg-fatal ProviderError). build_provider splits it on the
-    # first ``:`` (RFC 7617: the userid has no colon, the password may), and the
-    # adapter sends Basic auth only when both halves are present.
-    # #CRITICAL: security: ollama_auth contains a password; never log its value or
-    # echo it in an error message. It must be supplied from a secret manager
-    # (env var / Infisical), never committed to source control.
-    # #VERIFY: build_provider passes the split halves to httpx.BasicAuth and no
-    # ProviderError message includes the credential.
-    ollama_auth: str | None = Field(default=None, validation_alias="OLLAMA_AUTH")
-
-    # Optional path to a CA bundle for verifying the Ollama host's TLS cert. The
-    # homelab host is fronted by Traefik serving a privately-signed cert (Homelab
-    # CA) until the public wildcard is in place, so the public CA store alone
-    # cannot verify it. Point this at the Homelab root+intermediate bundle to
-    # verify properly (NOT a verification bypass). build_provider loads it ON TOP
-    # of the system CAs, so the same setting keeps working once the host serves a
-    # publicly-trusted cert. Leave unset for a direct local Ollama (plain http).
-    ollama_ca_bundle: str | None = Field(
-        default=None, validation_alias="OLLAMA_CA_BUNDLE"
-    )
-
-    # --- Experimental Modal generation leg (ADR-010 item 2) ---
-    # An offline-only leg: build_provider never wraps this in the production
-    # FallbackProvider cascade. All three fields are None until an operator
-    # deploys a Modal Auto Endpoint and sets them; build_modal_leg raises
-    # ConfigurationError naming the missing setting if either the url or model
-    # is absent at that point.
+    # --- Modal generation leg (ADR-010 item 2) ---
+    # Since the Ollama retirement this is the THIRD leg of the production
+    # FallbackProvider cascade, replacing the local Ollama leg as the
+    # non-OpenRouter backstop (ADR-003 as amended). It stays optional: all
+    # four fields are None until an operator deploys a Modal Auto Endpoint and
+    # sets them, and build_provider omits the leg entirely when the endpoint is
+    # unconfigured rather than failing the cascade (see modal_leg_configured).
+    # #CRITICAL: external-resources: with Modal unconfigured the cascade is two
+    # OpenRouter legs, so a single-vendor OpenRouter outage takes generation
+    # down with no backstop. Configuring Modal in production is what makes
+    # Layer 2 failover span two vendors.
+    # #VERIFY: generation/provider.py::build_provider logs
+    # generation.cascade_single_vendor at WARNING when it builds the two-leg
+    # cascade; tests/unit/test_providers.py pins both shapes.
     modal_base_url: str | None = Field(default=None, validation_alias="MODAL_BASE_URL")
     modal_model: str | None = Field(default=None, validation_alias="MODAL_MODEL")
     # #CRITICAL: security: these are secrets if the endpoint enforces auth; never
@@ -607,10 +560,11 @@ class Settings(BaseSettings):
     # Which backend the moderation LLM stages use. "mock" (default) runs no real
     # review and requires no classifier key. "modal" is deferred to slice 2b and
     # raises at build time. (The "anthropic" generation provider, once similarly
-    # deferred, now ships as a real backend via WS-C PR1.)
-    review_provider: Literal["mock", "ollama", "openrouter", "modal"] = "mock"
+    # deferred, now ships as a real backend via WS-C PR1.) "ollama" was removed
+    # with the Ollama retirement, so "openrouter" is the only live backend here
+    # until the slice-2b Modal review leg lands.
+    review_provider: Literal["mock", "openrouter", "modal"] = "mock"
     review_openrouter_model: str = "anthropic/claude-sonnet-4.6"
-    review_ollama_model: str = "qwen2.5:14b"
     # Nodes reviewed per Stage-1 safety call (design doc moderation-review-
     # redesign-2026-07-28.md, section 2.2 item 2). At 1 every chunk is a
     # single-node call, byte-identical to the pre-chunking behavior the
@@ -677,7 +631,7 @@ class Settings(BaseSettings):
     # Provider-agnostic names are deliberate (ADR-009's ejection path): these
     # point at Supabase's GoTrue issuer today but api/deps.py never imports a
     # Supabase SDK, only jwt.PyJWKClient against oidc_jwks_url. Read from
-    # UNPREFIXED env vars, matching the openrouter_api_key/ollama_auth pattern.
+    # UNPREFIXED env vars, matching the openrouter_api_key/modal_proxy_key pattern.
     # Optional here so local dev needs no config; _require_oidc_config_outside_local
     # below fails fast outside "local", and api/deps.py's own import-time guard is a
     # second check against the same invariant for the mocked-settings test scenario.
@@ -964,7 +918,7 @@ class Settings(BaseSettings):
     # --- Observability: Sentry (M5 / Phase 5) ---
     # Read from the UNPREFIXED SENTRY_DSN env var: .env.example already
     # documents this name (Observability section), matching the
-    # OPENROUTER_API_KEY/OLLAMA_*/OIDC_* precedent for operator-facing names.
+    # OPENROUTER_API_KEY/MODAL_*/OIDC_* precedent for operator-facing names.
     # None (default) disables Sentry entirely; core/observability.py::init_sentry
     # is a documented no-op in that case, so leaving this unset is always safe
     # for local dev, CI, and any deployment that has not opted in.
@@ -1409,6 +1363,30 @@ class Settings(BaseSettings):
         """
         return self.worker_database_url or self.database_url
 
+    @property
+    def modal_leg_configured(self) -> bool:
+        """Whether the Modal endpoint is configured well enough to build a leg.
+
+        ``build_modal_leg`` raises :class:`ConfigurationError` when either the
+        base url or the model is absent. Since the Ollama retirement the Modal
+        leg is part of the default ``openrouter`` cascade, so that raise would
+        turn every unconfigured environment (local dev, CI, any deploy that has
+        not stood up a Modal Auto Endpoint) into a hard generation failure.
+        This predicate lets ``build_provider`` include the leg only when it can
+        actually be built, and degrade to the two OpenRouter legs otherwise.
+
+        Only the url and model are checked, matching exactly what
+        ``build_modal_leg`` requires. The proxy credential pair is deliberately
+        excluded: an endpoint with no proxy auth is a valid configuration, and
+        a half-set pair stays a hard :class:`ConfigurationError` rather than
+        being silently downgraded to "leg absent".
+
+        Returns:
+            bool: True when both ``modal_base_url`` and ``modal_model`` are
+                set to non-empty values.
+        """
+        return bool(self.modal_base_url) and bool(self.modal_model)
+
     @model_validator(mode="after")
     def _reject_dev_database_url_outside_local(self) -> Settings:
         """Fail fast if the dev default DSN leaks into a non-local environment.
@@ -1778,6 +1756,52 @@ class Settings(BaseSettings):
                 "this is an intentional non-evidence run (for example catalog "
                 "seeding), which also stamps every report it produces as "
                 "reviewer_independent=false with a structural advisory finding."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _require_modal_proxy_credentials_together(self) -> Settings:
+        """Fail fast on a half-set Modal proxy credential pair.
+
+        ``build_modal_leg`` already rejects a half-set
+        ``MODAL_PROXY_KEY``/``MODAL_PROXY_SECRET`` pair, and while Modal was an
+        offline-only leg that raise was well contained: it fired only when an
+        operator explicitly selected ``generation_provider=modal``.
+
+        # #CRITICAL: external-resources: the Ollama retirement made Modal the
+        # third leg of the DEFAULT openrouter cascade, which widens that raise's
+        # blast radius from "explicit Modal runs" to "all story generation" -- a
+        # deployment with a base url, a model, and one half of the proxy pair
+        # would build its cascade straight into a ConfigurationError on every
+        # job. Checking it here converts that runtime failure into a startup
+        # failure, so the misconfiguration is caught before the deploy is
+        # serving rather than on the first generation request.
+        # #VERIFY: tests/unit/test_config.py::TestModalProxyCredentialPairing
+        # pins both half-set directions as rejected and both complete states
+        # (neither set, both set) as accepted.
+
+        Deliberately NOT folded into ``modal_leg_configured``: that predicate
+        answers "can a leg be built at all", and treating a half-set credential
+        as "no leg" would silently drop the backstop for what is really an
+        operator typo. This stays a hard error, just an earlier one.
+
+        Returns:
+            Settings: ``self``, unchanged, when the pair is coherent.
+
+        Raises:
+            ConfigurationError: When exactly one of the two is set.
+        """
+        has_key = bool(self.modal_proxy_key)
+        has_secret = bool(self.modal_proxy_secret)
+        if has_key != has_secret:
+            present = "MODAL_PROXY_KEY" if has_key else "MODAL_PROXY_SECRET"
+            missing = "MODAL_PROXY_SECRET" if has_key else "MODAL_PROXY_KEY"
+            msg = (
+                f"{present} is set but {missing} is not; Modal proxy auth needs "
+                "both or neither. Since the Ollama retirement the Modal leg is "
+                "part of the default generation cascade, so a half-set pair "
+                "would fail every generation job, not just an explicit Modal run."
             )
             raise ConfigurationError(msg)
         return self

@@ -162,7 +162,7 @@ part of the skeleton-matching rework (workstream WS-C, PR #175).
    non-blocking warning to the authoring-plan result instead of failing.
 
 Skeleton selection is a distinct concern from **provider selection**: which LLM
-backend (Anthropic, OpenRouter, Modal, or Ollama) fills the chosen skeleton's
+backend (Anthropic, OpenRouter, or Modal) fills the chosen skeleton's
 `<<FILL>>` directives is governed separately by the admin-editable provider/model
 allowlist (`generation/allowlist.py`, workstream WS-C PR #170) and
 `generation/provider.py::build_provider`. Which skeleton is picked and which provider

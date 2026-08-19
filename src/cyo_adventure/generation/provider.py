@@ -9,10 +9,8 @@ constructs the appropriate backend from the application settings.
 from __future__ import annotations
 
 import json
-import ssl
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final, Protocol
-from urllib.parse import urlsplit
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -24,10 +22,12 @@ from cyo_adventure.generation.providers import (
     AnthropicProvider,
     FallbackProvider,
     ModalProvider,
-    OllamaProvider,
     OpenRouterProvider,
 )
 from cyo_adventure.generation.usage import Completion, TokenUsage
+from cyo_adventure.utils.logging import get_logger
+
+logger = get_logger(__name__)
 
 # What MockProvider reports when a test does not inject its own usage: a call
 # that happened (so it is counted) but whose token cost is unknown, never zero.
@@ -474,15 +474,19 @@ def build_anthropic_leg(settings: Settings, model: str) -> GenerationProvider:
 
 
 def build_modal_leg(settings: Settings) -> GenerationProvider:
-    """Construct the experimental Modal leg from settings (ADR-010 item 2).
+    """Construct the Modal leg from settings (ADR-010 item 2).
 
     Args:
         settings: The application settings instance.
 
     Returns:
-        A bare Modal ``GenerationProvider`` adapter. Never wrapped in a
+        A bare Modal ``GenerationProvider`` adapter. Since the Ollama
+        retirement ``build_provider`` also appends this leg to the production
         :class:`~cyo_adventure.generation.providers.fallback.FallbackProvider`
-        cascade: this leg is an offline experiment, not on the production path.
+        cascade as its non-OpenRouter backstop, so this is no longer an
+        offline-only experiment. Callers that need to know whether the leg can
+        be built at all should check ``settings.modal_leg_configured`` rather
+        than catching the ``ConfigurationError`` below.
 
     Raises:
         ConfigurationError: If ``MODAL_BASE_URL`` or ``MODAL_MODEL`` is not
@@ -519,126 +523,6 @@ def build_modal_leg(settings: Settings) -> GenerationProvider:
     )
 
 
-def _split_basic_auth(value: str | None) -> tuple[str | None, str | None]:
-    """Split an ``OLLAMA_AUTH`` ``user:password`` string into its two halves.
-
-    Splits on the FIRST colon only: per RFC 7617 a Basic-auth userid cannot
-    contain a colon, but the password may, so ``partition`` preserves a password
-    that itself contains colons. A ``None`` or empty/whitespace value, or one
-    with no colon, yields ``(None, None)`` so the adapter sends no credential
-    (and an auth-proxied host then answers the leg-fatal 302). Each half is
-    stripped of surrounding whitespace: a dotenv entry with stray spaces around
-    the value is far more likely a typo than an intentional whitespace
-    credential, and an unstripped half would silently produce an auth failure.
-
-    Args:
-        value: The raw ``ollama_auth`` setting (``user:password`` or ``None``).
-
-    Returns:
-        ``(username, password)`` when a well-formed pair is present, else
-        ``(None, None)``.
-    """
-    if value is None or not value.strip() or ":" not in value:
-        return None, None
-    raw_username, _, raw_password = value.partition(":")
-    username, password = raw_username.strip(), raw_password.strip()
-    if not username or not password:
-        return None, None
-    return username, password
-
-
-# Loopback hosts where HTTP Basic auth never crosses a network boundary, so
-# cleartext is acceptable; any other host over plain http would put the
-# credential on the wire in reversible base64.
-_LOOPBACK_HOSTS: Final[frozenset[str]] = frozenset({"localhost", "127.0.0.1", "::1"})
-
-
-def _reject_cleartext_basic_auth(base_url: str) -> None:
-    """Refuse to send HTTP Basic credentials over a cleartext, non-loopback URL.
-
-    Basic auth base64-encodes ``user:password`` reversibly, so an ``http://``
-    request to a remote host ships the credential in the clear. A misconfigured
-    ``OLLAMA_BASE_URL`` (http to a remote host) paired with ``OLLAMA_AUTH`` is a
-    credential-exposure bug, so fail fast rather than leak the password.
-
-    Args:
-        base_url: The configured Ollama base url.
-
-    Raises:
-        ConfigurationError: When the scheme is not https and the host is not a
-            loopback address.
-    """
-    # #CRITICAL: security: Basic auth over plaintext http leaks the credential on
-    # the wire; only loopback (never on the network) is exempt.
-    # #VERIFY: build raises ConfigurationError for an http://<remote-host> + auth
-    # combination (tests/unit/test_worker.py).
-    parsed = urlsplit(base_url)
-    if parsed.scheme == "https" or parsed.hostname in _LOOPBACK_HOSTS:
-        return
-    msg = (
-        "OLLAMA_AUTH is set but OLLAMA_BASE_URL is not https; HTTP Basic auth "
-        "would send the credential in cleartext. Use an https URL, or a local "
-        "loopback host for unauthenticated dev."
-    )
-    raise ConfigurationError(msg)
-
-
-def build_ollama_leg(
-    settings: Settings, model: str | None = None
-) -> GenerationProvider:
-    """Construct the local Ollama leg from settings.
-
-    Args:
-        settings: The application settings instance.
-        model: Override the Ollama model to use. Defaults to
-            ``settings.ollama_model`` when ``None``.
-
-    Returns:
-        An Ollama ``GenerationProvider`` adapter.
-
-    Raises:
-        ConfigurationError: When auth is set over cleartext http to a non-loopback
-            host, or when ``OLLAMA_CA_BUNDLE`` points at an unusable bundle.
-    """
-    # Basic-auth is optional: a direct local Ollama needs none, the auth-proxied
-    # homelab host needs it. The adapter attaches Basic auth only when both halves
-    # are present and maps the 302 auth challenge to a leg-fatal error.
-    username, password = _split_basic_auth(settings.ollama_auth)
-    if username is not None and password is not None:
-        _reject_cleartext_basic_auth(settings.ollama_base_url)
-    # TLS verification: default to the public CA store. When a CA bundle is
-    # configured (the homelab host serves a Homelab-CA cert until the public
-    # wildcard lands), load it ON TOP of the system CAs so verification succeeds
-    # under either issuer. This is proper verification, not a bypass.
-    verify: ssl.SSLContext | bool = True
-    if settings.ollama_ca_bundle:
-        ctx = ssl.create_default_context()
-        try:
-            # ssl.SSLError subclasses OSError, so OSError covers a missing path
-            # and a malformed/unreadable PEM. Map both to ConfigurationError so a
-            # misconfigured operator gets a named setting, not a raw traceback.
-            ctx.load_verify_locations(settings.ollama_ca_bundle)
-        except OSError as exc:
-            # Built as two single-line f-strings (rather than one
-            # continuation-paren-wrapped literal) so the enclosing parens,
-            # which fold away to nothing once adjacent string literals are
-            # joined, are never introduced (S1110).
-            detail = f"({settings.ollama_ca_bundle!r}): {type(exc).__name__}"
-            msg = f"OLLAMA_CA_BUNDLE points at an unusable CA bundle {detail}"
-            raise ConfigurationError(msg) from exc
-        verify = ctx
-    return OllamaProvider(
-        model=model if model is not None else settings.ollama_model,
-        base_url=settings.ollama_base_url,
-        # Ollama gets its own, longer timeout: the single-parallel homelab host can
-        # take minutes to first byte when a prior request holds the execution slot.
-        timeout_seconds=settings.ollama_timeout_seconds,
-        username=username,
-        password=password,
-        verify=verify,
-    )
-
-
 def build_provider(
     settings: Settings,
     *,
@@ -658,8 +542,6 @@ def build_provider(
     - ``"mock"`` (default): a :class:`MockProvider` seeded with the canned
       story. CI and local runs use this so they never make live calls.
       ``model_override`` has no effect (mock has no model concept).
-    - ``"ollama"``: the local Ollama leg alone. ``model_override`` replaces
-      ``settings.ollama_model`` for this leg only.
     - ``"anthropic"``: the direct-Anthropic leg alone (no cascade).
       ``model_override`` replaces ``settings.anthropic_model``.
     - ``"openrouter"``: the primary OpenRouter leg, using ``model_override``
@@ -667,12 +549,16 @@ def build_provider(
       ``settings.provider_fallback_enabled`` is ``True`` (default) it is
       wrapped in a
       :class:`~cyo_adventure.generation.providers.fallback.FallbackProvider`
-      cascade ``[primary, openrouter:fallback_model, ollama]`` (the fallback
-      leg's model is never overridden); when ``False`` the bare primary leg
-      is returned so a yield/comparison run can measure one leg in isolation.
-    - ``"modal"``: the experimental Modal leg. ``model_override`` has no
-      effect (the offline Modal leg's model is settings-only in PR1; it is
-      not part of the per-job override seam).
+      cascade ``[primary, openrouter:fallback_model, modal]`` (neither
+      trailing leg's model is ever overridden); when ``False`` the bare
+      primary leg is returned so a yield/comparison run can measure one leg
+      in isolation. The Modal leg replaced the retired local Ollama leg as
+      the non-OpenRouter backstop and is included only when
+      ``settings.modal_leg_configured`` is true, so an environment with no
+      Modal Auto Endpoint degrades to a two-leg cascade instead of failing.
+    - ``"modal"``: the Modal leg alone. ``model_override`` has no effect (the
+      Modal leg's model is settings-only; it is not part of the per-job
+      override seam).
 
     Live adapters are constructed only for the provider actually selected, so
     the default mock path opens no client and validates no credential.
@@ -713,9 +599,6 @@ def build_provider(
         )
         return MockProvider(responses=[fixture] * 8)
 
-    if provider == "ollama":
-        return build_ollama_leg(settings, model_override)
-
     if provider == "anthropic":
         return build_anthropic_leg(settings, model_override or settings.anthropic_model)
 
@@ -725,13 +608,36 @@ def build_provider(
         )
         if not settings.provider_fallback_enabled:
             return primary
-        return FallbackProvider(
-            legs=[
-                primary,
-                build_openrouter_leg(settings, settings.openrouter_fallback_model),
-                build_ollama_leg(settings),
-            ]
-        )
+        legs = [
+            primary,
+            build_openrouter_leg(settings, settings.openrouter_fallback_model),
+        ]
+        # #CRITICAL: external-resources: both legs above are the same vendor on
+        # the same account, so without the Modal backstop an OpenRouter outage,
+        # billing lapse, or account suspension stops generation outright. The
+        # retired Ollama leg used to be what kept this cascade spanning two
+        # independent failure domains. Including Modal unconditionally is not an
+        # option: build_modal_leg raises when the endpoint is unset, which would
+        # turn every local dev run, CI run, and Modal-less deploy into a hard
+        # generation failure. So degrade, but never silently.
+        # #VERIFY: tests/unit/test_worker.py::TestBuildProviderLive pins all
+        # four states: test_openrouter_with_modal_configured_builds_three_leg_cascade
+        # and test_openrouter_without_modal_degrades_to_two_leg_cascade cover the
+        # two shapes, while test_single_vendor_cascade_is_warned_about and
+        # test_configured_modal_cascade_emits_no_warning cover the warning.
+        if settings.modal_leg_configured:
+            legs.append(build_modal_leg(settings))
+        else:
+            logger.warning(
+                "generation.cascade_single_vendor",
+                cascade_legs=len(legs),
+                reason="modal_endpoint_unconfigured",
+                detail=(
+                    "generation cascade has no non-OpenRouter backstop; set "
+                    "MODAL_BASE_URL and MODAL_MODEL to restore two-vendor failover"
+                ),
+            )
+        return FallbackProvider(legs=legs)
 
     if provider == "modal":
         return build_modal_leg(settings)

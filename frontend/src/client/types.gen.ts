@@ -175,7 +175,7 @@ export type AllowlistCreateBody = {
     /**
      * Provider
      */
-    provider: 'anthropic' | 'openrouter' | 'modal' | 'ollama';
+    provider: 'anthropic' | 'openrouter' | 'modal';
     /**
      * Model Id
      */
@@ -227,7 +227,7 @@ export type AllowlistView = {
     /**
      * Provider
      */
-    provider: 'anthropic' | 'openrouter' | 'modal' | 'ollama';
+    provider: 'anthropic' | 'openrouter' | 'modal';
     /**
      * Model Id
      */
@@ -498,7 +498,7 @@ export type AuthoringPlanRequest = {
     /**
      * Provider
      */
-    provider?: 'anthropic' | 'openrouter' | 'modal' | 'ollama' | null;
+    provider?: 'anthropic' | 'openrouter' | 'modal' | null;
     /**
      * Model
      */

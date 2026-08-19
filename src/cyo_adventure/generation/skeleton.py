@@ -228,8 +228,8 @@ def active_fill_model(settings: object) -> str | None:
     backend = getattr(settings, "generation_provider", None)
     field = {
         "openrouter": "openrouter_model",
-        "ollama": "ollama_model",
         "anthropic": "anthropic_model",
+        "modal": "modal_model",
     }.get(str(backend))
     if field is None:
         return None

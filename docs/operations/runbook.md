@@ -65,12 +65,15 @@ S3-compatible API, configured via the `R2_*` env vars). Story-content object sto
 [ADR-004](../planning/adr/adr-004-homelab-first-deployment.md)) is Phase 5 and not yet built; see
 [Deployment: Phase 1 vs Phase 5 Storage](../architecture/deployment.md#phase-1-vs-phase-5-storage).
 
-**Ollama**: the local/homelab LLM fallback leg (third leg of the default provider cascade). A
-separate service the worker calls over HTTP (`OLLAMA_BASE_URL`); not started by this repo's
-compose files.
+**Modal**: the non-OpenRouter backstop (third leg of the default provider cascade), replacing the
+retired local Ollama leg. A separate Modal Auto Endpoint the worker calls over HTTPS
+(`MODAL_BASE_URL`); not started by this repo's compose files. When `MODAL_BASE_URL`/`MODAL_MODEL`
+are unset the leg is omitted and the cascade runs on its two OpenRouter legs alone, which is a
+single-vendor posture; `build_provider` logs `generation.cascade_single_vendor` at WARNING when
+that happens.
 
 **Live-deployment caveat**: the actual R1 internal-web deployment's container definitions
-(`cyo-backend`, `cyo-worker`, `cyo-redis`, `cyo-ollama`, the rollback-only `cyo-postgres`, and
+(`cyo-backend`, `cyo-worker`, `cyo-redis`, the rollback-only `cyo-postgres`, and
 nginx ingress) live in `services/cyo-adventure/` in the separate `ByronWilliamsCPA/homelab-infra`
 repository, not in this repository. As of ADR-021 Phase 1, this repo's `docker-compose.yml` and
 `docker-compose.prod.yml` do stand up a working generation pipeline locally (`app`, `worker`,
@@ -81,9 +84,9 @@ stack's exact compose file when operating production.
 
 The default LLM provider cascade for story generation (`generation/providers/fallback.py`, per
 [ADR-003](../planning/adr/adr-003-frontier-llm-generation.md) as amended) is: OpenRouter Haiku
-(primary) → OpenRouter Sonnet (fallback) → Ollama (local fallback). Anthropic and Modal are
-additional per-job-selectable legs gated by the admin provider allowlist (Section 5.2, Section
-8).
+(primary) → OpenRouter Sonnet (fallback) → Modal (backstop, only when configured). Anthropic is an
+additional per-job-selectable leg gated by the admin provider allowlist (Section 5.2, Section 8),
+and Modal is selectable per-job as well as serving as the cascade's third leg.
 
 ## 2. Start, stop, restart
 
@@ -371,7 +374,7 @@ configured for a given environment, logs remain the only observability surface t
    time a worker process starts**: restarting the worker is therefore a legitimate first
    remediation step for a job that has been stuck for a while, not just a diagnostic no-op.
 4. If the job is genuinely running but slow: `generation_job_timeout_seconds` defaults to 1800s
-   (30 minutes) to comfortably cover a cold-start Ollama call plus the full three-stage pipeline;
+   (30 minutes) to comfortably cover a cold-start Modal call plus the full three-stage pipeline;
    a job should never sit at `"running"` much past that without either completing or RQ's own
    timeout marking it failed.
 5. `GenerationJob.status` progresses `queued` → `running` → one of `passed` / `needs_review` /
@@ -400,9 +403,11 @@ To diagnose: grep worker logs for `fallback.leg_dead` / `fallback.leg_failover` 
 Section 8's provider credentials (an expired or missing key surfaces here as a leg-fatal error,
 not a startup failure, per `.env.example`'s note that a missing provider key is a
 `ConfigurationError` at call time). If OpenRouter (the primary and first-fallback leg) is down,
-generation degrades to the local Ollama leg only, which is slower and, per `.env.example`, needs a
-reachable `OLLAMA_BASE_URL` (with `OLLAMA_AUTH`/`OLLAMA_CA_BUNDLE` if it is the homelab instance
-behind Traefik+Authentik) or every job fails.
+generation degrades to the Modal leg only, which needs a reachable `MODAL_BASE_URL`/`MODAL_MODEL`
+or every job fails. **If Modal is not configured at all, an OpenRouter outage stops generation
+outright**: both remaining legs are the same vendor on the same account, so there is nothing left
+to fail over to. Check for `generation.cascade_single_vendor` in the worker logs to tell the two
+situations apart.
 
 ### 5.3 Moderation / review backlog
 
@@ -701,11 +706,10 @@ it, not a replacement for it.
   connection. Needed by the backend and the worker.
 - `ANTHROPIC_API_KEY`: direct Anthropic generation leg. Backend and worker (see the note below).
 - `OPENROUTER_API_KEY`: OpenRouter generation legs (primary + fallback). Backend and worker.
-- `OLLAMA_BASE_URL` / `OLLAMA_AUTH` / `OLLAMA_CA_BUNDLE`: local/homelab Ollama fallback leg;
-  `OLLAMA_AUTH` is HTTP Basic for the Traefik+Authentik-fronted homelab instance. Backend and
-  worker.
-- `MODAL_BASE_URL` / `MODAL_PROXY_KEY` / `MODAL_PROXY_SECRET`: experimental Modal generation leg
-  (offline-only, never a production fallback). Backend and worker.
+- `MODAL_BASE_URL` / `MODAL_MODEL` / `MODAL_PROXY_KEY` / `MODAL_PROXY_SECRET`: the Modal
+  generation leg. Since the Ollama retirement this is also the cascade's third leg, so setting
+  `MODAL_BASE_URL` and `MODAL_MODEL` is what keeps failover spanning two vendors rather than two
+  OpenRouter legs on one account. Backend and worker.
 - `GEMINI_API_KEY`: cover-art generation (nano banana). Backend and worker.
 - `R2_ACCOUNT_ID` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` / `R2_BUCKET` /
   `R2_PUBLIC_BASE_URL`: Cloudflare R2 object storage for optimized cover images. Backend and
@@ -720,8 +724,8 @@ it, not a replacement for it.
 - `PERSPECTIVE_API_KEY`: Stage-0 moderation classifier (Google Perspective API). Backend and
   worker.
 - `CYO_ADVENTURE_REVIEW_PROVIDER`: independent-review backend selector
-  (`mock`/`ollama`/`openrouter`/`modal`); must differ from the generation provider. Backend and
-  worker.
+  (`mock`/`openrouter`/`modal`, though `modal` is still deferred to slice 2b); must differ from
+  the generation provider. Backend and worker.
 - `OIDC_ISSUER` / `OIDC_JWKS_URL` / `OIDC_AUDIENCE` / `OIDC_ALLOWED_ALGS`: guardian/admin
   bearer-token verification against Supabase Auth (ADR-009); required outside `local`. Backend
   only.

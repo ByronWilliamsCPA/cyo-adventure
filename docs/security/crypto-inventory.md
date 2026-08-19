@@ -35,7 +35,6 @@ signatures deferred.
 | 4 | Charon to homelab, then to app | WireGuard, then internal TLS/HTTP | Curve25519 (WireGuard) | homelab-infra | HNDL | No WireGuard PQ option yet |
 | 5 | Backend to Supabase Postgres | TLS (session pooler) | Classical | Supabase | HNDL (accepted) | Third-party gate |
 | 6 | Backend to LLM/image APIs | TLS via httpx | OS OpenSSL defaults | this repo + OS | HNDL | Inherits OpenSSL 3.5 groups |
-| 7 | Backend to Ollama (homelab) | TLS + private CA | OS OpenSSL defaults | this repo | HNDL (LAN) | Inherits OpenSSL 3.5 groups |
 | 8 | Backend to R2 (covers) | TLS + SigV4 | HMAC-SHA256 request signing | boto3/Cloudflare | Safe (symmetric) | No change needed |
 | 9 | Integrity hashing | hashlib | SHA-256 | this repo | Safe | No change needed |
 | 10 | Frontend auth session | supabase-js, token in localStorage | none locally (opaque token) | this repo | n/a | Size-sensitive to PQC tokens |
@@ -92,10 +91,11 @@ protocol and has no group to negotiate.
   container's OpenSSL defaults. Runtime image `dhi-python:3.14-debian13` ships OpenSSL 3.5.x,
   so hybrid groups are offered when the far end supports them; the 3.5 floor is asserted in
   CI by the `fips-runtime-parity` and `fips-image-floor` jobs (see section 7).
-- **Ollama leg**: `src/cyo_adventure/generation/provider.py` builds
-  `ssl.create_default_context()` and adds the homelab CA (`certs/homelab-ca.pem` via
-  `OLLAMA_CA_BUNDLE`); cleartext HTTP Basic is refused off-loopback
-  (`_reject_cleartext_basic_auth`). Groups inherit from OpenSSL.
+- **Ollama leg**: RETIRED. The leg built its own `ssl.SSLContext` from a private homelab CA
+  (`OLLAMA_CA_BUNDLE`) and refused cleartext HTTP Basic off-loopback
+  (`_reject_cleartext_basic_auth`). Both the private-CA trust path and the reversible
+  Basic-auth credential are gone with it, so every remaining egress leg verifies against the
+  public CA store alone and carries its credential in a header over TLS.
 - **Supabase Postgres**: session pooler over TLS, driver defaults, no explicit `sslmode` in
   code; classical until Supabase offers PQC transport (accepted, ADR-013 out-of-scope list).
 - **Redis**: `redis://` (no TLS) on the internal Docker network; a network-trust boundary, not

@@ -101,7 +101,7 @@ __all__ = [
 # impls (mocked here); the orchestrator is provider-agnostic via the
 # GenerationProvider protocol.
 # #VERIFY: the Phase 2b adapters supply timeout/retry/backoff (see
-# providers/_base.run_with_retries and the OpenRouter/Ollama adapters);
+# providers/_base.run_with_retries and the OpenRouter/Anthropic/Modal adapters);
 # build_provider injects them, covered by test_providers.
 
 # The role instruction and JSON-only directive now live in each stage template's

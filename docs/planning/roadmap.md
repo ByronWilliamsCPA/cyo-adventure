@@ -617,6 +617,9 @@ Two acceptance criteria were deferred from the Phase 2 cut and are now both met:
 2. **Concrete provider adapters** shipped: OpenRouter (primary, with in-provider
    fallback) and Ollama (homelab final fallback). A direct Anthropic SDK adapter remains
    intentionally deferred (Claude is reached via OpenRouter).
+   **Superseded 2026-08-18**: the Ollama leg is retired ahead of the homelab-to-Vultr
+   move and Modal takes its place as leg 3, and the direct Anthropic adapter is no longer
+   deferred (it shipped in WS-C PR1). See ADR-003's 2026-08-18 amendment.
 
 Full scope and the residual Tier-2 lever are in
 [`docs/planning/phase-2b-live-provider.md`](./phase-2b-live-provider.md).
