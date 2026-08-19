@@ -3,6 +3,11 @@
 Written 2026-08-19 for owner ruling on `UW-C302`. Every number below was executed. Where I could not
 establish something, it says so.
 
+> **REVISED 2026-08-19 after adversarial review. Five of my six claims were wrong in some part and
+> three of them quoted a bound I had not executed, which is the standing failure this workstream has
+> now earned four times. The corrections are inline below and the recommendation changed. See
+> "After the review" at the end for what moved and why.**
+
 ## What the screen is
 
 `generation/skeleton.py::is_fill_feasible(story, max_tokens)` returns
@@ -28,7 +33,7 @@ structlog noise, at 97 tokens over, 0.09 percent.
 | cell | node ceiling | reachable at word target | at the advisory low |
 | --- | ---: | ---: | ---: |
 | 16+/long/gamebook | 750 | **655** | 953 |
-| 16+/long/prose | 345 | **300** | 419 |
+| 16+/long/prose | 345 | **299** | 419 |
 | every other cell | | comfortably above its ceiling | |
 
 **Two of eighteen cells cannot reach their own declared node ceiling at their own words-per-node
@@ -44,7 +49,8 @@ same time far too loose for the path it does not guard.**
 
 `generation/chunking.py` partitions a skeleton into batches that each fit the cap. Measured: the
 largest single node in the catalog is 250 declared words, 500 tokens, against a batch budget of
-26,214 tokens under the smallest configured model cap (32,768). PL-19's hardest per-node maximum is
+26,214 tokens under the smallest cap in `MODEL_OUTPUT_CAPS` (32,768, a DeepSeek row that no shipped
+configuration selects; the smallest a shipped config resolves to is 64,000). PL-19's hardest per-node maximum is
 230 words at 16+, so a node can never approach a batch budget. **`UnpartitionableSkeletonError` is
 unreachable for any gate-valid skeleton**, which means no skeleton is "too large for any backend",
 which is exactly the premise the selection screen states.
@@ -60,16 +66,20 @@ therefore one-shot only, at the RESOLVED cap. On the shipped default model
 (`anthropic/claude-haiku-4.5`, ceiling 64,000) that budget is **51,200 tokens, 25,600 declared
 words**, less than half the selection screen. Measured against the catalog:
 
-**19 of 82 committed skeletons exceed the bound-fill budget on the shipped model**, including four of
-the fourteen authored yesterday. The largest five are `the-last-cartage` (99,906), 
+19 of 82 committed skeletons exceed that budget. **Only 7 of them are on the bound path**: boundness
+is decided by the presence of a `<slug>.contract.json` sidecar (`worker.py:1030-1032`,
+`load_contract_for` returns None without one and that branch calls `fill_skeleton` unbound), and 12 of
+the 19 are contractless and chunk safely. The 7 exposed are `the-tricameral-city`,
+`the-ashfall-expedition`, `the-salt-archive`, `the-pale-road`, `the-year-of-four-banners`,
+`the-third-shift` and `the-skyrail-heist`. None of the fourteen authored yesterday is among them. The largest five are `the-last-cartage` (99,906), 
 `the-longwinter-station` (87,200), `the-tenfold-siege` (84,466), `the-tricameral-city` (84,352) and
 `the-ashfall-expedition` (79,070).
 
 So the screen is calibrated to a cap that matches neither consumer: irrelevant to the chunked path,
 and twice as permissive as the bound path it never checks.
 
-**What I could NOT establish**, and it decides how urgent this is: whether `result.bindings` is ever
-`None` on the production path. If it never is, chunking never fires in production and those 19 books
+~~**What I could NOT establish**: whether `result.bindings` is ever `None` on the production path.~~
+**Answered, and I was asking about the wrong variable.** If it never is, chunking never fires in production and those 19 books
 are landmines; if it does, they are only landmines for personalized fills. The orchestrator's own
 comment asserts chunking "IS live rather than theoretical" at "15 of the 55 production skeletons",
 which implies unbound fills do happen, but that comment is stale on its face (the catalog is 82, not
@@ -89,37 +99,58 @@ Both drifted because the catalog grew, which is the `UW-C304` pattern in prose r
 
 | # | Option | Fixes | Cost |
 | --- | --- | --- | --- |
-| A | Do nothing | nothing | Two cells keep an unreachable ceiling; the 19-book exposure stays unmeasured in production |
-| B | **Print fill headroom in `--headroom`** | the invisibility | Trivial; a few lines. Fixes no arithmetic |
-| C | Lower the two cells' node ceilings to what the budget allows | the dishonest envelope | Contradicts ADR-011's cell table; buys little, since the advisory low already reaches the ceiling |
-| D | Screen at the cap the fill will actually use, per path | the mis-calibration | Selection must know whether the fill will be bound, which it currently does not |
-| E | Enable chunking for bound fills | the 19-book exposure at its root | Real work: the subset prompt has no bound-fill variant, and sentinel-wrapped slot values would have to survive a batch merge |
-| F | Raise `MAX_FILL_OUTPUT_TOKENS` or drop the 0.8 margin | the selection screen only | Does nothing for the bound path, which is the one that actually fails |
+| A | Do nothing | nothing | Seven books can be selected for a fill that cannot emit them |
+| B | **Print fill headroom in `--headroom`, saying which budget binds** | the invisibility | Trivial, and needs no ruling |
+| C | Lower the two cells' node ceilings | the dishonest envelope | Rejected: at the budget that actually binds, 7 of 18 cells miss their ceiling and 6 miss it at the advisory low, so lowering two encodes a per-model limit into a story-shape table and leaves five others unreachable |
+| D | **Screen a contract-bearing skeleton at the resolved cap** | the live defect, now | A few lines. Boundness is a filesystem check selection already makes. Caveat below |
+| E | **Enable chunking for bound fills** | the asymmetry at its root | A `fill_subset_bound.md` variant plus threading `slot_bindings` through `_ChunkedFillContext` |
+| F | Raise the cap or drop the 0.8 margin | the selection screen only | Does nothing for the path that fails |
 
-## Recommendation: B now, then resolve the bindings question, then E
+## Recommendation: B, then D as a fail-closed interim, then E
 
-**B immediately, and unconditionally.** `check_skeleton.py --headroom` should print expected output
-tokens against both budgets, the selection screen and the shipped model's bound-fill budget, the way
-it now prints state headroom. It is a few lines, it needs no decision, and it converts the only
-invisible budget in the system into a visible one. An author at 95.3 percent of a limit should be
-told so by the tool they already run.
+**B, widened.** `--headroom` should print expected output tokens against both budgets AND say which one
+binds for this skeleton, which it determines from sidecar presence. Printing both without saying which
+applies would recreate the exact conflation `is_fill_feasible`'s own docstring warns about.
 
-**Then answer the bindings question**, because it decides whether E is urgent or merely correct.
+**D, scoped to bound skeletons only.** Seven books can currently be selected for a fill that provably
+cannot emit them, and the cost is not the cheap stop I claimed: executed, the bound path spends one
+fill plus two repairs at the same wall before aborting. Screening a contract-bearing skeleton at the
+resolved cap is a few lines and removes the live defect until E lands.
 
-**Then E, not D or F.** The 19-book exposure is the real defect: a bound fill of any of them on the
-shipped model stops on `finish_reason=length`, and `AL-329` records that a length-stopped completion
-is leg-fatal rather than retried, so the job fails deterministically with no prose. D treats the
-symptom at selection time by hiding books the pipeline could fill; F raises a ceiling that the
-failing path never consults. E removes the asymmetry that created the problem, and the asymmetry is
-not principled: it exists because the subset prompt was never given a bound-fill variant, which is a
-gap rather than a design.
+**The caveat on D, verified.** In 16+/long/gamebook and 16+/long/prose, **both** contract-bearing
+candidates are over the bound budget (measured: 0 bound-and-fillable, 2 bound-but-over, 2 unbound in
+each). D empties the bound candidate pool in those two cells on a 64,000-ceiling job. Selection still
+finds the contractless candidates so the cells do not go dark, but the theme-incompatibility re-route
+only ever lands on another contract-gated bind, so an emptied bound pool turns a re-route into an
+exhausted re-route: a loud single-job failure becomes a silent unselectability, which is the defect
+class this row was filed about. If that trade is judged badly, skip D, accept seven loud failures, and
+go straight to E.
 
-**Against C**, and this is worth stating because it is the obvious move: the two cells CAN reach their
-ceilings at the advisory-low word count, so the envelope is reachable, just not at the target. Lowering
-the ceiling would encode a fill-pipeline limit into a story-shape table, where the next reader would
-have no way to know why. If B lands, an author sees the trade and picks; that is the better place for
-it.
+**E as the root fix, and smaller than I first said.** The bound values are already inside the
+`skeleton_json` the subset prompt carries in full, and the ending-title freeze is moot because
+`merge_fill_batch` never touches ending titles.
 
-**I have not demonstrated a production failure**, only the arithmetic that implies one. Before E is
-scheduled, one bound fill of `the-last-cartage` against the shipped model would turn this from a
-measured exposure into a reproduced defect, and that is worth doing first.
+**E carries no security cost, which was the strongest hypothesis against it and it fails.** The
+sentinel machinery runs after `fill_skeleton` returns, on the pre-fill `bound` document, and is
+path-agnostic. `merge_fill_batch` is a whitelist reading only `body` and choice `label`, so chunking a
+bound fill NARROWS what the model can change; the one-shot path accepts the model's entire returned
+document. The 3.3 percent sentinel-preservation figure is why the design stopped trusting the model at
+all, so chunking cannot make it worse.
+
+## After the review: what moved
+
+Five of six claims were wrong in some part, and three quoted a bound I had not executed.
+
+| claim | what I wrote | what is true |
+| --- | --- | --- |
+| PL-19 per-node max | 230 words | **385**. The tuple is `(mean, adv_lo, adv_hi, max)` and I read the third slot as the fourth. My own 250-word measurement contradicted 230 on the same page |
+| exposure | 19 of 82 exposed | 19 exceed the budget, **7** are on the bound path; sidecar presence decides it |
+| failure mode | leg-fatal, no retries, per `AL-329` | `AL-329` says an **empty** body at `finish_reason=length` is leg-fatal. A truncated non-empty one is an ordinary completion, and the bound path spends 1 fill + 2 repairs |
+| cell exposure | 2 of 18 at target, **0** at the advisory low | Computed against the screen my own thesis calls mis-calibrated. At the budget that binds: **7 of 18** at target, **6 of 18** at the advisory low |
+| case against D | selection cannot know if a fill is bound | It can: `contract_path_for(...).is_file()`, a check `_is_feasible` already makes on a path it already holds |
+| the open question | needed before any option could be picked | `_BindResult.bindings` is `dict[str, str]`, never None; the switch is `contract is None`. Fifteen minutes of reading, and I made it the gate on the whole decision |
+
+A fourth stale claim, security-adjacent, found during the review: `worker.py:1156` asserts
+`personalizable_slot_ids` "is empty for every contract on disk today". `the-midnight-museum.contract.json`
+declares a `personalizable` slot, 1 of 47. Harmless today (that skeleton never chunks under any cap)
+but it is the comment a future reader trusts when deciding whether the sentinel path is live.
