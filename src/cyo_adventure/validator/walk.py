@@ -54,6 +54,43 @@ if TYPE_CHECKING:
 # Public types
 # ---------------------------------------------------------------------------
 
+DEFAULT_PATH_BUDGET = 20_000_000
+"""The default ceiling on total retained path entries across all configurations.
+
+A companion bound to :data:`DEFAULT_CONFIG_CAP`, and not redundant with it.
+``configs`` retains one :class:`~cyo_adventure.player.state.ReadingState` per
+configuration, and each state carries its own ``path`` list, which
+:meth:`~cyo_adventure.player.engine.StoryEngine.choose` copies in full on every
+transition. Memory is therefore O(configurations x depth), while
+``DEFAULT_CONFIG_CAP`` bounds only the first factor. A story whose depth grows
+with its configuration count (an int counter incremented inside a loop is the
+canonical shape) exhausts memory long before the config cap is reached: a
+five-node story of that shape OOMs the process, so the gate dies instead of
+reporting on the book it was asked to judge.
+
+Bounding the product turns that crash into the walk's already-documented
+degraded path: ``capped=True``, which every caller inspects.
+
+Calibrated against the catalog rather than guessed. Measured 2026-08-19 over the
+15 conditioned committed skeletons, the largest walk retains **2,277,492** path
+entries across 51,241 configurations (``16+/the-longwinter-station``), and the
+runner-up 1,499,693. 20,000,000 leaves roughly nine times headroom over the
+worst real book while sitting about 250 times below the point where the repro
+above exhausts memory. A first attempt at 2,000,000 was set from an assumed
+twenty-node mean depth without measuring, and capped ``the-longwinter-station``:
+a budget under the real catalog turns this guard into the false-blocking defect
+it exists to prevent, so it must be re-measured whenever the catalog's deepest
+conditioned book changes.
+"""
+
+# #CRITICAL: data-integrity: `validate_policy` calls this unconditionally from
+# `run_gate` on the request path, so an unbounded walk is an availability defect
+# in the gate that must clear every book before a child reads it. L2-15 warns on
+# the int range that produces this shape, but `validate_layer2` runs AFTER
+# `validate_policy`, so the crash precedes the warning.
+# #VERIFY: test_state_aware_paths.py::test_a_looping_int_counter_caps_rather_than_exhausting_memory
+# and ::test_the_deepest_committed_skeleton_fits_the_path_budget.
+
 DEFAULT_CONFIG_CAP = 100_000
 """The default ceiling on distinct configurations a walk will enumerate.
 
@@ -94,9 +131,16 @@ class WalkResult:
             true ending apart from a dead-end.  Under a capped walk an entry may hold
             a partial successor list, and a listed successor key may be absent from
             ``configs`` (it was the configuration the cap refused to record).
-        capped: ``True`` if the walk was aborted because the number of distinct
-            configurations would have exceeded *cap*.  Partial results are still
-            returned; callers must inspect ``capped`` before relying on completeness.
+        capped: ``True`` if the walk was aborted because recording the next
+            configuration would have exceeded either bound: the count *cap*, or
+            the memory *path_budget*. Both surface through this one flag on
+            purpose, because every caller's answer to an incomplete closure is
+            the same regardless of which resource ran out. Partial results are
+            still returned; callers must inspect ``capped`` before relying on
+            completeness. Note L2-12 reports a cap as a configuration-ceiling
+            breach and quotes that number, which is the common case but not the
+            only one; the remedy it advises (fewer variables, tighter bounds)
+            applies to a path-budget breach too.
     """
 
     configs: dict[ConfigKey, ReadingState]
@@ -109,10 +153,16 @@ class WalkResult:
 # ---------------------------------------------------------------------------
 
 
-def walk_configurations(
+def walk_configurations(  # noqa: PLR0913
+    # Five parameters, one over the limit: `story` plus two independent resource
+    # bounds (`cap`, `path_budget`) and two independent seeding knobs (`carried`,
+    # `entry_node`). All four options are keyword-only and default correctly, and
+    # bundling them into a config object would force every one of the ~15 call
+    # sites to construct one to change a single value. Revisit if a sixth lands.
     story: Storybook,
     *,
     cap: int = DEFAULT_CONFIG_CAP,
+    path_budget: int = DEFAULT_PATH_BUDGET,
     carried: VarState | None = None,
     entry_node: str | None = None,
 ) -> WalkResult:
@@ -131,6 +181,10 @@ def walk_configurations(
         story: The parsed, schema-valid :class:`~cyo_adventure.storybook.models.Storybook`.
         cap: Maximum number of distinct configurations to enumerate before
             aborting.  Defaults to :data:`DEFAULT_CONFIG_CAP`.
+        path_budget: Maximum total retained path entries across all recorded
+            configurations before aborting.  Bounds the walk's MEMORY, which
+            *cap* alone does not: retained state is O(configurations x depth).
+            Defaults to :data:`DEFAULT_PATH_BUDGET`.
         carried: Carried variable values to seed the start configuration with,
             for walking a series continuation entry instead of a fresh read.
             ``None`` walks the ordinary declared-initial start. Seeding uses
@@ -174,6 +228,10 @@ def walk_configurations(
     configs[initial_key] = initial
     edges[initial_key] = []
     queue.append(initial)
+    # Running total of retained path entries, the walk's real memory cost. Kept
+    # incrementally rather than recomputed: summing over `configs` on every
+    # transition would make the guard itself quadratic.
+    retained_path_entries = len(initial.path)
 
     while queue:
         state = queue.popleft()
@@ -196,6 +254,12 @@ def walk_configurations(
                 # Cap check: abort before recording if doing so would exceed cap.
                 if len(configs) >= cap:
                     return WalkResult(configs=configs, edges=edges, capped=True)
+                # Memory check, on the same abort-before-recording contract. A
+                # deepening walk blows the budget long before the config count,
+                # so this is the guard that actually fires on a looping counter.
+                if retained_path_entries + len(next_state.path) > path_budget:
+                    return WalkResult(configs=configs, edges=edges, capped=True)
+                retained_path_entries += len(next_state.path)
                 configs[next_key] = next_state
                 edges[next_key] = []
                 queue.append(next_state)

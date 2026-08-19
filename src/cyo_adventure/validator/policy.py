@@ -1038,7 +1038,24 @@ def _check_min_to_complete(
         return
     # Every fewest-node walk has the same length, so PL-20's two tiers read the
     # same number they read before PL-26 began choosing among those walks.
-    shortest = len(path)
+    #
+    # Counted in DISTINCT story nodes, not in path vertices. `traversal.node_of`
+    # is many-to-one in state-aware mode (one node appears once per reachable
+    # configuration of it), so a walk that laps a loop lists the same page once
+    # per lap. `min_complete_floor` is calibrated in distinct authored nodes
+    # (ADR-011 section 3, per `band_profile.py`'s "CORRECTED 2026-08-18" note),
+    # so counting vertices would compare a config-space quantity against a
+    # node-space threshold and let a hollow win clear the floor by making the
+    # reader re-read one page. In the declared-graph fallback `node_of` is
+    # injective and a BFS shortest path never revisits, so this is a no-op there
+    # and the pre-`UW-C292` number is preserved exactly.
+    #
+    # #CRITICAL: data-integrity: this floor is a blocking ERROR that gates a
+    # child-facing book, and the quantity compared must be the quantity the
+    # threshold was derived from.
+    # #VERIFY: test_state_aware_paths.py::
+    # test_pl20_counts_distinct_nodes_not_loop_repeats.
+    shortest = len({traversal.node_of[vertex] for vertex in path})
     if shortest < floor:
         report.add(
             ValidationFinding(
@@ -1210,8 +1227,13 @@ def words_on_shortest_satisfying_path(story: Storybook) -> int | None:
     disagreement this closes. The heap tie-breaks equal distances by node id, so
     the result is deterministic under ``PYTHONHASHSEED``.
 
-    Reuses the same satisfying-ending definition and graph as PL-20, so the two
-    rules can never disagree about which path is "the fastest finish".
+    Reuses the same satisfying-ending definition as PL-20, but NOT the same
+    graph. PL-20 was migrated to measure over the configuration graph
+    (``traversal.adjacency``) for a story that conditions a choice (`UW-C292`);
+    this search still runs Dijkstra over ``_build_graph(story)``, the declared
+    choice graph. On a conditioned story the two therefore CAN disagree about
+    which path is "the fastest finish", and the reader-facing clock derived here
+    is the declared-graph answer. Reconciling them is `UW-C308`.
 
     Public (not underscore-prefixed) so a skeleton-context caller
     (``scripts/check_skeleton.py``, UW-C261/AL-391/AL-395) can compute the same
