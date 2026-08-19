@@ -18,6 +18,7 @@ from cyo_adventure.generation import worker as worker_module
 from cyo_adventure.generation.fidelity import parse_fill_directive
 from cyo_adventure.generation.provider import MockProvider
 from cyo_adventure.generation.skeleton import load_skeleton
+from cyo_adventure.generation.skeleton_match import candidates_for_cell
 from cyo_adventure.generation.worker import run_generation_job
 from tests.integration.conftest import Seed, auth
 
@@ -435,8 +436,19 @@ async def test_automated_provider_unallowlisted_model_is_422(
 async def test_skeleton_fill_response_includes_alternatives(
     client: AsyncClient, seed: Seed
 ) -> None:
-    """10-13/medium/prose holds three production skeletons; the response lists
-    the full sorted cell as alternatives and picks one of them."""
+    """The response lists the full sorted cell as alternatives and picks one.
+
+    The cell's membership is DERIVED, not frozen. This test froze it as three
+    literal slugs and broke the moment 10-13/medium/prose gained a book, which is
+    exactly the tax `AL-477` records and `UW-C304` fixed across the unit suite;
+    this integration copy was missed because it only runs where Docker is
+    available, so every local run skipped it and CI found it instead.
+
+    Derived from `candidates_for_cell` rather than from an independent disk scan,
+    unlike the unit-layer helper. The claim under test here is that the API
+    surfaces the selector's answer in the documented shape, not that the selector
+    reads disk correctly, which `test_skeleton_match.py` already owns.
+    """
     req_id = await _approved_request_id(client, seed, "a lighthouse keeper returns")
     res = await client.post(
         f"{_CREATE}/{req_id}/authoring-plan",
@@ -445,7 +457,10 @@ async def test_skeleton_fill_response_includes_alternatives(
     )
     assert res.status_code == 201, res.text
     body = res.json()
-    cell = ["the-envoy-of-three-courts", "the-flooded-quarter", "the-hollow-lighthouse"]
+    cell = candidates_for_cell("10-13", "medium", "prose")
+    # Guard the derivation itself: an empty cell would make both assertions below
+    # vacuous, and this test would then pass while the endpoint returned nothing.
+    assert cell, "10-13/medium/prose has no production skeletons"
     # The pick is a weighted-random draw over the cell (unseedable SystemRandom).
     assert body["skeleton_slug"] in cell
     assert body["skeleton_alternatives"] == [{"slug": slug} for slug in cell]
