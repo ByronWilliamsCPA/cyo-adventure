@@ -18,7 +18,10 @@ Why ``TAU_CELL`` and not ``TAU_STRUCT``:
   ``ws5_floor_baseline.json``'s own ``clamps`` entry records that it was set to
   reject "the observed same-cell minimum pair at 0.000947 with margin", which is
   this very pair. So the audit enforces an intent the baseline already states.
-- ``TAU_STRUCT`` (0.332507) is **documentation only** as of that same amendment
+- ``TAU_STRUCT`` (0.298321 as of the 2026-08-19 recalibration; this said
+  0.332507 until then, and the value moves whenever the catalog grows because
+  it is derived as a percentile of it) is **documentation only** as of that
+  same amendment
   ("No longer gates mutants"). Measured over the committed catalog it would fail
   17 of 67 in-cell pairs across 12 of 18 populated cells, which is the
   whole-class failure that PR #416's AL-051 lesson says to read as a wrong

@@ -64,7 +64,7 @@ export type StatusPill = 'Generating' | 'Waiting for review' | 'Approved' | 'Arc
 
 // Per-band defaults. nodes/endings come from validator/band_profile.py
 // _PROFILES (min_nodes / min_endings); protagonistAge is the band lower bound.
-// #ASSUME: data-integrity: fkTarget mirrors band_profile.py's _READING_LEVEL_TARGET (the source of record;
+// #ASSUME: data-integrity:
 // FK targets mirror validator/band_profile.py's _READING_LEVEL_TARGET, the
 // single source of record (owner ruling 2026-08-18). They used to be
 // independently "proposed defaults" and drifted from what the validator grades
