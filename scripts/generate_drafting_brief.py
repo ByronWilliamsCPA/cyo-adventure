@@ -49,6 +49,7 @@ from cyo_adventure.validator.policy import (
     _POSITIVE_ENDING_SHARE_FLOOR_GAMEBOOK,
     _POSITIVE_VALENCE_SHARE_FLOOR_PROSE,
 )
+from cyo_adventure.validator.topology import BAND_TOPOLOGIES
 from cyo_adventure.validator.walk import DEFAULT_CONFIG_CAP
 
 try:
@@ -157,6 +158,15 @@ def build_brief(band: str, length: str, style: str) -> dict[str, object]:
             ),
         },
         "state_budget": {
+            "requires_tier_2": (
+                "declaring ANY variable requires metadata.tier = 2. A tier-1 "
+                "story that declares one is a BLOCKING L1-6 (`tier-1 story must "
+                "not declare variables`), so this is the first thing to set on a "
+                "stateful book, not something to discover from the gate. Omitted "
+                "from this brief until 2026-08-19, when it cost a gamebook author "
+                "a whole iteration in the one cell where every book is stateful "
+                "(`UW-C306`)"
+            ),
             "configuration_cap": DEFAULT_CONFIG_CAP,
             "bound": (
                 "nodes x (product of declared variable ranges) x 2 ** "
@@ -209,10 +219,46 @@ def build_brief(band: str, length: str, style: str) -> dict[str, object]:
             ),
             "random_walk_satisfying_floor": walk_floor(band, style),
         },
+        "topology": {
+            "allowed_for_this_band": sorted(
+                topology.value for topology in BAND_TOPOLOGIES.get(band, frozenset())
+            ),
+            "rule": (
+                "PL-29 BLOCKS a topology this band may not declare. The list above "
+                "is the whole of what this cell may use; anything else is a "
+                "blocking finding, not a stylistic preference"
+            ),
+            "note": (
+                "published per band because `reconvergence.capped_topologies` "
+                "below is a band-INDEPENDENT list and reads as a menu. It is not "
+                "one: it names the topologies whose in-degree is capped, several "
+                "of which this band cannot declare at all. Two independent "
+                "authoring agents picked a forbidden topology off that list on "
+                "2026-08-19 and had to read `validator/topology.py` to find out "
+                "(`UW-C306`)"
+            ),
+        },
+        "depth": {
+            "cap": depth_cap,
+            "metric": (
+                "L1-7 grades `nx.dag_longest_path_length` over the reachable "
+                "subgraph: the graph's LONGEST simple path, not the depth a "
+                "reader experiences and not the BFS shortest path the "
+                "ending-depth floor uses"
+            ),
+            "watch": (
+                "a single-choice detour that rejoins the spine adds a hop to the "
+                "longest path while adding nothing any one reader walks, so six "
+                "of them can push a 35-hop story to 41 and fail the cap. If the "
+                "cap fails and the story looks shallow, look for rejoining "
+                "detours before shortening anything"
+            ),
+        },
         "reconvergence": {
             "capped_topologies": sorted(_RECONVERGENCE_CAPPED_TOPOLOGIES),
             "max_indegree_cap": _MAX_INDEGREE_CAPS.get(band),
             "exempt": "open_map and loop_and_grow (hub re-entry is by design)",
+            "see_also": "topology.allowed_for_this_band for what this cell may declare",
         },
         "gate_commands": {
             "on_your_draft": [

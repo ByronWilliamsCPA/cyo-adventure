@@ -1,0 +1,5555 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_quarry_signal",
+ "version": 1,
+ "title": "The Quarry Signal",
+ "metadata": {
+  "age_band": "13-16",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 7.0,
+   "tolerance": 1.5
+  },
+  "tier": 2,
+  "themes": [
+   "rescue",
+   "trust earned in the dark",
+   "the cost of a shortcut",
+   "a storm race"
+  ],
+  "estimated_minutes": 10,
+  "ending_count": 36,
+  "content_flags": {
+   "violence": "moderate",
+   "scariness": "moderate",
+   "peril": "intense"
+  },
+  "topology": "branch_and_bottleneck",
+  "length": "medium",
+  "narrative_style": "gamebook",
+  "production_eligible": true
+ },
+ "variables": [
+  {
+   "name": "light",
+   "type": "int",
+   "initial": 3,
+   "min": 0,
+   "max": 3,
+   "description": "Oil-lamp reserve. Decreases by 1 at each of three lit-shortcut checkpoints (a culvert, a failing stope, a slab-choked drift). Reachable set at the tower is {0,1,2,3}; read only in ending prose flavor, not gated by condition (the transmitter/trust gates carry the finale)."
+  },
+  {
+   "name": "trust",
+   "type": "int",
+   "initial": 0,
+   "min": 0,
+   "max": 2,
+   "description": "Dell Voss's confidence in you, built at three checkpoints where you look out for Dell over yourself (a failing rail, a catwalk gap, a switchback). Reachable set at the tower is {0,1,2}. Gates the finale's second resolution: trust==2 opens the together ending, ==1 a creditable solo ending, ==0 the estranged ending, on both the fixed and flare branches."
+  },
+  {
+   "name": "transmitter",
+   "type": "bool",
+   "initial": false,
+   "description": "Whether you recovered the tower's spare valve, wedged behind a rockfall at exactly one node partway down. Both values are reachable at the tower. Gates the finale's first resolution: true opens the clean-call branch, false forces the improvised flare branch."
+  }
+ ],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "<<FILL role=setup words=64 beats='the last bus back stopped running an hour ago and the storm the forecast promised for midnight is already stacking over the ridge when Dell Voss's torch finds you at the quarry gate, the Meridian survey crew three days overdue and the old signal tower the only working line down there left'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_open_0",
+     "label": "Follow Dell through the gate.",
+     "target": "n_gather"
+    }
+   ]
+  },
+  {
+   "id": "n_gather",
+   "body": "<<FILL role=choice words=70 beats='Dell lays a hand on the padlock and does not open it yet: three ways go down into the working, the terraced spoil road, the flooded cut, and the old crane road, and whichever one you take tonight is the one you keep'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_gather_0",
+     "label": "Take the spoil terraces down.",
+     "target": "t_terrace"
+    },
+    {
+     "id": "c_n_gather_1",
+     "label": "Wade the flooded cut.",
+     "target": "t_flood"
+    },
+    {
+     "id": "c_n_gather_2",
+     "label": "Follow the crane road.",
+     "target": "t_crane"
+    }
+   ]
+  },
+  {
+   "id": "t_terrace",
+   "body": "<<FILL role=rising words=72 beats='the spoil terraces step down in loose grey shale, easy underfoot but loud, every stride announcing you to anything listening in the dark below'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_t_terrace_0",
+     "label": "Push straight on down.",
+     "target": "p0_00"
+    },
+    {
+     "id": "c_t_terrace_1",
+     "label": "Go carefully and save the lamp.",
+     "target": "p0_01"
+    },
+    {
+     "id": "c_t_terrace_2",
+     "label": "Push straight on down.",
+     "target": "p0_02"
+    }
+   ]
+  },
+  {
+   "id": "t_flood",
+   "body": "<<FILL role=rising words=72 beats='the flooded cut is the quarry's old drainage channel, black water to the knee and colder than it has any right to be this early in the season'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_t_flood_0",
+     "label": "Go carefully and save the lamp.",
+     "target": "p0_03"
+    },
+    {
+     "id": "c_t_flood_1",
+     "label": "Push straight on down.",
+     "target": "p0_04"
+    },
+    {
+     "id": "c_t_flood_2",
+     "label": "Go carefully and save the lamp.",
+     "target": "p0_05"
+    }
+   ]
+  },
+  {
+   "id": "t_crane",
+   "body": "<<FILL role=rising words=72 beats='the crane road is the derelict haul route the loading rigs used, iron rails half-buried and a gantry crane rusted mid-swing overhead'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_t_crane_0",
+     "label": "Push straight on down.",
+     "target": "p0_00"
+    },
+    {
+     "id": "c_t_crane_1",
+     "label": "Go carefully and save the lamp.",
+     "target": "p0_01"
+    },
+    {
+     "id": "c_t_crane_2",
+     "label": "Push straight on down.",
+     "target": "p0_02"
+    }
+   ]
+  },
+  {
+   "id": "p0_00",
+   "body": "<<FILL role=rising words=72 beats='the shale gives with every step but you make good time, the lamp burning steady and Dell two strides ahead reading the ground by memory'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p0_00_0",
+     "label": "Press on.",
+     "target": "d0_n0"
+    },
+    {
+     "id": "c_p0_00_1",
+     "label": "Keep going.",
+     "target": "d0_n1"
+    },
+    {
+     "id": "c_p0_00_2",
+     "label": "Push forward.",
+     "target": "d0_n2"
+    }
+   ]
+  },
+  {
+   "id": "p0_01",
+   "body": "<<FILL role=rising words=72 beats='you thread the terrace slowly, choosing each foothold, and the extra minutes cost nothing but the dark closing in behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p0_01_0",
+     "label": "Press on.",
+     "target": "d0_n3"
+    },
+    {
+     "id": "c_p0_01_1",
+     "label": "Keep going.",
+     "target": "d0_n4"
+    },
+    {
+     "id": "c_p0_01_2",
+     "label": "Push forward.",
+     "target": "d0_n5"
+    }
+   ]
+  },
+  {
+   "id": "p0_02",
+   "body": "<<FILL role=rising words=72 beats='you wade the cut at a hard pace, current tugging at your knees, trusting the lamp to find the next dry step before your foot does'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p0_02_0",
+     "label": "Press on.",
+     "target": "d0_n6"
+    },
+    {
+     "id": "c_p0_02_1",
+     "label": "Keep going.",
+     "target": "d0_n7"
+    },
+    {
+     "id": "c_p0_02_2",
+     "label": "Push forward.",
+     "target": "d0_n8"
+    }
+   ]
+  },
+  {
+   "id": "p0_03",
+   "body": "<<FILL role=rising words=72 beats='you feel each stone before you trust it, and the water stays exactly as cold and exactly as slow the whole way down'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p0_03_0",
+     "label": "Press on.",
+     "target": "d0_n0"
+    },
+    {
+     "id": "c_p0_03_1",
+     "label": "Keep going.",
+     "target": "d0_n1"
+    },
+    {
+     "id": "c_p0_03_2",
+     "label": "Push forward.",
+     "target": "d0_n2"
+    }
+   ]
+  },
+  {
+   "id": "p0_04",
+   "body": "<<FILL role=rising words=72 beats='you move fast under the gantry, not looking up at the load still slung in its rusted cradle forty feet overhead, and it holds'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p0_04_0",
+     "label": "Press on.",
+     "target": "d0_n3"
+    },
+    {
+     "id": "c_p0_04_1",
+     "label": "Keep going.",
+     "target": "d0_n4"
+    },
+    {
+     "id": "c_p0_04_2",
+     "label": "Push forward.",
+     "target": "d0_n5"
+    }
+   ]
+  },
+  {
+   "id": "p0_05",
+   "body": "<<FILL role=rising words=72 beats='you keep to the rail bed and away from the gantry's old swing radius, the longer way round but the one Dell nods at without a word'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_p0_05_0",
+     "label": "Press on.",
+     "target": "d0_n6"
+    },
+    {
+     "id": "c_p0_05_1",
+     "label": "Keep going.",
+     "target": "d0_n7"
+    },
+    {
+     "id": "c_p0_05_2",
+     "label": "Push forward.",
+     "target": "d0_n8"
+    }
+   ]
+  },
+  {
+   "id": "d0_n0",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; test each rung before you trust it, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d0_n0_0",
+     "label": "Press on.",
+     "target": "d1_n0"
+    },
+    {
+     "id": "c_d0_n0_1",
+     "label": "Keep going.",
+     "target": "d1_n1"
+    },
+    {
+     "id": "c_d0_n0_2",
+     "label": "Push forward.",
+     "target": "d1_n2"
+    }
+   ]
+  },
+  {
+   "id": "d0_n1",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; pick a line through the loose stone, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d0_n1_0",
+     "label": "Press on.",
+     "target": "d1_n3"
+    },
+    {
+     "id": "c_d0_n1_1",
+     "label": "Keep going.",
+     "target": "d1_n4"
+    },
+    {
+     "id": "c_d0_n1_2",
+     "label": "Push forward.",
+     "target": "d1_n5"
+    }
+   ]
+  },
+  {
+   "id": "d0_n2",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; keep to the drier edge and move fast, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d0_n2_0",
+     "label": "Press on.",
+     "target": "d1_n6"
+    },
+    {
+     "id": "c_d0_n2_1",
+     "label": "Keep going.",
+     "target": "d1_n7"
+    },
+    {
+     "id": "c_d0_n2_2",
+     "label": "Push forward.",
+     "target": "d1_n8"
+    }
+   ]
+  },
+  {
+   "id": "d0_n3",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; duck the low slabs and count your steps, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d0_n3_0",
+     "label": "Press on.",
+     "target": "d1_n0"
+    },
+    {
+     "id": "c_d0_n3_1",
+     "label": "Keep going.",
+     "target": "d1_n1"
+    },
+    {
+     "id": "c_d0_n3_2",
+     "label": "Push forward.",
+     "target": "d1_n2"
+    }
+   ]
+  },
+  {
+   "id": "d0_n4",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; walk the rail rather than the sleepers, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d0_n4_0",
+     "label": "Press on.",
+     "target": "d1_n3"
+    },
+    {
+     "id": "c_d0_n4_1",
+     "label": "Keep going.",
+     "target": "d1_n4"
+    },
+    {
+     "id": "c_d0_n4_2",
+     "label": "Push forward.",
+     "target": "d1_n5"
+    }
+   ]
+  },
+  {
+   "id": "d0_n5",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; hug the rock and let the drop alone, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d0_n5_0",
+     "label": "Press on.",
+     "target": "d1_n6"
+    },
+    {
+     "id": "c_d0_n5_1",
+     "label": "Keep going.",
+     "target": "d1_n7"
+    },
+    {
+     "id": "c_d0_n5_2",
+     "label": "Push forward.",
+     "target": "d1_n8"
+    }
+   ]
+  },
+  {
+   "id": "d0_n6",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; brace every prop you pass a hand against, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d0_n6_0",
+     "label": "Press on.",
+     "target": "d1_n0"
+    },
+    {
+     "id": "c_d0_n6_1",
+     "label": "Keep going.",
+     "target": "d1_n1"
+    },
+    {
+     "id": "c_d0_n6_2",
+     "label": "Push forward.",
+     "target": "d1_n2"
+    }
+   ]
+  },
+  {
+   "id": "d0_n7",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; breathe shallow and keep moving, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d0_n7_0",
+     "label": "Press on.",
+     "target": "d1_n3"
+    },
+    {
+     "id": "c_d0_n7_1",
+     "label": "Keep going.",
+     "target": "d1_n4"
+    },
+    {
+     "id": "c_d0_n7_2",
+     "label": "Push forward.",
+     "target": "d1_n5"
+    }
+   ]
+  },
+  {
+   "id": "d0_n8",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; climb it in the dark rather than burn the lamp, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d0_n8_0",
+     "label": "Press on.",
+     "target": "d1_n6"
+    },
+    {
+     "id": "c_d0_n8_1",
+     "label": "Keep going.",
+     "target": "d1_n7"
+    },
+    {
+     "id": "c_d0_n8_2",
+     "label": "Push forward.",
+     "target": "d1_n8"
+    }
+   ]
+  },
+  {
+   "id": "d1_n0",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; keep to the drier edge and move fast, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d1_n0_0",
+     "label": "Press on.",
+     "target": "d2_n0"
+    },
+    {
+     "id": "c_d1_n0_1",
+     "label": "Keep going.",
+     "target": "d2_n1"
+    },
+    {
+     "id": "c_d1_n0_2",
+     "label": "Push forward.",
+     "target": "d2_n2"
+    }
+   ]
+  },
+  {
+   "id": "d1_n1",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; duck the low slabs and count your steps, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d1_n1_0",
+     "label": "Press on.",
+     "target": "d2_n3"
+    },
+    {
+     "id": "c_d1_n1_1",
+     "label": "Keep going.",
+     "target": "d2_n4"
+    },
+    {
+     "id": "c_d1_n1_2",
+     "label": "Push forward.",
+     "target": "d2_n5"
+    }
+   ]
+  },
+  {
+   "id": "d1_n2",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; walk the rail rather than the sleepers, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d1_n2_0",
+     "label": "Press on.",
+     "target": "d2_n6"
+    },
+    {
+     "id": "c_d1_n2_1",
+     "label": "Keep going.",
+     "target": "d2_n7"
+    },
+    {
+     "id": "c_d1_n2_2",
+     "label": "Push forward.",
+     "target": "d2_n8"
+    }
+   ]
+  },
+  {
+   "id": "d1_n3",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; hug the rock and let the drop alone, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d1_n3_0",
+     "label": "Press on.",
+     "target": "d2_n0"
+    },
+    {
+     "id": "c_d1_n3_1",
+     "label": "Keep going.",
+     "target": "d2_n1"
+    },
+    {
+     "id": "c_d1_n3_2",
+     "label": "Push forward.",
+     "target": "d2_n2"
+    }
+   ]
+  },
+  {
+   "id": "d1_n4",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; brace every prop you pass a hand against, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d1_n4_0",
+     "label": "Press on.",
+     "target": "d2_n3"
+    },
+    {
+     "id": "c_d1_n4_1",
+     "label": "Keep going.",
+     "target": "d2_n4"
+    },
+    {
+     "id": "c_d1_n4_2",
+     "label": "Push forward.",
+     "target": "d2_n5"
+    }
+   ]
+  },
+  {
+   "id": "d1_n5",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; breathe shallow and keep moving, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d1_n5_0",
+     "label": "Press on.",
+     "target": "d2_n6"
+    },
+    {
+     "id": "c_d1_n5_1",
+     "label": "Keep going.",
+     "target": "d2_n7"
+    },
+    {
+     "id": "c_d1_n5_2",
+     "label": "Push forward.",
+     "target": "d2_n8"
+    }
+   ]
+  },
+  {
+   "id": "d1_n6",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; climb it in the dark rather than burn the lamp, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d1_n6_0",
+     "label": "Press on.",
+     "target": "d2_n0"
+    },
+    {
+     "id": "c_d1_n6_1",
+     "label": "Keep going.",
+     "target": "d2_n1"
+    },
+    {
+     "id": "c_d1_n6_2",
+     "label": "Push forward.",
+     "target": "d2_n2"
+    }
+   ]
+  },
+  {
+   "id": "d1_n7",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; test each rung before you trust it, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d1_n7_0",
+     "label": "Press on.",
+     "target": "d2_n3"
+    },
+    {
+     "id": "c_d1_n7_1",
+     "label": "Keep going.",
+     "target": "d2_n4"
+    },
+    {
+     "id": "c_d1_n7_2",
+     "label": "Push forward.",
+     "target": "d2_n5"
+    }
+   ]
+  },
+  {
+   "id": "d1_n8",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; pick a line through the loose stone, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d1_n8_0",
+     "label": "Press on.",
+     "target": "d2_n6"
+    },
+    {
+     "id": "c_d1_n8_1",
+     "label": "Keep going.",
+     "target": "d2_n7"
+    },
+    {
+     "id": "c_d1_n8_2",
+     "label": "Push forward.",
+     "target": "d2_n8"
+    }
+   ]
+  },
+  {
+   "id": "d2_n0",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; walk the rail rather than the sleepers, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d2_n0_0",
+     "label": "Press on.",
+     "target": "d3_n0"
+    },
+    {
+     "id": "c_d2_n0_1",
+     "label": "Keep going.",
+     "target": "d3_n1"
+    },
+    {
+     "id": "c_d2_n0_2",
+     "label": "Push forward.",
+     "target": "d3_n2"
+    }
+   ]
+  },
+  {
+   "id": "d2_n1",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; hug the rock and let the drop alone, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d2_n1_0",
+     "label": "Press on.",
+     "target": "d3_n3"
+    },
+    {
+     "id": "c_d2_n1_1",
+     "label": "Keep going.",
+     "target": "d3_n4"
+    },
+    {
+     "id": "c_d2_n1_2",
+     "label": "Push forward.",
+     "target": "d3_n5"
+    }
+   ]
+  },
+  {
+   "id": "d2_n2",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; brace every prop you pass a hand against, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d2_n2_0",
+     "label": "Press on.",
+     "target": "d3_n6"
+    },
+    {
+     "id": "c_d2_n2_1",
+     "label": "Keep going.",
+     "target": "d3_n7"
+    },
+    {
+     "id": "c_d2_n2_2",
+     "label": "Push forward.",
+     "target": "d3_n8"
+    }
+   ]
+  },
+  {
+   "id": "d2_n3",
+   "body": "<<FILL role=rising words=72 beats='the culvert ahead is barely passable dry; burning the last of the spare wick to light it through costs you real oil but gets you through fast'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d2_n3_0",
+     "label": "Press on.",
+     "target": "d3_n0"
+    },
+    {
+     "id": "c_d2_n3_1",
+     "label": "Keep going.",
+     "target": "d3_n1"
+    },
+    {
+     "id": "c_d2_n3_2",
+     "label": "Push forward.",
+     "target": "d3_n2"
+    }
+   ],
+   "on_enter": [
+    {
+     "op": "dec",
+     "var": "light",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": "d2_n4",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; climb it in the dark rather than burn the lamp, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d2_n4_0",
+     "label": "Press on.",
+     "target": "d3_n3"
+    },
+    {
+     "id": "c_d2_n4_1",
+     "label": "Keep going.",
+     "target": "d3_n4"
+    },
+    {
+     "id": "c_d2_n4_2",
+     "label": "Push forward.",
+     "target": "d3_n5"
+    }
+   ]
+  },
+  {
+   "id": "d2_n5",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; test each rung before you trust it, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d2_n5_0",
+     "label": "Press on.",
+     "target": "d3_n6"
+    },
+    {
+     "id": "c_d2_n5_1",
+     "label": "Keep going.",
+     "target": "d3_n7"
+    },
+    {
+     "id": "c_d2_n5_2",
+     "label": "Push forward.",
+     "target": "d3_n8"
+    }
+   ]
+  },
+  {
+   "id": "d2_n6",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; pick a line through the loose stone, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d2_n6_0",
+     "label": "Press on.",
+     "target": "d3_n0"
+    },
+    {
+     "id": "c_d2_n6_1",
+     "label": "Keep going.",
+     "target": "d3_n1"
+    },
+    {
+     "id": "c_d2_n6_2",
+     "label": "Push forward.",
+     "target": "d3_n2"
+    }
+   ]
+  },
+  {
+   "id": "d2_n7",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; keep to the drier edge and move fast, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d2_n7_0",
+     "label": "Press on.",
+     "target": "d3_n3"
+    },
+    {
+     "id": "c_d2_n7_1",
+     "label": "Keep going.",
+     "target": "d3_n4"
+    },
+    {
+     "id": "c_d2_n7_2",
+     "label": "Push forward.",
+     "target": "d3_n5"
+    }
+   ]
+  },
+  {
+   "id": "d2_n8",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; duck the low slabs and count your steps, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d2_n8_0",
+     "label": "Press on.",
+     "target": "d3_n6"
+    },
+    {
+     "id": "c_d2_n8_1",
+     "label": "Keep going.",
+     "target": "d3_n7"
+    },
+    {
+     "id": "c_d2_n8_2",
+     "label": "Push forward.",
+     "target": "d3_n8"
+    }
+   ]
+  },
+  {
+   "id": "d3_n0",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; brace every prop you pass a hand against, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d3_n0_0",
+     "label": "Press on.",
+     "target": "d4_n0"
+    },
+    {
+     "id": "c_d3_n0_1",
+     "label": "Keep going.",
+     "target": "d4_n1"
+    },
+    {
+     "id": "c_d3_n0_2",
+     "label": "Push forward.",
+     "target": "d4_n2"
+    }
+   ]
+  },
+  {
+   "id": "d3_n1",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; breathe shallow and keep moving, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d3_n1_0",
+     "label": "Press on.",
+     "target": "d4_n3"
+    },
+    {
+     "id": "c_d3_n1_1",
+     "label": "Keep going.",
+     "target": "d4_n4"
+    },
+    {
+     "id": "c_d3_n1_2",
+     "label": "Push forward.",
+     "target": "d4_n5"
+    }
+   ]
+  },
+  {
+   "id": "d3_n2",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; climb it in the dark rather than burn the lamp, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d3_n2_0",
+     "label": "Press on.",
+     "target": "d4_n6"
+    },
+    {
+     "id": "c_d3_n2_1",
+     "label": "Keep going.",
+     "target": "d4_n7"
+    },
+    {
+     "id": "c_d3_n2_2",
+     "label": "Push forward.",
+     "target": "d4_n8"
+    }
+   ]
+  },
+  {
+   "id": "d3_n3",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; test each rung before you trust it, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d3_n3_0",
+     "label": "Press on.",
+     "target": "d4_n0"
+    },
+    {
+     "id": "c_d3_n3_1",
+     "label": "Keep going.",
+     "target": "d4_n1"
+    },
+    {
+     "id": "c_d3_n3_2",
+     "label": "Push forward.",
+     "target": "d4_n2"
+    }
+   ]
+  },
+  {
+   "id": "d3_n4",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; pick a line through the loose stone, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d3_n4_0",
+     "label": "Press on.",
+     "target": "d4_n3"
+    },
+    {
+     "id": "c_d3_n4_1",
+     "label": "Keep going.",
+     "target": "d4_n4"
+    },
+    {
+     "id": "c_d3_n4_2",
+     "label": "Push forward.",
+     "target": "d4_n5"
+    }
+   ]
+  },
+  {
+   "id": "d3_n5",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; keep to the drier edge and move fast, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d3_n5_0",
+     "label": "Press on.",
+     "target": "d4_n6"
+    },
+    {
+     "id": "c_d3_n5_1",
+     "label": "Keep going.",
+     "target": "d4_n7"
+    },
+    {
+     "id": "c_d3_n5_2",
+     "label": "Push forward.",
+     "target": "d4_n8"
+    }
+   ]
+  },
+  {
+   "id": "d3_n6",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; duck the low slabs and count your steps, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d3_n6_0",
+     "label": "Press on.",
+     "target": "d4_n0"
+    },
+    {
+     "id": "c_d3_n6_1",
+     "label": "Keep going.",
+     "target": "d4_n1"
+    },
+    {
+     "id": "c_d3_n6_2",
+     "label": "Push forward.",
+     "target": "d4_n2"
+    }
+   ]
+  },
+  {
+   "id": "d3_n7",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; walk the rail rather than the sleepers, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d3_n7_0",
+     "label": "Press on.",
+     "target": "d4_n3"
+    },
+    {
+     "id": "c_d3_n7_1",
+     "label": "Keep going.",
+     "target": "d4_n4"
+    },
+    {
+     "id": "c_d3_n7_2",
+     "label": "Push forward.",
+     "target": "d4_n5"
+    }
+   ]
+  },
+  {
+   "id": "d3_n8",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; hug the rock and let the drop alone, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d3_n8_0",
+     "label": "Press on.",
+     "target": "d4_n6"
+    },
+    {
+     "id": "c_d3_n8_1",
+     "label": "Keep going.",
+     "target": "d4_n7"
+    },
+    {
+     "id": "c_d3_n8_2",
+     "label": "Push forward.",
+     "target": "d4_n8"
+    }
+   ]
+  },
+  {
+   "id": "d4_n0",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; climb it in the dark rather than burn the lamp, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d4_n0_0",
+     "label": "Press on.",
+     "target": "d5_n0"
+    },
+    {
+     "id": "c_d4_n0_1",
+     "label": "Keep going.",
+     "target": "d5_n1"
+    },
+    {
+     "id": "c_d4_n0_2",
+     "label": "Push forward.",
+     "target": "d5_n2"
+    }
+   ]
+  },
+  {
+   "id": "d4_n1",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; test each rung before you trust it, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d4_n1_0",
+     "label": "Press on.",
+     "target": "d5_n3"
+    },
+    {
+     "id": "c_d4_n1_1",
+     "label": "Keep going.",
+     "target": "d5_n4"
+    },
+    {
+     "id": "c_d4_n1_2",
+     "label": "Push forward.",
+     "target": "d5_n5"
+    }
+   ]
+  },
+  {
+   "id": "d4_n2",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; pick a line through the loose stone, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d4_n2_0",
+     "label": "Press on.",
+     "target": "d5_n6"
+    },
+    {
+     "id": "c_d4_n2_1",
+     "label": "Keep going.",
+     "target": "d5_n7"
+    },
+    {
+     "id": "c_d4_n2_2",
+     "label": "Push forward.",
+     "target": "d5_n8"
+    }
+   ]
+  },
+  {
+   "id": "d4_n3",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; keep to the drier edge and move fast, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d4_n3_0",
+     "label": "Press on.",
+     "target": "d5_n0"
+    },
+    {
+     "id": "c_d4_n3_1",
+     "label": "Keep going.",
+     "target": "d5_n1"
+    },
+    {
+     "id": "c_d4_n3_2",
+     "label": "Push forward.",
+     "target": "d5_n2"
+    }
+   ]
+  },
+  {
+   "id": "d4_n4",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; duck the low slabs and count your steps, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d4_n4_0",
+     "label": "Press on.",
+     "target": "d5_n3"
+    },
+    {
+     "id": "c_d4_n4_1",
+     "label": "Keep going.",
+     "target": "d5_n4"
+    },
+    {
+     "id": "c_d4_n4_2",
+     "label": "Push forward.",
+     "target": "d5_n5"
+    }
+   ]
+  },
+  {
+   "id": "d4_n5",
+   "body": "<<FILL role=rising words=72 beats='you brace the failing rail bed for Dell before your own crossing, and Dell notices exactly what that cost you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d4_n5_0",
+     "label": "Press on.",
+     "target": "d5_n6"
+    },
+    {
+     "id": "c_d4_n5_1",
+     "label": "Keep going.",
+     "target": "d5_n7"
+    },
+    {
+     "id": "c_d4_n5_2",
+     "label": "Push forward.",
+     "target": "d5_n8"
+    }
+   ],
+   "on_enter": [
+    {
+     "op": "inc",
+     "var": "trust",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": "d4_n6",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; hug the rock and let the drop alone, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d4_n6_0",
+     "label": "Press on.",
+     "target": "d5_n0"
+    },
+    {
+     "id": "c_d4_n6_1",
+     "label": "Keep going.",
+     "target": "d5_n1"
+    },
+    {
+     "id": "c_d4_n6_2",
+     "label": "Push forward.",
+     "target": "d5_n2"
+    }
+   ]
+  },
+  {
+   "id": "d4_n7",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; brace every prop you pass a hand against, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d4_n7_0",
+     "label": "Press on.",
+     "target": "d5_n3"
+    },
+    {
+     "id": "c_d4_n7_1",
+     "label": "Keep going.",
+     "target": "d5_n4"
+    },
+    {
+     "id": "c_d4_n7_2",
+     "label": "Push forward.",
+     "target": "d5_n5"
+    }
+   ]
+  },
+  {
+   "id": "d4_n8",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; breathe shallow and keep moving, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d4_n8_0",
+     "label": "Press on.",
+     "target": "d5_n6"
+    },
+    {
+     "id": "c_d4_n8_1",
+     "label": "Keep going.",
+     "target": "d5_n7"
+    },
+    {
+     "id": "c_d4_n8_2",
+     "label": "Push forward.",
+     "target": "d5_n8"
+    }
+   ]
+  },
+  {
+   "id": "d5_n0",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; pick a line through the loose stone, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d5_n0_0",
+     "label": "Press on.",
+     "target": "d6_n0"
+    },
+    {
+     "id": "c_d5_n0_1",
+     "label": "Keep going.",
+     "target": "d6_n1"
+    },
+    {
+     "id": "c_d5_n0_2",
+     "label": "Push forward.",
+     "target": "d6_n2"
+    }
+   ]
+  },
+  {
+   "id": "d5_n1",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; keep to the drier edge and move fast, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d5_n1_0",
+     "label": "Press on.",
+     "target": "d6_n3"
+    },
+    {
+     "id": "c_d5_n1_1",
+     "label": "Keep going.",
+     "target": "d6_n4"
+    },
+    {
+     "id": "c_d5_n1_2",
+     "label": "Push forward.",
+     "target": "d6_n5"
+    }
+   ]
+  },
+  {
+   "id": "d5_n2",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; duck the low slabs and count your steps, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d5_n2_0",
+     "label": "Press on.",
+     "target": "d6_n6"
+    },
+    {
+     "id": "c_d5_n2_1",
+     "label": "Keep going.",
+     "target": "d6_n7"
+    },
+    {
+     "id": "c_d5_n2_2",
+     "label": "Push forward.",
+     "target": "d6_n8"
+    }
+   ]
+  },
+  {
+   "id": "d5_n3",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; walk the rail rather than the sleepers, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d5_n3_0",
+     "label": "Press on.",
+     "target": "d6_n0"
+    },
+    {
+     "id": "c_d5_n3_1",
+     "label": "Keep going.",
+     "target": "d6_n1"
+    },
+    {
+     "id": "c_d5_n3_2",
+     "label": "Push forward.",
+     "target": "d6_n2"
+    }
+   ]
+  },
+  {
+   "id": "d5_n4",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; hug the rock and let the drop alone, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d5_n4_0",
+     "label": "Press on.",
+     "target": "d6_n3"
+    },
+    {
+     "id": "c_d5_n4_1",
+     "label": "Keep going.",
+     "target": "d6_n4"
+    },
+    {
+     "id": "c_d5_n4_2",
+     "label": "Push forward.",
+     "target": "d6_n5"
+    }
+   ]
+  },
+  {
+   "id": "d5_n5",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; brace every prop you pass a hand against, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d5_n5_0",
+     "label": "Press on.",
+     "target": "d6_n6"
+    },
+    {
+     "id": "c_d5_n5_1",
+     "label": "Keep going.",
+     "target": "d6_n7"
+    },
+    {
+     "id": "c_d5_n5_2",
+     "label": "Push forward.",
+     "target": "d6_n8"
+    }
+   ]
+  },
+  {
+   "id": "d5_n6",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; breathe shallow and keep moving, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d5_n6_0",
+     "label": "Press on.",
+     "target": "d6_n0"
+    },
+    {
+     "id": "c_d5_n6_1",
+     "label": "Keep going.",
+     "target": "d6_n1"
+    },
+    {
+     "id": "c_d5_n6_2",
+     "label": "Push forward.",
+     "target": "d6_n2"
+    }
+   ]
+  },
+  {
+   "id": "d5_n7",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; climb it in the dark rather than burn the lamp, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d5_n7_0",
+     "label": "Press on.",
+     "target": "d6_n3"
+    },
+    {
+     "id": "c_d5_n7_1",
+     "label": "Keep going.",
+     "target": "d6_n4"
+    },
+    {
+     "id": "c_d5_n7_2",
+     "label": "Push forward.",
+     "target": "d6_n5"
+    }
+   ]
+  },
+  {
+   "id": "d5_n8",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; test each rung before you trust it, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d5_n8_0",
+     "label": "Press on.",
+     "target": "d6_n6"
+    },
+    {
+     "id": "c_d5_n8_1",
+     "label": "Keep going.",
+     "target": "d6_n7"
+    },
+    {
+     "id": "c_d5_n8_2",
+     "label": "Push forward.",
+     "target": "d6_n8"
+    }
+   ]
+  },
+  {
+   "id": "d6_n0",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; duck the low slabs and count your steps, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d6_n0_0",
+     "label": "Press on.",
+     "target": "d7_n0"
+    },
+    {
+     "id": "c_d6_n0_1",
+     "label": "Keep going.",
+     "target": "d7_n1"
+    },
+    {
+     "id": "c_d6_n0_2",
+     "label": "Push forward.",
+     "target": "d7_n2"
+    }
+   ]
+  },
+  {
+   "id": "d6_n1",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; walk the rail rather than the sleepers, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d6_n1_0",
+     "label": "Press on.",
+     "target": "d7_n3"
+    },
+    {
+     "id": "c_d6_n1_1",
+     "label": "Keep going.",
+     "target": "d7_n4"
+    },
+    {
+     "id": "c_d6_n1_2",
+     "label": "Push forward.",
+     "target": "d7_n5"
+    }
+   ]
+  },
+  {
+   "id": "d6_n2",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; hug the rock and let the drop alone, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d6_n2_0",
+     "label": "Press on.",
+     "target": "d7_n6"
+    },
+    {
+     "id": "c_d6_n2_1",
+     "label": "Keep going.",
+     "target": "d7_n7"
+    },
+    {
+     "id": "c_d6_n2_2",
+     "label": "Push forward.",
+     "target": "d7_n8"
+    }
+   ]
+  },
+  {
+   "id": "d6_n3",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; brace every prop you pass a hand against, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d6_n3_0",
+     "label": "Press on.",
+     "target": "d7_n0"
+    },
+    {
+     "id": "c_d6_n3_1",
+     "label": "Keep going.",
+     "target": "d7_n1"
+    },
+    {
+     "id": "c_d6_n3_2",
+     "label": "Push forward.",
+     "target": "d7_n2"
+    }
+   ]
+  },
+  {
+   "id": "d6_n4",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; breathe shallow and keep moving, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d6_n4_0",
+     "label": "Press on.",
+     "target": "d7_n3"
+    },
+    {
+     "id": "c_d6_n4_1",
+     "label": "Keep going.",
+     "target": "d7_n4"
+    },
+    {
+     "id": "c_d6_n4_2",
+     "label": "Push forward.",
+     "target": "d7_n5"
+    }
+   ]
+  },
+  {
+   "id": "d6_n5",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; climb it in the dark rather than burn the lamp, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d6_n5_0",
+     "label": "Press on.",
+     "target": "d7_n6"
+    },
+    {
+     "id": "c_d6_n5_1",
+     "label": "Keep going.",
+     "target": "d7_n7"
+    },
+    {
+     "id": "c_d6_n5_2",
+     "label": "Push forward.",
+     "target": "d7_n8"
+    }
+   ]
+  },
+  {
+   "id": "d6_n6",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; test each rung before you trust it, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d6_n6_0",
+     "label": "Press on.",
+     "target": "d7_n0"
+    },
+    {
+     "id": "c_d6_n6_1",
+     "label": "Keep going.",
+     "target": "d7_n1"
+    },
+    {
+     "id": "c_d6_n6_2",
+     "label": "Push forward.",
+     "target": "d7_n2"
+    }
+   ]
+  },
+  {
+   "id": "d6_n7",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; pick a line through the loose stone, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d6_n7_0",
+     "label": "Press on.",
+     "target": "d7_n3"
+    },
+    {
+     "id": "c_d6_n7_1",
+     "label": "Keep going.",
+     "target": "d7_n4"
+    },
+    {
+     "id": "c_d6_n7_2",
+     "label": "Push forward.",
+     "target": "d7_n5"
+    }
+   ]
+  },
+  {
+   "id": "d6_n8",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; keep to the drier edge and move fast, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d6_n8_0",
+     "label": "Press on.",
+     "target": "d7_n6"
+    },
+    {
+     "id": "c_d6_n8_1",
+     "label": "Keep going.",
+     "target": "d7_n7"
+    },
+    {
+     "id": "c_d6_n8_2",
+     "label": "Push forward.",
+     "target": "d7_n8"
+    }
+   ]
+  },
+  {
+   "id": "d7_n0",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; hug the rock and let the drop alone, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d7_n0_0",
+     "label": "Press on.",
+     "target": "d8_n0"
+    },
+    {
+     "id": "c_d7_n0_1",
+     "label": "Keep going.",
+     "target": "d8_n1"
+    },
+    {
+     "id": "c_d7_n0_2",
+     "label": "Push forward.",
+     "target": "d8_n2"
+    }
+   ]
+  },
+  {
+   "id": "d7_n1",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; brace every prop you pass a hand against, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d7_n1_0",
+     "label": "Press on.",
+     "target": "d8_n3"
+    },
+    {
+     "id": "c_d7_n1_1",
+     "label": "Keep going.",
+     "target": "d8_n4"
+    },
+    {
+     "id": "c_d7_n1_2",
+     "label": "Push forward.",
+     "target": "d8_n5"
+    }
+   ]
+  },
+  {
+   "id": "d7_n2",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; breathe shallow and keep moving, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d7_n2_0",
+     "label": "Press on.",
+     "target": "d8_n6"
+    },
+    {
+     "id": "c_d7_n2_1",
+     "label": "Keep going.",
+     "target": "d8_n7"
+    },
+    {
+     "id": "c_d7_n2_2",
+     "label": "Push forward.",
+     "target": "d8_n8"
+    }
+   ]
+  },
+  {
+   "id": "d7_n3",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; climb it in the dark rather than burn the lamp, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d7_n3_0",
+     "label": "Press on.",
+     "target": "d8_n0"
+    },
+    {
+     "id": "c_d7_n3_1",
+     "label": "Keep going.",
+     "target": "d8_n1"
+    },
+    {
+     "id": "c_d7_n3_2",
+     "label": "Push forward.",
+     "target": "d8_n2"
+    }
+   ]
+  },
+  {
+   "id": "d7_n4",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; test each rung before you trust it, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d7_n4_0",
+     "label": "Press on.",
+     "target": "d8_n3"
+    },
+    {
+     "id": "c_d7_n4_1",
+     "label": "Keep going.",
+     "target": "d8_n4"
+    },
+    {
+     "id": "c_d7_n4_2",
+     "label": "Push forward.",
+     "target": "d8_n5"
+    }
+   ]
+  },
+  {
+   "id": "d7_n5",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; pick a line through the loose stone, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d7_n5_0",
+     "label": "Press on.",
+     "target": "d8_n6"
+    },
+    {
+     "id": "c_d7_n5_1",
+     "label": "Keep going.",
+     "target": "d8_n7"
+    },
+    {
+     "id": "c_d7_n5_2",
+     "label": "Push forward.",
+     "target": "d8_n8"
+    }
+   ]
+  },
+  {
+   "id": "d7_n6",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; keep to the drier edge and move fast, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d7_n6_0",
+     "label": "Press on.",
+     "target": "d8_n0"
+    },
+    {
+     "id": "c_d7_n6_1",
+     "label": "Keep going.",
+     "target": "d8_n1"
+    },
+    {
+     "id": "c_d7_n6_2",
+     "label": "Push forward.",
+     "target": "d8_n2"
+    }
+   ]
+  },
+  {
+   "id": "d7_n7",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; duck the low slabs and count your steps, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d7_n7_0",
+     "label": "Press on.",
+     "target": "d8_n3"
+    },
+    {
+     "id": "c_d7_n7_1",
+     "label": "Keep going.",
+     "target": "d8_n4"
+    },
+    {
+     "id": "c_d7_n7_2",
+     "label": "Push forward.",
+     "target": "d8_n5"
+    }
+   ]
+  },
+  {
+   "id": "d7_n8",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; walk the rail rather than the sleepers, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d7_n8_0",
+     "label": "Press on.",
+     "target": "d8_n6"
+    },
+    {
+     "id": "c_d7_n8_1",
+     "label": "Keep going.",
+     "target": "d8_n7"
+    },
+    {
+     "id": "c_d7_n8_2",
+     "label": "Push forward.",
+     "target": "d8_n8"
+    }
+   ]
+  },
+  {
+   "id": "d8_n0",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; breathe shallow and keep moving, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d8_n0_0",
+     "label": "Press on.",
+     "target": "d9_n0"
+    },
+    {
+     "id": "c_d8_n0_1",
+     "label": "Keep going.",
+     "target": "d9_n1"
+    },
+    {
+     "id": "c_d8_n0_2",
+     "label": "Push forward.",
+     "target": "d9_n2"
+    }
+   ]
+  },
+  {
+   "id": "d8_n1",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; climb it in the dark rather than burn the lamp, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d8_n1_0",
+     "label": "Press on.",
+     "target": "d9_n3"
+    },
+    {
+     "id": "c_d8_n1_1",
+     "label": "Keep going.",
+     "target": "d9_n4"
+    },
+    {
+     "id": "c_d8_n1_2",
+     "label": "Push forward.",
+     "target": "d9_n5"
+    }
+   ]
+  },
+  {
+   "id": "d8_n2",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; test each rung before you trust it, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d8_n2_0",
+     "label": "Press on.",
+     "target": "d9_n6"
+    },
+    {
+     "id": "c_d8_n2_1",
+     "label": "Keep going.",
+     "target": "d9_n7"
+    },
+    {
+     "id": "c_d8_n2_2",
+     "label": "Push forward.",
+     "target": "d9_n8"
+    }
+   ]
+  },
+  {
+   "id": "d8_n3",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; pick a line through the loose stone, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d8_n3_0",
+     "label": "Press on.",
+     "target": "d9_n0"
+    },
+    {
+     "id": "c_d8_n3_1",
+     "label": "Keep going.",
+     "target": "d9_n1"
+    },
+    {
+     "id": "c_d8_n3_2",
+     "label": "Push forward.",
+     "target": "d9_n2"
+    }
+   ]
+  },
+  {
+   "id": "d8_n4",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; keep to the drier edge and move fast, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d8_n4_0",
+     "label": "Press on.",
+     "target": "d9_n3"
+    },
+    {
+     "id": "c_d8_n4_1",
+     "label": "Keep going.",
+     "target": "d9_n4"
+    },
+    {
+     "id": "c_d8_n4_2",
+     "label": "Push forward.",
+     "target": "d9_n5"
+    }
+   ]
+  },
+  {
+   "id": "d8_n5",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; duck the low slabs and count your steps, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d8_n5_0",
+     "label": "Press on.",
+     "target": "d9_n6"
+    },
+    {
+     "id": "c_d8_n5_1",
+     "label": "Keep going.",
+     "target": "d9_n7"
+    },
+    {
+     "id": "c_d8_n5_2",
+     "label": "Push forward.",
+     "target": "d9_n8"
+    }
+   ]
+  },
+  {
+   "id": "d8_n6",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; walk the rail rather than the sleepers, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d8_n6_0",
+     "label": "Press on.",
+     "target": "d9_n0"
+    },
+    {
+     "id": "c_d8_n6_1",
+     "label": "Keep going.",
+     "target": "d9_n1"
+    },
+    {
+     "id": "c_d8_n6_2",
+     "label": "Push forward.",
+     "target": "d9_n2"
+    }
+   ]
+  },
+  {
+   "id": "d8_n7",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; hug the rock and let the drop alone, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d8_n7_0",
+     "label": "Press on.",
+     "target": "d9_n3"
+    },
+    {
+     "id": "c_d8_n7_1",
+     "label": "Keep going.",
+     "target": "d9_n4"
+    },
+    {
+     "id": "c_d8_n7_2",
+     "label": "Push forward.",
+     "target": "d9_n5"
+    }
+   ]
+  },
+  {
+   "id": "d8_n8",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; brace every prop you pass a hand against, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d8_n8_0",
+     "label": "Press on.",
+     "target": "d9_n6"
+    },
+    {
+     "id": "c_d8_n8_1",
+     "label": "Keep going.",
+     "target": "d9_n7"
+    },
+    {
+     "id": "c_d8_n8_2",
+     "label": "Push forward.",
+     "target": "d9_n8"
+    }
+   ]
+  },
+  {
+   "id": "d9_n0",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; test each rung before you trust it, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d9_n0_0",
+     "label": "Press on.",
+     "target": "d10_n0"
+    },
+    {
+     "id": "c_d9_n0_1",
+     "label": "Keep going.",
+     "target": "d10_n1"
+    },
+    {
+     "id": "c_d9_n0_2",
+     "label": "Push forward.",
+     "target": "d10_n2"
+    }
+   ]
+  },
+  {
+   "id": "d9_n1",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; pick a line through the loose stone, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d9_n1_0",
+     "label": "Press on.",
+     "target": "d10_n3"
+    },
+    {
+     "id": "c_d9_n1_1",
+     "label": "Keep going.",
+     "target": "d10_n4"
+    },
+    {
+     "id": "c_d9_n1_2",
+     "label": "Push forward.",
+     "target": "d10_n5"
+    }
+   ]
+  },
+  {
+   "id": "d9_n2",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; keep to the drier edge and move fast, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d9_n2_0",
+     "label": "Press on.",
+     "target": "d10_n6"
+    },
+    {
+     "id": "c_d9_n2_1",
+     "label": "Keep going.",
+     "target": "d10_n7"
+    },
+    {
+     "id": "c_d9_n2_2",
+     "label": "Push forward.",
+     "target": "d10_n8"
+    }
+   ]
+  },
+  {
+   "id": "d9_n3",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; duck the low slabs and count your steps, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d9_n3_0",
+     "label": "Press on.",
+     "target": "d10_n0"
+    },
+    {
+     "id": "c_d9_n3_1",
+     "label": "Keep going.",
+     "target": "d10_n1"
+    },
+    {
+     "id": "c_d9_n3_2",
+     "label": "Push forward.",
+     "target": "d10_n2"
+    }
+   ]
+  },
+  {
+   "id": "d9_n4",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; walk the rail rather than the sleepers, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d9_n4_0",
+     "label": "Press on.",
+     "target": "d10_n3"
+    },
+    {
+     "id": "c_d9_n4_1",
+     "label": "Keep going.",
+     "target": "d10_n4"
+    },
+    {
+     "id": "c_d9_n4_2",
+     "label": "Push forward.",
+     "target": "d10_n5"
+    }
+   ]
+  },
+  {
+   "id": "d9_n5",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; hug the rock and let the drop alone, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d9_n5_0",
+     "label": "Press on.",
+     "target": "d10_n6"
+    },
+    {
+     "id": "c_d9_n5_1",
+     "label": "Keep going.",
+     "target": "d10_n7"
+    },
+    {
+     "id": "c_d9_n5_2",
+     "label": "Push forward.",
+     "target": "d10_n8"
+    }
+   ]
+  },
+  {
+   "id": "d9_n6",
+   "body": "<<FILL role=rising words=72 beats='the stope's props are too far gone to trust in the dark, so you burn the lamp brighter to see the safe line through, spending oil you will want later'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d9_n6_0",
+     "label": "Press on.",
+     "target": "d10_n0"
+    },
+    {
+     "id": "c_d9_n6_1",
+     "label": "Keep going.",
+     "target": "d10_n1"
+    },
+    {
+     "id": "c_d9_n6_2",
+     "label": "Push forward.",
+     "target": "d10_n2"
+    }
+   ],
+   "on_enter": [
+    {
+     "op": "dec",
+     "var": "light",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": "d9_n7",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; breathe shallow and keep moving, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d9_n7_0",
+     "label": "Press on.",
+     "target": "d10_n3"
+    },
+    {
+     "id": "c_d9_n7_1",
+     "label": "Keep going.",
+     "target": "d10_n4"
+    },
+    {
+     "id": "c_d9_n7_2",
+     "label": "Push forward.",
+     "target": "d10_n5"
+    }
+   ]
+  },
+  {
+   "id": "d9_n8",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; climb it in the dark rather than burn the lamp, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d9_n8_0",
+     "label": "Press on.",
+     "target": "d10_n6"
+    },
+    {
+     "id": "c_d9_n8_1",
+     "label": "Keep going.",
+     "target": "d10_n7"
+    },
+    {
+     "id": "c_d9_n8_2",
+     "label": "Push forward.",
+     "target": "d10_n8"
+    }
+   ]
+  },
+  {
+   "id": "d10_n0",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; keep to the drier edge and move fast, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_n0_0",
+     "label": "Press on.",
+     "target": "d11_n0"
+    },
+    {
+     "id": "c_d10_n0_1",
+     "label": "Keep going.",
+     "target": "d11_n1"
+    },
+    {
+     "id": "c_d10_n0_2",
+     "label": "Push forward.",
+     "target": "d11_n2"
+    }
+   ]
+  },
+  {
+   "id": "d10_n1",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; duck the low slabs and count your steps, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_n1_0",
+     "label": "Press on.",
+     "target": "d11_n3"
+    },
+    {
+     "id": "c_d10_n1_1",
+     "label": "Keep going.",
+     "target": "d11_n4"
+    },
+    {
+     "id": "c_d10_n1_2",
+     "label": "Push forward.",
+     "target": "d11_n5"
+    }
+   ]
+  },
+  {
+   "id": "d10_n2",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; walk the rail rather than the sleepers, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_n2_0",
+     "label": "Press on.",
+     "target": "d11_n6"
+    },
+    {
+     "id": "c_d10_n2_1",
+     "label": "Keep going.",
+     "target": "d11_n7"
+    },
+    {
+     "id": "c_d10_n2_2",
+     "label": "Push forward.",
+     "target": "d11_n8"
+    }
+   ]
+  },
+  {
+   "id": "d10_n3",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; hug the rock and let the drop alone, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_n3_0",
+     "label": "Press on.",
+     "target": "d11_n0"
+    },
+    {
+     "id": "c_d10_n3_1",
+     "label": "Keep going.",
+     "target": "d11_n1"
+    },
+    {
+     "id": "c_d10_n3_2",
+     "label": "Push forward.",
+     "target": "d11_n2"
+    }
+   ]
+  },
+  {
+   "id": "d10_n4",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; brace every prop you pass a hand against, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_n4_0",
+     "label": "Press on.",
+     "target": "d11_n3"
+    },
+    {
+     "id": "c_d10_n4_1",
+     "label": "Keep going.",
+     "target": "d11_n4"
+    },
+    {
+     "id": "c_d10_n4_2",
+     "label": "Push forward.",
+     "target": "d11_n5"
+    }
+   ]
+  },
+  {
+   "id": "d10_n5",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; breathe shallow and keep moving, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_n5_0",
+     "label": "Press on.",
+     "target": "d11_n6"
+    },
+    {
+     "id": "c_d10_n5_1",
+     "label": "Keep going.",
+     "target": "d11_n7"
+    },
+    {
+     "id": "c_d10_n5_2",
+     "label": "Push forward.",
+     "target": "d11_n8"
+    }
+   ]
+  },
+  {
+   "id": "d10_n6",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; climb it in the dark rather than burn the lamp, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_n6_0",
+     "label": "Press on.",
+     "target": "d11_n0"
+    },
+    {
+     "id": "c_d10_n6_1",
+     "label": "Keep going.",
+     "target": "d11_n1"
+    },
+    {
+     "id": "c_d10_n6_2",
+     "label": "Push forward.",
+     "target": "d11_n2"
+    }
+   ]
+  },
+  {
+   "id": "d10_n7",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; test each rung before you trust it, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_n7_0",
+     "label": "Press on.",
+     "target": "d11_n3"
+    },
+    {
+     "id": "c_d10_n7_1",
+     "label": "Keep going.",
+     "target": "d11_n4"
+    },
+    {
+     "id": "c_d10_n7_2",
+     "label": "Push forward.",
+     "target": "d11_n5"
+    }
+   ]
+  },
+  {
+   "id": "d10_n8",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; pick a line through the loose stone, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_n8_0",
+     "label": "Press on.",
+     "target": "d11_n6"
+    },
+    {
+     "id": "c_d10_n8_1",
+     "label": "Keep going.",
+     "target": "d11_n7"
+    },
+    {
+     "id": "c_d10_n8_2",
+     "label": "Push forward.",
+     "target": "d11_n8"
+    }
+   ]
+  },
+  {
+   "id": "d11_n0",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; walk the rail rather than the sleepers, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_n0_0",
+     "label": "Press on.",
+     "target": "d12_n0"
+    },
+    {
+     "id": "c_d11_n0_1",
+     "label": "Keep going.",
+     "target": "d12_n1"
+    },
+    {
+     "id": "c_d11_n0_2",
+     "label": "Push forward.",
+     "target": "d12_n2"
+    }
+   ]
+  },
+  {
+   "id": "d11_n1",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; hug the rock and let the drop alone, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_n1_0",
+     "label": "Press on.",
+     "target": "d12_n3"
+    },
+    {
+     "id": "c_d11_n1_1",
+     "label": "Keep going.",
+     "target": "d12_n4"
+    },
+    {
+     "id": "c_d11_n1_2",
+     "label": "Push forward.",
+     "target": "d12_n5"
+    }
+   ]
+  },
+  {
+   "id": "d11_n2",
+   "body": "<<FILL role=rising words=72 beats='you call the gap in the catwalk out to Dell before testing it yourself, and Dell starts trusting your eyes as much as your own from here on'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_n2_0",
+     "label": "Press on.",
+     "target": "d12_n6"
+    },
+    {
+     "id": "c_d11_n2_1",
+     "label": "Keep going.",
+     "target": "d12_n7"
+    },
+    {
+     "id": "c_d11_n2_2",
+     "label": "Push forward.",
+     "target": "d12_n8"
+    }
+   ],
+   "on_enter": [
+    {
+     "op": "inc",
+     "var": "trust",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": "d11_n3",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; breathe shallow and keep moving, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_n3_0",
+     "label": "Press on.",
+     "target": "d12_n0"
+    },
+    {
+     "id": "c_d11_n3_1",
+     "label": "Keep going.",
+     "target": "d12_n1"
+    },
+    {
+     "id": "c_d11_n3_2",
+     "label": "Push forward.",
+     "target": "d12_n2"
+    }
+   ]
+  },
+  {
+   "id": "d11_n4",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; climb it in the dark rather than burn the lamp, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_n4_0",
+     "label": "Press on.",
+     "target": "d12_n3"
+    },
+    {
+     "id": "c_d11_n4_1",
+     "label": "Keep going.",
+     "target": "d12_n4"
+    },
+    {
+     "id": "c_d11_n4_2",
+     "label": "Push forward.",
+     "target": "d12_n5"
+    }
+   ]
+  },
+  {
+   "id": "d11_n5",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; test each rung before you trust it, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_n5_0",
+     "label": "Press on.",
+     "target": "d12_n6"
+    },
+    {
+     "id": "c_d11_n5_1",
+     "label": "Keep going.",
+     "target": "d12_n7"
+    },
+    {
+     "id": "c_d11_n5_2",
+     "label": "Push forward.",
+     "target": "d12_n8"
+    }
+   ]
+  },
+  {
+   "id": "d11_n6",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; pick a line through the loose stone, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_n6_0",
+     "label": "Press on.",
+     "target": "d12_n0"
+    },
+    {
+     "id": "c_d11_n6_1",
+     "label": "Keep going.",
+     "target": "d12_n1"
+    },
+    {
+     "id": "c_d11_n6_2",
+     "label": "Push forward.",
+     "target": "d12_n2"
+    }
+   ]
+  },
+  {
+   "id": "d11_n7",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; keep to the drier edge and move fast, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_n7_0",
+     "label": "Press on.",
+     "target": "d12_n3"
+    },
+    {
+     "id": "c_d11_n7_1",
+     "label": "Keep going.",
+     "target": "d12_n4"
+    },
+    {
+     "id": "c_d11_n7_2",
+     "label": "Push forward.",
+     "target": "d12_n5"
+    }
+   ]
+  },
+  {
+   "id": "d11_n8",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; duck the low slabs and count your steps, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_n8_0",
+     "label": "Press on.",
+     "target": "d12_n6"
+    },
+    {
+     "id": "c_d11_n8_1",
+     "label": "Keep going.",
+     "target": "d12_n7"
+    },
+    {
+     "id": "c_d11_n8_2",
+     "label": "Push forward.",
+     "target": "d12_n8"
+    }
+   ]
+  },
+  {
+   "id": "d12_n0",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; brace every prop you pass a hand against, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_n0_0",
+     "label": "Press on.",
+     "target": "d13_n0"
+    },
+    {
+     "id": "c_d12_n0_1",
+     "label": "Keep going.",
+     "target": "d13_n1"
+    },
+    {
+     "id": "c_d12_n0_2",
+     "label": "Push forward.",
+     "target": "d13_n2"
+    }
+   ]
+  },
+  {
+   "id": "d12_n1",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; breathe shallow and keep moving, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_n1_0",
+     "label": "Press on.",
+     "target": "d13_n3"
+    },
+    {
+     "id": "c_d12_n1_1",
+     "label": "Keep going.",
+     "target": "d13_n4"
+    },
+    {
+     "id": "c_d12_n1_2",
+     "label": "Push forward.",
+     "target": "d13_n5"
+    }
+   ]
+  },
+  {
+   "id": "d12_n2",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; climb it in the dark rather than burn the lamp, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_n2_0",
+     "label": "Press on.",
+     "target": "d13_n6"
+    },
+    {
+     "id": "c_d12_n2_1",
+     "label": "Keep going.",
+     "target": "d13_n7"
+    },
+    {
+     "id": "c_d12_n2_2",
+     "label": "Push forward.",
+     "target": "d13_n8"
+    }
+   ]
+  },
+  {
+   "id": "d12_n3",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; test each rung before you trust it, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_n3_0",
+     "label": "Press on.",
+     "target": "d13_n0"
+    },
+    {
+     "id": "c_d12_n3_1",
+     "label": "Keep going.",
+     "target": "d13_n1"
+    },
+    {
+     "id": "c_d12_n3_2",
+     "label": "Push forward.",
+     "target": "d13_n2"
+    }
+   ]
+  },
+  {
+   "id": "d12_n4",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; pick a line through the loose stone, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_n4_0",
+     "label": "Press on.",
+     "target": "d13_n3"
+    },
+    {
+     "id": "c_d12_n4_1",
+     "label": "Keep going.",
+     "target": "d13_n4"
+    },
+    {
+     "id": "c_d12_n4_2",
+     "label": "Push forward.",
+     "target": "d13_n5"
+    }
+   ]
+  },
+  {
+   "id": "d12_n5",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; keep to the drier edge and move fast, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_n5_0",
+     "label": "Press on.",
+     "target": "d13_n6"
+    },
+    {
+     "id": "c_d12_n5_1",
+     "label": "Keep going.",
+     "target": "d13_n7"
+    },
+    {
+     "id": "c_d12_n5_2",
+     "label": "Push forward.",
+     "target": "d13_n8"
+    }
+   ]
+  },
+  {
+   "id": "d12_n6",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; duck the low slabs and count your steps, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_n6_0",
+     "label": "Press on.",
+     "target": "d13_n0"
+    },
+    {
+     "id": "c_d12_n6_1",
+     "label": "Keep going.",
+     "target": "d13_n1"
+    },
+    {
+     "id": "c_d12_n6_2",
+     "label": "Push forward.",
+     "target": "d13_n2"
+    }
+   ]
+  },
+  {
+   "id": "d12_n7",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; walk the rail rather than the sleepers, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_n7_0",
+     "label": "Press on.",
+     "target": "d13_n3"
+    },
+    {
+     "id": "c_d12_n7_1",
+     "label": "Keep going.",
+     "target": "d13_n4"
+    },
+    {
+     "id": "c_d12_n7_2",
+     "label": "Push forward.",
+     "target": "d13_n5"
+    }
+   ]
+  },
+  {
+   "id": "d12_n8",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; hug the rock and let the drop alone, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_n8_0",
+     "label": "Press on.",
+     "target": "d13_n6"
+    },
+    {
+     "id": "c_d12_n8_1",
+     "label": "Keep going.",
+     "target": "d13_n7"
+    },
+    {
+     "id": "c_d12_n8_2",
+     "label": "Push forward.",
+     "target": "d13_n8"
+    }
+   ]
+  },
+  {
+   "id": "d13_n0",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; climb it in the dark rather than burn the lamp, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_n0_0",
+     "label": "Press on.",
+     "target": "d14_n0"
+    },
+    {
+     "id": "c_d13_n0_1",
+     "label": "Keep going.",
+     "target": "d14_n1"
+    },
+    {
+     "id": "c_d13_n0_2",
+     "label": "Push forward.",
+     "target": "d14_n2"
+    }
+   ]
+  },
+  {
+   "id": "d13_n1",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; test each rung before you trust it, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_n1_0",
+     "label": "Press on.",
+     "target": "d14_n3"
+    },
+    {
+     "id": "c_d13_n1_1",
+     "label": "Keep going.",
+     "target": "d14_n4"
+    },
+    {
+     "id": "c_d13_n1_2",
+     "label": "Push forward.",
+     "target": "d14_n5"
+    }
+   ]
+  },
+  {
+   "id": "d13_n2",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; pick a line through the loose stone, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_n2_0",
+     "label": "Press on.",
+     "target": "d14_n6"
+    },
+    {
+     "id": "c_d13_n2_1",
+     "label": "Keep going.",
+     "target": "d14_n7"
+    },
+    {
+     "id": "c_d13_n2_2",
+     "label": "Push forward.",
+     "target": "d14_n8"
+    }
+   ]
+  },
+  {
+   "id": "d13_n3",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; keep to the drier edge and move fast, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_n3_0",
+     "label": "Press on.",
+     "target": "d14_n0"
+    },
+    {
+     "id": "c_d13_n3_1",
+     "label": "Keep going.",
+     "target": "d14_n1"
+    },
+    {
+     "id": "c_d13_n3_2",
+     "label": "Push forward.",
+     "target": "d14_n2"
+    }
+   ]
+  },
+  {
+   "id": "d13_n4",
+   "body": "<<FILL role=rising words=72 beats='wedged behind the rockfall's loose slabs is a canvas kit bag from the missing crew, and inside it, wrapped against the wet, the tower's spare transmitter valve'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_n4_0",
+     "label": "Press on.",
+     "target": "d14_n3"
+    },
+    {
+     "id": "c_d13_n4_1",
+     "label": "Keep going.",
+     "target": "d14_n4"
+    },
+    {
+     "id": "c_d13_n4_2",
+     "label": "Push forward.",
+     "target": "d14_n5"
+    }
+   ],
+   "on_enter": [
+    {
+     "op": "set",
+     "var": "transmitter",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": "d13_n5",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; walk the rail rather than the sleepers, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_n5_0",
+     "label": "Press on.",
+     "target": "d14_n6"
+    },
+    {
+     "id": "c_d13_n5_1",
+     "label": "Keep going.",
+     "target": "d14_n7"
+    },
+    {
+     "id": "c_d13_n5_2",
+     "label": "Push forward.",
+     "target": "d14_n8"
+    }
+   ]
+  },
+  {
+   "id": "d13_n6",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; hug the rock and let the drop alone, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_n6_0",
+     "label": "Press on.",
+     "target": "d14_n0"
+    },
+    {
+     "id": "c_d13_n6_1",
+     "label": "Keep going.",
+     "target": "d14_n1"
+    },
+    {
+     "id": "c_d13_n6_2",
+     "label": "Push forward.",
+     "target": "d14_n2"
+    }
+   ]
+  },
+  {
+   "id": "d13_n7",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; brace every prop you pass a hand against, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_n7_0",
+     "label": "Press on.",
+     "target": "d14_n3"
+    },
+    {
+     "id": "c_d13_n7_1",
+     "label": "Keep going.",
+     "target": "d14_n4"
+    },
+    {
+     "id": "c_d13_n7_2",
+     "label": "Push forward.",
+     "target": "d14_n5"
+    }
+   ]
+  },
+  {
+   "id": "d13_n8",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; breathe shallow and keep moving, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_n8_0",
+     "label": "Press on.",
+     "target": "d14_n6"
+    },
+    {
+     "id": "c_d13_n8_1",
+     "label": "Keep going.",
+     "target": "d14_n7"
+    },
+    {
+     "id": "c_d13_n8_2",
+     "label": "Push forward.",
+     "target": "d14_n8"
+    }
+   ]
+  },
+  {
+   "id": "d14_n0",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; pick a line through the loose stone, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_n0_0",
+     "label": "Press on.",
+     "target": "d15_n0"
+    },
+    {
+     "id": "c_d14_n0_1",
+     "label": "Keep going.",
+     "target": "d15_n1"
+    },
+    {
+     "id": "c_d14_n0_2",
+     "label": "Push forward.",
+     "target": "d15_n2"
+    }
+   ]
+  },
+  {
+   "id": "d14_n1",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; keep to the drier edge and move fast, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_n1_0",
+     "label": "Press on.",
+     "target": "d15_n3"
+    },
+    {
+     "id": "c_d14_n1_1",
+     "label": "Keep going.",
+     "target": "d15_n4"
+    },
+    {
+     "id": "c_d14_n1_2",
+     "label": "Push forward.",
+     "target": "d15_n5"
+    }
+   ]
+  },
+  {
+   "id": "d14_n2",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; duck the low slabs and count your steps, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_n2_0",
+     "label": "Press on.",
+     "target": "d15_n6"
+    },
+    {
+     "id": "c_d14_n2_1",
+     "label": "Keep going.",
+     "target": "d15_n7"
+    },
+    {
+     "id": "c_d14_n2_2",
+     "label": "Push forward.",
+     "target": "d15_n8"
+    }
+   ]
+  },
+  {
+   "id": "d14_n3",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; walk the rail rather than the sleepers, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_n3_0",
+     "label": "Press on.",
+     "target": "d15_n0"
+    },
+    {
+     "id": "c_d14_n3_1",
+     "label": "Keep going.",
+     "target": "d15_n1"
+    },
+    {
+     "id": "c_d14_n3_2",
+     "label": "Push forward.",
+     "target": "d15_n2"
+    }
+   ]
+  },
+  {
+   "id": "d14_n4",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; hug the rock and let the drop alone, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_n4_0",
+     "label": "Press on.",
+     "target": "d15_n3"
+    },
+    {
+     "id": "c_d14_n4_1",
+     "label": "Keep going.",
+     "target": "d15_n4"
+    },
+    {
+     "id": "c_d14_n4_2",
+     "label": "Push forward.",
+     "target": "d15_n5"
+    }
+   ]
+  },
+  {
+   "id": "d14_n5",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; brace every prop you pass a hand against, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_n5_0",
+     "label": "Press on.",
+     "target": "d15_n6"
+    },
+    {
+     "id": "c_d14_n5_1",
+     "label": "Keep going.",
+     "target": "d15_n7"
+    },
+    {
+     "id": "c_d14_n5_2",
+     "label": "Push forward.",
+     "target": "d15_n8"
+    }
+   ]
+  },
+  {
+   "id": "d14_n6",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; breathe shallow and keep moving, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_n6_0",
+     "label": "Press on.",
+     "target": "d15_n0"
+    },
+    {
+     "id": "c_d14_n6_1",
+     "label": "Keep going.",
+     "target": "d15_n1"
+    },
+    {
+     "id": "c_d14_n6_2",
+     "label": "Push forward.",
+     "target": "d15_n2"
+    }
+   ]
+  },
+  {
+   "id": "d14_n7",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; climb it in the dark rather than burn the lamp, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_n7_0",
+     "label": "Press on.",
+     "target": "d15_n3"
+    },
+    {
+     "id": "c_d14_n7_1",
+     "label": "Keep going.",
+     "target": "d15_n4"
+    },
+    {
+     "id": "c_d14_n7_2",
+     "label": "Push forward.",
+     "target": "d15_n5"
+    }
+   ]
+  },
+  {
+   "id": "d14_n8",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; test each rung before you trust it, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_n8_0",
+     "label": "Press on.",
+     "target": "d15_n6"
+    },
+    {
+     "id": "c_d14_n8_1",
+     "label": "Keep going.",
+     "target": "d15_n7"
+    },
+    {
+     "id": "c_d14_n8_2",
+     "label": "Push forward.",
+     "target": "d15_n8"
+    }
+   ]
+  },
+  {
+   "id": "d15_n0",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; duck the low slabs and count your steps, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_n0_0",
+     "label": "Press on.",
+     "target": "d16_n0"
+    },
+    {
+     "id": "c_d15_n0_1",
+     "label": "Keep going.",
+     "target": "d16_n1"
+    },
+    {
+     "id": "c_d15_n0_2",
+     "label": "Push forward.",
+     "target": "d16_n2"
+    }
+   ]
+  },
+  {
+   "id": "d15_n1",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; walk the rail rather than the sleepers, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_n1_0",
+     "label": "Press on.",
+     "target": "d16_n3"
+    },
+    {
+     "id": "c_d15_n1_1",
+     "label": "Keep going.",
+     "target": "d16_n4"
+    },
+    {
+     "id": "c_d15_n1_2",
+     "label": "Push forward.",
+     "target": "d16_n5"
+    }
+   ]
+  },
+  {
+   "id": "d15_n2",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; hug the rock and let the drop alone, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_n2_0",
+     "label": "Press on.",
+     "target": "d16_n6"
+    },
+    {
+     "id": "c_d15_n2_1",
+     "label": "Keep going.",
+     "target": "d16_n7"
+    },
+    {
+     "id": "c_d15_n2_2",
+     "label": "Push forward.",
+     "target": "d16_n8"
+    }
+   ]
+  },
+  {
+   "id": "d15_n3",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; brace every prop you pass a hand against, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_n3_0",
+     "label": "Press on.",
+     "target": "d16_n0"
+    },
+    {
+     "id": "c_d15_n3_1",
+     "label": "Keep going.",
+     "target": "d16_n1"
+    },
+    {
+     "id": "c_d15_n3_2",
+     "label": "Push forward.",
+     "target": "d16_n2"
+    }
+   ]
+  },
+  {
+   "id": "d15_n4",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; breathe shallow and keep moving, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_n4_0",
+     "label": "Press on.",
+     "target": "d16_n3"
+    },
+    {
+     "id": "c_d15_n4_1",
+     "label": "Keep going.",
+     "target": "d16_n4"
+    },
+    {
+     "id": "c_d15_n4_2",
+     "label": "Push forward.",
+     "target": "d16_n5"
+    }
+   ]
+  },
+  {
+   "id": "d15_n5",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; climb it in the dark rather than burn the lamp, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_n5_0",
+     "label": "Press on.",
+     "target": "d16_n6"
+    },
+    {
+     "id": "c_d15_n5_1",
+     "label": "Keep going.",
+     "target": "d16_n7"
+    },
+    {
+     "id": "c_d15_n5_2",
+     "label": "Push forward.",
+     "target": "d16_n8"
+    }
+   ]
+  },
+  {
+   "id": "d15_n6",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; test each rung before you trust it, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_n6_0",
+     "label": "Press on.",
+     "target": "d16_n0"
+    },
+    {
+     "id": "c_d15_n6_1",
+     "label": "Keep going.",
+     "target": "d16_n1"
+    },
+    {
+     "id": "c_d15_n6_2",
+     "label": "Push forward.",
+     "target": "d16_n2"
+    }
+   ]
+  },
+  {
+   "id": "d15_n7",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; pick a line through the loose stone, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_n7_0",
+     "label": "Press on.",
+     "target": "d16_n3"
+    },
+    {
+     "id": "c_d15_n7_1",
+     "label": "Keep going.",
+     "target": "d16_n4"
+    },
+    {
+     "id": "c_d15_n7_2",
+     "label": "Push forward.",
+     "target": "d16_n5"
+    }
+   ]
+  },
+  {
+   "id": "d15_n8",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; keep to the drier edge and move fast, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_n8_0",
+     "label": "Press on.",
+     "target": "d16_n6"
+    },
+    {
+     "id": "c_d15_n8_1",
+     "label": "Keep going.",
+     "target": "d16_n7"
+    },
+    {
+     "id": "c_d15_n8_2",
+     "label": "Push forward.",
+     "target": "d16_n8"
+    }
+   ]
+  },
+  {
+   "id": "d16_n0",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; hug the rock and let the drop alone, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_n0_0",
+     "label": "Press on.",
+     "target": "d17_n0"
+    },
+    {
+     "id": "c_d16_n0_1",
+     "label": "Keep going.",
+     "target": "d17_n1"
+    },
+    {
+     "id": "c_d16_n0_2",
+     "label": "Push forward.",
+     "target": "d17_n2"
+    }
+   ]
+  },
+  {
+   "id": "d16_n1",
+   "body": "<<FILL role=rising words=72 beats='the drift ahead has come down in slabs you cannot read blind, and lighting it properly to pick a safe line costs another measure of the lamp's oil'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_n1_0",
+     "label": "Press on.",
+     "target": "d17_n3"
+    },
+    {
+     "id": "c_d16_n1_1",
+     "label": "Keep going.",
+     "target": "d17_n4"
+    },
+    {
+     "id": "c_d16_n1_2",
+     "label": "Push forward.",
+     "target": "d17_n5"
+    }
+   ],
+   "on_enter": [
+    {
+     "op": "dec",
+     "var": "light",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": "d16_n2",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; breathe shallow and keep moving, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_n2_0",
+     "label": "Press on.",
+     "target": "d17_n6"
+    },
+    {
+     "id": "c_d16_n2_1",
+     "label": "Keep going.",
+     "target": "d17_n7"
+    },
+    {
+     "id": "c_d16_n2_2",
+     "label": "Push forward.",
+     "target": "d17_n8"
+    }
+   ]
+  },
+  {
+   "id": "d16_n3",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; climb it in the dark rather than burn the lamp, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_n3_0",
+     "label": "Press on.",
+     "target": "d17_n0"
+    },
+    {
+     "id": "c_d16_n3_1",
+     "label": "Keep going.",
+     "target": "d17_n1"
+    },
+    {
+     "id": "c_d16_n3_2",
+     "label": "Push forward.",
+     "target": "d17_n2"
+    }
+   ]
+  },
+  {
+   "id": "d16_n4",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; test each rung before you trust it, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_n4_0",
+     "label": "Press on.",
+     "target": "d17_n3"
+    },
+    {
+     "id": "c_d16_n4_1",
+     "label": "Keep going.",
+     "target": "d17_n4"
+    },
+    {
+     "id": "c_d16_n4_2",
+     "label": "Push forward.",
+     "target": "d17_n5"
+    }
+   ]
+  },
+  {
+   "id": "d16_n5",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; pick a line through the loose stone, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_n5_0",
+     "label": "Press on.",
+     "target": "d17_n6"
+    },
+    {
+     "id": "c_d16_n5_1",
+     "label": "Keep going.",
+     "target": "d17_n7"
+    },
+    {
+     "id": "c_d16_n5_2",
+     "label": "Push forward.",
+     "target": "d17_n8"
+    }
+   ]
+  },
+  {
+   "id": "d16_n6",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; keep to the drier edge and move fast, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_n6_0",
+     "label": "Press on.",
+     "target": "d17_n0"
+    },
+    {
+     "id": "c_d16_n6_1",
+     "label": "Keep going.",
+     "target": "d17_n1"
+    },
+    {
+     "id": "c_d16_n6_2",
+     "label": "Push forward.",
+     "target": "d17_n2"
+    }
+   ]
+  },
+  {
+   "id": "d16_n7",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; duck the low slabs and count your steps, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_n7_0",
+     "label": "Press on.",
+     "target": "d17_n3"
+    },
+    {
+     "id": "c_d16_n7_1",
+     "label": "Keep going.",
+     "target": "d17_n4"
+    },
+    {
+     "id": "c_d16_n7_2",
+     "label": "Push forward.",
+     "target": "d17_n5"
+    }
+   ]
+  },
+  {
+   "id": "d16_n8",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; walk the rail rather than the sleepers, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_n8_0",
+     "label": "Press on.",
+     "target": "d17_n6"
+    },
+    {
+     "id": "c_d16_n8_1",
+     "label": "Keep going.",
+     "target": "d17_n7"
+    },
+    {
+     "id": "c_d16_n8_2",
+     "label": "Push forward.",
+     "target": "d17_n8"
+    }
+   ]
+  },
+  {
+   "id": "d17_n0",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; breathe shallow and keep moving, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_n0_0",
+     "label": "Press on.",
+     "target": "d18_n0"
+    },
+    {
+     "id": "c_d17_n0_1",
+     "label": "Keep going.",
+     "target": "d18_n1"
+    },
+    {
+     "id": "c_d17_n0_2",
+     "label": "Push forward.",
+     "target": "d18_n2"
+    }
+   ]
+  },
+  {
+   "id": "d17_n1",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; climb it in the dark rather than burn the lamp, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_n1_0",
+     "label": "Press on.",
+     "target": "d18_n3"
+    },
+    {
+     "id": "c_d17_n1_1",
+     "label": "Keep going.",
+     "target": "d18_n4"
+    },
+    {
+     "id": "c_d17_n1_2",
+     "label": "Push forward.",
+     "target": "d18_n5"
+    }
+   ]
+  },
+  {
+   "id": "d17_n2",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; test each rung before you trust it, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_n2_0",
+     "label": "Press on.",
+     "target": "d18_n6"
+    },
+    {
+     "id": "c_d17_n2_1",
+     "label": "Keep going.",
+     "target": "d18_n7"
+    },
+    {
+     "id": "c_d17_n2_2",
+     "label": "Push forward.",
+     "target": "d18_n8"
+    }
+   ]
+  },
+  {
+   "id": "d17_n3",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; pick a line through the loose stone, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_n3_0",
+     "label": "Press on.",
+     "target": "d18_n0"
+    },
+    {
+     "id": "c_d17_n3_1",
+     "label": "Keep going.",
+     "target": "d18_n1"
+    },
+    {
+     "id": "c_d17_n3_2",
+     "label": "Push forward.",
+     "target": "d18_n2"
+    }
+   ]
+  },
+  {
+   "id": "d17_n4",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; keep to the drier edge and move fast, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_n4_0",
+     "label": "Press on.",
+     "target": "d18_n3"
+    },
+    {
+     "id": "c_d17_n4_1",
+     "label": "Keep going.",
+     "target": "d18_n4"
+    },
+    {
+     "id": "c_d17_n4_2",
+     "label": "Push forward.",
+     "target": "d18_n5"
+    }
+   ]
+  },
+  {
+   "id": "d17_n5",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; duck the low slabs and count your steps, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_n5_0",
+     "label": "Press on.",
+     "target": "d18_n6"
+    },
+    {
+     "id": "c_d17_n5_1",
+     "label": "Keep going.",
+     "target": "d18_n7"
+    },
+    {
+     "id": "c_d17_n5_2",
+     "label": "Push forward.",
+     "target": "d18_n8"
+    }
+   ]
+  },
+  {
+   "id": "d17_n6",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; walk the rail rather than the sleepers, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_n6_0",
+     "label": "Press on.",
+     "target": "d18_n0"
+    },
+    {
+     "id": "c_d17_n6_1",
+     "label": "Keep going.",
+     "target": "d18_n1"
+    },
+    {
+     "id": "c_d17_n6_2",
+     "label": "Push forward.",
+     "target": "d18_n2"
+    }
+   ]
+  },
+  {
+   "id": "d17_n7",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; hug the rock and let the drop alone, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_n7_0",
+     "label": "Press on.",
+     "target": "d18_n3"
+    },
+    {
+     "id": "c_d17_n7_1",
+     "label": "Keep going.",
+     "target": "d18_n4"
+    },
+    {
+     "id": "c_d17_n7_2",
+     "label": "Push forward.",
+     "target": "d18_n5"
+    }
+   ]
+  },
+  {
+   "id": "d17_n8",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; brace every prop you pass a hand against, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_n8_0",
+     "label": "Press on.",
+     "target": "d18_n6"
+    },
+    {
+     "id": "c_d17_n8_1",
+     "label": "Keep going.",
+     "target": "d18_n7"
+    },
+    {
+     "id": "c_d17_n8_2",
+     "label": "Push forward.",
+     "target": "d18_n8"
+    }
+   ]
+  },
+  {
+   "id": "d18_n0",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; test each rung before you trust it, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_n0_0",
+     "label": "Press on.",
+     "target": "d19_n0"
+    },
+    {
+     "id": "c_d18_n0_1",
+     "label": "Keep going.",
+     "target": "d19_n1"
+    },
+    {
+     "id": "c_d18_n0_2",
+     "label": "Push forward.",
+     "target": "d19_n2"
+    }
+   ]
+  },
+  {
+   "id": "d18_n1",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; pick a line through the loose stone, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_n1_0",
+     "label": "Press on.",
+     "target": "d19_n3"
+    },
+    {
+     "id": "c_d18_n1_1",
+     "label": "Keep going.",
+     "target": "d19_n4"
+    },
+    {
+     "id": "c_d18_n1_2",
+     "label": "Push forward.",
+     "target": "d19_n5"
+    }
+   ]
+  },
+  {
+   "id": "d18_n2",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; keep to the drier edge and move fast, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_n2_0",
+     "label": "Press on.",
+     "target": "d19_n6"
+    },
+    {
+     "id": "c_d18_n2_1",
+     "label": "Keep going.",
+     "target": "d19_n7"
+    },
+    {
+     "id": "c_d18_n2_2",
+     "label": "Push forward.",
+     "target": "d19_n8"
+    }
+   ]
+  },
+  {
+   "id": "d18_n3",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; duck the low slabs and count your steps, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_n3_0",
+     "label": "Press on.",
+     "target": "d19_n0"
+    },
+    {
+     "id": "c_d18_n3_1",
+     "label": "Keep going.",
+     "target": "d19_n1"
+    },
+    {
+     "id": "c_d18_n3_2",
+     "label": "Push forward.",
+     "target": "d19_n2"
+    }
+   ]
+  },
+  {
+   "id": "d18_n4",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; walk the rail rather than the sleepers, and the quarry breathes cold air up out of the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_n4_0",
+     "label": "Press on.",
+     "target": "d19_n3"
+    },
+    {
+     "id": "c_d18_n4_1",
+     "label": "Keep going.",
+     "target": "d19_n4"
+    },
+    {
+     "id": "c_d18_n4_2",
+     "label": "Push forward.",
+     "target": "d19_n5"
+    }
+   ]
+  },
+  {
+   "id": "d18_n5",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; hug the rock and let the drop alone, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_n5_0",
+     "label": "Press on.",
+     "target": "d19_n6"
+    },
+    {
+     "id": "c_d18_n5_1",
+     "label": "Keep going.",
+     "target": "d19_n7"
+    },
+    {
+     "id": "c_d18_n5_2",
+     "label": "Push forward.",
+     "target": "d19_n8"
+    }
+   ]
+  },
+  {
+   "id": "d18_n6",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; brace every prop you pass a hand against, and Dell's torch never wavers ahead of you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_n6_0",
+     "label": "Press on.",
+     "target": "d19_n0"
+    },
+    {
+     "id": "c_d18_n6_1",
+     "label": "Keep going.",
+     "target": "d19_n1"
+    },
+    {
+     "id": "c_d18_n6_2",
+     "label": "Push forward.",
+     "target": "d19_n2"
+    }
+   ]
+  },
+  {
+   "id": "d18_n7",
+   "body": "<<FILL role=rising words=72 beats='you double back to walk Dell through the worst of the switchback rather than pressing on alone, and it costs you nothing but time Dell remembers'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_n7_0",
+     "label": "Press on.",
+     "target": "d19_n3"
+    },
+    {
+     "id": "c_d18_n7_1",
+     "label": "Keep going.",
+     "target": "d19_n4"
+    },
+    {
+     "id": "c_d18_n7_2",
+     "label": "Push forward.",
+     "target": "d19_n5"
+    }
+   ],
+   "on_enter": [
+    {
+     "op": "inc",
+     "var": "trust",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": "d18_n8",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; climb it in the dark rather than burn the lamp, and Dell checks the map by feel more than by sight now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_n8_0",
+     "label": "Press on.",
+     "target": "d19_n6"
+    },
+    {
+     "id": "c_d18_n8_1",
+     "label": "Keep going.",
+     "target": "d19_n7"
+    },
+    {
+     "id": "c_d18_n8_2",
+     "label": "Push forward.",
+     "target": "d19_n8"
+    }
+   ]
+  },
+  {
+   "id": "d19_n0",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; keep to the drier edge and move fast, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_n0_0",
+     "label": "Press on.",
+     "target": "d20_n0"
+    },
+    {
+     "id": "c_d19_n0_1",
+     "label": "Keep going.",
+     "target": "d20_n1"
+    },
+    {
+     "id": "c_d19_n0_2",
+     "label": "Push forward.",
+     "target": "d20_n2"
+    }
+   ]
+  },
+  {
+   "id": "d19_n1",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; duck the low slabs and count your steps, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_n1_0",
+     "label": "Press on.",
+     "target": "d20_n3"
+    },
+    {
+     "id": "c_d19_n1_1",
+     "label": "Keep going.",
+     "target": "d20_n4"
+    },
+    {
+     "id": "c_d19_n1_2",
+     "label": "Push forward.",
+     "target": "d20_n5"
+    }
+   ]
+  },
+  {
+   "id": "d19_n2",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; walk the rail rather than the sleepers, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_n2_0",
+     "label": "Press on.",
+     "target": "d20_n6"
+    },
+    {
+     "id": "c_d19_n2_1",
+     "label": "Keep going.",
+     "target": "d20_n7"
+    },
+    {
+     "id": "c_d19_n2_2",
+     "label": "Push forward.",
+     "target": "d20_n8"
+    }
+   ]
+  },
+  {
+   "id": "d19_n3",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; hug the rock and let the drop alone, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_n3_0",
+     "label": "Press on.",
+     "target": "d20_n0"
+    },
+    {
+     "id": "c_d19_n3_1",
+     "label": "Keep going.",
+     "target": "d20_n1"
+    },
+    {
+     "id": "c_d19_n3_2",
+     "label": "Push forward.",
+     "target": "d20_n2"
+    }
+   ]
+  },
+  {
+   "id": "d19_n4",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; brace every prop you pass a hand against, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_n4_0",
+     "label": "Press on.",
+     "target": "d20_n3"
+    },
+    {
+     "id": "c_d19_n4_1",
+     "label": "Keep going.",
+     "target": "d20_n4"
+    },
+    {
+     "id": "c_d19_n4_2",
+     "label": "Push forward.",
+     "target": "d20_n5"
+    }
+   ]
+  },
+  {
+   "id": "d19_n5",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; breathe shallow and keep moving, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_n5_0",
+     "label": "Press on.",
+     "target": "d20_n6"
+    },
+    {
+     "id": "c_d19_n5_1",
+     "label": "Keep going.",
+     "target": "d20_n7"
+    },
+    {
+     "id": "c_d19_n5_2",
+     "label": "Push forward.",
+     "target": "d20_n8"
+    }
+   ]
+  },
+  {
+   "id": "d19_n6",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; climb it in the dark rather than burn the lamp, and the storm sounds nearer through the rock than it should'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_n6_0",
+     "label": "Press on.",
+     "target": "d20_n0"
+    },
+    {
+     "id": "c_d19_n6_1",
+     "label": "Keep going.",
+     "target": "d20_n1"
+    },
+    {
+     "id": "c_d19_n6_2",
+     "label": "Push forward.",
+     "target": "d20_n2"
+    }
+   ]
+  },
+  {
+   "id": "d19_n7",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; test each rung before you trust it, and a survey stake from the missing crew turns up wedged in the rubble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_n7_0",
+     "label": "Press on.",
+     "target": "d20_n3"
+    },
+    {
+     "id": "c_d19_n7_1",
+     "label": "Keep going.",
+     "target": "d20_n4"
+    },
+    {
+     "id": "c_d19_n7_2",
+     "label": "Push forward.",
+     "target": "d20_n5"
+    }
+   ]
+  },
+  {
+   "id": "d19_n8",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; pick a line through the loose stone, and your own breathing is the loudest thing in the working'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_n8_0",
+     "label": "Press on.",
+     "target": "d20_n6"
+    },
+    {
+     "id": "c_d19_n8_1",
+     "label": "Keep going.",
+     "target": "d20_n7"
+    },
+    {
+     "id": "c_d19_n8_2",
+     "label": "Push forward.",
+     "target": "d20_n8"
+    }
+   ]
+  },
+  {
+   "id": "d20_n0",
+   "body": "<<FILL role=rising words=72 beats='a stretch of rail sunk soft into the mud bars the way down; walk the rail rather than the sleepers, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d20_n0_0",
+     "label": "Press on.",
+     "target": "tail0_c0"
+    },
+    {
+     "id": "c_d20_n0_1",
+     "label": "Keep going.",
+     "target": "tail0_c1"
+    },
+    {
+     "id": "c_d20_n0_2",
+     "label": "Push forward.",
+     "target": "tail0_c2"
+    }
+   ]
+  },
+  {
+   "id": "d20_n1",
+   "body": "<<FILL role=rising words=72 beats='a drift where the roof has come down in slabs bars the way down; hug the rock and let the drop alone, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d20_n1_0",
+     "label": "Press on.",
+     "target": "tail0_c3"
+    },
+    {
+     "id": "c_d20_n1_1",
+     "label": "Trust the wrong hazard.",
+     "target": "tail0_death"
+    },
+    {
+     "id": "c_d20_n1_2",
+     "label": "Get pinned trying.",
+     "target": "tail0_capture"
+    }
+   ]
+  },
+  {
+   "id": "d20_n2",
+   "body": "<<FILL role=rising words=72 beats='a catwalk over black standing water bars the way down; brace every prop you pass a hand against, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d20_n2_0",
+     "label": "Turn back for the gate.",
+     "target": "tail0_setback"
+    },
+    {
+     "id": "c_d20_n2_1",
+     "label": "Back away and search instead.",
+     "target": "tail0_discover"
+    },
+    {
+     "id": "c_d20_n2_2",
+     "label": "Find the miners' bypass.",
+     "target": "tail0_complete"
+    }
+   ]
+  },
+  {
+   "id": "d20_n3",
+   "body": "<<FILL role=rising words=72 beats='a switchback cut sideways into bare rock bars the way down; breathe shallow and keep moving, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d20_n3_0",
+     "label": "Press on.",
+     "target": "tail0_c0"
+    },
+    {
+     "id": "c_d20_n3_1",
+     "label": "Keep going.",
+     "target": "tail0_c1"
+    },
+    {
+     "id": "c_d20_n3_2",
+     "label": "Push forward.",
+     "target": "tail0_c2"
+    }
+   ]
+  },
+  {
+   "id": "d20_n4",
+   "body": "<<FILL role=rising words=72 beats='a stope where the timber props have gone soft bars the way down; climb it in the dark rather than burn the lamp, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d20_n4_0",
+     "label": "Press on.",
+     "target": "tail0_c3"
+    },
+    {
+     "id": "c_d20_n4_1",
+     "label": "Trust the wrong hazard.",
+     "target": "tail0_death"
+    },
+    {
+     "id": "c_d20_n4_2",
+     "label": "Get pinned trying.",
+     "target": "tail0_capture"
+    }
+   ]
+  },
+  {
+   "id": "d20_n5",
+   "body": "<<FILL role=rising words=72 beats='a culvert barely wide enough for your shoulders bars the way down; test each rung before you trust it, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d20_n5_0",
+     "label": "Turn back for the gate.",
+     "target": "tail0_setback"
+    },
+    {
+     "id": "c_d20_n5_1",
+     "label": "Back away and search instead.",
+     "target": "tail0_discover"
+    },
+    {
+     "id": "c_d20_n5_2",
+     "label": "Find the miners' bypass.",
+     "target": "tail0_complete"
+    }
+   ]
+  },
+  {
+   "id": "d20_n6",
+   "body": "<<FILL role=rising words=72 beats='a stair cut straight into the quarry face bars the way down; pick a line through the loose stone, and somewhere below, water is moving that should not be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d20_n6_0",
+     "label": "Press on.",
+     "target": "tail0_c0"
+    },
+    {
+     "id": "c_d20_n6_1",
+     "label": "Keep going.",
+     "target": "tail0_c1"
+    },
+    {
+     "id": "c_d20_n6_2",
+     "label": "Push forward.",
+     "target": "tail0_c2"
+    }
+   ]
+  },
+  {
+   "id": "d20_n7",
+   "body": "<<FILL role=rising words=72 beats='a rope ladder slick with quarry spray bars the way down; keep to the drier edge and move fast, and the tower's aerial catches torchlight for a second, high above'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d20_n7_0",
+     "label": "Press on.",
+     "target": "tail0_c3"
+    },
+    {
+     "id": "c_d20_n7_1",
+     "label": "Trust the wrong hazard.",
+     "target": "tail0_death"
+    },
+    {
+     "id": "c_d20_n7_2",
+     "label": "Get pinned trying.",
+     "target": "tail0_capture"
+    }
+   ]
+  },
+  {
+   "id": "d20_n8",
+   "body": "<<FILL role=rising words=72 beats='a gallery half choked with old spoil bars the way down; duck the low slabs and count your steps, and the last passage before this one is already behind you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d20_n8_0",
+     "label": "Turn back for the gate.",
+     "target": "tail0_setback"
+    },
+    {
+     "id": "c_d20_n8_1",
+     "label": "Back away and search instead.",
+     "target": "tail0_discover"
+    },
+    {
+     "id": "c_d20_n8_2",
+     "label": "Find the miners' bypass.",
+     "target": "tail0_complete"
+    }
+   ]
+  },
+  {
+   "id": "tail0_c0",
+   "body": "<<FILL role=rising words=72 beats='a rockfall seals the passage behind you, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail0_c0_0",
+     "label": "Press on.",
+     "target": "tail1_c0"
+    },
+    {
+     "id": "c_tail0_c0_1",
+     "label": "Keep going.",
+     "target": "tail1_c1"
+    },
+    {
+     "id": "c_tail0_c0_2",
+     "label": "Push forward.",
+     "target": "tail1_c2"
+    }
+   ]
+  },
+  {
+   "id": "tail0_c1",
+   "body": "<<FILL role=rising words=72 beats='a rockfall seals the passage behind you, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail0_c1_0",
+     "label": "Press on.",
+     "target": "tail1_c3"
+    },
+    {
+     "id": "c_tail0_c1_1",
+     "label": "Trust the wrong hazard.",
+     "target": "tail1_death"
+    },
+    {
+     "id": "c_tail0_c1_2",
+     "label": "Get pinned trying.",
+     "target": "tail1_capture"
+    }
+   ]
+  },
+  {
+   "id": "tail0_c2",
+   "body": "<<FILL role=rising words=72 beats='a rockfall seals the passage behind you, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail0_c2_0",
+     "label": "Turn back for the gate.",
+     "target": "tail1_setback"
+    },
+    {
+     "id": "c_tail0_c2_1",
+     "label": "Back away and search instead.",
+     "target": "tail1_discover"
+    },
+    {
+     "id": "c_tail0_c2_2",
+     "label": "Find the miners' bypass.",
+     "target": "tail1_complete"
+    }
+   ]
+  },
+  {
+   "id": "tail0_c3",
+   "body": "<<FILL role=rising words=72 beats='a rockfall seals the passage behind you, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail0_c3_0",
+     "label": "Press on.",
+     "target": "tail1_c0"
+    },
+    {
+     "id": "c_tail0_c3_1",
+     "label": "Keep going.",
+     "target": "tail1_c1"
+    },
+    {
+     "id": "c_tail0_c3_2",
+     "label": "Push forward.",
+     "target": "tail1_c2"
+    }
+   ]
+  },
+  {
+   "id": "tail0_death",
+   "body": "<<FILL role=death words=66 beats='a rockfall seals the passage behind you and this time it does not stop; the quarry keeps the ones who trust the wrong hazard too late'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail0_death",
+    "valence": "negative",
+    "kind": "death",
+    "title": "Sealed by the Fall"
+   }
+  },
+  {
+   "id": "tail0_capture",
+   "body": "<<FILL role=capture words=66 beats='a rockfall seals the passage behind you and pins you fast, not hurt but not free either; it is Dell, an hour later, who has to go for help alone'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail0_capture",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Pinned in the Working"
+   }
+  },
+  {
+   "id": "tail0_setback",
+   "body": "<<FILL role=setback words=66 beats='a rockfall seals the passage behind you and there is no way past it tonight; you and Dell turn back for the gate, the tower still dark and the crew still waiting'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail0_setback",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Turned Back Underground"
+   }
+  },
+  {
+   "id": "tail0_discover",
+   "body": "<<FILL role=discovery words=66 beats='a rockfall seals the passage behind you, and in backing away from it you find an old surveyor's cache instead, untouched since the quarry closed, and a way out that is not the tower but is at least a way out'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail0_discover",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Surveyor's Cache"
+   }
+  },
+  {
+   "id": "tail0_complete",
+   "body": "<<FILL role=completion words=66 beats='a rockfall seals the passage behind you, but you and Dell find the old miners' bypass around it together, and though the tower is still a long climb off, you know now that you will reach it before the storm does'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail0_complete",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Long Way Round"
+   }
+  },
+  {
+   "id": "tail1_c0",
+   "body": "<<FILL role=rising words=72 beats='the flood cut rises past a safe wading depth, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail1_c0_0",
+     "label": "Press on.",
+     "target": "tail2_c0"
+    },
+    {
+     "id": "c_tail1_c0_1",
+     "label": "Keep going.",
+     "target": "tail2_c1"
+    },
+    {
+     "id": "c_tail1_c0_2",
+     "label": "Push forward.",
+     "target": "tail2_c2"
+    }
+   ]
+  },
+  {
+   "id": "tail1_c1",
+   "body": "<<FILL role=rising words=72 beats='the flood cut rises past a safe wading depth, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail1_c1_0",
+     "label": "Press on.",
+     "target": "tail2_c3"
+    },
+    {
+     "id": "c_tail1_c1_1",
+     "label": "Trust the wrong hazard.",
+     "target": "tail2_death"
+    },
+    {
+     "id": "c_tail1_c1_2",
+     "label": "Get pinned trying.",
+     "target": "tail2_capture"
+    }
+   ]
+  },
+  {
+   "id": "tail1_c2",
+   "body": "<<FILL role=rising words=72 beats='the flood cut rises past a safe wading depth, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail1_c2_0",
+     "label": "Turn back for the gate.",
+     "target": "tail2_setback"
+    },
+    {
+     "id": "c_tail1_c2_1",
+     "label": "Back away and search instead.",
+     "target": "tail2_discover"
+    },
+    {
+     "id": "c_tail1_c2_2",
+     "label": "Find the miners' bypass.",
+     "target": "tail2_complete"
+    }
+   ]
+  },
+  {
+   "id": "tail1_c3",
+   "body": "<<FILL role=rising words=72 beats='the flood cut rises past a safe wading depth, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail1_c3_0",
+     "label": "Press on.",
+     "target": "tail2_c0"
+    },
+    {
+     "id": "c_tail1_c3_1",
+     "label": "Keep going.",
+     "target": "tail2_c1"
+    },
+    {
+     "id": "c_tail1_c3_2",
+     "label": "Push forward.",
+     "target": "tail2_c2"
+    }
+   ]
+  },
+  {
+   "id": "tail1_death",
+   "body": "<<FILL role=death words=66 beats='the flood cut rises past a safe wading depth and this time it does not stop; the quarry keeps the ones who trust the wrong hazard too late'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail1_death",
+    "valence": "negative",
+    "kind": "death",
+    "title": "Over the Safe Depth"
+   }
+  },
+  {
+   "id": "tail1_capture",
+   "body": "<<FILL role=capture words=66 beats='the flood cut rises past a safe wading depth and pins you fast, not hurt but not free either; it is Dell, an hour later, who has to go for help alone'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail1_capture",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Pinned in the Working"
+   }
+  },
+  {
+   "id": "tail1_setback",
+   "body": "<<FILL role=setback words=66 beats='the flood cut rises past a safe wading depth and there is no way past it tonight; you and Dell turn back for the gate, the tower still dark and the crew still waiting'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail1_setback",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Turned Back Underground"
+   }
+  },
+  {
+   "id": "tail1_discover",
+   "body": "<<FILL role=discovery words=66 beats='the flood cut rises past a safe wading depth, and in backing away from it you find an old surveyor's cache instead, untouched since the quarry closed, and a way out that is not the tower but is at least a way out'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail1_discover",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Surveyor's Cache"
+   }
+  },
+  {
+   "id": "tail1_complete",
+   "body": "<<FILL role=completion words=66 beats='the flood cut rises past a safe wading depth, but you and Dell find the old miners' bypass around it together, and though the tower is still a long climb off, you know now that you will reach it before the storm does'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail1_complete",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Channel That Held"
+   }
+  },
+  {
+   "id": "tail2_c0",
+   "body": "<<FILL role=rising words=72 beats='the gantry's old cradle finally lets go overhead, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail2_c0_0",
+     "label": "Press on.",
+     "target": "tail3_c0"
+    },
+    {
+     "id": "c_tail2_c0_1",
+     "label": "Keep going.",
+     "target": "tail3_c1"
+    },
+    {
+     "id": "c_tail2_c0_2",
+     "label": "Push forward.",
+     "target": "tail3_c2"
+    }
+   ]
+  },
+  {
+   "id": "tail2_c1",
+   "body": "<<FILL role=rising words=72 beats='the gantry's old cradle finally lets go overhead, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail2_c1_0",
+     "label": "Press on.",
+     "target": "tail3_c3"
+    },
+    {
+     "id": "c_tail2_c1_1",
+     "label": "Trust the wrong hazard.",
+     "target": "tail3_death"
+    },
+    {
+     "id": "c_tail2_c1_2",
+     "label": "Get pinned trying.",
+     "target": "tail3_capture"
+    }
+   ]
+  },
+  {
+   "id": "tail2_c2",
+   "body": "<<FILL role=rising words=72 beats='the gantry's old cradle finally lets go overhead, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail2_c2_0",
+     "label": "Turn back for the gate.",
+     "target": "tail3_setback"
+    },
+    {
+     "id": "c_tail2_c2_1",
+     "label": "Back away and search instead.",
+     "target": "tail3_discover"
+    },
+    {
+     "id": "c_tail2_c2_2",
+     "label": "Find the miners' bypass.",
+     "target": "tail3_complete"
+    }
+   ]
+  },
+  {
+   "id": "tail2_c3",
+   "body": "<<FILL role=rising words=72 beats='the gantry's old cradle finally lets go overhead, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail2_c3_0",
+     "label": "Press on.",
+     "target": "tail3_c0"
+    },
+    {
+     "id": "c_tail2_c3_1",
+     "label": "Keep going.",
+     "target": "tail3_c1"
+    },
+    {
+     "id": "c_tail2_c3_2",
+     "label": "Push forward.",
+     "target": "tail3_c2"
+    }
+   ]
+  },
+  {
+   "id": "tail2_death",
+   "body": "<<FILL role=death words=66 beats='the gantry's old cradle finally lets go overhead and this time it does not stop; the quarry keeps the ones who trust the wrong hazard too late'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail2_death",
+    "valence": "negative",
+    "kind": "death",
+    "title": "Under the Cradle"
+   }
+  },
+  {
+   "id": "tail2_capture",
+   "body": "<<FILL role=capture words=66 beats='the gantry's old cradle finally lets go overhead and pins you fast, not hurt but not free either; it is Dell, an hour later, who has to go for help alone'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail2_capture",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Pinned in the Working"
+   }
+  },
+  {
+   "id": "tail2_setback",
+   "body": "<<FILL role=setback words=66 beats='the gantry's old cradle finally lets go overhead and there is no way past it tonight; you and Dell turn back for the gate, the tower still dark and the crew still waiting'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail2_setback",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Turned Back Underground"
+   }
+  },
+  {
+   "id": "tail2_discover",
+   "body": "<<FILL role=discovery words=66 beats='the gantry's old cradle finally lets go overhead, and in backing away from it you find an old surveyor's cache instead, untouched since the quarry closed, and a way out that is not the tower but is at least a way out'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail2_discover",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Surveyor's Cache"
+   }
+  },
+  {
+   "id": "tail2_complete",
+   "body": "<<FILL role=completion words=66 beats='the gantry's old cradle finally lets go overhead, but you and Dell find the old miners' bypass around it together, and though the tower is still a long climb off, you know now that you will reach it before the storm does'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail2_complete",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Swing That Missed"
+   }
+  },
+  {
+   "id": "tail3_c0",
+   "body": "<<FILL role=rising words=72 beats='the roof timbers give without warning, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail3_c0_0",
+     "label": "Press on.",
+     "target": "tail4_c0"
+    },
+    {
+     "id": "c_tail3_c0_1",
+     "label": "Keep going.",
+     "target": "tail4_c1"
+    },
+    {
+     "id": "c_tail3_c0_2",
+     "label": "Push forward.",
+     "target": "tail4_c2"
+    }
+   ]
+  },
+  {
+   "id": "tail3_c1",
+   "body": "<<FILL role=rising words=72 beats='the roof timbers give without warning, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail3_c1_0",
+     "label": "Press on.",
+     "target": "tail4_c3"
+    },
+    {
+     "id": "c_tail3_c1_1",
+     "label": "Trust the wrong hazard.",
+     "target": "tail4_death"
+    },
+    {
+     "id": "c_tail3_c1_2",
+     "label": "Get pinned trying.",
+     "target": "tail4_capture"
+    }
+   ]
+  },
+  {
+   "id": "tail3_c2",
+   "body": "<<FILL role=rising words=72 beats='the roof timbers give without warning, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail3_c2_0",
+     "label": "Turn back for the gate.",
+     "target": "tail4_setback"
+    },
+    {
+     "id": "c_tail3_c2_1",
+     "label": "Back away and search instead.",
+     "target": "tail4_discover"
+    },
+    {
+     "id": "c_tail3_c2_2",
+     "label": "Find the miners' bypass.",
+     "target": "tail4_complete"
+    }
+   ]
+  },
+  {
+   "id": "tail3_c3",
+   "body": "<<FILL role=rising words=72 beats='the roof timbers give without warning, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail3_c3_0",
+     "label": "Press on.",
+     "target": "tail4_c0"
+    },
+    {
+     "id": "c_tail3_c3_1",
+     "label": "Keep going.",
+     "target": "tail4_c1"
+    },
+    {
+     "id": "c_tail3_c3_2",
+     "label": "Push forward.",
+     "target": "tail4_c2"
+    }
+   ]
+  },
+  {
+   "id": "tail3_death",
+   "body": "<<FILL role=death words=66 beats='the roof timbers give without warning and this time it does not stop; the quarry keeps the ones who trust the wrong hazard too late'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail3_death",
+    "valence": "negative",
+    "kind": "death",
+    "title": "Under the Timbers"
+   }
+  },
+  {
+   "id": "tail3_capture",
+   "body": "<<FILL role=capture words=66 beats='the roof timbers give without warning and pins you fast, not hurt but not free either; it is Dell, an hour later, who has to go for help alone'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail3_capture",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Pinned in the Working"
+   }
+  },
+  {
+   "id": "tail3_setback",
+   "body": "<<FILL role=setback words=66 beats='the roof timbers give without warning and there is no way past it tonight; you and Dell turn back for the gate, the tower still dark and the crew still waiting'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail3_setback",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Turned Back Underground"
+   }
+  },
+  {
+   "id": "tail3_discover",
+   "body": "<<FILL role=discovery words=66 beats='the roof timbers give without warning, and in backing away from it you find an old surveyor's cache instead, untouched since the quarry closed, and a way out that is not the tower but is at least a way out'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail3_discover",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Surveyor's Cache"
+   }
+  },
+  {
+   "id": "tail3_complete",
+   "body": "<<FILL role=completion words=66 beats='the roof timbers give without warning, but you and Dell find the old miners' bypass around it together, and though the tower is still a long climb off, you know now that you will reach it before the storm does'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail3_complete",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Roof That Held"
+   }
+  },
+  {
+   "id": "tail4_c0",
+   "body": "<<FILL role=rising words=72 beats='a side shaft opens onto nothing but dark, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail4_c0_0",
+     "label": "Press on.",
+     "target": "tail5_c0"
+    },
+    {
+     "id": "c_tail4_c0_1",
+     "label": "Keep going.",
+     "target": "tail5_c1"
+    },
+    {
+     "id": "c_tail4_c0_2",
+     "label": "Push forward.",
+     "target": "tail5_c2"
+    }
+   ]
+  },
+  {
+   "id": "tail4_c1",
+   "body": "<<FILL role=rising words=72 beats='a side shaft opens onto nothing but dark, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail4_c1_0",
+     "label": "Press on.",
+     "target": "tail5_c3"
+    },
+    {
+     "id": "c_tail4_c1_1",
+     "label": "Trust the wrong hazard.",
+     "target": "tail5_death"
+    },
+    {
+     "id": "c_tail4_c1_2",
+     "label": "Get pinned trying.",
+     "target": "tail5_capture"
+    }
+   ]
+  },
+  {
+   "id": "tail4_c2",
+   "body": "<<FILL role=rising words=72 beats='a side shaft opens onto nothing but dark, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail4_c2_0",
+     "label": "Turn back for the gate.",
+     "target": "tail5_setback"
+    },
+    {
+     "id": "c_tail4_c2_1",
+     "label": "Back away and search instead.",
+     "target": "tail5_discover"
+    },
+    {
+     "id": "c_tail4_c2_2",
+     "label": "Find the miners' bypass.",
+     "target": "tail5_complete"
+    }
+   ]
+  },
+  {
+   "id": "tail4_c3",
+   "body": "<<FILL role=rising words=72 beats='a side shaft opens onto nothing but dark, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail4_c3_0",
+     "label": "Press on.",
+     "target": "tail5_c0"
+    },
+    {
+     "id": "c_tail4_c3_1",
+     "label": "Keep going.",
+     "target": "tail5_c1"
+    },
+    {
+     "id": "c_tail4_c3_2",
+     "label": "Push forward.",
+     "target": "tail5_c2"
+    }
+   ]
+  },
+  {
+   "id": "tail4_death",
+   "body": "<<FILL role=death words=66 beats='a side shaft opens onto nothing but dark and this time it does not stop; the quarry keeps the ones who trust the wrong hazard too late'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail4_death",
+    "valence": "negative",
+    "kind": "death",
+    "title": "Into the Side Shaft"
+   }
+  },
+  {
+   "id": "tail4_capture",
+   "body": "<<FILL role=capture words=66 beats='a side shaft opens onto nothing but dark and pins you fast, not hurt but not free either; it is Dell, an hour later, who has to go for help alone'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail4_capture",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Pinned in the Working"
+   }
+  },
+  {
+   "id": "tail4_setback",
+   "body": "<<FILL role=setback words=66 beats='a side shaft opens onto nothing but dark and there is no way past it tonight; you and Dell turn back for the gate, the tower still dark and the crew still waiting'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail4_setback",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Turned Back Underground"
+   }
+  },
+  {
+   "id": "tail4_discover",
+   "body": "<<FILL role=discovery words=66 beats='a side shaft opens onto nothing but dark, and in backing away from it you find an old surveyor's cache instead, untouched since the quarry closed, and a way out that is not the tower but is at least a way out'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail4_discover",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Surveyor's Cache"
+   }
+  },
+  {
+   "id": "tail4_complete",
+   "body": "<<FILL role=completion words=66 beats='a side shaft opens onto nothing but dark, but you and Dell find the old miners' bypass around it together, and though the tower is still a long climb off, you know now that you will reach it before the storm does'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail4_complete",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Light at the Shaft Mouth"
+   }
+  },
+  {
+   "id": "tail5_c0",
+   "body": "<<FILL role=rising words=42 beats='the storm's first gust reaches down into the working, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail5_c0_0",
+     "label": "Climb out onto the scree shelf.",
+     "target": "n_scree"
+    }
+   ]
+  },
+  {
+   "id": "tail5_c1",
+   "body": "<<FILL role=rising words=42 beats='the storm's first gust reaches down into the working, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail5_c1_0",
+     "label": "Climb out onto the scree shelf.",
+     "target": "n_scree"
+    }
+   ]
+  },
+  {
+   "id": "tail5_c2",
+   "body": "<<FILL role=rising words=42 beats='the storm's first gust reaches down into the working, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail5_c2_0",
+     "label": "Climb out onto the scree shelf.",
+     "target": "n_scree"
+    }
+   ]
+  },
+  {
+   "id": "tail5_c3",
+   "body": "<<FILL role=rising words=42 beats='the storm's first gust reaches down into the working, and there is still a way past it if you keep your head and keep moving, Dell's torch waiting just beyond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tail5_c3_0",
+     "label": "Climb out onto the scree shelf.",
+     "target": "n_scree"
+    }
+   ]
+  },
+  {
+   "id": "tail5_death",
+   "body": "<<FILL role=death words=66 beats='the storm's first gust reaches down into the working and this time it does not stop; the quarry keeps the ones who trust the wrong hazard too late'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail5_death",
+    "valence": "negative",
+    "kind": "death",
+    "title": "Caught by the Gust"
+   }
+  },
+  {
+   "id": "tail5_capture",
+   "body": "<<FILL role=capture words=66 beats='the storm's first gust reaches down into the working and pins you fast, not hurt but not free either; it is Dell, an hour later, who has to go for help alone'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail5_capture",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Pinned in the Working"
+   }
+  },
+  {
+   "id": "tail5_setback",
+   "body": "<<FILL role=setback words=66 beats='the storm's first gust reaches down into the working and there is no way past it tonight; you and Dell turn back for the gate, the tower still dark and the crew still waiting'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail5_setback",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Turned Back Underground"
+   }
+  },
+  {
+   "id": "tail5_discover",
+   "body": "<<FILL role=discovery words=66 beats='the storm's first gust reaches down into the working, and in backing away from it you find an old surveyor's cache instead, untouched since the quarry closed, and a way out that is not the tower but is at least a way out'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail5_discover",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Surveyor's Cache"
+   }
+  },
+  {
+   "id": "tail5_complete",
+   "body": "<<FILL role=completion words=66 beats='the storm's first gust reaches down into the working, but you and Dell find the old miners' bypass around it together, and though the tower is still a long climb off, you know now that you will reach it before the storm does'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tail5_complete",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Ahead of the Gust"
+   }
+  },
+  {
+   "id": "n_scree",
+   "body": "<<FILL role=rising words=40 beats='whichever way brought you here, it ends the same: a scree shelf below the old winding house, the tower's aerial black against a sky the storm has almost finished stacking'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_scree",
+     "label": "Start the climb to the tower.",
+     "target": "tower_gate"
+    }
+   ]
+  },
+  {
+   "id": "tower_gate",
+   "body": "<<FILL role=choice words=43 beats='the tower stair spirals up the outside of the old winding house, rusted through in places, a service hatch hanging open at the top'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tower_gate",
+     "label": "Climb to the transmitter room.",
+     "target": "tower_resolve_1"
+    }
+   ]
+  },
+  {
+   "id": "tower_resolve_1",
+   "body": "<<FILL role=choice words=65 beats='the transmitter room is exactly as the crew left it, a spare valve missing from the set since the day it failed, and whether you are holding that valve right now decides everything about what happens next'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tr1_fixed",
+     "label": "Fit the valve you carried down.",
+     "target": "tower_fixed",
+     "condition": {
+      "==": [
+       {
+        "var": "transmitter"
+       },
+       true
+      ]
+     }
+    },
+    {
+     "id": "c_tr1_flare",
+     "label": "Rig a flare from the lamp instead.",
+     "target": "tower_flare",
+     "condition": {
+      "==": [
+       {
+        "var": "transmitter"
+       },
+       false
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "tower_fixed",
+   "body": "<<FILL role=rising words=72 beats='the valve seats clean on the first try and the set hums back to life under your hands, the old relay light blinking awake for the first time in three days'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tower_fixed",
+     "label": "Send the call.",
+     "target": "tower_resolve_2_fixed"
+    }
+   ]
+  },
+  {
+   "id": "tower_flare",
+   "body": "<<FILL role=rising words=72 beats='with no valve to fit, you strip the lamp for its oil and rig a flare off the tower rail instead, the last of the light spent on one single throw against the coming storm'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tower_flare",
+     "label": "Light the flare.",
+     "target": "tower_resolve_2_flare"
+    }
+   ]
+  },
+  {
+   "id": "tower_resolve_2_fixed",
+   "body": "<<FILL role=choice words=76 beats='the set is live and the call will go through clean, but what comes back over it, and whether Dell is still beside you to hear it, depends on the whole night behind you now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_trf_2",
+     "label": "Trust carried you both this far.",
+     "target": "end_fixed_trust2",
+     "condition": {
+      "==": [
+       {
+        "var": "trust"
+       },
+       2
+      ]
+     }
+    },
+    {
+     "id": "c_trf_1",
+     "label": "Trust carried you partway.",
+     "target": "end_fixed_trust1",
+     "condition": {
+      "==": [
+       {
+        "var": "trust"
+       },
+       1
+      ]
+     }
+    },
+    {
+     "id": "c_trf_0",
+     "label": "Trust never got a foothold.",
+     "target": "end_fixed_trust0",
+     "condition": {
+      "==": [
+       {
+        "var": "trust"
+       },
+       0
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "tower_resolve_2_flare",
+   "body": "<<FILL role=choice words=76 beats='the flare is one shot into a sky already lit by the storm, and whether anyone is watching for it, and whether Dell still trusts your aim, depends on the whole night behind you now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_trr_2",
+     "label": "Trust carried you both this far.",
+     "target": "end_flare_trust2",
+     "condition": {
+      "==": [
+       {
+        "var": "trust"
+       },
+       2
+      ]
+     }
+    },
+    {
+     "id": "c_trr_1",
+     "label": "Trust carried you partway.",
+     "target": "end_flare_trust1",
+     "condition": {
+      "==": [
+       {
+        "var": "trust"
+       },
+       1
+      ]
+     }
+    },
+    {
+     "id": "c_trr_0",
+     "label": "Trust never got a foothold.",
+     "target": "end_flare_trust0",
+     "condition": {
+      "==": [
+       {
+        "var": "trust"
+       },
+       0
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "end_fixed_trust2",
+   "body": "<<FILL role=success words=80 beats='the call goes through and so does everything you did to earn it; Dell keys the second channel without being asked and between you the whole crew's position goes out clean, rescue moving before the storm breaks'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_fixed_trust2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Clean Call"
+   }
+  },
+  {
+   "id": "end_fixed_trust1",
+   "body": "<<FILL role=completion words=78 beats='the call goes through and rescue is coming; Dell stands a little apart at the rail while you make it, glad of the result and still weighing the night it took to get here'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_fixed_trust1",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Call Alone"
+   }
+  },
+  {
+   "id": "end_fixed_trust0",
+   "body": "<<FILL role=completion words=78 beats='the call goes through, and it is the only thing that does; Dell went back for the gate two hours ago and you send the crew's position out to an empty tower with nobody beside you to hear it land'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_fixed_trust0",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Empty Tower"
+   }
+  },
+  {
+   "id": "end_flare_trust2",
+   "body": "<<FILL role=success words=78 beats='Dell has the timing of the storm in a way you never could, and calls the exact second to loose the flare; it clears the ridge and someone, somewhere below, is already watching for it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_flare_trust2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Timed to the Storm"
+   }
+  },
+  {
+   "id": "end_flare_trust1",
+   "body": "<<FILL role=discovery words=76 beats='the flare clears the ridge and burns for its ten seconds against the cloud; whether it was seen is a question the night does not answer either way before you have to climb back down'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_flare_trust1",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Ten Seconds Against the Cloud"
+   }
+  },
+  {
+   "id": "end_flare_trust0",
+   "body": "<<FILL role=setback words=76 beats='the flare goes up alone, badly timed against a gust that was never going to give you a clean throw, and it is gone into the storm with nothing behind it and no one left to have watched for it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_flare_trust0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Lost Against the Gust"
+   }
+  }
+ ]
+}

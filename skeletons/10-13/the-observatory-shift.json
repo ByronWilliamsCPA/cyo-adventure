@@ -1,0 +1,2899 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_observatory_shift",
+ "version": 1,
+ "title": "The Observatory Shift",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "responsibility",
+   "curiosity",
+   "trust",
+   "careful work"
+  ],
+  "estimated_minutes": 16,
+  "ending_count": 27,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "moderate"
+  },
+  "topology": "sorting_hat",
+  "length": "medium",
+  "narrative_style": "prose",
+  "production_eligible": true
+ },
+ "variables": [],
+ "start_node": "n_start",
+ "nodes": [
+  {
+   "id": "n_start",
+   "body": "<<FILL role=setup words=35 beats='1:14 a.m. at Kestrel Ridge Observatory, the middle of your first authorized solo watch; the wide-field camera chimes once, a soft alert tone you have never heard on a real shift before'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_start_1",
+     "label": "Check what the camera flagged.",
+     "target": "n_intro"
+    }
+   ]
+  },
+  {
+   "id": "n_intro",
+   "body": "<<FILL role=setup words=30 beats='the flagged frame shows a point of light the catalog match returns nothing for; across the last three frames it has moved and brightened in a way nothing in your training ever covered'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_intro_1",
+     "label": "Check the sky itself before deciding anything.",
+     "target": "n_weather"
+    }
+   ]
+  },
+  {
+   "id": "n_weather",
+   "body": "<<FILL role=setup words=30 beats='outside the control-room window the sky is clean and dark, no cloud on the monitor, nothing wrong with the equipment that you can find in thirty seconds of looking'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_weather_1",
+     "label": "Decide what to do about it.",
+     "target": "n_first"
+    }
+   ]
+  },
+  {
+   "id": "n_first",
+   "body": "<<FILL role=choice words=50 beats='shift protocol gives you three honest options for an uncatalogued flag, and the decision is yours to make before anyone else even knows it exists'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_first_1",
+     "label": "Keep the log running and work it by the book.",
+     "target": "a_l01"
+    },
+    {
+     "id": "c_n_first_2",
+     "label": "Take the keys and get eyes on it from the dome catwalk.",
+     "target": "b_l01"
+    },
+    {
+     "id": "c_n_first_3",
+     "label": "Go wake Dr. Voss in the site trailer right now.",
+     "target": "c_l01"
+    }
+   ]
+  },
+  {
+   "id": "a_l01",
+   "body": "<<FILL role=choice words=105 beats='back at the console, you re-key the frame timestamp against the GPS clock, the object's soft chime still sitting behind every other sound in the room'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_l01_1",
+     "label": "Read the value out loud as you go.",
+     "target": "a_l02"
+    },
+    {
+     "id": "c_a_l01_2",
+     "label": "Copy it silently and move on.",
+     "target": "a_l02"
+    },
+    {
+     "id": "c_a_l01_3",
+     "label": "Double-check it a third way.",
+     "target": "a_l02"
+    }
+   ]
+  },
+  {
+   "id": "a_l02",
+   "body": "<<FILL role=choice words=105 beats='you plot the object's brightness against the last twenty minutes, a shallow, stubborn climb on the graph'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_l02_1",
+     "label": "Sketch the curve by hand first.",
+     "target": "a_l03"
+    },
+    {
+     "id": "c_a_l02_2",
+     "label": "Trust the software's own plot.",
+     "target": "a_l03"
+    },
+    {
+     "id": "c_a_l02_3",
+     "label": "Plot it twice to be sure.",
+     "target": "a_l03"
+    }
+   ]
+  },
+  {
+   "id": "a_l03",
+   "body": "<<FILL role=choice words=105 beats='you check the camera hasn't slipped into a bad exposure mode, the kind that fakes a false brightening'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_l03_1",
+     "label": "Check the manual override switch first.",
+     "target": "a_l04"
+    },
+    {
+     "id": "c_a_l03_2",
+     "label": "Trust the automatic settings.",
+     "target": "a_l04"
+    },
+    {
+     "id": "c_a_l03_3",
+     "label": "Reset the mode and start clean.",
+     "target": "a_l04"
+    }
+   ]
+  },
+  {
+   "id": "a_l04",
+   "body": "<<FILL role=choice words=105 beats='you cross-check against the site's own cloud sensor, ruling out a thin, invisible haze'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_l04_1",
+     "label": "Believe the sensor.",
+     "target": "a_l05"
+    },
+    {
+     "id": "c_a_l04_2",
+     "label": "Step outside and look at the sky yourself.",
+     "target": "a_l05"
+    },
+    {
+     "id": "c_a_l04_3",
+     "label": "Check both and compare.",
+     "target": "a_l05"
+    }
+   ]
+  },
+  {
+   "id": "a_l05",
+   "body": "<<FILL role=choice words=105 beats='you confirm tonight's frames are actually being saved twice, the way protocol asks'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_l05_1",
+     "label": "Check the second drive now.",
+     "target": "a_l06"
+    },
+    {
+     "id": "c_a_l05_2",
+     "label": "Check it at the end of the shift.",
+     "target": "a_l06"
+    },
+    {
+     "id": "c_a_l05_3",
+     "label": "Check both drives at once.",
+     "target": "a_l06"
+    }
+   ]
+  },
+  {
+   "id": "a_l06",
+   "body": "<<FILL role=choice words=105 beats='you pull last week's calibration set to rule out a sensor flaw hiding under the reading'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_l06_1",
+     "label": "Pull the whole week's set.",
+     "target": "a_l07"
+    },
+    {
+     "id": "c_a_l06_2",
+     "label": "Pull just last night's.",
+     "target": "a_l07"
+    },
+    {
+     "id": "c_a_l06_3",
+     "label": "Pull a month back to be thorough.",
+     "target": "a_l07"
+    }
+   ]
+  },
+  {
+   "id": "a_l07",
+   "body": "<<FILL role=choice words=105 beats='you check the campus network link is still up before you trust anything you might need to send'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_l07_1",
+     "label": "Wait for the link to stabilize.",
+     "target": "a_l08"
+    },
+    {
+     "id": "c_a_l07_2",
+     "label": "Send a test ping now.",
+     "target": "a_l08"
+    },
+    {
+     "id": "c_a_l07_3",
+     "label": "Check the router itself first.",
+     "target": "a_l08"
+    }
+   ]
+  },
+  {
+   "id": "a_l08",
+   "body": "<<FILL role=choice words=105 beats='you extend the object's track forward on paper, guessing where it should sit an hour from now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_l08_1",
+     "label": "Project it five minutes ahead.",
+     "target": "a_l09"
+    },
+    {
+     "id": "c_a_l08_2",
+     "label": "Project it a full hour ahead.",
+     "target": "a_l09"
+    },
+    {
+     "id": "c_a_l08_3",
+     "label": "Project it both ways and compare.",
+     "target": "a_l09"
+    }
+   ]
+  },
+  {
+   "id": "a_l09",
+   "body": "<<FILL role=choice words=105 beats='you write the whole sequence out longhand in the paper log, in case the digital one ever fails'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_l09_1",
+     "label": "Write it in your own words.",
+     "target": "a_l10"
+    },
+    {
+     "id": "c_a_l09_2",
+     "label": "Copy the digital log verbatim.",
+     "target": "a_l10"
+    },
+    {
+     "id": "c_a_l09_3",
+     "label": "Write a short summary only.",
+     "target": "a_l10"
+    }
+   ]
+  },
+  {
+   "id": "a_l10",
+   "body": "<<FILL role=choice words=105 beats='you swing the smaller guide-scope camera onto the same patch of sky for a second angle'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_l10_1",
+     "label": "Aim the guide-scope yourself.",
+     "target": "a_split"
+    },
+    {
+     "id": "c_a_l10_2",
+     "label": "Let the mount slew there automatically.",
+     "target": "a_split"
+    },
+    {
+     "id": "c_a_l10_3",
+     "label": "Split the difference and nudge it by hand after.",
+     "target": "a_split"
+    }
+   ]
+  },
+  {
+   "id": "a_split",
+   "body": "<<FILL role=choice words=105 beats='with the basics checked and logged, the shift clock keeps moving, and you have to decide how far to take this alone before the night is over'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_split_1",
+     "label": "Stay strictly procedural: verify everything twice before saying a word.",
+     "target": "a_s1_01"
+    },
+    {
+     "id": "c_a_split_2",
+     "label": "Escalate now: call the regional network's night line.",
+     "target": "a_s2_01"
+    },
+    {
+     "id": "c_a_split_3",
+     "label": "Reach sideways: message another site's overnight watcher first.",
+     "target": "a_s3_01"
+    }
+   ]
+  },
+  {
+   "id": "a_s1_01",
+   "body": "<<FILL role=choice words=105 beats='back at the console, you re-verify every figure in the log a second full time, start to finish, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s1_01_1",
+     "label": "Read each line aloud as you check it.",
+     "target": "a_s1_02"
+    },
+    {
+     "id": "c_a_s1_01_2",
+     "label": "Check silently, faster.",
+     "target": "a_s1_02"
+    },
+    {
+     "id": "c_a_s1_01_3",
+     "label": "Check it against the paper copy too.",
+     "target": "a_s1_02"
+    }
+   ]
+  },
+  {
+   "id": "a_s1_02",
+   "body": "<<FILL role=choice words=105 beats='back at the console, you rebuild the brightness curve from scratch, ignoring your first attempt entirely, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s1_02_1",
+     "label": "Start completely fresh.",
+     "target": "a_s1_03"
+    },
+    {
+     "id": "c_a_s1_02_2",
+     "label": "Compare the new curve to the old one.",
+     "target": "a_s1_03"
+    },
+    {
+     "id": "c_a_s1_02_3",
+     "label": "Average the two together.",
+     "target": "a_s1_03"
+    }
+   ]
+  },
+  {
+   "id": "a_s1_03",
+   "body": "<<FILL role=choice words=105 beats='back at the console, you check the object's track for any sign it might simply be a very slow satellite after all, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s1_03_1",
+     "label": "Rule it out carefully, step by step.",
+     "target": "a_s1_04"
+    },
+    {
+     "id": "c_a_s1_03_2",
+     "label": "Rule it out quickly, on the numbers alone.",
+     "target": "a_s1_04"
+    },
+    {
+     "id": "c_a_s1_03_3",
+     "label": "Leave the question open for now.",
+     "target": "a_s1_04"
+    }
+   ]
+  },
+  {
+   "id": "a_s1_04",
+   "body": "<<FILL role=choice words=105 beats='back at the console, you search the archive one more time for any near match you might have missed, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s1_04_1",
+     "label": "Widen the search terms.",
+     "target": "a_s1_05"
+    },
+    {
+     "id": "c_a_s1_04_2",
+     "label": "Narrow them instead.",
+     "target": "a_s1_05"
+    },
+    {
+     "id": "c_a_s1_04_3",
+     "label": "Ask the archive's own index for suggestions.",
+     "target": "a_s1_05"
+    }
+   ]
+  },
+  {
+   "id": "a_s1_05",
+   "body": "<<FILL role=choice words=105 beats='back at the console, you double-check the GPS clock sync one final time before it goes in any report, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s1_05_1",
+     "label": "Trust it now, once confirmed.",
+     "target": "a_s1_06"
+    },
+    {
+     "id": "c_a_s1_05_2",
+     "label": "Recheck it in ten more minutes.",
+     "target": "a_s1_06"
+    },
+    {
+     "id": "c_a_s1_05_3",
+     "label": "Cross-check it against a second clock.",
+     "target": "a_s1_06"
+    }
+   ]
+  },
+  {
+   "id": "a_s1_06",
+   "body": "<<FILL role=choice words=105 beats='back at the console, you read your own draft report back to yourself, hunting for anything overstated, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s1_06_1",
+     "label": "Cut anything that sounds too certain.",
+     "target": "a_s1_07"
+    },
+    {
+     "id": "c_a_s1_06_2",
+     "label": "Leave the confident lines as written.",
+     "target": "a_s1_07"
+    },
+    {
+     "id": "c_a_s1_06_3",
+     "label": "Soften just the riskiest claim.",
+     "target": "a_s1_07"
+    }
+   ]
+  },
+  {
+   "id": "a_s1_07",
+   "body": "<<FILL role=choice words=105 beats='back at the console, you weigh whether tonight's evidence is enough to put your name on a formal report, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s1_07_1",
+     "label": "Decide it is, carefully.",
+     "target": "a_s1_08"
+    },
+    {
+     "id": "c_a_s1_07_2",
+     "label": "Decide to wait one more check.",
+     "target": "a_s1_08"
+    },
+    {
+     "id": "c_a_s1_07_3",
+     "label": "Ask what Dr. Voss would want here.",
+     "target": "a_s1_08"
+    }
+   ]
+  },
+  {
+   "id": "a_s1_08",
+   "body": "<<FILL role=choice words=105 beats='back at the console, you set the finished, triple-checked report beside the handoff folder for the morning, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s1_08_1",
+     "label": "Leave a short note on top explaining the checks.",
+     "target": "a_c1"
+    },
+    {
+     "id": "c_a_s1_08_2",
+     "label": "Leave it plain, numbers only.",
+     "target": "a_c1"
+    },
+    {
+     "id": "c_a_s1_08_3",
+     "label": "Leave it with a single flagged question.",
+     "target": "a_c1"
+    }
+   ]
+  },
+  {
+   "id": "a_e11",
+   "body": "<<FILL role=completion words=100 beats='by the time Dr. Voss reads your handoff note over breakfast, every figure in it checks out against her own review, and she tells you the regional network is escalating KR-19 to a real follow-up campaign on the strength of a log a twelve-year-old kept clean enough to trust'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "a_e11",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Report That Held"
+   }
+  },
+  {
+   "id": "a_e12",
+   "body": "<<FILL role=ending words=100 beats='you chase one more verification past the point it was needed, and the extra hour costs you the clean confirming exposure that would have made the report airtight instead of merely careful'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "a_e12",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "One Check Too Many"
+   }
+  },
+  {
+   "id": "a_e13",
+   "body": "<<FILL role=ending words=100 beats='you decide your own word isn't enough and hold the report back for morning review instead of sending it, and the case sits quietly filed while the regional desk moves on without it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "a_e13",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Filed, Not Sent"
+   }
+  },
+  {
+   "id": "a_c1",
+   "body": "<<FILL role=choice words=105 beats='with every figure checked three times over, you have to decide how to close out the most careful report you've ever written'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_c1_1",
+     "label": "Sign it and put it in the folder, done.",
+     "target": "a_e11"
+    },
+    {
+     "id": "c_a_c1_2",
+     "label": "Add one more check you don't actually have time for.",
+     "target": "a_e12"
+    },
+    {
+     "id": "c_a_c1_3",
+     "label": "Decide it's too thin without a second observer and shelve it.",
+     "target": "a_e13"
+    }
+   ]
+  },
+  {
+   "id": "a_s2_01",
+   "body": "<<FILL role=choice words=105 beats='back at the console, the regional night line rings twice before a tired voice answers, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s2_01_1",
+     "label": "Give your name and shift number first.",
+     "target": "a_s2_02"
+    },
+    {
+     "id": "c_a_s2_01_2",
+     "label": "Give the object's coordinates first.",
+     "target": "a_s2_02"
+    },
+    {
+     "id": "c_a_s2_01_3",
+     "label": "Give both together, fast.",
+     "target": "a_s2_02"
+    }
+   ]
+  },
+  {
+   "id": "a_s2_02",
+   "body": "<<FILL role=choice words=105 beats='back at the console, the dispatcher asks you to slow down and start again from the top, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s2_02_1",
+     "label": "Slow down and restart calmly.",
+     "target": "a_s2_03"
+    },
+    {
+     "id": "c_a_s2_02_2",
+     "label": "Push through at your own pace.",
+     "target": "a_s2_03"
+    },
+    {
+     "id": "c_a_s2_02_3",
+     "label": "Ask him what part confused him.",
+     "target": "a_s2_03"
+    }
+   ]
+  },
+  {
+   "id": "a_s2_03",
+   "body": "<<FILL role=choice words=105 beats='back at the console, he asks whether a supervising astronomer has seen the data yet, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s2_03_1",
+     "label": "Answer honestly: not yet.",
+     "target": "a_s2_04"
+    },
+    {
+     "id": "c_a_s2_03_2",
+     "label": "Say you're about to wake her.",
+     "target": "a_s2_04"
+    },
+    {
+     "id": "c_a_s2_03_3",
+     "label": "Ask if that matters right now.",
+     "target": "a_s2_04"
+    }
+   ]
+  },
+  {
+   "id": "a_s2_04",
+   "body": "<<FILL role=choice words=105 beats='back at the console, he puts you on hold to check something on his end, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s2_04_1",
+     "label": "Wait it out patiently.",
+     "target": "a_s2_05"
+    },
+    {
+     "id": "c_a_s2_04_2",
+     "label": "Use the time to recheck your numbers.",
+     "target": "a_s2_05"
+    },
+    {
+     "id": "c_a_s2_04_3",
+     "label": "Hang up and call back later.",
+     "target": "a_s2_05"
+    }
+   ]
+  },
+  {
+   "id": "a_s2_05",
+   "body": "<<FILL role=choice words=105 beats='back at the console, he comes back with a case number and a warning that follow-up is not guaranteed, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s2_05_1",
+     "label": "Thank him and log the number.",
+     "target": "a_s2_06"
+    },
+    {
+     "id": "c_a_s2_05_2",
+     "label": "Push for a firmer commitment.",
+     "target": "a_s2_06"
+    },
+    {
+     "id": "c_a_s2_05_3",
+     "label": "Ask what would make it more likely.",
+     "target": "a_s2_06"
+    }
+   ]
+  },
+  {
+   "id": "a_s2_06",
+   "body": "<<FILL role=choice words=105 beats='back at the console, he mentions an amateur skywatcher two states over reported something similar an hour ago, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s2_06_1",
+     "label": "Ask for that watcher's contact details.",
+     "target": "a_s2_07"
+    },
+    {
+     "id": "c_a_s2_06_2",
+     "label": "Ask for their raw numbers instead.",
+     "target": "a_s2_07"
+    },
+    {
+     "id": "c_a_s2_06_3",
+     "label": "Just note the coincidence and move on.",
+     "target": "a_s2_07"
+    }
+   ]
+  },
+  {
+   "id": "a_s2_07",
+   "body": "<<FILL role=choice words=105 beats='back at the console, you weigh calling the amateur watcher directly, off the record, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s2_07_1",
+     "label": "Call and compare notes plainly.",
+     "target": "a_s2_08"
+    },
+    {
+     "id": "c_a_s2_07_2",
+     "label": "Wait for an official channel instead.",
+     "target": "a_s2_08"
+    },
+    {
+     "id": "c_a_s2_07_3",
+     "label": "Send a short message rather than call.",
+     "target": "a_s2_08"
+    }
+   ]
+  },
+  {
+   "id": "a_s2_08",
+   "body": "<<FILL role=choice words=105 beats='back at the console, you write up the call, official case number and all, for the handoff folder, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s2_08_1",
+     "label": "Write it exactly as it happened.",
+     "target": "a_c2"
+    },
+    {
+     "id": "c_a_s2_08_2",
+     "label": "Summarize just the outcome.",
+     "target": "a_c2"
+    },
+    {
+     "id": "c_a_s2_08_3",
+     "label": "Attach your own doubts as a footnote.",
+     "target": "a_c2"
+    }
+   ]
+  },
+  {
+   "id": "a_e21",
+   "body": "<<FILL role=completion words=100 beats='your closing call ties the case number to a complete, dated record, and the dispatcher's own note flags it for daytime follow-up in words that make it clear someone actually read your report'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "a_e21",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Case, Followed Through"
+   }
+  },
+  {
+   "id": "a_e22",
+   "body": "<<FILL role=ending words=100 beats='the case number turns out to mean less than you hoped without a closing call behind it, and by the weekly review it has quietly slipped to the bottom of an unglamorous list'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "a_e22",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Number, and Nothing After"
+   }
+  },
+  {
+   "id": "a_e23",
+   "body": "<<FILL role=ending words=100 beats='you press the tired dispatcher past what the process is built for, and he logs your persistence as a complaint rather than a follow-up, which helps nobody, least of all KR-19'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "a_e23",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Pushed Too Hard"
+   }
+  },
+  {
+   "id": "a_c2",
+   "body": "<<FILL role=choice words=105 beats='the case number sits open on the desk, and you have to decide what more, if anything, this call is worth pursuing tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_c2_1",
+     "label": "Call back at shift's end with a final summary.",
+     "target": "a_e21"
+    },
+    {
+     "id": "c_a_c2_2",
+     "label": "Let the case number sit and hope it's enough.",
+     "target": "a_e22"
+    },
+    {
+     "id": "c_a_c2_3",
+     "label": "Push the dispatcher harder than the protocol really allows.",
+     "target": "a_e23"
+    }
+   ]
+  },
+  {
+   "id": "a_s3_01",
+   "body": "<<FILL role=choice words=105 beats='back at the console, you find the overnight contact for a sister observatory two time zones west, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s3_01_1",
+     "label": "Message plainly, numbers first.",
+     "target": "a_s3_02"
+    },
+    {
+     "id": "c_a_s3_01_2",
+     "label": "Message cautiously, question first.",
+     "target": "a_s3_02"
+    },
+    {
+     "id": "c_a_s3_01_3",
+     "label": "Call instead of messaging.",
+     "target": "a_s3_02"
+    }
+   ]
+  },
+  {
+   "id": "a_s3_02",
+   "body": "<<FILL role=choice words=105 beats='back at the console, she writes back faster than you expected, sounding half-asleep and fully interested, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s3_02_1",
+     "label": "Answer her questions in order.",
+     "target": "a_s3_03"
+    },
+    {
+     "id": "c_a_s3_02_2",
+     "label": "Send your whole log at once.",
+     "target": "a_s3_03"
+    },
+    {
+     "id": "c_a_s3_02_3",
+     "label": "Ask her a question of your own first.",
+     "target": "a_s3_03"
+    }
+   ]
+  },
+  {
+   "id": "a_s3_03",
+   "body": "<<FILL role=choice words=105 beats='back at the console, she says her own site logged something odd earlier that she'd dismissed as a satellite, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s3_03_1",
+     "label": "Ask for her exact numbers.",
+     "target": "a_s3_04"
+    },
+    {
+     "id": "c_a_s3_03_2",
+     "label": "Ask her to look again tonight.",
+     "target": "a_s3_04"
+    },
+    {
+     "id": "c_a_s3_03_3",
+     "label": "Just note the coincidence for now.",
+     "target": "a_s3_04"
+    }
+   ]
+  },
+  {
+   "id": "a_s3_04",
+   "body": "<<FILL role=choice words=105 beats='back at the console, her numbers, when they arrive, are close to yours but not identical, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s3_04_1",
+     "label": "Recheck your own figures against hers.",
+     "target": "a_s3_05"
+    },
+    {
+     "id": "c_a_s3_04_2",
+     "label": "Ask her to recheck hers.",
+     "target": "a_s3_05"
+    },
+    {
+     "id": "c_a_s3_04_3",
+     "label": "Note the gap and move on.",
+     "target": "a_s3_05"
+    }
+   ]
+  },
+  {
+   "id": "a_s3_05",
+   "body": "<<FILL role=choice words=105 beats='back at the console, she offers to keep her own scope on it for the next hour if you'll share updates, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s3_05_1",
+     "label": "Agree and set a check-in time.",
+     "target": "a_s3_06"
+    },
+    {
+     "id": "c_a_s3_05_2",
+     "label": "Agree, loosely, without a fixed time.",
+     "target": "a_s3_06"
+    },
+    {
+     "id": "c_a_s3_05_3",
+     "label": "Politely decline and work alone.",
+     "target": "a_s3_06"
+    }
+   ]
+  },
+  {
+   "id": "a_s3_06",
+   "body": "<<FILL role=choice words=105 beats='back at the console, your two logs start to read like two witnesses describing the same thing, carefully, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s3_06_1",
+     "label": "Merge them into one shared file.",
+     "target": "a_s3_07"
+    },
+    {
+     "id": "c_a_s3_06_2",
+     "label": "Keep them separate on purpose.",
+     "target": "a_s3_07"
+    },
+    {
+     "id": "c_a_s3_06_3",
+     "label": "Merge just the key numbers.",
+     "target": "a_s3_07"
+    }
+   ]
+  },
+  {
+   "id": "a_s3_07",
+   "body": "<<FILL role=choice words=105 beats='back at the console, she asks, half-joking, whether you're going to be the one who names it, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s3_07_1",
+     "label": "Laugh it off and stay focused.",
+     "target": "a_s3_08"
+    },
+    {
+     "id": "c_a_s3_07_2",
+     "label": "Say that's not up to you.",
+     "target": "a_s3_08"
+    },
+    {
+     "id": "c_a_s3_07_3",
+     "label": "Say you hope so, honestly.",
+     "target": "a_s3_08"
+    }
+   ]
+  },
+  {
+   "id": "a_s3_08",
+   "body": "<<FILL role=choice words=105 beats='back at the console, you write the joint log up for the handoff folder, her site's name right beside yours, KR-19's chime still sitting behind everything else tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_s3_08_1",
+     "label": "Credit her plainly and fully.",
+     "target": "a_c3"
+    },
+    {
+     "id": "c_a_s3_08_2",
+     "label": "Keep it brief and businesslike.",
+     "target": "a_c3"
+    },
+    {
+     "id": "c_a_s3_08_3",
+     "label": "Add a short thank-you line.",
+     "target": "a_c3"
+    }
+   ]
+  },
+  {
+   "id": "a_e31",
+   "body": "<<FILL role=completion words=100 beats='the joint log lands on the regional desk with two independent sites behind it, and independent confirmation is exactly the kind of evidence that turns an overnight curiosity into a real case'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "a_e31",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Two Sites, One Finding"
+   }
+  },
+  {
+   "id": "a_e32",
+   "body": "<<FILL role=ending words=100 beats='the two reports arrive separately, an hour apart, and read almost like two different nights; the connection between them takes the regional desk most of a week to notice'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "a_e32",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Split Down the Middle"
+   }
+  },
+  {
+   "id": "a_e33",
+   "body": "<<FILL role=ending words=100 beats='waiting for total certainty costs you the freshest window for anyone to act on what you found, and by the time you're both satisfied the object has set for good'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "a_e33",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Waiting for Certainty"
+   }
+  },
+  {
+   "id": "a_c3",
+   "body": "<<FILL role=choice words=105 beats='the two-site log, yours and hers, is nearly ready, and the last decision is how to send it onward'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_a_c3_1",
+     "label": "Send the joint log to the regional network together.",
+     "target": "a_e31"
+    },
+    {
+     "id": "c_a_c3_2",
+     "label": "Send only your half and let her send hers separately.",
+     "target": "a_e32"
+    },
+    {
+     "id": "c_a_c3_3",
+     "label": "Hold the joint log back until you're both fully certain.",
+     "target": "a_e33"
+    }
+   ]
+  },
+  {
+   "id": "b_l01",
+   "body": "<<FILL role=choice words=105 beats='up on the catwalk, the dome's manual crank has not been used since the spring inspection, and KR-19 is out there somewhere past the slit'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_l01_1",
+     "label": "Force the crank slowly.",
+     "target": "b_l02"
+    },
+    {
+     "id": "c_b_l01_2",
+     "label": "Go find the oil can first.",
+     "target": "b_l02"
+    },
+    {
+     "id": "c_b_l01_3",
+     "label": "Try the crank gently, then decide.",
+     "target": "b_l02"
+    }
+   ]
+  },
+  {
+   "id": "b_l02",
+   "body": "<<FILL role=choice words=105 beats='the catwalk hatch sticks half-open and needs a real shove'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_l02_1",
+     "label": "Put your shoulder into the hatch.",
+     "target": "b_l03"
+    },
+    {
+     "id": "c_b_l02_2",
+     "label": "Wedge it with the toolkit instead.",
+     "target": "b_l03"
+    },
+    {
+     "id": "c_b_l02_3",
+     "label": "Try both together.",
+     "target": "b_l03"
+    }
+   ]
+  },
+  {
+   "id": "b_l03",
+   "body": "<<FILL role=choice words=105 beats='the night air on the catwalk is colder than the control room by a lot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_l03_1",
+     "label": "Zip your jacket and push on.",
+     "target": "b_l04"
+    },
+    {
+     "id": "c_b_l03_2",
+     "label": "Grab the spare coat from the locker.",
+     "target": "b_l04"
+    },
+    {
+     "id": "c_b_l03_3",
+     "label": "Push on and warm up moving.",
+     "target": "b_l04"
+    }
+   ]
+  },
+  {
+   "id": "b_l04",
+   "body": "<<FILL role=choice words=105 beats='the site's old sighting scope needs its eyepiece cleaned before it's any use at all'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_l04_1",
+     "label": "Clean it with your sleeve.",
+     "target": "b_l05"
+    },
+    {
+     "id": "c_b_l04_2",
+     "label": "Use the lens cloth properly.",
+     "target": "b_l05"
+    },
+    {
+     "id": "c_b_l04_3",
+     "label": "Clean it twice to be sure.",
+     "target": "b_l05"
+    }
+   ]
+  },
+  {
+   "id": "b_l05",
+   "body": "<<FILL role=choice words=105 beats='the dome slit lines up with the wrong patch of sky on the first try'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_l05_1",
+     "label": "Nudge the dome by hand.",
+     "target": "b_l06"
+    },
+    {
+     "id": "c_b_l05_2",
+     "label": "Recheck the coordinates first.",
+     "target": "b_l06"
+    },
+    {
+     "id": "c_b_l05_3",
+     "label": "Do both, coordinates then a nudge.",
+     "target": "b_l06"
+    }
+   ]
+  },
+  {
+   "id": "b_l06",
+   "body": "<<FILL role=choice words=105 beats='the safety rail's bolt is looser than it should be'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_l06_1",
+     "label": "Tighten the bolt yourself.",
+     "target": "b_l07"
+    },
+    {
+     "id": "c_b_l06_2",
+     "label": "Note it and stay off that section.",
+     "target": "b_l07"
+    },
+    {
+     "id": "c_b_l06_3",
+     "label": "Test its give carefully first.",
+     "target": "b_l07"
+    }
+   ]
+  },
+  {
+   "id": "b_l07",
+   "body": "<<FILL role=choice words=105 beats='your torch beam catches dew already forming on the rail'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_l07_1",
+     "label": "Wipe the rail down.",
+     "target": "b_l08"
+    },
+    {
+     "id": "c_b_l07_2",
+     "label": "Just watch your grip.",
+     "target": "b_l08"
+    },
+    {
+     "id": "c_b_l07_3",
+     "label": "Wipe it and watch your grip both.",
+     "target": "b_l08"
+    }
+   ]
+  },
+  {
+   "id": "b_l08",
+   "body": "<<FILL role=choice words=105 beats='the manual dome motor jams a quarter-turn short of where you need it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_l08_1",
+     "label": "Force the last quarter-turn.",
+     "target": "b_l09"
+    },
+    {
+     "id": "c_b_l08_2",
+     "label": "Back it off and try again slower.",
+     "target": "b_l09"
+    },
+    {
+     "id": "c_b_l08_3",
+     "label": "Try it from the other direction.",
+     "target": "b_l09"
+    }
+   ]
+  },
+  {
+   "id": "b_l09",
+   "body": "<<FILL role=choice words=105 beats='the sighting scope's mount won't hold still in the wind'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_l09_1",
+     "label": "Brace the mount with your arm.",
+     "target": "b_l10"
+    },
+    {
+     "id": "c_b_l09_2",
+     "label": "Wait for the gust to pass.",
+     "target": "b_l10"
+    },
+    {
+     "id": "c_b_l09_3",
+     "label": "Brace it and wait both.",
+     "target": "b_l10"
+    }
+   ]
+  },
+  {
+   "id": "b_l10",
+   "body": "<<FILL role=choice words=105 beats='a gust rattles the dome shutter loud enough to worry you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_l10_1",
+     "label": "Check the shutter latch.",
+     "target": "b_split"
+    },
+    {
+     "id": "c_b_l10_2",
+     "label": "Ignore it and keep watching.",
+     "target": "b_split"
+    },
+    {
+     "id": "c_b_l10_3",
+     "label": "Check it quickly, then keep watching.",
+     "target": "b_split"
+    }
+   ]
+  },
+  {
+   "id": "b_split",
+   "body": "<<FILL role=choice words=105 beats='with the dome finally lined up and holding steady, you have to decide how to spend the rest of a very cold, very short window'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_split_1",
+     "label": "Stay at the eyepiece and track it by hand, patiently.",
+     "target": "b_s1_01"
+    },
+    {
+     "id": "c_b_split_2",
+     "label": "Try to rig the site's old camera to the scope for proof.",
+     "target": "b_s2_01"
+    },
+    {
+     "id": "c_b_split_3",
+     "label": "Climb higher, onto the maintenance platform, for a wider view.",
+     "target": "b_s3_01"
+    }
+   ]
+  },
+  {
+   "id": "b_s1_01",
+   "body": "<<FILL role=choice words=105 beats='the object drifts steadily across the eyepiece, and holding it takes constant tiny corrections'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s1_01_1",
+     "label": "Track it manually, hand on the slow-motion knob.",
+     "target": "b_s1_02"
+    },
+    {
+     "id": "c_b_s1_01_2",
+     "label": "Let it drift and re-find it after.",
+     "target": "b_s1_02"
+    },
+    {
+     "id": "c_b_s1_01_3",
+     "label": "Alternate between the two.",
+     "target": "b_s1_02"
+    }
+   ]
+  },
+  {
+   "id": "b_s1_02",
+   "body": "<<FILL role=choice words=105 beats='your hands are too cold to hold the focus knob perfectly steady'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s1_02_1",
+     "label": "Tuck your hands under your arms first.",
+     "target": "b_s1_03"
+    },
+    {
+     "id": "c_b_s1_02_2",
+     "label": "Push through the cold.",
+     "target": "b_s1_03"
+    },
+    {
+     "id": "c_b_s1_02_3",
+     "label": "Warm them briefly, then push through.",
+     "target": "b_s1_03"
+    }
+   ]
+  },
+  {
+   "id": "b_s1_03",
+   "body": "<<FILL role=choice words=105 beats='the crosshairs drift off target every few seconds no matter what you do'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s1_03_1",
+     "label": "Recenter gently, again and again.",
+     "target": "b_s1_04"
+    },
+    {
+     "id": "c_b_s1_03_2",
+     "label": "Recenter fast, before it drifts more.",
+     "target": "b_s1_04"
+    },
+    {
+     "id": "c_b_s1_03_3",
+     "label": "Recenter once, then hold still.",
+     "target": "b_s1_04"
+    }
+   ]
+  },
+  {
+   "id": "b_s1_04",
+   "body": "<<FILL role=choice words=105 beats='your phone's flashlight is the only backup light you brought up here'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s1_04_1",
+     "label": "Trust the phone light.",
+     "target": "b_s1_05"
+    },
+    {
+     "id": "c_b_s1_04_2",
+     "label": "Feel your way by memory instead.",
+     "target": "b_s1_05"
+    },
+    {
+     "id": "c_b_s1_04_3",
+     "label": "Use the phone sparingly.",
+     "target": "b_s1_05"
+    }
+   ]
+  },
+  {
+   "id": "b_s1_05",
+   "body": "<<FILL role=choice words=105 beats='the wind picks up enough to make the whole catwalk hum faintly under you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s1_05_1",
+     "label": "Brace against the rail.",
+     "target": "b_s1_06"
+    },
+    {
+     "id": "c_b_s1_05_2",
+     "label": "Crouch low until it passes.",
+     "target": "b_s1_06"
+    },
+    {
+     "id": "c_b_s1_05_3",
+     "label": "Brace low against the rail together.",
+     "target": "b_s1_06"
+    }
+   ]
+  },
+  {
+   "id": "b_s1_06",
+   "body": "<<FILL role=choice words=105 beats='the object brightens for a few seconds, then fades back to where it was'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s1_06_1",
+     "label": "Note the exact second it faded.",
+     "target": "b_s1_07"
+    },
+    {
+     "id": "c_b_s1_06_2",
+     "label": "Assume it was nothing.",
+     "target": "b_s1_07"
+    },
+    {
+     "id": "c_b_s1_06_3",
+     "label": "Note it and keep watching closely.",
+     "target": "b_s1_07"
+    }
+   ]
+  },
+  {
+   "id": "b_s1_07",
+   "body": "<<FILL role=choice words=105 beats='the dome's own position readout disagrees slightly with what your eye is seeing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s1_07_1",
+     "label": "Trust your own eye.",
+     "target": "b_s1_08"
+    },
+    {
+     "id": "c_b_s1_07_2",
+     "label": "Trust the readout.",
+     "target": "b_s1_08"
+    },
+    {
+     "id": "c_b_s1_07_3",
+     "label": "Split the difference and note both.",
+     "target": "b_s1_08"
+    }
+   ]
+  },
+  {
+   "id": "b_s1_08",
+   "body": "<<FILL role=choice words=105 beats='the object holds dead steady in the eyepiece for a rare, full ten seconds'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s1_08_1",
+     "label": "Start sketching immediately.",
+     "target": "b_c1"
+    },
+    {
+     "id": "c_b_s1_08_2",
+     "label": "Just watch and memorize it first.",
+     "target": "b_c1"
+    },
+    {
+     "id": "c_b_s1_08_3",
+     "label": "Do a fast sketch, then watch.",
+     "target": "b_c1"
+    }
+   ]
+  },
+  {
+   "id": "b_e11",
+   "body": "<<FILL role=completion words=100 beats='cold, sure-footed, and half an hour past when your shift should have ended, you get one clean, held look at KR-19 through the old sighting scope, and the sketch you bring down to Dr. Voss at dawn, hand-drawn and imperfect, turns out to be the first visual confirmation anyone files that night'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "b_e11",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Eyes on It, First"
+   }
+  },
+  {
+   "id": "b_e12",
+   "body": "<<FILL role=ending words=100 beats='you push for one more look past the point your hands can manage, and the sketch that results is shaky enough that nobody, including you, can be fully sure what it shows'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "b_e12",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "One Look Too Many"
+   }
+  },
+  {
+   "id": "b_e13",
+   "body": "<<FILL role=ending words=100 beats='the cold wins before the sketch does, and you climb down with a half-drawn page that captures the feeling of the night far better than it captures KR-19 itself'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "b_e13",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Left Unfinished"
+   }
+  },
+  {
+   "id": "b_c1",
+   "body": "<<FILL role=choice words=105 beats='the object holds in the eyepiece one more time, and you have to decide how to make this sighting count'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_c1_1",
+     "label": "Finish the sketch and bring it down at once.",
+     "target": "b_e11"
+    },
+    {
+     "id": "c_b_c1_2",
+     "label": "Try to squeeze in one more, riskier look first.",
+     "target": "b_e12"
+    },
+    {
+     "id": "c_b_c1_3",
+     "label": "Head down immediately, sketch unfinished.",
+     "target": "b_e13"
+    }
+   ]
+  },
+  {
+   "id": "b_s2_01",
+   "body": "<<FILL role=choice words=105 beats='the old camera bracket doesn't quite fit the sighting scope's barrel'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s2_01_1",
+     "label": "Improvise a fix with tape and patience.",
+     "target": "b_s2_02"
+    },
+    {
+     "id": "c_b_s2_01_2",
+     "label": "Give up on the camera idea.",
+     "target": "b_s2_02"
+    },
+    {
+     "id": "c_b_s2_01_3",
+     "label": "Try a different bracket entirely.",
+     "target": "b_s2_02"
+    }
+   ]
+  },
+  {
+   "id": "b_s2_02",
+   "body": "<<FILL role=choice words=105 beats='the camera's battery is nearly dead from sitting unused all winter'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s2_02_1",
+     "label": "Use what charge is left, carefully.",
+     "target": "b_s2_03"
+    },
+    {
+     "id": "c_b_s2_02_2",
+     "label": "Go down for a spare battery.",
+     "target": "b_s2_03"
+    },
+    {
+     "id": "c_b_s2_02_3",
+     "label": "Try it and accept what you get.",
+     "target": "b_s2_03"
+    }
+   ]
+  },
+  {
+   "id": "b_s2_03",
+   "body": "<<FILL role=choice words=105 beats='focusing a camera through an old scope is nothing like focusing your own eye'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s2_03_1",
+     "label": "Focus slowly and patiently.",
+     "target": "b_s2_04"
+    },
+    {
+     "id": "c_b_s2_03_2",
+     "label": "Trust the scope's usual setting.",
+     "target": "b_s2_04"
+    },
+    {
+     "id": "c_b_s2_03_3",
+     "label": "Focus by trial and error, fast.",
+     "target": "b_s2_04"
+    }
+   ]
+  },
+  {
+   "id": "b_s2_04",
+   "body": "<<FILL role=choice words=105 beats='the first test shot comes out blurred past any use'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s2_04_1",
+     "label": "Adjust and try again.",
+     "target": "b_s2_05"
+    },
+    {
+     "id": "c_b_s2_04_2",
+     "label": "Switch back to the eyepiece instead.",
+     "target": "b_s2_05"
+    },
+    {
+     "id": "c_b_s2_04_3",
+     "label": "Try one more setting first.",
+     "target": "b_s2_05"
+    }
+   ]
+  },
+  {
+   "id": "b_s2_05",
+   "body": "<<FILL role=choice words=105 beats='a second test shot is better, but still shaky from the wind'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s2_05_1",
+     "label": "Brace the whole rig against the rail.",
+     "target": "b_s2_06"
+    },
+    {
+     "id": "c_b_s2_05_2",
+     "label": "Wait for a lull in the wind.",
+     "target": "b_s2_06"
+    },
+    {
+     "id": "c_b_s2_05_3",
+     "label": "Do both together.",
+     "target": "b_s2_06"
+    }
+   ]
+  },
+  {
+   "id": "b_s2_06",
+   "body": "<<FILL role=choice words=105 beats='you get one frame that might actually be usable'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s2_06_1",
+     "label": "Take three more just in case.",
+     "target": "b_s2_07"
+    },
+    {
+     "id": "c_b_s2_06_2",
+     "label": "Stop while you're ahead.",
+     "target": "b_s2_07"
+    },
+    {
+     "id": "c_b_s2_06_3",
+     "label": "Take exactly one more to be safe.",
+     "target": "b_s2_07"
+    }
+   ]
+  },
+  {
+   "id": "b_s2_07",
+   "body": "<<FILL role=choice words=105 beats='the camera's little screen is too dim to tell if the shot is any good'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s2_07_1",
+     "label": "Trust it and move on.",
+     "target": "b_s2_08"
+    },
+    {
+     "id": "c_b_s2_07_2",
+     "label": "Wait until you're back at the console to check.",
+     "target": "b_s2_08"
+    },
+    {
+     "id": "c_b_s2_07_3",
+     "label": "Squint and decide now anyway.",
+     "target": "b_s2_08"
+    }
+   ]
+  },
+  {
+   "id": "b_s2_08",
+   "body": "<<FILL role=choice words=105 beats='with one possible frame saved, the cold is starting to really bite'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s2_08_1",
+     "label": "Pack up carefully, protecting the card.",
+     "target": "b_c2"
+    },
+    {
+     "id": "c_b_s2_08_2",
+     "label": "Pack up fast, cold winning out.",
+     "target": "b_c2"
+    },
+    {
+     "id": "c_b_s2_08_3",
+     "label": "Take one last look first.",
+     "target": "b_c2"
+    }
+   ]
+  },
+  {
+   "id": "b_e21",
+   "body": "<<FILL role=completion words=100 beats='back in the warmth, the single saved frame turns out to be real: grainy, off-center, but unmistakably KR-19, and the first photographic proof anyone at Kestrel Ridge has of it tonight'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "b_e21",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The One Frame"
+   }
+  },
+  {
+   "id": "b_e22",
+   "body": "<<FILL role=ending words=100 beats='in the cold and the rush you delete the wrong frame from the card, and the one clean shot you actually had goes with it, gone before anyone else ever sees it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "b_e22",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Deleted the Wrong One"
+   }
+  },
+  {
+   "id": "b_e23",
+   "body": "<<FILL role=ending words=100 beats='the card sits forgotten in the camera through breakfast, and by the time anyone thinks to check it the moment has passed into a curiosity rather than urgent evidence'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "b_e23",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Left for Later"
+   }
+  },
+  {
+   "id": "b_c2",
+   "body": "<<FILL role=choice words=105 beats='one possible photo sits on the camera's memory card, and the climb down is waiting'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_c2_1",
+     "label": "Carry it down carefully and check it properly.",
+     "target": "b_e21"
+    },
+    {
+     "id": "c_b_c2_2",
+     "label": "Delete the blurry attempts to save space along the way.",
+     "target": "b_e22"
+    },
+    {
+     "id": "c_b_c2_3",
+     "label": "Leave the card in the camera and worry about it later.",
+     "target": "b_e23"
+    }
+   ]
+  },
+  {
+   "id": "b_s3_01",
+   "body": "<<FILL role=choice words=105 beats='the maintenance platform ladder is slick with the same dew as the rail below'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s3_01_1",
+     "label": "Take it slowly, testing each rung.",
+     "target": "b_s3_02"
+    },
+    {
+     "id": "c_b_s3_01_2",
+     "label": "Take it quickly, before your hands get worse.",
+     "target": "b_s3_02"
+    },
+    {
+     "id": "c_b_s3_01_3",
+     "label": "Test the first rung, then commit.",
+     "target": "b_s3_02"
+    }
+   ]
+  },
+  {
+   "id": "b_s3_02",
+   "body": "<<FILL role=choice words=105 beats='the platform is higher, colder, and a good deal more exposed to the wind'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s3_02_1",
+     "label": "Crouch low against the wind.",
+     "target": "b_s3_03"
+    },
+    {
+     "id": "c_b_s3_02_2",
+     "label": "Stand and brace against the rail.",
+     "target": "b_s3_03"
+    },
+    {
+     "id": "c_b_s3_02_3",
+     "label": "Move low and quick between gusts.",
+     "target": "b_s3_03"
+    }
+   ]
+  },
+  {
+   "id": "b_s3_03",
+   "body": "<<FILL role=choice words=105 beats='from up here the whole dark valley spreads out under the ridge'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s3_03_1",
+     "label": "Take a second to actually look at it.",
+     "target": "b_s3_04"
+    },
+    {
+     "id": "c_b_s3_03_2",
+     "label": "Stay focused only on the sky.",
+     "target": "b_s3_04"
+    },
+    {
+     "id": "c_b_s3_03_3",
+     "label": "Glance once, then focus up.",
+     "target": "b_s3_04"
+    }
+   ]
+  },
+  {
+   "id": "b_s3_04",
+   "body": "<<FILL role=choice words=105 beats='naked-eye, without the scope, KR-19 is nearly too faint to hold onto'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s3_04_1",
+     "label": "Use averted vision, looking just beside it.",
+     "target": "b_s3_05"
+    },
+    {
+     "id": "c_b_s3_04_2",
+     "label": "Stare straight at it and strain.",
+     "target": "b_s3_05"
+    },
+    {
+     "id": "c_b_s3_04_3",
+     "label": "Try both techniques in turn.",
+     "target": "b_s3_05"
+    }
+   ]
+  },
+  {
+   "id": "b_s3_05",
+   "body": "<<FILL role=choice words=105 beats='your eyes water in the wind and blur the faint point further'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s3_05_1",
+     "label": "Blink hard and refocus.",
+     "target": "b_s3_06"
+    },
+    {
+     "id": "c_b_s3_05_2",
+     "label": "Wipe your eyes on your sleeve.",
+     "target": "b_s3_06"
+    },
+    {
+     "id": "c_b_s3_05_3",
+     "label": "Turn briefly away, then look back.",
+     "target": "b_s3_06"
+    }
+   ]
+  },
+  {
+   "id": "b_s3_06",
+   "body": "<<FILL role=choice words=105 beats='you realize you left the two-way radio down at the console'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s3_06_1",
+     "label": "Shout down toward the trailer instead.",
+     "target": "b_s3_07"
+    },
+    {
+     "id": "c_b_s3_06_2",
+     "label": "Just note it and manage without.",
+     "target": "b_s3_07"
+    },
+    {
+     "id": "c_b_s3_06_3",
+     "label": "Head down quickly to fetch it.",
+     "target": "b_s3_07"
+    }
+   ]
+  },
+  {
+   "id": "b_s3_07",
+   "body": "<<FILL role=choice words=105 beats='the cold up here is worse than anything on the catwalk below'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s3_07_1",
+     "label": "Time yourself strictly and stick to it.",
+     "target": "b_s3_08"
+    },
+    {
+     "id": "c_b_s3_07_2",
+     "label": "Push past the limit you set.",
+     "target": "b_s3_08"
+    },
+    {
+     "id": "c_b_s3_07_3",
+     "label": "Cut the visit short on purpose.",
+     "target": "b_s3_08"
+    }
+   ]
+  },
+  {
+   "id": "b_s3_08",
+   "body": "<<FILL role=choice words=105 beats='the eastern sky has started to pale faintly at the edge of the ridge'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_s3_08_1",
+     "label": "Take one last long look before it's gone.",
+     "target": "b_c3"
+    },
+    {
+     "id": "c_b_s3_08_2",
+     "label": "Start down now, satisfied with what you have.",
+     "target": "b_c3"
+    },
+    {
+     "id": "c_b_s3_08_3",
+     "label": "Take one last look, then start straight down.",
+     "target": "b_c3"
+    }
+   ]
+  },
+  {
+   "id": "b_e31",
+   "body": "<<FILL role=completion words=100 beats='your plain, careful naked-eye notes turn out to matter more than you expected: a second, independent kind of evidence next to the scope's, exactly the sort of thing Dr. Voss says makes a shaky report into a solid one'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "b_e31",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Steady Set of Eyes"
+   }
+  },
+  {
+   "id": "b_e32",
+   "body": "<<FILL role=ending words=100 beats='you rush the wet ladder in the cold, and the slip that follows costs you a scraped hand and a morning spent explaining a minor injury more than one spent explaining KR-19'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "b_e32",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Bad Step"
+   }
+  },
+  {
+   "id": "b_e33",
+   "body": "<<FILL role=ending words=100 beats='the one extra minute costs you nothing dramatic, only the last of the day light window, and you come down with notes that are honest but a little thinner than they could have been'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "b_e33",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "One Minute Too Long"
+   }
+  },
+  {
+   "id": "b_c3",
+   "body": "<<FILL role=choice words=105 beats='the platform visit is nearly over, and the ladder down is waiting in the strengthening light'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_b_c3_1",
+     "label": "Climb down carefully with your naked-eye notes intact.",
+     "target": "b_e31"
+    },
+    {
+     "id": "c_b_c3_2",
+     "label": "Rush the ladder down, cold outweighing caution.",
+     "target": "b_e32"
+    },
+    {
+     "id": "c_b_c3_3",
+     "label": "Stay up past your own time limit for one more minute.",
+     "target": "b_e33"
+    }
+   ]
+  },
+  {
+   "id": "c_l01",
+   "body": "<<FILL role=choice words=105 beats='in the control room, Dr. Voss reads the flagged frame twice before saying anything at all, the trailer door's cold air still hanging in the room'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_l01_1",
+     "label": "Wait quietly while she reads.",
+     "target": "c_l02"
+    },
+    {
+     "id": "c_c_l01_2",
+     "label": "Explain what you saw as she reads.",
+     "target": "c_l02"
+    },
+    {
+     "id": "c_c_l01_3",
+     "label": "Point to the key frame silently.",
+     "target": "c_l02"
+    }
+   ]
+  },
+  {
+   "id": "c_l02",
+   "body": "<<FILL role=choice words=105 beats='she asks you to reconstruct the exact sequence, in order, from memory'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_l02_1",
+     "label": "Walk her through it slowly.",
+     "target": "c_l03"
+    },
+    {
+     "id": "c_c_l02_2",
+     "label": "Just hand her your written log.",
+     "target": "c_l03"
+    },
+    {
+     "id": "c_c_l02_3",
+     "label": "Do both, log first, then walk through.",
+     "target": "c_l03"
+    }
+   ]
+  },
+  {
+   "id": "c_l03",
+   "body": "<<FILL role=choice words=105 beats='she pulls up the object's spectrum and frowns at it for a long moment'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_l03_1",
+     "label": "Ask what the spectrum shows.",
+     "target": "c_l04"
+    },
+    {
+     "id": "c_c_l03_2",
+     "label": "Wait for her to explain unprompted.",
+     "target": "c_l04"
+    },
+    {
+     "id": "c_c_l03_3",
+     "label": "Guess quietly to yourself first.",
+     "target": "c_l04"
+    }
+   ]
+  },
+  {
+   "id": "c_l04",
+   "body": "<<FILL role=choice words=105 beats='she has you re-run the automated match against a second, older catalog'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_l04_1",
+     "label": "Run the second match yourself.",
+     "target": "c_l05"
+    },
+    {
+     "id": "c_c_l04_2",
+     "label": "Watch over her shoulder as she runs it.",
+     "target": "c_l05"
+    },
+    {
+     "id": "c_c_l04_3",
+     "label": "Run it while she does something else.",
+     "target": "c_l05"
+    }
+   ]
+  },
+  {
+   "id": "c_l05",
+   "body": "<<FILL role=choice words=105 beats='she checks the object's motion against every known satellite constellation'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_l05_1",
+     "label": "Suggest checking the ISS first.",
+     "target": "c_l06"
+    },
+    {
+     "id": "c_c_l05_2",
+     "label": "Let her work through the list alone.",
+     "target": "c_l06"
+    },
+    {
+     "id": "c_c_l05_3",
+     "label": "Offer to check half the list yourself.",
+     "target": "c_l06"
+    }
+   ]
+  },
+  {
+   "id": "c_l06",
+   "body": "<<FILL role=choice words=105 beats='she radios the regional network herself, using a callsign you've never heard her use'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_l06_1",
+     "label": "Listen without interrupting.",
+     "target": "c_l07"
+    },
+    {
+     "id": "c_c_l06_2",
+     "label": "Ask who she's actually calling.",
+     "target": "c_l07"
+    },
+    {
+     "id": "c_c_l06_3",
+     "label": "Write down what she says as she says it.",
+     "target": "c_l07"
+    }
+   ]
+  },
+  {
+   "id": "c_l07",
+   "body": "<<FILL role=choice words=105 beats='she has you double-check the telescope's own internal clock against GPS time'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_l07_1",
+     "label": "Check it yourself first.",
+     "target": "c_l08"
+    },
+    {
+     "id": "c_c_l07_2",
+     "label": "Trust her word for it.",
+     "target": "c_l08"
+    },
+    {
+     "id": "c_c_l07_3",
+     "label": "Check it together, side by side.",
+     "target": "c_l08"
+    }
+   ]
+  },
+  {
+   "id": "c_l08",
+   "body": "<<FILL role=choice words=105 beats='she asks whether you touched any settings before waking her, and seems relieved you didn't'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_l08_1",
+     "label": "Say plainly that you didn't.",
+     "target": "c_l09"
+    },
+    {
+     "id": "c_c_l08_2",
+     "label": "Walk her through exactly what you did do.",
+     "target": "c_l09"
+    },
+    {
+     "id": "c_c_l08_3",
+     "label": "Ask why it matters so much.",
+     "target": "c_l09"
+    }
+   ]
+  },
+  {
+   "id": "c_l09",
+   "body": "<<FILL role=choice words=105 beats='she talks you through what a normal false alarm looks like, for comparison'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_l09_1",
+     "label": "Compare it point by point to tonight.",
+     "target": "c_l10"
+    },
+    {
+     "id": "c_c_l09_2",
+     "label": "Just listen and take notes.",
+     "target": "c_l10"
+    },
+    {
+     "id": "c_c_l09_3",
+     "label": "Ask how tonight is different.",
+     "target": "c_l10"
+    }
+   ]
+  },
+  {
+   "id": "c_l10",
+   "body": "<<FILL role=choice words=105 beats='she has you plot the object's brightness curve alongside her own scratch numbers'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_l10_1",
+     "label": "Plot it neatly.",
+     "target": "c_split"
+    },
+    {
+     "id": "c_c_l10_2",
+     "label": "Plot it quickly, mess and all.",
+     "target": "c_split"
+    },
+    {
+     "id": "c_c_l10_3",
+     "label": "Plot it and compare live as you go.",
+     "target": "c_split"
+    }
+   ]
+  },
+  {
+   "id": "c_split",
+   "body": "<<FILL role=choice words=105 beats='with the basics confirmed between you, Dr. Voss lays out three ways the rest of the night could go, and asks what you think'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_split_1",
+     "label": "Help her verify everything calmly before any call goes out.",
+     "target": "c_s1_01"
+    },
+    {
+     "id": "c_c_split_2",
+     "label": "Encourage her to call the regional network right away.",
+     "target": "c_s2_01"
+    },
+    {
+     "id": "c_c_split_3",
+     "label": "Suggest waking the site director too, just in case.",
+     "target": "c_s3_01"
+    }
+   ]
+  },
+  {
+   "id": "c_s1_01",
+   "body": "<<FILL role=choice words=105 beats='she has you read the object's coordinates back to her three separate times'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s1_01_1",
+     "label": "Read slowly and carefully.",
+     "target": "c_s1_02"
+    },
+    {
+     "id": "c_c_s1_01_2",
+     "label": "Read fast, trusting you have it right.",
+     "target": "c_s1_02"
+    },
+    {
+     "id": "c_c_s1_01_3",
+     "label": "Read once, then double-check together.",
+     "target": "c_s1_02"
+    }
+   ]
+  },
+  {
+   "id": "c_s1_02",
+   "body": "<<FILL role=choice words=105 beats='she checks the weather forecast for the rest of the dark-sky window'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s1_02_1",
+     "label": "Check the forecast yourself too.",
+     "target": "c_s1_03"
+    },
+    {
+     "id": "c_c_s1_02_2",
+     "label": "Trust her read of it.",
+     "target": "c_s1_03"
+    },
+    {
+     "id": "c_c_s1_02_3",
+     "label": "Check it and compare notes.",
+     "target": "c_s1_03"
+    }
+   ]
+  },
+  {
+   "id": "c_s1_03",
+   "body": "<<FILL role=choice words=105 beats='she asks what you think it is, before she says what she thinks'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s1_03_1",
+     "label": "Answer honestly, uncertain and all.",
+     "target": "c_s1_04"
+    },
+    {
+     "id": "c_c_s1_03_2",
+     "label": "Hedge until she says her view first.",
+     "target": "c_s1_04"
+    },
+    {
+     "id": "c_c_s1_03_3",
+     "label": "Answer honestly, then ask her view.",
+     "target": "c_s1_04"
+    }
+   ]
+  },
+  {
+   "id": "c_s1_04",
+   "body": "<<FILL role=choice words=105 beats='she compares your numbers against a colleague's late-night message that just came in'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s1_04_1",
+     "label": "Read the colleague's message aloud.",
+     "target": "c_s1_05"
+    },
+    {
+     "id": "c_c_s1_04_2",
+     "label": "Let her read it silently.",
+     "target": "c_s1_05"
+    },
+    {
+     "id": "c_c_s1_04_3",
+     "label": "Skim it together at the same time.",
+     "target": "c_s1_05"
+    }
+   ]
+  },
+  {
+   "id": "c_s1_05",
+   "body": "<<FILL role=choice words=105 beats='she has you help set up a second telescope for a parallel check'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s1_05_1",
+     "label": "Handle the second scope's setup.",
+     "target": "c_s1_06"
+    },
+    {
+     "id": "c_c_s1_05_2",
+     "label": "Just hand her tools as she asks.",
+     "target": "c_s1_06"
+    },
+    {
+     "id": "c_c_s1_05_3",
+     "label": "Split the setup steps between you.",
+     "target": "c_s1_06"
+    }
+   ]
+  },
+  {
+   "id": "c_s1_06",
+   "body": "<<FILL role=choice words=105 beats='she talks through the ethics of a too-early public announcement'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s1_06_1",
+     "label": "Say what you'd want done, honestly.",
+     "target": "c_s1_07"
+    },
+    {
+     "id": "c_c_s1_06_2",
+     "label": "Say you trust her call completely.",
+     "target": "c_s1_07"
+    },
+    {
+     "id": "c_c_s1_06_3",
+     "label": "Ask what she'd regret more.",
+     "target": "c_s1_07"
+    }
+   ]
+  },
+  {
+   "id": "c_s1_07",
+   "body": "<<FILL role=choice words=105 beats='she has you draft the report while she reviews it line by line'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s1_07_1",
+     "label": "Write plainly, numbers first.",
+     "target": "c_s1_08"
+    },
+    {
+     "id": "c_c_s1_07_2",
+     "label": "Write it the way she'd expect.",
+     "target": "c_s1_08"
+    },
+    {
+     "id": "c_c_s1_07_3",
+     "label": "Write a rough draft, then revise together.",
+     "target": "c_s1_08"
+    }
+   ]
+  },
+  {
+   "id": "c_s1_08",
+   "body": "<<FILL role=choice words=105 beats='she catches a small error in your first draft and has you fix it together'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s1_08_1",
+     "label": "Fix it without being asked twice.",
+     "target": "c_c1"
+    },
+    {
+     "id": "c_c_s1_08_2",
+     "label": "Ask her to explain the fix first.",
+     "target": "c_c1"
+    },
+    {
+     "id": "c_c_s1_08_3",
+     "label": "Fix it and explain your reasoning back.",
+     "target": "c_c1"
+    }
+   ]
+  },
+  {
+   "id": "c_e11",
+   "body": "<<FILL role=completion words=100 beats='by the time the sky pales over the ridge, Dr. Voss's careful review and your own steady record have turned an unlabeled chime into a report the regional network takes seriously, filed at dawn with both your names on it, hers first and yours right under it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "c_e11",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Two Names on the Report"
+   }
+  },
+  {
+   "id": "c_e12",
+   "body": "<<FILL role=ending words=100 beats='she signs it alone at your own request, and the report goes out perfectly well without your name on it; a fine outcome for KR-19, and a quietly disappointing one for you'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "c_e12",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Her Name Only"
+   }
+  },
+  {
+   "id": "c_e13",
+   "body": "<<FILL role=ending words=100 beats='the extra hedge you add reads, in daylight, like doubt neither of you actually felt, and it takes the regional desk a confused phone call to work out that the report meant more than it said'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "c_e13",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "One Caveat Too Many"
+   }
+  },
+  {
+   "id": "c_c1",
+   "body": "<<FILL role=choice words=105 beats='with everything checked calmly and together, the last decision is how the two of you close the night out'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_c1_1",
+     "label": "Countersign the finished report together.",
+     "target": "c_e11"
+    },
+    {
+     "id": "c_c_c1_2",
+     "label": "Ask her to sign it alone, to be safe.",
+     "target": "c_e12"
+    },
+    {
+     "id": "c_c_c1_3",
+     "label": "Add one more caveat than the evidence really needs.",
+     "target": "c_e13"
+    }
+   ]
+  },
+  {
+   "id": "c_s2_01",
+   "body": "<<FILL role=choice words=105 beats='she calls the regional network herself, and this time hands you the second headset'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s2_01_1",
+     "label": "Listen closely on the second line.",
+     "target": "c_s2_02"
+    },
+    {
+     "id": "c_c_s2_01_2",
+     "label": "Take your own separate notes.",
+     "target": "c_s2_02"
+    },
+    {
+     "id": "c_c_s2_01_3",
+     "label": "Do both at once.",
+     "target": "c_s2_02"
+    }
+   ]
+  },
+  {
+   "id": "c_s2_02",
+   "body": "<<FILL role=choice words=105 beats='the dispatcher asks for a supervising astronomer's name and credentials'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s2_02_1",
+     "label": "Let her answer that part.",
+     "target": "c_s2_03"
+    },
+    {
+     "id": "c_c_s2_02_2",
+     "label": "Offer to note it down as she speaks.",
+     "target": "c_s2_03"
+    },
+    {
+     "id": "c_c_s2_02_3",
+     "label": "Stay quiet and just listen.",
+     "target": "c_s2_03"
+    }
+   ]
+  },
+  {
+   "id": "c_s2_03",
+   "body": "<<FILL role=choice words=105 beats='she reads out coordinates and timestamps in a calm, practiced voice'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s2_03_1",
+     "label": "Follow along on your own copy.",
+     "target": "c_s2_04"
+    },
+    {
+     "id": "c_c_s2_03_2",
+     "label": "Just listen to the rhythm of it.",
+     "target": "c_s2_04"
+    },
+    {
+     "id": "c_c_s2_03_3",
+     "label": "Check her numbers against yours as she goes.",
+     "target": "c_s2_04"
+    }
+   ]
+  },
+  {
+   "id": "c_s2_04",
+   "body": "<<FILL role=choice words=105 beats='the dispatcher puts them on hold to check something on his end'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s2_04_1",
+     "label": "Use the wait to recheck your figures.",
+     "target": "c_s2_05"
+    },
+    {
+     "id": "c_c_s2_04_2",
+     "label": "Wait quietly with her.",
+     "target": "c_s2_05"
+    },
+    {
+     "id": "c_c_s2_04_3",
+     "label": "Ask her what she expects next.",
+     "target": "c_s2_05"
+    }
+   ]
+  },
+  {
+   "id": "c_s2_05",
+   "body": "<<FILL role=choice words=105 beats='he comes back and asks a question neither of you expected'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s2_05_1",
+     "label": "Let her field it.",
+     "target": "c_s2_06"
+    },
+    {
+     "id": "c_c_s2_05_2",
+     "label": "Offer a possible answer quietly.",
+     "target": "c_s2_06"
+    },
+    {
+     "id": "c_c_s2_05_3",
+     "label": "Say plainly you're not sure either.",
+     "target": "c_s2_06"
+    }
+   ]
+  },
+  {
+   "id": "c_s2_06",
+   "body": "<<FILL role=choice words=105 beats='she wraps up the call with a case number and a promise of follow-up'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s2_06_1",
+     "label": "Write the number down carefully.",
+     "target": "c_s2_07"
+    },
+    {
+     "id": "c_c_s2_06_2",
+     "label": "Just remember it for now.",
+     "target": "c_s2_07"
+    },
+    {
+     "id": "c_c_s2_06_3",
+     "label": "Write it and repeat it back to confirm.",
+     "target": "c_s2_07"
+    }
+   ]
+  },
+  {
+   "id": "c_s2_07",
+   "body": "<<FILL role=choice words=105 beats='she sets the phone down and asks how you're holding up'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s2_07_1",
+     "label": "Say honestly that you're tired but glad.",
+     "target": "c_s2_08"
+    },
+    {
+     "id": "c_c_s2_07_2",
+     "label": "Say you're fine and ready to keep going.",
+     "target": "c_s2_08"
+    },
+    {
+     "id": "c_c_s2_07_3",
+     "label": "Ask her the same question back.",
+     "target": "c_s2_08"
+    }
+   ]
+  },
+  {
+   "id": "c_s2_08",
+   "body": "<<FILL role=choice words=105 beats='she starts drafting the joint report with the case number at the top'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s2_08_1",
+     "label": "Offer to write the first draft.",
+     "target": "c_c2"
+    },
+    {
+     "id": "c_c_s2_08_2",
+     "label": "Let her draft it while you review.",
+     "target": "c_c2"
+    },
+    {
+     "id": "c_c_s2_08_3",
+     "label": "Draft it together, sentence by sentence.",
+     "target": "c_c2"
+    }
+   ]
+  },
+  {
+   "id": "c_e21",
+   "body": "<<FILL role=completion words=100 beats='your closing radio call ties the case number to a complete, dated record, and the regional desk's own note flags it for daytime follow-up in words that make it clear someone actually read what the two of you sent'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "c_e21",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Case, Followed Through"
+   }
+  },
+  {
+   "id": "c_e22",
+   "body": "<<FILL role=ending words=100 beats='the phone call turns out to mean less on paper than it did out loud, and without a written follow-up the case drifts toward the bottom of an unglamorous list by the weekly review'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "c_e22",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Call, and Nothing Written"
+   }
+  },
+  {
+   "id": "c_e23",
+   "body": "<<FILL role=ending words=100 beats='you step back and let her finish it entirely herself, competently, and correctly, and the night ends well for KR-19 and a little quietly for you'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "c_e23",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Stepped Back"
+   }
+  },
+  {
+   "id": "c_c2",
+   "body": "<<FILL role=choice words=105 beats='the call is logged, the case number written down twice for safety, and one decision remains'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_c2_1",
+     "label": "Follow up with a short written summary by radio.",
+     "target": "c_e21"
+    },
+    {
+     "id": "c_c_c2_2",
+     "label": "Assume the phone call alone was enough.",
+     "target": "c_e22"
+    },
+    {
+     "id": "c_c_c2_3",
+     "label": "Let Dr. Voss handle every remaining step alone.",
+     "target": "c_e23"
+    }
+   ]
+  },
+  {
+   "id": "c_s3_01",
+   "body": "<<FILL role=choice words=105 beats='she picks up the phone to call the site director, then pauses, thinking'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s3_01_1",
+     "label": "Say you think she should call.",
+     "target": "c_s3_02"
+    },
+    {
+     "id": "c_c_s3_01_2",
+     "label": "Say you'd wait a little longer.",
+     "target": "c_s3_02"
+    },
+    {
+     "id": "c_c_s3_01_3",
+     "label": "Say either choice seems fine to you.",
+     "target": "c_s3_02"
+    }
+   ]
+  },
+  {
+   "id": "c_s3_02",
+   "body": "<<FILL role=choice words=105 beats='she decides to call, and the director answers groggy but attentive'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s3_02_1",
+     "label": "Listen quietly to the call.",
+     "target": "c_s3_03"
+    },
+    {
+     "id": "c_c_s3_02_2",
+     "label": "Write down what you can catch.",
+     "target": "c_s3_03"
+    },
+    {
+     "id": "c_c_s3_02_3",
+     "label": "Step back and give her space.",
+     "target": "c_s3_03"
+    }
+   ]
+  },
+  {
+   "id": "c_s3_03",
+   "body": "<<FILL role=choice words=105 beats='the director asks her to summarize the evidence in under a minute'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s3_03_1",
+     "label": "Mouth the key numbers to help her.",
+     "target": "c_s3_04"
+    },
+    {
+     "id": "c_c_s3_03_2",
+     "label": "Stay silent and let her handle it.",
+     "target": "c_s3_04"
+    },
+    {
+     "id": "c_c_s3_03_3",
+     "label": "Hold up your written summary for her.",
+     "target": "c_s3_04"
+    }
+   ]
+  },
+  {
+   "id": "c_s3_04",
+   "body": "<<FILL role=choice words=105 beats='the director asks whether a twelve-year-old volunteer first flagged this'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s3_04_1",
+     "label": "Let Dr. Voss answer for you.",
+     "target": "c_s3_05"
+    },
+    {
+     "id": "c_c_s3_04_2",
+     "label": "Speak up for yourself, briefly.",
+     "target": "c_s3_05"
+    },
+    {
+     "id": "c_c_s3_04_3",
+     "label": "Say only what's asked, nothing more.",
+     "target": "c_s3_05"
+    }
+   ]
+  },
+  {
+   "id": "c_s3_05",
+   "body": "<<FILL role=choice words=105 beats='the director asks a sharp follow-up question about the timestamps'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s3_05_1",
+     "label": "Answer if you're sure of it.",
+     "target": "c_s3_06"
+    },
+    {
+     "id": "c_c_s3_05_2",
+     "label": "Let Dr. Voss field it.",
+     "target": "c_s3_06"
+    },
+    {
+     "id": "c_c_s3_05_3",
+     "label": "Answer together, filling in each other's gaps.",
+     "target": "c_s3_06"
+    }
+   ]
+  },
+  {
+   "id": "c_s3_06",
+   "body": "<<FILL role=choice words=105 beats='the call ends with the director promising to loop in the daytime team'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s3_06_1",
+     "label": "Thank her for making the call.",
+     "target": "c_s3_07"
+    },
+    {
+     "id": "c_c_s3_06_2",
+     "label": "Ask what happens next.",
+     "target": "c_s3_07"
+    },
+    {
+     "id": "c_c_s3_06_3",
+     "label": "Just quietly note the outcome.",
+     "target": "c_s3_07"
+    }
+   ]
+  },
+  {
+   "id": "c_s3_07",
+   "body": "<<FILL role=choice words=105 beats='Dr. Voss sets the phone down and looks, for the first time tonight, genuinely pleased'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s3_07_1",
+     "label": "Ask what she's thinking.",
+     "target": "c_s3_08"
+    },
+    {
+     "id": "c_c_s3_07_2",
+     "label": "Let the moment sit quietly.",
+     "target": "c_s3_08"
+    },
+    {
+     "id": "c_c_s3_07_3",
+     "label": "Say you're glad you woke her.",
+     "target": "c_s3_08"
+    }
+   ]
+  },
+  {
+   "id": "c_s3_08",
+   "body": "<<FILL role=choice words=105 beats='the three of you, across two calls, now have KR-19 on record from every angle that matters'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_s3_08_1",
+     "label": "Help finish the paperwork.",
+     "target": "c_c3"
+    },
+    {
+     "id": "c_c_s3_08_2",
+     "label": "Step back and let the adults finish it.",
+     "target": "c_c3"
+    },
+    {
+     "id": "c_c_s3_08_3",
+     "label": "Offer to write the summary line.",
+     "target": "c_c3"
+    }
+   ]
+  },
+  {
+   "id": "c_e31",
+   "body": "<<FILL role=completion words=100 beats='the finished report, backed by three separate calls and two careful observers, is the strongest thing Kestrel Ridge has filed in years, and Dr. Voss makes sure the director's morning email names you by name'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "c_e31",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Three Calls, One Morning"
+   }
+  },
+  {
+   "id": "c_e32",
+   "body": "<<FILL role=ending words=100 beats='you step back exactly when asked to, and the report finishes fine without you in the room for the last of it, competent and correct and a little less yours than it might have been'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "c_e32",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Stepped Back, Politely"
+   }
+  },
+  {
+   "id": "c_e33",
+   "body": "<<FILL role=ending words=100 beats='the summary line you offer runs longer and more certain than the evidence supports, and Dr. Voss has to gently trim it back before it goes out under both your names'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "c_e33",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Overwritten"
+   }
+  },
+  {
+   "id": "c_c3",
+   "body": "<<FILL role=choice words=105 beats='with the director's call ended and the paperwork nearly done, the sky over the ridge is starting to go grey'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_c3_1",
+     "label": "Finish the paperwork together, start to end.",
+     "target": "c_e31"
+    },
+    {
+     "id": "c_c_c3_2",
+     "label": "Step back and let the adults finish it alone.",
+     "target": "c_e32"
+    },
+    {
+     "id": "c_c_c3_3",
+     "label": "Offer to write the summary line, then overreach it.",
+     "target": "c_e33"
+    }
+   ]
+  }
+ ]
+}
