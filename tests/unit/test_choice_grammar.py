@@ -16,6 +16,7 @@ from pathlib import Path
 import pytest
 
 from cyo_adventure.storybook.models import Storybook
+from cyo_adventure.validator import choice_grammar
 from cyo_adventure.validator.choice_grammar import (
     check_choice_grammar,
     check_choiceless_run_cap,
@@ -26,6 +27,7 @@ from cyo_adventure.validator.choice_grammar import (
 )
 from cyo_adventure.validator.gate import run_gate
 from cyo_adventure.validator.report import Severity
+from cyo_adventure.validator.walk import ConfigDag
 
 # ---------------------------------------------------------------------------
 # Fixture builder
@@ -1008,6 +1010,61 @@ class TestVisibleRunCap:
         """
         story = _chain_story("16+", run_length=10)
         assert self._cg5(story) == []
+
+    def test_a_cycle_reports_only_that_cycle_not_every_one_option_stop(self) -> None:
+        """A loop anywhere must not inflate the corridor with unrelated stops.
+
+        `_topological_order` returns None for a cycle ANYWHERE in the induced
+        one-option subgraph, and the cycle branch used to answer with the whole
+        vertex set. So a 2-vertex loop made CG-5 report a corridor as long as
+        every one-option configuration in the story, listing stops no reader
+        walks consecutively. The rule over-reported rather than missing a
+        defect, but an inflated finding naming unrelated stops is close to
+        unactionable (`UW-C307`, found in review of the CG-5 PR).
+
+        Asserted through `_longest_visible_run`, the function that had the
+        defect, on a hand-built `ConfigDag`. Calling `_largest_cycle` directly
+        would pass against the pre-fix code too, since the bug was which helper
+        the caller reached for: the first version of this test did exactly that
+        and proved nothing.
+
+        The graph: a 2-cycle `c0 <-> c1`, three unrelated one-option
+        configurations `c2 -> c3`, `c4`, and a two-option `c5` that must be
+        excluded from the induced subgraph entirely.
+        """
+        dag = ConfigDag(
+            adjacency={
+                "c0": ["c1"],
+                "c1": ["c0"],
+                "c2": ["c3"],
+                "c3": [],
+                "c4": [],
+                "c5": ["c0", "c2"],
+            },
+            start="c5",
+            node_of={f"c{i}": f"n{i}" for i in range(6)},
+            choice_count={"c0": 1, "c1": 1, "c2": 1, "c3": 1, "c4": 1, "c5": 2},
+        )
+
+        assert choice_grammar._longest_visible_run(dag) == ["c0", "c1"]  # pyright: ignore[reportPrivateUsage]
+
+    def test_a_self_looping_configuration_counts_as_a_cycle(self) -> None:
+        """A single vertex is a cycle only when it carries a self-edge.
+
+        `loop_and_grow` can route a choice back to its own node in the same
+        variable state, which is a one-vertex strongly connected component that
+        IS an unbounded corridor. Sizing components alone would discard it and
+        fall through to the whole-vertex-set fallback, restoring the very
+        over-report this fix removes.
+        """
+        dag = ConfigDag(
+            adjacency={"c0": ["c0"], "c1": [], "c2": []},
+            start="c0",
+            node_of={f"c{i}": f"n{i}" for i in range(3)},
+            choice_count={"c0": 1, "c1": 1, "c2": 1},
+        )
+
+        assert choice_grammar._longest_visible_run(dag) == ["c0"]  # pyright: ignore[reportPrivateUsage]
 
     def test_a_declared_run_already_over_the_cap_is_left_to_cg1(self) -> None:
         """No duplicate finding: what CG-5 adds is the excess CG-1 cannot see.

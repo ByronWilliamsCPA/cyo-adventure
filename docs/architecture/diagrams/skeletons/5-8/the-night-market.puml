@@ -10,11 +10,13 @@ hide empty description
 state n_start #BBDEFB
 n_start : setup · 85w
 state n_meet #BBDEFB
-n_meet : setup · 78w
-state n_promise #BBDEFB
-n_promise : setup · 70w
+n_meet : setup · 95w
 state n_hub #FFF9C4
-n_hub : choice · 92w
+n_hub : choice · 85w
+state n_hub2 #FFF9C4
+n_hub2 : choice · 80w
+state n_hub3 #FFF9C4
+n_hub3 : choice · 80w
 state ds_entry #FFF9C4
 ds_entry : choice · 78w
 state ds_carry #FFF9C4
@@ -139,15 +141,16 @@ state e_up_song #C8E6C9
 e_up_song : success (positive)
 e_up_song : "{UP_SONG}"
 n_start --> n_meet : Peek behind the barrel.
-n_meet --> n_promise : Promise to help {COMPANION} before {GOAL...
-n_promise --> n_hub : Step into {HUB}.
+n_meet --> n_hub : Walk into the market together.
 n_hub --> ds_entry : Follow {ROUTE_A_LURE} to {ROUTE_A_STALL}...
 n_hub --> pf_entry : Visit {ROUTE_B_STALL} and his {ROUTE_B_G...
-n_hub --> tc_entry : Stop by {ROUTE_C_STALL} with {ROUTE_C_LU...
-n_hub --> tm_entry : Look in at {ROUTE_D_STALL}.
-n_hub --> fs_entry : Wander over to {ROUTE_E_STALL}.
-n_hub --> mc_entry : Drift toward {ROUTE_F_STALL}.
-n_hub --> f_steps : Head to {GOAL_STEPS} with {COMPANION}.
+n_hub --> n_hub2 : Follow the lantern walk further.
+n_hub2 --> tc_entry : Stop by {ROUTE_C_STALL} with {ROUTE_C_LU...
+n_hub2 --> tm_entry : Look in at {ROUTE_D_STALL}.
+n_hub2 --> n_hub3 : Keep going toward the top of the square.
+n_hub3 --> fs_entry : Wander over to {ROUTE_E_STALL}.
+n_hub3 --> mc_entry : Drift toward {ROUTE_F_STALL}.
+n_hub3 --> f_steps : Head to {GOAL_STEPS} with {COMPANION}.
 ds_entry --> ds_carry : Carry the warm trays to the tables.
 ds_entry --> ds_fold : Join the folding table and pleat {ROUTE_...
 ds_carry --> ds_happy : Take one tray at a time, slow and steady...
@@ -232,9 +235,9 @@ e_up_song --> [*]
 
 legend right
   The Night Market
-  Band 5-8 · Tier 1 · ~7 min
+  Band 5-8 · Tier 1 · ~9 min
   Topology: open_map
-  59 nodes · 13 endings (9+ / 4n / 0-)
+  60 nodes · 13 endings (9+ / 4n / 0-)
   Production-eligible
   Scale: medium · prose
 endlegend

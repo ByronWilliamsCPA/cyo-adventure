@@ -20,7 +20,12 @@ const endingWithoutChoicesKey = {
   title: 'T',
   start_node: 'n0',
   nodes: [
-    { id: 'n0', body: 'open', is_ending: false, choices: [{ id: 'c', label: 'go', target: 'n_end' }] },
+    {
+      id: 'n0',
+      body: 'open',
+      is_ending: false,
+      choices: [{ id: 'c', label: 'go', target: 'n_end' }],
+    },
     {
       id: 'n_end',
       body: 'done',
@@ -38,7 +43,12 @@ const storyWithoutVariablesKey = {
   title: 'T',
   start_node: 'n0',
   nodes: [
-    { id: 'n0', body: 'open', is_ending: false, choices: [{ id: 'c', label: 'go', target: 'n_end' }] },
+    {
+      id: 'n0',
+      body: 'open',
+      is_ending: false,
+      choices: [{ id: 'c', label: 'go', target: 'n_end' }],
+    },
     {
       id: 'n_end',
       body: 'done',

@@ -1,0 +1,86 @@
+@startuml the-last-blue-cup
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_snack
+state n_snack #BBDEFB
+n_snack : setup · 34w
+state n_gap #BBDEFB
+n_gap : setup · 40w
+state n_sand #D1C4E9
+n_sand : rising · 40w
+state n_books #D1C4E9
+n_books : rising · 40w
+state n_dig #D1C4E9
+n_dig : rising · 40w
+state n_cushion #D1C4E9
+n_cushion : rising · 40w
+state n_ask #D1C4E9
+n_ask : rising · 40w
+state n_water #D1C4E9
+n_water : rising · 40w
+state n_wait #D1C4E9
+n_wait : rising · 40w
+state n_found #D1C4E9
+n_found : rising · 40w
+state n_share #D1C4E9
+n_share : rising · 40w
+state e_tidied #E0E0E0
+e_tidied : discovery (neutral)
+e_tidied : "Tidying Instead"
+state e_helper #C8E6C9
+e_helper : completion (positive)
+e_helper : "Telling Meena"
+state e_washed #C8E6C9
+e_washed : completion (positive)
+e_washed : "Back in Its Space"
+state e_juice #C8E6C9
+e_juice : success (positive)
+e_juice : "The Blue Cup at Last"
+state e_swap #E0E0E0
+e_swap : discovery (neutral)
+e_swap : "Someone Else's Turn"
+state e_tomorrow #E0E0E0
+e_tomorrow : setback (neutral)
+e_tomorrow : "On the Whiteboard"
+n_snack --> n_gap : Go and look for it.
+n_gap --> n_sand : Dig in the sand tray.
+n_gap --> n_books : Look in the book corner.
+n_sand --> n_dig : Dig down where the castle is.
+n_sand --> n_cushion : Lift up the big cushion.
+n_books --> n_dig : Dig down where the castle is.
+n_books --> n_cushion : Lift up the big cushion.
+n_dig --> n_ask : Ask everybody at the table.
+n_dig --> n_water : Go out to the water tray.
+n_cushion --> n_wait : Sit down and have snack anyway.
+n_cushion --> n_ask : Ask everybody at the table.
+n_ask --> n_found : Look behind the big jug.
+n_ask --> n_share : Take the red cup instead.
+n_water --> e_tidied : Put everything back where it goes.
+n_water --> e_helper : Go and tell Meena.
+n_wait --> n_share : Take the red cup instead.
+n_wait --> n_gap : Go back and think again.
+n_found --> e_washed : Wash it at the sink.
+n_found --> e_juice : Take it to the table.
+n_share --> e_swap : Let somebody else have it.
+n_share --> e_tomorrow : Leave it for tomorrow.
+e_tidied --> [*]
+e_helper --> [*]
+e_washed --> [*]
+e_juice --> [*]
+e_swap --> [*]
+e_tomorrow --> [*]
+
+legend right
+  The Last Blue Cup
+  Band 3-5 · Tier 1 · ~2 min
+  Topology: loop_and_grow
+  17 nodes · 6 endings (3+ / 3n / 0-)
+  Production-eligible
+  Scale: short · prose
+endlegend
+@enduml

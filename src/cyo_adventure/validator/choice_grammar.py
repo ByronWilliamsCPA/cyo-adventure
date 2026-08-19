@@ -72,6 +72,8 @@ from collections import Counter, deque
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+import networkx as nx
+
 from cyo_adventure.diversity.normalize import STOPWORDS, tokenize
 from cyo_adventure.storybook.sentinels import strip_sentinels
 from cyo_adventure.utils.sentences import split_sentences
@@ -676,9 +678,17 @@ def _longest_visible_run(dag: ConfigDag) -> list[str] | None:
     path enumeration, which is exponential in the worst case, and rather than by
     memoised recursion, which a ~100,000-vertex configuration graph would
     overflow. A cycle inside the induced subgraph means an unbounded corridor;
-    it is reported as the cycle's own length rather than looping forever, since
-    L2-10's loop-escape rule owns unescapable loops and this rule should not
-    race it.
+    it is reported as THAT CYCLE's own members rather than looping forever,
+    since L2-10's loop-escape rule owns unescapable loops and this rule should
+    not race it.
+
+    The cycle branch used to return every one-option configuration in the story,
+    not the cycle's, so one 2-vertex loop anywhere made CG-5 report a corridor as
+    long as the whole induced subgraph and list unrelated configurations as
+    consecutive stops. The docstring already promised the cycle's own length; the
+    code did not deliver it (`UW-C307`). The rule over-reported rather than
+    missing a defect, so it was a diagnostic-quality bug, but an inflated finding
+    naming stops a reader never walks consecutively is close to unactionable.
 
     Args:
         dag: The story's configuration graph.
@@ -699,10 +709,45 @@ def _longest_visible_run(dag: ConfigDag) -> list[str] | None:
     order = _topological_order(single, succ)
     if order is None:
         # A cycle of one-option configurations: the reader can walk it forever.
-        # Report its members rather than iterating it. L2-10 owns unescapable
-        # loops, so this rule names the shape and does not race that finding.
-        return sorted(single)
+        # Report that cycle's members rather than iterating it. L2-10 owns
+        # unescapable loops, so this rule names the shape and does not race it.
+        return _largest_cycle(single, succ)
     return _longest_chain(single, succ, order)
+
+
+def _largest_cycle(vertices: set[str], succ: dict[str, list[str]]) -> list[str]:
+    """Return the members of the largest one-option cycle in the subgraph.
+
+    Reached only when :func:`_topological_order` reports a cycle, so at least one
+    exists. Uses strongly connected components: a component of more than one
+    vertex is a cycle, and a single vertex is one only when it carries a
+    self-edge (a choice returning to its own node in the same variable state,
+    which ``loop_and_grow`` can produce).
+
+    Args:
+        vertices: The induced subgraph's vertex set.
+        succ: Each vertex to its successors inside that set.
+
+    Returns:
+        The largest cycle's vertices, sorted. Falls back to the whole vertex set
+        only if no component qualifies, which the caller's own precondition makes
+        unreachable; it is kept so a future change to that precondition degrades
+        to the old over-report rather than to an empty finding.
+    """
+    graph: nx.DiGraph[str] = nx.DiGraph()
+    graph.add_nodes_from(vertices)
+    for vertex, successors in succ.items():
+        for successor in successors:
+            graph.add_edge(vertex, successor)
+    cycles = [
+        component
+        for component in nx.strongly_connected_components(graph)
+        if len(component) > 1
+        or next(iter(component)) in succ.get(next(iter(component)), ())
+    ]
+    if not cycles:
+        return sorted(vertices)
+    return sorted(max(cycles, key=len))
 
 
 def _topological_order(

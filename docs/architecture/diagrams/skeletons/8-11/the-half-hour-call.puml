@@ -1,0 +1,308 @@
+@startuml the-half-hour-call
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_arrive
+state n_arrive #BBDEFB
+n_arrive : setup · 60w
+state n_board #BBDEFB
+n_board : setup · 70w
+state l_hub #BBDEFB
+l_hub : setup · 100w
+state l_a #D1C4E9
+l_a : rising · 100w
+state l_b #D1C4E9
+l_b : rising · 100w
+state l_c #D1C4E9
+l_c : rising · 100w
+state l_p #D1C4E9
+l_p : rising · 100w
+state l_q #D1C4E9
+l_q : rising · 100w
+state l_r #D1C4E9
+l_r : rising · 100w
+state l_x #D1C4E9
+l_x : rising · 100w
+state l_y #D1C4E9
+l_y : rising · 100w
+state l_z #D1C4E9
+l_z : rising · 100w
+state l_early #E0E0E0
+l_early : setback (neutral)
+l_early : "A Job Handed Back"
+state c_hub #BBDEFB
+c_hub : setup · 100w
+state c_a #D1C4E9
+c_a : rising · 100w
+state c_b #D1C4E9
+c_b : rising · 100w
+state c_c #D1C4E9
+c_c : rising · 100w
+state c_p #D1C4E9
+c_p : rising · 100w
+state c_q #D1C4E9
+c_q : rising · 100w
+state c_r #D1C4E9
+c_r : rising · 100w
+state c_x #D1C4E9
+c_x : rising · 100w
+state c_y #D1C4E9
+c_y : rising · 100w
+state c_z #D1C4E9
+c_z : rising · 100w
+state c_early #E0E0E0
+c_early : discovery (neutral)
+c_early : "The Hood Instead"
+state s_hub #BBDEFB
+s_hub : setup · 100w
+state s_a #D1C4E9
+s_a : rising · 100w
+state s_b #D1C4E9
+s_b : rising · 100w
+state s_c #D1C4E9
+s_c : rising · 100w
+state s_p #D1C4E9
+s_p : rising · 100w
+state s_q #D1C4E9
+s_q : rising · 100w
+state s_r #D1C4E9
+s_r : rising · 100w
+state s_x #D1C4E9
+s_x : rising · 100w
+state s_y #D1C4E9
+s_y : rising · 100w
+state s_z #D1C4E9
+s_z : rising · 100w
+state s_early #E0E0E0
+s_early : setback (neutral)
+s_early : "Fixed By Someone Else"
+state n_call0 #D1C4E9
+n_call0 : rising · 100w
+state n_call1 #D1C4E9
+n_call1 : rising · 100w
+state n_call2 #D1C4E9
+n_call2 : rising · 100w
+state n_call3 #D1C4E9
+n_call3 : rising · 100w
+state n_call4 #D1C4E9
+n_call4 : rising · 100w
+state n_beg0 #D1C4E9
+n_beg0 : rising · 100w
+state n_beg1 #D1C4E9
+n_beg1 : rising · 100w
+state n_beg2 #D1C4E9
+n_beg2 : rising · 100w
+state n_beg3 #D1C4E9
+n_beg3 : rising · 100w
+state n_beg4 #D1C4E9
+n_beg4 : rising · 100w
+state n_up0 #FFE0B2
+n_up0 : climax · 100w
+state n_up1 #FFE0B2
+n_up1 : climax · 100w
+state n_up2 #FFE0B2
+n_up2 : climax · 100w
+state n_act0 #FFE0B2
+n_act0 : climax · 100w
+state n_act1 #FFE0B2
+n_act1 : climax · 100w
+state e9a #C8E6C9
+e9a : completion (positive)
+e9a : "The Show That Holds"
+state e9b #E0E0E0
+e9b : discovery (neutral)
+e9b : "What the Wings See"
+state e10a #C8E6C9
+e10a : success (positive)
+e10a : "The Moment Lands"
+state e10b #C8E6C9
+e10b : completion (positive)
+e10b : "Forty Seconds"
+state e10c #E0E0E0
+e10c : discovery (neutral)
+e10c : "A Different Picture"
+state e10d #E0E0E0
+e10d : setback (neutral)
+e10d : "A Note for Tomorrow"
+state e11a #C8E6C9
+e11a : success (positive)
+e11a : "The Curtain Call"
+state e11b #C8E6C9
+e11b : completion (positive)
+e11b : "Named in the Programme"
+state e11c #C8E6C9
+e11c : success (positive)
+e11c : "Asked Back for the Next One"
+state e11d #E0E0E0
+e11d : discovery (neutral)
+e11d : "What the Job Actually Is"
+state e11e #C8E6C9
+e11e : completion (positive)
+e11e : "Striking the Set"
+n_arrive --> n_board : Go in and find the job board.
+n_board --> l_hub : Take the lighting box.
+n_board --> c_hub : Take the costume room.
+n_board --> s_hub : Take the stage crew.
+l_hub --> l_a : Sort the cue sheets first.
+l_hub --> l_b : Check the lamp that keeps flickering.
+l_hub --> l_c : Learn the desk before touching anything ...
+l_a --> l_p : Go and find the breaker.
+l_a --> l_q : Give the snow cue a lamp of its own.
+l_a --> l_r : Rebuild Act Two on the desk.
+l_b --> l_q : Give the snow cue a lamp of its own.
+l_b --> l_r : Rebuild Act Two on the desk.
+l_b --> l_p : Go and find the breaker.
+l_c --> l_r : Rebuild Act Two on the desk.
+l_c --> l_p : Go and find the breaker.
+l_c --> l_q : Give the snow cue a lamp of its own.
+l_p --> l_x : Do the small, boring, reliable fix.
+l_p --> l_y : Go and ask someone to help you.
+l_p --> l_z : Change the moment so that it works.
+l_q --> l_y : Go and ask someone to help you.
+l_q --> l_z : Change the moment so that it works.
+l_q --> l_x : Do the small, boring, reliable fix.
+l_r --> l_z : Change the moment so that it works.
+l_r --> l_x : Do the small, boring, reliable fix.
+l_r --> l_early : Leave it and hope nobody notices.
+l_x --> n_call0 : Take the half-hour call and keep moving.
+l_x --> n_call1 : Listen to the house doors opening.
+l_x --> n_call2 : Go and find Bea in the corridor.
+l_y --> n_call3 : Clear the fog before it settles.
+l_y --> n_call4 : Run one last check on your own thing.
+l_y --> n_call0 : Take the half-hour call and keep moving.
+l_z --> n_call1 : Listen to the house doors opening.
+l_z --> n_call2 : Go and find Bea in the corridor.
+l_z --> n_call3 : Clear the fog before it settles.
+c_hub --> c_a : Start with the fox head.
+c_hub --> c_b : Start with the torn hem.
+c_hub --> c_c : Start with the quick change.
+c_a --> c_p : Work on through the blackout.
+c_a --> c_q : Make the fox head actually fit.
+c_a --> c_r : Refit the whole show for Nadia.
+c_b --> c_q : Make the fox head actually fit.
+c_b --> c_r : Refit the whole show for Nadia.
+c_b --> c_p : Work on through the blackout.
+c_c --> c_r : Refit the whole show for Nadia.
+c_c --> c_p : Work on through the blackout.
+c_c --> c_q : Make the fox head actually fit.
+c_p --> c_x : Do the small, boring, reliable fix.
+c_p --> c_y : Go and ask someone to help you.
+c_p --> c_z : Change the moment so that it works.
+c_q --> c_y : Go and ask someone to help you.
+c_q --> c_z : Change the moment so that it works.
+c_q --> c_x : Do the small, boring, reliable fix.
+c_r --> c_z : Change the moment so that it works.
+c_r --> c_x : Do the small, boring, reliable fix.
+c_r --> c_early : Say it is close enough and stop.
+c_x --> n_call4 : Run one last check on your own thing.
+c_x --> n_call0 : Take the half-hour call and keep moving.
+c_x --> n_call1 : Listen to the house doors opening.
+c_y --> n_call2 : Go and find Bea in the corridor.
+c_y --> n_call3 : Clear the fog before it settles.
+c_y --> n_call4 : Run one last check on your own thing.
+c_z --> n_call0 : Take the half-hour call and keep moving.
+c_z --> n_call1 : Listen to the house doors opening.
+c_z --> n_call2 : Go and find Bea in the corridor.
+s_hub --> s_a : Walk the scene changes first.
+s_hub --> s_b : Tape the floor first.
+s_hub --> s_c : Fix the rostrum that rocks.
+s_a --> s_p : Steady the loose flat in the dark.
+s_a --> s_q : Make the third change fit the music.
+s_a --> s_r : Stop the silk snagging the rostrum.
+s_b --> s_q : Make the third change fit the music.
+s_b --> s_r : Stop the silk snagging the rostrum.
+s_b --> s_p : Steady the loose flat in the dark.
+s_c --> s_r : Stop the silk snagging the rostrum.
+s_c --> s_p : Steady the loose flat in the dark.
+s_c --> s_q : Make the third change fit the music.
+s_p --> s_x : Do the small, boring, reliable fix.
+s_p --> s_y : Go and ask someone to help you.
+s_p --> s_z : Change the moment so that it works.
+s_q --> s_y : Go and ask someone to help you.
+s_q --> s_z : Change the moment so that it works.
+s_q --> s_x : Do the small, boring, reliable fix.
+s_r --> s_z : Change the moment so that it works.
+s_r --> s_x : Do the small, boring, reliable fix.
+s_r --> s_early : Call it good enough and go and get a dri...
+s_x --> n_call3 : Clear the fog before it settles.
+s_x --> n_call4 : Run one last check on your own thing.
+s_x --> n_call0 : Take the half-hour call and keep moving.
+s_y --> n_call1 : Listen to the house doors opening.
+s_y --> n_call2 : Go and find Bea in the corridor.
+s_y --> n_call3 : Clear the fog before it settles.
+s_z --> n_call4 : Run one last check on your own thing.
+s_z --> n_call0 : Take the half-hour call and keep moving.
+s_z --> n_call1 : Listen to the house doors opening.
+n_call0 --> n_beg0 : Go to the wings for beginners.
+n_call0 --> n_beg1 : Put a hand on your own thing one last ti...
+n_call0 --> n_beg2 : Answer Ms Adeyinka honestly.
+n_call1 --> n_beg1 : Put a hand on your own thing one last ti...
+n_call1 --> n_beg2 : Answer Ms Adeyinka honestly.
+n_call1 --> n_beg3 : Help Bea get the fox head on.
+n_call2 --> n_beg2 : Answer Ms Adeyinka honestly.
+n_call2 --> n_beg3 : Help Bea get the fox head on.
+n_call2 --> n_beg4 : Stand by for the first cue.
+n_call3 --> n_beg3 : Help Bea get the fox head on.
+n_call3 --> n_beg4 : Stand by for the first cue.
+n_call3 --> n_beg0 : Go to the wings for beginners.
+n_call4 --> n_beg4 : Stand by for the first cue.
+n_call4 --> n_beg0 : Go to the wings for beginners.
+n_call4 --> n_beg1 : Put a hand on your own thing one last ti...
+n_beg0 --> n_up0 : Watch the house lights go.
+n_beg0 --> n_up1 : Stay in the wings for the river scene.
+n_beg0 --> n_up2 : Work all the way through to the interval...
+n_beg1 --> n_up1 : Stay in the wings for the river scene.
+n_beg1 --> n_up2 : Work all the way through to the interval...
+n_beg1 --> e9a : Hold your nerve and let the act run.
+n_beg2 --> n_up2 : Work all the way through to the interval...
+n_beg2 --> e9a : Hold your nerve and let the act run.
+n_beg2 --> e9b : Watch the whole act from the wings.
+n_beg3 --> e9a : Hold your nerve and let the act run.
+n_beg3 --> e9b : Watch the whole act from the wings.
+n_beg3 --> n_up0 : Watch the house lights go.
+n_beg4 --> e9b : Watch the whole act from the wings.
+n_beg4 --> n_up0 : Watch the house lights go.
+n_beg4 --> n_up1 : Stay in the wings for the river scene.
+n_up0 --> n_act0 : Watch the second half start.
+n_up0 --> e10a : See the big moment land.
+n_up0 --> e10b : Let the hardest part go right.
+n_up1 --> n_act1 : Wait for the big cue.
+n_up1 --> e10c : Watch it happen the changed way.
+n_up1 --> e10d : Let it go and note it down for tomorrow.
+n_up2 --> n_act0 : Watch the second half start.
+n_up2 --> e10a : See the big moment land.
+n_up2 --> e10b : Let the hardest part go right.
+n_act0 --> e11a : Take the curtain call.
+n_act0 --> e11b : Find your name in the programme.
+n_act0 --> e11c : Say yes to the spring show.
+n_act1 --> e11d : Think about what the job actually was.
+n_act1 --> e11e : Stay behind and strike the set.
+n_act1 --> e11a : Take the curtain call.
+l_early --> [*]
+c_early --> [*]
+s_early --> [*]
+e9a --> [*]
+e9b --> [*]
+e10a --> [*]
+e10b --> [*]
+e10c --> [*]
+e10d --> [*]
+e11a --> [*]
+e11b --> [*]
+e11c --> [*]
+e11d --> [*]
+e11e --> [*]
+
+legend right
+  The Half-Hour Call
+  Band 8-11 · Tier 1 · ~8 min
+  Topology: branch_and_bottleneck
+  61 nodes · 14 endings (7+ / 7n / 0-)
+  Production-eligible
+  Scale: short · prose
+endlegend
+@enduml
