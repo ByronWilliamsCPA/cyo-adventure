@@ -50,6 +50,7 @@ from cyo_adventure.generation.prompts import (
     build_bound_fill_prompt,
     build_fidelity_repair_prompt,
     build_fill_prompt,
+    build_fill_subset_bound_prompt,
     build_fill_subset_prompt,
     build_prose_prompt,
     build_repair_prompt,
@@ -1118,12 +1119,18 @@ class _ChunkedFillContext:
         differentiation_directive: The trusted A6/A7 block, passed to every
             batch so anti-repetition steering is not confined to the first one.
         stage_log: The run's stage log, appended to per batch.
+        slot_bindings: The WS-2 bound values when this is a bound fill, else
+            None. Selects the bound batch prompt variant, and is passed to EVERY
+            batch: the bound-values block is the only place a batch learns the
+            theme's names, so omitting it from later batches would leave them
+            re-inventing the world the first batch bound.
     """
 
     provider: PiiGuardedProvider
     cap: int
     differentiation_directive: str
     stage_log: list[str]
+    slot_bindings: Mapping[str, str] | None = None
 
 
 async def _fill_in_batches(
@@ -1183,14 +1190,29 @@ async def _fill_in_batches(
     brief_json = json.dumps(theme_brief)
     document = skeleton
     for index, node_ids in enumerate(batches, start=1):
-        prompt = build_fill_subset_prompt(
-            skeleton_json,
-            FillBatchPayload(
-                nodes_to_fill_json=json.dumps(batch_request(document, node_ids)),
-                prose_so_far_json=json.dumps(written_prose(document)),
+        payload_for_batch = FillBatchPayload(
+            nodes_to_fill_json=json.dumps(batch_request(document, node_ids)),
+            prose_so_far_json=json.dumps(written_prose(document)),
+            slot_bindings_json=(
+                None
+                if ctx.slot_bindings is None
+                else json.dumps(dict(ctx.slot_bindings))
             ),
-            brief_json,
-            ctx.differentiation_directive,
+        )
+        prompt = (
+            build_fill_subset_bound_prompt(
+                skeleton_json,
+                payload_for_batch,
+                brief_json,
+                ctx.differentiation_directive,
+            )
+            if ctx.slot_bindings is not None
+            else build_fill_subset_prompt(
+                skeleton_json,
+                payload_for_batch,
+                brief_json,
+                ctx.differentiation_directive,
+            )
         )
         completion = await ctx.provider.complete(
             system=prompt.system, prompt=prompt.user, max_tokens=ctx.cap
@@ -1280,9 +1302,12 @@ async def fill_skeleton(
     * The repair budget is zero on that path. Every repair prompt asks for the
       whole document back, which is what does not fit; the Stage 1 fidelity
       CHECK still runs and can still downgrade to ``needs_review``.
-    * A bound fill (``slot_bindings`` supplied) is never chunked. WS-2 bound
-      skeletons are rendered against a theme contract before the fill, and the
-      subset prompt has no bound-fill variant.
+    * A bound fill (``slot_bindings`` supplied) chunks too, through
+      ``fill_subset_bound.md``. It did not until 2026-08-19, and that was the
+      whole of `UW-C302`: a bound skeleton over the serving model's ceiling had
+      no degraded path, so it truncated, parsed as nothing, and burned the
+      repair budget on every retry. Seven committed skeletons were in that
+      state. Every batch carries the bound values, not just the first.
     * Ending ``title`` text is not re-themed. One-shot fill returns the whole
       document and ``fill.md`` does not list ``title`` among the fields it may
       not change, so a one-shot book gets themed ending titles; the batch merge
@@ -1402,9 +1427,12 @@ async def fill_skeleton(
     # one-shot path whenever it fits the resolved cap. It becomes True only when
     # the backend's own output ceiling clamps the cap under what this skeleton
     # needs, which is the portability case this whole path exists for. On the
-    # shipped default (`anthropic/claude-haiku-4.5`, ceiling 64,000) that is 15 of
-    # the 55 production skeletons, so this path IS live rather than theoretical.
-    chunked = slot_bindings is None and not is_fill_feasible(skeleton, max_tokens=cap)
+    # shipped default (`anthropic/claude-haiku-4.5`, ceiling 64,000) that is 19 of
+    # the 73 production skeletons (measured 2026-08-19; it read "15 of the 55"
+    # until then, which was true of a smaller catalog), so this path IS live
+    # rather than theoretical. Since `UW-C302` it carries bound fills too, which
+    # is what makes 7 of those 19 reachable at all.
+    chunked = not is_fill_feasible(skeleton, max_tokens=cap)
     if chunked:
         try:
             current_doc, gate_result = await _fill_in_batches(
@@ -1415,6 +1443,7 @@ async def fill_skeleton(
                     cap=cap,
                     differentiation_directive=differentiation_directive,
                     stage_log=stage_log,
+                    slot_bindings=slot_bindings,
                 ),
             )
         except UnpartitionableSkeletonError as exc:

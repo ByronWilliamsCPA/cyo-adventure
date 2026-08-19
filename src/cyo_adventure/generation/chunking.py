@@ -8,7 +8,9 @@ every production skeleton fits, so that path stays exactly as it was.
 This module exists for **portability**, not for feasibility. The moment the
 configured backend is a smaller-output model the default cap clamps down (see
 ``skeleton.MODEL_OUTPUT_CAPS``: ``deepseek/deepseek-chat-v3.1`` emits 32,768),
-and the largest skeleton in the catalog needs about 87,200 output tokens. Under
+and the largest skeleton in the catalog needs 99,906 output tokens (measured
+2026-08-19 on `the-last-cartage`; this said 87,200 until then, which was the
+catalog's largest when written and is now its second). Under
 such a backend a one-shot fill cannot be emitted at all: the completion stops on
 ``finish_reason=length``, truncated JSON parses as nothing, and the run dies
 without a single line of prose. Chunking lets the same skeleton be filled a

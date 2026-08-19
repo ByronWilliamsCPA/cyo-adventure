@@ -157,11 +157,24 @@ def is_production_eligible(story: dict[str, object]) -> bool:
 #
 # Raised from 32,000 to 131,072 on 2026-08-16. The old value dated from initial
 # testing and made 36 of the 59 production skeletons unfillable, with the 13-16
-# and 16+ bands unfillable in their entirety. Measured against the catalog: the
-# largest skeleton needs 87,200 output tokens, so 131,072 clears every cell with
-# 20 percent headroom, and the next step down (65,536) still leaves 12 short.
+# and 16+ bands unfillable in their entirety. Measured against the catalog then:
+# the largest skeleton needed 87,200 output tokens, so 131,072 cleared every cell
+# with 20 percent headroom, and the next step down (65,536) still left 12 short.
 # Cost is not the constraint at this size: one full 59-book catalog fill is
 # about $6.42 on deepseek-v4-pro and $0.33 on deepseek-v4-flash.
+#
+# **The headroom claim is no longer true and the tense above is deliberate.**
+# Re-measured 2026-08-19 across 73 production skeletons: the largest
+# (`the-last-cartage`) needs 99,906 output tokens against the 104,857 this cap
+# actually permits once `_FEASIBILITY_MARGIN` is applied, which is 4.7 percent
+# of headroom rather than 20. The catalog grew into the cap; the cap did not
+# move. Two consequences worth stating rather than rediscovering. A skeleton
+# authored much past the current largest becomes unselectable with a green gate,
+# which is why `check_skeleton.py --headroom` now prints this budget
+# (`UW-C302`). And the margin's own justification (`AL-328`: a leg with under
+# ~20 percent headroom is a coin toss) no longer holds for the top of the
+# catalog even at the default cap, so raising this constant is a live question
+# and not a settled one.
 MAX_FILL_OUTPUT_TOKENS = 131_072
 
 # Per-model output ceilings, used to CLAMP the default DOWN for a backend that

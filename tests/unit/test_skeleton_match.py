@@ -861,6 +861,50 @@ def test_a_within_cap_skeleton_is_still_a_candidate(
     assert slugs == ["fits"]
 
 
+# `is_fill_feasible` allows `cap * 0.8 / 2.0` declared words (the 0.8 margin is
+# applied inside it, and `_TOKENS_PER_FILL_WORD` is 2.0). At the 131,072 default
+# that is 52,428 words; at `anthropic/claude-haiku-4.5`'s 64,000 ceiling it is
+# 25,600. 30,000 words therefore sits BETWEEN the two caps.
+_BETWEEN_CAPS_WORDS = 30_000
+
+
+@pytest.mark.unit
+def test_a_bound_skeleton_over_a_models_cap_is_still_a_candidate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Selection screens the model-independent default for BOTH fill paths.
+
+    This is a guard against re-narrowing, and it is worth the words because
+    narrowing looks obviously right. `UW-C302` was that a BOUND fill (one whose
+    skeleton carries a `.contract.json` sidecar) could not be chunked, so a bound
+    skeleton over the serving model's ceiling truncated and burned its whole
+    repair budget; the tempting fix is to screen bound skeletons at that ceiling
+    here. That fix was written and measured: at the lowest live ceiling it drops
+    7 skeletons and narrows 6 of the 28 populated cells, 16+/long worst at 4
+    candidates to 2. It was not shipped, because the actual repair is to let a
+    bound fill chunk (``fill_subset_bound.md``), after which the bound and
+    unbound paths meet the same limit and this screen is correct for both.
+
+    A model-dependent screen would also make the catalog a child can be offered
+    depend on which backend happens to be configured, so swapping models would
+    silently change the library rather than the plumbing.
+    """
+    band_dir = tmp_path / "5-8"
+    _write_sized_skeleton(band_dir, "bound-and-big", fill_words=_BETWEEN_CAPS_WORDS)
+    # A contract sidecar is what makes a fill bound (`worker.py`'s
+    # `load_contract_for` returns None without one), and it must not itself be
+    # scanned as a skeleton.
+    (band_dir / "bound-and-big.contract.json").write_text(
+        json.dumps({"contract_version": 1, "skeleton_slug": "bound-and-big"}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
+
+    slugs = [slug for slug, _ in skeleton_match._production_candidates("5-8")]  # pyright: ignore[reportPrivateUsage]
+
+    assert slugs == ["bound-and-big"]
+
+
 @pytest.mark.unit
 def test_a_deprecated_skeleton_is_not_a_candidate(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch

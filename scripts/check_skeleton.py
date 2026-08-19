@@ -46,7 +46,15 @@ import networkx as nx
 from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.core.exceptions import ProjectBaseError
-from cyo_adventure.generation.skeleton import FILL_MARKER, load_skeleton
+from cyo_adventure.generation.binding import contract_path_for
+from cyo_adventure.generation.skeleton import (
+    _FEASIBILITY_MARGIN,
+    _TOKENS_PER_FILL_WORD,
+    FILL_MARKER,
+    MAX_FILL_OUTPUT_TOKENS,
+    expected_output_tokens,
+    load_skeleton,
+)
 from cyo_adventure.mutation.identity import recompute_estimated_minutes
 from cyo_adventure.storybook.models import (
     SATISFYING_ENDING_VALENCES,
@@ -150,8 +158,17 @@ _MAX_INDEGREE_CAPS: dict[str, int] = {
 # within two taps of the start) while preserving the breadth incentive.
 _ENDING_DEPTH_QUALIFICATION_FRACTION = 1 / 3
 
+# The reference ceiling the fill-batching line reports against: the lowest cap
+# any shipped configuration resolves to (`anthropic/claude-haiku-4.5`, 64,000).
+# A job may override the model, so this is the conservative reading rather than
+# a promise about the serving model. It bounds no longer WHETHER a book fills,
+# only how many calls it takes, since `UW-C302` gave the bound path chunking too.
+_BOUND_FILL_REFERENCE_CAP = 64_000
 
-def _headroom(story: dict[str, Any], metadata: dict[str, Any]) -> str:
+
+def _headroom(
+    story: dict[str, Any], metadata: dict[str, Any], path: Path | None = None
+) -> str:
     """Return a report of how close a skeleton sits to each budget edge.
 
     A pass/fail verdict tells an author nothing about proximity, and proximity is
@@ -227,6 +244,7 @@ def _headroom(story: dict[str, Any], metadata: dict[str, Any]) -> str:
         )
     lines.extend(_state_headroom_lines(story))
     lines.extend(_visible_run_lines(story))
+    lines.extend(_fill_budget_lines(story, path))
     return "".join(f"{line}\n" for line in lines)
 
 
@@ -340,6 +358,75 @@ def _state_headroom_lines(story: dict[str, Any]) -> list[str]:
         lines.append(
             f"state reachable     {reached:,} of the {DEFAULT_CONFIG_CAP:,} cap "
             f"({DEFAULT_CONFIG_CAP - reached:+,} spare, {reached / DEFAULT_CONFIG_CAP:.1%} used)"
+        )
+    return lines
+
+
+def _fill_budget_lines(story: dict[str, Any], path: Path | None) -> list[str]:
+    """Report the fill budget, and say WHICH budget binds for this skeleton.
+
+    The only budget in the system an author cannot otherwise see. A skeleton over
+    it is dropped from generation selection or fails its fill, and nothing else
+    in this report mentions it: the 16+ gamebook author who hit it on 2026-08-18
+    found it as structlog noise, 97 tokens over, 0.09 percent (`UW-C302`).
+
+    ONE budget binds, and the sidecar no longer changes which. Both an unbound
+    fill and a bound one are CHUNKED when they exceed the serving model's
+    ceiling, so what an author must clear is the model-independent selection
+    screen: below it the book is selectable and fillable on any backend, above
+    it no partition helps.
+
+    That was not true until 2026-08-19, and the difference is worth stating
+    because it is what `UW-C302` was. A bound fill was excluded from chunking by
+    construction, so a contract-bearing skeleton had to fit ONE SHOT at the
+    serving model's resolved cap: on the shipped 64,000-ceiling default that is
+    51,200 tokens, less than half the screen, and seven committed skeletons sat
+    above it with a green gate. This block reported that second budget for bound
+    skeletons while it existed. It is reported now as context rather than as a
+    limit, because a bound book over it costs extra calls and not a failure.
+
+    Args:
+        story: The decoded skeleton dict.
+        path: The skeleton's path, used only to report whether the fill will be
+            bound. When None that is left unstated; it changes no budget.
+
+    Returns:
+        A list of report lines.
+    """
+    tokens = expected_output_tokens(story)
+    screen = MAX_FILL_OUTPUT_TOKENS * _FEASIBILITY_MARGIN
+    bound = _BOUND_FILL_REFERENCE_CAP * _FEASIBILITY_MARGIN
+    lines = [
+        (
+            f"fill tokens         {tokens:,} expected output "
+            f"({tokens / _TOKENS_PER_FILL_WORD:,.0f} declared words)"
+        )
+    ]
+    lines.append(
+        f"fill budget         {screen:,.0f} selection screen "
+        f"({screen - tokens:+,.0f} spare, {tokens / screen:.1%} used); over it the "
+        f"skeleton is not selectable on any backend"
+    )
+    if tokens > bound:
+        # Not a limit, and saying so is the point: since `UW-C302` a fill over
+        # the serving model's ceiling is chunked on both the bound and unbound
+        # paths, so this costs calls rather than the job. It is printed because
+        # an author choosing between two viable sizes should know one of them
+        # buys a multi-call fill on the shipped backend.
+        batches = -(-tokens // int(bound))
+        lines.append(
+            f"fill batching       over {bound:,.0f} (one shot at a "
+            f"{_BOUND_FILL_REFERENCE_CAP:,}-ceiling model), so the fill is "
+            f"chunked into roughly {batches} calls on that backend rather than one"
+        )
+    has_contract = None if path is None else contract_path_for(path).is_file()
+    if has_contract is not None:
+        lines.append(
+            f"fill binding        "
+            f"{'BOUND' if has_contract else 'UNBOUND'} "
+            f"({'a' if has_contract else 'no'} .contract.json sidecar"
+            f"{' exists' if has_contract else ''}); both bind against the same "
+            f"budget since `UW-C302`"
         )
     return lines
 
@@ -848,7 +935,7 @@ def main(argv: list[str] | None = None) -> int:
                         f"2026-08-09, review Part 4 R2)"
                     )
     if args.headroom:
-        sys.stdout.write(_headroom(skeleton, metadata))
+        sys.stdout.write(_headroom(skeleton, metadata, Path(args.path)))
     # A series book's chain rules are NOT run here, and saying "ok" without
     # saying that let a book with a foreign series_id, a wrong book_index, no
     # entry node and a disagreeing carries_state pass with exit 0 (`UW-C299`).

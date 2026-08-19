@@ -1145,11 +1145,17 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     # against its own derived manifest and re-scans the result for anything
     # sentinel-shaped left at rest ("derive, not prescribe"). This runs on
     # every skeleton fill, not only personalizable ones:
-    # `personalizable_slot_ids` is empty for every contract on disk today
-    # (Task 2 added the slot KIND; nothing declares it yet), so `bound` has no
-    # expected tokens, the transform is a byte-identical no-op, and
-    # `check_sentinel_integrity_at_rest` derives an empty expected set for
-    # existing content. Fails closed on the FIRST trip: the section 3.4
+    # `personalizable_slot_ids` is empty for 46 of the 47 contracts on disk
+    # (measured 2026-08-19), so for those `bound` has no expected tokens, the
+    # transform is a byte-identical no-op, and `check_sentinel_integrity_at_rest`
+    # derives an empty expected set. This comment said "empty for every contract
+    # on disk today" until 2026-08-19, which stopped being true when
+    # `skeletons/10-13/the-midnight-museum.contract.json` declared `HERO` as
+    # `kind: personalizable`; the no-op reading is therefore no longer the whole
+    # picture and this path is live for that book. Note the set is DERIVED from
+    # slot `kind` (`binding.personalizable_slot_ids`) and is not a top-level
+    # contract key, so grepping the JSON for the name finds nothing and is not
+    # evidence of absence. Fails closed on the FIRST trip: the section 3.4
     # one-retry policy is explicitly out of scope here (Task 4b). Skipped
     # when `outcome.storybook` is `None` (the gate blocked with no
     # salvageable doc, `_build_outcome`'s "failed, no doc" branch): there is
