@@ -728,14 +728,26 @@ def build_fill_subset_bound_prompt(
     # #CRITICAL: security: ``prose_so_far_json`` is model-written prose descended
     # from an untrusted guardian/child brief and is fenced, for the same reason
     # and by the same call as in :func:`build_fill_subset_prompt`; JSON escaping
-    # does not escape the fence terminator. ``slot_bindings_json`` is NOT fenced,
-    # deliberately and identically to :func:`build_bound_fill_prompt`: every
-    # value in it has already passed the deterministic contract check in
-    # ``validator/slots.py`` before the fill is dispatched, so it is validated
-    # data rather than untrusted input. Fencing it here and not there would make
-    # the two paths disagree about what a bound value is.
+    # does not escape the fence terminator.
+    #
+    # ``slot_bindings_json`` is fenced too, which it was NOT in the first
+    # revision of this function. That revision argued the values were validated
+    # data because each had passed ``validator/slots.py``. They had, but that
+    # check does not cover the stage-split marker: ``_charset_violations``
+    # blocks ``{``/``}``, ``<<``/``>>``, the em dash, non-printables and >120
+    # chars, and ``_structural_slot_violations`` blocks only the two
+    # ``UNTRUSTED_USER_INPUT`` fence markers. ``<!-- @user -->`` is fourteen
+    # printable ASCII characters on one line and passes every one of them. A
+    # bound value carrying it forges a second marker, and per the comment in
+    # :func:`_neutralize_fence` that is worse than forging the fence:
+    # ``_split_stage_prompt`` raises ``BusinessLogicError``, which is not a
+    # ``ValidationError`` and so escapes both ``_fill_in_batches`` and
+    # ``fill_skeleton``, leaving an RQ job retrying a deterministic failure
+    # forever. Neutralising is safe for well-formed values, which contain
+    # neither marker and pass through byte-identical.
     # #VERIFY: tests/unit/test_chunked_fill.py::
-    # test_the_bound_subset_prompt_neutralizes_a_literal_fence_terminator.
+    # test_the_bound_subset_prompt_neutralizes_a_literal_fence_terminator and
+    # ::test_a_bound_value_forging_the_stage_marker_cannot_split_the_prompt.
     text = (
         _load_template("fill_subset_bound.md")
         .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
@@ -743,7 +755,7 @@ def build_fill_subset_bound_prompt(
         .replace("{nodes_to_fill}", batch.nodes_to_fill_json)
         .replace("{prose_so_far}", _neutralize_fence(batch.prose_so_far_json))
         .replace("{skeleton_with_fill_directives}", skeleton_json)
-        .replace("{slot_bindings}", batch.slot_bindings_json)
+        .replace("{slot_bindings}", _neutralize_fence(batch.slot_bindings_json))
         .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
         .replace(
             "{differentiation_directive}",
@@ -968,12 +980,21 @@ def build_bound_fill_prompt(
     # characters. .replace() handles this safely.
     # #VERIFY: caller must pass a bound skeleton that already passed
     # render_bound_skeleton's post-conditions.
+    # #CRITICAL: security: ``slot_bindings_json`` is neutralised for the same
+    # reason as in :func:`build_fill_subset_bound_prompt`: ``validator/slots.py``
+    # does not reject the ``<!-- @user -->`` stage-split marker, so a bound value
+    # carrying it would forge a second marker and make ``_split_stage_prompt``
+    # raise a ``BusinessLogicError`` that escapes every handler on this path.
+    # Both bound builders neutralise, so the two paths still agree about what a
+    # bound value is.
+    # #VERIFY: tests/unit/test_chunked_fill.py::
+    # test_a_bound_value_forging_the_stage_marker_cannot_split_the_prompt.
     text = (
         _load_template("fill_bound.md")
         .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
         .replace("{skeleton_with_fill_directives}", skeleton_json)
-        .replace("{slot_bindings}", slot_bindings_json)
+        .replace("{slot_bindings}", _neutralize_fence(slot_bindings_json))
         .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
         .replace(
             "{differentiation_directive}",
