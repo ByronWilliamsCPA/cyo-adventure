@@ -24,13 +24,55 @@ from cyo_adventure.generation.skeleton_match import (
 from cyo_adventure.storybook.models import AgeBand, NarrativeStyle, StoryMetadata
 
 
+def _cell_members_from_disk(band: str, length: str, style: str) -> list[str]:
+    """Recompute a cell's membership straight from the skeleton files.
+
+    Deliberately an independent reimplementation rather than a call to
+    `candidates_for_cell`, which would make the assertions tautological. It reads
+    the same three metadata fields the selector keys on, from the same directory,
+    and sorts by filename as the selector does.
+
+    Exists because these tests used to freeze the expected slug list. Every
+    skeleton authored into a covered cell then broke them, which taxed the
+    project's central activity: the 2026-08-18 fan-out added fourteen books and
+    broke four tests that had no defect in them (`UW-C304`).
+    """
+    import json
+    from pathlib import Path
+
+    members: list[str] = []
+    for path in sorted(Path("skeletons").glob(f"{band}/*.json")):
+        if path.name.endswith((".contract.json", ".lineage.json", ".narrative.json")):
+            continue
+        try:
+            doc = json.loads(path.read_text())
+        except (ValueError, OSError):
+            continue
+        meta = doc.get("metadata") or {}
+        if not isinstance(meta, dict):
+            continue
+        if meta.get("production_eligible") is False:
+            continue
+        if meta.get("series") is not None:
+            continue
+        if meta.get("length") != length or meta.get("narrative_style") != style:
+            continue
+        if meta.get("age_band") != band:
+            continue
+        members.append(path.stem)
+    return members
+
+
 def test_candidates_for_cell_matches_real_library_cell() -> None:
-    """10-13/medium/prose returns every in-cell production skeleton, sorted."""
-    assert candidates_for_cell("10-13", "medium", "prose") == [
-        "the-envoy-of-three-courts",
-        "the-flooded-quarter",
-        "the-hollow-lighthouse",
-    ]
+    """10-13/medium/prose returns every in-cell production skeleton, sorted.
+
+    Checked against an independent read of the skeleton files rather than a
+    frozen slug list, so authoring into this cell cannot break a test that has
+    no defect in it.
+    """
+    expected = _cell_members_from_disk("10-13", "medium", "prose")
+    assert expected, "fixture guard: the cell must have members for this to test"
+    assert candidates_for_cell("10-13", "medium", "prose") == expected
 
 
 def test_candidates_for_cell_excludes_non_eligible_and_length_mismatch() -> None:
@@ -46,17 +88,19 @@ def test_candidates_for_cell_excludes_non_eligible_and_length_mismatch() -> None
 
 
 def test_candidates_for_cell_matches_style_for_teen_band() -> None:
-    """13-16/medium: prose and gamebook are different cells (style-aware band)."""
-    assert candidates_for_cell("13-16", "medium", "prose") == [
-        "the-conservatory-wars",
-        "the-signal-in-the-static",
-        "the-undertow-season",
-    ]
-    assert candidates_for_cell("13-16", "medium", "gamebook") == [
-        "the-iron-spire-trial",
-        "the-smugglers-cut",
-        "the-sunspire-ascent",
-    ]
+    """13-16/medium: prose and gamebook are different cells (style-aware band).
+
+    The property is the SPLIT, not the membership: no slug may appear in both
+    lists, and each must match an independent read of the files. Freezing the
+    membership made authoring into either cell break this test.
+    """
+    prose = candidates_for_cell("13-16", "medium", "prose")
+    gamebook = candidates_for_cell("13-16", "medium", "gamebook")
+    assert prose == _cell_members_from_disk("13-16", "medium", "prose")
+    assert gamebook == _cell_members_from_disk("13-16", "medium", "gamebook")
+    assert prose, "fixture guard: the prose cell must have members"
+    assert gamebook, "fixture guard: the gamebook cell must have members"
+    assert not set(prose) & set(gamebook)
 
 
 def test_candidates_for_cell_ignores_style_below_teen_band() -> None:

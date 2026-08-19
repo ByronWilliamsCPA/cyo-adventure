@@ -40,11 +40,21 @@ _CELL_8_11_SHORT_PROSE = [
     "the-locked-carousel",
     "the-robot-fair-sabotage",
 ]
-_CELL_13_16_MEDIUM_PROSE = [
-    "the-conservatory-wars",
-    "the-signal-in-the-static",
-    "the-undertow-season",
-]
+
+
+def _cell_13_16_medium_prose() -> list[str]:
+    """The 13-16/medium/prose cell's live membership.
+
+    Read from the selector rather than frozen as a list. These assertions are
+    about WHICH CELL the plan resolved to, not about which books happen to be in
+    it, and the frozen list broke on every skeleton authored into the cell
+    (`UW-C304`).
+    """
+    from cyo_adventure.generation.skeleton_match import (
+        candidates_for_cell,
+    )
+
+    return candidates_for_cell("13-16", "medium", "prose")
 
 
 class _FakeResult:
@@ -536,7 +546,7 @@ async def test_skeleton_fill_teen_band_null_length_falls_back_to_medium() -> Non
         actor=_admin_actor(),
     )
     # 13-16/medium/prose now has three production skeletons; the pick is one.
-    assert result.skeleton_slug in _CELL_13_16_MEDIUM_PROSE
+    assert result.skeleton_slug in _cell_13_16_medium_prose()
 
 
 @pytest.mark.asyncio
@@ -607,7 +617,7 @@ async def test_skeleton_fill_defaulted_length_appends_warning() -> None:
         actor=_admin_actor(),
     )
     assert any("defaulted to 'medium'" in w for w in result.warnings)
-    assert result.skeleton_slug in _CELL_13_16_MEDIUM_PROSE
+    assert result.skeleton_slug in _cell_13_16_medium_prose()
 
 
 @pytest.mark.asyncio
