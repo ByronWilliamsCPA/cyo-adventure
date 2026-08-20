@@ -1,0 +1,3704 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_migration_year",
+ "version": 1,
+ "title": "The Migration Year",
+ "metadata": {
+  "age_band": "13-16",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 7.0,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "belonging",
+   "family under pressure",
+   "language and arriving",
+   "friendship across distance",
+   "keeping a record"
+  ],
+  "estimated_minutes": 14,
+  "ending_count": 30,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "length": "long",
+  "narrative_style": "prose",
+  "production_eligible": true
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "<<FILL role=setup words=60 beats='the Caldy works shuts on a Friday in September and by the Sunday the year has a shape: three postings, three cities, eleven months; Rhian Pellett, fifteen, is going with her parents and her sister Bea is staying with Mamgu to finish sixth form; Mamgu hands over the bird notebook she started in 1968'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_open_0",
+     "label": "Sit down at the kitchen table in Caldy.",
+     "target": "d01_0"
+    }
+   ]
+  },
+  {
+   "id": "d01_0",
+   "body": "<<FILL role=setup words=137 beats='the map on the table with three rings on it, Hull and Rotterdam and a village outside Bangor; the dates already fixed by other people, the school forms already printed, and Bea upstairs not coming down for any of it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d01_0_0",
+     "label": "Say yes and start packing.",
+     "target": "d02_0"
+    },
+    {
+     "id": "c_d01_0_1",
+     "label": "Say you are staying with Mamgu.",
+     "target": "d02_1"
+    },
+    {
+     "id": "c_d01_0_2",
+     "label": "Ask what happens if the year does not work.",
+     "target": "d02_2"
+    }
+   ]
+  },
+  {
+   "id": "d02_0",
+   "body": "<<FILL role=choice words=154 beats='Rhian takes the yes as far as her bedroom door and then stands in it for a while; a year of a life fits into four boxes and a rucksack if you are ruthless, and she is not ruthless yet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d02_0_0",
+     "label": "Go through the notebook with Mamgu.",
+     "target": "d03_0"
+    },
+    {
+     "id": "c_d02_0_1",
+     "label": "Work out what actually comes with you.",
+     "target": "d03_1"
+    },
+    {
+     "id": "c_d02_0_2",
+     "label": "Talk to Bea about staying.",
+     "target": "d03_2"
+    }
+   ]
+  },
+  {
+   "id": "d02_1",
+   "body": "<<FILL role=choice words=137 beats='the argument is short and Rhian loses it in the first minute; what surprises her is that Bea takes their parents' side, quietly, in the hall afterwards'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d02_1_0",
+     "label": "Say goodbye to the works.",
+     "target": "d03_3"
+    },
+    {
+     "id": "c_d02_1_1",
+     "label": "Deal with your own last week of school.",
+     "target": "d03_4"
+    },
+    {
+     "id": "c_d02_1_2",
+     "label": "Go through the notebook with Mamgu.",
+     "target": "d03_0"
+    }
+   ]
+  },
+  {
+   "id": "d02_2",
+   "body": "<<FILL role=choice words=120 beats='her father Gethin answers honestly, which nobody expects: the year is not a plan, it is what is available, and if it does not work they will be somewhere else and out of savings'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d02_2_0",
+     "label": "Work out what actually comes with you.",
+     "target": "d03_1"
+    },
+    {
+     "id": "c_d02_2_1",
+     "label": "Talk to Bea about staying.",
+     "target": "d03_2"
+    },
+    {
+     "id": "c_d02_2_2",
+     "label": "Say goodbye to the works.",
+     "target": "d03_3"
+    }
+   ]
+  },
+  {
+   "id": "d03_0",
+   "body": "<<FILL role=rising words=125 beats='fifty-seven years of arrivals: whooper swans in 1968, a hoopoe in a Caldy garden in 1983, the year the swifts came late; Mamgu writes the date of Rhian's leaving into it as though it were a species'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d03_0_0",
+     "label": "Take the notebook out on the ferry.",
+     "target": "d04_0"
+    },
+    {
+     "id": "c_d03_0_1",
+     "label": "Arrive at the Hull flat.",
+     "target": "d04_1"
+    },
+    {
+     "id": "c_d03_0_2",
+     "label": "Ring Bea on the first night.",
+     "target": "d04_2"
+    }
+   ]
+  },
+  {
+   "id": "d03_1",
+   "body": "<<FILL role=rising words=154 beats='the notebook, the boots, three books and the cheap binoculars with the sticky focus; everything else goes into Mamgu's back bedroom under a sheet, which is not the same as being kept'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d03_1_0",
+     "label": "Watch your mother start work.",
+     "target": "d04_3"
+    },
+    {
+     "id": "c_d03_1_1",
+     "label": "Watch your father not start work.",
+     "target": "d04_4"
+    },
+    {
+     "id": "c_d03_1_2",
+     "label": "Walk the whole city on the first Saturday.",
+     "target": "d04_5"
+    }
+   ]
+  },
+  {
+   "id": "d03_2",
+   "body": "<<FILL role=rising words=137 beats='Bea has a bus pass, an exam timetable and a room she has painted twice; she says the word lucky and Rhian says it back, and neither of them means the same thing by it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d03_2_0",
+     "label": "Take the notebook out on the ferry.",
+     "target": "d04_0"
+    },
+    {
+     "id": "c_d03_2_1",
+     "label": "Arrive at the Hull flat.",
+     "target": "d04_1"
+    },
+    {
+     "id": "c_d03_2_2",
+     "label": "Ring Bea on the first night.",
+     "target": "d04_2"
+    },
+    {
+     "id": "c_d03_2_3",
+     "label": "Watch your mother start work.",
+     "target": "d04_3"
+    }
+   ]
+  },
+  {
+   "id": "d03_3",
+   "body": "<<FILL role=rising words=120 beats='Gethin takes Rhian into the maintenance shop on the last day; twenty-two years of his handwriting on the whiteboard, and a man from the agency photographing the plant for the sale particulars'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d03_3_0",
+     "label": "Watch your father not start work.",
+     "target": "d04_4"
+    },
+    {
+     "id": "c_d03_3_1",
+     "label": "Walk the whole city on the first Saturday.",
+     "target": "d04_5"
+    },
+    {
+     "id": "c_d03_3_2",
+     "label": "Take the notebook out on the ferry.",
+     "target": "d04_0"
+    }
+   ]
+  },
+  {
+   "id": "d03_4",
+   "body": "<<FILL role=rising words=149 beats='nobody quite knows how to say goodbye to someone who is not dying or falling out with anyone; two people cry, one asks for her address, and by Thursday the class has moved on and so, almost, has she'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d03_4_0",
+     "label": "Arrive at the Hull flat.",
+     "target": "d04_1"
+    },
+    {
+     "id": "c_d03_4_1",
+     "label": "Ring Bea on the first night.",
+     "target": "d04_2"
+    },
+    {
+     "id": "c_d03_4_2",
+     "label": "Watch your mother start work.",
+     "target": "d04_3"
+    }
+   ]
+  },
+  {
+   "id": "d04_0",
+   "body": "<<FILL role=rising words=142 beats='first entry of the year, written badly on a moving boat: gannets off the point, a single skua, and the coast of the place she is from getting smaller in a way that is embarrassing to be moved by'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d04_0_0",
+     "label": "Start at the new school.",
+     "target": "d05_0"
+    },
+    {
+     "id": "c_d04_0_1",
+     "label": "Say nothing about Caldy for the first fortnight.",
+     "target": "d05_1"
+    },
+    {
+     "id": "c_d04_0_2",
+     "label": "Find the nearest water.",
+     "target": "d05_2"
+    }
+   ]
+  },
+  {
+   "id": "d04_1",
+   "body": "<<FILL role=rising words=125 beats='two bedrooms above a shuttered unit in the Fruit Market, damp in the corner of the kitchen, and a window that looks straight at a brick wall with a gull standing on it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d04_1_0",
+     "label": "Take the notebook to school.",
+     "target": "d05_3"
+    },
+    {
+     "id": "c_d04_1_1",
+     "label": "Ring Mamgu on Sunday.",
+     "target": "d05_4"
+    },
+    {
+     "id": "c_d04_1_2",
+     "label": "Keep the flat tidy for your father.",
+     "target": "d05_5"
+    }
+   ]
+  },
+  {
+   "id": "d04_2",
+   "body": "<<FILL role=rising words=154 beats='the call lasts four minutes and is entirely about a bus; both of them understand that this is what they are going to do instead of saying anything, and that it will get harder'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d04_2_0",
+     "label": "Let Tobi show you the city.",
+     "target": "d05_6"
+    },
+    {
+     "id": "c_d04_2_1",
+     "label": "Start at the new school.",
+     "target": "d05_0"
+    },
+    {
+     "id": "c_d04_2_2",
+     "label": "Say nothing about Caldy for the first fortnight.",
+     "target": "d05_1"
+    }
+   ]
+  },
+  {
+   "id": "d04_3",
+   "body": "<<FILL role=rising words=137 beats='Nia has a lab, a lanyard and eleven months of soil cores; she is happier than Rhian has seen her in two years, and the guilt of noticing that sits in Rhian for weeks'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d04_3_0",
+     "label": "Find the nearest water.",
+     "target": "d05_2"
+    },
+    {
+     "id": "c_d04_3_1",
+     "label": "Take the notebook to school.",
+     "target": "d05_3"
+    },
+    {
+     "id": "c_d04_3_2",
+     "label": "Ring Mamgu on Sunday.",
+     "target": "d05_4"
+    }
+   ]
+  },
+  {
+   "id": "d04_4",
+   "body": "<<FILL role=rising words=120 beats='Gethin has a fitter's ticket, thirty years of it, and no posting until February; he cleans the flat twice a day and applies for things he does not want'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d04_4_0",
+     "label": "Keep the flat tidy for your father.",
+     "target": "d05_5"
+    },
+    {
+     "id": "c_d04_4_1",
+     "label": "Let Tobi show you the city.",
+     "target": "d05_6"
+    },
+    {
+     "id": "c_d04_4_2",
+     "label": "Start at the new school.",
+     "target": "d05_0"
+    },
+    {
+     "id": "c_d04_4_3",
+     "label": "Say nothing about Caldy for the first fortnight.",
+     "target": "d05_1"
+    }
+   ]
+  },
+  {
+   "id": "d04_5",
+   "body": "<<FILL role=rising words=149 beats='the old town, the bridge over the Hull with the tide going out fast and brown, nine miles and no plan, and a peregrine on the gasholder that she writes down before she has a pen that works'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d04_5_0",
+     "label": "Find the nearest water.",
+     "target": "d05_2"
+    },
+    {
+     "id": "c_d04_5_1",
+     "label": "Take the notebook to school.",
+     "target": "d05_3"
+    },
+    {
+     "id": "c_d04_5_2",
+     "label": "Ring Mamgu on Sunday.",
+     "target": "d05_4"
+    }
+   ]
+  },
+  {
+   "id": "d05_0",
+   "body": "<<FILL role=rising words=159 beats='a form room of thirty who have known each other since they were four; Mrs Vardy the head of year is kind in a brisk administrative way and pairs Rhian with Tobi Aleshinloye, because Tobi is the one who will actually do it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d05_0_0",
+     "label": "Join the ringing group at the reserve.",
+     "target": "d06_0"
+    },
+    {
+     "id": "c_d05_0_1",
+     "label": "Tell Tobi about the year.",
+     "target": "d06_1"
+    },
+    {
+     "id": "c_d05_0_2",
+     "label": "Fall behind in two subjects.",
+     "target": "d06_2"
+    }
+   ]
+  },
+  {
+   "id": "d05_1",
+   "body": "<<FILL role=rising words=142 beats='Rhian decides to arrive as a person with no history, and finds within eight days that this is exhausting and that nobody has asked anyway'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d05_1_0",
+     "label": "Watch your father take the agency shift.",
+     "target": "d06_3"
+    },
+    {
+     "id": "c_d05_1_1",
+     "label": "Miss Bea's eighteenth.",
+     "target": "d06_4"
+    },
+    {
+     "id": "c_d05_1_2",
+     "label": "Do the November count.",
+     "target": "d06_5"
+    },
+    {
+     "id": "c_d05_1_3",
+     "label": "Let the flat be a flat.",
+     "target": "d06_6"
+    }
+   ]
+  },
+  {
+   "id": "d05_2",
+   "body": "<<FILL role=rising words=125 beats='the Humber is twenty minutes on foot, the colour of milky tea, and moves like something with an opinion; there is a hide at the end of a footpath and a man with a telescope who does not mind company'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d05_2_0",
+     "label": "Ask to go home for a weekend.",
+     "target": "d06_7"
+    },
+    {
+     "id": "c_d05_2_1",
+     "label": "Join the ringing group at the reserve.",
+     "target": "d06_0"
+    },
+    {
+     "id": "c_d05_2_2",
+     "label": "Tell Tobi about the year.",
+     "target": "d06_1"
+    }
+   ]
+  },
+  {
+   "id": "d05_3",
+   "body": "<<FILL role=rising words=154 beats='a boy in the year above sees the binoculars in her bag and says the obvious thing, and Tobi says something back that ends it, and Rhian does not have to say anything at all'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d05_3_0",
+     "label": "Fall behind in two subjects.",
+     "target": "d06_2"
+    },
+    {
+     "id": "c_d05_3_1",
+     "label": "Watch your father take the agency shift.",
+     "target": "d06_3"
+    },
+    {
+     "id": "c_d05_3_2",
+     "label": "Miss Bea's eighteenth.",
+     "target": "d06_4"
+    }
+   ]
+  },
+  {
+   "id": "d05_4",
+   "body": "<<FILL role=rising words=137 beats='Mamgu wants the list, not the feelings; Rhian reads out four species and a date and Mamgu says good girl, and then asks, unexpectedly, how her mother is'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d05_4_0",
+     "label": "Do the November count.",
+     "target": "d06_5"
+    },
+    {
+     "id": "c_d05_4_1",
+     "label": "Let the flat be a flat.",
+     "target": "d06_6"
+    },
+    {
+     "id": "c_d05_4_2",
+     "label": "Ask to go home for a weekend.",
+     "target": "d06_7"
+    }
+   ]
+  },
+  {
+   "id": "d05_5",
+   "body": "<<FILL role=rising words=120 beats='Rhian starts doing the washing up before he can, which is meant kindly and lands as an accusation, and it takes them three weeks to work out what it was'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d05_5_0",
+     "label": "Join the ringing group at the reserve.",
+     "target": "d06_0"
+    },
+    {
+     "id": "c_d05_5_1",
+     "label": "Tell Tobi about the year.",
+     "target": "d06_1"
+    },
+    {
+     "id": "c_d05_5_2",
+     "label": "Fall behind in two subjects.",
+     "target": "d06_2"
+    }
+   ]
+  },
+  {
+   "id": "d05_6",
+   "body": "<<FILL role=rising words=149 beats='the market, the chip shop with vinegar in a bucket, the way to the estuary without paying for a bus; Tobi does all of it as a job at first, and about the fourth Saturday stops doing it as a job'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d05_6_0",
+     "label": "Watch your father take the agency shift.",
+     "target": "d06_3"
+    },
+    {
+     "id": "c_d05_6_1",
+     "label": "Miss Bea's eighteenth.",
+     "target": "d06_4"
+    },
+    {
+     "id": "c_d05_6_2",
+     "label": "Do the November count.",
+     "target": "d06_5"
+    },
+    {
+     "id": "c_d05_6_3",
+     "label": "Let the flat be a flat.",
+     "target": "d06_6"
+    }
+   ]
+  },
+  {
+   "id": "d06_0",
+   "body": "<<FILL role=rising words=130 beats='six adults and a fifteen year old on a Saturday morning; Rhian holds a redwing on the second week, writes down the ring number and the wing length, and does not think about Caldy for four hours'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_0_0",
+     "label": "Tell someone about the chemistry.",
+     "target": "d07_0"
+    },
+    {
+     "id": "c_d06_0_1",
+     "label": "Go out with the ringing group in the dark.",
+     "target": "d07_1"
+    },
+    {
+     "id": "c_d06_0_2",
+     "label": "Get on the train to Caldy on your own.",
+     "target": "e06_0"
+    }
+   ]
+  },
+  {
+   "id": "d06_1",
+   "body": "<<FILL role=rising words=159 beats='three cities, eleven months, a sister who stayed; Tobi listens the whole way through and then says the useful thing, which is that Rhian has been describing it as something happening to her'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_1_0",
+     "label": "Sit with your father on a night off.",
+     "target": "d07_2"
+    },
+    {
+     "id": "c_d06_1_1",
+     "label": "Have the first real row with your mother.",
+     "target": "d07_3"
+    },
+    {
+     "id": "c_d06_1_2",
+     "label": "Let Tobi read the notebook.",
+     "target": "d07_4"
+    }
+   ]
+  },
+  {
+   "id": "d06_2",
+   "body": "<<FILL role=rising words=142 beats='the syllabus is not the same syllabus and nobody has time to notice; Rhian is four topics adrift in chemistry by half term and says nothing to anyone at home'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_2_0",
+     "label": "Go to the December ringing session anyway.",
+     "target": "d07_5"
+    },
+    {
+     "id": "c_d06_2_1",
+     "label": "Send Bea something.",
+     "target": "d07_6"
+    },
+    {
+     "id": "c_d06_2_2",
+     "label": "Work out the Rotterdam paperwork.",
+     "target": "d07_7"
+    }
+   ]
+  },
+  {
+   "id": "d06_3",
+   "body": "<<FILL role=rising words=125 beats='nights at a cold store on the docks for less than half what he earned; he takes it because it is work, and he stops applying for the things he does want'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_3_0",
+     "label": "Decide what to do about Christmas.",
+     "target": "d07_8"
+    },
+    {
+     "id": "c_d06_3_1",
+     "label": "Tell someone about the chemistry.",
+     "target": "d07_0"
+    },
+    {
+     "id": "c_d06_3_2",
+     "label": "Go out with the ringing group in the dark.",
+     "target": "d07_1"
+    },
+    {
+     "id": "c_d06_3_3",
+     "label": "Sit with your father on a night off.",
+     "target": "d07_2"
+    }
+   ]
+  },
+  {
+   "id": "d06_4",
+   "body": "<<FILL role=rising words=154 beats='the party happens on a Saturday four hundred miles away and Rhian is sent eleven photographs of it at half past one in the morning'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_4_0",
+     "label": "Have the first real row with your mother.",
+     "target": "d07_3"
+    },
+    {
+     "id": "c_d06_4_1",
+     "label": "Let Tobi read the notebook.",
+     "target": "d07_4"
+    },
+    {
+     "id": "c_d06_4_2",
+     "label": "Get on the train to Caldy on your own.",
+     "target": "e06_0"
+    }
+   ]
+  },
+  {
+   "id": "d06_5",
+   "body": "<<FILL role=rising words=137 beats='the notebook fills faster here than it ever did at home; knot in thousands over the mudflats, and Rhian understands for the first time that a place she does not like can still be full of things worth writing down'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_5_0",
+     "label": "Go to the December ringing session anyway.",
+     "target": "d07_5"
+    },
+    {
+     "id": "c_d06_5_1",
+     "label": "Send Bea something.",
+     "target": "d07_6"
+    },
+    {
+     "id": "c_d06_5_2",
+     "label": "Work out the Rotterdam paperwork.",
+     "target": "d07_7"
+    }
+   ]
+  },
+  {
+   "id": "d06_6",
+   "body": "<<FILL role=rising words=120 beats='Nia buys a lamp and a rug in the same week and Gethin says nothing about either, and the argument that follows is not about the rug'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_6_0",
+     "label": "Decide what to do about Christmas.",
+     "target": "d07_8"
+    },
+    {
+     "id": "c_d06_6_1",
+     "label": "Tell someone about the chemistry.",
+     "target": "d07_0"
+    },
+    {
+     "id": "c_d06_6_2",
+     "label": "Go out with the ringing group in the dark.",
+     "target": "d07_1"
+    }
+   ]
+  },
+  {
+   "id": "d06_7",
+   "body": "<<FILL role=rising words=149 beats='the trains are ninety pounds and the answer is not no, it is not this month, which Rhian understands and takes badly anyway'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d06_7_0",
+     "label": "Sit with your father on a night off.",
+     "target": "d07_2"
+    },
+    {
+     "id": "c_d06_7_1",
+     "label": "Have the first real row with your mother.",
+     "target": "d07_3"
+    },
+    {
+     "id": "c_d06_7_2",
+     "label": "Let Tobi read the notebook.",
+     "target": "d07_4"
+    }
+   ]
+  },
+  {
+   "id": "d07_0",
+   "body": "<<FILL role=rising words=147 beats='Mrs Vardy is unsurprised, produces a plan inside ten minutes, and asks the question nobody at home has asked, which is whether anyone had checked what Rhian was walking into'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_0_0",
+     "label": "Go back to Caldy for Christmas.",
+     "target": "d08_0"
+    },
+    {
+     "id": "c_d07_0_1",
+     "label": "Show Mamgu the notebook.",
+     "target": "d08_1"
+    },
+    {
+     "id": "c_d07_0_2",
+     "label": "Ask Bea the direct question.",
+     "target": "d08_2"
+    },
+    {
+     "id": "c_d07_0_3",
+     "label": "Stay in Hull for Christmas and say it is fine.",
+     "target": "e07_0"
+    }
+   ]
+  },
+  {
+   "id": "d07_1",
+   "body": "<<FILL role=rising words=130 beats='a four in the morning start on the estuary in November, mist nets and a thermos, and a woodcock in the hand that weighs nothing and looks at her steadily'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_1_0",
+     "label": "See what has happened to the works.",
+     "target": "d08_3"
+    },
+    {
+     "id": "c_d07_1_1",
+     "label": "Say goodbye to Hull properly.",
+     "target": "d08_4"
+    },
+    {
+     "id": "c_d07_1_2",
+     "label": "Get the chemistry back.",
+     "target": "d08_5"
+    }
+   ]
+  },
+  {
+   "id": "d07_2",
+   "body": "<<FILL role=rising words=159 beats='Gethin talks about the works for the first time since September, not about losing it but about what it was, and Rhian realises she has never once asked him what he actually did all day'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_2_0",
+     "label": "Ring the last of the Hull winter.",
+     "target": "d08_6"
+    },
+    {
+     "id": "c_d07_2_1",
+     "label": "Ask to come back to Hull in the summer.",
+     "target": "d08_7"
+    },
+    {
+     "id": "c_d07_2_2",
+     "label": "Go back to Caldy for Christmas.",
+     "target": "d08_0"
+    }
+   ]
+  },
+  {
+   "id": "d07_3",
+   "body": "<<FILL role=rising words=142 beats='about a lamp, then about a school, then about whose year this is; Nia says a true thing badly and does not take it back, and Rhian does not want her to'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_3_0",
+     "label": "Show Mamgu the notebook.",
+     "target": "d08_1"
+    },
+    {
+     "id": "c_d07_3_1",
+     "label": "Ask Bea the direct question.",
+     "target": "d08_2"
+    },
+    {
+     "id": "c_d07_3_2",
+     "label": "See what has happened to the works.",
+     "target": "d08_3"
+    }
+   ]
+  },
+  {
+   "id": "d07_4",
+   "body": "<<FILL role=rising words=125 beats='fifty-seven years of other people's handwriting and four months of Rhian's; Tobi reads it properly, front to back, and asks who is going to write in it after Mamgu'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_4_0",
+     "label": "Say goodbye to Hull properly.",
+     "target": "d08_4"
+    },
+    {
+     "id": "c_d07_4_1",
+     "label": "Get the chemistry back.",
+     "target": "d08_5"
+    },
+    {
+     "id": "c_d07_4_2",
+     "label": "Stay in Hull for Christmas and say it is fine.",
+     "target": "e07_0"
+    }
+   ]
+  },
+  {
+   "id": "d07_5",
+   "body": "<<FILL role=rising words=154 beats='the reserve in freezing fog, four birds all morning, and the best conversation of the autumn with a retired dockworker about the difference between moving and being moved'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_5_0",
+     "label": "Ring the last of the Hull winter.",
+     "target": "d08_6"
+    },
+    {
+     "id": "c_d07_5_1",
+     "label": "Ask to come back to Hull in the summer.",
+     "target": "d08_7"
+    },
+    {
+     "id": "c_d07_5_2",
+     "label": "Go back to Caldy for Christmas.",
+     "target": "d08_0"
+    },
+    {
+     "id": "c_d07_5_3",
+     "label": "Show Mamgu the notebook.",
+     "target": "d08_1"
+    }
+   ]
+  },
+  {
+   "id": "d07_6",
+   "body": "<<FILL role=rising words=137 beats='a feather, a tide table and a bad drawing of the Humber, posted on a Tuesday; Bea sends back a photograph of the sheet over Rhian's furniture with a caption that is meant to be funny'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_6_0",
+     "label": "Ask Bea the direct question.",
+     "target": "d08_2"
+    },
+    {
+     "id": "c_d07_6_1",
+     "label": "See what has happened to the works.",
+     "target": "d08_3"
+    },
+    {
+     "id": "c_d07_6_2",
+     "label": "Say goodbye to Hull properly.",
+     "target": "d08_4"
+    }
+   ]
+  },
+  {
+   "id": "d07_7",
+   "body": "<<FILL role=rising words=120 beats='residence forms, a school intake test, a language nobody in the family has, and a February date that is now eight weeks away and has stopped being theoretical'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_7_0",
+     "label": "Get the chemistry back.",
+     "target": "d08_5"
+    },
+    {
+     "id": "c_d07_7_1",
+     "label": "Ring the last of the Hull winter.",
+     "target": "d08_6"
+    },
+    {
+     "id": "c_d07_7_2",
+     "label": "Ask to come back to Hull in the summer.",
+     "target": "d08_7"
+    }
+   ]
+  },
+  {
+   "id": "d07_8",
+   "body": "<<FILL role=branch words=149 beats='they can afford two of the three of them going back to Caldy, or all three staying in Hull, and the arithmetic is laid out on the kitchen table like a school problem'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d07_8_0",
+     "label": "Go back to Caldy for Christmas.",
+     "target": "d08_0"
+    },
+    {
+     "id": "c_d07_8_1",
+     "label": "Show Mamgu the notebook.",
+     "target": "d08_1"
+    },
+    {
+     "id": "c_d07_8_2",
+     "label": "Ask Bea the direct question.",
+     "target": "d08_2"
+    }
+   ]
+  },
+  {
+   "id": "d08_0",
+   "body": "<<FILL role=rising words=164 beats='four days, Mamgu's house, Bea in the doorway; everything is exactly as it was, which is the problem, because Rhian is not, and finds herself performing the version of herself that fits the kitchen'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_0_0",
+     "label": "Leave Hull.",
+     "target": "d09_0"
+    },
+    {
+     "id": "c_d08_0_1",
+     "label": "Arrive in Rotterdam.",
+     "target": "d09_1"
+    },
+    {
+     "id": "c_d08_0_2",
+     "label": "Ask to stay in Hull with Tobi's family.",
+     "target": "e08_0"
+    }
+   ]
+  },
+  {
+   "id": "d08_1",
+   "body": "<<FILL role=rising words=147 beats='four months and sixty-one species; Mamgu reads it slowly with a finger under the line and says that Rhian's handwriting has changed, which is the only comment she makes and is not about handwriting'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_1_0",
+     "label": "Fail the school intake test.",
+     "target": "d09_2"
+    },
+    {
+     "id": "c_d08_1_1",
+     "label": "Meet Sanne from downstairs.",
+     "target": "d09_3"
+    },
+    {
+     "id": "c_d08_1_2",
+     "label": "Watch your father start work at last.",
+     "target": "d09_4"
+    }
+   ]
+  },
+  {
+   "id": "d08_2",
+   "body": "<<FILL role=rising words=130 beats='whether she is glad she stayed; Bea takes it seriously and answers on the third try, and the answer is yes, and also that she did not know it would be permanent'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_2_0",
+     "label": "Find the water here.",
+     "target": "d09_5"
+    },
+    {
+     "id": "c_d08_2_1",
+     "label": "Try to keep the Hull thing going.",
+     "target": "d09_6"
+    },
+    {
+     "id": "c_d08_2_2",
+     "label": "Start the language programme.",
+     "target": "d09_7"
+    },
+    {
+     "id": "c_d08_2_3",
+     "label": "Leave Hull.",
+     "target": "d09_0"
+    }
+   ]
+  },
+  {
+   "id": "d08_3",
+   "body": "<<FILL role=rising words=159 beats='fenced, drained and half demolished; Gethin does not get out of the car and Rhian does, and stands at the fence for ten minutes on Boxing Day'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_3_0",
+     "label": "Arrive in Rotterdam.",
+     "target": "d09_1"
+    },
+    {
+     "id": "c_d08_3_1",
+     "label": "Fail the school intake test.",
+     "target": "d09_2"
+    },
+    {
+     "id": "c_d08_3_2",
+     "label": "Meet Sanne from downstairs.",
+     "target": "d09_3"
+    }
+   ]
+  },
+  {
+   "id": "d08_4",
+   "body": "<<FILL role=rising words=142 beats='six weeks left; Rhian starts saying no to things she would have said yes to, and Tobi notices in three days and calls it what it is'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_4_0",
+     "label": "Watch your father start work at last.",
+     "target": "d09_4"
+    },
+    {
+     "id": "c_d08_4_1",
+     "label": "Find the water here.",
+     "target": "d09_5"
+    },
+    {
+     "id": "c_d08_4_2",
+     "label": "Ask to stay in Hull with Tobi's family.",
+     "target": "e08_0"
+    }
+   ]
+  },
+  {
+   "id": "d08_5",
+   "body": "<<FILL role=rising words=125 beats='Mrs Vardy's plan, four extra hours a week, and a January test that Rhian passes by two marks and treats as a personal triumph nobody else can see'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_5_0",
+     "label": "Try to keep the Hull thing going.",
+     "target": "d09_6"
+    },
+    {
+     "id": "c_d08_5_1",
+     "label": "Start the language programme.",
+     "target": "d09_7"
+    },
+    {
+     "id": "c_d08_5_2",
+     "label": "Leave Hull.",
+     "target": "d09_0"
+    }
+   ]
+  },
+  {
+   "id": "d08_6",
+   "body": "<<FILL role=rising words=154 beats='a hen harrier over the rough ground on the last Saturday of January; every adult in the group turns and goes quiet, and Rhian writes it down with her hands shaking'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_6_0",
+     "label": "Arrive in Rotterdam.",
+     "target": "d09_1"
+    },
+    {
+     "id": "c_d08_6_1",
+     "label": "Fail the school intake test.",
+     "target": "d09_2"
+    },
+    {
+     "id": "c_d08_6_2",
+     "label": "Meet Sanne from downstairs.",
+     "target": "d09_3"
+    }
+   ]
+  },
+  {
+   "id": "d08_7",
+   "body": "<<FILL role=rising words=137 beats='not possible, obviously, and asking it out loud is still the first time Rhian has admitted that she wants to be somewhere rather than simply not wanting to leave it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d08_7_0",
+     "label": "Watch your father start work at last.",
+     "target": "d09_4"
+    },
+    {
+     "id": "c_d08_7_1",
+     "label": "Find the water here.",
+     "target": "d09_5"
+    },
+    {
+     "id": "c_d08_7_2",
+     "label": "Try to keep the Hull thing going.",
+     "target": "d09_6"
+    },
+    {
+     "id": "c_d08_7_3",
+     "label": "Start the language programme.",
+     "target": "d09_7"
+    }
+   ]
+  },
+  {
+   "id": "d09_0",
+   "body": "<<FILL role=rising words=135 beats='the flat empty in ninety minutes, the gull still on the wall, and Tobi at the station in a coat that is not warm enough, saying the thing people say and meaning it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_0_0",
+     "label": "Let Sanne take you out.",
+     "target": "d10_0"
+    },
+    {
+     "id": "c_d09_0_1",
+     "label": "Do the four hours a day.",
+     "target": "d10_1"
+    },
+    {
+     "id": "c_d09_0_2",
+     "label": "Refuse the language programme.",
+     "target": "e09_0"
+    }
+   ]
+  },
+  {
+   "id": "d09_1",
+   "body": "<<FILL role=rising words=164 beats='a fourth floor in Delfshaven with a lift that works, more light than the Hull flat had in four months, and a city that starts at eight and does not apologise for anything'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_1_0",
+     "label": "Ring Mamgu in the new place.",
+     "target": "d10_2"
+    },
+    {
+     "id": "c_d09_1_1",
+     "label": "Deal with Bea's exam term.",
+     "target": "d10_3"
+    },
+    {
+     "id": "c_d09_1_2",
+     "label": "Go out to the dredged ponds.",
+     "target": "d10_4"
+    }
+   ]
+  },
+  {
+   "id": "d09_2",
+   "body": "<<FILL role=rising words=147 beats='the Dutch is not there and cannot be faked; Meneer Bakhuis is entirely calm about it, puts Rhian into a language programme for a term, and tells her, accurately, that this will be the hardest eleven weeks of her life'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_2_0",
+     "label": "Watch your parents in the new flat.",
+     "target": "d10_5"
+    },
+    {
+     "id": "c_d09_2_1",
+     "label": "Take the notebook to the language class.",
+     "target": "d10_6"
+    },
+    {
+     "id": "c_d09_2_2",
+     "label": "Write the Hull pages up properly.",
+     "target": "e09_1"
+    }
+   ]
+  },
+  {
+   "id": "d09_3",
+   "body": "<<FILL role=rising words=130 beats='Sanne de Kok is sixteen, speaks four languages badly on purpose, and knocks on the door on the second evening to ask whether the English girl wants to see something'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_3_0",
+     "label": "Say something in Dutch on purpose.",
+     "target": "d10_7"
+    },
+    {
+     "id": "c_d09_3_1",
+     "label": "Ask what happens after September.",
+     "target": "d10_8"
+    },
+    {
+     "id": "c_d09_3_2",
+     "label": "Let Sanne take you out.",
+     "target": "d10_0"
+    }
+   ]
+  },
+  {
+   "id": "d09_4",
+   "body": "<<FILL role=rising words=159 beats='a maintenance contract in the port, real hours and real money, and a man who is entirely different at dinner from the man who cleaned the Hull flat twice a day'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_4_0",
+     "label": "Do the four hours a day.",
+     "target": "d10_1"
+    },
+    {
+     "id": "c_d09_4_1",
+     "label": "Ring Mamgu in the new place.",
+     "target": "d10_2"
+    },
+    {
+     "id": "c_d09_4_2",
+     "label": "Deal with Bea's exam term.",
+     "target": "d10_3"
+    },
+    {
+     "id": "c_d09_4_3",
+     "label": "Refuse the language programme.",
+     "target": "e09_0"
+    }
+   ]
+  },
+  {
+   "id": "d09_5",
+   "body": "<<FILL role=rising words=142 beats='the Kralingse Plas, the Maas, the dredged ponds out past the ring road; different birds, a different light, and a notebook page that looks nothing like the Humber pages'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_5_0",
+     "label": "Go out to the dredged ponds.",
+     "target": "d10_4"
+    },
+    {
+     "id": "c_d09_5_1",
+     "label": "Watch your parents in the new flat.",
+     "target": "d10_5"
+    },
+    {
+     "id": "c_d09_5_2",
+     "label": "Take the notebook to the language class.",
+     "target": "d10_6"
+    }
+   ]
+  },
+  {
+   "id": "d09_6",
+   "body": "<<FILL role=rising words=125 beats='Rhian and Tobi message every day for eleven days, then every other day, and then, without either of them deciding it, not'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_6_0",
+     "label": "Say something in Dutch on purpose.",
+     "target": "d10_7"
+    },
+    {
+     "id": "c_d09_6_1",
+     "label": "Ask what happens after September.",
+     "target": "d10_8"
+    },
+    {
+     "id": "c_d09_6_2",
+     "label": "Write the Hull pages up properly.",
+     "target": "e09_1"
+    }
+   ]
+  },
+  {
+   "id": "d09_7",
+   "body": "<<FILL role=branch words=154 beats='eleven weeks, four hours a day, in a room with a Syrian boy, two Polish sisters and a Somali woman of fifty; Rhian is the only one for whom this is temporary, and she works out inside a fortnight what that means'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d09_7_0",
+     "label": "Let Sanne take you out.",
+     "target": "d10_0"
+    },
+    {
+     "id": "c_d09_7_1",
+     "label": "Do the four hours a day.",
+     "target": "d10_1"
+    },
+    {
+     "id": "c_d09_7_2",
+     "label": "Ring Mamgu in the new place.",
+     "target": "d10_2"
+    }
+   ]
+  },
+  {
+   "id": "d10_0",
+   "body": "<<FILL role=rising words=152 beats='the Maas at night, the bridge, a chip shop with a queue at eleven; Sanne asks nothing about Wales or Hull for three weeks, which is either tact or indifference and turns out to be tact'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_0_0",
+     "label": "Finish the language programme.",
+     "target": "d11_0"
+    },
+    {
+     "id": "c_d10_0_1",
+     "label": "Start in the actual school.",
+     "target": "d11_1"
+    },
+    {
+     "id": "c_d10_0_2",
+     "label": "Go home for Bea's examinations.",
+     "target": "e10_0"
+    }
+   ]
+  },
+  {
+   "id": "d10_1",
+   "body": "<<FILL role=rising words=135 beats='verbs on the tram, verbs in the lift, verbs on the ceiling above the bed; Halimo, the Somali woman, is the fastest in the room and tells Rhian that shame is the only thing that actually slows anybody down'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_1_0",
+     "label": "Be the foreign one on purpose.",
+     "target": "d11_2"
+    },
+    {
+     "id": "c_d10_1_1",
+     "label": "Take Sanne to the ponds.",
+     "target": "d11_3"
+    },
+    {
+     "id": "c_d10_1_2",
+     "label": "Send Mamgu the Rotterdam pages.",
+     "target": "d11_4"
+    },
+    {
+     "id": "c_d10_1_3",
+     "label": "Watch the summer coming.",
+     "target": "d11_5"
+    }
+   ]
+  },
+  {
+   "id": "d10_2",
+   "body": "<<FILL role=rising words=164 beats='the list is shorter this month and Mamgu says so; then she asks Rhian to describe the light, which nobody has ever asked her before'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_2_0",
+     "label": "Sit down with your mother about next year.",
+     "target": "d11_6"
+    },
+    {
+     "id": "c_d10_2_1",
+     "label": "Do the last Rotterdam count.",
+     "target": "d11_7"
+    },
+    {
+     "id": "c_d10_2_2",
+     "label": "Let the messages stop.",
+     "target": "e10_1"
+    }
+   ]
+  },
+  {
+   "id": "d10_3",
+   "body": "<<FILL role=rising words=147 beats='four hundred miles and no time difference at all, and still every call lands at the wrong moment; Bea is revising and frightened and does not want a sister who is having a year'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_3_0",
+     "label": "Finish the language programme.",
+     "target": "d11_0"
+    },
+    {
+     "id": "c_d10_3_1",
+     "label": "Start in the actual school.",
+     "target": "d11_1"
+    },
+    {
+     "id": "c_d10_3_2",
+     "label": "Be the foreign one on purpose.",
+     "target": "d11_2"
+    }
+   ]
+  },
+  {
+   "id": "d10_4",
+   "body": "<<FILL role=rising words=130 beats='spoonbills, which Rhian has never seen, six of them, absurd; she stands in the wind for forty minutes and comes home with the first Rotterdam page she is proud of'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_4_0",
+     "label": "Take Sanne to the ponds.",
+     "target": "d11_3"
+    },
+    {
+     "id": "c_d10_4_1",
+     "label": "Send Mamgu the Rotterdam pages.",
+     "target": "d11_4"
+    },
+    {
+     "id": "c_d10_4_2",
+     "label": "Go home for Bea's examinations.",
+     "target": "e10_0"
+    }
+   ]
+  },
+  {
+   "id": "d10_5",
+   "body": "<<FILL role=rising words=159 beats='both of them working, both of them tired, both easier with each other than at any point since the works shut; Rhian notices it and does not know where to put it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_5_0",
+     "label": "Watch the summer coming.",
+     "target": "d11_5"
+    },
+    {
+     "id": "c_d10_5_1",
+     "label": "Sit down with your mother about next year.",
+     "target": "d11_6"
+    },
+    {
+     "id": "c_d10_5_2",
+     "label": "Do the last Rotterdam count.",
+     "target": "d11_7"
+    }
+   ]
+  },
+  {
+   "id": "d10_6",
+   "body": "<<FILL role=rising words=142 beats='Halimo looks at the 1968 pages for a long time and says that her grandmother kept something similar, and that it is in a house that is not there any more'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_6_0",
+     "label": "Finish the language programme.",
+     "target": "d11_0"
+    },
+    {
+     "id": "c_d10_6_1",
+     "label": "Start in the actual school.",
+     "target": "d11_1"
+    },
+    {
+     "id": "c_d10_6_2",
+     "label": "Be the foreign one on purpose.",
+     "target": "d11_2"
+    },
+    {
+     "id": "c_d10_6_3",
+     "label": "Let the messages stop.",
+     "target": "e10_1"
+    }
+   ]
+  },
+  {
+   "id": "d10_7",
+   "body": "<<FILL role=rising words=125 beats='nine words at a market stall in April, correctly; the man answers at full speed and Rhian understands about a third of it and grins the whole way home'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_7_0",
+     "label": "Take Sanne to the ponds.",
+     "target": "d11_3"
+    },
+    {
+     "id": "c_d10_7_1",
+     "label": "Send Mamgu the Rotterdam pages.",
+     "target": "d11_4"
+    },
+    {
+     "id": "c_d10_7_2",
+     "label": "Watch the summer coming.",
+     "target": "d11_5"
+    }
+   ]
+  },
+  {
+   "id": "d10_8",
+   "body": "<<FILL role=rising words=154 beats='nobody at the kitchen table has an answer; Nia's contract ends, Gethin's does not, and the village outside Bangor was always the last posting and never a destination'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d10_8_0",
+     "label": "Sit down with your mother about next year.",
+     "target": "d11_6"
+    },
+    {
+     "id": "c_d10_8_1",
+     "label": "Do the last Rotterdam count.",
+     "target": "d11_7"
+    },
+    {
+     "id": "c_d10_8_2",
+     "label": "Finish the language programme.",
+     "target": "d11_0"
+    }
+   ]
+  },
+  {
+   "id": "d11_0",
+   "body": "<<FILL role=rising words=123 beats='eleven weeks, a certificate that is a piece of A4, and a test Rhian passes in the middle of the group; Bakhuis shakes her hand and puts her into a class of thirty who have to slow down for her and mostly do'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_0_0",
+     "label": "Leave Rotterdam.",
+     "target": "d12_0"
+    },
+    {
+     "id": "c_d11_0_1",
+     "label": "Arrive in the village.",
+     "target": "d12_1"
+    },
+    {
+     "id": "c_d11_0_2",
+     "label": "Ask to repeat the year rather than move again.",
+     "target": "e11_0"
+    }
+   ]
+  },
+  {
+   "id": "d11_1",
+   "body": "<<FILL role=rising words=152 beats='a corridor in Dutch, a maths lesson she can follow because numbers do not care, and a history lesson she cannot follow at all and sits through anyway'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_1_0",
+     "label": "Go and see Mamgu on the first day.",
+     "target": "d12_2"
+    },
+    {
+     "id": "c_d11_1_1",
+     "label": "Find Bea changed.",
+     "target": "d12_3"
+    },
+    {
+     "id": "c_d11_1_2",
+     "label": "Meet Carys.",
+     "target": "d12_4"
+    }
+   ]
+  },
+  {
+   "id": "d11_2",
+   "body": "<<FILL role=rising words=135 beats='Rhian works out that being the person who does not know is a role with some freedom in it, and starts asking the questions the Dutch fifteen year olds are too embarrassed to ask'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_2_0",
+     "label": "Walk out on to the flats.",
+     "target": "d12_5"
+    },
+    {
+     "id": "c_d11_2_1",
+     "label": "Deal with the fourth school.",
+     "target": "d12_6"
+    },
+    {
+     "id": "c_d11_2_2",
+     "label": "Ask your father what happens now.",
+     "target": "d12_7"
+    }
+   ]
+  },
+  {
+   "id": "d11_3",
+   "body": "<<FILL role=rising words=164 beats='Sanne is bored for twenty minutes and then is not; she is the one who spots the bittern, and refuses ever afterwards to be described as somebody who does not care about birds'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_3_0",
+     "label": "Leave Rotterdam.",
+     "target": "d12_0"
+    },
+    {
+     "id": "c_d11_3_1",
+     "label": "Arrive in the village.",
+     "target": "d12_1"
+    },
+    {
+     "id": "c_d11_3_2",
+     "label": "Go and see Mamgu on the first day.",
+     "target": "d12_2"
+    },
+    {
+     "id": "c_d11_3_3",
+     "label": "Find Bea changed.",
+     "target": "d12_3"
+    }
+   ]
+  },
+  {
+   "id": "d11_4",
+   "body": "<<FILL role=rising words=147 beats='photocopies in an envelope with a Dutch stamp; Mamgu writes back on paper for the first time in years and encloses a cutting about a hoopoe in Caldy in 1983'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_4_0",
+     "label": "Meet Carys.",
+     "target": "d12_4"
+    },
+    {
+     "id": "c_d11_4_1",
+     "label": "Walk out on to the flats.",
+     "target": "d12_5"
+    },
+    {
+     "id": "c_d11_4_2",
+     "label": "Ask to repeat the year rather than move again.",
+     "target": "e11_0"
+    }
+   ]
+  },
+  {
+   "id": "d11_5",
+   "body": "<<FILL role=rising words=130 beats='the postings end in June and the village outside Bangor starts in July, and Rhian catches herself dreading a place that is twelve miles from where she was born'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_5_0",
+     "label": "Deal with the fourth school.",
+     "target": "d12_6"
+    },
+    {
+     "id": "c_d11_5_1",
+     "label": "Ask your father what happens now.",
+     "target": "d12_7"
+    },
+    {
+     "id": "c_d11_5_2",
+     "label": "Leave Rotterdam.",
+     "target": "d12_0"
+    }
+   ]
+  },
+  {
+   "id": "d11_6",
+   "body": "<<FILL role=rising words=159 beats='Nia's contract, the mortgage they no longer have, the school in Bangor, and the fact that Rhian will be doing her examination year in a fourth school'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_6_0",
+     "label": "Arrive in the village.",
+     "target": "d12_1"
+    },
+    {
+     "id": "c_d11_6_1",
+     "label": "Go and see Mamgu on the first day.",
+     "target": "d12_2"
+    },
+    {
+     "id": "c_d11_6_2",
+     "label": "Find Bea changed.",
+     "target": "d12_3"
+    }
+   ]
+  },
+  {
+   "id": "d11_7",
+   "body": "<<FILL role=rising words=142 beats='a June evening on the Plas with swifts over the water in numbers she cannot count and does not try to; the last page of the middle of the year'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d11_7_0",
+     "label": "Meet Carys.",
+     "target": "d12_4"
+    },
+    {
+     "id": "c_d11_7_1",
+     "label": "Walk out on to the flats.",
+     "target": "d12_5"
+    },
+    {
+     "id": "c_d11_7_2",
+     "label": "Deal with the fourth school.",
+     "target": "d12_6"
+    }
+   ]
+  },
+  {
+   "id": "d12_0",
+   "body": "<<FILL role=rising words=140 beats='Sanne on the platform with a paper bag of stroopwafels and an address; the flat empty, the light in it still better than anywhere else that year, and Rhian crying on a train for the second time in eleven months'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_0_0",
+     "label": "Tell your mother.",
+     "target": "d13_0"
+    },
+    {
+     "id": "c_d12_0_1",
+     "label": "Go out on the flats with Carys.",
+     "target": "d13_1"
+    },
+    {
+     "id": "c_d12_0_2",
+     "label": "Take Mamgu out to see the birds.",
+     "target": "d13_2"
+    },
+    {
+     "id": "c_d12_0_3",
+     "label": "Keep your father's secret.",
+     "target": "e12_0"
+    }
+   ]
+  },
+  {
+   "id": "d12_1",
+   "body": "<<FILL role=rising words=123 beats='a rented cottage twelve miles from Caldy, a lane, a farm at the end of it, and Welsh spoken in the shop by people who switch to English for her, which is worse than if they had not'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_1_0",
+     "label": "Start the school year.",
+     "target": "d13_3"
+    },
+    {
+     "id": "c_d12_1_1",
+     "label": "Write to Tobi.",
+     "target": "d13_4"
+    },
+    {
+     "id": "c_d12_1_2",
+     "label": "Work out where you actually are from.",
+     "target": "d13_5"
+    }
+   ]
+  },
+  {
+   "id": "d12_2",
+   "body": "<<FILL role=rising words=152 beats='twenty minutes on two buses; Mamgu has the notebook drawer open when Rhian arrives, which means she has been waiting, which she will not admit'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_2_0",
+     "label": "Deal with the money.",
+     "target": "d13_6"
+    },
+    {
+     "id": "c_d12_2_1",
+     "label": "Get back into the notebook.",
+     "target": "d13_7"
+    },
+    {
+     "id": "c_d12_2_2",
+     "label": "Stop writing the notebook.",
+     "target": "e12_1"
+    }
+   ]
+  },
+  {
+   "id": "d12_3",
+   "body": "<<FILL role=rising words=135 beats='results in August, a place in Cardiff, a boyfriend nobody mentioned in eleven months of calls; Bea is kind and busy and has become a person Rhian would have to get to know'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_3_0",
+     "label": "Let Carys be a friend rather than a guide.",
+     "target": "d13_8"
+    },
+    {
+     "id": "c_d12_3_1",
+     "label": "Tell your mother.",
+     "target": "d13_0"
+    },
+    {
+     "id": "c_d12_3_2",
+     "label": "Go out on the flats with Carys.",
+     "target": "d13_1"
+    }
+   ]
+  },
+  {
+   "id": "d12_4",
+   "body": "<<FILL role=rising words=164 beats='Carys Lloyd-Rees, a cousin of a cousin, fifteen, who has never lived anywhere else; she asks Rhian which of the three places was best and is annoyed when the answer takes four minutes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_4_0",
+     "label": "Take Mamgu out to see the birds.",
+     "target": "d13_2"
+    },
+    {
+     "id": "c_d12_4_1",
+     "label": "Start the school year.",
+     "target": "d13_3"
+    },
+    {
+     "id": "c_d12_4_2",
+     "label": "Keep your father's secret.",
+     "target": "e12_0"
+    }
+   ]
+  },
+  {
+   "id": "d12_5",
+   "body": "<<FILL role=rising words=147 beats='Traeth Lafan at low tide, two miles of sand and a tide that comes in faster than a person walks; oystercatchers in thousands, and the same species she watched on the Humber in November'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_5_0",
+     "label": "Write to Tobi.",
+     "target": "d13_4"
+    },
+    {
+     "id": "c_d12_5_1",
+     "label": "Work out where you actually are from.",
+     "target": "d13_5"
+    },
+    {
+     "id": "c_d12_5_2",
+     "label": "Deal with the money.",
+     "target": "d13_6"
+    },
+    {
+     "id": "c_d12_5_3",
+     "label": "Get back into the notebook.",
+     "target": "d13_7"
+    }
+   ]
+  },
+  {
+   "id": "d12_6",
+   "body": "<<FILL role=rising words=130 beats='the examination year, a fourth syllabus, and a school where everybody has known everybody since primary; Rhian is now extremely good at the first fortnight and knows it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_6_0",
+     "label": "Let Carys be a friend rather than a guide.",
+     "target": "d13_8"
+    },
+    {
+     "id": "c_d12_6_1",
+     "label": "Tell your mother.",
+     "target": "d13_0"
+    },
+    {
+     "id": "c_d12_6_2",
+     "label": "Stop writing the notebook.",
+     "target": "e12_1"
+    }
+   ]
+  },
+  {
+   "id": "d12_7",
+   "body": "<<FILL role=branch words=159 beats='Gethin's contract runs to Christmas and then is not renewed, and he knows it; he tells her straight because she has earned it, and asks her not to tell her mother yet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d12_7_0",
+     "label": "Go out on the flats with Carys.",
+     "target": "d13_1"
+    },
+    {
+     "id": "c_d12_7_1",
+     "label": "Take Mamgu out to see the birds.",
+     "target": "d13_2"
+    },
+    {
+     "id": "c_d12_7_2",
+     "label": "Start the school year.",
+     "target": "d13_3"
+    }
+   ]
+  },
+  {
+   "id": "d13_0",
+   "body": "<<FILL role=rising words=157 beats='Rhian does it badly on a Sunday and the row is enormous and clears something; Nia says that she has spent eleven months assuming Rhian was the one being carried'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_0_0",
+     "label": "Ask Mamgu about 1968.",
+     "target": "d14_0"
+    },
+    {
+     "id": "c_d13_0_1",
+     "label": "Put the year to Carys.",
+     "target": "d14_1"
+    },
+    {
+     "id": "c_d13_0_2",
+     "label": "Go and live with Mamgu.",
+     "target": "e13_0"
+    }
+   ]
+  },
+  {
+   "id": "d13_1",
+   "body": "<<FILL role=rising words=140 beats='Carys knows the sand and the channels and the point at which you turn back, which Rhian does not; there is a genuinely frightening twenty minutes and neither of them tells anyone about it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_1_0",
+     "label": "Get the examination year under control.",
+     "target": "d14_2"
+    },
+    {
+     "id": "c_d13_1_1",
+     "label": "Let Bea in.",
+     "target": "d14_3"
+    },
+    {
+     "id": "c_d13_1_2",
+     "label": "Answer Tobi's reply.",
+     "target": "d14_4"
+    }
+   ]
+  },
+  {
+   "id": "d13_2",
+   "body": "<<FILL role=rising words=123 beats='she has not been on the flats in six years; the walk takes an hour to cover four hundred metres, and neither of them mentions that this is probably the last time'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_2_0",
+     "label": "Decide about the notebook.",
+     "target": "d14_5"
+    },
+    {
+     "id": "c_d13_2_1",
+     "label": "Look at where the family goes in spring.",
+     "target": "d14_6"
+    },
+    {
+     "id": "c_d13_2_2",
+     "label": "Walk the flats at the turn of the tide.",
+     "target": "d14_7"
+    },
+    {
+     "id": "c_d13_2_3",
+     "label": "Read the 1968 pages properly.",
+     "target": "e13_1"
+    }
+   ]
+  },
+  {
+   "id": "d13_3",
+   "body": "<<FILL role=rising words=152 beats='September, a fourth uniform, a form room where a boy asks whether she is the one who has been abroad, and Rhian hears herself say yes in a voice she does not entirely recognise'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_3_0",
+     "label": "Ask Mamgu about 1968.",
+     "target": "d14_0"
+    },
+    {
+     "id": "c_d13_3_1",
+     "label": "Put the year to Carys.",
+     "target": "d14_1"
+    },
+    {
+     "id": "c_d13_3_2",
+     "label": "Get the examination year under control.",
+     "target": "d14_2"
+    }
+   ]
+  },
+  {
+   "id": "d13_4",
+   "body": "<<FILL role=rising words=135 beats='a real letter on paper, because a message would be too easy to leave unanswered; it takes four evenings and posts on a Friday and is the best thing Rhian writes all year'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_4_0",
+     "label": "Let Bea in.",
+     "target": "d14_3"
+    },
+    {
+     "id": "c_d13_4_1",
+     "label": "Answer Tobi's reply.",
+     "target": "d14_4"
+    },
+    {
+     "id": "c_d13_4_2",
+     "label": "Go and live with Mamgu.",
+     "target": "e13_0"
+    }
+   ]
+  },
+  {
+   "id": "d13_5",
+   "body": "<<FILL role=rising words=164 beats='twelve miles from the house she was born in, and she does not know a single person under twenty in this village; the question stops being rhetorical some time in early September'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_5_0",
+     "label": "Decide about the notebook.",
+     "target": "d14_5"
+    },
+    {
+     "id": "c_d13_5_1",
+     "label": "Look at where the family goes in spring.",
+     "target": "d14_6"
+    },
+    {
+     "id": "c_d13_5_2",
+     "label": "Walk the flats at the turn of the tide.",
+     "target": "d14_7"
+    }
+   ]
+  },
+  {
+   "id": "d13_6",
+   "body": "<<FILL role=rising words=147 beats='Gethin's contract ending, Nia's grant application, and a family conversation about the spring held with the door shut, which Rhian is for the first time invited into'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_6_0",
+     "label": "Ask Mamgu about 1968.",
+     "target": "d14_0"
+    },
+    {
+     "id": "c_d13_6_1",
+     "label": "Put the year to Carys.",
+     "target": "d14_1"
+    },
+    {
+     "id": "c_d13_6_2",
+     "label": "Read the 1968 pages properly.",
+     "target": "e13_1"
+    }
+   ]
+  },
+  {
+   "id": "d13_7",
+   "body": "<<FILL role=rising words=130 beats='the July gap sits in it like a missing tooth; Rhian writes the missing weeks in from memory, marks them as reconstructed, and Mamgu approves of the honesty of that more than of the entries'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_7_0",
+     "label": "Get the examination year under control.",
+     "target": "d14_2"
+    },
+    {
+     "id": "c_d13_7_1",
+     "label": "Let Bea in.",
+     "target": "d14_3"
+    },
+    {
+     "id": "c_d13_7_2",
+     "label": "Answer Tobi's reply.",
+     "target": "d14_4"
+    },
+    {
+     "id": "c_d13_7_3",
+     "label": "Decide about the notebook.",
+     "target": "d14_5"
+    }
+   ]
+  },
+  {
+   "id": "d13_8",
+   "body": "<<FILL role=rising words=159 beats='the difference arrives on a Tuesday, when Carys tells Rhian something about her own family that she did not have to tell anyone'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d13_8_0",
+     "label": "Look at where the family goes in spring.",
+     "target": "d14_6"
+    },
+    {
+     "id": "c_d13_8_1",
+     "label": "Walk the flats at the turn of the tide.",
+     "target": "d14_7"
+    },
+    {
+     "id": "c_d13_8_2",
+     "label": "Ask Mamgu about 1968.",
+     "target": "d14_0"
+    }
+   ]
+  },
+  {
+   "id": "d14_0",
+   "body": "<<FILL role=revelation words=128 beats='she answers for two hours, which she has never done; a boat, a job in a laundry, a landlady who would not say her name properly, and a notebook started because it was the only thing that was hers'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_0_0",
+     "label": "Take the notebook and start a second volume.",
+     "target": "d15_0"
+    },
+    {
+     "id": "c_d14_0_1",
+     "label": "Get the four schools into one story.",
+     "target": "d15_1"
+    },
+    {
+     "id": "c_d14_0_2",
+     "label": "Refuse the notebook.",
+     "target": "e14_0"
+    }
+   ]
+  },
+  {
+   "id": "d14_1",
+   "body": "<<FILL role=rising words=157 beats='Rhian tries to explain three cities to somebody who has never moved, and fails, and in failing works out for herself what the year has actually been'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_1_0",
+     "label": "Set up the winter counts.",
+     "target": "d15_2"
+    },
+    {
+     "id": "c_d14_1_1",
+     "label": "Have the argument about spring properly.",
+     "target": "d15_3"
+    },
+    {
+     "id": "c_d14_1_2",
+     "label": "Go and see the works site.",
+     "target": "d15_4"
+    }
+   ]
+  },
+  {
+   "id": "d14_2",
+   "body": "<<FILL role=rising words=140 beats='four syllabuses in eleven months and a set of gaps only Rhian can see; she maps them out on the back of a tide table and gives a copy to her form tutor'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_2_0",
+     "label": "Ask Carys to come to Caldy.",
+     "target": "d15_5"
+    },
+    {
+     "id": "c_d14_2_1",
+     "label": "Keep writing to Tobi.",
+     "target": "d15_6"
+    },
+    {
+     "id": "c_d14_2_2",
+     "label": "Deal with the anniversary.",
+     "target": "d15_7"
+    }
+   ]
+  },
+  {
+   "id": "d14_3",
+   "body": "<<FILL role=rising words=123 beats='Cardiff is two hours away and Bea comes back one weekend in October; the two of them walk the flats, and the conversation is the first all year that is not about logistics'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_3_0",
+     "label": "Take the notebook and start a second volume.",
+     "target": "d15_0"
+    },
+    {
+     "id": "c_d14_3_1",
+     "label": "Get the four schools into one story.",
+     "target": "d15_1"
+    },
+    {
+     "id": "c_d14_3_2",
+     "label": "Set up the winter counts.",
+     "target": "d15_2"
+    }
+   ]
+  },
+  {
+   "id": "d14_4",
+   "body": "<<FILL role=rising words=152 beats='it comes back in nine days, four pages, and it turns out that Tobi's year has also had a shape and that Rhian never once asked about it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_4_0",
+     "label": "Have the argument about spring properly.",
+     "target": "d15_3"
+    },
+    {
+     "id": "c_d14_4_1",
+     "label": "Go and see the works site.",
+     "target": "d15_4"
+    },
+    {
+     "id": "c_d14_4_2",
+     "label": "Ask Carys to come to Caldy.",
+     "target": "d15_5"
+    },
+    {
+     "id": "c_d14_4_3",
+     "label": "Refuse the notebook.",
+     "target": "e14_0"
+    }
+   ]
+  },
+  {
+   "id": "d14_5",
+   "body": "<<FILL role=rising words=135 beats='Mamgu wants to give it to her outright and Rhian does not want to be given it, because being given it means something about Mamgu that neither of them will say'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_5_0",
+     "label": "Keep writing to Tobi.",
+     "target": "d15_6"
+    },
+    {
+     "id": "c_d14_5_1",
+     "label": "Deal with the anniversary.",
+     "target": "d15_7"
+    },
+    {
+     "id": "c_d14_5_2",
+     "label": "Take the notebook and start a second volume.",
+     "target": "d15_0"
+    }
+   ]
+  },
+  {
+   "id": "d14_6",
+   "body": "<<FILL role=rising words=164 beats='three options on the table, none of them Caldy; Rhian is asked for her view and gives it and is listened to, which is new'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_6_0",
+     "label": "Get the four schools into one story.",
+     "target": "d15_1"
+    },
+    {
+     "id": "c_d14_6_1",
+     "label": "Set up the winter counts.",
+     "target": "d15_2"
+    },
+    {
+     "id": "c_d14_6_2",
+     "label": "Have the argument about spring properly.",
+     "target": "d15_3"
+    }
+   ]
+  },
+  {
+   "id": "d14_7",
+   "body": "<<FILL role=rising words=147 beats='the water comes in over two miles of sand at the speed of a bicycle, and every bird in the bay moves at once, and Rhian stands still for it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d14_7_0",
+     "label": "Go and see the works site.",
+     "target": "d15_4"
+    },
+    {
+     "id": "c_d14_7_1",
+     "label": "Ask Carys to come to Caldy.",
+     "target": "d15_5"
+    },
+    {
+     "id": "c_d14_7_2",
+     "label": "Keep writing to Tobi.",
+     "target": "d15_6"
+    }
+   ]
+  },
+  {
+   "id": "d15_0",
+   "body": "<<FILL role=rising words=145 beats='Mamgu's book closed at the end of the migration year and a new one begun the same evening in Rhian's hand, with the first entry written on the flats in October'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_0_0",
+     "label": "Do the second Sunday in November.",
+     "target": "d16_0"
+    },
+    {
+     "id": "c_d15_0_1",
+     "label": "Face the spring move.",
+     "target": "d16_1"
+    },
+    {
+     "id": "c_d15_0_2",
+     "label": "Take the monthly count and let the rest go.",
+     "target": "e15_0"
+    }
+   ]
+  },
+  {
+   "id": "d15_1",
+   "body": "<<FILL role=rising words=128 beats='Rhian writes it out for a college application she does not have to make yet, and the writing of it is what makes the year hers rather than something done to her'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_1_0",
+     "label": "Ask what the family owes each other.",
+     "target": "d16_2"
+    },
+    {
+     "id": "c_d15_1_1",
+     "label": "Sit an examination in a fourth school.",
+     "target": "d16_3"
+    },
+    {
+     "id": "c_d15_1_2",
+     "label": "Bring Mamgu the November count.",
+     "target": "d16_4"
+    },
+    {
+     "id": "c_d15_1_3",
+     "label": "Talk to Sanne.",
+     "target": "d16_5"
+    }
+   ]
+  },
+  {
+   "id": "d15_2",
+   "body": "<<FILL role=rising words=157 beats='the local group needs somebody to cover Traeth Lafan on the second Sunday of each month and nobody has managed it since 2019, and Rhian says yes before she has thought about it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_2_0",
+     "label": "Tell Carys about the move.",
+     "target": "d16_6"
+    },
+    {
+     "id": "c_d15_2_1",
+     "label": "Look at the whole notebook at once.",
+     "target": "d16_7"
+    },
+    {
+     "id": "c_d15_2_2",
+     "label": "Let the second volume stay empty.",
+     "target": "e15_1"
+    }
+   ]
+  },
+  {
+   "id": "d15_3",
+   "body": "<<FILL role=rising words=140 beats='the family decides in the kitchen with the door open this time; Rhian argues for one of the three options and loses, and losing an argument she was actually in turns out to be entirely different'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_3_0",
+     "label": "Decide what you are actually asking for.",
+     "target": "d16_8"
+    },
+    {
+     "id": "c_d15_3_1",
+     "label": "Do the second Sunday in November.",
+     "target": "d16_0"
+    },
+    {
+     "id": "c_d15_3_2",
+     "label": "Face the spring move.",
+     "target": "d16_1"
+    }
+   ]
+  },
+  {
+   "id": "d15_4",
+   "body": "<<FILL role=rising words=123 beats='flattened now, hoardings, a sign about two hundred and forty homes; Gethin comes this time and gets out of the car'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_4_0",
+     "label": "Ask what the family owes each other.",
+     "target": "d16_2"
+    },
+    {
+     "id": "c_d15_4_1",
+     "label": "Sit an examination in a fourth school.",
+     "target": "d16_3"
+    },
+    {
+     "id": "c_d15_4_2",
+     "label": "Take the monthly count and let the rest go.",
+     "target": "e15_0"
+    }
+   ]
+  },
+  {
+   "id": "d15_5",
+   "body": "<<FILL role=rising words=152 beats='a Saturday at Mamgu's with too much food; Carys and Mamgu get on in the way that skips two generations, and Rhian watches her two worlds fail entirely to need her as an interpreter'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_5_0",
+     "label": "Bring Mamgu the November count.",
+     "target": "d16_4"
+    },
+    {
+     "id": "c_d15_5_1",
+     "label": "Talk to Sanne.",
+     "target": "d16_5"
+    },
+    {
+     "id": "c_d15_5_2",
+     "label": "Tell Carys about the move.",
+     "target": "d16_6"
+    }
+   ]
+  },
+  {
+   "id": "d15_6",
+   "body": "<<FILL role=rising words=135 beats='a letter a month, both ways, all winter; it is slower and better than the messaging ever was and neither of them says so out loud'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_6_0",
+     "label": "Look at the whole notebook at once.",
+     "target": "d16_7"
+    },
+    {
+     "id": "c_d15_6_1",
+     "label": "Decide what you are actually asking for.",
+     "target": "d16_8"
+    },
+    {
+     "id": "c_d15_6_2",
+     "label": "Do the second Sunday in November.",
+     "target": "d16_0"
+    },
+    {
+     "id": "c_d15_6_3",
+     "label": "Let the second volume stay empty.",
+     "target": "e15_1"
+    }
+   ]
+  },
+  {
+   "id": "d15_7",
+   "body": "<<FILL role=rising words=164 beats='the Friday in September when the works shut comes round again, and nobody in the cottage mentions it, and Rhian writes the date in the notebook with nothing beside it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d15_7_0",
+     "label": "Face the spring move.",
+     "target": "d16_1"
+    },
+    {
+     "id": "c_d15_7_1",
+     "label": "Ask what the family owes each other.",
+     "target": "d16_2"
+    },
+    {
+     "id": "c_d15_7_2",
+     "label": "Sit an examination in a fourth school.",
+     "target": "d16_3"
+    }
+   ]
+  },
+  {
+   "id": "d16_0",
+   "body": "<<FILL role=rising words=162 beats='rain across two miles of sand and a count of eleven thousand oystercatchers done in ninety minutes on wet paper; Rhian gets home, writes it up, and is entirely happy'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_0_0",
+     "label": "Take Mamgu out in the spring.",
+     "target": "d17_0"
+    },
+    {
+     "id": "c_d16_0_1",
+     "label": "Close the migration year.",
+     "target": "d17_1"
+    },
+    {
+     "id": "c_d16_0_2",
+     "label": "Ask to be asked.",
+     "target": "e16_0"
+    }
+   ]
+  },
+  {
+   "id": "d16_1",
+   "body": "<<FILL role=rising words=145 beats='the decision is made and the date is set and it is a fourth city in eighteen months; Rhian says out loud, for the first time, that she is not going to pretend this one is fine'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_1_0",
+     "label": "Finish the school year here.",
+     "target": "d17_2"
+    },
+    {
+     "id": "c_d16_1_1",
+     "label": "Hand the count on.",
+     "target": "d17_3"
+    },
+    {
+     "id": "c_d16_1_2",
+     "label": "Have the conversation with Bea.",
+     "target": "d17_4"
+    }
+   ]
+  },
+  {
+   "id": "d16_2",
+   "body": "<<FILL role=rising words=128 beats='Gethin has followed the work and Nia has followed the funding and Bea has stayed and Rhian has gone, and nobody has ever put those four facts in the same sentence before'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_2_0",
+     "label": "Write the last letter to Tobi.",
+     "target": "d17_5"
+    },
+    {
+     "id": "c_d16_2_1",
+     "label": "Decide what to do with the notebooks.",
+     "target": "d17_6"
+    },
+    {
+     "id": "c_d16_2_2",
+     "label": "Say nothing and go where you are sent.",
+     "target": "e16_1"
+    }
+   ]
+  },
+  {
+   "id": "d16_3",
+   "body": "<<FILL role=rising words=157 beats='the mocks in January, and Rhian does better than the gaps predict and worse than she wanted, and the difference between those two numbers is the whole story of the year'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_3_0",
+     "label": "Say goodbye to the village.",
+     "target": "d17_7"
+    },
+    {
+     "id": "c_d16_3_1",
+     "label": "Take Mamgu out in the spring.",
+     "target": "d17_0"
+    },
+    {
+     "id": "c_d16_3_2",
+     "label": "Close the migration year.",
+     "target": "d17_1"
+    },
+    {
+     "id": "c_d16_3_3",
+     "label": "Finish the school year here.",
+     "target": "d17_2"
+    }
+   ]
+  },
+  {
+   "id": "d16_4",
+   "body": "<<FILL role=rising words=140 beats='she checks the arithmetic, disputes one species and is right about it, and asks to be taken out to the flats again in the spring, which is a plan and therefore a promise'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_4_0",
+     "label": "Hand the count on.",
+     "target": "d17_3"
+    },
+    {
+     "id": "c_d16_4_1",
+     "label": "Have the conversation with Bea.",
+     "target": "d17_4"
+    },
+    {
+     "id": "c_d16_4_2",
+     "label": "Ask to be asked.",
+     "target": "e16_0"
+    }
+   ]
+  },
+  {
+   "id": "d16_5",
+   "body": "<<FILL role=rising words=123 beats='a call from Delfshaven at eleven at night; Sanne has been to England once and hated it, and wants to know why Rhian has never once said which of the three she liked'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_5_0",
+     "label": "Write the last letter to Tobi.",
+     "target": "d17_5"
+    },
+    {
+     "id": "c_d16_5_1",
+     "label": "Decide what to do with the notebooks.",
+     "target": "d17_6"
+    },
+    {
+     "id": "c_d16_5_2",
+     "label": "Say goodbye to the village.",
+     "target": "d17_7"
+    }
+   ]
+  },
+  {
+   "id": "d16_6",
+   "body": "<<FILL role=rising words=152 beats='Carys is angry on Rhian's behalf in a way Rhian has not allowed herself to be, and hearing it out loud from somebody else is what finally makes it real'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_6_0",
+     "label": "Take Mamgu out in the spring.",
+     "target": "d17_0"
+    },
+    {
+     "id": "c_d16_6_1",
+     "label": "Close the migration year.",
+     "target": "d17_1"
+    },
+    {
+     "id": "c_d16_6_2",
+     "label": "Say nothing and go where you are sent.",
+     "target": "e16_1"
+    }
+   ]
+  },
+  {
+   "id": "d16_7",
+   "body": "<<FILL role=rising words=135 beats='fifty-seven years and one, laid out on Mamgu's table: two women, four countries, eleven house moves and about nine hundred species, and a pattern that is not about birds at all'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_7_0",
+     "label": "Finish the school year here.",
+     "target": "d17_2"
+    },
+    {
+     "id": "c_d16_7_1",
+     "label": "Hand the count on.",
+     "target": "d17_3"
+    },
+    {
+     "id": "c_d16_7_2",
+     "label": "Have the conversation with Bea.",
+     "target": "d17_4"
+    }
+   ]
+  },
+  {
+   "id": "d16_8",
+   "body": "<<FILL role=branch words=164 beats='not to stop moving; Rhian works out over about a week that what she wants is to be told in advance and asked, and that this is a smaller and much more possible thing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d16_8_0",
+     "label": "Write the last letter to Tobi.",
+     "target": "d17_5"
+    },
+    {
+     "id": "c_d16_8_1",
+     "label": "Decide what to do with the notebooks.",
+     "target": "d17_6"
+    },
+    {
+     "id": "c_d16_8_2",
+     "label": "Say goodbye to the village.",
+     "target": "d17_7"
+    },
+    {
+     "id": "c_d16_8_3",
+     "label": "Take Mamgu out in the spring.",
+     "target": "d17_0"
+    }
+   ]
+  },
+  {
+   "id": "d17_0",
+   "body": "<<FILL role=rising words=133 beats='March, the flats, a folding chair carried a quarter of a mile, and a hundred and forty minutes in which Mamgu names eleven species and gets nine of them right'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_0_0",
+     "label": "Take the second volume with you.",
+     "target": "d18_0"
+    },
+    {
+     "id": "c_d17_0_1",
+     "label": "Have Tobi to stay.",
+     "target": "d18_1"
+    },
+    {
+     "id": "c_d17_0_2",
+     "label": "Make Carys keep her word.",
+     "target": "d18_2"
+    },
+    {
+     "id": "c_d17_0_3",
+     "label": "Leave both notebooks with Mamgu.",
+     "target": "e17_0"
+    }
+   ]
+  },
+  {
+   "id": "d17_1",
+   "body": "<<FILL role=rising words=162 beats='the anniversary of the ferry; Rhian rules a line under twelve months in the second volume and counts up what is actually on the pages of it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_1_0",
+     "label": "Get the results.",
+     "target": "d18_3"
+    },
+    {
+     "id": "c_d17_1_1",
+     "label": "Sit with your mother on the last evening.",
+     "target": "d18_4"
+    },
+    {
+     "id": "c_d17_1_2",
+     "label": "Do the last second Sunday.",
+     "target": "d18_5"
+    }
+   ]
+  },
+  {
+   "id": "d17_2",
+   "body": "<<FILL role=rising words=145 beats='examinations in the fourth school, a form tutor who has actually read the tide table map, and results in August that are, given everything, unarguable'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_2_0",
+     "label": "Look at where you are going.",
+     "target": "d18_6"
+    },
+    {
+     "id": "c_d17_2_1",
+     "label": "Say the true thing to Mamgu.",
+     "target": "d18_7"
+    },
+    {
+     "id": "c_d17_2_2",
+     "label": "Keep moving and stop counting.",
+     "target": "e17_1"
+    }
+   ]
+  },
+  {
+   "id": "d17_3",
+   "body": "<<FILL role=rising words=128 beats='somebody has to do the second Sunday when Rhian moves; she trains a boy from the year below over three months and finds that handing something on is a skill nobody teaches you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_3_0",
+     "label": "Pack the fourth time.",
+     "target": "d18_8"
+    },
+    {
+     "id": "c_d17_3_1",
+     "label": "Take the second volume with you.",
+     "target": "d18_0"
+    },
+    {
+     "id": "c_d17_3_2",
+     "label": "Have Tobi to stay.",
+     "target": "d18_1"
+    }
+   ]
+  },
+  {
+   "id": "d17_4",
+   "body": "<<FILL role=rising words=157 beats='Cardiff in April, one afternoon, and Bea says the thing she has not said in eighteen months, which is that staying was not the safe option and that nobody ever asked her about it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_4_0",
+     "label": "Make Carys keep her word.",
+     "target": "d18_2"
+    },
+    {
+     "id": "c_d17_4_1",
+     "label": "Get the results.",
+     "target": "d18_3"
+    },
+    {
+     "id": "c_d17_4_2",
+     "label": "Leave both notebooks with Mamgu.",
+     "target": "e17_0"
+    }
+   ]
+  },
+  {
+   "id": "d17_5",
+   "body": "<<FILL role=rising words=140 beats='not last as in ending; last as in the one that arranges the visit, four days in July, the first time either of them will have chosen the place'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_5_0",
+     "label": "Sit with your mother on the last evening.",
+     "target": "d18_4"
+    },
+    {
+     "id": "c_d17_5_1",
+     "label": "Do the last second Sunday.",
+     "target": "d18_5"
+    },
+    {
+     "id": "c_d17_5_2",
+     "label": "Look at where you are going.",
+     "target": "d18_6"
+    },
+    {
+     "id": "c_d17_5_3",
+     "label": "Say the true thing to Mamgu.",
+     "target": "d18_7"
+    }
+   ]
+  },
+  {
+   "id": "d17_6",
+   "body": "<<FILL role=rising words=123 beats='two volumes, one drawer in Caldy and one rucksack; Rhian works out where they ought to live, and it is not, in the end, with her'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_6_0",
+     "label": "Pack the fourth time.",
+     "target": "d18_8"
+    },
+    {
+     "id": "c_d17_6_1",
+     "label": "Take the second volume with you.",
+     "target": "d18_0"
+    },
+    {
+     "id": "c_d17_6_2",
+     "label": "Keep moving and stop counting.",
+     "target": "e17_1"
+    }
+   ]
+  },
+  {
+   "id": "d17_7",
+   "body": "<<FILL role=rising words=152 beats='a lane, a farm, a shop where they still switch to English, and Carys at the gate saying that she is going to come and see the fourth place whether Rhian likes it or not'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d17_7_0",
+     "label": "Have Tobi to stay.",
+     "target": "d18_1"
+    },
+    {
+     "id": "c_d17_7_1",
+     "label": "Make Carys keep her word.",
+     "target": "d18_2"
+    },
+    {
+     "id": "c_d17_7_2",
+     "label": "Get the results.",
+     "target": "d18_3"
+    }
+   ]
+  },
+  {
+   "id": "d18_0",
+   "body": "<<FILL role=rising words=150 beats='the rucksack, the boots, the binoculars with the sticky focus, and a book with fourteen months in it and a great deal of space left'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_0_0",
+     "label": "Arrive in the fourth place on purpose.",
+     "target": "d19_0"
+    },
+    {
+     "id": "c_d18_0_1",
+     "label": "Write the first entry.",
+     "target": "d19_1"
+    },
+    {
+     "id": "c_d18_0_2",
+     "label": "Put the whole year in a box and shut it.",
+     "target": "e18_0"
+    }
+   ]
+  },
+  {
+   "id": "d18_1",
+   "body": "<<FILL role=rising words=133 beats='four days in July, the flats, Mamgu's kitchen, and two people finding out whether a friendship built in one winter in one city travels'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_1_0",
+     "label": "Get the count going here.",
+     "target": "d19_2"
+    },
+    {
+     "id": "c_d18_1_1",
+     "label": "Keep all three of them.",
+     "target": "d19_3"
+    },
+    {
+     "id": "c_d18_1_2",
+     "label": "Tell your parents what the year was.",
+     "target": "d19_4"
+    }
+   ]
+  },
+  {
+   "id": "d18_2",
+   "body": "<<FILL role=rising words=162 beats='the visit is booked before Rhian leaves, which is the difference between a goodbye and an arrangement, and Rhian has learned that difference the hard way'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_2_0",
+     "label": "Go back for Mamgu's birthday.",
+     "target": "d19_5"
+    },
+    {
+     "id": "c_d18_2_1",
+     "label": "Decide about next summer.",
+     "target": "d19_6"
+    },
+    {
+     "id": "c_d18_2_2",
+     "label": "Read what you wrote in September.",
+     "target": "d19_7"
+    },
+    {
+     "id": "c_d18_2_3",
+     "label": "Arrive in the fourth place on purpose.",
+     "target": "d19_0"
+    }
+   ]
+  },
+  {
+   "id": "d18_3",
+   "body": "<<FILL role=rising words=145 beats='August, a brown envelope, four syllabuses reconciled into a set of grades that open the doors Rhian wants open; Gethin reads them twice and puts them in his wallet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_3_0",
+     "label": "Write the first entry.",
+     "target": "d19_1"
+    },
+    {
+     "id": "c_d18_3_1",
+     "label": "Get the count going here.",
+     "target": "d19_2"
+    },
+    {
+     "id": "c_d18_3_2",
+     "label": "Keep all three of them.",
+     "target": "d19_3"
+    }
+   ]
+  },
+  {
+   "id": "d18_4",
+   "body": "<<FILL role=rising words=128 beats='Nia says that she has spent two years thinking she was dragging her family behind her, and has only just worked out that this is not what happened'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_4_0",
+     "label": "Tell your parents what the year was.",
+     "target": "d19_4"
+    },
+    {
+     "id": "c_d18_4_1",
+     "label": "Go back for Mamgu's birthday.",
+     "target": "d19_5"
+    },
+    {
+     "id": "c_d18_4_2",
+     "label": "Put the whole year in a box and shut it.",
+     "target": "e18_0"
+    }
+   ]
+  },
+  {
+   "id": "d18_5",
+   "body": "<<FILL role=rising words=157 beats='a September count in fog, the boy from the year below on the tally, Rhian on the telescope, and a handover that takes ninety minutes and lifts eighteen years off her mind'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_5_0",
+     "label": "Decide about next summer.",
+     "target": "d19_6"
+    },
+    {
+     "id": "c_d18_5_1",
+     "label": "Read what you wrote in September.",
+     "target": "d19_7"
+    },
+    {
+     "id": "c_d18_5_2",
+     "label": "Arrive in the fourth place on purpose.",
+     "target": "d19_0"
+    }
+   ]
+  },
+  {
+   "id": "d18_6",
+   "body": "<<FILL role=rising words=140 beats='a city, a flat, a school and a river she has never seen, and for the first time Rhian looks it up on purpose and finds out what comes down that estuary in October'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_6_0",
+     "label": "Write the first entry.",
+     "target": "d19_1"
+    },
+    {
+     "id": "c_d18_6_1",
+     "label": "Get the count going here.",
+     "target": "d19_2"
+    },
+    {
+     "id": "c_d18_6_2",
+     "label": "Keep all three of them.",
+     "target": "d19_3"
+    }
+   ]
+  },
+  {
+   "id": "d18_7",
+   "body": "<<FILL role=rising words=123 beats='that the notebook was never really about birds; Mamgu agrees instantly and is faintly insulted to have been thought subtle'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_7_0",
+     "label": "Tell your parents what the year was.",
+     "target": "d19_4"
+    },
+    {
+     "id": "c_d18_7_1",
+     "label": "Go back for Mamgu's birthday.",
+     "target": "d19_5"
+    },
+    {
+     "id": "c_d18_7_2",
+     "label": "Decide about next summer.",
+     "target": "d19_6"
+    },
+    {
+     "id": "c_d18_7_3",
+     "label": "Read what you wrote in September.",
+     "target": "d19_7"
+    }
+   ]
+  },
+  {
+   "id": "d18_8",
+   "body": "<<FILL role=rising words=152 beats='twenty-two minutes now, and Rhian notices the twenty-two minutes and does not know whether it is a skill or a wound'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d18_8_0",
+     "label": "Arrive in the fourth place on purpose.",
+     "target": "d19_0"
+    },
+    {
+     "id": "c_d18_8_1",
+     "label": "Write the first entry.",
+     "target": "d19_1"
+    },
+    {
+     "id": "c_d18_8_2",
+     "label": "Get the count going here.",
+     "target": "d19_2"
+    }
+   ]
+  },
+  {
+   "id": "d19_0",
+   "body": "<<FILL role=rising words=121 beats='a river she has read about, a school she has looked up, a room she chose the side of; the first day is not easier, and it is, for the first time, hers'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_0_0",
+     "label": "Stand at the estuary in October.",
+     "target": "d20_0"
+    },
+    {
+     "id": "c_d19_0_1",
+     "label": "Take Mamgu's question seriously.",
+     "target": "d20_1"
+    },
+    {
+     "id": "c_d19_0_2",
+     "label": "Send the second volume back to Caldy.",
+     "target": "e19_0"
+    }
+   ]
+  },
+  {
+   "id": "d19_1",
+   "body": "<<FILL role=rising words=150 beats='October, an estuary nobody in the family has ever seen, and Rhian at a railing with the notebook open, doing the thing Mamgu did in 1968 for the same reason'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_1_0",
+     "label": "Look at the whole thing from the end.",
+     "target": "d20_2"
+    },
+    {
+     "id": "c_d19_1_1",
+     "label": "Decide what the notebook is for.",
+     "target": "d20_3"
+    },
+    {
+     "id": "c_d19_1_2",
+     "label": "Work out who you are now.",
+     "target": "d20_4"
+    }
+   ]
+  },
+  {
+   "id": "d19_2",
+   "body": "<<FILL role=rising words=133 beats='she finds the local group inside a fortnight because she now knows exactly how to; the man on the telephone is astonished that a sixteen year old has rung him first'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_2_0",
+     "label": "Choose what happens next.",
+     "target": "d20_5"
+    },
+    {
+     "id": "c_d19_2_1",
+     "label": "Stand at the estuary in October.",
+     "target": "d20_0"
+    },
+    {
+     "id": "c_d19_2_2",
+     "label": "Give up on keeping the three of them.",
+     "target": "e19_1"
+    }
+   ]
+  },
+  {
+   "id": "d19_3",
+   "body": "<<FILL role=rising words=162 beats='Tobi, Sanne and Carys, in three cities, and Rhian works out the actual cost of that in evenings and pays it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_3_0",
+     "label": "Take Mamgu's question seriously.",
+     "target": "d20_1"
+    },
+    {
+     "id": "c_d19_3_1",
+     "label": "Look at the whole thing from the end.",
+     "target": "d20_2"
+    },
+    {
+     "id": "c_d19_3_2",
+     "label": "Decide what the notebook is for.",
+     "target": "d20_3"
+    }
+   ]
+  },
+  {
+   "id": "d19_4",
+   "body": "<<FILL role=rising words=145 beats='over a table, without a row, with the map still folded in the drawer; the conversation is twenty minutes long and eighteen months late and worth every minute of both'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_4_0",
+     "label": "Work out who you are now.",
+     "target": "d20_4"
+    },
+    {
+     "id": "c_d19_4_1",
+     "label": "Choose what happens next.",
+     "target": "d20_5"
+    },
+    {
+     "id": "c_d19_4_2",
+     "label": "Stand at the estuary in October.",
+     "target": "d20_0"
+    },
+    {
+     "id": "c_d19_4_3",
+     "label": "Send the second volume back to Caldy.",
+     "target": "e19_0"
+    }
+   ]
+  },
+  {
+   "id": "d19_5",
+   "body": "<<FILL role=rising words=128 beats='a train, two buses and a kitchen full of people; Mamgu asks for the list first and the feelings afterwards, in that order, as she always has'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_5_0",
+     "label": "Take Mamgu's question seriously.",
+     "target": "d20_1"
+    },
+    {
+     "id": "c_d19_5_1",
+     "label": "Look at the whole thing from the end.",
+     "target": "d20_2"
+    },
+    {
+     "id": "c_d19_5_2",
+     "label": "Decide what the notebook is for.",
+     "target": "d20_3"
+    }
+   ]
+  },
+  {
+   "id": "d19_6",
+   "body": "<<FILL role=rising words=157 beats='Nia's grant runs three years and there is a chance of staying somewhere long enough to be from it, and Rhian finds that she does not want that as simply as she expected to'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_6_0",
+     "label": "Work out who you are now.",
+     "target": "d20_4"
+    },
+    {
+     "id": "c_d19_6_1",
+     "label": "Choose what happens next.",
+     "target": "d20_5"
+    },
+    {
+     "id": "c_d19_6_2",
+     "label": "Give up on keeping the three of them.",
+     "target": "e19_1"
+    }
+   ]
+  },
+  {
+   "id": "d19_7",
+   "body": "<<FILL role=rising words=140 beats='the anniversary entry with nothing beside it, and Rhian goes back and fills it in a year late, in a different hand, with what actually happened that day'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d19_7_0",
+     "label": "Stand at the estuary in October.",
+     "target": "d20_0"
+    },
+    {
+     "id": "c_d19_7_1",
+     "label": "Take Mamgu's question seriously.",
+     "target": "d20_1"
+    },
+    {
+     "id": "c_d19_7_2",
+     "label": "Look at the whole thing from the end.",
+     "target": "d20_2"
+    }
+   ]
+  },
+  {
+   "id": "d20_0",
+   "body": "<<FILL role=climax words=138 beats='a fourth river, brent geese coming down it in skeins, and a girl with a notebook who has done this in four places now and knows exactly what she is looking at'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d20_0_0",
+     "label": "Let it be a year you chose in the end.",
+     "target": "e20_0"
+    },
+    {
+     "id": "c_d20_0_1",
+     "label": "Keep the record going.",
+     "target": "e20_1"
+    },
+    {
+     "id": "c_d20_0_2",
+     "label": "Say the answer out loud.",
+     "target": "e20_2"
+    }
+   ]
+  },
+  {
+   "id": "d20_1",
+   "body": "<<FILL role=climax words=121 beats='which of them was best; Rhian finally has an answer, and it is not one of the four places'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d20_1_0",
+     "label": "Take what the year actually taught you.",
+     "target": "e20_3"
+    },
+    {
+     "id": "c_d20_1_1",
+     "label": "Hold on to all three of them.",
+     "target": "e20_4"
+    },
+    {
+     "id": "c_d20_1_2",
+     "label": "Understand what Mamgu did.",
+     "target": "e20_5"
+    }
+   ]
+  },
+  {
+   "id": "d20_2",
+   "body": "<<FILL role=resolution words=150 beats='eleven months, three cities, four schools, one sister who stayed and one grandmother who did all of this first and alone'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d20_2_0",
+     "label": "Count what the year cost.",
+     "target": "e20_6"
+    },
+    {
+     "id": "c_d20_2_1",
+     "label": "Let it stay unresolved.",
+     "target": "e20_7"
+    },
+    {
+     "id": "c_d20_2_2",
+     "label": "Let it be a year you chose in the end.",
+     "target": "e20_0"
+    }
+   ]
+  },
+  {
+   "id": "d20_3",
+   "body": "<<FILL role=resolution words=133 beats='not a record of birds and not a record of places, but a record of arriving, which is a thing a person can get better at'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d20_3_0",
+     "label": "Keep the record going.",
+     "target": "e20_1"
+    },
+    {
+     "id": "c_d20_3_1",
+     "label": "Say the answer out loud.",
+     "target": "e20_2"
+    },
+    {
+     "id": "c_d20_3_2",
+     "label": "Take what the year actually taught you.",
+     "target": "e20_3"
+    }
+   ]
+  },
+  {
+   "id": "d20_4",
+   "body": "<<FILL role=resolution words=162 beats='somebody who is good at the first fortnight, who knows how to find the water in any town, and who has had to learn on purpose the thing most people are simply given'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d20_4_0",
+     "label": "Hold on to all three of them.",
+     "target": "e20_4"
+    },
+    {
+     "id": "c_d20_4_1",
+     "label": "Understand what Mamgu did.",
+     "target": "e20_5"
+    },
+    {
+     "id": "c_d20_4_2",
+     "label": "Count what the year cost.",
+     "target": "e20_6"
+    }
+   ]
+  },
+  {
+   "id": "d20_5",
+   "body": "<<FILL role=resolution words=145 beats='the grant, the third year, the possibility of staying put, and a sixteen year old with an actual opinion about it for the first time'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d20_5_0",
+     "label": "Let it stay unresolved.",
+     "target": "e20_7"
+    },
+    {
+     "id": "c_d20_5_1",
+     "label": "Let it be a year you chose in the end.",
+     "target": "e20_0"
+    },
+    {
+     "id": "c_d20_5_2",
+     "label": "Keep the record going.",
+     "target": "e20_1"
+    }
+   ]
+  },
+  {
+   "id": "e06_0",
+   "body": "<<FILL role=setback words=120 beats='Rhian goes anyway on the money Mamgu sent her for Christmas, and the weekend is wonderful for a day and a half and then wrong; the house has arranged itself around her absence, Bea has a life with a shape in it, and the return journey is the loneliest eight hours of the year'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e06_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Ninety Pound Weekend"
+   }
+  },
+  {
+   "id": "e07_0",
+   "body": "<<FILL role=discovery words=143 beats='the three of them in two rooms over a shuttered unit, a chicken in a too-small oven and a video call at four; it is not a disaster and it is not nothing, and Rhian learns that year that a thing can be survivable and still count'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e07_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Flat on the Twenty-Fifth"
+   }
+  },
+  {
+   "id": "e08_0",
+   "body": "<<FILL role=setback words=125 beats='Tobi's mother says yes before Rhian has finished the sentence and Nia says no that evening, gently and completely; the last fortnight in Hull is spent not talking about it, and Rhian carries the shape of that yes for years'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e08_0",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Offer at the Kitchen Door"
+   }
+  },
+  {
+   "id": "e09_0",
+   "body": "<<FILL role=setback words=148 beats='Rhian does the term by correspondence and never learns more than fifty words; she leaves Rotterdam in June having lived four months at a distance of about two metres from everything that was actually there'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e09_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Eleven Weeks in English"
+   }
+  },
+  {
+   "id": "e09_1",
+   "body": "<<FILL role=discovery words=130 beats='Rhian spends an evening ruling off the Humber pages, listing the sixty-one species and the ring numbers and the dockworker's name, and understands that a place you have left can be finished rather than lost'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e09_1",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Winter, Closed"
+   }
+  },
+  {
+   "id": "e10_0",
+   "body": "<<FILL role=discovery words=153 beats='Rhian flies back for two weeks in May and does nothing except make tea, test vocabulary and be in the house; she misses the spoonbills and the end of the language programme, and it is the only thing all year that nobody has to explain to her afterwards'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e10_0",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Fortnight She Was Needed"
+   }
+  },
+  {
+   "id": "e10_1",
+   "body": "<<FILL role=setback words=135 beats='the last one goes unanswered for a week, then a month, and then it is simply a thing that happened in a winter; Rhian understands that she has begun doing the thing she was most afraid of having done to her'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e10_1",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Tobi, in the Past Tense"
+   }
+  },
+  {
+   "id": "e11_0",
+   "body": "<<FILL role=setback words=158 beats='Rhian puts it to both parents properly, with reasons; they take it seriously, and they cannot do it, and the not being able to is worse than a refusal would have been'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e11_0",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Year She Asked to Stop"
+   }
+  },
+  {
+   "id": "e12_0",
+   "body": "<<FILL role=setback words=140 beats='Rhian holds it for six weeks and it changes every conversation in the cottage; when Nia finds out she is angry with Gethin and hurt by Rhian, and the hurt is the part that lasts'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e12_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Thing She Did Not Say"
+   }
+  },
+  {
+   "id": "e12_1",
+   "body": "<<FILL role=discovery words=122 beats='Rhian puts it in a drawer in the cottage and does not open it for the rest of the summer, and finds that the year keeps happening whether or not she records it, which is a smaller comfort than she expected'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e12_1",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Blank Page in July"
+   }
+  },
+  {
+   "id": "e13_0",
+   "body": "<<FILL role=setback words=145 beats='it is arranged in a week and it works; Rhian spends her examination year in the house she has always known, and the family finishes the migration year in two places instead of one and calls that a solution'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e13_0",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Two Buses, Every Day"
+   }
+  },
+  {
+   "id": "e13_1",
+   "body": "<<FILL role=discovery words=127 beats='Mamgu came to Caldy in 1968 from a village she has not seen since, and the first pages are a stranger writing down what flew over an unfamiliar estuary; Rhian has been reading her own year in the wrong handwriting all along'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e13_1",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Whose Notebook It Was"
+   }
+  },
+  {
+   "id": "e14_0",
+   "body": "<<FILL role=discovery words=150 beats='Rhian tells Mamgu to keep it and to keep writing in it, and both of them know exactly what is being said and neither says it; the notebook stays in the drawer in Caldy and the year goes unfinished on paper'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e14_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "What She Would Not Be Handed"
+   }
+  },
+  {
+   "id": "e15_0",
+   "body": "<<FILL role=discovery words=132 beats='Rhian covers Traeth Lafan for a year and then another, and the year of moving becomes the thing that got her here rather than the thing that happened to her; the counts are still lodged under her name'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e15_0",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Second Sunday, Every Month"
+   }
+  },
+  {
+   "id": "e15_1",
+   "body": "<<FILL role=setback words=155 beats='the new notebook gets an October date and a heading and nothing else; Rhian carries it through the spring move and the one after it and never writes in it, and the fifty-seven years stop where Mamgu stopped'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e15_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "One Entry and No More"
+   }
+  },
+  {
+   "id": "e16_0",
+   "body": "<<FILL role=discovery words=137 beats='Rhian puts it to her parents in one sentence and it is granted immediately and without argument, and the shock of how easy it was is the last thing the year has to teach her'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e16_0",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Smaller and Possible Thing"
+   }
+  },
+  {
+   "id": "e16_1",
+   "body": "<<FILL role=setback words=160 beats='Rhian packs in March without a word and arrives in the fourth place having decided in advance that it does not count; it is two years before she can walk through it and see anything at all'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e16_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Fourth City, Unremarked"
+   }
+  },
+  {
+   "id": "e17_0",
+   "body": "<<FILL role=discovery words=142 beats='both volumes go into the drawer they came out of and Rhian moves with nothing to write in; she tells herself it is safekeeping, and is not sure, then or later, that it was'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e17_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Drawer in Caldy"
+   }
+  },
+  {
+   "id": "e17_1",
+   "body": "<<FILL role=setback words=124 beats='Rhian arrives in the fourth city having decided that recording a place is what makes leaving it hurt; she is right about that, and the eighteen months that follow are the emptiest of her life'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e17_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Year Without a Record"
+   }
+  },
+  {
+   "id": "e18_0",
+   "body": "<<FILL role=setback words=147 beats='Rhian packs the notebooks, the tide tables, the Rotterdam certificate and Tobi's four letters into one box and puts it in Mamgu's back bedroom under the sheet with everything else, and does not open it for six years'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e18_0",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Under a Sheet, Like the Furniture"
+   }
+  },
+  {
+   "id": "e19_0",
+   "body": "<<FILL role=discovery words=129 beats='Rhian posts it at the end of the fourth autumn so that both volumes sit together, and starts a third; it is the first thing all year she does purely because of what it will mean to somebody else'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e19_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Two Books, One Drawer"
+   }
+  },
+  {
+   "id": "e19_1",
+   "body": "<<FILL role=setback words=152 beats='the evenings cost more than Rhian has and one by one the threads go slack; by spring there is nobody left from the migration year except her family, and she is the only person who could have prevented it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e19_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Three Cities, No Letters"
+   }
+  },
+  {
+   "id": "e20_0",
+   "body": "<<FILL role=success words=134 beats='Rhian closes the twelve months on the estuary in October with the second volume open and the geese still coming; the year was done to her and the ending of it is not, and that difference is the whole of what she got out of it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e20_0",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Migration Year"
+   }
+  },
+  {
+   "id": "e20_1",
+   "body": "<<FILL role=completion words=157 beats='two volumes in a drawer in Caldy and a third in a rucksack; Mamgu writes the last entry of hers in her own hand and Rhian writes the first of the next one, and the thing that started in a laundry in 1968 does not stop'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e20_1",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Fifty-Seven Years and Counting"
+   }
+  },
+  {
+   "id": "e20_2",
+   "body": "<<FILL role=success words=139 beats='Rhian tells Mamgu that the best of them was the fortnight in May when she went back for Bea's examinations and did nothing but make tea, and Mamgu says she has taken a whole year to learn what took her eleven, and is pleased about it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e20_2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Not One of the Four Places"
+   }
+  },
+  {
+   "id": "e20_3",
+   "body": "<<FILL role=completion words=121 beats='Rhian leaves the year able to arrive anywhere: find the water, find the group, find the one person who will do it properly rather than as a favour; it is a small and unglamorous set of skills and it will carry her for thirty years'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e20_3",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Good at the First Fortnight"
+   }
+  },
+  {
+   "id": "e20_4",
+   "body": "<<FILL role=completion words=144 beats='Tobi in July, Sanne on the telephone at eleven at night, Carys at the gate refusing to be left behind; three friendships that survive because Rhian decides they are going to and pays for it in evenings'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e20_4",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Hull, Rotterdam, the Village"
+   }
+  },
+  {
+   "id": "e20_5",
+   "body": "<<FILL role=discovery words=126 beats='a girl off a boat in 1968 with a job in a laundry and a landlady who would not say her name, writing down what flew over an estuary she did not know; Rhian has spent a year discovering a thing her grandmother has been quietly telling her since she was six'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e20_5",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Notebook Because It Was Hers"
+   }
+  },
+  {
+   "id": "e20_6",
+   "body": "<<FILL role=discovery words=149 beats='the honest arithmetic: four syllabuses, two friendships nearly lost, a sister who has become somebody she will have to get to know, and a father who is still on contracts; Rhian writes it down as a list, because that is what the notebook is for'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e20_6",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Eleven Months, Four Schools"
+   }
+  },
+  {
+   "id": "e20_7",
+   "body": "<<FILL role=setback words=131 beats='nobody is from anywhere yet, the grant runs three years and might not run four, and Rhian ends the migration year with an estuary she likes, a notebook with room in it, and no promises from anybody at all'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e20_7",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Nothing Settled by October"
+   }
+  }
+ ]
+}

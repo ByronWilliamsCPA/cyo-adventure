@@ -15,6 +15,7 @@ own beats, which no earlier check can see.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.diversity.structure import structure_fingerprint
@@ -29,8 +30,6 @@ from cyo_adventure.storybook.theme_contract import (
 from scripts import check_theme_contract as ctc
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     import pytest
 
 
@@ -159,7 +158,7 @@ def _well_configured_contract() -> ThemeContract:
     return ThemeContract(
         contract_version=1,
         skeleton_slug="s_test_ctc",
-        age_band=AgeBand.BAND_13_16,
+        age_band=AgeBand.BAND_3_5,
         legacy_lexicon=[],
         default_binding=dict(_FULL_BINDINGS),
         slots=[
@@ -320,17 +319,36 @@ def test_default_binding_violation_fails_check_4(
 def test_misconfigured_gate_slot_fails_check_5(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    skeleton_path = _write_pair(tmp_path, _tiny_skeleton(), _misconfigured_contract())
+    """A ``*_GATE`` slot that forgot ``lethal`` fails check 5 at a weak-floor band.
+
+    The misconfiguration only shows at a band whose mandatory floor does not
+    already forbid ``lethal``: at 3-5 the floor catches it regardless, so the
+    check would pass and prove nothing. Uses the real committed
+    ``the-envoy-of-three-courts`` pair (10-13, floor ``graphic`` only) with
+    ``lethal`` stripped from its gate slots, rather than a synthetic 3-5 skeleton
+    paired with a 10-13 contract, which is now a checked defect (`UW-C285`).
+    """
+    source_skeleton = Path("skeletons/10-13/the-envoy-of-three-courts.json")
+    source_contract = Path("skeletons/10-13/the-envoy-of-three-courts.contract.json")
+    skeleton_path = tmp_path / source_skeleton.name
+    skeleton_path.write_bytes(source_skeleton.read_bytes())
+
+    contract = json.loads(source_contract.read_text(encoding="utf-8"))
+    for slot in contract["slots"]:
+        if slot["id"].endswith("_GATE"):
+            slot["constraints"]["forbid"] = [
+                bundle for bundle in slot["constraints"]["forbid"] if bundle != "lethal"
+            ]
+    (tmp_path / source_contract.name).write_text(json.dumps(contract), encoding="utf-8")
 
     exit_code = ctc.main([str(skeleton_path)])
 
     assert exit_code == 1
     out = capsys.readouterr().out
     assert "FAIL 5." in out
-    # Sanity: the other checks (1, 2, 4, 6) still pass; only 5 is broken.
     assert "PASS 1." in out
+    assert "PASS 2." in out
     assert "PASS 4." in out
-    assert "PASS 6." in out
 
 
 def test_missing_contract_sidecar_fails_check_2_and_skips_the_rest(
@@ -421,7 +439,13 @@ def test_pick_probe_prefers_a_gate_slot_with_lethal() -> None:
 def test_pick_probe_without_gate_at_empty_floor_uses_a_declared_bundle() -> None:
     # 13-16 has no band floor; with the _GATE removed, the probe falls back to
     # a slot that declares a forbid bundle (HERO declares weapon).
-    contract = _well_configured_contract()
+    # Band set here rather than taken from the shared fixture, which now
+    # declares 3-5 to agree with the skeleton it is written beside
+    # (`UW-C285`). This test writes no files, so it is free to pick the
+    # band its premise needs.
+    contract = _well_configured_contract().model_copy(
+        update={"age_band": AgeBand.BAND_13_16}
+    )
     slots = [
         slot.model_copy(update={"id": "NOGATEHERE"}) if slot.id == "A1_GATE" else slot
         for slot in contract.slots
@@ -438,45 +462,27 @@ def test_gateless_weak_floor_band_passes_check_5_via_the_floor(
 ) -> None:
     """A gate-less 10-13 contract passes check 5 through its graphic floor.
 
-    Regression for the check-5 fix: the 10-13 band floor is ``graphic`` only,
-    so probing the (gate-less) first slot with ``lethal`` would have
-    false-failed a correct contract. The probe now uses the band floor, which
-    the validator enforces on every slot regardless of what the contract
-    declares.
-    """
-    contract = ThemeContract(
-        contract_version=1,
-        skeleton_slug="s_test_ctc",
-        age_band=AgeBand.BAND_10_13,
-        legacy_lexicon=[],
-        default_binding=dict(_FULL_BINDINGS),
-        slots=[
-            _slot("HERO", constraints=SlotConstraints(max_words=6, forbid=["weapon"])),
-            _slot("A1_GATE", scope=SlotScope.TRACK),
-            _slot("A1_OFFER", scope=SlotScope.TRACK),
-            _slot("PRIZE", scope=SlotScope.ENDING),
-        ],
-    )
-    # Rename A1_GATE so no _GATE slot exists, forcing the floor-probe path.
-    slots = [
-        slot.model_copy(update={"id": "A1_OBSTACLE"}) if slot.id == "A1_GATE" else slot
-        for slot in contract.slots
-    ]
-    contract = contract.model_copy(update={"slots": slots})
-    bindings = dict(_FULL_BINDINGS)
-    bindings["A1_OBSTACLE"] = bindings.pop("A1_GATE")
-    contract = contract.model_copy(update={"default_binding": bindings})
+    Regression for the check-5 fix: the 10-13 band floor is ``graphic`` only, so
+    probing the (gate-less) first slot with ``lethal`` would have false-failed a
+    correct contract. The probe uses the band floor, which the validator enforces
+    on every slot regardless of what the contract declares.
 
-    skeleton = _tiny_skeleton()
-    # Re-point the skeleton's {A1_GATE} token to {A1_OBSTACLE} so the token set
-    # still matches the contract's declared slot ids.
-    dumped = json.dumps(skeleton).replace("{A1_GATE}", "{A1_OBSTACLE}")
-    skeleton = json.loads(dumped)
-    skeleton_path = _write_pair(tmp_path, skeleton, contract)
+    Uses the real committed ``the-clocktower-cipher`` pair rather than a
+    synthetic one. The synthetic fixture paired a 3-5 skeleton with a 10-13
+    contract, and that inconsistency is now a checked defect (`UW-C285`): the
+    contract's band selects the band-mandatory denylist floor, so a contract free
+    to disagree with its skeleton could pick a weaker floor than its readers'
+    band. No 3-node skeleton is gate-valid at a weak-floor band, so the honest
+    fixture is a real book that already is one.
+    """
+    for suffix in (".json", ".contract.json"):
+        source = Path("skeletons/10-13/the-clocktower-cipher" + suffix)
+        (tmp_path / source.name).write_bytes(source.read_bytes())
+    skeleton_path = tmp_path / "the-clocktower-cipher.json"
 
     exit_code = ctc.main([str(skeleton_path)])
 
+    assert exit_code == 0
     out = capsys.readouterr().out
-    assert exit_code == 0, out
     assert "PASS 5." in out
-    assert "graphic" in out  # the probe used the band floor, not lethal
+    assert "graphic" in out

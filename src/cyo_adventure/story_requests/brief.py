@@ -31,6 +31,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
+from cyo_adventure.core.exceptions import ConfigurationError
 from cyo_adventure.generation.concept import (
     AnchorContext,
     ConceptBrief,
@@ -45,7 +46,15 @@ from cyo_adventure.storybook.models import (
     NarrativeStyle,
     level_rank,
 )
-from cyo_adventure.validator.band_profile import breadth_scaled_floors, profile_for
+from cyo_adventure.validator.band_profile import (
+    BandProfile,
+    breadth_scaled_floors,
+    cell_ending_bounds,
+    clamp_target_to_cap,
+    production_cell_budget,
+    profile_for,
+    reading_level_target_for,
+)
 
 if TYPE_CHECKING:
     from cyo_adventure.db.models import ChildProfile, StoryRequest
@@ -58,20 +67,18 @@ _CONTENT_FLAG_NAMES = ("violence", "scariness", "peril")
 # at or above this sentinel the band-default FK target applies.
 _READING_CAP_SENTINEL = 99.0
 
-# #ASSUME: data-integrity: band_profile.py carries no per-band reading-level
-# values, so these FK targets mirror frontend intakeApi.ts BAND_DEFAULTS
-# (monotonic with band). Used only when the child's reading_level_cap is the
-# unset 99 sentinel.
-# #VERIFY: revisit when validator policy grows per-band reading-level values;
-# test_story_requests covers the sentinel path.
-_BAND_FK_TARGET: dict[AgeBand, float] = {
-    AgeBand.BAND_3_5: 1.0,
-    AgeBand.BAND_5_8: 2.0,
-    AgeBand.BAND_8_11: 4.0,
-    AgeBand.BAND_10_13: 6.0,
-    AgeBand.BAND_13_16: 8.0,
-    AgeBand.BAND_16_PLUS: 10.0,
-}
+# FK targets now come from `band_profile._READING_LEVEL_TARGET`, the single
+# source of record ruled 2026-08-18. This table used to restate them and drifted:
+# it said 4.0 at 8-11 and 6.0 at 10-13 where the catalog declares 4.5 and 5.5,
+# and 8.0/10.0 at the teen bands where the catalog declares 7.0/9.0. Three other
+# sites carried three more sets; see `docs/planning/reading-level-source-table.md`
+# (`UW-C281`).
+# #ASSUME: data-integrity: every band this function can be called with is
+# configured in that table. `reading_level_target_for` returns None for an
+# unconfigured band, which `_reading_target_for` below turns into a loud failure
+# rather than a silent default, since a wrong FK target reaches a child as prose
+# at the wrong difficulty.
+# #VERIFY: test_reading_level_sources.py::test_reading_level_target_covers_every_band.
 
 # #ASSUME: data-integrity: band lower-bound protagonist age, mirroring the
 # frontend default; a fictional character age, not a real child's age.
@@ -90,6 +97,38 @@ _DEFAULT_PROTAGONIST_ROLE = "a curious young adventurer"
 # Band-independent structural fallbacks when profile_for returns None.
 _FALLBACK_NODES = 8
 _FALLBACK_ENDINGS = 2
+
+
+def _reading_target_for(age_band: AgeBand, profile: object) -> float:
+    """Return the FK target for a band, tightened by a guardian's cap.
+
+    A `reading_level_cap` is a CEILING (`api/schemas.py`: "can only ever
+    tighten"), and RL-13 reads a target as the CENTRE of a plus-or-minus window.
+    Substituting the cap for the target therefore admitted prose a full grade
+    ABOVE the maximum a guardian asked for: a cap of 2.0 passed FK 3.00. Clamping
+    keeps a cap from ever raising a band's target and from becoming a target in
+    its own right (`UW-C281`).
+
+    Args:
+        age_band: The story's age band.
+        profile: The child's personalization profile, or None.
+
+    Returns:
+        The band target, lowered to the cap when the guardian set one.
+
+    Raises:
+        ConfigurationError: When the band has no configured FK target. Failing
+            closed beats defaulting: a wrong target reaches a child as prose at
+            the wrong difficulty, which no later gate re-derives.
+    """
+    target = reading_level_target_for(age_band.value)
+    if target is None:
+        msg = f"no reading-level target configured for age band '{age_band.value}'"
+        raise ConfigurationError(msg)
+    cap = getattr(profile, "reading_level_cap", None)
+    if cap is not None and cap < _READING_CAP_SENTINEL:
+        return clamp_target_to_cap(target, cap)
+    return target
 
 
 def _content_controls(
@@ -157,6 +196,82 @@ def _content_controls(
     return content_nogo, constraints
 
 
+def _budget_for(
+    request: StoryRequest,
+    age_band: AgeBand,
+    band: BandProfile | None,
+    narrative_style: str,
+) -> tuple[int, int]:
+    """Return the ``(node_count, ending_count)`` the prompt should ask for.
+
+    #CRITICAL: data-integrity: this must derive from the SAME envelope PL-17
+    grades against, or the prompt asks for a story the gate rejects. It used to
+    take the midpoint of the BAND envelope while PL-17 floors from the CELL
+    envelope, and `generation/prompts.py` renders the result as "produce EXACTLY
+    N ending node(s) ... Not more, not fewer" in the same block that states the
+    cell's node range. In 17 of the 18 offered cells the two disagreed, often by
+    an order of magnitude: 8-11/long asked for 4 endings where the gate needs 24,
+    13-16/long/gamebook asked 7 where it needs 93. A generator obeying the prompt
+    exactly could not pass, and one passing the gate was disobeying an
+    instruction marked EXACTLY (`UW-C279`).
+    #VERIFY: test_story_requests.py::test_brief_ending_count_satisfies_the_gate_in_every_cell
+    renders the number for all 18 cells and checks it against the floor the gate
+    will apply.
+
+    Both counts are derived rather than restated, so a future change to
+    `breadth_scaled_floors` (see `UW-C283`) moves the prompt with it instead of
+    reopening the same gap.
+
+    Args:
+        request: The story request, read for its declared length.
+        age_band: The resolved age band.
+        band: The band profile, or None when the band is unconfigured.
+        narrative_style: The resolved narrative style.
+
+    Returns:
+        The ``(node_count, ending_count)`` pair for the brief.
+    """
+    if band is None:
+        return _FALLBACK_NODES, _FALLBACK_ENDINGS
+
+    length = cast("str | None", request.length)
+    cell = (
+        production_cell_budget(age_band.value, length, narrative_style)
+        if length is not None
+        else None
+    )
+    if cell is not None:
+        min_nodes, max_nodes, _max_depth = cell
+    else:
+        # Off-matrix or length-less: the band envelope is what L1-7 falls back
+        # to as well, so prompt and gate still agree.
+        min_nodes, max_nodes = band.min_nodes, band.max_nodes
+
+    node_count = round((min_nodes + max_nodes) / 2)
+    # The ending floor is derived from the TOP of the node range, not from the
+    # midpoint the brief suggests as a node count. `generation/prompts.py`
+    # authorises the whole range ("produce between {min_nodes} and {max_nodes}
+    # nodes total") while rendering this number as "produce EXACTLY N ending
+    # node(s) ... Not more, not fewer", and PL-17 floors from the story's ACTUAL
+    # `len(story.nodes)`. `breadth_scaled_floors` is monotonically increasing in
+    # node count, so the least favourable case a compliant generator can land on
+    # is `max_nodes`, not `min_nodes`: deriving from the midpoint left the ask
+    # below the floor in 17 of the 18 offered cells, by 1 to 16 endings.
+    #
+    # `cell_ceiling` is passed for the same reason `_effective_floors` passes it
+    # (`policy.py`): PL-17 caps the scaled floor at the cell's ending ceiling, so
+    # omitting it here would over-ask where a ceiling binds.
+    bounds = (
+        None
+        if length is None
+        else cell_ending_bounds(age_band.value, length, narrative_style)
+    )
+    scaled_min_endings, _ = breadth_scaled_floors(
+        max_nodes, narrative_style, None if bounds is None else bounds[1]
+    )
+    return node_count, max(band.min_endings, scaled_min_endings)
+
+
 def brief_from_request(
     request: StoryRequest,
     profile: ChildProfile | None,
@@ -194,26 +309,8 @@ def brief_from_request(
     # ``str | None`` here to match the real pre-flush runtime shape.
     narrative_style_value = cast("str | None", request.narrative_style)
     narrative_style_str = narrative_style_value or NarrativeStyle.PROSE.value
-    # W2.2 unforce (design review finding 2.5): target the middle of the
-    # band's node envelope rather than its floor (band.min_nodes), and scale
-    # the ending count with it via the same node-count-proportional formula
-    # the validator itself uses for a scale-classified story
-    # (band_profile.breadth_scaled_floors, ADR-011 section 6: endings are
-    # reconvergent leaves scaling with node count). ``max`` with the band's
-    # absolute floor keeps a small band (e.g. 3-5) from ever requesting fewer
-    # endings than PL-17 would accept.
-    if band is not None:
-        node_count = round((band.min_nodes + band.max_nodes) / 2)
-        scaled_min_endings, _ = breadth_scaled_floors(node_count, narrative_style_str)
-        ending_count = max(band.min_endings, scaled_min_endings)
-    else:
-        node_count = _FALLBACK_NODES
-        ending_count = _FALLBACK_ENDINGS
-    reading_target = (
-        profile.reading_level_cap
-        if profile is not None and profile.reading_level_cap < _READING_CAP_SENTINEL
-        else _BAND_FK_TARGET[age_band]
-    )
+    node_count, ending_count = _budget_for(request, age_band, band, narrative_style_str)
+    reading_target = _reading_target_for(age_band, profile)
     content_nogo, content_flag_constraints = _content_controls(profile, age_band)
     return ConceptBrief(
         premise=request.request_text,

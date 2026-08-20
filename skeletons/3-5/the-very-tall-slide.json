@@ -1,0 +1,526 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_very_tall_slide",
+  "version": 1,
+  "title": "The Very Tall Slide",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "playground",
+      "courage",
+      "trying again",
+      "asking for help"
+    ],
+    "estimated_minutes": 5,
+    "ending_count": 6,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "loop_and_grow",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_park",
+  "nodes": [
+    {
+      "id": "n_park",
+      "body": "<<FILL role=setup words=38 beats='the park gate is open and the swings are squeaking and right in the middle stands the tall slide with eight silver steps, taller than Nan, taller than anything'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_park_0",
+          "label": "Walk over to the tall slide.",
+          "target": "n_gate"
+        }
+      ]
+    },
+    {
+      "id": "n_gate",
+      "body": "<<FILL role=setup words=40 beats='Bo stops at the bottom step and looks all the way up; Nan says there is no hurry at all, and the park is full of other things that need doing first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_gate_0",
+          "label": "Go and swing first.",
+          "target": "n_swings"
+        },
+        {
+          "id": "c_n_gate_1",
+          "label": "Dig in the sandpit first.",
+          "target": "n_sandpit"
+        }
+      ]
+    },
+    {
+      "id": "n_swings",
+      "body": "<<FILL role=rising words=40 beats='the swings are cold and the chains are cold, and Bo can already do the pumping with both legs, which is a thing Bo could not do at all in the summer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_swings_0",
+          "label": "Pump until the chains go floppy.",
+          "target": "n_pump_legs"
+        },
+        {
+          "id": "c_n_swings_1",
+          "label": "Hop off while the swing is low.",
+          "target": "n_hop_off"
+        }
+      ]
+    },
+    {
+      "id": "n_sandpit",
+      "body": "<<FILL role=rising words=40 beats='the sandpit is damp at the bottom and dry on top, and somebody has left a red bucket and a spade with a bent handle right where Bo likes to sit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_sandpit_0",
+          "label": "Dig a hole all the way down.",
+          "target": "n_dig_deep"
+        },
+        {
+          "id": "c_n_sandpit_1",
+          "label": "Fill the bucket to the brim.",
+          "target": "n_fill_bucket"
+        }
+      ]
+    },
+    {
+      "id": "n_pump_legs",
+      "body": "<<FILL role=rising words=38 beats='the swing goes so high that the chains go floppy for half a second at the top, and from up there the tall slide looks like a slide and not like a mountain'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_pump_legs_0",
+          "label": "Slow down and look around.",
+          "target": "n_hub_one"
+        }
+      ]
+    },
+    {
+      "id": "n_hop_off",
+      "body": "<<FILL role=rising words=36 beats='Bo waits for the low bit and hops off with both feet together and lands standing up, which is the proper way and takes a bit of doing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_hop_off_0",
+          "label": "Brush the sand off and look up.",
+          "target": "n_hub_one"
+        }
+      ]
+    },
+    {
+      "id": "n_dig_deep",
+      "body": "<<FILL role=rising words=38 beats='the hole goes down past the dry sand into the cold dark sand, and Bo finds a stone shaped like a tooth and puts it in a pocket for later'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_dig_deep_0",
+          "label": "Pat the sand down and stand up.",
+          "target": "n_hub_one"
+        }
+      ]
+    },
+    {
+      "id": "n_fill_bucket",
+      "body": "<<FILL role=rising words=36 beats='the bucket gets patted flat on top and turned over and lifted off, and out comes a proper round tower with a smooth top, first go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_fill_bucket_0",
+          "label": "Leave the tower and turn round.",
+          "target": "n_hub_one"
+        }
+      ]
+    },
+    {
+      "id": "n_hub_one",
+      "body": "<<FILL role=rising words=40 beats='the tall slide is still there and it has not got any bigger while Bo was busy; Nan is on the bench with the flask and there is nobody on the steps at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_hub_one_0",
+          "label": "Go and look at the steps.",
+          "target": "n_steps_look"
+        },
+        {
+          "id": "c_n_hub_one_1",
+          "label": "Try the little slide instead.",
+          "target": "n_small_slide"
+        }
+      ]
+    },
+    {
+      "id": "n_steps_look",
+      "body": "<<FILL role=rising words=40 beats='up close the steps are wide and flat with little bumps on them so that shoes do not slip, and there is a rail on both sides all the way to the top'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_steps_look_0",
+          "label": "Count the steps out loud.",
+          "target": "n_count_steps"
+        },
+        {
+          "id": "c_n_steps_look_1",
+          "label": "Put a hand on the rail.",
+          "target": "n_hand_rail"
+        }
+      ]
+    },
+    {
+      "id": "n_small_slide",
+      "body": "<<FILL role=rising words=38 beats='the little slide has three steps and a bump at the bottom, and Bo has been down it about a hundred times, which is the whole point of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_small_slide_0",
+          "label": "Go down it once more.",
+          "target": "n_small_go"
+        },
+        {
+          "id": "c_n_small_slide_1",
+          "label": "Sit at the top and look.",
+          "target": "n_small_watch"
+        }
+      ]
+    },
+    {
+      "id": "n_count_steps",
+      "body": "<<FILL role=rising words=36 beats='one two three four five six seven eight; eight is not very many, and counting them again on the way back gives eight again, which is a good steady number'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_count_steps_0",
+          "label": "Say the number to Nan.",
+          "target": "n_hub_two"
+        }
+      ]
+    },
+    {
+      "id": "n_hand_rail",
+      "body": "<<FILL role=rising words=38 beats='the rail is cold and thin and exactly the right size for a hand, and it goes on and on upwards without stopping, which is the useful thing about it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_hand_rail_0",
+          "label": "Let go and step back.",
+          "target": "n_hub_two"
+        }
+      ]
+    },
+    {
+      "id": "n_small_go",
+      "body": "<<FILL role=rising words=36 beats='down the little slide, bump at the bottom, feet in the woodchips; it is a good slide, it is only a slide Bo already knows the whole way through'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_small_go_0",
+          "label": "Climb out of the woodchips.",
+          "target": "n_hub_two"
+        }
+      ]
+    },
+    {
+      "id": "n_small_watch",
+      "body": "<<FILL role=rising words=38 beats='from the top of the little slide Bo can see the tall slide side on, and side on it is thin, just a shiny strip with a ladder stuck to it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_small_watch_0",
+          "label": "Slide down and go over.",
+          "target": "n_hub_two"
+        }
+      ]
+    },
+    {
+      "id": "n_hub_two",
+      "body": "<<FILL role=rising words=40 beats='a boy in a yellow coat goes up the tall steps and down the shiny part and off the end without stopping, then runs round the back to do the whole thing again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_hub_two_0",
+          "label": "Get in the queue.",
+          "target": "n_queue"
+        },
+        {
+          "id": "c_n_hub_two_1",
+          "label": "Sit on the grass a minute.",
+          "target": "n_grass_rest"
+        }
+      ]
+    },
+    {
+      "id": "n_queue",
+      "body": "<<FILL role=rising words=40 beats='there are two people on the steps now and Bo is behind them at the bottom, which means Bo is in the queue, which is a thing that has already started happening'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_queue_0",
+          "label": "Let the big one go first.",
+          "target": "n_big_kid"
+        },
+        {
+          "id": "c_n_queue_1",
+          "label": "Say it is my turn next.",
+          "target": "n_my_turn"
+        }
+      ]
+    },
+    {
+      "id": "n_grass_rest",
+      "body": "<<FILL role=rising words=38 beats='the grass is wet and Nan pours half a cup of something warm, and the two of them watch the slide for a while without saying anything about it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_grass_rest_0",
+          "label": "Watch how they all do it.",
+          "target": "n_watch_others"
+        },
+        {
+          "id": "c_n_grass_rest_1",
+          "label": "Go back and start again.",
+          "target": "n_back_to_gate"
+        }
+      ]
+    },
+    {
+      "id": "n_big_kid",
+      "body": "<<FILL role=rising words=38 beats='the big one goes up two steps at a time and down in a blink, and going second turns out to be better than going first, because now Bo knows where the shiny part starts'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_big_kid_0",
+          "label": "Move up one place.",
+          "target": "n_hub_three"
+        }
+      ]
+    },
+    {
+      "id": "n_my_turn",
+      "body": "<<FILL role=rising words=38 beats='Bo says it out loud, my turn next, and nobody argues at all, and saying it turns the queue into a real place where Bo is standing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_my_turn_0",
+          "label": "Wait for the step to be empty.",
+          "target": "n_hub_three"
+        }
+      ]
+    },
+    {
+      "id": "n_watch_others",
+      "body": "<<FILL role=rising words=38 beats='four people go down while Bo watches, and every single one holds the rail on the way up and sits down at the top before they go, and nobody falls off at all'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_watch_others_0",
+          "label": "Get up off the wet grass.",
+          "target": "n_hub_three"
+        }
+      ]
+    },
+    {
+      "id": "n_back_to_gate",
+      "body": "<<FILL role=rising words=34 beats='Bo walks all the way round to the gate and starts the whole park again, which is allowed, and the slide waits exactly where it was'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_back_to_gate_0",
+          "label": "Start again at the gate.",
+          "target": "n_gate"
+        }
+      ]
+    },
+    {
+      "id": "n_hub_three",
+      "body": "<<FILL role=rising words=40 beats='the steps are empty and Nan is watching, and Bo has a hand on the cold rail already without quite having decided to put it there'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_hub_three_0",
+          "label": "Put one foot on the first step.",
+          "target": "n_first_step"
+        },
+        {
+          "id": "c_n_hub_three_1",
+          "label": "Ask Nan to come too.",
+          "target": "n_ask_help"
+        }
+      ]
+    },
+    {
+      "id": "n_first_step",
+      "body": "<<FILL role=rising words=40 beats='one foot, then the other foot, and the first step is done and it is barely off the ground; there are seven left and the rail is right there the whole way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_first_step_0",
+          "label": "Keep going up the steps.",
+          "target": "n_halfway"
+        },
+        {
+          "id": "c_n_first_step_1",
+          "label": "Come back down the steps.",
+          "target": "n_come_down"
+        }
+      ]
+    },
+    {
+      "id": "n_ask_help",
+      "body": "<<FILL role=rising words=40 beats='Nan comes over without making it into a big thing and stands at the bottom with one hand up on the rail, which turns out to be exactly enough'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ask_help_0",
+          "label": "Go up with Nan holding on.",
+          "target": "n_hand_hold"
+        },
+        {
+          "id": "c_n_ask_help_1",
+          "label": "Ask Nan what she thinks.",
+          "target": "n_nan_says"
+        }
+      ]
+    },
+    {
+      "id": "n_halfway",
+      "body": "<<FILL role=rising words=40 beats='four steps up is halfway, and the woodchips look further away than they did; the top is close enough now that going back would take just as long as going on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_halfway_0",
+          "label": "Go all the way to the top.",
+          "target": "e_down_alone"
+        },
+        {
+          "id": "c_n_halfway_1",
+          "label": "Stop and look at the park.",
+          "target": "e_top_and_back"
+        }
+      ]
+    },
+    {
+      "id": "n_come_down",
+      "body": "<<FILL role=rising words=36 beats='one foot and then the other foot, backwards this time, and Bo is on the woodchips again with the first step done and kept for good'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_come_down_0",
+          "label": "Tell Nan about the step.",
+          "target": "e_tomorrow"
+        }
+      ]
+    },
+    {
+      "id": "n_hand_hold",
+      "body": "<<FILL role=rising words=38 beats='up they go together with Nan on the outside and Bo on the inside, and at the top there is a little flat bit to sit on that Bo did not know was there'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_hand_hold_0",
+          "label": "Sit down at the top.",
+          "target": "e_down_together"
+        }
+      ]
+    },
+    {
+      "id": "n_nan_says",
+      "body": "<<FILL role=rising words=40 beats='Nan says the tall slide will still be here on Thursday and so will the little one, and that both of those things are true at exactly the same time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_nan_says_0",
+          "label": "Go down the little slide twice.",
+          "target": "e_little_slide"
+        },
+        {
+          "id": "c_n_nan_says_1",
+          "label": "Let the yellow coat go again.",
+          "target": "e_someone_else"
+        }
+      ]
+    },
+    {
+      "id": "e_down_alone",
+      "body": "<<FILL role=success words=40 beats='the shiny part is cold and then it is not cold because Bo is moving, and the bottom arrives much sooner than expected, and Bo lands in the woodchips and runs straight round to the steps to do it again'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_down_alone",
+        "valence": "positive",
+        "kind": "success",
+        "title": "All the Way Down"
+      }
+    },
+    {
+      "id": "e_top_and_back",
+      "body": "<<FILL role=discovery words=38 beats='from the top step Bo can see the whole park at once, the swings and the flask on the bench and the red bucket in the sandpit, and climbing back down is fine because the looking was the good part'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_top_and_back",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Best Place to Look From"
+      }
+    },
+    {
+      "id": "e_tomorrow",
+      "body": "<<FILL role=discovery words=36 beats='Bo has done one step of the tall slide, which is one more than yesterday, and Nan says that is how the whole thing gets done, one step at a time and no arguing'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_tomorrow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "One Step, Kept"
+      }
+    },
+    {
+      "id": "e_down_together",
+      "body": "<<FILL role=completion words=40 beats='they go down together with Nan behind and Bo in front and both of them shouting, and at the bottom Bo says again, and they do it again, and the second time Nan only watches'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_down_together",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Down With Nan"
+      }
+    },
+    {
+      "id": "e_little_slide",
+      "body": "<<FILL role=completion words=38 beats='down the little slide once for speed and once for style, and on the way home Bo tells Nan about the eight steps and how eight is really not very many at all'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_little_slide",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Little Slide, Twice"
+      }
+    },
+    {
+      "id": "e_someone_else",
+      "body": "<<FILL role=setback words=36 beats='the boy in the yellow coat goes up and down twice more, and by then it is time to go home, and the tall slide stays untried, standing there with its eight steps waiting'>>",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_someone_else",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Yellow Coat Goes First"
+      }
+    }
+  ]
+}

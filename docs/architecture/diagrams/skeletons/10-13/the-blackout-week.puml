@@ -1,0 +1,453 @@
+@startuml the-blackout-week
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_out
+state n_out #BBDEFB
+n_out : setup · 65w
+state n_hall #BBDEFB
+n_hall : setup · 80w
+state t_shop #D1C4E9
+t_shop : rising · 100w
+state t_nan #D1C4E9
+t_nan : rising · 100w
+state t_school #D1C4E9
+t_school : rising · 100w
+state s_stock #D1C4E9
+s_stock : rising · 100w
+state s_gen #D1C4E9
+s_gen : rising · 100w
+state p_cyl #D1C4E9
+p_cyl : rising · 100w
+state p_calls #D1C4E9
+p_calls : rising · 100w
+state c_power #D1C4E9
+c_power : rising · 100w
+state c_paper #D1C4E9
+c_paper : rising · 100w
+state s_list #D1C4E9
+s_list : rising · 100w
+state s_share #D1C4E9
+s_share : rising · 100w
+state s_fuel #D1C4E9
+s_fuel : rising · 100w
+state p_hours #D1C4E9
+p_hours : rising · 100w
+state p_hold #D1C4E9
+p_hold : rising · 100w
+state p_sit #D1C4E9
+p_sit : rising · 100w
+state c_ups #D1C4E9
+c_ups : rising · 100w
+state c_keys #D1C4E9
+c_keys : rising · 100w
+state c_ask #D1C4E9
+c_ask : rising · 100w
+state s_triage #D1C4E9
+s_triage : rising · 100w
+state s_bbq #D1C4E9
+s_bbq : rising · 100w
+state s_run #D1C4E9
+s_run : rising · 100w
+state p_maths #D1C4E9
+p_maths : rising · 100w
+state p_esc #D1C4E9
+p_esc : rising · 100w
+state p_neigh #D1C4E9
+p_neigh : rising · 100w
+state c_shut #D1C4E9
+c_shut : rising · 100w
+state c_perm #D1C4E9
+c_perm : rising · 100w
+state c_ride #D1C4E9
+c_ride : rising · 100w
+state s_cold #D1C4E9
+s_cold : rising · 100w
+state s_books #D1C4E9
+s_books : rising · 100w
+state s_choice #D1C4E9
+s_choice : rising · 100w
+state p_answer #D1C4E9
+p_answer : rising · 100w
+state p_drive #D1C4E9
+p_drive : rising · 100w
+state p_watch #D1C4E9
+p_watch : rising · 100w
+state c_cmd #D1C4E9
+c_cmd : rising · 100w
+state c_four #D1C4E9
+c_four : rising · 100w
+state c_teacher #D1C4E9
+c_teacher : rising · 100w
+state s_hold #D1C4E9
+s_hold : rising · 100w
+state s_lost #D1C4E9
+s_lost : rising · 100w
+state s_hall #D1C4E9
+s_hall : rising · 100w
+state p_engineer #D1C4E9
+p_engineer : rising · 100w
+state p_spare #D1C4E9
+p_spare : rising · 100w
+state p_talk #D1C4E9
+p_talk : rising · 100w
+state c_saved #D1C4E9
+c_saved : rising · 100w
+state c_ext #D1C4E9
+c_ext : rising · 100w
+state c_backup #D1C4E9
+c_backup : rising · 100w
+state s_thurs #D1C4E9
+s_thurs : rising · 100w
+state s_credit #D1C4E9
+s_credit : rising · 100w
+state s_tired #D1C4E9
+s_tired : rising · 100w
+state p_rhythm #D1C4E9
+p_rhythm : rising · 100w
+state p_others #D1C4E9
+p_others : rising · 100w
+state p_list #D1C4E9
+p_list : rising · 100w
+state c_files #D1C4E9
+c_files : rising · 100w
+state c_lesson #D1C4E9
+c_lesson : rising · 100w
+state c_survey #D1C4E9
+c_survey : rising · 100w
+state s_sun #D1C4E9
+s_sun : rising · 100w
+state s_count #D1C4E9
+s_count : rising · 100w
+state s_next #D1C4E9
+s_next : rising · 100w
+state p_sunday #D1C4E9
+p_sunday : rising · 100w
+state p_thanks #D1C4E9
+p_thanks : rising · 100w
+state p_rota #D1C4E9
+p_rota : rising · 100w
+state c_friday #D1C4E9
+c_friday : rising · 100w
+state c_room #D1C4E9
+c_room : rising · 100w
+state c_write #D1C4E9
+c_write : rising · 100w
+state n_storm #D1C4E9
+n_storm : rising · 100w
+state n_ready #D1C4E9
+n_ready : rising · 100w
+state n_town #D1C4E9
+n_town : rising · 100w
+state n_after #D1C4E9
+n_after : rising · 100w
+state e_held #C8E6C9
+e_held : completion (positive)
+e_held : "It Holds the Second Time"
+state e_seen #E0E0E0
+e_seen : discovery (neutral)
+e_seen : "What the Week Made Visible"
+state e_tired_out #E0E0E0
+e_tired_out : setback (neutral)
+e_tired_out : "The Night It Goes Wrong"
+state e_notebook #C8E6C9
+e_notebook : completion (positive)
+e_notebook : "Kept Rather Than Binned"
+state e_quiet #E0E0E0
+e_quiet : discovery (neutral)
+e_quiet : "The Last Time You Do It"
+state n_meet #D1C4E9
+n_meet : rising · 100w
+state n_kit #D1C4E9
+n_kit : rising · 100w
+state n_you #D1C4E9
+n_you : rising · 100w
+state e_committee #C8E6C9
+e_committee : success (positive)
+e_committee : "A Seat at the Table"
+state e_cupboard #C8E6C9
+e_cupboard : completion (positive)
+e_cupboard : "The Cupboard by the Door"
+state e_paper_record #E0E0E0
+e_paper_record : discovery (neutral)
+e_paper_record : "In the Archive"
+state e_forgotten #E0E0E0
+e_forgotten : setback (neutral)
+e_forgotten : "By the Spring"
+state e_thanked #C8E6C9
+e_thanked : success (positive)
+e_thanked : "The Photograph on the Fridge"
+state e_next_winter #C8E6C9
+e_next_winter : success (positive)
+e_next_winter : "Six Hours the Next November"
+state e_taught #C8E6C9
+e_taught : completion (positive)
+e_taught : "Taught to Year Seven"
+state e_mrs_p #C8E6C9
+e_mrs_p : success (positive)
+e_mrs_p : "Mrs Petrakis Chairs It"
+state e_moved #E0E0E0
+e_moved : setback (neutral)
+e_moved : "When the Shop Changes Hands"
+state e_habit #C8E6C9
+e_habit : completion (positive)
+e_habit : "A Torch in a Known Drawer"
+state e_grown #E0E0E0
+e_grown : discovery (neutral)
+e_grown : "The Line That Got Crossed"
+state e_ordinary #E0E0E0
+e_ordinary : discovery (neutral)
+e_ordinary : "A Week People Mention"
+state e_wall #C8E6C9
+e_wall : completion (positive)
+e_wall : "Framed in the Hall"
+state e_left #E0E0E0
+e_left : setback (neutral)
+e_left : "Moving Away in the Summer"
+n_out --> n_hall : Go down to the village hall.
+n_hall --> t_shop : Take on the shop's freezers.
+n_hall --> t_nan : Take on Mrs Petrakis's power.
+n_hall --> t_school : Take on the school's server.
+t_shop --> s_stock : Work out what is actually in there.
+t_shop --> s_gen : Chase the garage generator.
+t_shop --> p_cyl : Count the cylinder hours.
+t_nan --> p_calls : Find out who is responsible.
+t_nan --> c_power : Get it enough power to shut down.
+t_nan --> c_paper : Argue for extensions instead.
+t_school --> s_stock : Work out what is actually in there.
+t_school --> s_gen : Chase the garage generator.
+t_school --> p_cyl : Count the cylinder hours.
+s_stock --> s_list : Write the list up where people can see i...
+s_stock --> s_share : Get it eaten before it spoils.
+s_stock --> s_fuel : Go and get fuel.
+s_gen --> p_hours : Do the arithmetic properly.
+s_gen --> p_hold : Wait on the helpline.
+s_gen --> p_sit : Go and sit with her.
+p_cyl --> c_ups : Look at the UPS in the cupboard.
+p_cyl --> c_keys : Get the caretaker to open up.
+p_cyl --> c_ask : Go and fetch the IT teacher.
+p_calls --> s_list : Write the list up where people can see i...
+p_calls --> s_share : Get it eaten before it spoils.
+p_calls --> s_fuel : Go and get fuel.
+c_power --> p_hours : Do the arithmetic properly.
+c_power --> p_hold : Wait on the helpline.
+c_power --> p_sit : Go and sit with her.
+c_paper --> c_ups : Look at the UPS in the cupboard.
+c_paper --> c_keys : Get the caretaker to open up.
+c_paper --> c_ask : Go and fetch the IT teacher.
+s_list --> s_triage : Triage it cold and honestly.
+s_list --> s_bbq : Put it on every barbecue in the street.
+s_list --> s_run : Get the generator running.
+s_share --> p_maths : Have someone check your numbers.
+s_share --> p_esc : Escalate it as medical.
+s_share --> p_neigh : Organise the street around the house.
+s_fuel --> c_shut : Find the shutdown command.
+s_fuel --> c_perm : Ring the head teacher.
+s_fuel --> c_ride : Cycle out in the dark.
+p_hours --> s_triage : Triage it cold and honestly.
+p_hours --> s_bbq : Put it on every barbecue in the street.
+p_hours --> s_run : Get the generator running.
+p_hold --> p_maths : Have someone check your numbers.
+p_hold --> p_esc : Escalate it as medical.
+p_hold --> p_neigh : Organise the street around the house.
+p_sit --> c_shut : Find the shutdown command.
+p_sit --> c_perm : Ring the head teacher.
+p_sit --> c_ride : Cycle out in the dark.
+c_ups --> s_triage : Triage it cold and honestly.
+c_ups --> s_bbq : Put it on every barbecue in the street.
+c_ups --> s_run : Get the generator running.
+c_keys --> p_maths : Have someone check your numbers.
+c_keys --> p_esc : Escalate it as medical.
+c_keys --> p_neigh : Organise the street around the house.
+c_ask --> c_shut : Find the shutdown command.
+c_ask --> c_perm : Ring the head teacher.
+c_ask --> c_ride : Cycle out in the dark.
+s_triage --> s_cold : Move it into neighbours' freezers.
+s_triage --> s_books : Keep a written record of everything.
+s_triage --> s_choice : Choose between the shop and the hall.
+s_bbq --> p_answer : Take the answer when it comes.
+s_bbq --> p_drive : Drive for the spare cylinder.
+s_bbq --> p_watch : Set up a watch rota.
+s_run --> c_cmd : Use the command on the cupboard door.
+s_run --> c_four : Buy four minutes off the kettle.
+s_run --> c_teacher : Bring her back on the bike.
+p_maths --> s_cold : Move it into neighbours' freezers.
+p_maths --> s_books : Keep a written record of everything.
+p_maths --> s_choice : Choose between the shop and the hall.
+p_esc --> p_answer : Take the answer when it comes.
+p_esc --> p_drive : Drive for the spare cylinder.
+p_esc --> p_watch : Set up a watch rota.
+p_neigh --> c_cmd : Use the command on the cupboard door.
+p_neigh --> c_four : Buy four minutes off the kettle.
+p_neigh --> c_teacher : Bring her back on the bike.
+c_shut --> s_cold : Move it into neighbours' freezers.
+c_shut --> s_books : Keep a written record of everything.
+c_shut --> s_choice : Choose between the shop and the hall.
+c_perm --> p_answer : Take the answer when it comes.
+c_perm --> p_drive : Drive for the spare cylinder.
+c_perm --> p_watch : Set up a watch rota.
+c_ride --> c_cmd : Use the command on the cupboard door.
+c_ride --> c_four : Buy four minutes off the kettle.
+c_ride --> c_teacher : Bring her back on the bike.
+s_cold --> s_hold : Check the temperatures twice a day.
+s_cold --> s_lost : Accept what has already gone.
+s_cold --> s_hall : Keep the hall lit instead.
+s_books --> p_engineer : Wait for the engineer.
+s_books --> p_spare : Keep the spare cylinder unused.
+s_books --> p_talk : Listen to her properly.
+s_choice --> c_saved : Bring it down cleanly.
+s_choice --> c_ext : Get the whole year an extension.
+s_choice --> c_backup : Make the missing backup visible.
+p_answer --> s_hold : Check the temperatures twice a day.
+p_answer --> s_lost : Accept what has already gone.
+p_answer --> s_hall : Keep the hall lit instead.
+p_drive --> p_engineer : Wait for the engineer.
+p_drive --> p_spare : Keep the spare cylinder unused.
+p_drive --> p_talk : Listen to her properly.
+p_watch --> c_saved : Bring it down cleanly.
+p_watch --> c_ext : Get the whole year an extension.
+p_watch --> c_backup : Make the missing backup visible.
+c_cmd --> s_hold : Check the temperatures twice a day.
+c_cmd --> s_lost : Accept what has already gone.
+c_cmd --> s_hall : Keep the hall lit instead.
+c_four --> p_engineer : Wait for the engineer.
+c_four --> p_spare : Keep the spare cylinder unused.
+c_four --> p_talk : Listen to her properly.
+c_teacher --> c_saved : Bring it down cleanly.
+c_teacher --> c_ext : Get the whole year an extension.
+c_teacher --> c_backup : Make the missing backup visible.
+s_hold --> s_thurs : Keep the shop open on the list.
+s_hold --> s_credit : Let people pay later in a notebook.
+s_hold --> s_tired : Do the jobs anyway.
+s_lost --> p_rhythm : Let it become a routine.
+s_lost --> p_others : Ask the same question about everyone.
+s_lost --> p_list : Put the names up in the hall.
+s_hall --> c_files : Hand the files round on memory sticks.
+s_hall --> c_lesson : Teach the caretaker the kit.
+s_hall --> c_survey : Start writing down what happened.
+p_engineer --> s_thurs : Keep the shop open on the list.
+p_engineer --> s_credit : Let people pay later in a notebook.
+p_engineer --> s_tired : Do the jobs anyway.
+p_spare --> p_rhythm : Let it become a routine.
+p_spare --> p_others : Ask the same question about everyone.
+p_spare --> p_list : Put the names up in the hall.
+p_talk --> c_files : Hand the files round on memory sticks.
+p_talk --> c_lesson : Teach the caretaker the kit.
+p_talk --> c_survey : Start writing down what happened.
+c_saved --> s_thurs : Keep the shop open on the list.
+c_saved --> s_credit : Let people pay later in a notebook.
+c_saved --> s_tired : Do the jobs anyway.
+c_ext --> p_rhythm : Let it become a routine.
+c_ext --> p_others : Ask the same question about everyone.
+c_ext --> p_list : Put the names up in the hall.
+c_backup --> c_files : Hand the files round on memory sticks.
+c_backup --> c_lesson : Teach the caretaker the kit.
+c_backup --> c_survey : Start writing down what happened.
+s_thurs --> s_sun : Get to Sunday.
+s_thurs --> s_count : Count the cost properly.
+s_thurs --> s_next : Ask what happens next time.
+s_credit --> p_sunday : Spend Sunday there.
+s_credit --> p_thanks : Take the thanks badly.
+s_credit --> p_rota : Keep the rota going anyway.
+s_tired --> c_friday : Get every file in by Friday.
+s_tired --> c_room : Open up the server room properly.
+s_tired --> c_write : Read the account out at the hall.
+p_rhythm --> s_sun : Get to Sunday.
+p_rhythm --> s_count : Count the cost properly.
+p_rhythm --> s_next : Ask what happens next time.
+p_others --> p_sunday : Spend Sunday there.
+p_others --> p_thanks : Take the thanks badly.
+p_others --> p_rota : Keep the rota going anyway.
+p_list --> c_friday : Get every file in by Friday.
+p_list --> c_room : Open up the server room properly.
+p_list --> c_write : Read the account out at the hall.
+c_files --> s_sun : Get to Sunday.
+c_files --> s_count : Count the cost properly.
+c_files --> s_next : Ask what happens next time.
+c_lesson --> p_sunday : Spend Sunday there.
+c_lesson --> p_thanks : Take the thanks badly.
+c_lesson --> p_rota : Keep the rota going anyway.
+c_survey --> c_friday : Get every file in by Friday.
+c_survey --> c_room : Open up the server room properly.
+c_survey --> c_write : Read the account out at the hall.
+s_sun --> n_storm : Watch the forecast turn.
+s_sun --> n_ready : Get ready properly this time.
+s_sun --> n_town : Deal with the people from town.
+s_count --> n_after : Wait for the lights to come back.
+s_count --> e_held : Hold everything together again.
+s_count --> e_seen : Notice what the week made visible.
+s_next --> e_tired_out : Get through a night that goes wrong.
+s_next --> e_notebook : Square up what you wrote down.
+s_next --> e_quiet : Let it stop without marking it.
+p_sunday --> n_storm : Watch the forecast turn.
+p_sunday --> n_ready : Get ready properly this time.
+p_sunday --> n_town : Deal with the people from town.
+p_thanks --> n_after : Wait for the lights to come back.
+p_thanks --> e_held : Hold everything together again.
+p_thanks --> e_seen : Notice what the week made visible.
+p_rota --> e_tired_out : Get through a night that goes wrong.
+p_rota --> e_notebook : Square up what you wrote down.
+p_rota --> e_quiet : Let it stop without marking it.
+c_friday --> n_storm : Watch the forecast turn.
+c_friday --> n_ready : Get ready properly this time.
+c_friday --> n_town : Deal with the people from town.
+c_room --> n_after : Wait for the lights to come back.
+c_room --> e_held : Hold everything together again.
+c_room --> e_seen : Notice what the week made visible.
+c_write --> e_tired_out : Get through a night that goes wrong.
+c_write --> e_notebook : Square up what you wrote down.
+c_write --> e_quiet : Let it stop without marking it.
+n_storm --> n_meet : Go to the village meeting.
+n_storm --> n_kit : Argue about what to buy.
+n_storm --> n_you : Let them put your name forward.
+n_ready --> e_committee : Take the seat.
+n_ready --> e_cupboard : Build the cupboard.
+n_ready --> e_paper_record : Put the account in the archive.
+n_town --> e_forgotten : Watch it fade by the spring.
+n_town --> e_thanked : Stand for the photograph.
+n_town --> n_meet : Go to the village meeting.
+n_after --> n_kit : Argue about what to buy.
+n_after --> n_you : Let them put your name forward.
+n_after --> e_committee : Take the seat.
+n_meet --> e_next_winter : See how the next one goes.
+n_meet --> e_taught : Teach it to the year below.
+n_meet --> e_mrs_p : Put Mrs Petrakis in the chair.
+n_kit --> e_moved : Say goodbye to the shop.
+n_kit --> e_habit : Keep the habit rather than the plan.
+n_kit --> e_grown : Notice the line you crossed.
+n_you --> e_ordinary : Let it become ordinary.
+n_you --> e_wall : Frame it all in the hall.
+n_you --> e_left : Move away in the summer.
+e_held --> [*]
+e_seen --> [*]
+e_tired_out --> [*]
+e_notebook --> [*]
+e_quiet --> [*]
+e_committee --> [*]
+e_cupboard --> [*]
+e_paper_record --> [*]
+e_forgotten --> [*]
+e_thanked --> [*]
+e_next_winter --> [*]
+e_taught --> [*]
+e_mrs_p --> [*]
+e_moved --> [*]
+e_habit --> [*]
+e_grown --> [*]
+e_ordinary --> [*]
+e_wall --> [*]
+e_left --> [*]
+
+legend right
+  The Blackout Week
+  Band 10-13 · Tier 1 · ~7 min
+  Topology: branch_and_bottleneck
+  91 nodes · 19 endings (10+ / 9n / 0-)
+  Production-eligible
+  Scale: short · prose
+endlegend
+@enduml

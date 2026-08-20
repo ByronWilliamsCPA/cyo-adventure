@@ -17,13 +17,16 @@ from typing import TYPE_CHECKING, cast
 
 import pytest
 
+from cyo_adventure.diversity.structure import structural_distance
 from cyo_adventure.generation.skeleton import is_sidecar
 from cyo_adventure.mutation.acceptance import (
     Stage,
     _cell_matches,  # pyright: ignore[reportPrivateUsage]
+    _graph_shape_unchanged,  # pyright: ignore[reportPrivateUsage]
     acceptance_to_dict,
     run_acceptance,
 )
+from cyo_adventure.mutation.identity import recompute_tier
 from cyo_adventure.mutation.operators import M1
 from cyo_adventure.mutation.ops import (
     MutationResult,
@@ -619,3 +622,50 @@ def test_tier2_blocked_gate_is_never_promotable(
     assert result.discarded_at_stage is Stage.GATE
     assert result.promotable is False
     assert Stage.TIER2_STATE not in [outcome.stage for outcome in result.stages]
+
+
+def test_m2_only_tier1_mutant_is_rejected_by_the_structural_floor() -> None:
+    """A shape-unchanged Tier-1 candidate must reach a floor, not fall between two.
+
+    `UW-C280`. The structural stage used to be skipped whenever the graph shape
+    was unchanged, on the stated ground that such a candidate had already used
+    the state-signature floor in the Tier-2 stage. That stage returns
+    immediately for a Tier-1 candidate, so for a Tier-1 parent NEITHER floor
+    ran. M2 permutes only ending payloads, leaving node ids and adjacency
+    untouched, so every M2-only mutant of a Tier-1 parent promoted at
+    `structural_distance == 0.000000` against a `TAU_CELL` of 0.05: measured, 52
+    of 63 eligible parents, with a structure stage running in 0 of 252 runs.
+
+    This asserts the routing, which is where the defect lived: the floor
+    function itself always rejected these candidates when handed one directly.
+    """
+    path = _eligible_parent_path()
+    parent = cast("dict[str, object]", json.loads(path.read_text(encoding="utf-8")))
+    assert recompute_tier(parent) == 1, "helper must yield a Tier-1 parent"
+
+    candidate = copy.deepcopy(parent)
+    endings = [
+        node
+        for node in cast("list[dict[str, object]]", candidate["nodes"])
+        if node.get("is_ending") and node.get("ending")
+    ]
+    if len(endings) < 2:
+        pytest.skip("parent has too few endings to permute")
+    endings[0]["ending"], endings[1]["ending"] = (
+        endings[1]["ending"],
+        endings[0]["ending"],
+    )
+
+    # The shape is untouched, which is exactly why the old routing skipped it.
+    assert _graph_shape_unchanged(parent, candidate)
+    assert structural_distance(parent, candidate) == 0.0
+    # Tier-1, so the state floor's own stage returns before reaching the floor.
+    assert recompute_tier(candidate) == 1
+
+    # Therefore the structural stage MUST apply. Guarding the routing condition
+    # directly, because a candidate that reaches no floor is the defect and a
+    # promotable verdict is only its symptom.
+    state_floor_ran = (
+        _graph_shape_unchanged(parent, candidate) and recompute_tier(candidate) == 2
+    )
+    assert not state_floor_ran, "no floor would run; the candidate is unguarded"

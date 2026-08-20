@@ -54,6 +54,7 @@ from cyo_adventure.mutation.subtree import (
     extract_subtree,
     node_ids,
 )
+from cyo_adventure.storybook.models import SATISFYING_ENDING_KINDS
 from cyo_adventure.storybook.theme_contract import (
     SLOT_TOKEN_RE,
     SlotConstraints,
@@ -92,9 +93,11 @@ if TYPE_CHECKING:
 M1_OP_ID = "M1"
 
 # The satisfying-ending kinds (a full-arc completion) the PL-20 arc floor
-# targets, per ADR-011 section 4. Read from the raw ending block, so the
-# pre-check matches ``validator.policy._SATISFYING_KINDS`` without importing it.
-_SATISFYING_KINDS = frozenset({"success", "completion"})
+# targets, per ADR-011 section 4. Read from the raw ending block, so the members
+# are compared against raw JSON strings; ``EndingKind`` is a ``StrEnum``, so the
+# set PL-20 itself reads answers that too and the pre-check no longer matches
+# the gate "by value" (`UW-C292`).
+_SATISFYING_KINDS = SATISFYING_ENDING_KINDS
 
 # Static precondition and error messages, kept as single-line module constants
 # so a long fixed string never needs a plain-string line wrap.
@@ -323,7 +326,7 @@ def _shortest_satisfying_nodes(
     """Return the fewest nodes on any path from start to a satisfying ending.
 
     Path length is measured in nodes (hops + 1), matching
-    ``validator.policy._shortest_path_nodes``. Returns None when no satisfying
+    ``validator.policy._opening_extent``. Returns None when no satisfying
     ending is reachable.
     """
     if start is None:
@@ -397,7 +400,7 @@ def _pl25_opening_reason(
         return None
     if not nx.has_path(graph, start, host_decision):
         return None
-    # Nodes, not hops, matching validator.policy._shortest_path_nodes.
+    # Nodes, not hops, matching validator.policy._opening_extent.
     depth = int(nx.shortest_path_length(graph, start, host_decision)) + 1
     floor = window[0]
     if depth >= floor:

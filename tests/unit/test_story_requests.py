@@ -5,6 +5,8 @@ from __future__ import annotations
 import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from types import SimpleNamespace
+from typing import Any, cast
 
 import httpx
 import pytest
@@ -38,6 +40,12 @@ from cyo_adventure.story_requests.interpretation import build_general_interpreta
 from cyo_adventure.story_requests.screening import screen_request_text
 from cyo_adventure.story_requests.service import ApprovalConfirmation
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
+from cyo_adventure.validator.band_profile import (
+    _PRODUCTION_CELLS,  # pyright: ignore[reportPrivateUsage]
+    breadth_scaled_floors,
+    cell_ending_bounds,
+    reading_level_target_for,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -100,11 +108,28 @@ def test_brief_from_request_uses_band_budget_and_generic_protagonist() -> None:
     assert brief.age_band == AgeBand.BAND_8_11
     assert brief.length == Length.SHORT
     assert brief.narrative_style == NarrativeStyle.PROSE
-    # band_profile 8-11 is min_nodes=15, max_nodes=30; round(midpoint) == 22.
-    assert brief.target_node_count == 22
-    # breadth_scaled_floors(22, "prose") == ceil(22 * 0.15) == 4, above the
-    # band's absolute min_endings floor of 3.
-    assert brief.ending_count == 4
+    # Derived from the CELL envelope, not the band's. 8-11/short/prose is
+    # 60-100 nodes. This used to read the band envelope (15-30, midpoint 22, 4
+    # endings) while PL-17 floored from the cell, so the prompt demanded exactly
+    # 4 endings where the gate required 9 (`UW-C279`).
+    #
+    # The suggested node count is the midpoint, but the ending floor comes from
+    # the TOP of the range: the prompt authorises the whole range while marking
+    # the ending count EXACTLY, PL-17 floors from the story's ACTUAL node count,
+    # and `breadth_scaled_floors` rises with that count. Deriving the floor from
+    # the midpoint too left the ask short in 17 of the 18 offered cells.
+    cell = _PRODUCTION_CELLS[("8-11", "short", "prose")]
+    assert brief.target_node_count == round((cell[0] + cell[1]) / 2)
+
+    bounds = cell_ending_bounds("8-11", "short", "prose")
+    expected_endings, _ = breadth_scaled_floors(
+        cell[1], "prose", None if bounds is None else bounds[1]
+    )
+    assert brief.ending_count == expected_endings
+    midpoint_endings, _ = breadth_scaled_floors(round((cell[0] + cell[1]) / 2), "prose")
+    assert brief.ending_count > midpoint_endings, (
+        "the midpoint derivation is the defect; this must not silently return to it"
+    )
     assert brief.protagonist.name == "Explorer"  # never a real child name
     assert brief.tier == 1
 
@@ -131,7 +156,12 @@ def test_brief_from_request_without_profile_uses_band_reading_target() -> None:
         age_band="8-11",
     )
     brief = brief_from_request(request, None)
-    assert brief.reading_level_target == pytest.approx(4.0)  # _BAND_FK_TARGET[8-11]
+    # Derived from the single source of record rather than restated, which is
+    # how the old literal (4.0) drifted from the catalog's declared 4.5
+    # (`UW-C281`).
+    expected = reading_level_target_for("8-11")
+    assert expected is not None
+    assert brief.reading_level_target == pytest.approx(expected)
 
 
 def test_brief_from_request_uses_reading_cap_when_below_sentinel() -> None:
@@ -1425,4 +1455,83 @@ class TestCanAutoApprove:
         assert (
             await service.can_auto_approve(session, profile, family)  # type: ignore[arg-type]
             is False
+        )
+
+
+def test_a_reading_cap_above_the_band_target_does_not_raise_it() -> None:
+    """A cap is a ceiling, so it may lower a band's FK target and never raise it.
+
+    `api/schemas.py` documents `reading_level_cap` as a ceiling that "can only
+    ever tighten", but the brief substituted it for the target, and RL-13 reads
+    a target as the CENTRE of a plus-or-minus window. A guardian cap of 2.0 on a
+    band targeting 4.5 therefore produced a window centred on 2.0, and,
+    separately, a cap ABOVE the band target silently RAISED it. Clamping fixes
+    both directions; this pins the direction the old code got backwards
+    (`UW-C281`).
+    """
+    band_target = reading_level_target_for("3-5")
+    assert band_target is not None
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        request_text="a gentle story",
+        status="pending",
+        age_band="3-5",
+    )
+
+    profile = SimpleNamespace(
+        reading_level_cap=9.0,
+        banned_themes=None,
+        allowed_content_flags={},
+    )
+    brief = brief_from_request(request, cast("Any", profile))
+
+    assert brief.reading_level_target == pytest.approx(band_target)
+
+
+def test_brief_ending_count_satisfies_the_gate_in_every_cell() -> None:
+    """The prompt must never demand an ending count PL-17 will reject.
+
+    `UW-C279`. `generation/prompts.py` renders the brief's `ending_count` as
+    "produce EXACTLY N ending node(s) ... Not more, not fewer" in the same block
+    that states the cell's node range. The brief derived N from the BAND
+    envelope while PL-17 floors from the CELL envelope, so in 17 of 18 offered
+    cells the two disagreed, sometimes by an order of magnitude (8-11/long asked
+    for 4 where the gate needs 24; 13-16/long/gamebook asked 7 where it needs
+    93). A generator obeying the prompt exactly could not pass, and one that
+    passed was disobeying an instruction marked EXACTLY.
+
+    This sweeps every offered cell rather than sampling, because the defect was
+    not in one cell's arithmetic but in which table was consulted, and a
+    single-cell test would have passed on the one cell that happened to agree.
+    """
+    for (band, length, style), (_min, max_nodes, _depth) in _PRODUCTION_CELLS.items():
+        request = StoryRequest(
+            family_id=uuid.uuid4(),
+            request_text="a story",
+            status="pending",
+            age_band=band,
+            length=length,
+            narrative_style=style,
+        )
+        brief = brief_from_request(request, None)
+
+        # The gate applies the floor to the story's ACTUAL node count, and
+        # `breadth_scaled_floors` is monotonically increasing in that count, so
+        # the least favourable case a compliant generator can land on is the
+        # cell MAXIMUM. This assertion read `min_nodes` and described it as the
+        # least favourable case, which is backwards; it passed while the ask sat
+        # below the floor in 17 of the 18 cells, because the prompt authorises
+        # the whole range while marking the ending count EXACTLY.
+        #
+        # `cell_ending_bounds(...)[1]` is passed because `_effective_floors`
+        # passes it: PL-17 caps the scaled floor at the cell's ending ceiling,
+        # so omitting it here would assert against a floor the gate never applies.
+        bounds = cell_ending_bounds(band, length, style)
+        floor_at_max, _ = breadth_scaled_floors(
+            max_nodes, style, None if bounds is None else bounds[1]
+        )
+        assert brief.ending_count >= floor_at_max, (
+            f"{band}/{length}/{style}: prompt asks for exactly "
+            f"{brief.ending_count} endings, PL-17 floors at {floor_at_max} "
+            f"for a compliant {max_nodes}-node story"
         )

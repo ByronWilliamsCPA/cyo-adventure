@@ -732,20 +732,35 @@ def run_acceptance(  # noqa: PLR0913, PLR0911
         gate_blocked=gate.blocked, cell_ok=cell_ok, outstanding=outstanding
     )
 
-    # --- Stage 3 (structural anti-clone floor): shape-changed candidates only ---
+    # --- Stage 3 (structural anti-clone floor) ---
     # #CRITICAL: data-integrity: the structural floor is reject-only and gates
     # ONLY the promotable decision (design 4.6). A candidate already held for
-    # re-guidance stays held (it is not promotable regardless), and a
-    # shape-UNCHANGED (M5-only) candidate used the state-signature floor in the
-    # Tier-2 stage above; running both would double-count. So the floor runs only
-    # for a would-be-promotable, graph-shape-CHANGED candidate, and it can only
-    # turn that promotion into a discard, never admit anything (CR-2).
+    # re-guidance stays held (it is not promotable regardless). It is skipped for
+    # a shape-UNCHANGED candidate ONLY when the state-signature floor actually
+    # ran, because running both would double-count.
+    #
+    # "Actually ran" is the correction. This used to skip on shape-unchanged
+    # alone, on the stated ground that such a candidate "used the state-signature
+    # floor in the Tier-2 stage above". That stage opens with
+    # ``if recompute_tier(candidate) != 2: return None``, so for a TIER-1 parent
+    # it returned before reaching the floor and NEITHER floor ran. M2 permutes
+    # only ending payloads, leaving node ids and adjacency untouched, so every
+    # M2-only mutant of a Tier-1 parent fell through the gap: 52 of 63 eligible
+    # parents produced a mutant at ``structural_distance == 0.000000`` against a
+    # ``TAU_CELL`` of 0.05 that still reached ``promotable=True``, with a
+    # structure stage running in 0 of 252 runs. ADR-020 Amendment 1 clause 2
+    # states in as many words that an M2-only re-map "is rejected here"
+    # (``UW-C280``). Handed the same candidate directly,
+    # ``structural_floor_reason`` rejects it, so only the routing was wrong.
     # #VERIFY: test_skeleton_mutation_acceptance.py asserts a resolved-reguide M1 swap that
-    # genuinely re-shapes the tree stays promotable, and test_skeleton_mutation_floors.py
-    # pins the clone-rejection clauses on the floor function directly.
-    structural_stage_applies = would_be_promotable and not _graph_shape_unchanged(
-        parent, candidate
+    # genuinely re-shapes the tree stays promotable,
+    # ::test_m2_only_tier1_mutant_is_rejected_by_the_structural_floor pins the gap
+    # itself, and test_skeleton_mutation_floors.py pins the clone-rejection
+    # clauses on the floor function directly.
+    state_floor_ran = (
+        _graph_shape_unchanged(parent, candidate) and recompute_tier(candidate) == 2
     )
+    structural_stage_applies = would_be_promotable and not state_floor_ran
     struct_reason = (
         _structural_floor_stage(context, parent, candidate, parent_slug)
         if structural_stage_applies

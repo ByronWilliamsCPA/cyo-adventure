@@ -42,7 +42,13 @@ export interface StoryNode {
   id: string
   body: string
   on_enter?: Effect[]
-  choices: Choice[]
+  // Optional, matching schema/storybook.schema.json, which requires only `id`
+  // and `body` on a node. Declaring it required was the root of UW-C282: the
+  // blob is served verbatim (no `response_model` on the read route, and
+  // `generation/persistence.py` stores a shallow dict copy), and 777 nodes
+  // across 28 of 31 committed filled books omit the key on their endings, so
+  // the reader threw on `node.choices.filter` at nearly every ending.
+  choices?: Choice[]
   is_ending: boolean
   ending?: Ending | null
   tags?: string[]
@@ -62,7 +68,10 @@ export interface Storybook {
   version: number
   title: string
   metadata: Record<string, unknown>
-  variables: Variable[]
+  // Optional for the same reason as `StoryNode.choices` above; the schema does
+  // not require it. No committed filled book omits it today, but three
+  // committed skeletons do, and nothing normalises the blob on the way out.
+  variables?: Variable[]
   start_node: string
   nodes: StoryNode[]
 }

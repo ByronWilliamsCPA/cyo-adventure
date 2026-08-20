@@ -170,7 +170,7 @@ export function useFlowedStop(
     const nodesById = new Map(story.nodes.map((node) => [node.id, node]))
     for (let i = startIndex; i < stop.nodeIds.length - 1; i += 1) {
       const hop = nodesById.get(stop.nodeIds[i])
-      const choiceId = hop?.choices[0]?.id
+      const choiceId = hop?.choices?.[0]?.id
       // #EDGE: data-integrity: unreachable given composeStop's own contract
       // (every hop but the last has exactly one choice, or composition would
       // have stopped there instead), kept as a fail-closed guard rather than

@@ -154,14 +154,16 @@ warning only; the parent makes the final call).
 | Age band | FK grade target | Target +/- tolerance | Guidance |
 |----------|-----------------:|------------------------|----------|
 | 3-5 | 1.0 | 0.0 to 2.0 | Very short, rhythmic sentences; heavy repetition. See "Craft for Delight" below: draft for the read-aloud ear before this window. |
-| 5-8 | 2.0 | 1.0 to 3.0 | Short, simple sentences. Familiar vocabulary. One idea per sentence. |
-| 8-11 | 4.0 | 3.0 to 5.0 | Short sentences (10-14 words average). Simple vocabulary. One idea per sentence. Concrete imagery. |
-| 10-13 | 6.0 | 5.0 to 7.0 | Moderate sentence length (14-18 words average). Can introduce unfamiliar words if context makes them clear. |
-| 13-16 | 8.0 | 7.0 to 9.0 | Longer sentences acceptable. Figurative language, irony, and ambiguous outcomes are age-appropriate. |
-| 16+ | 10.0 | 9.0 to 11.0 | Full adult sentence variety. Figurative language, irony, moral ambiguity, and gamebook terseness (in the `gamebook` style) are all in bounds. |
+| 5-8 | 2.5 | 1.5 to 3.5 | Short, simple sentences. Familiar vocabulary. One idea per sentence. |
+| 8-11 | 4.5 | 3.5 to 5.5 | Short sentences (10-14 words average). Simple vocabulary. One idea per sentence. Concrete imagery. |
+| 10-13 | 5.5 | 4.5 to 6.5 | Moderate sentence length (14-18 words average). Can introduce unfamiliar words if context makes them clear. |
+| 13-16 | 7.0 | 6.0 to 8.0 | Longer sentences acceptable. Figurative language, irony, and ambiguous outcomes are age-appropriate. |
+| 16+ | 9.0 | 8.0 to 10.0 | Full adult sentence variety. Figurative language, irony, moral ambiguity, and gamebook terseness (in the `gamebook` style) are all in bounds. |
 
-Targets are `story_requests/brief.py`'s `_BAND_FK_TARGET` table (the FK-target source of record
-used when a child's `reading_level_cap` is unset); the tolerance window applies
+Targets are `validator/band_profile.py`'s `_READING_LEVEL_TARGET` table, the single source of
+record (owner ruling 2026-08-18). This guide previously called ITSELF the source of record and
+stated 8.0 at 13-16 and 10.0 at 16+ while the catalog declared 7.0 and 9.0, so prose written to
+its own centre landed a full grade outside the window RL-13 measures (`UW-C281`); the tolerance window applies
 `storybook/models.py`'s `ReadingLevel.tolerance` default of `1.0`. See "Craft for Delight" below
 for why the 3-5 window should not be drafted to as a literal, line-by-line target.
 

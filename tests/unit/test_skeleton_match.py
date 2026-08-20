@@ -24,19 +24,62 @@ from cyo_adventure.generation.skeleton_match import (
 from cyo_adventure.storybook.models import AgeBand, NarrativeStyle, StoryMetadata
 
 
+def _cell_members_from_disk(band: str, length: str, style: str) -> list[str]:
+    """Recompute a cell's membership straight from the skeleton files.
+
+    Deliberately an independent reimplementation rather than a call to
+    `candidates_for_cell`, which would make the assertions tautological. It reads
+    the same three metadata fields the selector keys on, from the same directory,
+    and sorts by filename as the selector does.
+
+    Exists because these tests used to freeze the expected slug list. Every
+    skeleton authored into a covered cell then broke them, which taxed the
+    project's central activity: the 2026-08-18 fan-out added fourteen books and
+    broke four tests that had no defect in them (`UW-C304`).
+    """
+    import json
+    from pathlib import Path
+
+    members: list[str] = []
+    for path in sorted(Path("skeletons").glob(f"{band}/*.json")):
+        if path.name.endswith((".contract.json", ".lineage.json", ".narrative.json")):
+            continue
+        try:
+            doc = json.loads(path.read_text())
+        except (ValueError, OSError):
+            continue
+        meta = doc.get("metadata") or {}
+        if not isinstance(meta, dict):
+            continue
+        if meta.get("production_eligible") is False:
+            continue
+        if meta.get("series") is not None:
+            continue
+        if meta.get("length") != length or meta.get("narrative_style") != style:
+            continue
+        if meta.get("age_band") != band:
+            continue
+        members.append(path.stem)
+    return members
+
+
 def test_candidates_for_cell_matches_real_library_cell() -> None:
-    """10-13/medium/prose returns every in-cell production skeleton, sorted."""
-    assert candidates_for_cell("10-13", "medium", "prose") == [
-        "the-envoy-of-three-courts",
-        "the-flooded-quarter",
-        "the-hollow-lighthouse",
-    ]
+    """10-13/medium/prose returns every in-cell production skeleton, sorted.
+
+    Checked against an independent read of the skeleton files rather than a
+    frozen slug list, so authoring into this cell cannot break a test that has
+    no defect in it.
+    """
+    expected = _cell_members_from_disk("10-13", "medium", "prose")
+    assert expected, "fixture guard: the cell must have members for this to test"
+    assert candidates_for_cell("10-13", "medium", "prose") == expected
 
 
 def test_candidates_for_cell_excludes_non_eligible_and_length_mismatch() -> None:
     """10-13/short/prose excludes the non-eligible clocktower-cipher (which has no
     length/style at all) and every other length in the band."""
     assert candidates_for_cell("10-13", "short", "prose") == [
+        "the-blackout-week",
         "the-cinderwick-exchange",
         "the-glass-comet",
         "the-midnight-frequency",
@@ -45,17 +88,19 @@ def test_candidates_for_cell_excludes_non_eligible_and_length_mismatch() -> None
 
 
 def test_candidates_for_cell_matches_style_for_teen_band() -> None:
-    """13-16/medium: prose and gamebook are different cells (style-aware band)."""
-    assert candidates_for_cell("13-16", "medium", "prose") == [
-        "the-conservatory-wars",
-        "the-signal-in-the-static",
-        "the-undertow-season",
-    ]
-    assert candidates_for_cell("13-16", "medium", "gamebook") == [
-        "the-iron-spire-trial",
-        "the-smugglers-cut",
-        "the-sunspire-ascent",
-    ]
+    """13-16/medium: prose and gamebook are different cells (style-aware band).
+
+    The property is the SPLIT, not the membership: no slug may appear in both
+    lists, and each must match an independent read of the files. Freezing the
+    membership made authoring into either cell break this test.
+    """
+    prose = candidates_for_cell("13-16", "medium", "prose")
+    gamebook = candidates_for_cell("13-16", "medium", "gamebook")
+    assert prose == _cell_members_from_disk("13-16", "medium", "prose")
+    assert gamebook == _cell_members_from_disk("13-16", "medium", "gamebook")
+    assert prose, "fixture guard: the prose cell must have members"
+    assert gamebook, "fixture guard: the gamebook cell must have members"
+    assert not set(prose) & set(gamebook)
 
 
 def test_candidates_for_cell_ignores_style_below_teen_band() -> None:
@@ -63,6 +108,7 @@ def test_candidates_for_cell_ignores_style_below_teen_band() -> None:
     skeletons in the cell."""
     assert candidates_for_cell("8-11", "short", "gamebook") == [
         "the-cave-of-echoes",
+        "the-half-hour-call",
         "the-locked-carousel",
         "the-robot-fair-sabotage",
     ]
@@ -813,6 +859,50 @@ def test_a_within_cap_skeleton_is_still_a_candidate(
     slugs = [slug for slug, _ in skeleton_match._production_candidates("5-8")]  # pyright: ignore[reportPrivateUsage]
 
     assert slugs == ["fits"]
+
+
+# `is_fill_feasible` allows `cap * 0.8 / 2.0` declared words (the 0.8 margin is
+# applied inside it, and `_TOKENS_PER_FILL_WORD` is 2.0). At the 131,072 default
+# that is 52,428 words; at `anthropic/claude-haiku-4.5`'s 64,000 ceiling it is
+# 25,600. 30,000 words therefore sits BETWEEN the two caps.
+_BETWEEN_CAPS_WORDS = 30_000
+
+
+@pytest.mark.unit
+def test_a_bound_skeleton_over_a_models_cap_is_still_a_candidate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Selection screens the model-independent default for BOTH fill paths.
+
+    This is a guard against re-narrowing, and it is worth the words because
+    narrowing looks obviously right. `UW-C302` was that a BOUND fill (one whose
+    skeleton carries a `.contract.json` sidecar) could not be chunked, so a bound
+    skeleton over the serving model's ceiling truncated and burned its whole
+    repair budget; the tempting fix is to screen bound skeletons at that ceiling
+    here. That fix was written and measured: at the lowest live ceiling it drops
+    7 skeletons and narrows 6 of the 28 populated cells, 16+/long worst at 4
+    candidates to 2. It was not shipped, because the actual repair is to let a
+    bound fill chunk (``fill_subset_bound.md``), after which the bound and
+    unbound paths meet the same limit and this screen is correct for both.
+
+    A model-dependent screen would also make the catalog a child can be offered
+    depend on which backend happens to be configured, so swapping models would
+    silently change the library rather than the plumbing.
+    """
+    band_dir = tmp_path / "5-8"
+    _write_sized_skeleton(band_dir, "bound-and-big", fill_words=_BETWEEN_CAPS_WORDS)
+    # A contract sidecar is what makes a fill bound (`worker.py`'s
+    # `load_contract_for` returns None without one), and it must not itself be
+    # scanned as a skeleton.
+    (band_dir / "bound-and-big.contract.json").write_text(
+        json.dumps({"contract_version": 1, "skeleton_slug": "bound-and-big"}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
+
+    slugs = [slug for slug, _ in skeleton_match._production_candidates("5-8")]  # pyright: ignore[reportPrivateUsage]
+
+    assert slugs == ["bound-and-big"]
 
 
 @pytest.mark.unit

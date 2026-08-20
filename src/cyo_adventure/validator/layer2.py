@@ -41,19 +41,21 @@ from typing import TYPE_CHECKING, cast
 import networkx as nx
 
 from cyo_adventure.player.engine import StoryEngine
+from cyo_adventure.storybook.condition import compared_int_literals
+from cyo_adventure.storybook.models import VariableType
 from cyo_adventure.validator.report import (
     Severity,
     ValidationFinding,
     ValidationReport,
 )
-from cyo_adventure.validator.walk import walk_configurations
+from cyo_adventure.validator.walk import DEFAULT_CONFIG_CAP, walk_configurations
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping
 
     from cyo_adventure.player.state import ReadingState
     from cyo_adventure.storybook.evaluator import VarState, VarValue
-    from cyo_adventure.storybook.models import Ending, Storybook
+    from cyo_adventure.storybook.models import Ending, Storybook, Variable
     from cyo_adventure.validator.walk import ConfigKey, WalkResult
 
 
@@ -92,8 +94,9 @@ HAND_AUTHORING_NODE_CEILING = 460
 def validate_layer2(
     story: Storybook,
     *,
-    cap: int = 100_000,
+    cap: int = DEFAULT_CONFIG_CAP,
     carried: VarState | None = None,
+    entry_node: str | None = None,
 ) -> ValidationReport:
     """Run every Layer-2 rule over a Tier-2 story's reachable configuration space.
 
@@ -111,6 +114,10 @@ def validate_layer2(
             this to ask whether a predecessor's win state leaves the receiving
             book sound, which is a question no other rule can pose because every
             other walk begins at the declared initials.
+        entry_node: The node the walk begins at, or ``None`` for the story's
+            ``start_node``. SR-9 passes the receiving book's
+            ``series_entry_node`` so the Layer-2 delta it measures is taken from
+            the node the continuation reader actually enters (`UW-C296`).
 
     Returns:
         ValidationReport: All findings from the Layer-2 rules. ``report.ok``
@@ -122,7 +129,12 @@ def validate_layer2(
     if story.metadata.tier == 1:
         return report
 
-    result = walk_configurations(story, cap=cap, carried=carried)
+    # L2-15 runs BEFORE the walk, on purpose. It is the early warning for the
+    # commonest cause of an L2-12 cap, so emitting it only on a completed walk
+    # would silence it in exactly the case it exists for.
+    _check_over_declared_int_ranges(story, report)
+
+    result = walk_configurations(story, cap=cap, carried=carried, entry_node=entry_node)
 
     # L2-12: configuration space too large. Return immediately -- partial results
     # are unreliable for the remaining rules.
@@ -151,6 +163,146 @@ def validate_layer2(
     _check_no_all_fatal_decisions(ctx, story, report)
 
     return report
+
+
+# ---------------------------------------------------------------------------
+# L2-15: a declared integer range far wider than the story exercises
+# ---------------------------------------------------------------------------
+
+# How far a declared int range may exceed the span its conditions test before
+# L2-15 warns. A counter tested at 1, 2 and 3 has an exercised span of 3, so a
+# 0..12 declaration passes and 0..99 does not.
+#
+# Grounding, and the reason this rule exists at all: the first story-first
+# gamebook declared `wounds` and `seen` as 0..99 when no condition in it compares
+# either above 3. That is 25x on each of two variables, a 625x inflation of the
+# reachable configuration space, and it surfaced only as an L2-12 ceiling breach
+# 16,000 words after the mistake was made. L2-12's own message already says
+# "reduce variable count or tighten bounds"; this says it early and says WHICH
+# variable (`UW-C294`).
+#
+# `AL-008` recorded exactly this lesson on 2026-07-25 against this exact cap. Its
+# proposed change was a corrected prose rule, no check was built, and it was
+# re-learned 24 days later. This is the check that lesson should have produced.
+#
+# 4x is deliberately loose, and the span it multiplies is measured from the
+# declared floor to the highest tested literal (see `_exercised_int_span`). A
+# story may legitimately declare headroom its conditions do not test: a counter
+# incremented more often than it is read, or a range a series continuation must
+# be able to receive (`AL-038`). Values above the highest threshold are also not
+# strictly inert, because `inc`/`dec` are order-dependent and a saturating
+# counter is not the same story as a clamped one. So the rule targets the
+# order-of-magnitude mistake and stays advisory; it does not assert the extra
+# values are unreachable.
+_INT_RANGE_SLACK_MULTIPLE = 4
+
+# Advisory: a wide range is a cost, not a defect, and a story that pays it and
+# still fits under L2-12 is valid. Escalating would also break the series case,
+# where a receiving book's range must contain the sending book's (`AL-038`).
+_L2_15_SEVERITY = Severity.WARNING
+
+
+def _declared_int_span(variable: Variable) -> int | None:
+    """Return the number of values a declared int variable can hold.
+
+    Args:
+        variable: The declared story variable.
+
+    Returns:
+        int | None: The count of representable values, or None when the variable
+            is not an int or does not declare both bounds. An unbounded int is
+            L2-12's problem rather than this rule's: there is no declared range
+            to call disproportionate.
+    """
+    if variable.type is not VariableType.INT:
+        return None
+    low, high = variable.min, variable.max
+    if not isinstance(low, int) or not isinstance(high, int):
+        return None
+    if isinstance(low, bool) or isinstance(high, bool):
+        return None
+    return high - low + 1
+
+
+def _exercised_int_span(literals: set[int], declared_min: int) -> int:
+    """Return the range of values a variable's conditions can distinguish.
+
+    Measured from the declared floor to the highest literal tested, NOT between
+    the lowest and highest literal. A counter declared 0..6 and tested only at
+    ``>= 3`` distinguishes four values (0, 1, 2, and 3-or-more), not one: every
+    value below the threshold is a distinct step toward it. Measuring literal
+    spread instead reported that counter as exercising a single value and fired
+    on two committed skeletons that were correctly authored.
+
+    Args:
+        literals: Every int literal the story's conditions compare the variable
+            against.
+        declared_min: The variable's declared lower bound.
+
+    Returns:
+        int: The count of distinguishable values, or 0 when the variable is
+            never compared against an int literal.
+    """
+    if not literals:
+        return 0
+    return max(max(literals) - declared_min + 1, 1)
+
+
+def _check_over_declared_int_ranges(story: Storybook, report: ValidationReport) -> None:
+    """L2-15: warn on a declared int range far wider than the conditions test.
+
+    Static: reads the condition trees, never the walk, so it fires before the
+    walk and survives a capped one. See ``_INT_RANGE_SLACK_MULTIPLE``.
+
+    A variable no condition compares against an int literal is skipped rather
+    than reported with an exercised span of zero. Such a variable may be read
+    only for its effects or carried for a continuation, and calling every one of
+    those over-declared would make the rule noise.
+
+    Args:
+        story: The parsed story.
+        report: The report to append findings to.
+    """
+    compared: dict[str, set[int]] = {}
+    for node in story.nodes:
+        for choice in node.choices:
+            if choice.condition is None:
+                continue
+            for name, literals in compared_int_literals(choice.condition).items():
+                compared.setdefault(name, set()).update(literals)
+
+    for variable in story.variables:
+        declared = _declared_int_span(variable)
+        if declared is None:
+            continue
+        # `_declared_int_span` returned a value, so both bounds are real ints.
+        declared_min = cast("int", variable.min)
+        exercised = _exercised_int_span(
+            compared.get(variable.name, set()), declared_min
+        )
+        if exercised == 0:
+            continue
+        if declared <= exercised * _INT_RANGE_SLACK_MULTIPLE:
+            continue
+        tested = sorted(compared[variable.name])
+        report.add(
+            ValidationFinding(
+                rule_id="L2-15",
+                severity=_L2_15_SEVERITY,
+                story_id=story.id,
+                message=(
+                    f"L2-15 range: variable '{variable.name}' is declared "
+                    f"{variable.min}..{variable.max} ({declared} values) but the "
+                    f"highest value any condition tests it against is "
+                    f"{tested[-1]}, so only {exercised} of them can change a "
+                    f"choice's visibility; the declared range multiplies the "
+                    f"configuration space L2-12 must enumerate by "
+                    f"{declared / exercised:.0f}x in story '{story.id}' "
+                    f"(advisory only; tighten the bounds to what the story "
+                    f"tests, unless the headroom is deliberate)"
+                ),
+            )
+        )
 
 
 # ---------------------------------------------------------------------------

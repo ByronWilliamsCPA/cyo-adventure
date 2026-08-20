@@ -1352,7 +1352,7 @@ def _depth_chain_story(band: str) -> dict[str, object]:
 
     ``d0`` is the start node (depth 1, one node), ``d1`` is depth 2, ``d2`` is
     depth 3; depth counts nodes from the start inclusive, matching
-    ``validator.policy._shortest_path_nodes``.
+    ``validator.policy._opening_extent``.
     """
     return {
         "metadata": {"age_band": band},

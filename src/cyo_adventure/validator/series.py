@@ -19,7 +19,10 @@ from __future__ import annotations
 from itertools import pairwise
 from typing import TYPE_CHECKING
 
-from cyo_adventure.storybook.models import EndingKind, VariableType
+from cyo_adventure.storybook.models import (
+    SATISFYING_ENDING_KINDS as _MODEL_SATISFYING_ENDING_KINDS,
+)
+from cyo_adventure.storybook.models import VariableType
 from cyo_adventure.validator.layer2 import validate_layer2
 from cyo_adventure.validator.report import (
     Severity,
@@ -37,19 +40,16 @@ if TYPE_CHECKING:
 # A satisfying continuation ending: a win the reader carries into the next book.
 # A fail-fast negative ending does not continue the campaign, matching PL-20.
 #
-# Public: characters/progression.py (via api/reading.py) imports this same
-# definition to decide whether a completed book grows a persistent character's
-# stats, so the runtime consumer reuses SR-9's answer instead of adding a sixth
-# copy of it. This is not a single source of truth, and the promotion did not
-# make it one: ``validator/policy.py::_SATISFYING_KINDS`` already holds an
-# independent set with the same membership, and the offline mutation module
-# (ADR-020) holds three more: ``mutation/state_ops.py`` as ``EndingKind``
-# values, ``mutation/identity.py`` and ``mutation/operators.py`` as bare
-# strings. Unifying those five is pre-existing work and out of scope here.
-# Exported under a public name for
-# the same reason as ``MAX_ENTRY_STATES`` and ``satisfying_ending_reachable``
-# below; ``_SATISFYING_KINDS`` keeps this module's own callers unchanged.
-SATISFYING_ENDING_KINDS = frozenset({EndingKind.SUCCESS, EndingKind.COMPLETION})
+# Public: characters/progression.py (via api/reading.py) imports this name to
+# decide whether a completed book grows a persistent character's stats, so the
+# runtime consumer reuses SR-9's answer.
+#
+# The five independent copies this comment used to enumerate are gone. The set
+# now lives once, in ``storybook.models.SATISFYING_ENDING_KINDS``, and PL-20,
+# SR-9, the character runtime, the mutation clock re-proof and the two mutation
+# pre-checks all read that one definition (`UW-C292`). This module re-exports it
+# under the name its callers already import.
+SATISFYING_ENDING_KINDS = _MODEL_SATISFYING_ENDING_KINDS
 _SATISFYING_KINDS = SATISFYING_ENDING_KINDS
 
 # Bands that must run episodic (no state carry) series, per ADR-011 section 8.
@@ -308,18 +308,31 @@ def _check_state_carry(series_books: list[_Book], report: ValidationReport) -> N
 MAX_ENTRY_STATES = 64
 
 
-def _satisfying_exit_states(book: Storybook) -> tuple[list[VarState], bool]:
+def _satisfying_exit_states(
+    book: Storybook, entry_node: str | None = None
+) -> tuple[list[VarState], bool]:
     """Return the distinct variable states at ``book``'s satisfying endings.
+
+    The sender is walked from the node ITS reader enters, not unconditionally
+    from ``start_node``. A middle book of a chain is both a receiver and a
+    sender: its reader arrives at its own ``series_entry_node``, so exit states
+    computed from ``start_node`` describe a read of a prologue that reader skips,
+    and the states handed to the next book are the wrong ones. This is the same
+    `UW-C296` defect the receiver side of SR-9 already fixes; the sender side was
+    missed in that pass.
 
     Args:
         book: The sending book.
+        entry_node: The node the sending book's own reader enters at, or ``None``
+            for its ``start_node``. ``None`` is correct for the first book in a
+            chain, which nobody enters mid-way.
 
     Returns:
         tuple: The distinct exit states (deduplicated, deterministically
             ordered), and whether the walk capped or the state list was
             truncated at :data:`MAX_ENTRY_STATES`.
     """
-    result = walk_configurations(book)
+    result = walk_configurations(book, entry_node=entry_node)
     endings = {
         node.id: node.ending
         for node in book.nodes
@@ -340,12 +353,15 @@ def _satisfying_exit_states(book: Storybook) -> tuple[list[VarState], bool]:
     return states, result.capped
 
 
-def _l2_error_signatures(book: Storybook, carried: VarState | None) -> set[str]:
+def _l2_error_signatures(
+    book: Storybook, carried: VarState | None, entry_node: str | None = None
+) -> set[str]:
     """Return a stable signature per Layer-2 ERROR for one entry state.
 
     Args:
         book: The book to validate.
         carried: The carried entry state, or ``None`` for the declared initials.
+        entry_node: The node the reader enters at, or ``None`` for ``start_node``.
 
     Returns:
         set[str]: One ``rule_id|node_id`` signature per error. Keyed on rule and
@@ -353,11 +369,13 @@ def _l2_error_signatures(book: Storybook, carried: VarState | None) -> set[str]:
             variable state and would therefore never match between the baseline
             and the seeded run even for the same defect.
     """
-    report = validate_layer2(book, carried=carried)
+    report = validate_layer2(book, carried=carried, entry_node=entry_node)
     return {f"{finding.rule_id}|{finding.node_id or ''}" for finding in report.errors}
 
 
-def satisfying_ending_reachable(book: Storybook, carried: VarState) -> bool:
+def satisfying_ending_reachable(
+    book: Storybook, carried: VarState, entry_node: str | None = None
+) -> bool:
     """Whether a satisfying ending is still reachable entering with ``carried``.
 
     Public: CH-4 (``validator/character.py``) imports this same reachability
@@ -370,13 +388,17 @@ def satisfying_ending_reachable(book: Storybook, carried: VarState) -> bool:
     Args:
         book: The receiving book.
         carried: The carried variable state to seed the entry with.
+        entry_node: The node the continuation reader enters at, or ``None`` for
+            ``start_node``. CH-4 passes ``None`` because a character envelope
+            entry is an ordinary read; SR-9 passes the receiving book's
+            ``series_entry_node`` (`UW-C296`).
 
     Returns:
         bool: ``True`` when at least one reachable configuration sits on a
             satisfying ending. A capped walk returns ``True``, because a partial
             exploration cannot prove unreachability.
     """
-    result = walk_configurations(book, carried=carried)
+    result = walk_configurations(book, carried=carried, entry_node=entry_node)
     if result.capped:
         return True
     satisfying = {
@@ -435,21 +457,27 @@ def _check_continuation_entry_states(
         next_book = by_index.get(series.book_index + 1)
         if next_book is None or not series.carries_state:
             continue
-        receiver, _receiver_series = next_book
+        receiver, receiver_series = next_book
 
-        # #ASSUME: data-integrity: this rule walks the receiver from its
-        # start_node (via _l2_error_signatures / _satisfying_ending_reachable),
-        # which is the correct entry only because a continuation's
-        # series_entry_node equals its start_node for every book today:
-        # generation.series_link.embed_series_block is the sole writer and
-        # copies start_node into series_entry_node (WS-G G2), and
-        # player.engine.start_continuation takes no mid-graph entry parameter. A
-        # future v2 with a genuine mid-graph entry would make this walk seed the
-        # wrong prologue and silently validate the wrong reader path.
-        # #VERIFY: if series_entry_node ever diverges from start_node, seed the
-        # receiver walk from series_entry_node here and in walk.py, and pin it
-        # with a test that a non-start entry changes SR-9's carried reachability.
-        exit_states, truncated = _satisfying_exit_states(book)
+        # #CRITICAL: data-integrity: SR-9 must walk the receiver from the node
+        # the reader enters, which is the RECEIVER's series_entry_node, not its
+        # start_node. This used to seed from start_node under an #ASSUME that the
+        # two are equal for every book, on the grounds that
+        # generation.series_link.embed_series_block is the sole writer of the
+        # series block. It is not: hand-authored skeletons are writers too, and
+        # both committed brass-lantern books declare start_node 'n_open' against
+        # series_entry_node 'n_start'. That was benign only because 'n_open' is
+        # an effect-free single-choice corridor into 'n_start'; a receiver whose
+        # entry node applies an on_enter effect, or which is gated behind one,
+        # validated a path nobody walks. Measured on a synthetic pair: identical
+        # graphs, findings=0 from start_node and eight SR-9 errors from the
+        # declared entry (`UW-C296`, `AL-473`).
+        # #VERIFY: test_series.py::test_sr9_walks_the_declared_series_entry_node
+        # pins that a non-start entry changes SR-9's carried reachability.
+        # None is a valid value and means the ordinary start node, which is
+        # the same fallback the client takes.
+        receiver_entry = receiver_series.series_entry_node
+        exit_states, truncated = _satisfying_exit_states(book, series.series_entry_node)
         if truncated:
             report.add(
                 ValidationFinding(
@@ -465,10 +493,13 @@ def _check_continuation_entry_states(
                 )
             )
 
-        baseline_errors = _l2_error_signatures(receiver, None)
+        baseline_errors = _l2_error_signatures(receiver, None, receiver_entry)
 
         for carried in exit_states:
-            new_errors = _l2_error_signatures(receiver, carried) - baseline_errors
+            new_errors = (
+                _l2_error_signatures(receiver, carried, receiver_entry)
+                - baseline_errors
+            )
             if new_errors:
                 report.add(
                     ValidationFinding(
@@ -487,7 +518,7 @@ def _check_continuation_entry_states(
                         ),
                     )
                 )
-            if _satisfying_ending_reachable(receiver, carried):
+            if _satisfying_ending_reachable(receiver, carried, receiver_entry):
                 continue
             report.add(
                 ValidationFinding(

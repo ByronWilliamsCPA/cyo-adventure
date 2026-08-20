@@ -116,7 +116,10 @@ def test_reading_level_in_band_book_passes_check(tmp_path: Path) -> None:
 
     scored = check_reading_level_script.score(book)
     assert scored is not None
-    assert scored.level.grade <= check_reading_level_script._MAX_GRADE
+    # The ceiling is per-book now, derived from the book's own declared window;
+    # the script used to grade all six bands against one hardcoded 7.0
+    # (`UW-C281`).
+    assert scored.level.grade <= scored.max_grade
 
     result = check_reading_level_script.main([str(book), "--check"])
 

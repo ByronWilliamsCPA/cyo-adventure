@@ -243,6 +243,49 @@ class EndingKind(StrEnum):
     DISCOVERY = "discovery"
 
 
+# The ending kinds that count as a *satisfying* completion: the reader finished
+# the arc rather than failing out of it. One definition, because six rules and
+# one runtime path all need the same answer and five separate copies of it were
+# a drift waiting to happen (`UW-C292`). PL-20's arc floor, SR-9's series
+# continuity, the character-progression runtime, the mutation clock re-proof and
+# two mutation pre-checks all read this set.
+#
+# `EndingKind` is a `StrEnum`, so membership works for a raw JSON string as well
+# as for a parsed enum value; the mutation module reads unparsed story dicts and
+# needs the former.
+# #ASSUME: data-integrity: a caller testing a raw string against this set relies
+# on StrEnum hashing as its value, so `"success" in SATISFYING_ENDING_KINDS` is
+# True without a parse step.
+# #VERIFY: test_storybook_schema.py::test_satisfying_kinds_accept_raw_strings, and
+# ::test_every_satisfying_kind_consumer_reads_this_one_set.
+SATISFYING_ENDING_KINDS: frozenset[EndingKind] = frozenset(
+    {EndingKind.SUCCESS, EndingKind.COMPLETION}
+)
+
+
+# The ending valences that count as a satisfying *outcome*: the reader was not
+# defeated. Deliberately NOT the same predicate as SATISFYING_ENDING_KINDS above,
+# and the two are named separately so the difference is stated once here rather
+# than rediscovered as a drift between rules (`UW-C292`). Catalog-wide the two
+# readings disagree on 500 of 968 endings, so which one a rule means is a real
+# choice, not a formality.
+#
+# - By KIND (above): PL-20's arc floor, SR-9's series continuity, the character
+#   runtime and the mutation clock. These ask "did the reader complete the arc",
+#   so a neutral `discovery` ending is not a completion.
+# - By VALENCE (here): the strict random-walk outcome floor in
+#   `scripts/check_skeleton.py`. This asks "would a reader choosing at random be
+#   defeated", where a neutral ending is not a defeat.
+#
+# RULED 2026-08-09 (owner, review Part 4 R1): the walk floor is a valence floor.
+# Switching it to kind was tried and would make the teen gamebook cells
+# unauthorable, since those books carry 2-7 satisfying-KIND endings out of 74-209
+# (`AL-460`). Do not "unify" these by collapsing one into the other.
+SATISFYING_ENDING_VALENCES: frozenset[Valence] = frozenset(
+    {Valence.POSITIVE, Valence.NEUTRAL}
+)
+
+
 class Topology(StrEnum):
     """The branching shape of a story graph (Ashwell vocabulary).
 

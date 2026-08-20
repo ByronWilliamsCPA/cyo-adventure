@@ -35,6 +35,8 @@ by narrative role.
 
 | Skeleton | Band | Length (min) | Tier | Topology | Nodes | Endings (+/n/-) | Diagram |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| The Blackout Week | 10-13 | 7 | 1 | branch_and_bottleneck | 91 | 10/9/0 | [svg](diagrams/skeletons/10-13/the-blackout-week.svg) |
+| The Cartographer's Apprentice | 10-13 | 9 | 1 | branch_and_bottleneck | 254 | 12/16/15 | [svg](diagrams/skeletons/10-13/the-cartographers-apprentice.svg) |
 | The Cinderwick Exchange | 10-13 | 12 | 1 | sorting_hat | 99 | 8/5/7 | [svg](diagrams/skeletons/10-13/the-cinderwick-exchange.svg) |
 | The Clocktower Cipher | 10-13 | 18 | 1 | branch_and_bottleneck | 26 | 3/1/4 | [svg](diagrams/skeletons/10-13/the-clocktower-cipher.svg) |
 | The Envoy of Three Courts | 10-13 | 9 | 1 | sorting_hat | 159 | 18/6/6 | [svg](diagrams/skeletons/10-13/the-envoy-of-three-courts.svg) |
@@ -44,13 +46,20 @@ by narrative role.
 | The Mapmaker's Island | 10-13 | 22 | 1 | branch_and_bottleneck | 225 | 11/32/29 | [svg](diagrams/skeletons/10-13/the-mapmakers-island.svg) |
 | The Midnight Frequency | 10-13 | 7 | 1 | open_map | 101 | 9/2/7 | [svg](diagrams/skeletons/10-13/the-midnight-frequency.svg) |
 | The Midnight Museum | 10-13 | 9 | 1 | branch_and_bottleneck | 95 | 7/3/9 | [svg](diagrams/skeletons/10-13/the-midnight-museum.svg) |
+| The Observatory Shift | 10-13 | 16 | 1 | sorting_hat | 145 | 9/11/7 | [svg](diagrams/skeletons/10-13/the-observatory-shift.svg) |
+| The Orchard Signal | 10-13 | 7 | 1 | branch_and_bottleneck | 173 | 9/15/6 | [svg](diagrams/skeletons/10-13/the-orchard-signal.svg) |
 | The Skyrail Heist | 10-13 | 11 | 1 | sorting_hat | 246 | 29/6/5 | [svg](diagrams/skeletons/10-13/the-skyrail-heist.svg) |
 | The Winter of the Wolf Queen | 10-13 | 12 | 2 | open_map | 250 | 19/14/7 | [svg](diagrams/skeletons/10-13/the-winter-of-the-wolf-queen.svg) |
 | The Conservatory Wars | 13-16 | 11 | 1 | sorting_hat | 160 | 20/4/2 | [svg](diagrams/skeletons/13-16/the-conservatory-wars.svg) |
+| The Glasswright's Debt | 13-16 | 11 | 1 | branch_and_bottleneck | 130 | 7/10/6 | [svg](diagrams/skeletons/13-16/the-glasswright-debt.svg) |
 | The Harrowstone Keep | 13-16 | 30 | 2 | branch_and_bottleneck | 551 | 4/3/145 | [svg](diagrams/skeletons/13-16/the-harrowstone-keep.svg) |
+| The Hollow Crown Gambit | 13-16 | 11 | 1 | branch_and_bottleneck | 434 | 8/10/40 | [svg](diagrams/skeletons/13-16/the-hollow-crown-gambit.svg) |
 | The Hollow Sea | 13-16 | 24 | 2 | open_map | 197 | 21/12/7 | [svg](diagrams/skeletons/13-16/the-hollow-sea.svg) |
 | The Iron Spire Trial | 13-16 | 30 | 2 | gauntlet | 277 | 2/1/76 | [svg](diagrams/skeletons/13-16/the-iron-spire-trial.svg) |
 | The Labyrinth of Glass | 13-16 | 35 | 1 | gauntlet | 383 | 2/1/113 | [svg](diagrams/skeletons/13-16/the-labyrinth-of-glass.svg) |
+| The Migration Year | 13-16 | 14 | 1 | branch_and_bottleneck | 176 | 10/13/7 | [svg](diagrams/skeletons/13-16/the-migration-year.svg) |
+| The Quarry Signal | 13-16 | 10 | 2 | branch_and_bottleneck | 267 | 9/8/19 | [svg](diagrams/skeletons/13-16/the-quarry-signal.svg) |
+| The Saltmarsh Run | 13-16 | 8 | 1 | gauntlet | 322 | 6/9/27 | [svg](diagrams/skeletons/13-16/the-saltmarsh-run.svg) |
 | The Serpent Vaults | 13-16 | 35 | 2 | gauntlet | 530 | 4/33/135 | [svg](diagrams/skeletons/13-16/the-serpent-vaults.svg) |
 | The Signal in the Static | 13-16 | 11 | 1 | branch_and_bottleneck | 124 | 11/0/21 | [svg](diagrams/skeletons/13-16/the-signal-in-the-static.svg) |
 | The Smuggler's Cut | 13-16 | 16 | 1 | branch_and_bottleneck | 277 | 2/1/77 | [svg](diagrams/skeletons/13-16/the-smugglers-cut.svg) |
@@ -64,9 +73,13 @@ by narrative role.
 | The Blackwood Sanatorium | 16+ | 40 | 1 | open_map | 151 | 2/8/14 | [svg](diagrams/skeletons/16+/the-blackwood-sanatorium.svg) |
 | The Cinder Bazaar | 16+ | 40 | 2 | branch_and_bottleneck | 453 | 3/18/120 | [svg](diagrams/skeletons/16+/the-cinder-bazaar.svg) |
 | The Drowned Court | 16+ | 18 | 1 | branch_and_bottleneck | 315 | 5/2/98 | [svg](diagrams/skeletons/16+/the-drowned-court.svg) |
+| The Last Cartage | 16+ | 16 | 1 | gauntlet | 632 | 6/15/67 | [svg](diagrams/skeletons/16+/the-last-cartage.svg) |
 | The Last Train North | 16+ | 14 | 1 | branch_and_bottleneck | 144 | 5/9/11 | [svg](diagrams/skeletons/16+/the-last-train-north.svg) |
+| The Long Thaw | 16+ | 18 | 1 | branch_and_bottleneck | 220 | 6/28/11 | [svg](diagrams/skeletons/16+/the-long-thaw.svg) |
 | The Longwinter Station | 16+ | 34 | 2 | open_map | 248 | 22/9/13 | [svg](diagrams/skeletons/16+/the-longwinter-station.svg) |
+| The Obsidian Relay | 16+ | 12 | 1 | branch_and_bottleneck | 393 | 5/11/46 | [svg](diagrams/skeletons/16+/the-obsidian-relay.svg) |
 | The Pale Road | 16+ | 45 | 1 | gauntlet | 498 | 2/1/147 | [svg](diagrams/skeletons/16+/the-pale-road.svg) |
+| The Quarantine Ledger | 16+ | 14 | 1 | branch_and_bottleneck | 141 | 6/23/9 | [svg](diagrams/skeletons/16+/the-quarantine-ledger.svg) |
 | The Quiet Harbor Protocol | 16+ | 24 | 2 | branch_and_bottleneck | 153 | 3/11/14 | [svg](diagrams/skeletons/16+/the-quiet-harbor-protocol.svg) |
 | The Red Meridian Run | 16+ | 30 | 1 | gauntlet | 306 | 2/1/87 | [svg](diagrams/skeletons/16+/the-red-meridian-run.svg) |
 | The Salt Archive | 16+ | 24 | 1 | branch_and_bottleneck | 226 | 15/21/18 | [svg](diagrams/skeletons/16+/the-salt-archive.svg) |
@@ -79,26 +92,33 @@ by narrative role.
 | The Big Cardboard Box | 3-5 | 3 | 1 | time_cave | 44 | 6/12/0 | [svg](diagrams/skeletons/3-5/the-big-cardboard-box.svg) |
 | The Big Red Balloon | 3-5 | 4 | 1 | time_cave | 32 | 5/1/0 | [svg](diagrams/skeletons/3-5/the-big-red-balloon.svg) |
 | Clover and the Butterfly | 3-5 | 2 | 1 | time_cave | 20 | 4/3/0 | [svg](diagrams/skeletons/3-5/the-clover-and-the-butterfly.svg) |
+| The Last Blue Cup | 3-5 | 2 | 1 | loop_and_grow | 17 | 3/3/0 | [svg](diagrams/skeletons/3-5/the-last-blue-cup.svg) |
 | The Lost Mitten | 3-5 | 3 | 1 | loop_and_grow | 11 | 3/0/0 | [svg](diagrams/skeletons/3-5/the-lost-mitten.svg) |
 | The Market Morning | 3-5 | 3 | 1 | time_cave | 21 | 6/0/0 | [svg](diagrams/skeletons/3-5/the-market-morning.svg) |
 | The Sleepy Little Star | 3-5 | 3 | 1 | loop_and_grow | 17 | 3/0/0 | [svg](diagrams/skeletons/3-5/the-sleepy-little-star.svg) |
 | The Teddy Bears' Picnic | 3-5 | 3 | 1 | loop_and_grow | 29 | 5/6/0 | [svg](diagrams/skeletons/3-5/the-teddy-bears-picnic.svg) |
+| The Very Tall Slide | 3-5 | 5 | 1 | loop_and_grow | 35 | 3/3/0 | [svg](diagrams/skeletons/3-5/the-very-tall-slide.svg) |
 | The Backyard Treasure Map | 5-8 | 7 | 1 | time_cave | 62 | 6/6/0 | [svg](diagrams/skeletons/5-8/the-backyard-treasure-map.svg) |
+| The Bridge of Stones | 5-8 | 11 | 1 | open_map | 58 | 6/4/2 | [svg](diagrams/skeletons/5-8/the-bridge-of-stones.svg) |
 | The Lantern Festival | 5-8 | 6 | 1 | loop_and_grow | 37 | 7/3/0 | [svg](diagrams/skeletons/5-8/the-lantern-festival.svg) |
-| The Night Market | 5-8 | 7 | 1 | open_map | 59 | 9/4/0 | [svg](diagrams/skeletons/5-8/the-night-market.svg) |
+| The Night Market | 5-8 | 9 | 1 | open_map | 60 | 9/4/0 | [svg](diagrams/skeletons/5-8/the-night-market.svg) |
 | The Paper Plane Hall | 5-8 | 8 | 1 | loop_and_grow | 50 | 4/9/0 | [svg](diagrams/skeletons/5-8/the-paper-plane-hall.svg) |
 | The School Garden Mystery | 5-8 | 8 | 1 | open_map | 35 | 4/3/0 | [svg](diagrams/skeletons/5-8/the-school-garden-mystery.svg) |
+| The Seedling Thief | 5-8 | 5 | 1 | open_map | 31 | 6/4/0 | [svg](diagrams/skeletons/5-8/the-seedling-thief.svg) |
 | The Snow Day Expedition | 5-8 | 7 | 1 | time_cave | 38 | 8/2/0 | [svg](diagrams/skeletons/5-8/the-snow-day-expedition.svg) |
-| The Tide Pool Rescue | 5-8 | 10 | 1 | loop_and_grow | 57 | 10/2/0 | [svg](diagrams/skeletons/5-8/the-tide-pool-rescue.svg) |
+| The Tide Pool Rescue | 5-8 | 10 | 1 | loop_and_grow | 55 | 10/2/0 | [svg](diagrams/skeletons/5-8/the-tide-pool-rescue.svg) |
 | The Cave of Echoes | 8-11 | 8 | 1 | time_cave | 65 | 10/6/0 | [svg](diagrams/skeletons/8-11/the-cave-of-echoes.svg) |
 | The Clockwork Menagerie | 8-11 | 18 | 1 | branch_and_bottleneck | 167 | 14/6/7 | [svg](diagrams/skeletons/8-11/the-clockwork-menagerie.svg) |
 | The Guild of Junior Inventors | 8-11 | 12 | 1 | sorting_hat | 191 | 11/8/15 | [svg](diagrams/skeletons/8-11/the-guild-of-junior-inventors.svg) |
+| The Half-Hour Call | 8-11 | 8 | 1 | branch_and_bottleneck | 61 | 7/7/0 | [svg](diagrams/skeletons/8-11/the-half-hour-call.svg) |
 | The Hundred-Door Hotel | 8-11 | 12 | 1 | open_map | 176 | 6/24/1 | [svg](diagrams/skeletons/8-11/the-hundred-door-hotel.svg) |
+| The Lantern Keepers' List | 8-11 | 10 | 1 | branch_and_bottleneck | 125 | 10/12/2 | [svg](diagrams/skeletons/8-11/the-lantern-keepers-list.svg) |
 | The Locked Carousel | 8-11 | 8 | 1 | open_map | 71 | 6/7/0 | [svg](diagrams/skeletons/8-11/the-locked-carousel.svg) |
 | The River of Small Boats | 8-11 | 10 | 1 | time_cave | 127 | 17/9/0 | [svg](diagrams/skeletons/8-11/the-river-of-small-boats.svg) |
 | The Robot Fair Sabotage | 8-11 | 8 | 1 | branch_and_bottleneck | 74 | 5/5/4 | [svg](diagrams/skeletons/8-11/the-robot-fair-sabotage.svg) |
 | The Sky-Ship Stowaway | 8-11 | 11 | 1 | branch_and_bottleneck | 112 | 8/8/4 | [svg](diagrams/skeletons/8-11/the-sky-ship-stowaway.svg) |
 | The Storm Chasers Club | 8-11 | 10 | 1 | sorting_hat | 121 | 16/5/4 | [svg](diagrams/skeletons/8-11/the-storm-chasers-club.svg) |
+| The Tin Whistle Map | 8-11 | 11 | 1 | branch_and_bottleneck | 193 | 15/14/6 | [svg](diagrams/skeletons/8-11/the-tin-whistle-map.svg) |
 
 ### Band coverage
 

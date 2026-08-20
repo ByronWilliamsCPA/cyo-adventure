@@ -25,6 +25,7 @@ from cyo_adventure.storybook.models import (
 )
 from cyo_adventure.validator.band_profile import ARC_CEILING_MULTIPLE
 from cyo_adventure.validator.policy import (
+    _adjacency_of,
     _build_graph,
     _decision_node_ids,
     _fewest_decision_shortest_path,
@@ -783,6 +784,7 @@ def _branch_at_depth(
     lead_in: int,
     age_band: AgeBand = AgeBand.BAND_8_11,
     length: Length | None = None,
+    words: int = 100,
 ) -> Storybook:
     """Build a lead-in corridor whose last node offers the first decision.
 
@@ -796,11 +798,14 @@ def _branch_at_depth(
         lead_in: Single-choice nodes before the decision node.
         age_band: The band whose PL-25 window applies.
         length: Declared length, or ``None`` to skip the scale-classified rules.
+        words: Declared word target per node. The default of 100 is the 8-11
+            mean, so a default-built story's node count and word count agree on
+            every PL-25 verdict; vary it to separate the two readings.
 
     Returns:
         The assembled Storybook.
     """
-    body = _fill(100)
+    body = _fill(words)
     nodes: list[Node] = [
         Node(
             id=f"n{i}",
@@ -922,6 +927,147 @@ def test_pl25_allows_cold_open_at_3_5():
     assert not any(f.rule_id == "PL-25" for f in report.findings)
 
 
+def test_pl25_floor_accepts_a_cold_open_that_covers_the_ground_in_words():
+    """A single opening scene worth 2 nodes of prose clears the 8-11 floor of 2.
+
+    The JHM anchor counts pages, not authoring units, so an opening that carries
+    the floor's worth of situation satisfies the floor however its node
+    boundaries fall. 210 words is over 2 x the band mean of 100 and still under
+    PL-19's per-node max of 220, so the story is legal on both rules at once.
+    """
+    report = validate_policy(_branch_at_depth(lead_in=0, words=210))
+    assert not any(f.rule_id == "PL-25" for f in report.findings)
+
+
+def test_pl25_floor_still_blocks_a_cold_open_that_covers_no_ground():
+    """The word reading does not retire the floor: a thin cold open still blocks.
+
+    The contrast case for the test above. Same shape, same band, one node before
+    the first choice; only the prose behind it differs, and 100 words is under
+    the 200 the floor stands for.
+    """
+    report = validate_policy(_branch_at_depth(lead_in=0, words=100))
+    assert any(f.rule_id == "PL-25" for f in report.errors)
+
+
+def test_pl25_ceiling_accepts_a_deep_opening_told_in_short_beats():
+    """Ten 30-word beats are 300 words, inside the 8-11 ceiling's 900.
+
+    The ceiling carries the same unit defect as the floor and in the same
+    direction: told in beats rather than pages, an opening reaches a high node
+    count without burying the choice in reading time.
+    """
+    report = validate_policy(_branch_at_depth(lead_in=9, words=30))
+    assert not any(f.rule_id == "PL-25" for f in report.findings)
+
+
+def test_pl25_hard_limit_accepts_short_beats_and_still_blocks_long_ones():
+    """Past the hard limit, the word reading separates a real prologue from beats.
+
+    Both stories put the first decision the same number of nodes in, well past
+    ``ARC_CEILING_MULTIPLE`` x the ceiling. Only the one whose prose also runs
+    past the hard limit's word equivalent is the unbranching prologue the
+    blocking tier exists to catch.
+    """
+    hard = int(9 * ARC_CEILING_MULTIPLE)
+    beats = validate_policy(_branch_at_depth(lead_in=hard, words=30))
+    prologue = validate_policy(_branch_at_depth(lead_in=hard, words=100))
+    assert not any(f.rule_id == "PL-25" for f in beats.findings)
+    assert any(f.rule_id == "PL-25" for f in prologue.errors)
+
+
+def test_pl25_word_reading_does_not_depend_on_node_ids():
+    """Two equally short openings of different lengths: renaming cannot flip it.
+
+    ``n0`` forks into a 40-word beat and a 220-word scene that rejoin on the
+    first decision, so the two fewest-node openings carry very different word
+    counts. Reading one arbitrarily chosen path would make the verdict a
+    property of the ids; ``_opening_extent`` brackets them instead, so shuffling
+    the ids must leave the finding set identical. Same trap as PL-26's, caught
+    by the same shape of test.
+    """
+
+    def build(fork_a: str, fork_b: str) -> Storybook:
+        end = Node(
+            id="n_win",
+            body=_fill(100),
+            is_ending=True,
+            ending=Ending(
+                id="e1", valence=Valence.POSITIVE, kind=EndingKind.SUCCESS, title="W"
+            ),
+        )
+        alt = Node(
+            id="n_alt",
+            body=_fill(100),
+            is_ending=True,
+            ending=Ending(
+                id="e2", valence=Valence.NEUTRAL, kind=EndingKind.DISCOVERY, title="A"
+            ),
+        )
+        return Storybook(
+            id="s",
+            version=1,
+            title="T",
+            start_node="n0",
+            nodes=[
+                Node(
+                    id="n0",
+                    body=_fill(40),
+                    choices=[
+                        Choice(id="ca", label="a", target=fork_a),
+                        Choice(id="cb", label="b", target=fork_b),
+                    ],
+                ),
+                Node(
+                    id=fork_a,
+                    body=_fill(40),
+                    choices=[Choice(id="fa", label="on", target="n_dec")],
+                ),
+                Node(
+                    id=fork_b,
+                    body=_fill(220),
+                    choices=[Choice(id="fb", label="on", target="n_dec")],
+                ),
+                Node(
+                    id="n_dec",
+                    body=_fill(100),
+                    choices=[
+                        Choice(id="cw", label="win", target="n_win"),
+                        Choice(id="cx", label="look", target="n_alt"),
+                    ],
+                ),
+                end,
+                alt,
+            ],
+            metadata=StoryMetadata(
+                age_band=AgeBand.BAND_8_11,
+                reading_level=ReadingLevel(target=2.0),
+                tier=1,
+                estimated_minutes=5,
+                ending_count=2,
+                topology=Topology.TIME_CAVE,
+            ),
+        )
+
+    original = validate_policy(build("a_short", "z_long"))
+    renamed = validate_policy(build("z_short", "a_long"))
+    assert [f.message for f in original.findings if f.rule_id == "PL-25"] == [
+        f.message for f in renamed.findings if f.rule_id == "PL-25"
+    ]
+
+
+def test_pl25_word_reading_only_ever_relaxes():
+    """A story inside the node window never starts failing on its word count.
+
+    Five 200-word nodes are 1,000 words, past the 8-11 ceiling's 900-word
+    equivalent, but the node count is inside the window and that alone decides.
+    Guards the one-way property the relaxation rests on: no story that passes
+    today can be failed by the added reading.
+    """
+    report = validate_policy(_branch_at_depth(lead_in=4, words=200))
+    assert not any(f.rule_id == "PL-25" for f in report.findings)
+
+
 def test_pl25_silent_when_story_has_no_decision():
     """A story with no decision node is left to PL-17, not double-reported."""
     report = validate_policy(_linear_scale_story(middles=7))
@@ -1027,13 +1173,20 @@ def test_pl26_does_not_bound_density_from_below():
 def test_pl26_gamebook_ceiling_is_tighter_than_prose():
     """One density, two verdicts: fine as prose, a corridor as a gamebook.
 
-    26-node fastest finish over 5 decisions is 5.2, under the prose ceiling of
-    6.0 and over the gamebook ceiling of 4.0. A gamebook that steers this rarely
-    has abandoned the genre's own section-by-section pacing.
+    21-node fastest finish over 5 decisions is 4.2, under the 13-16 prose ceiling
+    of 4.29 and over the gamebook ceiling of 4.0. A gamebook that steers this
+    rarely has abandoned the genre's own section-by-section pacing.
+
+    The window is narrow, and deliberately measured at 13-16. PL-26's prose
+    ceiling is now derived per band so it bounds the same number of WORDS between
+    decisions at every band; the gamebook ceiling stays a flat, product-defined
+    4.0 with no page anchor to convert. The two therefore CROSS: gamebook is
+    tighter than prose at 13-16 (4.0 vs 4.29) and looser at 16+ (4.0 vs 3.43), so
+    this property is band-specific rather than universal (`UW-C287`).
     """
     kwargs = {
-        "spine": 25,
-        "decision_every": 5,
+        "spine": 20,
+        "decision_every": 4,
         "age_band": AgeBand.BAND_13_16,
         "length": Length.MEDIUM,
         "words": 65,
@@ -1091,7 +1244,7 @@ def test_pl20_ceiling_is_advisory_not_blocking():
 # ---------------------------------------------------------------------------
 # PL-26 regression: PL-20 and PL-26 must not share a tie-break (PR #635)
 #
-# ``_check_min_to_complete`` used to hand ``_shortest_path_to``'s single result
+# ``_check_min_to_complete`` used to hand a lexically tie-broken single result
 # to both PL-20 (which reads only path length, safe under any tie-break) and
 # PL-26 (which reads decision count along the path, NOT safe: equally short
 # paths can carry different decision counts). The shared tie-break was BFS
@@ -1104,7 +1257,9 @@ def test_pl20_ceiling_is_advisory_not_blocking():
 # ---------------------------------------------------------------------------
 
 
-def _tiebreak_story(*, corridor: str, branchy: str) -> Storybook:
+def _tiebreak_story(
+    *, corridor: str, branchy: str, age_band: AgeBand = AgeBand.BAND_8_11
+) -> Storybook:
     """Two equally-short (7-node) routes from a fork to the same win.
 
     ``corridor`` and ``branchy`` are id prefixes for the two routes: the
@@ -1193,7 +1348,7 @@ def _tiebreak_story(*, corridor: str, branchy: str) -> Storybook:
         start_node="p0",
         nodes=nodes,
         metadata=StoryMetadata(
-            age_band=AgeBand.BAND_3_5,
+            age_band=age_band,
             reading_level=ReadingLevel(target=2.0),
             tier=1,
             estimated_minutes=5,
@@ -1232,7 +1387,7 @@ def test_pl26_reports_the_worst_equally_fast_walk_not_its_average():
     Two 7-node routes reach the win: one with one decision (density 7.0) and
     one with two (density 3.5). ``branchy`` sorts first here, so a naive
     alphabetical tie-break would have picked the *denser-in-decisions* route
-    and reported 3.5 (silent, under the 6.0 ceiling); an averaging
+    and reported 3.5 (silent, under the 8-11 ceiling of 6.0); an averaging
     implementation would report 5.25. Only 7.0, the deliberate worst case, is
     correct.
     """
@@ -1457,7 +1612,9 @@ def test_decision_node_ids_and_density_handle_a_story_with_no_decisions():
     story = _linear_scale_story(middles=3)
     assert _decision_node_ids(story) == set()
     graph = _build_graph(story)
-    path = _fewest_decision_shortest_path(graph, story.start_node, {"n_end"}, set())
+    path = _fewest_decision_shortest_path(
+        _adjacency_of(graph), story.start_node, {"n_end"}, set()
+    )
     assert path is not None
     assert path[-1] == "n_end"
     # A real run through the public gate must not raise, and must report the
@@ -1478,7 +1635,9 @@ def test_fewest_decision_shortest_path_returns_none_for_unreachable_targets():
     graph: nx.DiGraph[str] = nx.DiGraph()
     graph.add_nodes_from(["a", "b", "isolated"])
     graph.add_edge("a", "b")
-    result = _fewest_decision_shortest_path(graph, "a", {"isolated"}, set())
+    result = _fewest_decision_shortest_path(
+        _adjacency_of(graph), "a", {"isolated"}, set()
+    )
     assert result is None
 
 
@@ -1491,7 +1650,9 @@ def test_fewest_decision_shortest_path_returns_none_when_start_is_absent():
     """
     graph: nx.DiGraph[str] = nx.DiGraph()
     graph.add_node("only")
-    result = _fewest_decision_shortest_path(graph, "missing", {"only"}, set())
+    result = _fewest_decision_shortest_path(
+        _adjacency_of(graph), "missing", {"only"}, set()
+    )
     assert result is None
 
 
@@ -1557,7 +1718,9 @@ def test_fewest_decision_shortest_path_includes_an_unavoidable_decision():
     graph.add_edge("start", "mid")
     graph.add_edge("mid", "target")
     graph.add_edge("mid", "dead_end")
-    path = _fewest_decision_shortest_path(graph, "start", {"target"}, {"mid"})
+    path = _fewest_decision_shortest_path(
+        _adjacency_of(graph), "start", {"target"}, {"mid"}
+    )
     assert path == ["start", "mid", "target"]
 
 
@@ -1621,7 +1784,9 @@ def _cross_check(
         ``None`` on agreement, or a failure message describing the mismatch.
     """
     best = _brute_force_best(graph, start, targets, decisions)
-    got = _fewest_decision_shortest_path(graph, start, targets, decisions)
+    got = _fewest_decision_shortest_path(
+        _adjacency_of(graph), start, targets, decisions
+    )
     if best is None:
         return None if got is None else f"unreachable but DP returned {got}"
     if got is None:

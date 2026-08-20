@@ -30,20 +30,31 @@ from cyo_adventure.story_requests.authoring_plan import (
 )
 
 # In-cell candidate lists (sorted, as candidates_for_cell returns them) for the
-# two cells these tests exercise. Each cell now holds three production
-# skeletons, and the pick within a cell is a weighted-random draw over an
-# unseedable SystemRandom, so tests assert membership in the cell rather than a
-# single fixed slug.
+# two cells these tests exercise: 8-11/short/prose holds four production
+# skeletons and 13-16/medium/prose holds three. The pick within a cell is a
+# weighted-random draw over an unseedable SystemRandom, so tests assert
+# membership in the cell rather than a single fixed slug.
 _CELL_8_11_SHORT_PROSE = [
     "the-cave-of-echoes",
+    "the-half-hour-call",
     "the-locked-carousel",
     "the-robot-fair-sabotage",
 ]
-_CELL_13_16_MEDIUM_PROSE = [
-    "the-conservatory-wars",
-    "the-signal-in-the-static",
-    "the-undertow-season",
-]
+
+
+def _cell_13_16_medium_prose() -> list[str]:
+    """The 13-16/medium/prose cell's live membership.
+
+    Read from the selector rather than frozen as a list. These assertions are
+    about WHICH CELL the plan resolved to, not about which books happen to be in
+    it, and the frozen list broke on every skeleton authored into the cell
+    (`UW-C304`).
+    """
+    from cyo_adventure.generation.skeleton_match import (
+        candidates_for_cell,
+    )
+
+    return candidates_for_cell("13-16", "medium", "prose")
 
 
 class _FakeResult:
@@ -535,7 +546,7 @@ async def test_skeleton_fill_teen_band_null_length_falls_back_to_medium() -> Non
         actor=_admin_actor(),
     )
     # 13-16/medium/prose now has three production skeletons; the pick is one.
-    assert result.skeleton_slug in _CELL_13_16_MEDIUM_PROSE
+    assert result.skeleton_slug in _cell_13_16_medium_prose()
 
 
 @pytest.mark.asyncio
@@ -606,7 +617,7 @@ async def test_skeleton_fill_defaulted_length_appends_warning() -> None:
         actor=_admin_actor(),
     )
     assert any("defaulted to 'medium'" in w for w in result.warnings)
-    assert result.skeleton_slug in _CELL_13_16_MEDIUM_PROSE
+    assert result.skeleton_slug in _cell_13_16_medium_prose()
 
 
 @pytest.mark.asyncio
@@ -710,11 +721,25 @@ async def test_skeleton_fill_auto_pick_passes_similar_usage_to_selection() -> No
     )
     assert result.skeleton_slug == expected.slug
     # The blended weighting must pick differently from the legacy (no
-    # similar_usage) pick under the identical seed, proving the counts were
-    # actually threaded through rather than ignored: uniform weights consume
-    # the RNG's draw differently than [0.0625, 1, 1].
-    legacy = select_skeleton_for_cell(_CELL_8_11_SHORT_PROSE, {}, random.Random(42))
-    assert legacy.slug != result.skeleton_slug
+    # similar_usage) weighting, proving the counts were actually threaded
+    # through rather than ignored: uniform weights consume the RNG's draw
+    # differently than the de-weighted [0.0625, 1, 1, ...].
+    #
+    # Swept over seeds rather than asserted on one. Whether a single seed
+    # happens to separate the two weightings depends on how many skeletons the
+    # cell holds, so a fixed seed silently stops testing anything the next time
+    # the cell grows: seed 42 separated them at three skeletons and stopped
+    # doing so at four, with the threading itself unchanged.
+    assert any(
+        select_skeleton_for_cell(_CELL_8_11_SHORT_PROSE, {}, random.Random(seed)).slug
+        != select_skeleton_for_cell(
+            _CELL_8_11_SHORT_PROSE,
+            {},
+            random.Random(seed),
+            similar_usage=similar_counts,
+        ).slug
+        for seed in range(50)
+    )
 
 
 @pytest.mark.asyncio

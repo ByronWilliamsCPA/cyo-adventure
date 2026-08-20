@@ -1,904 +1,885 @@
 {
-  "schema_version": "2.0",
-  "id": "sk_tide_pool_rescue",
-  "version": 1,
-  "title": "The Tide Pool Rescue",
-  "metadata": {
-    "age_band": "5-8",
-    "reading_level": {
-      "scheme": "flesch_kincaid",
-      "target": 2.5,
-      "tolerance": 1.5
-    },
-    "tier": 1,
-    "themes": [
-      "kindness",
-      "helping",
-      "perseverance",
-      "friendship"
-    ],
-    "estimated_minutes": 10,
-    "ending_count": 12,
-    "content_flags": {
-      "violence": "none",
-      "scariness": "mild",
-      "peril": "mild"
-    },
-    "topology": "loop_and_grow",
-    "length": "medium",
-    "narrative_style": "prose",
-    "production_eligible": true
+ "schema_version": "2.0",
+ "id": "sk_tide_pool_rescue",
+ "version": 1,
+ "title": "The Tide Pool Rescue",
+ "metadata": {
+  "age_band": "5-8",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
   },
-  "variables": [],
-  "start_node": "n_start",
-  "nodes": [
+  "tier": 1,
+  "themes": [
+   "kindness",
+   "helping",
+   "perseverance",
+   "friendship"
+  ],
+  "estimated_minutes": 10,
+  "ending_count": 12,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "loop_and_grow",
+  "length": "medium",
+  "narrative_style": "prose",
+  "production_eligible": true
+ },
+ "variables": [],
+ "start_node": "n_start",
+ "nodes": [
+  {
+   "id": "n_start",
+   "body": "<<FILL role=setup words=85 beats='{HERO} and {COMPANION} arrive at {PLACE} on a bright morning at {OPENING_MOMENT}, {COMPANION} in {HAT} carrying {PICNIC} and {HERO} swinging {TOOL}; the sea has gone way out and left the rocks shiny and dotted with tide pools; {COMPANION} says the water always comes back, like a friend coming home; {HERO} cannot wait to explore {THRESHOLD}; warm, sunny, and excited, never worried'>>",
+   "is_ending": false,
+   "choices": [
     {
-      "id": "n_start",
-      "body": "<<FILL role=setup words=85 beats='{HERO} and {COMPANION} arrive at {PLACE} on a bright morning at {OPENING_MOMENT}, {COMPANION} in {HAT} carrying {PICNIC} and {HERO} swinging {TOOL}; the sea has gone way out and left the rocks shiny and dotted with tide pools; {COMPANION} says the water always comes back, like a friend coming home; {HERO} cannot wait to explore {THRESHOLD}; warm, sunny, and excited, never worried'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_start_go",
-          "label": "Follow {COMPANION} down the sandy path.",
-          "target": "n_walk"
-        }
-      ]
-    },
-    {
-      "id": "n_walk",
-      "body": "<<FILL role=rising words=75 beats='{COMPANION} leads the way down the sandy path and spreads {TOWEL} on {ENTRANCE} where she can see everything; she reminds {HERO} of the beach rules, stay on the dry rocks, wet feet are fine, and call if you ever want a hand; {HERO} promises with a salute and turns toward the shining pools'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_walk_rocks",
-          "label": "Step out onto the flat low-tide rocks.",
-          "target": "n_meet"
-        }
-      ]
-    },
-    {
-      "id": "n_meet",
-      "body": "<<FILL role=choice words=80 beats='out on the rocks {HERO} hears tiny voices; {OPENING_MOMENT} has left some tide-pool friends stranded too high and dry, a {Q1_SPECIES} {Q1_PLIGHT}, a {Q2_SPECIES} {Q2_PLIGHT}, a {Q3_SPECIES} {Q3_PLIGHT}, and a {Q4_SPECIES} {Q4_PLIGHT}; far off {DEADLINE_SIGN} says {TIDE} is already on its way and will reach the rocks by {DEADLINE}; they are all calling at once and {HERO} can only reach one at a time, so he picks who to go to first'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_meet_star",
-          "label": "Hurry to the {Q1_SPECIES} on the high ledge.",
-          "target": "st_scene"
-        },
-        {
-          "id": "c_meet_fish",
-          "label": "Follow {Q2_SIGN} across the rocks.",
-          "target": "t_st_fi"
-        },
-        {
-          "id": "c_meet_crab",
-          "label": "Follow {Q3_SIGN} to the seaweed patch.",
-          "target": "t_fi_cr"
-        },
-        {
-          "id": "c_meet_snail",
-          "label": "Climb toward {Q4_SIGN} on the dry rock.",
-          "target": "t_cr_pw"
-        }
-      ]
-    },
-    {
-      "id": "st_scene",
-      "body": "<<FILL role=rising words=70 beats='{HERO} reaches the tall rock where {Q1_NAME} the {Q1_SPECIES} sits {Q1_PLIGHT} above his head; her five arms droop like a tired star sticker; she calls down that the ledge is getting warm and she would very much like to be back in {Q1_HOME} below'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_st_scene",
-          "label": "Climb the low steps for a closer look.",
-          "target": "st_meet"
-        }
-      ]
-    },
-    {
-      "id": "st_meet",
-      "body": "<<FILL role=rising words=75 beats='{HERO} climbs two safe flat steps and says hello; {Q1_NAME} perks up one arm to wave; the ledge is dry as toast and {Q1_HOME} waits just below; {Q1_NAME} says any rescue plan is fine with her, she is a very patient {Q1_SPECIES}; {HERO} looks at {TOOL}, at his own two hands, and at the little slope'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_st_meet",
-          "label": "Think up a rescue plan for {Q1_NAME}.",
-          "target": "st_plan"
-        }
-      ]
-    },
-    {
-      "id": "st_plan",
-      "body": "<<FILL role=choice words=80 beats='{HERO} lines up his ideas while {Q1_NAME} waves cheerfully from her dry ledge; he could {Q1_ATTEMPT1}, {Q1_ATTEMPT2} to pour her a waterfall, or {Q1_METHOD} himself; {COMPANION} watches from {ENTRANCE}, ready with a tip whenever he wants one; must read the same on a first visit and on any try-again visit'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_st_plan_hands",
-          "label": "Toss water up with your cupped hands.",
-          "target": "st_flop_hands"
-        },
-        {
-          "id": "c_st_plan_bucket",
-          "label": "Carry {TOOL} up the little slope.",
-          "target": "st_flop_bucket"
-        },
-        {
-          "id": "c_st_plan_slide",
-          "label": "Wet your hands and gently slide {Q1_NAME} down.",
-          "target": "st_win"
-        }
-      ]
-    },
-    {
-      "id": "st_flop_hands",
-      "body": "<<FILL role=choice words=75 beats='{HERO} scoops sea water in his cupped hands and tosses it up toward the ledge, but the water rains straight back down on his own head, plip plop; {Q1_NAME} giggles so hard her arms wiggle; {HERO} laughs and shakes his wet hair like a puppy; no harm done, just a soggy fringe; he can line the plans up again or trot over and ask {COMPANION} for a tip'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_st_hands_again",
-          "label": "Line up the plans and try again.",
-          "target": "st_plan"
-        },
-        {
-          "id": "c_st_hands_gran",
-          "label": "Ask {COMPANION} for a tip.",
-          "target": "st_gran"
-        }
-      ]
-    },
-    {
-      "id": "st_flop_bucket",
-      "body": "<<FILL role=choice words=75 beats='{HERO} fills {TOOL} and starts up the little slope, but it wobbles, tips, and whooshes every drop over his own shoes; his toes squelch; {Q1_NAME} claps two arms for the amazing splash; {HERO} grins and wiggles his soggy toes; nothing lost, {TIDE} has plenty more water; he can go back to his plans or ask {COMPANION} for a tip'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_st_bucket_again",
-          "label": "Shake off the splash and try again.",
-          "target": "st_plan"
-        },
-        {
-          "id": "c_st_bucket_gran",
-          "label": "Ask {COMPANION} for a tip.",
-          "target": "st_gran"
-        }
-      ]
-    },
-    {
-      "id": "st_gran",
-      "body": "<<FILL role=choice words=65 beats='{COMPANION} tips back {HAT} and smiles; {Q1_SPECIES}s like slow and gentle, she says, wet your hands first so {Q1_NAME} can hold on comfy, then slide her down to {Q1_HOME} like a little slide ride; {HERO} can try the gentle sliding idea right away or look over his plans once more; reads the same on any visit'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_st_gran_try",
-          "label": "Try {COMPANION}'s gentle sliding idea.",
-          "target": "st_win"
-        },
-        {
-          "id": "c_st_gran_back",
-          "label": "Look over the plans once more.",
-          "target": "st_plan"
-        }
-      ]
-    },
-    {
-      "id": "st_win",
-      "body": "<<FILL role=rising words=75 beats='{HERO} dips his hands in the pool until they are cool and wet, reaches up, and {Q1_NAME} holds on with all five arms; slow and gentle, he carries her down the rock into {Q1_HOME} with a soft ploop; {Q1_NAME} stretches every arm wide, like a happy dance underwater'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_st_win",
-          "label": "Watch {Q1_NAME} settle into her pool.",
-          "target": "st_thanks"
-        }
-      ]
-    },
-    {
-      "id": "st_thanks",
-      "body": "<<FILL role=choice words=60 beats='{Q1_NAME} presses one arm up against the glassy top of the water like a high five and burbles thank you; back across the rocks other small voices are still calling, and {TIDE} is coming on; {HERO} can pick his way out to the pools again, watch {TIDE} arrive, or sit with {COMPANION} and let it finish the rescuing'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_st_back",
-          "label": "Pick your way back out to the pools.",
-          "target": "n_meet"
-        },
-        {
-          "id": "c_st_done",
-          "label": "Watch {TIDE} come in over the pools.",
-          "target": "n_alldone"
-        },
-        {
-          "id": "c_st_rest",
-          "label": "Sit with {COMPANION} and let the tide finish the rescuing.",
-          "target": "e_tide_star"
-        }
-      ]
-    },
-    {
-      "id": "t_st_fi",
-      "body": "<<FILL role=rising words=60 beats='{HERO} hops carefully from flat rock to flat rock toward {Q2_SIGN}; out past the pools {TIDE} has crept one sparkly step closer, glittering as it comes; {COMPANION} waves {HAT} from {ENTRANCE}; the splashing gets louder in a puddle no bigger than a dinner plate'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_t1",
-          "label": "Kneel beside the shrinking puddle.",
-          "target": "fi_scene"
-        }
-      ]
-    },
-    {
-      "id": "fi_scene",
-      "body": "<<FILL role=rising words=70 beats='in the little puddle a small silver {Q2_SPECIES} zips in busy circles; the puddle is only as deep as a soup bowl and the warm sun is sipping it smaller; he pops his mouth up and says his name is {Q2_NAME} and he would very much like a bigger pool please; hopeful and chatty, never scared'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_fi_scene",
-          "label": "Lean in and say hello to the little {Q2_SPECIES}.",
-          "target": "fi_meet"
-        }
-      ],
-      "safety_scope": [
-        "peril"
-      ]
-    },
-    {
-      "id": "fi_meet",
-      "body": "<<FILL role=rising words=75 beats='{HERO} tells {Q2_NAME} that help is here; {Q2_HOME} waits just two hops away, calm and shady; {Q2_NAME} zooms an excited lap around his puddle; {HERO} looks from his two quick hands to the strip of sand between the puddles to {TOOL}, three ways this rescue might go'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_fi_meet",
-          "label": "Think up a plan to move {Q2_NAME}.",
-          "target": "fi_plan"
-        }
-      ],
-      "safety_scope": [
-        "peril"
-      ]
-    },
-    {
-      "id": "fi_plan",
-      "body": "<<FILL role=choice words=80 beats='{HERO} studies the puddle while {Q2_NAME} swims hopeful loops; he could {Q2_ATTEMPT1}, {Q2_ATTEMPT2} so the puddle can flow to {Q2_HOME}, or {Q2_METHOD}; {Q2_NAME} blows a bubble that seems to say you can do it; must read the same on a first visit and on any try-again visit'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_fi_plan_hands",
-          "label": "Catch {Q2_NAME} with your bare hands.",
-          "target": "fi_flop_hands"
-        },
-        {
-          "id": "c_fi_plan_dig",
-          "label": "Dig a little river over to {Q2_HOME}.",
-          "target": "fi_flop_dig"
-        },
-        {
-          "id": "c_fi_plan_scoop",
-          "label": "Scoop water and {Q2_NAME} up together in {TOOL}.",
-          "target": "fi_win"
-        }
-      ]
-    },
-    {
-      "id": "fi_flop_hands",
-      "body": "<<FILL role=choice words=75 beats='{HERO} cups his hands and reaches in, but {Q2_NAME} is quicker than a sneeze; he zips between {HERO}'s fingers, tickles his thumb, and splashes a tiny wave right up {HERO}'s nose; {HERO} snorts with laughter and {Q2_NAME} does a proud little flip; no harm done to anyone; {HERO} can pick a plan again or ask {COMPANION} for a tip'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_fi_hands_again",
-          "label": "Line up the plans and try again.",
-          "target": "fi_plan"
-        },
-        {
-          "id": "c_fi_hands_gran",
-          "label": "Ask {COMPANION} for a tip.",
-          "target": "fi_gran"
-        }
-      ]
-    },
-    {
-      "id": "fi_flop_dig",
-      "body": "<<FILL role=choice words=75 beats='{HERO} drags his finger through the sand to dig a little river, but the thirsty sand drinks the water down with a polite glug before it travels anywhere; the channel just sits there, damp and empty; {HERO} pats the sand and giggles at his disappearing river; {Q2_NAME} shrugs his fins; {HERO} can pick a plan again or ask {COMPANION} for a tip'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_fi_dig_again",
-          "label": "Smooth the sand and try again.",
-          "target": "fi_plan"
-        },
-        {
-          "id": "c_fi_dig_gran",
-          "label": "Ask {COMPANION} for a tip.",
-          "target": "fi_gran"
-        }
-      ]
-    },
-    {
-      "id": "fi_gran",
-      "body": "<<FILL role=choice words=65 beats='{COMPANION} leans forward on {ENTRANCE} and smiles; {Q2_SPECIES}s do not like to be squeezed, she says, but they do love to swim; {Q2_METHOD} and he can ride to {Q2_HOME} swimming the whole way; {HERO} can try the gentle scoop or look over his plans once more; reads the same on any visit'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_fi_gran_try",
-          "label": "Scoop water and {Q2_NAME} up together, {COMPANION}'s way.",
-          "target": "fi_win"
-        },
-        {
-          "id": "c_fi_gran_back",
-          "label": "Look over the plans once more.",
-          "target": "fi_plan"
-        }
-      ]
-    },
-    {
-      "id": "fi_win",
-      "body": "<<FILL role=rising words=75 beats='{HERO} lowers {TOOL} slowly into the puddle and {Q2_NAME} swims right in, riding his very own cupful of sea; two careful hops later {HERO} tips {TOOL} at the edge of {Q2_HOME} and {Q2_NAME} pours out with the water, zooming one giant loop around his cool new home'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_fi_win",
-          "label": "Watch {Q2_NAME} zoom around his big new pool.",
-          "target": "fi_thanks"
-        }
-      ]
-    },
-    {
-      "id": "fi_thanks",
-      "body": "<<FILL role=choice words=60 beats='{Q2_NAME} leaps one sparkling thank-you hop and races another lap; out across the rocks somebody else is still calling, and {TIDE} is coming on; {HERO} waves goodbye and can head back toward the pools or stay and watch the water arrive'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_fi_back",
-          "label": "Head back out toward the calling.",
-          "target": "n_meet"
-        },
-        {
-          "id": "c_fi_done",
-          "label": "Watch {TIDE} come in over the pools.",
-          "target": "n_alldone"
-        }
-      ]
-    },
-    {
-      "id": "t_fi_cr",
-      "body": "<<FILL role=rising words=60 beats='{HERO} crosses the rocks toward {Q3_SIGN}; behind him {TIDE} has slid another sparkly step up the sand, filling the farthest pools first like little cups; the seaweed patch ahead is green and shiny, and something in the middle of it is waving'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_t2",
-          "label": "Cross the rocks to the seaweed patch.",
-          "target": "cr_scene"
-        }
-      ]
-    },
-    {
-      "id": "cr_scene",
-      "body": "<<FILL role=rising words=70 beats='in the seaweed patch a small {Q3_SPECIES} is {Q3_PLIGHT} like a present that tied itself; he clacks his claws hello and says his name is {Q3_NAME}; he was climbing through when the seaweed flopped over, and now his legs are in a friendly muddle; cheerful, not frightened'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_cr_scene",
-          "label": "Crouch down beside the tangled {Q3_SPECIES}.",
-          "target": "cr_meet"
-        }
-      ]
-    },
-    {
-      "id": "cr_meet",
-      "body": "<<FILL role=rising words=75 beats='{HERO} crouches close and {Q3_NAME} wiggles to show which legs are stuck; the seaweed is shiny and slippery as wet noodles; {Q3_NAME} promises his claws only pinch things that poke too fast; {HERO} looks at the tangle, then at the picnic spoon peeking out of his pocket, and starts to think'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_cr_meet",
-          "label": "Think up a plan to untangle {Q3_NAME}.",
-          "target": "cr_plan"
-        }
-      ]
-    },
-    {
-      "id": "cr_plan",
-      "body": "<<FILL role=choice words=80 beats='{HERO} considers the seaweed muddle while {Q3_NAME} waits, waving one free claw like a tiny flag; {HERO} could {Q3_ATTEMPT1}, {Q3_ATTEMPT2}, or {Q3_METHOD}; {COMPANION} hums a beach tune from {ENTRANCE} nearby; must read the same on a first visit and on any try-again visit'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_cr_plan_tug",
-          "label": "Give the seaweed one quick tug.",
-          "target": "cr_flop_tug"
-        },
-        {
-          "id": "c_cr_plan_spoon",
-          "label": "Hold out the picnic spoon for {Q3_NAME} to grab.",
-          "target": "cr_flop_spoon"
-        },
-        {
-          "id": "c_cr_plan_ribbon",
-          "label": "Untangle one seaweed ribbon at a time.",
-          "target": "cr_win"
-        }
-      ]
-    },
-    {
-      "id": "cr_flop_tug",
-      "body": "<<FILL role=choice words=75 beats='{HERO} grips the slippery seaweed and gives one quick tug; the wet ribbon slides straight through his fingers and {HERO} sits down plop in a shallow warm puddle; {Q3_NAME} waves both claws as if to say whoa, nice splash; {HERO} laughs and stands up dripping and completely fine; the tangle is still tangled; he can pick a plan again or ask {COMPANION} for a tip'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_cr_tug_again",
-          "label": "Stand up and try again.",
-          "target": "cr_plan"
-        },
-        {
-          "id": "c_cr_tug_gran",
-          "label": "Ask {COMPANION} for a tip.",
-          "target": "cr_gran"
-        }
-      ]
-    },
-    {
-      "id": "cr_flop_spoon",
-      "body": "<<FILL role=choice words=75 beats='{HERO} holds out the picnic spoon and {Q3_NAME} grabs it, but instead of climbing free the {Q3_SPECIES} pinches on tight and waves the spoon around like a shiny trophy; {HERO} has a gentle giggly tug-of-war just to get his spoon back and tucks it safely in his pocket; the tangle is still tangled; he can pick a plan again or ask {COMPANION} for a tip'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_cr_spoon_again",
-          "label": "Pocket the spoon and try again.",
-          "target": "cr_plan"
-        },
-        {
-          "id": "c_cr_spoon_gran",
-          "label": "Ask {COMPANION} for a tip.",
-          "target": "cr_gran"
-        }
-      ]
-    },
-    {
-      "id": "cr_gran",
-      "body": "<<FILL role=choice words=65 beats='{COMPANION} calls over softly from {ENTRANCE}; tangles hate hurrying, she says, hum a slow song and {Q3_METHOD}, and the whole knot will give up all by itself; {HERO} can try the slow ribbon-by-ribbon way or look over his plans once more; reads the same on any visit'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_cr_gran_try",
-          "label": "Untangle one ribbon at a time, {COMPANION}'s way.",
-          "target": "cr_win"
-        },
-        {
-          "id": "c_cr_gran_back",
-          "label": "Look over the plans once more.",
-          "target": "cr_plan"
-        }
-      ]
-    },
-    {
-      "id": "cr_win",
-      "body": "<<FILL role=rising words=75 beats='{HERO} hums a slow beach song and loosens one green ribbon, then another, then another; the tangle gives up with a soft slurp and {Q3_NAME} steps out, stretching each leg one by one like a tiny gym class; {Q3_HOME} is deep and ready for him'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_cr_win",
-          "label": "Watch {Q3_NAME} scuttle into the cool pool.",
-          "target": "cr_thanks"
-        }
-      ]
-    },
-    {
-      "id": "cr_thanks",
-      "body": "<<FILL role=choice words=60 beats='{Q3_NAME} clacks a happy drumroll on a pebble and scuttles a thank-you circle around his pool; another voice is still calling somewhere back across the rocks, and {TIDE} is coming on; {HERO} can go and find it, watch the water arrive, or watch from {COMPANION}'s {TOWEL} while {TIDE} does the rest'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_cr_back",
-          "label": "Go and find who is calling.",
-          "target": "n_meet"
-        },
-        {
-          "id": "c_cr_done",
-          "label": "Watch {TIDE} come in over the pools.",
-          "target": "n_alldone"
-        },
-        {
-          "id": "c_cr_rest",
-          "label": "Watch from {COMPANION}'s {TOWEL} while {TIDE} fetches the {Q4_SPECIES}.",
-          "target": "e_tide_snail"
-        }
-      ]
-    },
-    {
-      "id": "t_cr_pw",
-      "body": "<<FILL role=rising words=60 beats='{HERO} tiptoes up the dry rock toward {Q4_SIGN}, keeping his feet on the rough gray parts the way {COMPANION} likes; {TIDE} is closer now, filling pool after pool behind him with happy gurgles; near the top, a shell no bigger than a button sits all alone in the sunshine'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_t3",
-          "label": "Tiptoe up the dry rock to the tiny shell.",
-          "target": "pw_scene"
-        }
-      ]
-    },
-    {
-      "id": "pw_scene",
-      "body": "<<FILL role=rising words=70 beats='near the top of the dry rock sits a {Q4_SPECIES} shell no bigger than a button, far from any water; a tiny voice inside gives a tiny polite cough; the sun is warm, the rock is very dry, and the shell is a very long walk from home for someone so small'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_pw_scene",
-          "label": "Bend down and greet the little {Q4_SPECIES}.",
-          "target": "pw_meet"
-        }
-      ]
-    },
-    {
-      "id": "pw_meet",
-      "body": "<<FILL role=rising words=75 beats='{HERO} bends down and the tiny shell peeks out; her name is {Q4_NAME}, and she went exploring at {OPENING_MOMENT} and wandered much too far; {Q4_HOME} is way down the rock, and {Q4_SPECIES}s are the slowest walkers on the whole beach; {HERO} dips one hand in a nearby pool while he thinks'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_pw_meet",
-          "label": "Think up a plan to bring {Q4_NAME} home.",
-          "target": "pw_plan"
-        }
-      ]
-    },
-    {
-      "id": "pw_plan",
-      "body": "<<FILL role=choice words=80 beats='{HERO} thinks it over while {Q4_NAME} waits, snug in her shell; he could {Q4_ATTEMPT1}, {Q4_ATTEMPT2}, or {Q4_METHOD}; {Q4_NAME} says any way is fine, she is in no hurry at all, though {TIDE} rather is; must read the same on a first visit and on any try-again visit'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_pw_plan_roll",
-          "label": "Roll {Q4_NAME} along like a tiny wheel.",
-          "target": "pw_flop_roll"
-        },
-        {
-          "id": "c_pw_plan_cheer",
-          "label": "Cheer for {Q4_NAME} to walk faster.",
-          "target": "pw_flop_cheer"
-        },
-        {
-          "id": "c_pw_plan_palm",
-          "label": "Offer {Q4_NAME} a ride on your wet palm.",
-          "target": "pw_win"
-        }
-      ]
-    },
-    {
-      "id": "pw_flop_roll",
-      "body": "<<FILL role=choice words=75 beats='{HERO} gives {Q4_NAME} the gentlest nudge to start her rolling like a tiny wheel, but {Q4_NAME} tucks herself snugly into her shell and simply will not budge, stuck fast as a pebble glued to the rock; no rolling today, thank you, says a tiny muffled voice; {HERO} laughs at his silly fizzled idea, and {Q4_NAME} peeks back out, completely comfy; he can pick a plan again or ask {COMPANION} for a tip'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_pw_roll_again",
-          "label": "Smile at the stubborn shell and try again.",
-          "target": "pw_plan"
-        },
-        {
-          "id": "c_pw_roll_gran",
-          "label": "Ask {COMPANION} for a tip.",
-          "target": "pw_gran"
-        }
-      ]
-    },
-    {
-      "id": "pw_flop_cheer",
-      "body": "<<FILL role=choice words=75 beats='{HERO} claps and cheers, go {Q4_NAME} go; {Q4_NAME} tries her very fastest, and after one whole minute of mighty effort she has traveled the width of a single pebble; she puffs proudly; at this speed they might arrive by next Tuesday; {HERO} cheers once more anyway, because trying deserves a cheer; he can pick a plan again or ask {COMPANION} for a tip'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_pw_cheer_again",
-          "label": "Line up the plans and try again.",
-          "target": "pw_plan"
-        },
-        {
-          "id": "c_pw_cheer_gran",
-          "label": "Ask {COMPANION} for a tip.",
-          "target": "pw_gran"
-        }
-      ]
-    },
-    {
-      "id": "pw_gran",
-      "body": "<<FILL role=choice words=65 beats='{COMPANION} cups her hands around her mouth and calls up gently; little {Q4_SPECIES}s ride better than they roll, she says, wet your palm so it feels like home, let {Q4_NAME} hold on tight, and walk her down slow as a Sunday; {HERO} can offer the wet-palm ride or look over his plans once more; reads the same on any visit'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_pw_gran_try",
-          "label": "Offer {Q4_NAME} a wet-palm ride, {COMPANION}'s way.",
-          "target": "pw_win"
-        },
-        {
-          "id": "c_pw_gran_back",
-          "label": "Look over the plans once more.",
-          "target": "pw_plan"
-        }
-      ]
-    },
-    {
-      "id": "pw_win",
-      "body": "<<FILL role=rising words=75 beats='{HERO} wets his palm in a pool and lays his hand flat beside {Q4_NAME}; she slides aboard and holds on snug; this is the longest, highest, most careful rescue of the whole day, step by slow step down the big rock while {TIDE} gurgles behind him like a cheering crowd, until he kneels at the edge of {Q4_HOME}'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_pw_win",
-          "label": "Lower {Q4_NAME} into her cool pool.",
-          "target": "pw_thanks"
-        }
-      ]
-    },
-    {
-      "id": "pw_thanks",
-      "body": "<<FILL role=choice words=60 beats='{Q4_NAME} settles onto her favorite green stone with a tiny happy squeak, home at last; a bright gurgle runs all along the rocks as {TIDE} comes on; {HERO} can look back across the rocks for anyone still calling, or stay and watch the water arrive'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_pw_back",
-          "label": "Look back across the rocks for anyone else.",
-          "target": "n_meet"
-        },
-        {
-          "id": "c_pw_done",
-          "label": "Watch {TIDE} come in over the pools.",
-          "target": "n_alldone"
-        }
-      ]
-    },
-    {
-      "id": "n_alldone",
-      "body": "<<FILL role=rising words=80 beats='{HERO} stands tall on the flat rocks and looks back over the pools he reached; every friend he got to is safe and settled, waving or drumming or zooming in the water; {TIDE} sweeps closer in sparkly stripes, warm and friendly, coming to welcome everyone home and to finish what {HERO} started; {COMPANION} gives {HERO} a proud thumbs up from {ENTRANCE}'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_alldone",
-          "label": "Watch the first wave-finger slide in.",
-          "target": "n_tide"
-        }
-      ]
-    },
-    {
-      "id": "n_tide",
-      "body": "<<FILL role=choice words=85 beats='the first thin finger of {TIDE} slides across the rocks and fills the nearest pool right up to its brim; the water is home, and it is reaching every pool {HERO} could not get to as well; the pools fizz and sparkle like a celebration; {HERO} can follow {TIDE} from pool to pool to see each friend greet it, climb up beside {COMPANION} on {ENTRANCE} to watch it all at once, or open {PICNIC} to celebrate the rescue team'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_tide_follow",
-          "label": "Follow {TIDE} from pool to pool.",
-          "target": "n_fill"
-        },
-        {
-          "id": "c_tide_gran",
-          "label": "Climb up beside {COMPANION} on {ENTRANCE}.",
-          "target": "n_wave"
-        },
-        {
-          "id": "c_tide_picnic",
-          "label": "Open {PICNIC} to celebrate.",
-          "target": "n_picnic"
-        }
-      ]
-    },
-    {
-      "id": "n_fill",
-      "body": "<<FILL role=choice words=75 beats='{HERO} trots beside {TIDE} as it fills pool after pool like a row of tea cups; {Q1_NAME}'s pool is next and already trembling at the brim; {HERO} can stay and cheer as {Q1_NAME}'s pool spills over, race the soft foam line up the dry sand just for fun, or peek around for anyone else who might still need a hand'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_fill_cheer",
-          "label": "Cheer as {Q1_NAME}'s pool spills over.",
-          "target": "e_cartwheel"
-        },
-        {
-          "id": "c_fill_race",
-          "label": "Race the foam line up the dry sand.",
-          "target": "n_race"
-        },
-        {
-          "id": "c_fill_check",
-          "label": "Peek around for anyone else who needs help.",
-          "target": "n_check"
-        }
-      ]
-    },
-    {
-      "id": "n_race",
-      "body": "<<FILL role=rising words=60 beats='{HERO} lines up his toes on the dry sand, well ahead of the water, and waits for the soft foam line to catch up; {COMPANION} calls ready, steady, go from {ENTRANCE}; {TIDE} whooshes gently forward and {HERO} takes off giggling along the dry sand beside it'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_race_go",
-          "label": "Run the last few splashy-sounding steps.",
-          "target": "e_race_win"
-        }
-      ]
-    },
-    {
-      "id": "n_check",
-      "body": "<<FILL role=choice words=70 beats='{HERO} shades his eyes and looks over the busy, filling pools; nobody calls for help, but under a shadowy ledge something small is bobbing on the new water, and along the wet sand a glittery trail winds toward a heap of shining pebbles; both look like tiny mysteries worth one last look before {PICNIC}'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_check_ledge",
-          "label": "Peek under the shadowy ledge.",
-          "target": "e_hermit"
-        },
-        {
-          "id": "c_check_trail",
-          "label": "Follow the glittery trail.",
-          "target": "e_shell"
-        }
-      ]
-    },
-    {
-      "id": "n_wave",
-      "body": "<<FILL role=choice words=75 beats='{HERO} climbs up beside {COMPANION} on {ENTRANCE} and she wraps him in the warm corner of {TOWEL}; below them {TIDE} fills every pool one by one while the friends wave, splash, and clack; {COMPANION} asks how the rescue team would like to celebrate; they could sing a welcome-home song, shout three hip-hip-hoorays, or call each friend by name as their pool fills'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_wave_song",
-          "label": "Sing the welcome-home song.",
-          "target": "e_song"
-        },
-        {
-          "id": "c_wave_cheer",
-          "label": "Shout three hip-hip-hoorays.",
-          "target": "e_hooray"
-        },
-        {
-          "id": "c_wave_names",
-          "label": "Call each friend's name as their pool fills.",
-          "target": "e_names"
-        }
-      ]
-    },
-    {
-      "id": "n_picnic",
-      "body": "<<FILL role=choice words=75 beats='{COMPANION} opens {PICNIC} on {ENTRANCE}, crackers, berries, and two little cups of juice; below them {TIDE} sparkles into the last pools while the friends splash hello to it; {HERO} can raise juice cups in a toast to the rescue team, tell {COMPANION} the whole story of the rescue day, or start planning the next {OPENING_MOMENT} rescue patrol'>>",
-      "is_ending": false,
-      "choices": [
-        {
-          "id": "c_picnic_toast",
-          "label": "Raise juice cups to the rescue team.",
-          "target": "e_toast"
-        },
-        {
-          "id": "c_picnic_story",
-          "label": "Tell {COMPANION} the whole rescue story.",
-          "target": "e_story"
-        },
-        {
-          "id": "c_picnic_patrol",
-          "label": "Plan the next {OPENING_MOMENT} rescue patrol.",
-          "target": "e_patrol"
-        }
-      ]
-    },
-    {
-      "id": "e_tide_star",
-      "body": "<<FILL role=ending words=80 beats='{HERO} snuggles next to {COMPANION} on {TOWEL} and shares crackers while {TIDE} slides in; the water reaches {Q2_NAME} and his puddle grows into a lake, unwraps {Q3_NAME} from his seaweed, and carries {Q4_NAME} gently home, doing the rest of the rescuing all by itself; {HERO} waves to each friend as they float free and happy; one rescue by {HERO} and three by {TIDE}, says {COMPANION}, what a fine team; {HERO} snuggles deeper into the warm towel, proud of {Q1_NAME}'s rescue and already excited to come back and visit the brimming pools'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "end_tide_star",
-        "valence": "neutral",
-        "kind": "setback",
-        "title": "{SETBACK1_PRIZE}"
-      }
-    },
-    {
-      "id": "e_tide_snail",
-      "body": "<<FILL role=ending words=80 beats='from {COMPANION}'s {TOWEL} {HERO} watches sparkly {TIDE} climb the rock, higher and higher, until it reaches tiny {Q4_NAME}'s shell and lifts her like a leaf on a stream; the little {Q4_SPECIES} sails down to her pool in style, and a tiny faraway wheee floats across the rocks; three rescues by {HERO} and one by {TIDE}, says {COMPANION}, sounds like a fine team; {HERO} waves until the little shell settles safely into deep cool water'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "end_tide_snail",
-        "valence": "neutral",
-        "kind": "setback",
-        "title": "{SETBACK2_PRIZE}"
-      }
-    },
-    {
-      "id": "e_cartwheel",
-      "body": "<<FILL role=completion words=85 beats='{TIDE} tips over the rim of {Q1_NAME}'s pool and the water rises around her like a big cool hug; {Q1_NAME} does a slow magnificent underwater cartwheel of thank you, all five arms sparkling; {HERO} cheers, {COMPANION} cheers from {ENTRANCE}, and {TIDE} keeps rolling gently in, welcoming every rescued friend home; best {OPENING_MOMENT} ever, {HERO} decides, and {Q1_NAME} cartwheels once more as if she completely agrees'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "end_cartwheel",
-        "valence": "positive",
-        "kind": "success",
-        "title": "{Q1_PRIZE}"
-      }
-    },
-    {
-      "id": "e_race_win",
-      "body": "<<FILL role=completion words=85 beats='{HERO} and the foam line race up the beach and {HERO} wins by exactly one giggling toe; {TIDE} pit-pats little wave-claps behind him and fills the last pools while {COMPANION} shouts hooray; {HERO} takes a big bow to {TIDE}, and it seems to bow back with one soft sparkly wave; every friend is home, the water is back where it belongs, and {HERO} is the fastest rescuer on the whole {PLACE}'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "end_race_win",
-        "valence": "positive",
-        "kind": "success",
-        "title": "{RACE_PRIZE}"
-      }
-    },
-    {
-      "id": "e_hermit",
-      "body": "<<FILL role=completion words=80 beats='under the shadowy ledge bobs {BONUS1_FIND}, already floating home on the new water and needing no rescue at all; he tips his shell to {HERO} exactly the way {COMPANION} tips {HAT}; {HERO} tips an invisible hat right back; a new friend to wave to as {TIDE} carries him past the rocks, while all the rescued friends settle happily into their brimming pools'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "end_hermit",
-        "valence": "positive",
-        "kind": "discovery",
-        "title": "{BONUS1_PRIZE}"
-      }
-    },
-    {
-      "id": "e_shell",
-      "body": "<<FILL role=completion words=80 beats='the glittery trail winds between two pebbles and stops at {BONUS2_FIND}, polished smooth by {TIDE}; {COMPANION} says it is a thank-you gift from {PLACE} for a hard-working rescuer; {HERO} holds it to his ear and hears {TIDE} inside, whooshing home; he carries it back in {TOOL}, a treasure to remember the rescue day forever'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "end_shell",
-        "valence": "positive",
-        "kind": "discovery",
-        "title": "{BONUS2_PRIZE}"
-      }
-    },
-    {
-      "id": "e_song",
-      "body": "<<FILL role=completion words=85 beats='{HERO} and {COMPANION} make up a welcome-home song right there on {ENTRANCE}, with a happy sound for {Q1_NAME}, for {Q2_NAME}, for {Q3_NAME}, and for {Q4_NAME}; the friends join in from their brimming pools, splashing along in time, and {TIDE} keeps the beat with soft whooshes; the song floats out over the water until every pool is full and everybody is home'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "end_song",
-        "valence": "positive",
-        "kind": "completion",
-        "title": "The Welcome-Home Song"
-      }
-    },
-    {
-      "id": "e_hooray",
-      "body": "<<FILL role=completion words=80 beats='hip hip hooray, hip hip hooray, hip hip hooray; {HERO} and {COMPANION} shout three big cheers as {TIDE} rolls home across the rocks, and the friends answer with splashes, bubbles, and claw-clacks from their pools; {TIDE} fills the very last pool with a happy gulp; every friend is safe, every pool is brimming, and the whole {PLACE} feels like it is clapping along'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "end_hooray",
-        "valence": "positive",
-        "kind": "success",
-        "title": "Three Cheers for Everyone"
-      }
-    },
-    {
-      "id": "e_names",
-      "body": "<<FILL role=completion words=80 beats='as each pool fills, {HERO} calls its friend by name; welcome home, {Q1_NAME}; welcome home, {Q2_NAME}; welcome home, {Q3_NAME}; welcome home, {Q4_NAME}; each friend pops up and waves an arm or a fin or a claw or a tiny shell, then settles snug into deep cool water; {COMPANION} squeezes {HERO}'s shoulder; every single friend is home, and {HERO} is the reason why'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "end_names",
-        "valence": "positive",
-        "kind": "completion",
-        "title": "Everyone Home"
-      }
-    },
-    {
-      "id": "e_toast",
-      "body": "<<FILL role=completion words=85 beats='{HERO} and {COMPANION} clink their little juice cups together on {ENTRANCE}; to the rescue team, says {COMPANION}, to {Q1_NAME}, {Q2_NAME}, {Q3_NAME}, and {Q4_NAME}, and to the helper who never gave up; below them {TIDE} sparkles into every pool while the friends splash a fizzy toast of their own; {HERO} sips his juice and decides that rescue days taste especially sweet'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "end_toast",
-        "valence": "positive",
-        "kind": "completion",
-        "title": "A Toast to the Rescue Team"
-      }
-    },
-    {
-      "id": "e_story",
-      "body": "<<FILL role=completion words=85 beats='{HERO} tells {COMPANION} the whole story of the rescue day, being {Q1_PLIGHT}, {Q2_PLIGHT}, {Q3_PLIGHT}, and the long slow ride home for the littlest shell; {COMPANION} listens under {HAT} and declares it the best {PLACE} story she has ever heard; below them the full pools sparkle and the friends splash, as if adding their own favorite parts to the tale'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "end_story",
-        "valence": "positive",
-        "kind": "completion",
-        "title": "{STORY_PRIZE}"
-      }
-    },
-    {
-      "id": "e_patrol",
-      "body": "<<FILL role=completion words=80 beats='{HERO} and {COMPANION} plan the next {OPENING_MOMENT} rescue patrol with cracker-crumb maps on {TOWEL}; {COMPANION} will bring {HAT} and {PICNIC}, {HERO} will bring {TOOL} and his gentle wet hands; below them {TIDE} tucks every friend into deep cool water for the afternoon; {TIDE} will go out again someday, {COMPANION} says, and when it does, the rescue patrol will be ready'>>",
-      "is_ending": true,
-      "ending": {
-        "id": "end_patrol",
-        "valence": "positive",
-        "kind": "success",
-        "title": "{PATROL_PRIZE}"
-      }
+     "id": "c_start_go",
+     "label": "Follow {COMPANION} down the sandy path.",
+     "target": "n_walk"
     }
-  ]
+   ]
+  },
+  {
+   "id": "n_walk",
+   "body": "<<FILL role=rising words=75 beats='{COMPANION} leads the way down the sandy path and spreads {TOWEL} on {ENTRANCE} where she can see everything; she reminds {HERO} of the beach rules, stay on the dry rocks, wet feet are fine, and call if you ever want a hand; {HERO} promises with a salute and turns toward the shining pools'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_walk_rocks",
+     "label": "Step out onto the flat low-tide rocks.",
+     "target": "n_meet"
+    }
+   ]
+  },
+  {
+   "id": "n_meet",
+   "body": "<<FILL role=choice words=80 beats='out on the rocks {HERO} hears tiny voices; {OPENING_MOMENT} has left some tide-pool friends stranded too high and dry, a {Q1_SPECIES} {Q1_PLIGHT} and a {Q2_SPECIES} {Q2_PLIGHT} here on the near rocks, and two more voices calling from somewhere past the big gray boulder; far off {DEADLINE_SIGN} says {TIDE} is already on its way and will reach the rocks by {DEADLINE}; they are all calling at once and {HERO} can only reach one at a time, so he picks where to start'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_meet_star",
+     "label": "Hurry to the {Q1_SPECIES} on the high ledge.",
+     "target": "st_scene"
+    },
+    {
+     "id": "c_meet_fish",
+     "label": "Follow {Q2_SIGN} across the rocks.",
+     "target": "fi_scene"
+    },
+    {
+     "id": "c_meet_further",
+     "label": "Head further along the rocks.",
+     "target": "n_further"
+    }
+   ]
+  },
+  {
+   "id": "n_further",
+   "body": "<<FILL role=choice words=75 beats='{HERO} picks his way around the big gray boulder to the far rocks, hopping from flat top to flat top the way {COMPANION} likes; out here the voices are much clearer, a {Q3_SPECIES} {Q3_PLIGHT} down in the seaweed patch and a {Q4_SPECIES} {Q4_PLIGHT} somewhere up on the dry shelf where no water has reached all afternoon; behind him {TIDE} has slid another sparkly step up the sand, and the way back to the near pools stays easy to see; keep this general so it reads naturally on a first trip or on any return, mentioning only whoever is still calling'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_further_crab",
+     "label": "Follow {Q3_SIGN} to the seaweed patch.",
+     "target": "cr_scene"
+    },
+    {
+     "id": "c_further_snail",
+     "label": "Climb toward {Q4_SIGN} on the dry rock.",
+     "target": "pw_scene"
+    },
+    {
+     "id": "c_further_back",
+     "label": "Go back to the near pools.",
+     "target": "n_meet"
+    }
+   ]
+  },
+  {
+   "id": "st_scene",
+   "body": "<<FILL role=rising words=70 beats='{HERO} reaches the tall rock where {Q1_NAME} the {Q1_SPECIES} sits {Q1_PLIGHT} above his head; her five arms droop like a tired star sticker; she calls down that the ledge is getting warm and she would very much like to be back in {Q1_HOME} below'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_st_scene",
+     "label": "Climb the low steps for a closer look.",
+     "target": "st_meet"
+    }
+   ]
+  },
+  {
+   "id": "st_meet",
+   "body": "<<FILL role=rising words=75 beats='{HERO} climbs two safe flat steps and says hello; {Q1_NAME} perks up one arm to wave; the ledge is dry as toast and {Q1_HOME} waits just below; {Q1_NAME} says any rescue plan is fine with her, she is a very patient {Q1_SPECIES}; {HERO} looks at {TOOL}, at his own two hands, and at the little slope'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_st_meet",
+     "label": "Think up a rescue plan for {Q1_NAME}.",
+     "target": "st_plan"
+    }
+   ]
+  },
+  {
+   "id": "st_plan",
+   "body": "<<FILL role=choice words=80 beats='{HERO} lines up his ideas while {Q1_NAME} waves cheerfully from her dry ledge; he could {Q1_ATTEMPT1}, {Q1_ATTEMPT2} to pour her a waterfall, or {Q1_METHOD} himself; {COMPANION} watches from {ENTRANCE}, ready with a tip whenever he wants one; must read the same on a first visit and on any try-again visit'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_st_plan_hands",
+     "label": "Toss water up with your cupped hands.",
+     "target": "st_flop_hands"
+    },
+    {
+     "id": "c_st_plan_bucket",
+     "label": "Carry {TOOL} up the little slope.",
+     "target": "st_flop_bucket"
+    },
+    {
+     "id": "c_st_plan_slide",
+     "label": "Wet your hands and gently slide {Q1_NAME} down.",
+     "target": "st_win"
+    }
+   ]
+  },
+  {
+   "id": "st_flop_hands",
+   "body": "<<FILL role=choice words=75 beats='{HERO} scoops sea water in his cupped hands and tosses it up toward the ledge, but the water rains straight back down on his own head, plip plop; {Q1_NAME} giggles so hard her arms wiggle; {HERO} laughs and shakes his wet hair like a puppy; no harm done, just a soggy fringe; he can line the plans up again or trot over and ask {COMPANION} for a tip'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_st_hands_again",
+     "label": "Line up the plans and try again.",
+     "target": "st_plan"
+    },
+    {
+     "id": "c_st_hands_gran",
+     "label": "Ask {COMPANION} for a tip.",
+     "target": "st_gran"
+    }
+   ]
+  },
+  {
+   "id": "st_flop_bucket",
+   "body": "<<FILL role=choice words=75 beats='{HERO} fills {TOOL} and starts up the little slope, but it wobbles, tips, and whooshes every drop over his own shoes; his toes squelch; {Q1_NAME} claps two arms for the amazing splash; {HERO} grins and wiggles his soggy toes; nothing lost, {TIDE} has plenty more water; he can go back to his plans or ask {COMPANION} for a tip'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_st_bucket_again",
+     "label": "Shake off the splash and try again.",
+     "target": "st_plan"
+    },
+    {
+     "id": "c_st_bucket_gran",
+     "label": "Ask {COMPANION} for a tip.",
+     "target": "st_gran"
+    }
+   ]
+  },
+  {
+   "id": "st_gran",
+   "body": "<<FILL role=choice words=65 beats='{COMPANION} tips back {HAT} and smiles; {Q1_SPECIES}s like slow and gentle, she says, wet your hands first so {Q1_NAME} can hold on comfy, then slide her down to {Q1_HOME} like a little slide ride; {HERO} can try the gentle sliding idea right away or look over his plans once more; reads the same on any visit'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_st_gran_try",
+     "label": "Try {COMPANION}'s gentle sliding idea.",
+     "target": "st_win"
+    },
+    {
+     "id": "c_st_gran_back",
+     "label": "Look over the plans once more.",
+     "target": "st_plan"
+    }
+   ]
+  },
+  {
+   "id": "st_win",
+   "body": "<<FILL role=rising words=75 beats='{HERO} dips his hands in the pool until they are cool and wet, reaches up, and {Q1_NAME} holds on with all five arms; slow and gentle, he carries her down the rock into {Q1_HOME} with a soft ploop; {Q1_NAME} stretches every arm wide, like a happy dance underwater'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_st_win",
+     "label": "Watch {Q1_NAME} settle into her pool.",
+     "target": "st_thanks"
+    }
+   ]
+  },
+  {
+   "id": "st_thanks",
+   "body": "<<FILL role=choice words=60 beats='{Q1_NAME} presses one arm up against the glassy top of the water like a high five and burbles thank you; back across the rocks other small voices are still calling, and {TIDE} is coming on; {HERO} can pick his way out to the pools again, watch {TIDE} arrive, or sit with {COMPANION} and let it finish the rescuing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_st_back",
+     "label": "Pick your way back out to the pools.",
+     "target": "n_meet"
+    },
+    {
+     "id": "c_st_done",
+     "label": "Watch {TIDE} come in over the pools.",
+     "target": "n_alldone"
+    },
+    {
+     "id": "c_st_rest",
+     "label": "Sit with {COMPANION} and let the tide finish the rescuing.",
+     "target": "e_tide_star"
+    }
+   ]
+  },
+  {
+   "id": "fi_scene",
+   "body": "<<FILL role=rising words=70 beats='in the little puddle a small silver {Q2_SPECIES} zips in busy circles; the puddle is only as deep as a soup bowl and the warm sun is sipping it smaller; he pops his mouth up and says his name is {Q2_NAME} and he would very much like a bigger pool please; hopeful and chatty, never scared'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fi_scene",
+     "label": "Lean in and say hello to the little {Q2_SPECIES}.",
+     "target": "fi_meet"
+    }
+   ],
+   "safety_scope": [
+    "peril"
+   ]
+  },
+  {
+   "id": "fi_meet",
+   "body": "<<FILL role=rising words=75 beats='{HERO} tells {Q2_NAME} that help is here; {Q2_HOME} waits just two hops away, calm and shady; {Q2_NAME} zooms an excited lap around his puddle; {HERO} looks from his two quick hands to the strip of sand between the puddles to {TOOL}, three ways this rescue might go'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fi_meet",
+     "label": "Think up a plan to move {Q2_NAME}.",
+     "target": "fi_plan"
+    }
+   ],
+   "safety_scope": [
+    "peril"
+   ]
+  },
+  {
+   "id": "fi_plan",
+   "body": "<<FILL role=choice words=80 beats='{HERO} studies the puddle while {Q2_NAME} swims hopeful loops; he could {Q2_ATTEMPT1}, {Q2_ATTEMPT2} so the puddle can flow to {Q2_HOME}, or {Q2_METHOD}; {Q2_NAME} blows a bubble that seems to say you can do it; must read the same on a first visit and on any try-again visit'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fi_plan_hands",
+     "label": "Catch {Q2_NAME} with your bare hands.",
+     "target": "fi_flop_hands"
+    },
+    {
+     "id": "c_fi_plan_dig",
+     "label": "Dig a little river over to {Q2_HOME}.",
+     "target": "fi_flop_dig"
+    },
+    {
+     "id": "c_fi_plan_scoop",
+     "label": "Scoop water and {Q2_NAME} up together in {TOOL}.",
+     "target": "fi_win"
+    }
+   ]
+  },
+  {
+   "id": "fi_flop_hands",
+   "body": "<<FILL role=choice words=75 beats='{HERO} cups his hands and reaches in, but {Q2_NAME} is quicker than a sneeze; he zips between {HERO}'s fingers, tickles his thumb, and splashes a tiny wave right up {HERO}'s nose; {HERO} snorts with laughter and {Q2_NAME} does a proud little flip; no harm done to anyone; {HERO} can pick a plan again or ask {COMPANION} for a tip'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fi_hands_again",
+     "label": "Line up the plans and try again.",
+     "target": "fi_plan"
+    },
+    {
+     "id": "c_fi_hands_gran",
+     "label": "Ask {COMPANION} for a tip.",
+     "target": "fi_gran"
+    }
+   ]
+  },
+  {
+   "id": "fi_flop_dig",
+   "body": "<<FILL role=choice words=75 beats='{HERO} drags his finger through the sand to dig a little river, but the thirsty sand drinks the water down with a polite glug before it travels anywhere; the channel just sits there, damp and empty; {HERO} pats the sand and giggles at his disappearing river; {Q2_NAME} shrugs his fins; {HERO} can pick a plan again or ask {COMPANION} for a tip'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fi_dig_again",
+     "label": "Smooth the sand and try again.",
+     "target": "fi_plan"
+    },
+    {
+     "id": "c_fi_dig_gran",
+     "label": "Ask {COMPANION} for a tip.",
+     "target": "fi_gran"
+    }
+   ]
+  },
+  {
+   "id": "fi_gran",
+   "body": "<<FILL role=choice words=65 beats='{COMPANION} leans forward on {ENTRANCE} and smiles; {Q2_SPECIES}s do not like to be squeezed, she says, but they do love to swim; {Q2_METHOD} and he can ride to {Q2_HOME} swimming the whole way; {HERO} can try the gentle scoop or look over his plans once more; reads the same on any visit'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fi_gran_try",
+     "label": "Scoop water and {Q2_NAME} up together, {COMPANION}'s way.",
+     "target": "fi_win"
+    },
+    {
+     "id": "c_fi_gran_back",
+     "label": "Look over the plans once more.",
+     "target": "fi_plan"
+    }
+   ]
+  },
+  {
+   "id": "fi_win",
+   "body": "<<FILL role=rising words=75 beats='{HERO} lowers {TOOL} slowly into the puddle and {Q2_NAME} swims right in, riding his very own cupful of sea; two careful hops later {HERO} tips {TOOL} at the edge of {Q2_HOME} and {Q2_NAME} pours out with the water, zooming one giant loop around his cool new home'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fi_win",
+     "label": "Watch {Q2_NAME} zoom around his big new pool.",
+     "target": "fi_thanks"
+    }
+   ]
+  },
+  {
+   "id": "fi_thanks",
+   "body": "<<FILL role=choice words=60 beats='{Q2_NAME} leaps one sparkling thank-you hop and races another lap; out across the rocks somebody else is still calling, and {TIDE} is coming on; {HERO} waves goodbye and can head back toward the pools or stay and watch the water arrive'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fi_back",
+     "label": "Head back out toward the calling.",
+     "target": "n_meet"
+    },
+    {
+     "id": "c_fi_done",
+     "label": "Watch {TIDE} come in over the pools.",
+     "target": "n_alldone"
+    }
+   ]
+  },
+  {
+   "id": "cr_scene",
+   "body": "<<FILL role=rising words=70 beats='in the seaweed patch a small {Q3_SPECIES} is {Q3_PLIGHT} like a present that tied itself; he clacks his claws hello and says his name is {Q3_NAME}; he was climbing through when the seaweed flopped over, and now his legs are in a friendly muddle; cheerful, not frightened'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cr_scene",
+     "label": "Crouch down beside the tangled {Q3_SPECIES}.",
+     "target": "cr_meet"
+    }
+   ]
+  },
+  {
+   "id": "cr_meet",
+   "body": "<<FILL role=rising words=75 beats='{HERO} crouches close and {Q3_NAME} wiggles to show which legs are stuck; the seaweed is shiny and slippery as wet noodles; {Q3_NAME} promises his claws only pinch things that poke too fast; {HERO} looks at the tangle, then at the picnic spoon peeking out of his pocket, and starts to think'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cr_meet",
+     "label": "Think up a plan to untangle {Q3_NAME}.",
+     "target": "cr_plan"
+    }
+   ]
+  },
+  {
+   "id": "cr_plan",
+   "body": "<<FILL role=choice words=80 beats='{HERO} considers the seaweed muddle while {Q3_NAME} waits, waving one free claw like a tiny flag; {HERO} could {Q3_ATTEMPT1}, {Q3_ATTEMPT2}, or {Q3_METHOD}; {COMPANION} hums a beach tune from {ENTRANCE} nearby; must read the same on a first visit and on any try-again visit'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cr_plan_tug",
+     "label": "Give the seaweed one quick tug.",
+     "target": "cr_flop_tug"
+    },
+    {
+     "id": "c_cr_plan_spoon",
+     "label": "Hold out the picnic spoon for {Q3_NAME} to grab.",
+     "target": "cr_flop_spoon"
+    },
+    {
+     "id": "c_cr_plan_ribbon",
+     "label": "Untangle one seaweed ribbon at a time.",
+     "target": "cr_win"
+    }
+   ]
+  },
+  {
+   "id": "cr_flop_tug",
+   "body": "<<FILL role=choice words=75 beats='{HERO} grips the slippery seaweed and gives one quick tug; the wet ribbon slides straight through his fingers and {HERO} sits down plop in a shallow warm puddle; {Q3_NAME} waves both claws as if to say whoa, nice splash; {HERO} laughs and stands up dripping and completely fine; the tangle is still tangled; he can pick a plan again or ask {COMPANION} for a tip'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cr_tug_again",
+     "label": "Stand up and try again.",
+     "target": "cr_plan"
+    },
+    {
+     "id": "c_cr_tug_gran",
+     "label": "Ask {COMPANION} for a tip.",
+     "target": "cr_gran"
+    }
+   ]
+  },
+  {
+   "id": "cr_flop_spoon",
+   "body": "<<FILL role=choice words=75 beats='{HERO} holds out the picnic spoon and {Q3_NAME} grabs it, but instead of climbing free the {Q3_SPECIES} pinches on tight and waves the spoon around like a shiny trophy; {HERO} has a gentle giggly tug-of-war just to get his spoon back and tucks it safely in his pocket; the tangle is still tangled; he can pick a plan again or ask {COMPANION} for a tip'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cr_spoon_again",
+     "label": "Pocket the spoon and try again.",
+     "target": "cr_plan"
+    },
+    {
+     "id": "c_cr_spoon_gran",
+     "label": "Ask {COMPANION} for a tip.",
+     "target": "cr_gran"
+    }
+   ]
+  },
+  {
+   "id": "cr_gran",
+   "body": "<<FILL role=choice words=65 beats='{COMPANION} calls over softly from {ENTRANCE}; tangles hate hurrying, she says, hum a slow song and {Q3_METHOD}, and the whole knot will give up all by itself; {HERO} can try the slow ribbon-by-ribbon way or look over his plans once more; reads the same on any visit'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cr_gran_try",
+     "label": "Untangle one ribbon at a time, {COMPANION}'s way.",
+     "target": "cr_win"
+    },
+    {
+     "id": "c_cr_gran_back",
+     "label": "Look over the plans once more.",
+     "target": "cr_plan"
+    }
+   ]
+  },
+  {
+   "id": "cr_win",
+   "body": "<<FILL role=rising words=75 beats='{HERO} hums a slow beach song and loosens one green ribbon, then another, then another; the tangle gives up with a soft slurp and {Q3_NAME} steps out, stretching each leg one by one like a tiny gym class; {Q3_HOME} is deep and ready for him'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cr_win",
+     "label": "Watch {Q3_NAME} scuttle into the cool pool.",
+     "target": "cr_thanks"
+    }
+   ]
+  },
+  {
+   "id": "cr_thanks",
+   "body": "<<FILL role=choice words=60 beats='{Q3_NAME} clacks a happy drumroll on a pebble and scuttles a thank-you circle around his pool; another voice is still calling somewhere back across the rocks, and {TIDE} is coming on; {HERO} can go and find it, watch the water arrive, or watch from {COMPANION}'s {TOWEL} while {TIDE} does the rest'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cr_back",
+     "label": "Go and find who is calling.",
+     "target": "n_meet"
+    },
+    {
+     "id": "c_cr_done",
+     "label": "Watch {TIDE} come in over the pools.",
+     "target": "n_alldone"
+    },
+    {
+     "id": "c_cr_rest",
+     "label": "Watch from {COMPANION}'s {TOWEL} while {TIDE} fetches the {Q4_SPECIES}.",
+     "target": "e_tide_snail"
+    }
+   ]
+  },
+  {
+   "id": "pw_scene",
+   "body": "<<FILL role=rising words=70 beats='near the top of the dry rock sits a {Q4_SPECIES} shell no bigger than a button, far from any water; a tiny voice inside gives a tiny polite cough; the sun is warm, the rock is very dry, and the shell is a very long walk from home for someone so small'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pw_scene",
+     "label": "Bend down and greet the little {Q4_SPECIES}.",
+     "target": "pw_meet"
+    }
+   ]
+  },
+  {
+   "id": "pw_meet",
+   "body": "<<FILL role=rising words=75 beats='{HERO} bends down and the tiny shell peeks out; her name is {Q4_NAME}, and she went exploring at {OPENING_MOMENT} and wandered much too far; {Q4_HOME} is way down the rock, and {Q4_SPECIES}s are the slowest walkers on the whole beach; {HERO} dips one hand in a nearby pool while he thinks'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pw_meet",
+     "label": "Think up a plan to bring {Q4_NAME} home.",
+     "target": "pw_plan"
+    }
+   ]
+  },
+  {
+   "id": "pw_plan",
+   "body": "<<FILL role=choice words=80 beats='{HERO} thinks it over while {Q4_NAME} waits, snug in her shell; he could {Q4_ATTEMPT1}, {Q4_ATTEMPT2}, or {Q4_METHOD}; {Q4_NAME} says any way is fine, she is in no hurry at all, though {TIDE} rather is; must read the same on a first visit and on any try-again visit'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pw_plan_roll",
+     "label": "Roll {Q4_NAME} along like a tiny wheel.",
+     "target": "pw_flop_roll"
+    },
+    {
+     "id": "c_pw_plan_cheer",
+     "label": "Cheer for {Q4_NAME} to walk faster.",
+     "target": "pw_flop_cheer"
+    },
+    {
+     "id": "c_pw_plan_palm",
+     "label": "Offer {Q4_NAME} a ride on your wet palm.",
+     "target": "pw_win"
+    }
+   ]
+  },
+  {
+   "id": "pw_flop_roll",
+   "body": "<<FILL role=choice words=75 beats='{HERO} gives {Q4_NAME} the gentlest nudge to start her rolling like a tiny wheel, but {Q4_NAME} tucks herself snugly into her shell and simply will not budge, stuck fast as a pebble glued to the rock; no rolling today, thank you, says a tiny muffled voice; {HERO} laughs at his silly fizzled idea, and {Q4_NAME} peeks back out, completely comfy; he can pick a plan again or ask {COMPANION} for a tip'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pw_roll_again",
+     "label": "Smile at the stubborn shell and try again.",
+     "target": "pw_plan"
+    },
+    {
+     "id": "c_pw_roll_gran",
+     "label": "Ask {COMPANION} for a tip.",
+     "target": "pw_gran"
+    }
+   ]
+  },
+  {
+   "id": "pw_flop_cheer",
+   "body": "<<FILL role=choice words=75 beats='{HERO} claps and cheers, go {Q4_NAME} go; {Q4_NAME} tries her very fastest, and after one whole minute of mighty effort she has traveled the width of a single pebble; she puffs proudly; at this speed they might arrive by next Tuesday; {HERO} cheers once more anyway, because trying deserves a cheer; he can pick a plan again or ask {COMPANION} for a tip'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pw_cheer_again",
+     "label": "Line up the plans and try again.",
+     "target": "pw_plan"
+    },
+    {
+     "id": "c_pw_cheer_gran",
+     "label": "Ask {COMPANION} for a tip.",
+     "target": "pw_gran"
+    }
+   ]
+  },
+  {
+   "id": "pw_gran",
+   "body": "<<FILL role=choice words=65 beats='{COMPANION} cups her hands around her mouth and calls up gently; little {Q4_SPECIES}s ride better than they roll, she says, wet your palm so it feels like home, let {Q4_NAME} hold on tight, and walk her down slow as a Sunday; {HERO} can offer the wet-palm ride or look over his plans once more; reads the same on any visit'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pw_gran_try",
+     "label": "Offer {Q4_NAME} a wet-palm ride, {COMPANION}'s way.",
+     "target": "pw_win"
+    },
+    {
+     "id": "c_pw_gran_back",
+     "label": "Look over the plans once more.",
+     "target": "pw_plan"
+    }
+   ]
+  },
+  {
+   "id": "pw_win",
+   "body": "<<FILL role=rising words=75 beats='{HERO} wets his palm in a pool and lays his hand flat beside {Q4_NAME}; she slides aboard and holds on snug; this is the longest, highest, most careful rescue of the whole day, step by slow step down the big rock while {TIDE} gurgles behind him like a cheering crowd, until he kneels at the edge of {Q4_HOME}'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pw_win",
+     "label": "Lower {Q4_NAME} into her cool pool.",
+     "target": "pw_thanks"
+    }
+   ]
+  },
+  {
+   "id": "pw_thanks",
+   "body": "<<FILL role=choice words=60 beats='{Q4_NAME} settles onto her favorite green stone with a tiny happy squeak, home at last; a bright gurgle runs all along the rocks as {TIDE} comes on; {HERO} can look back across the rocks for anyone still calling, or stay and watch the water arrive'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pw_back",
+     "label": "Look back across the rocks for anyone else.",
+     "target": "n_meet"
+    },
+    {
+     "id": "c_pw_done",
+     "label": "Watch {TIDE} come in over the pools.",
+     "target": "n_alldone"
+    }
+   ]
+  },
+  {
+   "id": "n_alldone",
+   "body": "<<FILL role=rising words=80 beats='{HERO} stands tall on the flat rocks and looks back over the pools he reached; every friend he got to is safe and settled, waving or drumming or zooming in the water; {TIDE} sweeps closer in sparkly stripes, warm and friendly, coming to welcome everyone home and to finish what {HERO} started; {COMPANION} gives {HERO} a proud thumbs up from {ENTRANCE}'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_alldone",
+     "label": "Watch the first wave-finger slide in.",
+     "target": "n_tide"
+    }
+   ]
+  },
+  {
+   "id": "n_tide",
+   "body": "<<FILL role=choice words=85 beats='the first thin finger of {TIDE} slides across the rocks and fills the nearest pool right up to its brim; the water is home, and it is reaching every pool {HERO} could not get to as well; the pools fizz and sparkle like a celebration; {HERO} can follow {TIDE} from pool to pool to see each friend greet it, climb up beside {COMPANION} on {ENTRANCE} to watch it all at once, or open {PICNIC} to celebrate the rescue team'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tide_follow",
+     "label": "Follow {TIDE} from pool to pool.",
+     "target": "n_fill"
+    },
+    {
+     "id": "c_tide_gran",
+     "label": "Climb up beside {COMPANION} on {ENTRANCE}.",
+     "target": "n_wave"
+    },
+    {
+     "id": "c_tide_picnic",
+     "label": "Open {PICNIC} to celebrate.",
+     "target": "n_picnic"
+    }
+   ]
+  },
+  {
+   "id": "n_fill",
+   "body": "<<FILL role=choice words=75 beats='{HERO} trots beside {TIDE} as it fills pool after pool like a row of tea cups; {Q1_NAME}'s pool is next and already trembling at the brim; {HERO} can stay and cheer as {Q1_NAME}'s pool spills over, race the soft foam line up the dry sand just for fun, or peek around for anyone else who might still need a hand'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fill_cheer",
+     "label": "Cheer as {Q1_NAME}'s pool spills over.",
+     "target": "e_cartwheel"
+    },
+    {
+     "id": "c_fill_race",
+     "label": "Race the foam line up the dry sand.",
+     "target": "n_race"
+    },
+    {
+     "id": "c_fill_check",
+     "label": "Peek around for anyone else who needs help.",
+     "target": "n_check"
+    }
+   ]
+  },
+  {
+   "id": "n_race",
+   "body": "<<FILL role=rising words=60 beats='{HERO} lines up his toes on the dry sand, well ahead of the water, and waits for the soft foam line to catch up; {COMPANION} calls ready, steady, go from {ENTRANCE}; {TIDE} whooshes gently forward and {HERO} takes off giggling along the dry sand beside it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_race_go",
+     "label": "Run the last few splashy-sounding steps.",
+     "target": "e_race_win"
+    }
+   ]
+  },
+  {
+   "id": "n_check",
+   "body": "<<FILL role=choice words=70 beats='{HERO} shades his eyes and looks over the busy, filling pools; nobody calls for help, but under a shadowy ledge something small is bobbing on the new water, and along the wet sand a glittery trail winds toward a heap of shining pebbles; both look like tiny mysteries worth one last look before {PICNIC}'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_check_ledge",
+     "label": "Peek under the shadowy ledge.",
+     "target": "e_hermit"
+    },
+    {
+     "id": "c_check_trail",
+     "label": "Follow the glittery trail.",
+     "target": "e_shell"
+    }
+   ]
+  },
+  {
+   "id": "n_wave",
+   "body": "<<FILL role=choice words=75 beats='{HERO} climbs up beside {COMPANION} on {ENTRANCE} and she wraps him in the warm corner of {TOWEL}; below them {TIDE} fills every pool one by one while the friends wave, splash, and clack; {COMPANION} asks how the rescue team would like to celebrate; they could sing a welcome-home song, shout three hip-hip-hoorays, or call each friend by name as their pool fills'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wave_song",
+     "label": "Sing the welcome-home song.",
+     "target": "e_song"
+    },
+    {
+     "id": "c_wave_cheer",
+     "label": "Shout three hip-hip-hoorays.",
+     "target": "e_hooray"
+    },
+    {
+     "id": "c_wave_names",
+     "label": "Call each friend's name as their pool fills.",
+     "target": "e_names"
+    }
+   ]
+  },
+  {
+   "id": "n_picnic",
+   "body": "<<FILL role=choice words=75 beats='{COMPANION} opens {PICNIC} on {ENTRANCE}, crackers, berries, and two little cups of juice; below them {TIDE} sparkles into the last pools while the friends splash hello to it; {HERO} can raise juice cups in a toast to the rescue team, tell {COMPANION} the whole story of the rescue day, or start planning the next {OPENING_MOMENT} rescue patrol'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_picnic_toast",
+     "label": "Raise juice cups to the rescue team.",
+     "target": "e_toast"
+    },
+    {
+     "id": "c_picnic_story",
+     "label": "Tell {COMPANION} the whole rescue story.",
+     "target": "e_story"
+    },
+    {
+     "id": "c_picnic_patrol",
+     "label": "Plan the next {OPENING_MOMENT} rescue patrol.",
+     "target": "e_patrol"
+    }
+   ]
+  },
+  {
+   "id": "e_tide_star",
+   "body": "<<FILL role=ending words=80 beats='{HERO} snuggles next to {COMPANION} on {TOWEL} and shares crackers while {TIDE} slides in; the water reaches {Q2_NAME} and his puddle grows into a lake, unwraps {Q3_NAME} from his seaweed, and carries {Q4_NAME} gently home, doing the rest of the rescuing all by itself; {HERO} waves to each friend as they float free and happy; one rescue by {HERO} and three by {TIDE}, says {COMPANION}, what a fine team; {HERO} snuggles deeper into the warm towel, proud of {Q1_NAME}'s rescue and already excited to come back and visit the brimming pools'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_tide_star",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "{SETBACK1_PRIZE}"
+   }
+  },
+  {
+   "id": "e_tide_snail",
+   "body": "<<FILL role=ending words=80 beats='from {COMPANION}'s {TOWEL} {HERO} watches sparkly {TIDE} climb the rock, higher and higher, until it reaches tiny {Q4_NAME}'s shell and lifts her like a leaf on a stream; the little {Q4_SPECIES} sails down to her pool in style, and a tiny faraway wheee floats across the rocks; three rescues by {HERO} and one by {TIDE}, says {COMPANION}, sounds like a fine team; {HERO} waves until the little shell settles safely into deep cool water'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_tide_snail",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "{SETBACK2_PRIZE}"
+   }
+  },
+  {
+   "id": "e_cartwheel",
+   "body": "<<FILL role=completion words=85 beats='{TIDE} tips over the rim of {Q1_NAME}'s pool and the water rises around her like a big cool hug; {Q1_NAME} does a slow magnificent underwater cartwheel of thank you, all five arms sparkling; {HERO} cheers, {COMPANION} cheers from {ENTRANCE}, and {TIDE} keeps rolling gently in, welcoming every rescued friend home; best {OPENING_MOMENT} ever, {HERO} decides, and {Q1_NAME} cartwheels once more as if she completely agrees'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_cartwheel",
+    "valence": "positive",
+    "kind": "success",
+    "title": "{Q1_PRIZE}"
+   }
+  },
+  {
+   "id": "e_race_win",
+   "body": "<<FILL role=completion words=85 beats='{HERO} and the foam line race up the beach and {HERO} wins by exactly one giggling toe; {TIDE} pit-pats little wave-claps behind him and fills the last pools while {COMPANION} shouts hooray; {HERO} takes a big bow to {TIDE}, and it seems to bow back with one soft sparkly wave; every friend is home, the water is back where it belongs, and {HERO} is the fastest rescuer on the whole {PLACE}'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_race_win",
+    "valence": "positive",
+    "kind": "success",
+    "title": "{RACE_PRIZE}"
+   }
+  },
+  {
+   "id": "e_hermit",
+   "body": "<<FILL role=completion words=80 beats='under the shadowy ledge bobs {BONUS1_FIND}, already floating home on the new water and needing no rescue at all; he tips his shell to {HERO} exactly the way {COMPANION} tips {HAT}; {HERO} tips an invisible hat right back; a new friend to wave to as {TIDE} carries him past the rocks, while all the rescued friends settle happily into their brimming pools'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_hermit",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "{BONUS1_PRIZE}"
+   }
+  },
+  {
+   "id": "e_shell",
+   "body": "<<FILL role=completion words=80 beats='the glittery trail winds between two pebbles and stops at {BONUS2_FIND}, polished smooth by {TIDE}; {COMPANION} says it is a thank-you gift from {PLACE} for a hard-working rescuer; {HERO} holds it to his ear and hears {TIDE} inside, whooshing home; he carries it back in {TOOL}, a treasure to remember the rescue day forever'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_shell",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "{BONUS2_PRIZE}"
+   }
+  },
+  {
+   "id": "e_song",
+   "body": "<<FILL role=completion words=85 beats='{HERO} and {COMPANION} make up a welcome-home song right there on {ENTRANCE}, with a happy sound for {Q1_NAME}, for {Q2_NAME}, for {Q3_NAME}, and for {Q4_NAME}; the friends join in from their brimming pools, splashing along in time, and {TIDE} keeps the beat with soft whooshes; the song floats out over the water until every pool is full and everybody is home'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_song",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Welcome-Home Song"
+   }
+  },
+  {
+   "id": "e_hooray",
+   "body": "<<FILL role=completion words=80 beats='hip hip hooray, hip hip hooray, hip hip hooray; {HERO} and {COMPANION} shout three big cheers as {TIDE} rolls home across the rocks, and the friends answer with splashes, bubbles, and claw-clacks from their pools; {TIDE} fills the very last pool with a happy gulp; every friend is safe, every pool is brimming, and the whole {PLACE} feels like it is clapping along'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_hooray",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Three Cheers for Everyone"
+   }
+  },
+  {
+   "id": "e_names",
+   "body": "<<FILL role=completion words=80 beats='as each pool fills, {HERO} calls its friend by name; welcome home, {Q1_NAME}; welcome home, {Q2_NAME}; welcome home, {Q3_NAME}; welcome home, {Q4_NAME}; each friend pops up and waves an arm or a fin or a claw or a tiny shell, then settles snug into deep cool water; {COMPANION} squeezes {HERO}'s shoulder; every single friend is home, and {HERO} is the reason why'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_names",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Everyone Home"
+   }
+  },
+  {
+   "id": "e_toast",
+   "body": "<<FILL role=completion words=85 beats='{HERO} and {COMPANION} clink their little juice cups together on {ENTRANCE}; to the rescue team, says {COMPANION}, to {Q1_NAME}, {Q2_NAME}, {Q3_NAME}, and {Q4_NAME}, and to the helper who never gave up; below them {TIDE} sparkles into every pool while the friends splash a fizzy toast of their own; {HERO} sips his juice and decides that rescue days taste especially sweet'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_toast",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Toast to the Rescue Team"
+   }
+  },
+  {
+   "id": "e_story",
+   "body": "<<FILL role=completion words=85 beats='{HERO} tells {COMPANION} the whole story of the rescue day, being {Q1_PLIGHT}, {Q2_PLIGHT}, {Q3_PLIGHT}, and the long slow ride home for the littlest shell; {COMPANION} listens under {HAT} and declares it the best {PLACE} story she has ever heard; below them the full pools sparkle and the friends splash, as if adding their own favorite parts to the tale'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_story",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "{STORY_PRIZE}"
+   }
+  },
+  {
+   "id": "e_patrol",
+   "body": "<<FILL role=completion words=80 beats='{HERO} and {COMPANION} plan the next {OPENING_MOMENT} rescue patrol with cracker-crumb maps on {TOWEL}; {COMPANION} will bring {HAT} and {PICNIC}, {HERO} will bring {TOOL} and his gentle wet hands; below them {TIDE} tucks every friend into deep cool water for the afternoon; {TIDE} will go out again someday, {COMPANION} says, and when it does, the rescue patrol will be ready'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end_patrol",
+    "valence": "positive",
+    "kind": "success",
+    "title": "{PATROL_PRIZE}"
+   }
+  }
+ ]
 }

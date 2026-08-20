@@ -53,6 +53,8 @@ describe('buildBrief', () => {
     expect(brief.ending_count).toBe(3)
     expect(brief.protagonist.age).toBe(8)
     expect(brief.age_band).toBe('8-11')
+    // The guardian's cap of 4 is below the 8-11 band target of 4.5, so the cap
+    // wins. A cap is a ceiling and may only tighten (`UW-C281`).
     expect(brief.reading_level_target).toBe(4)
   })
 
@@ -63,14 +65,30 @@ describe('buildBrief', () => {
       ageBand: '8-11',
       readingLevelCap: 99,
     })
-    expect(brief.reading_level_target).toBe(4)
+    // 4.5 and 7, matching band_profile._READING_LEVEL_TARGET. The frontend used
+    // to state 4.0 and 8.0 independently and drifted from what RL-13 grades
+    // against (`UW-C281`).
+    expect(brief.reading_level_target).toBe(4.5)
     const teen = buildBrief({
       premise: 'Into the tide pools.',
       tone: 'adventurous',
       ageBand: '13-16',
       readingLevelCap: 99,
     })
-    expect(teen.reading_level_target).toBe(8)
+    expect(teen.reading_level_target).toBe(7)
+  })
+
+  it('a cap above the band target does not raise it', () => {
+    // The direction the old code got backwards: a cap is a ceiling, so a cap of
+    // 9 on a band targeting 4.5 must leave the target at 4.5 rather than
+    // raising it to 9 (`UW-C281`).
+    const brief = buildBrief({
+      premise: 'Into the tide pools.',
+      tone: 'adventurous',
+      ageBand: '8-11',
+      readingLevelCap: 9,
+    })
+    expect(brief.reading_level_target).toBe(4.5)
   })
 
   it('never puts a child display name into the brief', () => {

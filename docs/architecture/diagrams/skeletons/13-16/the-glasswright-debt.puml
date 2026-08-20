@@ -1,0 +1,663 @@
+@startuml the-glasswright-debt
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 60w
+state d01_0 #BBDEFB
+d01_0 : setup · 137w
+state d02_0 #FFF9C4
+d02_0 : choice · 154w
+state d02_1 #D1C4E9
+d02_1 : rising · 137w
+state d02_2 #D1C4E9
+d02_2 : rising · 120w
+state d03_0 #D1C4E9
+d03_0 : rising · 125w
+state d03_1 #D1C4E9
+d03_1 : rising · 154w
+state d03_2 #D1C4E9
+d03_2 : rising · 137w
+state d03_3 #D1C4E9
+d03_3 : rising · 120w
+state d03_4 #ECEFF1
+d03_4 : branch · 149w
+state d04_0 #D1C4E9
+d04_0 : rising · 142w
+state d04_1 #D1C4E9
+d04_1 : rising · 125w
+state d04_2 #D1C4E9
+d04_2 : rising · 154w
+state d04_3 #D1C4E9
+d04_3 : rising · 137w
+state d04_4 #ECEFF1
+d04_4 : branch · 120w
+state d04_5 #D1C4E9
+d04_5 : rising · 149w
+state d04_6 #ECEFF1
+d04_6 : discovery · 132w
+state d05_0 #D1C4E9
+d05_0 : rising · 159w
+state d05_1 #D1C4E9
+d05_1 : rising · 142w
+state d05_2 #D1C4E9
+d05_2 : rising · 125w
+state d05_3 #D1C4E9
+d05_3 : rising · 154w
+state d05_4 #D1C4E9
+d05_4 : rising · 137w
+state d05_5 #D1C4E9
+d05_5 : rising · 120w
+state d05_6 #D1C4E9
+d05_6 : rising · 149w
+state d05_7 #D1C4E9
+d05_7 : rising · 132w
+state d06_0 #D1C4E9
+d06_0 : rising · 130w
+state d06_1 #ECEFF1
+d06_1 : branch · 159w
+state d06_2 #D1C4E9
+d06_2 : rising · 142w
+state d06_3 #D1C4E9
+d06_3 : rising · 125w
+state d06_4 #D1C4E9
+d06_4 : rising · 154w
+state d06_5 #ECEFF1
+d06_5 : discovery · 137w
+state d06_6 #D1C4E9
+d06_6 : rising · 120w
+state d06_7 #D1C4E9
+d06_7 : rising · 149w
+state d07_0 #ECEFF1
+d07_0 : revelation · 147w
+state d07_1 #D1C4E9
+d07_1 : rising · 130w
+state d07_2 #D1C4E9
+d07_2 : rising · 159w
+state d07_3 #D1C4E9
+d07_3 : rising · 142w
+state d07_4 #D1C4E9
+d07_4 : rising · 125w
+state d07_5 #ECEFF1
+d07_5 : discovery · 154w
+state d07_6 #D1C4E9
+d07_6 : rising · 137w
+state d07_7 #D1C4E9
+d07_7 : rising · 120w
+state d07_8 #D1C4E9
+d07_8 : rising · 149w
+state d08_0 #D1C4E9
+d08_0 : rising · 164w
+state d08_1 #D1C4E9
+d08_1 : rising · 147w
+state d08_2 #D1C4E9
+d08_2 : rising · 130w
+state d08_3 #D1C4E9
+d08_3 : rising · 159w
+state d08_4 #D1C4E9
+d08_4 : rising · 142w
+state d08_5 #D1C4E9
+d08_5 : rising · 125w
+state d08_6 #D1C4E9
+d08_6 : rising · 154w
+state d08_7 #D1C4E9
+d08_7 : rising · 137w
+state d09_0 #D1C4E9
+d09_0 : rising · 135w
+state d09_1 #D1C4E9
+d09_1 : rising · 164w
+state d09_2 #D1C4E9
+d09_2 : rising · 147w
+state d09_3 #ECEFF1
+d09_3 : branch · 130w
+state d09_4 #ECEFF1
+d09_4 : discovery · 159w
+state d09_5 #D1C4E9
+d09_5 : rising · 142w
+state d09_6 #D1C4E9
+d09_6 : rising · 125w
+state d09_7 #D1C4E9
+d09_7 : rising · 154w
+state d09_8 #D1C4E9
+d09_8 : rising · 137w
+state d10_0 #D1C4E9
+d10_0 : rising · 152w
+state d10_1 #D1C4E9
+d10_1 : rising · 135w
+state d10_2 #D1C4E9
+d10_2 : rising · 164w
+state d10_3 #D1C4E9
+d10_3 : rising · 147w
+state d10_4 #D1C4E9
+d10_4 : rising · 130w
+state d10_5 #D1C4E9
+d10_5 : rising · 159w
+state d10_6 #D1C4E9
+d10_6 : rising · 142w
+state d10_7 #D1C4E9
+d10_7 : rising · 125w
+state d11_0 #D1C4E9
+d11_0 : rising · 123w
+state d11_1 #D1C4E9
+d11_1 : rising · 152w
+state d11_2 #D1C4E9
+d11_2 : rising · 135w
+state d11_3 #ECEFF1
+d11_3 : branch · 164w
+state d11_4 #D1C4E9
+d11_4 : rising · 147w
+state d11_5 #D1C4E9
+d11_5 : rising · 130w
+state d11_6 #D1C4E9
+d11_6 : rising · 159w
+state d11_7 #D1C4E9
+d11_7 : rising · 142w
+state d11_8 #D1C4E9
+d11_8 : rising · 125w
+state d12_0 #D1C4E9
+d12_0 : rising · 140w
+state d12_1 #FFE0B2
+d12_1 : climax · 123w
+state d12_2 #D1C4E9
+d12_2 : rising · 152w
+state d12_3 #D1C4E9
+d12_3 : rising · 135w
+state d12_4 #D1C4E9
+d12_4 : rising · 164w
+state d12_5 #D1C4E9
+d12_5 : rising · 147w
+state d12_6 #D1C4E9
+d12_6 : rising · 130w
+state d12_7 #D1C4E9
+d12_7 : rising · 159w
+state d13_0 #D1C4E9
+d13_0 : rising · 157w
+state d13_1 #D1C4E9
+d13_1 : rising · 140w
+state d13_2 #D1C4E9
+d13_2 : rising · 123w
+state d13_3 #D1C4E9
+d13_3 : rising · 152w
+state d13_4 #D1C4E9
+d13_4 : rising · 135w
+state d13_5 #D1C4E9
+d13_5 : rising · 164w
+state d13_6 #ECEFF1
+d13_6 : discovery · 147w
+state d13_7 #D1C4E9
+d13_7 : rising · 130w
+state d13_8 #D1C4E9
+d13_8 : rising · 159w
+state d14_0 #FFE0B2
+d14_0 : climax · 128w
+state d14_1 #D1C4E9
+d14_1 : rising · 157w
+state d14_2 #D1C4E9
+d14_2 : rising · 140w
+state d14_3 #D1C4E9
+d14_3 : rising · 123w
+state d14_4 #D1C4E9
+d14_4 : rising · 152w
+state d14_5 #D1C4E9
+d14_5 : rising · 135w
+state d14_6 #D1C4E9
+d14_6 : rising · 164w
+state d14_7 #D1C4E9
+d14_7 : rising · 147w
+state d15_0 #FFE0B2
+d15_0 : climax · 145w
+state d15_1 #FFE0B2
+d15_1 : climax · 128w
+state d15_2 #ECEFF1
+d15_2 : resolution · 157w
+state d15_3 #ECEFF1
+d15_3 : resolution · 140w
+state d15_4 #ECEFF1
+d15_4 : resolution · 123w
+state d15_5 #ECEFF1
+d15_5 : resolution · 152w
+state e04_0 #FFCDD2
+e04_0 : setback (negative)
+e04_0 : "Sold in the First Fortnight"
+state e05_0 #FFCDD2
+e05_0 : setback (negative)
+e05_0 : "Returned Unfinished"
+state e06_0 #E0E0E0
+e06_0 : discovery (neutral)
+e06_0 : "The Story Everyone Preferred"
+state e06_1 #FFCDD2
+e06_1 : setback (negative)
+e06_1 : "Three Months at a Worse Rate"
+state e07_0 #E0E0E0
+e07_0 : setback (neutral)
+e07_0 : "The Drawings Go, the Building Stays"
+state e07_1 #C8E6C9
+e07_1 : discovery (positive)
+e07_1 : "What He Tried to Return"
+state e08_0 #FFCDD2
+e08_0 : setback (negative)
+e08_0 : "The Uninsured Fortnight"
+state e08_1 #E0E0E0
+e08_1 : discovery (neutral)
+e08_1 : "Everything but the Bench"
+state e09_0 #E0E0E0
+e09_0 : setback (neutral)
+e09_0 : "Borrowed Against the Drawings"
+state e09_1 #C8E6C9
+e09_1 : discovery (positive)
+e09_1 : "The Account She Never Kept"
+state e10_0 #C8E6C9
+e10_0 : discovery (positive)
+e10_0 : "Two Hundred and Six Names"
+state e10_1 #FFCDD2
+e10_1 : setback (negative)
+e10_1 : "Saint Barnabas Without the Light"
+state e11_0 #E0E0E0
+e11_0 : setback (neutral)
+e11_0 : "A Workshop Without a Roof"
+state e12_0 #E0E0E0
+e12_0 : discovery (neutral)
+e12_0 : "The Version Without Her Debts"
+state e12_1 #FFCDD2
+e12_1 : setback (negative)
+e12_1 : "Four Lights and a Gap"
+state e13_0 #E0E0E0
+e13_0 : setback (neutral)
+e13_0 : "Enough, and Not the Window"
+state e14_0 #E0E0E0
+e14_0 : discovery (neutral)
+e14_0 : "The Morning She Did Not Go"
+state e15_0 #C8E6C9
+e15_0 : success (positive)
+e15_0 : "Five Lights at Eleven in the Morning"
+state e15_1 #C8E6C9
+e15_1 : completion (positive)
+e15_1 : "What the Ledger Could Not Hold"
+state e15_2 #C8E6C9
+e15_2 : completion (positive)
+e15_2 : "The Workshop That Owed People"
+state e15_3 #C8E6C9
+e15_3 : success (positive)
+e15_3 : "The Second Tranche, Read Aloud"
+state e15_4 #E0E0E0
+e15_4 : discovery (neutral)
+e15_4 : "Forty Years of Not Sending the Invoice"
+state e15_5 #E0E0E0
+e15_5 : setback (neutral)
+e15_5 : "Fossgate Sold in September"
+n_open --> d01_0 : Open the workshop on Fossgate.
+d01_0 --> d02_0 : Tell Idris and Marguerite exactly where ...
+d01_0 --> d02_1 : Take the ledger to the bank before anyon...
+d01_0 --> d02_2 : Say nothing yet and get the fourth lance...
+d02_0 --> d03_0 : Ask the cathedral what it has actually p...
+d02_0 --> d03_1 : Follow the second tranche out of the acc...
+d02_0 --> d03_2 : Put Idris's wages ahead of the glass ord...
+d02_1 --> d03_3 : Hand the fourth lancet to Marguerite.
+d02_1 --> d03_4 : Take Cauldwell's call.
+d02_1 --> d03_0 : Ask the cathedral what it has actually p...
+d02_2 --> d03_1 : Follow the second tranche out of the acc...
+d02_2 --> d03_2 : Put Idris's wages ahead of the glass ord...
+d02_2 --> d03_3 : Hand the fourth lancet to Marguerite.
+d03_0 --> d04_0 : Read the completion clause properly.
+d03_0 --> d04_1 : Find out who D P is.
+d03_0 --> d04_2 : Pay Idris from the cathedral deposit.
+d03_1 --> d04_3 : Cost the last two lancets honestly.
+d03_1 --> d04_4 : Ask Cauldwell what he actually wants.
+d03_1 --> d04_5 : Tell your mother the whole of it.
+d03_2 --> d04_6 : Open the bottom drawer of the plan chest...
+d03_2 --> d04_0 : Read the completion clause properly.
+d03_2 --> d04_1 : Find out who D P is.
+d03_2 --> d04_2 : Pay Idris from the cathedral deposit.
+d03_3 --> d04_3 : Cost the last two lancets honestly.
+d03_3 --> d04_4 : Ask Cauldwell what he actually wants.
+d03_3 --> d04_5 : Tell your mother the whole of it.
+d03_4 --> d04_6 : Open the bottom drawer of the plan chest...
+d03_4 --> d04_0 : Read the completion clause properly.
+d03_4 --> d04_1 : Find out who D P is.
+d04_0 --> d05_0 : Go to the address on the payments.
+d04_0 --> d05_1 : Get the ruby glass ordered on credit.
+d04_0 --> e04_0 : Sign Cauldwell's letter of intent and be...
+d04_1 --> d05_2 : Sit down with the ledger and Marguerite.
+d04_1 --> d05_3 : Ask Idris what he thinks the window need...
+d04_1 --> d05_4 : Go to the fabric committee meeting.
+d04_2 --> d05_5 : Take stock of the tools.
+d04_2 --> d05_6 : Let your mother do the arithmetic out lo...
+d04_2 --> d05_7 : Work the night through on the fifth lanc...
+d04_3 --> d05_0 : Go to the address on the payments.
+d04_3 --> d05_1 : Get the ruby glass ordered on credit.
+d04_3 --> e04_0 : Sign Cauldwell's letter of intent and be...
+d04_4 --> d05_2 : Sit down with the ledger and Marguerite.
+d04_4 --> d05_3 : Ask Idris what he thinks the window need...
+d04_4 --> d05_4 : Go to the fabric committee meeting.
+d04_4 --> d05_5 : Take stock of the tools.
+d04_5 --> d05_6 : Let your mother do the arithmetic out lo...
+d04_5 --> d05_7 : Work the night through on the fifth lanc...
+d04_5 --> d05_0 : Go to the address on the payments.
+d04_6 --> d05_1 : Get the ruby glass ordered on credit.
+d04_6 --> d05_2 : Sit down with the ledger and Marguerite.
+d04_6 --> d05_3 : Ask Idris what he thinks the window need...
+d05_0 --> d06_0 : Visit Dov Prosser.
+d05_0 --> d06_1 : Cut the rejected fourth cartoon instead.
+d05_0 --> e05_0 : Hand the contract back to the cathedral.
+d05_1 --> d06_2 : Ask Miss Tarrant for a payment holiday.
+d05_1 --> d06_3 : Put Marguerite on the books properly.
+d05_1 --> d06_4 : Let Idris take the lead on installation.
+d05_1 --> d06_5 : Go through the second drawer.
+d05_2 --> d06_6 : Open the workshop to the street.
+d05_2 --> d06_7 : Talk to the other glaziers in the county...
+d05_2 --> d06_0 : Visit Dov Prosser.
+d05_3 --> d06_1 : Cut the rejected fourth cartoon instead.
+d05_3 --> d06_2 : Ask Miss Tarrant for a payment holiday.
+d05_3 --> d06_3 : Put Marguerite on the books properly.
+d05_4 --> d06_4 : Let Idris take the lead on installation.
+d05_4 --> d06_5 : Go through the second drawer.
+d05_4 --> e05_0 : Hand the contract back to the cathedral.
+d05_5 --> d06_6 : Open the workshop to the street.
+d05_5 --> d06_7 : Talk to the other glaziers in the county...
+d05_5 --> d06_0 : Visit Dov Prosser.
+d05_6 --> d06_1 : Cut the rejected fourth cartoon instead.
+d05_6 --> d06_2 : Ask Miss Tarrant for a payment holiday.
+d05_6 --> d06_3 : Put Marguerite on the books properly.
+d05_6 --> d06_4 : Let Idris take the lead on installation.
+d05_7 --> d06_5 : Go through the second drawer.
+d05_7 --> d06_6 : Open the workshop to the street.
+d05_7 --> d06_7 : Talk to the other glaziers in the county...
+d06_0 --> d07_0 : Ask Dov what the second tranche was for.
+d06_0 --> d07_1 : Cut the ruby before the credit runs out.
+d06_0 --> e06_0 : Let the county paper run the sad version...
+d06_1 --> d07_2 : Sit at Marguerite's bench for a day.
+d06_1 --> d07_3 : Draw up a realistic programme to the fea...
+d06_1 --> d07_4 : Ask the fabric committee for staged paym...
+d06_2 --> d07_5 : Find out who else Vashti was carrying.
+d06_2 --> d07_6 : Get Idris to teach you the lead.
+d06_2 --> e06_1 : Take the bank's three months at the high...
+d06_3 --> d07_7 : Answer your mother.
+d06_3 --> d07_8 : Go back to the plan chest.
+d06_3 --> d07_0 : Ask Dov what the second tranche was for.
+d06_3 --> d07_1 : Cut the ruby before the credit runs out.
+d06_4 --> d07_2 : Sit at Marguerite's bench for a day.
+d06_4 --> d07_3 : Draw up a realistic programme to the fea...
+d06_4 --> e06_0 : Let the county paper run the sad version...
+d06_5 --> d07_4 : Ask the fabric committee for staged paym...
+d06_5 --> d07_5 : Find out who else Vashti was carrying.
+d06_5 --> d07_6 : Get Idris to teach you the lead.
+d06_6 --> d07_7 : Answer your mother.
+d06_6 --> d07_8 : Go back to the plan chest.
+d06_6 --> e06_1 : Take the bank's three months at the high...
+d06_7 --> d07_0 : Ask Dov what the second tranche was for.
+d06_7 --> d07_1 : Cut the ruby before the credit runs out.
+d06_7 --> d07_2 : Sit at Marguerite's bench for a day.
+d07_0 --> d08_0 : Put the whole thing to Idris and Marguer...
+d07_0 --> d08_1 : Push the fifth lancet through in a week.
+d07_0 --> d08_2 : Meet Pargeter about the fabric fund.
+d07_0 --> e07_0 : Sell the cartoons to Cauldwell and keep ...
+d07_1 --> d08_3 : Write to the chapel in Ripon.
+d07_1 --> d08_4 : Let Marguerite take Cauldwell's offer.
+d07_1 --> d08_5 : Check the insurance on the racked panels...
+d07_2 --> d08_6 : Take Dov to see the window.
+d07_2 --> d08_7 : Do the sums on selling the tools.
+d07_2 --> e07_1 : Tell Dov to stop paying it back.
+d07_3 --> d08_0 : Put the whole thing to Idris and Marguer...
+d07_3 --> d08_1 : Push the fifth lancet through in a week.
+d07_3 --> d08_2 : Meet Pargeter about the fabric fund.
+d07_4 --> d08_3 : Write to the chapel in Ripon.
+d07_4 --> d08_4 : Let Marguerite take Cauldwell's offer.
+d07_4 --> e07_0 : Sell the cartoons to Cauldwell and keep ...
+d07_5 --> d08_5 : Check the insurance on the racked panels...
+d07_5 --> d08_6 : Take Dov to see the window.
+d07_5 --> d08_7 : Do the sums on selling the tools.
+d07_5 --> d08_0 : Put the whole thing to Idris and Marguer...
+d07_6 --> d08_1 : Push the fifth lancet through in a week.
+d07_6 --> d08_2 : Meet Pargeter about the fabric fund.
+d07_6 --> e07_1 : Tell Dov to stop paying it back.
+d07_7 --> d08_3 : Write to the chapel in Ripon.
+d07_7 --> d08_4 : Let Marguerite take Cauldwell's offer.
+d07_7 --> d08_5 : Check the insurance on the racked panels...
+d07_8 --> d08_6 : Take Dov to see the window.
+d07_8 --> d08_7 : Do the sums on selling the tools.
+d07_8 --> d08_0 : Put the whole thing to Idris and Marguer...
+d08_0 --> d09_0 : Run the site visit with Pargeter.
+d08_0 --> d09_1 : Cut the saint with his back turned.
+d08_0 --> e08_0 : Let the insurance lapse and hope.
+d08_1 --> d09_2 : Get the three finished lancets insured.
+d08_1 --> d09_3 : Ask Cauldwell for a loan instead of a sa...
+d08_1 --> d09_4 : Go back through Vashti's letters.
+d08_2 --> d09_5 : Set a real rate for yourself.
+d08_2 --> d09_6 : Bring the fabric committee to the worksh...
+d08_2 --> d09_7 : Ask Idris to stay past the feast.
+d08_2 --> e08_1 : Price the bench with everything else.
+d08_3 --> d09_8 : Take a week off.
+d08_3 --> d09_0 : Run the site visit with Pargeter.
+d08_3 --> d09_1 : Cut the saint with his back turned.
+d08_4 --> d09_2 : Get the three finished lancets insured.
+d08_4 --> d09_3 : Ask Cauldwell for a loan instead of a sa...
+d08_4 --> e08_0 : Let the insurance lapse and hope.
+d08_5 --> d09_4 : Go back through Vashti's letters.
+d08_5 --> d09_5 : Set a real rate for yourself.
+d08_5 --> d09_6 : Bring the fabric committee to the worksh...
+d08_6 --> d09_7 : Ask Idris to stay past the feast.
+d08_6 --> d09_8 : Take a week off.
+d08_6 --> e08_1 : Price the bench with everything else.
+d08_7 --> d09_0 : Run the site visit with Pargeter.
+d08_7 --> d09_1 : Cut the saint with his back turned.
+d08_7 --> d09_2 : Get the three finished lancets insured.
+d08_7 --> d09_3 : Ask Cauldwell for a loan instead of a sa...
+d09_0 --> d10_0 : Install the first three lancets early.
+d09_0 --> d10_1 : Refuse Cauldwell for the last time.
+d09_0 --> e09_0 : Take Cauldwell's loan.
+d09_1 --> d10_2 : Bring Dov into the workshop.
+d09_1 --> d10_3 : Renegotiate with the glass merchant.
+d09_1 --> d10_4 : Deal with the auditor's conditions.
+d09_2 --> d10_5 : Tell Marguerite what her name will be on...
+d09_2 --> d10_6 : Keep the fifth lancet moving at night.
+d09_2 --> e09_1 : Stop and write the whole thing down.
+d09_3 --> d10_7 : Face the arithmetic one more time.
+d09_3 --> d10_0 : Install the first three lancets early.
+d09_3 --> d10_1 : Refuse Cauldwell for the last time.
+d09_4 --> d10_2 : Bring Dov into the workshop.
+d09_4 --> d10_3 : Renegotiate with the glass merchant.
+d09_4 --> d10_4 : Deal with the auditor's conditions.
+d09_4 --> e09_0 : Take Cauldwell's loan.
+d09_5 --> d10_5 : Tell Marguerite what her name will be on...
+d09_5 --> d10_6 : Keep the fifth lancet moving at night.
+d09_5 --> d10_7 : Face the arithmetic one more time.
+d09_6 --> d10_0 : Install the first three lancets early.
+d09_6 --> d10_1 : Refuse Cauldwell for the last time.
+d09_6 --> e09_1 : Stop and write the whole thing down.
+d09_7 --> d10_2 : Bring Dov into the workshop.
+d09_7 --> d10_3 : Renegotiate with the glass merchant.
+d09_7 --> d10_4 : Deal with the auditor's conditions.
+d09_8 --> d10_5 : Tell Marguerite what her name will be on...
+d09_8 --> d10_6 : Keep the fifth lancet moving at night.
+d09_8 --> d10_7 : Face the arithmetic one more time.
+d10_0 --> d11_0 : Get the certificate signed.
+d10_0 --> d11_1 : Put both names on the plaque.
+d10_0 --> e10_0 : Ask the town.
+d10_1 --> d11_2 : Bring the fourth lancet to the kiln.
+d10_1 --> d11_3 : Settle with Idris.
+d10_1 --> d11_4 : Take Dov home for the last time.
+d10_1 --> d11_5 : Check the stonework in the aisle.
+d10_2 --> d11_6 : Call the whole team in for the last fort...
+d10_2 --> d11_7 : Look at the loan one final time.
+d10_2 --> e10_1 : Miss the feast.
+d10_3 --> d11_8 : Let Marguerite finish the face.
+d10_3 --> d11_0 : Get the certificate signed.
+d10_3 --> d11_1 : Put both names on the plaque.
+d10_4 --> d11_2 : Bring the fourth lancet to the kiln.
+d10_4 --> d11_3 : Settle with Idris.
+d10_4 --> e10_0 : Ask the town.
+d10_5 --> d11_4 : Take Dov home for the last time.
+d10_5 --> d11_5 : Check the stonework in the aisle.
+d10_5 --> d11_6 : Call the whole team in for the last fort...
+d10_6 --> d11_7 : Look at the loan one final time.
+d10_6 --> d11_8 : Let Marguerite finish the face.
+d10_6 --> d11_0 : Get the certificate signed.
+d10_6 --> e10_1 : Miss the feast.
+d10_7 --> d11_1 : Put both names on the plaque.
+d10_7 --> d11_2 : Bring the fourth lancet to the kiln.
+d10_7 --> d11_3 : Settle with Idris.
+d11_0 --> d12_0 : Get the mason on to the rebate.
+d11_0 --> d12_1 : Fire the third paint layer.
+d11_0 --> e11_0 : Sell the building and keep the trade.
+d11_1 --> d12_2 : Do the final costing.
+d11_1 --> d12_3 : Tell Canon Aldred about Dov.
+d11_1 --> d12_4 : Rehearse the installation.
+d11_2 --> d12_5 : Decide about the partnership.
+d11_2 --> d12_6 : Take one afternoon off for the funeral t...
+d11_2 --> d12_7 : Write to Cauldwell.
+d11_3 --> d12_0 : Get the mason on to the rebate.
+d11_3 --> d12_1 : Fire the third paint layer.
+d11_3 --> d12_2 : Do the final costing.
+d11_3 --> d12_3 : Tell Canon Aldred about Dov.
+d11_4 --> d12_4 : Rehearse the installation.
+d11_4 --> d12_5 : Decide about the partnership.
+d11_4 --> e11_0 : Sell the building and keep the trade.
+d11_5 --> d12_6 : Take one afternoon off for the funeral t...
+d11_5 --> d12_7 : Write to Cauldwell.
+d11_5 --> d12_0 : Get the mason on to the rebate.
+d11_6 --> d12_1 : Fire the third paint layer.
+d11_6 --> d12_2 : Do the final costing.
+d11_6 --> d12_3 : Tell Canon Aldred about Dov.
+d11_7 --> d12_4 : Rehearse the installation.
+d11_7 --> d12_5 : Decide about the partnership.
+d11_7 --> d12_6 : Take one afternoon off for the funeral t...
+d11_8 --> d12_7 : Write to Cauldwell.
+d11_8 --> d12_0 : Get the mason on to the rebate.
+d11_8 --> d12_1 : Fire the third paint layer.
+d11_8 --> d12_2 : Do the final costing.
+d12_0 --> d13_0 : Lift the fourth lancet into the aisle.
+d12_0 --> d13_1 : Get the fifth panel cemented and racked.
+d12_0 --> d13_2 : Deal with the interest bill.
+d12_0 --> e12_0 : Let the dedication be about Vashti.
+d12_1 --> d13_3 : Ask Dov to come to the feast.
+d12_1 --> d13_4 : Settle Marguerite's rate for good.
+d12_1 --> d13_5 : Sign the Cauldwell subcontract.
+d12_2 --> d13_6 : Clean the store.
+d12_2 --> d13_7 : Write the plaque.
+d12_2 --> e12_1 : Lose the fifth lancet.
+d12_3 --> d13_8 : Walk the aisle at night.
+d12_3 --> d13_0 : Lift the fourth lancet into the aisle.
+d12_3 --> d13_1 : Get the fifth panel cemented and racked.
+d12_4 --> d13_2 : Deal with the interest bill.
+d12_4 --> d13_3 : Ask Dov to come to the feast.
+d12_4 --> e12_0 : Let the dedication be about Vashti.
+d12_5 --> d13_4 : Settle Marguerite's rate for good.
+d12_5 --> d13_5 : Sign the Cauldwell subcontract.
+d12_5 --> d13_6 : Clean the store.
+d12_5 --> d13_7 : Write the plaque.
+d12_6 --> d13_8 : Walk the aisle at night.
+d12_6 --> d13_0 : Lift the fourth lancet into the aisle.
+d12_6 --> e12_1 : Lose the fifth lancet.
+d12_7 --> d13_1 : Get the fifth panel cemented and racked.
+d12_7 --> d13_2 : Deal with the interest bill.
+d12_7 --> d13_3 : Ask Dov to come to the feast.
+d13_0 --> d14_0 : Install the fifth lancet.
+d13_0 --> d14_1 : Hang the plaque.
+d13_0 --> e13_0 : Stop at four lights and take the fee.
+d13_1 --> d14_2 : Bring Dov to see it finished.
+d13_1 --> d14_3 : Do the final account for the fabric comm...
+d13_1 --> d14_4 : Decide what to say at the dedication.
+d13_2 --> d14_5 : Answer the bank.
+d13_2 --> d14_6 : Ask Idris and Marguerite what happens ne...
+d13_2 --> d14_7 : Sit with the ledger one last time.
+d13_2 --> d14_0 : Install the fifth lancet.
+d13_3 --> d14_1 : Hang the plaque.
+d13_3 --> d14_2 : Bring Dov to see it finished.
+d13_3 --> d14_3 : Do the final account for the fabric comm...
+d13_4 --> d14_4 : Decide what to say at the dedication.
+d13_4 --> d14_5 : Answer the bank.
+d13_4 --> e13_0 : Stop at four lights and take the fee.
+d13_5 --> d14_6 : Ask Idris and Marguerite what happens ne...
+d13_5 --> d14_7 : Sit with the ledger one last time.
+d13_5 --> d14_0 : Install the fifth lancet.
+d13_6 --> d14_1 : Hang the plaque.
+d13_6 --> d14_2 : Bring Dov to see it finished.
+d13_6 --> d14_3 : Do the final account for the fabric comm...
+d13_7 --> d14_4 : Decide what to say at the dedication.
+d13_7 --> d14_5 : Answer the bank.
+d13_7 --> d14_6 : Ask Idris and Marguerite what happens ne...
+d13_7 --> d14_7 : Sit with the ledger one last time.
+d13_8 --> d14_0 : Install the fifth lancet.
+d13_8 --> d14_1 : Hang the plaque.
+d13_8 --> d14_2 : Bring Dov to see it finished.
+d14_0 --> d15_0 : Stand at the back for the dedication.
+d14_0 --> d15_1 : Say the thing about Dov out loud.
+d14_0 --> e14_0 : Let the feast come without you.
+d14_1 --> d15_2 : Open the workshop the Monday after.
+d14_1 --> d15_3 : Settle everything with the bank.
+d14_1 --> d15_4 : Give Marguerite the fourth drawer.
+d14_2 --> d15_5 : Take the fifth lancet cartoon down off t...
+d14_2 --> d15_0 : Stand at the back for the dedication.
+d14_2 --> d15_1 : Say the thing about Dov out loud.
+d14_3 --> d15_2 : Open the workshop the Monday after.
+d14_3 --> d15_3 : Settle everything with the bank.
+d14_3 --> d15_4 : Give Marguerite the fourth drawer.
+d14_4 --> d15_5 : Take the fifth lancet cartoon down off t...
+d14_4 --> d15_0 : Stand at the back for the dedication.
+d14_4 --> d15_1 : Say the thing about Dov out loud.
+d14_4 --> e14_0 : Let the feast come without you.
+d14_5 --> d15_2 : Open the workshop the Monday after.
+d14_5 --> d15_3 : Settle everything with the bank.
+d14_5 --> d15_4 : Give Marguerite the fourth drawer.
+d14_6 --> d15_5 : Take the fifth lancet cartoon down off t...
+d14_6 --> d15_0 : Stand at the back for the dedication.
+d14_6 --> d15_1 : Say the thing about Dov out loud.
+d14_7 --> d15_2 : Open the workshop the Monday after.
+d14_7 --> d15_3 : Settle everything with the bank.
+d14_7 --> d15_4 : Give Marguerite the fourth drawer.
+d15_0 --> e15_0 : Let it be finished.
+d15_0 --> e15_1 : Keep both sets of books.
+d15_0 --> e15_2 : Hand it on.
+d15_1 --> e15_3 : Say it in the chapter house.
+d15_1 --> e15_4 : Understand what she was doing.
+d15_1 --> e15_5 : Let the building go and keep the rest.
+d15_2 --> e15_0 : Let it be finished.
+d15_2 --> e15_1 : Keep both sets of books.
+d15_2 --> e15_2 : Hand it on.
+d15_3 --> e15_3 : Say it in the chapter house.
+d15_3 --> e15_4 : Understand what she was doing.
+d15_3 --> e15_5 : Let the building go and keep the rest.
+d15_4 --> e15_0 : Let it be finished.
+d15_4 --> e15_1 : Keep both sets of books.
+d15_4 --> e15_2 : Hand it on.
+d15_5 --> e15_3 : Say it in the chapter house.
+d15_5 --> e15_4 : Understand what she was doing.
+d15_5 --> e15_5 : Let the building go and keep the rest.
+e04_0 --> [*]
+e05_0 --> [*]
+e06_0 --> [*]
+e06_1 --> [*]
+e07_0 --> [*]
+e07_1 --> [*]
+e08_0 --> [*]
+e08_1 --> [*]
+e09_0 --> [*]
+e09_1 --> [*]
+e10_0 --> [*]
+e10_1 --> [*]
+e11_0 --> [*]
+e12_0 --> [*]
+e12_1 --> [*]
+e13_0 --> [*]
+e14_0 --> [*]
+e15_0 --> [*]
+e15_1 --> [*]
+e15_2 --> [*]
+e15_3 --> [*]
+e15_4 --> [*]
+e15_5 --> [*]
+
+legend right
+  The Glasswright's Debt
+  Band 13-16 · Tier 1 · ~11 min
+  Topology: branch_and_bottleneck
+  130 nodes · 23 endings (7+ / 10n / 6-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

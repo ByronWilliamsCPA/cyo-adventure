@@ -157,11 +157,24 @@ def is_production_eligible(story: dict[str, object]) -> bool:
 #
 # Raised from 32,000 to 131,072 on 2026-08-16. The old value dated from initial
 # testing and made 36 of the 59 production skeletons unfillable, with the 13-16
-# and 16+ bands unfillable in their entirety. Measured against the catalog: the
-# largest skeleton needs 87,200 output tokens, so 131,072 clears every cell with
-# 20 percent headroom, and the next step down (65,536) still leaves 12 short.
+# and 16+ bands unfillable in their entirety. Measured against the catalog then:
+# the largest skeleton needed 87,200 output tokens, so 131,072 cleared every cell
+# with 20 percent headroom, and the next step down (65,536) still left 12 short.
 # Cost is not the constraint at this size: one full 59-book catalog fill is
 # about $6.42 on deepseek-v4-pro and $0.33 on deepseek-v4-flash.
+#
+# **The headroom claim is no longer true and the tense above is deliberate.**
+# Re-measured 2026-08-19 across 73 production skeletons: the largest
+# (`the-last-cartage`) needs 99,906 output tokens against the 104,857 this cap
+# actually permits once `_FEASIBILITY_MARGIN` is applied, which is 4.7 percent
+# of headroom rather than 20. The catalog grew into the cap; the cap did not
+# move. Two consequences worth stating rather than rediscovering. A skeleton
+# authored much past the current largest becomes unselectable with a green gate,
+# which is why `check_skeleton.py --headroom` now prints this budget
+# (`UW-C302`). And the margin's own justification (`AL-328`: a leg with under
+# ~20 percent headroom is a coin toss) no longer holds for the top of the
+# catalog even at the default cap, so raising this constant is a live question
+# and not a settled one.
 MAX_FILL_OUTPUT_TOKENS = 131_072
 
 # Per-model output ceilings, used to CLAMP the default DOWN for a backend that
@@ -173,10 +186,25 @@ MAX_FILL_OUTPUT_TOKENS = 131_072
 # model with a 32,000-token ceiling asked for 131,072 truncates, and a truncated
 # completion parses as nothing. Values are transcribed from the OpenRouter
 # models endpoint on 2026-08-16, not estimated. A model absent from this table
-# gets the default; that is the permissive direction, and it is survivable
-# because a completion stopped on `length` is leg-fatal rather than retried
-# (AL-329), so an unknown small-output model fails fast and loudly rather than
-# burning the repair budget.
+# gets the default, which is the permissive direction.
+#
+# That fallback used to be justified here on the grounds that a completion
+# stopped on `length` is leg-fatal rather than retried (`AL-329`), so an unknown
+# small-output model would fail fast and loudly. **That justification is wrong
+# and the correction is `AL-479`.** `providers/openrouter.py` sets
+# `leg_fatal=finish_reason == "length"` INSIDE `if not content:`, so it covers an
+# EMPTY body at the length stop. An over-ask against a small ceiling produces a
+# truncated NON-empty completion, which is an ordinary completion: it parses as
+# nothing and spends the repair budget, which is the loud-failure case this
+# comment claimed could not happen. So the fallback is permissive without the
+# backstop it was written to rely on, and the rule below is the whole of the
+# protection rather than a belt beside a brace.
+#
+# A dated or pinned model id is the live way to land in that state, because it
+# does not match its own undated row: `deepseek/deepseek-chat-v3.1` resolves to
+# 32,768 and `deepseek/deepseek-chat-v3.1-0813` resolves to the 131,072 default,
+# four times what the backend can emit. Pin a variant in `core/config.py` only
+# together with its own row here.
 #
 # This table is PARTIAL by construction: it lists only the models whose ceiling
 # is known, and every entry must be looked up rather than inferred. The set that

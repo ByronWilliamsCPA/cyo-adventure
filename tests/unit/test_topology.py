@@ -3,7 +3,7 @@
 import networkx as nx
 
 from cyo_adventure.storybook.models import Topology
-from cyo_adventure.validator.topology import admissible_topologies
+from cyo_adventure.validator.topology import BAND_TOPOLOGIES, admissible_topologies
 
 
 def _path(n: int) -> nx.DiGraph:
@@ -102,3 +102,76 @@ def test_multi_branch_reconverging_graph_includes_gauntlet():
     result = admissible_topologies(g)
     assert Topology.GAUNTLET in result
     assert Topology.BRANCH_AND_BOTTLENECK in result
+
+
+def test_every_offered_cell_has_a_buildable_topology() -> None:
+    """PL-18 and PL-29 must agree on at least one label for every offered cell.
+
+    `UW-C272`. PL-18 answers what a graph's SHAPE may be called; PL-29 answers
+    what a BAND may declare. Both must hold, and nothing asserted their
+    intersection was non-empty. It was not: the gauntlet ADR-011 section 7
+    describes, built from its own "linear spine, branch-to-fail, terminal"
+    construction, classified as sorting_hat/time_cave and drew a blocking PL-18
+    error at 13-16 gamebook, so the deadly gamebook gauntlet was inexpressible
+    while only the friendly reconverging one was.
+
+    This asserts the property rather than the fix, so it keeps holding if either
+    table moves. It sweeps the four canonical shapes a story can actually have,
+    which is what makes it a feasibility check rather than a restatement of the
+    tables.
+    """
+    shapes = {
+        "linear spine": _spine(),
+        "branching tree": _branching_tree(),
+        "spine with fail branches": _gauntlet_shape(),
+        "reconverging graph": _reconverging(),
+    }
+    for band, permitted in BAND_TOPOLOGIES.items():
+        buildable: set[str] = set()
+        for name, graph in shapes.items():
+            admissible = admissible_topologies(graph)
+            if admissible & set(permitted):
+                buildable.add(name)
+        assert buildable, (
+            f"band '{band}' permits {sorted(t.value for t in permitted)} but no "
+            f"canonical shape classifies as any of them, so nothing is buildable"
+        )
+
+
+def _spine() -> "nx.DiGraph[str]":
+    """A pure linear chain, no choices."""
+    graph: nx.DiGraph[str] = nx.DiGraph()
+    for i in range(5):
+        graph.add_edge(f"n{i}", f"n{i + 1}")
+    return graph
+
+
+def _branching_tree() -> "nx.DiGraph[str]":
+    """A branching tree with no merges."""
+    graph: nx.DiGraph[str] = nx.DiGraph()
+    graph.add_edge("root", "a")
+    graph.add_edge("root", "b")
+    for side in ("a", "b"):
+        graph.add_edge(side, f"{side}1")
+        graph.add_edge(side, f"{side}2")
+    return graph
+
+
+def _gauntlet_shape() -> "nx.DiGraph[str]":
+    """ADR-011 section 7's gauntlet: a spine whose side branches END."""
+    graph: nx.DiGraph[str] = nx.DiGraph()
+    for i in range(6):
+        graph.add_edge(f"s{i}", f"s{i + 1}")
+        graph.add_edge(f"s{i}", f"fail{i}")
+    return graph
+
+
+def _reconverging() -> "nx.DiGraph[str]":
+    """A branch-and-bottleneck: two tracks merging back onto one node."""
+    graph: nx.DiGraph[str] = nx.DiGraph()
+    graph.add_edge("start", "a")
+    graph.add_edge("start", "b")
+    graph.add_edge("a", "hub")
+    graph.add_edge("b", "hub")
+    graph.add_edge("hub", "end")
+    return graph

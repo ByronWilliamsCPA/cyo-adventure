@@ -44,7 +44,7 @@ from __future__ import annotations
 
 import copy
 import json
-from collections import Counter, deque
+from collections import Counter
 from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
@@ -70,16 +70,23 @@ from cyo_adventure.storybook.condition import (
     referenced_vars,
     validate_condition,
 )
-from cyo_adventure.storybook.models import Effect, EndingKind, Storybook, Variable
+from cyo_adventure.storybook.models import (
+    Effect,
+    Storybook,
+    Variable,
+)
 from cyo_adventure.validator.band_profile import min_complete_floor
-from cyo_adventure.validator.walk import walk_configurations
+from cyo_adventure.validator.walk import (
+    fastest_satisfying_finish,
+    walk_configurations,
+)
 
 if TYPE_CHECKING:
     import random
 
     from pydantic import JsonValue
 
-    from cyo_adventure.validator.walk import ConfigKey, WalkResult
+    from cyo_adventure.validator.walk import WalkResult
 
 # This module's dict accessors cast repeatedly to ``Mapping[str, object]``,
 # ``list[object]``, and ``dict[str, object]``. Those generic-alias type
@@ -108,12 +115,6 @@ _M5_MODES: frozenset[str] = frozenset(
         _M5_MODE_ADD_ROUTE,
         _M5_MODE_RELOCATE,
     }
-)
-
-# The satisfying-ending kinds (a full-arc completion) the clock re-proof targets,
-# per ADR-011 section 4; kept in sync with ``validator.policy`` by value.
-_SATISFYING_KINDS: frozenset[EndingKind] = frozenset(
-    {EndingKind.SUCCESS, EndingKind.COMPLETION}
 )
 
 # The ADR-011 section 6 choices-per-decision window (2-3). The gate does not
@@ -1015,6 +1016,13 @@ def walk_fastest_satisfying_finish(story: Storybook, walk: WalkResult) -> int | 
     configuration at a ``success``/``completion`` node. Measured over the SAME
     ``WalkResult`` the gate's L2 consumed (single-walk rule).
 
+    The measurement itself now lives in
+    :func:`~cyo_adventure.validator.walk.fastest_satisfying_finish`, because
+    PL-20 needs the same answer and this module is offline-only (ADR-020): the
+    validator cannot import it, so a copy here would have been a second
+    implementation of the gate's own clock rather than a re-proof of it
+    (`UW-C292`). This wrapper keeps the operator's call site and its name.
+
     Args:
         story: The parsed candidate Storybook.
         walk: The single reachable-configuration closure the harness ran.
@@ -1023,27 +1031,7 @@ def walk_fastest_satisfying_finish(story: Storybook, walk: WalkResult) -> int | 
         int | None: The minimum config-path node count (hops + 1), or None when no
             satisfying finish is reachable in any configuration.
     """
-    satisfying_nodes = {
-        node.id
-        for node in story.nodes
-        if node.is_ending
-        and node.ending is not None
-        and node.ending.kind in _SATISFYING_KINDS
-    }
-    if not walk.configs:
-        return None
-    initial_key = next(iter(walk.configs))
-    seen: set[ConfigKey] = {initial_key}
-    queue: deque[tuple[ConfigKey, int]] = deque([(initial_key, 1)])
-    while queue:
-        key, nodes = queue.popleft()
-        if key[0] in satisfying_nodes:
-            return nodes
-        for succ in walk.edges.get(key, []):
-            if succ in walk.configs and succ not in seen:
-                seen.add(succ)
-                queue.append((succ, nodes + 1))
-    return None
+    return fastest_satisfying_finish(story, walk)
 
 
 def clock_floor_for(story: Storybook) -> int | None:

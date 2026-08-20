@@ -37,6 +37,7 @@ from cyo_adventure.validator.band_profile import (
     min_complete_floor,
     words_per_node_profile,
 )
+from cyo_adventure.validator.choice_grammar import words_per_stop_ceiling
 from cyo_adventure.validator.layer1 import Scale, ScalePlacement, resolve_node_budget
 
 if TYPE_CHECKING:
@@ -53,6 +54,7 @@ __all__ = [
     "build_bound_fill_prompt",
     "build_fidelity_repair_prompt",
     "build_fill_prompt",
+    "build_fill_subset_bound_prompt",
     "build_fill_subset_prompt",
     "build_interpret_bind_prompt",
     "build_prose_prompt",
@@ -325,6 +327,15 @@ def _scale_cell_block(brief: ConceptBrief) -> str:
             f"node, and keep every single node at or under {per_node_max} words "
             f"(rule PL-19). A one-line beat is fine; no node may exceed the max."
         )
+    stop_ceiling = words_per_stop_ceiling(band)
+    if stop_ceiling is not None:
+        lines.append(
+            f"\n- Words per rendered stop: at this band consecutive no-decision "
+            f"nodes are flowed into ONE scrollable stop for the reader, so keep "
+            f"the prose between two decisions at or under {stop_ceiling} words "
+            f"(rule CG-3). This is a pacing bound on what the reader meets "
+            f"between choices, not a bound on any single node."
+        )
     floor = min_complete_floor(band, brief.length.value, style)
     if floor is not None:
         lines.append(
@@ -584,10 +595,17 @@ class FillBatchPayload:
             produced by
             :func:`~cyo_adventure.generation.chunking.written_prose`. ``"{}"``
             for the first batch.
+        slot_bindings_json: JSON ``{slot_id: value}`` for a WS-2 BOUND fill, or
+            None for an unbound one. Book-level rather than batch-level, unlike
+            its two siblings: it is the same string for every batch of a book,
+            and it rides here so
+            :func:`build_fill_subset_bound_prompt` keeps the four-parameter
+            shape this class exists to preserve.
     """
 
     nodes_to_fill_json: str
     prose_so_far_json: str
+    slot_bindings_json: str | None = None
 
 
 def build_fill_subset_prompt(
@@ -647,6 +665,97 @@ def build_fill_subset_prompt(
         .replace("{nodes_to_fill}", batch.nodes_to_fill_json)
         .replace("{prose_so_far}", _neutralize_fence(batch.prose_so_far_json))
         .replace("{skeleton_with_fill_directives}", skeleton_json)
+        .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
+        .replace(
+            "{differentiation_directive}",
+            differentiation_directive
+            or build_differentiation_directive(level=None, axis_instruction=None),
+        )
+    )
+    return _split_stage_prompt(text)
+
+
+def build_fill_subset_bound_prompt(
+    skeleton_json: str,
+    batch: FillBatchPayload,
+    theme_brief: str,
+    differentiation_directive: str = "",
+) -> StagePrompt:
+    """Build the prompt for ONE batch of a chunked BOUND skeleton fill.
+
+    Stands to :func:`build_fill_subset_prompt` exactly as
+    :func:`build_bound_fill_prompt` stands to :func:`build_fill_prompt`:
+    ``fill_subset_bound.md`` is ``fill_subset.md`` plus the same three bound-fill
+    blocks, lifted verbatim from ``fill_bound.md`` so a bound book gets the same
+    contract whether it is emitted in one shot or a batch at a time. Those are
+    the WS-2 binding preamble, the ending-title freeze and verbatim-token rules,
+    and the labeled bound-values data block.
+
+    Without this variant a bound fill could not be chunked at all, so a bound
+    skeleton over the serving model's ceiling had no degraded path and simply
+    failed (`UW-C302`).
+
+    Args:
+        skeleton_json: The full JSON string of the BOUND skeleton (the output of
+            :func:`~cyo_adventure.generation.binding.render_bound_skeleton`),
+            for structural context. The model is told not to return it.
+        batch: This batch's work order, the prose already written, and the
+            ``{slot_id: value}`` map that produced the bound skeleton. Its
+            ``slot_bindings_json`` must be set; an unbound payload here would
+            ship the template's ``{slot_bindings}`` token unfilled.
+        theme_brief: JSON-serialised concept brief (the child's request).
+        differentiation_directive: The trusted differentiation block from
+            :func:`build_differentiation_directive`. Defaults to the no-context
+            block rather than to an empty string, so the template never ships an
+            unfilled token.
+
+    Returns:
+        The bound batch :class:`StagePrompt` (no unfilled tokens).
+
+    Raises:
+        BusinessLogicError: If the template lacks its ``<!-- @user -->`` marker,
+            or if ``batch.slot_bindings_json`` is None. Refused rather than
+            defaulted to ``"{}"``: an empty bound-values block reads to the
+            model as a book with no theme bound, which is the silent-wrong
+            outcome rather than the loud one.
+    """
+    if batch.slot_bindings_json is None:
+        msg = (
+            "build_fill_subset_bound_prompt requires batch.slot_bindings_json; "
+            "use build_fill_subset_prompt for an unbound fill"
+        )
+        raise BusinessLogicError(msg)
+    # #CRITICAL: security: ``prose_so_far_json`` is model-written prose descended
+    # from an untrusted guardian/child brief and is fenced, for the same reason
+    # and by the same call as in :func:`build_fill_subset_prompt`; JSON escaping
+    # does not escape the fence terminator.
+    #
+    # ``slot_bindings_json`` is fenced too, which it was NOT in the first
+    # revision of this function. That revision argued the values were validated
+    # data because each had passed ``validator/slots.py``. They had, but that
+    # check does not cover the stage-split marker: ``_charset_violations``
+    # blocks ``{``/``}``, ``<<``/``>>``, the em dash, non-printables and >120
+    # chars, and ``_structural_slot_violations`` blocks only the two
+    # ``UNTRUSTED_USER_INPUT`` fence markers. ``<!-- @user -->`` is fourteen
+    # printable ASCII characters on one line and passes every one of them. A
+    # bound value carrying it forges a second marker, and per the comment in
+    # :func:`_neutralize_fence` that is worse than forging the fence:
+    # ``_split_stage_prompt`` raises ``BusinessLogicError``, which is not a
+    # ``ValidationError`` and so escapes both ``_fill_in_batches`` and
+    # ``fill_skeleton``, leaving an RQ job retrying a deterministic failure
+    # forever. Neutralising is safe for well-formed values, which contain
+    # neither marker and pass through byte-identical.
+    # #VERIFY: tests/unit/test_chunked_fill.py::
+    # test_the_bound_subset_prompt_neutralizes_a_literal_fence_terminator and
+    # ::test_a_bound_value_forging_the_stage_marker_cannot_split_the_prompt.
+    text = (
+        _load_template("fill_subset_bound.md")
+        .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
+        .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
+        .replace("{nodes_to_fill}", batch.nodes_to_fill_json)
+        .replace("{prose_so_far}", _neutralize_fence(batch.prose_so_far_json))
+        .replace("{skeleton_with_fill_directives}", skeleton_json)
+        .replace("{slot_bindings}", _neutralize_fence(batch.slot_bindings_json))
         .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
         .replace(
             "{differentiation_directive}",
@@ -871,12 +980,21 @@ def build_bound_fill_prompt(
     # characters. .replace() handles this safely.
     # #VERIFY: caller must pass a bound skeleton that already passed
     # render_bound_skeleton's post-conditions.
+    # #CRITICAL: security: ``slot_bindings_json`` is neutralised for the same
+    # reason as in :func:`build_fill_subset_bound_prompt`: ``validator/slots.py``
+    # does not reject the ``<!-- @user -->`` stage-split marker, so a bound value
+    # carrying it would forge a second marker and make ``_split_stage_prompt``
+    # raise a ``BusinessLogicError`` that escapes every handler on this path.
+    # Both bound builders neutralise, so the two paths still agree about what a
+    # bound value is.
+    # #VERIFY: tests/unit/test_chunked_fill.py::
+    # test_a_bound_value_forging_the_stage_marker_cannot_split_the_prompt.
     text = (
         _load_template("fill_bound.md")
         .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
         .replace("{skeleton_with_fill_directives}", skeleton_json)
-        .replace("{slot_bindings}", slot_bindings_json)
+        .replace("{slot_bindings}", _neutralize_fence(slot_bindings_json))
         .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
         .replace(
             "{differentiation_directive}",

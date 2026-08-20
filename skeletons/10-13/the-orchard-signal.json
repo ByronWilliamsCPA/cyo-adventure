@@ -1,0 +1,3042 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_orchard_signal",
+ "version": 1,
+ "title": "The Orchard Signal",
+ "metadata": {
+  "age_band": "10-13",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "record keeping",
+   "evidence",
+   "persistence",
+   "community"
+  ],
+  "estimated_minutes": 7,
+  "ending_count": 30,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  },
+  "topology": "branch_and_bottleneck",
+  "length": "medium",
+  "narrative_style": "prose",
+  "production_eligible": true
+ },
+ "variables": [],
+ "start_node": "n00c0",
+ "nodes": [
+  {
+   "id": "n00c0",
+   "body": "<<FILL role=setup words=36 beats='the last week of October and the big Bramley at the top of the orchard is in full blossom, white and early and wrong, while every other tree on the hill stands bare'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n00c0_0",
+     "label": "Go and tell Ada what you have seen.",
+     "target": "n01d0"
+    }
+   ]
+  },
+  {
+   "id": "n01d0",
+   "body": "<<FILL role=setup words=100 beats='Ada is in the shed writing the day up in a ruled notebook, the way she has every evening since before you were born, and she does not look surprised, which is worse than if she had'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n01d0_0",
+     "label": "Ask whether the notebooks have seen this before.",
+     "target": "n02c0"
+    },
+    {
+     "id": "c_n01d0_1",
+     "label": "Go and stand by the hives instead.",
+     "target": "n02c1"
+    },
+    {
+     "id": "c_n01d0_2",
+     "label": "Go down and read the notice on the gate.",
+     "target": "n02c2"
+    }
+   ]
+  },
+  {
+   "id": "n02c0",
+   "body": "<<FILL role=bridge words=36 beats='Ada turns back through decades of her own handwriting looking for another October like this one and does not find it, and the shed smells of paraffin and bruised fruit'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n02c0_0",
+     "label": "Begin with what the record already holds.",
+     "target": "n03d0"
+    }
+   ]
+  },
+  {
+   "id": "n02c1",
+   "body": "<<FILL role=bridge words=36 beats='the hives along the south fence are loud at four on a cold afternoon, which Mrs Cassar will tell you later is not a thing bees are supposed to do in October'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n02c1_0",
+     "label": "Begin with what the bees are doing.",
+     "target": "n03d1"
+    }
+   ]
+  },
+  {
+   "id": "n02c2",
+   "body": "<<FILL role=bridge words=36 beats='a laminated notice has appeared on the orchard gate since morning, zip tied at four corners by somebody who expected it to be there a while'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n02c2_0",
+     "label": "Begin with the notice itself.",
+     "target": "n03d2"
+    }
+   ]
+  },
+  {
+   "id": "n03d0",
+   "body": "<<FILL role=rising words=112 beats='six shelves of notebooks, 1911 to this evening, nine different hands and no index of any kind, and everything anyone knows about this hill is in there somewhere'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n03d0_0",
+     "label": "Find out who wrote the survey.",
+     "target": "n04d0"
+    },
+    {
+     "id": "c_n03d0_1",
+     "label": "Find out what the survey left out.",
+     "target": "n04d1"
+    },
+    {
+     "id": "c_n03d0_2",
+     "label": "Ask what a hundred years of weather notes are worth.",
+     "target": "n04d2"
+    }
+   ]
+  },
+  {
+   "id": "n03d1",
+   "body": "<<FILL role=rising words=112 beats='Mrs Cassar keeps her own counts and they disagree with yours by a wide margin, which means one of you has been counting the wrong thing all autumn'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n03d1_0",
+     "label": "Copy the sentence out and take it home.",
+     "target": "n04c0"
+    },
+    {
+     "id": "c_n03d1_1",
+     "label": "Stay in the shed until the light goes.",
+     "target": "n04c1"
+    },
+    {
+     "id": "c_n03d1_2",
+     "label": "Walk the rows and count the trees.",
+     "target": "n04c2"
+    }
+   ]
+  },
+  {
+   "id": "n03d2",
+   "body": "<<FILL role=rising words=112 beats='the notice is a preliminary ecological survey summary and the sentence that matters is eleven words long: the site is of no particular scientific interest'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n03d2_0",
+     "label": "Ask Ada who else wrote in these.",
+     "target": "n04c3"
+    },
+    {
+     "id": "c_n03d2_1",
+     "label": "Photograph the notice before anything happens to it.",
+     "target": "n04c4"
+    },
+    {
+     "id": "c_n03d2_2",
+     "label": "Find out who wrote the survey.",
+     "target": "n04d0"
+    }
+   ]
+  },
+  {
+   "id": "n04d0",
+   "body": "<<FILL role=rising words=100 beats='the survey is signed D. Faulks and dated in August, a month when a century old orchard looks like nothing much except long grass and shade'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04d0_0",
+     "label": "Find out how a survey gets challenged.",
+     "target": "n05d0"
+    },
+    {
+     "id": "c_n04d0_1",
+     "label": "Find out what Faulks actually looked at.",
+     "target": "n05d1"
+    },
+    {
+     "id": "c_n04d0_2",
+     "label": "Find somebody who reads old records for a living.",
+     "target": "n05d2"
+    }
+   ]
+  },
+  {
+   "id": "n04d1",
+   "body": "<<FILL role=rising words=100 beats='every survey carries a method section and this one lists four site visits inside eleven days, all of them dry, none of them longer than an hour'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04d1_0",
+     "label": "Find somebody who studies the ground itself.",
+     "target": "n05d3"
+    },
+    {
+     "id": "c_n04d1_1",
+     "label": "Find out what the developer actually wants.",
+     "target": "n05d4"
+    },
+    {
+     "id": "c_n04d1_2",
+     "label": "Ask Tobe to help with the numbers.",
+     "target": "n05d5"
+    }
+   ]
+  },
+  {
+   "id": "n04d2",
+   "body": "<<FILL role=rising words=100 beats='Ada says the notebooks are only the weather, you say the weather is the entire argument, and neither of you can prove it standing in a shed'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04d2_0",
+     "label": "Let the six weeks run out.",
+     "target": "e05_0"
+    },
+    {
+     "id": "c_n04d2_1",
+     "label": "Find out how a survey gets challenged.",
+     "target": "n05d0"
+    },
+    {
+     "id": "c_n04d2_2",
+     "label": "Find out what Faulks actually looked at.",
+     "target": "n05d1"
+    }
+   ]
+  },
+  {
+   "id": "n04c0",
+   "body": "<<FILL role=bridge words=36 beats='you copy the eleven words into the back of an exercise book and they look smaller in your own hand, and somehow worse'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04c0_0",
+     "label": "Find somebody who reads old records for a living.",
+     "target": "n05d2"
+    }
+   ]
+  },
+  {
+   "id": "n04c1",
+   "body": "<<FILL role=bridge words=36 beats='the shed light is one bulb on a flex, and the oldest notebooks sit above it on the top shelf where the light does not reach'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04c1_0",
+     "label": "Find somebody who studies the ground itself.",
+     "target": "n05d3"
+    }
+   ]
+  },
+  {
+   "id": "n04c2",
+   "body": "<<FILL role=bridge words=36 beats='you walk the rows counting and reach three hundred and ninety one, then start over because you lost the number somewhere near the pond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04c2_0",
+     "label": "Find out what the developer actually wants.",
+     "target": "n05d4"
+    }
+   ]
+  },
+  {
+   "id": "n04c3",
+   "body": "<<FILL role=bridge words=36 beats='nine hands, Ada says, and she can name eight of them, and the ninth is a small neat pencil that stops in 1943 without explaining itself'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04c3_0",
+     "label": "Ask Tobe to help with the numbers.",
+     "target": "n05d5"
+    }
+   ]
+  },
+  {
+   "id": "n04c4",
+   "body": "<<FILL role=bridge words=36 beats='you photograph the notice with the bare trees behind it, which turns out much later to be the only picture anyone has of it in place'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n04c4_0",
+     "label": "Let the six weeks run out.",
+     "target": "e05_0"
+    }
+   ]
+  },
+  {
+   "id": "n05d0",
+   "body": "<<FILL role=rising words=106 beats='objections close in six weeks and the form asks for evidence of scientific interest, which is the exact phrase the survey used to say there is none'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n05d0_0",
+     "label": "Work out how many pages there actually are.",
+     "target": "n06d0"
+    },
+    {
+     "id": "c_n05d0_1",
+     "label": "Work out which years matter most.",
+     "target": "n06d1"
+    },
+    {
+     "id": "c_n05d0_2",
+     "label": "Work out how to read the difficult hands.",
+     "target": "n06d2"
+    }
+   ]
+  },
+  {
+   "id": "n05d1",
+   "body": "<<FILL role=rising words=106 beats='the four visits are logged to the half hour and not one of them lasted long enough to walk the whole orchard, let alone open a hive'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n05d1_0",
+     "label": "Work out who is allowed to touch them.",
+     "target": "n06d3"
+    },
+    {
+     "id": "c_n05d1_1",
+     "label": "Work out where to do the work.",
+     "target": "n06d4"
+    },
+    {
+     "id": "c_n05d1_2",
+     "label": "Work out how to prove you copied it right.",
+     "target": "n06d5"
+    }
+   ]
+  },
+  {
+   "id": "n05d2",
+   "body": "<<FILL role=rising words=106 beats='the city archive keeps a Tuesday desk and the archivist there has seen a great many shoeboxes and is not impressed by any of them yet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n05d2_0",
+     "label": "Open the 1911 volume first.",
+     "target": "n06c0"
+    },
+    {
+     "id": "c_n05d2_1",
+     "label": "Set the laptop up on the shed bench.",
+     "target": "n06c1"
+    },
+    {
+     "id": "c_n05d2_2",
+     "label": "Take the folding table down to the orchard.",
+     "target": "n06c2"
+    }
+   ]
+  },
+  {
+   "id": "n05d3",
+   "body": "<<FILL role=rising words=106 beats='the university lists a Dr Ines Abara under long term monitoring, a phrase that turns out to mean precisely the thing your six shelves are'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n05d3_0",
+     "label": "Ask Ada to read the hard pages aloud.",
+     "target": "n06c3"
+    },
+    {
+     "id": "c_n05d3_1",
+     "label": "Photograph one page as a test.",
+     "target": "n06c4"
+    },
+    {
+     "id": "c_n05d3_2",
+     "label": "Make a list of every year that is missing.",
+     "target": "n06c5"
+    }
+   ]
+  },
+  {
+   "id": "n05d4",
+   "body": "<<FILL role=rising words=106 beats='the plan is eighty two homes and a spine road, and the road runs straight along the row the big Bramley stands in'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n05d4_0",
+     "label": "Stop and eat something.",
+     "target": "n06c6"
+    },
+    {
+     "id": "c_n05d4_1",
+     "label": "Try to do all of it at once.",
+     "target": "e06_0"
+    },
+    {
+     "id": "c_n05d4_2",
+     "label": "Work out how many pages there actually are.",
+     "target": "n06d0"
+    }
+   ]
+  },
+  {
+   "id": "n05d5",
+   "body": "<<FILL role=rising words=106 beats='Tobe runs the school weather club, owns a laptop that works, and thinks a hundred years of bloom dates is the finest thing he has ever been offered'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n05d5_0",
+     "label": "Work out which years matter most.",
+     "target": "n06d1"
+    },
+    {
+     "id": "c_n05d5_1",
+     "label": "Work out how to read the difficult hands.",
+     "target": "n06d2"
+    },
+    {
+     "id": "c_n05d5_2",
+     "label": "Work out who is allowed to touch them.",
+     "target": "n06d3"
+    }
+   ]
+  },
+  {
+   "id": "e05_0",
+   "body": "<<FILL role=discovery words=106 beats='you put the notebooks back on the shelf and the objection window closes without you in it, and what you are left with is a photograph of a notice and a clear idea of what you did not do'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e05_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Six Weeks Run Out"
+   }
+  },
+  {
+   "id": "n06d0",
+   "body": "<<FILL role=rising words=112 beats='Tobe counts sample pages and multiplies, and the answer is somewhere near forty thousand daily lines, which is a number that makes the kitchen go quiet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06d0_0",
+     "label": "Take the four lines a year approach.",
+     "target": "n07d0"
+    },
+    {
+     "id": "c_n06d0_1",
+     "label": "Take the whole record but only for the Bramleys.",
+     "target": "n07d1"
+    },
+    {
+     "id": "c_n06d0_2",
+     "label": "Take the hive counts as well.",
+     "target": "n07d2"
+    }
+   ]
+  },
+  {
+   "id": "n06d1",
+   "body": "<<FILL role=rising words=112 beats='not all of it has to be typed up, because the argument needs bloom dates and frost dates, which is four lines a year and a hundred and fourteen years'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06d1_0",
+     "label": "Ask the archive to hold the originals.",
+     "target": "n07d3"
+    },
+    {
+     "id": "c_n06d1_1",
+     "label": "Ask Dr Abara what would count as evidence.",
+     "target": "n07d4"
+    },
+    {
+     "id": "c_n06d1_2",
+     "label": "Ask Tobe to build the chart.",
+     "target": "n07d5"
+    }
+   ]
+  },
+  {
+   "id": "n06d2",
+   "body": "<<FILL role=rising words=112 beats='the 1920s hand slopes so far that a three and a five are the same shape, and getting one wrong by two would put a bloom date in the wrong week'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06d2_0",
+     "label": "Ask the school if the class can help.",
+     "target": "n07d6"
+    },
+    {
+     "id": "c_n06d2_1",
+     "label": "Ask what happens if you are wrong.",
+     "target": "n07d7"
+    },
+    {
+     "id": "c_n06d2_2",
+     "label": "Ask Ada what she wants out of this.",
+     "target": "n07d8"
+    }
+   ]
+  },
+  {
+   "id": "n06d3",
+   "body": "<<FILL role=rising words=112 beats='Ada has never let a notebook leave the shed, the archive will not accept anything it cannot see in person, and both of those positions are reasonable'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06d3_0",
+     "label": "Hand the whole thing to the archive and step back.",
+     "target": "e07_0"
+    },
+    {
+     "id": "c_n06d3_1",
+     "label": "Send the chart out before it is checked.",
+     "target": "e07_1"
+    },
+    {
+     "id": "c_n06d3_2",
+     "label": "Take the four lines a year approach.",
+     "target": "n07d0"
+    }
+   ]
+  },
+  {
+   "id": "n06d4",
+   "body": "<<FILL role=rising words=112 beats='the shed is cold and has one socket, the kitchen has a table but Ada does not want the books in the house, and the school hall is free on Thursdays'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06d4_0",
+     "label": "Take the whole record but only for the Bramleys.",
+     "target": "n07d1"
+    },
+    {
+     "id": "c_n06d4_1",
+     "label": "Take the hive counts as well.",
+     "target": "n07d2"
+    },
+    {
+     "id": "c_n06d4_2",
+     "label": "Ask the archive to hold the originals.",
+     "target": "n07d3"
+    }
+   ]
+  },
+  {
+   "id": "n06d5",
+   "body": "<<FILL role=rising words=112 beats='a number typed from a page is only a claim about a page, and Tobe says the fix is boring, which is to photograph every page you type'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06d5_0",
+     "label": "Ask Dr Abara what would count as evidence.",
+     "target": "n07d4"
+    },
+    {
+     "id": "c_n06d5_1",
+     "label": "Ask Tobe to build the chart.",
+     "target": "n07d5"
+    },
+    {
+     "id": "c_n06d5_2",
+     "label": "Ask the school if the class can help.",
+     "target": "n07d6"
+    }
+   ]
+  },
+  {
+   "id": "n06c0",
+   "body": "<<FILL role=bridge words=36 beats='the first volume opens stiffly on a page of copperplate that begins with the price of ladders and then, without ceremony, gives the first bloom date'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06c0_0",
+     "label": "Ask what happens if you are wrong.",
+     "target": "n07d7"
+    }
+   ]
+  },
+  {
+   "id": "n06c1",
+   "body": "<<FILL role=bridge words=36 beats='the laptop sits on the bench between a sack of grafting wax and a jar of screws, and the extension lead runs out under the door'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06c1_0",
+     "label": "Ask Ada what she wants out of this.",
+     "target": "n07d8"
+    }
+   ]
+  },
+  {
+   "id": "n06c2",
+   "body": "<<FILL role=bridge words=36 beats='the folding table goes down the hill on the wheelbarrow and comes to rest on the level ground beside the pond, which is the only flat spot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06c2_0",
+     "label": "Hand the whole thing to the archive and step back.",
+     "target": "e07_0"
+    }
+   ]
+  },
+  {
+   "id": "n06c3",
+   "body": "<<FILL role=bridge words=36 beats='Ada reads the 1920s pages out loud while you type, and she reads them the way people read things they already half remember'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06c3_0",
+     "label": "Send the chart out before it is checked.",
+     "target": "e07_1"
+    }
+   ]
+  },
+  {
+   "id": "n06c4",
+   "body": "<<FILL role=bridge words=36 beats='the first photograph comes out with your own shadow across the column of figures, so you learn quickly to stand to the side of the light'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06c4_0",
+     "label": "Take the four lines a year approach.",
+     "target": "n07d0"
+    }
+   ]
+  },
+  {
+   "id": "n06c5",
+   "body": "<<FILL role=bridge words=36 beats='there is no 1917 volume and no 1918, and no note anywhere explaining where they went, only a gap on the shelf the width of two fingers'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06c5_0",
+     "label": "Take the whole record but only for the Bramleys.",
+     "target": "n07d1"
+    }
+   ]
+  },
+  {
+   "id": "n06c6",
+   "body": "<<FILL role=bridge words=36 beats='you eat toast standing up at nine at night with cold hands, and Ada says that this is what the work is, mostly, and always was'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n06c6_0",
+     "label": "Take the hive counts as well.",
+     "target": "n07d2"
+    }
+   ]
+  },
+  {
+   "id": "e06_0",
+   "body": "<<FILL role=setback words=112 beats='you start at 1911 meaning to type everything, and by the fourth evening the pages blur and the numbers stop meaning anything, and the six weeks are shorter than they were'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e06_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Forty Thousand Lines"
+   }
+  },
+  {
+   "id": "n07d0",
+   "body": "<<FILL role=rising words=100 beats='first bloom, full bloom, last frost, first picking, which is four dates a year, so a century becomes four hundred and fifty six numbers instead of forty thousand'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d0_0",
+     "label": "Set up a check by two people.",
+     "target": "n08d0"
+    },
+    {
+     "id": "c_n07d0_1",
+     "label": "Set up a rule for unreadable figures.",
+     "target": "n08d1"
+    },
+    {
+     "id": "c_n07d0_2",
+     "label": "Bring Mrs Cassar in properly.",
+     "target": "n08d2"
+    }
+   ]
+  },
+  {
+   "id": "n07d1",
+   "body": "<<FILL role=rising words=100 beats='one row of trees all the way back is fewer numbers and a much easier argument to explain out loud to somebody who is in a hurry'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d1_0",
+     "label": "Bring Dr Abara up the hill.",
+     "target": "n08d3"
+    },
+    {
+     "id": "c_n07d1_1",
+     "label": "Bring the school class in.",
+     "target": "n08d4"
+    },
+    {
+     "id": "c_n07d1_2",
+     "label": "Go and find the missing volumes.",
+     "target": "n08d5"
+    }
+   ]
+  },
+  {
+   "id": "n07d2",
+   "body": "<<FILL role=rising words=100 beats='Mrs Cassar has thirty years of her own and is willing, though she wants it understood that her early counts were done differently'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d2_0",
+     "label": "Go and see Priya Raval at the council.",
+     "target": "n08d6"
+    },
+    {
+     "id": "c_n07d2_1",
+     "label": "Print the first proper chart.",
+     "target": "n08c0"
+    },
+    {
+     "id": "c_n07d2_2",
+     "label": "Walk the frost pocket at dawn.",
+     "target": "n08c1"
+    }
+   ]
+  },
+  {
+   "id": "n07d3",
+   "body": "<<FILL role=rising words=100 beats='the archivist offers a shelf in a room with a stable temperature, a receipt, and the right for Ada to see them any weekday she likes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d3_0",
+     "label": "Sort the notebooks by hand.",
+     "target": "n08c2"
+    },
+    {
+     "id": "c_n07d3_1",
+     "label": "Wait outside the council office.",
+     "target": "n08c3"
+    },
+    {
+     "id": "c_n07d3_2",
+     "label": "Carry the carrier bags up the hill.",
+     "target": "n08c4"
+    }
+   ]
+  },
+  {
+   "id": "n07d4",
+   "body": "<<FILL role=rising words=100 beats='Abara is careful: a long unbroken local series is genuinely rare, but only if somebody can show how it was measured and by whom'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d4_0",
+     "label": "Let Tobe explain the spreadsheet.",
+     "target": "n08c5"
+    },
+    {
+     "id": "c_n07d4_1",
+     "label": "Look at the chart for a long time.",
+     "target": "n08c6"
+    },
+    {
+     "id": "c_n07d4_2",
+     "label": "Decide the chart is enough on its own.",
+     "target": "e08_0"
+    }
+   ]
+  },
+  {
+   "id": "n07d5",
+   "body": "<<FILL role=rising words=100 beats='Tobe puts the bloom dates on one axis and the years on the other, and the shape that comes out is not subtle, and nobody says anything for a while'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d5_0",
+     "label": "Guess at the unreadable figures.",
+     "target": "e08_1"
+    },
+    {
+     "id": "c_n07d5_1",
+     "label": "Set up a check by two people.",
+     "target": "n08d0"
+    },
+    {
+     "id": "c_n07d5_2",
+     "label": "Set up a rule for unreadable figures.",
+     "target": "n08d1"
+    }
+   ]
+  },
+  {
+   "id": "n07d6",
+   "body": "<<FILL role=rising words=100 beats='thirty pairs of hands could type a century in a fortnight, and thirty pairs of hands could also put a hundred small errors into it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d6_0",
+     "label": "Bring Mrs Cassar in properly.",
+     "target": "n08d2"
+    },
+    {
+     "id": "c_n07d6_1",
+     "label": "Bring Dr Abara up the hill.",
+     "target": "n08d3"
+    },
+    {
+     "id": "c_n07d6_2",
+     "label": "Bring the school class in.",
+     "target": "n08d4"
+    }
+   ]
+  },
+  {
+   "id": "n07d7",
+   "body": "<<FILL role=rising words=100 beats='if a single date is out by a fortnight the whole chart is arguable, Faulks will only need one, and everybody in the kitchen knows it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d7_0",
+     "label": "Go and find the missing volumes.",
+     "target": "n08d5"
+    },
+    {
+     "id": "c_n07d7_1",
+     "label": "Go and see Priya Raval at the council.",
+     "target": "n08d6"
+    },
+    {
+     "id": "c_n07d7_2",
+     "label": "Print the first proper chart.",
+     "target": "n08c0"
+    }
+   ]
+  },
+  {
+   "id": "n07d8",
+   "body": "<<FILL role=rising words=100 beats='Ada says she has never once thought of the notebooks as an argument, and that she is not sure she likes them becoming one'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n07d8_0",
+     "label": "Walk the frost pocket at dawn.",
+     "target": "n08c1"
+    },
+    {
+     "id": "c_n07d8_1",
+     "label": "Sort the notebooks by hand.",
+     "target": "n08c2"
+    },
+    {
+     "id": "c_n07d8_2",
+     "label": "Wait outside the council office.",
+     "target": "n08c3"
+    }
+   ]
+  },
+  {
+   "id": "e07_0",
+   "body": "<<FILL role=discovery words=100 beats='the notebooks go into a temperature stable room and are safe forever, nobody makes the argument, and the orchard is surveyed again in August by the same method'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e07_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Safe on a Better Shelf"
+   }
+  },
+  {
+   "id": "e07_1",
+   "body": "<<FILL role=setback words=100 beats='the chart goes round the neighbourhood in an evening and comes back with a correction attached that you cannot answer, and after that people read the next thing you send more slowly'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e07_1",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Sent Before It Was Checked"
+   }
+  },
+  {
+   "id": "n08d0",
+   "body": "<<FILL role=rising words=106 beats='every page is typed twice by different people and the two versions are compared by machine, which finds eleven disagreements in the first hundred pages'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08d0_0",
+     "label": "Ask Raval exactly what she can accept.",
+     "target": "n09d0"
+    },
+    {
+     "id": "c_n08d0_1",
+     "label": "Ask Abara to write about the frost pocket.",
+     "target": "n09d1"
+    },
+    {
+     "id": "c_n08d0_2",
+     "label": "Ask the archive to write a custody note.",
+     "target": "n09d2"
+    }
+   ]
+  },
+  {
+   "id": "n08d1",
+   "body": "<<FILL role=rising words=106 beats='anything genuinely ambiguous is marked rather than guessed, and the marked ones are kept in their own list where anybody can see them'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08d1_0",
+     "label": "Ask Mrs Cassar to date her method changes.",
+     "target": "n09d3"
+    },
+    {
+     "id": "c_n08d1_1",
+     "label": "Ask what Faulks would say to this.",
+     "target": "n09d4"
+    },
+    {
+     "id": "c_n08d1_2",
+     "label": "Ask the paper to run something.",
+     "target": "n09d5"
+    }
+   ]
+  },
+  {
+   "id": "n08d2",
+   "body": "<<FILL role=rising words=106 beats='Mrs Cassar arrives with two carrier bags of hive records and one condition, which is that nobody pretends her counts are more precise than they are'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08d2_0",
+     "label": "Ask the developer for their survey data.",
+     "target": "n09d6"
+    },
+    {
+     "id": "c_n08d2_1",
+     "label": "Ask Ada about 1917.",
+     "target": "n09d7"
+    },
+    {
+     "id": "c_n08d2_2",
+     "label": "Ask the school to keep the Thursday hall.",
+     "target": "n09d8"
+    }
+   ]
+  },
+  {
+   "id": "n08d3",
+   "body": "<<FILL role=rising words=106 beats='Abara walks the rows for two hours in the rain and says almost nothing, then asks whether anybody has ever measured the frost pocket by the pond'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08d3_0",
+     "label": "Take the newspaper offer and stop there.",
+     "target": "e09_0"
+    },
+    {
+     "id": "c_n08d3_1",
+     "label": "Say something about Faulks you cannot support.",
+     "target": "e09_1"
+    },
+    {
+     "id": "c_n08d3_2",
+     "label": "Ask Raval exactly what she can accept.",
+     "target": "n09d0"
+    }
+   ]
+  },
+  {
+   "id": "n08d4",
+   "body": "<<FILL role=rising words=106 beats='the Thursday hall fills with thirty people typing, the noise is enormous, and by four in the afternoon the 1930s are finished'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08d4_0",
+     "label": "Ask Abara to write about the frost pocket.",
+     "target": "n09d1"
+    },
+    {
+     "id": "c_n08d4_1",
+     "label": "Ask the archive to write a custody note.",
+     "target": "n09d2"
+    },
+    {
+     "id": "c_n08d4_2",
+     "label": "Ask Mrs Cassar to date her method changes.",
+     "target": "n09d3"
+    }
+   ]
+  },
+  {
+   "id": "n08d5",
+   "body": "<<FILL role=rising words=106 beats='two volumes are gone and somebody must have taken them somewhere in 1919, and the shed is not the only building on this hill'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08d5_0",
+     "label": "Ask what Faulks would say to this.",
+     "target": "n09d4"
+    },
+    {
+     "id": "c_n08d5_1",
+     "label": "Ask the paper to run something.",
+     "target": "n09d5"
+    },
+    {
+     "id": "c_n08d5_2",
+     "label": "Ask the developer for their survey data.",
+     "target": "n09d6"
+    }
+   ]
+  },
+  {
+   "id": "n08d6",
+   "body": "<<FILL role=rising words=106 beats='Raval is the ecology officer, has eleven sites on her desk this month, and tells you plainly that a shed full of notebooks is not evidence yet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08d6_0",
+     "label": "Ask Ada about 1917.",
+     "target": "n09d7"
+    },
+    {
+     "id": "c_n08d6_1",
+     "label": "Ask the school to keep the Thursday hall.",
+     "target": "n09d8"
+    },
+    {
+     "id": "c_n08d6_2",
+     "label": "Take the newspaper offer and stop there.",
+     "target": "e09_0"
+    }
+   ]
+  },
+  {
+   "id": "n08c0",
+   "body": "<<FILL role=bridge words=36 beats='the chart comes off the school printer in colour and is pinned to the shed door, where it stays until the rain gets at the bottom corner'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08c0_0",
+     "label": "Say something about Faulks you cannot support.",
+     "target": "e09_1"
+    }
+   ]
+  },
+  {
+   "id": "n08c1",
+   "body": "<<FILL role=bridge words=36 beats='at half past six the low ground by the pond is white and the top of the hill is not, and the line between them is as clear as a drawn edge'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08c1_0",
+     "label": "Ask Raval exactly what she can accept.",
+     "target": "n09d0"
+    }
+   ]
+  },
+  {
+   "id": "n08c2",
+   "body": "<<FILL role=bridge words=36 beats='the nine hands sort into four periods, and the changeovers all fall in the same three months of three different years, which is somebody dying or leaving'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08c2_0",
+     "label": "Ask Abara to write about the frost pocket.",
+     "target": "n09d1"
+    }
+   ]
+  },
+  {
+   "id": "n08c3",
+   "body": "<<FILL role=bridge words=36 beats='you wait forty minutes on a chair in a corridor with a poster about recycling, and by the end of it you have written down what you want to say'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08c3_0",
+     "label": "Ask the archive to write a custody note.",
+     "target": "n09d2"
+    }
+   ]
+  },
+  {
+   "id": "n08c4",
+   "body": "<<FILL role=bridge words=36 beats='the two carrier bags of hive records weigh more than they look, and Mrs Cassar will not let anybody else carry the older one'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08c4_0",
+     "label": "Ask Mrs Cassar to date her method changes.",
+     "target": "n09d3"
+    }
+   ]
+  },
+  {
+   "id": "n08c5",
+   "body": "<<FILL role=bridge words=36 beats='Tobe explains the spreadsheet to Ada twice, and the second time he uses the word ledger, and after that she understands it completely'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08c5_0",
+     "label": "Ask what Faulks would say to this.",
+     "target": "n09d4"
+    }
+   ]
+  },
+  {
+   "id": "n08c6",
+   "body": "<<FILL role=bridge words=36 beats='the line moves eleven days earlier across the century, and it does not wobble the way you expected a real thing measured by hand to wobble'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n08c6_0",
+     "label": "Ask the paper to run something.",
+     "target": "n09d5"
+    }
+   ]
+  },
+  {
+   "id": "e08_0",
+   "body": "<<FILL role=discovery words=106 beats='you send the chart alone and it is admired and filed, and the thing everybody remembers afterwards is that it was pretty, which is not what you needed'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e08_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Admired and Filed"
+   }
+  },
+  {
+   "id": "e08_1",
+   "body": "<<FILL role=setback words=106 beats='the guessed dates hold up until Faulks finds three of them, and once three are wrong every one of the other four hundred is treated as a guess too'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e08_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Three Wrong Numbers"
+   }
+  },
+  {
+   "id": "n09d0",
+   "body": "<<FILL role=rising words=112 beats='Raval says she can accept a dataset with a stated method, a named custodian and a way for anyone to check it, and that almost nobody ever brings one'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d0_0",
+     "label": "Put a thermometer in the frost pocket.",
+     "target": "n10d0"
+    },
+    {
+     "id": "c_n09d0_1",
+     "label": "Request the survey data formally.",
+     "target": "n10d1"
+    },
+    {
+     "id": "c_n09d0_2",
+     "label": "Write the method section.",
+     "target": "n10d2"
+    }
+   ]
+  },
+  {
+   "id": "n09d1",
+   "body": "<<FILL role=rising words=112 beats='Abara will write two pages on cold air drainage if somebody measures the pocket properly for six weeks, which means a thermometer and somebody at dawn'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d1_0",
+     "label": "Write to the eight named hands.",
+     "target": "n10d3"
+    },
+    {
+     "id": "c_n09d1_1",
+     "label": "Go through the parish records for 1917.",
+     "target": "n10d4"
+    },
+    {
+     "id": "c_n09d1_2",
+     "label": "Decide what to do about the paper.",
+     "target": "n10d5"
+    }
+   ]
+  },
+  {
+   "id": "n09d2",
+   "body": "<<FILL role=rising words=112 beats='the archivist will state on paper where every volume has been since the day it arrived, which sounds dull and turns out to matter enormously'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d2_0",
+     "label": "Decide who signs the objection.",
+     "target": "n10d6"
+    },
+    {
+     "id": "c_n09d2_1",
+     "label": "Read at dawn in the rain.",
+     "target": "n10c0"
+    },
+    {
+     "id": "c_n09d2_2",
+     "label": "File the request and wait.",
+     "target": "n10c1"
+    }
+   ]
+  },
+  {
+   "id": "n09d3",
+   "body": "<<FILL role=rising words=112 beats='she can say exactly when she changed frames and when she changed how she counted, which turns thirty ragged years into three clean ones'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d3_0",
+     "label": "Draft the method section badly.",
+     "target": "n10c2"
+    },
+    {
+     "id": "c_n09d3_1",
+     "label": "Post the four letters.",
+     "target": "n10c3"
+    },
+    {
+     "id": "c_n09d3_2",
+     "label": "Sit at the Tuesday desk.",
+     "target": "n10c4"
+    }
+   ]
+  },
+  {
+   "id": "n09d4",
+   "body": "<<FILL role=rising words=112 beats='Tobe writes out the objections he would make if he were Faulks, and the list is four items long, and every item on it is fair'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d4_0",
+     "label": "Pin the second chart beside the first.",
+     "target": "n10c5"
+    },
+    {
+     "id": "c_n09d4_1",
+     "label": "Let Ada sign nothing yet.",
+     "target": "n10c6"
+    },
+    {
+     "id": "c_n09d4_2",
+     "label": "Publish everything the moment you have it.",
+     "target": "e10_0"
+    }
+   ]
+  },
+  {
+   "id": "n09d5",
+   "body": "<<FILL role=rising words=112 beats='the local paper would take a picture of Ada with the notebooks, which would be lovely and would also put the shed on the front page'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d5_0",
+     "label": "Skip the method section.",
+     "target": "e10_1"
+    },
+    {
+     "id": "c_n09d5_1",
+     "label": "Put a thermometer in the frost pocket.",
+     "target": "n10d0"
+    },
+    {
+     "id": "c_n09d5_2",
+     "label": "Request the survey data formally.",
+     "target": "n10d1"
+    }
+   ]
+  },
+  {
+   "id": "n09d6",
+   "body": "<<FILL role=rising words=112 beats='you can request the data underneath the eleven words and they must give it, and it will take twenty working days'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d6_0",
+     "label": "Write the method section.",
+     "target": "n10d2"
+    },
+    {
+     "id": "c_n09d6_1",
+     "label": "Write to the eight named hands.",
+     "target": "n10d3"
+    },
+    {
+     "id": "c_n09d6_2",
+     "label": "Go through the parish records for 1917.",
+     "target": "n10d4"
+    }
+   ]
+  },
+  {
+   "id": "n09d7",
+   "body": "<<FILL role=rising words=112 beats='Ada says her grandmother never spoke about the war years on the hill except once, and that once was about a horse'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d7_0",
+     "label": "Decide what to do about the paper.",
+     "target": "n10d5"
+    },
+    {
+     "id": "c_n09d7_1",
+     "label": "Decide who signs the objection.",
+     "target": "n10d6"
+    },
+    {
+     "id": "c_n09d7_2",
+     "label": "Read at dawn in the rain.",
+     "target": "n10c0"
+    }
+   ]
+  },
+  {
+   "id": "n09d8",
+   "body": "<<FILL role=rising words=112 beats='the hall is booked for the term if somebody responsible signs for it, and the only somebody available is you'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n09d8_0",
+     "label": "File the request and wait.",
+     "target": "n10c1"
+    },
+    {
+     "id": "c_n09d8_1",
+     "label": "Draft the method section badly.",
+     "target": "n10c2"
+    },
+    {
+     "id": "c_n09d8_2",
+     "label": "Post the four letters.",
+     "target": "n10c3"
+    }
+   ]
+  },
+  {
+   "id": "e09_0",
+   "body": "<<FILL role=discovery words=112 beats='the photograph of Ada with an open notebook runs on page five and is genuinely lovely, and the objection deadline passes while everybody is admiring it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e09_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Page Five, Lovely Photograph"
+   }
+  },
+  {
+   "id": "e09_1",
+   "body": "<<FILL role=setback words=112 beats='you say in front of witnesses that the survey was written to order, which you believe and cannot show, and after that every honest thing you say arrives with that attached'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e09_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Thing You Could Not Show"
+   }
+  },
+  {
+   "id": "n10d0",
+   "body": "<<FILL role=rising words=100 beats='two thermometers, one in the pocket and one at the top of the hill, read at dawn every day for six weeks by whoever is nearest'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10d0_0",
+     "label": "Read the survey data when it arrives.",
+     "target": "n11d0"
+    },
+    {
+     "id": "c_n10d0_1",
+     "label": "Compare the survey dates to the weather.",
+     "target": "n11d1"
+    },
+    {
+     "id": "c_n10d0_2",
+     "label": "Compare the species list to Ada.",
+     "target": "n11d2"
+    }
+   ]
+  },
+  {
+   "id": "n10d1",
+   "body": "<<FILL role=rising words=100 beats='the request goes in on a form with a reference number and an acknowledgement arrives the same afternoon, which is the first time any of this has felt official'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10d1_0",
+     "label": "Find out where the 1917 volumes went.",
+     "target": "n11d3"
+    },
+    {
+     "id": "c_n10d1_1",
+     "label": "Go and look for the volumes.",
+     "target": "n11d4"
+    },
+    {
+     "id": "c_n10d1_2",
+     "label": "Answer the four objections in writing.",
+     "target": "n11d5"
+    }
+   ]
+  },
+  {
+   "id": "n10d2",
+   "body": "<<FILL role=rising words=100 beats='somebody has to write down how the notebooks were kept, transcribed, checked and stored, and it turns out to be the hardest writing anybody does'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10d2_0",
+     "label": "Ask Abara to read the whole dossier.",
+     "target": "n11d6"
+    },
+    {
+     "id": "c_n10d2_1",
+     "label": "Ask Raval to look at a draft.",
+     "target": "n11d7"
+    },
+    {
+     "id": "c_n10d2_2",
+     "label": "Ask Halvor from the developer what he wants.",
+     "target": "n11d8"
+    }
+   ]
+  },
+  {
+   "id": "n10d3",
+   "body": "<<FILL role=rising words=100 beats='four of the nine writers have living family in the city, and a letter to each of them is either a kindness or an intrusion depending on the letter'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10d3_0",
+     "label": "Accept the offer of a plaque.",
+     "target": "e11_0"
+    },
+    {
+     "id": "c_n10d3_1",
+     "label": "Go after Faulks personally.",
+     "target": "e11_1"
+    },
+    {
+     "id": "c_n10d3_2",
+     "label": "Read the survey data when it arrives.",
+     "target": "n11d0"
+    }
+   ]
+  },
+  {
+   "id": "n10d4",
+   "body": "<<FILL role=rising words=100 beats='the parish records are in the same archive and the Tuesday desk is patient, and somewhere in there is why two volumes left this hill'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10d4_0",
+     "label": "Compare the survey dates to the weather.",
+     "target": "n11d1"
+    },
+    {
+     "id": "c_n10d4_1",
+     "label": "Compare the species list to Ada.",
+     "target": "n11d2"
+    },
+    {
+     "id": "c_n10d4_2",
+     "label": "Find out where the 1917 volumes went.",
+     "target": "n11d3"
+    }
+   ]
+  },
+  {
+   "id": "n10d5",
+   "body": "<<FILL role=rising words=100 beats='the paper will run it whenever you say, and running it early makes noise, and noise is useful exactly once'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10d5_0",
+     "label": "Go and look for the volumes.",
+     "target": "n11d4"
+    },
+    {
+     "id": "c_n10d5_1",
+     "label": "Answer the four objections in writing.",
+     "target": "n11d5"
+    },
+    {
+     "id": "c_n10d5_2",
+     "label": "Ask Abara to read the whole dossier.",
+     "target": "n11d6"
+    }
+   ]
+  },
+  {
+   "id": "n10d6",
+   "body": "<<FILL role=rising words=100 beats='the form has one line for a name, Ada is eighty one, and the objection will be answered in writing by people who are paid to answer things'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10d6_0",
+     "label": "Ask Raval to look at a draft.",
+     "target": "n11d7"
+    },
+    {
+     "id": "c_n10d6_1",
+     "label": "Ask Halvor from the developer what he wants.",
+     "target": "n11d8"
+    },
+    {
+     "id": "c_n10d6_2",
+     "label": "Accept the offer of a plaque.",
+     "target": "e11_0"
+    }
+   ]
+  },
+  {
+   "id": "n10c0",
+   "body": "<<FILL role=bridge words=36 beats='the dawn readings are the least interesting work anybody does and the most difficult to keep doing, and Tobe does nineteen of the forty two'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10c0_0",
+     "label": "Go after Faulks personally.",
+     "target": "e11_1"
+    }
+   ]
+  },
+  {
+   "id": "n10c1",
+   "body": "<<FILL role=bridge words=36 beats='twenty working days is four weeks, the objection window is six, and the arithmetic of that sits on the kitchen table like a third person'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10c1_0",
+     "label": "Read the survey data when it arrives.",
+     "target": "n11d0"
+    }
+   ]
+  },
+  {
+   "id": "n10c2",
+   "body": "<<FILL role=bridge words=36 beats='the first draft is three pages of everything you did in the order you did it, which Abara reads and returns with one word written on it, and the word is why'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10c2_0",
+     "label": "Compare the survey dates to the weather.",
+     "target": "n11d1"
+    }
+   ]
+  },
+  {
+   "id": "n10c3",
+   "body": "<<FILL role=bridge words=36 beats='the four letters go into the postbox at the bottom of the hill on a Tuesday and you feel worse about it than you expected to'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10c3_0",
+     "label": "Compare the species list to Ada.",
+     "target": "n11d2"
+    }
+   ]
+  },
+  {
+   "id": "n10c4",
+   "body": "<<FILL role=bridge words=36 beats='the archivist brings the 1917 parish box and leaves you alone with it, and the room is so quiet you can hear the ventilation'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10c4_0",
+     "label": "Find out where the 1917 volumes went.",
+     "target": "n11d3"
+    }
+   ]
+  },
+  {
+   "id": "n10c5",
+   "body": "<<FILL role=bridge words=36 beats='the frost pocket readings go up beside the bloom chart, and the two of them together say something that neither of them says alone'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10c5_0",
+     "label": "Go and look for the volumes.",
+     "target": "n11d4"
+    }
+   ]
+  },
+  {
+   "id": "n10c6",
+   "body": "<<FILL role=bridge words=36 beats='Ada says she will sign when there is something worth signing, and that she has watched people sign things too early her whole life'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n10c6_0",
+     "label": "Answer the four objections in writing.",
+     "target": "n11d5"
+    }
+   ]
+  },
+  {
+   "id": "e10_0",
+   "body": "<<FILL role=discovery words=100 beats='the whole dossier goes online in one go, unchecked and complete, and it is read by four hundred people and answered by nobody who matters'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e10_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Four Hundred Readers, No Answer"
+   }
+  },
+  {
+   "id": "e10_1",
+   "body": "<<FILL role=setback words=100 beats='the numbers go in without any account of how they were made, and Raval sends them back the same week with a note that is polite and final'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e10_1",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Numbers Without a Method"
+   }
+  },
+  {
+   "id": "n11d0",
+   "body": "<<FILL role=rising words=106 beats='the underlying data is thin: four visits, one transect, a species list of twenty two, and a note that the site was dry at the time of survey'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d0_0",
+     "label": "Show that the survey was done in a drought.",
+     "target": "n12d0"
+    },
+    {
+     "id": "c_n11d0_1",
+     "label": "Go to the agricultural committee building.",
+     "target": "n12d1"
+    },
+    {
+     "id": "c_n11d0_2",
+     "label": "Get the species list checked properly.",
+     "target": "n12d2"
+    }
+   ]
+  },
+  {
+   "id": "n11d1",
+   "body": "<<FILL role=rising words=106 beats='the four visits fall inside the driest eleven days of that August, which Tobe can show from public records in about nine minutes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d1_0",
+     "label": "Decide what to say to Halvor.",
+     "target": "n12d3"
+    },
+    {
+     "id": "c_n11d1_1",
+     "label": "Decide how hard to push the frost pocket.",
+     "target": "n12d4"
+    },
+    {
+     "id": "c_n11d1_2",
+     "label": "Decide whether Ada should speak.",
+     "target": "n12d5"
+    }
+   ]
+  },
+  {
+   "id": "n11d2",
+   "body": "<<FILL role=rising words=106 beats='Ada reads the list of twenty two and adds fourteen from memory, then says she will not swear to any of them without going and looking'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d2_0",
+     "label": "Decide when to release the dossier.",
+     "target": "n12d6"
+    },
+    {
+     "id": "c_n11d2_1",
+     "label": "Go down into the basement.",
+     "target": "n12c0"
+    },
+    {
+     "id": "c_n11d2_2",
+     "label": "Read the rainfall record twice.",
+     "target": "n12c1"
+    }
+   ]
+  },
+  {
+   "id": "n11d3",
+   "body": "<<FILL role=rising words=106 beats='the parish box holds a receipt for two orchard books lent to the agricultural committee in 1917 and never entered as returned'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d3_0",
+     "label": "Walk the rows with a list in hand.",
+     "target": "n12c2"
+    },
+    {
+     "id": "c_n11d3_1",
+     "label": "Leave the coffee untouched.",
+     "target": "n12c3"
+    },
+    {
+     "id": "c_n11d3_2",
+     "label": "Sit with Ada in the shed.",
+     "target": "n12c4"
+    }
+   ]
+  },
+  {
+   "id": "n11d4",
+   "body": "<<FILL role=rising words=106 beats='if they were never returned they are in a building that still exists, and the agricultural committee became three things and then one thing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d4_0",
+     "label": "Number every page of the dossier.",
+     "target": "n12c5"
+    },
+    {
+     "id": "c_n11d4_1",
+     "label": "Find the two volumes in a box.",
+     "target": "n12c6"
+    },
+    {
+     "id": "c_n11d4_2",
+     "label": "Keep the found volumes to yourself.",
+     "target": "e12_0"
+    }
+   ]
+  },
+  {
+   "id": "n11d5",
+   "body": "<<FILL role=rising words=106 beats='each of the four objections Tobe wrote gets a paragraph and a piece of evidence, and two of them are easy and two of them are not'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d5_0",
+     "label": "Let the deadline decide for you.",
+     "target": "e12_1"
+    },
+    {
+     "id": "c_n11d5_1",
+     "label": "Show that the survey was done in a drought.",
+     "target": "n12d0"
+    },
+    {
+     "id": "c_n11d5_2",
+     "label": "Go to the agricultural committee building.",
+     "target": "n12d1"
+    }
+   ]
+  },
+  {
+   "id": "n11d6",
+   "body": "<<FILL role=rising words=106 beats='Abara will read it once, properly, and say whether she would put her name near it, and she is not a person who does that lightly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d6_0",
+     "label": "Get the species list checked properly.",
+     "target": "n12d2"
+    },
+    {
+     "id": "c_n11d6_1",
+     "label": "Decide what to say to Halvor.",
+     "target": "n12d3"
+    },
+    {
+     "id": "c_n11d6_2",
+     "label": "Decide how hard to push the frost pocket.",
+     "target": "n12d4"
+    }
+   ]
+  },
+  {
+   "id": "n11d7",
+   "body": "<<FILL role=rising words=106 beats='Raval is not supposed to help an objector and is allowed to explain her own criteria, and the difference between those two things is very narrow'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d7_0",
+     "label": "Decide whether Ada should speak.",
+     "target": "n12d5"
+    },
+    {
+     "id": "c_n11d7_1",
+     "label": "Decide when to release the dossier.",
+     "target": "n12d6"
+    },
+    {
+     "id": "c_n11d7_2",
+     "label": "Go down into the basement.",
+     "target": "n12c0"
+    }
+   ]
+  },
+  {
+   "id": "n11d8",
+   "body": "<<FILL role=rising words=106 beats='Halvor is polite, buys you a coffee you do not drink, and asks a reasonable question, which is what would make you stop'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n11d8_0",
+     "label": "Read the rainfall record twice.",
+     "target": "n12c1"
+    },
+    {
+     "id": "c_n11d8_1",
+     "label": "Walk the rows with a list in hand.",
+     "target": "n12c2"
+    },
+    {
+     "id": "c_n11d8_2",
+     "label": "Leave the coffee untouched.",
+     "target": "n12c3"
+    }
+   ]
+  },
+  {
+   "id": "e11_0",
+   "body": "<<FILL role=discovery words=106 beats='the developer offers a preserved corner, an interpretation board and a plaque with the name of Ada on it, and the row with the Bramley is not in the preserved corner'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e11_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Corner and a Plaque"
+   }
+  },
+  {
+   "id": "e11_1",
+   "body": "<<FILL role=setback words=106 beats='you write the thing about Faulks that you have wanted to write for a month, and it is published, and from that morning the argument is about you'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e11_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Argument Becomes About You"
+   }
+  },
+  {
+   "id": "n12d0",
+   "body": "<<FILL role=rising words=112 beats='the four visits, the rainfall record and the method section together say the site was surveyed in the one fortnight of the year it looks like nothing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12d0_0",
+     "label": "Submit the objection with the full method.",
+     "target": "n13d0"
+    },
+    {
+     "id": "c_n12d0_1",
+     "label": "Submit it in the name of the orchard trust.",
+     "target": "n13d1"
+    },
+    {
+     "id": "c_n12d0_2",
+     "label": "Ask for the hearing to be public.",
+     "target": "n13d2"
+    }
+   ]
+  },
+  {
+   "id": "n12d1",
+   "body": "<<FILL role=rising words=112 beats='the successor body keeps a basement in the old market building, and the basement has a card index that stops in 1961'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12d1_0",
+     "label": "Give the developer the dossier first.",
+     "target": "n13d3"
+    },
+    {
+     "id": "c_n12d1_1",
+     "label": "Put the found volumes into the record.",
+     "target": "n13d4"
+    },
+    {
+     "id": "c_n12d1_2",
+     "label": "Ask Abara to attend in person.",
+     "target": "n13d5"
+    }
+   ]
+  },
+  {
+   "id": "n12d2",
+   "body": "<<FILL role=rising words=112 beats='a proper list needs somebody qualified walking the rows in May, and it is November, and that fact cannot be argued with'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12d2_0",
+     "label": "Ask Mrs Cassar to bring the hives.",
+     "target": "n13d6"
+    },
+    {
+     "id": "c_n12d2_1",
+     "label": "Ask Ada to read one page aloud.",
+     "target": "n13d7"
+    },
+    {
+     "id": "c_n12d2_2",
+     "label": "Hand it in and let the work speak.",
+     "target": "e13_0"
+    }
+   ]
+  },
+  {
+   "id": "n12d3",
+   "body": "<<FILL role=rising words=112 beats='the honest answer to what would make you stop is that nothing would, and saying that out loud closes a door you may want later'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12d3_0",
+     "label": "Finish the record before you finish the fight.",
+     "target": "e13_1"
+    },
+    {
+     "id": "c_n12d3_1",
+     "label": "Read the whole thing through one last time.",
+     "target": "e13_2"
+    },
+    {
+     "id": "c_n12d3_2",
+     "label": "Submit the objection with the full method.",
+     "target": "n13d0"
+    }
+   ]
+  },
+  {
+   "id": "n12d4",
+   "body": "<<FILL role=rising words=112 beats='six weeks of dawn readings is a real dataset and a short one, and Abara will say so in exactly those words if she is asked'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12d4_0",
+     "label": "Submit it in the name of the orchard trust.",
+     "target": "n13d1"
+    },
+    {
+     "id": "c_n12d4_1",
+     "label": "Ask for the hearing to be public.",
+     "target": "n13d2"
+    },
+    {
+     "id": "c_n12d4_2",
+     "label": "Give the developer the dossier first.",
+     "target": "n13d3"
+    }
+   ]
+  },
+  {
+   "id": "n12d5",
+   "body": "<<FILL role=rising words=112 beats='Ada in a room of forty people is either the strongest thing you have or a thing you should not have asked of her'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12d5_0",
+     "label": "Put the found volumes into the record.",
+     "target": "n13d4"
+    },
+    {
+     "id": "c_n12d5_1",
+     "label": "Ask Abara to attend in person.",
+     "target": "n13d5"
+    },
+    {
+     "id": "c_n12d5_2",
+     "label": "Ask Mrs Cassar to bring the hives.",
+     "target": "n13d6"
+    }
+   ]
+  },
+  {
+   "id": "n12d6",
+   "body": "<<FILL role=rising words=112 beats='release it early and it can be answered, release it late and it cannot be checked, and there is no date that is not a decision'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12d6_0",
+     "label": "Ask Ada to read one page aloud.",
+     "target": "n13d7"
+    },
+    {
+     "id": "c_n12d6_1",
+     "label": "Hand it in and let the work speak.",
+     "target": "e13_0"
+    },
+    {
+     "id": "c_n12d6_2",
+     "label": "Finish the record before you finish the fight.",
+     "target": "e13_1"
+    }
+   ]
+  },
+  {
+   "id": "n12c0",
+   "body": "<<FILL role=bridge words=36 beats='the basement smells of cold paper, the card index drawers stick, and the light is on a timer that runs out every four minutes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12c0_0",
+     "label": "Read the whole thing through one last time.",
+     "target": "e13_2"
+    }
+   ]
+  },
+  {
+   "id": "n12c1",
+   "body": "<<FILL role=bridge words=36 beats='the rainfall record for that August is public, ordinary and completely damning, and you read it twice because it seems too easy'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12c1_0",
+     "label": "Submit the objection with the full method.",
+     "target": "n13d0"
+    }
+   ]
+  },
+  {
+   "id": "n12c2",
+   "body": "<<FILL role=bridge words=36 beats='you walk the rows in November with the species list and tick the ones you can be certain of, and the number you can be certain of is nine'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12c2_0",
+     "label": "Submit it in the name of the orchard trust.",
+     "target": "n13d1"
+    }
+   ]
+  },
+  {
+   "id": "n12c3",
+   "body": "<<FILL role=bridge words=36 beats='the coffee goes cold on the table between you and Halvor, neither of you mentions it, and he pays for it on the way out'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12c3_0",
+     "label": "Ask for the hearing to be public.",
+     "target": "n13d2"
+    }
+   ]
+  },
+  {
+   "id": "n12c4",
+   "body": "<<FILL role=bridge words=36 beats='Ada says that speaking in rooms is not the difficult part, and that the difficult part is afterwards, when people are kind to you about it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12c4_0",
+     "label": "Give the developer the dossier first.",
+     "target": "n13d3"
+    }
+   ]
+  },
+  {
+   "id": "n12c5",
+   "body": "<<FILL role=bridge words=36 beats='every page is numbered, every figure is sourced and every uncertainty is stated, which takes two evenings and removes four arguments'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12c5_0",
+     "label": "Put the found volumes into the record.",
+     "target": "n13d4"
+    }
+   ]
+  },
+  {
+   "id": "n12c6",
+   "body": "<<FILL role=bridge words=36 beats='the two 1917 volumes are in a box marked WAR COMMITTEE MISC, undamaged, with a pressed leaf still in one of them at July'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n12c6_0",
+     "label": "Ask Abara to attend in person.",
+     "target": "n13d5"
+    }
+   ]
+  },
+  {
+   "id": "e12_0",
+   "body": "<<FILL role=discovery words=112 beats='you put the two volumes back on the shelf without telling anybody where they were, so the record is complete and its story is not, and only you know the difference'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e12_0",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Gap You Filled Quietly"
+   }
+  },
+  {
+   "id": "e12_1",
+   "body": "<<FILL role=setback words=112 beats='you do not choose a release date so the deadline chooses one, and what goes in is the version that happened to be finished on the Friday'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e12_1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Version That Was Finished"
+   }
+  },
+  {
+   "id": "n13d0",
+   "body": "<<FILL role=rising words=100 beats='the objection goes in with a hundred and fourteen years, a stated method, a custody note, nine species you would swear to, and a covering page of eleven words'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d0_0",
+     "label": "Answer the drought question first.",
+     "target": "n14d0"
+    },
+    {
+     "id": "c_n13d0_1",
+     "label": "Answer the amateur question.",
+     "target": "n14d1"
+    },
+    {
+     "id": "c_n13d0_2",
+     "label": "Answer the too short question.",
+     "target": "n14d2"
+    }
+   ]
+  },
+  {
+   "id": "n13d1",
+   "body": "<<FILL role=rising words=100 beats='a name that is not a person is harder to answer unkindly, and setting one up takes an afternoon and three signatures'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d1_0",
+     "label": "Let Faulks speak without interrupting.",
+     "target": "n14d3"
+    },
+    {
+     "id": "c_n13d1_1",
+     "label": "Let Ada read her page.",
+     "target": "n14d4"
+    },
+    {
+     "id": "c_n13d1_2",
+     "label": "Offer the panel the whole dataset.",
+     "target": "n14d5"
+    }
+   ]
+  },
+  {
+   "id": "n13d2",
+   "body": "<<FILL role=rising words=100 beats='a public hearing means neighbours in the room and a note taker, and it means Faulks answering out loud rather than in writing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d2_0",
+     "label": "Sit in the front row and wait.",
+     "target": "n14c0"
+    },
+    {
+     "id": "c_n13d2_1",
+     "label": "Set the two charts on the easel.",
+     "target": "n14c1"
+    },
+    {
+     "id": "c_n13d2_2",
+     "label": "Watch the note taker write.",
+     "target": "n14c2"
+    }
+   ]
+  },
+  {
+   "id": "n13d3",
+   "body": "<<FILL role=rising words=100 beats='handing it over before the hearing is either fair dealing or a wasted advantage, and Ada thinks it is the first and Tobe thinks it is the second'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d3_0",
+     "label": "Pass the frame along the table.",
+     "target": "n14c3"
+    },
+    {
+     "id": "c_n13d3_1",
+     "label": "Let the room go quiet.",
+     "target": "n14c4"
+    },
+    {
+     "id": "c_n13d3_2",
+     "label": "Wait outside while they decide.",
+     "target": "n14c5"
+    }
+   ]
+  },
+  {
+   "id": "n13d4",
+   "body": "<<FILL role=rising words=100 beats='the two war volumes go in with the receipt that explains them, and the gap on the shelf becomes the most convincing part of the whole thing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d4_0",
+     "label": "Argue with the panel.",
+     "target": "e14_0"
+    },
+    {
+     "id": "c_n13d4_1",
+     "label": "Say only what you can support.",
+     "target": "e14_1"
+    },
+    {
+     "id": "c_n13d4_2",
+     "label": "Answer the drought question first.",
+     "target": "n14d0"
+    }
+   ]
+  },
+  {
+   "id": "n13d5",
+   "body": "<<FILL role=rising words=100 beats='Abara will come and will say only what she can defend, which is less than you want and more than anybody else in the room will have'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d5_0",
+     "label": "Answer the amateur question.",
+     "target": "n14d1"
+    },
+    {
+     "id": "c_n13d5_1",
+     "label": "Answer the too short question.",
+     "target": "n14d2"
+    },
+    {
+     "id": "c_n13d5_2",
+     "label": "Let Faulks speak without interrupting.",
+     "target": "n14d3"
+    }
+   ]
+  },
+  {
+   "id": "n13d6",
+   "body": "<<FILL role=rising words=100 beats='she will bring thirty years of counts and a frame in a case, and she wants it minuted that her early years are approximate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d6_0",
+     "label": "Let Ada read her page.",
+     "target": "n14d4"
+    },
+    {
+     "id": "c_n13d6_1",
+     "label": "Offer the panel the whole dataset.",
+     "target": "n14d5"
+    },
+    {
+     "id": "c_n13d6_2",
+     "label": "Sit in the front row and wait.",
+     "target": "n14c0"
+    }
+   ]
+  },
+  {
+   "id": "n13d7",
+   "body": "<<FILL role=rising words=100 beats='one page, chosen by her, read out at the hearing, which is either the cheapest trick in the room or the only true thing in it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n13d7_0",
+     "label": "Set the two charts on the easel.",
+     "target": "n14c1"
+    },
+    {
+     "id": "c_n13d7_1",
+     "label": "Watch the note taker write.",
+     "target": "n14c2"
+    },
+    {
+     "id": "c_n13d7_2",
+     "label": "Pass the frame along the table.",
+     "target": "n14c3"
+    }
+   ]
+  },
+  {
+   "id": "e13_0",
+   "body": "<<FILL role=success words=100 beats='the objection is accepted for consideration on its evidence, the officer report cites the series by name, and the survey is ordered to be redone in May'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e13_0",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Redone in May"
+   }
+  },
+  {
+   "id": "e13_1",
+   "body": "<<FILL role=completion words=100 beats='the transcription is completed and lodged, checked twice and open to anybody, and whatever the hearing decides the hundred and fourteen years now exist outside the shed'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e13_1",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "It Exists Outside the Shed"
+   }
+  },
+  {
+   "id": "e13_2",
+   "body": "<<FILL role=discovery words=100 beats='reading it end to end you understand for the first time that the notebooks were never about the orchard, but about people turning up, in order, for a hundred and fourteen years'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e13_2",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "People Turning Up, In Order"
+   }
+  },
+  {
+   "id": "n14d0",
+   "body": "<<FILL role=rising words=106 beats='the first question from the panel is why the survey should not stand, and the rainfall record answers it in about ninety seconds'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14d0_0",
+     "label": "Read the officer report when it lands.",
+     "target": "n15d0"
+    },
+    {
+     "id": "c_n14d0_1",
+     "label": "Read the conditions attached.",
+     "target": "n15d1"
+    },
+    {
+     "id": "c_n14d0_2",
+     "label": "Decide what to do about the spine road.",
+     "target": "n15d2"
+    }
+   ]
+  },
+  {
+   "id": "n14d1",
+   "body": "<<FILL role=rising words=106 beats='somebody uses the word amateur about the notebooks, and the answer is the custody note, the double typing and the marked uncertainties'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14d1_0",
+     "label": "Decide who keeps the notebooks now.",
+     "target": "n15d3"
+    },
+    {
+     "id": "c_n14d1_1",
+     "label": "Decide what to tell the class.",
+     "target": "n15d4"
+    },
+    {
+     "id": "c_n14d1_2",
+     "label": "Decide what to do next year.",
+     "target": "n15d5"
+    }
+   ]
+  },
+  {
+   "id": "n14d2",
+   "body": "<<FILL role=rising words=106 beats='six weeks of frost pocket readings is short and you say so before anybody else can, and then say what it does and does not show'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14d2_0",
+     "label": "Decide what to say to Halvor now.",
+     "target": "n15d6"
+    },
+    {
+     "id": "c_n14d2_1",
+     "label": "Hand the series over to the archive for good.",
+     "target": "e15_0"
+    },
+    {
+     "id": "c_n14d2_2",
+     "label": "Hold out for the road to move.",
+     "target": "e15_1"
+    }
+   ]
+  },
+  {
+   "id": "n14d3",
+   "body": "<<FILL role=rising words=106 beats='Faulks explains his method, which is a standard method correctly applied in the wrong fortnight, and he does not enjoy saying so'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14d3_0",
+     "label": "Ask what the early bloom was actually telling you.",
+     "target": "e15_2"
+    },
+    {
+     "id": "c_n14d3_1",
+     "label": "Read the officer report when it lands.",
+     "target": "n15d0"
+    },
+    {
+     "id": "c_n14d3_2",
+     "label": "Read the conditions attached.",
+     "target": "n15d1"
+    }
+   ]
+  },
+  {
+   "id": "n14d4",
+   "body": "<<FILL role=rising words=106 beats='Ada reads a page from March 1947 about ice on the water butt and eleven days of nothing, and the room is completely silent afterwards'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14d4_0",
+     "label": "Decide what to do about the spine road.",
+     "target": "n15d2"
+    },
+    {
+     "id": "c_n14d4_1",
+     "label": "Decide who keeps the notebooks now.",
+     "target": "n15d3"
+    },
+    {
+     "id": "c_n14d4_2",
+     "label": "Decide what to tell the class.",
+     "target": "n15d4"
+    }
+   ]
+  },
+  {
+   "id": "n14d5",
+   "body": "<<FILL role=rising words=106 beats='you offer the file to the panel, the developer and the public on the same day, which costs you the advantage and buys something else'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14d5_0",
+     "label": "Decide what to do next year.",
+     "target": "n15d5"
+    },
+    {
+     "id": "c_n14d5_1",
+     "label": "Decide what to say to Halvor now.",
+     "target": "n15d6"
+    },
+    {
+     "id": "c_n14d5_2",
+     "label": "Hand the series over to the archive for good.",
+     "target": "e15_0"
+    }
+   ]
+  },
+  {
+   "id": "n14c0",
+   "body": "<<FILL role=bridge words=36 beats='the hearing runs an hour late and you sit through a drainage item and a fence dispute, and by the end of them your hands are steady'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14c0_0",
+     "label": "Hold out for the road to move.",
+     "target": "e15_1"
+    }
+   ]
+  },
+  {
+   "id": "n14c1",
+   "body": "<<FILL role=bridge words=36 beats='the two charts go on the easel side by side and stay there all afternoon, and people look at them during the other items'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14c1_0",
+     "label": "Ask what the early bloom was actually telling you.",
+     "target": "e15_2"
+    }
+   ]
+  },
+  {
+   "id": "n14c2",
+   "body": "<<FILL role=bridge words=36 beats='the note taker writes down the phrase long unbroken local series, and Tobe nudges you, and you both look straight ahead'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14c2_0",
+     "label": "Read the officer report when it lands.",
+     "target": "n15d0"
+    }
+   ]
+  },
+  {
+   "id": "n14c3",
+   "body": "<<FILL role=bridge words=36 beats='the frame in its case goes along the table and every single person on the panel picks it up, including the one who has said nothing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14c3_0",
+     "label": "Read the conditions attached.",
+     "target": "n15d1"
+    }
+   ]
+  },
+  {
+   "id": "n14c4",
+   "body": "<<FILL role=bridge words=36 beats='after Ada finishes reading nobody says anything for eight seconds, which in a council chamber is a very long time'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14c4_0",
+     "label": "Decide what to do about the spine road.",
+     "target": "n15d2"
+    }
+   ]
+  },
+  {
+   "id": "n14c5",
+   "body": "<<FILL role=bridge words=36 beats='you wait in the corridor with the recycling poster again, and Mrs Cassar tells you about a swarm in 1994, at length, on purpose'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n14c5_0",
+     "label": "Decide who keeps the notebooks now.",
+     "target": "n15d3"
+    }
+   ]
+  },
+  {
+   "id": "e14_0",
+   "body": "<<FILL role=setback words=106 beats='you answer a fair question as though it were an unfair one, the chair becomes careful with you, and careful is the worst thing a chair can become'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e14_0",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Chair Becomes Careful"
+   }
+  },
+  {
+   "id": "e14_1",
+   "body": "<<FILL role=success words=106 beats='you answer six questions with six pieces of evidence and decline the seventh honestly, and the officer recommends that the site be resurveyed in the growing season'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e14_1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Six Answers and One Honest No"
+   }
+  },
+  {
+   "id": "n15d0",
+   "body": "<<FILL role=rising words=112 beats='the report runs to forty pages, the orchard is in eight of them, and the phrase of no particular scientific interest does not appear anywhere'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d0_0",
+     "label": "Start the winter frost study properly.",
+     "target": "n16d0"
+    },
+    {
+     "id": "c_n15d0_1",
+     "label": "Train somebody to read the hands.",
+     "target": "n16d1"
+    },
+    {
+     "id": "c_n15d0_2",
+     "label": "Decide what the trust is for.",
+     "target": "n16d2"
+    }
+   ]
+  },
+  {
+   "id": "n15d1",
+   "body": "<<FILL role=rising words=112 beats='a resurvey in May, a frost pocket study over a full winter, and the series lodged with the archive as a condition of any permission'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d1_0",
+     "label": "Decide how the record continues.",
+     "target": "n16d3"
+    },
+    {
+     "id": "c_n15d1_1",
+     "label": "Buy a second thermometer.",
+     "target": "n16c0"
+    },
+    {
+     "id": "c_n15d1_2",
+     "label": "Put the rota on the shed door.",
+     "target": "n16c1"
+    }
+   ]
+  },
+  {
+   "id": "n15d2",
+   "body": "<<FILL role=rising words=112 beats='the road can be moved forty metres east at a cost, and the row with the Bramley either survives that decision or does not'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d2_0",
+     "label": "Sit with the 1917 volumes.",
+     "target": "n16c2"
+    },
+    {
+     "id": "c_n15d2_1",
+     "label": "Watch the May resurvey happen.",
+     "target": "n16c3"
+    },
+    {
+     "id": "c_n15d2_2",
+     "label": "Write the hundred and fifteenth year.",
+     "target": "e16_0"
+    }
+   ]
+  },
+  {
+   "id": "n15d3",
+   "body": "<<FILL role=rising words=112 beats='the archive, the trust or the shed, and each of those three answers is a different promise to somebody who is not in the room'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d3_0",
+     "label": "Let the rota lapse in December.",
+     "target": "e16_1"
+    },
+    {
+     "id": "c_n15d3_1",
+     "label": "Start the winter frost study properly.",
+     "target": "n16d0"
+    },
+    {
+     "id": "c_n15d3_2",
+     "label": "Train somebody to read the hands.",
+     "target": "n16d1"
+    }
+   ]
+  },
+  {
+   "id": "n15d4",
+   "body": "<<FILL role=rising words=112 beats='thirty people typed the 1930s in a school hall and are owed an honest account of what it did and did not achieve'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d4_0",
+     "label": "Decide what the trust is for.",
+     "target": "n16d2"
+    },
+    {
+     "id": "c_n15d4_1",
+     "label": "Decide how the record continues.",
+     "target": "n16d3"
+    },
+    {
+     "id": "c_n15d4_2",
+     "label": "Buy a second thermometer.",
+     "target": "n16c0"
+    }
+   ]
+  },
+  {
+   "id": "n15d5",
+   "body": "<<FILL role=rising words=112 beats='the readings only mean anything if they continue, and continuing is a decision somebody has to make every single morning'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d5_0",
+     "label": "Put the rota on the shed door.",
+     "target": "n16c1"
+    },
+    {
+     "id": "c_n15d5_1",
+     "label": "Sit with the 1917 volumes.",
+     "target": "n16c2"
+    },
+    {
+     "id": "c_n15d5_2",
+     "label": "Watch the May resurvey happen.",
+     "target": "n16c3"
+    }
+   ]
+  },
+  {
+   "id": "n15d6",
+   "body": "<<FILL role=rising words=112 beats='Halvor asks the same question again in the corridor and this time the honest answer is different, and you have to work out how different'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n15d6_0",
+     "label": "Write the hundred and fifteenth year.",
+     "target": "e16_0"
+    },
+    {
+     "id": "c_n15d6_1",
+     "label": "Let the rota lapse in December.",
+     "target": "e16_1"
+    },
+    {
+     "id": "c_n15d6_2",
+     "label": "Start the winter frost study properly.",
+     "target": "n16d0"
+    }
+   ]
+  },
+  {
+   "id": "e15_0",
+   "body": "<<FILL role=completion words=112 beats='the notebooks go into the stable room with a deed of gift, a public catalogue entry and a standing right for Ada to read any of them, and the record outlives everybody in the argument'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e15_0",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Deed of Gift"
+   }
+  },
+  {
+   "id": "e15_1",
+   "body": "<<FILL role=success words=112 beats='the road goes forty metres east, the Bramley row stands, and the condition about the winter frost study is written into the permission in full'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e15_1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Forty Metres East"
+   }
+  },
+  {
+   "id": "e15_2",
+   "body": "<<FILL role=discovery words=112 beats='Abara says the honest answer is that one October bloom proves nothing and a hundred and fourteen years of dates proves a great deal, and that the tree was not a signal but a question'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e15_2",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Not a Signal, a Question"
+   }
+  },
+  {
+   "id": "n16d0",
+   "body": "<<FILL role=rising words=100 beats='a full winter of dawn readings needs a rota of nine people, a spare thermometer, and somebody who will do December'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16d0_0",
+     "label": "Look at what the resurvey found.",
+     "target": "n17d0"
+    },
+    {
+     "id": "c_n16d0_1",
+     "label": "Look at what the argument cost.",
+     "target": "n17d1"
+    },
+    {
+     "id": "c_n16d0_2",
+     "label": "Look at what you would do again.",
+     "target": "n17d2"
+    }
+   ]
+  },
+  {
+   "id": "n16d1",
+   "body": "<<FILL role=rising words=100 beats='the nine hands can be taught in an afternoon to anybody patient, and the teaching turns out to be the part Ada enjoys most'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16d1_0",
+     "label": "Look at the Bramley in April.",
+     "target": "n17d3"
+    },
+    {
+     "id": "c_n16d1_1",
+     "label": "Take the long view on purpose.",
+     "target": "e17_0"
+    },
+    {
+     "id": "c_n16d1_2",
+     "label": "Take the record for what it is.",
+     "target": "e17_1"
+    }
+   ]
+  },
+  {
+   "id": "n16d2",
+   "body": "<<FILL role=rising words=100 beats='a trust with three signatures and no purpose is a form, and deciding what it exists to do takes four meetings and one argument'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16d2_0",
+     "label": "Look at what the resurvey found.",
+     "target": "n17d0"
+    },
+    {
+     "id": "c_n16d2_1",
+     "label": "Look at what the argument cost.",
+     "target": "n17d1"
+    },
+    {
+     "id": "c_n16d2_2",
+     "label": "Look at what you would do again.",
+     "target": "n17d2"
+    }
+   ]
+  },
+  {
+   "id": "n16d3",
+   "body": "<<FILL role=rising words=100 beats='somebody has to write the day up every evening, and it has to be a person, and it has to be a person who will still be doing it in March'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16d3_0",
+     "label": "Look at the Bramley in April.",
+     "target": "n17d3"
+    },
+    {
+     "id": "c_n16d3_1",
+     "label": "Take the long view on purpose.",
+     "target": "e17_0"
+    },
+    {
+     "id": "c_n16d3_2",
+     "label": "Take the record for what it is.",
+     "target": "e17_1"
+    }
+   ]
+  },
+  {
+   "id": "n16c0",
+   "body": "<<FILL role=bridge words=36 beats='the second thermometer costs eleven pounds and is the single most consequential purchase anybody makes that year'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16c0_0",
+     "label": "Look at what the resurvey found.",
+     "target": "n17d0"
+    }
+   ]
+  },
+  {
+   "id": "n16c1",
+   "body": "<<FILL role=bridge words=36 beats='the rota goes up where the chart was, and by January two names have been crossed out and four have been added'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16c1_0",
+     "label": "Look at what the argument cost.",
+     "target": "n17d1"
+    }
+   ]
+  },
+  {
+   "id": "n16c2",
+   "body": "<<FILL role=bridge words=36 beats='the two war volumes are the same as all the others, which is weather, ladders, wasps, and one line in September about the horse'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16c2_0",
+     "label": "Look at what you would do again.",
+     "target": "n17d2"
+    }
+   ]
+  },
+  {
+   "id": "n16c3",
+   "body": "<<FILL role=bridge words=36 beats='the May survey takes nine days and four people and finds sixty one species, one of which nobody has ever recorded on this hill before'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n16c3_0",
+     "label": "Look at the Bramley in April.",
+     "target": "n17d3"
+    }
+   ]
+  },
+  {
+   "id": "e16_0",
+   "body": "<<FILL role=completion words=100 beats='you write the day up in a new notebook in your own hand, badly, and Ada watches and says nothing, and the record goes on being a record'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e16_0",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Hundred and Fifteenth Year"
+   }
+  },
+  {
+   "id": "e16_1",
+   "body": "<<FILL role=setback words=100 beats='the December readings stop for eleven days over Christmas, and the winter series has a hole in it that no amount of care afterwards can fill'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e16_1",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Eleven Days Missing"
+   }
+  },
+  {
+   "id": "n17d0",
+   "body": "<<FILL role=rising words=106 beats='sixty one species, a frost pocket described in its own paragraph, and a recommendation that the orchard be monitored rather than cleared'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n17d0_0",
+     "label": "Finish it the way it was started.",
+     "target": "e18_0"
+    },
+    {
+     "id": "c_n17d0_1",
+     "label": "See the orchard through to the following autumn.",
+     "target": "e18_1"
+    },
+    {
+     "id": "c_n17d0_2",
+     "label": "Look back at the eleven words.",
+     "target": "e18_2"
+    }
+   ]
+  },
+  {
+   "id": "n17d1",
+   "body": "<<FILL role=rising words=106 beats='four months, two friendships strained, one letter you should not have sent, and a grandmother who is tireder than she was in October'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n17d1_0",
+     "label": "Stop keeping it.",
+     "target": "e18_3"
+    },
+    {
+     "id": "c_n17d1_1",
+     "label": "Finish it the way it was started.",
+     "target": "e18_0"
+    },
+    {
+     "id": "c_n17d1_2",
+     "label": "See the orchard through to the following autumn.",
+     "target": "e18_1"
+    }
+   ]
+  },
+  {
+   "id": "n17d2",
+   "body": "<<FILL role=rising words=106 beats='almost all of it, in the same order, except the thing you said about Faulks, which you would not say'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n17d2_0",
+     "label": "Look back at the eleven words.",
+     "target": "e18_2"
+    },
+    {
+     "id": "c_n17d2_1",
+     "label": "Stop keeping it.",
+     "target": "e18_3"
+    },
+    {
+     "id": "c_n17d2_2",
+     "label": "Finish it the way it was started.",
+     "target": "e18_0"
+    }
+   ]
+  },
+  {
+   "id": "n17d3",
+   "body": "<<FILL role=rising words=106 beats='in April the whole row blossoms at once the way it is supposed to, and the big tree at the top is neither early nor late'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n17d3_0",
+     "label": "See the orchard through to the following autumn.",
+     "target": "e18_1"
+    },
+    {
+     "id": "c_n17d3_1",
+     "label": "Look back at the eleven words.",
+     "target": "e18_2"
+    },
+    {
+     "id": "c_n17d3_2",
+     "label": "Stop keeping it.",
+     "target": "e18_3"
+    }
+   ]
+  },
+  {
+   "id": "e17_0",
+   "body": "<<FILL role=success words=106 beats='the orchard is monitored, the series is public and growing, and the thing that protected it in the end was not one October morning but a hundred and fourteen ordinary evenings'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e17_0",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Hundred and Fourteen Evenings"
+   }
+  },
+  {
+   "id": "e17_1",
+   "body": "<<FILL role=discovery words=106 beats='you understand at last that a record is not proof and never was, and that it is only the reason a person can be believed when they finally say something'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e17_1",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Reason to Be Believed"
+   }
+  },
+  {
+   "id": "e18_0",
+   "body": "<<FILL role=completion words=112 beats='the last thing you do is index the six shelves, which nobody has ever done, and the index takes a year and becomes the most useful object on the hill'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e18_0",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The First Index"
+   }
+  },
+  {
+   "id": "e18_1",
+   "body": "<<FILL role=success words=112 beats='the next October the Bramley does not bloom, the road runs forty metres east, and the picking is ordinary and enormous and takes nine days'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e18_1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "An Ordinary Enormous Autumn"
+   }
+  },
+  {
+   "id": "e18_2",
+   "body": "<<FILL role=discovery words=112 beats='the eleven words are still in the back of your exercise book, and they are the reason there is now a hundred and fifteen years of anything'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e18_2",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Eleven Words"
+   }
+  },
+  {
+   "id": "e18_3",
+   "body": "<<FILL role=setback words=112 beats='the notebooks are safe and catalogued and nobody adds to them, and in twenty years the series is a closed thing that people study rather than a thing that is kept'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e18_3",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "A Closed Thing"
+   }
+  }
+ ]
+}

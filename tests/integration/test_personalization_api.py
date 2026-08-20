@@ -198,7 +198,7 @@ async def test_put_personalization_replaces_wholesale(
             },
             {
                 "slot_type": "pronoun_set",
-                "value_text": "she/her",
+                "value_enum": "she/her",
                 "ring1_enabled": True,
                 "ring2_enabled": False,
             },

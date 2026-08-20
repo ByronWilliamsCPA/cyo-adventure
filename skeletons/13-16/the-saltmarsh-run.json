@@ -1,0 +1,5643 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_saltmarsh_run",
+ "version": 1,
+ "title": "The Saltmarsh Run",
+ "metadata": {
+  "age_band": "13-16",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 7.0,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "endurance",
+   "obligation",
+   "tides",
+   "trust between towns"
+  ],
+  "estimated_minutes": 8,
+  "ending_count": 42,
+  "content_flags": {
+   "violence": "mild",
+   "scariness": "moderate",
+   "peril": "intense"
+  },
+  "topology": "gauntlet",
+  "length": "medium",
+  "narrative_style": "gamebook",
+  "production_eligible": true
+ },
+ "variables": [],
+ "start_node": "n_open",
+ "nodes": [
+  {
+   "id": "n_open",
+   "body": "<<FILL role=setup words=60 beats='nine hours of ebb, one sealed ledger, and a marsh between Lowbridge and the Weir that floods twice a day whether or not you are on it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n_open_0",
+     "label": "Take the ledger and go",
+     "target": "n_brief"
+    }
+   ]
+  },
+  {
+   "id": "n_brief",
+   "body": "<<FILL role=setup words=58 beats='Ilsa gives you the seal, the count, and one instruction: the ledger goes on before you do, whatever else happens out there'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n_brief_0",
+     "label": "Head down to the water",
+     "target": "n_water"
+    }
+   ]
+  },
+  {
+   "id": "n_water",
+   "body": "<<FILL role=rising words=56 beats='the water stairs at first light, three ways out of Lowbridge, and a tide that will decide which of them was the right one'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n_water_0",
+     "label": "Take the coal wharf",
+     "target": "d00_0"
+    },
+    {
+     "id": "ch_n_water_1",
+     "label": "Cut across to the ferry steps",
+     "target": "d00_1"
+    },
+    {
+     "id": "ch_n_water_2",
+     "label": "Follow the drain culvert",
+     "target": "d00_2"
+    }
+   ]
+  },
+  {
+   "id": "e_000",
+   "body": "<<FILL role=setback words=74 beats='at the Hulk Yards, you get out of it, and you will never take this route again, and both of those are losses'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_000",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Route You Will Not Use Again"
+   }
+  },
+  {
+   "id": "e_001",
+   "body": "<<FILL role=capture words=80 beats='at the Hulk Yards, the chain store is dry, dark, and locked, and you are in it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_001",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Kept in the Chain Store"
+   }
+  },
+  {
+   "id": "e_002",
+   "body": "<<FILL role=setback words=70 beats='at the Hulk Yards, you end up on the wrong side of the channel with the light gone'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_002",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Wrong Side of the Channel"
+   }
+  },
+  {
+   "id": "e_003",
+   "body": "<<FILL role=capture words=78 beats='at the Hulk Yards, they take you in the boiler yard without raising their voices'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_003",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Taken in the Boiler Yard"
+   }
+  },
+  {
+   "id": "e_004",
+   "body": "<<FILL role=discovery words=72 beats='at the Hulk Yards, the gauge has been reading wrong for a decade and everyone downstream built their year around it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_004",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Gauge Nobody Repaired"
+   }
+  },
+  {
+   "id": "e_005",
+   "body": "<<FILL role=death words=84 beats='at the Hulk Yards, the marsh closes over and stays closed'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_005",
+    "valence": "negative",
+    "kind": "death",
+    "title": "The Marsh Closes Over"
+   }
+  },
+  {
+   "id": "e_006",
+   "body": "<<FILL role=death words=76 beats='at the Hulk Yards, the lighter shifts on the tide and there is no getting back out from under it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_006",
+    "valence": "negative",
+    "kind": "death",
+    "title": "Under the Sunk Lighter"
+   }
+  },
+  {
+   "id": "e_007",
+   "body": "<<FILL role=setback words=68 beats='at the Hulk Yards, the ledger goes on in another satchel and you sit down where you are'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_007",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Ledger Goes On Without You"
+   }
+  },
+  {
+   "id": "e_008",
+   "body": "<<FILL role=setback words=74 beats='at the Salt Pans, you finish the run with nothing anybody wanted'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_008",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Nothing to Show for It"
+   }
+  },
+  {
+   "id": "e_009",
+   "body": "<<FILL role=capture words=80 beats='at the Salt Pans, they walk you the rest of the way, carrying your satchel for you'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_009",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Escorted the Rest of the Way"
+   }
+  },
+  {
+   "id": "e_010",
+   "body": "<<FILL role=setback words=70 beats='at the Salt Pans, you finish two hours after the hour, and two hours is the whole distance'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_010",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Two Hours Short"
+   }
+  },
+  {
+   "id": "e_011",
+   "body": "<<FILL role=capture words=78 beats='at the Salt Pans, the tally hut has a bolt on the outside and somebody uses it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_011",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Locked in the Tally Hut"
+   }
+  },
+  {
+   "id": "e_012",
+   "body": "<<FILL role=discovery words=72 beats='at the Salt Pans, the second set of tracks turns out to be older than today'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_012",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Second Set of Tracks"
+   }
+  },
+  {
+   "id": "e_013",
+   "body": "<<FILL role=death words=84 beats='at the Salt Pans, the water gets into everything and then the cold gets into you'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_013",
+    "valence": "negative",
+    "kind": "death",
+    "title": "Cold, Then Nothing"
+   }
+  },
+  {
+   "id": "e_014",
+   "body": "<<FILL role=death words=76 beats='at the Salt Pans, the duckboard goes under you where it was already rotten, and the water is over your head before you understand it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_014",
+    "valence": "negative",
+    "kind": "death",
+    "title": "Down With the Duckboard"
+   }
+  },
+  {
+   "id": "e_015",
+   "body": "<<FILL role=setback words=68 beats='at the Salt Pans, you hand off to somebody faster and watch them go'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_015",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Handed Off and Left Behind"
+   }
+  },
+  {
+   "id": "e_016",
+   "body": "<<FILL role=setback words=74 beats='at the Long Causeway, salt water gets into the ledger and takes the ink with it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_016",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Ink and Salt Water"
+   }
+  },
+  {
+   "id": "e_017",
+   "body": "<<FILL role=capture words=80 beats='at the Long Causeway, two of them are waiting at the tide gauge and they have been waiting a while'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_017",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Stopped at the Tide Gauge"
+   }
+  },
+  {
+   "id": "e_018",
+   "body": "<<FILL role=setback words=70 beats='at the Long Causeway, the count in your head and the count on the gauge do not agree, and the gauge is the one they use'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_018",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Count Comes Out Wrong"
+   }
+  },
+  {
+   "id": "e_019",
+   "body": "<<FILL role=capture words=78 beats='at the Long Causeway, they hold you at the passing place, where there is nowhere to go but back the way you came'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_019",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Held at the Passing Place"
+   }
+  },
+  {
+   "id": "e_020",
+   "body": "<<FILL role=discovery words=72 beats='at the Long Causeway, the route was sold, and the name on the sale is one you know'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_020",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Whose Name Was on the Route"
+   }
+  },
+  {
+   "id": "e_021",
+   "body": "<<FILL role=death words=84 beats='at the Long Causeway, the shell bank slides out from under you and the channel beside it is deeper than the whole marsh'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_021",
+    "valence": "negative",
+    "kind": "death",
+    "title": "The Shell Bank Slides"
+   }
+  },
+  {
+   "id": "e_022",
+   "body": "<<FILL role=death words=76 beats='at the Long Causeway, the span goes while you are on it and the marsh does the rest'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_022",
+    "valence": "negative",
+    "kind": "death",
+    "title": "The Span Goes First"
+   }
+  },
+  {
+   "id": "e_023",
+   "body": "<<FILL role=setback words=68 beats='at the Long Causeway, the broken span turns you and there is no arguing with it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_023",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Turned at the Broken Span"
+   }
+  },
+  {
+   "id": "e_024",
+   "body": "<<FILL role=setback words=74 beats='at the Weir, the sluice comes down before you are through, and there is no other way in from this side'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_024",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Sluice Comes Down"
+   }
+  },
+  {
+   "id": "e_025",
+   "body": "<<FILL role=capture words=80 beats='at the Weir, they hold you until the tide turns, which is exactly long enough'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_025",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Held Until the Tide Turns"
+   }
+  },
+  {
+   "id": "e_026",
+   "body": "<<FILL role=completion words=70 beats='at the Weir, the tide table gets corrected and your name goes on the correction'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_026",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Tide Table Rewritten"
+   }
+  },
+  {
+   "id": "e_027",
+   "body": "<<FILL role=capture words=78 beats='at the Weir, the Weir crew wait you out, which costs them nothing and you everything'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_027",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "The Weir Crew Are Patient"
+   }
+  },
+  {
+   "id": "e_028",
+   "body": "<<FILL role=success words=72 beats='at the Weir, the run is done and the only proof of it is a wet ledger and a line in a book'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_028",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Nine Hours, Nine Miles"
+   }
+  },
+  {
+   "id": "e_029",
+   "body": "<<FILL role=setback words=84 beats='at the Weir, the satchel is empty when you get it open and you do not know when'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_029",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Empty Satchel, Full Tide"
+   }
+  },
+  {
+   "id": "e_030",
+   "body": "<<FILL role=success words=76 beats='at the Weir, the seal is intact, the hour is inside the margin, and the clerk who takes it does not look up until she has read the second page'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_030",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Seal Unbroken"
+   }
+  },
+  {
+   "id": "e_031",
+   "body": "<<FILL role=setback words=68 beats='at the Weir, the Weir crew are there before you and they were never in a hurry'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_031",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Beaten to the Weir"
+   }
+  },
+  {
+   "id": "e_032",
+   "body": "<<FILL role=completion words=74 beats='at the Weir, they read it out in the muster yard and the argument goes quiet in stages'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_032",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Weir Reads It Aloud"
+   }
+  },
+  {
+   "id": "e_033",
+   "body": "<<FILL role=capture words=80 beats='at the Weir, the muster yard has a place for people like you and you are put in it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_033",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Detained at the Muster Yard"
+   }
+  },
+  {
+   "id": "e_034",
+   "body": "<<FILL role=success words=70 beats='at the Weir, you get it in on the turn of the tide with the water at the door, and somebody hands you dry socks before they hand you thanks'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_034",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Delivered on the Turn"
+   }
+  },
+  {
+   "id": "e_035",
+   "body": "<<FILL role=setback words=78 beats='at the Weir, the seal goes in the water, and a broken seal is worth nothing to anyone'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_035",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Seal Breaks"
+   }
+  },
+  {
+   "id": "e_036",
+   "body": "<<FILL role=discovery words=72 beats='at the Weir, you finally get the seal open and the ledger is not what anyone was fighting about'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_036",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "What the Ledger Actually Said"
+   }
+  },
+  {
+   "id": "e_037",
+   "body": "<<FILL role=death words=84 beats='at the Weir, the overspill takes you sideways off the crest with no warning at all'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_037",
+    "valence": "negative",
+    "kind": "death",
+    "title": "Caught in the Overspill"
+   }
+  },
+  {
+   "id": "e_038",
+   "body": "<<FILL role=completion words=76 beats='at the Weir, both towns end up in the same room for the first time in nine years, and it is not friendly, but it is a room'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_038",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Both Towns in One Room"
+   }
+  },
+  {
+   "id": "e_039",
+   "body": "<<FILL role=setback words=68 beats='at the Weir, you arrive after the hour and they take it anyway, unimpressed'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_039",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Late, But Standing"
+   }
+  },
+  {
+   "id": "e_040",
+   "body": "<<FILL role=setback words=74 beats='at the Weir, you get there and nobody believes a runner without a seal'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_040",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Nobody Believes the Runner"
+   }
+  },
+  {
+   "id": "e_041",
+   "body": "<<FILL role=discovery words=80 beats='at the Weir, you recognise the hand that sealed the ledger and stop walking'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_041",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Hand That Sealed It"
+   }
+  },
+  {
+   "id": "d00_0",
+   "body": "<<FILL role=setup words=62 beats='the ebb has four hours left in it and the mud is still soft enough to read; the way in front of you is the coal wharf; the ledger is sealed and the seal is the only thing that makes it worth anything'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d00_0_0",
+     "label": "Take the coal wharf",
+     "target": "d01_0"
+    },
+    {
+     "id": "ch_d00_0_1",
+     "label": "Cut across to the ferry steps",
+     "target": "c00_0_1"
+    },
+    {
+     "id": "ch_d00_0_2",
+     "label": "Follow the drain culvert",
+     "target": "c00_0_2"
+    },
+    {
+     "id": "ch_d00_0_3",
+     "label": "Work along the tollhouse arch",
+     "target": "c00_0_3"
+    }
+   ]
+  },
+  {
+   "id": "d00_1",
+   "body": "<<FILL role=setup words=68 beats='the ebb has four hours left in it and the mud is still soft enough to read; the way in front of you is the ferry steps; you promised Ilsa you would be back before the second tide'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d00_1_0",
+     "label": "Follow the ferry steps",
+     "target": "d01_1"
+    },
+    {
+     "id": "ch_d00_1_1",
+     "label": "Work along the drain culvert",
+     "target": "c00_1_1"
+    },
+    {
+     "id": "ch_d00_1_2",
+     "label": "Drop down to the tollhouse arch",
+     "target": "c00_1_2"
+    }
+   ]
+  },
+  {
+   "id": "d00_2",
+   "body": "<<FILL role=setup words=60 beats='the ebb has four hours left in it and the mud is still soft enough to read; the way in front of you is the drain culvert; your boots are the wrong boots for this and you knew it when you put them on'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d00_2_0",
+     "label": "Drop down to the drain culvert",
+     "target": "d01_2"
+    },
+    {
+     "id": "ch_d00_2_1",
+     "label": "Push out onto the tollhouse arch",
+     "target": "d01_3"
+    },
+    {
+     "id": "ch_d00_2_2",
+     "label": "Double back to the netting sheds",
+     "target": "d01_4"
+    }
+   ]
+  },
+  {
+   "id": "d01_0",
+   "body": "<<FILL role=setup words=63 beats='the town watch is turning people back at the water stairs and nobody says why; the way in front of you is the coal wharf; you have done this route twice, both times in daylight, both times in summer'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d01_0_0",
+     "label": "Work along the coal wharf",
+     "target": "d02_0"
+    },
+    {
+     "id": "ch_d01_0_1",
+     "label": "Drop down to the ferry steps",
+     "target": "d02_1"
+    },
+    {
+     "id": "ch_d01_0_2",
+     "label": "Push out onto the drain culvert",
+     "target": "d02_2"
+    }
+   ]
+  },
+  {
+   "id": "d01_1",
+   "body": "<<FILL role=setup words=66 beats='the town watch is turning people back at the water stairs and nobody says why; the way in front of you is the ferry steps; whatever happens, the ledger goes on before you do'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d01_1_0",
+     "label": "Push out onto the ferry steps",
+     "target": "d02_1"
+    },
+    {
+     "id": "ch_d01_1_1",
+     "label": "Double back to the drain culvert",
+     "target": "d02_2"
+    },
+    {
+     "id": "ch_d01_1_2",
+     "label": "Head for the tollhouse arch",
+     "target": "c01_1_2"
+    }
+   ]
+  },
+  {
+   "id": "d01_2",
+   "body": "<<FILL role=setup words=61 beats='the town watch is turning people back at the water stairs and nobody says why; the way in front of you is the drain culvert; your father ran this and did not come back, and nobody explains why'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d01_2_0",
+     "label": "Head for the drain culvert",
+     "target": "d02_2"
+    },
+    {
+     "id": "ch_d01_2_1",
+     "label": "Wade for the tollhouse arch",
+     "target": "c01_2_1"
+    },
+    {
+     "id": "ch_d01_2_2",
+     "label": "Climb to the netting sheds",
+     "target": "c01_2_2"
+    }
+   ]
+  },
+  {
+   "id": "d01_3",
+   "body": "<<FILL role=setup words=69 beats='the town watch is turning people back at the water stairs and nobody says why; the way in front of you is the tollhouse arch; there is a right way to do this and a fast way and they are not the same'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d01_3_0",
+     "label": "Climb to the tollhouse arch",
+     "target": "d02_3"
+    },
+    {
+     "id": "ch_d01_3_1",
+     "label": "Keep to the netting sheds",
+     "target": "c01_3_1"
+    },
+    {
+     "id": "ch_d01_3_2",
+     "label": "Ride the ebb to the ice house",
+     "target": "c01_3_2"
+    }
+   ]
+  },
+  {
+   "id": "d01_4",
+   "body": "<<FILL role=setup words=64 beats='the town watch is turning people back at the water stairs and nobody says why; the way in front of you is the netting sheds; the marsh does not care whether you are brave'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d01_4_0",
+     "label": "Ride the ebb to the netting sheds",
+     "target": "d02_4"
+    },
+    {
+     "id": "ch_d01_4_1",
+     "label": "Take the ice house",
+     "target": "d02_5"
+    },
+    {
+     "id": "ch_d01_4_2",
+     "label": "Cut across to the slipway",
+     "target": "d02_6"
+    },
+    {
+     "id": "ch_d01_4_3",
+     "label": "Follow the coal wharf",
+     "target": "d02_0"
+    }
+   ]
+  },
+  {
+   "id": "d02_0",
+   "body": "<<FILL role=rising words=60 beats='the last cart out of Lowbridge is loaded and the driver will not wait; the way in front of you is the coal wharf; somebody in Lowbridge sold the route and you do not know who'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d02_0_0",
+     "label": "Double back to the coal wharf",
+     "target": "d03_0"
+    },
+    {
+     "id": "ch_d02_0_1",
+     "label": "Head for the ferry steps",
+     "target": "d03_1"
+    },
+    {
+     "id": "ch_d02_0_2",
+     "label": "Wade for the drain culvert",
+     "target": "d03_2"
+    }
+   ]
+  },
+  {
+   "id": "d02_1",
+   "body": "<<FILL role=rising words=72 beats='the last cart out of Lowbridge is loaded and the driver will not wait; the way in front of you is the ferry steps; the flare in your pocket is one flare and one signal'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d02_1_0",
+     "label": "Wade for the ferry steps",
+     "target": "d03_1"
+    },
+    {
+     "id": "ch_d02_1_1",
+     "label": "Climb to the drain culvert",
+     "target": "d03_2"
+    },
+    {
+     "id": "ch_d02_1_2",
+     "label": "Keep to the tollhouse arch",
+     "target": "d03_3"
+    }
+   ]
+  },
+  {
+   "id": "d02_2",
+   "body": "<<FILL role=rising words=65 beats='the last cart out of Lowbridge is loaded and the driver will not wait; the way in front of you is the drain culvert; if the seal breaks, none of this counted'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d02_2_0",
+     "label": "Keep to the drain culvert",
+     "target": "d03_2"
+    },
+    {
+     "id": "ch_d02_2_1",
+     "label": "Ride the ebb to the tollhouse arch",
+     "target": "d03_3"
+    },
+    {
+     "id": "ch_d02_2_2",
+     "label": "Take the netting sheds",
+     "target": "d03_4"
+    }
+   ]
+  },
+  {
+   "id": "d02_3",
+   "body": "<<FILL role=rising words=58 beats='the last cart out of Lowbridge is loaded and the driver will not wait; the way in front of you is the tollhouse arch; you are being followed carefully rather than closely'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d02_3_0",
+     "label": "Take the tollhouse arch",
+     "target": "d03_3"
+    },
+    {
+     "id": "ch_d02_3_1",
+     "label": "Cut across to the netting sheds",
+     "target": "c02_3_1"
+    },
+    {
+     "id": "ch_d02_3_2",
+     "label": "Follow the ice house",
+     "target": "c02_3_2"
+    },
+    {
+     "id": "ch_d02_3_3",
+     "label": "Work along the slipway",
+     "target": "c02_3_3"
+    }
+   ]
+  },
+  {
+   "id": "d02_4",
+   "body": "<<FILL role=rising words=70 beats='the last cart out of Lowbridge is loaded and the driver will not wait; the way in front of you is the netting sheds; there is a dry way and a short way and the tide picks between them'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d02_4_0",
+     "label": "Follow the netting sheds",
+     "target": "d03_4"
+    },
+    {
+     "id": "ch_d02_4_1",
+     "label": "Work along the ice house",
+     "target": "c02_4_1"
+    },
+    {
+     "id": "ch_d02_4_2",
+     "label": "Drop down to the slipway",
+     "target": "c02_4_2"
+    }
+   ]
+  },
+  {
+   "id": "d02_5",
+   "body": "<<FILL role=rising words=63 beats='the last cart out of Lowbridge is loaded and the driver will not wait; the way in front of you is the ice house; the light is going and you have not lit anything yet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d02_5_0",
+     "label": "Drop down to the ice house",
+     "target": "d03_5"
+    },
+    {
+     "id": "ch_d02_5_1",
+     "label": "Push out onto the slipway",
+     "target": "d03_6"
+    },
+    {
+     "id": "ch_d02_5_2",
+     "label": "Double back to the coal wharf",
+     "target": "d03_0"
+    }
+   ]
+  },
+  {
+   "id": "d02_6",
+   "body": "<<FILL role=rising words=66 beats='the last cart out of Lowbridge is loaded and the driver will not wait; the way in front of you is the slipway; you have been awake for nineteen hours'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d02_6_0",
+     "label": "Double back to the slipway",
+     "target": "d03_6"
+    },
+    {
+     "id": "ch_d02_6_1",
+     "label": "Head for the coal wharf",
+     "target": "d03_0"
+    },
+    {
+     "id": "ch_d02_6_2",
+     "label": "Wade for the ferry steps",
+     "target": "d03_1"
+    }
+   ]
+  },
+  {
+   "id": "d03_0",
+   "body": "<<FILL role=rising words=61 beats='the marsh opens ahead as one flat grey sheet with the light going off it; the way in front of you is the coal wharf; the weight of the satchel is on the wrong hip now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d03_0_0",
+     "label": "Climb to the cut",
+     "target": "d04_0"
+    },
+    {
+     "id": "ch_d03_0_1",
+     "label": "Keep to the reed line",
+     "target": "d04_1"
+    },
+    {
+     "id": "ch_d03_0_2",
+     "label": "Ride the ebb to the plank walk",
+     "target": "d04_2"
+    }
+   ]
+  },
+  {
+   "id": "d03_1",
+   "body": "<<FILL role=rising words=69 beats='the marsh opens ahead as one flat grey sheet with the light going off it; the way in front of you is the ferry steps; the marsh sounds different when the water turns and it has turned'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d03_1_0",
+     "label": "Ride the ebb to the reed line",
+     "target": "d04_1"
+    },
+    {
+     "id": "ch_d03_1_1",
+     "label": "Take the plank walk",
+     "target": "d04_2"
+    },
+    {
+     "id": "ch_d03_1_2",
+     "label": "Cut across to the eel traps",
+     "target": "d04_3"
+    }
+   ]
+  },
+  {
+   "id": "d03_2",
+   "body": "<<FILL role=rising words=64 beats='the marsh opens ahead as one flat grey sheet with the light going off it; the way in front of you is the drain culvert; you can hear your own breathing over the reeds, which is a bad sign'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d03_2_0",
+     "label": "Cut across to the plank walk",
+     "target": "d04_2"
+    },
+    {
+     "id": "ch_d03_2_1",
+     "label": "Follow the eel traps",
+     "target": "d04_3"
+    },
+    {
+     "id": "ch_d03_2_2",
+     "label": "Work along the burnt hide",
+     "target": "d04_4"
+    },
+    {
+     "id": "ch_d03_2_3",
+     "label": "Drop down to the drovers track",
+     "target": "d04_5"
+    }
+   ]
+  },
+  {
+   "id": "d03_3",
+   "body": "<<FILL role=rising words=62 beats='the marsh opens ahead as one flat grey sheet with the light going off it; the way in front of you is the tollhouse arch; the ledger is sealed and the seal is the only thing that makes it worth anything'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d03_3_0",
+     "label": "Work along the eel traps",
+     "target": "d04_3"
+    },
+    {
+     "id": "ch_d03_3_1",
+     "label": "Drop down to the burnt hide",
+     "target": "d04_4"
+    },
+    {
+     "id": "ch_d03_3_2",
+     "label": "Push out onto the drovers track",
+     "target": "d04_5"
+    }
+   ]
+  },
+  {
+   "id": "d03_4",
+   "body": "<<FILL role=rising words=68 beats='the marsh opens ahead as one flat grey sheet with the light going off it; the way in front of you is the netting sheds; you promised Ilsa you would be back before the second tide'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d03_4_0",
+     "label": "Push out onto the burnt hide",
+     "target": "d04_4"
+    },
+    {
+     "id": "ch_d03_4_1",
+     "label": "Double back to the drovers track",
+     "target": "c03_4_1"
+    },
+    {
+     "id": "ch_d03_4_2",
+     "label": "Head for the black pool",
+     "target": "c03_4_2"
+    }
+   ]
+  },
+  {
+   "id": "d03_5",
+   "body": "<<FILL role=rising words=60 beats='the marsh opens ahead as one flat grey sheet with the light going off it; the way in front of you is the ice house; your boots are the wrong boots for this and you knew it when you put them on'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d03_5_0",
+     "label": "Head for the drovers track",
+     "target": "d04_5"
+    },
+    {
+     "id": "ch_d03_5_1",
+     "label": "Wade for the black pool",
+     "target": "c03_5_1"
+    },
+    {
+     "id": "ch_d03_5_2",
+     "label": "Climb to the cut",
+     "target": "c03_5_2"
+    }
+   ]
+  },
+  {
+   "id": "d03_6",
+   "body": "<<FILL role=rising words=72 beats='the marsh opens ahead as one flat grey sheet with the light going off it; the way in front of you is the slipway; there is no version of this where you get to stop and think for long'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d03_6_0",
+     "label": "Climb to the black pool",
+     "target": "d04_6"
+    },
+    {
+     "id": "ch_d03_6_1",
+     "label": "Keep to the cut",
+     "target": "c03_6_1"
+    },
+    {
+     "id": "ch_d03_6_2",
+     "label": "Ride the ebb to the reed line",
+     "target": "d04_1"
+    }
+   ]
+  },
+  {
+   "id": "d04_0",
+   "body": "<<FILL role=rising words=65 beats='the reeds close over your head and the path is only a rumour underfoot; the way in front of you is the cut; the tide table in your head disagrees with the one on the wall'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d04_0_0",
+     "label": "Take the cut",
+     "target": "d05_0"
+    },
+    {
+     "id": "ch_d04_0_1",
+     "label": "Cut across to the reed line",
+     "target": "c04_0_1"
+    },
+    {
+     "id": "ch_d04_0_2",
+     "label": "Follow the plank walk",
+     "target": "d05_2"
+    }
+   ]
+  },
+  {
+   "id": "d04_1",
+   "body": "<<FILL role=rising words=58 beats='the reeds close over your head and the path is only a rumour underfoot; the way in front of you is the reed line; a wrong turn here costs an hour and you do not have an hour'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d04_1_0",
+     "label": "Follow the reed line",
+     "target": "d05_1"
+    },
+    {
+     "id": "ch_d04_1_1",
+     "label": "Work along the plank walk",
+     "target": "d05_2"
+    },
+    {
+     "id": "ch_d04_1_2",
+     "label": "Drop down to the eel traps",
+     "target": "d05_3"
+    },
+    {
+     "id": "ch_d04_1_3",
+     "label": "Push out onto the burnt hide",
+     "target": "d05_4"
+    }
+   ]
+  },
+  {
+   "id": "d04_2",
+   "body": "<<FILL role=rising words=70 beats='the reeds close over your head and the path is only a rumour underfoot; the way in front of you is the plank walk; the Weir crew are not thieves, which is somehow worse'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d04_2_0",
+     "label": "Drop down to the plank walk",
+     "target": "d05_2"
+    },
+    {
+     "id": "ch_d04_2_1",
+     "label": "Push out onto the eel traps",
+     "target": "d05_3"
+    },
+    {
+     "id": "ch_d04_2_2",
+     "label": "Double back to the burnt hide",
+     "target": "d05_4"
+    }
+   ]
+  },
+  {
+   "id": "d04_3",
+   "body": "<<FILL role=rising words=63 beats='the reeds close over your head and the path is only a rumour underfoot; the way in front of you is the eel traps; you have done this route twice, both times in daylight, both times in summer'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d04_3_0",
+     "label": "Double back to the eel traps",
+     "target": "d05_3"
+    },
+    {
+     "id": "ch_d04_3_1",
+     "label": "Head for the burnt hide",
+     "target": "d05_4"
+    },
+    {
+     "id": "ch_d04_3_2",
+     "label": "Wade for the drovers track",
+     "target": "d05_5"
+    }
+   ]
+  },
+  {
+   "id": "d04_4",
+   "body": "<<FILL role=rising words=66 beats='the reeds close over your head and the path is only a rumour underfoot; the way in front of you is the burnt hide; whatever happens, the ledger goes on before you do'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d04_4_0",
+     "label": "Wade for the burnt hide",
+     "target": "d05_4"
+    },
+    {
+     "id": "ch_d04_4_1",
+     "label": "Climb to the drovers track",
+     "target": "d05_5"
+    },
+    {
+     "id": "ch_d04_4_2",
+     "label": "Keep to the black pool",
+     "target": "d05_6"
+    }
+   ]
+  },
+  {
+   "id": "d04_5",
+   "body": "<<FILL role=rising words=61 beats='the reeds close over your head and the path is only a rumour underfoot; the way in front of you is the drovers track; your father ran this and did not come back, and nobody explains why'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d04_5_0",
+     "label": "Keep to the drovers track",
+     "target": "d05_5"
+    },
+    {
+     "id": "ch_d04_5_1",
+     "label": "Ride the ebb to the black pool",
+     "target": "d05_6"
+    },
+    {
+     "id": "ch_d04_5_2",
+     "label": "Take the cut",
+     "target": "c04_5_2"
+    }
+   ]
+  },
+  {
+   "id": "d04_6",
+   "body": "<<FILL role=rising words=69 beats='the reeds close over your head and the path is only a rumour underfoot; the way in front of you is the black pool; there is a right way to do this and a fast way and they are not the same'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d04_6_0",
+     "label": "Take the black pool",
+     "target": "d05_6"
+    },
+    {
+     "id": "ch_d04_6_1",
+     "label": "Cut across to the cut",
+     "target": "c04_6_1"
+    },
+    {
+     "id": "ch_d04_6_2",
+     "label": "Follow the reed line",
+     "target": "c04_6_2"
+    },
+    {
+     "id": "ch_d04_6_3",
+     "label": "Work along the plank walk",
+     "target": "c04_6_3"
+    }
+   ]
+  },
+  {
+   "id": "d05_0",
+   "body": "<<FILL role=rising words=64 beats='somebody else has been through here today and did not bother to hide it; the way in front of you is the cut; the marsh does not care whether you are brave'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d05_0_0",
+     "label": "Work along the cut",
+     "target": "d06_0"
+    },
+    {
+     "id": "ch_d05_0_1",
+     "label": "Drop down to the reed line",
+     "target": "c05_0_1"
+    },
+    {
+     "id": "ch_d05_0_2",
+     "label": "Push out onto the plank walk",
+     "target": "c05_0_2"
+    },
+    {
+     "id": "ch_d05_0_3",
+     "label": "Double back to the eel traps",
+     "target": "c05_0_3"
+    }
+   ]
+  },
+  {
+   "id": "d05_1",
+   "body": "<<FILL role=rising words=62 beats='somebody else has been through here today and did not bother to hide it; the way in front of you is the reed line; you can already feel the water in your left boot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d05_1_0",
+     "label": "Push out onto the reed line",
+     "target": "d06_1"
+    },
+    {
+     "id": "ch_d05_1_1",
+     "label": "Double back to the plank walk",
+     "target": "c05_1_1"
+    },
+    {
+     "id": "ch_d05_1_2",
+     "label": "Head for the eel traps",
+     "target": "d06_3"
+    }
+   ]
+  },
+  {
+   "id": "d05_2",
+   "body": "<<FILL role=rising words=68 beats='somebody else has been through here today and did not bother to hide it; the way in front of you is the plank walk; the rope over your shoulder weighs more every mile'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d05_2_0",
+     "label": "Head for the plank walk",
+     "target": "d06_2"
+    },
+    {
+     "id": "ch_d05_2_1",
+     "label": "Wade for the eel traps",
+     "target": "d06_3"
+    },
+    {
+     "id": "ch_d05_2_2",
+     "label": "Climb to the burnt hide",
+     "target": "d06_4"
+    }
+   ]
+  },
+  {
+   "id": "d05_3",
+   "body": "<<FILL role=rising words=60 beats='somebody else has been through here today and did not bother to hide it; the way in front of you is the eel traps; somebody in Lowbridge sold the route and you do not know who'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d05_3_0",
+     "label": "Climb to the eel traps",
+     "target": "d06_3"
+    },
+    {
+     "id": "ch_d05_3_1",
+     "label": "Keep to the burnt hide",
+     "target": "d06_4"
+    },
+    {
+     "id": "ch_d05_3_2",
+     "label": "Ride the ebb to the drovers track",
+     "target": "d06_5"
+    }
+   ]
+  },
+  {
+   "id": "d05_4",
+   "body": "<<FILL role=rising words=72 beats='somebody else has been through here today and did not bother to hide it; the way in front of you is the burnt hide; the flare in your pocket is one flare and one signal'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d05_4_0",
+     "label": "Ride the ebb to the burnt hide",
+     "target": "d06_4"
+    },
+    {
+     "id": "ch_d05_4_1",
+     "label": "Take the drovers track",
+     "target": "d06_5"
+    },
+    {
+     "id": "ch_d05_4_2",
+     "label": "Cut across to the black pool",
+     "target": "d06_6"
+    }
+   ]
+  },
+  {
+   "id": "d05_5",
+   "body": "<<FILL role=rising words=65 beats='somebody else has been through here today and did not bother to hide it; the way in front of you is the drovers track; if the seal breaks, none of this counted'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d05_5_0",
+     "label": "Cut across to the drovers track",
+     "target": "d06_5"
+    },
+    {
+     "id": "ch_d05_5_1",
+     "label": "Follow the black pool",
+     "target": "d06_6"
+    },
+    {
+     "id": "ch_d05_5_2",
+     "label": "Work along the cut",
+     "target": "d06_0"
+    },
+    {
+     "id": "ch_d05_5_3",
+     "label": "Drop down to the reed line",
+     "target": "d06_1"
+    }
+   ]
+  },
+  {
+   "id": "d05_6",
+   "body": "<<FILL role=rising words=58 beats='somebody else has been through here today and did not bother to hide it; the way in front of you is the black pool; you are being followed carefully rather than closely'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d05_6_0",
+     "label": "Work along the black pool",
+     "target": "d06_6"
+    },
+    {
+     "id": "ch_d05_6_1",
+     "label": "Drop down to the cut",
+     "target": "d06_0"
+    },
+    {
+     "id": "ch_d05_6_2",
+     "label": "Push out onto the reed line",
+     "target": "c05_6_2"
+    }
+   ]
+  },
+  {
+   "id": "d06_0",
+   "body": "<<FILL role=rising words=70 beats='the wind swings hard into the east and the water starts moving the wrong way; the way in front of you is the cut; there is a dry way and a short way and the tide picks between them'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d06_0_0",
+     "label": "Double back to the cut",
+     "target": "d07_0"
+    },
+    {
+     "id": "ch_d06_0_1",
+     "label": "Head for the reed line",
+     "target": "d07_1"
+    },
+    {
+     "id": "ch_d06_0_2",
+     "label": "Wade for the plank walk",
+     "target": "d07_2"
+    }
+   ]
+  },
+  {
+   "id": "d06_1",
+   "body": "<<FILL role=rising words=63 beats='the wind swings hard into the east and the water starts moving the wrong way; the way in front of you is the reed line; the light is going and you have not lit anything yet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d06_1_0",
+     "label": "Wade for the reed line",
+     "target": "d07_1"
+    },
+    {
+     "id": "ch_d06_1_1",
+     "label": "Climb to the plank walk",
+     "target": "d07_2"
+    },
+    {
+     "id": "ch_d06_1_2",
+     "label": "Keep to the eel traps",
+     "target": "c06_1_2"
+    }
+   ]
+  },
+  {
+   "id": "d06_2",
+   "body": "<<FILL role=rising words=66 beats='the wind swings hard into the east and the water starts moving the wrong way; the way in front of you is the plank walk; you have been awake for nineteen hours'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d06_2_0",
+     "label": "Keep to the plank walk",
+     "target": "d07_2"
+    },
+    {
+     "id": "ch_d06_2_1",
+     "label": "Ride the ebb to the eel traps",
+     "target": "c06_2_1"
+    },
+    {
+     "id": "ch_d06_2_2",
+     "label": "Take the burnt hide",
+     "target": "c06_2_2"
+    }
+   ]
+  },
+  {
+   "id": "d06_3",
+   "body": "<<FILL role=rising words=61 beats='the wind swings hard into the east and the water starts moving the wrong way; the way in front of you is the eel traps; the weight of the satchel is on the wrong hip now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d06_3_0",
+     "label": "Take the eel traps",
+     "target": "d07_3"
+    },
+    {
+     "id": "ch_d06_3_1",
+     "label": "Cut across to the burnt hide",
+     "target": "c06_3_1"
+    },
+    {
+     "id": "ch_d06_3_2",
+     "label": "Follow the drovers track",
+     "target": "c06_3_2"
+    }
+   ]
+  },
+  {
+   "id": "d06_4",
+   "body": "<<FILL role=rising words=69 beats='the wind swings hard into the east and the water starts moving the wrong way; the way in front of you is the burnt hide; the marsh sounds different when the water turns and it has turned'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d06_4_0",
+     "label": "Follow the burnt hide",
+     "target": "d07_4"
+    },
+    {
+     "id": "ch_d06_4_1",
+     "label": "Work along the drovers track",
+     "target": "d07_5"
+    },
+    {
+     "id": "ch_d06_4_2",
+     "label": "Drop down to the black pool",
+     "target": "d07_6"
+    },
+    {
+     "id": "ch_d06_4_3",
+     "label": "Push out onto the cut",
+     "target": "d07_0"
+    }
+   ]
+  },
+  {
+   "id": "d06_5",
+   "body": "<<FILL role=rising words=64 beats='the wind swings hard into the east and the water starts moving the wrong way; the way in front of you is the drovers track; you can hear your own breathing over the reeds, which is a bad sign'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d06_5_0",
+     "label": "Drop down to the drovers track",
+     "target": "d07_5"
+    },
+    {
+     "id": "ch_d06_5_1",
+     "label": "Push out onto the black pool",
+     "target": "d07_6"
+    },
+    {
+     "id": "ch_d06_5_2",
+     "label": "Double back to the cut",
+     "target": "d07_0"
+    }
+   ]
+  },
+  {
+   "id": "d06_6",
+   "body": "<<FILL role=rising words=62 beats='the wind swings hard into the east and the water starts moving the wrong way; the way in front of you is the black pool; the ledger is sealed and the seal is the only thing that makes it worth anything'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d06_6_0",
+     "label": "Double back to the black pool",
+     "target": "d07_6"
+    },
+    {
+     "id": "ch_d06_6_1",
+     "label": "Head for the cut",
+     "target": "d07_0"
+    },
+    {
+     "id": "ch_d06_6_2",
+     "label": "Wade for the reed line",
+     "target": "d07_1"
+    }
+   ]
+  },
+  {
+   "id": "d07_0",
+   "body": "<<FILL role=rising words=68 beats='a bittern goes up out of the reeds and every bird in the marsh answers; the way in front of you is the cut; you promised Ilsa you would be back before the second tide'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d07_0_0",
+     "label": "Climb to the barge hulk",
+     "target": "d08_0"
+    },
+    {
+     "id": "ch_d07_0_1",
+     "label": "Keep to the crane frame",
+     "target": "d08_1"
+    },
+    {
+     "id": "ch_d07_0_2",
+     "label": "Ride the ebb to the tar shed",
+     "target": "d08_2"
+    }
+   ]
+  },
+  {
+   "id": "d07_1",
+   "body": "<<FILL role=rising words=60 beats='a bittern goes up out of the reeds and every bird in the marsh answers; the way in front of you is the reed line; your boots are the wrong boots for this and you knew it when you put them on'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d07_1_0",
+     "label": "Ride the ebb to the crane frame",
+     "target": "d08_1"
+    },
+    {
+     "id": "ch_d07_1_1",
+     "label": "Take the tar shed",
+     "target": "d08_2"
+    },
+    {
+     "id": "ch_d07_1_2",
+     "label": "Cut across to the boiler yard",
+     "target": "d08_3"
+    }
+   ]
+  },
+  {
+   "id": "d07_2",
+   "body": "<<FILL role=rising words=72 beats='a bittern goes up out of the reeds and every bird in the marsh answers; the way in front of you is the plank walk; there is no version of this where you get to stop and think for long'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d07_2_0",
+     "label": "Cut across to the tar shed",
+     "target": "d08_2"
+    },
+    {
+     "id": "ch_d07_2_1",
+     "label": "Follow the boiler yard",
+     "target": "d08_3"
+    },
+    {
+     "id": "ch_d07_2_2",
+     "label": "Work along the sunk lighter",
+     "target": "d08_4"
+    }
+   ]
+  },
+  {
+   "id": "d07_3",
+   "body": "<<FILL role=rising words=65 beats='a bittern goes up out of the reeds and every bird in the marsh answers; the way in front of you is the eel traps; the tide table in your head disagrees with the one on the wall'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d07_3_0",
+     "label": "Work along the boiler yard",
+     "target": "d08_3"
+    },
+    {
+     "id": "ch_d07_3_1",
+     "label": "Drop down to the sunk lighter",
+     "target": "c07_3_1"
+    },
+    {
+     "id": "ch_d07_3_2",
+     "label": "Push out onto the chain store",
+     "target": "c07_3_2"
+    },
+    {
+     "id": "ch_d07_3_3",
+     "label": "Double back to the dry dock",
+     "target": "c07_3_3"
+    }
+   ]
+  },
+  {
+   "id": "d07_4",
+   "body": "<<FILL role=rising words=58 beats='a bittern goes up out of the reeds and every bird in the marsh answers; the way in front of you is the burnt hide; a wrong turn here costs an hour and you do not have an hour'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d07_4_0",
+     "label": "Push out onto the sunk lighter",
+     "target": "d08_4"
+    },
+    {
+     "id": "ch_d07_4_1",
+     "label": "Double back to the chain store",
+     "target": "c07_4_1"
+    },
+    {
+     "id": "ch_d07_4_2",
+     "label": "Head for the dry dock",
+     "target": "c07_4_2"
+    }
+   ]
+  },
+  {
+   "id": "d07_5",
+   "body": "<<FILL role=rising words=70 beats='a bittern goes up out of the reeds and every bird in the marsh answers; the way in front of you is the drovers track; the Weir crew are not thieves, which is somehow worse'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d07_5_0",
+     "label": "Head for the chain store",
+     "target": "d08_5"
+    },
+    {
+     "id": "ch_d07_5_1",
+     "label": "Wade for the dry dock",
+     "target": "d08_6"
+    },
+    {
+     "id": "ch_d07_5_2",
+     "label": "Climb to the barge hulk",
+     "target": "d08_0"
+    }
+   ]
+  },
+  {
+   "id": "d07_6",
+   "body": "<<FILL role=rising words=63 beats='a bittern goes up out of the reeds and every bird in the marsh answers; the way in front of you is the black pool; you have done this route twice, both times in daylight, both times in summer'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d07_6_0",
+     "label": "Climb to the dry dock",
+     "target": "d08_6"
+    },
+    {
+     "id": "ch_d07_6_1",
+     "label": "Keep to the barge hulk",
+     "target": "d08_0"
+    },
+    {
+     "id": "ch_d07_6_2",
+     "label": "Ride the ebb to the crane frame",
+     "target": "d08_1"
+    }
+   ]
+  },
+  {
+   "id": "d08_0",
+   "body": "<<FILL role=rising words=66 beats='the hulks stand out of the mud like broken teeth and the tide is under them; the way in front of you is the barge hulk; whatever happens, the ledger goes on before you do'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d08_0_0",
+     "label": "Take the barge hulk",
+     "target": "d09_0"
+    },
+    {
+     "id": "ch_d08_0_1",
+     "label": "Gamble on the tar shed",
+     "target": "e_000"
+    },
+    {
+     "id": "ch_d08_0_2",
+     "label": "Force a way through the boiler yard",
+     "target": "e_001"
+    }
+   ]
+  },
+  {
+   "id": "d08_1",
+   "body": "<<FILL role=rising words=61 beats='the hulks stand out of the mud like broken teeth and the tide is under them; the way in front of you is the crane frame; your father ran this and did not come back, and nobody explains why'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d08_1_0",
+     "label": "Follow the crane frame",
+     "target": "d09_1"
+    },
+    {
+     "id": "ch_d08_1_1",
+     "label": "Work along the tar shed",
+     "target": "c08_1_1"
+    },
+    {
+     "id": "ch_d08_1_2",
+     "label": "Drop down to the boiler yard",
+     "target": "c08_1_2"
+    }
+   ]
+  },
+  {
+   "id": "d08_2",
+   "body": "<<FILL role=rising words=69 beats='the hulks stand out of the mud like broken teeth and the tide is under them; the way in front of you is the tar shed; there is a right way to do this and a fast way and they are not the same'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d08_2_0",
+     "label": "Drop down to the tar shed",
+     "target": "d09_2"
+    },
+    {
+     "id": "ch_d08_2_1",
+     "label": "Push out onto the boiler yard",
+     "target": "c08_2_1"
+    },
+    {
+     "id": "ch_d08_2_2",
+     "label": "Double back to the sunk lighter",
+     "target": "c08_2_2"
+    },
+    {
+     "id": "ch_d08_2_3",
+     "label": "Head for the chain store",
+     "target": "c08_2_3"
+    }
+   ]
+  },
+  {
+   "id": "d08_3",
+   "body": "<<FILL role=rising words=64 beats='the hulks stand out of the mud like broken teeth and the tide is under them; the way in front of you is the boiler yard; the marsh does not care whether you are brave'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d08_3_0",
+     "label": "Double back to the boiler yard",
+     "target": "d09_3"
+    },
+    {
+     "id": "ch_d08_3_1",
+     "label": "Head for the sunk lighter",
+     "target": "d09_4"
+    },
+    {
+     "id": "ch_d08_3_2",
+     "label": "Wade for the chain store",
+     "target": "d09_5"
+    }
+   ]
+  },
+  {
+   "id": "d08_4",
+   "body": "<<FILL role=rising words=62 beats='the hulks stand out of the mud like broken teeth and the tide is under them; the way in front of you is the sunk lighter; you can already feel the water in your left boot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d08_4_0",
+     "label": "Wade for the sunk lighter",
+     "target": "d09_4"
+    },
+    {
+     "id": "ch_d08_4_1",
+     "label": "Run flat out for the dry dock",
+     "target": "e_000"
+    },
+    {
+     "id": "ch_d08_4_2",
+     "label": "Trust your feet on the barge hulk",
+     "target": "e_001"
+    }
+   ]
+  },
+  {
+   "id": "d08_5",
+   "body": "<<FILL role=rising words=68 beats='the hulks stand out of the mud like broken teeth and the tide is under them; the way in front of you is the chain store; the rope over your shoulder weighs more every mile'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d08_5_0",
+     "label": "Keep to the chain store",
+     "target": "d09_5"
+    },
+    {
+     "id": "ch_d08_5_1",
+     "label": "Trust your feet on the barge hulk",
+     "target": "e_000"
+    },
+    {
+     "id": "ch_d08_5_2",
+     "label": "Go straight over the crane frame",
+     "target": "e_001"
+    }
+   ]
+  },
+  {
+   "id": "d08_6",
+   "body": "<<FILL role=rising words=60 beats='the hulks stand out of the mud like broken teeth and the tide is under them; the way in front of you is the dry dock; somebody in Lowbridge sold the route and you do not know who'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d08_6_0",
+     "label": "Take the dry dock",
+     "target": "d09_6"
+    },
+    {
+     "id": "ch_d08_6_1",
+     "label": "Go straight over the crane frame",
+     "target": "e_000"
+    },
+    {
+     "id": "ch_d08_6_2",
+     "label": "Break for the tar shed",
+     "target": "e_001"
+    }
+   ]
+  },
+  {
+   "id": "d09_0",
+   "body": "<<FILL role=rising words=72 beats='a Weir crew is working the yards and they have already seen you; the way in front of you is the barge hulk; the flare in your pocket is one flare and one signal'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d09_0_0",
+     "label": "Work along the barge hulk",
+     "target": "d10_0"
+    },
+    {
+     "id": "ch_d09_0_1",
+     "label": "Trust your feet on the tar shed",
+     "target": "e_003"
+    },
+    {
+     "id": "ch_d09_0_2",
+     "label": "Go straight over the boiler yard",
+     "target": "e_002"
+    }
+   ]
+  },
+  {
+   "id": "d09_1",
+   "body": "<<FILL role=rising words=65 beats='a Weir crew is working the yards and they have already seen you; the way in front of you is the crane frame; if the seal breaks, none of this counted'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d09_1_0",
+     "label": "Push out onto the crane frame",
+     "target": "d10_1"
+    },
+    {
+     "id": "ch_d09_1_1",
+     "label": "Go straight over the boiler yard",
+     "target": "e_003"
+    },
+    {
+     "id": "ch_d09_1_2",
+     "label": "Head for the boiler yard",
+     "target": "c09_1_2"
+    },
+    {
+     "id": "ch_d09_1_3",
+     "label": "Wade for the sunk lighter",
+     "target": "c09_1_3"
+    }
+   ]
+  },
+  {
+   "id": "d09_2",
+   "body": "<<FILL role=rising words=58 beats='a Weir crew is working the yards and they have already seen you; the way in front of you is the tar shed; you are being followed carefully rather than closely'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d09_2_0",
+     "label": "Head for the tar shed",
+     "target": "d10_2"
+    },
+    {
+     "id": "ch_d09_2_1",
+     "label": "Wade for the boiler yard",
+     "target": "c09_2_1"
+    },
+    {
+     "id": "ch_d09_2_2",
+     "label": "Climb to the sunk lighter",
+     "target": "c09_2_2"
+    }
+   ]
+  },
+  {
+   "id": "d09_3",
+   "body": "<<FILL role=rising words=70 beats='a Weir crew is working the yards and they have already seen you; the way in front of you is the boiler yard; there is a dry way and a short way and the tide picks between them'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d09_3_0",
+     "label": "Climb to the boiler yard",
+     "target": "d10_3"
+    },
+    {
+     "id": "ch_d09_3_1",
+     "label": "Keep to the sunk lighter",
+     "target": "c09_3_1"
+    },
+    {
+     "id": "ch_d09_3_2",
+     "label": "Ride the ebb to the chain store",
+     "target": "d10_5"
+    }
+   ]
+  },
+  {
+   "id": "d09_4",
+   "body": "<<FILL role=rising words=63 beats='a Weir crew is working the yards and they have already seen you; the way in front of you is the sunk lighter; the light is going and you have not lit anything yet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d09_4_0",
+     "label": "Ride the ebb to the sunk lighter",
+     "target": "d10_4"
+    },
+    {
+     "id": "ch_d09_4_1",
+     "label": "Take the chain store",
+     "target": "d10_5"
+    },
+    {
+     "id": "ch_d09_4_2",
+     "label": "Cut across to the dry dock",
+     "target": "d10_6"
+    }
+   ]
+  },
+  {
+   "id": "d09_5",
+   "body": "<<FILL role=rising words=66 beats='a Weir crew is working the yards and they have already seen you; the way in front of you is the chain store; you have been awake for nineteen hours'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d09_5_0",
+     "label": "Cut across to the chain store",
+     "target": "d10_5"
+    },
+    {
+     "id": "ch_d09_5_1",
+     "label": "Swim for the barge hulk",
+     "target": "e_002"
+    },
+    {
+     "id": "ch_d09_5_2",
+     "label": "Chance the far side of the crane frame",
+     "target": "e_003"
+    }
+   ]
+  },
+  {
+   "id": "d09_6",
+   "body": "<<FILL role=rising words=61 beats='a Weir crew is working the yards and they have already seen you; the way in front of you is the dry dock; the weight of the satchel is on the wrong hip now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d09_6_0",
+     "label": "Work along the dry dock",
+     "target": "d10_6"
+    },
+    {
+     "id": "ch_d09_6_1",
+     "label": "Chance the far side of the crane frame",
+     "target": "e_002"
+    },
+    {
+     "id": "ch_d09_6_2",
+     "label": "Run flat out for the tar shed",
+     "target": "e_003"
+    },
+    {
+     "id": "ch_d09_6_3",
+     "label": "Trust your feet on the boiler yard",
+     "target": "e_002"
+    }
+   ]
+  },
+  {
+   "id": "d10_0",
+   "body": "<<FILL role=rising words=69 beats='rust and rotten deck plate, and every route across is a decision about weight; the way in front of you is the barge hulk; the marsh sounds different when the water turns and it has turned'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d10_0_0",
+     "label": "Double back to the barge hulk",
+     "target": "d11_0"
+    },
+    {
+     "id": "ch_d10_0_1",
+     "label": "Swim for the tar shed",
+     "target": "e_004"
+    },
+    {
+     "id": "ch_d10_0_2",
+     "label": "Chance the far side of the boiler yard",
+     "target": "e_005"
+    },
+    {
+     "id": "ch_d10_0_3",
+     "label": "Run flat out for the sunk lighter",
+     "target": "e_004"
+    }
+   ]
+  },
+  {
+   "id": "d10_1",
+   "body": "<<FILL role=rising words=64 beats='rust and rotten deck plate, and every route across is a decision about weight; the way in front of you is the crane frame; you can hear your own breathing over the reeds, which is a bad sign'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d10_1_0",
+     "label": "Wade for the crane frame",
+     "target": "d11_1"
+    },
+    {
+     "id": "ch_d10_1_1",
+     "label": "Chance the far side of the boiler yard",
+     "target": "e_005"
+    },
+    {
+     "id": "ch_d10_1_2",
+     "label": "Run flat out for the sunk lighter",
+     "target": "e_004"
+    }
+   ]
+  },
+  {
+   "id": "d10_2",
+   "body": "<<FILL role=rising words=62 beats='rust and rotten deck plate, and every route across is a decision about weight; the way in front of you is the tar shed; the ledger is sealed and the seal is the only thing that makes it worth anything'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d10_2_0",
+     "label": "Keep to the tar shed",
+     "target": "d11_2"
+    },
+    {
+     "id": "ch_d10_2_1",
+     "label": "Run flat out for the sunk lighter",
+     "target": "e_005"
+    },
+    {
+     "id": "ch_d10_2_2",
+     "label": "Take the sunk lighter",
+     "target": "c10_2_2"
+    }
+   ]
+  },
+  {
+   "id": "d10_3",
+   "body": "<<FILL role=rising words=68 beats='rust and rotten deck plate, and every route across is a decision about weight; the way in front of you is the boiler yard; you promised Ilsa you would be back before the second tide'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d10_3_0",
+     "label": "Take the boiler yard",
+     "target": "d11_3"
+    },
+    {
+     "id": "ch_d10_3_1",
+     "label": "Cut across to the sunk lighter",
+     "target": "c10_3_1"
+    },
+    {
+     "id": "ch_d10_3_2",
+     "label": "Follow the chain store",
+     "target": "c10_3_2"
+    }
+   ]
+  },
+  {
+   "id": "d10_4",
+   "body": "<<FILL role=rising words=60 beats='rust and rotten deck plate, and every route across is a decision about weight; the way in front of you is the sunk lighter; your boots are the wrong boots for this and you knew it when you put them on'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d10_4_0",
+     "label": "Follow the sunk lighter",
+     "target": "d11_4"
+    },
+    {
+     "id": "ch_d10_4_1",
+     "label": "Work along the chain store",
+     "target": "c10_4_1"
+    },
+    {
+     "id": "ch_d10_4_2",
+     "label": "Drop down to the dry dock",
+     "target": "c10_4_2"
+    }
+   ]
+  },
+  {
+   "id": "d10_5",
+   "body": "<<FILL role=rising words=72 beats='rust and rotten deck plate, and every route across is a decision about weight; the way in front of you is the chain store; there is no version of this where you get to stop and think for long'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d10_5_0",
+     "label": "Drop down to the chain store",
+     "target": "d11_5"
+    },
+    {
+     "id": "ch_d10_5_1",
+     "label": "Push out onto the dry dock",
+     "target": "d11_6"
+    },
+    {
+     "id": "ch_d10_5_2",
+     "label": "Double back to the barge hulk",
+     "target": "d11_0"
+    },
+    {
+     "id": "ch_d10_5_3",
+     "label": "Head for the crane frame",
+     "target": "d11_1"
+    }
+   ]
+  },
+  {
+   "id": "d10_6",
+   "body": "<<FILL role=rising words=65 beats='rust and rotten deck plate, and every route across is a decision about weight; the way in front of you is the dry dock; the tide table in your head disagrees with the one on the wall'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d10_6_0",
+     "label": "Double back to the dry dock",
+     "target": "d11_6"
+    },
+    {
+     "id": "ch_d10_6_1",
+     "label": "Gamble on the crane frame",
+     "target": "e_004"
+    },
+    {
+     "id": "ch_d10_6_2",
+     "label": "Force a way through the tar shed",
+     "target": "e_005"
+    }
+   ]
+  },
+  {
+   "id": "d11_0",
+   "body": "<<FILL role=rising words=58 beats='the channel between the hulks fills faster than the marsh around it; the way in front of you is the barge hulk; a wrong turn here costs an hour and you do not have an hour'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d11_0_0",
+     "label": "Climb to the crystal pans",
+     "target": "d12_0"
+    },
+    {
+     "id": "ch_d11_0_1",
+     "label": "Keep to the brine ladder",
+     "target": "c11_0_1"
+    },
+    {
+     "id": "ch_d11_0_2",
+     "label": "Ride the ebb to the pump house",
+     "target": "d12_2"
+    }
+   ]
+  },
+  {
+   "id": "d11_1",
+   "body": "<<FILL role=rising words=70 beats='the channel between the hulks fills faster than the marsh around it; the way in front of you is the crane frame; the Weir crew are not thieves, which is somehow worse'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d11_1_0",
+     "label": "Ride the ebb to the brine ladder",
+     "target": "d12_1"
+    },
+    {
+     "id": "ch_d11_1_1",
+     "label": "Take the pump house",
+     "target": "d12_2"
+    },
+    {
+     "id": "ch_d11_1_2",
+     "label": "Force a way through the sunk lighter",
+     "target": "e_006"
+    }
+   ]
+  },
+  {
+   "id": "d11_2",
+   "body": "<<FILL role=rising words=63 beats='the channel between the hulks fills faster than the marsh around it; the way in front of you is the tar shed; you have done this route twice, both times in daylight, both times in summer'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d11_2_0",
+     "label": "Cut across to the pump house",
+     "target": "d12_2"
+    },
+    {
+     "id": "ch_d11_2_1",
+     "label": "Force a way through the sunk lighter",
+     "target": "e_007"
+    },
+    {
+     "id": "ch_d11_2_2",
+     "label": "Swim for the chain store",
+     "target": "e_006"
+    }
+   ]
+  },
+  {
+   "id": "d11_3",
+   "body": "<<FILL role=rising words=66 beats='the channel between the hulks fills faster than the marsh around it; the way in front of you is the boiler yard; whatever happens, the ledger goes on before you do'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d11_3_0",
+     "label": "Work along the salt road",
+     "target": "d12_3"
+    },
+    {
+     "id": "ch_d11_3_1",
+     "label": "Swim for the chain store",
+     "target": "e_007"
+    },
+    {
+     "id": "ch_d11_3_2",
+     "label": "Chance the far side of the dry dock",
+     "target": "e_006"
+    }
+   ]
+  },
+  {
+   "id": "d11_4",
+   "body": "<<FILL role=rising words=61 beats='the channel between the hulks fills faster than the marsh around it; the way in front of you is the sunk lighter; your father ran this and did not come back, and nobody explains why'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d11_4_0",
+     "label": "Push out onto the wind engine",
+     "target": "d12_4"
+    },
+    {
+     "id": "ch_d11_4_1",
+     "label": "Chance the far side of the dry dock",
+     "target": "e_007"
+    },
+    {
+     "id": "ch_d11_4_2",
+     "label": "Run flat out for the barge hulk",
+     "target": "e_006"
+    },
+    {
+     "id": "ch_d11_4_3",
+     "label": "Trust your feet on the crane frame",
+     "target": "e_007"
+    }
+   ]
+  },
+  {
+   "id": "d11_5",
+   "body": "<<FILL role=rising words=69 beats='the channel between the hulks fills faster than the marsh around it; the way in front of you is the chain store; there is a right way to do this and a fast way and they are not the same'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d11_5_0",
+     "label": "Head for the settling beds",
+     "target": "d12_5"
+    },
+    {
+     "id": "ch_d11_5_1",
+     "label": "Wade for the tally hut",
+     "target": "c11_5_1"
+    },
+    {
+     "id": "ch_d11_5_2",
+     "label": "Climb to the crystal pans",
+     "target": "c11_5_2"
+    }
+   ]
+  },
+  {
+   "id": "d11_6",
+   "body": "<<FILL role=rising words=64 beats='the channel between the hulks fills faster than the marsh around it; the way in front of you is the dry dock; the marsh does not care whether you are brave'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d11_6_0",
+     "label": "Climb to the tally hut",
+     "target": "d12_6"
+    },
+    {
+     "id": "ch_d11_6_1",
+     "label": "Keep to the crystal pans",
+     "target": "c11_6_1"
+    },
+    {
+     "id": "ch_d11_6_2",
+     "label": "Ride the ebb to the brine ladder",
+     "target": "c11_6_2"
+    }
+   ]
+  },
+  {
+   "id": "d12_0",
+   "body": "<<FILL role=rising words=62 beats='the salt pans are geometry laid over swamp and the geometry lies; the way in front of you is the crystal pans; you can already feel the water in your left boot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d12_0_0",
+     "label": "Take the crystal pans",
+     "target": "d13_0"
+    },
+    {
+     "id": "ch_d12_0_1",
+     "label": "Cut across to the brine ladder",
+     "target": "c12_0_1"
+    },
+    {
+     "id": "ch_d12_0_2",
+     "label": "Follow the pump house",
+     "target": "c12_0_2"
+    }
+   ]
+  },
+  {
+   "id": "d12_1",
+   "body": "<<FILL role=rising words=68 beats='the salt pans are geometry laid over swamp and the geometry lies; the way in front of you is the brine ladder; the rope over your shoulder weighs more every mile'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d12_1_0",
+     "label": "Follow the brine ladder",
+     "target": "d13_1"
+    },
+    {
+     "id": "ch_d12_1_1",
+     "label": "Work along the pump house",
+     "target": "c12_1_1"
+    },
+    {
+     "id": "ch_d12_1_2",
+     "label": "Drop down to the salt road",
+     "target": "c12_1_2"
+    }
+   ]
+  },
+  {
+   "id": "d12_2",
+   "body": "<<FILL role=rising words=60 beats='the salt pans are geometry laid over swamp and the geometry lies; the way in front of you is the pump house; somebody in Lowbridge sold the route and you do not know who'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d12_2_0",
+     "label": "Drop down to the pump house",
+     "target": "d13_2"
+    },
+    {
+     "id": "ch_d12_2_1",
+     "label": "Push out onto the salt road",
+     "target": "d13_3"
+    },
+    {
+     "id": "ch_d12_2_2",
+     "label": "Double back to the wind engine",
+     "target": "d13_4"
+    }
+   ]
+  },
+  {
+   "id": "d12_3",
+   "body": "<<FILL role=rising words=72 beats='the salt pans are geometry laid over swamp and the geometry lies; the way in front of you is the salt road; the flare in your pocket is one flare and one signal'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d12_3_0",
+     "label": "Double back to the salt road",
+     "target": "d13_3"
+    },
+    {
+     "id": "ch_d12_3_1",
+     "label": "Break for the settling beds",
+     "target": "e_008"
+    },
+    {
+     "id": "ch_d12_3_2",
+     "label": "Gamble on the tally hut",
+     "target": "e_009"
+    },
+    {
+     "id": "ch_d12_3_3",
+     "label": "Force a way through the crystal pans",
+     "target": "e_008"
+    }
+   ]
+  },
+  {
+   "id": "d12_4",
+   "body": "<<FILL role=rising words=65 beats='the salt pans are geometry laid over swamp and the geometry lies; the way in front of you is the wind engine; if the seal breaks, none of this counted'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d12_4_0",
+     "label": "Wade for the wind engine",
+     "target": "d13_4"
+    },
+    {
+     "id": "ch_d12_4_1",
+     "label": "Gamble on the tally hut",
+     "target": "e_009"
+    },
+    {
+     "id": "ch_d12_4_2",
+     "label": "Force a way through the crystal pans",
+     "target": "e_008"
+    }
+   ]
+  },
+  {
+   "id": "d12_5",
+   "body": "<<FILL role=rising words=58 beats='the salt pans are geometry laid over swamp and the geometry lies; the way in front of you is the settling beds; you are being followed carefully rather than closely'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d12_5_0",
+     "label": "Keep to the settling beds",
+     "target": "d13_5"
+    },
+    {
+     "id": "ch_d12_5_1",
+     "label": "Force a way through the crystal pans",
+     "target": "e_009"
+    },
+    {
+     "id": "ch_d12_5_2",
+     "label": "Swim for the brine ladder",
+     "target": "e_008"
+    }
+   ]
+  },
+  {
+   "id": "d12_6",
+   "body": "<<FILL role=rising words=70 beats='the salt pans are geometry laid over swamp and the geometry lies; the way in front of you is the tally hut; there is a dry way and a short way and the tide picks between them'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d12_6_0",
+     "label": "Take the tally hut",
+     "target": "d13_6"
+    },
+    {
+     "id": "ch_d12_6_1",
+     "label": "Swim for the brine ladder",
+     "target": "e_009"
+    },
+    {
+     "id": "ch_d12_6_2",
+     "label": "Follow the brine ladder",
+     "target": "c12_6_2"
+    }
+   ]
+  },
+  {
+   "id": "d13_0",
+   "body": "<<FILL role=rising words=63 beats='the pump house engine is running, which means somebody is paying for it; the way in front of you is the crystal pans; the light is going and you have not lit anything yet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d13_0_0",
+     "label": "Work along the crystal pans",
+     "target": "d14_0"
+    },
+    {
+     "id": "ch_d13_0_1",
+     "label": "Force a way through the pump house",
+     "target": "e_010"
+    },
+    {
+     "id": "ch_d13_0_2",
+     "label": "Swim for the salt road",
+     "target": "e_011"
+    }
+   ]
+  },
+  {
+   "id": "d13_1",
+   "body": "<<FILL role=rising words=66 beats='the pump house engine is running, which means somebody is paying for it; the way in front of you is the brine ladder; you have been awake for nineteen hours'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d13_1_0",
+     "label": "Push out onto the brine ladder",
+     "target": "d14_1"
+    },
+    {
+     "id": "ch_d13_1_1",
+     "label": "Double back to the pump house",
+     "target": "c13_1_1"
+    },
+    {
+     "id": "ch_d13_1_2",
+     "label": "Head for the salt road",
+     "target": "c13_1_2"
+    }
+   ]
+  },
+  {
+   "id": "d13_2",
+   "body": "<<FILL role=rising words=61 beats='the pump house engine is running, which means somebody is paying for it; the way in front of you is the pump house; the weight of the satchel is on the wrong hip now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d13_2_0",
+     "label": "Head for the pump house",
+     "target": "d14_2"
+    },
+    {
+     "id": "ch_d13_2_1",
+     "label": "Wade for the salt road",
+     "target": "c13_2_1"
+    },
+    {
+     "id": "ch_d13_2_2",
+     "label": "Climb to the wind engine",
+     "target": "c13_2_2"
+    },
+    {
+     "id": "ch_d13_2_3",
+     "label": "Keep to the settling beds",
+     "target": "c13_2_3"
+    }
+   ]
+  },
+  {
+   "id": "d13_3",
+   "body": "<<FILL role=rising words=69 beats='the pump house engine is running, which means somebody is paying for it; the way in front of you is the salt road; the marsh sounds different when the water turns and it has turned'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d13_3_0",
+     "label": "Climb to the salt road",
+     "target": "d14_3"
+    },
+    {
+     "id": "ch_d13_3_1",
+     "label": "Keep to the wind engine",
+     "target": "d14_4"
+    },
+    {
+     "id": "ch_d13_3_2",
+     "label": "Ride the ebb to the settling beds",
+     "target": "d14_5"
+    }
+   ]
+  },
+  {
+   "id": "d13_4",
+   "body": "<<FILL role=rising words=64 beats='the pump house engine is running, which means somebody is paying for it; the way in front of you is the wind engine; you can hear your own breathing over the reeds, which is a bad sign'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d13_4_0",
+     "label": "Ride the ebb to the wind engine",
+     "target": "d14_4"
+    },
+    {
+     "id": "ch_d13_4_1",
+     "label": "Trust your feet on the tally hut",
+     "target": "e_010"
+    },
+    {
+     "id": "ch_d13_4_2",
+     "label": "Go straight over the crystal pans",
+     "target": "e_011"
+    }
+   ]
+  },
+  {
+   "id": "d13_5",
+   "body": "<<FILL role=rising words=62 beats='the pump house engine is running, which means somebody is paying for it; the way in front of you is the settling beds; the ledger is sealed and the seal is the only thing that makes it worth anything'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d13_5_0",
+     "label": "Cut across to the settling beds",
+     "target": "d14_5"
+    },
+    {
+     "id": "ch_d13_5_1",
+     "label": "Go straight over the crystal pans",
+     "target": "e_010"
+    },
+    {
+     "id": "ch_d13_5_2",
+     "label": "Break for the brine ladder",
+     "target": "e_011"
+    }
+   ]
+  },
+  {
+   "id": "d13_6",
+   "body": "<<FILL role=rising words=68 beats='the pump house engine is running, which means somebody is paying for it; the way in front of you is the tally hut; you promised Ilsa you would be back before the second tide'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d13_6_0",
+     "label": "Work along the tally hut",
+     "target": "d14_6"
+    },
+    {
+     "id": "ch_d13_6_1",
+     "label": "Break for the brine ladder",
+     "target": "e_010"
+    },
+    {
+     "id": "ch_d13_6_2",
+     "label": "Gamble on the pump house",
+     "target": "e_011"
+    }
+   ]
+  },
+  {
+   "id": "d14_0",
+   "body": "<<FILL role=rising words=60 beats='brine burns the cuts on your hands and the light off the pans is blinding; the way in front of you is the crystal pans; your boots are the wrong boots for this and you knew it when you put them on'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d14_0_0",
+     "label": "Double back to the crystal pans",
+     "target": "d15_0"
+    },
+    {
+     "id": "ch_d14_0_1",
+     "label": "Go straight over the pump house",
+     "target": "e_012"
+    },
+    {
+     "id": "ch_d14_0_2",
+     "label": "Break for the salt road",
+     "target": "e_013"
+    }
+   ]
+  },
+  {
+   "id": "d14_1",
+   "body": "<<FILL role=rising words=72 beats='brine burns the cuts on your hands and the light off the pans is blinding; the way in front of you is the brine ladder; there is no version of this where you get to stop and think for long'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d14_1_0",
+     "label": "Wade for the brine ladder",
+     "target": "d15_1"
+    },
+    {
+     "id": "ch_d14_1_1",
+     "label": "Climb to the pump house",
+     "target": "c14_1_1"
+    },
+    {
+     "id": "ch_d14_1_2",
+     "label": "Keep to the salt road",
+     "target": "c14_1_2"
+    },
+    {
+     "id": "ch_d14_1_3",
+     "label": "Ride the ebb to the wind engine",
+     "target": "c14_1_3"
+    }
+   ]
+  },
+  {
+   "id": "d14_2",
+   "body": "<<FILL role=rising words=65 beats='brine burns the cuts on your hands and the light off the pans is blinding; the way in front of you is the pump house; the tide table in your head disagrees with the one on the wall'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d14_2_0",
+     "label": "Keep to the pump house",
+     "target": "d15_2"
+    },
+    {
+     "id": "ch_d14_2_1",
+     "label": "Ride the ebb to the salt road",
+     "target": "c14_2_1"
+    },
+    {
+     "id": "ch_d14_2_2",
+     "label": "Take the wind engine",
+     "target": "c14_2_2"
+    }
+   ]
+  },
+  {
+   "id": "d14_3",
+   "body": "<<FILL role=rising words=58 beats='brine burns the cuts on your hands and the light off the pans is blinding; the way in front of you is the salt road; a wrong turn here costs an hour and you do not have an hour'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d14_3_0",
+     "label": "Take the salt road",
+     "target": "d15_3"
+    },
+    {
+     "id": "ch_d14_3_1",
+     "label": "Cut across to the wind engine",
+     "target": "d15_4"
+    },
+    {
+     "id": "ch_d14_3_2",
+     "label": "Follow the settling beds",
+     "target": "d15_5"
+    }
+   ]
+  },
+  {
+   "id": "d14_4",
+   "body": "<<FILL role=rising words=70 beats='brine burns the cuts on your hands and the light off the pans is blinding; the way in front of you is the wind engine; the Weir crew are not thieves, which is somehow worse'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d14_4_0",
+     "label": "Follow the wind engine",
+     "target": "d15_4"
+    },
+    {
+     "id": "ch_d14_4_1",
+     "label": "Work along the settling beds",
+     "target": "d15_5"
+    },
+    {
+     "id": "ch_d14_4_2",
+     "label": "Chance the far side of the crystal pans",
+     "target": "e_012"
+    }
+   ]
+  },
+  {
+   "id": "d14_5",
+   "body": "<<FILL role=rising words=63 beats='brine burns the cuts on your hands and the light off the pans is blinding; the way in front of you is the settling beds; you have done this route twice, both times in daylight, both times in summer'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d14_5_0",
+     "label": "Drop down to the settling beds",
+     "target": "d15_5"
+    },
+    {
+     "id": "ch_d14_5_1",
+     "label": "Chance the far side of the crystal pans",
+     "target": "e_013"
+    },
+    {
+     "id": "ch_d14_5_2",
+     "label": "Run flat out for the brine ladder",
+     "target": "e_012"
+    }
+   ]
+  },
+  {
+   "id": "d14_6",
+   "body": "<<FILL role=rising words=66 beats='brine burns the cuts on your hands and the light off the pans is blinding; the way in front of you is the tally hut; whatever happens, the ledger goes on before you do'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d14_6_0",
+     "label": "Double back to the tally hut",
+     "target": "d15_6"
+    },
+    {
+     "id": "ch_d14_6_1",
+     "label": "Run flat out for the brine ladder",
+     "target": "e_013"
+    },
+    {
+     "id": "ch_d14_6_2",
+     "label": "Trust your feet on the pump house",
+     "target": "e_012"
+    },
+    {
+     "id": "ch_d14_6_3",
+     "label": "Go straight over the salt road",
+     "target": "e_013"
+    }
+   ]
+  },
+  {
+   "id": "d15_0",
+   "body": "<<FILL role=rising words=61 beats='the pan walls are giving way in three places and you can only choose one; the way in front of you is the crystal pans; your father ran this and did not come back, and nobody explains why'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d15_0_0",
+     "label": "Climb to the low arches",
+     "target": "d16_0"
+    },
+    {
+     "id": "ch_d15_0_1",
+     "label": "Chance the far side of the pump house",
+     "target": "e_015"
+    },
+    {
+     "id": "ch_d15_0_2",
+     "label": "Run flat out for the salt road",
+     "target": "e_014"
+    },
+    {
+     "id": "ch_d15_0_3",
+     "label": "Trust your feet on the wind engine",
+     "target": "e_015"
+    }
+   ]
+  },
+  {
+   "id": "d15_1",
+   "body": "<<FILL role=rising words=69 beats='the pan walls are giving way in three places and you can only choose one; the way in front of you is the brine ladder; there is a right way to do this and a fast way and they are not the same'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d15_1_0",
+     "label": "Ride the ebb to the counting stones",
+     "target": "d16_1"
+    },
+    {
+     "id": "ch_d15_1_1",
+     "label": "Run flat out for the salt road",
+     "target": "e_014"
+    },
+    {
+     "id": "ch_d15_1_2",
+     "label": "Trust your feet on the wind engine",
+     "target": "e_015"
+    }
+   ]
+  },
+  {
+   "id": "d15_2",
+   "body": "<<FILL role=rising words=64 beats='the pan walls are giving way in three places and you can only choose one; the way in front of you is the pump house; the marsh does not care whether you are brave'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d15_2_0",
+     "label": "Cut across to the passing place",
+     "target": "d16_2"
+    },
+    {
+     "id": "ch_d15_2_1",
+     "label": "Follow the broken span",
+     "target": "c15_2_1"
+    },
+    {
+     "id": "ch_d15_2_2",
+     "label": "Work along the tide gauge",
+     "target": "c15_2_2"
+    }
+   ]
+  },
+  {
+   "id": "d15_3",
+   "body": "<<FILL role=rising words=62 beats='the pan walls are giving way in three places and you can only choose one; the way in front of you is the salt road; you can already feel the water in your left boot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d15_3_0",
+     "label": "Work along the broken span",
+     "target": "d16_3"
+    },
+    {
+     "id": "ch_d15_3_1",
+     "label": "Drop down to the tide gauge",
+     "target": "c15_3_1"
+    },
+    {
+     "id": "ch_d15_3_2",
+     "label": "Push out onto the beacon post",
+     "target": "c15_3_2"
+    }
+   ]
+  },
+  {
+   "id": "d15_4",
+   "body": "<<FILL role=rising words=68 beats='the pan walls are giving way in three places and you can only choose one; the way in front of you is the wind engine; the rope over your shoulder weighs more every mile'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d15_4_0",
+     "label": "Push out onto the tide gauge",
+     "target": "d16_4"
+    },
+    {
+     "id": "ch_d15_4_1",
+     "label": "Double back to the beacon post",
+     "target": "c15_4_1"
+    },
+    {
+     "id": "ch_d15_4_2",
+     "label": "Head for the shell bank",
+     "target": "d16_6"
+    }
+   ]
+  },
+  {
+   "id": "d15_5",
+   "body": "<<FILL role=rising words=60 beats='the pan walls are giving way in three places and you can only choose one; the way in front of you is the settling beds; somebody in Lowbridge sold the route and you do not know who'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d15_5_0",
+     "label": "Head for the beacon post",
+     "target": "d16_5"
+    },
+    {
+     "id": "ch_d15_5_1",
+     "label": "Wade for the shell bank",
+     "target": "d16_6"
+    },
+    {
+     "id": "ch_d15_5_2",
+     "label": "Climb to the low arches",
+     "target": "d16_0"
+    },
+    {
+     "id": "ch_d15_5_3",
+     "label": "Swim for the pump house",
+     "target": "e_014"
+    }
+   ]
+  },
+  {
+   "id": "d15_6",
+   "body": "<<FILL role=rising words=72 beats='the pan walls are giving way in three places and you can only choose one; the way in front of you is the tally hut; the flare in your pocket is one flare and one signal'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d15_6_0",
+     "label": "Climb to the shell bank",
+     "target": "d16_6"
+    },
+    {
+     "id": "ch_d15_6_1",
+     "label": "Force a way through the brine ladder",
+     "target": "e_015"
+    },
+    {
+     "id": "ch_d15_6_2",
+     "label": "Swim for the pump house",
+     "target": "e_014"
+    }
+   ]
+  },
+  {
+   "id": "d16_0",
+   "body": "<<FILL role=rising words=65 beats='the causeway is nine miles of raised stone and no cover at all; the way in front of you is the low arches; if the seal breaks, none of this counted'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d16_0_0",
+     "label": "Take the low arches",
+     "target": "d17_0"
+    },
+    {
+     "id": "ch_d16_0_1",
+     "label": "Cut across to the counting stones",
+     "target": "c16_0_1"
+    },
+    {
+     "id": "ch_d16_0_2",
+     "label": "Follow the passing place",
+     "target": "d17_2"
+    }
+   ]
+  },
+  {
+   "id": "d16_1",
+   "body": "<<FILL role=rising words=58 beats='the causeway is nine miles of raised stone and no cover at all; the way in front of you is the counting stones; you are being followed carefully rather than closely'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d16_1_0",
+     "label": "Follow the counting stones",
+     "target": "d17_1"
+    },
+    {
+     "id": "ch_d16_1_1",
+     "label": "Work along the passing place",
+     "target": "d17_2"
+    },
+    {
+     "id": "ch_d16_1_2",
+     "label": "Swim for the tide gauge",
+     "target": "e_016"
+    }
+   ]
+  },
+  {
+   "id": "d16_2",
+   "body": "<<FILL role=rising words=70 beats='the causeway is nine miles of raised stone and no cover at all; the way in front of you is the passing place; there is a dry way and a short way and the tide picks between them'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d16_2_0",
+     "label": "Drop down to the passing place",
+     "target": "d17_2"
+    },
+    {
+     "id": "ch_d16_2_1",
+     "label": "Swim for the tide gauge",
+     "target": "e_017"
+    },
+    {
+     "id": "ch_d16_2_2",
+     "label": "Chance the far side of the beacon post",
+     "target": "e_016"
+    }
+   ]
+  },
+  {
+   "id": "d16_3",
+   "body": "<<FILL role=rising words=63 beats='the causeway is nine miles of raised stone and no cover at all; the way in front of you is the broken span; the light is going and you have not lit anything yet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d16_3_0",
+     "label": "Double back to the broken span",
+     "target": "d17_3"
+    },
+    {
+     "id": "ch_d16_3_1",
+     "label": "Chance the far side of the beacon post",
+     "target": "e_017"
+    },
+    {
+     "id": "ch_d16_3_2",
+     "label": "Run flat out for the shell bank",
+     "target": "e_016"
+    }
+   ]
+  },
+  {
+   "id": "d16_4",
+   "body": "<<FILL role=rising words=66 beats='the causeway is nine miles of raised stone and no cover at all; the way in front of you is the tide gauge; you have been awake for nineteen hours'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d16_4_0",
+     "label": "Wade for the tide gauge",
+     "target": "d17_4"
+    },
+    {
+     "id": "ch_d16_4_1",
+     "label": "Run flat out for the shell bank",
+     "target": "e_017"
+    },
+    {
+     "id": "ch_d16_4_2",
+     "label": "Trust your feet on the low arches",
+     "target": "e_016"
+    },
+    {
+     "id": "ch_d16_4_3",
+     "label": "Go straight over the counting stones",
+     "target": "e_017"
+    }
+   ]
+  },
+  {
+   "id": "d16_5",
+   "body": "<<FILL role=rising words=61 beats='the causeway is nine miles of raised stone and no cover at all; the way in front of you is the beacon post; the weight of the satchel is on the wrong hip now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d16_5_0",
+     "label": "Keep to the beacon post",
+     "target": "d17_5"
+    },
+    {
+     "id": "ch_d16_5_1",
+     "label": "Ride the ebb to the shell bank",
+     "target": "c16_5_1"
+    },
+    {
+     "id": "ch_d16_5_2",
+     "label": "Take the low arches",
+     "target": "c16_5_2"
+    }
+   ]
+  },
+  {
+   "id": "d16_6",
+   "body": "<<FILL role=rising words=69 beats='the causeway is nine miles of raised stone and no cover at all; the way in front of you is the shell bank; the marsh sounds different when the water turns and it has turned'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d16_6_0",
+     "label": "Take the shell bank",
+     "target": "d17_6"
+    },
+    {
+     "id": "ch_d16_6_1",
+     "label": "Cut across to the low arches",
+     "target": "c16_6_1"
+    },
+    {
+     "id": "ch_d16_6_2",
+     "label": "Follow the counting stones",
+     "target": "c16_6_2"
+    }
+   ]
+  },
+  {
+   "id": "d17_0",
+   "body": "<<FILL role=rising words=64 beats='the tide gauge reads higher than it should for the hour; the way in front of you is the low arches; you can hear your own breathing over the reeds, which is a bad sign'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d17_0_0",
+     "label": "Work along the low arches",
+     "target": "d18_0"
+    },
+    {
+     "id": "ch_d17_0_1",
+     "label": "Drop down to the counting stones",
+     "target": "c17_0_1"
+    },
+    {
+     "id": "ch_d17_0_2",
+     "label": "Push out onto the passing place",
+     "target": "c17_0_2"
+    }
+   ]
+  },
+  {
+   "id": "d17_1",
+   "body": "<<FILL role=rising words=62 beats='the tide gauge reads higher than it should for the hour; the way in front of you is the counting stones; the ledger is sealed and the seal is the only thing that makes it worth anything'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d17_1_0",
+     "label": "Push out onto the counting stones",
+     "target": "d18_1"
+    },
+    {
+     "id": "ch_d17_1_1",
+     "label": "Double back to the passing place",
+     "target": "c17_1_1"
+    },
+    {
+     "id": "ch_d17_1_2",
+     "label": "Head for the broken span",
+     "target": "c17_1_2"
+    }
+   ]
+  },
+  {
+   "id": "d17_2",
+   "body": "<<FILL role=rising words=68 beats='the tide gauge reads higher than it should for the hour; the way in front of you is the passing place; you promised Ilsa you would be back before the second tide'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d17_2_0",
+     "label": "Head for the passing place",
+     "target": "d18_2"
+    },
+    {
+     "id": "ch_d17_2_1",
+     "label": "Wade for the broken span",
+     "target": "d18_3"
+    },
+    {
+     "id": "ch_d17_2_2",
+     "label": "Climb to the tide gauge",
+     "target": "d18_4"
+    }
+   ]
+  },
+  {
+   "id": "d17_3",
+   "body": "<<FILL role=rising words=60 beats='the tide gauge reads higher than it should for the hour; the way in front of you is the broken span; your boots are the wrong boots for this and you knew it when you put them on'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d17_3_0",
+     "label": "Climb to the broken span",
+     "target": "d18_3"
+    },
+    {
+     "id": "ch_d17_3_1",
+     "label": "Gamble on the beacon post",
+     "target": "e_018"
+    },
+    {
+     "id": "ch_d17_3_2",
+     "label": "Force a way through the shell bank",
+     "target": "e_019"
+    },
+    {
+     "id": "ch_d17_3_3",
+     "label": "Swim for the low arches",
+     "target": "e_018"
+    }
+   ]
+  },
+  {
+   "id": "d17_4",
+   "body": "<<FILL role=rising words=72 beats='the tide gauge reads higher than it should for the hour; the way in front of you is the tide gauge; there is no version of this where you get to stop and think for long'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d17_4_0",
+     "label": "Ride the ebb to the tide gauge",
+     "target": "d18_4"
+    },
+    {
+     "id": "ch_d17_4_1",
+     "label": "Force a way through the shell bank",
+     "target": "e_019"
+    },
+    {
+     "id": "ch_d17_4_2",
+     "label": "Swim for the low arches",
+     "target": "e_018"
+    }
+   ]
+  },
+  {
+   "id": "d17_5",
+   "body": "<<FILL role=rising words=65 beats='the tide gauge reads higher than it should for the hour; the way in front of you is the beacon post; the tide table in your head disagrees with the one on the wall'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d17_5_0",
+     "label": "Cut across to the beacon post",
+     "target": "d18_5"
+    },
+    {
+     "id": "ch_d17_5_1",
+     "label": "Swim for the low arches",
+     "target": "e_019"
+    },
+    {
+     "id": "ch_d17_5_2",
+     "label": "Chance the far side of the counting stones",
+     "target": "e_018"
+    }
+   ]
+  },
+  {
+   "id": "d17_6",
+   "body": "<<FILL role=rising words=58 beats='the tide gauge reads higher than it should for the hour; the way in front of you is the shell bank; a wrong turn here costs an hour and you do not have an hour'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d17_6_0",
+     "label": "Work along the shell bank",
+     "target": "d18_6"
+    },
+    {
+     "id": "ch_d17_6_1",
+     "label": "Chance the far side of the counting stones",
+     "target": "e_019"
+    },
+    {
+     "id": "ch_d17_6_2",
+     "label": "Push out onto the counting stones",
+     "target": "c17_6_2"
+    }
+   ]
+  },
+  {
+   "id": "d18_0",
+   "body": "<<FILL role=rising words=70 beats='the arches are already taking water and the count of dry spans is falling; the way in front of you is the low arches; the Weir crew are not thieves, which is somehow worse'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d18_0_0",
+     "label": "Double back to the low arches",
+     "target": "d19_0"
+    },
+    {
+     "id": "ch_d18_0_1",
+     "label": "Swim for the passing place",
+     "target": "e_020"
+    },
+    {
+     "id": "ch_d18_0_2",
+     "label": "Chance the far side of the broken span",
+     "target": "e_021"
+    }
+   ]
+  },
+  {
+   "id": "d18_1",
+   "body": "<<FILL role=rising words=63 beats='the arches are already taking water and the count of dry spans is falling; the way in front of you is the counting stones; you have done this route twice, both times in daylight, both times in summer'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d18_1_0",
+     "label": "Wade for the counting stones",
+     "target": "d19_1"
+    },
+    {
+     "id": "ch_d18_1_1",
+     "label": "Climb to the passing place",
+     "target": "c18_1_1"
+    },
+    {
+     "id": "ch_d18_1_2",
+     "label": "Keep to the broken span",
+     "target": "c18_1_2"
+    }
+   ]
+  },
+  {
+   "id": "d18_2",
+   "body": "<<FILL role=rising words=66 beats='the arches are already taking water and the count of dry spans is falling; the way in front of you is the passing place; whatever happens, the ledger goes on before you do'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d18_2_0",
+     "label": "Keep to the passing place",
+     "target": "d19_2"
+    },
+    {
+     "id": "ch_d18_2_1",
+     "label": "Ride the ebb to the broken span",
+     "target": "c18_2_1"
+    },
+    {
+     "id": "ch_d18_2_2",
+     "label": "Take the tide gauge",
+     "target": "c18_2_2"
+    },
+    {
+     "id": "ch_d18_2_3",
+     "label": "Cut across to the beacon post",
+     "target": "c18_2_3"
+    }
+   ]
+  },
+  {
+   "id": "d18_3",
+   "body": "<<FILL role=rising words=61 beats='the arches are already taking water and the count of dry spans is falling; the way in front of you is the broken span; your father ran this and did not come back, and nobody explains why'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d18_3_0",
+     "label": "Take the broken span",
+     "target": "d19_3"
+    },
+    {
+     "id": "ch_d18_3_1",
+     "label": "Cut across to the tide gauge",
+     "target": "d19_4"
+    },
+    {
+     "id": "ch_d18_3_2",
+     "label": "Follow the beacon post",
+     "target": "d19_5"
+    }
+   ]
+  },
+  {
+   "id": "d18_4",
+   "body": "<<FILL role=rising words=69 beats='the arches are already taking water and the count of dry spans is falling; the way in front of you is the tide gauge; there is a right way to do this and a fast way and they are not the same'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d18_4_0",
+     "label": "Follow the tide gauge",
+     "target": "d19_4"
+    },
+    {
+     "id": "ch_d18_4_1",
+     "label": "Go straight over the shell bank",
+     "target": "e_020"
+    },
+    {
+     "id": "ch_d18_4_2",
+     "label": "Break for the low arches",
+     "target": "e_021"
+    }
+   ]
+  },
+  {
+   "id": "d18_5",
+   "body": "<<FILL role=rising words=64 beats='the arches are already taking water and the count of dry spans is falling; the way in front of you is the beacon post; the marsh does not care whether you are brave'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d18_5_0",
+     "label": "Drop down to the beacon post",
+     "target": "d19_5"
+    },
+    {
+     "id": "ch_d18_5_1",
+     "label": "Break for the low arches",
+     "target": "e_020"
+    },
+    {
+     "id": "ch_d18_5_2",
+     "label": "Gamble on the counting stones",
+     "target": "e_021"
+    }
+   ]
+  },
+  {
+   "id": "d18_6",
+   "body": "<<FILL role=rising words=62 beats='the arches are already taking water and the count of dry spans is falling; the way in front of you is the shell bank; you can already feel the water in your left boot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d18_6_0",
+     "label": "Double back to the shell bank",
+     "target": "d19_6"
+    },
+    {
+     "id": "ch_d18_6_1",
+     "label": "Gamble on the counting stones",
+     "target": "e_020"
+    },
+    {
+     "id": "ch_d18_6_2",
+     "label": "Force a way through the passing place",
+     "target": "e_021"
+    }
+   ]
+  },
+  {
+   "id": "d19_0",
+   "body": "<<FILL role=rising words=68 beats='you can see the Weir now, and everyone on the causeway can see you; the way in front of you is the low arches; the rope over your shoulder weighs more every mile'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d19_0_0",
+     "label": "Climb to the fish ladder",
+     "target": "d20_0"
+    },
+    {
+     "id": "ch_d19_0_1",
+     "label": "Break for the passing place",
+     "target": "e_023"
+    },
+    {
+     "id": "ch_d19_0_2",
+     "label": "Ride the ebb to the keepers house",
+     "target": "c19_0_2"
+    }
+   ]
+  },
+  {
+   "id": "d19_1",
+   "body": "<<FILL role=rising words=60 beats='you can see the Weir now, and everyone on the causeway can see you; the way in front of you is the counting stones; somebody in Lowbridge sold the route and you do not know who'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d19_1_0",
+     "label": "Ride the ebb to the sluice gate",
+     "target": "d20_1"
+    },
+    {
+     "id": "ch_d19_1_1",
+     "label": "Take the keepers house",
+     "target": "c19_1_1"
+    },
+    {
+     "id": "ch_d19_1_2",
+     "label": "Cut across to the overspill",
+     "target": "c19_1_2"
+    },
+    {
+     "id": "ch_d19_1_3",
+     "label": "Follow the weir crest",
+     "target": "c19_1_3"
+    }
+   ]
+  },
+  {
+   "id": "d19_2",
+   "body": "<<FILL role=rising words=72 beats='you can see the Weir now, and everyone on the causeway can see you; the way in front of you is the passing place; the flare in your pocket is one flare and one signal'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d19_2_0",
+     "label": "Cut across to the keepers house",
+     "target": "d20_2"
+    },
+    {
+     "id": "ch_d19_2_1",
+     "label": "Follow the overspill",
+     "target": "c19_2_1"
+    },
+    {
+     "id": "ch_d19_2_2",
+     "label": "Work along the weir crest",
+     "target": "d20_4"
+    }
+   ]
+  },
+  {
+   "id": "d19_3",
+   "body": "<<FILL role=rising words=65 beats='you can see the Weir now, and everyone on the causeway can see you; the way in front of you is the broken span; if the seal breaks, none of this counted'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d19_3_0",
+     "label": "Work along the overspill",
+     "target": "d20_3"
+    },
+    {
+     "id": "ch_d19_3_1",
+     "label": "Drop down to the weir crest",
+     "target": "d20_4"
+    },
+    {
+     "id": "ch_d19_3_2",
+     "label": "Push out onto the gauge tower",
+     "target": "d20_5"
+    }
+   ]
+  },
+  {
+   "id": "d19_4",
+   "body": "<<FILL role=rising words=58 beats='you can see the Weir now, and everyone on the causeway can see you; the way in front of you is the tide gauge; you are being followed carefully rather than closely'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d19_4_0",
+     "label": "Push out onto the weir crest",
+     "target": "d20_4"
+    },
+    {
+     "id": "ch_d19_4_1",
+     "label": "Chance the far side of the shell bank",
+     "target": "e_022"
+    },
+    {
+     "id": "ch_d19_4_2",
+     "label": "Run flat out for the low arches",
+     "target": "e_023"
+    }
+   ]
+  },
+  {
+   "id": "d19_5",
+   "body": "<<FILL role=rising words=70 beats='you can see the Weir now, and everyone on the causeway can see you; the way in front of you is the beacon post; there is a dry way and a short way and the tide picks between them'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d19_5_0",
+     "label": "Head for the gauge tower",
+     "target": "d20_5"
+    },
+    {
+     "id": "ch_d19_5_1",
+     "label": "Run flat out for the low arches",
+     "target": "e_022"
+    },
+    {
+     "id": "ch_d19_5_2",
+     "label": "Trust your feet on the counting stones",
+     "target": "e_023"
+    }
+   ]
+  },
+  {
+   "id": "d19_6",
+   "body": "<<FILL role=rising words=63 beats='you can see the Weir now, and everyone on the causeway can see you; the way in front of you is the shell bank; the light is going and you have not lit anything yet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d19_6_0",
+     "label": "Climb to the muster yard",
+     "target": "d20_6"
+    },
+    {
+     "id": "ch_d19_6_1",
+     "label": "Trust your feet on the counting stones",
+     "target": "e_022"
+    },
+    {
+     "id": "ch_d19_6_2",
+     "label": "Go straight over the passing place",
+     "target": "e_023"
+    },
+    {
+     "id": "ch_d19_6_3",
+     "label": "Break for the broken span",
+     "target": "e_022"
+    }
+   ]
+  },
+  {
+   "id": "d20_0",
+   "body": "<<FILL role=rising words=66 beats='the sluice gates are being wound down and the noise carries a mile; the way in front of you is the fish ladder; you have been awake for nineteen hours'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d20_0_0",
+     "label": "Take the fish ladder",
+     "target": "d21_0"
+    },
+    {
+     "id": "ch_d20_0_1",
+     "label": "Run flat out for the keepers house",
+     "target": "e_024"
+    },
+    {
+     "id": "ch_d20_0_2",
+     "label": "Trust your feet on the overspill",
+     "target": "e_025"
+    },
+    {
+     "id": "ch_d20_0_3",
+     "label": "Go straight over the weir crest",
+     "target": "e_024"
+    }
+   ]
+  },
+  {
+   "id": "d20_1",
+   "body": "<<FILL role=rising words=61 beats='the sluice gates are being wound down and the noise carries a mile; the way in front of you is the sluice gate; the weight of the satchel is on the wrong hip now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d20_1_0",
+     "label": "Follow the sluice gate",
+     "target": "d21_1"
+    },
+    {
+     "id": "ch_d20_1_1",
+     "label": "Trust your feet on the overspill",
+     "target": "e_025"
+    },
+    {
+     "id": "ch_d20_1_2",
+     "label": "Drop down to the overspill",
+     "target": "c20_1_2"
+    }
+   ]
+  },
+  {
+   "id": "d20_2",
+   "body": "<<FILL role=rising words=69 beats='the sluice gates are being wound down and the noise carries a mile; the way in front of you is the keepers house; the marsh sounds different when the water turns and it has turned'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d20_2_0",
+     "label": "Drop down to the keepers house",
+     "target": "d21_2"
+    },
+    {
+     "id": "ch_d20_2_1",
+     "label": "Push out onto the overspill",
+     "target": "c20_2_1"
+    },
+    {
+     "id": "ch_d20_2_2",
+     "label": "Double back to the weir crest",
+     "target": "c20_2_2"
+    }
+   ]
+  },
+  {
+   "id": "d20_3",
+   "body": "<<FILL role=rising words=64 beats='the sluice gates are being wound down and the noise carries a mile; the way in front of you is the overspill; you can hear your own breathing over the reeds, which is a bad sign'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d20_3_0",
+     "label": "Double back to the overspill",
+     "target": "d21_3"
+    },
+    {
+     "id": "ch_d20_3_1",
+     "label": "Head for the weir crest",
+     "target": "c20_3_1"
+    },
+    {
+     "id": "ch_d20_3_2",
+     "label": "Wade for the gauge tower",
+     "target": "c20_3_2"
+    }
+   ]
+  },
+  {
+   "id": "d20_4",
+   "body": "<<FILL role=rising words=62 beats='the sluice gates are being wound down and the noise carries a mile; the way in front of you is the weir crest; the ledger is sealed and the seal is the only thing that makes it worth anything'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d20_4_0",
+     "label": "Wade for the weir crest",
+     "target": "d21_4"
+    },
+    {
+     "id": "ch_d20_4_1",
+     "label": "Climb to the gauge tower",
+     "target": "d21_5"
+    },
+    {
+     "id": "ch_d20_4_2",
+     "label": "Keep to the muster yard",
+     "target": "d21_6"
+    }
+   ]
+  },
+  {
+   "id": "d20_5",
+   "body": "<<FILL role=rising words=68 beats='the sluice gates are being wound down and the noise carries a mile; the way in front of you is the gauge tower; you promised Ilsa you would be back before the second tide'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d20_5_0",
+     "label": "Keep to the gauge tower",
+     "target": "d21_5"
+    },
+    {
+     "id": "ch_d20_5_1",
+     "label": "Ride the ebb to the muster yard",
+     "target": "d21_6"
+    },
+    {
+     "id": "ch_d20_5_2",
+     "label": "Swim for the sluice gate",
+     "target": "e_024"
+    },
+    {
+     "id": "ch_d20_5_3",
+     "label": "Chance the far side of the keepers house",
+     "target": "e_025"
+    }
+   ]
+  },
+  {
+   "id": "d20_6",
+   "body": "<<FILL role=rising words=60 beats='the sluice gates are being wound down and the noise carries a mile; the way in front of you is the muster yard; your boots are the wrong boots for this and you knew it when you put them on'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d20_6_0",
+     "label": "Take the muster yard",
+     "target": "d21_6"
+    },
+    {
+     "id": "ch_d20_6_1",
+     "label": "Swim for the sluice gate",
+     "target": "e_024"
+    },
+    {
+     "id": "ch_d20_6_2",
+     "label": "Chance the far side of the keepers house",
+     "target": "e_025"
+    }
+   ]
+  },
+  {
+   "id": "d21_0",
+   "body": "<<FILL role=climax words=72 beats='the keepers house has a lamp lit in the wrong window; the way in front of you is the fish ladder; there is no version of this where you get to stop and think for long'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d21_0_0",
+     "label": "Work along the fish ladder",
+     "target": "d22_0"
+    },
+    {
+     "id": "ch_d21_0_1",
+     "label": "Drop down to the sluice gate",
+     "target": "c21_0_1"
+    },
+    {
+     "id": "ch_d21_0_2",
+     "label": "Push out onto the keepers house",
+     "target": "d22_2"
+    }
+   ]
+  },
+  {
+   "id": "d21_1",
+   "body": "<<FILL role=climax words=65 beats='the keepers house has a lamp lit in the wrong window; the way in front of you is the sluice gate; the tide table in your head disagrees with the one on the wall'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d21_1_0",
+     "label": "Push out onto the sluice gate",
+     "target": "d22_1"
+    },
+    {
+     "id": "ch_d21_1_1",
+     "label": "Double back to the keepers house",
+     "target": "d22_2"
+    },
+    {
+     "id": "ch_d21_1_2",
+     "label": "Chance the far side of the weir crest",
+     "target": "e_026"
+    }
+   ]
+  },
+  {
+   "id": "d21_2",
+   "body": "<<FILL role=climax words=58 beats='the keepers house has a lamp lit in the wrong window; the way in front of you is the keepers house; a wrong turn here costs an hour and you do not have an hour'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d21_2_0",
+     "label": "Head for the keepers house",
+     "target": "d22_2"
+    },
+    {
+     "id": "ch_d21_2_1",
+     "label": "Chance the far side of the weir crest",
+     "target": "e_027"
+    },
+    {
+     "id": "ch_d21_2_2",
+     "label": "Run flat out for the gauge tower",
+     "target": "e_026"
+    }
+   ]
+  },
+  {
+   "id": "d21_3",
+   "body": "<<FILL role=climax words=70 beats='the keepers house has a lamp lit in the wrong window; the way in front of you is the overspill; the Weir crew are not thieves, which is somehow worse'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d21_3_0",
+     "label": "Climb to the overspill",
+     "target": "d22_3"
+    },
+    {
+     "id": "ch_d21_3_1",
+     "label": "Run flat out for the gauge tower",
+     "target": "e_027"
+    },
+    {
+     "id": "ch_d21_3_2",
+     "label": "Trust your feet on the muster yard",
+     "target": "e_026"
+    }
+   ]
+  },
+  {
+   "id": "d21_4",
+   "body": "<<FILL role=climax words=63 beats='the keepers house has a lamp lit in the wrong window; the way in front of you is the weir crest; you have done this route twice, both times in daylight, both times in summer'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d21_4_0",
+     "label": "Ride the ebb to the weir crest",
+     "target": "d22_4"
+    },
+    {
+     "id": "ch_d21_4_1",
+     "label": "Trust your feet on the muster yard",
+     "target": "e_027"
+    },
+    {
+     "id": "ch_d21_4_2",
+     "label": "Go straight over the fish ladder",
+     "target": "e_026"
+    },
+    {
+     "id": "ch_d21_4_3",
+     "label": "Break for the sluice gate",
+     "target": "e_027"
+    }
+   ]
+  },
+  {
+   "id": "d21_5",
+   "body": "<<FILL role=climax words=66 beats='the keepers house has a lamp lit in the wrong window; the way in front of you is the gauge tower; whatever happens, the ledger goes on before you do'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d21_5_0",
+     "label": "Cut across to the gauge tower",
+     "target": "d22_5"
+    },
+    {
+     "id": "ch_d21_5_1",
+     "label": "Follow the muster yard",
+     "target": "c21_5_1"
+    },
+    {
+     "id": "ch_d21_5_2",
+     "label": "Work along the fish ladder",
+     "target": "c21_5_2"
+    }
+   ]
+  },
+  {
+   "id": "d21_6",
+   "body": "<<FILL role=climax words=61 beats='the keepers house has a lamp lit in the wrong window; the way in front of you is the muster yard; your father ran this and did not come back, and nobody explains why'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d21_6_0",
+     "label": "Work along the muster yard",
+     "target": "d22_6"
+    },
+    {
+     "id": "ch_d21_6_1",
+     "label": "Drop down to the fish ladder",
+     "target": "c21_6_1"
+    },
+    {
+     "id": "ch_d21_6_2",
+     "label": "Push out onto the sluice gate",
+     "target": "c21_6_2"
+    }
+   ]
+  },
+  {
+   "id": "d22_0",
+   "body": "<<FILL role=climax words=69 beats='the overspill is running white and the muster yard is full of people; the way in front of you is the fish ladder; there is a right way to do this and a fast way and they are not the same'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d22_0_0",
+     "label": "Double back to the fish ladder",
+     "target": "d23_0"
+    },
+    {
+     "id": "ch_d22_0_1",
+     "label": "Head for the sluice gate",
+     "target": "c22_0_1"
+    },
+    {
+     "id": "ch_d22_0_2",
+     "label": "Wade for the keepers house",
+     "target": "c22_0_2"
+    }
+   ]
+  },
+  {
+   "id": "d22_1",
+   "body": "<<FILL role=climax words=64 beats='the overspill is running white and the muster yard is full of people; the way in front of you is the sluice gate; the marsh does not care whether you are brave'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d22_1_0",
+     "label": "Wade for the sluice gate",
+     "target": "d23_1"
+    },
+    {
+     "id": "ch_d22_1_1",
+     "label": "Climb to the keepers house",
+     "target": "c22_1_1"
+    },
+    {
+     "id": "ch_d22_1_2",
+     "label": "Keep to the overspill",
+     "target": "c22_1_2"
+    }
+   ]
+  },
+  {
+   "id": "d22_2",
+   "body": "<<FILL role=climax words=62 beats='the overspill is running white and the muster yard is full of people; the way in front of you is the keepers house; you can already feel the water in your left boot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d22_2_0",
+     "label": "Keep to the keepers house",
+     "target": "d23_2"
+    },
+    {
+     "id": "ch_d22_2_1",
+     "label": "Ride the ebb to the overspill",
+     "target": "d23_3"
+    },
+    {
+     "id": "ch_d22_2_2",
+     "label": "Take the weir crest",
+     "target": "d23_4"
+    }
+   ]
+  },
+  {
+   "id": "d22_3",
+   "body": "<<FILL role=climax words=68 beats='the overspill is running white and the muster yard is full of people; the way in front of you is the overspill; the rope over your shoulder weighs more every mile'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d22_3_0",
+     "label": "Take the overspill",
+     "target": "d23_3"
+    },
+    {
+     "id": "ch_d22_3_1",
+     "label": "Force a way through the gauge tower",
+     "target": "e_028"
+    },
+    {
+     "id": "ch_d22_3_2",
+     "label": "Swim for the muster yard",
+     "target": "e_029"
+    },
+    {
+     "id": "ch_d22_3_3",
+     "label": "Chance the far side of the fish ladder",
+     "target": "e_028"
+    }
+   ]
+  },
+  {
+   "id": "d22_4",
+   "body": "<<FILL role=climax words=60 beats='the overspill is running white and the muster yard is full of people; the way in front of you is the weir crest; somebody in Lowbridge sold the route and you do not know who'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d22_4_0",
+     "label": "Follow the weir crest",
+     "target": "d23_4"
+    },
+    {
+     "id": "ch_d22_4_1",
+     "label": "Swim for the muster yard",
+     "target": "e_029"
+    },
+    {
+     "id": "ch_d22_4_2",
+     "label": "Chance the far side of the fish ladder",
+     "target": "e_028"
+    }
+   ]
+  },
+  {
+   "id": "d22_5",
+   "body": "<<FILL role=climax words=72 beats='the overspill is running white and the muster yard is full of people; the way in front of you is the gauge tower; the flare in your pocket is one flare and one signal'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d22_5_0",
+     "label": "Drop down to the gauge tower",
+     "target": "d23_5"
+    },
+    {
+     "id": "ch_d22_5_1",
+     "label": "Chance the far side of the fish ladder",
+     "target": "e_029"
+    },
+    {
+     "id": "ch_d22_5_2",
+     "label": "Run flat out for the sluice gate",
+     "target": "e_028"
+    }
+   ]
+  },
+  {
+   "id": "d22_6",
+   "body": "<<FILL role=climax words=65 beats='the overspill is running white and the muster yard is full of people; the way in front of you is the muster yard; if the seal breaks, none of this counted'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d22_6_0",
+     "label": "Double back to the muster yard",
+     "target": "d23_6"
+    },
+    {
+     "id": "ch_d22_6_1",
+     "label": "Run flat out for the sluice gate",
+     "target": "e_029"
+    },
+    {
+     "id": "ch_d22_6_2",
+     "label": "Wade for the sluice gate",
+     "target": "c22_6_2"
+    }
+   ]
+  },
+  {
+   "id": "d23_0",
+   "body": "<<FILL role=climax words=58 beats='the ledger is in your hand and the Weir is deciding what to do about it; the way in front of you is the fish ladder; you are being followed carefully rather than closely'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d23_0_0",
+     "label": "Gamble on the fish ladder",
+     "target": "e_030"
+    },
+    {
+     "id": "ch_d23_0_1",
+     "label": "Force a way through the sluice gate",
+     "target": "e_031"
+    },
+    {
+     "id": "ch_d23_0_2",
+     "label": "Swim for the keepers house",
+     "target": "e_032"
+    }
+   ]
+  },
+  {
+   "id": "d23_1",
+   "body": "<<FILL role=climax words=70 beats='the ledger is in your hand and the Weir is deciding what to do about it; the way in front of you is the sluice gate; there is a dry way and a short way and the tide picks between them'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d23_1_0",
+     "label": "Chance the far side of the sluice gate",
+     "target": "e_033"
+    },
+    {
+     "id": "ch_d23_1_1",
+     "label": "Run flat out for the keepers house",
+     "target": "e_034"
+    },
+    {
+     "id": "ch_d23_1_2",
+     "label": "Trust your feet on the overspill",
+     "target": "e_035"
+    }
+   ]
+  },
+  {
+   "id": "d23_2",
+   "body": "<<FILL role=climax words=63 beats='the ledger is in your hand and the Weir is deciding what to do about it; the way in front of you is the keepers house; the light is going and you have not lit anything yet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d23_2_0",
+     "label": "Go straight over the keepers house",
+     "target": "e_036"
+    },
+    {
+     "id": "ch_d23_2_1",
+     "label": "Break for the overspill",
+     "target": "e_037"
+    },
+    {
+     "id": "ch_d23_2_2",
+     "label": "Gamble on the weir crest",
+     "target": "e_038"
+    }
+   ]
+  },
+  {
+   "id": "d23_3",
+   "body": "<<FILL role=climax words=66 beats='the ledger is in your hand and the Weir is deciding what to do about it; the way in front of you is the overspill; you have been awake for nineteen hours'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d23_3_0",
+     "label": "Force a way through the overspill",
+     "target": "e_039"
+    },
+    {
+     "id": "ch_d23_3_1",
+     "label": "Swim for the weir crest",
+     "target": "e_040"
+    },
+    {
+     "id": "ch_d23_3_2",
+     "label": "Chance the far side of the gauge tower",
+     "target": "e_041"
+    }
+   ]
+  },
+  {
+   "id": "d23_4",
+   "body": "<<FILL role=climax words=61 beats='the ledger is in your hand and the Weir is deciding what to do about it; the way in front of you is the weir crest; the weight of the satchel is on the wrong hip now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d23_4_0",
+     "label": "Run flat out for the weir crest",
+     "target": "e_030"
+    },
+    {
+     "id": "ch_d23_4_1",
+     "label": "Trust your feet on the gauge tower",
+     "target": "e_031"
+    },
+    {
+     "id": "ch_d23_4_2",
+     "label": "Go straight over the muster yard",
+     "target": "e_032"
+    }
+   ]
+  },
+  {
+   "id": "d23_5",
+   "body": "<<FILL role=climax words=69 beats='the ledger is in your hand and the Weir is deciding what to do about it; the way in front of you is the gauge tower; the marsh sounds different when the water turns and it has turned'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d23_5_0",
+     "label": "Break for the gauge tower",
+     "target": "e_033"
+    },
+    {
+     "id": "ch_d23_5_1",
+     "label": "Gamble on the muster yard",
+     "target": "e_034"
+    },
+    {
+     "id": "ch_d23_5_2",
+     "label": "Force a way through the fish ladder",
+     "target": "e_035"
+    }
+   ]
+  },
+  {
+   "id": "d23_6",
+   "body": "<<FILL role=climax words=64 beats='the ledger is in your hand and the Weir is deciding what to do about it; the way in front of you is the muster yard; you can hear your own breathing over the reeds, which is a bad sign'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_d23_6_0",
+     "label": "Swim for the muster yard",
+     "target": "e_036"
+    },
+    {
+     "id": "ch_d23_6_1",
+     "label": "Chance the far side of the fish ladder",
+     "target": "e_037"
+    },
+    {
+     "id": "ch_d23_6_2",
+     "label": "Run flat out for the sluice gate",
+     "target": "e_038"
+    }
+   ]
+  },
+  {
+   "id": "c00_0_1",
+   "body": "<<FILL role=rising words=62 beats='a stretch where the only marker is a stick somebody drove in years ago, working from the coal wharf toward the ferry steps'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c00_0_1_0",
+     "label": "Drop down to the ferry steps",
+     "target": "d01_1"
+    }
+   ]
+  },
+  {
+   "id": "c00_0_2",
+   "body": "<<FILL role=rising words=58 beats='a scramble over broken revetment with the satchel swinging, working from the coal wharf toward the drain culvert'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c00_0_2_0",
+     "label": "Push out onto the drain culvert",
+     "target": "d01_2"
+    }
+   ]
+  },
+  {
+   "id": "c00_0_3",
+   "body": "<<FILL role=rising words=66 beats='a hundred yards of open going with nothing to hide behind, working from the coal wharf toward the tollhouse arch'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c00_0_3_0",
+     "label": "Double back to the tollhouse arch",
+     "target": "d01_3"
+    }
+   ]
+  },
+  {
+   "id": "c00_1_1",
+   "body": "<<FILL role=rising words=58 beats='a scramble over broken revetment with the satchel swinging, working from the ferry steps toward the drain culvert'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c00_1_1_0",
+     "label": "Push out onto the drain culvert",
+     "target": "d01_2"
+    }
+   ]
+  },
+  {
+   "id": "c00_1_2",
+   "body": "<<FILL role=rising words=66 beats='a hundred yards of open going with nothing to hide behind, working from the ferry steps toward the tollhouse arch'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c00_1_2_0",
+     "label": "Double back to the tollhouse arch",
+     "target": "d01_3"
+    }
+   ]
+  },
+  {
+   "id": "c01_1_2",
+   "body": "<<FILL role=rising words=55 beats='a pause to get the water out of your boots and the count back in your head, working from the ferry steps toward the tollhouse arch'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c01_1_2_0",
+     "label": "Head for the tollhouse arch",
+     "target": "d02_3"
+    }
+   ]
+  },
+  {
+   "id": "c01_2_1",
+   "body": "<<FILL role=rising words=55 beats='a pause to get the water out of your boots and the count back in your head, working from the drain culvert toward the tollhouse arch'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c01_2_1_0",
+     "label": "Head for the tollhouse arch",
+     "target": "d02_3"
+    }
+   ]
+  },
+  {
+   "id": "c01_2_2",
+   "body": "<<FILL role=rising words=62 beats='a stretch of old duckboard, half of it sound, working from the drain culvert toward the netting sheds'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c01_2_2_0",
+     "label": "Wade for the netting sheds",
+     "target": "d02_4"
+    }
+   ]
+  },
+  {
+   "id": "c01_3_1",
+   "body": "<<FILL role=rising words=62 beats='a stretch of old duckboard, half of it sound, working from the tollhouse arch toward the netting sheds'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c01_3_1_0",
+     "label": "Wade for the netting sheds",
+     "target": "d02_4"
+    }
+   ]
+  },
+  {
+   "id": "c01_3_2",
+   "body": "<<FILL role=rising words=58 beats='a climb that puts you on the skyline for longer than you like, working from the tollhouse arch toward the ice house'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c01_3_2_0",
+     "label": "Climb to the ice house",
+     "target": "d02_5"
+    }
+   ]
+  },
+  {
+   "id": "c02_3_1",
+   "body": "<<FILL role=rising words=57 beats='ground that will not decide whether it is water or land, working from the tollhouse arch toward the netting sheds'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c02_3_1_0",
+     "label": "Climb to the netting sheds",
+     "target": "d03_4"
+    }
+   ]
+  },
+  {
+   "id": "c02_3_2",
+   "body": "<<FILL role=rising words=63 beats='a stretch where the only marker is a stick somebody drove in years ago, working from the tollhouse arch toward the ice house'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c02_3_2_0",
+     "label": "Keep to the ice house",
+     "target": "d03_5"
+    }
+   ]
+  },
+  {
+   "id": "c02_3_3",
+   "body": "<<FILL role=rising words=55 beats='a scramble over broken revetment with the satchel swinging, working from the tollhouse arch toward the slipway'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c02_3_3_0",
+     "label": "Ride the ebb to the slipway",
+     "target": "d03_6"
+    }
+   ]
+  },
+  {
+   "id": "c02_4_1",
+   "body": "<<FILL role=rising words=63 beats='a stretch where the only marker is a stick somebody drove in years ago, working from the netting sheds toward the ice house'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c02_4_1_0",
+     "label": "Keep to the ice house",
+     "target": "d03_5"
+    }
+   ]
+  },
+  {
+   "id": "c02_4_2",
+   "body": "<<FILL role=rising words=55 beats='a scramble over broken revetment with the satchel swinging, working from the netting sheds toward the slipway'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c02_4_2_0",
+     "label": "Ride the ebb to the slipway",
+     "target": "d03_6"
+    }
+   ]
+  },
+  {
+   "id": "c03_4_1",
+   "body": "<<FILL role=rising words=54 beats='a crawl under a fallen staging with the mud coming up cold, working from the netting sheds toward the drovers track'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c03_4_1_0",
+     "label": "Ride the ebb to the drovers track",
+     "target": "d04_5"
+    }
+   ]
+  },
+  {
+   "id": "c03_4_2",
+   "body": "<<FILL role=rising words=60 beats='a run along a bank that is narrower than it looked, working from the netting sheds toward the black pool'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c03_4_2_0",
+     "label": "Take the black pool",
+     "target": "d04_6"
+    }
+   ]
+  },
+  {
+   "id": "c03_5_1",
+   "body": "<<FILL role=rising words=60 beats='a run along a bank that is narrower than it looked, working from the ice house toward the black pool'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c03_5_1_0",
+     "label": "Take the black pool",
+     "target": "d04_6"
+    }
+   ]
+  },
+  {
+   "id": "c03_5_2",
+   "body": "<<FILL role=rising words=57 beats='a pause to get the water out of your boots and the count back in your head, working from the ice house toward the cut'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c03_5_2_0",
+     "label": "Cut across to the cut",
+     "target": "d04_0"
+    }
+   ]
+  },
+  {
+   "id": "c03_6_1",
+   "body": "<<FILL role=rising words=57 beats='a pause to get the water out of your boots and the count back in your head, working from the slipway toward the cut'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c03_6_1_0",
+     "label": "Cut across to the cut",
+     "target": "d04_0"
+    }
+   ]
+  },
+  {
+   "id": "c04_0_1",
+   "body": "<<FILL role=rising words=60 beats='a crawl under a fallen staging with the mud coming up cold, working from the cut toward the reed line'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c04_0_1_0",
+     "label": "Wade for the reed line",
+     "target": "d05_1"
+    }
+   ]
+  },
+  {
+   "id": "c04_5_2",
+   "body": "<<FILL role=rising words=66 beats='a length of ditch that turns out to run the wrong way, working from the drovers track toward the cut'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c04_5_2_0",
+     "label": "Follow the cut",
+     "target": "d05_0"
+    }
+   ]
+  },
+  {
+   "id": "c04_6_1",
+   "body": "<<FILL role=rising words=66 beats='a length of ditch that turns out to run the wrong way, working from the black pool toward the cut'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c04_6_1_0",
+     "label": "Follow the cut",
+     "target": "d05_0"
+    }
+   ]
+  },
+  {
+   "id": "c04_6_2",
+   "body": "<<FILL role=rising words=54 beats='ground that will not decide whether it is water or land, working from the black pool toward the reed line'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c04_6_2_0",
+     "label": "Work along the reed line",
+     "target": "d05_1"
+    }
+   ]
+  },
+  {
+   "id": "c04_6_3",
+   "body": "<<FILL role=rising words=60 beats='a stretch where the only marker is a stick somebody drove in years ago, working from the black pool toward the plank walk'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c04_6_3_0",
+     "label": "Drop down to the plank walk",
+     "target": "d05_2"
+    }
+   ]
+  },
+  {
+   "id": "c05_0_1",
+   "body": "<<FILL role=rising words=58 beats='a climb that puts you on the skyline for longer than you like, working from the cut toward the reed line'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c05_0_1_0",
+     "label": "Climb to the reed line",
+     "target": "d06_1"
+    }
+   ]
+  },
+  {
+   "id": "c05_0_2",
+   "body": "<<FILL role=rising words=66 beats='a crossing made on somebody elses rope, working from the cut toward the plank walk'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c05_0_2_0",
+     "label": "Keep to the plank walk",
+     "target": "d06_2"
+    }
+   ]
+  },
+  {
+   "id": "c05_0_3",
+   "body": "<<FILL role=rising words=54 beats='a length of ditch that turns out to run the wrong way, working from the cut toward the eel traps'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c05_0_3_0",
+     "label": "Ride the ebb to the eel traps",
+     "target": "d06_3"
+    }
+   ]
+  },
+  {
+   "id": "c05_1_1",
+   "body": "<<FILL role=rising words=66 beats='a crossing made on somebody elses rope, working from the reed line toward the plank walk'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c05_1_1_0",
+     "label": "Keep to the plank walk",
+     "target": "d06_2"
+    }
+   ]
+  },
+  {
+   "id": "c05_6_2",
+   "body": "<<FILL role=rising words=62 beats='a wade that starts at the knee and does not stay there, working from the black pool toward the reed line'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c05_6_2_0",
+     "label": "Drop down to the reed line",
+     "target": "d06_1"
+    }
+   ]
+  },
+  {
+   "id": "c06_1_2",
+   "body": "<<FILL role=rising words=62 beats='a hundred yards of open going with nothing to hide behind, working from the reed line toward the eel traps'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c06_1_2_0",
+     "label": "Take the eel traps",
+     "target": "d07_3"
+    }
+   ]
+  },
+  {
+   "id": "c06_2_1",
+   "body": "<<FILL role=rising words=62 beats='a hundred yards of open going with nothing to hide behind, working from the plank walk toward the eel traps'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c06_2_1_0",
+     "label": "Take the eel traps",
+     "target": "d07_3"
+    }
+   ]
+  },
+  {
+   "id": "c06_2_2",
+   "body": "<<FILL role=rising words=58 beats='a wade that starts at the knee and does not stay there, working from the plank walk toward the burnt hide'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c06_2_2_0",
+     "label": "Cut across to the burnt hide",
+     "target": "d07_4"
+    }
+   ]
+  },
+  {
+   "id": "c06_3_1",
+   "body": "<<FILL role=rising words=58 beats='a wade that starts at the knee and does not stay there, working from the eel traps toward the burnt hide'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c06_3_1_0",
+     "label": "Cut across to the burnt hide",
+     "target": "d07_4"
+    }
+   ]
+  },
+  {
+   "id": "c06_3_2",
+   "body": "<<FILL role=rising words=66 beats='a crawl under a fallen staging with the mud coming up cold, working from the eel traps toward the drovers track'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c06_3_2_0",
+     "label": "Follow the drovers track",
+     "target": "d07_5"
+    }
+   ]
+  },
+  {
+   "id": "c07_3_1",
+   "body": "<<FILL role=rising words=63 beats='a stretch of old duckboard, half of it sound, working from the eel traps toward the sunk lighter'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c07_3_1_0",
+     "label": "Follow the sunk lighter",
+     "target": "d08_4"
+    }
+   ]
+  },
+  {
+   "id": "c07_3_2",
+   "body": "<<FILL role=rising words=55 beats='a climb that puts you on the skyline for longer than you like, working from the eel traps toward the chain store'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c07_3_2_0",
+     "label": "Work along the chain store",
+     "target": "d08_5"
+    }
+   ]
+  },
+  {
+   "id": "c07_3_3",
+   "body": "<<FILL role=rising words=62 beats='a crossing made on somebody elses rope, working from the eel traps toward the dry dock'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c07_3_3_0",
+     "label": "Drop down to the dry dock",
+     "target": "d08_6"
+    }
+   ]
+  },
+  {
+   "id": "c07_4_1",
+   "body": "<<FILL role=rising words=55 beats='a climb that puts you on the skyline for longer than you like, working from the burnt hide toward the chain store'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c07_4_1_0",
+     "label": "Work along the chain store",
+     "target": "d08_5"
+    }
+   ]
+  },
+  {
+   "id": "c07_4_2",
+   "body": "<<FILL role=rising words=62 beats='a crossing made on somebody elses rope, working from the burnt hide toward the dry dock'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c07_4_2_0",
+     "label": "Drop down to the dry dock",
+     "target": "d08_6"
+    }
+   ]
+  },
+  {
+   "id": "c08_1_1",
+   "body": "<<FILL role=rising words=58 beats='a crossing made on somebody elses rope, working from the crane frame toward the tar shed'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c08_1_1_0",
+     "label": "Cut across to the tar shed",
+     "target": "d09_2"
+    }
+   ]
+  },
+  {
+   "id": "c08_1_2",
+   "body": "<<FILL role=rising words=66 beats='a length of ditch that turns out to run the wrong way, working from the crane frame toward the boiler yard'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c08_1_2_0",
+     "label": "Follow the boiler yard",
+     "target": "d09_3"
+    }
+   ]
+  },
+  {
+   "id": "c08_2_1",
+   "body": "<<FILL role=rising words=66 beats='a length of ditch that turns out to run the wrong way, working from the tar shed toward the boiler yard'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c08_2_1_0",
+     "label": "Follow the boiler yard",
+     "target": "d09_3"
+    }
+   ]
+  },
+  {
+   "id": "c08_2_2",
+   "body": "<<FILL role=rising words=54 beats='ground that will not decide whether it is water or land, working from the tar shed toward the sunk lighter'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c08_2_2_0",
+     "label": "Work along the sunk lighter",
+     "target": "d09_4"
+    }
+   ]
+  },
+  {
+   "id": "c08_2_3",
+   "body": "<<FILL role=rising words=60 beats='a stretch where the only marker is a stick somebody drove in years ago, working from the tar shed toward the chain store'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c08_2_3_0",
+     "label": "Drop down to the chain store",
+     "target": "d09_5"
+    }
+   ]
+  },
+  {
+   "id": "c09_1_2",
+   "body": "<<FILL role=rising words=55 beats='a hundred yards of open going with nothing to hide behind, working from the crane frame toward the boiler yard'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c09_1_2_0",
+     "label": "Work along the boiler yard",
+     "target": "d10_3"
+    }
+   ]
+  },
+  {
+   "id": "c09_1_3",
+   "body": "<<FILL role=rising words=62 beats='a wade that starts at the knee and does not stay there, working from the crane frame toward the sunk lighter'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c09_1_3_0",
+     "label": "Drop down to the sunk lighter",
+     "target": "d10_4"
+    }
+   ]
+  },
+  {
+   "id": "c09_2_1",
+   "body": "<<FILL role=rising words=55 beats='a hundred yards of open going with nothing to hide behind, working from the tar shed toward the boiler yard'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c09_2_1_0",
+     "label": "Work along the boiler yard",
+     "target": "d10_3"
+    }
+   ]
+  },
+  {
+   "id": "c09_2_2",
+   "body": "<<FILL role=rising words=62 beats='a wade that starts at the knee and does not stay there, working from the tar shed toward the sunk lighter'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c09_2_2_0",
+     "label": "Drop down to the sunk lighter",
+     "target": "d10_4"
+    }
+   ]
+  },
+  {
+   "id": "c09_3_1",
+   "body": "<<FILL role=rising words=62 beats='a wade that starts at the knee and does not stay there, working from the boiler yard toward the sunk lighter'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c09_3_1_0",
+     "label": "Drop down to the sunk lighter",
+     "target": "d10_4"
+    }
+   ]
+  },
+  {
+   "id": "c10_2_2",
+   "body": "<<FILL role=rising words=57 beats='a stretch of old duckboard, half of it sound, working from the tar shed toward the sunk lighter'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c10_2_2_0",
+     "label": "Push out onto the sunk lighter",
+     "target": "d11_4"
+    }
+   ]
+  },
+  {
+   "id": "c10_3_1",
+   "body": "<<FILL role=rising words=57 beats='a stretch of old duckboard, half of it sound, working from the boiler yard toward the sunk lighter'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c10_3_1_0",
+     "label": "Push out onto the sunk lighter",
+     "target": "d11_4"
+    }
+   ]
+  },
+  {
+   "id": "c10_3_2",
+   "body": "<<FILL role=rising words=63 beats='a climb that puts you on the skyline for longer than you like, working from the boiler yard toward the chain store'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c10_3_2_0",
+     "label": "Double back to the chain store",
+     "target": "d11_5"
+    }
+   ]
+  },
+  {
+   "id": "c10_4_1",
+   "body": "<<FILL role=rising words=63 beats='a climb that puts you on the skyline for longer than you like, working from the sunk lighter toward the chain store'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c10_4_1_0",
+     "label": "Double back to the chain store",
+     "target": "d11_5"
+    }
+   ]
+  },
+  {
+   "id": "c10_4_2",
+   "body": "<<FILL role=rising words=55 beats='a crossing made on somebody elses rope, working from the sunk lighter toward the dry dock'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c10_4_2_0",
+     "label": "Head for the dry dock",
+     "target": "d11_6"
+    }
+   ]
+  },
+  {
+   "id": "c11_0_1",
+   "body": "<<FILL role=rising words=55 beats='a climb that puts you on the skyline for longer than you like, working from the barge hulk toward the brine ladder'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c11_0_1_0",
+     "label": "Work along the brine ladder",
+     "target": "d12_1"
+    }
+   ]
+  },
+  {
+   "id": "c11_5_1",
+   "body": "<<FILL role=rising words=60 beats='a scramble over broken revetment with the satchel swinging, working from the chain store toward the tally hut'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c11_5_1_0",
+     "label": "Wade for the tally hut",
+     "target": "d12_6"
+    }
+   ]
+  },
+  {
+   "id": "c11_5_2",
+   "body": "<<FILL role=rising words=57 beats='a hundred yards of open going with nothing to hide behind, working from the chain store toward the crystal pans'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c11_5_2_0",
+     "label": "Climb to the crystal pans",
+     "target": "d12_0"
+    }
+   ]
+  },
+  {
+   "id": "c11_6_1",
+   "body": "<<FILL role=rising words=57 beats='a hundred yards of open going with nothing to hide behind, working from the dry dock toward the crystal pans'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c11_6_1_0",
+     "label": "Climb to the crystal pans",
+     "target": "d12_0"
+    }
+   ]
+  },
+  {
+   "id": "c11_6_2",
+   "body": "<<FILL role=rising words=63 beats='a wade that starts at the knee and does not stay there, working from the dry dock toward the brine ladder'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c11_6_2_0",
+     "label": "Keep to the brine ladder",
+     "target": "d12_1"
+    }
+   ]
+  },
+  {
+   "id": "c12_0_1",
+   "body": "<<FILL role=rising words=60 beats='a stretch where the only marker is a stick somebody drove in years ago, working from the crystal pans toward the brine ladder'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c12_0_1_0",
+     "label": "Drop down to the brine ladder",
+     "target": "d13_1"
+    }
+   ]
+  },
+  {
+   "id": "c12_0_2",
+   "body": "<<FILL role=rising words=57 beats='a scramble over broken revetment with the satchel swinging, working from the crystal pans toward the pump house'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c12_0_2_0",
+     "label": "Push out onto the pump house",
+     "target": "d13_2"
+    }
+   ]
+  },
+  {
+   "id": "c12_1_1",
+   "body": "<<FILL role=rising words=57 beats='a scramble over broken revetment with the satchel swinging, working from the brine ladder toward the pump house'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c12_1_1_0",
+     "label": "Push out onto the pump house",
+     "target": "d13_2"
+    }
+   ]
+  },
+  {
+   "id": "c12_1_2",
+   "body": "<<FILL role=rising words=63 beats='a hundred yards of open going with nothing to hide behind, working from the brine ladder toward the salt road'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c12_1_2_0",
+     "label": "Double back to the salt road",
+     "target": "d13_3"
+    }
+   ]
+  },
+  {
+   "id": "c12_6_2",
+   "body": "<<FILL role=rising words=54 beats='a stretch of old duckboard, half of it sound, working from the tally hut toward the brine ladder'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c12_6_2_0",
+     "label": "Ride the ebb to the brine ladder",
+     "target": "d13_1"
+    }
+   ]
+  },
+  {
+   "id": "c13_1_1",
+   "body": "<<FILL role=rising words=66 beats='a run along a bank that is narrower than it looked, working from the brine ladder toward the pump house'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c13_1_1_0",
+     "label": "Double back to the pump house",
+     "target": "d14_2"
+    }
+   ]
+  },
+  {
+   "id": "c13_1_2",
+   "body": "<<FILL role=rising words=54 beats='a pause to get the water out of your boots and the count back in your head, working from the brine ladder toward the salt road'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c13_1_2_0",
+     "label": "Head for the salt road",
+     "target": "d14_3"
+    }
+   ]
+  },
+  {
+   "id": "c13_2_1",
+   "body": "<<FILL role=rising words=54 beats='a pause to get the water out of your boots and the count back in your head, working from the pump house toward the salt road'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c13_2_1_0",
+     "label": "Head for the salt road",
+     "target": "d14_3"
+    }
+   ]
+  },
+  {
+   "id": "c13_2_2",
+   "body": "<<FILL role=rising words=60 beats='a stretch of old duckboard, half of it sound, working from the pump house toward the wind engine'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c13_2_2_0",
+     "label": "Wade for the wind engine",
+     "target": "d14_4"
+    }
+   ]
+  },
+  {
+   "id": "c13_2_3",
+   "body": "<<FILL role=rising words=57 beats='a climb that puts you on the skyline for longer than you like, working from the pump house toward the settling beds'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c13_2_3_0",
+     "label": "Climb to the settling beds",
+     "target": "d14_5"
+    }
+   ]
+  },
+  {
+   "id": "c14_1_1",
+   "body": "<<FILL role=rising words=55 beats='a crossing made on somebody elses rope, working from the brine ladder toward the pump house'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c14_1_1_0",
+     "label": "Head for the pump house",
+     "target": "d15_2"
+    }
+   ]
+  },
+  {
+   "id": "c14_1_2",
+   "body": "<<FILL role=rising words=62 beats='a length of ditch that turns out to run the wrong way, working from the brine ladder toward the salt road'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c14_1_2_0",
+     "label": "Wade for the salt road",
+     "target": "d15_3"
+    }
+   ]
+  },
+  {
+   "id": "c14_1_3",
+   "body": "<<FILL role=rising words=58 beats='ground that will not decide whether it is water or land, working from the brine ladder toward the wind engine'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c14_1_3_0",
+     "label": "Climb to the wind engine",
+     "target": "d15_4"
+    }
+   ]
+  },
+  {
+   "id": "c14_2_1",
+   "body": "<<FILL role=rising words=62 beats='a length of ditch that turns out to run the wrong way, working from the pump house toward the salt road'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c14_2_1_0",
+     "label": "Wade for the salt road",
+     "target": "d15_3"
+    }
+   ]
+  },
+  {
+   "id": "c14_2_2",
+   "body": "<<FILL role=rising words=58 beats='ground that will not decide whether it is water or land, working from the pump house toward the wind engine'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c14_2_2_0",
+     "label": "Climb to the wind engine",
+     "target": "d15_4"
+    }
+   ]
+  },
+  {
+   "id": "c15_2_1",
+   "body": "<<FILL role=rising words=57 beats='a hundred yards of open going with nothing to hide behind, working from the pump house toward the broken span'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c15_2_1_0",
+     "label": "Climb to the broken span",
+     "target": "d16_3"
+    }
+   ]
+  },
+  {
+   "id": "c15_2_2",
+   "body": "<<FILL role=rising words=63 beats='a wade that starts at the knee and does not stay there, working from the pump house toward the tide gauge'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c15_2_2_0",
+     "label": "Keep to the tide gauge",
+     "target": "d16_4"
+    }
+   ]
+  },
+  {
+   "id": "c15_3_1",
+   "body": "<<FILL role=rising words=63 beats='a wade that starts at the knee and does not stay there, working from the salt road toward the tide gauge'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c15_3_1_0",
+     "label": "Keep to the tide gauge",
+     "target": "d16_4"
+    }
+   ]
+  },
+  {
+   "id": "c15_3_2",
+   "body": "<<FILL role=rising words=55 beats='a crawl under a fallen staging with the mud coming up cold, working from the salt road toward the beacon post'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c15_3_2_0",
+     "label": "Ride the ebb to the beacon post",
+     "target": "d16_5"
+    }
+   ]
+  },
+  {
+   "id": "c15_4_1",
+   "body": "<<FILL role=rising words=55 beats='a crawl under a fallen staging with the mud coming up cold, working from the wind engine toward the beacon post'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c15_4_1_0",
+     "label": "Ride the ebb to the beacon post",
+     "target": "d16_5"
+    }
+   ]
+  },
+  {
+   "id": "c16_0_1",
+   "body": "<<FILL role=rising words=62 beats='a crawl under a fallen staging with the mud coming up cold, working from the low arches toward the counting stones'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c16_0_1_0",
+     "label": "Wade for the counting stones",
+     "target": "d17_1"
+    }
+   ]
+  },
+  {
+   "id": "c16_5_1",
+   "body": "<<FILL role=rising words=57 beats='a crossing made on somebody elses rope, working from the beacon post toward the shell bank'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c16_5_1_0",
+     "label": "Cut across to the shell bank",
+     "target": "d17_6"
+    }
+   ]
+  },
+  {
+   "id": "c16_5_2",
+   "body": "<<FILL role=rising words=63 beats='a length of ditch that turns out to run the wrong way, working from the beacon post toward the low arches'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c16_5_2_0",
+     "label": "Follow the low arches",
+     "target": "d17_0"
+    }
+   ]
+  },
+  {
+   "id": "c16_6_1",
+   "body": "<<FILL role=rising words=63 beats='a length of ditch that turns out to run the wrong way, working from the shell bank toward the low arches'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c16_6_1_0",
+     "label": "Follow the low arches",
+     "target": "d17_0"
+    }
+   ]
+  },
+  {
+   "id": "c16_6_2",
+   "body": "<<FILL role=rising words=55 beats='ground that will not decide whether it is water or land, working from the shell bank toward the counting stones'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c16_6_2_0",
+     "label": "Work along the counting stones",
+     "target": "d17_1"
+    }
+   ]
+  },
+  {
+   "id": "c17_0_1",
+   "body": "<<FILL role=rising words=57 beats='a climb that puts you on the skyline for longer than you like, working from the low arches toward the counting stones'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c17_0_1_0",
+     "label": "Climb to the counting stones",
+     "target": "d18_1"
+    }
+   ]
+  },
+  {
+   "id": "c17_0_2",
+   "body": "<<FILL role=rising words=63 beats='a crossing made on somebody elses rope, working from the low arches toward the passing place'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c17_0_2_0",
+     "label": "Keep to the passing place",
+     "target": "d18_2"
+    }
+   ]
+  },
+  {
+   "id": "c17_1_1",
+   "body": "<<FILL role=rising words=63 beats='a crossing made on somebody elses rope, working from the counting stones toward the passing place'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c17_1_1_0",
+     "label": "Keep to the passing place",
+     "target": "d18_2"
+    }
+   ]
+  },
+  {
+   "id": "c17_1_2",
+   "body": "<<FILL role=rising words=55 beats='a length of ditch that turns out to run the wrong way, working from the counting stones toward the broken span'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c17_1_2_0",
+     "label": "Ride the ebb to the broken span",
+     "target": "d18_3"
+    }
+   ]
+  },
+  {
+   "id": "c17_6_2",
+   "body": "<<FILL role=rising words=60 beats='a wade that starts at the knee and does not stay there, working from the shell bank toward the counting stones'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c17_6_2_0",
+     "label": "Drop down to the counting stones",
+     "target": "d18_1"
+    }
+   ]
+  },
+  {
+   "id": "c18_1_1",
+   "body": "<<FILL role=rising words=54 beats='a scramble over broken revetment with the satchel swinging, working from the counting stones toward the passing place'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c18_1_1_0",
+     "label": "Ride the ebb to the passing place",
+     "target": "d19_2"
+    }
+   ]
+  },
+  {
+   "id": "c18_1_2",
+   "body": "<<FILL role=rising words=60 beats='a hundred yards of open going with nothing to hide behind, working from the counting stones toward the broken span'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c18_1_2_0",
+     "label": "Take the broken span",
+     "target": "d19_3"
+    }
+   ]
+  },
+  {
+   "id": "c18_2_1",
+   "body": "<<FILL role=rising words=60 beats='a hundred yards of open going with nothing to hide behind, working from the passing place toward the broken span'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c18_2_1_0",
+     "label": "Take the broken span",
+     "target": "d19_3"
+    }
+   ]
+  },
+  {
+   "id": "c18_2_2",
+   "body": "<<FILL role=rising words=57 beats='a wade that starts at the knee and does not stay there, working from the passing place toward the tide gauge'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c18_2_2_0",
+     "label": "Cut across to the tide gauge",
+     "target": "d19_4"
+    }
+   ]
+  },
+  {
+   "id": "c18_2_3",
+   "body": "<<FILL role=rising words=63 beats='a crawl under a fallen staging with the mud coming up cold, working from the passing place toward the beacon post'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c18_2_3_0",
+     "label": "Follow the beacon post",
+     "target": "d19_5"
+    }
+   ]
+  },
+  {
+   "id": "c19_0_2",
+   "body": "<<FILL role=rising words=62 beats='a run along a bank that is narrower than it looked, working from the low arches toward the keepers house'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c19_0_2_0",
+     "label": "Take the keepers house",
+     "target": "d20_2"
+    }
+   ]
+  },
+  {
+   "id": "c19_1_1",
+   "body": "<<FILL role=rising words=62 beats='a run along a bank that is narrower than it looked, working from the counting stones toward the keepers house'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c19_1_1_0",
+     "label": "Take the keepers house",
+     "target": "d20_2"
+    }
+   ]
+  },
+  {
+   "id": "c19_1_2",
+   "body": "<<FILL role=rising words=58 beats='a pause to get the water out of your boots and the count back in your head, working from the counting stones toward the overspill'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c19_1_2_0",
+     "label": "Cut across to the overspill",
+     "target": "d20_3"
+    }
+   ]
+  },
+  {
+   "id": "c19_1_3",
+   "body": "<<FILL role=rising words=66 beats='a stretch of old duckboard, half of it sound, working from the counting stones toward the weir crest'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c19_1_3_0",
+     "label": "Follow the weir crest",
+     "target": "d20_4"
+    }
+   ]
+  },
+  {
+   "id": "c19_2_1",
+   "body": "<<FILL role=rising words=58 beats='a pause to get the water out of your boots and the count back in your head, working from the passing place toward the overspill'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c19_2_1_0",
+     "label": "Cut across to the overspill",
+     "target": "d20_3"
+    }
+   ]
+  },
+  {
+   "id": "c20_1_2",
+   "body": "<<FILL role=rising words=63 beats='a length of ditch that turns out to run the wrong way, working from the sluice gate toward the overspill'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c20_1_2_0",
+     "label": "Follow the overspill",
+     "target": "d21_3"
+    }
+   ]
+  },
+  {
+   "id": "c20_2_1",
+   "body": "<<FILL role=rising words=63 beats='a length of ditch that turns out to run the wrong way, working from the keepers house toward the overspill'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c20_2_1_0",
+     "label": "Follow the overspill",
+     "target": "d21_3"
+    }
+   ]
+  },
+  {
+   "id": "c20_2_2",
+   "body": "<<FILL role=rising words=55 beats='ground that will not decide whether it is water or land, working from the keepers house toward the weir crest'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c20_2_2_0",
+     "label": "Work along the weir crest",
+     "target": "d21_4"
+    }
+   ]
+  },
+  {
+   "id": "c20_3_1",
+   "body": "<<FILL role=rising words=55 beats='ground that will not decide whether it is water or land, working from the overspill toward the weir crest'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c20_3_1_0",
+     "label": "Work along the weir crest",
+     "target": "d21_4"
+    }
+   ]
+  },
+  {
+   "id": "c20_3_2",
+   "body": "<<FILL role=rising words=62 beats='a stretch where the only marker is a stick somebody drove in years ago, working from the overspill toward the gauge tower'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c20_3_2_0",
+     "label": "Drop down to the gauge tower",
+     "target": "d21_5"
+    }
+   ]
+  },
+  {
+   "id": "c21_0_1",
+   "body": "<<FILL role=rising words=58 beats='a stretch where the only marker is a stick somebody drove in years ago, working from the fish ladder toward the sluice gate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c21_0_1_0",
+     "label": "Cut across to the sluice gate",
+     "target": "d22_1"
+    }
+   ]
+  },
+  {
+   "id": "c21_5_1",
+   "body": "<<FILL role=rising words=63 beats='a run along a bank that is narrower than it looked, working from the gauge tower toward the muster yard'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c21_5_1_0",
+     "label": "Double back to the muster yard",
+     "target": "d22_6"
+    }
+   ]
+  },
+  {
+   "id": "c21_5_2",
+   "body": "<<FILL role=rising words=55 beats='a pause to get the water out of your boots and the count back in your head, working from the gauge tower toward the fish ladder'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c21_5_2_0",
+     "label": "Head for the fish ladder",
+     "target": "d22_0"
+    }
+   ]
+  },
+  {
+   "id": "c21_6_1",
+   "body": "<<FILL role=rising words=55 beats='a pause to get the water out of your boots and the count back in your head, working from the muster yard toward the fish ladder'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c21_6_1_0",
+     "label": "Head for the fish ladder",
+     "target": "d22_0"
+    }
+   ]
+  },
+  {
+   "id": "c21_6_2",
+   "body": "<<FILL role=rising words=62 beats='a stretch of old duckboard, half of it sound, working from the muster yard toward the sluice gate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c21_6_2_0",
+     "label": "Wade for the sluice gate",
+     "target": "d22_1"
+    }
+   ]
+  },
+  {
+   "id": "c22_0_1",
+   "body": "<<FILL role=rising words=63 beats='a crawl under a fallen staging with the mud coming up cold, working from the fish ladder toward the sluice gate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c22_0_1_0",
+     "label": "Follow the sluice gate",
+     "target": "d23_1"
+    }
+   ]
+  },
+  {
+   "id": "c22_0_2",
+   "body": "<<FILL role=rising words=55 beats='a run along a bank that is narrower than it looked, working from the fish ladder toward the keepers house'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c22_0_2_0",
+     "label": "Work along the keepers house",
+     "target": "d23_2"
+    }
+   ]
+  },
+  {
+   "id": "c22_1_1",
+   "body": "<<FILL role=rising words=55 beats='a run along a bank that is narrower than it looked, working from the sluice gate toward the keepers house'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c22_1_1_0",
+     "label": "Work along the keepers house",
+     "target": "d23_2"
+    }
+   ]
+  },
+  {
+   "id": "c22_1_2",
+   "body": "<<FILL role=rising words=62 beats='a pause to get the water out of your boots and the count back in your head, working from the sluice gate toward the overspill'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c22_1_2_0",
+     "label": "Drop down to the overspill",
+     "target": "d23_3"
+    }
+   ]
+  },
+  {
+   "id": "c22_6_2",
+   "body": "<<FILL role=rising words=57 beats='ground that will not decide whether it is water or land, working from the muster yard toward the sluice gate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_c22_6_2_0",
+     "label": "Climb to the sluice gate",
+     "target": "d23_1"
+    }
+   ]
+  }
+ ]
+}

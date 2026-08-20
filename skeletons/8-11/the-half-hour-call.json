@@ -1,0 +1,1215 @@
+{
+ "schema_version": "2.0",
+ "id": "sk_half_hour_call",
+ "version": 1,
+ "title": "The Half-Hour Call",
+ "metadata": {
+  "age_band": "8-11",
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 4.5,
+   "tolerance": 1.5
+  },
+  "tier": 1,
+  "themes": [
+   "theatre",
+   "teamwork",
+   "nerve",
+   "craft",
+   "responsibility"
+  ],
+  "estimated_minutes": 8,
+  "ending_count": 14,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  },
+  "topology": "branch_and_bottleneck",
+  "length": "short",
+  "narrative_style": "prose",
+  "production_eligible": true
+ },
+ "variables": [],
+ "start_node": "n_arrive",
+ "nodes": [
+  {
+   "id": "n_arrive",
+   "body": "<<FILL role=setup words=60 beats='the stage door of the Fenwick Hall is propped open with a fire extinguisher and the corridor smells of sawdust and hot lamps; somebody carries a papier-mache fox head past at head height without slowing down; a chalkboard by the door says CURTAIN 7:00 and under it in smaller letters HALF-HOUR CALL 6:30'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_arrive_0",
+     "label": "Go in and find the job board.",
+     "target": "n_board"
+    }
+   ]
+  },
+  {
+   "id": "n_board",
+   "body": "<<FILL role=setup words=70 beats='the job board is a corkboard by the scene dock with three index cards pinned in a row, each with a department on it and a question mark after it; Ms Adeyinka the stage manager has a headset round her neck and a clipboard against her hip and says to pick one and mean it, because whoever picks it owns it tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_board_0",
+     "label": "Take the lighting box.",
+     "target": "l_hub"
+    },
+    {
+     "id": "c_n_board_1",
+     "label": "Take the costume room.",
+     "target": "c_hub"
+    },
+    {
+     "id": "c_n_board_2",
+     "label": "Take the stage crew.",
+     "target": "s_hub"
+    }
+   ]
+  },
+  {
+   "id": "l_hub",
+   "body": "<<FILL role=setup words=100 beats='the lighting box is a plywood room at the back of the hall with one window looking down over the empty seats; twenty-four faders on the desk and only about half of them labelled in marker; Theo has been running the whole show on his own and has a folder of cue sheets in no order at all; the hall lights buzz faintly and three things are wrong at once'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l_hub_0",
+     "label": "Sort the cue sheets first.",
+     "target": "l_a"
+    },
+    {
+     "id": "c_l_hub_1",
+     "label": "Check the lamp that keeps flickering.",
+     "target": "l_b"
+    },
+    {
+     "id": "c_l_hub_2",
+     "label": "Learn the desk before touching anything else.",
+     "target": "l_c"
+    }
+   ]
+  },
+  {
+   "id": "l_a",
+   "body": "<<FILL role=rising words=100 beats='the cue folder holds forty loose pages, some typed and some in pencil, and two of them are water-stained into grey clouds; the running order taped to the wall does not match the folder anywhere after the interval; Theo remembers every cue he has actually run and none of the ones in Act Two; and then at ten past five three things go wrong in the same minute, and there is only enough of the afternoon left to take on one of them properly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l_a_0",
+     "label": "Go and find the breaker.",
+     "target": "l_p"
+    },
+    {
+     "id": "c_l_a_1",
+     "label": "Give the snow cue a lamp of its own.",
+     "target": "l_q"
+    },
+    {
+     "id": "c_l_a_2",
+     "label": "Rebuild Act Two on the desk.",
+     "target": "l_r"
+    }
+   ]
+  },
+  {
+   "id": "l_b",
+   "body": "<<FILL role=rising words=100 beats='the lamp over the stage-left corner stutters whenever anyone walks the gantry above it; its gel frame is warm to the back of a hand and the cable behind it is coiled tight against a bracket; the ladder rule is painted on the wall in letters a foot high, nobody up it without Ms Adeyinka knowing; and then at ten past five three things go wrong in the same minute, and there is only enough of the afternoon left to take on one of them properly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l_b_0",
+     "label": "Give the snow cue a lamp of its own.",
+     "target": "l_q"
+    },
+    {
+     "id": "c_l_b_1",
+     "label": "Rebuild Act Two on the desk.",
+     "target": "l_r"
+    },
+    {
+     "id": "c_l_b_2",
+     "label": "Go and find the breaker.",
+     "target": "l_p"
+    }
+   ]
+  },
+  {
+   "id": "l_c",
+   "body": "<<FILL role=rising words=100 beats='Theo points out the record button and the go button and says the desk remembers whatever you tell it, mistakes included; last night's rehearsal stack is still loaded and still wrong in two places; there is a plan of which lamp is which somewhere under the folder, or possibly under the kettle; and then at ten past five three things go wrong in the same minute, and there is only enough of the afternoon left to take on one of them properly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l_c_0",
+     "label": "Rebuild Act Two on the desk.",
+     "target": "l_r"
+    },
+    {
+     "id": "c_l_c_1",
+     "label": "Go and find the breaker.",
+     "target": "l_p"
+    },
+    {
+     "id": "c_l_c_2",
+     "label": "Give the snow cue a lamp of its own.",
+     "target": "l_q"
+    }
+   ]
+  },
+  {
+   "id": "l_p",
+   "body": "<<FILL role=rising words=100 beats='at ten past five the fog machine pulls too much and the breaker goes; the hall drops to the emergency lights and everyone stops where they are and says ooh; the board is in a cupboard behind the kitchen and only Ms Adeyinka has the key on her belt'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l_p_0",
+     "label": "Do the small, boring, reliable fix.",
+     "target": "l_x"
+    },
+    {
+     "id": "c_l_p_1",
+     "label": "Go and ask someone to help you.",
+     "target": "l_y"
+    },
+    {
+     "id": "c_l_p_2",
+     "label": "Change the moment so that it works.",
+     "target": "l_z"
+    }
+   ]
+  },
+  {
+   "id": "l_q",
+   "body": "<<FILL role=rising words=100 beats='the script's biggest moment, the snow falling on the fox, has a cue number and no lamp assigned to it; whoever wrote the plot left that line blank and then left for university; the only spare lantern is rigged to light a door nobody uses in this version'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l_q_0",
+     "label": "Go and ask someone to help you.",
+     "target": "l_y"
+    },
+    {
+     "id": "c_l_q_1",
+     "label": "Change the moment so that it works.",
+     "target": "l_z"
+    },
+    {
+     "id": "c_l_q_2",
+     "label": "Do the small, boring, reliable fix.",
+     "target": "l_x"
+    }
+   ]
+  },
+  {
+   "id": "l_r",
+   "body": "<<FILL role=rising words=100 beats='the stack plays back perfectly up to the interval and then produces a full blackout where a sunrise should be; Theo goes very quiet; there are ninety minutes left and the sunrise is on the poster outside'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l_r_0",
+     "label": "Change the moment so that it works.",
+     "target": "l_z"
+    },
+    {
+     "id": "c_l_r_1",
+     "label": "Do the small, boring, reliable fix.",
+     "target": "l_x"
+    },
+    {
+     "id": "c_l_r_2",
+     "label": "Leave it and hope nobody notices.",
+     "target": "l_early"
+    }
+   ]
+  },
+  {
+   "id": "l_x",
+   "body": "<<FILL role=rising words=100 beats='the answer turns out to be small and boring and completely reliable: one lamp moved, one number written down, one thing tested twice instead of once; the hall looks the way the script says it should look; Theo writes the number on the back of his hand'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l_x_0",
+     "label": "Take the half-hour call and keep moving.",
+     "target": "n_call0"
+    },
+    {
+     "id": "c_l_x_1",
+     "label": "Listen to the house doors opening.",
+     "target": "n_call1"
+    },
+    {
+     "id": "c_l_x_2",
+     "label": "Go and find Bea in the corridor.",
+     "target": "n_call2"
+    }
+   ]
+  },
+  {
+   "id": "l_y",
+   "body": "<<FILL role=rising words=100 beats='it will work but not alone: someone has to hold the ladder, or call the number, or stand in the middle of the stage being roughly fox-sized while the lamp is aimed; the costume room and the crew are both busy with their own five o'clock disaster; asking turns out to be the whole job: somebody puts down what they were doing and comes, and it costs them something, and they come anyway'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l_y_0",
+     "label": "Clear the fog before it settles.",
+     "target": "n_call3"
+    },
+    {
+     "id": "c_l_y_1",
+     "label": "Run one last check on your own thing.",
+     "target": "n_call4"
+    },
+    {
+     "id": "c_l_y_2",
+     "label": "Take the half-hour call and keep moving.",
+     "target": "n_call0"
+    }
+   ]
+  },
+  {
+   "id": "l_z",
+   "body": "<<FILL role=rising words=100 beats='there is a way to make the moment work that is not the way it was written: a slower fade, a different colour, the snow arriving from the other side; it is honest and it is not what Bea has rehearsed thirty times'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l_z_0",
+     "label": "Listen to the house doors opening.",
+     "target": "n_call1"
+    },
+    {
+     "id": "c_l_z_1",
+     "label": "Go and find Bea in the corridor.",
+     "target": "n_call2"
+    },
+    {
+     "id": "c_l_z_2",
+     "label": "Clear the fog before it settles.",
+     "target": "n_call3"
+    }
+   ]
+  },
+  {
+   "id": "l_early",
+   "body": "<<FILL role=setback words=95 beats='the lamp is left as it is and the cue is left blank, and at twenty past six Ms Adeyinka finds both while checking the plot herself; nothing is shouted and nothing is said twice; the box goes back to Theo and what is left is handing out programmes, which is a real job and is not this one'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_l_early",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "A Job Handed Back"
+   }
+  },
+  {
+   "id": "c_hub",
+   "body": "<<FILL role=setup words=100 beats='the costume room is the old changing room with a rail down the middle and a sewing machine on the bench under the window; the Snow Fox costume hangs at the end in white and grey, finished except for the parts that are not; Mrs Iyer has been up since six and has a pincushion on her wrist and a list with three things still uncrossed'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_hub_0",
+     "label": "Start with the fox head.",
+     "target": "c_a"
+    },
+    {
+     "id": "c_c_hub_1",
+     "label": "Start with the torn hem.",
+     "target": "c_b"
+    },
+    {
+     "id": "c_c_hub_2",
+     "label": "Start with the quick change.",
+     "target": "c_c"
+    }
+   ]
+  },
+  {
+   "id": "c_a",
+   "body": "<<FILL role=rising words=100 beats='the papier-mache fox head is beautiful from the front and unfinished inside, with two strips of foam that press exactly on Bea's ears after ten minutes; Bea has not said anything about it because she does not want to be trouble; the head has to stay on for the whole of Act One; and then at ten past five three things go wrong in the same minute, and there is only enough of the afternoon left to take on one of them properly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_a_0",
+     "label": "Work on through the blackout.",
+     "target": "c_p"
+    },
+    {
+     "id": "c_c_a_1",
+     "label": "Make the fox head actually fit.",
+     "target": "c_q"
+    },
+    {
+     "id": "c_c_a_2",
+     "label": "Refit the whole show for Nadia.",
+     "target": "c_r"
+    }
+   ]
+  },
+  {
+   "id": "c_b",
+   "body": "<<FILL role=rising words=100 beats='the long grey coat has caught on something in the wings and opened a hand's width along the hem; it is the kind of tear that walks itself longer every time the actor turns; the thread on the bench is close to the right grey and is not the right grey; and then at ten past five three things go wrong in the same minute, and there is only enough of the afternoon left to take on one of them properly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_b_0",
+     "label": "Make the fox head actually fit.",
+     "target": "c_q"
+    },
+    {
+     "id": "c_c_b_1",
+     "label": "Refit the whole show for Nadia.",
+     "target": "c_r"
+    },
+    {
+     "id": "c_c_b_2",
+     "label": "Work on through the blackout.",
+     "target": "c_p"
+    }
+   ]
+  },
+  {
+   "id": "c_c",
+   "body": "<<FILL role=rising words=100 beats='between scene four and scene five the fox becomes a girl again in about forty seconds, in the dark, behind a flat; it has never once been done in under a minute in rehearsal; the plan so far is that everyone will simply be quicker on the night; and then at ten past five three things go wrong in the same minute, and there is only enough of the afternoon left to take on one of them properly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_c_0",
+     "label": "Refit the whole show for Nadia.",
+     "target": "c_r"
+    },
+    {
+     "id": "c_c_c_1",
+     "label": "Work on through the blackout.",
+     "target": "c_p"
+    },
+    {
+     "id": "c_c_c_2",
+     "label": "Make the fox head actually fit.",
+     "target": "c_q"
+    }
+   ]
+  },
+  {
+   "id": "c_p",
+   "body": "<<FILL role=rising words=100 beats='at ten past five the hall drops to the emergency lights and the sewing machine stops mid-seam; the costume room has one window and it faces north; everything left to do is now being done in the grey light off a phone torch'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_p_0",
+     "label": "Do the small, boring, reliable fix.",
+     "target": "c_x"
+    },
+    {
+     "id": "c_c_p_1",
+     "label": "Go and ask someone to help you.",
+     "target": "c_y"
+    },
+    {
+     "id": "c_c_p_2",
+     "label": "Change the moment so that it works.",
+     "target": "c_z"
+    }
+   ]
+  },
+  {
+   "id": "c_q",
+   "body": "<<FILL role=rising words=100 beats='with the foam moved the head slips forward whenever Bea looks down, which she does in the scene where the fox finds the river; the padding that stops it is the padding that hurt; there is no third option in the box'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_q_0",
+     "label": "Go and ask someone to help you.",
+     "target": "c_y"
+    },
+    {
+     "id": "c_c_q_1",
+     "label": "Change the moment so that it works.",
+     "target": "c_z"
+    },
+    {
+     "id": "c_c_q_2",
+     "label": "Do the small, boring, reliable fix.",
+     "target": "c_x"
+    }
+   ]
+  },
+  {
+   "id": "c_r",
+   "body": "<<FILL role=rising words=100 beats='Bea's voice has gone from a cold nobody mentioned and Nadia, who has rehearsed as understudy on Tuesdays only, is standing very straight and saying she can do it; Nadia is a head shorter than Bea and every costume in the room was fitted to Bea'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_r_0",
+     "label": "Change the moment so that it works.",
+     "target": "c_z"
+    },
+    {
+     "id": "c_c_r_1",
+     "label": "Do the small, boring, reliable fix.",
+     "target": "c_x"
+    },
+    {
+     "id": "c_c_r_2",
+     "label": "Say it is close enough and stop.",
+     "target": "c_early"
+    }
+   ]
+  },
+  {
+   "id": "c_x",
+   "body": "<<FILL role=rising words=100 beats='the answer is quiet needlework and a piece of foam cut a different shape: the head sits, the hem holds, the change is rehearsed twice in the corridor with a chair standing in for the flat; Mrs Iyer crosses one thing off the list'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_x_0",
+     "label": "Run one last check on your own thing.",
+     "target": "n_call4"
+    },
+    {
+     "id": "c_c_x_1",
+     "label": "Take the half-hour call and keep moving.",
+     "target": "n_call0"
+    },
+    {
+     "id": "c_c_x_2",
+     "label": "Listen to the house doors opening.",
+     "target": "n_call1"
+    }
+   ]
+  },
+  {
+   "id": "c_y",
+   "body": "<<FILL role=rising words=100 beats='it works only if someone else is standing in the dark at exactly the right moment holding exactly the right sleeve; that person is currently up a ladder or behind a lighting desk; the corridor is not the stage and everyone knows it; asking turns out to be the whole job: somebody puts down what they were doing and comes, and it costs them something, and they come anyway'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_y_0",
+     "label": "Go and find Bea in the corridor.",
+     "target": "n_call2"
+    },
+    {
+     "id": "c_c_y_1",
+     "label": "Clear the fog before it settles.",
+     "target": "n_call3"
+    },
+    {
+     "id": "c_c_y_2",
+     "label": "Run one last check on your own thing.",
+     "target": "n_call4"
+    }
+   ]
+  },
+  {
+   "id": "c_z",
+   "body": "<<FILL role=rising words=100 beats='the costume can be made to work by changing what the audience sees: the coat stays on through the change, or the fox keeps the head off for the river scene and plays it with her face; it is a real solution and it is a different picture from the one on the poster'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_c_z_0",
+     "label": "Take the half-hour call and keep moving.",
+     "target": "n_call0"
+    },
+    {
+     "id": "c_c_z_1",
+     "label": "Listen to the house doors opening.",
+     "target": "n_call1"
+    },
+    {
+     "id": "c_c_z_2",
+     "label": "Go and find Bea in the corridor.",
+     "target": "n_call2"
+    }
+   ]
+  },
+  {
+   "id": "c_early",
+   "body": "<<FILL role=discovery words=95 beats='the head goes back on the rail with the foam as it was, and at the half-hour call Bea puts it on and says nothing again, and Mrs Iyer sees her not saying it; the head comes off the rail and off the show, and the fox goes on with a grey hood, which is a discovery nobody wanted to make this way'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_c_early",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Hood Instead"
+   }
+  },
+  {
+   "id": "s_hub",
+   "body": "<<FILL role=setup words=100 beats='the stage crew is Dara and a roll of glow tape and a set that has to become three different places in ninety minutes; the flats are painted on both sides and are heavier than they look; the river is a length of blue silk on two poles and nobody has yet agreed who carries which end'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_hub_0",
+     "label": "Walk the scene changes first.",
+     "target": "s_a"
+    },
+    {
+     "id": "c_s_hub_1",
+     "label": "Tape the floor first.",
+     "target": "s_b"
+    },
+    {
+     "id": "c_s_hub_2",
+     "label": "Fix the rostrum that rocks.",
+     "target": "s_c"
+    }
+   ]
+  },
+  {
+   "id": "s_a",
+   "body": "<<FILL role=rising words=100 beats='Dara wants the whole change order walked once slowly before anyone touches anything at speed; there are four changes and the third one has never been done with the actual furniture in the actual dark; walking it takes twenty minutes the schedule does not obviously have; and then at ten past five three things go wrong in the same minute, and there is only enough of the afternoon left to take on one of them properly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_a_0",
+     "label": "Steady the loose flat in the dark.",
+     "target": "s_p"
+    },
+    {
+     "id": "c_s_a_1",
+     "label": "Make the third change fit the music.",
+     "target": "s_q"
+    },
+    {
+     "id": "c_s_a_2",
+     "label": "Stop the silk snagging the rostrum.",
+     "target": "s_r"
+    }
+   ]
+  },
+  {
+   "id": "s_b",
+   "body": "<<FILL role=rising words=100 beats='there is no glow tape down anywhere and the wings are genuinely black once the house lights go; the roll on the shelf is old and its glow is more of a rumour; marks go down for the flats, the chair, and the edge of the rostrum somebody will otherwise walk off; and then at ten past five three things go wrong in the same minute, and there is only enough of the afternoon left to take on one of them properly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_b_0",
+     "label": "Make the third change fit the music.",
+     "target": "s_q"
+    },
+    {
+     "id": "c_s_b_1",
+     "label": "Stop the silk snagging the rostrum.",
+     "target": "s_r"
+    },
+    {
+     "id": "c_s_b_2",
+     "label": "Steady the loose flat in the dark.",
+     "target": "s_p"
+    }
+   ]
+  },
+  {
+   "id": "s_c",
+   "body": "<<FILL role=rising words=100 beats='the rostrum the fox stands on for the last scene rocks about a centimetre when weight moves to its front left corner; a folded programme under the leg cures it until somebody drags it; underneath, one bolt turns freely and does not tighten; and then at ten past five three things go wrong in the same minute, and there is only enough of the afternoon left to take on one of them properly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_c_0",
+     "label": "Stop the silk snagging the rostrum.",
+     "target": "s_r"
+    },
+    {
+     "id": "c_s_c_1",
+     "label": "Steady the loose flat in the dark.",
+     "target": "s_p"
+    },
+    {
+     "id": "c_s_c_2",
+     "label": "Make the third change fit the music.",
+     "target": "s_q"
+    }
+   ]
+  },
+  {
+   "id": "s_p",
+   "body": "<<FILL role=rising words=100 beats='at ten past five the hall goes to emergency lighting and the half-moved flat is standing in the middle of the stage with nobody holding it; Dara says nobody move, in the voice that means it; the flat is fine and everyone's heart is not'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_p_0",
+     "label": "Do the small, boring, reliable fix.",
+     "target": "s_x"
+    },
+    {
+     "id": "c_s_p_1",
+     "label": "Go and ask someone to help you.",
+     "target": "s_y"
+    },
+    {
+     "id": "c_s_p_2",
+     "label": "Change the moment so that it works.",
+     "target": "s_z"
+    }
+   ]
+  },
+  {
+   "id": "s_q",
+   "body": "<<FILL role=rising words=100 beats='the third scene change is timed to eighteen seconds of music and takes thirty-one on the best run so far; the music cannot be made longer because it is a recording; the change cannot be made shorter with the number of people currently in the wings'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_q_0",
+     "label": "Go and ask someone to help you.",
+     "target": "s_y"
+    },
+    {
+     "id": "c_s_q_1",
+     "label": "Change the moment so that it works.",
+     "target": "s_z"
+    },
+    {
+     "id": "c_s_q_2",
+     "label": "Do the small, boring, reliable fix.",
+     "target": "s_x"
+    }
+   ]
+  },
+  {
+   "id": "s_r",
+   "body": "<<FILL role=rising words=100 beats='the blue silk catches on the corner of the rostrum every single time it crosses, and when it catches it pulls the rostrum a few centimetres out of its tape; by the fourth run the marks and the rostrum disagree by a hand's width; the fox has to step onto it in the dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_r_0",
+     "label": "Change the moment so that it works.",
+     "target": "s_z"
+    },
+    {
+     "id": "c_s_r_1",
+     "label": "Do the small, boring, reliable fix.",
+     "target": "s_x"
+    },
+    {
+     "id": "c_s_r_2",
+     "label": "Call it good enough and go and get a drink.",
+     "target": "s_early"
+    }
+   ]
+  },
+  {
+   "id": "s_x",
+   "body": "<<FILL role=rising words=100 beats='the answer is unglamorous and works: a bolt tightened with the proper spanner, tape relaid where the rostrum actually ends up, a corner padded so the silk slides past it; the change is run twice and lands inside the music'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_x_0",
+     "label": "Clear the fog before it settles.",
+     "target": "n_call3"
+    },
+    {
+     "id": "c_s_x_1",
+     "label": "Run one last check on your own thing.",
+     "target": "n_call4"
+    },
+    {
+     "id": "c_s_x_2",
+     "label": "Take the half-hour call and keep moving.",
+     "target": "n_call0"
+    }
+   ]
+  },
+  {
+   "id": "s_y",
+   "body": "<<FILL role=rising words=100 beats='the change fits the music only with one more person in the wings, and every person in the building is currently the only one who can do the thing they are doing; asking costs somebody else something; asking turns out to be the whole job: somebody puts down what they were doing and comes, and it costs them something, and they come anyway'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_y_0",
+     "label": "Listen to the house doors opening.",
+     "target": "n_call1"
+    },
+    {
+     "id": "c_s_y_1",
+     "label": "Go and find Bea in the corridor.",
+     "target": "n_call2"
+    },
+    {
+     "id": "c_s_y_2",
+     "label": "Clear the fog before it settles.",
+     "target": "n_call3"
+    }
+   ]
+  },
+  {
+   "id": "s_z",
+   "body": "<<FILL role=rising words=100 beats='the change fits if the change gets smaller: the chair stays on, or the river crosses the other way, or the rostrum simply does not move at all and the last scene happens a metre downstage of where it was blocked'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_s_z_0",
+     "label": "Run one last check on your own thing.",
+     "target": "n_call4"
+    },
+    {
+     "id": "c_s_z_1",
+     "label": "Take the half-hour call and keep moving.",
+     "target": "n_call0"
+    },
+    {
+     "id": "c_s_z_2",
+     "label": "Listen to the house doors opening.",
+     "target": "n_call1"
+    }
+   ]
+  },
+  {
+   "id": "s_early",
+   "body": "<<FILL role=setback words=95 beats='the bolt stays loose and the tape stays where it was, and at the half-hour call Dara runs the change once more on her own and finds both; she says nothing about it and fixes it herself in four minutes, and the lesson lands harder than being told off would have'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_s_early",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Fixed By Someone Else"
+   }
+  },
+  {
+   "id": "n_call0",
+   "body": "<<FILL role=rising words=100 beats='Ms Adeyinka calls the half-hour over the headsets and the hall changes temperature; the cast go to get their faces on and the crew get their last twenty minutes of being allowed to make noise; the thing that was wrong at five o'clock is either fixed or it is not and there is no more pretending either way'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_call0_0",
+     "label": "Go to the wings for beginners.",
+     "target": "n_beg0"
+    },
+    {
+     "id": "c_n_call0_1",
+     "label": "Put a hand on your own thing one last time.",
+     "target": "n_beg1"
+    },
+    {
+     "id": "c_n_call0_2",
+     "label": "Answer Ms Adeyinka honestly.",
+     "target": "n_beg2"
+    }
+   ]
+  },
+  {
+   "id": "n_call1",
+   "body": "<<FILL role=rising words=100 beats='the front-of-house doors open somewhere behind the hall and the first voices come in, which is a sound like weather arriving; from backstage the audience is not people yet, just a rising noise; there is exactly one more chance to test anything that needs testing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_call1_0",
+     "label": "Put a hand on your own thing one last time.",
+     "target": "n_beg1"
+    },
+    {
+     "id": "c_n_call1_1",
+     "label": "Answer Ms Adeyinka honestly.",
+     "target": "n_beg2"
+    },
+    {
+     "id": "c_n_call1_2",
+     "label": "Help Bea get the fox head on.",
+     "target": "n_beg3"
+    }
+   ]
+  },
+  {
+   "id": "n_call2",
+   "body": "<<FILL role=rising words=100 beats='Bea is in the corridor with the fox head under one arm, going through the river speech under her breath and getting the same line wrong the same way; she is not asking for help and is very obviously near to it; the half-hour is now twenty-two minutes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_call2_0",
+     "label": "Answer Ms Adeyinka honestly.",
+     "target": "n_beg2"
+    },
+    {
+     "id": "c_n_call2_1",
+     "label": "Help Bea get the fox head on.",
+     "target": "n_beg3"
+    },
+    {
+     "id": "c_n_call2_2",
+     "label": "Stand by for the first cue.",
+     "target": "n_beg4"
+    }
+   ]
+  },
+  {
+   "id": "n_call3",
+   "body": "<<FILL role=rising words=100 beats='the whole building smells of the fog machine, which is working now and is working slightly too well; Dara props the fire door for two minutes to let it clear, with someone standing by it because a propped fire door has to be watched; the fog thins to the level it was rehearsed at'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_call3_0",
+     "label": "Help Bea get the fox head on.",
+     "target": "n_beg3"
+    },
+    {
+     "id": "c_n_call3_1",
+     "label": "Stand by for the first cue.",
+     "target": "n_beg4"
+    },
+    {
+     "id": "c_n_call3_2",
+     "label": "Go to the wings for beginners.",
+     "target": "n_beg0"
+    }
+   ]
+  },
+  {
+   "id": "n_call4",
+   "body": "<<FILL role=rising words=100 beats='the last checks happen at the same time in three rooms and none of the three can see the other two; this is the part where a show either has been prepared or is about to find out; the headsets go quiet in the way that means everyone is listening'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_call4_0",
+     "label": "Stand by for the first cue.",
+     "target": "n_beg4"
+    },
+    {
+     "id": "c_n_call4_1",
+     "label": "Go to the wings for beginners.",
+     "target": "n_beg0"
+    },
+    {
+     "id": "c_n_call4_2",
+     "label": "Put a hand on your own thing one last time.",
+     "target": "n_beg1"
+    }
+   ]
+  },
+  {
+   "id": "n_beg0",
+   "body": "<<FILL role=rising words=100 beats='beginners are called and the fox and the two crows go to the wings; the hall lights go to half and the noise out front drops by half with them, which nobody ever quite believes until they hear it; the blue working light in the wings makes everyone look like they are underwater'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_beg0_0",
+     "label": "Watch the house lights go.",
+     "target": "n_up0"
+    },
+    {
+     "id": "c_n_beg0_1",
+     "label": "Stay in the wings for the river scene.",
+     "target": "n_up1"
+    },
+    {
+     "id": "c_n_beg0_2",
+     "label": "Work all the way through to the interval.",
+     "target": "n_up2"
+    }
+   ]
+  },
+  {
+   "id": "n_beg1",
+   "body": "<<FILL role=rising words=100 beats='the last thing before the top of the show is always the same: a check that the thing you personally are responsible for is where you left it; a hand on the rostrum, a hand on the fader, a hand on the sleeve; the answer is yes or the answer is now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_beg1_0",
+     "label": "Stay in the wings for the river scene.",
+     "target": "n_up1"
+    },
+    {
+     "id": "c_n_beg1_1",
+     "label": "Work all the way through to the interval.",
+     "target": "n_up2"
+    },
+    {
+     "id": "c_n_beg1_2",
+     "label": "Hold your nerve and let the act run.",
+     "target": "e9a"
+    }
+   ]
+  },
+  {
+   "id": "n_beg2",
+   "body": "<<FILL role=rising words=100 beats='Ms Adeyinka stands at the corner where she can see the stage and the wings at once and asks each department, one at a time, whether they are ready; the honest answer and the easy answer are not always the same word; she waits for whichever one is given'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_beg2_0",
+     "label": "Work all the way through to the interval.",
+     "target": "n_up2"
+    },
+    {
+     "id": "c_n_beg2_1",
+     "label": "Hold your nerve and let the act run.",
+     "target": "e9a"
+    },
+    {
+     "id": "c_n_beg2_2",
+     "label": "Watch the whole act from the wings.",
+     "target": "e9b"
+    }
+   ]
+  },
+  {
+   "id": "n_beg3",
+   "body": "<<FILL role=rising words=100 beats='Bea puts the fox head on and becomes a different shape; through the eye holes she can see less than everyone assumes, which is the reason the glow tape matters and the reason the rostrum has to be where the tape says; she gives a thumbs up that is aimed slightly wrong'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_beg3_0",
+     "label": "Hold your nerve and let the act run.",
+     "target": "e9a"
+    },
+    {
+     "id": "c_n_beg3_1",
+     "label": "Watch the whole act from the wings.",
+     "target": "e9b"
+    },
+    {
+     "id": "c_n_beg3_2",
+     "label": "Watch the house lights go.",
+     "target": "n_up0"
+    }
+   ]
+  },
+  {
+   "id": "n_beg4",
+   "body": "<<FILL role=rising words=100 beats='the recording of the first music cue is queued and the operator's finger is on the button; the last conversation in the building finishes mid-sentence; there is a silence of about four seconds that belongs to everyone backstage and to nobody in the audience'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_beg4_0",
+     "label": "Watch the whole act from the wings.",
+     "target": "e9b"
+    },
+    {
+     "id": "c_n_beg4_1",
+     "label": "Watch the house lights go.",
+     "target": "n_up0"
+    },
+    {
+     "id": "c_n_beg4_2",
+     "label": "Stay in the wings for the river scene.",
+     "target": "n_up1"
+    }
+   ]
+  },
+  {
+   "id": "n_up0",
+   "body": "<<FILL role=climax words=100 beats='the house lights go and the first cue lands and the hall makes the sound a hall makes when three hundred people decide at once to be quiet; whatever was fixed at five o'clock is now load-bearing; Act One runs and mostly runs well'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_up0_0",
+     "label": "Watch the second half start.",
+     "target": "n_act0"
+    },
+    {
+     "id": "c_n_up0_1",
+     "label": "See the big moment land.",
+     "target": "e10a"
+    },
+    {
+     "id": "c_n_up0_2",
+     "label": "Let the hardest part go right.",
+     "target": "e10b"
+    }
+   ]
+  },
+  {
+   "id": "n_up1",
+   "body": "<<FILL role=climax words=100 beats='the river scene arrives, which is the one with the silk and the rostrum and the lamp that had no number; it goes the way it was prepared to go, which is the only way anything ever goes; from the wings it is possible to watch an audience lean forward'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_up1_0",
+     "label": "Wait for the big cue.",
+     "target": "n_act1"
+    },
+    {
+     "id": "c_n_up1_1",
+     "label": "Watch it happen the changed way.",
+     "target": "e10c"
+    },
+    {
+     "id": "c_n_up1_2",
+     "label": "Let it go and note it down for tomorrow.",
+     "target": "e10d"
+    }
+   ]
+  },
+  {
+   "id": "n_up2",
+   "body": "<<FILL role=climax words=100 beats='the interval comes and the bar opens and backstage becomes a completely different and much louder place for twenty minutes; the second half has the snow in it, and the sunrise, and the quick change nobody has done in under a minute; the list of things still to survive is short and specific'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_up2_0",
+     "label": "Watch the second half start.",
+     "target": "n_act0"
+    },
+    {
+     "id": "c_n_up2_1",
+     "label": "See the big moment land.",
+     "target": "e10a"
+    },
+    {
+     "id": "c_n_up2_2",
+     "label": "Let the hardest part go right.",
+     "target": "e10b"
+    }
+   ]
+  },
+  {
+   "id": "n_act0",
+   "body": "<<FILL role=climax words=100 beats='the second half starts and the hardest transition of the night happens in the dark behind the flat, and it works because three departments each got one small thing right this afternoon; from where you are standing you can see your own part of it and have to take the rest on trust; the fox becomes a girl on time'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_act0_0",
+     "label": "Take the curtain call.",
+     "target": "e11a"
+    },
+    {
+     "id": "c_n_act0_1",
+     "label": "Find your name in the programme.",
+     "target": "e11b"
+    },
+    {
+     "id": "c_n_act0_2",
+     "label": "Say yes to the spring show.",
+     "target": "e11c"
+    }
+   ]
+  },
+  {
+   "id": "n_act1",
+   "body": "<<FILL role=climax words=100 beats='the biggest moment in the play arrives, the one that was still a problem at half past five in whichever room you were standing in; whatever got decided then is what three hundred people see now, and they see it once, and they have no idea it was ever in doubt; the sunrise follows it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n_act1_0",
+     "label": "Think about what the job actually was.",
+     "target": "e11d"
+    },
+    {
+     "id": "c_n_act1_1",
+     "label": "Stay behind and strike the set.",
+     "target": "e11e"
+    },
+    {
+     "id": "c_n_act1_2",
+     "label": "Take the curtain call.",
+     "target": "e11a"
+    }
+   ]
+  },
+  {
+   "id": "e9a",
+   "body": "<<FILL role=completion words=95 beats='the curtain comes down on Act One and holds, and the thing that was broken at five o'clock stays fixed for the whole of it; backstage nobody says well done because there is a second half, but Ms Adeyinka catches an eye across the wings and nods once, which in this building is a great deal'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_curtain_holds",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Show That Holds"
+   }
+  },
+  {
+   "id": "e9b",
+   "body": "<<FILL role=discovery words=95 beats='from the wings the show looks nothing like it looks from a seat: the fox is a girl breathing hard in a hot head, the river is two people walking sideways, the snow is a lamp; knowing how it is done turns out not to spoil it at all, and is a thing that cannot be un-known afterwards'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_seen_from_wings",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "What the Wings See"
+   }
+  },
+  {
+   "id": "e10a",
+   "body": "<<FILL role=success words=95 beats='the big moment lands exactly as it should, and three hundred people make a small sound at the same time; the whole of it rests on one unglamorous decision taken at half past five by somebody who is now standing in the dark watching it work; it is the bit people describe in the car going home'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_snow_lands",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Moment Lands"
+   }
+  },
+  {
+   "id": "e10b",
+   "body": "<<FILL role=completion words=95 beats='the hardest forty seconds in the building go right, in the dark, with three people doing three separate small things at the same moment; the fox walks out as a girl on the beat she is supposed to; nobody out front will ever know it was hard, which turns out to be the entire point of the job'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_change_made",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Forty Seconds"
+   }
+  },
+  {
+   "id": "e10c",
+   "body": "<<FILL role=discovery words=95 beats='the moment happens the changed way, not the way the poster shows and not the way it was rehearsed thirty times, and it works; it is a smaller, truer picture than the one that was planned, and afterwards there is a real argument about which one was better, which is the kind of argument worth having'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_other_picture",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Different Picture"
+   }
+  },
+  {
+   "id": "e10d",
+   "body": "<<FILL role=setback words=95 beats='it does not quite come off: the timing slips, or the colour is wrong, or the rostrum is a hand's width from where the tape says, and the audience notices nothing while everyone backstage notices everything; Ms Adeyinka writes it in the book for tomorrow, without a name next to it'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_note_for_tomorrow",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "A Note for Tomorrow"
+   }
+  },
+  {
+   "id": "e11a",
+   "body": "<<FILL role=success words=95 beats='the curtain call happens and the cast bow and then Bea does the thing she has clearly planned, which is to point at the wings until whoever is standing there has to come out; the applause changes shape slightly for the crew, and the walk back into the dark afterwards is about six feet long and unforgettable'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_curtain_call",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Curtain Call"
+   }
+  },
+  {
+   "id": "e11b",
+   "body": "<<FILL role=completion words=95 beats='the programme has a page at the back with everyone's name on it, printed on Tuesday before any of this happened, and there is a name on it that was only put there in hope; it is now simply true; somebody's grandmother folds the programme open at that page and keeps it that way'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_named_in_the_programme",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Named in the Programme"
+   }
+  },
+  {
+   "id": "e11c",
+   "body": "<<FILL role=success words=95 beats='as the get-out starts Ms Adeyinka comes over with her clipboard still in her hand and asks, in the flattest possible voice, whether the same department is wanted for the spring one; it is not praise and it is much better than praise, because it is a plan'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_asked_back",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Asked Back for the Next One"
+   }
+  },
+  {
+   "id": "e11d",
+   "body": "<<FILL role=discovery words=95 beats='somewhere between the half-hour call and the curtain the job stops being a job and becomes obvious: it is not about lamps or thread or glow tape, it is about being the person other people can leave a thing with; that is a heavier and much more interesting discovery than expected'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_what_the_job_is",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "What the Job Actually Is"
+   }
+  },
+  {
+   "id": "e11e",
+   "body": "<<FILL role=completion words=95 beats='the audience goes and the work is not over, because a set that took a week to build comes down in ninety minutes with everyone in the building carrying something; the hall is a hall again by half past ten, swept, with the chalkboard wiped; it is the best-tempered ninety minutes of the whole week'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "e_striking_the_set",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Striking the Set"
+   }
+  }
+ ]
+}

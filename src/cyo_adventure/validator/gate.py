@@ -201,7 +201,13 @@ def run_gate(
 
     # --- CG-1..CG-4: advisory choice-grammar checks (WARNING, never blocks,
     # gated behind enforce_grammar per D3/D11 grandfathering) ---
-    merged.extend(check_choice_grammar(story, enforce_grammar=enforce_grammar))
+    merged.extend(
+        check_choice_grammar(
+            story,
+            enforce_grammar=enforce_grammar,
+            is_fill_result=context == "fill_result",
+        )
+    )
 
     # --- SAFE-14: safety check (Phase-2 stub, always empty) ---
     merged.extend(check_safety(story))

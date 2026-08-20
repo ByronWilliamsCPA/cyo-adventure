@@ -1,0 +1,1019 @@
+@startuml the-long-thaw
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n00_0
+state n00_0 #BBDEFB
+n00_0 : setup · 55w
+state n01_0 #BBDEFB
+n01_0 : setup · 170w
+state n02_0 #BBDEFB
+n02_0 : setup · 185w
+state n02_1 #BBDEFB
+n02_1 : setup · 185w
+state n02_2 #BBDEFB
+n02_2 : setup · 185w
+state n03_0 #BBDEFB
+n03_0 : setup · 185w
+state n03_1 #BBDEFB
+n03_1 : setup · 185w
+state n03_2 #BBDEFB
+n03_2 : setup · 185w
+state n03_3 #BBDEFB
+n03_3 : setup · 185w
+state n04_0 #D1C4E9
+n04_0 : rising · 55w
+state n04_1 #D1C4E9
+n04_1 : rising · 55w
+state n04_2 #D1C4E9
+n04_2 : rising · 55w
+state n04_3 #D1C4E9
+n04_3 : rising · 55w
+state n04_4 #D1C4E9
+n04_4 : rising · 55w
+state n05_0 #D1C4E9
+n05_0 : rising · 170w
+state n05_1 #D1C4E9
+n05_1 : rising · 170w
+state n05_2 #D1C4E9
+n05_2 : rising · 170w
+state n05_3 #D1C4E9
+n05_3 : rising · 170w
+state n05_4 #D1C4E9
+n05_4 : rising · 170w
+state n06_0 #D1C4E9
+n06_0 : rising · 185w
+state n06_1 #D1C4E9
+n06_1 : rising · 185w
+state n06_2 #D1C4E9
+n06_2 : rising · 185w
+state n06_3 #D1C4E9
+n06_3 : rising · 185w
+state n06_4 #D1C4E9
+n06_4 : rising · 185w
+state n06_5 #D1C4E9
+n06_5 : rising · 185w
+state n07_0 #D1C4E9
+n07_0 : rising · 185w
+state n07_1 #D1C4E9
+n07_1 : rising · 185w
+state n07_2 #D1C4E9
+n07_2 : rising · 185w
+state n07_3 #D1C4E9
+n07_3 : rising · 185w
+state n07_4 #D1C4E9
+n07_4 : rising · 185w
+state n07_5 #D1C4E9
+n07_5 : rising · 185w
+state n07_6 #D1C4E9
+n07_6 : rising · 185w
+state n08_0 #D1C4E9
+n08_0 : rising · 55w
+state n08_1 #D1C4E9
+n08_1 : rising · 55w
+state n08_2 #D1C4E9
+n08_2 : rising · 55w
+state n08_3 #D1C4E9
+n08_3 : rising · 55w
+state n08_4 #D1C4E9
+n08_4 : rising · 55w
+state n08_5 #D1C4E9
+n08_5 : rising · 55w
+state n08_6 #D1C4E9
+n08_6 : rising · 55w
+state n09_0 #D1C4E9
+n09_0 : rising · 170w
+state n09_1 #D1C4E9
+n09_1 : rising · 170w
+state n09_2 #D1C4E9
+n09_2 : rising · 170w
+state n09_3 #D1C4E9
+n09_3 : rising · 170w
+state n09_4 #D1C4E9
+n09_4 : rising · 170w
+state n09_5 #D1C4E9
+n09_5 : rising · 170w
+state n09_6 #D1C4E9
+n09_6 : rising · 170w
+state n10_0 #D1C4E9
+n10_0 : rising · 185w
+state n10_1 #D1C4E9
+n10_1 : rising · 185w
+state n10_2 #D1C4E9
+n10_2 : rising · 185w
+state n10_3 #D1C4E9
+n10_3 : rising · 185w
+state n10_4 #D1C4E9
+n10_4 : rising · 185w
+state n10_5 #D1C4E9
+n10_5 : rising · 185w
+state n10_6 #D1C4E9
+n10_6 : rising · 185w
+state n10_7 #D1C4E9
+n10_7 : rising · 185w
+state n10_8 #D1C4E9
+n10_8 : rising · 185w
+state n11_0 #D1C4E9
+n11_0 : rising · 185w
+state n11_1 #D1C4E9
+n11_1 : rising · 185w
+state n11_2 #D1C4E9
+n11_2 : rising · 185w
+state n11_3 #D1C4E9
+n11_3 : rising · 185w
+state n11_4 #D1C4E9
+n11_4 : rising · 185w
+state n11_5 #D1C4E9
+n11_5 : rising · 185w
+state n11_6 #D1C4E9
+n11_6 : rising · 185w
+state n11_7 #D1C4E9
+n11_7 : rising · 185w
+state n11_8 #D1C4E9
+n11_8 : rising · 185w
+state n12_0 #D1C4E9
+n12_0 : rising · 55w
+state n12_1 #D1C4E9
+n12_1 : rising · 55w
+state n12_2 #D1C4E9
+n12_2 : rising · 55w
+state n12_3 #D1C4E9
+n12_3 : rising · 55w
+state n12_4 #D1C4E9
+n12_4 : rising · 55w
+state n12_5 #D1C4E9
+n12_5 : rising · 55w
+state n12_6 #D1C4E9
+n12_6 : rising · 55w
+state n12_7 #D1C4E9
+n12_7 : rising · 55w
+state n12_8 #D1C4E9
+n12_8 : rising · 55w
+state n13_0 #D1C4E9
+n13_0 : rising · 170w
+state n13_1 #D1C4E9
+n13_1 : rising · 170w
+state n13_2 #D1C4E9
+n13_2 : rising · 170w
+state n13_3 #D1C4E9
+n13_3 : rising · 170w
+state n13_4 #D1C4E9
+n13_4 : rising · 170w
+state n13_5 #D1C4E9
+n13_5 : rising · 170w
+state n13_6 #D1C4E9
+n13_6 : rising · 170w
+state n13_7 #D1C4E9
+n13_7 : rising · 170w
+state n13_8 #D1C4E9
+n13_8 : rising · 170w
+state n14_0 #D1C4E9
+n14_0 : rising · 185w
+state n14_1 #D1C4E9
+n14_1 : rising · 185w
+state n14_2 #D1C4E9
+n14_2 : rising · 185w
+state n14_3 #D1C4E9
+n14_3 : rising · 185w
+state n14_4 #D1C4E9
+n14_4 : rising · 185w
+state n14_5 #D1C4E9
+n14_5 : rising · 185w
+state n14_6 #D1C4E9
+n14_6 : rising · 185w
+state n14_7 #D1C4E9
+n14_7 : rising · 185w
+state n14_8 #D1C4E9
+n14_8 : rising · 185w
+state n15_0 #D1C4E9
+n15_0 : rising · 185w
+state n15_1 #D1C4E9
+n15_1 : rising · 185w
+state n15_2 #D1C4E9
+n15_2 : rising · 185w
+state n15_3 #D1C4E9
+n15_3 : rising · 185w
+state n15_4 #D1C4E9
+n15_4 : rising · 185w
+state n15_5 #D1C4E9
+n15_5 : rising · 185w
+state n15_6 #D1C4E9
+n15_6 : rising · 185w
+state n15_7 #D1C4E9
+n15_7 : rising · 185w
+state n15_8 #D1C4E9
+n15_8 : rising · 185w
+state n16_0 #FFE0B2
+n16_0 : climax · 55w
+state n16_1 #FFE0B2
+n16_1 : climax · 55w
+state n16_2 #FFE0B2
+n16_2 : climax · 55w
+state n16_3 #FFE0B2
+n16_3 : climax · 55w
+state n16_4 #FFE0B2
+n16_4 : climax · 55w
+state n16_5 #FFE0B2
+n16_5 : climax · 55w
+state n16_6 #FFE0B2
+n16_6 : climax · 55w
+state n16_7 #FFE0B2
+n16_7 : climax · 55w
+state n16_8 #FFE0B2
+n16_8 : climax · 55w
+state n17_0 #FFE0B2
+n17_0 : climax · 170w
+state n17_1 #FFE0B2
+n17_1 : climax · 170w
+state n17_2 #FFE0B2
+n17_2 : climax · 170w
+state n17_3 #FFE0B2
+n17_3 : climax · 170w
+state n17_4 #FFE0B2
+n17_4 : climax · 170w
+state n17_5 #FFE0B2
+n17_5 : climax · 170w
+state n17_6 #FFE0B2
+n17_6 : climax · 170w
+state n17_7 #FFE0B2
+n17_7 : climax · 170w
+state n17_8 #FFE0B2
+n17_8 : climax · 170w
+state n18_0 #FFE0B2
+n18_0 : climax · 185w
+state n18_1 #FFE0B2
+n18_1 : climax · 185w
+state n18_2 #FFE0B2
+n18_2 : climax · 185w
+state n18_3 #FFE0B2
+n18_3 : climax · 185w
+state n18_4 #FFE0B2
+n18_4 : climax · 185w
+state n18_5 #FFE0B2
+n18_5 : climax · 185w
+state n18_6 #FFE0B2
+n18_6 : climax · 185w
+state n18_7 #FFE0B2
+n18_7 : climax · 185w
+state n18_8 #FFE0B2
+n18_8 : climax · 185w
+state n19_0 #FFE0B2
+n19_0 : climax · 185w
+state n19_1 #FFE0B2
+n19_1 : climax · 185w
+state n19_2 #FFE0B2
+n19_2 : climax · 185w
+state n19_3 #FFE0B2
+n19_3 : climax · 185w
+state n19_4 #FFE0B2
+n19_4 : climax · 185w
+state n19_5 #FFE0B2
+n19_5 : climax · 185w
+state n19_6 #FFE0B2
+n19_6 : climax · 185w
+state n19_7 #FFE0B2
+n19_7 : climax · 185w
+state n20_0 #FFE0B2
+n20_0 : climax · 55w
+state n20_1 #FFE0B2
+n20_1 : climax · 55w
+state n20_2 #FFE0B2
+n20_2 : climax · 55w
+state n20_3 #FFE0B2
+n20_3 : climax · 55w
+state n20_4 #FFE0B2
+n20_4 : climax · 55w
+state n20_5 #FFE0B2
+n20_5 : climax · 55w
+state n20_6 #FFE0B2
+n20_6 : climax · 55w
+state n20_7 #FFE0B2
+n20_7 : climax · 55w
+state n21_0 #FFE0B2
+n21_0 : climax · 170w
+state n21_1 #FFE0B2
+n21_1 : climax · 170w
+state n21_2 #FFE0B2
+n21_2 : climax · 170w
+state n21_3 #FFE0B2
+n21_3 : climax · 170w
+state n21_4 #FFE0B2
+n21_4 : climax · 170w
+state n21_5 #FFE0B2
+n21_5 : climax · 170w
+state n21_6 #FFE0B2
+n21_6 : climax · 170w
+state n21_7 #FFE0B2
+n21_7 : climax · 170w
+state n22_0 #FFE0B2
+n22_0 : climax · 185w
+state n22_1 #FFE0B2
+n22_1 : climax · 185w
+state n22_2 #FFE0B2
+n22_2 : climax · 185w
+state n22_3 #FFE0B2
+n22_3 : climax · 185w
+state n22_4 #FFE0B2
+n22_4 : climax · 185w
+state n22_5 #FFE0B2
+n22_5 : climax · 185w
+state n22_6 #FFE0B2
+n22_6 : climax · 185w
+state n22_7 #FFE0B2
+n22_7 : climax · 185w
+state n23_0 #FFE0B2
+n23_0 : climax · 185w
+state n23_1 #FFE0B2
+n23_1 : climax · 185w
+state n23_2 #FFE0B2
+n23_2 : climax · 185w
+state n23_3 #FFE0B2
+n23_3 : climax · 185w
+state n23_4 #FFE0B2
+n23_4 : climax · 185w
+state n23_5 #FFE0B2
+n23_5 : climax · 185w
+state n24_0 #FFE0B2
+n24_0 : climax · 55w
+state n24_1 #FFE0B2
+n24_1 : climax · 55w
+state n24_2 #FFE0B2
+n24_2 : climax · 55w
+state n24_3 #FFE0B2
+n24_3 : climax · 55w
+state n24_4 #FFE0B2
+n24_4 : climax · 55w
+state n25_0 #FFE0B2
+n25_0 : climax · 170w
+state n25_1 #FFE0B2
+n25_1 : climax · 170w
+state n25_2 #FFE0B2
+n25_2 : climax · 170w
+state n25_3 #FFE0B2
+n25_3 : climax · 170w
+state n25_4 #FFE0B2
+n25_4 : climax · 170w
+state e_m01 #E0E0E0
+e_m01 : setback (neutral)
+e_m01 : "The Village Waits Another Year"
+state e_m02 #E0E0E0
+e_m02 : discovery (neutral)
+e_m02 : "What Gabor Knows"
+state e_m03 #FFCDD2
+e_m03 : setback (negative)
+e_m03 : "The Plough Goes Through"
+state e_m04 #E0E0E0
+e_m04 : discovery (neutral)
+e_m04 : "Sixty Metres East"
+state e_m05 #E0E0E0
+e_m05 : setback (neutral)
+e_m05 : "The Ledger Was Written to Be Found"
+state e_m06 #E0E0E0
+e_m06 : discovery (neutral)
+e_m06 : "The Track on the Satellite Image"
+state e_m07 #FFCDD2
+e_m07 : setback (negative)
+e_m07 : "Cleared Where the Hazard Was Not"
+state e_m08 #E0E0E0
+e_m08 : discovery (neutral)
+e_m08 : "The Ground Nobody Asked About"
+state e_m09 #E0E0E0
+e_m09 : setback (neutral)
+e_m09 : "A Metre a Day"
+state e_m10 #FFCDD2
+e_m10 : setback (negative)
+e_m10 : "Twenty Centimetres"
+state e_m11 #E0E0E0
+e_m11 : discovery (neutral)
+e_m11 : "Proving the Negative"
+state e_m12 #FFCDD2
+e_m12 : setback (negative)
+e_m12 : "Cancelled and Wrong"
+state e_m13 #E0E0E0
+e_m13 : setback (neutral)
+e_m13 : "Two Days of Nothing"
+state e_m14 #E0E0E0
+e_m14 : discovery (neutral)
+e_m14 : "The Procedure Held"
+state e_m15 #FFCDD2
+e_m15 : setback (negative)
+e_m15 : "Bogdan Goes Back Too Soon"
+state e_m16 #E0E0E0
+e_m16 : discovery (neutral)
+e_m16 : "The Report Somebody Reads"
+state e_m17 #E0E0E0
+e_m17 : setback (neutral)
+e_m17 : "A Ribbon on Unfinished Ground"
+state e_m18 #FFCDD2
+e_m18 : setback (negative)
+e_m18 : "Hectares Per Euro"
+state e_m19 #E0E0E0
+e_m19 : discovery (neutral)
+e_m19 : "Dubec Digs"
+state e_m20 #E0E0E0
+e_m20 : setback (neutral)
+e_m20 : "The Titles Inside the Polygon"
+state e_m21 #E0E0E0
+e_m21 : discovery (neutral)
+e_m21 : "Fen Works the Morning"
+state e_m22 #FFCDD2
+e_m22 : setback (negative)
+e_m22 : "The Wall from 1911"
+state e_m23 #E0E0E0
+e_m23 : discovery (neutral)
+e_m23 : "Four Hundred a Day"
+state e_m24 #E0E0E0
+e_m24 : setback (neutral)
+e_m24 : "The Missing Ninety"
+state e_m25 #E0E0E0
+e_m25 : discovery (neutral)
+e_m25 : "The Item That Should Not Exist"
+state e_m26 #FFCDD2
+e_m26 : setback (negative)
+e_m26 : "The Edge Was Somewhere Else"
+state e_m27 #E0E0E0
+e_m27 : setback (neutral)
+e_m27 : "A Date She Should Not Give"
+state e_m28 #E0E0E0
+e_m28 : discovery (neutral)
+e_m28 : "Ninety-One People and a Map"
+state e_m29 #FFCDD2
+e_m29 : setback (negative)
+e_m29 : "Gabor at Night"
+state e_m30 #E0E0E0
+e_m30 : discovery (neutral)
+e_m30 : "What the Fence Costs"
+state e_m31 #E0E0E0
+e_m31 : setback (neutral)
+e_m31 : "The Optimistic Report"
+state e_m32 #E0E0E0
+e_m32 : discovery (neutral)
+e_m32 : "The Honest Report"
+state e_m33 #FFCDD2
+e_m33 : setback (negative)
+e_m33 : "Partial Release"
+state e_f01 #C8E6C9
+e_f01 : success (positive)
+e_f01 : "Four Hundred Hectares"
+state e_f02 #C8E6C9
+e_f02 : completion (positive)
+e_f02 : "The Ribbon Across the Gate"
+state e_f03 #C8E6C9
+e_f03 : success (positive)
+e_f03 : "Nobody Afterwards"
+state e_f04 #C8E6C9
+e_f04 : completion (positive)
+e_f04 : "The Map on the Hall Wall"
+state e_f05 #C8E6C9
+e_f05 : success (positive)
+e_f05 : "Cleared and Certified"
+state e_f06 #C8E6C9
+e_f06 : completion (positive)
+e_f06 : "The Second Ledger"
+state e_f07 #E0E0E0
+e_f07 : success (neutral)
+e_f07 : "Released, and Still Taped"
+state e_f08 #E0E0E0
+e_f08 : discovery (neutral)
+e_f08 : "Two Armies, One Offset"
+state e_f09 #E0E0E0
+e_f09 : discovery (neutral)
+e_f09 : "What Neither Record Said"
+state e_f10 #FFCDD2
+e_f10 : setback (negative)
+e_f10 : "Withdrawn in Spring"
+state e_f11 #E0E0E0
+e_f11 : completion (neutral)
+e_f11 : "The Residual Risk Statement"
+state e_f12 #E0E0E0
+e_f12 : setback (neutral)
+e_f12 : "Next Season"
+n00_0 --> n01_0 : Open the season.
+n01_0 --> n02_0 : Start at the pasture.
+n01_0 --> n02_1 : Start with the record book.
+n01_0 --> n02_2 : Start in the village.
+n02_0 --> n03_0 : Draw the polygons.
+n02_0 --> n03_1 : Sort out the team.
+n02_0 --> n03_2 : Count the weeks.
+n02_1 --> n03_1 : Sort out the team.
+n02_1 --> n03_2 : Count the weeks.
+n02_1 --> n03_3 : Deal with the agency.
+n02_2 --> n03_2 : Count the weeks.
+n02_2 --> n03_3 : Deal with the agency.
+n02_2 --> n03_0 : Draw the polygons.
+n03_0 --> n04_0 : Set up the base.
+n03_0 --> n04_1 : Hold the first briefing.
+n03_0 --> n04_2 : Walk the evacuation route.
+n03_1 --> n04_1 : Hold the first briefing.
+n03_1 --> n04_2 : Walk the evacuation route.
+n03_1 --> n04_3 : Read the accreditation file.
+n03_2 --> n04_2 : Walk the evacuation route.
+n03_2 --> n04_3 : Read the accreditation file.
+n03_2 --> n04_4 : Start the first morning.
+n03_3 --> n04_3 : Read the accreditation file.
+n03_3 --> n04_4 : Start the first morning.
+n03_3 --> n04_0 : Set up the base.
+n04_0 --> n05_0 : Do the survey properly first.
+n04_1 --> n05_1 : Start the interviews.
+n04_2 --> n05_2 : Read the ground itself.
+n04_3 --> n05_3 : Study the accident record.
+n04_4 --> n05_4 : Sit down with the mapper.
+n05_0 --> n06_0 : Look at the treeline belt.
+n05_0 --> n06_1 : Look at the bridge approaches.
+n05_0 --> n06_2 : Look at the quarry.
+n05_1 --> n06_1 : Look at the bridge approaches.
+n05_1 --> n06_2 : Look at the quarry.
+n05_1 --> n06_3 : Look at the orchard terraces.
+n05_2 --> n06_2 : Look at the quarry.
+n05_2 --> n06_3 : Look at the orchard terraces.
+n05_2 --> n06_4 : Look at what the river moved.
+n05_3 --> n06_3 : Look at the orchard terraces.
+n05_3 --> n06_4 : Look at what the river moved.
+n05_3 --> n06_5 : Look at the school field.
+n05_4 --> n06_4 : Look at what the river moved.
+n05_4 --> n06_5 : Look at the school field.
+n05_4 --> n06_0 : Look at the treeline belt.
+n06_0 --> n07_0 : Sit down with the village head.
+n06_0 --> n07_1 : Go and see the Ilic family.
+n06_0 --> n07_2 : Go with the liaison to a session.
+n06_1 --> n07_1 : Go and see the Ilic family.
+n06_1 --> n07_2 : Go with the liaison to a session.
+n06_1 --> n07_3 : Find the scrap collector.
+n06_2 --> n07_2 : Go with the liaison to a session.
+n06_2 --> n07_3 : Find the scrap collector.
+n06_2 --> n07_4 : Go to the school.
+n06_3 --> n07_3 : Find the scrap collector.
+n06_3 --> n07_4 : Go to the school.
+n06_3 --> n07_5 : Get the returnee list.
+n06_4 --> n07_4 : Go to the school.
+n06_4 --> n07_5 : Get the returnee list.
+n06_4 --> n07_6 : Look at the grazing agreement.
+n06_5 --> n07_5 : Get the returnee list.
+n06_5 --> n07_6 : Look at the grazing agreement.
+n06_5 --> n07_0 : Sit down with the village head.
+n07_0 --> n08_0 : Let the first week close and see what is...
+n07_0 --> n08_1 : Redraw the polygons with the week behind...
+n07_0 --> n08_2 : Sit at the base and let the village come...
+n07_0 --> e_m01 : Do the survey and release nothing.
+n07_1 --> n08_1 : Redraw the polygons with the week behind...
+n07_1 --> n08_2 : Sit at the base and let the village come...
+n07_1 --> n08_3 : Write off the rain days and re-plan.
+n07_2 --> n08_2 : Sit at the base and let the village come...
+n07_2 --> n08_3 : Write off the rain days and re-plan.
+n07_2 --> n08_4 : Wait for ground dry enough to scent.
+n07_3 --> n08_3 : Write off the rain days and re-plan.
+n07_3 --> n08_4 : Wait for ground dry enough to scent.
+n07_3 --> n08_5 : Do the double recording and get it right...
+n07_3 --> e_m02 : Follow Gabor and ask nothing.
+n07_4 --> n08_4 : Wait for ground dry enough to scent.
+n07_4 --> n08_5 : Do the double recording and get it right...
+n07_4 --> n08_6 : Lie awake in the container and listen.
+n07_5 --> n08_5 : Do the double recording and get it right...
+n07_5 --> n08_6 : Lie awake in the container and listen.
+n07_5 --> n08_0 : Let the first week close and see what is...
+n07_6 --> n08_6 : Lie awake in the container and listen.
+n07_6 --> n08_0 : Let the first week close and see what is...
+n07_6 --> n08_1 : Redraw the polygons with the week behind...
+n08_0 --> n09_0 : Read the Kovan ledger.
+n08_1 --> n09_1 : Read the official records.
+n08_2 --> n09_2 : Lay the two records side by side.
+n08_3 --> n09_3 : Solve the grid problem.
+n08_4 --> n09_4 : Push on what Kovan will not say.
+n08_5 --> n09_5 : Read the pattern as a document.
+n08_6 --> n09_6 : Consider that the ledger lies.
+n09_0 --> n10_0 : Work the moving slope.
+n09_0 --> n10_1 : Work into the treeline.
+n09_0 --> n10_2 : Work the terrace walls.
+n09_1 --> n10_1 : Work into the treeline.
+n09_1 --> n10_2 : Work the terrace walls.
+n09_1 --> n10_3 : Clear the access lane.
+n09_1 --> e_m03 : Let the ploughing go unchallenged.
+n09_2 --> n10_2 : Work the terrace walls.
+n09_2 --> n10_3 : Clear the access lane.
+n09_2 --> n10_4 : Work the river bank.
+n09_3 --> n10_3 : Clear the access lane.
+n09_3 --> n10_4 : Work the river bank.
+n09_3 --> n10_5 : Work the quarry floor.
+n09_3 --> e_m04 : Prove the sixty metre offset.
+n09_4 --> n10_4 : Work the river bank.
+n09_4 --> n10_5 : Work the quarry floor.
+n09_4 --> n10_6 : Work the easy ground first.
+n09_5 --> n10_5 : Work the quarry floor.
+n09_5 --> n10_6 : Work the easy ground first.
+n09_5 --> n10_7 : Work the polygon boundaries.
+n09_6 --> n10_6 : Work the easy ground first.
+n09_6 --> n10_7 : Work the polygon boundaries.
+n09_6 --> n10_8 : Work the ground nobody asked about.
+n09_6 --> e_m05 : Treat the ledger as an argument, not a r...
+n10_0 --> n11_0 : Do it by hand.
+n10_0 --> n11_1 : Bring in the flail.
+n10_0 --> n11_2 : Use the dogs.
+n10_1 --> n11_1 : Bring in the flail.
+n10_1 --> n11_2 : Use the dogs.
+n10_1 --> n11_3 : Prove the ground instead of clearing it.
+n10_2 --> n11_2 : Use the dogs.
+n10_2 --> n11_3 : Prove the ground instead of clearing it.
+n10_2 --> n11_4 : Run the large loop over the terraces.
+n10_2 --> e_m06 : Trust the satellite image.
+n10_3 --> n11_3 : Prove the ground instead of clearing it.
+n10_3 --> n11_4 : Run the large loop over the terraces.
+n10_3 --> n11_5 : Excavate the heap.
+n10_4 --> n11_4 : Run the large loop over the terraces.
+n10_4 --> n11_5 : Excavate the heap.
+n10_4 --> n11_6 : Run the combined approach.
+n10_5 --> n11_5 : Excavate the heap.
+n10_5 --> n11_6 : Run the combined approach.
+n10_5 --> n11_7 : Settle which standard applies.
+n10_6 --> n11_6 : Run the combined approach.
+n10_6 --> n11_7 : Settle which standard applies.
+n10_6 --> n11_8 : Consider cancelling the polygon.
+n10_6 --> e_m07 : Spend the season on the easy ground.
+n10_7 --> n11_7 : Settle which standard applies.
+n10_7 --> n11_8 : Consider cancelling the polygon.
+n10_7 --> n11_0 : Do it by hand.
+n10_8 --> n11_8 : Consider cancelling the polygon.
+n10_8 --> n11_0 : Do it by hand.
+n10_8 --> n11_1 : Bring in the flail.
+n10_8 --> e_m08 : Test the ground nobody asked about.
+n11_0 --> n12_0 : Take stock at midsummer.
+n11_0 --> n12_1 : Count the released hectares out loud.
+n11_0 --> n12_2 : Go and see who has moved back already.
+n11_0 --> e_m09 : Commit to manual clearance and accept th...
+n11_1 --> n12_1 : Count the released hectares out loud.
+n11_1 --> n12_2 : Go and see who has moved back already.
+n11_1 --> n12_3 : Look at what forty days has done to Bogd...
+n11_1 --> e_m10 : Rely on the flail and release on its dep...
+n11_2 --> n12_2 : Go and see who has moved back already.
+n11_2 --> n12_3 : Look at what forty days has done to Bogd...
+n11_2 --> n12_4 : Open the inspection notice.
+n11_3 --> n12_3 : Look at what forty days has done to Bogd...
+n11_3 --> n12_4 : Open the inspection notice.
+n11_3 --> n12_5 : Get down to the river while the water is...
+n11_4 --> n12_4 : Open the inspection notice.
+n11_4 --> n12_5 : Get down to the river while the water is...
+n11_4 --> n12_6 : Drive over to Kovan unannounced.
+n11_5 --> n12_5 : Get down to the river while the water is...
+n11_5 --> n12_6 : Drive over to Kovan unannounced.
+n11_5 --> n12_7 : Find out who has been pruning inside the...
+n11_6 --> n12_6 : Drive over to Kovan unannounced.
+n11_6 --> n12_7 : Find out who has been pruning inside the...
+n11_6 --> n12_8 : Open the satellite imagery on the laptop...
+n11_7 --> n12_7 : Find out who has been pruning inside the...
+n11_7 --> n12_8 : Open the satellite imagery on the laptop...
+n11_7 --> n12_0 : Take stock at midsummer.
+n11_8 --> n12_8 : Open the satellite imagery on the laptop...
+n11_8 --> n12_0 : Take stock at midsummer.
+n11_8 --> n12_1 : Count the released hectares out loud.
+n12_0 --> n13_0 : Deal with the near miss.
+n12_1 --> n13_1 : Run the internal investigation.
+n12_2 --> n13_2 : Stand the team down.
+n12_3 --> n13_3 : Deal with Bogdan.
+n12_4 --> n13_4 : Write the incident report.
+n12_5 --> n13_5 : Face the village about the near miss.
+n12_6 --> n13_6 : Take the news from the next district.
+n12_7 --> n13_7 : Run the medical drill again.
+n12_8 --> n13_8 : Sit with the fear.
+n13_0 --> n14_0 : Take on the handback ceremony.
+n13_0 --> n14_1 : Host the donor monitor.
+n13_0 --> n14_2 : Deal with the inspector.
+n13_1 --> n14_1 : Host the donor monitor.
+n13_1 --> n14_2 : Deal with the inspector.
+n13_1 --> n14_3 : Confront the district office.
+n13_2 --> n14_2 : Deal with the inspector.
+n13_2 --> n14_3 : Confront the district office.
+n13_2 --> n14_4 : Answer for the neighbouring valley.
+n13_2 --> e_m13 : Stand the team down for two days.
+n13_3 --> n14_3 : Confront the district office.
+n13_3 --> n14_4 : Answer for the neighbouring valley.
+n13_3 --> n14_5 : Handle the television crew.
+n13_3 --> e_m15 : Put Bogdan back on the lane.
+n13_4 --> n14_4 : Answer for the neighbouring valley.
+n13_4 --> n14_5 : Handle the television crew.
+n13_4 --> n14_6 : Decide about inviting Kovan.
+n13_4 --> e_m16 : Write the incident report without protec...
+n13_5 --> n14_5 : Handle the television crew.
+n13_5 --> n14_6 : Decide about inviting Kovan.
+n13_5 --> n14_7 : Face the funding calendar.
+n13_6 --> n14_6 : Decide about inviting Kovan.
+n13_6 --> n14_7 : Face the funding calendar.
+n13_6 --> n14_8 : Take the call from the country director.
+n13_7 --> n14_7 : Face the funding calendar.
+n13_7 --> n14_8 : Take the call from the country director.
+n13_7 --> n14_0 : Take on the handback ceremony.
+n13_8 --> n14_8 : Take the call from the country director.
+n13_8 --> n14_0 : Take on the handback ceremony.
+n13_8 --> n14_1 : Host the donor monitor.
+n14_0 --> n15_0 : Work the dog while it lasts.
+n14_0 --> n15_1 : Get the machine into the valley.
+n14_0 --> n15_2 : Assess the bridge.
+n14_0 --> e_m17 : Give the district its August ceremony.
+n14_1 --> n15_1 : Get the machine into the valley.
+n14_1 --> n15_2 : Assess the bridge.
+n14_1 --> n15_3 : Put the machine on the terraces.
+n14_1 --> e_m18 : Give the donor the metric it wants.
+n14_2 --> n15_2 : Assess the bridge.
+n14_2 --> n15_3 : Put the machine on the terraces.
+n14_2 --> n15_4 : Work through the false positives.
+n14_3 --> n15_3 : Put the machine on the terraces.
+n14_3 --> n15_4 : Work through the false positives.
+n14_3 --> n15_5 : Chase the detector calibration.
+n14_3 --> e_m20 : Force the district office on the titles.
+n14_4 --> n15_4 : Work through the false positives.
+n14_4 --> n15_5 : Chase the detector calibration.
+n14_4 --> n15_6 : Consider night work.
+n14_5 --> n15_5 : Chase the detector calibration.
+n14_5 --> n15_6 : Consider night work.
+n14_5 --> n15_7 : Take the second dog team.
+n14_6 --> n15_6 : Consider night work.
+n14_6 --> n15_7 : Take the second dog team.
+n14_6 --> n15_8 : Tighten the quality system.
+n14_7 --> n15_7 : Take the second dog team.
+n14_7 --> n15_8 : Tighten the quality system.
+n14_7 --> n15_0 : Work the dog while it lasts.
+n14_8 --> n15_8 : Tighten the quality system.
+n14_8 --> n15_0 : Work the dog while it lasts.
+n14_8 --> n15_1 : Get the machine into the valley.
+n15_0 --> n16_0 : Work through the hard, dry weeks.
+n15_0 --> n16_1 : Take the slope in the dust and the wind.
+n15_0 --> n16_2 : Go and watch the first hay cut.
+n15_0 --> e_m21 : Give the dog the mornings.
+n15_1 --> n16_1 : Take the slope in the dust and the wind.
+n15_1 --> n16_2 : Go and watch the first hay cut.
+n15_1 --> n16_3 : Read the three inspection findings.
+n15_2 --> n16_2 : Go and watch the first hay cut.
+n15_2 --> n16_3 : Read the three inspection findings.
+n15_2 --> n16_4 : Work the banks while the water stays dow...
+n15_3 --> n16_3 : Read the three inspection findings.
+n15_3 --> n16_4 : Work the banks while the water stays dow...
+n15_3 --> n16_5 : Look at how much red is left.
+n15_3 --> e_m22 : Send the machine onto the terraces.
+n15_4 --> n16_4 : Work the banks while the water stays dow...
+n15_4 --> n16_5 : Look at how much red is left.
+n15_4 --> n16_6 : Deal with the two resignations.
+n15_5 --> n16_5 : Look at how much red is left.
+n15_5 --> n16_6 : Deal with the two resignations.
+n15_5 --> n16_7 : Release the school field first.
+n15_6 --> n16_6 : Deal with the two resignations.
+n15_6 --> n16_7 : Release the school field first.
+n15_6 --> n16_8 : Go back to the kitchen table while there...
+n15_7 --> n16_7 : Release the school field first.
+n15_7 --> n16_8 : Go back to the kitchen table while there...
+n15_7 --> n16_0 : Work through the hard, dry weeks.
+n15_8 --> n16_8 : Go back to the kitchen table while there...
+n15_8 --> n16_0 : Work through the hard, dry weeks.
+n15_8 --> n16_1 : Take the slope in the dust and the wind.
+n16_0 --> n17_0 : Work the hard ground.
+n16_1 --> n17_1 : Chase the deep items.
+n16_2 --> n17_2 : Deal with the void.
+n16_3 --> n17_3 : Find the true edge of the Ribbon.
+n16_4 --> n17_4 : Deal with the item that should not exist...
+n16_5 --> n17_5 : Reconcile the count.
+n16_6 --> n17_6 : Decide about the missing ninety.
+n16_7 --> n17_7 : Run the demolition day.
+n16_8 --> n17_8 : Face the ground you cannot finish.
+n17_0 --> n18_0 : Go back to the Ilic family.
+n17_0 --> n18_1 : Deal with the grazing families.
+n17_0 --> n18_2 : Deal with Gabor.
+n17_1 --> n18_1 : Deal with the grazing families.
+n17_1 --> n18_2 : Deal with Gabor.
+n17_1 --> n18_3 : Argue for a real fence.
+n17_2 --> n18_2 : Deal with Gabor.
+n17_2 --> n18_3 : Argue for a real fence.
+n17_2 --> n18_4 : Go back to the school.
+n17_3 --> n18_3 : Argue for a real fence.
+n17_3 --> n18_4 : Go back to the school.
+n17_3 --> n18_5 : Prepare for the September returnees.
+n17_3 --> e_m26 : Release the Ribbon edge on the records.
+n17_4 --> n18_4 : Go back to the school.
+n17_4 --> n18_5 : Prepare for the September returnees.
+n17_4 --> n18_6 : Answer the village head about the date.
+n17_4 --> e_m25 : Report the item that should not exist.
+n17_5 --> n18_5 : Prepare for the September returnees.
+n17_5 --> n18_6 : Answer the village head about the date.
+n17_5 --> n18_7 : Chase the compensation question.
+n17_6 --> n18_6 : Answer the village head about the date.
+n17_6 --> n18_7 : Chase the compensation question.
+n17_6 --> n18_8 : Hold the village meeting.
+n17_6 --> e_m24 : Write the missing ninety into the record...
+n17_7 --> n18_7 : Chase the compensation question.
+n17_7 --> n18_8 : Hold the village meeting.
+n17_7 --> n18_0 : Go back to the Ilic family.
+n17_8 --> n18_8 : Hold the village meeting.
+n17_8 --> n18_0 : Go back to the Ilic family.
+n17_8 --> n18_1 : Deal with the grazing families.
+n18_0 --> n19_0 : Go through the budget.
+n18_0 --> n19_1 : Argue about cost per square metre.
+n18_0 --> n19_2 : Face the September cliff.
+n18_1 --> n19_1 : Argue about cost per square metre.
+n18_1 --> n19_2 : Face the September cliff.
+n18_1 --> n19_3 : Write the bridging proposal.
+n18_2 --> n19_2 : Face the September cliff.
+n18_2 --> n19_3 : Write the bridging proposal.
+n18_2 --> n19_4 : Choose what to drop.
+n18_3 --> n19_3 : Write the bridging proposal.
+n18_3 --> n19_4 : Choose what to drop.
+n18_3 --> n19_5 : Write the honest report.
+n18_4 --> n19_4 : Choose what to drop.
+n18_4 --> n19_5 : Write the honest report.
+n18_4 --> n19_6 : Write the optimistic report.
+n18_5 --> n19_5 : Write the honest report.
+n18_5 --> n19_6 : Write the optimistic report.
+n18_5 --> n19_7 : Take the national centre view seriously.
+n18_6 --> n19_6 : Write the optimistic report.
+n18_6 --> n19_7 : Take the national centre view seriously.
+n18_6 --> n19_0 : Go through the budget.
+n18_6 --> e_m27 : Give the village head a date.
+n18_7 --> n19_7 : Take the national centre view seriously.
+n18_7 --> n19_0 : Go through the budget.
+n18_7 --> n19_1 : Argue about cost per square metre.
+n18_8 --> n19_0 : Go through the budget.
+n18_8 --> n19_1 : Argue about cost per square metre.
+n18_8 --> n19_2 : Face the September cliff.
+n18_8 --> e_m28 : Put the map on the wall and take the mee...
+n19_0 --> n20_0 : Work into the first cold nights.
+n19_0 --> n20_1 : Take the slope in frost and thaw.
+n19_0 --> n20_2 : Start packing the base down.
+n19_1 --> n20_1 : Take the slope in frost and thaw.
+n19_1 --> n20_2 : Start packing the base down.
+n19_1 --> n20_3 : Argue over the three shapes that are lef...
+n19_2 --> n20_2 : Start packing the base down.
+n19_2 --> n20_3 : Argue over the three shapes that are lef...
+n19_2 --> n20_4 : Go into the village and talk about sprin...
+n19_3 --> n20_3 : Argue over the three shapes that are lef...
+n19_3 --> n20_4 : Go into the village and talk about sprin...
+n19_3 --> n20_5 : Open the book he left you.
+n19_4 --> n20_4 : Go into the village and talk about sprin...
+n19_4 --> n20_5 : Open the book he left you.
+n19_4 --> n20_6 : Take the photograph outside the containe...
+n19_5 --> n20_5 : Open the book he left you.
+n19_5 --> n20_6 : Take the photograph outside the containe...
+n19_5 --> n20_7 : Walk the lane once more before the machi...
+n19_5 --> e_m32 : Send the honest report.
+n19_6 --> n20_6 : Take the photograph outside the containe...
+n19_6 --> n20_7 : Walk the lane once more before the machi...
+n19_6 --> n20_0 : Work into the first cold nights.
+n19_6 --> e_m31 : Send the optimistic report.
+n19_7 --> n20_7 : Walk the lane once more before the machi...
+n19_7 --> n20_0 : Work into the first cold nights.
+n19_7 --> n20_1 : Take the slope in frost and thaw.
+n19_7 --> e_m33 : Release it in pieces.
+n20_0 --> n21_0 : Finish the terraces.
+n20_1 --> n21_1 : Finish the lane.
+n20_2 --> n21_2 : Finish the school verges.
+n20_3 --> n21_3 : Finish the river bank.
+n20_4 --> n21_4 : Close the quarry down for the year.
+n20_5 --> n21_5 : Finish the Ribbon edge.
+n20_6 --> n21_6 : Finish the pasture.
+n20_7 --> n21_7 : Cancel what can honestly be cancelled.
+n21_0 --> n22_0 : Assemble the completion documents.
+n21_0 --> n22_1 : Walk the land with the inspector.
+n21_0 --> n22_2 : Agree the sampling regime.
+n21_1 --> n22_1 : Walk the land with the inspector.
+n21_1 --> n22_2 : Agree the sampling regime.
+n21_1 --> n22_3 : Write the residual risk statement.
+n21_2 --> n22_2 : Agree the sampling regime.
+n21_2 --> n22_3 : Write the residual risk statement.
+n21_2 --> n22_4 : Argue the certificate wording.
+n21_3 --> n22_3 : Write the residual risk statement.
+n21_3 --> n22_4 : Argue the certificate wording.
+n21_3 --> n22_5 : Get the land records changed.
+n21_4 --> n22_4 : Argue the certificate wording.
+n21_4 --> n22_5 : Get the land records changed.
+n21_4 --> n22_6 : Make the map for the village hall.
+n21_4 --> e_m29 : Leave the quarry to enforcement.
+n21_5 --> n22_5 : Get the land records changed.
+n21_5 --> n22_6 : Make the map for the village hall.
+n21_5 --> n22_7 : Settle where the archive lives.
+n21_5 --> e_m11 : Prove the ground rather than clear it.
+n21_6 --> n22_6 : Make the map for the village hall.
+n21_6 --> n22_7 : Settle where the archive lives.
+n21_6 --> n22_0 : Assemble the completion documents.
+n21_7 --> n22_7 : Settle where the archive lives.
+n21_7 --> n22_0 : Assemble the completion documents.
+n21_7 --> n22_1 : Walk the land with the inspector.
+n21_7 --> e_m12 : Cancel the polygon on the evidence.
+n22_0 --> n23_0 : Hold the handover.
+n22_0 --> n23_1 : Give the speech.
+n22_0 --> n23_2 : Walk the field with Marta Ilic.
+n22_1 --> n23_1 : Give the speech.
+n22_1 --> n23_2 : Walk the field with Marta Ilic.
+n22_1 --> n23_3 : Keep the risk education running.
+n22_1 --> e_m19 : Let the inspector choose his own sample.
+n22_2 --> n23_2 : Walk the field with Marta Ilic.
+n22_2 --> n23_3 : Keep the risk education running.
+n22_2 --> n23_4 : Leave the tape where it must stay.
+n22_2 --> e_m23 : Accept the false positives as the work i...
+n22_3 --> n23_3 : Keep the risk education running.
+n22_3 --> n23_4 : Leave the tape where it must stay.
+n22_3 --> n23_5 : Send the team home.
+n22_4 --> n23_4 : Leave the tape where it must stay.
+n22_4 --> n23_5 : Send the team home.
+n22_4 --> n23_0 : Hold the handover.
+n22_5 --> n23_5 : Send the team home.
+n22_5 --> n23_0 : Hold the handover.
+n22_5 --> n23_1 : Give the speech.
+n22_6 --> n23_0 : Hold the handover.
+n22_6 --> n23_1 : Give the speech.
+n22_6 --> n23_2 : Walk the field with Marta Ilic.
+n22_7 --> n23_1 : Give the speech.
+n22_7 --> n23_2 : Walk the field with Marta Ilic.
+n22_7 --> n23_3 : Keep the risk education running.
+n23_0 --> n24_0 : Strike the base.
+n23_0 --> n24_1 : Close the file, all four kilograms of it...
+n23_0 --> n24_2 : Go and look at what the children drew.
+n23_1 --> n24_1 : Close the file, all four kilograms of it...
+n23_1 --> n24_2 : Go and look at what the children drew.
+n23_1 --> n24_3 : Screw the final map to the hall wall.
+n23_1 --> e_m14 : Follow the investigation wherever it goe...
+n23_2 --> n24_2 : Go and look at what the children drew.
+n23_2 --> n24_3 : Screw the final map to the hall wall.
+n23_2 --> n24_4 : Put the ledger on the passenger seat and...
+n23_3 --> n24_3 : Screw the final map to the hall wall.
+n23_3 --> n24_4 : Put the ledger on the passenger seat and...
+n23_3 --> n24_0 : Strike the base.
+n23_4 --> n24_4 : Put the ledger on the passenger seat and...
+n23_4 --> n24_0 : Strike the base.
+n23_4 --> n24_1 : Close the file, all four kilograms of it...
+n23_4 --> e_m30 : Cost the fence and put it in writing.
+n23_5 --> n24_0 : Strike the base.
+n23_5 --> n24_1 : Close the file, all four kilograms of it...
+n23_5 --> n24_2 : Go and look at what the children drew.
+n24_0 --> n25_0 : Sign the completion report.
+n24_1 --> n25_1 : Sign the risk statement.
+n24_2 --> n25_2 : File the recommendation.
+n24_3 --> n25_3 : Decide about the ledger.
+n24_4 --> n25_4 : Answer the question that will be asked i...
+n25_0 --> e_f01 : Finish the valley.
+n25_0 --> e_f02 : Hand it back.
+n25_0 --> e_f03 : Hold out for the only measure that matte...
+n25_1 --> e_f04 : Leave them the map.
+n25_1 --> e_f05 : Sign it exactly as it was done.
+n25_1 --> e_f06 : Give the second ledger to the archive.
+n25_2 --> e_f07 : Sign what can be signed and tape the res...
+n25_2 --> e_f08 : Publish the offset.
+n25_2 --> e_f09 : Write down what the ground said.
+n25_3 --> e_f10 : Release on the schedule.
+n25_3 --> e_f11 : Sign the residual risk statement in the ...
+n25_3 --> e_f12 : Leave it for next season.
+n25_4 --> e_f01 : Finish the valley.
+n25_4 --> e_f02 : Hand it back.
+n25_4 --> e_f03 : Hold out for the only measure that matte...
+e_m01 --> [*]
+e_m02 --> [*]
+e_m03 --> [*]
+e_m04 --> [*]
+e_m05 --> [*]
+e_m06 --> [*]
+e_m07 --> [*]
+e_m08 --> [*]
+e_m09 --> [*]
+e_m10 --> [*]
+e_m11 --> [*]
+e_m12 --> [*]
+e_m13 --> [*]
+e_m14 --> [*]
+e_m15 --> [*]
+e_m16 --> [*]
+e_m17 --> [*]
+e_m18 --> [*]
+e_m19 --> [*]
+e_m20 --> [*]
+e_m21 --> [*]
+e_m22 --> [*]
+e_m23 --> [*]
+e_m24 --> [*]
+e_m25 --> [*]
+e_m26 --> [*]
+e_m27 --> [*]
+e_m28 --> [*]
+e_m29 --> [*]
+e_m30 --> [*]
+e_m31 --> [*]
+e_m32 --> [*]
+e_m33 --> [*]
+e_f01 --> [*]
+e_f02 --> [*]
+e_f03 --> [*]
+e_f04 --> [*]
+e_f05 --> [*]
+e_f06 --> [*]
+e_f07 --> [*]
+e_f08 --> [*]
+e_f09 --> [*]
+e_f10 --> [*]
+e_f11 --> [*]
+e_f12 --> [*]
+
+legend right
+  The Long Thaw
+  Band 16+ · Tier 1 · ~18 min
+  Topology: branch_and_bottleneck
+  220 nodes · 45 endings (6+ / 28n / 11-)
+  Production-eligible
+  Scale: long · prose
+endlegend
+@enduml

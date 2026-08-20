@@ -64,23 +64,25 @@ export type StatusPill = 'Generating' | 'Waiting for review' | 'Approved' | 'Arc
 
 // Per-band defaults. nodes/endings come from validator/band_profile.py
 // _PROFILES (min_nodes / min_endings); protagonistAge is the band lower bound.
-// #ASSUME: data-integrity: fkTarget has no source in policy code (band_profile.py
-// carries no reading-level values); these are proposed defaults, monotonically
-// increasing with band, anchored to the repo's 8-11 precedent (4.0 in
-// tests/integration/test_generation_api.py). Used only when the child's
-// reading_level_cap is the unset 99 sentinel.
-// #VERIFY: intakeApi.test.ts sentinel test; revisit when validator policy grows
-// per-band reading-level values.
+// #ASSUME: data-integrity:
+// FK targets mirror validator/band_profile.py's _READING_LEVEL_TARGET, the
+// single source of record (owner ruling 2026-08-18). They used to be
+// independently "proposed defaults" and drifted from what the validator grades
+// against: 4.0 vs 4.5 at 8-11, 6.0 vs 5.5 at 10-13, 8.0/10.0 vs 7.0/9.0 at the
+// teen bands (`UW-C281`). Used only when reading_level_cap is the unset 99
+// sentinel.
+// #VERIFY: test_reading_level_sources.py::test_frontend_band_defaults_match_the_source_table
+// parses this literal and compares it to the Python table.
 const BAND_DEFAULTS: Record<
   AgeBandValue,
   { nodes: number; endings: number; protagonistAge: number; fkTarget: number }
 > = {
   '3-5': { nodes: 8, endings: 2, protagonistAge: 3, fkTarget: 1 },
-  '5-8': { nodes: 12, endings: 2, protagonistAge: 5, fkTarget: 2 },
-  '8-11': { nodes: 15, endings: 3, protagonistAge: 8, fkTarget: 4 },
-  '10-13': { nodes: 25, endings: 3, protagonistAge: 10, fkTarget: 6 },
-  '13-16': { nodes: 30, endings: 4, protagonistAge: 13, fkTarget: 8 },
-  '16+': { nodes: 30, endings: 4, protagonistAge: 16, fkTarget: 10 },
+  '5-8': { nodes: 12, endings: 2, protagonistAge: 5, fkTarget: 2.5 },
+  '8-11': { nodes: 15, endings: 3, protagonistAge: 8, fkTarget: 4.5 },
+  '10-13': { nodes: 25, endings: 3, protagonistAge: 10, fkTarget: 5.5 },
+  '13-16': { nodes: 30, endings: 4, protagonistAge: 13, fkTarget: 7 },
+  '16+': { nodes: 30, endings: 4, protagonistAge: 16, fkTarget: 9 },
 }
 
 // reading_level_cap defaults to 99.0 server-side (an unset ceiling, not a
@@ -130,7 +132,13 @@ export function buildBrief(params: BuildBriefParams): ConceptBriefBody {
   const band = BAND_DEFAULTS[params.ageBand]
   const name = params.protagonistName?.trim() || DEFAULT_PROTAGONIST_NAME
   const readingLevelTarget =
-    params.readingLevelCap < READING_CAP_SENTINEL ? params.readingLevelCap : band.fkTarget
+    params.readingLevelCap < READING_CAP_SENTINEL
+      ? // A cap is a CEILING (api/schemas.py: "can only ever tighten") and the
+        // validator reads a target as the CENTRE of a plus-or-minus window, so
+        // substituting it let a cap ABOVE the band target silently raise it.
+        // Clamping matches band_profile.clamp_target_to_cap (`UW-C281`).
+        Math.min(band.fkTarget, params.readingLevelCap)
+      : band.fkTarget
   return {
     title: null,
     premise: params.premise,

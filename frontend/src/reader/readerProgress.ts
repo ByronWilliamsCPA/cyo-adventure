@@ -88,7 +88,7 @@ export function readerPositionCount(
   let stops = 0
   for (let i = 0; i < reading.path.length; i += 1) {
     const previousNode = i > 0 ? nodesById.get(reading.path[i - 1]) : undefined
-    if (i === 0 || previousNode === undefined || previousNode.choices.length !== 1) {
+    if (i === 0 || previousNode === undefined || (previousNode.choices ?? []).length !== 1) {
       stops += 1
     }
   }

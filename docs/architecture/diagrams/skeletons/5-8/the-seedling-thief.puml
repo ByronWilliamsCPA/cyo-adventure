@@ -1,0 +1,162 @@
+@startuml the-seedling-thief
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_monday
+state n_monday #BBDEFB
+n_monday : setup · 60w
+state n_gate #BBDEFB
+n_gate : setup · 70w
+state n_bed #D1C4E9
+n_bed : rising · 70w
+state n_compost #D1C4E9
+n_compost : rising · 70w
+state n_wild #D1C4E9
+n_wild : rising · 70w
+state n_bite #D1C4E9
+n_bite : rising · 70w
+state n_tracks #D1C4E9
+n_tracks : rising · 70w
+state n_run #D1C4E9
+n_run : rising · 70w
+state n_watch #D1C4E9
+n_watch : rising · 70w
+state n_ask #D1C4E9
+n_ask : rising · 70w
+state n_fix #D1C4E9
+n_fix : rising · 70w
+state n_trap #D1C4E9
+n_trap : rising · 70w
+state n_dawn #D1C4E9
+n_dawn : rising · 70w
+state n_together #D1C4E9
+n_together : rising · 70w
+state n_caught #D1C4E9
+n_caught : rising · 70w
+state n_nothing #D1C4E9
+n_nothing : rising · 70w
+state n_decide #D1C4E9
+n_decide : rising · 70w
+state n_tell #D1C4E9
+n_tell : rising · 70w
+state n_release #D1C4E9
+n_release : rising · 70w
+state e_beans_hold #C8E6C9
+e_beans_hold : completion (positive)
+e_beans_hold : "Eight Beans Climbing"
+state e_still_unknown #E0E0E0
+e_still_unknown : discovery (neutral)
+e_still_unknown : "Safe and Still Unknown"
+state n_summer #D1C4E9
+n_summer : rising · 70w
+state n_board #D1C4E9
+n_board : rising · 70w
+state e_wire_and_welcome #C8E6C9
+e_wire_and_welcome : success (positive)
+e_wire_and_welcome : "Wire and Welcome"
+state e_lane_door #C8E6C9
+e_lane_door : completion (positive)
+e_lane_door : "The Board Left Loose"
+state e_learned_tracks #E0E0E0
+e_learned_tracks : discovery (neutral)
+e_learned_tracks : "Reading the Ground"
+state e_lost_three_more #E0E0E0
+e_lost_three_more : setback (neutral)
+e_lost_three_more : "Three More First"
+state e_show_bench #C8E6C9
+e_show_bench : success (positive)
+e_show_bench : "On the Show Bench"
+state e_shared_out #C8E6C9
+e_shared_out : completion (positive)
+e_shared_out : "Beans in Ice Cream Tubs"
+state e_new_plot #C8E6C9
+e_new_plot : success (positive)
+e_new_plot : "First Refusal on the Half Plot"
+state e_notice_stays #E0E0E0
+e_notice_stays : discovery (neutral)
+e_notice_stays : "The Card by the Gate"
+n_monday --> n_gate : Go down to the allotment.
+n_gate --> n_bed : Look closely at the bean bed.
+n_gate --> n_compost : Check the compost corner.
+n_gate --> n_wild : Walk to the wild end.
+n_bed --> n_bite : Study how the stems were cut.
+n_bed --> n_tracks : Follow the little tracks.
+n_bed --> n_run : Follow the run through the grass.
+n_compost --> n_bite : Study how the stems were cut.
+n_compost --> n_tracks : Follow the little tracks.
+n_compost --> n_run : Follow the run through the grass.
+n_wild --> n_bite : Study how the stems were cut.
+n_wild --> n_tracks : Follow the little tracks.
+n_wild --> n_run : Follow the run through the grass.
+n_bite --> n_watch : Come back at dawn and watch.
+n_bite --> n_ask : Ask the other plotholders.
+n_bite --> n_fix : Just fix the gaps instead.
+n_tracks --> n_trap : Borrow the humane trap.
+n_tracks --> n_watch : Come back at dawn and watch.
+n_tracks --> n_ask : Ask the other plotholders.
+n_run --> n_fix : Just fix the gaps instead.
+n_run --> n_trap : Borrow the humane trap.
+n_run --> n_watch : Come back at dawn and watch.
+n_watch --> n_dawn : Sit still and wait.
+n_watch --> n_together : Do the work as a group.
+n_watch --> n_caught : Go and check the trap.
+n_ask --> n_nothing : Give it three more mornings.
+n_ask --> n_dawn : Sit still and wait.
+n_ask --> n_together : Do the work as a group.
+n_fix --> n_caught : Go and check the trap.
+n_fix --> n_nothing : Give it three more mornings.
+n_fix --> n_gate : Go back to the gate and start again.
+n_trap --> n_together : Do the work as a group.
+n_trap --> n_caught : Go and check the trap.
+n_trap --> n_nothing : Give it three more mornings.
+n_dawn --> n_decide : Decide what to do about it.
+n_dawn --> n_tell : Tell the rest of the site.
+n_dawn --> n_release : Let it go somewhere.
+n_together --> e_beans_hold : Put the wire down and leave it.
+n_together --> e_still_unknown : Stop looking and grow beans.
+n_together --> n_decide : Decide what to do about it.
+n_caught --> n_tell : Tell the rest of the site.
+n_caught --> n_release : Let it go somewhere.
+n_caught --> e_beans_hold : Put the wire down and leave it.
+n_nothing --> e_still_unknown : Stop looking and grow beans.
+n_nothing --> n_decide : Decide what to do about it.
+n_nothing --> n_gate : Go back to the gate and start again.
+n_decide --> n_summer : Get on with the summer.
+n_decide --> n_board : Write it on the noticeboard.
+n_decide --> e_wire_and_welcome : Protect the beds and keep the wild end.
+n_tell --> e_lane_door : Leave the lane board loose.
+n_tell --> e_learned_tracks : Keep what you learned about tracks.
+n_tell --> e_lost_three_more : Finish the wire tomorrow.
+n_release --> n_summer : Get on with the summer.
+n_release --> n_board : Write it on the noticeboard.
+n_release --> e_wire_and_welcome : Protect the beds and keep the wild end.
+n_summer --> e_show_bench : Enter two beans in the village show.
+n_summer --> e_shared_out : Share the crop round the site.
+n_summer --> e_new_plot : Say yes to the half plot.
+n_board --> e_notice_stays : Leave the card up all season.
+n_board --> e_show_bench : Enter two beans in the village show.
+n_board --> e_shared_out : Share the crop round the site.
+e_beans_hold --> [*]
+e_still_unknown --> [*]
+e_wire_and_welcome --> [*]
+e_lane_door --> [*]
+e_learned_tracks --> [*]
+e_lost_three_more --> [*]
+e_show_bench --> [*]
+e_shared_out --> [*]
+e_new_plot --> [*]
+e_notice_stays --> [*]
+
+legend right
+  The Seedling Thief
+  Band 5-8 · Tier 1 · ~5 min
+  Topology: open_map
+  31 nodes · 10 endings (6+ / 4n / 0-)
+  Production-eligible
+  Scale: short · prose
+endlegend
+@enduml

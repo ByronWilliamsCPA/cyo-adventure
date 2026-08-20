@@ -1,0 +1,711 @@
+@startuml the-observatory-shift
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 35w
+state n_intro #BBDEFB
+n_intro : setup · 30w
+state n_weather #BBDEFB
+n_weather : setup · 30w
+state n_first #FFF9C4
+n_first : choice · 50w
+state a_l01 #FFF9C4
+a_l01 : choice · 105w
+state a_l02 #FFF9C4
+a_l02 : choice · 105w
+state a_l03 #FFF9C4
+a_l03 : choice · 105w
+state a_l04 #FFF9C4
+a_l04 : choice · 105w
+state a_l05 #FFF9C4
+a_l05 : choice · 105w
+state a_l06 #FFF9C4
+a_l06 : choice · 105w
+state a_l07 #FFF9C4
+a_l07 : choice · 105w
+state a_l08 #FFF9C4
+a_l08 : choice · 105w
+state a_l09 #FFF9C4
+a_l09 : choice · 105w
+state a_l10 #FFF9C4
+a_l10 : choice · 105w
+state a_split #FFF9C4
+a_split : choice · 105w
+state a_s1_01 #FFF9C4
+a_s1_01 : choice · 105w
+state a_s1_02 #FFF9C4
+a_s1_02 : choice · 105w
+state a_s1_03 #FFF9C4
+a_s1_03 : choice · 105w
+state a_s1_04 #FFF9C4
+a_s1_04 : choice · 105w
+state a_s1_05 #FFF9C4
+a_s1_05 : choice · 105w
+state a_s1_06 #FFF9C4
+a_s1_06 : choice · 105w
+state a_s1_07 #FFF9C4
+a_s1_07 : choice · 105w
+state a_s1_08 #FFF9C4
+a_s1_08 : choice · 105w
+state a_e11 #C8E6C9
+a_e11 : completion (positive)
+a_e11 : "The Report That Held"
+state a_e12 #FFCDD2
+a_e12 : setback (negative)
+a_e12 : "One Check Too Many"
+state a_e13 #E0E0E0
+a_e13 : setback (neutral)
+a_e13 : "Filed, Not Sent"
+state a_c1 #FFF9C4
+a_c1 : choice · 105w
+state a_s2_01 #FFF9C4
+a_s2_01 : choice · 105w
+state a_s2_02 #FFF9C4
+a_s2_02 : choice · 105w
+state a_s2_03 #FFF9C4
+a_s2_03 : choice · 105w
+state a_s2_04 #FFF9C4
+a_s2_04 : choice · 105w
+state a_s2_05 #FFF9C4
+a_s2_05 : choice · 105w
+state a_s2_06 #FFF9C4
+a_s2_06 : choice · 105w
+state a_s2_07 #FFF9C4
+a_s2_07 : choice · 105w
+state a_s2_08 #FFF9C4
+a_s2_08 : choice · 105w
+state a_e21 #C8E6C9
+a_e21 : completion (positive)
+a_e21 : "The Case, Followed Through"
+state a_e22 #FFCDD2
+a_e22 : setback (negative)
+a_e22 : "A Number, and Nothing After"
+state a_e23 #FFCDD2
+a_e23 : setback (negative)
+a_e23 : "Pushed Too Hard"
+state a_c2 #FFF9C4
+a_c2 : choice · 105w
+state a_s3_01 #FFF9C4
+a_s3_01 : choice · 105w
+state a_s3_02 #FFF9C4
+a_s3_02 : choice · 105w
+state a_s3_03 #FFF9C4
+a_s3_03 : choice · 105w
+state a_s3_04 #FFF9C4
+a_s3_04 : choice · 105w
+state a_s3_05 #FFF9C4
+a_s3_05 : choice · 105w
+state a_s3_06 #FFF9C4
+a_s3_06 : choice · 105w
+state a_s3_07 #FFF9C4
+a_s3_07 : choice · 105w
+state a_s3_08 #FFF9C4
+a_s3_08 : choice · 105w
+state a_e31 #C8E6C9
+a_e31 : completion (positive)
+a_e31 : "Two Sites, One Finding"
+state a_e32 #E0E0E0
+a_e32 : discovery (neutral)
+a_e32 : "Split Down the Middle"
+state a_e33 #E0E0E0
+a_e33 : setback (neutral)
+a_e33 : "Waiting for Certainty"
+state a_c3 #FFF9C4
+a_c3 : choice · 105w
+state b_l01 #FFF9C4
+b_l01 : choice · 105w
+state b_l02 #FFF9C4
+b_l02 : choice · 105w
+state b_l03 #FFF9C4
+b_l03 : choice · 105w
+state b_l04 #FFF9C4
+b_l04 : choice · 105w
+state b_l05 #FFF9C4
+b_l05 : choice · 105w
+state b_l06 #FFF9C4
+b_l06 : choice · 105w
+state b_l07 #FFF9C4
+b_l07 : choice · 105w
+state b_l08 #FFF9C4
+b_l08 : choice · 105w
+state b_l09 #FFF9C4
+b_l09 : choice · 105w
+state b_l10 #FFF9C4
+b_l10 : choice · 105w
+state b_split #FFF9C4
+b_split : choice · 105w
+state b_s1_01 #FFF9C4
+b_s1_01 : choice · 105w
+state b_s1_02 #FFF9C4
+b_s1_02 : choice · 105w
+state b_s1_03 #FFF9C4
+b_s1_03 : choice · 105w
+state b_s1_04 #FFF9C4
+b_s1_04 : choice · 105w
+state b_s1_05 #FFF9C4
+b_s1_05 : choice · 105w
+state b_s1_06 #FFF9C4
+b_s1_06 : choice · 105w
+state b_s1_07 #FFF9C4
+b_s1_07 : choice · 105w
+state b_s1_08 #FFF9C4
+b_s1_08 : choice · 105w
+state b_e11 #C8E6C9
+b_e11 : completion (positive)
+b_e11 : "Eyes on It, First"
+state b_e12 #FFCDD2
+b_e12 : setback (negative)
+b_e12 : "One Look Too Many"
+state b_e13 #E0E0E0
+b_e13 : setback (neutral)
+b_e13 : "Left Unfinished"
+state b_c1 #FFF9C4
+b_c1 : choice · 105w
+state b_s2_01 #FFF9C4
+b_s2_01 : choice · 105w
+state b_s2_02 #FFF9C4
+b_s2_02 : choice · 105w
+state b_s2_03 #FFF9C4
+b_s2_03 : choice · 105w
+state b_s2_04 #FFF9C4
+b_s2_04 : choice · 105w
+state b_s2_05 #FFF9C4
+b_s2_05 : choice · 105w
+state b_s2_06 #FFF9C4
+b_s2_06 : choice · 105w
+state b_s2_07 #FFF9C4
+b_s2_07 : choice · 105w
+state b_s2_08 #FFF9C4
+b_s2_08 : choice · 105w
+state b_e21 #C8E6C9
+b_e21 : completion (positive)
+b_e21 : "The One Frame"
+state b_e22 #FFCDD2
+b_e22 : setback (negative)
+b_e22 : "Deleted the Wrong One"
+state b_e23 #E0E0E0
+b_e23 : discovery (neutral)
+b_e23 : "Left for Later"
+state b_c2 #FFF9C4
+b_c2 : choice · 105w
+state b_s3_01 #FFF9C4
+b_s3_01 : choice · 105w
+state b_s3_02 #FFF9C4
+b_s3_02 : choice · 105w
+state b_s3_03 #FFF9C4
+b_s3_03 : choice · 105w
+state b_s3_04 #FFF9C4
+b_s3_04 : choice · 105w
+state b_s3_05 #FFF9C4
+b_s3_05 : choice · 105w
+state b_s3_06 #FFF9C4
+b_s3_06 : choice · 105w
+state b_s3_07 #FFF9C4
+b_s3_07 : choice · 105w
+state b_s3_08 #FFF9C4
+b_s3_08 : choice · 105w
+state b_e31 #C8E6C9
+b_e31 : completion (positive)
+b_e31 : "A Steady Set of Eyes"
+state b_e32 #FFCDD2
+b_e32 : setback (negative)
+b_e32 : "A Bad Step"
+state b_e33 #E0E0E0
+b_e33 : setback (neutral)
+b_e33 : "One Minute Too Long"
+state b_c3 #FFF9C4
+b_c3 : choice · 105w
+state c_l01 #FFF9C4
+c_l01 : choice · 105w
+state c_l02 #FFF9C4
+c_l02 : choice · 105w
+state c_l03 #FFF9C4
+c_l03 : choice · 105w
+state c_l04 #FFF9C4
+c_l04 : choice · 105w
+state c_l05 #FFF9C4
+c_l05 : choice · 105w
+state c_l06 #FFF9C4
+c_l06 : choice · 105w
+state c_l07 #FFF9C4
+c_l07 : choice · 105w
+state c_l08 #FFF9C4
+c_l08 : choice · 105w
+state c_l09 #FFF9C4
+c_l09 : choice · 105w
+state c_l10 #FFF9C4
+c_l10 : choice · 105w
+state c_split #FFF9C4
+c_split : choice · 105w
+state c_s1_01 #FFF9C4
+c_s1_01 : choice · 105w
+state c_s1_02 #FFF9C4
+c_s1_02 : choice · 105w
+state c_s1_03 #FFF9C4
+c_s1_03 : choice · 105w
+state c_s1_04 #FFF9C4
+c_s1_04 : choice · 105w
+state c_s1_05 #FFF9C4
+c_s1_05 : choice · 105w
+state c_s1_06 #FFF9C4
+c_s1_06 : choice · 105w
+state c_s1_07 #FFF9C4
+c_s1_07 : choice · 105w
+state c_s1_08 #FFF9C4
+c_s1_08 : choice · 105w
+state c_e11 #C8E6C9
+c_e11 : completion (positive)
+c_e11 : "Two Names on the Report"
+state c_e12 #E0E0E0
+c_e12 : discovery (neutral)
+c_e12 : "Her Name Only"
+state c_e13 #E0E0E0
+c_e13 : setback (neutral)
+c_e13 : "One Caveat Too Many"
+state c_c1 #FFF9C4
+c_c1 : choice · 105w
+state c_s2_01 #FFF9C4
+c_s2_01 : choice · 105w
+state c_s2_02 #FFF9C4
+c_s2_02 : choice · 105w
+state c_s2_03 #FFF9C4
+c_s2_03 : choice · 105w
+state c_s2_04 #FFF9C4
+c_s2_04 : choice · 105w
+state c_s2_05 #FFF9C4
+c_s2_05 : choice · 105w
+state c_s2_06 #FFF9C4
+c_s2_06 : choice · 105w
+state c_s2_07 #FFF9C4
+c_s2_07 : choice · 105w
+state c_s2_08 #FFF9C4
+c_s2_08 : choice · 105w
+state c_e21 #C8E6C9
+c_e21 : completion (positive)
+c_e21 : "The Case, Followed Through"
+state c_e22 #FFCDD2
+c_e22 : setback (negative)
+c_e22 : "A Call, and Nothing Written"
+state c_e23 #E0E0E0
+c_e23 : discovery (neutral)
+c_e23 : "Stepped Back"
+state c_c2 #FFF9C4
+c_c2 : choice · 105w
+state c_s3_01 #FFF9C4
+c_s3_01 : choice · 105w
+state c_s3_02 #FFF9C4
+c_s3_02 : choice · 105w
+state c_s3_03 #FFF9C4
+c_s3_03 : choice · 105w
+state c_s3_04 #FFF9C4
+c_s3_04 : choice · 105w
+state c_s3_05 #FFF9C4
+c_s3_05 : choice · 105w
+state c_s3_06 #FFF9C4
+c_s3_06 : choice · 105w
+state c_s3_07 #FFF9C4
+c_s3_07 : choice · 105w
+state c_s3_08 #FFF9C4
+c_s3_08 : choice · 105w
+state c_e31 #C8E6C9
+c_e31 : completion (positive)
+c_e31 : "Three Calls, One Morning"
+state c_e32 #E0E0E0
+c_e32 : discovery (neutral)
+c_e32 : "Stepped Back, Politely"
+state c_e33 #E0E0E0
+c_e33 : setback (neutral)
+c_e33 : "Overwritten"
+state c_c3 #FFF9C4
+c_c3 : choice · 105w
+n_start --> n_intro : Check what the camera flagged.
+n_intro --> n_weather : Check the sky itself before deciding any...
+n_weather --> n_first : Decide what to do about it.
+n_first --> a_l01 : Keep the log running and work it by the ...
+n_first --> b_l01 : Take the keys and get eyes on it from th...
+n_first --> c_l01 : Go wake Dr. Voss in the site trailer rig...
+a_l01 --> a_l02 : Read the value out loud as you go.
+a_l01 --> a_l02 : Copy it silently and move on.
+a_l01 --> a_l02 : Double-check it a third way.
+a_l02 --> a_l03 : Sketch the curve by hand first.
+a_l02 --> a_l03 : Trust the software's own plot.
+a_l02 --> a_l03 : Plot it twice to be sure.
+a_l03 --> a_l04 : Check the manual override switch first.
+a_l03 --> a_l04 : Trust the automatic settings.
+a_l03 --> a_l04 : Reset the mode and start clean.
+a_l04 --> a_l05 : Believe the sensor.
+a_l04 --> a_l05 : Step outside and look at the sky yoursel...
+a_l04 --> a_l05 : Check both and compare.
+a_l05 --> a_l06 : Check the second drive now.
+a_l05 --> a_l06 : Check it at the end of the shift.
+a_l05 --> a_l06 : Check both drives at once.
+a_l06 --> a_l07 : Pull the whole week's set.
+a_l06 --> a_l07 : Pull just last night's.
+a_l06 --> a_l07 : Pull a month back to be thorough.
+a_l07 --> a_l08 : Wait for the link to stabilize.
+a_l07 --> a_l08 : Send a test ping now.
+a_l07 --> a_l08 : Check the router itself first.
+a_l08 --> a_l09 : Project it five minutes ahead.
+a_l08 --> a_l09 : Project it a full hour ahead.
+a_l08 --> a_l09 : Project it both ways and compare.
+a_l09 --> a_l10 : Write it in your own words.
+a_l09 --> a_l10 : Copy the digital log verbatim.
+a_l09 --> a_l10 : Write a short summary only.
+a_l10 --> a_split : Aim the guide-scope yourself.
+a_l10 --> a_split : Let the mount slew there automatically.
+a_l10 --> a_split : Split the difference and nudge it by han...
+a_split --> a_s1_01 : Stay strictly procedural: verify everyth...
+a_split --> a_s2_01 : Escalate now: call the regional network'...
+a_split --> a_s3_01 : Reach sideways: message another site's o...
+a_s1_01 --> a_s1_02 : Read each line aloud as you check it.
+a_s1_01 --> a_s1_02 : Check silently, faster.
+a_s1_01 --> a_s1_02 : Check it against the paper copy too.
+a_s1_02 --> a_s1_03 : Start completely fresh.
+a_s1_02 --> a_s1_03 : Compare the new curve to the old one.
+a_s1_02 --> a_s1_03 : Average the two together.
+a_s1_03 --> a_s1_04 : Rule it out carefully, step by step.
+a_s1_03 --> a_s1_04 : Rule it out quickly, on the numbers alon...
+a_s1_03 --> a_s1_04 : Leave the question open for now.
+a_s1_04 --> a_s1_05 : Widen the search terms.
+a_s1_04 --> a_s1_05 : Narrow them instead.
+a_s1_04 --> a_s1_05 : Ask the archive's own index for suggesti...
+a_s1_05 --> a_s1_06 : Trust it now, once confirmed.
+a_s1_05 --> a_s1_06 : Recheck it in ten more minutes.
+a_s1_05 --> a_s1_06 : Cross-check it against a second clock.
+a_s1_06 --> a_s1_07 : Cut anything that sounds too certain.
+a_s1_06 --> a_s1_07 : Leave the confident lines as written.
+a_s1_06 --> a_s1_07 : Soften just the riskiest claim.
+a_s1_07 --> a_s1_08 : Decide it is, carefully.
+a_s1_07 --> a_s1_08 : Decide to wait one more check.
+a_s1_07 --> a_s1_08 : Ask what Dr. Voss would want here.
+a_s1_08 --> a_c1 : Leave a short note on top explaining the...
+a_s1_08 --> a_c1 : Leave it plain, numbers only.
+a_s1_08 --> a_c1 : Leave it with a single flagged question.
+a_c1 --> a_e11 : Sign it and put it in the folder, done.
+a_c1 --> a_e12 : Add one more check you don't actually ha...
+a_c1 --> a_e13 : Decide it's too thin without a second ob...
+a_s2_01 --> a_s2_02 : Give your name and shift number first.
+a_s2_01 --> a_s2_02 : Give the object's coordinates first.
+a_s2_01 --> a_s2_02 : Give both together, fast.
+a_s2_02 --> a_s2_03 : Slow down and restart calmly.
+a_s2_02 --> a_s2_03 : Push through at your own pace.
+a_s2_02 --> a_s2_03 : Ask him what part confused him.
+a_s2_03 --> a_s2_04 : Answer honestly: not yet.
+a_s2_03 --> a_s2_04 : Say you're about to wake her.
+a_s2_03 --> a_s2_04 : Ask if that matters right now.
+a_s2_04 --> a_s2_05 : Wait it out patiently.
+a_s2_04 --> a_s2_05 : Use the time to recheck your numbers.
+a_s2_04 --> a_s2_05 : Hang up and call back later.
+a_s2_05 --> a_s2_06 : Thank him and log the number.
+a_s2_05 --> a_s2_06 : Push for a firmer commitment.
+a_s2_05 --> a_s2_06 : Ask what would make it more likely.
+a_s2_06 --> a_s2_07 : Ask for that watcher's contact details.
+a_s2_06 --> a_s2_07 : Ask for their raw numbers instead.
+a_s2_06 --> a_s2_07 : Just note the coincidence and move on.
+a_s2_07 --> a_s2_08 : Call and compare notes plainly.
+a_s2_07 --> a_s2_08 : Wait for an official channel instead.
+a_s2_07 --> a_s2_08 : Send a short message rather than call.
+a_s2_08 --> a_c2 : Write it exactly as it happened.
+a_s2_08 --> a_c2 : Summarize just the outcome.
+a_s2_08 --> a_c2 : Attach your own doubts as a footnote.
+a_c2 --> a_e21 : Call back at shift's end with a final su...
+a_c2 --> a_e22 : Let the case number sit and hope it's en...
+a_c2 --> a_e23 : Push the dispatcher harder than the prot...
+a_s3_01 --> a_s3_02 : Message plainly, numbers first.
+a_s3_01 --> a_s3_02 : Message cautiously, question first.
+a_s3_01 --> a_s3_02 : Call instead of messaging.
+a_s3_02 --> a_s3_03 : Answer her questions in order.
+a_s3_02 --> a_s3_03 : Send your whole log at once.
+a_s3_02 --> a_s3_03 : Ask her a question of your own first.
+a_s3_03 --> a_s3_04 : Ask for her exact numbers.
+a_s3_03 --> a_s3_04 : Ask her to look again tonight.
+a_s3_03 --> a_s3_04 : Just note the coincidence for now.
+a_s3_04 --> a_s3_05 : Recheck your own figures against hers.
+a_s3_04 --> a_s3_05 : Ask her to recheck hers.
+a_s3_04 --> a_s3_05 : Note the gap and move on.
+a_s3_05 --> a_s3_06 : Agree and set a check-in time.
+a_s3_05 --> a_s3_06 : Agree, loosely, without a fixed time.
+a_s3_05 --> a_s3_06 : Politely decline and work alone.
+a_s3_06 --> a_s3_07 : Merge them into one shared file.
+a_s3_06 --> a_s3_07 : Keep them separate on purpose.
+a_s3_06 --> a_s3_07 : Merge just the key numbers.
+a_s3_07 --> a_s3_08 : Laugh it off and stay focused.
+a_s3_07 --> a_s3_08 : Say that's not up to you.
+a_s3_07 --> a_s3_08 : Say you hope so, honestly.
+a_s3_08 --> a_c3 : Credit her plainly and fully.
+a_s3_08 --> a_c3 : Keep it brief and businesslike.
+a_s3_08 --> a_c3 : Add a short thank-you line.
+a_c3 --> a_e31 : Send the joint log to the regional netwo...
+a_c3 --> a_e32 : Send only your half and let her send her...
+a_c3 --> a_e33 : Hold the joint log back until you're bot...
+b_l01 --> b_l02 : Force the crank slowly.
+b_l01 --> b_l02 : Go find the oil can first.
+b_l01 --> b_l02 : Try the crank gently, then decide.
+b_l02 --> b_l03 : Put your shoulder into the hatch.
+b_l02 --> b_l03 : Wedge it with the toolkit instead.
+b_l02 --> b_l03 : Try both together.
+b_l03 --> b_l04 : Zip your jacket and push on.
+b_l03 --> b_l04 : Grab the spare coat from the locker.
+b_l03 --> b_l04 : Push on and warm up moving.
+b_l04 --> b_l05 : Clean it with your sleeve.
+b_l04 --> b_l05 : Use the lens cloth properly.
+b_l04 --> b_l05 : Clean it twice to be sure.
+b_l05 --> b_l06 : Nudge the dome by hand.
+b_l05 --> b_l06 : Recheck the coordinates first.
+b_l05 --> b_l06 : Do both, coordinates then a nudge.
+b_l06 --> b_l07 : Tighten the bolt yourself.
+b_l06 --> b_l07 : Note it and stay off that section.
+b_l06 --> b_l07 : Test its give carefully first.
+b_l07 --> b_l08 : Wipe the rail down.
+b_l07 --> b_l08 : Just watch your grip.
+b_l07 --> b_l08 : Wipe it and watch your grip both.
+b_l08 --> b_l09 : Force the last quarter-turn.
+b_l08 --> b_l09 : Back it off and try again slower.
+b_l08 --> b_l09 : Try it from the other direction.
+b_l09 --> b_l10 : Brace the mount with your arm.
+b_l09 --> b_l10 : Wait for the gust to pass.
+b_l09 --> b_l10 : Brace it and wait both.
+b_l10 --> b_split : Check the shutter latch.
+b_l10 --> b_split : Ignore it and keep watching.
+b_l10 --> b_split : Check it quickly, then keep watching.
+b_split --> b_s1_01 : Stay at the eyepiece and track it by han...
+b_split --> b_s2_01 : Try to rig the site's old camera to the ...
+b_split --> b_s3_01 : Climb higher, onto the maintenance platf...
+b_s1_01 --> b_s1_02 : Track it manually, hand on the slow-moti...
+b_s1_01 --> b_s1_02 : Let it drift and re-find it after.
+b_s1_01 --> b_s1_02 : Alternate between the two.
+b_s1_02 --> b_s1_03 : Tuck your hands under your arms first.
+b_s1_02 --> b_s1_03 : Push through the cold.
+b_s1_02 --> b_s1_03 : Warm them briefly, then push through.
+b_s1_03 --> b_s1_04 : Recenter gently, again and again.
+b_s1_03 --> b_s1_04 : Recenter fast, before it drifts more.
+b_s1_03 --> b_s1_04 : Recenter once, then hold still.
+b_s1_04 --> b_s1_05 : Trust the phone light.
+b_s1_04 --> b_s1_05 : Feel your way by memory instead.
+b_s1_04 --> b_s1_05 : Use the phone sparingly.
+b_s1_05 --> b_s1_06 : Brace against the rail.
+b_s1_05 --> b_s1_06 : Crouch low until it passes.
+b_s1_05 --> b_s1_06 : Brace low against the rail together.
+b_s1_06 --> b_s1_07 : Note the exact second it faded.
+b_s1_06 --> b_s1_07 : Assume it was nothing.
+b_s1_06 --> b_s1_07 : Note it and keep watching closely.
+b_s1_07 --> b_s1_08 : Trust your own eye.
+b_s1_07 --> b_s1_08 : Trust the readout.
+b_s1_07 --> b_s1_08 : Split the difference and note both.
+b_s1_08 --> b_c1 : Start sketching immediately.
+b_s1_08 --> b_c1 : Just watch and memorize it first.
+b_s1_08 --> b_c1 : Do a fast sketch, then watch.
+b_c1 --> b_e11 : Finish the sketch and bring it down at o...
+b_c1 --> b_e12 : Try to squeeze in one more, riskier look...
+b_c1 --> b_e13 : Head down immediately, sketch unfinished...
+b_s2_01 --> b_s2_02 : Improvise a fix with tape and patience.
+b_s2_01 --> b_s2_02 : Give up on the camera idea.
+b_s2_01 --> b_s2_02 : Try a different bracket entirely.
+b_s2_02 --> b_s2_03 : Use what charge is left, carefully.
+b_s2_02 --> b_s2_03 : Go down for a spare battery.
+b_s2_02 --> b_s2_03 : Try it and accept what you get.
+b_s2_03 --> b_s2_04 : Focus slowly and patiently.
+b_s2_03 --> b_s2_04 : Trust the scope's usual setting.
+b_s2_03 --> b_s2_04 : Focus by trial and error, fast.
+b_s2_04 --> b_s2_05 : Adjust and try again.
+b_s2_04 --> b_s2_05 : Switch back to the eyepiece instead.
+b_s2_04 --> b_s2_05 : Try one more setting first.
+b_s2_05 --> b_s2_06 : Brace the whole rig against the rail.
+b_s2_05 --> b_s2_06 : Wait for a lull in the wind.
+b_s2_05 --> b_s2_06 : Do both together.
+b_s2_06 --> b_s2_07 : Take three more just in case.
+b_s2_06 --> b_s2_07 : Stop while you're ahead.
+b_s2_06 --> b_s2_07 : Take exactly one more to be safe.
+b_s2_07 --> b_s2_08 : Trust it and move on.
+b_s2_07 --> b_s2_08 : Wait until you're back at the console to...
+b_s2_07 --> b_s2_08 : Squint and decide now anyway.
+b_s2_08 --> b_c2 : Pack up carefully, protecting the card.
+b_s2_08 --> b_c2 : Pack up fast, cold winning out.
+b_s2_08 --> b_c2 : Take one last look first.
+b_c2 --> b_e21 : Carry it down carefully and check it pro...
+b_c2 --> b_e22 : Delete the blurry attempts to save space...
+b_c2 --> b_e23 : Leave the card in the camera and worry a...
+b_s3_01 --> b_s3_02 : Take it slowly, testing each rung.
+b_s3_01 --> b_s3_02 : Take it quickly, before your hands get w...
+b_s3_01 --> b_s3_02 : Test the first rung, then commit.
+b_s3_02 --> b_s3_03 : Crouch low against the wind.
+b_s3_02 --> b_s3_03 : Stand and brace against the rail.
+b_s3_02 --> b_s3_03 : Move low and quick between gusts.
+b_s3_03 --> b_s3_04 : Take a second to actually look at it.
+b_s3_03 --> b_s3_04 : Stay focused only on the sky.
+b_s3_03 --> b_s3_04 : Glance once, then focus up.
+b_s3_04 --> b_s3_05 : Use averted vision, looking just beside ...
+b_s3_04 --> b_s3_05 : Stare straight at it and strain.
+b_s3_04 --> b_s3_05 : Try both techniques in turn.
+b_s3_05 --> b_s3_06 : Blink hard and refocus.
+b_s3_05 --> b_s3_06 : Wipe your eyes on your sleeve.
+b_s3_05 --> b_s3_06 : Turn briefly away, then look back.
+b_s3_06 --> b_s3_07 : Shout down toward the trailer instead.
+b_s3_06 --> b_s3_07 : Just note it and manage without.
+b_s3_06 --> b_s3_07 : Head down quickly to fetch it.
+b_s3_07 --> b_s3_08 : Time yourself strictly and stick to it.
+b_s3_07 --> b_s3_08 : Push past the limit you set.
+b_s3_07 --> b_s3_08 : Cut the visit short on purpose.
+b_s3_08 --> b_c3 : Take one last long look before it's gone...
+b_s3_08 --> b_c3 : Start down now, satisfied with what you ...
+b_s3_08 --> b_c3 : Take one last look, then start straight ...
+b_c3 --> b_e31 : Climb down carefully with your naked-eye...
+b_c3 --> b_e32 : Rush the ladder down, cold outweighing c...
+b_c3 --> b_e33 : Stay up past your own time limit for one...
+c_l01 --> c_l02 : Wait quietly while she reads.
+c_l01 --> c_l02 : Explain what you saw as she reads.
+c_l01 --> c_l02 : Point to the key frame silently.
+c_l02 --> c_l03 : Walk her through it slowly.
+c_l02 --> c_l03 : Just hand her your written log.
+c_l02 --> c_l03 : Do both, log first, then walk through.
+c_l03 --> c_l04 : Ask what the spectrum shows.
+c_l03 --> c_l04 : Wait for her to explain unprompted.
+c_l03 --> c_l04 : Guess quietly to yourself first.
+c_l04 --> c_l05 : Run the second match yourself.
+c_l04 --> c_l05 : Watch over her shoulder as she runs it.
+c_l04 --> c_l05 : Run it while she does something else.
+c_l05 --> c_l06 : Suggest checking the ISS first.
+c_l05 --> c_l06 : Let her work through the list alone.
+c_l05 --> c_l06 : Offer to check half the list yourself.
+c_l06 --> c_l07 : Listen without interrupting.
+c_l06 --> c_l07 : Ask who she's actually calling.
+c_l06 --> c_l07 : Write down what she says as she says it.
+c_l07 --> c_l08 : Check it yourself first.
+c_l07 --> c_l08 : Trust her word for it.
+c_l07 --> c_l08 : Check it together, side by side.
+c_l08 --> c_l09 : Say plainly that you didn't.
+c_l08 --> c_l09 : Walk her through exactly what you did do...
+c_l08 --> c_l09 : Ask why it matters so much.
+c_l09 --> c_l10 : Compare it point by point to tonight.
+c_l09 --> c_l10 : Just listen and take notes.
+c_l09 --> c_l10 : Ask how tonight is different.
+c_l10 --> c_split : Plot it neatly.
+c_l10 --> c_split : Plot it quickly, mess and all.
+c_l10 --> c_split : Plot it and compare live as you go.
+c_split --> c_s1_01 : Help her verify everything calmly before...
+c_split --> c_s2_01 : Encourage her to call the regional netwo...
+c_split --> c_s3_01 : Suggest waking the site director too, ju...
+c_s1_01 --> c_s1_02 : Read slowly and carefully.
+c_s1_01 --> c_s1_02 : Read fast, trusting you have it right.
+c_s1_01 --> c_s1_02 : Read once, then double-check together.
+c_s1_02 --> c_s1_03 : Check the forecast yourself too.
+c_s1_02 --> c_s1_03 : Trust her read of it.
+c_s1_02 --> c_s1_03 : Check it and compare notes.
+c_s1_03 --> c_s1_04 : Answer honestly, uncertain and all.
+c_s1_03 --> c_s1_04 : Hedge until she says her view first.
+c_s1_03 --> c_s1_04 : Answer honestly, then ask her view.
+c_s1_04 --> c_s1_05 : Read the colleague's message aloud.
+c_s1_04 --> c_s1_05 : Let her read it silently.
+c_s1_04 --> c_s1_05 : Skim it together at the same time.
+c_s1_05 --> c_s1_06 : Handle the second scope's setup.
+c_s1_05 --> c_s1_06 : Just hand her tools as she asks.
+c_s1_05 --> c_s1_06 : Split the setup steps between you.
+c_s1_06 --> c_s1_07 : Say what you'd want done, honestly.
+c_s1_06 --> c_s1_07 : Say you trust her call completely.
+c_s1_06 --> c_s1_07 : Ask what she'd regret more.
+c_s1_07 --> c_s1_08 : Write plainly, numbers first.
+c_s1_07 --> c_s1_08 : Write it the way she'd expect.
+c_s1_07 --> c_s1_08 : Write a rough draft, then revise togethe...
+c_s1_08 --> c_c1 : Fix it without being asked twice.
+c_s1_08 --> c_c1 : Ask her to explain the fix first.
+c_s1_08 --> c_c1 : Fix it and explain your reasoning back.
+c_c1 --> c_e11 : Countersign the finished report together...
+c_c1 --> c_e12 : Ask her to sign it alone, to be safe.
+c_c1 --> c_e13 : Add one more caveat than the evidence re...
+c_s2_01 --> c_s2_02 : Listen closely on the second line.
+c_s2_01 --> c_s2_02 : Take your own separate notes.
+c_s2_01 --> c_s2_02 : Do both at once.
+c_s2_02 --> c_s2_03 : Let her answer that part.
+c_s2_02 --> c_s2_03 : Offer to note it down as she speaks.
+c_s2_02 --> c_s2_03 : Stay quiet and just listen.
+c_s2_03 --> c_s2_04 : Follow along on your own copy.
+c_s2_03 --> c_s2_04 : Just listen to the rhythm of it.
+c_s2_03 --> c_s2_04 : Check her numbers against yours as she g...
+c_s2_04 --> c_s2_05 : Use the wait to recheck your figures.
+c_s2_04 --> c_s2_05 : Wait quietly with her.
+c_s2_04 --> c_s2_05 : Ask her what she expects next.
+c_s2_05 --> c_s2_06 : Let her field it.
+c_s2_05 --> c_s2_06 : Offer a possible answer quietly.
+c_s2_05 --> c_s2_06 : Say plainly you're not sure either.
+c_s2_06 --> c_s2_07 : Write the number down carefully.
+c_s2_06 --> c_s2_07 : Just remember it for now.
+c_s2_06 --> c_s2_07 : Write it and repeat it back to confirm.
+c_s2_07 --> c_s2_08 : Say honestly that you're tired but glad.
+c_s2_07 --> c_s2_08 : Say you're fine and ready to keep going.
+c_s2_07 --> c_s2_08 : Ask her the same question back.
+c_s2_08 --> c_c2 : Offer to write the first draft.
+c_s2_08 --> c_c2 : Let her draft it while you review.
+c_s2_08 --> c_c2 : Draft it together, sentence by sentence.
+c_c2 --> c_e21 : Follow up with a short written summary b...
+c_c2 --> c_e22 : Assume the phone call alone was enough.
+c_c2 --> c_e23 : Let Dr. Voss handle every remaining step...
+c_s3_01 --> c_s3_02 : Say you think she should call.
+c_s3_01 --> c_s3_02 : Say you'd wait a little longer.
+c_s3_01 --> c_s3_02 : Say either choice seems fine to you.
+c_s3_02 --> c_s3_03 : Listen quietly to the call.
+c_s3_02 --> c_s3_03 : Write down what you can catch.
+c_s3_02 --> c_s3_03 : Step back and give her space.
+c_s3_03 --> c_s3_04 : Mouth the key numbers to help her.
+c_s3_03 --> c_s3_04 : Stay silent and let her handle it.
+c_s3_03 --> c_s3_04 : Hold up your written summary for her.
+c_s3_04 --> c_s3_05 : Let Dr. Voss answer for you.
+c_s3_04 --> c_s3_05 : Speak up for yourself, briefly.
+c_s3_04 --> c_s3_05 : Say only what's asked, nothing more.
+c_s3_05 --> c_s3_06 : Answer if you're sure of it.
+c_s3_05 --> c_s3_06 : Let Dr. Voss field it.
+c_s3_05 --> c_s3_06 : Answer together, filling in each other's...
+c_s3_06 --> c_s3_07 : Thank her for making the call.
+c_s3_06 --> c_s3_07 : Ask what happens next.
+c_s3_06 --> c_s3_07 : Just quietly note the outcome.
+c_s3_07 --> c_s3_08 : Ask what she's thinking.
+c_s3_07 --> c_s3_08 : Let the moment sit quietly.
+c_s3_07 --> c_s3_08 : Say you're glad you woke her.
+c_s3_08 --> c_c3 : Help finish the paperwork.
+c_s3_08 --> c_c3 : Step back and let the adults finish it.
+c_s3_08 --> c_c3 : Offer to write the summary line.
+c_c3 --> c_e31 : Finish the paperwork together, start to ...
+c_c3 --> c_e32 : Step back and let the adults finish it a...
+c_c3 --> c_e33 : Offer to write the summary line, then ov...
+a_e11 --> [*]
+a_e12 --> [*]
+a_e13 --> [*]
+a_e21 --> [*]
+a_e22 --> [*]
+a_e23 --> [*]
+a_e31 --> [*]
+a_e32 --> [*]
+a_e33 --> [*]
+b_e11 --> [*]
+b_e12 --> [*]
+b_e13 --> [*]
+b_e21 --> [*]
+b_e22 --> [*]
+b_e23 --> [*]
+b_e31 --> [*]
+b_e32 --> [*]
+b_e33 --> [*]
+c_e11 --> [*]
+c_e12 --> [*]
+c_e13 --> [*]
+c_e21 --> [*]
+c_e22 --> [*]
+c_e23 --> [*]
+c_e31 --> [*]
+c_e32 --> [*]
+c_e33 --> [*]
+
+legend right
+  The Observatory Shift
+  Band 10-13 · Tier 1 · ~16 min
+  Topology: sorting_hat
+  145 nodes · 27 endings (9+ / 11n / 7-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

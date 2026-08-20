@@ -131,7 +131,7 @@ export function composeStop(
     if (node.is_ending) {
       return { originNode: nodeIds[0], nodeIds, state: current, terminalReason: 'ending' }
     }
-    const choices = node.choices
+    const choices = node.choices ?? []
     if (choices.length !== 1) {
       // 2+ choices is the ordinary branch stop. 0 choices on a non-ending
       // node cannot happen (the schema requires >=1 choice on a non-ending
@@ -241,8 +241,8 @@ export function flowedPrefix(story: Storybook, state: ReadingState): string[] {
     if (predecessor.is_ending) break
     // 2+ choices is the previous stop's terminal (a real decision the child
     // stopped at); 0 is an ending. Only a single-choice node ever flows.
-    if (predecessor.choices.length !== 1) break
-    if (predecessor.choices[0].target !== path[i]) break
+    if ((predecessor.choices ?? []).length !== 1) break
+    if (predecessor.choices?.[0]?.target !== path[i]) break
     prefix.unshift(predecessorId)
     seen.add(predecessorId)
     i -= 1

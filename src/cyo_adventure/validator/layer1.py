@@ -1022,6 +1022,19 @@ def _branch_depth(story: _Story, graph: nx.DiGraph[str]) -> int | None:
         return None
     reachable = nx.descendants(graph, start) | {start}
     subgraph = graph.subgraph(reachable)
-    if not nx.is_directed_acyclic_graph(subgraph):
-        return None
-    return int(nx.dag_longest_path_length(subgraph))
+    if nx.is_directed_acyclic_graph(subgraph):
+        return int(nx.dag_longest_path_length(subgraph))
+    # A cycle makes "the longest path" unbounded, so this used to return None and
+    # `_check_budget` then emitted NOTHING: the depth cap was not approximated on
+    # a cyclic graph, it was absent. All 19 cyclic committed skeletons went
+    # unchecked, one carrying a real 87-hop start-to-ending path against a cell
+    # cap of 43 (`UW-C284`).
+    #
+    # Condensing the strongly connected components gives a DAG whose longest path
+    # is well defined and is the depth EXCLUDING repeat laps around any loop.
+    # That is the right quantity: a `loop_and_grow` or `open_map` hub is meant to
+    # be revisited, and counting laps would punish the topology for working. It
+    # is a lower bound on true traversal depth, so it can under-report a runaway
+    # chain but never invent one, which keeps the rule reject-only in spirit.
+    condensed = nx.condensation(subgraph)
+    return int(nx.dag_longest_path_length(condensed))
