@@ -531,6 +531,68 @@ mechanical noun-substitution check is only as good as its hand-picked word list*
 and the honest reading of book 1 is that surface nouns were reskinned densely
 while the source theme's apparatus and physics were retained wholesale.
 
+## 5.3 Router comparison (2026-08-20): the shortfall is the prompt, not the model
+
+Built to break the five-fill run's two structural confounds: one endpoint, one
+model. Same skeleton (`the-tin-whistle-map`, 193 nodes, 19,574 commissioned
+words), same two briefs that produced the 96.3 sibling floor, three legs.
+
+| Metric | DeepSeek @ `azure/us` | DeepSeek @ `novita/fp8` | Sonnet 5 @ `bedrock` | GLM-5 @ `z-ai` | Budget |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Books passed (of 2) | **2** | 0 | **2** | 0 | - |
+| Delivery ratio | 42.9-65.2% | n/a | **40.9-45.2%** | n/a | 100% |
+| In-band nodes | **73.1%** | n/a | 60.1-64.2% | n/a | - |
+| Sibling 4-grams per 1000 | 96.3 | n/a | **326.3** | n/a | 4.0 |
+| Cost per book | **$0.35** | $0.24 | $3.50 | $0.38 | - |
+| Latency per book | **469s** | 1712s | 2519s | 1594s | - |
+
+### The decisive result: model selection will not fix the word shortfall
+
+Sonnet 5 delivered **40.9 and 45.2 percent** of commissioned words where DeepSeek
+delivered 42.7 and 42.9. A frontier model from a different lab, at ten times the
+cost and five times the latency, under-delivers by the same margin. **The
+shortfall is a property of the prompt, not of the model.**
+
+That settles `UW-C307`'s direction and removes an option from the fix list before
+anyone spends a sprint on it: switching the fill model buys nothing on delivery.
+The fill-rate gate is correctly aimed as a detector, but the remedy has to be the
+prompt, because two independent frontier models read the same `words=` directive
+and both wrote about 43 percent of it.
+
+### Sibling convergence is WORSE on the stronger model
+
+Sonnet's two books on one skeleton scored **326.3 shared four-grams per 1000 leaf
+words against a 4.0 budget**: 3,800 shared grams and 466 shared menu frames,
+against DeepSeek's 1,350 and 274. That is 3.4 times DeepSeek's convergence and 81
+times budget. So `AL-498` is not a DeepSeek defect, it is worse on the better
+model, and no vendor rotation addresses it.
+
+### Only one of three legs could complete a fill at all
+
+Both failing legs died the same way, on `finish_reason=length` with the budget
+spent on hidden reasoning: DeepSeek on Novita at 8,608 then 131,072 reasoning
+tokens, GLM-5 at 58,924 then 108,775. Sonnet reasons heavily too (164,388 of
+303,996 output tokens on book 0) and still delivered, so reasoning is not
+disqualifying by itself; spending the whole budget on it is. `is_fill_feasible`
+derives its estimate from `words=` directives and therefore models content tokens
+only, so it is blind to this by construction.
+
+### The counterintuitive conclusion
+
+**DeepSeek v4 Pro on `azure/us` is the best leg tested**, on delivery ratio,
+reading-level conformance, sibling diversity, cost and latency simultaneously. The
+run was designed expecting to find that DeepSeek was the weak link. It is the
+strongest of the three, and the defects the five-fill run attributed to it are
+properties of the prompt and the skeleton-reuse strategy.
+
+### Cost of this comparison
+
+Harness reported $7.9979 over 5 priced books, 1 of 6 unmetered. OpenRouter's own
+accounting puts the session at $11.4431 total. The gap is the unattributed
+failed-leg spend already filed: four failed books here billed real tokens
+(DeepSeek/Novita 41,038 and an unmetered 131,072; GLM 99,606 and 157,966) and the
+journal shows $1.00 of it.
+
 ## 6. Findings from planning
 
 Five things surfaced while building this plan that are worth recording independently of the run.

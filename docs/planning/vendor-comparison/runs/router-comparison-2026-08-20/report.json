@@ -1,0 +1,215 @@
+{
+  "skeletons": [
+    "the-tin-whistle-map.json",
+    "the-tin-whistle-map.json"
+  ],
+  "structure_varies": false,
+  "brief_count": 2,
+  "mock": false,
+  "vendors": [
+    {
+      "label": "deepseek-v4-pro-novita",
+      "model": "deepseek/deepseek-v4-pro",
+      "provider_order": [
+        "novita/fp8"
+      ],
+      "family": "deepseek"
+    },
+    {
+      "label": "anthropic-sonnet-5",
+      "model": "anthropic/claude-sonnet-5",
+      "provider_order": [
+        "amazon-bedrock/global"
+      ],
+      "family": "anthropic"
+    },
+    {
+      "label": "zai-glm-5",
+      "model": "z-ai/glm-5",
+      "provider_order": [
+        "z-ai"
+      ],
+      "family": "z-ai"
+    }
+  ],
+  "books": [
+    {
+      "vendor": "deepseek-v4-pro-novita",
+      "family": "deepseek",
+      "brief_index": 0,
+      "status": "error",
+      "attempts": 0,
+      "latency_s": 520.09,
+      "grade": null,
+      "in_band": null,
+      "leaf_words": 0,
+      "fill_completeness": 0.0,
+      "complete": false,
+      "max_tokens": 131072,
+      "output_tokens": 41038,
+      "reasoning_tokens": 8608,
+      "near_cap": false,
+      "reading_level_degraded": false,
+      "reading_level_nodes_dropped": 0,
+      "cost": 0.24179236,
+      "cost_complete": true,
+      "cost_unavailable_reason": "",
+      "file": null,
+      "error": "openrouter completion hit the token budget and returned no usable content (finish_reason=length, 8191 of them on reasoning); retrying at the same cap would buy the same wall, so this leg is not retried"
+    },
+    {
+      "vendor": "deepseek-v4-pro-novita",
+      "family": "deepseek",
+      "brief_index": 1,
+      "status": "error",
+      "attempts": 0,
+      "latency_s": 2903.71,
+      "grade": null,
+      "in_band": null,
+      "leaf_words": 0,
+      "fill_completeness": 0.0,
+      "complete": false,
+      "max_tokens": 131072,
+      "output_tokens": null,
+      "reasoning_tokens": null,
+      "near_cap": false,
+      "reading_level_degraded": false,
+      "reading_level_nodes_dropped": 0,
+      "cost": null,
+      "cost_complete": false,
+      "cost_unavailable_reason": "no provider call was metered for this book",
+      "file": null,
+      "error": "openrouter completion hit the token budget and returned no usable content (finish_reason=length, 131072 of them on reasoning); retrying at the same cap would buy the same wall, so this leg is not retried"
+    },
+    {
+      "vendor": "anthropic-sonnet-5",
+      "family": "anthropic",
+      "brief_index": 0,
+      "status": "passed",
+      "attempts": 2,
+      "latency_s": 2549.51,
+      "grade": 4.73841000525271,
+      "in_band": 0.6010362694300518,
+      "leaf_words": 7999,
+      "fill_completeness": 1.0,
+      "complete": true,
+      "max_tokens": 131072,
+      "output_tokens": 303996,
+      "reasoning_tokens": 164388,
+      "near_cap": true,
+      "reading_level_degraded": false,
+      "reading_level_nodes_dropped": 0,
+      "cost": 3.513562,
+      "cost_complete": true,
+      "cost_unavailable_reason": "",
+      "file": "books/anthropic-sonnet-5__00.json",
+      "error": null
+    },
+    {
+      "vendor": "anthropic-sonnet-5",
+      "family": "anthropic",
+      "brief_index": 1,
+      "status": "passed",
+      "attempts": 2,
+      "latency_s": 2488.83,
+      "grade": 4.745482319107239,
+      "in_band": 0.6424870466321243,
+      "leaf_words": 8856,
+      "fill_completeness": 1.0,
+      "complete": true,
+      "max_tokens": 131072,
+      "output_tokens": 300740,
+      "reasoning_tokens": 148031,
+      "near_cap": true,
+      "reading_level_degraded": false,
+      "reading_level_nodes_dropped": 0,
+      "cost": 3.482092,
+      "cost_complete": true,
+      "cost_unavailable_reason": "",
+      "file": "books/anthropic-sonnet-5__01.json",
+      "error": null
+    },
+    {
+      "vendor": "zai-glm-5",
+      "family": "z-ai",
+      "brief_index": 0,
+      "status": "error",
+      "attempts": 0,
+      "latency_s": 1263.21,
+      "grade": null,
+      "in_band": null,
+      "leaf_words": 0,
+      "fill_completeness": 0.0,
+      "complete": false,
+      "max_tokens": 131072,
+      "output_tokens": 99606,
+      "reasoning_tokens": 58924,
+      "near_cap": false,
+      "reading_level_degraded": false,
+      "reading_level_nodes_dropped": 0,
+      "cost": 0.29458025,
+      "cost_complete": true,
+      "cost_unavailable_reason": "",
+      "file": null,
+      "error": "openrouter completion hit the token budget and returned no usable content (finish_reason=length, 8192 of them on reasoning); retrying at the same cap would buy the same wall, so this leg is not retried"
+    },
+    {
+      "vendor": "zai-glm-5",
+      "family": "z-ai",
+      "brief_index": 1,
+      "status": "error",
+      "attempts": 0,
+      "latency_s": 1924.25,
+      "grade": null,
+      "in_band": null,
+      "leaf_words": 0,
+      "fill_completeness": 0.0,
+      "complete": false,
+      "max_tokens": 131072,
+      "output_tokens": 157966,
+      "reasoning_tokens": 108775,
+      "near_cap": true,
+      "reading_level_degraded": false,
+      "reading_level_nodes_dropped": 0,
+      "cost": 0.46587145,
+      "cost_complete": true,
+      "cost_unavailable_reason": "",
+      "file": null,
+      "error": "openrouter completion hit the token budget and returned no usable content (finish_reason=length, 8192 of them on reasoning); retrying at the same cap would buy the same wall, so this leg is not retried"
+    }
+  ],
+  "within_vendor": {
+    "anthropic-sonnet-5": {
+      "pairs": 1.0,
+      "mean_per_1000": 326.32,
+      "median_per_1000": 326.32,
+      "max_per_1000": 326.32
+    }
+  },
+  "cross_vendor": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "same_brief_cross_vendor": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "same_family_cross_model": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "same_family_same_brief": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "excluded_incomplete": [],
+  "verdict": "not measured: need both within-vendor and cross-vendor pairs"
+}
