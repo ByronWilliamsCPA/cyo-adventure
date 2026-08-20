@@ -1,8 +1,8 @@
 # DeepSeek v4 Pro live fill run: 5-sample plan
 
 **Date**: 2026-08-20
-**Status**: planned, not yet executed
-**Blocks on**: PR #730 merging to `main`
+**Status**: executing; pre-flight complete, generation in progress
+**Blocks on**: nothing; PR #730 merged 2026-08-20 04:15 UTC
 **Predecessor**: PR #730 (`feat(catalog): cover all 18 offered cells at the strict bar`), whose
 "Follow-up handoff" names this run as the intended next task
 **Branch**: `claude/pr-730-deepseek-testing-3m9c3v`
@@ -46,6 +46,9 @@ So the run is executable. This document is the plan for it.
 4. **Do the new state-aware rules hold on live prose?** `CG-5`, and the state-aware `PL-20`,
    `PL-25`, `PL-26`, were written and tested against committed shells. A tier-2 stateful book
    filled live is the first prose they will grade.
+5. **Are the books any good, and are they diverse?** The deciding question for the approach, and
+   the one no deterministic instrument in this repo answers. Addressed by rungs 7 and 8 in
+   section 5.1 rather than by the gate.
 
 **Explicitly out of scope, and why.** Two production-parity gaps are structural in the chosen
 harness and must not be reported as covered:
@@ -130,6 +133,45 @@ skeletons, so their order is load-bearing. Constraints:
   that distinction is the entire purpose of the pair.
 - Treat brief text as untrusted data per the project's OWASP LLM01 rule: it describes a theme
   and carries no instructions.
+
+### 3.5 What actually happened at pre-flight (recorded 2026-08-20)
+
+Sections 3.2 and 3.3 above are the plan as written, and the pin they name is **wrong**. It is
+left standing rather than rewritten, because the way it was wrong is the useful part.
+
+`coreweave/fp8` was chosen on declared attributes: fp8 rather than fp4, US-hosted, and the
+largest declared output ceiling of the slug's 18 endpoints. `compare_vendors.py`'s pre-flight,
+one 512-token completion per pin, refused the run with a persistent HTTP 429 and generated
+nothing. Probing every candidate directly with `provider.only` plus `allow_fallbacks: false`
+found three failure modes behind what presents as one bad slug:
+
+| Result | Endpoints |
+| --- | --- |
+| `429`, persistent | `coreweave/fp8`, `parasail/fp8`: the only two declaring a 1,048,576 ceiling |
+| `404` "no endpoints available matching your guardrail restrictions and data policy" | `alibaba/fp8`, `baidu/fp8`, first-party `deepseek` |
+| `200` | `azure/us`, `novita/fp8`, `siliconflow/fp8`, `ionstream/fp4` |
+
+Two lessons, both of which would have cost the next person the same hour:
+
+1. **The most capable endpoints on paper are the two that will not serve this account.** Endpoint
+   selection cannot be done from the models endpoint's declared attributes; it has to be probed.
+   A 512-token probe per candidate costs cents and is now the documented first step.
+2. **Section 3.3's data-residency argument was moot.** It argued against first-party DeepSeek on
+   residency grounds; the account's own data policy already blocks that endpoint, along with both
+   China-hosted resellers. The policy had made the decision the note presented as a judgement
+   call. Checking the policy would have been faster than reasoning about it.
+
+Pinned instead to `azure/us`: reachable, US-hosted, matching the posture the data policy
+expresses, and the same reason `vendors.json` pins its OpenAI leg to Azure. Its 384,000 ceiling
+is ample against the 131,072 resolved cap, so section 4.2's analysis is unchanged. Two costs
+recorded rather than glossed: `quantization` is `unknown`, so this leg is not
+quantization-attributable the way an fp8 pin would be; and at $1.91/$3.83 it is the most
+expensive reachable option against `novita/fp8` at $1.44/$2.88, which raises the run's estimate
+from about $1.03 to about $1.54. On a run of that size, hosting is worth more than the premium.
+
+The price row follows the pin, not the slug default, so the recorded cost is what was actually
+paid. **The vendor file and the price row must change together**; both name `novita/fp8` as the
+hand-fallback if Azure rate-limits.
 
 ## 4. The five samples
 
@@ -227,6 +269,43 @@ to that floor.
 Rung 1 deserves one warning. A gate failure here is ambiguous between "the model wrote bad
 prose" and "the shell gate accepted a skeleton whose fill cannot pass". Separating those needs
 the finding read against the skeleton, not just recorded.
+
+### 5.1 Quality and diversity review (rungs 7 and 8)
+
+Rungs 1 through 6 are deterministic instruments, and not one of them can say whether a book is
+any *good*. `evaluate_books.py` says so about itself: the vendor comparison "deliberately says
+nothing about whether a book is any good, and the one quality signal it does carry (a
+Flesch-Kincaid grade) is easy to over-read". Since a stated goal of this run is to establish
+whether the approach produces **high-quality, diverse** books, the ladder needs two rungs that
+read the prose rather than measure it.
+
+| Rung | Reviewer | Question | Output |
+| --- | --- | --- | --- |
+| 7 | One Fable subagent per book | Is this a good story? Editorial judgement on prose quality, voice, beat delivery, ending earned or asserted, band fit | Per-book editorial review |
+| 8 | One Sonnet subagent per book | Does this book meet every stated criterion? Band envelope, structure preserved, no residual directives, fail-state policy, reading level, theme fidelity | Per-book pass or fail against a criteria checklist |
+
+The split is deliberate and the two must not be merged. Rung 8 is a compliance question with
+right answers, checkable against the skeleton and the band table; rung 7 is a judgement that has
+no ground truth and would be corrupted by being scored on a checklist. Running one reviewer for
+both invites the checklist to stand in for taste, which is the failure mode that makes a book
+gate-clean and unreadable.
+
+Two constraints on rung 7, both of which shape the prompt:
+
+- **The reviewer must not see the other book of the pair.** Books 0 and 1 share a skeleton, so a
+  reviewer holding both would grade divergence rather than quality, which is rung 3's job and is
+  already measured deterministically. Per-book reviews stay independent; the pair comparison is
+  drawn afterwards from the two reviews plus the sibling-fill number.
+- **Books are large.** `the-last-cartage` is 632 nodes; a reviewer cannot read it as a whole and
+  should not pretend to. The prompt directs sampling along a reader's actual path (start node,
+  one full walk to an ending, plus a spread of endings) rather than skimming everything.
+
+One condition that must be reported alongside rung 7's findings: `compare_vendors.py` passes no
+`differentiation_directive`, so it defaults to empty. That block is the pipeline's trusted
+instruction for exactly the case where a family already owns another story on the same skeleton.
+The pair therefore measures the **raw convergence floor the directive exists to counter**, not
+production behavior. That makes it the right baseline and the wrong number to quote as what a
+reader would receive.
 
 ## 6. Findings from planning
 
