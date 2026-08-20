@@ -498,9 +498,14 @@ def _load_differentiation(path: Path, brief_count: int) -> list[str]:
         print(f"Error: {path} must contain a JSON array.", file=sys.stderr)
         sys.exit(1)
     if len(parsed) != brief_count:  # pyright: ignore[reportUnknownArgumentType]
+        # pyright: ignore on its own line: appended to the f-string above it
+        # the comment pushes the source line to 127 characters, and neither
+        # `ruff format` (it cannot split a trailing comment) nor E501 (ignored
+        # as formatter-handled) will catch that.
+        entry_count = len(parsed)  # pyright: ignore[reportUnknownArgumentType]
         print(
-            f"Error: {path} has {len(parsed)} entries for {brief_count} briefs; "  # pyright: ignore[reportUnknownArgumentType]
-            "they pair index-wise.",
+            f"Error: {path} has {entry_count} entries for {brief_count} "
+            "briefs; they pair index-wise.",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -1280,7 +1285,12 @@ def _pairs(summary: dict[str, float]) -> str:
     return f"{count} pair" if count == 1 else f"{count} pairs"
 
 
-def _print_report(report: ComparisonReport, *, structure_varies: bool = True) -> None:
+def _print_report(
+    report: ComparisonReport,
+    *,
+    structure_varies: bool = True,
+    directed: bool = False,
+) -> None:
     """Print the human-readable summary to stdout.
 
     Args:
@@ -1289,6 +1299,12 @@ def _print_report(report: ComparisonReport, *, structure_varies: bool = True) ->
             not, the within-vendor number is a shared-structure figure and the
             printer says so, because 3.3 is the obvious thing a reader will
             compare it against and that comparison would not be like for like.
+        directed: Whether any fill was given a differentiation directive. A
+            directed run measures the DIRECTED floor, not the raw one
+            (`AL-498`), so the two must never be pooled. Recording that in the
+            report metadata alone is not enough: the console summary is what an
+            operator reads and pastes into a calibration record, so it has to
+            carry the same caveat.
     """
     print("=" * 72)
     print("Cross-vendor fill comparison")
@@ -1310,15 +1326,22 @@ def _print_report(report: ComparisonReport, *, structure_varies: bool = True) ->
         )
     print()
     print("Shared four-grams per 1000 leaf words (different-brief pairs):")
-    if structure_varies:
-        print(
-            "  within-vendor pairs share nothing but the model and the band, "
-            "the condition the 3.3 floor was measured under."
-        )
-    else:
+    if not structure_varies:
         print(
             "  one skeleton for every brief: within-vendor pairs share "
             "structure, so these are NOT comparable to the 3.3 floor."
+        )
+    elif directed:
+        print(
+            "  a differentiation directive was injected into these fills, so "
+            "this is the DIRECTED floor and is NOT comparable to the 3.3 "
+            "floor, which was measured undirected."
+        )
+    else:
+        print(
+            "  within-vendor pairs share nothing but the model and the band, "
+            "and no differentiation directive was passed: the condition the "
+            "3.3 floor was measured under."
         )
     # "within " is 7 characters, so padding the bucket names to 7 wider than the
     # widest vendor label keeps both kinds of row sharing one "mean" column.
@@ -1944,7 +1967,14 @@ def main(argv: list[str] | None = None) -> int:
             ),
         )
     distinct_skeletons = len({p.name for p in skeleton_paths})
-    _print_report(report, structure_varies=distinct_skeletons > 1)
+    _print_report(
+        report,
+        structure_varies=distinct_skeletons > 1,
+        # Any non-empty rendered directive makes this a directed run. An
+        # all-null spec renders every entry as "", which is byte-identical to
+        # passing no flag at all, so it must NOT read as directed.
+        directed=bool(directives) and any(directives),
+    )
     meta: dict[str, object] = {
         "skeletons": [p.name for p in skeleton_paths],
         # A within-vendor pair is only the 3.3 quantity ("sharing nothing but
@@ -1957,7 +1987,12 @@ def main(argv: list[str] | None = None) -> int:
         # quantities (the directed floor against the raw floor). The rendered
         # directives are recorded verbatim so the report says which one it is,
         # and what each fill was actually told.
-        "differentiation_directives": directives,
+        # An all-null spec renders every entry as "", which is exactly what
+        # passing no flag does, so record None rather than a truthy list of
+        # empty strings that a consumer's `if meta[...]` would read as directed.
+        "differentiation_directives": (
+            directives if directives and any(directives) else None
+        ),
         "mock": mock,
         "vendors": [
             {
