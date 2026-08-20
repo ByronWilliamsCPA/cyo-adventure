@@ -1,0 +1,1299 @@
+@startuml the-quarry-signal
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 64w
+state n_gather #FFF9C4
+n_gather : choice · 70w
+state t_terrace #D1C4E9
+t_terrace : rising · 72w
+state t_flood #D1C4E9
+t_flood : rising · 72w
+state t_crane #D1C4E9
+t_crane : rising · 72w
+state p0_00 #D1C4E9
+p0_00 : rising · 72w
+state p0_01 #D1C4E9
+p0_01 : rising · 72w
+state p0_02 #D1C4E9
+p0_02 : rising · 72w
+state p0_03 #D1C4E9
+p0_03 : rising · 72w
+state p0_04 #D1C4E9
+p0_04 : rising · 72w
+state p0_05 #D1C4E9
+p0_05 : rising · 72w
+state d0_n0 #D1C4E9
+d0_n0 : rising · 72w
+state d0_n1 #D1C4E9
+d0_n1 : rising · 72w
+state d0_n2 #D1C4E9
+d0_n2 : rising · 72w
+state d0_n3 #D1C4E9
+d0_n3 : rising · 72w
+state d0_n4 #D1C4E9
+d0_n4 : rising · 72w
+state d0_n5 #D1C4E9
+d0_n5 : rising · 72w
+state d0_n6 #D1C4E9
+d0_n6 : rising · 72w
+state d0_n7 #D1C4E9
+d0_n7 : rising · 72w
+state d0_n8 #D1C4E9
+d0_n8 : rising · 72w
+state d1_n0 #D1C4E9
+d1_n0 : rising · 72w
+state d1_n1 #D1C4E9
+d1_n1 : rising · 72w
+state d1_n2 #D1C4E9
+d1_n2 : rising · 72w
+state d1_n3 #D1C4E9
+d1_n3 : rising · 72w
+state d1_n4 #D1C4E9
+d1_n4 : rising · 72w
+state d1_n5 #D1C4E9
+d1_n5 : rising · 72w
+state d1_n6 #D1C4E9
+d1_n6 : rising · 72w
+state d1_n7 #D1C4E9
+d1_n7 : rising · 72w
+state d1_n8 #D1C4E9
+d1_n8 : rising · 72w
+state d2_n0 #D1C4E9
+d2_n0 : rising · 72w
+state d2_n1 #D1C4E9
+d2_n1 : rising · 72w
+state d2_n2 #D1C4E9
+d2_n2 : rising · 72w
+state d2_n3 #D1C4E9
+d2_n3 : rising · 72w
+state d2_n4 #D1C4E9
+d2_n4 : rising · 72w
+state d2_n5 #D1C4E9
+d2_n5 : rising · 72w
+state d2_n6 #D1C4E9
+d2_n6 : rising · 72w
+state d2_n7 #D1C4E9
+d2_n7 : rising · 72w
+state d2_n8 #D1C4E9
+d2_n8 : rising · 72w
+state d3_n0 #D1C4E9
+d3_n0 : rising · 72w
+state d3_n1 #D1C4E9
+d3_n1 : rising · 72w
+state d3_n2 #D1C4E9
+d3_n2 : rising · 72w
+state d3_n3 #D1C4E9
+d3_n3 : rising · 72w
+state d3_n4 #D1C4E9
+d3_n4 : rising · 72w
+state d3_n5 #D1C4E9
+d3_n5 : rising · 72w
+state d3_n6 #D1C4E9
+d3_n6 : rising · 72w
+state d3_n7 #D1C4E9
+d3_n7 : rising · 72w
+state d3_n8 #D1C4E9
+d3_n8 : rising · 72w
+state d4_n0 #D1C4E9
+d4_n0 : rising · 72w
+state d4_n1 #D1C4E9
+d4_n1 : rising · 72w
+state d4_n2 #D1C4E9
+d4_n2 : rising · 72w
+state d4_n3 #D1C4E9
+d4_n3 : rising · 72w
+state d4_n4 #D1C4E9
+d4_n4 : rising · 72w
+state d4_n5 #D1C4E9
+d4_n5 : rising · 72w
+state d4_n6 #D1C4E9
+d4_n6 : rising · 72w
+state d4_n7 #D1C4E9
+d4_n7 : rising · 72w
+state d4_n8 #D1C4E9
+d4_n8 : rising · 72w
+state d5_n0 #D1C4E9
+d5_n0 : rising · 72w
+state d5_n1 #D1C4E9
+d5_n1 : rising · 72w
+state d5_n2 #D1C4E9
+d5_n2 : rising · 72w
+state d5_n3 #D1C4E9
+d5_n3 : rising · 72w
+state d5_n4 #D1C4E9
+d5_n4 : rising · 72w
+state d5_n5 #D1C4E9
+d5_n5 : rising · 72w
+state d5_n6 #D1C4E9
+d5_n6 : rising · 72w
+state d5_n7 #D1C4E9
+d5_n7 : rising · 72w
+state d5_n8 #D1C4E9
+d5_n8 : rising · 72w
+state d6_n0 #D1C4E9
+d6_n0 : rising · 72w
+state d6_n1 #D1C4E9
+d6_n1 : rising · 72w
+state d6_n2 #D1C4E9
+d6_n2 : rising · 72w
+state d6_n3 #D1C4E9
+d6_n3 : rising · 72w
+state d6_n4 #D1C4E9
+d6_n4 : rising · 72w
+state d6_n5 #D1C4E9
+d6_n5 : rising · 72w
+state d6_n6 #D1C4E9
+d6_n6 : rising · 72w
+state d6_n7 #D1C4E9
+d6_n7 : rising · 72w
+state d6_n8 #D1C4E9
+d6_n8 : rising · 72w
+state d7_n0 #D1C4E9
+d7_n0 : rising · 72w
+state d7_n1 #D1C4E9
+d7_n1 : rising · 72w
+state d7_n2 #D1C4E9
+d7_n2 : rising · 72w
+state d7_n3 #D1C4E9
+d7_n3 : rising · 72w
+state d7_n4 #D1C4E9
+d7_n4 : rising · 72w
+state d7_n5 #D1C4E9
+d7_n5 : rising · 72w
+state d7_n6 #D1C4E9
+d7_n6 : rising · 72w
+state d7_n7 #D1C4E9
+d7_n7 : rising · 72w
+state d7_n8 #D1C4E9
+d7_n8 : rising · 72w
+state d8_n0 #D1C4E9
+d8_n0 : rising · 72w
+state d8_n1 #D1C4E9
+d8_n1 : rising · 72w
+state d8_n2 #D1C4E9
+d8_n2 : rising · 72w
+state d8_n3 #D1C4E9
+d8_n3 : rising · 72w
+state d8_n4 #D1C4E9
+d8_n4 : rising · 72w
+state d8_n5 #D1C4E9
+d8_n5 : rising · 72w
+state d8_n6 #D1C4E9
+d8_n6 : rising · 72w
+state d8_n7 #D1C4E9
+d8_n7 : rising · 72w
+state d8_n8 #D1C4E9
+d8_n8 : rising · 72w
+state d9_n0 #D1C4E9
+d9_n0 : rising · 72w
+state d9_n1 #D1C4E9
+d9_n1 : rising · 72w
+state d9_n2 #D1C4E9
+d9_n2 : rising · 72w
+state d9_n3 #D1C4E9
+d9_n3 : rising · 72w
+state d9_n4 #D1C4E9
+d9_n4 : rising · 72w
+state d9_n5 #D1C4E9
+d9_n5 : rising · 72w
+state d9_n6 #D1C4E9
+d9_n6 : rising · 72w
+state d9_n7 #D1C4E9
+d9_n7 : rising · 72w
+state d9_n8 #D1C4E9
+d9_n8 : rising · 72w
+state d10_n0 #D1C4E9
+d10_n0 : rising · 72w
+state d10_n1 #D1C4E9
+d10_n1 : rising · 72w
+state d10_n2 #D1C4E9
+d10_n2 : rising · 72w
+state d10_n3 #D1C4E9
+d10_n3 : rising · 72w
+state d10_n4 #D1C4E9
+d10_n4 : rising · 72w
+state d10_n5 #D1C4E9
+d10_n5 : rising · 72w
+state d10_n6 #D1C4E9
+d10_n6 : rising · 72w
+state d10_n7 #D1C4E9
+d10_n7 : rising · 72w
+state d10_n8 #D1C4E9
+d10_n8 : rising · 72w
+state d11_n0 #D1C4E9
+d11_n0 : rising · 72w
+state d11_n1 #D1C4E9
+d11_n1 : rising · 72w
+state d11_n2 #D1C4E9
+d11_n2 : rising · 72w
+state d11_n3 #D1C4E9
+d11_n3 : rising · 72w
+state d11_n4 #D1C4E9
+d11_n4 : rising · 72w
+state d11_n5 #D1C4E9
+d11_n5 : rising · 72w
+state d11_n6 #D1C4E9
+d11_n6 : rising · 72w
+state d11_n7 #D1C4E9
+d11_n7 : rising · 72w
+state d11_n8 #D1C4E9
+d11_n8 : rising · 72w
+state d12_n0 #D1C4E9
+d12_n0 : rising · 72w
+state d12_n1 #D1C4E9
+d12_n1 : rising · 72w
+state d12_n2 #D1C4E9
+d12_n2 : rising · 72w
+state d12_n3 #D1C4E9
+d12_n3 : rising · 72w
+state d12_n4 #D1C4E9
+d12_n4 : rising · 72w
+state d12_n5 #D1C4E9
+d12_n5 : rising · 72w
+state d12_n6 #D1C4E9
+d12_n6 : rising · 72w
+state d12_n7 #D1C4E9
+d12_n7 : rising · 72w
+state d12_n8 #D1C4E9
+d12_n8 : rising · 72w
+state d13_n0 #D1C4E9
+d13_n0 : rising · 72w
+state d13_n1 #D1C4E9
+d13_n1 : rising · 72w
+state d13_n2 #D1C4E9
+d13_n2 : rising · 72w
+state d13_n3 #D1C4E9
+d13_n3 : rising · 72w
+state d13_n4 #D1C4E9
+d13_n4 : rising · 72w
+state d13_n5 #D1C4E9
+d13_n5 : rising · 72w
+state d13_n6 #D1C4E9
+d13_n6 : rising · 72w
+state d13_n7 #D1C4E9
+d13_n7 : rising · 72w
+state d13_n8 #D1C4E9
+d13_n8 : rising · 72w
+state d14_n0 #D1C4E9
+d14_n0 : rising · 72w
+state d14_n1 #D1C4E9
+d14_n1 : rising · 72w
+state d14_n2 #D1C4E9
+d14_n2 : rising · 72w
+state d14_n3 #D1C4E9
+d14_n3 : rising · 72w
+state d14_n4 #D1C4E9
+d14_n4 : rising · 72w
+state d14_n5 #D1C4E9
+d14_n5 : rising · 72w
+state d14_n6 #D1C4E9
+d14_n6 : rising · 72w
+state d14_n7 #D1C4E9
+d14_n7 : rising · 72w
+state d14_n8 #D1C4E9
+d14_n8 : rising · 72w
+state d15_n0 #D1C4E9
+d15_n0 : rising · 72w
+state d15_n1 #D1C4E9
+d15_n1 : rising · 72w
+state d15_n2 #D1C4E9
+d15_n2 : rising · 72w
+state d15_n3 #D1C4E9
+d15_n3 : rising · 72w
+state d15_n4 #D1C4E9
+d15_n4 : rising · 72w
+state d15_n5 #D1C4E9
+d15_n5 : rising · 72w
+state d15_n6 #D1C4E9
+d15_n6 : rising · 72w
+state d15_n7 #D1C4E9
+d15_n7 : rising · 72w
+state d15_n8 #D1C4E9
+d15_n8 : rising · 72w
+state d16_n0 #D1C4E9
+d16_n0 : rising · 72w
+state d16_n1 #D1C4E9
+d16_n1 : rising · 72w
+state d16_n2 #D1C4E9
+d16_n2 : rising · 72w
+state d16_n3 #D1C4E9
+d16_n3 : rising · 72w
+state d16_n4 #D1C4E9
+d16_n4 : rising · 72w
+state d16_n5 #D1C4E9
+d16_n5 : rising · 72w
+state d16_n6 #D1C4E9
+d16_n6 : rising · 72w
+state d16_n7 #D1C4E9
+d16_n7 : rising · 72w
+state d16_n8 #D1C4E9
+d16_n8 : rising · 72w
+state d17_n0 #D1C4E9
+d17_n0 : rising · 72w
+state d17_n1 #D1C4E9
+d17_n1 : rising · 72w
+state d17_n2 #D1C4E9
+d17_n2 : rising · 72w
+state d17_n3 #D1C4E9
+d17_n3 : rising · 72w
+state d17_n4 #D1C4E9
+d17_n4 : rising · 72w
+state d17_n5 #D1C4E9
+d17_n5 : rising · 72w
+state d17_n6 #D1C4E9
+d17_n6 : rising · 72w
+state d17_n7 #D1C4E9
+d17_n7 : rising · 72w
+state d17_n8 #D1C4E9
+d17_n8 : rising · 72w
+state d18_n0 #D1C4E9
+d18_n0 : rising · 72w
+state d18_n1 #D1C4E9
+d18_n1 : rising · 72w
+state d18_n2 #D1C4E9
+d18_n2 : rising · 72w
+state d18_n3 #D1C4E9
+d18_n3 : rising · 72w
+state d18_n4 #D1C4E9
+d18_n4 : rising · 72w
+state d18_n5 #D1C4E9
+d18_n5 : rising · 72w
+state d18_n6 #D1C4E9
+d18_n6 : rising · 72w
+state d18_n7 #D1C4E9
+d18_n7 : rising · 72w
+state d18_n8 #D1C4E9
+d18_n8 : rising · 72w
+state d19_n0 #D1C4E9
+d19_n0 : rising · 72w
+state d19_n1 #D1C4E9
+d19_n1 : rising · 72w
+state d19_n2 #D1C4E9
+d19_n2 : rising · 72w
+state d19_n3 #D1C4E9
+d19_n3 : rising · 72w
+state d19_n4 #D1C4E9
+d19_n4 : rising · 72w
+state d19_n5 #D1C4E9
+d19_n5 : rising · 72w
+state d19_n6 #D1C4E9
+d19_n6 : rising · 72w
+state d19_n7 #D1C4E9
+d19_n7 : rising · 72w
+state d19_n8 #D1C4E9
+d19_n8 : rising · 72w
+state d20_n0 #D1C4E9
+d20_n0 : rising · 72w
+state d20_n1 #D1C4E9
+d20_n1 : rising · 72w
+state d20_n2 #D1C4E9
+d20_n2 : rising · 72w
+state d20_n3 #D1C4E9
+d20_n3 : rising · 72w
+state d20_n4 #D1C4E9
+d20_n4 : rising · 72w
+state d20_n5 #D1C4E9
+d20_n5 : rising · 72w
+state d20_n6 #D1C4E9
+d20_n6 : rising · 72w
+state d20_n7 #D1C4E9
+d20_n7 : rising · 72w
+state d20_n8 #D1C4E9
+d20_n8 : rising · 72w
+state tail0_c0 #D1C4E9
+tail0_c0 : rising · 72w
+state tail0_c1 #D1C4E9
+tail0_c1 : rising · 72w
+state tail0_c2 #D1C4E9
+tail0_c2 : rising · 72w
+state tail0_c3 #D1C4E9
+tail0_c3 : rising · 72w
+state tail0_death #FFCDD2
+tail0_death : death (negative)
+tail0_death : "Sealed by the Fall"
+state tail0_capture #FFCDD2
+tail0_capture : capture (negative)
+tail0_capture : "Pinned in the Working"
+state tail0_setback #FFCDD2
+tail0_setback : setback (negative)
+tail0_setback : "Turned Back Underground"
+state tail0_discover #E0E0E0
+tail0_discover : discovery (neutral)
+tail0_discover : "The Surveyor's Cache"
+state tail0_complete #C8E6C9
+tail0_complete : completion (positive)
+tail0_complete : "The Long Way Round"
+state tail1_c0 #D1C4E9
+tail1_c0 : rising · 72w
+state tail1_c1 #D1C4E9
+tail1_c1 : rising · 72w
+state tail1_c2 #D1C4E9
+tail1_c2 : rising · 72w
+state tail1_c3 #D1C4E9
+tail1_c3 : rising · 72w
+state tail1_death #FFCDD2
+tail1_death : death (negative)
+tail1_death : "Over the Safe Depth"
+state tail1_capture #FFCDD2
+tail1_capture : capture (negative)
+tail1_capture : "Pinned in the Working"
+state tail1_setback #FFCDD2
+tail1_setback : setback (negative)
+tail1_setback : "Turned Back Underground"
+state tail1_discover #E0E0E0
+tail1_discover : discovery (neutral)
+tail1_discover : "The Surveyor's Cache"
+state tail1_complete #C8E6C9
+tail1_complete : completion (positive)
+tail1_complete : "The Channel That Held"
+state tail2_c0 #D1C4E9
+tail2_c0 : rising · 72w
+state tail2_c1 #D1C4E9
+tail2_c1 : rising · 72w
+state tail2_c2 #D1C4E9
+tail2_c2 : rising · 72w
+state tail2_c3 #D1C4E9
+tail2_c3 : rising · 72w
+state tail2_death #FFCDD2
+tail2_death : death (negative)
+tail2_death : "Under the Cradle"
+state tail2_capture #FFCDD2
+tail2_capture : capture (negative)
+tail2_capture : "Pinned in the Working"
+state tail2_setback #FFCDD2
+tail2_setback : setback (negative)
+tail2_setback : "Turned Back Underground"
+state tail2_discover #E0E0E0
+tail2_discover : discovery (neutral)
+tail2_discover : "The Surveyor's Cache"
+state tail2_complete #C8E6C9
+tail2_complete : completion (positive)
+tail2_complete : "The Swing That Missed"
+state tail3_c0 #D1C4E9
+tail3_c0 : rising · 72w
+state tail3_c1 #D1C4E9
+tail3_c1 : rising · 72w
+state tail3_c2 #D1C4E9
+tail3_c2 : rising · 72w
+state tail3_c3 #D1C4E9
+tail3_c3 : rising · 72w
+state tail3_death #FFCDD2
+tail3_death : death (negative)
+tail3_death : "Under the Timbers"
+state tail3_capture #FFCDD2
+tail3_capture : capture (negative)
+tail3_capture : "Pinned in the Working"
+state tail3_setback #FFCDD2
+tail3_setback : setback (negative)
+tail3_setback : "Turned Back Underground"
+state tail3_discover #E0E0E0
+tail3_discover : discovery (neutral)
+tail3_discover : "The Surveyor's Cache"
+state tail3_complete #C8E6C9
+tail3_complete : completion (positive)
+tail3_complete : "The Roof That Held"
+state tail4_c0 #D1C4E9
+tail4_c0 : rising · 72w
+state tail4_c1 #D1C4E9
+tail4_c1 : rising · 72w
+state tail4_c2 #D1C4E9
+tail4_c2 : rising · 72w
+state tail4_c3 #D1C4E9
+tail4_c3 : rising · 72w
+state tail4_death #FFCDD2
+tail4_death : death (negative)
+tail4_death : "Into the Side Shaft"
+state tail4_capture #FFCDD2
+tail4_capture : capture (negative)
+tail4_capture : "Pinned in the Working"
+state tail4_setback #FFCDD2
+tail4_setback : setback (negative)
+tail4_setback : "Turned Back Underground"
+state tail4_discover #E0E0E0
+tail4_discover : discovery (neutral)
+tail4_discover : "The Surveyor's Cache"
+state tail4_complete #C8E6C9
+tail4_complete : completion (positive)
+tail4_complete : "Light at the Shaft Mouth"
+state tail5_c0 #D1C4E9
+tail5_c0 : rising · 42w
+state tail5_c1 #D1C4E9
+tail5_c1 : rising · 42w
+state tail5_c2 #D1C4E9
+tail5_c2 : rising · 42w
+state tail5_c3 #D1C4E9
+tail5_c3 : rising · 42w
+state tail5_death #FFCDD2
+tail5_death : death (negative)
+tail5_death : "Caught by the Gust"
+state tail5_capture #FFCDD2
+tail5_capture : capture (negative)
+tail5_capture : "Pinned in the Working"
+state tail5_setback #FFCDD2
+tail5_setback : setback (negative)
+tail5_setback : "Turned Back Underground"
+state tail5_discover #E0E0E0
+tail5_discover : discovery (neutral)
+tail5_discover : "The Surveyor's Cache"
+state tail5_complete #C8E6C9
+tail5_complete : completion (positive)
+tail5_complete : "Ahead of the Gust"
+state n_scree #D1C4E9
+n_scree : rising · 40w
+state tower_gate #FFF9C4
+tower_gate : choice · 43w
+state tower_resolve_1 #FFF9C4
+tower_resolve_1 : choice · 65w
+state tower_fixed #D1C4E9
+tower_fixed : rising · 72w
+state tower_flare #D1C4E9
+tower_flare : rising · 72w
+state tower_resolve_2_fixed #FFF9C4
+tower_resolve_2_fixed : choice · 76w
+state tower_resolve_2_flare #FFF9C4
+tower_resolve_2_flare : choice · 76w
+state end_fixed_trust2 #C8E6C9
+end_fixed_trust2 : success (positive)
+end_fixed_trust2 : "The Clean Call"
+state end_fixed_trust1 #C8E6C9
+end_fixed_trust1 : completion (positive)
+end_fixed_trust1 : "The Call Alone"
+state end_fixed_trust0 #E0E0E0
+end_fixed_trust0 : completion (neutral)
+end_fixed_trust0 : "The Empty Tower"
+state end_flare_trust2 #C8E6C9
+end_flare_trust2 : success (positive)
+end_flare_trust2 : "Timed to the Storm"
+state end_flare_trust1 #E0E0E0
+end_flare_trust1 : discovery (neutral)
+end_flare_trust1 : "Ten Seconds Against the Cloud"
+state end_flare_trust0 #FFCDD2
+end_flare_trust0 : setback (negative)
+end_flare_trust0 : "Lost Against the Gust"
+n_open --> n_gather : Follow Dell through the gate.
+n_gather --> t_terrace : Take the spoil terraces down.
+n_gather --> t_flood : Wade the flooded cut.
+n_gather --> t_crane : Follow the crane road.
+t_terrace --> p0_00 : Push straight on down.
+t_terrace --> p0_01 : Go carefully and save the lamp.
+t_terrace --> p0_02 : Push straight on down.
+t_flood --> p0_03 : Go carefully and save the lamp.
+t_flood --> p0_04 : Push straight on down.
+t_flood --> p0_05 : Go carefully and save the lamp.
+t_crane --> p0_00 : Push straight on down.
+t_crane --> p0_01 : Go carefully and save the lamp.
+t_crane --> p0_02 : Push straight on down.
+p0_00 --> d0_n0 : Press on.
+p0_00 --> d0_n1 : Keep going.
+p0_00 --> d0_n2 : Push forward.
+p0_01 --> d0_n3 : Press on.
+p0_01 --> d0_n4 : Keep going.
+p0_01 --> d0_n5 : Push forward.
+p0_02 --> d0_n6 : Press on.
+p0_02 --> d0_n7 : Keep going.
+p0_02 --> d0_n8 : Push forward.
+p0_03 --> d0_n0 : Press on.
+p0_03 --> d0_n1 : Keep going.
+p0_03 --> d0_n2 : Push forward.
+p0_04 --> d0_n3 : Press on.
+p0_04 --> d0_n4 : Keep going.
+p0_04 --> d0_n5 : Push forward.
+p0_05 --> d0_n6 : Press on.
+p0_05 --> d0_n7 : Keep going.
+p0_05 --> d0_n8 : Push forward.
+d0_n0 --> d1_n0 : Press on.
+d0_n0 --> d1_n1 : Keep going.
+d0_n0 --> d1_n2 : Push forward.
+d0_n1 --> d1_n3 : Press on.
+d0_n1 --> d1_n4 : Keep going.
+d0_n1 --> d1_n5 : Push forward.
+d0_n2 --> d1_n6 : Press on.
+d0_n2 --> d1_n7 : Keep going.
+d0_n2 --> d1_n8 : Push forward.
+d0_n3 --> d1_n0 : Press on.
+d0_n3 --> d1_n1 : Keep going.
+d0_n3 --> d1_n2 : Push forward.
+d0_n4 --> d1_n3 : Press on.
+d0_n4 --> d1_n4 : Keep going.
+d0_n4 --> d1_n5 : Push forward.
+d0_n5 --> d1_n6 : Press on.
+d0_n5 --> d1_n7 : Keep going.
+d0_n5 --> d1_n8 : Push forward.
+d0_n6 --> d1_n0 : Press on.
+d0_n6 --> d1_n1 : Keep going.
+d0_n6 --> d1_n2 : Push forward.
+d0_n7 --> d1_n3 : Press on.
+d0_n7 --> d1_n4 : Keep going.
+d0_n7 --> d1_n5 : Push forward.
+d0_n8 --> d1_n6 : Press on.
+d0_n8 --> d1_n7 : Keep going.
+d0_n8 --> d1_n8 : Push forward.
+d1_n0 --> d2_n0 : Press on.
+d1_n0 --> d2_n1 : Keep going.
+d1_n0 --> d2_n2 : Push forward.
+d1_n1 --> d2_n3 : Press on.
+d1_n1 --> d2_n4 : Keep going.
+d1_n1 --> d2_n5 : Push forward.
+d1_n2 --> d2_n6 : Press on.
+d1_n2 --> d2_n7 : Keep going.
+d1_n2 --> d2_n8 : Push forward.
+d1_n3 --> d2_n0 : Press on.
+d1_n3 --> d2_n1 : Keep going.
+d1_n3 --> d2_n2 : Push forward.
+d1_n4 --> d2_n3 : Press on.
+d1_n4 --> d2_n4 : Keep going.
+d1_n4 --> d2_n5 : Push forward.
+d1_n5 --> d2_n6 : Press on.
+d1_n5 --> d2_n7 : Keep going.
+d1_n5 --> d2_n8 : Push forward.
+d1_n6 --> d2_n0 : Press on.
+d1_n6 --> d2_n1 : Keep going.
+d1_n6 --> d2_n2 : Push forward.
+d1_n7 --> d2_n3 : Press on.
+d1_n7 --> d2_n4 : Keep going.
+d1_n7 --> d2_n5 : Push forward.
+d1_n8 --> d2_n6 : Press on.
+d1_n8 --> d2_n7 : Keep going.
+d1_n8 --> d2_n8 : Push forward.
+d2_n0 --> d3_n0 : Press on.
+d2_n0 --> d3_n1 : Keep going.
+d2_n0 --> d3_n2 : Push forward.
+d2_n1 --> d3_n3 : Press on.
+d2_n1 --> d3_n4 : Keep going.
+d2_n1 --> d3_n5 : Push forward.
+d2_n2 --> d3_n6 : Press on.
+d2_n2 --> d3_n7 : Keep going.
+d2_n2 --> d3_n8 : Push forward.
+d2_n3 --> d3_n0 : Press on.
+d2_n3 --> d3_n1 : Keep going.
+d2_n3 --> d3_n2 : Push forward.
+d2_n4 --> d3_n3 : Press on.
+d2_n4 --> d3_n4 : Keep going.
+d2_n4 --> d3_n5 : Push forward.
+d2_n5 --> d3_n6 : Press on.
+d2_n5 --> d3_n7 : Keep going.
+d2_n5 --> d3_n8 : Push forward.
+d2_n6 --> d3_n0 : Press on.
+d2_n6 --> d3_n1 : Keep going.
+d2_n6 --> d3_n2 : Push forward.
+d2_n7 --> d3_n3 : Press on.
+d2_n7 --> d3_n4 : Keep going.
+d2_n7 --> d3_n5 : Push forward.
+d2_n8 --> d3_n6 : Press on.
+d2_n8 --> d3_n7 : Keep going.
+d2_n8 --> d3_n8 : Push forward.
+d3_n0 --> d4_n0 : Press on.
+d3_n0 --> d4_n1 : Keep going.
+d3_n0 --> d4_n2 : Push forward.
+d3_n1 --> d4_n3 : Press on.
+d3_n1 --> d4_n4 : Keep going.
+d3_n1 --> d4_n5 : Push forward.
+d3_n2 --> d4_n6 : Press on.
+d3_n2 --> d4_n7 : Keep going.
+d3_n2 --> d4_n8 : Push forward.
+d3_n3 --> d4_n0 : Press on.
+d3_n3 --> d4_n1 : Keep going.
+d3_n3 --> d4_n2 : Push forward.
+d3_n4 --> d4_n3 : Press on.
+d3_n4 --> d4_n4 : Keep going.
+d3_n4 --> d4_n5 : Push forward.
+d3_n5 --> d4_n6 : Press on.
+d3_n5 --> d4_n7 : Keep going.
+d3_n5 --> d4_n8 : Push forward.
+d3_n6 --> d4_n0 : Press on.
+d3_n6 --> d4_n1 : Keep going.
+d3_n6 --> d4_n2 : Push forward.
+d3_n7 --> d4_n3 : Press on.
+d3_n7 --> d4_n4 : Keep going.
+d3_n7 --> d4_n5 : Push forward.
+d3_n8 --> d4_n6 : Press on.
+d3_n8 --> d4_n7 : Keep going.
+d3_n8 --> d4_n8 : Push forward.
+d4_n0 --> d5_n0 : Press on.
+d4_n0 --> d5_n1 : Keep going.
+d4_n0 --> d5_n2 : Push forward.
+d4_n1 --> d5_n3 : Press on.
+d4_n1 --> d5_n4 : Keep going.
+d4_n1 --> d5_n5 : Push forward.
+d4_n2 --> d5_n6 : Press on.
+d4_n2 --> d5_n7 : Keep going.
+d4_n2 --> d5_n8 : Push forward.
+d4_n3 --> d5_n0 : Press on.
+d4_n3 --> d5_n1 : Keep going.
+d4_n3 --> d5_n2 : Push forward.
+d4_n4 --> d5_n3 : Press on.
+d4_n4 --> d5_n4 : Keep going.
+d4_n4 --> d5_n5 : Push forward.
+d4_n5 --> d5_n6 : Press on.
+d4_n5 --> d5_n7 : Keep going.
+d4_n5 --> d5_n8 : Push forward.
+d4_n6 --> d5_n0 : Press on.
+d4_n6 --> d5_n1 : Keep going.
+d4_n6 --> d5_n2 : Push forward.
+d4_n7 --> d5_n3 : Press on.
+d4_n7 --> d5_n4 : Keep going.
+d4_n7 --> d5_n5 : Push forward.
+d4_n8 --> d5_n6 : Press on.
+d4_n8 --> d5_n7 : Keep going.
+d4_n8 --> d5_n8 : Push forward.
+d5_n0 --> d6_n0 : Press on.
+d5_n0 --> d6_n1 : Keep going.
+d5_n0 --> d6_n2 : Push forward.
+d5_n1 --> d6_n3 : Press on.
+d5_n1 --> d6_n4 : Keep going.
+d5_n1 --> d6_n5 : Push forward.
+d5_n2 --> d6_n6 : Press on.
+d5_n2 --> d6_n7 : Keep going.
+d5_n2 --> d6_n8 : Push forward.
+d5_n3 --> d6_n0 : Press on.
+d5_n3 --> d6_n1 : Keep going.
+d5_n3 --> d6_n2 : Push forward.
+d5_n4 --> d6_n3 : Press on.
+d5_n4 --> d6_n4 : Keep going.
+d5_n4 --> d6_n5 : Push forward.
+d5_n5 --> d6_n6 : Press on.
+d5_n5 --> d6_n7 : Keep going.
+d5_n5 --> d6_n8 : Push forward.
+d5_n6 --> d6_n0 : Press on.
+d5_n6 --> d6_n1 : Keep going.
+d5_n6 --> d6_n2 : Push forward.
+d5_n7 --> d6_n3 : Press on.
+d5_n7 --> d6_n4 : Keep going.
+d5_n7 --> d6_n5 : Push forward.
+d5_n8 --> d6_n6 : Press on.
+d5_n8 --> d6_n7 : Keep going.
+d5_n8 --> d6_n8 : Push forward.
+d6_n0 --> d7_n0 : Press on.
+d6_n0 --> d7_n1 : Keep going.
+d6_n0 --> d7_n2 : Push forward.
+d6_n1 --> d7_n3 : Press on.
+d6_n1 --> d7_n4 : Keep going.
+d6_n1 --> d7_n5 : Push forward.
+d6_n2 --> d7_n6 : Press on.
+d6_n2 --> d7_n7 : Keep going.
+d6_n2 --> d7_n8 : Push forward.
+d6_n3 --> d7_n0 : Press on.
+d6_n3 --> d7_n1 : Keep going.
+d6_n3 --> d7_n2 : Push forward.
+d6_n4 --> d7_n3 : Press on.
+d6_n4 --> d7_n4 : Keep going.
+d6_n4 --> d7_n5 : Push forward.
+d6_n5 --> d7_n6 : Press on.
+d6_n5 --> d7_n7 : Keep going.
+d6_n5 --> d7_n8 : Push forward.
+d6_n6 --> d7_n0 : Press on.
+d6_n6 --> d7_n1 : Keep going.
+d6_n6 --> d7_n2 : Push forward.
+d6_n7 --> d7_n3 : Press on.
+d6_n7 --> d7_n4 : Keep going.
+d6_n7 --> d7_n5 : Push forward.
+d6_n8 --> d7_n6 : Press on.
+d6_n8 --> d7_n7 : Keep going.
+d6_n8 --> d7_n8 : Push forward.
+d7_n0 --> d8_n0 : Press on.
+d7_n0 --> d8_n1 : Keep going.
+d7_n0 --> d8_n2 : Push forward.
+d7_n1 --> d8_n3 : Press on.
+d7_n1 --> d8_n4 : Keep going.
+d7_n1 --> d8_n5 : Push forward.
+d7_n2 --> d8_n6 : Press on.
+d7_n2 --> d8_n7 : Keep going.
+d7_n2 --> d8_n8 : Push forward.
+d7_n3 --> d8_n0 : Press on.
+d7_n3 --> d8_n1 : Keep going.
+d7_n3 --> d8_n2 : Push forward.
+d7_n4 --> d8_n3 : Press on.
+d7_n4 --> d8_n4 : Keep going.
+d7_n4 --> d8_n5 : Push forward.
+d7_n5 --> d8_n6 : Press on.
+d7_n5 --> d8_n7 : Keep going.
+d7_n5 --> d8_n8 : Push forward.
+d7_n6 --> d8_n0 : Press on.
+d7_n6 --> d8_n1 : Keep going.
+d7_n6 --> d8_n2 : Push forward.
+d7_n7 --> d8_n3 : Press on.
+d7_n7 --> d8_n4 : Keep going.
+d7_n7 --> d8_n5 : Push forward.
+d7_n8 --> d8_n6 : Press on.
+d7_n8 --> d8_n7 : Keep going.
+d7_n8 --> d8_n8 : Push forward.
+d8_n0 --> d9_n0 : Press on.
+d8_n0 --> d9_n1 : Keep going.
+d8_n0 --> d9_n2 : Push forward.
+d8_n1 --> d9_n3 : Press on.
+d8_n1 --> d9_n4 : Keep going.
+d8_n1 --> d9_n5 : Push forward.
+d8_n2 --> d9_n6 : Press on.
+d8_n2 --> d9_n7 : Keep going.
+d8_n2 --> d9_n8 : Push forward.
+d8_n3 --> d9_n0 : Press on.
+d8_n3 --> d9_n1 : Keep going.
+d8_n3 --> d9_n2 : Push forward.
+d8_n4 --> d9_n3 : Press on.
+d8_n4 --> d9_n4 : Keep going.
+d8_n4 --> d9_n5 : Push forward.
+d8_n5 --> d9_n6 : Press on.
+d8_n5 --> d9_n7 : Keep going.
+d8_n5 --> d9_n8 : Push forward.
+d8_n6 --> d9_n0 : Press on.
+d8_n6 --> d9_n1 : Keep going.
+d8_n6 --> d9_n2 : Push forward.
+d8_n7 --> d9_n3 : Press on.
+d8_n7 --> d9_n4 : Keep going.
+d8_n7 --> d9_n5 : Push forward.
+d8_n8 --> d9_n6 : Press on.
+d8_n8 --> d9_n7 : Keep going.
+d8_n8 --> d9_n8 : Push forward.
+d9_n0 --> d10_n0 : Press on.
+d9_n0 --> d10_n1 : Keep going.
+d9_n0 --> d10_n2 : Push forward.
+d9_n1 --> d10_n3 : Press on.
+d9_n1 --> d10_n4 : Keep going.
+d9_n1 --> d10_n5 : Push forward.
+d9_n2 --> d10_n6 : Press on.
+d9_n2 --> d10_n7 : Keep going.
+d9_n2 --> d10_n8 : Push forward.
+d9_n3 --> d10_n0 : Press on.
+d9_n3 --> d10_n1 : Keep going.
+d9_n3 --> d10_n2 : Push forward.
+d9_n4 --> d10_n3 : Press on.
+d9_n4 --> d10_n4 : Keep going.
+d9_n4 --> d10_n5 : Push forward.
+d9_n5 --> d10_n6 : Press on.
+d9_n5 --> d10_n7 : Keep going.
+d9_n5 --> d10_n8 : Push forward.
+d9_n6 --> d10_n0 : Press on.
+d9_n6 --> d10_n1 : Keep going.
+d9_n6 --> d10_n2 : Push forward.
+d9_n7 --> d10_n3 : Press on.
+d9_n7 --> d10_n4 : Keep going.
+d9_n7 --> d10_n5 : Push forward.
+d9_n8 --> d10_n6 : Press on.
+d9_n8 --> d10_n7 : Keep going.
+d9_n8 --> d10_n8 : Push forward.
+d10_n0 --> d11_n0 : Press on.
+d10_n0 --> d11_n1 : Keep going.
+d10_n0 --> d11_n2 : Push forward.
+d10_n1 --> d11_n3 : Press on.
+d10_n1 --> d11_n4 : Keep going.
+d10_n1 --> d11_n5 : Push forward.
+d10_n2 --> d11_n6 : Press on.
+d10_n2 --> d11_n7 : Keep going.
+d10_n2 --> d11_n8 : Push forward.
+d10_n3 --> d11_n0 : Press on.
+d10_n3 --> d11_n1 : Keep going.
+d10_n3 --> d11_n2 : Push forward.
+d10_n4 --> d11_n3 : Press on.
+d10_n4 --> d11_n4 : Keep going.
+d10_n4 --> d11_n5 : Push forward.
+d10_n5 --> d11_n6 : Press on.
+d10_n5 --> d11_n7 : Keep going.
+d10_n5 --> d11_n8 : Push forward.
+d10_n6 --> d11_n0 : Press on.
+d10_n6 --> d11_n1 : Keep going.
+d10_n6 --> d11_n2 : Push forward.
+d10_n7 --> d11_n3 : Press on.
+d10_n7 --> d11_n4 : Keep going.
+d10_n7 --> d11_n5 : Push forward.
+d10_n8 --> d11_n6 : Press on.
+d10_n8 --> d11_n7 : Keep going.
+d10_n8 --> d11_n8 : Push forward.
+d11_n0 --> d12_n0 : Press on.
+d11_n0 --> d12_n1 : Keep going.
+d11_n0 --> d12_n2 : Push forward.
+d11_n1 --> d12_n3 : Press on.
+d11_n1 --> d12_n4 : Keep going.
+d11_n1 --> d12_n5 : Push forward.
+d11_n2 --> d12_n6 : Press on.
+d11_n2 --> d12_n7 : Keep going.
+d11_n2 --> d12_n8 : Push forward.
+d11_n3 --> d12_n0 : Press on.
+d11_n3 --> d12_n1 : Keep going.
+d11_n3 --> d12_n2 : Push forward.
+d11_n4 --> d12_n3 : Press on.
+d11_n4 --> d12_n4 : Keep going.
+d11_n4 --> d12_n5 : Push forward.
+d11_n5 --> d12_n6 : Press on.
+d11_n5 --> d12_n7 : Keep going.
+d11_n5 --> d12_n8 : Push forward.
+d11_n6 --> d12_n0 : Press on.
+d11_n6 --> d12_n1 : Keep going.
+d11_n6 --> d12_n2 : Push forward.
+d11_n7 --> d12_n3 : Press on.
+d11_n7 --> d12_n4 : Keep going.
+d11_n7 --> d12_n5 : Push forward.
+d11_n8 --> d12_n6 : Press on.
+d11_n8 --> d12_n7 : Keep going.
+d11_n8 --> d12_n8 : Push forward.
+d12_n0 --> d13_n0 : Press on.
+d12_n0 --> d13_n1 : Keep going.
+d12_n0 --> d13_n2 : Push forward.
+d12_n1 --> d13_n3 : Press on.
+d12_n1 --> d13_n4 : Keep going.
+d12_n1 --> d13_n5 : Push forward.
+d12_n2 --> d13_n6 : Press on.
+d12_n2 --> d13_n7 : Keep going.
+d12_n2 --> d13_n8 : Push forward.
+d12_n3 --> d13_n0 : Press on.
+d12_n3 --> d13_n1 : Keep going.
+d12_n3 --> d13_n2 : Push forward.
+d12_n4 --> d13_n3 : Press on.
+d12_n4 --> d13_n4 : Keep going.
+d12_n4 --> d13_n5 : Push forward.
+d12_n5 --> d13_n6 : Press on.
+d12_n5 --> d13_n7 : Keep going.
+d12_n5 --> d13_n8 : Push forward.
+d12_n6 --> d13_n0 : Press on.
+d12_n6 --> d13_n1 : Keep going.
+d12_n6 --> d13_n2 : Push forward.
+d12_n7 --> d13_n3 : Press on.
+d12_n7 --> d13_n4 : Keep going.
+d12_n7 --> d13_n5 : Push forward.
+d12_n8 --> d13_n6 : Press on.
+d12_n8 --> d13_n7 : Keep going.
+d12_n8 --> d13_n8 : Push forward.
+d13_n0 --> d14_n0 : Press on.
+d13_n0 --> d14_n1 : Keep going.
+d13_n0 --> d14_n2 : Push forward.
+d13_n1 --> d14_n3 : Press on.
+d13_n1 --> d14_n4 : Keep going.
+d13_n1 --> d14_n5 : Push forward.
+d13_n2 --> d14_n6 : Press on.
+d13_n2 --> d14_n7 : Keep going.
+d13_n2 --> d14_n8 : Push forward.
+d13_n3 --> d14_n0 : Press on.
+d13_n3 --> d14_n1 : Keep going.
+d13_n3 --> d14_n2 : Push forward.
+d13_n4 --> d14_n3 : Press on.
+d13_n4 --> d14_n4 : Keep going.
+d13_n4 --> d14_n5 : Push forward.
+d13_n5 --> d14_n6 : Press on.
+d13_n5 --> d14_n7 : Keep going.
+d13_n5 --> d14_n8 : Push forward.
+d13_n6 --> d14_n0 : Press on.
+d13_n6 --> d14_n1 : Keep going.
+d13_n6 --> d14_n2 : Push forward.
+d13_n7 --> d14_n3 : Press on.
+d13_n7 --> d14_n4 : Keep going.
+d13_n7 --> d14_n5 : Push forward.
+d13_n8 --> d14_n6 : Press on.
+d13_n8 --> d14_n7 : Keep going.
+d13_n8 --> d14_n8 : Push forward.
+d14_n0 --> d15_n0 : Press on.
+d14_n0 --> d15_n1 : Keep going.
+d14_n0 --> d15_n2 : Push forward.
+d14_n1 --> d15_n3 : Press on.
+d14_n1 --> d15_n4 : Keep going.
+d14_n1 --> d15_n5 : Push forward.
+d14_n2 --> d15_n6 : Press on.
+d14_n2 --> d15_n7 : Keep going.
+d14_n2 --> d15_n8 : Push forward.
+d14_n3 --> d15_n0 : Press on.
+d14_n3 --> d15_n1 : Keep going.
+d14_n3 --> d15_n2 : Push forward.
+d14_n4 --> d15_n3 : Press on.
+d14_n4 --> d15_n4 : Keep going.
+d14_n4 --> d15_n5 : Push forward.
+d14_n5 --> d15_n6 : Press on.
+d14_n5 --> d15_n7 : Keep going.
+d14_n5 --> d15_n8 : Push forward.
+d14_n6 --> d15_n0 : Press on.
+d14_n6 --> d15_n1 : Keep going.
+d14_n6 --> d15_n2 : Push forward.
+d14_n7 --> d15_n3 : Press on.
+d14_n7 --> d15_n4 : Keep going.
+d14_n7 --> d15_n5 : Push forward.
+d14_n8 --> d15_n6 : Press on.
+d14_n8 --> d15_n7 : Keep going.
+d14_n8 --> d15_n8 : Push forward.
+d15_n0 --> d16_n0 : Press on.
+d15_n0 --> d16_n1 : Keep going.
+d15_n0 --> d16_n2 : Push forward.
+d15_n1 --> d16_n3 : Press on.
+d15_n1 --> d16_n4 : Keep going.
+d15_n1 --> d16_n5 : Push forward.
+d15_n2 --> d16_n6 : Press on.
+d15_n2 --> d16_n7 : Keep going.
+d15_n2 --> d16_n8 : Push forward.
+d15_n3 --> d16_n0 : Press on.
+d15_n3 --> d16_n1 : Keep going.
+d15_n3 --> d16_n2 : Push forward.
+d15_n4 --> d16_n3 : Press on.
+d15_n4 --> d16_n4 : Keep going.
+d15_n4 --> d16_n5 : Push forward.
+d15_n5 --> d16_n6 : Press on.
+d15_n5 --> d16_n7 : Keep going.
+d15_n5 --> d16_n8 : Push forward.
+d15_n6 --> d16_n0 : Press on.
+d15_n6 --> d16_n1 : Keep going.
+d15_n6 --> d16_n2 : Push forward.
+d15_n7 --> d16_n3 : Press on.
+d15_n7 --> d16_n4 : Keep going.
+d15_n7 --> d16_n5 : Push forward.
+d15_n8 --> d16_n6 : Press on.
+d15_n8 --> d16_n7 : Keep going.
+d15_n8 --> d16_n8 : Push forward.
+d16_n0 --> d17_n0 : Press on.
+d16_n0 --> d17_n1 : Keep going.
+d16_n0 --> d17_n2 : Push forward.
+d16_n1 --> d17_n3 : Press on.
+d16_n1 --> d17_n4 : Keep going.
+d16_n1 --> d17_n5 : Push forward.
+d16_n2 --> d17_n6 : Press on.
+d16_n2 --> d17_n7 : Keep going.
+d16_n2 --> d17_n8 : Push forward.
+d16_n3 --> d17_n0 : Press on.
+d16_n3 --> d17_n1 : Keep going.
+d16_n3 --> d17_n2 : Push forward.
+d16_n4 --> d17_n3 : Press on.
+d16_n4 --> d17_n4 : Keep going.
+d16_n4 --> d17_n5 : Push forward.
+d16_n5 --> d17_n6 : Press on.
+d16_n5 --> d17_n7 : Keep going.
+d16_n5 --> d17_n8 : Push forward.
+d16_n6 --> d17_n0 : Press on.
+d16_n6 --> d17_n1 : Keep going.
+d16_n6 --> d17_n2 : Push forward.
+d16_n7 --> d17_n3 : Press on.
+d16_n7 --> d17_n4 : Keep going.
+d16_n7 --> d17_n5 : Push forward.
+d16_n8 --> d17_n6 : Press on.
+d16_n8 --> d17_n7 : Keep going.
+d16_n8 --> d17_n8 : Push forward.
+d17_n0 --> d18_n0 : Press on.
+d17_n0 --> d18_n1 : Keep going.
+d17_n0 --> d18_n2 : Push forward.
+d17_n1 --> d18_n3 : Press on.
+d17_n1 --> d18_n4 : Keep going.
+d17_n1 --> d18_n5 : Push forward.
+d17_n2 --> d18_n6 : Press on.
+d17_n2 --> d18_n7 : Keep going.
+d17_n2 --> d18_n8 : Push forward.
+d17_n3 --> d18_n0 : Press on.
+d17_n3 --> d18_n1 : Keep going.
+d17_n3 --> d18_n2 : Push forward.
+d17_n4 --> d18_n3 : Press on.
+d17_n4 --> d18_n4 : Keep going.
+d17_n4 --> d18_n5 : Push forward.
+d17_n5 --> d18_n6 : Press on.
+d17_n5 --> d18_n7 : Keep going.
+d17_n5 --> d18_n8 : Push forward.
+d17_n6 --> d18_n0 : Press on.
+d17_n6 --> d18_n1 : Keep going.
+d17_n6 --> d18_n2 : Push forward.
+d17_n7 --> d18_n3 : Press on.
+d17_n7 --> d18_n4 : Keep going.
+d17_n7 --> d18_n5 : Push forward.
+d17_n8 --> d18_n6 : Press on.
+d17_n8 --> d18_n7 : Keep going.
+d17_n8 --> d18_n8 : Push forward.
+d18_n0 --> d19_n0 : Press on.
+d18_n0 --> d19_n1 : Keep going.
+d18_n0 --> d19_n2 : Push forward.
+d18_n1 --> d19_n3 : Press on.
+d18_n1 --> d19_n4 : Keep going.
+d18_n1 --> d19_n5 : Push forward.
+d18_n2 --> d19_n6 : Press on.
+d18_n2 --> d19_n7 : Keep going.
+d18_n2 --> d19_n8 : Push forward.
+d18_n3 --> d19_n0 : Press on.
+d18_n3 --> d19_n1 : Keep going.
+d18_n3 --> d19_n2 : Push forward.
+d18_n4 --> d19_n3 : Press on.
+d18_n4 --> d19_n4 : Keep going.
+d18_n4 --> d19_n5 : Push forward.
+d18_n5 --> d19_n6 : Press on.
+d18_n5 --> d19_n7 : Keep going.
+d18_n5 --> d19_n8 : Push forward.
+d18_n6 --> d19_n0 : Press on.
+d18_n6 --> d19_n1 : Keep going.
+d18_n6 --> d19_n2 : Push forward.
+d18_n7 --> d19_n3 : Press on.
+d18_n7 --> d19_n4 : Keep going.
+d18_n7 --> d19_n5 : Push forward.
+d18_n8 --> d19_n6 : Press on.
+d18_n8 --> d19_n7 : Keep going.
+d18_n8 --> d19_n8 : Push forward.
+d19_n0 --> d20_n0 : Press on.
+d19_n0 --> d20_n1 : Keep going.
+d19_n0 --> d20_n2 : Push forward.
+d19_n1 --> d20_n3 : Press on.
+d19_n1 --> d20_n4 : Keep going.
+d19_n1 --> d20_n5 : Push forward.
+d19_n2 --> d20_n6 : Press on.
+d19_n2 --> d20_n7 : Keep going.
+d19_n2 --> d20_n8 : Push forward.
+d19_n3 --> d20_n0 : Press on.
+d19_n3 --> d20_n1 : Keep going.
+d19_n3 --> d20_n2 : Push forward.
+d19_n4 --> d20_n3 : Press on.
+d19_n4 --> d20_n4 : Keep going.
+d19_n4 --> d20_n5 : Push forward.
+d19_n5 --> d20_n6 : Press on.
+d19_n5 --> d20_n7 : Keep going.
+d19_n5 --> d20_n8 : Push forward.
+d19_n6 --> d20_n0 : Press on.
+d19_n6 --> d20_n1 : Keep going.
+d19_n6 --> d20_n2 : Push forward.
+d19_n7 --> d20_n3 : Press on.
+d19_n7 --> d20_n4 : Keep going.
+d19_n7 --> d20_n5 : Push forward.
+d19_n8 --> d20_n6 : Press on.
+d19_n8 --> d20_n7 : Keep going.
+d19_n8 --> d20_n8 : Push forward.
+d20_n0 --> tail0_c0 : Press on.
+d20_n0 --> tail0_c1 : Keep going.
+d20_n0 --> tail0_c2 : Push forward.
+d20_n1 --> tail0_c3 : Press on.
+d20_n1 --> tail0_death : Trust the wrong hazard.
+d20_n1 --> tail0_capture : Get pinned trying.
+d20_n2 --> tail0_setback : Turn back for the gate.
+d20_n2 --> tail0_discover : Back away and search instead.
+d20_n2 --> tail0_complete : Find the miners' bypass.
+d20_n3 --> tail0_c0 : Press on.
+d20_n3 --> tail0_c1 : Keep going.
+d20_n3 --> tail0_c2 : Push forward.
+d20_n4 --> tail0_c3 : Press on.
+d20_n4 --> tail0_death : Trust the wrong hazard.
+d20_n4 --> tail0_capture : Get pinned trying.
+d20_n5 --> tail0_setback : Turn back for the gate.
+d20_n5 --> tail0_discover : Back away and search instead.
+d20_n5 --> tail0_complete : Find the miners' bypass.
+d20_n6 --> tail0_c0 : Press on.
+d20_n6 --> tail0_c1 : Keep going.
+d20_n6 --> tail0_c2 : Push forward.
+d20_n7 --> tail0_c3 : Press on.
+d20_n7 --> tail0_death : Trust the wrong hazard.
+d20_n7 --> tail0_capture : Get pinned trying.
+d20_n8 --> tail0_setback : Turn back for the gate.
+d20_n8 --> tail0_discover : Back away and search instead.
+d20_n8 --> tail0_complete : Find the miners' bypass.
+tail0_c0 --> tail1_c0 : Press on.
+tail0_c0 --> tail1_c1 : Keep going.
+tail0_c0 --> tail1_c2 : Push forward.
+tail0_c1 --> tail1_c3 : Press on.
+tail0_c1 --> tail1_death : Trust the wrong hazard.
+tail0_c1 --> tail1_capture : Get pinned trying.
+tail0_c2 --> tail1_setback : Turn back for the gate.
+tail0_c2 --> tail1_discover : Back away and search instead.
+tail0_c2 --> tail1_complete : Find the miners' bypass.
+tail0_c3 --> tail1_c0 : Press on.
+tail0_c3 --> tail1_c1 : Keep going.
+tail0_c3 --> tail1_c2 : Push forward.
+tail1_c0 --> tail2_c0 : Press on.
+tail1_c0 --> tail2_c1 : Keep going.
+tail1_c0 --> tail2_c2 : Push forward.
+tail1_c1 --> tail2_c3 : Press on.
+tail1_c1 --> tail2_death : Trust the wrong hazard.
+tail1_c1 --> tail2_capture : Get pinned trying.
+tail1_c2 --> tail2_setback : Turn back for the gate.
+tail1_c2 --> tail2_discover : Back away and search instead.
+tail1_c2 --> tail2_complete : Find the miners' bypass.
+tail1_c3 --> tail2_c0 : Press on.
+tail1_c3 --> tail2_c1 : Keep going.
+tail1_c3 --> tail2_c2 : Push forward.
+tail2_c0 --> tail3_c0 : Press on.
+tail2_c0 --> tail3_c1 : Keep going.
+tail2_c0 --> tail3_c2 : Push forward.
+tail2_c1 --> tail3_c3 : Press on.
+tail2_c1 --> tail3_death : Trust the wrong hazard.
+tail2_c1 --> tail3_capture : Get pinned trying.
+tail2_c2 --> tail3_setback : Turn back for the gate.
+tail2_c2 --> tail3_discover : Back away and search instead.
+tail2_c2 --> tail3_complete : Find the miners' bypass.
+tail2_c3 --> tail3_c0 : Press on.
+tail2_c3 --> tail3_c1 : Keep going.
+tail2_c3 --> tail3_c2 : Push forward.
+tail3_c0 --> tail4_c0 : Press on.
+tail3_c0 --> tail4_c1 : Keep going.
+tail3_c0 --> tail4_c2 : Push forward.
+tail3_c1 --> tail4_c3 : Press on.
+tail3_c1 --> tail4_death : Trust the wrong hazard.
+tail3_c1 --> tail4_capture : Get pinned trying.
+tail3_c2 --> tail4_setback : Turn back for the gate.
+tail3_c2 --> tail4_discover : Back away and search instead.
+tail3_c2 --> tail4_complete : Find the miners' bypass.
+tail3_c3 --> tail4_c0 : Press on.
+tail3_c3 --> tail4_c1 : Keep going.
+tail3_c3 --> tail4_c2 : Push forward.
+tail4_c0 --> tail5_c0 : Press on.
+tail4_c0 --> tail5_c1 : Keep going.
+tail4_c0 --> tail5_c2 : Push forward.
+tail4_c1 --> tail5_c3 : Press on.
+tail4_c1 --> tail5_death : Trust the wrong hazard.
+tail4_c1 --> tail5_capture : Get pinned trying.
+tail4_c2 --> tail5_setback : Turn back for the gate.
+tail4_c2 --> tail5_discover : Back away and search instead.
+tail4_c2 --> tail5_complete : Find the miners' bypass.
+tail4_c3 --> tail5_c0 : Press on.
+tail4_c3 --> tail5_c1 : Keep going.
+tail4_c3 --> tail5_c2 : Push forward.
+tail5_c0 --> n_scree : Climb out onto the scree shelf.
+tail5_c1 --> n_scree : Climb out onto the scree shelf.
+tail5_c2 --> n_scree : Climb out onto the scree shelf.
+tail5_c3 --> n_scree : Climb out onto the scree shelf.
+n_scree --> tower_gate : Start the climb to the tower.
+tower_gate --> tower_resolve_1 : Climb to the transmitter room.
+tower_resolve_1 --> tower_fixed : Fit the valve you carried down.
+tower_resolve_1 --> tower_flare : Rig a flare from the lamp instead.
+tower_fixed --> tower_resolve_2_fixed : Send the call.
+tower_flare --> tower_resolve_2_flare : Light the flare.
+tower_resolve_2_fixed --> end_fixed_trust2 : Trust carried you both this far.
+tower_resolve_2_fixed --> end_fixed_trust1 : Trust carried you partway.
+tower_resolve_2_fixed --> end_fixed_trust0 : Trust never got a foothold.
+tower_resolve_2_flare --> end_flare_trust2 : Trust carried you both this far.
+tower_resolve_2_flare --> end_flare_trust1 : Trust carried you partway.
+tower_resolve_2_flare --> end_flare_trust0 : Trust never got a foothold.
+tail0_death --> [*]
+tail0_capture --> [*]
+tail0_setback --> [*]
+tail0_discover --> [*]
+tail0_complete --> [*]
+tail1_death --> [*]
+tail1_capture --> [*]
+tail1_setback --> [*]
+tail1_discover --> [*]
+tail1_complete --> [*]
+tail2_death --> [*]
+tail2_capture --> [*]
+tail2_setback --> [*]
+tail2_discover --> [*]
+tail2_complete --> [*]
+tail3_death --> [*]
+tail3_capture --> [*]
+tail3_setback --> [*]
+tail3_discover --> [*]
+tail3_complete --> [*]
+tail4_death --> [*]
+tail4_capture --> [*]
+tail4_setback --> [*]
+tail4_discover --> [*]
+tail4_complete --> [*]
+tail5_death --> [*]
+tail5_capture --> [*]
+tail5_setback --> [*]
+tail5_discover --> [*]
+tail5_complete --> [*]
+end_fixed_trust2 --> [*]
+end_fixed_trust1 --> [*]
+end_fixed_trust0 --> [*]
+end_flare_trust2 --> [*]
+end_flare_trust1 --> [*]
+end_flare_trust0 --> [*]
+
+legend right
+  The Quarry Signal
+  Band 13-16 · Tier 2 · ~10 min
+  Topology: branch_and_bottleneck
+  267 nodes · 36 endings (9+ / 8n / 19-)
+  Production-eligible
+  Scale: medium · gamebook
+endlegend
+@enduml

@@ -13,6 +13,8 @@ state n_walk #D1C4E9
 n_walk : rising · 75w
 state n_meet #FFF9C4
 n_meet : choice · 80w
+state n_further #FFF9C4
+n_further : choice · 75w
 state st_scene #D1C4E9
 st_scene : rising · 70w
 state st_meet #D1C4E9
@@ -29,8 +31,6 @@ state st_win #D1C4E9
 st_win : rising · 75w
 state st_thanks #FFF9C4
 st_thanks : choice · 60w
-state t_st_fi #D1C4E9
-t_st_fi : rising · 60w
 state fi_scene #D1C4E9
 fi_scene : rising · 70w
 state fi_meet #D1C4E9
@@ -47,8 +47,6 @@ state fi_win #D1C4E9
 fi_win : rising · 75w
 state fi_thanks #FFF9C4
 fi_thanks : choice · 60w
-state t_fi_cr #D1C4E9
-t_fi_cr : rising · 60w
 state cr_scene #D1C4E9
 cr_scene : rising · 70w
 state cr_meet #D1C4E9
@@ -65,8 +63,6 @@ state cr_win #D1C4E9
 cr_win : rising · 75w
 state cr_thanks #FFF9C4
 cr_thanks : choice · 60w
-state t_cr_pw #D1C4E9
-t_cr_pw : rising · 60w
 state pw_scene #D1C4E9
 pw_scene : rising · 70w
 state pw_meet #D1C4E9
@@ -136,9 +132,11 @@ e_patrol : "{PATROL_PRIZE}"
 n_start --> n_walk : Follow {COMPANION} down the sandy path.
 n_walk --> n_meet : Step out onto the flat low-tide rocks.
 n_meet --> st_scene : Hurry to the {Q1_SPECIES} on the high le...
-n_meet --> t_st_fi : Follow {Q2_SIGN} across the rocks.
-n_meet --> t_fi_cr : Follow {Q3_SIGN} to the seaweed patch.
-n_meet --> t_cr_pw : Climb toward {Q4_SIGN} on the dry rock.
+n_meet --> fi_scene : Follow {Q2_SIGN} across the rocks.
+n_meet --> n_further : Head further along the rocks.
+n_further --> cr_scene : Follow {Q3_SIGN} to the seaweed patch.
+n_further --> pw_scene : Climb toward {Q4_SIGN} on the dry rock.
+n_further --> n_meet : Go back to the near pools.
 st_scene --> st_meet : Climb the low steps for a closer look.
 st_meet --> st_plan : Think up a rescue plan for {Q1_NAME}.
 st_plan --> st_flop_hands : Toss water up with your cupped hands.
@@ -154,7 +152,6 @@ st_win --> st_thanks : Watch {Q1_NAME} settle into her pool.
 st_thanks --> n_meet : Pick your way back out to the pools.
 st_thanks --> n_alldone : Watch {TIDE} come in over the pools.
 st_thanks --> e_tide_star : Sit with {COMPANION} and let the tide fi...
-t_st_fi --> fi_scene : Kneel beside the shrinking puddle.
 fi_scene --> fi_meet : Lean in and say hello to the little {Q2_...
 fi_meet --> fi_plan : Think up a plan to move {Q2_NAME}.
 fi_plan --> fi_flop_hands : Catch {Q2_NAME} with your bare hands.
@@ -169,7 +166,6 @@ fi_gran --> fi_plan : Look over the plans once more.
 fi_win --> fi_thanks : Watch {Q2_NAME} zoom around his big new ...
 fi_thanks --> n_meet : Head back out toward the calling.
 fi_thanks --> n_alldone : Watch {TIDE} come in over the pools.
-t_fi_cr --> cr_scene : Cross the rocks to the seaweed patch.
 cr_scene --> cr_meet : Crouch down beside the tangled {Q3_SPECI...
 cr_meet --> cr_plan : Think up a plan to untangle {Q3_NAME}.
 cr_plan --> cr_flop_tug : Give the seaweed one quick tug.
@@ -185,7 +181,6 @@ cr_win --> cr_thanks : Watch {Q3_NAME} scuttle into the cool po...
 cr_thanks --> n_meet : Go and find who is calling.
 cr_thanks --> n_alldone : Watch {TIDE} come in over the pools.
 cr_thanks --> e_tide_snail : Watch from {COMPANION}'s {TOWEL} while {...
-t_cr_pw --> pw_scene : Tiptoe up the dry rock to the tiny shell...
 pw_scene --> pw_meet : Bend down and greet the little {Q4_SPECI...
 pw_meet --> pw_plan : Think up a plan to bring {Q4_NAME} home.
 pw_plan --> pw_flop_roll : Roll {Q4_NAME} along like a tiny wheel.
@@ -233,7 +228,7 @@ legend right
   The Tide Pool Rescue
   Band 5-8 · Tier 1 · ~10 min
   Topology: loop_and_grow
-  57 nodes · 12 endings (10+ / 2n / 0-)
+  55 nodes · 12 endings (10+ / 2n / 0-)
   Production-eligible
   Scale: medium · prose
 endlegend

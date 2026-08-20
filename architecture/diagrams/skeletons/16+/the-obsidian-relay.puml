@@ -1,0 +1,1826 @@
+@startuml the-obsidian-relay
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n00_0
+state n00_0 #BBDEFB
+n00_0 : setup · 95w
+state n01_0 #FFF9C4
+n01_0 : choice · 79w
+state n02_0 #FFF9C4
+n02_0 : choice · 82w
+state n02_1 #FFF9C4
+n02_1 : choice · 84w
+state n02_2 #FFF9C4
+n02_2 : choice · 86w
+state n03_0 #FFF9C4
+n03_0 : choice · 85w
+state n03_1 #FFF9C4
+n03_1 : choice · 87w
+state n03_2 #FFF9C4
+n03_2 : choice · 89w
+state n03_3 #FFF9C4
+n03_3 : choice · 85w
+state n03_4 #FFF9C4
+n03_4 : choice · 87w
+state n03_5 #FFF9C4
+n03_5 : choice · 89w
+state n03_6 #FFF9C4
+n03_6 : choice · 85w
+state n04_0 #FFF9C4
+n04_0 : choice · 88w
+state n04_1 #FFF9C4
+n04_1 : choice · 90w
+state n04_10 #FFF9C4
+n04_10 : choice · 90w
+state n04_2 #FFF9C4
+n04_2 : choice · 92w
+state n04_3 #FFF9C4
+n04_3 : choice · 88w
+state n04_4 #FFF9C4
+n04_4 : choice · 90w
+state n04_5 #FFF9C4
+n04_5 : choice · 92w
+state n04_6 #FFF9C4
+n04_6 : choice · 88w
+state n04_7 #FFF9C4
+n04_7 : choice · 90w
+state n04_8 #FFF9C4
+n04_8 : choice · 92w
+state n04_9 #FFF9C4
+n04_9 : choice · 88w
+state n05_0 #FFF9C4
+n05_0 : choice · 76w
+state n05_1 #FFF9C4
+n05_1 : choice · 78w
+state n05_10 #FFF9C4
+n05_10 : choice · 78w
+state n05_2 #FFF9C4
+n05_2 : choice · 80w
+state n05_3 #FFF9C4
+n05_3 : choice · 76w
+state n05_4 #FFF9C4
+n05_4 : choice · 78w
+state n05_5 #FFF9C4
+n05_5 : choice · 80w
+state n05_6 #FFF9C4
+n05_6 : choice · 76w
+state n05_7 #FFF9C4
+n05_7 : choice · 78w
+state n05_8 #FFF9C4
+n05_8 : choice · 80w
+state n05_9 #FFF9C4
+n05_9 : choice · 76w
+state n06_0 #D1C4E9
+n06_0 : rising · 62w
+state n06_1 #D1C4E9
+n06_1 : rising · 65w
+state n06_10 #D1C4E9
+n06_10 : rising · 71w
+state n06_2 #D1C4E9
+n06_2 : rising · 68w
+state n06_3 #D1C4E9
+n06_3 : rising · 71w
+state n06_4 #D1C4E9
+n06_4 : rising · 62w
+state n06_5 #D1C4E9
+n06_5 : rising · 65w
+state n06_6 #D1C4E9
+n06_6 : rising · 68w
+state n06_7 #D1C4E9
+n06_7 : rising · 71w
+state n06_8 #D1C4E9
+n06_8 : rising · 65w
+state n06_9 #D1C4E9
+n06_9 : rising · 68w
+state n07_0 #FFF9C4
+n07_0 : choice · 82w
+state n07_1 #FFF9C4
+n07_1 : choice · 84w
+state n07_10 #FFF9C4
+n07_10 : choice · 84w
+state n07_2 #FFF9C4
+n07_2 : choice · 86w
+state n07_3 #FFF9C4
+n07_3 : choice · 82w
+state n07_4 #FFF9C4
+n07_4 : choice · 84w
+state n07_5 #FFF9C4
+n07_5 : choice · 86w
+state n07_6 #FFF9C4
+n07_6 : choice · 82w
+state n07_7 #FFF9C4
+n07_7 : choice · 84w
+state n07_8 #FFF9C4
+n07_8 : choice · 86w
+state n07_9 #FFF9C4
+n07_9 : choice · 82w
+state n08_0 #FFF9C4
+n08_0 : choice · 85w
+state n08_1 #FFF9C4
+n08_1 : choice · 87w
+state n08_10 #FFF9C4
+n08_10 : choice · 87w
+state n08_2 #FFF9C4
+n08_2 : choice · 89w
+state n08_3 #FFF9C4
+n08_3 : choice · 85w
+state n08_4 #FFF9C4
+n08_4 : choice · 87w
+state n08_5 #FFF9C4
+n08_5 : choice · 89w
+state n08_6 #FFF9C4
+n08_6 : choice · 85w
+state n08_7 #FFF9C4
+n08_7 : choice · 87w
+state n08_8 #FFF9C4
+n08_8 : choice · 89w
+state n08_9 #FFF9C4
+n08_9 : choice · 85w
+state n09_0 #FFF9C4
+n09_0 : choice · 88w
+state n09_1 #FFF9C4
+n09_1 : choice · 90w
+state n09_10 #FFF9C4
+n09_10 : choice · 90w
+state n09_2 #FFF9C4
+n09_2 : choice · 92w
+state n09_3 #FFF9C4
+n09_3 : choice · 88w
+state n09_4 #FFF9C4
+n09_4 : choice · 90w
+state n09_5 #FFF9C4
+n09_5 : choice · 92w
+state n09_6 #FFF9C4
+n09_6 : choice · 88w
+state n09_7 #FFF9C4
+n09_7 : choice · 90w
+state n09_8 #FFF9C4
+n09_8 : choice · 92w
+state n09_9 #FFF9C4
+n09_9 : choice · 88w
+state n10_0 #FFF9C4
+n10_0 : choice · 76w
+state n10_1 #FFF9C4
+n10_1 : choice · 78w
+state n10_10 #FFF9C4
+n10_10 : choice · 78w
+state n10_2 #FFF9C4
+n10_2 : choice · 80w
+state n10_3 #FFF9C4
+n10_3 : choice · 76w
+state n10_4 #FFF9C4
+n10_4 : choice · 78w
+state n10_5 #FFF9C4
+n10_5 : choice · 80w
+state n10_6 #FFF9C4
+n10_6 : choice · 76w
+state n10_7 #FFF9C4
+n10_7 : choice · 78w
+state n10_8 #FFF9C4
+n10_8 : choice · 80w
+state n10_9 #FFF9C4
+n10_9 : choice · 76w
+state e10_0 #FFCDD2
+e10_0 : death (negative)
+e10_0 : "Under the Relief (SG 10.1)"
+state e10_1 #FFCDD2
+e10_1 : capture (negative)
+e10_1 : "The Far Door (SG 10.2)"
+state e10_2 #FFCDD2
+e10_2 : death (negative)
+e10_2 : "What the Pipe Keeps (SG 10.3)"
+state n11_0 #D1C4E9
+n11_0 : rising · 62w
+state n11_1 #D1C4E9
+n11_1 : rising · 65w
+state n11_10 #D1C4E9
+n11_10 : rising · 71w
+state n11_2 #D1C4E9
+n11_2 : rising · 68w
+state n11_3 #D1C4E9
+n11_3 : rising · 71w
+state n11_4 #D1C4E9
+n11_4 : rising · 62w
+state n11_5 #D1C4E9
+n11_5 : rising · 65w
+state n11_6 #D1C4E9
+n11_6 : rising · 68w
+state n11_7 #D1C4E9
+n11_7 : rising · 71w
+state n11_8 #D1C4E9
+n11_8 : rising · 65w
+state n11_9 #D1C4E9
+n11_9 : rising · 68w
+state e11_0 #E0E0E0
+e11_0 : setback (neutral)
+e11_0 : "Sealed the Gallery (SG 11.1)"
+state e11_1 #FFCDD2
+e11_1 : death (negative)
+e11_1 : "Under the Relief (SG 11.2)"
+state e11_2 #FFCDD2
+e11_2 : capture (negative)
+e11_2 : "The Far Door (SG 11.3)"
+state n12_0 #FFF9C4
+n12_0 : choice · 82w
+state n12_1 #FFF9C4
+n12_1 : choice · 84w
+state n12_10 #FFF9C4
+n12_10 : choice · 84w
+state n12_2 #FFF9C4
+n12_2 : choice · 86w
+state n12_3 #FFF9C4
+n12_3 : choice · 82w
+state n12_4 #FFF9C4
+n12_4 : choice · 84w
+state n12_5 #FFF9C4
+n12_5 : choice · 86w
+state n12_6 #FFF9C4
+n12_6 : choice · 82w
+state n12_7 #FFF9C4
+n12_7 : choice · 84w
+state n12_8 #FFF9C4
+n12_8 : choice · 86w
+state n12_9 #FFF9C4
+n12_9 : choice · 82w
+state n13_0 #FFF9C4
+n13_0 : choice · 85w
+state n13_1 #FFF9C4
+n13_1 : choice · 87w
+state n13_10 #FFF9C4
+n13_10 : choice · 87w
+state n13_2 #FFF9C4
+n13_2 : choice · 89w
+state n13_3 #FFF9C4
+n13_3 : choice · 85w
+state n13_4 #FFF9C4
+n13_4 : choice · 87w
+state n13_5 #FFF9C4
+n13_5 : choice · 89w
+state n13_6 #FFF9C4
+n13_6 : choice · 85w
+state n13_7 #FFF9C4
+n13_7 : choice · 87w
+state n13_8 #FFF9C4
+n13_8 : choice · 89w
+state n13_9 #FFF9C4
+n13_9 : choice · 85w
+state e13_0 #FFCDD2
+e13_0 : death (negative)
+e13_0 : "A Hundred and Ninety Metres (TS 13.1)"
+state e13_1 #FFCDD2
+e13_1 : death (negative)
+e13_1 : "Twice on the Way Up (TS 13.2)"
+state e13_2 #FFCDD2
+e13_2 : capture (negative)
+e13_2 : "Opened From the Other Side (TS 13.3)"
+state n14_0 #FFF9C4
+n14_0 : choice · 88w
+state n14_1 #FFF9C4
+n14_1 : choice · 90w
+state n14_10 #FFF9C4
+n14_10 : choice · 90w
+state n14_2 #FFF9C4
+n14_2 : choice · 92w
+state n14_3 #FFF9C4
+n14_3 : choice · 88w
+state n14_4 #FFF9C4
+n14_4 : choice · 90w
+state n14_5 #FFF9C4
+n14_5 : choice · 92w
+state n14_6 #FFF9C4
+n14_6 : choice · 88w
+state n14_7 #FFF9C4
+n14_7 : choice · 90w
+state n14_8 #FFF9C4
+n14_8 : choice · 92w
+state n14_9 #FFF9C4
+n14_9 : choice · 88w
+state e14_0 #E0E0E0
+e14_0 : discovery (neutral)
+e14_0 : "Late Enough to See (TS 14.1)"
+state e14_1 #FFCDD2
+e14_1 : death (negative)
+e14_1 : "A Hundred and Ninety Metres (TS 14.2)"
+state e14_2 #FFCDD2
+e14_2 : death (negative)
+e14_2 : "Twice on the Way Up (TS 14.3)"
+state n15_0 #FFF9C4
+n15_0 : choice · 76w
+state n15_1 #FFF9C4
+n15_1 : choice · 78w
+state n15_10 #FFF9C4
+n15_10 : choice · 78w
+state n15_2 #FFF9C4
+n15_2 : choice · 80w
+state n15_3 #FFF9C4
+n15_3 : choice · 76w
+state n15_4 #FFF9C4
+n15_4 : choice · 78w
+state n15_5 #FFF9C4
+n15_5 : choice · 80w
+state n15_6 #FFF9C4
+n15_6 : choice · 76w
+state n15_7 #FFF9C4
+n15_7 : choice · 78w
+state n15_8 #FFF9C4
+n15_8 : choice · 80w
+state n15_9 #FFF9C4
+n15_9 : choice · 76w
+state e15_0 #FFCDD2
+e15_0 : capture (negative)
+e15_0 : "Opened From the Other Side (TS 15.1)"
+state e15_1 #FFCDD2
+e15_1 : death (negative)
+e15_1 : "A Hundred and Ninety Metres (TS 15.2)"
+state e15_2 #FFCDD2
+e15_2 : death (negative)
+e15_2 : "Twice on the Way Up (TS 15.3)"
+state n16_0 #D1C4E9
+n16_0 : rising · 62w
+state n16_1 #D1C4E9
+n16_1 : rising · 65w
+state n16_10 #D1C4E9
+n16_10 : rising · 71w
+state n16_2 #D1C4E9
+n16_2 : rising · 68w
+state n16_3 #D1C4E9
+n16_3 : rising · 71w
+state n16_4 #D1C4E9
+n16_4 : rising · 62w
+state n16_5 #D1C4E9
+n16_5 : rising · 65w
+state n16_6 #D1C4E9
+n16_6 : rising · 68w
+state n16_7 #D1C4E9
+n16_7 : rising · 71w
+state n16_8 #D1C4E9
+n16_8 : rising · 65w
+state n16_9 #D1C4E9
+n16_9 : rising · 68w
+state e16_0 #E0E0E0
+e16_0 : discovery (neutral)
+e16_0 : "The Witness on the Stair (TS 16.1)"
+state e16_1 #FFCDD2
+e16_1 : capture (negative)
+e16_1 : "Opened From the Other Side (TS 16.2)"
+state e16_2 #FFCDD2
+e16_2 : death (negative)
+e16_2 : "A Hundred and Ninety Metres (TS 16.3)"
+state n17_0 #FFF9C4
+n17_0 : choice · 82w
+state n17_1 #FFF9C4
+n17_1 : choice · 84w
+state n17_10 #FFF9C4
+n17_10 : choice · 84w
+state n17_2 #FFF9C4
+n17_2 : choice · 86w
+state n17_3 #FFF9C4
+n17_3 : choice · 82w
+state n17_4 #FFF9C4
+n17_4 : choice · 84w
+state n17_5 #FFF9C4
+n17_5 : choice · 86w
+state n17_6 #FFF9C4
+n17_6 : choice · 82w
+state n17_7 #FFF9C4
+n17_7 : choice · 84w
+state n17_8 #FFF9C4
+n17_8 : choice · 86w
+state n17_9 #FFF9C4
+n17_9 : choice · 82w
+state n18_0 #FFF9C4
+n18_0 : choice · 85w
+state n18_1 #FFF9C4
+n18_1 : choice · 87w
+state n18_10 #FFF9C4
+n18_10 : choice · 87w
+state n18_2 #FFF9C4
+n18_2 : choice · 89w
+state n18_3 #FFF9C4
+n18_3 : choice · 85w
+state n18_4 #FFF9C4
+n18_4 : choice · 87w
+state n18_5 #FFF9C4
+n18_5 : choice · 89w
+state n18_6 #FFF9C4
+n18_6 : choice · 85w
+state n18_7 #FFF9C4
+n18_7 : choice · 87w
+state n18_8 #FFF9C4
+n18_8 : choice · 89w
+state n18_9 #FFF9C4
+n18_9 : choice · 85w
+state e18_0 #FFCDD2
+e18_0 : death (negative)
+e18_0 : "One Syllable (SY 18.1)"
+state e18_1 #FFCDD2
+e18_1 : death (negative)
+e18_1 : "Inside the Boundary (SY 18.2)"
+state e18_2 #FFCDD2
+e18_2 : capture (negative)
+e18_2 : "The Far Gate (SY 18.3)"
+state n19_0 #FFF9C4
+n19_0 : choice · 88w
+state n19_1 #FFF9C4
+n19_1 : choice · 90w
+state n19_10 #FFF9C4
+n19_10 : choice · 90w
+state n19_2 #FFF9C4
+n19_2 : choice · 92w
+state n19_3 #FFF9C4
+n19_3 : choice · 88w
+state n19_4 #FFF9C4
+n19_4 : choice · 90w
+state n19_5 #FFF9C4
+n19_5 : choice · 92w
+state n19_6 #FFF9C4
+n19_6 : choice · 88w
+state n19_7 #FFF9C4
+n19_7 : choice · 90w
+state n19_8 #FFF9C4
+n19_8 : choice · 92w
+state n19_9 #FFF9C4
+n19_9 : choice · 88w
+state e19_0 #E0E0E0
+e19_0 : discovery (neutral)
+e19_0 : "The File Intact (SY 19.1)"
+state e19_1 #FFCDD2
+e19_1 : death (negative)
+e19_1 : "One Syllable (SY 19.2)"
+state e19_2 #FFCDD2
+e19_2 : death (negative)
+e19_2 : "Inside the Boundary (SY 19.3)"
+state n20_0 #FFF9C4
+n20_0 : choice · 76w
+state n20_1 #FFF9C4
+n20_1 : choice · 78w
+state n20_10 #FFF9C4
+n20_10 : choice · 78w
+state n20_2 #FFF9C4
+n20_2 : choice · 80w
+state n20_3 #FFF9C4
+n20_3 : choice · 76w
+state n20_4 #FFF9C4
+n20_4 : choice · 78w
+state n20_5 #FFF9C4
+n20_5 : choice · 80w
+state n20_6 #FFF9C4
+n20_6 : choice · 76w
+state n20_7 #FFF9C4
+n20_7 : choice · 78w
+state n20_8 #FFF9C4
+n20_8 : choice · 80w
+state n20_9 #FFF9C4
+n20_9 : choice · 76w
+state e20_0 #FFCDD2
+e20_0 : capture (negative)
+e20_0 : "The Far Gate (SY 20.1)"
+state e20_1 #FFCDD2
+e20_1 : death (negative)
+e20_1 : "One Syllable (SY 20.2)"
+state e20_2 #FFCDD2
+e20_2 : death (negative)
+e20_2 : "Inside the Boundary (SY 20.3)"
+state n21_0 #D1C4E9
+n21_0 : rising · 62w
+state n21_1 #D1C4E9
+n21_1 : rising · 65w
+state n21_10 #D1C4E9
+n21_10 : rising · 71w
+state n21_2 #D1C4E9
+n21_2 : rising · 68w
+state n21_3 #D1C4E9
+n21_3 : rising · 71w
+state n21_4 #D1C4E9
+n21_4 : rising · 62w
+state n21_5 #D1C4E9
+n21_5 : rising · 65w
+state n21_6 #D1C4E9
+n21_6 : rising · 68w
+state n21_7 #D1C4E9
+n21_7 : rising · 71w
+state n21_8 #D1C4E9
+n21_8 : rising · 65w
+state n21_9 #D1C4E9
+n21_9 : rising · 68w
+state e21_0 #E0E0E0
+e21_0 : setback (neutral)
+e21_0 : "Half a Plant (LR 21.1)"
+state e21_1 #FFCDD2
+e21_1 : capture (negative)
+e21_1 : "Four Kilometres Out (LR 21.2)"
+state e21_2 #FFCDD2
+e21_2 : death (negative)
+e21_2 : "At the Climbing Step (LR 21.3)"
+state n22_0 #FFF9C4
+n22_0 : choice · 82w
+state n22_1 #FFF9C4
+n22_1 : choice · 84w
+state n22_10 #FFF9C4
+n22_10 : choice · 84w
+state n22_2 #FFF9C4
+n22_2 : choice · 86w
+state n22_3 #FFF9C4
+n22_3 : choice · 82w
+state n22_4 #FFF9C4
+n22_4 : choice · 84w
+state n22_5 #FFF9C4
+n22_5 : choice · 86w
+state n22_6 #FFF9C4
+n22_6 : choice · 82w
+state n22_7 #FFF9C4
+n22_7 : choice · 84w
+state n22_8 #FFF9C4
+n22_8 : choice · 86w
+state n22_9 #FFF9C4
+n22_9 : choice · 82w
+state n23_0 #FFF9C4
+n23_0 : choice · 85w
+state n23_1 #FFF9C4
+n23_1 : choice · 87w
+state n23_10 #FFF9C4
+n23_10 : choice · 87w
+state n23_2 #FFF9C4
+n23_2 : choice · 89w
+state n23_3 #FFF9C4
+n23_3 : choice · 85w
+state n23_4 #FFF9C4
+n23_4 : choice · 87w
+state n23_5 #FFF9C4
+n23_5 : choice · 89w
+state n23_6 #FFF9C4
+n23_6 : choice · 85w
+state n23_7 #FFF9C4
+n23_7 : choice · 87w
+state n23_8 #FFF9C4
+n23_8 : choice · 89w
+state n23_9 #FFF9C4
+n23_9 : choice · 85w
+state e23_0 #FFCDD2
+e23_0 : setback (negative)
+e23_0 : "Keys in It (LR 23.1)"
+state e23_1 #FFCDD2
+e23_1 : capture (negative)
+e23_1 : "Four Kilometres Out (LR 23.2)"
+state e23_2 #FFCDD2
+e23_2 : death (negative)
+e23_2 : "At the Climbing Step (LR 23.3)"
+state n24_0 #FFF9C4
+n24_0 : choice · 88w
+state n24_1 #FFF9C4
+n24_1 : choice · 90w
+state n24_10 #FFF9C4
+n24_10 : choice · 90w
+state n24_2 #FFF9C4
+n24_2 : choice · 92w
+state n24_3 #FFF9C4
+n24_3 : choice · 88w
+state n24_4 #FFF9C4
+n24_4 : choice · 90w
+state n24_5 #FFF9C4
+n24_5 : choice · 92w
+state n24_6 #FFF9C4
+n24_6 : choice · 88w
+state n24_7 #FFF9C4
+n24_7 : choice · 90w
+state n24_8 #FFF9C4
+n24_8 : choice · 92w
+state n24_9 #FFF9C4
+n24_9 : choice · 88w
+state e24_0 #E0E0E0
+e24_0 : discovery (neutral)
+e24_0 : "The Map on the Way Out (LR 24.1)"
+state e24_1 #FFCDD2
+e24_1 : setback (negative)
+e24_1 : "Keys in It (LR 24.2)"
+state e24_2 #FFCDD2
+e24_2 : capture (negative)
+e24_2 : "Four Kilometres Out (LR 24.3)"
+state n25_0 #FFF9C4
+n25_0 : choice · 76w
+state n25_1 #FFF9C4
+n25_1 : choice · 78w
+state n25_10 #FFF9C4
+n25_10 : choice · 78w
+state n25_2 #FFF9C4
+n25_2 : choice · 80w
+state n25_3 #FFF9C4
+n25_3 : choice · 76w
+state n25_4 #FFF9C4
+n25_4 : choice · 78w
+state n25_5 #FFF9C4
+n25_5 : choice · 80w
+state n25_6 #FFF9C4
+n25_6 : choice · 76w
+state n25_7 #FFF9C4
+n25_7 : choice · 78w
+state n25_8 #FFF9C4
+n25_8 : choice · 80w
+state n25_9 #FFF9C4
+n25_9 : choice · 76w
+state e25_0 #FFCDD2
+e25_0 : setback (negative)
+e25_0 : "One Hard Note (PH 25.1)"
+state e25_1 #FFCDD2
+e25_1 : capture (negative)
+e25_1 : "Six Minutes In (PH 25.2)"
+state e25_2 #FFCDD2
+e25_2 : death (negative)
+e25_2 : "Against a Dead Head (PH 25.3)"
+state n26_0 #D1C4E9
+n26_0 : rising · 62w
+state n26_1 #D1C4E9
+n26_1 : rising · 65w
+state n26_10 #D1C4E9
+n26_10 : rising · 71w
+state n26_2 #D1C4E9
+n26_2 : rising · 68w
+state n26_3 #D1C4E9
+n26_3 : rising · 71w
+state n26_4 #D1C4E9
+n26_4 : rising · 62w
+state n26_5 #D1C4E9
+n26_5 : rising · 65w
+state n26_6 #D1C4E9
+n26_6 : rising · 68w
+state n26_7 #D1C4E9
+n26_7 : rising · 71w
+state n26_8 #D1C4E9
+n26_8 : rising · 65w
+state n26_9 #D1C4E9
+n26_9 : rising · 68w
+state e26_0 #E0E0E0
+e26_0 : setback (neutral)
+e26_0 : "Saved as Metal (PH 26.1)"
+state e26_1 #FFCDD2
+e26_1 : setback (negative)
+e26_1 : "One Hard Note (PH 26.2)"
+state e26_2 #FFCDD2
+e26_2 : capture (negative)
+e26_2 : "Six Minutes In (PH 26.3)"
+state n27_0 #FFF9C4
+n27_0 : choice · 82w
+state n27_1 #FFF9C4
+n27_1 : choice · 84w
+state n27_10 #FFF9C4
+n27_10 : choice · 84w
+state n27_2 #FFF9C4
+n27_2 : choice · 86w
+state n27_3 #FFF9C4
+n27_3 : choice · 82w
+state n27_4 #FFF9C4
+n27_4 : choice · 84w
+state n27_5 #FFF9C4
+n27_5 : choice · 86w
+state n27_6 #FFF9C4
+n27_6 : choice · 82w
+state n27_7 #FFF9C4
+n27_7 : choice · 84w
+state n27_8 #FFF9C4
+n27_8 : choice · 86w
+state n27_9 #FFF9C4
+n27_9 : choice · 82w
+state n28_0 #FFF9C4
+n28_0 : choice · 85w
+state n28_1 #FFF9C4
+n28_1 : choice · 87w
+state n28_10 #FFF9C4
+n28_10 : choice · 87w
+state n28_2 #FFF9C4
+n28_2 : choice · 89w
+state n28_3 #FFF9C4
+n28_3 : choice · 85w
+state n28_4 #FFF9C4
+n28_4 : choice · 87w
+state n28_5 #FFF9C4
+n28_5 : choice · 89w
+state n28_6 #FFF9C4
+n28_6 : choice · 85w
+state n28_7 #FFF9C4
+n28_7 : choice · 87w
+state n28_8 #FFF9C4
+n28_8 : choice · 89w
+state n28_9 #FFF9C4
+n28_9 : choice · 85w
+state e28_0 #FFCDD2
+e28_0 : death (negative)
+e28_0 : "Against a Dead Head (PH 28.1)"
+state e28_1 #FFCDD2
+e28_1 : setback (negative)
+e28_1 : "One Hard Note (PH 28.2)"
+state e28_2 #FFCDD2
+e28_2 : capture (negative)
+e28_2 : "Six Minutes In (PH 28.3)"
+state n29_0 #FFF9C4
+n29_0 : choice · 88w
+state n29_1 #FFF9C4
+n29_1 : choice · 90w
+state n29_10 #FFF9C4
+n29_10 : choice · 90w
+state n29_2 #FFF9C4
+n29_2 : choice · 92w
+state n29_3 #FFF9C4
+n29_3 : choice · 88w
+state n29_4 #FFF9C4
+n29_4 : choice · 90w
+state n29_5 #FFF9C4
+n29_5 : choice · 92w
+state n29_6 #FFF9C4
+n29_6 : choice · 88w
+state n29_7 #FFF9C4
+n29_7 : choice · 90w
+state n29_8 #FFF9C4
+n29_8 : choice · 92w
+state n29_9 #FFF9C4
+n29_9 : choice · 88w
+state e29_0 #E0E0E0
+e29_0 : discovery (neutral)
+e29_0 : "The Report You Write (RS 29.1)"
+state e29_1 #FFCDD2
+e29_1 : setback (negative)
+e29_1 : "The Last Four Hundred Metres (RS 29.2)"
+state e29_2 #FFCDD2
+e29_2 : setback (negative)
+e29_2 : "The Two Steps (RS 29.3)"
+state n30_0 #FFF9C4
+n30_0 : choice · 76w
+state n30_1 #FFF9C4
+n30_1 : choice · 78w
+state n30_10 #FFF9C4
+n30_10 : choice · 78w
+state n30_2 #FFF9C4
+n30_2 : choice · 80w
+state n30_3 #FFF9C4
+n30_3 : choice · 76w
+state n30_4 #FFF9C4
+n30_4 : choice · 78w
+state n30_5 #FFF9C4
+n30_5 : choice · 80w
+state n30_6 #FFF9C4
+n30_6 : choice · 76w
+state n30_7 #FFF9C4
+n30_7 : choice · 78w
+state n30_8 #FFF9C4
+n30_8 : choice · 80w
+state n30_9 #FFF9C4
+n30_9 : choice · 76w
+state e30_0 #FFCDD2
+e30_0 : setback (negative)
+e30_0 : "Eleven Months Later (RS 30.1)"
+state e30_1 #FFCDD2
+e30_1 : setback (negative)
+e30_1 : "The Last Four Hundred Metres (RS 30.2)"
+state e30_2 #FFCDD2
+e30_2 : setback (negative)
+e30_2 : "The Two Steps (RS 30.3)"
+state n31_0 #D1C4E9
+n31_0 : rising · 62w
+state n31_1 #D1C4E9
+n31_1 : rising · 65w
+state n31_10 #D1C4E9
+n31_10 : rising · 71w
+state n31_2 #D1C4E9
+n31_2 : rising · 68w
+state n31_3 #D1C4E9
+n31_3 : rising · 71w
+state n31_4 #D1C4E9
+n31_4 : rising · 62w
+state n31_5 #D1C4E9
+n31_5 : rising · 65w
+state n31_6 #D1C4E9
+n31_6 : rising · 68w
+state n31_7 #D1C4E9
+n31_7 : rising · 71w
+state n31_8 #D1C4E9
+n31_8 : rising · 65w
+state n31_9 #D1C4E9
+n31_9 : rising · 68w
+state e31_0 #E0E0E0
+e31_0 : discovery (neutral)
+e31_0 : "Handed Over Clean (RS 31.1)"
+state e31_1 #FFCDD2
+e31_1 : setback (negative)
+e31_1 : "Eleven Months Later (RS 31.2)"
+state e31_2 #FFCDD2
+e31_2 : setback (negative)
+e31_2 : "The Last Four Hundred Metres (RS 31.3)"
+state n32_0 #FFF9C4
+n32_0 : choice · 82w
+state n32_1 #FFF9C4
+n32_1 : choice · 84w
+state n32_10 #FFF9C4
+n32_10 : choice · 84w
+state n32_2 #FFF9C4
+n32_2 : choice · 86w
+state n32_3 #FFF9C4
+n32_3 : choice · 82w
+state n32_4 #FFF9C4
+n32_4 : choice · 84w
+state n32_5 #FFF9C4
+n32_5 : choice · 86w
+state n32_6 #FFF9C4
+n32_6 : choice · 82w
+state n32_7 #FFF9C4
+n32_7 : choice · 84w
+state n32_8 #FFF9C4
+n32_8 : choice · 86w
+state n32_9 #FFF9C4
+n32_9 : choice · 82w
+state e33_0 #C8E6C9
+e33_0 : success (positive)
+e33_0 : "Still a Power Station (RS 33.1)"
+state e33_1 #C8E6C9
+e33_1 : success (positive)
+e33_1 : "When the Gate Closes (RS 33.2)"
+state e33_2 #E0E0E0
+e33_2 : discovery (neutral)
+e33_2 : "Held at the Set Point (RS 33.3)"
+state e33_3 #C8E6C9
+e33_3 : completion (positive)
+e33_3 : "Nothing Skipped (RS 33.4)"
+state e33_4 #FFCDD2
+e33_4 : setback (negative)
+e33_4 : "The Two Steps (RS 33.5)"
+state e33_5 #C8E6C9
+e33_5 : completion (positive)
+e33_5 : "The Night the Procedure Held (RS 33.6)"
+state e33_6 #E0E0E0
+e33_6 : discovery (neutral)
+e33_6 : "The Report You Write (RS 33.7)"
+state e33_7 #C8E6C9
+e33_7 : completion (positive)
+e33_7 : "The Second Attempt (RS 33.8)"
+n00_0 --> n01_0 : Call the grid operator first.
+n01_0 --> n02_0 : Trust the fire panel over the process pa...
+n01_0 --> n02_1 : Call the grid operator first.
+n01_0 --> n02_2 : Walk the loop inlet and see it yourself.
+n02_0 --> n03_0 : Lock the control room behind you.
+n02_0 --> n03_1 : Trust the fire panel over the process pa...
+n02_0 --> n03_2 : Call the grid operator first.
+n02_1 --> n03_4 : Buy ten minutes with a partial reading.
+n02_1 --> n03_5 : Kill the site lighting to see who moves.
+n02_1 --> n03_6 : Raise the field crew on the spare set.
+n02_1 --> n03_3 : Send the honest number and take the cons...
+n02_2 --> n03_2 : Trust the process panel over the fire pa...
+n02_2 --> n03_0 : Go out to the yard cabinet.
+n02_2 --> n03_1 : Lock the control room behind you.
+n03_0 --> n04_0 : Go out to the yard cabinet.
+n03_0 --> n04_1 : Lock the control room behind you.
+n03_0 --> n04_2 : Trust the fire panel over the process pa...
+n03_0 --> n04_3 : Call the grid operator first.
+n03_1 --> n04_5 : Start the drain down now.
+n03_1 --> n04_6 : Buy ten minutes with a partial reading.
+n03_1 --> n04_4 : Kill the site lighting to see who moves.
+n03_2 --> n04_9 : Take the truck to the tower base.
+n03_2 --> n04_7 : Trust the process panel over the fire pa...
+n03_2 --> n04_8 : Go out to the yard cabinet.
+n03_3 --> n04_10 : Wake the manager at home.
+n03_3 --> n04_0 : Leave the lights on and be seen going.
+n03_3 --> n04_1 : Start the drain down now.
+n03_4 --> n04_3 : Go on foot and keep the truck in reserve...
+n03_4 --> n04_4 : Pull the badge log before you move.
+n03_4 --> n04_2 : Take the truck to the tower base.
+n03_5 --> n04_7 : Call the grid operator first.
+n03_5 --> n04_5 : Walk the loop inlet and see it yourself.
+n03_5 --> n04_6 : Wake the manager at home.
+n03_6 --> n04_8 : Raise the field crew on the spare set.
+n03_6 --> n04_9 : Send the honest number and take the cons...
+n03_6 --> n04_10 : Go on foot and keep the truck in reserve...
+n04_0 --> n05_0 : Trust the process panel over the fire pa...
+n04_0 --> n05_1 : Go out to the yard cabinet.
+n04_0 --> n05_2 : Lock the control room behind you.
+n04_1 --> n05_4 : Leave the lights on and be seen going.
+n04_1 --> n05_5 : Start the drain down now.
+n04_1 --> n05_3 : Buy ten minutes with a partial reading.
+n04_10 --> n05_10 : Wake the manager at home.
+n04_10 --> n05_0 : Leave the lights on and be seen going.
+n04_10 --> n05_9 : Start the drain down now.
+n04_2 --> n05_8 : Pull the badge log before you move.
+n04_2 --> n05_6 : Take the truck to the tower base.
+n04_2 --> n05_7 : Trust the process panel over the fire pa...
+n04_3 --> n05_9 : Walk the loop inlet and see it yourself.
+n04_3 --> n05_10 : Wake the manager at home.
+n04_3 --> n05_0 : Leave the lights on and be seen going.
+n04_4 --> n05_2 : Send the honest number and take the cons...
+n04_4 --> n05_3 : Go on foot and keep the truck in reserve...
+n04_4 --> n05_1 : Pull the badge log before you move.
+n04_5 --> n05_6 : Trust the fire panel over the process pa...
+n04_5 --> n05_4 : Call the grid operator first.
+n04_5 --> n05_5 : Walk the loop inlet and see it yourself.
+n04_6 --> n05_9 : Kill the site lighting to see who moves.
+n04_6 --> n05_10 : Raise the field crew on the spare set.
+n04_6 --> n05_7 : Send the honest number and take the cons...
+n04_6 --> n05_8 : Go on foot and keep the truck in reserve...
+n04_7 --> n05_1 : Go out to the yard cabinet.
+n04_7 --> n05_2 : Lock the control room behind you.
+n04_7 --> n05_0 : Trust the fire panel over the process pa...
+n04_8 --> n05_5 : Start the drain down now.
+n04_8 --> n05_3 : Buy ten minutes with a partial reading.
+n04_8 --> n05_4 : Kill the site lighting to see who moves.
+n04_9 --> n05_6 : Take the truck to the tower base.
+n04_9 --> n05_7 : Trust the process panel over the fire pa...
+n04_9 --> n05_8 : Go out to the yard cabinet.
+n05_0 --> n06_0 : Take the pallet stack apart.
+n05_0 --> n06_1 : Go back for the truck after all.
+n05_0 --> n06_2 : Defocus by hand, row by row.
+n05_1 --> n06_4 : Photograph the toolbag and move on.
+n05_1 --> n06_5 : Head for the gallery and let the field w...
+n05_1 --> n06_3 : Pull the row controller and carry it out...
+n05_10 --> n06_10 : Cross the aim line at a run.
+n05_10 --> n06_0 : Photograph the toolbag and move on.
+n05_10 --> n06_9 : Head for the gallery and let the field w...
+n05_2 --> n06_8 : Cut power to the whole row.
+n05_2 --> n06_6 : Follow the second set of tracks.
+n05_2 --> n06_7 : Take the pallet stack apart.
+n05_3 --> n06_9 : Stow the whole field now.
+n05_3 --> n06_10 : Cross the aim line at a run.
+n05_3 --> n06_0 : Photograph the toolbag and move on.
+n05_4 --> n06_2 : Splice the fibre where it was cut.
+n05_4 --> n06_3 : Radio the tower before you go further.
+n05_4 --> n06_1 : Cut power to the whole row.
+n05_5 --> n06_5 : Wait for the drive current to trip itsel...
+n05_5 --> n06_6 : Take the toolbag with you.
+n05_5 --> n06_7 : Stow the whole field now.
+n05_5 --> n06_4 : Cross the aim line at a run.
+n05_6 --> n06_8 : Keep radio silence and keep walking.
+n05_6 --> n06_9 : Leave the row live and use it as a lamp.
+n05_6 --> n06_10 : Splice the fibre where it was cut.
+n05_7 --> n06_1 : Go back for the truck after all.
+n05_7 --> n06_2 : Defocus by hand, row by row.
+n05_7 --> n06_0 : Wait for the drive current to trip itsel...
+n05_8 --> n06_5 : Head for the gallery and let the field w...
+n05_8 --> n06_3 : Pull the row controller and carry it out...
+n05_8 --> n06_4 : Keep radio silence and keep walking.
+n05_9 --> n06_6 : Follow the second set of tracks.
+n05_9 --> n06_7 : Take the pallet stack apart.
+n05_9 --> n06_8 : Go back for the truck after all.
+n06_0 --> n07_0 : Follow the second set of tracks.
+n06_1 --> n07_1 : Cross the aim line at a run.
+n06_10 --> n07_10 : Stow the whole field now.
+n06_2 --> n07_2 : Radio the tower before you go further.
+n06_3 --> n07_3 : Take the toolbag with you.
+n06_4 --> n07_4 : Leave the row live and use it as a lamp.
+n06_5 --> n07_5 : Defocus by hand, row by row.
+n06_6 --> n07_6 : Pull the row controller and carry it out...
+n06_7 --> n07_7 : Take the pallet stack apart.
+n06_8 --> n07_8 : Photograph the toolbag and move on.
+n06_9 --> n07_9 : Cut power to the whole row.
+n07_0 --> n08_0 : Cut power to the whole row.
+n07_0 --> n08_1 : Follow the second set of tracks.
+n07_0 --> n08_2 : Take the pallet stack apart.
+n07_1 --> n08_4 : Stow the whole field now.
+n07_1 --> n08_5 : Cross the aim line at a run.
+n07_1 --> n08_3 : Photograph the toolbag and move on.
+n07_10 --> n08_0 : Take the toolbag with you.
+n07_10 --> n08_1 : Stow the whole field now.
+n07_10 --> n08_9 : Cross the aim line at a run.
+n07_10 --> n08_10 : Photograph the toolbag and move on.
+n07_2 --> n08_8 : Splice the fibre where it was cut.
+n07_2 --> n08_6 : Radio the tower before you go further.
+n07_2 --> n08_7 : Cut power to the whole row.
+n07_3 --> n08_1 : Wait for the drive current to trip itsel...
+n07_3 --> n08_9 : Take the toolbag with you.
+n07_3 --> n08_10 : Stow the whole field now.
+n07_3 --> n08_0 : Cross the aim line at a run.
+n07_4 --> n08_3 : Keep radio silence and keep walking.
+n07_4 --> n08_4 : Leave the row live and use it as a lamp.
+n07_4 --> n08_2 : Splice the fibre where it was cut.
+n07_5 --> n08_7 : Go back for the truck after all.
+n07_5 --> n08_5 : Defocus by hand, row by row.
+n07_5 --> n08_6 : Wait for the drive current to trip itsel...
+n07_6 --> n08_8 : Head for the gallery and let the field w...
+n07_6 --> n08_9 : Pull the row controller and carry it out...
+n07_6 --> n08_10 : Keep radio silence and keep walking.
+n07_7 --> n08_1 : Follow the second set of tracks.
+n07_7 --> n08_2 : Take the pallet stack apart.
+n07_7 --> n08_0 : Go back for the truck after all.
+n07_8 --> n08_5 : Cross the aim line at a run.
+n07_8 --> n08_3 : Photograph the toolbag and move on.
+n07_8 --> n08_4 : Head for the gallery and let the field w...
+n07_9 --> n08_6 : Radio the tower before you go further.
+n07_9 --> n08_7 : Cut power to the whole row.
+n07_9 --> n08_8 : Follow the second set of tracks.
+n08_0 --> n09_0 : Radio the tower before you go further.
+n08_0 --> n09_1 : Cut power to the whole row.
+n08_0 --> n09_2 : Follow the second set of tracks.
+n08_1 --> n09_4 : Take the toolbag with you.
+n08_1 --> n09_5 : Stow the whole field now.
+n08_1 --> n09_3 : Cross the aim line at a run.
+n08_10 --> n09_0 : Wait for the drive current to trip itsel...
+n08_10 --> n09_1 : Take the toolbag with you.
+n08_10 --> n09_10 : Stow the whole field now.
+n08_2 --> n09_8 : Leave the row live and use it as a lamp.
+n08_2 --> n09_9 : Splice the fibre where it was cut.
+n08_2 --> n09_6 : Radio the tower before you go further.
+n08_2 --> n09_7 : Cut power to the whole row.
+n08_3 --> n09_10 : Defocus by hand, row by row.
+n08_3 --> n09_0 : Wait for the drive current to trip itsel...
+n08_3 --> n09_1 : Take the toolbag with you.
+n08_4 --> n09_3 : Pull the row controller and carry it out...
+n08_4 --> n09_4 : Keep radio silence and keep walking.
+n08_4 --> n09_2 : Leave the row live and use it as a lamp.
+n08_5 --> n09_7 : Take the pallet stack apart.
+n08_5 --> n09_5 : Go back for the truck after all.
+n08_5 --> n09_6 : Defocus by hand, row by row.
+n08_6 --> n09_8 : Photograph the toolbag and move on.
+n08_6 --> n09_9 : Head for the gallery and let the field w...
+n08_6 --> n09_10 : Pull the row controller and carry it out...
+n08_7 --> n09_1 : Cut power to the whole row.
+n08_7 --> n09_2 : Follow the second set of tracks.
+n08_7 --> n09_0 : Take the pallet stack apart.
+n08_8 --> n09_5 : Stow the whole field now.
+n08_8 --> n09_3 : Cross the aim line at a run.
+n08_8 --> n09_4 : Photograph the toolbag and move on.
+n08_9 --> n09_7 : Splice the fibre where it was cut.
+n08_9 --> n09_8 : Radio the tower before you go further.
+n08_9 --> n09_9 : Cut power to the whole row.
+n08_9 --> n09_6 : Follow the second set of tracks.
+n09_0 --> n10_0 : Pull the wedge out of the valve yoke.
+n09_0 --> n10_1 : Call it lost and save the tower loop.
+n09_0 --> e10_0 : Wait for the relief to answer.
+n09_1 --> n10_3 : Bag the chalk and the tape as evidence.
+n09_1 --> n10_4 : Get the ventilation running first.
+n09_1 --> e10_1 : Rack the trace heater breaker back in.
+n09_1 --> n10_2 : Back out and seal the gallery.
+n09_10 --> n10_1 : Jumper the heaters at the local panel.
+n09_10 --> e10_1 : Bag the chalk and the tape as evidence.
+n09_10 --> n10_0 : Get the ventilation running first.
+n09_2 --> e10_2 : Vent the relief manually before it lifts...
+n09_2 --> n10_5 : Climb out through the tower base.
+n09_2 --> n10_6 : Pull the wedge out of the valve yoke.
+n09_3 --> n10_7 : Take the gloves off to move faster.
+n09_3 --> n10_8 : Jumper the heaters at the local panel.
+n09_3 --> e10_0 : Bag the chalk and the tape as evidence.
+n09_4 --> n10_10 : Hold the gallery and send for the crew.
+n09_4 --> e10_1 : Go toward the noise at the far end.
+n09_4 --> n10_9 : Vent the relief manually before it lifts...
+n09_5 --> e10_2 : Open the mechanical drain now.
+n09_5 --> n10_0 : Blanket the cold spot with what you have...
+n09_5 --> n10_1 : Take the gloves off to move faster.
+n09_6 --> n10_2 : Back out and seal the gallery.
+n09_6 --> n10_3 : Sample the return line by hand.
+n09_6 --> e10_0 : Hold the gallery and send for the crew.
+n09_7 --> n10_5 : Call it lost and save the tower loop.
+n09_7 --> e10_1 : Wait for the relief to answer.
+n09_7 --> n10_4 : Open the mechanical drain now.
+n09_8 --> n10_6 : Get the ventilation running first.
+n09_8 --> n10_7 : Rack the trace heater breaker back in.
+n09_8 --> n10_8 : Back out and seal the gallery.
+n09_8 --> e10_2 : Sample the return line by hand.
+n09_9 --> n10_9 : Climb out through the tower base.
+n09_9 --> n10_10 : Pull the wedge out of the valve yoke.
+n09_9 --> e10_0 : Call it lost and save the tower loop.
+n10_0 --> n11_0 : Climb out through the tower base.
+n10_0 --> n11_1 : Pull the wedge out of the valve yoke.
+n10_0 --> n11_2 : Call it lost and save the tower loop.
+n10_0 --> e11_0 : Wait for the relief to answer.
+n10_1 --> n11_4 : Jumper the heaters at the local panel.
+n10_1 --> e11_1 : Bag the chalk and the tape as evidence.
+n10_1 --> n11_3 : Get the ventilation running first.
+n10_10 --> n11_1 : Take the gloves off to move faster.
+n10_10 --> e11_1 : Jumper the heaters at the local panel.
+n10_10 --> n11_0 : Bag the chalk and the tape as evidence.
+n10_2 --> e11_2 : Go toward the noise at the far end.
+n10_2 --> n11_5 : Vent the relief manually before it lifts...
+n10_2 --> n11_6 : Climb out through the tower base.
+n10_3 --> n11_7 : Blanket the cold spot with what you have...
+n10_3 --> n11_8 : Take the gloves off to move faster.
+n10_3 --> e11_0 : Jumper the heaters at the local panel.
+n10_4 --> n11_10 : Sample the return line by hand.
+n10_4 --> e11_1 : Hold the gallery and send for the crew.
+n10_4 --> n11_9 : Go toward the noise at the far end.
+n10_5 --> e11_2 : Wait for the relief to answer.
+n10_5 --> n11_0 : Open the mechanical drain now.
+n10_5 --> n11_1 : Blanket the cold spot with what you have...
+n10_6 --> n11_2 : Rack the trace heater breaker back in.
+n10_6 --> n11_3 : Back out and seal the gallery.
+n10_6 --> e11_0 : Sample the return line by hand.
+n10_7 --> e11_1 : Pull the wedge out of the valve yoke.
+n10_7 --> n11_4 : Call it lost and save the tower loop.
+n10_7 --> n11_5 : Wait for the relief to answer.
+n10_7 --> n11_6 : Open the mechanical drain now.
+n10_8 --> e11_2 : Bag the chalk and the tape as evidence.
+n10_8 --> n11_7 : Get the ventilation running first.
+n10_8 --> n11_8 : Rack the trace heater breaker back in.
+n10_9 --> n11_9 : Vent the relief manually before it lifts...
+n10_9 --> n11_10 : Climb out through the tower base.
+n10_9 --> e11_0 : Pull the wedge out of the valve yoke.
+n11_0 --> n12_0 : Vent the relief manually before it lifts...
+n11_1 --> n12_1 : Take the gloves off to move faster.
+n11_10 --> n12_10 : Blanket the cold spot with what you have...
+n11_2 --> n12_2 : Hold the gallery and send for the crew.
+n11_3 --> n12_3 : Open the mechanical drain now.
+n11_4 --> n12_4 : Back out and seal the gallery.
+n11_5 --> n12_5 : Call it lost and save the tower loop.
+n11_6 --> n12_6 : Get the ventilation running first.
+n11_7 --> n12_7 : Climb out through the tower base.
+n11_8 --> n12_8 : Jumper the heaters at the local panel.
+n11_9 --> n12_9 : Go toward the noise at the far end.
+n12_0 --> n13_0 : Go toward the noise at the far end.
+n12_0 --> n13_1 : Vent the relief manually before it lifts...
+n12_0 --> e13_0 : Climb out through the tower base.
+n12_1 --> n13_3 : Blanket the cold spot with what you have...
+n12_1 --> e13_1 : Take the gloves off to move faster.
+n12_1 --> n13_2 : Jumper the heaters at the local panel.
+n12_10 --> n13_0 : Open the mechanical drain now.
+n12_10 --> e13_1 : Blanket the cold spot with what you have...
+n12_10 --> n13_10 : Take the gloves off to move faster.
+n12_2 --> e13_2 : Sample the return line by hand.
+n12_2 --> n13_4 : Hold the gallery and send for the crew.
+n12_2 --> n13_5 : Go toward the noise at the far end.
+n12_3 --> n13_6 : Wait for the relief to answer.
+n12_3 --> n13_7 : Open the mechanical drain now.
+n12_3 --> e13_0 : Blanket the cold spot with what you have...
+n12_4 --> n13_9 : Rack the trace heater breaker back in.
+n12_4 --> e13_1 : Back out and seal the gallery.
+n12_4 --> n13_8 : Sample the return line by hand.
+n12_5 --> n13_0 : Pull the wedge out of the valve yoke.
+n12_5 --> n13_1 : Call it lost and save the tower loop.
+n12_5 --> e13_2 : Wait for the relief to answer.
+n12_5 --> n13_10 : Open the mechanical drain now.
+n12_6 --> n13_2 : Bag the chalk and the tape as evidence.
+n12_6 --> n13_3 : Get the ventilation running first.
+n12_6 --> e13_0 : Rack the trace heater breaker back in.
+n12_7 --> n13_5 : Vent the relief manually before it lifts...
+n12_7 --> e13_1 : Climb out through the tower base.
+n12_7 --> n13_4 : Pull the wedge out of the valve yoke.
+n12_8 --> e13_2 : Take the gloves off to move faster.
+n12_8 --> n13_6 : Jumper the heaters at the local panel.
+n12_8 --> n13_7 : Bag the chalk and the tape as evidence.
+n12_9 --> n13_8 : Hold the gallery and send for the crew.
+n12_9 --> n13_9 : Go toward the noise at the far end.
+n12_9 --> e13_0 : Vent the relief manually before it lifts...
+n13_0 --> n14_0 : Go up alone and keep the base clear.
+n13_0 --> n14_1 : Go up silent and fast.
+n13_0 --> e14_0 : Cut the aim before you cross the exposed...
+n13_1 --> n14_3 : Force the chained door.
+n13_1 --> e14_1 : Climb unclipped and gain them.
+n13_1 --> n14_2 : Turn back and re-key from the yard cabin...
+n13_10 --> n14_0 : Get the receiver deck door open from out...
+n13_10 --> e14_1 : Force the chained door.
+n13_10 --> n14_10 : Climb unclipped and gain them.
+n13_2 --> e14_2 : Free the lift car wedge from below.
+n13_2 --> n14_4 : Take the toolbox with you.
+n13_2 --> n14_5 : Go up alone and keep the base clear.
+n13_3 --> n14_6 : Wait on the landing and let them come do...
+n13_3 --> n14_7 : Get the receiver deck door open from out...
+n13_3 --> e14_0 : Force the chained door.
+n13_4 --> n14_8 : Leave the toolbox and go light.
+n13_4 --> n14_9 : Climb the stair and take the time.
+n13_4 --> n14_10 : Free the lift car wedge from below.
+n13_4 --> e14_1 : Take the toolbox with you.
+n13_5 --> e14_2 : Send the crew up and hold the base.
+n13_5 --> n14_0 : Call up the stair and announce yourself.
+n13_5 --> n14_1 : Wait on the landing and let them come do...
+n13_6 --> n14_2 : Take the outside ladder instead.
+n13_6 --> n14_3 : Clip on properly and lose the minutes.
+n13_6 --> e14_0 : Leave the toolbox and go light.
+n13_7 --> n14_5 : Go up silent and fast.
+n13_7 --> e14_1 : Cut the aim before you cross the exposed...
+n13_7 --> n14_4 : Send the crew up and hold the base.
+n13_8 --> e14_2 : Climb unclipped and gain them.
+n13_8 --> n14_6 : Turn back and re-key from the yard cabin...
+n13_8 --> n14_7 : Take the outside ladder instead.
+n13_9 --> n14_8 : Take the toolbox with you.
+n13_9 --> n14_9 : Go up alone and keep the base clear.
+n13_9 --> e14_0 : Go up silent and fast.
+n14_0 --> n15_0 : Take the toolbox with you.
+n14_0 --> n15_1 : Go up alone and keep the base clear.
+n14_0 --> e15_0 : Go up silent and fast.
+n14_1 --> n15_3 : Get the receiver deck door open from out...
+n14_1 --> e15_1 : Force the chained door.
+n14_1 --> n15_2 : Climb unclipped and gain them.
+n14_10 --> n15_1 : Wait on the landing and let them come do...
+n14_10 --> e15_1 : Get the receiver deck door open from out...
+n14_10 --> n15_10 : Force the chained door.
+n14_10 --> n15_0 : Climb unclipped and gain them.
+n14_2 --> e15_2 : Climb the stair and take the time.
+n14_2 --> n15_4 : Free the lift car wedge from below.
+n14_2 --> n15_5 : Take the toolbox with you.
+n14_3 --> e15_0 : Call up the stair and announce yourself.
+n14_3 --> n15_6 : Wait on the landing and let them come do...
+n14_3 --> n15_7 : Get the receiver deck door open from out...
+n14_3 --> n15_8 : Force the chained door.
+n14_4 --> n15_10 : Clip on properly and lose the minutes.
+n14_4 --> e15_1 : Leave the toolbox and go light.
+n14_4 --> n15_9 : Climb the stair and take the time.
+n14_5 --> e15_2 : Cut the aim before you cross the exposed...
+n14_5 --> n15_0 : Send the crew up and hold the base.
+n14_5 --> n15_1 : Call up the stair and announce yourself.
+n14_6 --> n15_2 : Turn back and re-key from the yard cabin...
+n14_6 --> n15_3 : Take the outside ladder instead.
+n14_6 --> e15_0 : Clip on properly and lose the minutes.
+n14_7 --> n15_5 : Go up alone and keep the base clear.
+n14_7 --> e15_1 : Go up silent and fast.
+n14_7 --> n15_4 : Cut the aim before you cross the exposed...
+n14_8 --> e15_2 : Force the chained door.
+n14_8 --> n15_6 : Climb unclipped and gain them.
+n14_8 --> n15_7 : Turn back and re-key from the yard cabin...
+n14_9 --> n15_8 : Free the lift car wedge from below.
+n14_9 --> n15_9 : Take the toolbox with you.
+n14_9 --> e15_0 : Go up alone and keep the base clear.
+n15_0 --> n16_0 : Free the lift car wedge from below.
+n15_0 --> n16_1 : Take the toolbox with you.
+n15_0 --> e16_0 : Go up alone and keep the base clear.
+n15_1 --> n16_3 : Wait on the landing and let them come do...
+n15_1 --> e16_1 : Get the receiver deck door open from out...
+n15_1 --> n16_2 : Force the chained door.
+n15_10 --> n16_1 : Call up the stair and announce yourself.
+n15_10 --> e16_1 : Wait on the landing and let them come do...
+n15_10 --> n16_0 : Get the receiver deck door open from out...
+n15_2 --> n16_6 : Leave the toolbox and go light.
+n15_2 --> e16_2 : Climb the stair and take the time.
+n15_2 --> n16_4 : Free the lift car wedge from below.
+n15_2 --> n16_5 : Take the toolbox with you.
+n15_3 --> n16_7 : Send the crew up and hold the base.
+n15_3 --> n16_8 : Call up the stair and announce yourself.
+n15_3 --> e16_0 : Wait on the landing and let them come do...
+n15_4 --> n16_10 : Take the outside ladder instead.
+n15_4 --> e16_1 : Clip on properly and lose the minutes.
+n15_4 --> n16_9 : Leave the toolbox and go light.
+n15_5 --> e16_2 : Go up silent and fast.
+n15_5 --> n16_0 : Cut the aim before you cross the exposed...
+n15_5 --> n16_1 : Send the crew up and hold the base.
+n15_6 --> n16_2 : Climb unclipped and gain them.
+n15_6 --> n16_3 : Turn back and re-key from the yard cabin...
+n15_6 --> e16_0 : Take the outside ladder instead.
+n15_7 --> n16_5 : Take the toolbox with you.
+n15_7 --> e16_1 : Go up alone and keep the base clear.
+n15_7 --> n16_4 : Go up silent and fast.
+n15_8 --> e16_2 : Get the receiver deck door open from out...
+n15_8 --> n16_6 : Force the chained door.
+n15_8 --> n16_7 : Climb unclipped and gain them.
+n15_9 --> n16_9 : Climb the stair and take the time.
+n15_9 --> n16_10 : Free the lift car wedge from below.
+n15_9 --> e16_0 : Take the toolbox with you.
+n15_9 --> n16_8 : Go up alone and keep the base clear.
+n16_0 --> n17_0 : Climb the stair and take the time.
+n16_1 --> n17_1 : Call up the stair and announce yourself.
+n16_10 --> n17_10 : Send the crew up and hold the base.
+n16_2 --> n17_2 : Clip on properly and lose the minutes.
+n16_3 --> n17_3 : Cut the aim before you cross the exposed...
+n16_4 --> n17_4 : Turn back and re-key from the yard cabin...
+n16_5 --> n17_5 : Go up alone and keep the base clear.
+n16_6 --> n17_6 : Force the chained door.
+n16_7 --> n17_7 : Free the lift car wedge from below.
+n16_8 --> n17_8 : Wait on the landing and let them come do...
+n16_9 --> n17_9 : Leave the toolbox and go light.
+n17_0 --> n18_0 : Fix the remote panel path instead.
+n17_0 --> n18_1 : Open the grid tie breaker.
+n17_0 --> n18_2 : Work the cubicle without earthing.
+n17_0 --> e18_0 : Command from the local panel.
+n17_1 --> n18_4 : Shut the far gate.
+n17_1 --> e18_1 : Read out the protection settings now.
+n17_1 --> n18_3 : Take the bag.
+n17_10 --> n18_1 : Photograph the bag and leave it.
+n17_10 --> e18_1 : Shut the far gate.
+n17_10 --> n18_0 : Read out the protection settings now.
+n17_2 --> e18_2 : Leave the tie closed and work around it.
+n17_2 --> n18_5 : Kill the yard lighting.
+n17_2 --> n18_6 : Fix the remote panel path instead.
+n17_3 --> n18_7 : Apply the portable earths properly.
+n17_3 --> n18_8 : Photograph the bag and leave it.
+n17_3 --> e18_0 : Shut the far gate.
+n17_4 --> n18_10 : Follow the road cut.
+n17_4 --> e18_1 : Get a second person before you switch.
+n17_4 --> n18_9 : Leave the tie closed and work around it.
+n17_5 --> e18_2 : Command from the local panel.
+n17_5 --> n18_0 : Go through the far gate.
+n17_5 --> n18_1 : Apply the portable earths properly.
+n17_6 --> n18_2 : Switch alone and log it after.
+n17_6 --> n18_3 : Restore the station battery first.
+n17_6 --> e18_0 : Follow the road cut.
+n17_7 --> e18_1 : Open the grid tie breaker.
+n17_7 --> n18_4 : Work the cubicle without earthing.
+n17_7 --> n18_5 : Command from the local panel.
+n17_7 --> n18_6 : Go through the far gate.
+n17_8 --> e18_2 : Read out the protection settings now.
+n17_8 --> n18_7 : Take the bag.
+n17_8 --> n18_8 : Switch alone and log it after.
+n17_9 --> n18_9 : Kill the yard lighting.
+n17_9 --> n18_10 : Fix the remote panel path instead.
+n17_9 --> e18_0 : Open the grid tie breaker.
+n18_0 --> n19_0 : Kill the yard lighting.
+n18_0 --> n19_1 : Fix the remote panel path instead.
+n18_0 --> e19_0 : Open the grid tie breaker.
+n18_1 --> n19_3 : Photograph the bag and leave it.
+n18_1 --> e19_1 : Shut the far gate.
+n18_1 --> n19_2 : Read out the protection settings now.
+n18_10 --> n19_0 : Apply the portable earths properly.
+n18_10 --> e19_1 : Photograph the bag and leave it.
+n18_10 --> n19_10 : Shut the far gate.
+n18_2 --> e19_2 : Get a second person before you switch.
+n18_2 --> n19_4 : Leave the tie closed and work around it.
+n18_2 --> n19_5 : Kill the yard lighting.
+n18_3 --> n19_6 : Go through the far gate.
+n18_3 --> n19_7 : Apply the portable earths properly.
+n18_3 --> e19_0 : Photograph the bag and leave it.
+n18_4 --> n19_9 : Restore the station battery first.
+n18_4 --> e19_1 : Follow the road cut.
+n18_4 --> n19_8 : Get a second person before you switch.
+n18_5 --> e19_2 : Work the cubicle without earthing.
+n18_5 --> n19_10 : Command from the local panel.
+n18_5 --> n19_0 : Go through the far gate.
+n18_6 --> n19_3 : Take the bag.
+n18_6 --> e19_0 : Switch alone and log it after.
+n18_6 --> n19_1 : Restore the station battery first.
+n18_6 --> n19_2 : Follow the road cut.
+n18_7 --> n19_5 : Fix the remote panel path instead.
+n18_7 --> e19_1 : Open the grid tie breaker.
+n18_7 --> n19_4 : Work the cubicle without earthing.
+n18_8 --> e19_2 : Shut the far gate.
+n18_8 --> n19_6 : Read out the protection settings now.
+n18_8 --> n19_7 : Take the bag.
+n18_9 --> n19_8 : Leave the tie closed and work around it.
+n18_9 --> n19_9 : Kill the yard lighting.
+n18_9 --> e19_0 : Fix the remote panel path instead.
+n19_0 --> n20_0 : Leave the tie closed and work around it.
+n19_0 --> n20_1 : Kill the yard lighting.
+n19_0 --> e20_0 : Fix the remote panel path instead.
+n19_1 --> n20_3 : Apply the portable earths properly.
+n19_1 --> e20_1 : Photograph the bag and leave it.
+n19_1 --> n20_2 : Shut the far gate.
+n19_10 --> n20_0 : Go through the far gate.
+n19_10 --> e20_1 : Apply the portable earths properly.
+n19_10 --> n20_10 : Photograph the bag and leave it.
+n19_2 --> e20_2 : Follow the road cut.
+n19_2 --> n20_4 : Get a second person before you switch.
+n19_2 --> n20_5 : Leave the tie closed and work around it.
+n19_3 --> n20_6 : Command from the local panel.
+n19_3 --> n20_7 : Go through the far gate.
+n19_3 --> e20_0 : Apply the portable earths properly.
+n19_4 --> n20_9 : Switch alone and log it after.
+n19_4 --> e20_1 : Restore the station battery first.
+n19_4 --> n20_8 : Follow the road cut.
+n19_5 --> n20_0 : Open the grid tie breaker.
+n19_5 --> n20_1 : Work the cubicle without earthing.
+n19_5 --> e20_2 : Command from the local panel.
+n19_5 --> n20_10 : Go through the far gate.
+n19_6 --> n20_2 : Read out the protection settings now.
+n19_6 --> n20_3 : Take the bag.
+n19_6 --> e20_0 : Switch alone and log it after.
+n19_7 --> n20_5 : Kill the yard lighting.
+n19_7 --> e20_1 : Fix the remote panel path instead.
+n19_7 --> n20_4 : Open the grid tie breaker.
+n19_8 --> e20_2 : Photograph the bag and leave it.
+n19_8 --> n20_6 : Shut the far gate.
+n19_8 --> n20_7 : Read out the protection settings now.
+n19_9 --> n20_8 : Get a second person before you switch.
+n19_9 --> n20_9 : Leave the tie closed and work around it.
+n19_9 --> e20_0 : Kill the yard lighting.
+n20_0 --> n21_0 : Get a second person before you switch.
+n20_0 --> n21_1 : Leave the tie closed and work around it.
+n20_0 --> e21_0 : Kill the yard lighting.
+n20_1 --> n21_3 : Go through the far gate.
+n20_1 --> e21_1 : Apply the portable earths properly.
+n20_1 --> n21_2 : Photograph the bag and leave it.
+n20_10 --> n21_0 : Command from the local panel.
+n20_10 --> e21_1 : Go through the far gate.
+n20_10 --> n21_10 : Apply the portable earths properly.
+n20_2 --> e21_2 : Restore the station battery first.
+n20_2 --> n21_4 : Follow the road cut.
+n20_2 --> n21_5 : Get a second person before you switch.
+n20_3 --> n21_6 : Work the cubicle without earthing.
+n20_3 --> n21_7 : Command from the local panel.
+n20_3 --> e21_0 : Go through the far gate.
+n20_4 --> n21_8 : Take the bag.
+n20_4 --> n21_9 : Switch alone and log it after.
+n20_4 --> n21_10 : Restore the station battery first.
+n20_4 --> e21_1 : Follow the road cut.
+n20_5 --> e21_2 : Fix the remote panel path instead.
+n20_5 --> n21_0 : Open the grid tie breaker.
+n20_5 --> n21_1 : Work the cubicle without earthing.
+n20_6 --> n21_2 : Shut the far gate.
+n20_6 --> n21_3 : Read out the protection settings now.
+n20_6 --> e21_0 : Take the bag.
+n20_7 --> n21_5 : Leave the tie closed and work around it.
+n20_7 --> e21_1 : Kill the yard lighting.
+n20_7 --> n21_4 : Fix the remote panel path instead.
+n20_8 --> e21_2 : Apply the portable earths properly.
+n20_8 --> n21_6 : Photograph the bag and leave it.
+n20_8 --> n21_7 : Shut the far gate.
+n20_9 --> n21_8 : Follow the road cut.
+n20_9 --> n21_9 : Get a second person before you switch.
+n20_9 --> e21_0 : Leave the tie closed and work around it.
+n21_0 --> n22_0 : Go through the gap in the fence.
+n21_1 --> n22_1 : Keep away from the moving light.
+n21_10 --> n22_10 : Drive without lights.
+n21_2 --> n22_2 : Walk the last kilometre.
+n21_3 --> n22_3 : Drive to the far end first.
+n21_4 --> n22_4 : Shut the far pump skid down.
+n21_5 --> n22_5 : Put the lights on and be obvious.
+n21_6 --> n22_6 : Head toward the moving light.
+n21_7 --> n22_7 : Bypass the repeater altogether.
+n21_8 --> n22_8 : Radio in your position.
+n21_9 --> n22_9 : Climb the repeater pole.
+n22_0 --> n23_0 : Climb the repeater pole.
+n22_0 --> n23_1 : Go through the gap in the fence.
+n22_0 --> e23_0 : Bypass the repeater altogether.
+n22_1 --> n23_3 : Drive without lights.
+n22_1 --> e23_1 : Keep away from the moving light.
+n22_1 --> n23_2 : Radio in your position.
+n22_10 --> n23_1 : Drive to the far end first.
+n22_10 --> e23_1 : Drive without lights.
+n22_10 --> n23_0 : Keep away from the moving light.
+n22_2 --> n23_6 : Block the gap with the truck.
+n22_2 --> e23_2 : Walk the last kilometre.
+n22_2 --> n23_4 : Climb the repeater pole.
+n22_2 --> n23_5 : Go through the gap in the fence.
+n22_3 --> n23_7 : Swap the repeater battery.
+n22_3 --> n23_8 : Drive to the far end first.
+n22_3 --> e23_0 : Drive without lights.
+n22_4 --> n23_10 : Turn back for the tower now.
+n22_4 --> e23_1 : Shut the far pump skid down.
+n22_4 --> n23_9 : Block the gap with the truck.
+n22_5 --> e23_2 : Work back from the near end.
+n22_5 --> n23_0 : Put the lights on and be obvious.
+n22_5 --> n23_1 : Swap the repeater battery.
+n22_6 --> n23_2 : Leave the pump running and go on.
+n22_6 --> n23_3 : Head toward the moving light.
+n22_6 --> e23_0 : Turn back for the tower now.
+n22_7 --> n23_5 : Go through the gap in the fence.
+n22_7 --> e23_1 : Bypass the repeater altogether.
+n22_7 --> n23_4 : Work back from the near end.
+n22_8 --> e23_2 : Keep away from the moving light.
+n22_8 --> n23_6 : Radio in your position.
+n22_8 --> n23_7 : Leave the pump running and go on.
+n22_9 --> n23_9 : Walk the last kilometre.
+n22_9 --> n23_10 : Climb the repeater pole.
+n22_9 --> e23_0 : Go through the gap in the fence.
+n22_9 --> n23_8 : Bypass the repeater altogether.
+n23_0 --> n24_0 : Walk the last kilometre.
+n23_0 --> n24_1 : Climb the repeater pole.
+n23_0 --> e24_0 : Go through the gap in the fence.
+n23_1 --> n24_3 : Drive to the far end first.
+n23_1 --> n24_4 : Drive without lights.
+n23_1 --> e24_1 : Keep away from the moving light.
+n23_1 --> n24_2 : Radio in your position.
+n23_10 --> n24_1 : Swap the repeater battery.
+n23_10 --> e24_1 : Drive to the far end first.
+n23_10 --> n24_0 : Drive without lights.
+n23_2 --> e24_2 : Shut the far pump skid down.
+n23_2 --> n24_5 : Block the gap with the truck.
+n23_2 --> n24_6 : Walk the last kilometre.
+n23_3 --> n24_7 : Put the lights on and be obvious.
+n23_3 --> n24_8 : Swap the repeater battery.
+n23_3 --> e24_0 : Drive to the far end first.
+n23_4 --> n24_10 : Head toward the moving light.
+n23_4 --> e24_1 : Turn back for the tower now.
+n23_4 --> n24_9 : Shut the far pump skid down.
+n23_5 --> e24_2 : Bypass the repeater altogether.
+n23_5 --> n24_0 : Work back from the near end.
+n23_5 --> n24_1 : Put the lights on and be obvious.
+n23_6 --> n24_2 : Radio in your position.
+n23_6 --> n24_3 : Leave the pump running and go on.
+n23_6 --> e24_0 : Head toward the moving light.
+n23_7 --> n24_5 : Climb the repeater pole.
+n23_7 --> e24_1 : Go through the gap in the fence.
+n23_7 --> n24_4 : Bypass the repeater altogether.
+n23_8 --> n24_6 : Drive without lights.
+n23_8 --> n24_7 : Keep away from the moving light.
+n23_8 --> n24_8 : Radio in your position.
+n23_8 --> e24_2 : Leave the pump running and go on.
+n23_9 --> n24_9 : Block the gap with the truck.
+n23_9 --> n24_10 : Walk the last kilometre.
+n23_9 --> e24_0 : Climb the repeater pole.
+n24_0 --> n25_0 : Block the gap with the truck.
+n24_0 --> n25_1 : Walk the last kilometre.
+n24_0 --> n25_2 : Climb the repeater pole.
+n24_0 --> e25_0 : Go through the gap in the fence.
+n24_1 --> n25_4 : Swap the repeater battery.
+n24_1 --> e25_1 : Drive to the far end first.
+n24_1 --> n25_3 : Drive without lights.
+n24_10 --> n25_1 : Put the lights on and be obvious.
+n24_10 --> e25_1 : Swap the repeater battery.
+n24_10 --> n25_0 : Drive to the far end first.
+n24_2 --> e25_2 : Turn back for the tower now.
+n24_2 --> n25_5 : Shut the far pump skid down.
+n24_2 --> n25_6 : Block the gap with the truck.
+n24_3 --> n25_7 : Work back from the near end.
+n24_3 --> n25_8 : Put the lights on and be obvious.
+n24_3 --> e25_0 : Swap the repeater battery.
+n24_4 --> n25_10 : Leave the pump running and go on.
+n24_4 --> e25_1 : Head toward the moving light.
+n24_4 --> n25_9 : Turn back for the tower now.
+n24_5 --> e25_2 : Go through the gap in the fence.
+n24_5 --> n25_0 : Bypass the repeater altogether.
+n24_5 --> n25_1 : Work back from the near end.
+n24_6 --> n25_2 : Keep away from the moving light.
+n24_6 --> n25_3 : Radio in your position.
+n24_6 --> e25_0 : Leave the pump running and go on.
+n24_7 --> e25_1 : Walk the last kilometre.
+n24_7 --> n25_4 : Climb the repeater pole.
+n24_7 --> n25_5 : Go through the gap in the fence.
+n24_7 --> n25_6 : Bypass the repeater altogether.
+n24_8 --> e25_2 : Drive to the far end first.
+n24_8 --> n25_7 : Drive without lights.
+n24_8 --> n25_8 : Keep away from the moving light.
+n24_9 --> n25_9 : Shut the far pump skid down.
+n24_9 --> n25_10 : Block the gap with the truck.
+n24_9 --> e25_0 : Walk the last kilometre.
+n25_0 --> n26_0 : Leave the lock and use the standby.
+n25_0 --> n26_1 : Shut the pump house door.
+n25_0 --> e26_0 : Warm the suction line first.
+n25_1 --> n26_3 : Prove the duty pump stopped.
+n25_1 --> e26_1 : Act alone and log it after.
+n25_1 --> n26_2 : Drain down and take the year.
+n25_10 --> n26_0 : Hold the loop and gamble the pipework.
+n25_10 --> e26_1 : Prove the duty pump stopped.
+n25_10 --> n26_10 : Act alone and log it after.
+n25_2 --> e26_2 : Leave the door open and watch it.
+n25_2 --> n26_4 : Go back to the gallery instead.
+n25_2 --> n26_5 : Leave the lock and use the standby.
+n25_3 --> n26_6 : Take the laminated card as evidence.
+n25_3 --> n26_7 : Hold the loop and gamble the pipework.
+n25_3 --> e26_0 : Prove the duty pump stopped.
+n25_4 --> n26_9 : Send the crew out and finish here.
+n25_4 --> e26_1 : Hand wind the drain actuator.
+n25_4 --> n26_8 : Leave the door open and watch it.
+n25_5 --> e26_2 : Cut the unregistered lock off.
+n25_5 --> n26_10 : Start the standby without proving it.
+n25_5 --> n26_0 : Take the laminated card as evidence.
+n25_6 --> n26_3 : Reconnect the actuator first.
+n25_6 --> e26_0 : Call for a second competent person.
+n25_6 --> n26_1 : Send the crew out and finish here.
+n25_6 --> n26_2 : Hand wind the drain actuator.
+n25_7 --> n26_5 : Shut the pump house door.
+n25_7 --> e26_1 : Warm the suction line first.
+n25_7 --> n26_4 : Cut the unregistered lock off.
+n25_8 --> e26_2 : Act alone and log it after.
+n25_8 --> n26_6 : Drain down and take the year.
+n25_8 --> n26_7 : Reconnect the actuator first.
+n25_9 --> n26_8 : Go back to the gallery instead.
+n25_9 --> n26_9 : Leave the lock and use the standby.
+n25_9 --> e26_0 : Shut the pump house door.
+n26_0 --> n27_0 : Go back to the gallery instead.
+n26_1 --> n27_1 : Hold the loop and gamble the pipework.
+n26_10 --> n27_10 : Take the laminated card as evidence.
+n26_2 --> n27_2 : Hand wind the drain actuator.
+n26_3 --> n27_3 : Start the standby without proving it.
+n26_4 --> n27_4 : Call for a second competent person.
+n26_5 --> n27_5 : Warm the suction line first.
+n26_6 --> n27_6 : Drain down and take the year.
+n26_7 --> n27_7 : Leave the lock and use the standby.
+n26_8 --> n27_8 : Prove the duty pump stopped.
+n26_9 --> n27_9 : Leave the door open and watch it.
+n27_0 --> n28_0 : Leave the door open and watch it.
+n27_0 --> n28_1 : Go back to the gallery instead.
+n27_0 --> e28_0 : Leave the lock and use the standby.
+n27_1 --> n28_3 : Take the laminated card as evidence.
+n27_1 --> e28_1 : Hold the loop and gamble the pipework.
+n27_1 --> n28_2 : Prove the duty pump stopped.
+n27_10 --> n28_0 : Start the standby without proving it.
+n27_10 --> e28_1 : Take the laminated card as evidence.
+n27_10 --> n28_10 : Hold the loop and gamble the pipework.
+n27_2 --> e28_2 : Send the crew out and finish here.
+n27_2 --> n28_4 : Hand wind the drain actuator.
+n27_2 --> n28_5 : Leave the door open and watch it.
+n27_3 --> n28_6 : Cut the unregistered lock off.
+n27_3 --> n28_7 : Start the standby without proving it.
+n27_3 --> e28_0 : Take the laminated card as evidence.
+n27_4 --> n28_8 : Reconnect the actuator first.
+n27_4 --> n28_9 : Call for a second competent person.
+n27_4 --> n28_10 : Send the crew out and finish here.
+n27_4 --> e28_1 : Hand wind the drain actuator.
+n27_5 --> e28_2 : Shut the pump house door.
+n27_5 --> n28_0 : Warm the suction line first.
+n27_5 --> n28_1 : Cut the unregistered lock off.
+n27_6 --> n28_2 : Act alone and log it after.
+n27_6 --> n28_3 : Drain down and take the year.
+n27_6 --> e28_0 : Reconnect the actuator first.
+n27_7 --> n28_5 : Go back to the gallery instead.
+n27_7 --> e28_1 : Leave the lock and use the standby.
+n27_7 --> n28_4 : Shut the pump house door.
+n27_8 --> e28_2 : Hold the loop and gamble the pipework.
+n27_8 --> n28_6 : Prove the duty pump stopped.
+n27_8 --> n28_7 : Act alone and log it after.
+n27_9 --> n28_8 : Hand wind the drain actuator.
+n27_9 --> n28_9 : Leave the door open and watch it.
+n27_9 --> e28_0 : Go back to the gallery instead.
+n28_0 --> n29_0 : Hand wind the drain actuator.
+n28_0 --> n29_1 : Leave the door open and watch it.
+n28_0 --> e29_0 : Go back to the gallery instead.
+n28_1 --> n29_3 : Start the standby without proving it.
+n28_1 --> e29_1 : Take the laminated card as evidence.
+n28_1 --> n29_2 : Hold the loop and gamble the pipework.
+n28_10 --> n29_1 : Cut the unregistered lock off.
+n28_10 --> e29_1 : Start the standby without proving it.
+n28_10 --> n29_10 : Take the laminated card as evidence.
+n28_10 --> n29_0 : Hold the loop and gamble the pipework.
+n28_2 --> e29_2 : Call for a second competent person.
+n28_2 --> n29_4 : Send the crew out and finish here.
+n28_2 --> n29_5 : Hand wind the drain actuator.
+n28_3 --> e29_0 : Warm the suction line first.
+n28_3 --> n29_6 : Cut the unregistered lock off.
+n28_3 --> n29_7 : Start the standby without proving it.
+n28_3 --> n29_8 : Take the laminated card as evidence.
+n28_4 --> n29_10 : Drain down and take the year.
+n28_4 --> e29_1 : Reconnect the actuator first.
+n28_4 --> n29_9 : Call for a second competent person.
+n28_5 --> e29_2 : Leave the lock and use the standby.
+n28_5 --> n29_0 : Shut the pump house door.
+n28_5 --> n29_1 : Warm the suction line first.
+n28_6 --> n29_2 : Prove the duty pump stopped.
+n28_6 --> n29_3 : Act alone and log it after.
+n28_6 --> e29_0 : Drain down and take the year.
+n28_7 --> n29_5 : Leave the door open and watch it.
+n28_7 --> e29_1 : Go back to the gallery instead.
+n28_7 --> n29_4 : Leave the lock and use the standby.
+n28_8 --> e29_2 : Take the laminated card as evidence.
+n28_8 --> n29_6 : Hold the loop and gamble the pipework.
+n28_8 --> n29_7 : Prove the duty pump stopped.
+n28_9 --> n29_8 : Send the crew out and finish here.
+n28_9 --> n29_9 : Hand wind the drain actuator.
+n28_9 --> e29_0 : Leave the door open and watch it.
+n29_0 --> n30_0 : Commit now and watch it from the board.
+n29_0 --> n30_1 : Ask the crew what they know first.
+n29_0 --> e30_0 : Refuse to sign and hand it up.
+n29_1 --> n30_3 : Hand over to the response team at the ga...
+n29_1 --> e30_1 : Hold the number until the loop proves ou...
+n29_1 --> n30_2 : Send someone to the far cabinet.
+n29_10 --> n30_1 : Bypass the far cabinet in software.
+n29_10 --> e30_1 : Hand over to the response team at the ga...
+n29_10 --> n30_0 : Hold the number until the loop proves ou...
+n29_2 --> n30_6 : Send the crew off site now.
+n29_2 --> e30_2 : Take the settings file with you.
+n29_2 --> n30_4 : Commit now and watch it from the board.
+n29_2 --> n30_5 : Ask the crew what they know first.
+n29_3 --> n30_7 : Sign the restart yourself.
+n29_3 --> n30_8 : Bypass the far cabinet in software.
+n29_3 --> e30_0 : Hand over to the response team at the ga...
+n29_4 --> n30_10 : Take the cut fibre instead.
+n29_4 --> e30_1 : Turn the key and run the full sequence.
+n29_4 --> n30_9 : Send the crew off site now.
+n29_5 --> e30_2 : Wait for the sight glass to prove it.
+n29_5 --> n30_0 : Finish it before they reach the floor.
+n29_5 --> n30_1 : Sign the restart yourself.
+n29_6 --> n30_2 : Skip to step seven and gain the minutes.
+n29_6 --> n30_3 : Give the grid operator the honest number...
+n29_6 --> e30_0 : Take the cut fibre instead.
+n29_7 --> n30_5 : Ask the crew what they know first.
+n29_7 --> e30_1 : Refuse to sign and hand it up.
+n29_7 --> n30_4 : Wait for the sight glass to prove it.
+n29_8 --> e30_2 : Hold the number until the loop proves ou...
+n29_8 --> n30_6 : Send someone to the far cabinet.
+n29_8 --> n30_7 : Skip to step seven and gain the minutes.
+n29_9 --> n30_9 : Take the settings file with you.
+n29_9 --> n30_10 : Commit now and watch it from the board.
+n29_9 --> e30_0 : Ask the crew what they know first.
+n29_9 --> n30_8 : Refuse to sign and hand it up.
+n30_0 --> n31_0 : Take the settings file with you.
+n30_0 --> n31_1 : Commit now and watch it from the board.
+n30_0 --> e31_0 : Ask the crew what they know first.
+n30_1 --> n31_3 : Bypass the far cabinet in software.
+n30_1 --> n31_4 : Hand over to the response team at the ga...
+n30_1 --> e31_1 : Hold the number until the loop proves ou...
+n30_1 --> n31_2 : Send someone to the far cabinet.
+n30_10 --> n31_1 : Sign the restart yourself.
+n30_10 --> e31_1 : Bypass the far cabinet in software.
+n30_10 --> n31_0 : Hand over to the response team at the ga...
+n30_2 --> e31_2 : Turn the key and run the full sequence.
+n30_2 --> n31_5 : Send the crew off site now.
+n30_2 --> n31_6 : Take the settings file with you.
+n30_3 --> n31_7 : Finish it before they reach the floor.
+n30_3 --> n31_8 : Sign the restart yourself.
+n30_3 --> e31_0 : Bypass the far cabinet in software.
+n30_4 --> n31_10 : Give the grid operator the honest number...
+n30_4 --> e31_1 : Take the cut fibre instead.
+n30_4 --> n31_9 : Turn the key and run the full sequence.
+n30_5 --> e31_2 : Refuse to sign and hand it up.
+n30_5 --> n31_0 : Wait for the sight glass to prove it.
+n30_5 --> n31_1 : Finish it before they reach the floor.
+n30_6 --> n31_2 : Send someone to the far cabinet.
+n30_6 --> n31_3 : Skip to step seven and gain the minutes.
+n30_6 --> e31_0 : Give the grid operator the honest number...
+n30_7 --> n31_5 : Commit now and watch it from the board.
+n30_7 --> e31_1 : Ask the crew what they know first.
+n30_7 --> n31_4 : Refuse to sign and hand it up.
+n30_8 --> n31_6 : Hand over to the response team at the ga...
+n30_8 --> n31_7 : Hold the number until the loop proves ou...
+n30_8 --> n31_8 : Send someone to the far cabinet.
+n30_8 --> e31_2 : Skip to step seven and gain the minutes.
+n30_9 --> n31_9 : Send the crew off site now.
+n30_9 --> n31_10 : Take the settings file with you.
+n30_9 --> e31_0 : Commit now and watch it from the board.
+n31_0 --> n32_0 : Send the crew off site now.
+n31_1 --> n32_1 : Sign the restart yourself.
+n31_10 --> n32_10 : Finish it before they reach the floor.
+n31_2 --> n32_2 : Take the cut fibre instead.
+n31_3 --> n32_3 : Wait for the sight glass to prove it.
+n31_4 --> n32_4 : Skip to step seven and gain the minutes.
+n31_5 --> n32_5 : Ask the crew what they know first.
+n31_6 --> n32_6 : Hold the number until the loop proves ou...
+n31_7 --> n32_7 : Take the settings file with you.
+n31_8 --> n32_8 : Bypass the far cabinet in software.
+n31_9 --> n32_9 : Turn the key and run the full sequence.
+n32_0 --> e33_0 : Turn the key and run the full sequence.
+n32_0 --> e33_1 : Send the crew off site now.
+n32_0 --> e33_2 : Take the settings file with you.
+n32_1 --> e33_4 : Finish it before they reach the floor.
+n32_1 --> e33_5 : Sign the restart yourself.
+n32_1 --> e33_3 : Bypass the far cabinet in software.
+n32_10 --> e33_0 : Wait for the sight glass to prove it.
+n32_10 --> e33_1 : Finish it before they reach the floor.
+n32_10 --> e33_7 : Sign the restart yourself.
+n32_2 --> e33_0 : Give the grid operator the honest number...
+n32_2 --> e33_6 : Take the cut fibre instead.
+n32_2 --> e33_7 : Turn the key and run the full sequence.
+n32_3 --> e33_1 : Refuse to sign and hand it up.
+n32_3 --> e33_2 : Wait for the sight glass to prove it.
+n32_3 --> e33_3 : Finish it before they reach the floor.
+n32_4 --> e33_5 : Send someone to the far cabinet.
+n32_4 --> e33_6 : Skip to step seven and gain the minutes.
+n32_4 --> e33_4 : Give the grid operator the honest number...
+n32_5 --> e33_1 : Commit now and watch it from the board.
+n32_5 --> e33_7 : Ask the crew what they know first.
+n32_5 --> e33_0 : Refuse to sign and hand it up.
+n32_6 --> e33_4 : Hand over to the response team at the ga...
+n32_6 --> e33_5 : Hold the number until the loop proves ou...
+n32_6 --> e33_2 : Send someone to the far cabinet.
+n32_6 --> e33_3 : Skip to step seven and gain the minutes.
+n32_7 --> e33_7 : Send the crew off site now.
+n32_7 --> e33_0 : Take the settings file with you.
+n32_7 --> e33_6 : Commit now and watch it from the board.
+n32_8 --> e33_3 : Sign the restart yourself.
+n32_8 --> e33_1 : Bypass the far cabinet in software.
+n32_8 --> e33_2 : Hand over to the response team at the ga...
+n32_9 --> e33_4 : Take the cut fibre instead.
+n32_9 --> e33_5 : Turn the key and run the full sequence.
+n32_9 --> e33_6 : Send the crew off site now.
+e10_0 --> [*]
+e10_1 --> [*]
+e10_2 --> [*]
+e11_0 --> [*]
+e11_1 --> [*]
+e11_2 --> [*]
+e13_0 --> [*]
+e13_1 --> [*]
+e13_2 --> [*]
+e14_0 --> [*]
+e14_1 --> [*]
+e14_2 --> [*]
+e15_0 --> [*]
+e15_1 --> [*]
+e15_2 --> [*]
+e16_0 --> [*]
+e16_1 --> [*]
+e16_2 --> [*]
+e18_0 --> [*]
+e18_1 --> [*]
+e18_2 --> [*]
+e19_0 --> [*]
+e19_1 --> [*]
+e19_2 --> [*]
+e20_0 --> [*]
+e20_1 --> [*]
+e20_2 --> [*]
+e21_0 --> [*]
+e21_1 --> [*]
+e21_2 --> [*]
+e23_0 --> [*]
+e23_1 --> [*]
+e23_2 --> [*]
+e24_0 --> [*]
+e24_1 --> [*]
+e24_2 --> [*]
+e25_0 --> [*]
+e25_1 --> [*]
+e25_2 --> [*]
+e26_0 --> [*]
+e26_1 --> [*]
+e26_2 --> [*]
+e28_0 --> [*]
+e28_1 --> [*]
+e28_2 --> [*]
+e29_0 --> [*]
+e29_1 --> [*]
+e29_2 --> [*]
+e30_0 --> [*]
+e30_1 --> [*]
+e30_2 --> [*]
+e31_0 --> [*]
+e31_1 --> [*]
+e31_2 --> [*]
+e33_0 --> [*]
+e33_1 --> [*]
+e33_2 --> [*]
+e33_3 --> [*]
+e33_4 --> [*]
+e33_5 --> [*]
+e33_6 --> [*]
+e33_7 --> [*]
+
+legend right
+  The Obsidian Relay
+  Band 16+ · Tier 1 · ~12 min
+  Topology: branch_and_bottleneck
+  393 nodes · 62 endings (5+ / 11n / 46-)
+  Production-eligible
+  Scale: medium · gamebook
+endlegend
+@enduml

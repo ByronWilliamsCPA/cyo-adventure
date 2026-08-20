@@ -1,0 +1,1112 @@
+@startuml the-cartographers-apprentice
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n00c0
+state n00c0 #BBDEFB
+n00c0 : setup · 36w
+state n01d0 #BBDEFB
+n01d0 : setup · 100w
+state n02c0 #ECEFF1
+n02c0 : bridge · 36w
+state n02c1 #ECEFF1
+n02c1 : bridge · 36w
+state n02c2 #ECEFF1
+n02c2 : bridge · 36w
+state n03d0 #D1C4E9
+n03d0 : rising · 112w
+state n03d1 #D1C4E9
+n03d1 : rising · 112w
+state n03d2 #D1C4E9
+n03d2 : rising · 112w
+state n04d0 #D1C4E9
+n04d0 : rising · 100w
+state n04d1 #D1C4E9
+n04d1 : rising · 100w
+state n04d2 #D1C4E9
+n04d2 : rising · 100w
+state n04c0 #ECEFF1
+n04c0 : bridge · 36w
+state n04c1 #ECEFF1
+n04c1 : bridge · 36w
+state n04c2 #ECEFF1
+n04c2 : bridge · 36w
+state n04c3 #ECEFF1
+n04c3 : bridge · 36w
+state n04c4 #ECEFF1
+n04c4 : bridge · 36w
+state n05d0 #D1C4E9
+n05d0 : rising · 106w
+state n05d1 #D1C4E9
+n05d1 : rising · 106w
+state n05d2 #D1C4E9
+n05d2 : rising · 106w
+state n05d3 #D1C4E9
+n05d3 : rising · 106w
+state n05d4 #D1C4E9
+n05d4 : rising · 106w
+state n05d5 #D1C4E9
+n05d5 : rising · 106w
+state n06d0 #D1C4E9
+n06d0 : rising · 112w
+state n06d1 #D1C4E9
+n06d1 : rising · 112w
+state n06d2 #D1C4E9
+n06d2 : rising · 112w
+state n06d3 #D1C4E9
+n06d3 : rising · 112w
+state n06d4 #D1C4E9
+n06d4 : rising · 112w
+state n06d5 #D1C4E9
+n06d5 : rising · 112w
+state n06c0 #ECEFF1
+n06c0 : bridge · 36w
+state n06c1 #ECEFF1
+n06c1 : bridge · 36w
+state n06c2 #ECEFF1
+n06c2 : bridge · 36w
+state n06c3 #ECEFF1
+n06c3 : bridge · 36w
+state n06c4 #ECEFF1
+n06c4 : bridge · 36w
+state n06c5 #ECEFF1
+n06c5 : bridge · 36w
+state n06c6 #ECEFF1
+n06c6 : bridge · 36w
+state e06_0 #FFCDD2
+e06_0 : setback (negative)
+e06_0 : "Everything, Therefore Nothing"
+state n07d0 #D1C4E9
+n07d0 : rising · 100w
+state n07d1 #D1C4E9
+n07d1 : rising · 100w
+state n07d2 #D1C4E9
+n07d2 : rising · 100w
+state n07d3 #D1C4E9
+n07d3 : rising · 100w
+state n07d4 #D1C4E9
+n07d4 : rising · 100w
+state n07d5 #D1C4E9
+n07d5 : rising · 100w
+state n07d6 #D1C4E9
+n07d6 : rising · 100w
+state n07d7 #D1C4E9
+n07d7 : rising · 100w
+state n07d8 #D1C4E9
+n07d8 : rising · 100w
+state e07_0 #E0E0E0
+e07_0 : discovery (neutral)
+e07_0 : "Logged for the Next Cycle"
+state e07_1 #FFCDD2
+e07_1 : setback (negative)
+e07_1 : "Existence Is Not the Question"
+state n08d0 #D1C4E9
+n08d0 : rising · 106w
+state n08d1 #D1C4E9
+n08d1 : rising · 106w
+state n08d2 #D1C4E9
+n08d2 : rising · 106w
+state n08d3 #D1C4E9
+n08d3 : rising · 106w
+state n08d4 #D1C4E9
+n08d4 : rising · 106w
+state n08d5 #D1C4E9
+n08d5 : rising · 106w
+state n08d6 #D1C4E9
+n08d6 : rising · 106w
+state n08c0 #ECEFF1
+n08c0 : bridge · 36w
+state n08c1 #ECEFF1
+n08c1 : bridge · 36w
+state n08c2 #ECEFF1
+n08c2 : bridge · 36w
+state n08c3 #ECEFF1
+n08c3 : bridge · 36w
+state n08c4 #ECEFF1
+n08c4 : bridge · 36w
+state n08c5 #ECEFF1
+n08c5 : bridge · 36w
+state n08c6 #ECEFF1
+n08c6 : bridge · 36w
+state e08_0 #FFCDD2
+e08_0 : setback (negative)
+e08_0 : "Honest and Unrepeatable"
+state e08_1 #E0E0E0
+e08_1 : setback (neutral)
+e08_1 : "Forty Two Set Aside"
+state n09d0 #D1C4E9
+n09d0 : rising · 112w
+state n09d1 #D1C4E9
+n09d1 : rising · 112w
+state n09d2 #D1C4E9
+n09d2 : rising · 112w
+state n09d3 #D1C4E9
+n09d3 : rising · 112w
+state n09d4 #D1C4E9
+n09d4 : rising · 112w
+state n09d5 #D1C4E9
+n09d5 : rising · 112w
+state n09d6 #D1C4E9
+n09d6 : rising · 112w
+state n09d7 #D1C4E9
+n09d7 : rising · 112w
+state n09d8 #D1C4E9
+n09d8 : rising · 112w
+state e09_0 #E0E0E0
+e09_0 : discovery (neutral)
+e09_0 : "Permissive, Therefore Closeable"
+state e09_1 #FFCDD2
+e09_1 : setback (negative)
+e09_1 : "What the Plate Says"
+state n10d0 #D1C4E9
+n10d0 : rising · 100w
+state n10d1 #D1C4E9
+n10d1 : rising · 100w
+state n10d2 #D1C4E9
+n10d2 : rising · 100w
+state n10d3 #D1C4E9
+n10d3 : rising · 100w
+state n10d4 #D1C4E9
+n10d4 : rising · 100w
+state n10d5 #D1C4E9
+n10d5 : rising · 100w
+state n10d6 #D1C4E9
+n10d6 : rising · 100w
+state n10c0 #ECEFF1
+n10c0 : bridge · 36w
+state n10c1 #ECEFF1
+n10c1 : bridge · 36w
+state n10c2 #ECEFF1
+n10c2 : bridge · 36w
+state n10c3 #ECEFF1
+n10c3 : bridge · 36w
+state n10c4 #ECEFF1
+n10c4 : bridge · 36w
+state n10c5 #ECEFF1
+n10c5 : bridge · 36w
+state n10c6 #ECEFF1
+n10c6 : bridge · 36w
+state e10_0 #FFCDD2
+e10_0 : setback (negative)
+e10_0 : "Pleasant, Well Lit, and Gone"
+state e10_1 #E0E0E0
+e10_1 : discovery (neutral)
+e10_1 : "Four Thousand Unverified Lines"
+state n11d0 #D1C4E9
+n11d0 : rising · 106w
+state n11d1 #D1C4E9
+n11d1 : rising · 106w
+state n11d2 #D1C4E9
+n11d2 : rising · 106w
+state n11d3 #D1C4E9
+n11d3 : rising · 106w
+state n11d4 #D1C4E9
+n11d4 : rising · 106w
+state n11d5 #D1C4E9
+n11d5 : rising · 106w
+state n11d6 #D1C4E9
+n11d6 : rising · 106w
+state n11d7 #D1C4E9
+n11d7 : rising · 106w
+state n11d8 #D1C4E9
+n11d8 : rising · 106w
+state e11_0 #FFCDD2
+e11_0 : setback (negative)
+e11_0 : "The Sentence Standing Behind"
+state e11_1 #E0E0E0
+e11_1 : setback (neutral)
+e11_1 : "The One You Traded"
+state n12d0 #D1C4E9
+n12d0 : rising · 112w
+state n12d1 #D1C4E9
+n12d1 : rising · 112w
+state n12d2 #D1C4E9
+n12d2 : rising · 112w
+state n12d3 #D1C4E9
+n12d3 : rising · 112w
+state n12d4 #D1C4E9
+n12d4 : rising · 112w
+state n12d5 #D1C4E9
+n12d5 : rising · 112w
+state n12d6 #D1C4E9
+n12d6 : rising · 112w
+state n12c0 #ECEFF1
+n12c0 : bridge · 36w
+state n12c1 #ECEFF1
+n12c1 : bridge · 36w
+state n12c2 #ECEFF1
+n12c2 : bridge · 36w
+state n12c3 #ECEFF1
+n12c3 : bridge · 36w
+state n12c4 #ECEFF1
+n12c4 : bridge · 36w
+state n12c5 #ECEFF1
+n12c5 : bridge · 36w
+state n12c6 #ECEFF1
+n12c6 : bridge · 36w
+state e12_0 #FFCDD2
+e12_0 : setback (negative)
+e12_0 : "Box Eight"
+state e12_1 #E0E0E0
+e12_1 : discovery (neutral)
+e12_1 : "Somebody With a Padlock"
+state n13d0 #D1C4E9
+n13d0 : rising · 100w
+state n13d1 #D1C4E9
+n13d1 : rising · 100w
+state n13d2 #D1C4E9
+n13d2 : rising · 100w
+state n13d3 #D1C4E9
+n13d3 : rising · 100w
+state n13d4 #D1C4E9
+n13d4 : rising · 100w
+state n13d5 #D1C4E9
+n13d5 : rising · 100w
+state n13d6 #D1C4E9
+n13d6 : rising · 100w
+state n13d7 #D1C4E9
+n13d7 : rising · 100w
+state n13d8 #D1C4E9
+n13d8 : rising · 100w
+state e13_0 #FFCDD2
+e13_0 : setback (negative)
+e13_0 : "The Card You Kept"
+state e13_1 #E0E0E0
+e13_1 : setback (neutral)
+e13_1 : "Three Weeks Into a Wrong Map"
+state n14d0 #D1C4E9
+n14d0 : rising · 106w
+state n14d1 #D1C4E9
+n14d1 : rising · 106w
+state n14d2 #D1C4E9
+n14d2 : rising · 106w
+state n14d3 #D1C4E9
+n14d3 : rising · 106w
+state n14d4 #D1C4E9
+n14d4 : rising · 106w
+state n14d5 #D1C4E9
+n14d5 : rising · 106w
+state n14d6 #D1C4E9
+n14d6 : rising · 106w
+state n14c0 #ECEFF1
+n14c0 : bridge · 36w
+state n14c1 #ECEFF1
+n14c1 : bridge · 36w
+state n14c2 #ECEFF1
+n14c2 : bridge · 36w
+state n14c3 #ECEFF1
+n14c3 : bridge · 36w
+state n14c4 #ECEFF1
+n14c4 : bridge · 36w
+state n14c5 #ECEFF1
+n14c5 : bridge · 36w
+state n14c6 #ECEFF1
+n14c6 : bridge · 36w
+state e14_0 #FFCDD2
+e14_0 : setback (negative)
+e14_0 : "The Same Unusual Phrase"
+state e14_1 #E0E0E0
+e14_1 : setback (neutral)
+e14_1 : "Two Hours on a Line"
+state n15d0 #D1C4E9
+n15d0 : rising · 112w
+state n15d1 #D1C4E9
+n15d1 : rising · 112w
+state n15d2 #D1C4E9
+n15d2 : rising · 112w
+state n15d3 #D1C4E9
+n15d3 : rising · 112w
+state n15d4 #D1C4E9
+n15d4 : rising · 112w
+state n15d5 #D1C4E9
+n15d5 : rising · 112w
+state n15d6 #D1C4E9
+n15d6 : rising · 112w
+state n15d7 #D1C4E9
+n15d7 : rising · 112w
+state n15d8 #D1C4E9
+n15d8 : rising · 112w
+state e15_0 #E0E0E0
+e15_0 : discovery (neutral)
+e15_0 : "From the Margin Inwards"
+state e15_1 #FFCDD2
+e15_1 : setback (negative)
+e15_1 : "Fifty Minutes of Twenty"
+state n16d0 #D1C4E9
+n16d0 : rising · 100w
+state n16d1 #D1C4E9
+n16d1 : rising · 100w
+state n16d2 #D1C4E9
+n16d2 : rising · 100w
+state n16d3 #D1C4E9
+n16d3 : rising · 100w
+state n16d4 #D1C4E9
+n16d4 : rising · 100w
+state n16d5 #D1C4E9
+n16d5 : rising · 100w
+state n16d6 #D1C4E9
+n16d6 : rising · 100w
+state n16c0 #ECEFF1
+n16c0 : bridge · 36w
+state n16c1 #ECEFF1
+n16c1 : bridge · 36w
+state n16c2 #ECEFF1
+n16c2 : bridge · 36w
+state n16c3 #ECEFF1
+n16c3 : bridge · 36w
+state n16c4 #ECEFF1
+n16c4 : bridge · 36w
+state n16c5 #ECEFF1
+n16c5 : bridge · 36w
+state n16c6 #ECEFF1
+n16c6 : bridge · 36w
+state e16_0 #FFCDD2
+e16_0 : setback (negative)
+e16_0 : "Not Before the Inquiry"
+state e16_1 #E0E0E0
+e16_1 : setback (neutral)
+e16_1 : "The Two You Should Have Let Go"
+state n17d0 #D1C4E9
+n17d0 : rising · 106w
+state n17d1 #D1C4E9
+n17d1 : rising · 106w
+state n17d2 #D1C4E9
+n17d2 : rising · 106w
+state n17d3 #D1C4E9
+n17d3 : rising · 106w
+state n17d4 #D1C4E9
+n17d4 : rising · 106w
+state n17d5 #D1C4E9
+n17d5 : rising · 106w
+state n17d6 #D1C4E9
+n17d6 : rising · 106w
+state n17d7 #D1C4E9
+n17d7 : rising · 106w
+state n17d8 #D1C4E9
+n17d8 : rising · 106w
+state e17_0 #C8E6C9
+e17_0 : success (positive)
+e17_0 : "Seven, With Reference Numbers"
+state e17_1 #C8E6C9
+e17_1 : completion (positive)
+e17_1 : "Correct on the Plate"
+state e17_2 #E0E0E0
+e17_2 : discovery (neutral)
+e17_2 : "An Insurance Schedule"
+state n18d0 #D1C4E9
+n18d0 : rising · 112w
+state n18d1 #D1C4E9
+n18d1 : rising · 112w
+state n18d2 #D1C4E9
+n18d2 : rising · 112w
+state n18d3 #D1C4E9
+n18d3 : rising · 112w
+state n18d4 #D1C4E9
+n18d4 : rising · 112w
+state n18d5 #D1C4E9
+n18d5 : rising · 112w
+state n18d6 #D1C4E9
+n18d6 : rising · 112w
+state n18c0 #ECEFF1
+n18c0 : bridge · 36w
+state n18c1 #ECEFF1
+n18c1 : bridge · 36w
+state n18c2 #ECEFF1
+n18c2 : bridge · 36w
+state n18c3 #ECEFF1
+n18c3 : bridge · 36w
+state n18c4 #ECEFF1
+n18c4 : bridge · 36w
+state n18c5 #ECEFF1
+n18c5 : bridge · 36w
+state e18_0 #FFCDD2
+e18_0 : setback (negative)
+e18_0 : "Two Clocks, One Person"
+state e18_1 #E0E0E0
+e18_1 : setback (neutral)
+e18_1 : "Nothing Written Down"
+state n19d0 #D1C4E9
+n19d0 : rising · 100w
+state n19d1 #D1C4E9
+n19d1 : rising · 100w
+state n19d2 #D1C4E9
+n19d2 : rising · 100w
+state n19d3 #D1C4E9
+n19d3 : rising · 100w
+state n19d4 #D1C4E9
+n19d4 : rising · 100w
+state n19d5 #D1C4E9
+n19d5 : rising · 100w
+state n19d6 #D1C4E9
+n19d6 : rising · 100w
+state n19d7 #D1C4E9
+n19d7 : rising · 100w
+state e19_0 #C8E6C9
+e19_0 : success (positive)
+e19_0 : "Nine Pencil Lines"
+state e19_1 #C8E6C9
+e19_1 : completion (positive)
+e19_1 : "It Stops Depending on You"
+state e19_2 #FFCDD2
+e19_2 : setback (negative)
+e19_2 : "Nineteen Months Ahead"
+state n20d0 #D1C4E9
+n20d0 : rising · 106w
+state n20d1 #D1C4E9
+n20d1 : rising · 106w
+state n20d2 #D1C4E9
+n20d2 : rising · 106w
+state n20d3 #D1C4E9
+n20d3 : rising · 106w
+state n20d4 #D1C4E9
+n20d4 : rising · 106w
+state n20d5 #D1C4E9
+n20d5 : rising · 106w
+state n20c0 #ECEFF1
+n20c0 : bridge · 36w
+state n20c1 #ECEFF1
+n20c1 : bridge · 36w
+state n20c2 #ECEFF1
+n20c2 : bridge · 36w
+state n20c3 #ECEFF1
+n20c3 : bridge · 36w
+state n20c4 #ECEFF1
+n20c4 : bridge · 36w
+state n20c5 #ECEFF1
+n20c5 : bridge · 36w
+state e20_0 #C8E6C9
+e20_0 : success (positive)
+e20_0 : "Marked, Not Deleted"
+state e20_1 #FFCDD2
+e20_1 : setback (negative)
+e20_1 : "The Same Setting Again"
+state n21d0 #D1C4E9
+n21d0 : rising · 112w
+state n21d1 #D1C4E9
+n21d1 : rising · 112w
+state n21d2 #D1C4E9
+n21d2 : rising · 112w
+state n21d3 #D1C4E9
+n21d3 : rising · 112w
+state n21d4 #D1C4E9
+n21d4 : rising · 112w
+state n21d5 #D1C4E9
+n21d5 : rising · 112w
+state n21d6 #D1C4E9
+n21d6 : rising · 112w
+state e21_0 #C8E6C9
+e21_0 : completion (positive)
+e21_0 : "The Fourth Attempt"
+state e21_1 #C8E6C9
+e21_1 : success (positive)
+e21_1 : "Because People Walked and Said So"
+state e21_2 #E0E0E0
+e21_2 : discovery (neutral)
+e21_2 : "A List of What Gets Looked After"
+state n22d0 #D1C4E9
+n22d0 : rising · 100w
+state n22d1 #D1C4E9
+n22d1 : rising · 100w
+state n22d2 #D1C4E9
+n22d2 : rising · 100w
+state n22d3 #D1C4E9
+n22d3 : rising · 100w
+state n22c0 #ECEFF1
+n22c0 : bridge · 36w
+state n22c1 #ECEFF1
+n22c1 : bridge · 36w
+state n22c2 #ECEFF1
+n22c2 : bridge · 36w
+state n22c3 #ECEFF1
+n22c3 : bridge · 36w
+state e22_0 #C8E6C9
+e22_0 : completion (positive)
+e22_0 : "Three Hundred and Nine"
+state e22_1 #E0E0E0
+e22_1 : discovery (neutral)
+e22_1 : "On the Record, Not Walked"
+state n23d0 #D1C4E9
+n23d0 : rising · 106w
+state n23d1 #D1C4E9
+n23d1 : rising · 106w
+state n23d2 #D1C4E9
+n23d2 : rising · 106w
+state n23d3 #D1C4E9
+n23d3 : rising · 106w
+state e23_0 #C8E6C9
+e23_0 : success (positive)
+e23_0 : "Two Engravers"
+state e23_1 #E0E0E0
+e23_1 : discovery (neutral)
+e23_1 : "The Least Impressive Object"
+state e24_0 #C8E6C9
+e24_0 : completion (positive)
+e24_0 : "The Last One, on a Tuesday"
+state e24_1 #C8E6C9
+e24_1 : success (positive)
+e24_1 : "The Hollow Left As It Is"
+state e24_2 #C8E6C9
+e24_2 : success (positive)
+e24_2 : "The Same Ninety One"
+state e24_3 #E0E0E0
+e24_3 : discovery (neutral)
+e24_3 : "Almost Never Asked"
+state e24_4 #FFCDD2
+e24_4 : setback (negative)
+e24_4 : "Accurate and Unchecked"
+n00c0 --> n01d0 : Ask Wren what is missing.
+n01d0 --> n02c0 : Compare the new sheet to the old plate.
+n01d0 --> n02c1 : Go out and walk the Sixty Steps.
+n01d0 --> n02c2 : Read the note that came with the file.
+n02c0 --> n03d0 : Start from the difference between the ma...
+n02c1 --> n03d1 : Start from the steps themselves.
+n02c2 --> n03d2 : Start from the rule underneath it.
+n03d0 --> n04d0 : Find out who made the simplification.
+n03d0 --> n04d1 : Find out how many ways are gone.
+n03d0 --> n04d2 : Find out what the seven years mean.
+n03d1 --> n04c0 : Pull every sheet out of the chest.
+n03d1 --> n04c1 : Stand at the bottom of the steps and cou...
+n03d1 --> n04c2 : Read the rule twice.
+n03d2 --> n04c3 : Watch Wren cut a correction by hand.
+n03d2 --> n04c4 : Take the file home on a stick.
+n03d2 --> n04d0 : Find out who made the simplification.
+n04d0 --> n05d0 : Go and see Odell Trant.
+n04d0 --> n05d1 : Go and see Basim at the record office.
+n04d0 --> n05d2 : Go and find Kestrel Dowie.
+n04d1 --> n05d3 : Go and talk to Nan Perrott.
+n04d1 --> n05d4 : Go and ask Devi about measuring.
+n04d1 --> n05d5 : Go and read what a modification order is...
+n04d2 --> n05d0 : Go and see Odell Trant.
+n04d2 --> n05d1 : Go and see Basim at the record office.
+n04d2 --> n05d2 : Go and find Kestrel Dowie.
+n04c0 --> n05d3 : Go and talk to Nan Perrott.
+n04c1 --> n05d4 : Go and ask Devi about measuring.
+n04c2 --> n05d5 : Go and read what a modification order is...
+n04c3 --> n05d0 : Go and see Odell Trant.
+n04c4 --> n05d1 : Go and see Basim at the record office.
+n05d0 --> n06d0 : Work out what evidence of use looks like...
+n05d0 --> n06d1 : Work out how many ways you can defend.
+n05d0 --> n06d2 : Work out who will actually sign.
+n05d1 --> n06d3 : Work out what the old maps prove.
+n05d1 --> n06d4 : Work out what Trant would accept.
+n05d1 --> n06d5 : Work out how long you have.
+n05d2 --> n06c0 : Sit in the record office reading room.
+n05d2 --> n06c1 : Walk the tannery cut with Kestrel.
+n05d2 --> n06c2 : Sit in the kitchen of Nan Perrott.
+n05d3 --> n06c3 : Draw up the shortlist.
+n05d3 --> n06c4 : Let Devi set the ground rules.
+n05d3 --> n06c5 : Look at the eleven week calendar.
+n05d4 --> n06c6 : Read the 1904 survey field book.
+n05d4 --> e06_0 : Try to save all three hundred and forty.
+n05d4 --> n06d0 : Work out what evidence of use looks like...
+n05d5 --> n06d1 : Work out how many ways you can defend.
+n05d5 --> n06d2 : Work out who will actually sign.
+n05d5 --> n06d3 : Work out what the old maps prove.
+n06d0 --> n07d0 : Take the nine ways with the most users.
+n06d0 --> n07d1 : Take the nine with the oldest records.
+n06d0 --> n07d2 : Take the Sixty Steps alone and do it pro...
+n06d1 --> n07d3 : Ask Nan to write her statement.
+n06d1 --> n07d4 : Ask Kestrel to log a fortnight of runs.
+n06d1 --> n07d5 : Ask Devi to run the counts.
+n06d2 --> n07d6 : Ask Basim for the deposited plans.
+n06d2 --> n07d7 : Ask Wren to engrave the shortlist.
+n06d2 --> n07d8 : Ask Trant what she would do in your plac...
+n06d3 --> e07_0 : Report it through the feedback channel a...
+n06d3 --> e07_1 : Rely on the old maps alone.
+n06d3 --> n07d0 : Take the nine ways with the most users.
+n06d4 --> n07d1 : Take the nine with the oldest records.
+n06d4 --> n07d2 : Take the Sixty Steps alone and do it pro...
+n06d4 --> n07d3 : Ask Nan to write her statement.
+n06d5 --> n07d4 : Ask Kestrel to log a fortnight of runs.
+n06d5 --> n07d5 : Ask Devi to run the counts.
+n06d5 --> n07d6 : Ask Basim for the deposited plans.
+n06c0 --> n07d7 : Ask Wren to engrave the shortlist.
+n06c1 --> n07d8 : Ask Trant what she would do in your plac...
+n06c2 --> e07_0 : Report it through the feedback channel a...
+n06c3 --> e07_1 : Rely on the old maps alone.
+n06c4 --> n07d0 : Take the nine ways with the most users.
+n06c5 --> n07d1 : Take the nine with the oldest records.
+n06c6 --> n07d2 : Take the Sixty Steps alone and do it pro...
+n07d0 --> n08d0 : Set the counting method and stick to it.
+n07d0 --> n08d1 : Collect statements door to door on Marsh...
+n07d0 --> n08d2 : Photograph the wear on the treads.
+n07d1 --> n08d3 : Go through the deposited plans properly.
+n07d1 --> n08d4 : Find out what Pentrell is building.
+n07d1 --> n08d5 : Find out who maintains the steps now.
+n07d2 --> n08d6 : Find out how the printed edition works.
+n07d2 --> n08c0 : Stand at the top of the steps at seven.
+n07d2 --> n08c1 : Knock on the first door.
+n07d3 --> n08c2 : Kneel down and photograph a tread.
+n07d3 --> n08c3 : Talk to Ivo about the gully.
+n07d3 --> n08c4 : Look at the tannery site plan.
+n07d4 --> n08c5 : Watch the plate go on the press.
+n07d4 --> n08c6 : Reconcile the counts with Devi.
+n07d4 --> e08_0 : Count on your own without a method.
+n07d5 --> e08_1 : Ask people to sign a form they have not ...
+n07d5 --> n08d0 : Set the counting method and stick to it.
+n07d5 --> n08d1 : Collect statements door to door on Marsh...
+n07d6 --> n08d2 : Photograph the wear on the treads.
+n07d6 --> n08d3 : Go through the deposited plans properly.
+n07d6 --> n08d4 : Find out what Pentrell is building.
+n07d7 --> n08d5 : Find out who maintains the steps now.
+n07d7 --> n08d6 : Find out how the printed edition works.
+n07d7 --> n08c0 : Stand at the top of the steps at seven.
+n07d8 --> n08c1 : Knock on the first door.
+n07d8 --> n08c2 : Kneel down and photograph a tread.
+n07d8 --> n08c3 : Talk to Ivo about the gully.
+n08d0 --> n09d0 : Get the statements witnessed properly.
+n08d0 --> n09d1 : Get Ivo to write about the gully.
+n08d0 --> n09d2 : Get the wear survey done properly.
+n08d1 --> n09d3 : Get a copy of the tannery site plan.
+n08d1 --> n09d4 : Get Trant to state her criteria in writi...
+n08d1 --> n09d5 : Get Wren to cut the Sixty Steps plate.
+n08d2 --> n09d6 : Get the school to say it uses the path.
+n08d2 --> n09d7 : Get a solicitor to read the submission.
+n08d2 --> n09d8 : Get the eleven week deadline moved.
+n08d3 --> e09_0 : Take the case straight to Pentrell.
+n08d3 --> e09_1 : Let the deadline pass on the printed edi...
+n08d3 --> n09d0 : Get the statements witnessed properly.
+n08d4 --> n09d1 : Get Ivo to write about the gully.
+n08d4 --> n09d2 : Get the wear survey done properly.
+n08d4 --> n09d3 : Get a copy of the tannery site plan.
+n08d5 --> n09d4 : Get Trant to state her criteria in writi...
+n08d5 --> n09d5 : Get Wren to cut the Sixty Steps plate.
+n08d5 --> n09d6 : Get the school to say it uses the path.
+n08d6 --> n09d7 : Get a solicitor to read the submission.
+n08d6 --> n09d8 : Get the eleven week deadline moved.
+n08d6 --> e09_0 : Take the case straight to Pentrell.
+n08c0 --> e09_1 : Let the deadline pass on the printed edi...
+n08c1 --> n09d0 : Get the statements witnessed properly.
+n08c2 --> n09d1 : Get Ivo to write about the gully.
+n08c3 --> n09d2 : Get the wear survey done properly.
+n08c4 --> n09d3 : Get a copy of the tannery site plan.
+n08c5 --> n09d4 : Get Trant to state her criteria in writi...
+n08c6 --> n09d5 : Get Wren to cut the Sixty Steps plate.
+n09d0 --> n10d0 : Submit the Sixty Steps as a test case.
+n09d0 --> n10d1 : Submit all nine at once.
+n09d0 --> n10d2 : Answer the permissive path offer.
+n09d1 --> n10d3 : Deal with the four overstatements.
+n09d1 --> n10d4 : Deal with the printer.
+n09d1 --> n10d5 : Deal with the objection from Pentrell.
+n09d2 --> n10d6 : Deal with what Ivo is worried about.
+n09d2 --> n10c0 : Bind the submission properly.
+n09d2 --> n10c1 : Carry it to the council office.
+n09d3 --> n10c2 : Sit with Nan while she signs.
+n09d3 --> n10c3 : Walk the cut with the solicitor.
+n09d3 --> n10c4 : Watch Pentrell file the objection.
+n09d4 --> n10c5 : Explain the risk to Ivo honestly.
+n09d4 --> n10c6 : Check the numbered pages twice.
+n09d4 --> e10_0 : Accept the permissive path.
+n09d5 --> e10_1 : Discover why the simplification happened...
+n09d5 --> n10d0 : Submit the Sixty Steps as a test case.
+n09d5 --> n10d1 : Submit all nine at once.
+n09d6 --> n10d2 : Answer the permissive path offer.
+n09d6 --> n10d3 : Deal with the four overstatements.
+n09d6 --> n10d4 : Deal with the printer.
+n09d7 --> n10d5 : Deal with the objection from Pentrell.
+n09d7 --> n10d6 : Deal with what Ivo is worried about.
+n09d7 --> n10c0 : Bind the submission properly.
+n09d8 --> n10c1 : Carry it to the council office.
+n09d8 --> n10c2 : Sit with Nan while she signs.
+n09d8 --> n10c3 : Walk the cut with the solicitor.
+n10d0 --> n11d0 : Answer the permission argument.
+n10d0 --> n11d1 : Answer it for the tannery cut too.
+n10d0 --> n11d2 : Look for the annual closure record.
+n10d1 --> n11d3 : Look for a sign in an old photograph.
+n10d1 --> n11d4 : Look at what Trant has restored already.
+n10d1 --> n11d5 : Ask for the hearing to be public.
+n10d2 --> n11d6 : Ask Wren about 1988.
+n10d2 --> n11d7 : Ask the school to bring the children.
+n10d2 --> n11d8 : Ask what happens if you lose.
+n10d3 --> e11_0 : Argue that Pentrell is acting in bad fai...
+n10d3 --> e11_1 : Drop the tannery cut to save the rest.
+n10d3 --> n11d0 : Answer the permission argument.
+n10d4 --> n11d1 : Answer it for the tannery cut too.
+n10d4 --> n11d2 : Look for the annual closure record.
+n10d4 --> n11d3 : Look for a sign in an old photograph.
+n10d5 --> n11d4 : Look at what Trant has restored already.
+n10d5 --> n11d5 : Ask for the hearing to be public.
+n10d5 --> n11d6 : Ask Wren about 1988.
+n10d6 --> n11d7 : Ask the school to bring the children.
+n10d6 --> n11d8 : Ask what happens if you lose.
+n10d6 --> e11_0 : Argue that Pentrell is acting in bad fai...
+n10c0 --> e11_1 : Drop the tannery cut to save the rest.
+n10c1 --> n11d0 : Answer the permission argument.
+n10c2 --> n11d1 : Answer it for the tannery cut too.
+n10c3 --> n11d2 : Look for the annual closure record.
+n10c4 --> n11d3 : Look for a sign in an old photograph.
+n10c5 --> n11d4 : Look at what Trant has restored already.
+n10c6 --> n11d5 : Ask for the hearing to be public.
+n11d0 --> n12d0 : Go through the nine boxes of tannery rec...
+n11d0 --> n12d1 : Go through the four thousand photographs...
+n11d0 --> n12d2 : Prepare Nan for the hearing.
+n11d1 --> n12d3 : Prepare Ivo for the hearing.
+n11d1 --> n12d4 : Prepare yourself for the permission argu...
+n11d1 --> n12d5 : Decide what to do about the plate date.
+n11d2 --> n12d6 : Decide whether to keep the tannery cut i...
+n11d2 --> n12c0 : Open the first box.
+n11d2 --> n12c1 : Sit at the light table on Thursday.
+n11d3 --> n12c2 : Rehearse the questions with Nan.
+n11d3 --> n12c3 : Walk the route with Ivo one more time.
+n11d3 --> n12c4 : Write out the argument against yourself.
+n11d4 --> n12c5 : Ring the printer yourself.
+n11d4 --> n12c6 : Find the works magazine for 1971.
+n11d4 --> e12_0 : Miss the closure record in the boxes.
+n11d5 --> e12_1 : Understand what one day a year means.
+n11d5 --> n12d0 : Go through the nine boxes of tannery rec...
+n11d5 --> n12d1 : Go through the four thousand photographs...
+n11d6 --> n12d2 : Prepare Nan for the hearing.
+n11d6 --> n12d3 : Prepare Ivo for the hearing.
+n11d6 --> n12d4 : Prepare yourself for the permission argu...
+n11d7 --> n12d5 : Decide what to do about the plate date.
+n11d7 --> n12d6 : Decide whether to keep the tannery cut i...
+n11d7 --> n12c0 : Open the first box.
+n11d8 --> n12c1 : Sit at the light table on Thursday.
+n11d8 --> n12c2 : Rehearse the questions with Nan.
+n11d8 --> n12c3 : Walk the route with Ivo one more time.
+n12d0 --> n13d0 : Use the 1971 photograph honestly.
+n12d0 --> n13d1 : Show that the closure stopped in 1988.
+n12d0 --> n13d2 : Find the last closure.
+n12d1 --> n13d3 : Ask the last employees.
+n12d1 --> n13d4 : Put the tannery cut back in the order.
+n12d1 --> n13d5 : Send the whole file to Pentrell first.
+n12d2 --> n13d6 : Give Trant the closure evidence early.
+n12d2 --> n13d7 : Set the plate date with Ferris.
+n12d2 --> n13d8 : Decide what the order is really for.
+n12d3 --> e13_0 : Hold the closure evidence back for the h...
+n12d3 --> e13_1 : Let the plate go down unchanged.
+n12d3 --> n13d0 : Use the 1971 photograph honestly.
+n12d4 --> n13d1 : Show that the closure stopped in 1988.
+n12d4 --> n13d2 : Find the last closure.
+n12d4 --> n13d3 : Ask the last employees.
+n12d5 --> n13d4 : Put the tannery cut back in the order.
+n12d5 --> n13d5 : Send the whole file to Pentrell first.
+n12d5 --> n13d6 : Give Trant the closure evidence early.
+n12d6 --> n13d7 : Set the plate date with Ferris.
+n12d6 --> n13d8 : Decide what the order is really for.
+n12d6 --> e13_0 : Hold the closure evidence back for the h...
+n12c0 --> e13_1 : Let the plate go down unchanged.
+n12c1 --> n13d0 : Use the 1971 photograph honestly.
+n12c2 --> n13d1 : Show that the closure stopped in 1988.
+n12c3 --> n13d2 : Find the last closure.
+n12c4 --> n13d3 : Ask the last employees.
+n12c5 --> n13d4 : Put the tannery cut back in the order.
+n12c6 --> n13d5 : Send the whole file to Pentrell first.
+n13d0 --> n14d0 : Track down the last two tannery workers.
+n13d0 --> n14d1 : Reconcile the two accounts.
+n13d0 --> n14d2 : Look in the insurance schedules.
+n13d1 --> n14d3 : Prepare the bundle for the inspector.
+n13d1 --> n14d4 : Prepare the witnesses.
+n13d1 --> n14d5 : Prepare the plate with Wren.
+n13d2 --> n14d6 : Prepare for the possibility of losing.
+n13d2 --> n14c0 : Sit in a front room in Coley Bank.
+n13d2 --> n14c1 : Ring the insurance broker.
+n13d3 --> n14c2 : Tab the bundle at the kitchen table.
+n13d3 --> n14c3 : Walk the nine ways in one afternoon.
+n13d3 --> n14c4 : Watch Wren cut the margin.
+n13d4 --> n14c5 : Read the bundle straight through.
+n13d4 --> n14c6 : Sleep badly the night before.
+n13d4 --> e14_0 : Coach the witnesses too hard.
+n13d5 --> e14_1 : Leave the insurance schedules unchecked.
+n13d5 --> n14d0 : Track down the last two tannery workers.
+n13d5 --> n14d1 : Reconcile the two accounts.
+n13d6 --> n14d2 : Look in the insurance schedules.
+n13d6 --> n14d3 : Prepare the bundle for the inspector.
+n13d6 --> n14d4 : Prepare the witnesses.
+n13d7 --> n14d5 : Prepare the plate with Wren.
+n13d7 --> n14d6 : Prepare for the possibility of losing.
+n13d7 --> n14c0 : Sit in a front room in Coley Bank.
+n13d8 --> n14c1 : Ring the insurance broker.
+n13d8 --> n14c2 : Tab the bundle at the kitchen table.
+n13d8 --> n14c3 : Walk the nine ways in one afternoon.
+n14d0 --> n15d0 : Produce the insurance schedule.
+n14d0 --> n15d1 : Set the twenty years from 1987.
+n14d0 --> n15d2 : Take the inspector through the wear tabl...
+n14d1 --> n15d3 : Take the inspector through the counts.
+n14d1 --> n15d4 : Let Nan answer in her own words.
+n14d1 --> n15d5 : Let Ivo answer about the gully.
+n14d2 --> n15d6 : Let the head teacher speak for the schoo...
+n14d2 --> n15d7 : Answer the courteous objection.
+n14d2 --> n15d8 : Ask the inspector to see the ways.
+n14d3 --> e15_0 : Watch how the inspector reads a map.
+n14d3 --> e15_1 : Overrun your time at the hearing.
+n14d3 --> n15d0 : Produce the insurance schedule.
+n14d4 --> n15d1 : Set the twenty years from 1987.
+n14d4 --> n15d2 : Take the inspector through the wear tabl...
+n14d4 --> n15d3 : Take the inspector through the counts.
+n14d5 --> n15d4 : Let Nan answer in her own words.
+n14d5 --> n15d5 : Let Ivo answer about the gully.
+n14d5 --> n15d6 : Let the head teacher speak for the schoo...
+n14d6 --> n15d7 : Answer the courteous objection.
+n14d6 --> n15d8 : Ask the inspector to see the ways.
+n14d6 --> e15_0 : Watch how the inspector reads a map.
+n14c0 --> e15_1 : Overrun your time at the hearing.
+n14c1 --> n15d0 : Produce the insurance schedule.
+n14c2 --> n15d1 : Set the twenty years from 1987.
+n14c3 --> n15d2 : Take the inspector through the wear tabl...
+n14c4 --> n15d3 : Take the inspector through the counts.
+n14c5 --> n15d4 : Let Nan answer in her own words.
+n14c6 --> n15d5 : Let Ivo answer about the gully.
+n15d0 --> n16d0 : Do the accompanied site visit.
+n15d0 --> n16d1 : Answer the final written round.
+n15d0 --> n16d2 : Decide what to concede.
+n15d1 --> n16d3 : Decide what to say about the basemap.
+n15d1 --> n16d4 : Decide what to do while you wait.
+n15d1 --> n16d5 : Decide what to do about Trant.
+n15d2 --> n16d6 : Decide what to tell the ninety people.
+n15d2 --> n16c0 : Stand on the third tread in the rain.
+n15d2 --> n16c1 : Write the closing statement four times.
+n15d3 --> n16c2 : Post the two weak ways.
+n15d3 --> n16c3 : Put a notice at the bottom of the steps.
+n15d3 --> n16c4 : Start the Ferrisgate survey.
+n15d4 --> n16c5 : Wait through eight weeks.
+n15d4 --> n16c6 : Read the decision when it comes.
+n15d4 --> e16_0 : Use the closing statement to attack the ...
+n15d5 --> e16_1 : Concede nothing at all.
+n15d5 --> n16d0 : Do the accompanied site visit.
+n15d5 --> n16d1 : Answer the final written round.
+n15d6 --> n16d2 : Decide what to concede.
+n15d6 --> n16d3 : Decide what to say about the basemap.
+n15d6 --> n16d4 : Decide what to do while you wait.
+n15d7 --> n16d5 : Decide what to do about Trant.
+n15d7 --> n16d6 : Decide what to tell the ninety people.
+n15d7 --> n16c0 : Stand on the third tread in the rain.
+n15d8 --> n16c1 : Write the closing statement four times.
+n15d8 --> n16c2 : Post the two weak ways.
+n15d8 --> n16c3 : Put a notice at the bottom of the steps.
+n16d0 --> n17d0 : Read the operative part carefully.
+n16d0 --> n17d1 : Get the seven onto the definitive map.
+n16d0 --> n17d2 : Get the seven onto the printed plate.
+n16d1 --> n17d3 : Get the maintenance restarted.
+n16d1 --> n17d4 : Deal with the two that were refused.
+n16d1 --> n17d5 : Deal with the other three hundred and th...
+n16d2 --> n17d6 : Tell the ninety people what happened.
+n16d2 --> n17d7 : Ask Trant to change the setting.
+n16d2 --> n17d8 : Ask what Wren wants to do next.
+n16d3 --> e17_0 : Take the seven and get them recorded.
+n16d3 --> e17_1 : See the plate through the press.
+n16d3 --> e17_2 : Work out what actually won it.
+n16d4 --> n17d0 : Read the operative part carefully.
+n16d4 --> n17d1 : Get the seven onto the definitive map.
+n16d4 --> n17d2 : Get the seven onto the printed plate.
+n16d5 --> n17d3 : Get the maintenance restarted.
+n16d5 --> n17d4 : Deal with the two that were refused.
+n16d5 --> n17d5 : Deal with the other three hundred and th...
+n16d6 --> n17d6 : Tell the ninety people what happened.
+n16d6 --> n17d7 : Ask Trant to change the setting.
+n16d6 --> n17d8 : Ask what Wren wants to do next.
+n16c0 --> e17_0 : Take the seven and get them recorded.
+n16c1 --> e17_1 : See the plate through the press.
+n16c2 --> e17_2 : Work out what actually won it.
+n16c3 --> n17d0 : Read the operative part carefully.
+n16c4 --> n17d1 : Get the seven onto the definitive map.
+n16c5 --> n17d2 : Get the seven onto the printed plate.
+n16c6 --> n17d3 : Get the maintenance restarted.
+n17d0 --> n18d0 : Resubmit the two refused ways.
+n17d0 --> n18d1 : Write the method down for other people.
+n17d0 --> n18d2 : Take on Ferrisgate properly.
+n17d1 --> n18d3 : Train somebody else to do this.
+n17d1 --> n18d4 : Answer the basemap question at source.
+n17d1 --> n18d5 : Decide about the apprenticeship.
+n17d2 --> n18d6 : Decide what to do with the shortlist.
+n17d2 --> n18c0 : Go back to the photograph archive.
+n17d2 --> n18c1 : Print the method as a pamphlet.
+n17d3 --> n18c2 : Walk Ferrisgate at seven in the morning.
+n17d3 --> n18c3 : Sit in the map office in the evening.
+n17d3 --> n18c4 : Look at the pinned shortlist.
+n17d4 --> n18c5 : Watch Nan go up the steps.
+n17d4 --> e18_0 : Try to do Ferrisgate and the resubmissio...
+n17d4 --> e18_1 : Let the method stay in your head.
+n17d5 --> n18d0 : Resubmit the two refused ways.
+n17d5 --> n18d1 : Write the method down for other people.
+n17d5 --> n18d2 : Take on Ferrisgate properly.
+n17d6 --> n18d3 : Train somebody else to do this.
+n17d6 --> n18d4 : Answer the basemap question at source.
+n17d6 --> n18d5 : Decide about the apprenticeship.
+n17d7 --> n18d6 : Decide what to do with the shortlist.
+n17d7 --> n18c0 : Go back to the photograph archive.
+n17d7 --> n18c1 : Print the method as a pamphlet.
+n17d8 --> n18c2 : Walk Ferrisgate at seven in the morning.
+n17d8 --> n18c3 : Sit in the map office in the evening.
+n17d8 --> n18c4 : Look at the pinned shortlist.
+n18d0 --> n19d0 : Get the second resubmission confirmed.
+n18d0 --> n19d1 : Get the pamphlet into other hands.
+n18d0 --> n19d2 : Get Ferrisgate onto the list.
+n18d1 --> n19d3 : Get the basemap setting reviewed.
+n18d1 --> n19d4 : Take the apprenticeship.
+n18d1 --> n19d5 : Take a different road.
+n18d2 --> n19d6 : Take stock of what the year cost.
+n18d2 --> n19d7 : Take Nan up the steps one more time.
+n18d2 --> e19_0 : Finish the nine.
+n18d3 --> e19_1 : Hand the method on.
+n18d3 --> e19_2 : Let the seven year clock beat you at Fer...
+n18d3 --> n19d0 : Get the second resubmission confirmed.
+n18d4 --> n19d1 : Get the pamphlet into other hands.
+n18d4 --> n19d2 : Get Ferrisgate onto the list.
+n18d4 --> n19d3 : Get the basemap setting reviewed.
+n18d5 --> n19d4 : Take the apprenticeship.
+n18d5 --> n19d5 : Take a different road.
+n18d5 --> n19d6 : Take stock of what the year cost.
+n18d6 --> n19d7 : Take Nan up the steps one more time.
+n18d6 --> e19_0 : Finish the nine.
+n18d6 --> e19_1 : Hand the method on.
+n18c0 --> e19_2 : Let the seven year clock beat you at Fer...
+n18c1 --> n19d0 : Get the second resubmission confirmed.
+n18c2 --> n19d1 : Get the pamphlet into other hands.
+n18c3 --> n19d2 : Get Ferrisgate onto the list.
+n18c4 --> n19d3 : Get the basemap setting reviewed.
+n18c5 --> n19d4 : Take the apprenticeship.
+n19d0 --> n20d0 : Take the flagging proposal to committee.
+n19d0 --> n20d1 : Build a way for the public to check.
+n19d0 --> n20d2 : Keep the plate tradition going.
+n19d1 --> n20d3 : Keep the counts running.
+n19d1 --> n20d4 : Keep Nan and Ivo in the record.
+n19d1 --> n20d5 : Keep going after the other three hundred...
+n19d2 --> n20c0 : Present to the committee.
+n19d2 --> n20c1 : Build the reporting form.
+n19d2 --> n20c2 : Cost the plate properly.
+n19d3 --> n20c3 : Set the ten year count schedule.
+n19d3 --> n20c4 : Deposit the statements formally.
+n19d3 --> n20c5 : Look at the map on the wall.
+n19d4 --> e20_0 : Get the flagging change adopted.
+n19d4 --> e20_1 : Win the seven and stop there.
+n19d4 --> n20d0 : Take the flagging proposal to committee.
+n19d5 --> n20d1 : Build a way for the public to check.
+n19d5 --> n20d2 : Keep the plate tradition going.
+n19d5 --> n20d3 : Keep the counts running.
+n19d6 --> n20d4 : Keep Nan and Ivo in the record.
+n19d6 --> n20d5 : Keep going after the other three hundred...
+n19d6 --> n20c0 : Present to the committee.
+n19d7 --> n20c1 : Build the reporting form.
+n19d7 --> n20c2 : Cost the plate properly.
+n19d7 --> n20c3 : Set the ten year count schedule.
+n20d0 --> n21d0 : Look at what the flagging change did.
+n20d0 --> n21d1 : Look at what the pamphlet did.
+n20d0 --> n21d2 : Look at what the apprenticeship is.
+n20d1 --> n21d3 : Look at what Nan asked for.
+n20d1 --> n21d4 : Look at the Ferrisgate result.
+n20d1 --> n21d5 : Look at the tannery cut.
+n20d2 --> n21d6 : Look at what you would do differently.
+n20d2 --> e21_0 : Finish the apprenticeship.
+n20d2 --> e21_1 : See the whole city checked.
+n20d3 --> e21_2 : Understand what a map is for.
+n20d3 --> n21d0 : Look at what the flagging change did.
+n20d3 --> n21d1 : Look at what the pamphlet did.
+n20d4 --> n21d2 : Look at what the apprenticeship is.
+n20d4 --> n21d3 : Look at what Nan asked for.
+n20d4 --> n21d4 : Look at the Ferrisgate result.
+n20d5 --> n21d5 : Look at the tannery cut.
+n20d5 --> n21d6 : Look at what you would do differently.
+n20d5 --> e21_0 : Finish the apprenticeship.
+n20c0 --> e21_1 : See the whole city checked.
+n20c1 --> e21_2 : Understand what a map is for.
+n20c2 --> n21d0 : Look at what the flagging change did.
+n20c3 --> n21d1 : Look at what the pamphlet did.
+n20c4 --> n21d2 : Look at what the apprenticeship is.
+n20c5 --> n21d3 : Look at what Nan asked for.
+n21d0 --> n22d0 : Take on an apprentice yourself.
+n21d0 --> n22d1 : Write the second edition of the pamphlet...
+n21d0 --> n22d2 : Keep walking the ways.
+n21d1 --> n22d3 : Keep the counts going after ten years.
+n21d1 --> n22c0 : Cut a plate for the Sixty Steps.
+n21d1 --> n22c1 : Walk the nine ways in the spring.
+n21d2 --> n22c2 : Show somebody the plan chest.
+n21d2 --> n22c3 : Read the first pamphlet again.
+n21d2 --> e22_0 : Leave the record better than you found i...
+n21d3 --> e22_1 : Stop walking them.
+n21d3 --> n22d0 : Take on an apprentice yourself.
+n21d3 --> n22d1 : Write the second edition of the pamphlet...
+n21d4 --> n22d2 : Keep walking the ways.
+n21d4 --> n22d3 : Keep the counts going after ten years.
+n21d4 --> n22c0 : Cut a plate for the Sixty Steps.
+n21d5 --> n22c1 : Walk the nine ways in the spring.
+n21d5 --> n22c2 : Show somebody the plan chest.
+n21d5 --> n22c3 : Read the first pamphlet again.
+n21d6 --> e22_0 : Leave the record better than you found i...
+n21d6 --> e22_1 : Stop walking them.
+n21d6 --> n22d0 : Take on an apprentice yourself.
+n22d0 --> n23d0 : Look at the city from the top of the ste...
+n22d0 --> n23d1 : Look at what is still missing.
+n22d0 --> n23d2 : Look at the margin of the plate.
+n22d1 --> n23d3 : Look at the first count sheet.
+n22d1 --> e23_0 : Hand the burin on.
+n22d1 --> e23_1 : Keep the count sheet.
+n22d2 --> n23d0 : Look at the city from the top of the ste...
+n22d2 --> n23d1 : Look at what is still missing.
+n22d2 --> n23d2 : Look at the margin of the plate.
+n22d3 --> n23d3 : Look at the first count sheet.
+n22d3 --> e23_0 : Hand the burin on.
+n22d3 --> e23_1 : Keep the count sheet.
+n22c0 --> n23d0 : Look at the city from the top of the ste...
+n22c1 --> n23d1 : Look at what is still missing.
+n22c2 --> n23d2 : Look at the margin of the plate.
+n22c3 --> n23d3 : Look at the first count sheet.
+n23d0 --> e24_0 : Finish what the file started.
+n23d0 --> e24_1 : See the Sixty Steps repaired.
+n23d0 --> e24_2 : Watch the seven in the morning queue.
+n23d1 --> e24_3 : Ask who the map was ever for.
+n23d1 --> e24_4 : Let the plate chest be cleared.
+n23d1 --> e24_0 : Finish what the file started.
+n23d2 --> e24_1 : See the Sixty Steps repaired.
+n23d2 --> e24_2 : Watch the seven in the morning queue.
+n23d2 --> e24_3 : Ask who the map was ever for.
+n23d3 --> e24_4 : Let the plate chest be cleared.
+n23d3 --> e24_0 : Finish what the file started.
+n23d3 --> e24_1 : See the Sixty Steps repaired.
+e06_0 --> [*]
+e07_0 --> [*]
+e07_1 --> [*]
+e08_0 --> [*]
+e08_1 --> [*]
+e09_0 --> [*]
+e09_1 --> [*]
+e10_0 --> [*]
+e10_1 --> [*]
+e11_0 --> [*]
+e11_1 --> [*]
+e12_0 --> [*]
+e12_1 --> [*]
+e13_0 --> [*]
+e13_1 --> [*]
+e14_0 --> [*]
+e14_1 --> [*]
+e15_0 --> [*]
+e15_1 --> [*]
+e16_0 --> [*]
+e16_1 --> [*]
+e17_0 --> [*]
+e17_1 --> [*]
+e17_2 --> [*]
+e18_0 --> [*]
+e18_1 --> [*]
+e19_0 --> [*]
+e19_1 --> [*]
+e19_2 --> [*]
+e20_0 --> [*]
+e20_1 --> [*]
+e21_0 --> [*]
+e21_1 --> [*]
+e21_2 --> [*]
+e22_0 --> [*]
+e22_1 --> [*]
+e23_0 --> [*]
+e23_1 --> [*]
+e24_0 --> [*]
+e24_1 --> [*]
+e24_2 --> [*]
+e24_3 --> [*]
+e24_4 --> [*]
+
+legend right
+  The Cartographer's Apprentice
+  Band 10-13 · Tier 1 · ~9 min
+  Topology: branch_and_bottleneck
+  254 nodes · 43 endings (12+ / 16n / 15-)
+  Production-eligible
+  Scale: long · prose
+endlegend
+@enduml

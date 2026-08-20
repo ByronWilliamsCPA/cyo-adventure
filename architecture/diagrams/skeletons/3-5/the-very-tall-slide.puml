@@ -1,0 +1,144 @@
+@startuml the-very-tall-slide
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_park
+state n_park #BBDEFB
+n_park : setup · 38w
+state n_gate #BBDEFB
+n_gate : setup · 40w
+state n_swings #D1C4E9
+n_swings : rising · 40w
+state n_sandpit #D1C4E9
+n_sandpit : rising · 40w
+state n_pump_legs #D1C4E9
+n_pump_legs : rising · 38w
+state n_hop_off #D1C4E9
+n_hop_off : rising · 36w
+state n_dig_deep #D1C4E9
+n_dig_deep : rising · 38w
+state n_fill_bucket #D1C4E9
+n_fill_bucket : rising · 36w
+state n_hub_one #D1C4E9
+n_hub_one : rising · 40w
+state n_steps_look #D1C4E9
+n_steps_look : rising · 40w
+state n_small_slide #D1C4E9
+n_small_slide : rising · 38w
+state n_count_steps #D1C4E9
+n_count_steps : rising · 36w
+state n_hand_rail #D1C4E9
+n_hand_rail : rising · 38w
+state n_small_go #D1C4E9
+n_small_go : rising · 36w
+state n_small_watch #D1C4E9
+n_small_watch : rising · 38w
+state n_hub_two #D1C4E9
+n_hub_two : rising · 40w
+state n_queue #D1C4E9
+n_queue : rising · 40w
+state n_grass_rest #D1C4E9
+n_grass_rest : rising · 38w
+state n_big_kid #D1C4E9
+n_big_kid : rising · 38w
+state n_my_turn #D1C4E9
+n_my_turn : rising · 38w
+state n_watch_others #D1C4E9
+n_watch_others : rising · 38w
+state n_back_to_gate #D1C4E9
+n_back_to_gate : rising · 34w
+state n_hub_three #D1C4E9
+n_hub_three : rising · 40w
+state n_first_step #D1C4E9
+n_first_step : rising · 40w
+state n_ask_help #D1C4E9
+n_ask_help : rising · 40w
+state n_halfway #D1C4E9
+n_halfway : rising · 40w
+state n_come_down #D1C4E9
+n_come_down : rising · 36w
+state n_hand_hold #D1C4E9
+n_hand_hold : rising · 38w
+state n_nan_says #D1C4E9
+n_nan_says : rising · 40w
+state e_down_alone #C8E6C9
+e_down_alone : success (positive)
+e_down_alone : "All the Way Down"
+state e_top_and_back #E0E0E0
+e_top_and_back : discovery (neutral)
+e_top_and_back : "The Best Place to Look From"
+state e_tomorrow #E0E0E0
+e_tomorrow : discovery (neutral)
+e_tomorrow : "One Step, Kept"
+state e_down_together #C8E6C9
+e_down_together : completion (positive)
+e_down_together : "Down With Nan"
+state e_little_slide #C8E6C9
+e_little_slide : completion (positive)
+e_little_slide : "The Little Slide, Twice"
+state e_someone_else #E0E0E0
+e_someone_else : setback (neutral)
+e_someone_else : "The Yellow Coat Goes First"
+n_park --> n_gate : Walk over to the tall slide.
+n_gate --> n_swings : Go and swing first.
+n_gate --> n_sandpit : Dig in the sandpit first.
+n_swings --> n_pump_legs : Pump until the chains go floppy.
+n_swings --> n_hop_off : Hop off while the swing is low.
+n_sandpit --> n_dig_deep : Dig a hole all the way down.
+n_sandpit --> n_fill_bucket : Fill the bucket to the brim.
+n_pump_legs --> n_hub_one : Slow down and look around.
+n_hop_off --> n_hub_one : Brush the sand off and look up.
+n_dig_deep --> n_hub_one : Pat the sand down and stand up.
+n_fill_bucket --> n_hub_one : Leave the tower and turn round.
+n_hub_one --> n_steps_look : Go and look at the steps.
+n_hub_one --> n_small_slide : Try the little slide instead.
+n_steps_look --> n_count_steps : Count the steps out loud.
+n_steps_look --> n_hand_rail : Put a hand on the rail.
+n_small_slide --> n_small_go : Go down it once more.
+n_small_slide --> n_small_watch : Sit at the top and look.
+n_count_steps --> n_hub_two : Say the number to Nan.
+n_hand_rail --> n_hub_two : Let go and step back.
+n_small_go --> n_hub_two : Climb out of the woodchips.
+n_small_watch --> n_hub_two : Slide down and go over.
+n_hub_two --> n_queue : Get in the queue.
+n_hub_two --> n_grass_rest : Sit on the grass a minute.
+n_queue --> n_big_kid : Let the big one go first.
+n_queue --> n_my_turn : Say it is my turn next.
+n_grass_rest --> n_watch_others : Watch how they all do it.
+n_grass_rest --> n_back_to_gate : Go back and start again.
+n_big_kid --> n_hub_three : Move up one place.
+n_my_turn --> n_hub_three : Wait for the step to be empty.
+n_watch_others --> n_hub_three : Get up off the wet grass.
+n_back_to_gate --> n_gate : Start again at the gate.
+n_hub_three --> n_first_step : Put one foot on the first step.
+n_hub_three --> n_ask_help : Ask Nan to come too.
+n_first_step --> n_halfway : Keep going up the steps.
+n_first_step --> n_come_down : Come back down the steps.
+n_ask_help --> n_hand_hold : Go up with Nan holding on.
+n_ask_help --> n_nan_says : Ask Nan what she thinks.
+n_halfway --> e_down_alone : Go all the way to the top.
+n_halfway --> e_top_and_back : Stop and look at the park.
+n_come_down --> e_tomorrow : Tell Nan about the step.
+n_hand_hold --> e_down_together : Sit down at the top.
+n_nan_says --> e_little_slide : Go down the little slide twice.
+n_nan_says --> e_someone_else : Let the yellow coat go again.
+e_down_alone --> [*]
+e_top_and_back --> [*]
+e_tomorrow --> [*]
+e_down_together --> [*]
+e_little_slide --> [*]
+e_someone_else --> [*]
+
+legend right
+  The Very Tall Slide
+  Band 3-5 · Tier 1 · ~5 min
+  Topology: loop_and_grow
+  35 nodes · 6 endings (3+ / 3n / 0-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

@@ -3368,17 +3368,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#series-cross-book-chain-rules-series-stories-only" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Series: Cross-Book Chain Rules (Series Stories Only)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#character-envelope-participating-books-only" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3649,6 +3638,12 @@ the closure of reachable configurations. The default configuration cap is 100,00
 <td><strong>No all-fatal decision</strong> (added 2026-07-26, A14, per the owner ruling "no decision should only have fatal node options; at least one needs to allow advancing or loop back"). No reachable configuration offering two or more visible choices may have every one of them arrive at a forbidden ending with no further choice on the way. Stated over the <strong>reader-visible decision unit</strong>, not the node: a node-scoped reading is trivially satisfied by splitting an all-fatal decision into single-choice corridors that each end fatally, which passes the rule and still shows a child a page with one button that kills them, so the check follows single-successor corridors forward. Forbidden endings are band-scoped: negative valence at 3-5/5-8/8-11/10-13, and <code>kind == death</code> at 13-16/16+. <code>capture</code> is deliberately NOT fatal at the teen bands, since a survivable capture is the signature ending of the espionage stories there and forbidding it would have rewritten four authored climaxes.</td>
 <td><code>L2-14 no-way-out: node '{node_id}' with var_state {var_state} offers {option_count} visible choices and every one of them reaches a forbidden ending with no further choice on the way, in story '{story_id}' (a reader must never be shown a decision where every option is fatal; at least one option must let them advance or loop back)</code></td>
 </tr>
+<tr>
+<td>L2-15</td>
+<td>2</td>
+<td><strong>Over-declared integer range</strong> (added 2026-08-18, <code>UW-C294</code>, owner-approved). A declared int variable whose range is more than 4x the values its conditions can distinguish. The distinguishable span runs from the declared floor to the highest literal any condition tests it against, so a counter declared <code>0..6</code> and tested at <code>&gt;= 3</code> distinguishes four values and passes; one declared <code>0..99</code> and tested at 1, 2 and 3 distinguishes four and does not. WARNING only, and it never blocks: a wide range is a cost the author may knowingly accept, values above the highest threshold are not strictly inert (<code>inc</code>/<code>dec</code> are order-dependent, so a saturating counter is not a clamped one), and a series continuation's receiving range must contain its sender's (<code>AL-038</code>). A variable no condition compares against an int literal is skipped rather than reported. <strong>Runs BEFORE the walk</strong>, unlike every other L2 rule: it is the early warning for the commonest cause of an L2-12 cap, and L2-12 returns immediately on a capped walk, so emitting it afterwards would silence it in exactly the case it exists for. Grounding: the first story-first gamebook declared two counters <code>0..99</code> against thresholds of at most 3, a 625x inflation of the configuration space that surfaced only as an L2-12 breach 16,000 words later. <code>AL-008</code> recorded this on 2026-07-25 and proposed a prose rule; no check was built and it was re-learned 24 days on. Silent on all 68 committed skeletons.</td>
+<td><code>L2-15 range: variable '{name}' is declared {min}..{max} ({declared} values) but the highest value any condition tests it against is {highest}, so only {exercised} of them can change a choice's visibility; the declared range multiplies the configuration space L2-12 must enumerate by {multiple}x in story '{story_id}' (advisory only; tighten the bounds to what the story tests, unless the headroom is deliberate)</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -3725,6 +3720,12 @@ damage: the flip would turn on four rules nobody had written down.</p>
 <td><strong>Choice acknowledgment</strong>: a heuristic proxy for section 10's "every choice is acknowledged in the immediately following prose" rule. Flags a decision-child whose opening sentence shares no content word (post-stopword) with the label of the choice that reaches it. Explicitly lossy: paraphrase and pronoun reference both trip it, which is why it can never be more than advisory. Skips an unfilled <code>&lt;&lt;FILL</code> body and any comparison where either side tokenizes to zero content words.</td>
 <td><code>CG-4 grammar: node '{target_id}' (reached via choice '{choice_id}' labeled {label!r} from node '{node_id}') has no content-word overlap between its opening sentence and the choice label in story '{story_id}' (advisory heuristic; may be a false positive, see module docstring)</code></td>
 </tr>
+<tr>
+<td>CG-5</td>
+<td>Advisory (opt-in)</td>
+<td><strong>Visible-run cap</strong> (added 2026-08-18, <code>UW-C297</code>, owner-approved): the longest chain of consecutive configurations offering the reader exactly ONE option must not exceed the band's choiceless-run cap, the same <code>run_cap_for_band</code> value CG-1 applies. Measured over the configuration graph, so it counts what the reader sees rather than what the node declares. CG-1 reads <code>len(node.choices)</code> and never reads <code>choice.condition</code>, so a corridor held open by conditions is invisible to it: <code>the-cinder-bazaar</code> walks a reader through <strong>ten</strong> consecutive one-option stops that CG-1 scores as a longest run of 3, because three nodes inside the chain declare 4, 4 and 2 choices. Runs only for a story that conditions something, since an unconditioned story's visible graph is its declared graph; skips a capped walk, since a corridor found in a fragment of the state space is not proof of one in the story. <strong>Defers to CG-1 whenever CG-1 already fires</strong> (declared run over the cap): what this rule adds is a corridor CG-1 cannot see at all, and a second finding under a second id would be noise. Deliberately NOT a repair of CG-1 or CG-2: 40 catalog nodes show one option in some configuration and nearly all are an ordinary closed gate, which is what conditions are for, so grading those would fire on the feature; and CG-1's choiceless <em>share</em> has no well-defined reading in configuration space, where one node appears once per reachable state of it. WARNING only, and ADVISORY rather than blocking because all four skeletons authored to the strict bar declare zero conditions and so cannot test the bound. <strong>Flip condition</strong>: becomes blocking once one conditioned book is authored to the strict bar and passes it deliberately. Fires on 2 of 68 committed skeletons.</td>
+<td><code>CG-5 grammar: a reader can walk {visible} consecutive stops offering one option, above band '{band}'s run cap {cap}, in story '{story_id}'. CG-1 sees a longest run of {declared} because it counts declared choices and this corridor is held open by conditions: {node_chain} (advisory only; the nodes in the middle of the chain may declare several choices each)</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -3742,7 +3743,7 @@ damage: the flip would turn on four rules nobody had written down.</p>
 <tr>
 <td>SAFE-14</td>
 <td>Safety</td>
-<td><strong>Safety moderation</strong>: moderation runs over all <code>body</code> and <code>label</code> text against the age-band policy. Any hit flags the specific nodes and forces mandatory human review. A safety flag does not auto-reject the story; it routes the generation job to <code>needs_review</code> (not <code>passed</code>), so the story cannot reach <code>published</code> until a global admin clears or escalates the flag. No auto-publish path exists when a SAFE-14 flag is set.</td>
+<td><strong>NOT IMPLEMENTED IN THE GATE</strong> (<code>validator/safety.py</code> is a stub returning an empty report; the live screening is <code>moderation/pipeline.py</code>, outside the gate). Specified behaviour: <strong>safety moderation</strong>: moderation runs over all <code>body</code> and <code>label</code> text against the age-band policy. Any hit flags the specific nodes and forces mandatory human review. A safety flag does not auto-reject the story; it routes the generation job to <code>needs_review</code> (not <code>passed</code>), so the story cannot reach <code>published</code> until a global admin clears or escalates the flag. No auto-publish path exists when a SAFE-14 flag is set.</td>
 <td><code>SAFE-14 safety: node '{node_id}' flagged by moderation for age band '{age_band}' in story '{story_id}': {flag_detail} (requires human review)</code></td>
 </tr>
 </tbody>
@@ -3923,6 +3924,12 @@ invoked by the publishing path (<code>publishing/service.py</code>) and by the o
 <td><strong>Carried-variable integrity</strong> (added 2026-07-25): on a <code>carries_state</code> chain, a variable declared by book N must survive into book N+1. The client seeds a continuation by variable <strong>name</strong> and clamps carried ints into the <em>receiving</em> book's bounds, silently, so a narrower receiving range rewrites every outcome outside it (ERROR: data loss), a changed type makes the carried value be skipped entirely (ERROR), and a variable the receiver does not declare is dropped without trace (WARNING, since a closed storyline is a legitimate authorial choice).</td>
 <td><code>SR-8 carry: '{var}' is [{lo},{hi}] in book {n} but [{lo2},{hi2}] in book {n2} '{book_id}'; the receiving range must contain the sending range or the client clamps carried outcomes away</code></td>
 </tr>
+<tr>
+<td>SR-9</td>
+<td>Series</td>
+<td><strong>A satisfying exit must leave the next book winnable</strong> (added 2026-07-26, B3). For a <code>carries_state</code> chain, every distinct variable state at a satisfying ending of book N is carried into book N+1 under the WS-G G3 rules (name match, type match, int clamp), and book N+1 must still work from there. Closes the gap SR-5 and Layer 2 both leave open: SR-5 tests ending existence and never traces state across the join, and Layer 2 only ever walks from <code>start_node</code> with the declared initials, so the state a continuation reader actually arrives with is outside every other rule's view. Two distinct failures are reported. (a) <strong>The receiving book stops being sound</strong>: its Layer-2 rules are re-run seeded from the carried entry, and any ERROR not also raised from its own declared initials is a cross-book defect. (b) <strong>The continuation is unwinnable</strong>: no satisfying ending is reachable from the carried entry, so a reader wins book N into a dead campaign. Entry states are sampled up to <code>MAX_ENTRY_STATES</code> (64, <code>validator/series.py</code>); exceeding that, or a capped walk, is reported as a truncated check rather than silently passed. <strong>The receiver is walked from its own <code>series_entry_node</code>, not its <code>start_node</code></strong> (<code>UW-C296</code>, 2026-08-18): the reader enters there, and seeding the walk at <code>start_node</code> validated a path nobody takes. An entry node absent from the story falls back to <code>start_node</code>, matching the client.</td>
+<td><code>SR-9 series: book {index} '{book_id}' can be completed with carried state {carried}, but entering book {next_index} '{next_id}' with that state raises Layer-2 errors it does not raise from its own declared initials: {new_errors} (an acquisition branch for a carried variable must be redesigned, not copied)</code> / <code>... leaves no satisfying ending reachable (the reader wins book {index} into an unwinnable continuation)</code> / <code>SR-9 series: book {index} '{book_id}' has more than {max} distinct satisfying exit states or capped its walk, so the continuation handoff into '{next_id}' was checked over a truncated sample</code></td>
+</tr>
 </tbody>
 </table>
 <p><strong>Remaining gap</strong> (AL-038): SR-8 now covers the declaration side, but nothing yet records <em>which</em>
@@ -3931,78 +3938,16 @@ carried values were clamped or dropped at read time. A per-variable carry audit 
 from the declarations, and the continuation offer is still not gated on reaching a satisfying ending,
 so a reader who loses book N can still be handed book N+1.</p>
 <hr />
-<h2 id="series-cross-book-chain-rules-series-stories-only">Series: Cross-Book Chain Rules (Series Stories Only)<a class="headerlink" href="#series-cross-book-chain-rules-series-stories-only" title="Permanent link">&para;</a></h2>
-<p>Runs at publish time over the whole chain, not at generation time over one story: see the note
-under Pass/Fail semantics above. <code>validate_series(books)</code> sorts the chain by <code>book_index</code> and
-applies the rules below; <code>publishing/service.py</code> raises
-<code>BusinessLogicError(rule="series_validation")</code> if any error is reported.</p>
-<table>
-<thead>
-<tr>
-<th>Rule ID</th>
-<th>Layer</th>
-<th>Description</th>
-<th>Failure Message Template</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>SR-1</td>
-<td>Series</td>
-<td><strong>Series metadata present and single-valued</strong>: every book passed as part of a chain must declare a <code>series</code> block, and the whole chain must share one <code>series_id</code>. Books lacking the block are reported and excluded, so the later rules operate only on series-tagged books.</td>
-<td><code>SR-1 series: book '{book_id}' declares no series metadata but was passed as part of a series chain</code> / <code>SR-1 series: chain spans multiple series ids {ids}; a series is one id</code></td>
-</tr>
-<tr>
-<td>SR-2</td>
-<td>Series</td>
-<td><strong>Contiguous index</strong>: <code>book_index</code> values must form a contiguous <code>1..N</code> with no gaps and no repeats. Gate for the index-dependent rules (SR-4, SR-5, SR-9), which do not run when it fails.</td>
-<td><code>SR-2 series: book_index values {indices} are not a contiguous 1..{n} chain (gaps or duplicates)</code></td>
-</tr>
-<tr>
-<td>SR-3</td>
-<td>Series</td>
-<td><strong>Entry node exists and is declared</strong>: a declared <code>series_entry_node</code> must name a real node in its own book, and any book that is continued into (index &gt; 1) must declare one.</td>
-<td><code>SR-3 series: series_entry_node '{node}' is not a node in book '{book_id}'</code> / <code>SR-3 series: continued-into book {index} '{book_id}' must declare a series_entry_node</code></td>
-</tr>
-<tr>
-<td>SR-4</td>
-<td>Series</td>
-<td><strong>Final flag position</strong>: no book below the highest index may be <code>is_final</code>. The top-index book MAY be final (closed series) or not (open chain a future continuation extends); ADR-011 section 8 and WS-G G4 make open chains first-class, and v1 generation always writes <code>is_final=false</code>.</td>
-<td><code>SR-4 series: book {index} '{book_id}' is marked is_final but is not the last of {last} books</code></td>
-</tr>
-<tr>
-<td>SR-5</td>
-<td>Series</td>
-<td><strong>Both ends of a continuation exist</strong>: each non-final book declares a successful-completion ending, and the book after it declares a <code>series_entry_node</code>. Deliberately does <strong>not</strong> trace that the win ending targets that entry node: books are independent graphs with no shared node ids, so cross-book target convergence is not machine-checkable here. Tests <strong>existence</strong>, not reachability, which is the gap SR-9 closes.</td>
-<td><code>SR-5 series: non-final book {index} '{book_id}' has no successful-completion ending to continue the campaign</code> / <code>SR-5 series: book {index} '{book_id}' continues, but the next book '{next_id}' declares no series_entry_node to converge on</code></td>
-</tr>
-<tr>
-<td>SR-6</td>
-<td>Series</td>
-<td><strong>Young and Tier-1 chains are episodic</strong>: a young-band or Tier-1 book must run with <code>carries_state=false</code>. Carrying state across books assumes a reader who returns to a specific save; the young bands and the variable-free tier do not support that contract.</td>
-<td><code>SR-6 series: book '{book_id}' is a young or Tier-1 story and must run an episodic (carries_state=false) series</code></td>
-</tr>
-<tr>
-<td>SR-7</td>
-<td>Series</td>
-<td><strong>Uniform carry mode</strong>: <code>carries_state</code> must be the same across every book of a chain; a chain must not mix state-carrying and episodic books.</td>
-<td><code>SR-7 series: the chain mixes state-carrying and episodic books; carries_state must be uniform across a series</code></td>
-</tr>
-<tr>
-<td>SR-8</td>
-<td>Series</td>
-<td><strong>RESERVED, not implemented here.</strong> Claimed by the open PR for the authoring-lessons workstream (#416). Do not reuse this id on <code>main</code> until that PR lands or closes; a rule id is free only when no <em>open</em> PR has claimed it.</td>
-<td>n/a</td>
-</tr>
-<tr>
-<td>SR-9</td>
-<td>Series</td>
-<td><strong>A satisfying exit must leave the next book winnable</strong> (added 2026-07-26, B3). For a <code>carries_state</code> chain, every distinct variable state at a satisfying ending of book N is carried into book N+1 under the WS-G G3 rules (name match, type match, int clamp), and book N+1 must still work from there. Closes the gap SR-5 and Layer 2 both leave open: SR-5 tests ending existence and never traces state across the join, and Layer 2 only ever walks from <code>start_node</code> with the declared initials, so the state a continuation reader actually arrives with is outside every other rule's view. Two distinct failures are reported. (a) <strong>The receiving book stops being sound</strong>: its Layer-2 rules are re-run seeded from the carried entry, and any ERROR not also raised from its own declared initials is a cross-book defect. (b) <strong>The continuation is unwinnable</strong>: no satisfying ending is reachable from the carried entry, so a reader wins book N into a dead campaign. Entry states are sampled up to <code>MAX_ENTRY_STATES</code> (64, <code>validator/series.py</code>); exceeding that, or a capped walk, is reported as a truncated check rather than silently passed.</td>
-<td><code>SR-9 series: book {index} '{book_id}' can be completed with carried state {carried}, but entering book {next_index} '{next_id}' with that state raises Layer-2 errors it does not raise from its own declared initials: {new_errors} (an acquisition branch for a carried variable must be redesigned, not copied)</code> / <code>... leaves no satisfying ending reachable (the reader wins book {index} into an unwinnable continuation)</code> / <code>SR-9 series: book {index} '{book_id}' has more than {max} distinct satisfying exit states or capped its walk, so the continuation handoff into '{next_id}' was checked over a truncated sample</code></td>
-</tr>
-</tbody>
-</table>
-<hr />
+<blockquote>
+<p><strong>Note on SR-8 and this section.</strong> Until 2026-08-18 this document carried the Series rules
+TWICE, and the two SR-8 rows contradicted each other: one documented the implemented rule with
+the message template the code emits, the other called the id RESERVED and told readers not to
+reuse it. SR-8 is implemented, and the 8-11 series validation on that date showed it firing
+three distinct ways: a receiver narrowing a carried int below the sender's reachable range
+(ERROR), a receiver dropping a carried variable (WARNING), and a receiver changing a carried
+variable's type (ERROR). The duplicate section and its reserved row are removed; SR-9 was only
+in the removed copy and has been folded into the table above (<code>UW-C298</code>).</p>
+</blockquote>
 <h2 id="character-envelope-participating-books-only">Character Envelope (Participating Books Only)<a class="headerlink" href="#character-envelope-participating-books-only" title="Permanent link">&para;</a></h2>
 <p>Rules proving that a book declaring <code>accepts_character</code> is safe across exactly the states a seeded reader can
 arrive in. Enforced by <code>validator/character.py</code>; specified in
@@ -4087,7 +4032,7 @@ cross-artifact handoff rather than a within-story property. All are ERROR severi
    finding and PL-15..PL-21 do not run. PL-25 runs for any story with a configured
    band; PL-20 and PL-26 additionally require a declared <code>length</code> and
    <code>production_eligible</code>, so an unclassified story is measured on breadth only.</li>
-<li>L2-8 through L2-14 (state-space; Tier-2 only). Stop if any L2 rule fails; L2-13 is a
+<li>L2-8 through L2-15 (state-space; Tier-2 only). Stop if any L2 rule fails; L2-13 is a
    non-blocking scale advisory and never stops the run.</li>
 <li>CH-1, CH-2, CH-3a, CH-3b, CH-4, CH-5, CH-6, CH-7, CH-8 (character envelope; ADR-028,
    participating books only). CH-3a, CH-3b, and CH-4 walk the story once per
@@ -4098,9 +4043,16 @@ cross-artifact handoff rather than a within-story property. All are ERROR severi
    node that would multiply that walk past the cap before L2-12 does, using a
    fixed vocabulary-derived arity rather than the declared span's own width.</li>
 <li>RL-13 (advisory; all stories). Log warnings; continue.</li>
-<li>CG-1 through CG-4 (advisory; all stories) <strong>only when <code>run_gate</code> is called with
+<li>CG-1 through CG-5 (advisory; all stories) <strong>only when <code>run_gate</code> is called with
    <code>enforce_grammar=True</code></strong>, which no production caller does today. Log warnings; continue.</li>
-<li>SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.</li>
+<li>SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.
+   <strong>NOT IMPLEMENTED IN THE GATE.</strong> <code>validator/safety.py::check_safety</code> is a Phase-2 stub
+   that returns an empty report for every story, so this step cannot produce a finding and
+   listing it here as a live step read as coverage the gate does not have (<code>UW-C292</code>). The
+   safety coverage that does exist runs OUTSIDE the gate, in <code>moderation/pipeline.py</code>,
+   which screens every node body and routes a story to <code>needs_review</code>. Keep this entry so
+   the intended order survives, but do not count it when reasoning about what the gate
+   enforces today.</li>
 <li>SR-1 through SR-9 (series chain; series stories only) run <strong>later and elsewhere</strong>, at
    publish time over the whole chain rather than inside <code>run_gate</code> over one story. A book
    can clear steps 1-7 at generation time and still be refused at publish by an SR error.</li>
@@ -4153,7 +4105,7 @@ to address only the flagged node ids and rule violations, changing nothing else.
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 17, 2026 17:31:22 UTC">August 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 20, 2026 04:04:23 UTC">August 20, 2026</span>
   </span>
 
     

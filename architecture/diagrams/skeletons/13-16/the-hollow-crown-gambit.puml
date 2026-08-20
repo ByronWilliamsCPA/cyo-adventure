@@ -1,0 +1,1860 @@
+@startuml the-hollow-crown-gambit
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 60w
+state n_brief #BBDEFB
+n_brief : setup · 58w
+state n_night #D1C4E9
+n_night : rising · 56w
+state e_000 #FFCDD2
+e_000 : setback (negative)
+e_000 : "The Argument You Could Not Finish"
+state e_001 #FFCDD2
+e_001 : capture (negative)
+e_001 : "Escorted Out of the Fair"
+state e_002 #E0E0E0
+e_002 : discovery (neutral)
+e_002 : "Not a Forgery, Which Is Worse"
+state e_003 #FFCDD2
+e_003 : death (negative)
+e_003 : "Cold Water, Fast Current"
+state e_004 #FFCDD2
+e_004 : death (negative)
+e_004 : "Under the Cloth Rows"
+state e_005 #FFCDD2
+e_005 : setback (negative)
+e_005 : "Dismissed on a Technicality"
+state e_006 #FFCDD2
+e_006 : setback (negative)
+e_006 : "A Case Without a Witness"
+state e_007 #FFCDD2
+e_007 : capture (negative)
+e_007 : "Held at the Toll Bar"
+state e_008 #FFCDD2
+e_008 : setback (negative)
+e_008 : "Your Name Off the Roll"
+state e_009 #FFCDD2
+e_009 : capture (negative)
+e_009 : "Charged With the Theft of a Roll"
+state e_010 #E0E0E0
+e_010 : discovery (neutral)
+e_010 : "What the Burned Shelf Held"
+state e_011 #FFCDD2
+e_011 : death (negative)
+e_011 : "The Lamp Room Burns"
+state e_012 #FFCDD2
+e_012 : death (negative)
+e_012 : "A Fire That Started in the Archive"
+state e_013 #FFCDD2
+e_013 : setback (negative)
+e_013 : "The Index Says Otherwise"
+state e_014 #FFCDD2
+e_014 : setback (negative)
+e_014 : "One Day After Midwinter"
+state e_015 #FFCDD2
+e_015 : capture (negative)
+e_015 : "Taken on the Vault Stair"
+state e_016 #FFCDD2
+e_016 : setback (negative)
+e_016 : "Filed and Forgotten"
+state e_017 #FFCDD2
+e_017 : capture (negative)
+e_017 : "Kept in the Sacristy"
+state e_018 #E0E0E0
+e_018 : discovery (neutral)
+e_018 : "A Debt Older Than the Queen"
+state e_019 #FFCDD2
+e_019 : death (negative)
+e_019 : "The Bell Loft Has No Rail"
+state e_020 #FFCDD2
+e_020 : death (negative)
+e_020 : "The Crypt Door Closes"
+state e_021 #FFCDD2
+e_021 : setback (negative)
+e_021 : "Nobody in the Chapter House Moves"
+state e_022 #FFCDD2
+e_022 : setback (negative)
+e_022 : "The Bells Cut You Off"
+state e_023 #FFCDD2
+e_023 : capture (negative)
+e_023 : "The Almoner Withdraws Sanctuary"
+state e_024 #FFCDD2
+e_024 : setback (negative)
+e_024 : "The Wrong Room, the Right Words"
+state e_025 #FFCDD2
+e_025 : capture (negative)
+e_025 : "The Sergeants Post Closes"
+state e_026 #E0E0E0
+e_026 : discovery (neutral)
+e_026 : "The Warden Tells You Why"
+state e_027 #FFCDD2
+e_027 : death (negative)
+e_027 : "The Bells Ring for Someone Else"
+state e_028 #FFCDD2
+e_028 : death (negative)
+e_028 : "Found Below the Gallery Stair"
+state e_029 #FFCDD2
+e_029 : setback (negative)
+e_029 : "Heard, and Not Believed"
+state e_030 #FFCDD2
+e_030 : setback (negative)
+e_030 : "A Copy of a Copy"
+state e_031 #FFCDD2
+e_031 : capture (negative)
+e_031 : "Arrested in Front of the Jury"
+state e_032 #E0E0E0
+e_032 : discovery (neutral)
+e_032 : "The Roll Was Never a Secret"
+state e_033 #FFCDD2
+e_033 : setback (negative)
+e_033 : "Nobody Swears For You"
+state e_034 #C8E6C9
+e_034 : completion (positive)
+e_034 : "Midwinter, and an Heir"
+state e_035 #FFCDD2
+e_035 : death (negative)
+e_035 : "Nothing Recorded, Nothing Recovered"
+state e_036 #E0E0E0
+e_036 : setback (neutral)
+e_036 : "Back to the Copy Room"
+state e_037 #FFCDD2
+e_037 : capture (negative)
+e_037 : "Named as a Forger"
+state e_038 #C8E6C9
+e_038 : success (positive)
+e_038 : "Entered Before the Bells"
+state e_039 #FFCDD2
+e_039 : setback (negative)
+e_039 : "Struck From the Record"
+state e_040 #C8E6C9
+e_040 : completion (positive)
+e_040 : "A Crown With a Name in It"
+state e_041 #FFCDD2
+e_041 : capture (negative)
+e_041 : "The Guard Line Does Not Part"
+state e_042 #E0E0E0
+e_042 : discovery (neutral)
+e_042 : "Whose Hand Was in the Margin"
+state e_043 #FFCDD2
+e_043 : setback (negative)
+e_043 : "Too Late for the Calling"
+state e_044 #C8E6C9
+e_044 : success (positive)
+e_044 : "The Roll Read in Full"
+state e_045 #FFCDD2
+e_045 : death (negative)
+e_045 : "Never Reached the Chamber"
+state e_046 #C8E6C9
+e_046 : completion (positive)
+e_046 : "The Assize Finds for the Record"
+state e_047 #FFCDD2
+e_047 : capture (negative)
+e_047 : "Held in the Antechamber"
+state e_048 #E0E0E0
+e_048 : setback (neutral)
+e_048 : "Withdrawn Without Prejudice"
+state e_049 #FFCDD2
+e_049 : setback (negative)
+e_049 : "Ruled Inadmissible"
+state e_050 #C8E6C9
+e_050 : success (positive)
+e_050 : "Sworn, Sealed, Recorded"
+state e_051 #E0E0E0
+e_051 : discovery (neutral)
+e_051 : "The Third Claimant Explains Herself"
+state e_052 #C8E6C9
+e_052 : completion (positive)
+e_052 : "What the Junior Clerk Proved"
+state e_053 #FFCDD2
+e_053 : death (negative)
+e_053 : "The Antechamber Fire"
+state e_054 #FFCDD2
+e_054 : capture (negative)
+e_054 : "Sworn Against and Detained"
+state e_055 #FFCDD2
+e_055 : setback (negative)
+e_055 : "The Seal Does Not Match"
+state e_056 #E0E0E0
+e_056 : discovery (neutral)
+e_056 : "Two Copies, One Correction"
+state e_057 #C8E6C9
+e_057 : success (positive)
+e_057 : "One Document, Read Once"
+state d00_0 #BBDEFB
+d00_0 : setup · 64w
+state d00_1 #BBDEFB
+d00_1 : setup · 70w
+state d00_2 #BBDEFB
+d00_2 : setup · 60w
+state d01_0 #BBDEFB
+d01_0 : setup · 62w
+state d01_1 #BBDEFB
+d01_1 : setup · 68w
+state d01_2 #BBDEFB
+d01_2 : setup · 61w
+state d01_3 #BBDEFB
+d01_3 : setup · 76w
+state d01_4 #BBDEFB
+d01_4 : setup · 65w
+state d02_0 #D1C4E9
+d02_0 : rising · 60w
+state d02_1 #D1C4E9
+d02_1 : rising · 74w
+state d02_2 #D1C4E9
+d02_2 : rising · 66w
+state d02_3 #D1C4E9
+d02_3 : rising · 58w
+state d02_4 #D1C4E9
+d02_4 : rising · 72w
+state d02_5 #D1C4E9
+d02_5 : rising · 62w
+state d02_6 #D1C4E9
+d02_6 : rising · 68w
+state d03_0 #D1C4E9
+d03_0 : rising · 61w
+state d03_1 #D1C4E9
+d03_1 : rising · 76w
+state d03_2 #D1C4E9
+d03_2 : rising · 65w
+state d03_3 #D1C4E9
+d03_3 : rising · 64w
+state d03_4 #D1C4E9
+d03_4 : rising · 70w
+state d03_5 #D1C4E9
+d03_5 : rising · 60w
+state d03_6 #D1C4E9
+d03_6 : rising · 74w
+state d04_0 #D1C4E9
+d04_0 : rising · 66w
+state d04_1 #D1C4E9
+d04_1 : rising · 58w
+state d04_2 #D1C4E9
+d04_2 : rising · 72w
+state d04_3 #D1C4E9
+d04_3 : rising · 62w
+state d04_4 #D1C4E9
+d04_4 : rising · 68w
+state d04_5 #D1C4E9
+d04_5 : rising · 61w
+state d04_6 #D1C4E9
+d04_6 : rising · 76w
+state d05_0 #D1C4E9
+d05_0 : rising · 65w
+state d05_1 #D1C4E9
+d05_1 : rising · 64w
+state d05_2 #D1C4E9
+d05_2 : rising · 70w
+state d05_3 #D1C4E9
+d05_3 : rising · 60w
+state d05_4 #D1C4E9
+d05_4 : rising · 74w
+state d05_5 #D1C4E9
+d05_5 : rising · 66w
+state d05_6 #D1C4E9
+d05_6 : rising · 58w
+state d06_0 #D1C4E9
+d06_0 : rising · 72w
+state d06_1 #D1C4E9
+d06_1 : rising · 62w
+state d06_2 #D1C4E9
+d06_2 : rising · 68w
+state d06_3 #D1C4E9
+d06_3 : rising · 61w
+state d06_4 #D1C4E9
+d06_4 : rising · 76w
+state d06_5 #D1C4E9
+d06_5 : rising · 65w
+state d06_6 #D1C4E9
+d06_6 : rising · 64w
+state d07_0 #D1C4E9
+d07_0 : rising · 70w
+state d07_1 #D1C4E9
+d07_1 : rising · 60w
+state d07_2 #D1C4E9
+d07_2 : rising · 74w
+state d07_3 #D1C4E9
+d07_3 : rising · 66w
+state d07_4 #D1C4E9
+d07_4 : rising · 58w
+state d07_5 #D1C4E9
+d07_5 : rising · 72w
+state d07_6 #D1C4E9
+d07_6 : rising · 62w
+state d08_0 #D1C4E9
+d08_0 : rising · 68w
+state d08_1 #D1C4E9
+d08_1 : rising · 61w
+state d08_2 #D1C4E9
+d08_2 : rising · 76w
+state d08_3 #D1C4E9
+d08_3 : rising · 65w
+state d08_4 #D1C4E9
+d08_4 : rising · 64w
+state d08_5 #D1C4E9
+d08_5 : rising · 70w
+state d08_6 #D1C4E9
+d08_6 : rising · 60w
+state d09_0 #D1C4E9
+d09_0 : rising · 74w
+state d09_1 #D1C4E9
+d09_1 : rising · 66w
+state d09_2 #D1C4E9
+d09_2 : rising · 58w
+state d09_3 #D1C4E9
+d09_3 : rising · 72w
+state d09_4 #D1C4E9
+d09_4 : rising · 62w
+state d09_5 #D1C4E9
+d09_5 : rising · 68w
+state d09_6 #D1C4E9
+d09_6 : rising · 61w
+state d10_0 #D1C4E9
+d10_0 : rising · 76w
+state d10_1 #D1C4E9
+d10_1 : rising · 65w
+state d10_2 #D1C4E9
+d10_2 : rising · 64w
+state d10_3 #D1C4E9
+d10_3 : rising · 70w
+state d10_4 #D1C4E9
+d10_4 : rising · 60w
+state d10_5 #D1C4E9
+d10_5 : rising · 74w
+state d10_6 #D1C4E9
+d10_6 : rising · 66w
+state d11_0 #D1C4E9
+d11_0 : rising · 58w
+state d11_1 #D1C4E9
+d11_1 : rising · 72w
+state d11_2 #D1C4E9
+d11_2 : rising · 62w
+state d11_3 #D1C4E9
+d11_3 : rising · 68w
+state d11_4 #D1C4E9
+d11_4 : rising · 61w
+state d11_5 #D1C4E9
+d11_5 : rising · 76w
+state d11_6 #D1C4E9
+d11_6 : rising · 65w
+state d12_0 #D1C4E9
+d12_0 : rising · 64w
+state d12_1 #D1C4E9
+d12_1 : rising · 70w
+state d12_2 #D1C4E9
+d12_2 : rising · 60w
+state d12_3 #D1C4E9
+d12_3 : rising · 74w
+state d12_4 #D1C4E9
+d12_4 : rising · 66w
+state d12_5 #D1C4E9
+d12_5 : rising · 58w
+state d12_6 #D1C4E9
+d12_6 : rising · 72w
+state d13_0 #D1C4E9
+d13_0 : rising · 62w
+state d13_1 #D1C4E9
+d13_1 : rising · 68w
+state d13_2 #D1C4E9
+d13_2 : rising · 61w
+state d13_3 #D1C4E9
+d13_3 : rising · 76w
+state d13_4 #D1C4E9
+d13_4 : rising · 65w
+state d13_5 #D1C4E9
+d13_5 : rising · 64w
+state d13_6 #D1C4E9
+d13_6 : rising · 70w
+state d14_0 #D1C4E9
+d14_0 : rising · 60w
+state d14_1 #D1C4E9
+d14_1 : rising · 74w
+state d14_2 #D1C4E9
+d14_2 : rising · 66w
+state d14_3 #D1C4E9
+d14_3 : rising · 58w
+state d14_4 #D1C4E9
+d14_4 : rising · 72w
+state d14_5 #D1C4E9
+d14_5 : rising · 62w
+state d14_6 #D1C4E9
+d14_6 : rising · 68w
+state d15_0 #D1C4E9
+d15_0 : rising · 61w
+state d15_1 #D1C4E9
+d15_1 : rising · 76w
+state d15_2 #D1C4E9
+d15_2 : rising · 65w
+state d15_3 #D1C4E9
+d15_3 : rising · 64w
+state d15_4 #D1C4E9
+d15_4 : rising · 70w
+state d15_5 #D1C4E9
+d15_5 : rising · 60w
+state d15_6 #D1C4E9
+d15_6 : rising · 74w
+state d16_0 #D1C4E9
+d16_0 : rising · 66w
+state d16_1 #D1C4E9
+d16_1 : rising · 58w
+state d16_2 #D1C4E9
+d16_2 : rising · 72w
+state d16_3 #D1C4E9
+d16_3 : rising · 62w
+state d16_4 #D1C4E9
+d16_4 : rising · 68w
+state d16_5 #D1C4E9
+d16_5 : rising · 61w
+state d16_6 #D1C4E9
+d16_6 : rising · 76w
+state d17_0 #D1C4E9
+d17_0 : rising · 65w
+state d17_1 #D1C4E9
+d17_1 : rising · 64w
+state d17_2 #D1C4E9
+d17_2 : rising · 70w
+state d17_3 #D1C4E9
+d17_3 : rising · 60w
+state d17_4 #D1C4E9
+d17_4 : rising · 74w
+state d17_5 #D1C4E9
+d17_5 : rising · 66w
+state d17_6 #D1C4E9
+d17_6 : rising · 58w
+state d18_0 #D1C4E9
+d18_0 : rising · 72w
+state d18_1 #D1C4E9
+d18_1 : rising · 62w
+state d18_2 #D1C4E9
+d18_2 : rising · 68w
+state d18_3 #D1C4E9
+d18_3 : rising · 61w
+state d18_4 #D1C4E9
+d18_4 : rising · 76w
+state d18_5 #D1C4E9
+d18_5 : rising · 65w
+state d18_6 #D1C4E9
+d18_6 : rising · 64w
+state d19_0 #D1C4E9
+d19_0 : rising · 70w
+state d19_1 #D1C4E9
+d19_1 : rising · 60w
+state d19_2 #D1C4E9
+d19_2 : rising · 74w
+state d19_3 #D1C4E9
+d19_3 : rising · 66w
+state d19_4 #D1C4E9
+d19_4 : rising · 58w
+state d19_5 #D1C4E9
+d19_5 : rising · 72w
+state d19_6 #D1C4E9
+d19_6 : rising · 62w
+state d20_0 #D1C4E9
+d20_0 : rising · 68w
+state d20_1 #D1C4E9
+d20_1 : rising · 61w
+state d20_2 #D1C4E9
+d20_2 : rising · 76w
+state d20_3 #D1C4E9
+d20_3 : rising · 65w
+state d20_4 #D1C4E9
+d20_4 : rising · 64w
+state d20_5 #D1C4E9
+d20_5 : rising · 70w
+state d20_6 #D1C4E9
+d20_6 : rising · 60w
+state d21_0 #D1C4E9
+d21_0 : rising · 74w
+state d21_1 #D1C4E9
+d21_1 : rising · 66w
+state d21_2 #D1C4E9
+d21_2 : rising · 58w
+state d21_3 #D1C4E9
+d21_3 : rising · 72w
+state d21_4 #D1C4E9
+d21_4 : rising · 62w
+state d21_5 #D1C4E9
+d21_5 : rising · 68w
+state d21_6 #D1C4E9
+d21_6 : rising · 61w
+state d22_0 #D1C4E9
+d22_0 : rising · 76w
+state d22_1 #D1C4E9
+d22_1 : rising · 65w
+state d22_2 #D1C4E9
+d22_2 : rising · 64w
+state d22_3 #D1C4E9
+d22_3 : rising · 70w
+state d22_4 #D1C4E9
+d22_4 : rising · 60w
+state d22_5 #D1C4E9
+d22_5 : rising · 74w
+state d22_6 #D1C4E9
+d22_6 : rising · 66w
+state d23_0 #D1C4E9
+d23_0 : rising · 58w
+state d23_1 #D1C4E9
+d23_1 : rising · 72w
+state d23_2 #D1C4E9
+d23_2 : rising · 62w
+state d23_3 #D1C4E9
+d23_3 : rising · 68w
+state d23_4 #D1C4E9
+d23_4 : rising · 61w
+state d23_5 #D1C4E9
+d23_5 : rising · 76w
+state d23_6 #D1C4E9
+d23_6 : rising · 65w
+state d24_0 #D1C4E9
+d24_0 : rising · 64w
+state d24_1 #D1C4E9
+d24_1 : rising · 70w
+state d24_2 #D1C4E9
+d24_2 : rising · 60w
+state d24_3 #D1C4E9
+d24_3 : rising · 74w
+state d24_4 #D1C4E9
+d24_4 : rising · 66w
+state d24_5 #D1C4E9
+d24_5 : rising · 58w
+state d24_6 #D1C4E9
+d24_6 : rising · 72w
+state d25_0 #D1C4E9
+d25_0 : rising · 62w
+state d25_1 #D1C4E9
+d25_1 : rising · 68w
+state d25_2 #D1C4E9
+d25_2 : rising · 61w
+state d25_3 #D1C4E9
+d25_3 : rising · 76w
+state d25_4 #D1C4E9
+d25_4 : rising · 65w
+state d25_5 #D1C4E9
+d25_5 : rising · 64w
+state d25_6 #D1C4E9
+d25_6 : rising · 70w
+state d26_0 #D1C4E9
+d26_0 : rising · 60w
+state d26_1 #D1C4E9
+d26_1 : rising · 74w
+state d26_2 #D1C4E9
+d26_2 : rising · 66w
+state d26_3 #D1C4E9
+d26_3 : rising · 58w
+state d26_4 #D1C4E9
+d26_4 : rising · 72w
+state d26_5 #D1C4E9
+d26_5 : rising · 62w
+state d26_6 #D1C4E9
+d26_6 : rising · 68w
+state d27_0 #D1C4E9
+d27_0 : rising · 61w
+state d27_1 #D1C4E9
+d27_1 : rising · 76w
+state d27_2 #D1C4E9
+d27_2 : rising · 65w
+state d27_3 #D1C4E9
+d27_3 : rising · 64w
+state d27_4 #D1C4E9
+d27_4 : rising · 70w
+state d27_5 #D1C4E9
+d27_5 : rising · 60w
+state d27_6 #D1C4E9
+d27_6 : rising · 74w
+state d28_0 #D1C4E9
+d28_0 : rising · 66w
+state d28_1 #D1C4E9
+d28_1 : rising · 58w
+state d28_2 #D1C4E9
+d28_2 : rising · 72w
+state d28_3 #D1C4E9
+d28_3 : rising · 62w
+state d28_4 #D1C4E9
+d28_4 : rising · 68w
+state d28_5 #D1C4E9
+d28_5 : rising · 61w
+state d28_6 #D1C4E9
+d28_6 : rising · 76w
+state d29_0 #FFE0B2
+d29_0 : climax · 65w
+state d29_1 #FFE0B2
+d29_1 : climax · 64w
+state d29_2 #FFE0B2
+d29_2 : climax · 70w
+state d29_3 #FFE0B2
+d29_3 : climax · 60w
+state d29_4 #FFE0B2
+d29_4 : climax · 74w
+state d29_5 #FFE0B2
+d29_5 : climax · 66w
+state d29_6 #FFE0B2
+d29_6 : climax · 58w
+state d30_0 #FFE0B2
+d30_0 : climax · 72w
+state d30_1 #FFE0B2
+d30_1 : climax · 62w
+state d30_2 #FFE0B2
+d30_2 : climax · 68w
+state d30_3 #FFE0B2
+d30_3 : climax · 61w
+state d30_4 #FFE0B2
+d30_4 : climax · 76w
+state d30_5 #FFE0B2
+d30_5 : climax · 65w
+state d30_6 #FFE0B2
+d30_6 : climax · 64w
+state d31_0 #FFE0B2
+d31_0 : climax · 70w
+state d31_1 #FFE0B2
+d31_1 : climax · 60w
+state d31_2 #FFE0B2
+d31_2 : climax · 74w
+state d31_3 #FFE0B2
+d31_3 : climax · 66w
+state d31_4 #FFE0B2
+d31_4 : climax · 58w
+state d31_5 #FFE0B2
+d31_5 : climax · 72w
+state d31_6 #FFE0B2
+d31_6 : climax · 62w
+state c00_0_1 #D1C4E9
+c00_0_1 : rising · 63w
+state c00_0_2 #D1C4E9
+c00_0_2 : rising · 59w
+state c00_0_3 #D1C4E9
+c00_0_3 : rising · 67w
+state c00_1_1 #D1C4E9
+c00_1_1 : rising · 59w
+state c00_1_2 #D1C4E9
+c00_1_2 : rising · 67w
+state c01_1_2 #D1C4E9
+c01_1_2 : rising · 56w
+state c01_2_1 #D1C4E9
+c01_2_1 : rising · 56w
+state c01_2_2 #D1C4E9
+c01_2_2 : rising · 63w
+state c01_3_1 #D1C4E9
+c01_3_1 : rising · 63w
+state c01_3_2 #D1C4E9
+c01_3_2 : rising · 59w
+state c02_3_1 #D1C4E9
+c02_3_1 : rising · 58w
+state c02_3_2 #D1C4E9
+c02_3_2 : rising · 64w
+state c02_3_3 #D1C4E9
+c02_3_3 : rising · 56w
+state c02_4_1 #D1C4E9
+c02_4_1 : rising · 64w
+state c02_4_2 #D1C4E9
+c02_4_2 : rising · 56w
+state c03_4_1 #D1C4E9
+c03_4_1 : rising · 55w
+state c03_4_2 #D1C4E9
+c03_4_2 : rising · 61w
+state c03_5_1 #D1C4E9
+c03_5_1 : rising · 61w
+state c03_5_2 #D1C4E9
+c03_5_2 : rising · 58w
+state c03_6_1 #D1C4E9
+c03_6_1 : rising · 58w
+state c04_0_1 #D1C4E9
+c04_0_1 : rising · 61w
+state c04_5_2 #D1C4E9
+c04_5_2 : rising · 67w
+state c04_6_1 #D1C4E9
+c04_6_1 : rising · 67w
+state c04_6_2 #D1C4E9
+c04_6_2 : rising · 55w
+state c04_6_3 #D1C4E9
+c04_6_3 : rising · 61w
+state c05_0_1 #D1C4E9
+c05_0_1 : rising · 59w
+state c05_0_2 #D1C4E9
+c05_0_2 : rising · 67w
+state c05_0_3 #D1C4E9
+c05_0_3 : rising · 55w
+state c05_1_1 #D1C4E9
+c05_1_1 : rising · 67w
+state c05_6_2 #D1C4E9
+c05_6_2 : rising · 63w
+state c06_1_2 #D1C4E9
+c06_1_2 : rising · 63w
+state c06_2_1 #D1C4E9
+c06_2_1 : rising · 63w
+state c06_2_2 #D1C4E9
+c06_2_2 : rising · 59w
+state c06_3_1 #D1C4E9
+c06_3_1 : rising · 59w
+state c06_3_2 #D1C4E9
+c06_3_2 : rising · 67w
+state c07_3_1 #D1C4E9
+c07_3_1 : rising · 64w
+state c07_3_2 #D1C4E9
+c07_3_2 : rising · 56w
+state c07_3_3 #D1C4E9
+c07_3_3 : rising · 63w
+state c07_4_1 #D1C4E9
+c07_4_1 : rising · 56w
+state c07_4_2 #D1C4E9
+c07_4_2 : rising · 63w
+state c08_4_1 #D1C4E9
+c08_4_1 : rising · 61w
+state c08_4_2 #D1C4E9
+c08_4_2 : rising · 58w
+state c08_5_1 #D1C4E9
+c08_5_1 : rising · 58w
+state c08_5_2 #D1C4E9
+c08_5_2 : rising · 64w
+state c08_6_1 #D1C4E9
+c08_6_1 : rising · 64w
+state c09_5_1 #D1C4E9
+c09_5_1 : rising · 67w
+state c09_5_2 #D1C4E9
+c09_5_2 : rising · 55w
+state c09_6_1 #D1C4E9
+c09_6_1 : rising · 55w
+state c09_6_2 #D1C4E9
+c09_6_2 : rising · 61w
+state c09_6_3 #D1C4E9
+c09_6_3 : rising · 58w
+state c10_0_1 #D1C4E9
+c10_0_1 : rising · 67w
+state c10_0_2 #D1C4E9
+c10_0_2 : rising · 55w
+state c10_0_3 #D1C4E9
+c10_0_3 : rising · 61w
+state c10_6_1 #D1C4E9
+c10_6_1 : rising · 63w
+state c10_6_2 #D1C4E9
+c10_6_2 : rising · 59w
+state c11_1_2 #D1C4E9
+c11_1_2 : rising · 59w
+state c11_2_1 #D1C4E9
+c11_2_1 : rising · 59w
+state c11_2_2 #D1C4E9
+c11_2_2 : rising · 67w
+state c11_3_1 #D1C4E9
+c11_3_1 : rising · 67w
+state c11_3_2 #D1C4E9
+c11_3_2 : rising · 55w
+state c12_0_1 #D1C4E9
+c12_0_1 : rising · 61w
+state c12_0_2 #D1C4E9
+c12_0_2 : rising · 58w
+state c12_1_1 #D1C4E9
+c12_1_1 : rising · 58w
+state c12_1_2 #D1C4E9
+c12_1_2 : rising · 64w
+state c12_6_2 #D1C4E9
+c12_6_2 : rising · 55w
+state c13_1_1 #D1C4E9
+c13_1_1 : rising · 67w
+state c13_1_2 #D1C4E9
+c13_1_2 : rising · 55w
+state c13_2_1 #D1C4E9
+c13_2_1 : rising · 55w
+state c13_2_2 #D1C4E9
+c13_2_2 : rising · 61w
+state c13_2_3 #D1C4E9
+c13_2_3 : rising · 58w
+state c14_1_1 #D1C4E9
+c14_1_1 : rising · 56w
+state c14_1_2 #D1C4E9
+c14_1_2 : rising · 63w
+state c14_1_3 #D1C4E9
+c14_1_3 : rising · 59w
+state c14_2_1 #D1C4E9
+c14_2_1 : rising · 63w
+state c14_2_2 #D1C4E9
+c14_2_2 : rising · 59w
+state c15_2_1 #D1C4E9
+c15_2_1 : rising · 58w
+state c15_2_2 #D1C4E9
+c15_2_2 : rising · 64w
+state c15_3_1 #D1C4E9
+c15_3_1 : rising · 64w
+state c15_3_2 #D1C4E9
+c15_3_2 : rising · 56w
+state c15_4_1 #D1C4E9
+c15_4_1 : rising · 56w
+state c16_0_1 #D1C4E9
+c16_0_1 : rising · 63w
+state c16_5_1 #D1C4E9
+c16_5_1 : rising · 58w
+state c16_5_2 #D1C4E9
+c16_5_2 : rising · 64w
+state c16_6_1 #D1C4E9
+c16_6_1 : rising · 64w
+state c16_6_2 #D1C4E9
+c16_6_2 : rising · 56w
+state c17_0_1 #D1C4E9
+c17_0_1 : rising · 58w
+state c17_0_2 #D1C4E9
+c17_0_2 : rising · 64w
+state c17_1_1 #D1C4E9
+c17_1_1 : rising · 64w
+state c17_1_2 #D1C4E9
+c17_1_2 : rising · 56w
+state c17_6_2 #D1C4E9
+c17_6_2 : rising · 61w
+state c18_1_1 #D1C4E9
+c18_1_1 : rising · 55w
+state c18_1_2 #D1C4E9
+c18_1_2 : rising · 61w
+state c18_2_1 #D1C4E9
+c18_2_1 : rising · 61w
+state c18_2_2 #D1C4E9
+c18_2_2 : rising · 58w
+state c18_2_3 #D1C4E9
+c18_2_3 : rising · 64w
+state c19_0_2 #D1C4E9
+c19_0_2 : rising · 63w
+state c19_1_1 #D1C4E9
+c19_1_1 : rising · 63w
+state c19_1_2 #D1C4E9
+c19_1_2 : rising · 59w
+state c19_1_3 #D1C4E9
+c19_1_3 : rising · 67w
+state c19_2_1 #D1C4E9
+c19_2_1 : rising · 59w
+state c20_1_2 #D1C4E9
+c20_1_2 : rising · 64w
+state c20_2_1 #D1C4E9
+c20_2_1 : rising · 64w
+state c20_2_2 #D1C4E9
+c20_2_2 : rising · 56w
+state c20_3_1 #D1C4E9
+c20_3_1 : rising · 56w
+state c20_3_2 #D1C4E9
+c20_3_2 : rising · 63w
+state c21_0_1 #D1C4E9
+c21_0_1 : rising · 59w
+state c21_5_1 #D1C4E9
+c21_5_1 : rising · 64w
+state c21_5_2 #D1C4E9
+c21_5_2 : rising · 56w
+state c21_6_1 #D1C4E9
+c21_6_1 : rising · 56w
+state c21_6_2 #D1C4E9
+c21_6_2 : rising · 63w
+state c22_0_1 #D1C4E9
+c22_0_1 : rising · 64w
+state c22_0_2 #D1C4E9
+c22_0_2 : rising · 56w
+state c22_1_1 #D1C4E9
+c22_1_1 : rising · 56w
+state c22_1_2 #D1C4E9
+c22_1_2 : rising · 63w
+state c22_6_2 #D1C4E9
+c22_6_2 : rising · 58w
+state c23_1_1 #D1C4E9
+c23_1_1 : rising · 61w
+state c23_1_2 #D1C4E9
+c23_1_2 : rising · 58w
+state c23_2_1 #D1C4E9
+c23_2_1 : rising · 58w
+state c23_2_2 #D1C4E9
+c23_2_2 : rising · 64w
+state c23_2_3 #D1C4E9
+c23_2_3 : rising · 56w
+state c24_0_1 #D1C4E9
+c24_0_1 : rising · 63w
+state c24_0_2 #D1C4E9
+c24_0_2 : rising · 59w
+state c24_1_1 #D1C4E9
+c24_1_1 : rising · 59w
+state c24_1_2 #D1C4E9
+c24_1_2 : rising · 67w
+state c24_1_3 #D1C4E9
+c24_1_3 : rising · 55w
+state c25_1_1 #D1C4E9
+c25_1_1 : rising · 64w
+state c25_1_2 #D1C4E9
+c25_1_2 : rising · 56w
+state c25_2_1 #D1C4E9
+c25_2_1 : rising · 56w
+state c25_2_2 #D1C4E9
+c25_2_2 : rising · 63w
+state c25_3_1 #D1C4E9
+c25_3_1 : rising · 63w
+state c26_0_1 #D1C4E9
+c26_0_1 : rising · 67w
+state c26_5_1 #D1C4E9
+c26_5_1 : rising · 56w
+state c26_5_2 #D1C4E9
+c26_5_2 : rising · 63w
+state c26_6_1 #D1C4E9
+c26_6_1 : rising · 63w
+state c26_6_2 #D1C4E9
+c26_6_2 : rising · 59w
+state c27_0_1 #D1C4E9
+c27_0_1 : rising · 56w
+state c27_0_2 #D1C4E9
+c27_0_2 : rising · 63w
+state c27_1_1 #D1C4E9
+c27_1_1 : rising · 63w
+state c27_1_2 #D1C4E9
+c27_1_2 : rising · 59w
+state c27_6_2 #D1C4E9
+c27_6_2 : rising · 64w
+state c28_1_1 #D1C4E9
+c28_1_1 : rising · 58w
+state c28_1_2 #D1C4E9
+c28_1_2 : rising · 64w
+state c28_2_1 #D1C4E9
+c28_2_1 : rising · 64w
+state c28_2_2 #D1C4E9
+c28_2_2 : rising · 56w
+state c28_2_3 #D1C4E9
+c28_2_3 : rising · 63w
+state c29_0_1 #D1C4E9
+c29_0_1 : rising · 59w
+state c29_0_2 #D1C4E9
+c29_0_2 : rising · 67w
+state c29_1_1 #D1C4E9
+c29_1_1 : rising · 67w
+state c29_1_2 #D1C4E9
+c29_1_2 : rising · 55w
+state c29_6_3 #D1C4E9
+c29_6_3 : rising · 59w
+state c30_0_3 #D1C4E9
+c30_0_3 : rising · 63w
+state c30_1_1 #D1C4E9
+c30_1_1 : rising · 56w
+state c30_1_2 #D1C4E9
+c30_1_2 : rising · 63w
+state c30_2_1 #D1C4E9
+c30_2_1 : rising · 63w
+state c30_2_2 #D1C4E9
+c30_2_2 : rising · 59w
+n_open --> n_brief : Finish the copy
+n_brief --> n_night : Take the keys
+n_night --> d00_0 : Take the copy room
+n_night --> d00_1 : Cross to the wax table
+n_night --> d00_2 : Slip through to the messengers bench
+d00_0 --> d01_0 : Take the copy room
+d00_0 --> c00_0_1 : Cross to the wax table
+d00_0 --> c00_0_2 : Slip through to the messengers bench
+d00_0 --> c00_0_3 : Present yourself at the undercroft stair
+d00_1 --> d01_1 : Slip through to the wax table
+d00_1 --> c00_1_1 : Present yourself at the messengers bench
+d00_1 --> c00_1_2 : Work your way round to the undercroft st...
+d00_2 --> d01_2 : Work your way round to the messengers be...
+d00_2 --> d01_3 : Ask for the undercroft stair
+d00_2 --> d01_4 : Wait at the seal press
+d01_0 --> d02_0 : Present yourself at the copy room
+d01_0 --> d02_1 : Work your way round to the wax table
+d01_0 --> d02_2 : Ask for the messengers bench
+d01_1 --> d02_1 : Ask for the wax table
+d01_1 --> d02_2 : Wait at the messengers bench
+d01_1 --> c01_1_2 : Send word to the undercroft stair
+d01_2 --> d02_2 : Send word to the messengers bench
+d01_2 --> c01_2_1 : Follow the clerk to the undercroft stair
+d01_2 --> c01_2_2 : Hold at the seal press
+d01_3 --> d02_3 : Hold at the undercroft stair
+d01_3 --> c01_3_1 : Make for the seal press
+d01_3 --> c01_3_2 : Go quietly to the clerks gallery
+d01_4 --> d02_4 : Go quietly to the seal press
+d01_4 --> d02_5 : Take the clerks gallery
+d01_4 --> d02_6 : Cross to the night desk
+d01_4 --> d02_0 : Slip through to the copy room
+d02_0 --> d03_0 : Wait at the copy room
+d02_0 --> d03_1 : Send word to the wax table
+d02_0 --> d03_2 : Follow the clerk to the messengers bench
+d02_1 --> d03_1 : Follow the clerk to the wax table
+d02_1 --> d03_2 : Hold at the messengers bench
+d02_1 --> d03_3 : Make for the undercroft stair
+d02_2 --> d03_2 : Make for the messengers bench
+d02_2 --> d03_3 : Go quietly to the undercroft stair
+d02_2 --> d03_4 : Take the seal press
+d02_3 --> d03_3 : Take the undercroft stair
+d02_3 --> c02_3_1 : Cross to the seal press
+d02_3 --> c02_3_2 : Slip through to the clerks gallery
+d02_3 --> c02_3_3 : Present yourself at the night desk
+d02_4 --> d03_4 : Slip through to the seal press
+d02_4 --> c02_4_1 : Present yourself at the clerks gallery
+d02_4 --> c02_4_2 : Work your way round to the night desk
+d02_5 --> d03_5 : Work your way round to the clerks galler...
+d02_5 --> d03_6 : Ask for the night desk
+d02_5 --> d03_0 : Wait at the copy room
+d02_6 --> d03_6 : Wait at the night desk
+d02_6 --> d03_0 : Send word to the copy room
+d02_6 --> d03_1 : Follow the clerk to the wax table
+d03_0 --> d04_0 : Hold at the petitions queue
+d03_0 --> d04_1 : Make for the bailiffs door
+d03_0 --> d04_2 : Go quietly to the witness pen
+d03_1 --> d04_1 : Go quietly to the bailiffs door
+d03_1 --> d04_2 : Take the witness pen
+d03_1 --> d04_3 : Cross to the fee table
+d03_2 --> d04_2 : Cross to the witness pen
+d03_2 --> d04_3 : Slip through to the fee table
+d03_2 --> d04_4 : Present yourself at the advocates hall
+d03_2 --> d04_5 : Work your way round to the sheriffs rota
+d03_3 --> d04_3 : Present yourself at the fee table
+d03_3 --> d04_4 : Work your way round to the advocates hal...
+d03_3 --> d04_5 : Ask for the sheriffs rota
+d03_4 --> d04_4 : Ask for the advocates hall
+d03_4 --> c03_4_1 : Wait at the sheriffs rota
+d03_4 --> c03_4_2 : Send word to the debtors gate
+d03_5 --> d04_5 : Send word to the sheriffs rota
+d03_5 --> c03_5_1 : Follow the clerk to the debtors gate
+d03_5 --> c03_5_2 : Hold at the petitions queue
+d03_6 --> d04_6 : Hold at the debtors gate
+d03_6 --> c03_6_1 : Make for the petitions queue
+d03_6 --> d04_1 : Go quietly to the bailiffs door
+d04_0 --> d05_0 : Take the petitions queue
+d04_0 --> c04_0_1 : Cross to the bailiffs door
+d04_0 --> d05_2 : Slip through to the witness pen
+d04_1 --> d05_1 : Slip through to the bailiffs door
+d04_1 --> d05_2 : Present yourself at the witness pen
+d04_1 --> d05_3 : Work your way round to the fee table
+d04_1 --> d05_4 : Ask for the advocates hall
+d04_2 --> d05_2 : Work your way round to the witness pen
+d04_2 --> d05_3 : Ask for the fee table
+d04_2 --> d05_4 : Wait at the advocates hall
+d04_3 --> d05_3 : Wait at the fee table
+d04_3 --> d05_4 : Send word to the advocates hall
+d04_3 --> d05_5 : Follow the clerk to the sheriffs rota
+d04_4 --> d05_4 : Follow the clerk to the advocates hall
+d04_4 --> d05_5 : Hold at the sheriffs rota
+d04_4 --> d05_6 : Make for the debtors gate
+d04_5 --> d05_5 : Make for the sheriffs rota
+d04_5 --> d05_6 : Go quietly to the debtors gate
+d04_5 --> c04_5_2 : Take the petitions queue
+d04_6 --> d05_6 : Take the debtors gate
+d04_6 --> c04_6_1 : Cross to the petitions queue
+d04_6 --> c04_6_2 : Slip through to the bailiffs door
+d04_6 --> c04_6_3 : Present yourself at the witness pen
+d05_0 --> d06_0 : Present yourself at the petitions queue
+d05_0 --> c05_0_1 : Work your way round to the bailiffs door
+d05_0 --> c05_0_2 : Ask for the witness pen
+d05_0 --> c05_0_3 : Wait at the fee table
+d05_1 --> d06_1 : Ask for the bailiffs door
+d05_1 --> c05_1_1 : Wait at the witness pen
+d05_1 --> d06_3 : Send word to the fee table
+d05_2 --> d06_2 : Send word to the witness pen
+d05_2 --> d06_3 : Follow the clerk to the fee table
+d05_2 --> d06_4 : Hold at the advocates hall
+d05_3 --> d06_3 : Hold at the fee table
+d05_3 --> d06_4 : Make for the advocates hall
+d05_3 --> d06_5 : Go quietly to the sheriffs rota
+d05_4 --> d06_4 : Go quietly to the advocates hall
+d05_4 --> d06_5 : Take the sheriffs rota
+d05_4 --> d06_6 : Cross to the debtors gate
+d05_5 --> d06_5 : Cross to the sheriffs rota
+d05_5 --> d06_6 : Slip through to the debtors gate
+d05_5 --> d06_0 : Present yourself at the petitions queue
+d05_5 --> d06_1 : Work your way round to the bailiffs door
+d05_6 --> d06_6 : Present yourself at the debtors gate
+d05_6 --> d06_0 : Work your way round to the petitions que...
+d05_6 --> c05_6_2 : Ask for the bailiffs door
+d06_0 --> d07_0 : Wait at the petitions queue
+d06_0 --> d07_1 : Send word to the bailiffs door
+d06_0 --> d07_2 : Follow the clerk to the witness pen
+d06_1 --> d07_1 : Follow the clerk to the bailiffs door
+d06_1 --> d07_2 : Hold at the witness pen
+d06_1 --> c06_1_2 : Make for the fee table
+d06_2 --> d07_2 : Make for the witness pen
+d06_2 --> c06_2_1 : Go quietly to the fee table
+d06_2 --> c06_2_2 : Take the advocates hall
+d06_3 --> d07_3 : Take the fee table
+d06_3 --> c06_3_1 : Cross to the advocates hall
+d06_3 --> c06_3_2 : Slip through to the sheriffs rota
+d06_4 --> d07_4 : Slip through to the advocates hall
+d06_4 --> d07_5 : Present yourself at the sheriffs rota
+d06_4 --> d07_6 : Work your way round to the debtors gate
+d06_4 --> d07_0 : Ask for the petitions queue
+d06_5 --> d07_5 : Work your way round to the sheriffs rota
+d06_5 --> d07_6 : Ask for the debtors gate
+d06_5 --> d07_0 : Wait at the petitions queue
+d06_6 --> d07_6 : Wait at the debtors gate
+d06_6 --> d07_0 : Send word to the petitions queue
+d06_6 --> d07_1 : Follow the clerk to the bailiffs door
+d07_0 --> d08_0 : Hold at the die room
+d07_0 --> d08_1 : Make for the assay bench
+d07_0 --> d08_2 : Go quietly to the bullion stair
+d07_1 --> d08_1 : Go quietly to the assay bench
+d07_1 --> d08_2 : Take the bullion stair
+d07_1 --> d08_3 : Cross to the pyx chest
+d07_2 --> d08_2 : Cross to the bullion stair
+d07_2 --> d08_3 : Slip through to the pyx chest
+d07_2 --> d08_4 : Present yourself at the strike floor
+d07_3 --> d08_3 : Present yourself at the pyx chest
+d07_3 --> c07_3_1 : Work your way round to the strike floor
+d07_3 --> c07_3_2 : Ask for the porters yard
+d07_3 --> c07_3_3 : Wait at the captain of the guard
+d07_4 --> d08_4 : Ask for the strike floor
+d07_4 --> c07_4_1 : Wait at the porters yard
+d07_4 --> c07_4_2 : Send word to the captain of the guard
+d07_5 --> d08_5 : Send word to the porters yard
+d07_5 --> d08_6 : Follow the clerk to the captain of the g...
+d07_5 --> d08_0 : Hold at the die room
+d07_6 --> d08_6 : Hold at the captain of the guard
+d07_6 --> d08_0 : Make for the die room
+d07_6 --> d08_1 : Go quietly to the assay bench
+d08_0 --> d09_0 : Take the die room
+d08_0 --> d09_1 : Cross to the assay bench
+d08_0 --> d09_2 : Slip through to the bullion stair
+d08_1 --> d09_1 : Slip through to the assay bench
+d08_1 --> d09_2 : Present yourself at the bullion stair
+d08_1 --> d09_3 : Work your way round to the pyx chest
+d08_2 --> d09_2 : Work your way round to the bullion stair
+d08_2 --> d09_3 : Ask for the pyx chest
+d08_2 --> d09_4 : Wait at the strike floor
+d08_2 --> d09_5 : Send word to the porters yard
+d08_3 --> d09_3 : Wait at the pyx chest
+d08_3 --> d09_4 : Send word to the strike floor
+d08_3 --> d09_5 : Follow the clerk to the porters yard
+d08_4 --> d09_4 : Follow the clerk to the strike floor
+d08_4 --> c08_4_1 : Hold at the porters yard
+d08_4 --> c08_4_2 : Make for the captain of the guard
+d08_5 --> d09_5 : Make for the porters yard
+d08_5 --> c08_5_1 : Go quietly to the captain of the guard
+d08_5 --> c08_5_2 : Take the die room
+d08_6 --> d09_6 : Take the captain of the guard
+d08_6 --> c08_6_1 : Cross to the die room
+d08_6 --> d09_1 : Slip through to the assay bench
+d09_0 --> d10_0 : Present yourself at the die room
+d09_0 --> d10_1 : Work your way round to the assay bench
+d09_0 --> d10_2 : Ask for the bullion stair
+d09_1 --> d10_1 : Ask for the assay bench
+d09_1 --> d10_2 : Wait at the bullion stair
+d09_1 --> d10_3 : Send word to the pyx chest
+d09_1 --> d10_4 : Follow the clerk to the strike floor
+d09_2 --> d10_2 : Send word to the bullion stair
+d09_2 --> d10_3 : Follow the clerk to the pyx chest
+d09_2 --> d10_4 : Hold at the strike floor
+d09_3 --> d10_3 : Hold at the pyx chest
+d09_3 --> d10_4 : Make for the strike floor
+d09_3 --> d10_5 : Go quietly to the porters yard
+d09_4 --> d10_4 : Go quietly to the strike floor
+d09_4 --> d10_5 : Take the porters yard
+d09_4 --> d10_6 : Cross to the captain of the guard
+d09_5 --> d10_5 : Cross to the porters yard
+d09_5 --> c09_5_1 : Slip through to the captain of the guard
+d09_5 --> c09_5_2 : Present yourself at the die room
+d09_6 --> d10_6 : Present yourself at the captain of the g...
+d09_6 --> c09_6_1 : Work your way round to the die room
+d09_6 --> c09_6_2 : Ask for the assay bench
+d09_6 --> c09_6_3 : Wait at the bullion stair
+d10_0 --> d11_0 : Wait at the die room
+d10_0 --> c10_0_1 : Send word to the assay bench
+d10_0 --> c10_0_2 : Follow the clerk to the bullion stair
+d10_0 --> c10_0_3 : Hold at the pyx chest
+d10_1 --> d11_1 : Follow the clerk to the assay bench
+d10_1 --> d11_2 : Hold at the bullion stair
+d10_1 --> d11_3 : Make for the pyx chest
+d10_2 --> d11_2 : Make for the bullion stair
+d10_2 --> d11_3 : Go quietly to the pyx chest
+d10_2 --> d11_4 : Take the strike floor
+d10_3 --> d11_3 : Take the pyx chest
+d10_3 --> d11_4 : Cross to the strike floor
+d10_3 --> d11_5 : Slip through to the porters yard
+d10_4 --> d11_4 : Slip through to the strike floor
+d10_4 --> d11_5 : Present yourself at the porters yard
+d10_4 --> d11_6 : Work your way round to the captain of th...
+d10_5 --> d11_5 : Work your way round to the porters yard
+d10_5 --> d11_6 : Ask for the captain of the guard
+d10_5 --> d11_0 : Wait at the die room
+d10_5 --> d11_1 : Send word to the assay bench
+d10_6 --> d11_6 : Wait at the captain of the guard
+d10_6 --> c10_6_1 : Send word to the die room
+d10_6 --> c10_6_2 : Follow the clerk to the assay bench
+d11_0 --> d12_0 : Hold at the cloth rows
+d11_0 --> d12_1 : Make for the horse lines
+d11_0 --> d12_2 : Go quietly to the pie stalls
+d11_1 --> d12_1 : Go quietly to the horse lines
+d11_1 --> d12_2 : Take the pie stalls
+d11_1 --> c11_1_2 : Cross to the mummers stage
+d11_2 --> d12_2 : Cross to the pie stalls
+d11_2 --> c11_2_1 : Slip through to the mummers stage
+d11_2 --> c11_2_2 : Present yourself at the moneychangers
+d11_3 --> d12_3 : Present yourself at the mummers stage
+d11_3 --> c11_3_1 : Work your way round to the moneychangers
+d11_3 --> c11_3_2 : Ask for the toll bar
+d11_4 --> d12_4 : Ask for the moneychangers
+d11_4 --> d12_5 : Wait at the toll bar
+d11_4 --> d12_6 : Send word to the river steps
+d11_4 --> d12_0 : Follow the clerk to the cloth rows
+d11_5 --> d12_5 : Send word to the toll bar
+d11_5 --> d12_6 : Follow the clerk to the river steps
+d11_5 --> d12_0 : Hold at the cloth rows
+d11_6 --> d12_6 : Hold at the river steps
+d11_6 --> d12_0 : Make for the cloth rows
+d11_6 --> d12_1 : Go quietly to the horse lines
+d12_0 --> d13_0 : Take the cloth rows
+d12_0 --> c12_0_1 : Cross to the horse lines
+d12_0 --> c12_0_2 : Slip through to the pie stalls
+d12_1 --> d13_1 : Slip through to the horse lines
+d12_1 --> c12_1_1 : Present yourself at the pie stalls
+d12_1 --> c12_1_2 : Work your way round to the mummers stage
+d12_2 --> d13_2 : Work your way round to the pie stalls
+d12_2 --> d13_3 : Ask for the mummers stage
+d12_2 --> d13_4 : Wait at the moneychangers
+d12_3 --> d13_3 : Wait at the mummers stage
+d12_3 --> e_000 : Force the matter at the toll bar
+d12_3 --> e_001 : Show the roll at the river steps
+d12_3 --> e_000 : Break cover at the cloth rows
+d12_4 --> d13_4 : Follow the clerk to the moneychangers
+d12_4 --> e_001 : Show the roll at the river steps
+d12_4 --> e_000 : Break cover at the cloth rows
+d12_5 --> d13_5 : Make for the toll bar
+d12_5 --> e_001 : Break cover at the cloth rows
+d12_5 --> e_000 : Stake everything on the horse lines
+d12_6 --> d13_6 : Take the river steps
+d12_6 --> e_001 : Stake everything on the horse lines
+d12_6 --> c12_6_2 : Slip through to the horse lines
+d13_0 --> d14_0 : Present yourself at the cloth rows
+d13_0 --> e_002 : Break cover at the pie stalls
+d13_0 --> e_003 : Stake everything on the mummers stage
+d13_1 --> d14_1 : Ask for the horse lines
+d13_1 --> c13_1_1 : Wait at the pie stalls
+d13_1 --> c13_1_2 : Send word to the mummers stage
+d13_2 --> d14_2 : Send word to the pie stalls
+d13_2 --> c13_2_1 : Follow the clerk to the mummers stage
+d13_2 --> c13_2_2 : Hold at the moneychangers
+d13_2 --> c13_2_3 : Make for the toll bar
+d13_3 --> d14_3 : Hold at the mummers stage
+d13_3 --> d14_4 : Make for the moneychangers
+d13_3 --> d14_5 : Go quietly to the toll bar
+d13_4 --> d14_4 : Go quietly to the moneychangers
+d13_4 --> e_002 : Go over the wardens head at the river st...
+d13_4 --> e_003 : Read it aloud at the cloth rows
+d13_5 --> d14_5 : Cross to the toll bar
+d13_5 --> e_002 : Read it aloud at the cloth rows
+d13_5 --> e_003 : Force the matter at the horse lines
+d13_6 --> d14_6 : Present yourself at the river steps
+d13_6 --> e_002 : Force the matter at the horse lines
+d13_6 --> e_003 : Show the roll at the pie stalls
+d14_0 --> d15_0 : Wait at the cloth rows
+d14_0 --> e_004 : Read it aloud at the pie stalls
+d14_0 --> e_005 : Force the matter at the mummers stage
+d14_1 --> d15_1 : Follow the clerk to the horse lines
+d14_1 --> c14_1_1 : Hold at the pie stalls
+d14_1 --> c14_1_2 : Make for the mummers stage
+d14_1 --> c14_1_3 : Go quietly to the moneychangers
+d14_2 --> d15_2 : Make for the pie stalls
+d14_2 --> c14_2_1 : Go quietly to the mummers stage
+d14_2 --> c14_2_2 : Take the moneychangers
+d14_3 --> d15_3 : Take the mummers stage
+d14_3 --> d15_4 : Cross to the moneychangers
+d14_3 --> d15_5 : Slip through to the toll bar
+d14_4 --> d15_4 : Slip through to the moneychangers
+d14_4 --> d15_5 : Present yourself at the toll bar
+d14_4 --> e_004 : Push past the guard at the cloth rows
+d14_5 --> d15_5 : Work your way round to the toll bar
+d14_5 --> e_005 : Push past the guard at the cloth rows
+d14_5 --> e_004 : Name the claimant at the horse lines
+d14_6 --> d15_6 : Wait at the river steps
+d14_6 --> e_005 : Name the claimant at the horse lines
+d14_6 --> e_004 : Go over the wardens head at the pie stal...
+d14_6 --> e_005 : Read it aloud at the mummers stage
+d15_0 --> d16_0 : Hold at the roll racks
+d15_0 --> e_007 : Push past the guard at the pie stalls
+d15_0 --> e_006 : Name the claimant at the mummers stage
+d15_0 --> e_007 : Go over the wardens head at the moneycha...
+d15_1 --> d16_1 : Go quietly to the index desk
+d15_1 --> e_006 : Name the claimant at the mummers stage
+d15_1 --> e_007 : Go over the wardens head at the moneycha...
+d15_2 --> d16_2 : Cross to the sealed presses
+d15_2 --> c15_2_1 : Slip through to the burned shelf
+d15_2 --> c15_2_2 : Present yourself at the copyists cell
+d15_3 --> d16_3 : Present yourself at the burned shelf
+d15_3 --> c15_3_1 : Work your way round to the copyists cell
+d15_3 --> c15_3_2 : Ask for the lamp room
+d15_4 --> d16_4 : Ask for the copyists cell
+d15_4 --> c15_4_1 : Wait at the lamp room
+d15_4 --> d16_6 : Send word to the vault stair
+d15_5 --> d16_5 : Send word to the lamp room
+d15_5 --> d16_6 : Follow the clerk to the vault stair
+d15_5 --> d16_0 : Hold at the roll racks
+d15_5 --> e_006 : Stake everything on the pie stalls
+d15_6 --> d16_6 : Hold at the vault stair
+d15_6 --> e_007 : Break cover at the horse lines
+d15_6 --> e_006 : Stake everything on the pie stalls
+d16_0 --> d17_0 : Take the roll racks
+d16_0 --> c16_0_1 : Cross to the index desk
+d16_0 --> d17_2 : Slip through to the sealed presses
+d16_1 --> d17_1 : Slip through to the index desk
+d16_1 --> d17_2 : Present yourself at the sealed presses
+d16_1 --> e_008 : Stake everything on the copyists cell
+d16_2 --> d17_2 : Work your way round to the sealed presse...
+d16_2 --> e_009 : Stake everything on the copyists cell
+d16_2 --> e_008 : Push past the guard at the lamp room
+d16_3 --> d17_3 : Wait at the burned shelf
+d16_3 --> e_009 : Push past the guard at the lamp room
+d16_3 --> e_008 : Name the claimant at the vault stair
+d16_4 --> d17_4 : Follow the clerk to the copyists cell
+d16_4 --> e_009 : Name the claimant at the vault stair
+d16_4 --> e_008 : Go over the wardens head at the roll rac...
+d16_4 --> e_009 : Read it aloud at the index desk
+d16_5 --> d17_5 : Make for the lamp room
+d16_5 --> c16_5_1 : Go quietly to the vault stair
+d16_5 --> c16_5_2 : Take the roll racks
+d16_6 --> d17_6 : Take the vault stair
+d16_6 --> c16_6_1 : Cross to the roll racks
+d16_6 --> c16_6_2 : Slip through to the index desk
+d17_0 --> d18_0 : Present yourself at the roll racks
+d17_0 --> c17_0_1 : Work your way round to the index desk
+d17_0 --> c17_0_2 : Ask for the sealed presses
+d17_1 --> d18_1 : Ask for the index desk
+d17_1 --> c17_1_1 : Wait at the sealed presses
+d17_1 --> c17_1_2 : Send word to the burned shelf
+d17_2 --> d18_2 : Send word to the sealed presses
+d17_2 --> d18_3 : Follow the clerk to the burned shelf
+d17_2 --> d18_4 : Hold at the copyists cell
+d17_3 --> d18_3 : Hold at the burned shelf
+d17_3 --> e_010 : Show the roll at the lamp room
+d17_3 --> e_011 : Break cover at the vault stair
+d17_3 --> e_010 : Stake everything on the roll racks
+d17_4 --> d18_4 : Go quietly to the copyists cell
+d17_4 --> e_011 : Break cover at the vault stair
+d17_4 --> e_010 : Stake everything on the roll racks
+d17_5 --> d18_5 : Cross to the lamp room
+d17_5 --> e_011 : Stake everything on the roll racks
+d17_5 --> e_010 : Push past the guard at the index desk
+d17_6 --> d18_6 : Present yourself at the vault stair
+d17_6 --> e_011 : Push past the guard at the index desk
+d17_6 --> c17_6_2 : Ask for the index desk
+d18_0 --> d19_0 : Wait at the roll racks
+d18_0 --> e_012 : Stake everything on the sealed presses
+d18_0 --> e_013 : Push past the guard at the burned shelf
+d18_1 --> d19_1 : Follow the clerk to the index desk
+d18_1 --> c18_1_1 : Hold at the sealed presses
+d18_1 --> c18_1_2 : Make for the burned shelf
+d18_2 --> d19_2 : Make for the sealed presses
+d18_2 --> c18_2_1 : Go quietly to the burned shelf
+d18_2 --> c18_2_2 : Take the copyists cell
+d18_2 --> c18_2_3 : Cross to the lamp room
+d18_3 --> d19_3 : Take the burned shelf
+d18_3 --> d19_4 : Cross to the copyists cell
+d18_3 --> d19_5 : Slip through to the lamp room
+d18_4 --> d19_4 : Slip through to the copyists cell
+d18_4 --> e_012 : Read it aloud at the vault stair
+d18_4 --> e_013 : Force the matter at the roll racks
+d18_5 --> d19_5 : Work your way round to the lamp room
+d18_5 --> e_012 : Force the matter at the roll racks
+d18_5 --> e_013 : Show the roll at the index desk
+d18_6 --> d19_6 : Wait at the vault stair
+d18_6 --> e_012 : Show the roll at the index desk
+d18_6 --> e_013 : Break cover at the sealed presses
+d19_0 --> d20_0 : Hold at the bell loft
+d19_0 --> e_015 : Force the matter at the sealed presses
+d19_0 --> c19_0_2 : Go quietly to the crypt door
+d19_1 --> d20_1 : Go quietly to the almonry
+d19_1 --> c19_1_1 : Take the crypt door
+d19_1 --> c19_1_2 : Cross to the chapter house
+d19_1 --> c19_1_3 : Slip through to the choir screen
+d19_2 --> d20_2 : Cross to the crypt door
+d19_2 --> c19_2_1 : Slip through to the chapter house
+d19_2 --> d20_4 : Present yourself at the choir screen
+d19_3 --> d20_3 : Present yourself at the chapter house
+d19_3 --> d20_4 : Work your way round to the choir screen
+d19_3 --> d20_5 : Ask for the sacristy
+d19_4 --> d20_4 : Ask for the choir screen
+d19_4 --> e_014 : Push past the guard at the vault stair
+d19_4 --> e_015 : Name the claimant at the roll racks
+d19_5 --> d20_5 : Send word to the sacristy
+d19_5 --> e_014 : Name the claimant at the roll racks
+d19_5 --> e_015 : Go over the wardens head at the index de...
+d19_6 --> d20_6 : Hold at the pilgrims yard
+d19_6 --> e_014 : Go over the wardens head at the index de...
+d19_6 --> e_015 : Read it aloud at the sealed presses
+d19_6 --> e_014 : Force the matter at the burned shelf
+d20_0 --> d21_0 : Take the bell loft
+d20_0 --> e_016 : Name the claimant at the crypt door
+d20_0 --> e_017 : Go over the wardens head at the chapter ...
+d20_0 --> e_016 : Read it aloud at the choir screen
+d20_1 --> d21_1 : Slip through to the almonry
+d20_1 --> e_017 : Go over the wardens head at the chapter ...
+d20_1 --> c20_1_2 : Work your way round to the chapter house
+d20_2 --> d21_2 : Work your way round to the crypt door
+d20_2 --> c20_2_1 : Ask for the chapter house
+d20_2 --> c20_2_2 : Wait at the choir screen
+d20_3 --> d21_3 : Wait at the chapter house
+d20_3 --> c20_3_1 : Send word to the choir screen
+d20_3 --> c20_3_2 : Follow the clerk to the sacristy
+d20_4 --> d21_4 : Follow the clerk to the choir screen
+d20_4 --> d21_5 : Hold at the sacristy
+d20_4 --> d21_6 : Make for the pilgrims yard
+d20_5 --> d21_5 : Make for the sacristy
+d20_5 --> d21_6 : Go quietly to the pilgrims yard
+d20_5 --> e_016 : Stake everything on the almonry
+d20_5 --> e_017 : Push past the guard at the crypt door
+d20_6 --> d21_6 : Take the pilgrims yard
+d20_6 --> e_016 : Stake everything on the almonry
+d20_6 --> e_017 : Push past the guard at the crypt door
+d21_0 --> d22_0 : Present yourself at the bell loft
+d21_0 --> c21_0_1 : Work your way round to the almonry
+d21_0 --> d22_2 : Ask for the crypt door
+d21_1 --> d22_1 : Ask for the almonry
+d21_1 --> d22_2 : Wait at the crypt door
+d21_1 --> e_018 : Push past the guard at the choir screen
+d21_2 --> d22_2 : Send word to the crypt door
+d21_2 --> e_019 : Push past the guard at the choir screen
+d21_2 --> e_018 : Name the claimant at the sacristy
+d21_3 --> d22_3 : Hold at the chapter house
+d21_3 --> e_019 : Name the claimant at the sacristy
+d21_3 --> e_018 : Go over the wardens head at the pilgrims...
+d21_4 --> d22_4 : Go quietly to the choir screen
+d21_4 --> e_019 : Go over the wardens head at the pilgrims...
+d21_4 --> e_018 : Read it aloud at the bell loft
+d21_4 --> e_019 : Force the matter at the almonry
+d21_5 --> d22_5 : Cross to the sacristy
+d21_5 --> c21_5_1 : Slip through to the pilgrims yard
+d21_5 --> c21_5_2 : Present yourself at the bell loft
+d21_6 --> d22_6 : Present yourself at the pilgrims yard
+d21_6 --> c21_6_1 : Work your way round to the bell loft
+d21_6 --> c21_6_2 : Ask for the almonry
+d22_0 --> d23_0 : Wait at the bell loft
+d22_0 --> c22_0_1 : Send word to the almonry
+d22_0 --> c22_0_2 : Follow the clerk to the crypt door
+d22_1 --> d23_1 : Follow the clerk to the almonry
+d22_1 --> c22_1_1 : Hold at the crypt door
+d22_1 --> c22_1_2 : Make for the chapter house
+d22_2 --> d23_2 : Make for the crypt door
+d22_2 --> d23_3 : Go quietly to the chapter house
+d22_2 --> d23_4 : Take the choir screen
+d22_3 --> d23_3 : Take the chapter house
+d22_3 --> e_020 : Break cover at the sacristy
+d22_3 --> e_021 : Stake everything on the pilgrims yard
+d22_3 --> e_020 : Push past the guard at the bell loft
+d22_4 --> d23_4 : Slip through to the choir screen
+d22_4 --> e_021 : Stake everything on the pilgrims yard
+d22_4 --> e_020 : Push past the guard at the bell loft
+d22_5 --> d23_5 : Work your way round to the sacristy
+d22_5 --> e_021 : Push past the guard at the bell loft
+d22_5 --> e_020 : Name the claimant at the almonry
+d22_6 --> d23_6 : Wait at the pilgrims yard
+d22_6 --> e_021 : Name the claimant at the almonry
+d22_6 --> c22_6_2 : Follow the clerk to the almonry
+d23_0 --> d24_0 : Hold at the clerks table
+d23_0 --> e_022 : Push past the guard at the crypt door
+d23_0 --> e_023 : Name the claimant at the chapter house
+d23_1 --> d24_1 : Go quietly to the jury bar
+d23_1 --> c23_1_1 : Take the gallery stair
+d23_1 --> c23_1_2 : Cross to the sergeants post
+d23_2 --> d24_2 : Cross to the gallery stair
+d23_2 --> c23_2_1 : Slip through to the sergeants post
+d23_2 --> c23_2_2 : Present yourself at the evidence chest
+d23_2 --> c23_2_3 : Work your way round to the side chamber
+d23_3 --> d24_3 : Present yourself at the sergeants post
+d23_3 --> d24_4 : Work your way round to the evidence ches...
+d23_3 --> d24_5 : Ask for the side chamber
+d23_4 --> d24_4 : Ask for the evidence chest
+d23_4 --> e_022 : Force the matter at the pilgrims yard
+d23_4 --> e_023 : Show the roll at the bell loft
+d23_5 --> d24_5 : Send word to the side chamber
+d23_5 --> e_022 : Show the roll at the bell loft
+d23_5 --> e_023 : Break cover at the almonry
+d23_6 --> d24_6 : Hold at the great door
+d23_6 --> e_022 : Break cover at the almonry
+d23_6 --> e_023 : Stake everything on the crypt door
+d24_0 --> d25_0 : Take the clerks table
+d24_0 --> c24_0_1 : Cross to the jury bar
+d24_0 --> c24_0_2 : Slip through to the gallery stair
+d24_1 --> d25_1 : Slip through to the jury bar
+d24_1 --> c24_1_1 : Present yourself at the gallery stair
+d24_1 --> c24_1_2 : Work your way round to the sergeants pos...
+d24_1 --> c24_1_3 : Ask for the evidence chest
+d24_2 --> d25_2 : Work your way round to the gallery stair
+d24_2 --> d25_3 : Ask for the sergeants post
+d24_2 --> d25_4 : Wait at the evidence chest
+d24_3 --> d25_3 : Wait at the sergeants post
+d24_3 --> d25_4 : Send word to the evidence chest
+d24_3 --> e_024 : Name the claimant at the great door
+d24_4 --> d25_4 : Follow the clerk to the evidence chest
+d24_4 --> e_025 : Name the claimant at the great door
+d24_4 --> e_024 : Go over the wardens head at the clerks t...
+d24_5 --> d25_5 : Make for the side chamber
+d24_5 --> e_025 : Go over the wardens head at the clerks t...
+d24_5 --> e_024 : Read it aloud at the jury bar
+d24_6 --> d25_6 : Take the great door
+d24_6 --> e_025 : Read it aloud at the jury bar
+d24_6 --> e_024 : Force the matter at the gallery stair
+d24_6 --> e_025 : Show the roll at the sergeants post
+d25_0 --> d26_0 : Present yourself at the clerks table
+d25_0 --> e_027 : Go over the wardens head at the gallery ...
+d25_0 --> e_026 : Read it aloud at the sergeants post
+d25_0 --> e_027 : Force the matter at the evidence chest
+d25_1 --> d26_1 : Ask for the jury bar
+d25_1 --> c25_1_1 : Wait at the gallery stair
+d25_1 --> c25_1_2 : Send word to the sergeants post
+d25_2 --> d26_2 : Send word to the gallery stair
+d25_2 --> c25_2_1 : Follow the clerk to the sergeants post
+d25_2 --> c25_2_2 : Hold at the evidence chest
+d25_3 --> d26_3 : Hold at the sergeants post
+d25_3 --> c25_3_1 : Make for the evidence chest
+d25_3 --> d26_5 : Go quietly to the side chamber
+d25_4 --> d26_4 : Go quietly to the evidence chest
+d25_4 --> d26_5 : Take the side chamber
+d25_4 --> d26_6 : Cross to the great door
+d25_5 --> d26_5 : Cross to the side chamber
+d25_5 --> e_026 : Stake everything on the clerks table
+d25_5 --> e_027 : Push past the guard at the jury bar
+d25_5 --> e_026 : Name the claimant at the gallery stair
+d25_6 --> d26_6 : Present yourself at the great door
+d25_6 --> e_027 : Push past the guard at the jury bar
+d25_6 --> e_026 : Name the claimant at the gallery stair
+d26_0 --> d27_0 : Wait at the clerks table
+d26_0 --> c26_0_1 : Send word to the jury bar
+d26_0 --> d27_2 : Follow the clerk to the gallery stair
+d26_1 --> d27_1 : Follow the clerk to the jury bar
+d26_1 --> d27_2 : Hold at the gallery stair
+d26_1 --> e_028 : Name the claimant at the evidence chest
+d26_2 --> d27_2 : Make for the gallery stair
+d26_2 --> e_029 : Name the claimant at the evidence chest
+d26_2 --> e_028 : Go over the wardens head at the side cha...
+d26_3 --> d27_3 : Take the sergeants post
+d26_3 --> e_029 : Go over the wardens head at the side cha...
+d26_3 --> e_028 : Read it aloud at the great door
+d26_4 --> d27_4 : Slip through to the evidence chest
+d26_4 --> e_029 : Read it aloud at the great door
+d26_4 --> e_028 : Force the matter at the clerks table
+d26_4 --> e_029 : Show the roll at the jury bar
+d26_5 --> d27_5 : Work your way round to the side chamber
+d26_5 --> c26_5_1 : Ask for the great door
+d26_5 --> c26_5_2 : Wait at the clerks table
+d26_6 --> d27_6 : Wait at the great door
+d26_6 --> c26_6_1 : Send word to the clerks table
+d26_6 --> c26_6_2 : Follow the clerk to the jury bar
+d27_0 --> d28_0 : Hold at the antechamber
+d27_0 --> c27_0_1 : Make for the guard line
+d27_0 --> c27_0_2 : Go quietly to the council table
+d27_1 --> d28_1 : Go quietly to the guard line
+d27_1 --> c27_1_1 : Take the council table
+d27_1 --> c27_1_2 : Cross to the regents seat
+d27_2 --> d28_2 : Cross to the council table
+d27_2 --> d28_3 : Slip through to the regents seat
+d27_2 --> d28_4 : Present yourself at the crown case
+d27_3 --> d28_3 : Present yourself at the regents seat
+d27_3 --> e_030 : Stake everything on the side chamber
+d27_3 --> e_031 : Push past the guard at the great door
+d27_3 --> e_030 : Name the claimant at the clerks table
+d27_4 --> d28_4 : Ask for the crown case
+d27_4 --> e_031 : Push past the guard at the great door
+d27_4 --> e_030 : Name the claimant at the clerks table
+d27_5 --> d28_5 : Send word to the herald post
+d27_5 --> e_031 : Name the claimant at the clerks table
+d27_5 --> e_030 : Go over the wardens head at the jury bar
+d27_6 --> d28_6 : Hold at the throne floor
+d27_6 --> e_031 : Go over the wardens head at the jury bar
+d27_6 --> c27_6_2 : Go quietly to the guard line
+d28_0 --> d29_0 : Take the antechamber
+d28_0 --> e_032 : Name the claimant at the council table
+d28_0 --> e_033 : Go over the wardens head at the regents ...
+d28_1 --> d29_1 : Slip through to the guard line
+d28_1 --> c28_1_1 : Present yourself at the council table
+d28_1 --> c28_1_2 : Work your way round to the regents seat
+d28_2 --> d29_2 : Work your way round to the council table
+d28_2 --> c28_2_1 : Ask for the regents seat
+d28_2 --> c28_2_2 : Wait at the crown case
+d28_2 --> c28_2_3 : Send word to the herald post
+d28_3 --> d29_3 : Wait at the regents seat
+d28_3 --> d29_4 : Send word to the crown case
+d28_3 --> d29_5 : Follow the clerk to the herald post
+d28_4 --> d29_4 : Follow the clerk to the crown case
+d28_4 --> e_032 : Show the roll at the throne floor
+d28_4 --> e_033 : Break cover at the antechamber
+d28_5 --> d29_5 : Make for the herald post
+d28_5 --> e_032 : Break cover at the antechamber
+d28_5 --> e_033 : Stake everything on the guard line
+d28_6 --> d29_6 : Take the throne floor
+d28_6 --> e_032 : Stake everything on the guard line
+d28_6 --> e_033 : Push past the guard at the council table
+d29_0 --> d30_0 : Present yourself at the antechamber
+d29_0 --> c29_0_1 : Work your way round to the guard line
+d29_0 --> c29_0_2 : Ask for the council table
+d29_1 --> d30_1 : Ask for the guard line
+d29_1 --> c29_1_1 : Wait at the council table
+d29_1 --> c29_1_2 : Send word to the regents seat
+d29_1 --> d30_4 : Follow the clerk to the crown case
+d29_2 --> d30_2 : Send word to the council table
+d29_2 --> d30_3 : Follow the clerk to the regents seat
+d29_2 --> d30_4 : Hold at the crown case
+d29_3 --> d30_3 : Hold at the regents seat
+d29_3 --> e_034 : Name the claimant at the herald post
+d29_3 --> e_035 : Go over the wardens head at the throne f...
+d29_4 --> d30_4 : Go quietly to the crown case
+d29_4 --> e_034 : Go over the wardens head at the throne f...
+d29_4 --> e_035 : Read it aloud at the antechamber
+d29_5 --> d30_5 : Cross to the herald post
+d29_5 --> e_034 : Read it aloud at the antechamber
+d29_5 --> e_035 : Force the matter at the guard line
+d29_6 --> d30_6 : Present yourself at the throne floor
+d29_6 --> e_034 : Force the matter at the guard line
+d29_6 --> e_035 : Show the roll at the council table
+d29_6 --> c29_6_3 : Wait at the council table
+d30_0 --> d31_0 : Wait at the antechamber
+d30_0 --> e_036 : Read it aloud at the council table
+d30_0 --> e_037 : Force the matter at the regents seat
+d30_0 --> c30_0_3 : Hold at the regents seat
+d30_1 --> d31_1 : Follow the clerk to the guard line
+d30_1 --> c30_1_1 : Hold at the council table
+d30_1 --> c30_1_2 : Make for the regents seat
+d30_2 --> d31_2 : Make for the council table
+d30_2 --> c30_2_1 : Go quietly to the regents seat
+d30_2 --> c30_2_2 : Take the crown case
+d30_3 --> d31_3 : Take the regents seat
+d30_3 --> d31_4 : Cross to the crown case
+d30_3 --> d31_5 : Slip through to the herald post
+d30_4 --> d31_4 : Slip through to the crown case
+d30_4 --> d31_5 : Present yourself at the herald post
+d30_4 --> e_036 : Push past the guard at the antechamber
+d30_5 --> d31_5 : Work your way round to the herald post
+d30_5 --> e_037 : Push past the guard at the antechamber
+d30_5 --> e_036 : Name the claimant at the guard line
+d30_5 --> e_037 : Go over the wardens head at the council ...
+d30_6 --> d31_6 : Wait at the throne floor
+d30_6 --> e_036 : Name the claimant at the guard line
+d30_6 --> e_037 : Go over the wardens head at the council ...
+d31_0 --> e_038 : Show the roll at the antechamber
+d31_0 --> e_039 : Break cover at the guard line
+d31_0 --> e_040 : Stake everything on the council table
+d31_1 --> e_041 : Push past the guard at the guard line
+d31_1 --> e_042 : Name the claimant at the council table
+d31_1 --> e_043 : Go over the wardens head at the regents ...
+d31_2 --> e_044 : Read it aloud at the council table
+d31_2 --> e_045 : Force the matter at the regents seat
+d31_2 --> e_046 : Show the roll at the crown case
+d31_3 --> e_047 : Break cover at the regents seat
+d31_3 --> e_048 : Stake everything on the crown case
+d31_3 --> e_049 : Push past the guard at the herald post
+d31_4 --> e_050 : Name the claimant at the crown case
+d31_4 --> e_051 : Go over the wardens head at the herald p...
+d31_4 --> e_052 : Read it aloud at the throne floor
+d31_5 --> e_053 : Force the matter at the herald post
+d31_5 --> e_054 : Show the roll at the throne floor
+d31_5 --> e_055 : Break cover at the antechamber
+d31_6 --> e_056 : Stake everything on the throne floor
+d31_6 --> e_057 : Push past the guard at the antechamber
+d31_6 --> e_038 : Name the claimant at the guard line
+c00_0_1 --> d01_1 : Work your way round to the wax table
+c00_0_2 --> d01_2 : Ask for the messengers bench
+c00_0_3 --> d01_3 : Wait at the undercroft stair
+c00_1_1 --> d01_2 : Ask for the messengers bench
+c00_1_2 --> d01_3 : Wait at the undercroft stair
+c01_1_2 --> d02_3 : Send word to the undercroft stair
+c01_2_1 --> d02_3 : Send word to the undercroft stair
+c01_2_2 --> d02_4 : Follow the clerk to the seal press
+c01_3_1 --> d02_4 : Follow the clerk to the seal press
+c01_3_2 --> d02_5 : Hold at the clerks gallery
+c02_3_1 --> d03_4 : Hold at the seal press
+c02_3_2 --> d03_5 : Make for the clerks gallery
+c02_3_3 --> d03_6 : Go quietly to the night desk
+c02_4_1 --> d03_5 : Make for the clerks gallery
+c02_4_2 --> d03_6 : Go quietly to the night desk
+c03_4_1 --> d04_5 : Go quietly to the sheriffs rota
+c03_4_2 --> d04_6 : Take the debtors gate
+c03_5_1 --> d04_6 : Take the debtors gate
+c03_5_2 --> d04_0 : Cross to the petitions queue
+c03_6_1 --> d04_0 : Cross to the petitions queue
+c04_0_1 --> d05_1 : Follow the clerk to the bailiffs door
+c04_5_2 --> d05_0 : Slip through to the petitions queue
+c04_6_1 --> d05_0 : Slip through to the petitions queue
+c04_6_2 --> d05_1 : Present yourself at the bailiffs door
+c04_6_3 --> d05_2 : Work your way round to the witness pen
+c05_0_1 --> d06_1 : Hold at the bailiffs door
+c05_0_2 --> d06_2 : Make for the witness pen
+c05_0_3 --> d06_3 : Go quietly to the fee table
+c05_1_1 --> d06_2 : Make for the witness pen
+c05_6_2 --> d06_1 : Work your way round to the bailiffs door
+c06_1_2 --> d07_3 : Take the fee table
+c06_2_1 --> d07_3 : Take the fee table
+c06_2_2 --> d07_4 : Cross to the advocates hall
+c06_3_1 --> d07_4 : Cross to the advocates hall
+c06_3_2 --> d07_5 : Slip through to the sheriffs rota
+c07_3_1 --> d08_4 : Slip through to the strike floor
+c07_3_2 --> d08_5 : Present yourself at the porters yard
+c07_3_3 --> d08_6 : Work your way round to the captain of th...
+c07_4_1 --> d08_5 : Present yourself at the porters yard
+c07_4_2 --> d08_6 : Work your way round to the captain of th...
+c08_4_1 --> d09_5 : Work your way round to the porters yard
+c08_4_2 --> d09_6 : Ask for the captain of the guard
+c08_5_1 --> d09_6 : Ask for the captain of the guard
+c08_5_2 --> d09_0 : Wait at the die room
+c08_6_1 --> d09_0 : Wait at the die room
+c09_5_1 --> d10_6 : Wait at the captain of the guard
+c09_5_2 --> d10_0 : Send word to the die room
+c09_6_1 --> d10_0 : Send word to the die room
+c09_6_2 --> d10_1 : Follow the clerk to the assay bench
+c09_6_3 --> d10_2 : Hold at the bullion stair
+c10_0_1 --> d11_1 : Slip through to the assay bench
+c10_0_2 --> d11_2 : Present yourself at the bullion stair
+c10_0_3 --> d11_3 : Work your way round to the pyx chest
+c10_6_1 --> d11_0 : Follow the clerk to the die room
+c10_6_2 --> d11_1 : Hold at the assay bench
+c11_1_2 --> d12_3 : Ask for the mummers stage
+c11_2_1 --> d12_3 : Ask for the mummers stage
+c11_2_2 --> d12_4 : Wait at the moneychangers
+c11_3_1 --> d12_4 : Wait at the moneychangers
+c11_3_2 --> d12_5 : Send word to the toll bar
+c12_0_1 --> d13_1 : Work your way round to the horse lines
+c12_0_2 --> d13_2 : Ask for the pie stalls
+c12_1_1 --> d13_2 : Ask for the pie stalls
+c12_1_2 --> d13_3 : Wait at the mummers stage
+c12_6_2 --> d13_1 : Go quietly to the horse lines
+c13_1_1 --> d14_2 : Wait at the pie stalls
+c13_1_2 --> d14_3 : Send word to the mummers stage
+c13_2_1 --> d14_3 : Send word to the mummers stage
+c13_2_2 --> d14_4 : Follow the clerk to the moneychangers
+c13_2_3 --> d14_5 : Hold at the toll bar
+c14_1_1 --> d15_2 : Send word to the pie stalls
+c14_1_2 --> d15_3 : Follow the clerk to the mummers stage
+c14_1_3 --> d15_4 : Hold at the moneychangers
+c14_2_1 --> d15_3 : Follow the clerk to the mummers stage
+c14_2_2 --> d15_4 : Hold at the moneychangers
+c15_2_1 --> d16_3 : Hold at the burned shelf
+c15_2_2 --> d16_4 : Make for the copyists cell
+c15_3_1 --> d16_4 : Make for the copyists cell
+c15_3_2 --> d16_5 : Go quietly to the lamp room
+c15_4_1 --> d16_5 : Go quietly to the lamp room
+c16_0_1 --> d17_1 : Follow the clerk to the index desk
+c16_5_1 --> d17_6 : Cross to the vault stair
+c16_5_2 --> d17_0 : Slip through to the roll racks
+c16_6_1 --> d17_0 : Slip through to the roll racks
+c16_6_2 --> d17_1 : Present yourself at the index desk
+c17_0_1 --> d18_1 : Hold at the index desk
+c17_0_2 --> d18_2 : Make for the sealed presses
+c17_1_1 --> d18_2 : Make for the sealed presses
+c17_1_2 --> d18_3 : Go quietly to the burned shelf
+c17_6_2 --> d18_1 : Work your way round to the index desk
+c18_1_1 --> d19_2 : Go quietly to the sealed presses
+c18_1_2 --> d19_3 : Take the burned shelf
+c18_2_1 --> d19_3 : Take the burned shelf
+c18_2_2 --> d19_4 : Cross to the copyists cell
+c18_2_3 --> d19_5 : Slip through to the lamp room
+c19_0_2 --> d20_2 : Take the crypt door
+c19_1_1 --> d20_2 : Take the crypt door
+c19_1_2 --> d20_3 : Cross to the chapter house
+c19_1_3 --> d20_4 : Slip through to the choir screen
+c19_2_1 --> d20_3 : Cross to the chapter house
+c20_1_2 --> d21_3 : Slip through to the chapter house
+c20_2_1 --> d21_3 : Slip through to the chapter house
+c20_2_2 --> d21_4 : Present yourself at the choir screen
+c20_3_1 --> d21_4 : Present yourself at the choir screen
+c20_3_2 --> d21_5 : Work your way round to the sacristy
+c21_0_1 --> d22_1 : Cross to the almonry
+c21_5_1 --> d22_6 : Wait at the pilgrims yard
+c21_5_2 --> d22_0 : Send word to the bell loft
+c21_6_1 --> d22_0 : Send word to the bell loft
+c21_6_2 --> d22_1 : Follow the clerk to the almonry
+c22_0_1 --> d23_1 : Slip through to the almonry
+c22_0_2 --> d23_2 : Present yourself at the crypt door
+c22_1_1 --> d23_2 : Present yourself at the crypt door
+c22_1_2 --> d23_3 : Work your way round to the chapter house
+c22_6_2 --> d23_1 : Hold at the almonry
+c23_1_1 --> d24_2 : Work your way round to the gallery stair
+c23_1_2 --> d24_3 : Ask for the sergeants post
+c23_2_1 --> d24_3 : Ask for the sergeants post
+c23_2_2 --> d24_4 : Wait at the evidence chest
+c23_2_3 --> d24_5 : Send word to the side chamber
+c24_0_1 --> d25_1 : Work your way round to the jury bar
+c24_0_2 --> d25_2 : Ask for the gallery stair
+c24_1_1 --> d25_2 : Ask for the gallery stair
+c24_1_2 --> d25_3 : Wait at the sergeants post
+c24_1_3 --> d25_4 : Send word to the evidence chest
+c25_1_1 --> d26_2 : Wait at the gallery stair
+c25_1_2 --> d26_3 : Send word to the sergeants post
+c25_2_1 --> d26_3 : Send word to the sergeants post
+c25_2_2 --> d26_4 : Follow the clerk to the evidence chest
+c25_3_1 --> d26_4 : Follow the clerk to the evidence chest
+c26_0_1 --> d27_1 : Wait at the jury bar
+c26_5_1 --> d27_6 : Go quietly to the great door
+c26_5_2 --> d27_0 : Take the clerks table
+c26_6_1 --> d27_0 : Take the clerks table
+c26_6_2 --> d27_1 : Cross to the jury bar
+c27_0_1 --> d28_1 : Send word to the guard line
+c27_0_2 --> d28_2 : Follow the clerk to the council table
+c27_1_1 --> d28_2 : Follow the clerk to the council table
+c27_1_2 --> d28_3 : Hold at the regents seat
+c27_6_2 --> d28_1 : Slip through to the guard line
+c28_1_1 --> d29_2 : Hold at the council table
+c28_1_2 --> d29_3 : Make for the regents seat
+c28_2_1 --> d29_3 : Make for the regents seat
+c28_2_2 --> d29_4 : Go quietly to the crown case
+c28_2_3 --> d29_5 : Take the herald post
+c29_0_1 --> d30_1 : Hold at the guard line
+c29_0_2 --> d30_2 : Make for the council table
+c29_1_1 --> d30_2 : Make for the council table
+c29_1_2 --> d30_3 : Go quietly to the regents seat
+c29_6_3 --> d30_2 : Ask for the council table
+c30_0_3 --> d31_3 : Take the regents seat
+c30_1_1 --> d31_2 : Go quietly to the council table
+c30_1_2 --> d31_3 : Take the regents seat
+c30_2_1 --> d31_3 : Take the regents seat
+c30_2_2 --> d31_4 : Cross to the crown case
+e_000 --> [*]
+e_001 --> [*]
+e_002 --> [*]
+e_003 --> [*]
+e_004 --> [*]
+e_005 --> [*]
+e_006 --> [*]
+e_007 --> [*]
+e_008 --> [*]
+e_009 --> [*]
+e_010 --> [*]
+e_011 --> [*]
+e_012 --> [*]
+e_013 --> [*]
+e_014 --> [*]
+e_015 --> [*]
+e_016 --> [*]
+e_017 --> [*]
+e_018 --> [*]
+e_019 --> [*]
+e_020 --> [*]
+e_021 --> [*]
+e_022 --> [*]
+e_023 --> [*]
+e_024 --> [*]
+e_025 --> [*]
+e_026 --> [*]
+e_027 --> [*]
+e_028 --> [*]
+e_029 --> [*]
+e_030 --> [*]
+e_031 --> [*]
+e_032 --> [*]
+e_033 --> [*]
+e_034 --> [*]
+e_035 --> [*]
+e_036 --> [*]
+e_037 --> [*]
+e_038 --> [*]
+e_039 --> [*]
+e_040 --> [*]
+e_041 --> [*]
+e_042 --> [*]
+e_043 --> [*]
+e_044 --> [*]
+e_045 --> [*]
+e_046 --> [*]
+e_047 --> [*]
+e_048 --> [*]
+e_049 --> [*]
+e_050 --> [*]
+e_051 --> [*]
+e_052 --> [*]
+e_053 --> [*]
+e_054 --> [*]
+e_055 --> [*]
+e_056 --> [*]
+e_057 --> [*]
+
+legend right
+  The Hollow Crown Gambit
+  Band 13-16 · Tier 1 · ~11 min
+  Topology: branch_and_bottleneck
+  434 nodes · 58 endings (8+ / 10n / 40-)
+  Production-eligible
+  Scale: long · gamebook
+endlegend
+@enduml

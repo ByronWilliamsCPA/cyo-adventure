@@ -1,0 +1,3922 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/audit-remediation-recommendations/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Audit remediation: recommendation per finding - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#audit-remediation-recommendation-per-finding" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Audit remediation: recommendation per finding
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../security/assurance-spine/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/kws-test-runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KWS Test-Environment Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/security-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Event Catalog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/assurance-spine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Spine
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/assurance-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Register
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/control-inheritance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Inheritance Map
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/crypto-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cryptographic Inventory
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/red-team-design-review-2026-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Team Design Review
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../research/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Story Structure Diversity
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Story Structure Diversity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-diversity-critical-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Critical Analysis
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-improvement-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Improvement Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-implementation-briefs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Briefs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#revised-2026-08-18-after-adversarial-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REVISED 2026-08-18 after adversarial review
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-organizing-observation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The organizing observation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wave-0-verify-before-anything-else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wave 0: verify before anything else
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wave 0: verify before anything else">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#uw-c282-reader-crash-recommendation-reproduce-it-today-then-one-line-fix-or-close-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UW-C282 reader crash. Recommendation: reproduce it today, then one-line fix or close it.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wave-1-safety-and-rules-that-cannot-fire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wave 1: safety, and rules that cannot fire
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wave 1: safety, and rules that cannot fire">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#uw-c285b-the-denylist-floor-trusts-the-contracts-own-band-recommendation-stop-reading-contractage_band-entirely" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UW-C285(b) the denylist floor trusts the contract's own band. Recommendation: stop reading contract.age_band entirely.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uw-c280-three-rules-that-cannot-fire-recommendation-fix-all-three-but-ship-the-test-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UW-C280 three rules that cannot fire. Recommendation: fix all three, but ship the test first.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wave-2-stop-telling-the-generator-the-wrong-number" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wave 2: stop telling the generator the wrong number
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wave 2: stop telling the generator the wrong number">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#uw-c279-prompt-ending-count-recommendation-derive-from-the-cell-and-pin-it-with-a-rendered-prompt-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UW-C279 prompt ending count. Recommendation: derive from the cell, and pin it with a rendered-prompt test.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uw-c281-reading-level-recommendation-band_profilepy-becomes-the-single-source-adopt-the-numbers-the-catalog-already-achieves-not-the-aspirational-ones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UW-C281 reading level. Recommendation: band_profile.py becomes the single source; adopt the numbers the catalog already achieves, not the aspirational ones.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uw-c278-the-stop-range-is-not-in-the-brief-recommendation-state-it-cheapest-item-on-the-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UW-C278 the stop range is not in the brief. Recommendation: state it, cheapest item on the list.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wave-3-the-calibration-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wave 3: the calibration decisions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wave 3: the calibration decisions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#uw-c283-the-endings-balance-partly-withdrawn-see-revision-1-and-5-above-the-series-table-below-is-unsound-and-the-replacement-rule-should-use-per-cell-fraction-pairs-not-static-ranges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UW-C283 + the endings balance. PARTLY WITHDRAWN, see revision 1 and 5 above. The series table below is unsound and the replacement rule should use per-cell fraction pairs, not static ranges.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uw-c277-remaining-unit-errors-pl-20-half-withdrawn-see-revision-4-above-pl-26-and-the-_min_complete-comment-fix-stand" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UW-C277 remaining unit errors. PL-20 HALF WITHDRAWN, see revision 4 above. PL-26 and the _MIN_COMPLETE comment fix stand.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uw-c284-topology-recommendation-fix-three-and-grandfather-the-fourth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UW-C284 topology. Recommendation: fix three, and grandfather the fourth.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wave-4-housekeeping-no-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wave 4: housekeeping, no decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#suggested-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Suggested order
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="audit-remediation-recommendation-per-finding">Audit remediation: recommendation per finding<a class="headerlink" href="#audit-remediation-recommendation-per-finding" title="Permanent link">&para;</a></h1>
+<p>Written 2026-08-18. Covers every open row from the <code>AL-458</code> seven-lane audit (<code>UW-C279</code> to
+<code>UW-C285</code>) plus the earlier open rows it interacts with (<code>UW-C272</code> to <code>UW-C278</code>). One
+recommendation each, sequenced. Where a recommendation rests on a measurement, the measurement is
+shown rather than cited.</p>
+<p>Three findings resolved already and not repeated here: <code>UW-C285(a)</code> (pronoun vocabulary, closed
+2026-08-18), PL-25's unit error (<code>AL-456</code>), and CG-1's average-versus-maximum error (<code>AL-455</code>).</p>
+<h2 id="revised-2026-08-18-after-adversarial-review">REVISED 2026-08-18 after adversarial review<a class="headerlink" href="#revised-2026-08-18-after-adversarial-review" title="Permanent link">&para;</a></h2>
+<p>An adversarial review (fable subagent, full text in the session scratchpad) attacked the reasoning
+below and landed four times. Every claim in this section was re-verified locally before being
+accepted. The original text is kept in place with markers rather than rewritten, because the
+reasoning that was wrong is the useful part of the record.</p>
+<p><strong>Withdrawn outright:</strong></p>
+<ol>
+<li><strong>The series-handoff table in <code>UW-C283</code>.</strong> It was headed "positive endings at ~40%", derived from
+   PL-24. PL-24 caps the dominant ending <strong>KIND</strong> at 60 percent; its positive-<strong>VALENCE</strong> floor is
+   gamebook-only (5 percent share, count of 3). Nothing implies 40 percent positive. That figure was
+   the catalog's authoring habit, not a rule. So the table, the "structurally opposed" conclusion,
+   and the gate on authoring at 10-13/long and above are all withdrawn. This is the same
+   kind-versus-valence conflation this document recommends fixing elsewhere, committed inside the
+   argument for fixing it.</li>
+<li><strong>The kind switch on the walk floor (<code>UW-C284d</code>).</strong> Verified locally: teen gamebooks carry 2 to 7
+   satisfying-KIND endings out of 74 to 209 total (<code>the-tenfold-siege</code> 6 of 209,
+   <code>the-ashfall-expedition</code> 3 of 143). ADR-011 section 5 defines the gamebook as "few wins plus many
+   fails", so a kind reading makes the genre's defining shape fail by construction and no new teen
+   gamebook could be authored. Worse, the floors were <strong>owner-ruled 2026-08-09</strong> and the ruling's own
+   text defines satisfying as "positive- or neutral-valence"; recommending the switch was
+   recommending a silent override of a dated ruling without noticing one existed. If the concern
+   (161 neutral-valence setbacks counting as satisfying) is worth acting on, the surgical form is
+   excluding <code>(setback, neutral)</code> only, and it needs the floors re-ratified.</li>
+<li><strong>The <code>TAU_STRUCT</code> ratchet (<code>UW-C273</code>).</strong> <code>diversity/incell.py</code> records <code>TAU_STRUCT</code> as
+   "<strong>documentation only</strong> as of that same amendment" (ADR-020 Amendment 1). The live floor is
+   <code>TAU_CELL</code>, a fixed 0.05 that cannot fall. Ratcheting a retired quantity is precisely the defect
+   class this document's closing line names.</li>
+<li><strong>The PL-20 one-way word transfer (<code>UW-C277</code>).</strong> PL-25's one-way reading fires only when node
+   count AND word count are both out of bounds. The motivating defect is a nine-node, 180-word
+   hollow win, and nine clears the cell's floor of seven, so the node test passes and the rule never
+   fires. The fix cannot catch its own worked example. Catching it needs a tightening word test with
+   grandfathering, which is a different and more expensive recommendation.</li>
+</ol>
+<p><strong>Revised, not withdrawn:</strong></p>
+<ol>
+<li><strong><code>UW-C283</code>'s replacement rule.</strong> Taking ADR section 5's column as STATIC per-cell ranges drops
+   scaling the column itself encodes (within <code>8-11/long</code> its implied fraction is 0.175 at the bottom
+   and 0.167 at the top, so it is a fraction times an envelope). Static ranges would admit a 340-node
+   book with 32 endings at a 9.4 percent share, below ADR section 6's own 15 to 22 percent band, so
+   the fix would trade a section-5-versus-code conflict for a section-5-versus-section-6 one. <strong>Use
+   per-cell fraction PAIRS (a floor fraction and a ceiling fraction per cell) instead</strong>, one step from
+   the table already shown. Grandfathering is required either way and was not mentioned: the review
+   reports the proposed ceiling failing seven committed books.</li>
+<li><strong><code>UW-C280</code>'s CG-4 fix.</strong> <code>enforce_grammar</code> is a single early return gating all four CG rules, so
+   the "one flag, low risk, it is a WARNING" framing is wrong: flipping it on the fill path enables
+   CG-1, CG-2 and CG-3 there too. The right fix is per-rule enablement. The review measured 375 CG
+   findings across eight filled books under the flag flip; I have not re-verified that number.</li>
+<li><strong><code>UW-C281</code>'s reading-level argument.</strong> The conclusion (adopt column E) survives; the argument does
+   not. Arguing from achievability is circular, since the books were written and repaired to their own
+   declarations. There is an external anchor and it was never cited:
+   <code>research/cyoa-research-reconciliation.md</code> item 4 sets the gate by age band and places core CYOA at
+   roughly 500-710L with teen gamebooks at middle-grade prose, which favours E over C at exactly the
+   bands where they diverge. Cite the anchor, note E sits slightly above it at 8-11, and route it to
+   the owner as a decision rather than presenting it as settled.</li>
+<li><strong>The can-it-fire test.</strong> All three dead rules were dead in the WIRING, not the rule bodies. A
+   registry-level test invoking each rule directly would have caught none of them, and the M2 floor
+   is not in the validator registry at all. The valuable form is entry-point level: a violating
+   artifact at each production call path must yield a finding. That is a materially harder spec and
+   the "highest leverage" claim should be restated against it.</li>
+</ol>
+<p><strong>One review claim I checked and falsified.</strong> The review states <code>the-winter-of-the-wolf-queen</code> and
+<code>the-tricameral-city</code> "pass <code>check_skeleton.py --strict</code> today with zero findings". They do not: 90
+and 52 blocking lines respectively, on CG-1 and CG-2. Its underlying point survives and is what
+matters, though: no rule floors satisfying-KIND endings, so those books do carry 40 and 42 endings
+with only 8 and 7 satisfying-kind, which is the setback-and-discovery remedy already in use without
+new architecture.</p>
+<p><strong>Unchanged and unrefuted:</strong> Wave 0 (<code>UW-C282</code>), <code>UW-C285(b)</code>, <code>UW-C279</code>, <code>UW-C278</code>, <code>UW-C284</code>'s
+other three items, <code>UW-C272</code>, <code>UW-C274</code>, <code>UW-C276</code>, <code>UW-C275</code>. The review attempted the <code>UW-C282</code>
+normalization collapse through the orchestrator, import path, <code>makeFetchStory</code>, IndexedDB, and the
+vitest fixtures and could not make it land, with one narrowing: all 31 filled artifacts do carry
+top-level <code>variables</code>, so only the <code>choices</code> leg is supported by committed evidence.</p>
+<h2 id="the-organizing-observation">The organizing observation<a class="headerlink" href="#the-organizing-observation" title="Permanent link">&para;</a></h2>
+<p>The 14 open items are not 14 problems. They are four, and the sequencing below follows them:</p>
+<ol>
+<li><strong>One rule set is not self-consistent.</strong> PL-17 contradicts ADR-011 section 5; PL-20 contradicts
+   PL-25's walk floor on what "satisfying" means; PL-29 offers topologies PL-18 forbids. Nothing
+   ever asserted the rules agree with each other, so they drifted.</li>
+<li><strong>The generator is told things the gate does not enforce, and not told things it does.</strong> The
+   ending count, the FK target, and the words-per-stop range are each stated to the model in a
+   number the gate disagrees with, or not stated at all.</li>
+<li><strong>Three rules cannot fire, and no test noticed.</strong> Nothing asserts a gated rule is capable of
+   producing a finding.</li>
+<li><strong>Two guards trust data they do not validate</strong>, and both say in their own comments that they do
+   not.</li>
+</ol>
+<h2 id="wave-0-verify-before-anything-else">Wave 0: verify before anything else<a class="headerlink" href="#wave-0-verify-before-anything-else" title="Permanent link">&para;</a></h2>
+<h3 id="uw-c282-reader-crash-recommendation-reproduce-it-today-then-one-line-fix-or-close-it"><code>UW-C282</code> reader crash. <strong>Recommendation: reproduce it today, then one-line fix or close it.</strong><a class="headerlink" href="#uw-c282-reader-crash-recommendation-reproduce-it-today-then-one-line-fix-or-close-it" title="Permanent link">&para;</a></h3>
+<p>The data path is confirmed unnormalized end to end. <code>generation/persistence.py</code> stores
+<code>stamped = {**params.blob, "id": ...}</code>, a shallow dict copy with no Pydantic round-trip; the read
+route carries <strong>no <code>response_model</code></strong>, so FastAPI returns the raw dict and materializes no defaults;
+777 nodes across 28 of 31 filled books omit <code>choices</code>. <code>player/engine.ts</code> then calls
+<code>node.choices.filter(...)</code> unguarded, from a <code>useMemo</code> that runs on every render including at an
+ending.</p>
+<p>The only unverified link is whether the reader visibly crashes, and <code>frontend/node_modules</code> is
+absent here so vitest could not run. <strong>Do not fix this blind.</strong> If it reproduces, the fix is
+<code>node.choices ?? []</code> and <code>story.variables ?? []</code>, matching the same file's existing idiom for
+<code>on_enter</code> and <code>effects</code>. If it does not reproduce, find what normalizes the blob and write the
+test that pins it, because nothing in the Python path does.</p>
+<p>Everything else on this list is calibration. This is the only item that could be failing a reader
+right now.</p>
+<h2 id="wave-1-safety-and-rules-that-cannot-fire">Wave 1: safety, and rules that cannot fire<a class="headerlink" href="#wave-1-safety-and-rules-that-cannot-fire" title="Permanent link">&para;</a></h2>
+<h3 id="uw-c285b-the-denylist-floor-trusts-the-contracts-own-band-recommendation-stop-reading-contractage_band-entirely"><code>UW-C285(b)</code> the denylist floor trusts the contract's own band. <strong>Recommendation: stop reading <code>contract.age_band</code> entirely.</strong><a class="headerlink" href="#uw-c285b-the-denylist-floor-trusts-the-contracts-own-band-recommendation-stop-reading-contractage_band-entirely" title="Permanent link">&para;</a></h3>
+<p>Key the band-mandatory floor on <code>story.metadata.age_band</code>, which is validated by PL-21/PL-22 and by
+the schema, and make <code>load_contract_for</code> assert the contract's band MATCHES the story's rather than
+supplying it. Two lines, no decision, removes the trust rather than adding a check to it. The
+current <code>#CRITICAL: security</code> comment claims "nothing in contract data can remove or shrink it";
+retyping a committed 3-5 contract to <code>16+</code> empties the floor, binds "a deadly poisoned blade" with
+zero violations, and the CI gate exits 0 with all seven checks PASS. Do this in the same batch as
+Wave 0.</p>
+<h3 id="uw-c280-three-rules-that-cannot-fire-recommendation-fix-all-three-but-ship-the-test-first"><code>UW-C280</code> three rules that cannot fire. <strong>Recommendation: fix all three, but ship the test first.</strong><a class="headerlink" href="#uw-c280-three-rules-that-cannot-fire-recommendation-fix-all-three-but-ship-the-test-first" title="Permanent link">&para;</a></h3>
+<p>The individual fixes are small and none needs a decision:</p>
+<ul>
+<li><strong>CG-4</strong> skips <code>&lt;&lt;FILL</code> bodies while only skeleton callers enable grammar checks. Run it on the
+  fill-result path (<code>enforce_grammar=True</code> on the post-fill <code>run_gate</code>), which is the context it was
+  designed for and the only one where "does the prose acknowledge the choice" is answerable. Low
+  risk: it is a WARNING.</li>
+<li><strong>The M2 anti-clone floor</strong> falls between a structural check that defers to the state floor and a
+  state floor that returns early for Tier-1. <code>check_promotion_bundle.py</code> already catches these with
+  a stricter fingerprint predicate; hoist that predicate into <code>acceptance.py</code> so one definition of
+  "shape unchanged" serves both sites.</li>
+<li><strong>The R4 theme gate</strong> scores <code>jaccard(theme_signature)</code> where production scores
+  <code>containment(similarity_signature)</code>. Change the panel to call the production function. One import.</li>
+</ul>
+<p><strong>The test is the real deliverable, and it is the highest-leverage single item on this list.</strong> A
+parametrized test over the rule registry, each rule paired with a minimal known-violating fixture,
+asserting a finding comes back. Three rules were dead and the suite was green. Note the
+personalization slots already have this property by accident, which is why closing <code>pronoun_set</code>
+tripped three separate guards on the way in; the validator rules have nothing equivalent.</p>
+<h2 id="wave-2-stop-telling-the-generator-the-wrong-number">Wave 2: stop telling the generator the wrong number<a class="headerlink" href="#wave-2-stop-telling-the-generator-the-wrong-number" title="Permanent link">&para;</a></h2>
+<h3 id="uw-c279-prompt-ending-count-recommendation-derive-from-the-cell-and-pin-it-with-a-rendered-prompt-test"><code>UW-C279</code> prompt ending count. <strong>Recommendation: derive from the cell, and pin it with a rendered-prompt test.</strong><a class="headerlink" href="#uw-c279-prompt-ending-count-recommendation-derive-from-the-cell-and-pin-it-with-a-rendered-prompt-test" title="Permanent link">&para;</a></h3>
+<p><code>brief.py</code> computes <code>ending_count</code> from the band envelope while PL-17 floors from the cell envelope,
+so the prompt says "produce EXACTLY 4 ending node(s) ... Not more, not fewer" where the gate needs
+24. Point <code>brief.py</code> at the same cell envelope. Then add the test that actually prevents the class:
+render the prompt for all 18 cells and assert every number it states satisfies the gate that will
+judge the result. Sequence this AFTER the <code>UW-C283</code> decision below, so the brief inherits whatever
+the floor becomes rather than being fixed twice.</p>
+<h3 id="uw-c281-reading-level-recommendation-band_profilepy-becomes-the-single-source-adopt-the-numbers-the-catalog-already-achieves-not-the-aspirational-ones"><code>UW-C281</code> reading level. <strong>Recommendation: <code>band_profile.py</code> becomes the single source; adopt the numbers the catalog already achieves, not the aspirational ones.</strong><a class="headerlink" href="#uw-c281-reading-level-recommendation-band_profilepy-becomes-the-single-source-adopt-the-numbers-the-catalog-already-achieves-not-the-aspirational-ones" title="Permanent link">&para;</a></h3>
+<p>Four tables claim the role and one of them says so in its own text. Put the per-band table in
+<code>band_profile.py</code>, where every other per-band policy lives and which the validator already reads,
+then derive the rest: <code>brief.py</code> reads it, the injected drafting guide renders its numbers from it
+rather than restating them in prose, the frontend gets it from the API, the planning guide cites it.</p>
+<p><strong>On which numbers win: adopt column E (what the catalog declares), not column C (what the prompt
+says).</strong> E is empirically achievable, demonstrated by 31 books; C is not, with four of five 13-16
+books falling below C's own floor. Adopting C would put most of the existing catalog out of band
+overnight in exchange for numbers nothing has hit. Full comparison in
+<code>reading-level-source-table.md</code>.</p>
+<p>Keep the per-story declared target, defaulted from the band table, and add a test that every
+committed skeleton's declaration sits inside its band's range. That keeps authoring latitude and
+kills the drift.</p>
+<p>Separately and independently of which table wins: <code>reading_level_cap</code> is documented as a ceiling
+that "can only ever tighten" and is used as a window CENTRE, so a guardian cap of 2.0 admits FK
+3.00. Make the cap clamp the upper bound (<code>target = min(band_target, cap)</code>, upper bound
+<code>min(target + tolerance, cap)</code>). This one is a straightforward bug in a guardian-facing promise.</p>
+<p>Finally, <code>scripts/check_reading_level.py</code> must read the band or its guard-battery row must stop
+claiming it does. Recommend the former.</p>
+<h3 id="uw-c278-the-stop-range-is-not-in-the-brief-recommendation-state-it-cheapest-item-on-the-list"><code>UW-C278</code> the stop range is not in the brief. <strong>Recommendation: state it, cheapest item on the list.</strong><a class="headerlink" href="#uw-c278-the-stop-range-is-not-in-the-brief-recommendation-state-it-cheapest-item-on-the-list" title="Permanent link">&para;</a></h3>
+<p>Median scene length across four story-first drafts is 246, 439, 400, 279 words at 5-8, 8-11, 10-13,
+13-16: no trend. The model does not infer the band's words-per-stop range, so put it in the
+authoring brief and the skeleton brief. No decision, no risk.</p>
+<h2 id="wave-3-the-calibration-decisions">Wave 3: the calibration decisions<a class="headerlink" href="#wave-3-the-calibration-decisions" title="Permanent link">&para;</a></h2>
+<h3 id="uw-c283-the-endings-balance-partly-withdrawn-see-revision-1-and-5-above-the-series-table-below-is-unsound-and-the-replacement-rule-should-use-per-cell-fraction-pairs-not-static-ranges"><code>UW-C283</code> + the endings balance. <strong>PARTLY WITHDRAWN, see revision 1 and 5 above. The series table below is unsound and the replacement rule should use per-cell fraction pairs, not static ranges.</strong><a class="headerlink" href="#uw-c283-the-endings-balance-partly-withdrawn-see-revision-1-and-5-above-the-series-table-below-is-unsound-and-the-replacement-rule-should-use-per-cell-fraction-pairs-not-static-ranges" title="Permanent link">&para;</a></h3>
+<p>The measurement that settles it. PL-17 applies a flat 0.15 to node count; the ADR's own per-cell
+numbers imply a fraction that is not constant and cannot be reproduced by any single value:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>implied endings fraction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5-8/short (highest)</td>
+<td>0.207</td>
+</tr>
+<tr>
+<td>10-13/long (lowest)</td>
+<td>0.141</td>
+</tr>
+<tr>
+<td>PL-17's flat value</td>
+<td>0.150</td>
+</tr>
+</tbody>
+</table>
+<p>A curve running 0.13 to 0.21 is not a typo in one cell, it is the wrong shape of rule. Three of 14
+prose cells conflict at the top of their node range (3-5/medium, 10-13/medium, 10-13/long: the ADR
+allows 48 endings at 340 nodes, PL-17 demands 51). Implementing the ADR's table directly resolves
+the contradiction by construction and, more importantly, <strong>supplies the ceiling the owner's balance
+requires and no rule currently has.</strong> Keep a fraction only for the four gamebook cells, where the
+ADR says "many fails" and gives no numbers.</p>
+<p>That handles three of the four stated concerns. The fourth needs its own rule:</p>
+<ul>
+<li><em>too few endings forces reconvergence</em> -&gt; the ADR floor</li>
+<li><em>too many endings makes paths individual</em> -&gt; the ADR ceiling, new</li>
+<li><em>too many unsuccessful endings and the reader cannot find the positive one</em> -&gt; <strong>already covered</strong>
+  by the strict walk floor (<code>satisfying_walk_probability</code>), which measures exactly this. Do not
+  build a second rule for it; do settle the kind-versus-valence question below, since that rule's
+  answer depends on it.</li>
+<li><em>in a series, all positive endings converge to one start point</em> -&gt; <strong>no rule expresses this, and
+  it is the one that actually bites.</strong></li>
+</ul>
+<p>At PL-24's 60 percent dominant-kind ceiling, the implied handoff cost is:</p>
+<table>
+<thead>
+<tr>
+<th>cell</th>
+<th>ADR endings</th>
+<th>positive endings at ~40%</th>
+<th>start states book 2 must absorb</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8-11/short</td>
+<td>12-18</td>
+<td>5-7</td>
+<td>5-7</td>
+</tr>
+<tr>
+<td>10-13/long</td>
+<td>32-48</td>
+<td>13-19</td>
+<td>13-19</td>
+</tr>
+<tr>
+<td>16+/long</td>
+<td>36-60</td>
+<td>14-24</td>
+<td>14-24</td>
+</tr>
+</tbody>
+</table>
+<p>Thirteen to nineteen start states is not a handoff anyone can author. <strong>So the series constraint and
+a node-scaled endings floor are structurally opposed at the long cells, and no choice of fraction
+fixes it.</strong> Recommendation: make series eligibility a declared cell-level property. A
+series-eligible book takes a positive-ending CEILING (3 to 5, one per intended book-2 opening) and a
+correspondingly lower total-endings floor, making the difference up in setback and discovery
+endings, which need no start state. A standalone book keeps the ADR range. This is the one item here
+that is genuinely an architecture decision rather than a calibration, and it should be decided
+before any authoring at 10-13/long or above.</p>
+<h3 id="uw-c277-remaining-unit-errors-pl-20-half-withdrawn-see-revision-4-above-pl-26-and-the-_min_complete-comment-fix-stand"><code>UW-C277</code> remaining unit errors. <strong>PL-20 HALF WITHDRAWN, see revision 4 above. PL-26 and the <code>_MIN_COMPLETE</code> comment fix stand.</strong><a class="headerlink" href="#uw-c277-remaining-unit-errors-pl-20-half-withdrawn-see-revision-4-above-pl-26-and-the-_min_complete-comment-fix-stand" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>PL-20</strong> counts nodes where its budget is words: rewriting only the <code>words=</code> hints on a nine-node
+  path to 20 each leaves the gate clean at 180 words, less prose than the two-node hollow win the
+  ADR says the floor forbids. Apply the same one-way word-equivalent reading PL-25 now uses, so no
+  passing story starts failing.</li>
+<li><strong>PL-26</strong>'s ceiling is one flat 6.0 nodes-per-decision against a "3.28 pages between decisions"
+  anchor, which spans 240 words at 3-5 to 1050 at 16+ and inverts the ordering on the real corpus.
+  Re-derive per band through <code>_WORDS_PER_NODE</code>.</li>
+<li><strong><code>_MIN_COMPLETE</code> needs no change</strong>: the suspicion that it held page counts was refuted, its
+  values reproduce the ADR's own fastest-finish minutes column across all 18 cells. Fix the
+  <code>band_profile.py</code> comment that mis-cites them as JHM page counts.</li>
+<li>Record the unit each threshold is stated in, in <code>validator-rules.md</code>, so the next threshold cannot
+  be adopted without naming its unit.</li>
+</ul>
+<h3 id="uw-c284-topology-recommendation-fix-three-and-grandfather-the-fourth"><code>UW-C284</code> topology. <strong>Recommendation: fix three, and grandfather the fourth.</strong><a class="headerlink" href="#uw-c284-topology-recommendation-fix-three-and-grandfather-the-fourth" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>gauntlet</code></strong>: fix the classifier, not the ADR. The ADR describes a real published form (the
+  deadly gamebook gauntlet, spine plus fail-branches plus restart) and the code cannot express it;
+  built as specified it classifies as <code>sorting_hat</code>/<code>time_cave</code> and blocks at 13-16 gamebook.</li>
+<li><strong>PL-29 dropping the ADR's length and style qualifiers</strong>: add them to the key. Small.</li>
+<li><strong>Cyclic branch depth unchecked</strong> (19 skeletons, one carrying a real 87-hop path against a cap of
+  43): condense the strongly connected components and take the longest path on the condensation.
+  Well defined on a cyclic graph and cheap; today the check returns <code>None</code> and emits nothing.</li>
+<li><strong>Two definitions of "satisfying"</strong>: <strong>WITHDRAWN, see revision 2 above.</strong> Original text: pick <strong>kind</strong>, aligning the walk floor to PL-20 rather than
+  the reverse. Kind describes what happened; valence describes tone, and 161 neutral-valence
+  SETBACKS currently count as satisfying outcomes. <strong>This tightens the bar</strong>: 19 of 68 skeletons
+  clear the walk floor only on the broader reading, so it needs the CG family's grandfathering
+  treatment, not a silent switch. Settle this before <code>UW-C283</code>'s walk-floor reliance above.</li>
+</ul>
+<h2 id="wave-4-housekeeping-no-decisions">Wave 4: housekeeping, no decisions<a class="headerlink" href="#wave-4-housekeeping-no-decisions" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><code>UW-C272</code></strong> PL-29 offers unbuildable topologies in 15 of 18 cells. Narrow the rows to the
+  reachable set per cell. The durable fix is the test: assert the intersection of PL-18-admissible
+  and PL-29-permitted is non-empty for every offered cell.</li>
+<li><strong><code>UW-C273</code></strong> <strong>WITHDRAWN, see revision 3 above: the quantity is retired.</strong> Original text: <code>TAU_STRUCT</code> can fall as skeletons are added. <strong>Ratchet it.</strong> A floor that the
+  authoring meant to strengthen the catalog can lower is not a floor. Cheap, and the alternative
+  reading (a falling floor tracks a more varied catalog) does not survive the fact that it fell
+  three times in one authoring session.</li>
+<li><strong><code>UW-C274</code></strong> self-dating census artifact, and the post-bottleneck coherence lint. Both small,
+  both already cost a real defect each. Schedule.</li>
+<li><strong><code>UW-C276</code></strong> CG-3: treat a decision or ending node with no preceding run as a stop of one, and
+  add the two missing bands from ADR-011 section 10's own numbers. Will fire on committed content,
+  so grandfather like the rest of the CG family.</li>
+<li><strong><code>UW-C275</code></strong> largely superseded by <code>AL-453</code> and <code>AL-457</code>: convergence is not the craft conflict
+  it was thought to be. The live remainder is whether 5-8 joins the flowed bands, which is an
+  ADR-026 amendment rather than a code change.</li>
+</ul>
+<h2 id="suggested-order">Suggested order<a class="headerlink" href="#suggested-order" title="Permanent link">&para;</a></h2>
+<p>Wave 0 and Wave 1 are a single batch and should go first: one is a possible live crash, one is a
+safety floor defeated by unvalidated data, and one is three dead rules. Wave 2 next, because every
+generation currently runs against wrong numbers. Wave 3 is the thinking, and <code>UW-C283</code>'s series
+decision gates authoring at 10-13/long and above. Wave 4 whenever.</p>
+<p>The single highest-leverage item across all four waves is the can-it-fire test in Wave 1. Three
+rules were dead, one gate measured a retired quantity, and one guard was defeated by its own input,
+all with a green suite.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 20, 2026 04:04:23 UTC">August 20, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 20, 2026 04:04:23 UTC">August 20, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

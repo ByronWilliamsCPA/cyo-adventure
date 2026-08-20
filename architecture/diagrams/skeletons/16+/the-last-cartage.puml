@@ -1,0 +1,2944 @@
+@startuml the-last-cartage
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n00_0
+state n00_0 #BBDEFB
+n00_0 : setup · 95w
+state n01_0 #FFF9C4
+n01_0 : choice · 75w
+state n02_0 #FFF9C4
+n02_0 : choice · 78w
+state n02_1 #FFF9C4
+n02_1 : choice · 80w
+state n02_2 #FFF9C4
+n02_2 : choice · 82w
+state n03_0 #FFF9C4
+n03_0 : choice · 81w
+state n03_1 #FFF9C4
+n03_1 : choice · 83w
+state n03_2 #FFF9C4
+n03_2 : choice · 85w
+state n03_3 #FFF9C4
+n03_3 : choice · 81w
+state n03_4 #FFF9C4
+n03_4 : choice · 83w
+state n03_5 #FFF9C4
+n03_5 : choice · 85w
+state n03_6 #FFF9C4
+n03_6 : choice · 81w
+state n04_0 #FFF9C4
+n04_0 : choice · 84w
+state n04_1 #FFF9C4
+n04_1 : choice · 86w
+state n04_10 #FFF9C4
+n04_10 : choice · 86w
+state n04_11 #FFF9C4
+n04_11 : choice · 88w
+state n04_2 #FFF9C4
+n04_2 : choice · 88w
+state n04_3 #FFF9C4
+n04_3 : choice · 84w
+state n04_4 #FFF9C4
+n04_4 : choice · 86w
+state n04_5 #FFF9C4
+n04_5 : choice · 88w
+state n04_6 #FFF9C4
+n04_6 : choice · 84w
+state n04_7 #FFF9C4
+n04_7 : choice · 86w
+state n04_8 #FFF9C4
+n04_8 : choice · 88w
+state n04_9 #FFF9C4
+n04_9 : choice · 84w
+state n05_0 #FFF9C4
+n05_0 : choice · 72w
+state n05_1 #FFF9C4
+n05_1 : choice · 74w
+state n05_10 #FFF9C4
+n05_10 : choice · 74w
+state n05_11 #FFF9C4
+n05_11 : choice · 76w
+state n05_12 #FFF9C4
+n05_12 : choice · 72w
+state n05_2 #FFF9C4
+n05_2 : choice · 76w
+state n05_3 #FFF9C4
+n05_3 : choice · 72w
+state n05_4 #FFF9C4
+n05_4 : choice · 74w
+state n05_5 #FFF9C4
+n05_5 : choice · 76w
+state n05_6 #FFF9C4
+n05_6 : choice · 72w
+state n05_7 #FFF9C4
+n05_7 : choice · 74w
+state n05_8 #FFF9C4
+n05_8 : choice · 76w
+state n05_9 #FFF9C4
+n05_9 : choice · 72w
+state n06_0 #D1C4E9
+n06_0 : rising · 58w
+state n06_1 #D1C4E9
+n06_1 : rising · 61w
+state n06_10 #D1C4E9
+n06_10 : rising · 67w
+state n06_11 #D1C4E9
+n06_11 : rising · 58w
+state n06_12 #D1C4E9
+n06_12 : rising · 61w
+state n06_2 #D1C4E9
+n06_2 : rising · 64w
+state n06_3 #D1C4E9
+n06_3 : rising · 67w
+state n06_4 #D1C4E9
+n06_4 : rising · 58w
+state n06_5 #D1C4E9
+n06_5 : rising · 61w
+state n06_6 #D1C4E9
+n06_6 : rising · 64w
+state n06_7 #D1C4E9
+n06_7 : rising · 67w
+state n06_8 #D1C4E9
+n06_8 : rising · 61w
+state n06_9 #D1C4E9
+n06_9 : rising · 64w
+state n07_0 #FFF9C4
+n07_0 : choice · 78w
+state n07_1 #FFF9C4
+n07_1 : choice · 80w
+state n07_10 #FFF9C4
+n07_10 : choice · 80w
+state n07_11 #FFF9C4
+n07_11 : choice · 82w
+state n07_12 #FFF9C4
+n07_12 : choice · 78w
+state n07_2 #FFF9C4
+n07_2 : choice · 82w
+state n07_3 #FFF9C4
+n07_3 : choice · 78w
+state n07_4 #FFF9C4
+n07_4 : choice · 80w
+state n07_5 #FFF9C4
+n07_5 : choice · 82w
+state n07_6 #FFF9C4
+n07_6 : choice · 78w
+state n07_7 #FFF9C4
+n07_7 : choice · 80w
+state n07_8 #FFF9C4
+n07_8 : choice · 82w
+state n07_9 #FFF9C4
+n07_9 : choice · 78w
+state n08_0 #FFF9C4
+n08_0 : choice · 81w
+state n08_1 #FFF9C4
+n08_1 : choice · 83w
+state n08_10 #FFF9C4
+n08_10 : choice · 83w
+state n08_11 #FFF9C4
+n08_11 : choice · 85w
+state n08_12 #FFF9C4
+n08_12 : choice · 81w
+state n08_2 #FFF9C4
+n08_2 : choice · 85w
+state n08_3 #FFF9C4
+n08_3 : choice · 81w
+state n08_4 #FFF9C4
+n08_4 : choice · 83w
+state n08_5 #FFF9C4
+n08_5 : choice · 85w
+state n08_6 #FFF9C4
+n08_6 : choice · 81w
+state n08_7 #FFF9C4
+n08_7 : choice · 83w
+state n08_8 #FFF9C4
+n08_8 : choice · 85w
+state n08_9 #FFF9C4
+n08_9 : choice · 81w
+state n09_0 #FFF9C4
+n09_0 : choice · 84w
+state n09_1 #FFF9C4
+n09_1 : choice · 86w
+state n09_10 #FFF9C4
+n09_10 : choice · 86w
+state n09_11 #FFF9C4
+n09_11 : choice · 88w
+state n09_12 #FFF9C4
+n09_12 : choice · 84w
+state n09_2 #FFF9C4
+n09_2 : choice · 88w
+state n09_3 #FFF9C4
+n09_3 : choice · 84w
+state n09_4 #FFF9C4
+n09_4 : choice · 86w
+state n09_5 #FFF9C4
+n09_5 : choice · 88w
+state n09_6 #FFF9C4
+n09_6 : choice · 84w
+state n09_7 #FFF9C4
+n09_7 : choice · 86w
+state n09_8 #FFF9C4
+n09_8 : choice · 88w
+state n09_9 #FFF9C4
+n09_9 : choice · 84w
+state n10_0 #FFF9C4
+n10_0 : choice · 72w
+state n10_1 #FFF9C4
+n10_1 : choice · 74w
+state n10_10 #FFF9C4
+n10_10 : choice · 74w
+state n10_11 #FFF9C4
+n10_11 : choice · 76w
+state n10_12 #FFF9C4
+n10_12 : choice · 72w
+state n10_2 #FFF9C4
+n10_2 : choice · 76w
+state n10_3 #FFF9C4
+n10_3 : choice · 72w
+state n10_4 #FFF9C4
+n10_4 : choice · 74w
+state n10_5 #FFF9C4
+n10_5 : choice · 76w
+state n10_6 #FFF9C4
+n10_6 : choice · 72w
+state n10_7 #FFF9C4
+n10_7 : choice · 74w
+state n10_8 #FFF9C4
+n10_8 : choice · 76w
+state n10_9 #FFF9C4
+n10_9 : choice · 72w
+state n11_0 #D1C4E9
+n11_0 : rising · 58w
+state n11_1 #D1C4E9
+n11_1 : rising · 61w
+state n11_10 #D1C4E9
+n11_10 : rising · 67w
+state n11_11 #D1C4E9
+n11_11 : rising · 58w
+state n11_12 #D1C4E9
+n11_12 : rising · 61w
+state n11_2 #D1C4E9
+n11_2 : rising · 64w
+state n11_3 #D1C4E9
+n11_3 : rising · 67w
+state n11_4 #D1C4E9
+n11_4 : rising · 58w
+state n11_5 #D1C4E9
+n11_5 : rising · 61w
+state n11_6 #D1C4E9
+n11_6 : rising · 64w
+state n11_7 #D1C4E9
+n11_7 : rising · 67w
+state n11_8 #D1C4E9
+n11_8 : rising · 61w
+state n11_9 #D1C4E9
+n11_9 : rising · 64w
+state n12_0 #FFF9C4
+n12_0 : choice · 78w
+state n12_1 #FFF9C4
+n12_1 : choice · 80w
+state n12_10 #FFF9C4
+n12_10 : choice · 80w
+state n12_11 #FFF9C4
+n12_11 : choice · 82w
+state n12_12 #FFF9C4
+n12_12 : choice · 78w
+state n12_2 #FFF9C4
+n12_2 : choice · 82w
+state n12_3 #FFF9C4
+n12_3 : choice · 78w
+state n12_4 #FFF9C4
+n12_4 : choice · 80w
+state n12_5 #FFF9C4
+n12_5 : choice · 82w
+state n12_6 #FFF9C4
+n12_6 : choice · 78w
+state n12_7 #FFF9C4
+n12_7 : choice · 80w
+state n12_8 #FFF9C4
+n12_8 : choice · 82w
+state n12_9 #FFF9C4
+n12_9 : choice · 78w
+state n13_0 #FFF9C4
+n13_0 : choice · 81w
+state n13_1 #FFF9C4
+n13_1 : choice · 83w
+state n13_10 #FFF9C4
+n13_10 : choice · 83w
+state n13_11 #FFF9C4
+n13_11 : choice · 85w
+state n13_12 #FFF9C4
+n13_12 : choice · 81w
+state n13_2 #FFF9C4
+n13_2 : choice · 85w
+state n13_3 #FFF9C4
+n13_3 : choice · 81w
+state n13_4 #FFF9C4
+n13_4 : choice · 83w
+state n13_5 #FFF9C4
+n13_5 : choice · 85w
+state n13_6 #FFF9C4
+n13_6 : choice · 81w
+state n13_7 #FFF9C4
+n13_7 : choice · 83w
+state n13_8 #FFF9C4
+n13_8 : choice · 85w
+state n13_9 #FFF9C4
+n13_9 : choice · 81w
+state e13_0 #FFCDD2
+e13_0 : death (negative)
+e13_0 : "Warm on the Return (ST 13.1)"
+state e13_1 #FFCDD2
+e13_1 : death (negative)
+e13_1 : "In the Shaft Bottom (ST 13.2)"
+state e13_2 #FFCDD2
+e13_2 : setback (negative)
+e13_2 : "Read to the Coroner (ST 13.3)"
+state n14_0 #FFF9C4
+n14_0 : choice · 84w
+state n14_1 #FFF9C4
+n14_1 : choice · 86w
+state n14_10 #FFF9C4
+n14_10 : choice · 86w
+state n14_11 #FFF9C4
+n14_11 : choice · 88w
+state n14_12 #FFF9C4
+n14_12 : choice · 84w
+state n14_2 #FFF9C4
+n14_2 : choice · 88w
+state n14_3 #FFF9C4
+n14_3 : choice · 84w
+state n14_4 #FFF9C4
+n14_4 : choice · 86w
+state n14_5 #FFF9C4
+n14_5 : choice · 88w
+state n14_6 #FFF9C4
+n14_6 : choice · 84w
+state n14_7 #FFF9C4
+n14_7 : choice · 86w
+state n14_8 #FFF9C4
+n14_8 : choice · 88w
+state n14_9 #FFF9C4
+n14_9 : choice · 84w
+state e14_0 #E0E0E0
+e14_0 : setback (neutral)
+e14_0 : "Nineteen in the Yard (ST 14.1)"
+state e14_1 #FFCDD2
+e14_1 : death (negative)
+e14_1 : "Warm on the Return (ST 14.2)"
+state e14_2 #FFCDD2
+e14_2 : death (negative)
+e14_2 : "In the Shaft Bottom (ST 14.3)"
+state n15_0 #FFF9C4
+n15_0 : choice · 72w
+state n15_1 #FFF9C4
+n15_1 : choice · 74w
+state n15_10 #FFF9C4
+n15_10 : choice · 74w
+state n15_11 #FFF9C4
+n15_11 : choice · 76w
+state n15_12 #FFF9C4
+n15_12 : choice · 72w
+state n15_2 #FFF9C4
+n15_2 : choice · 76w
+state n15_3 #FFF9C4
+n15_3 : choice · 72w
+state n15_4 #FFF9C4
+n15_4 : choice · 74w
+state n15_5 #FFF9C4
+n15_5 : choice · 76w
+state n15_6 #FFF9C4
+n15_6 : choice · 72w
+state n15_7 #FFF9C4
+n15_7 : choice · 74w
+state n15_8 #FFF9C4
+n15_8 : choice · 76w
+state n15_9 #FFF9C4
+n15_9 : choice · 72w
+state e15_0 #FFCDD2
+e15_0 : setback (negative)
+e15_0 : "Read to the Coroner (ST 15.1)"
+state e15_1 #FFCDD2
+e15_1 : death (negative)
+e15_1 : "Warm on the Return (ST 15.2)"
+state e15_2 #FFCDD2
+e15_2 : death (negative)
+e15_2 : "In the Shaft Bottom (ST 15.3)"
+state n16_0 #D1C4E9
+n16_0 : rising · 58w
+state n16_1 #D1C4E9
+n16_1 : rising · 61w
+state n16_10 #D1C4E9
+n16_10 : rising · 67w
+state n16_11 #D1C4E9
+n16_11 : rising · 58w
+state n16_12 #D1C4E9
+n16_12 : rising · 61w
+state n16_2 #D1C4E9
+n16_2 : rising · 64w
+state n16_3 #D1C4E9
+n16_3 : rising · 67w
+state n16_4 #D1C4E9
+n16_4 : rising · 58w
+state n16_5 #D1C4E9
+n16_5 : rising · 61w
+state n16_6 #D1C4E9
+n16_6 : rising · 64w
+state n16_7 #D1C4E9
+n16_7 : rising · 67w
+state n16_8 #D1C4E9
+n16_8 : rising · 61w
+state n16_9 #D1C4E9
+n16_9 : rising · 64w
+state e16_0 #E0E0E0
+e16_0 : discovery (neutral)
+e16_0 : "What Was Done in the Stable (ST 16.1)"
+state e16_1 #FFCDD2
+e16_1 : setback (negative)
+e16_1 : "Read to the Coroner (ST 16.2)"
+state e16_2 #FFCDD2
+e16_2 : death (negative)
+e16_2 : "Warm on the Return (ST 16.3)"
+state n17_0 #FFF9C4
+n17_0 : choice · 78w
+state n17_1 #FFF9C4
+n17_1 : choice · 80w
+state n17_10 #FFF9C4
+n17_10 : choice · 80w
+state n17_11 #FFF9C4
+n17_11 : choice · 82w
+state n17_12 #FFF9C4
+n17_12 : choice · 78w
+state n17_2 #FFF9C4
+n17_2 : choice · 82w
+state n17_3 #FFF9C4
+n17_3 : choice · 78w
+state n17_4 #FFF9C4
+n17_4 : choice · 80w
+state n17_5 #FFF9C4
+n17_5 : choice · 82w
+state n17_6 #FFF9C4
+n17_6 : choice · 78w
+state n17_7 #FFF9C4
+n17_7 : choice · 80w
+state n17_8 #FFF9C4
+n17_8 : choice · 82w
+state n17_9 #FFF9C4
+n17_9 : choice · 78w
+state n18_0 #FFF9C4
+n18_0 : choice · 81w
+state n18_1 #FFF9C4
+n18_1 : choice · 83w
+state n18_10 #FFF9C4
+n18_10 : choice · 83w
+state n18_11 #FFF9C4
+n18_11 : choice · 85w
+state n18_12 #FFF9C4
+n18_12 : choice · 81w
+state n18_2 #FFF9C4
+n18_2 : choice · 85w
+state n18_3 #FFF9C4
+n18_3 : choice · 81w
+state n18_4 #FFF9C4
+n18_4 : choice · 83w
+state n18_5 #FFF9C4
+n18_5 : choice · 85w
+state n18_6 #FFF9C4
+n18_6 : choice · 81w
+state n18_7 #FFF9C4
+n18_7 : choice · 83w
+state n18_8 #FFF9C4
+n18_8 : choice · 85w
+state n18_9 #FFF9C4
+n18_9 : choice · 81w
+state e18_0 #FFCDD2
+e18_0 : capture (negative)
+e18_0 : "Where the Splices Were (N9 18.1)"
+state e18_1 #FFCDD2
+e18_1 : death (negative)
+e18_1 : "The Far End Lets Go (N9 18.2)"
+state e18_2 #FFCDD2
+e18_2 : death (negative)
+e18_2 : "The Last Man But One (N9 18.3)"
+state n19_0 #FFF9C4
+n19_0 : choice · 84w
+state n19_1 #FFF9C4
+n19_1 : choice · 86w
+state n19_10 #FFF9C4
+n19_10 : choice · 86w
+state n19_11 #FFF9C4
+n19_11 : choice · 88w
+state n19_12 #FFF9C4
+n19_12 : choice · 84w
+state n19_2 #FFF9C4
+n19_2 : choice · 88w
+state n19_3 #FFF9C4
+n19_3 : choice · 84w
+state n19_4 #FFF9C4
+n19_4 : choice · 86w
+state n19_5 #FFF9C4
+n19_5 : choice · 88w
+state n19_6 #FFF9C4
+n19_6 : choice · 84w
+state n19_7 #FFF9C4
+n19_7 : choice · 86w
+state n19_8 #FFF9C4
+n19_8 : choice · 88w
+state n19_9 #FFF9C4
+n19_9 : choice · 84w
+state e19_0 #E0E0E0
+e19_0 : setback (neutral)
+e19_0 : "Abandoned on Day Four (N9 19.1)"
+state e19_1 #FFCDD2
+e19_1 : capture (negative)
+e19_1 : "Where the Splices Were (N9 19.2)"
+state e19_2 #FFCDD2
+e19_2 : death (negative)
+e19_2 : "The Far End Lets Go (N9 19.3)"
+state n20_0 #FFF9C4
+n20_0 : choice · 72w
+state n20_1 #FFF9C4
+n20_1 : choice · 74w
+state n20_10 #FFF9C4
+n20_10 : choice · 74w
+state n20_11 #FFF9C4
+n20_11 : choice · 76w
+state n20_12 #FFF9C4
+n20_12 : choice · 72w
+state n20_2 #FFF9C4
+n20_2 : choice · 76w
+state n20_3 #FFF9C4
+n20_3 : choice · 72w
+state n20_4 #FFF9C4
+n20_4 : choice · 74w
+state n20_5 #FFF9C4
+n20_5 : choice · 76w
+state n20_6 #FFF9C4
+n20_6 : choice · 72w
+state n20_7 #FFF9C4
+n20_7 : choice · 74w
+state n20_8 #FFF9C4
+n20_8 : choice · 76w
+state n20_9 #FFF9C4
+n20_9 : choice · 72w
+state e20_0 #FFCDD2
+e20_0 : death (negative)
+e20_0 : "The Last Man But One (N9 20.1)"
+state e20_1 #FFCDD2
+e20_1 : capture (negative)
+e20_1 : "Where the Splices Were (N9 20.2)"
+state e20_2 #FFCDD2
+e20_2 : death (negative)
+e20_2 : "The Far End Lets Go (N9 20.3)"
+state n21_0 #D1C4E9
+n21_0 : rising · 58w
+state n21_1 #D1C4E9
+n21_1 : rising · 61w
+state n21_10 #D1C4E9
+n21_10 : rising · 67w
+state n21_11 #D1C4E9
+n21_11 : rising · 58w
+state n21_12 #D1C4E9
+n21_12 : rising · 61w
+state n21_2 #D1C4E9
+n21_2 : rising · 64w
+state n21_3 #D1C4E9
+n21_3 : rising · 67w
+state n21_4 #D1C4E9
+n21_4 : rising · 58w
+state n21_5 #D1C4E9
+n21_5 : rising · 61w
+state n21_6 #D1C4E9
+n21_6 : rising · 64w
+state n21_7 #D1C4E9
+n21_7 : rising · 67w
+state n21_8 #D1C4E9
+n21_8 : rising · 61w
+state n21_9 #D1C4E9
+n21_9 : rising · 64w
+state e21_0 #E0E0E0
+e21_0 : setback (neutral)
+e21_0 : "Nothing Left Worth It (SP 21.1)"
+state e21_1 #FFCDD2
+e21_1 : capture (negative)
+e21_1 : "Eleven Hours Early (SP 21.2)"
+state e21_2 #FFCDD2
+e21_2 : death (negative)
+e21_2 : "The Wrong Section (SP 21.3)"
+state n22_0 #FFF9C4
+n22_0 : choice · 78w
+state n22_1 #FFF9C4
+n22_1 : choice · 80w
+state n22_10 #FFF9C4
+n22_10 : choice · 80w
+state n22_11 #FFF9C4
+n22_11 : choice · 82w
+state n22_12 #FFF9C4
+n22_12 : choice · 78w
+state n22_2 #FFF9C4
+n22_2 : choice · 82w
+state n22_3 #FFF9C4
+n22_3 : choice · 78w
+state n22_4 #FFF9C4
+n22_4 : choice · 80w
+state n22_5 #FFF9C4
+n22_5 : choice · 82w
+state n22_6 #FFF9C4
+n22_6 : choice · 78w
+state n22_7 #FFF9C4
+n22_7 : choice · 80w
+state n22_8 #FFF9C4
+n22_8 : choice · 82w
+state n22_9 #FFF9C4
+n22_9 : choice · 78w
+state n23_0 #FFF9C4
+n23_0 : choice · 81w
+state n23_1 #FFF9C4
+n23_1 : choice · 83w
+state n23_10 #FFF9C4
+n23_10 : choice · 83w
+state n23_11 #FFF9C4
+n23_11 : choice · 85w
+state n23_12 #FFF9C4
+n23_12 : choice · 81w
+state n23_2 #FFF9C4
+n23_2 : choice · 85w
+state n23_3 #FFF9C4
+n23_3 : choice · 81w
+state n23_4 #FFF9C4
+n23_4 : choice · 83w
+state n23_5 #FFF9C4
+n23_5 : choice · 85w
+state n23_6 #FFF9C4
+n23_6 : choice · 81w
+state n23_7 #FFF9C4
+n23_7 : choice · 83w
+state n23_8 #FFF9C4
+n23_8 : choice · 85w
+state n23_9 #FFF9C4
+n23_9 : choice · 81w
+state e23_0 #FFCDD2
+e23_0 : death (negative)
+e23_0 : "Half Remembered (SP 23.1)"
+state e23_1 #FFCDD2
+e23_1 : capture (negative)
+e23_1 : "Eleven Hours Early (SP 23.2)"
+state e23_2 #FFCDD2
+e23_2 : death (negative)
+e23_2 : "The Wrong Section (SP 23.3)"
+state n24_0 #FFF9C4
+n24_0 : choice · 84w
+state n24_1 #FFF9C4
+n24_1 : choice · 86w
+state n24_10 #FFF9C4
+n24_10 : choice · 86w
+state n24_11 #FFF9C4
+n24_11 : choice · 88w
+state n24_12 #FFF9C4
+n24_12 : choice · 84w
+state n24_2 #FFF9C4
+n24_2 : choice · 88w
+state n24_3 #FFF9C4
+n24_3 : choice · 84w
+state n24_4 #FFF9C4
+n24_4 : choice · 86w
+state n24_5 #FFF9C4
+n24_5 : choice · 88w
+state n24_6 #FFF9C4
+n24_6 : choice · 84w
+state n24_7 #FFF9C4
+n24_7 : choice · 86w
+state n24_8 #FFF9C4
+n24_8 : choice · 88w
+state n24_9 #FFF9C4
+n24_9 : choice · 84w
+state e24_0 #E0E0E0
+e24_0 : discovery (neutral)
+e24_0 : "What the Bypass Drowned (SP 24.1)"
+state e24_1 #FFCDD2
+e24_1 : death (negative)
+e24_1 : "Half Remembered (SP 24.2)"
+state e24_2 #FFCDD2
+e24_2 : capture (negative)
+e24_2 : "Eleven Hours Early (SP 24.3)"
+state n25_0 #FFF9C4
+n25_0 : choice · 72w
+state n25_1 #FFF9C4
+n25_1 : choice · 74w
+state n25_10 #FFF9C4
+n25_10 : choice · 74w
+state n25_11 #FFF9C4
+n25_11 : choice · 76w
+state n25_12 #FFF9C4
+n25_12 : choice · 72w
+state n25_2 #FFF9C4
+n25_2 : choice · 76w
+state n25_3 #FFF9C4
+n25_3 : choice · 72w
+state n25_4 #FFF9C4
+n25_4 : choice · 74w
+state n25_5 #FFF9C4
+n25_5 : choice · 76w
+state n25_6 #FFF9C4
+n25_6 : choice · 72w
+state n25_7 #FFF9C4
+n25_7 : choice · 74w
+state n25_8 #FFF9C4
+n25_8 : choice · 76w
+state n25_9 #FFF9C4
+n25_9 : choice · 72w
+state e25_0 #FFCDD2
+e25_0 : death (negative)
+e25_0 : "No Third Warning (OW 25.1)"
+state e25_1 #FFCDD2
+e25_1 : death (negative)
+e25_1 : "Forty Years of Nothing (OW 25.2)"
+state e25_2 #FFCDD2
+e25_2 : capture (negative)
+e25_2 : "Where the Rope Ends (OW 25.3)"
+state n26_0 #D1C4E9
+n26_0 : rising · 58w
+state n26_1 #D1C4E9
+n26_1 : rising · 61w
+state n26_10 #D1C4E9
+n26_10 : rising · 67w
+state n26_11 #D1C4E9
+n26_11 : rising · 58w
+state n26_12 #D1C4E9
+n26_12 : rising · 61w
+state n26_2 #D1C4E9
+n26_2 : rising · 64w
+state n26_3 #D1C4E9
+n26_3 : rising · 67w
+state n26_4 #D1C4E9
+n26_4 : rising · 58w
+state n26_5 #D1C4E9
+n26_5 : rising · 61w
+state n26_6 #D1C4E9
+n26_6 : rising · 64w
+state n26_7 #D1C4E9
+n26_7 : rising · 67w
+state n26_8 #D1C4E9
+n26_8 : rising · 61w
+state n26_9 #D1C4E9
+n26_9 : rising · 64w
+state e26_0 #E0E0E0
+e26_0 : discovery (neutral)
+e26_0 : "An Hour After (OW 26.1)"
+state e26_1 #FFCDD2
+e26_1 : death (negative)
+e26_1 : "No Third Warning (OW 26.2)"
+state e26_2 #FFCDD2
+e26_2 : death (negative)
+e26_2 : "Forty Years of Nothing (OW 26.3)"
+state n27_0 #FFF9C4
+n27_0 : choice · 78w
+state n27_1 #FFF9C4
+n27_1 : choice · 80w
+state n27_10 #FFF9C4
+n27_10 : choice · 80w
+state n27_11 #FFF9C4
+n27_11 : choice · 82w
+state n27_12 #FFF9C4
+n27_12 : choice · 78w
+state n27_2 #FFF9C4
+n27_2 : choice · 82w
+state n27_3 #FFF9C4
+n27_3 : choice · 78w
+state n27_4 #FFF9C4
+n27_4 : choice · 80w
+state n27_5 #FFF9C4
+n27_5 : choice · 82w
+state n27_6 #FFF9C4
+n27_6 : choice · 78w
+state n27_7 #FFF9C4
+n27_7 : choice · 80w
+state n27_8 #FFF9C4
+n27_8 : choice · 82w
+state n27_9 #FFF9C4
+n27_9 : choice · 78w
+state n28_0 #FFF9C4
+n28_0 : choice · 81w
+state n28_1 #FFF9C4
+n28_1 : choice · 83w
+state n28_10 #FFF9C4
+n28_10 : choice · 83w
+state n28_11 #FFF9C4
+n28_11 : choice · 85w
+state n28_12 #FFF9C4
+n28_12 : choice · 81w
+state n28_2 #FFF9C4
+n28_2 : choice · 85w
+state n28_3 #FFF9C4
+n28_3 : choice · 81w
+state n28_4 #FFF9C4
+n28_4 : choice · 83w
+state n28_5 #FFF9C4
+n28_5 : choice · 85w
+state n28_6 #FFF9C4
+n28_6 : choice · 81w
+state n28_7 #FFF9C4
+n28_7 : choice · 83w
+state n28_8 #FFF9C4
+n28_8 : choice · 85w
+state n28_9 #FFF9C4
+n28_9 : choice · 81w
+state e28_0 #FFCDD2
+e28_0 : capture (negative)
+e28_0 : "Where the Rope Ends (OW 28.1)"
+state e28_1 #FFCDD2
+e28_1 : death (negative)
+e28_1 : "No Third Warning (OW 28.2)"
+state e28_2 #FFCDD2
+e28_2 : death (negative)
+e28_2 : "Forty Years of Nothing (OW 28.3)"
+state n29_0 #FFF9C4
+n29_0 : choice · 84w
+state n29_1 #FFF9C4
+n29_1 : choice · 86w
+state n29_10 #FFF9C4
+n29_10 : choice · 86w
+state n29_11 #FFF9C4
+n29_11 : choice · 88w
+state n29_12 #FFF9C4
+n29_12 : choice · 84w
+state n29_2 #FFF9C4
+n29_2 : choice · 88w
+state n29_3 #FFF9C4
+n29_3 : choice · 84w
+state n29_4 #FFF9C4
+n29_4 : choice · 86w
+state n29_5 #FFF9C4
+n29_5 : choice · 88w
+state n29_6 #FFF9C4
+n29_6 : choice · 84w
+state n29_7 #FFF9C4
+n29_7 : choice · 86w
+state n29_8 #FFF9C4
+n29_8 : choice · 88w
+state n29_9 #FFF9C4
+n29_9 : choice · 84w
+state e29_0 #E0E0E0
+e29_0 : setback (neutral)
+e29_0 : "Eleven Out, Cartage Lost (ED 29.1)"
+state e29_1 #FFCDD2
+e29_1 : death (negative)
+e29_1 : "The Ground Finishes Moving (ED 29.2)"
+state e29_2 #FFCDD2
+e29_2 : death (negative)
+e29_2 : "At the Eighth Hour (ED 29.3)"
+state n30_0 #FFF9C4
+n30_0 : choice · 72w
+state n30_1 #FFF9C4
+n30_1 : choice · 74w
+state n30_10 #FFF9C4
+n30_10 : choice · 74w
+state n30_11 #FFF9C4
+n30_11 : choice · 76w
+state n30_12 #FFF9C4
+n30_12 : choice · 72w
+state n30_2 #FFF9C4
+n30_2 : choice · 76w
+state n30_3 #FFF9C4
+n30_3 : choice · 72w
+state n30_4 #FFF9C4
+n30_4 : choice · 74w
+state n30_5 #FFF9C4
+n30_5 : choice · 76w
+state n30_6 #FFF9C4
+n30_6 : choice · 72w
+state n30_7 #FFF9C4
+n30_7 : choice · 74w
+state n30_8 #FFF9C4
+n30_8 : choice · 76w
+state n30_9 #FFF9C4
+n30_9 : choice · 72w
+state e30_0 #FFCDD2
+e30_0 : capture (negative)
+e30_0 : "In and Not Back (ED 30.1)"
+state e30_1 #FFCDD2
+e30_1 : death (negative)
+e30_1 : "The Ground Finishes Moving (ED 30.2)"
+state e30_2 #FFCDD2
+e30_2 : death (negative)
+e30_2 : "At the Eighth Hour (ED 30.3)"
+state n31_0 #D1C4E9
+n31_0 : rising · 58w
+state n31_1 #D1C4E9
+n31_1 : rising · 61w
+state n31_10 #D1C4E9
+n31_10 : rising · 67w
+state n31_11 #D1C4E9
+n31_11 : rising · 58w
+state n31_12 #D1C4E9
+n31_12 : rising · 61w
+state n31_2 #D1C4E9
+n31_2 : rising · 64w
+state n31_3 #D1C4E9
+n31_3 : rising · 67w
+state n31_4 #D1C4E9
+n31_4 : rising · 58w
+state n31_5 #D1C4E9
+n31_5 : rising · 61w
+state n31_6 #D1C4E9
+n31_6 : rising · 64w
+state n31_7 #D1C4E9
+n31_7 : rising · 67w
+state n31_8 #D1C4E9
+n31_8 : rising · 61w
+state n31_9 #D1C4E9
+n31_9 : rising · 64w
+state e31_0 #E0E0E0
+e31_0 : discovery (neutral)
+e31_0 : "Found at Fourteen Hours (ED 31.1)"
+state e31_1 #FFCDD2
+e31_1 : capture (negative)
+e31_1 : "In and Not Back (ED 31.2)"
+state e31_2 #FFCDD2
+e31_2 : death (negative)
+e31_2 : "The Ground Finishes Moving (ED 31.3)"
+state n32_0 #FFF9C4
+n32_0 : choice · 78w
+state n32_1 #FFF9C4
+n32_1 : choice · 80w
+state n32_10 #FFF9C4
+n32_10 : choice · 80w
+state n32_11 #FFF9C4
+n32_11 : choice · 82w
+state n32_12 #FFF9C4
+n32_12 : choice · 78w
+state n32_2 #FFF9C4
+n32_2 : choice · 82w
+state n32_3 #FFF9C4
+n32_3 : choice · 78w
+state n32_4 #FFF9C4
+n32_4 : choice · 80w
+state n32_5 #FFF9C4
+n32_5 : choice · 82w
+state n32_6 #FFF9C4
+n32_6 : choice · 78w
+state n32_7 #FFF9C4
+n32_7 : choice · 80w
+state n32_8 #FFF9C4
+n32_8 : choice · 82w
+state n32_9 #FFF9C4
+n32_9 : choice · 78w
+state n33_0 #FFF9C4
+n33_0 : choice · 81w
+state n33_1 #FFF9C4
+n33_1 : choice · 83w
+state n33_10 #FFF9C4
+n33_10 : choice · 83w
+state n33_11 #FFF9C4
+n33_11 : choice · 85w
+state n33_12 #FFF9C4
+n33_12 : choice · 81w
+state n33_2 #FFF9C4
+n33_2 : choice · 85w
+state n33_3 #FFF9C4
+n33_3 : choice · 81w
+state n33_4 #FFF9C4
+n33_4 : choice · 83w
+state n33_5 #FFF9C4
+n33_5 : choice · 85w
+state n33_6 #FFF9C4
+n33_6 : choice · 81w
+state n33_7 #FFF9C4
+n33_7 : choice · 83w
+state n33_8 #FFF9C4
+n33_8 : choice · 85w
+state n33_9 #FFF9C4
+n33_9 : choice · 81w
+state e33_0 #FFCDD2
+e33_0 : setback (negative)
+e33_0 : "Plant Ahead of Men (CM 33.1)"
+state e33_1 #FFCDD2
+e33_1 : setback (negative)
+e33_1 : "A Different Book (CM 33.2)"
+state e33_2 #FFCDD2
+e33_2 : setback (negative)
+e33_2 : "Withdrawn on the Seventh (CM 33.3)"
+state n34_0 #FFF9C4
+n34_0 : choice · 84w
+state n34_1 #FFF9C4
+n34_1 : choice · 86w
+state n34_10 #FFF9C4
+n34_10 : choice · 86w
+state n34_11 #FFF9C4
+n34_11 : choice · 88w
+state n34_12 #FFF9C4
+n34_12 : choice · 84w
+state n34_2 #FFF9C4
+n34_2 : choice · 88w
+state n34_3 #FFF9C4
+n34_3 : choice · 84w
+state n34_4 #FFF9C4
+n34_4 : choice · 86w
+state n34_5 #FFF9C4
+n34_5 : choice · 88w
+state n34_6 #FFF9C4
+n34_6 : choice · 84w
+state n34_7 #FFF9C4
+n34_7 : choice · 86w
+state n34_8 #FFF9C4
+n34_8 : choice · 88w
+state n34_9 #FFF9C4
+n34_9 : choice · 84w
+state e34_0 #E0E0E0
+e34_0 : discovery (neutral)
+e34_0 : "Read Out Four Years Later (CM 34.1)"
+state e34_1 #FFCDD2
+e34_1 : setback (negative)
+e34_1 : "Plant Ahead of Men (CM 34.2)"
+state e34_2 #FFCDD2
+e34_2 : setback (negative)
+e34_2 : "A Different Book (CM 34.3)"
+state n35_0 #FFF9C4
+n35_0 : choice · 72w
+state n35_1 #FFF9C4
+n35_1 : choice · 74w
+state n35_10 #FFF9C4
+n35_10 : choice · 74w
+state n35_11 #FFF9C4
+n35_11 : choice · 76w
+state n35_12 #FFF9C4
+n35_12 : choice · 72w
+state n35_2 #FFF9C4
+n35_2 : choice · 76w
+state n35_3 #FFF9C4
+n35_3 : choice · 72w
+state n35_4 #FFF9C4
+n35_4 : choice · 74w
+state n35_5 #FFF9C4
+n35_5 : choice · 76w
+state n35_6 #FFF9C4
+n35_6 : choice · 72w
+state n35_7 #FFF9C4
+n35_7 : choice · 74w
+state n35_8 #FFF9C4
+n35_8 : choice · 76w
+state n35_9 #FFF9C4
+n35_9 : choice · 72w
+state e35_0 #FFCDD2
+e35_0 : setback (negative)
+e35_0 : "Withdrawn on the Seventh (CM 35.1)"
+state e35_1 #FFCDD2
+e35_1 : setback (negative)
+e35_1 : "Plant Ahead of Men (CM 35.2)"
+state e35_2 #FFCDD2
+e35_2 : setback (negative)
+e35_2 : "A Different Book (CM 35.3)"
+state n36_0 #D1C4E9
+n36_0 : rising · 58w
+state n36_1 #D1C4E9
+n36_1 : rising · 61w
+state n36_10 #D1C4E9
+n36_10 : rising · 67w
+state n36_11 #D1C4E9
+n36_11 : rising · 58w
+state n36_12 #D1C4E9
+n36_12 : rising · 61w
+state n36_2 #D1C4E9
+n36_2 : rising · 64w
+state n36_3 #D1C4E9
+n36_3 : rising · 67w
+state n36_4 #D1C4E9
+n36_4 : rising · 58w
+state n36_5 #D1C4E9
+n36_5 : rising · 61w
+state n36_6 #D1C4E9
+n36_6 : rising · 64w
+state n36_7 #D1C4E9
+n36_7 : rising · 67w
+state n36_8 #D1C4E9
+n36_8 : rising · 61w
+state n36_9 #D1C4E9
+n36_9 : rising · 64w
+state e36_0 #E0E0E0
+e36_0 : setback (neutral)
+e36_0 : "The Company Takes It Out (CM 36.1)"
+state e36_1 #FFCDD2
+e36_1 : setback (negative)
+e36_1 : "Withdrawn on the Seventh (CM 36.2)"
+state e36_2 #FFCDD2
+e36_2 : setback (negative)
+e36_2 : "Plant Ahead of Men (CM 36.3)"
+state n37_0 #FFF9C4
+n37_0 : choice · 78w
+state n37_1 #FFF9C4
+n37_1 : choice · 80w
+state n37_10 #FFF9C4
+n37_10 : choice · 80w
+state n37_11 #FFF9C4
+n37_11 : choice · 82w
+state n37_12 #FFF9C4
+n37_12 : choice · 78w
+state n37_2 #FFF9C4
+n37_2 : choice · 82w
+state n37_3 #FFF9C4
+n37_3 : choice · 78w
+state n37_4 #FFF9C4
+n37_4 : choice · 80w
+state n37_5 #FFF9C4
+n37_5 : choice · 82w
+state n37_6 #FFF9C4
+n37_6 : choice · 78w
+state n37_7 #FFF9C4
+n37_7 : choice · 80w
+state n37_8 #FFF9C4
+n37_8 : choice · 82w
+state n37_9 #FFF9C4
+n37_9 : choice · 78w
+state n38_0 #FFF9C4
+n38_0 : choice · 81w
+state n38_1 #FFF9C4
+n38_1 : choice · 83w
+state n38_10 #FFF9C4
+n38_10 : choice · 83w
+state n38_11 #FFF9C4
+n38_11 : choice · 85w
+state n38_12 #FFF9C4
+n38_12 : choice · 81w
+state n38_2 #FFF9C4
+n38_2 : choice · 85w
+state n38_3 #FFF9C4
+n38_3 : choice · 81w
+state n38_4 #FFF9C4
+n38_4 : choice · 83w
+state n38_5 #FFF9C4
+n38_5 : choice · 85w
+state n38_6 #FFF9C4
+n38_6 : choice · 81w
+state n38_7 #FFF9C4
+n38_7 : choice · 83w
+state n38_8 #FFF9C4
+n38_8 : choice · 85w
+state n38_9 #FFF9C4
+n38_9 : choice · 81w
+state e38_0 #FFCDD2
+e38_0 : death (negative)
+e38_0 : "On the Ladderway (RS 38.1)"
+state e38_1 #FFCDD2
+e38_1 : death (negative)
+e38_1 : "Four Minutes They Did Not Have (RS 38.2)"
+state e38_2 #FFCDD2
+e38_2 : death (negative)
+e38_2 : "Settled by the Water (RS 38.3)"
+state n39_0 #FFF9C4
+n39_0 : choice · 84w
+state n39_1 #FFF9C4
+n39_1 : choice · 86w
+state n39_10 #FFF9C4
+n39_10 : choice · 86w
+state n39_11 #FFF9C4
+n39_11 : choice · 88w
+state n39_12 #FFF9C4
+n39_12 : choice · 84w
+state n39_2 #FFF9C4
+n39_2 : choice · 88w
+state n39_3 #FFF9C4
+n39_3 : choice · 84w
+state n39_4 #FFF9C4
+n39_4 : choice · 86w
+state n39_5 #FFF9C4
+n39_5 : choice · 88w
+state n39_6 #FFF9C4
+n39_6 : choice · 84w
+state n39_7 #FFF9C4
+n39_7 : choice · 86w
+state n39_8 #FFF9C4
+n39_8 : choice · 88w
+state n39_9 #FFF9C4
+n39_9 : choice · 84w
+state e39_0 #E0E0E0
+e39_0 : setback (neutral)
+e39_0 : "Left Exactly as It Stood (RS 39.1)"
+state e39_1 #FFCDD2
+e39_1 : death (negative)
+e39_1 : "On the Ladderway (RS 39.2)"
+state e39_2 #FFCDD2
+e39_2 : death (negative)
+e39_2 : "Four Minutes They Did Not Have (RS 39.3)"
+state n40_0 #FFF9C4
+n40_0 : choice · 72w
+state n40_1 #FFF9C4
+n40_1 : choice · 74w
+state n40_10 #FFF9C4
+n40_10 : choice · 74w
+state n40_11 #FFF9C4
+n40_11 : choice · 76w
+state n40_12 #FFF9C4
+n40_12 : choice · 72w
+state n40_2 #FFF9C4
+n40_2 : choice · 76w
+state n40_3 #FFF9C4
+n40_3 : choice · 72w
+state n40_4 #FFF9C4
+n40_4 : choice · 74w
+state n40_5 #FFF9C4
+n40_5 : choice · 76w
+state n40_6 #FFF9C4
+n40_6 : choice · 72w
+state n40_7 #FFF9C4
+n40_7 : choice · 74w
+state n40_8 #FFF9C4
+n40_8 : choice · 76w
+state n40_9 #FFF9C4
+n40_9 : choice · 72w
+state e40_0 #FFCDD2
+e40_0 : death (negative)
+e40_0 : "Settled by the Water (RS 40.1)"
+state e40_1 #FFCDD2
+e40_1 : death (negative)
+e40_1 : "On the Ladderway (RS 40.2)"
+state e40_2 #FFCDD2
+e40_2 : death (negative)
+e40_2 : "Four Minutes They Did Not Have (RS 40.3)"
+state n41_0 #D1C4E9
+n41_0 : rising · 58w
+state n41_1 #D1C4E9
+n41_1 : rising · 61w
+state n41_10 #D1C4E9
+n41_10 : rising · 67w
+state n41_11 #D1C4E9
+n41_11 : rising · 58w
+state n41_12 #D1C4E9
+n41_12 : rising · 61w
+state n41_2 #D1C4E9
+n41_2 : rising · 64w
+state n41_3 #D1C4E9
+n41_3 : rising · 67w
+state n41_4 #D1C4E9
+n41_4 : rising · 58w
+state n41_5 #D1C4E9
+n41_5 : rising · 61w
+state n41_6 #D1C4E9
+n41_6 : rising · 64w
+state n41_7 #D1C4E9
+n41_7 : rising · 67w
+state n41_8 #D1C4E9
+n41_8 : rising · 61w
+state n41_9 #D1C4E9
+n41_9 : rising · 64w
+state e41_0 #E0E0E0
+e41_0 : setback (neutral)
+e41_0 : "Recorded as Carried (BA 41.1)"
+state e41_1 #FFCDD2
+e41_1 : setback (negative)
+e41_1 : "Never Questioned (BA 41.2)"
+state e41_2 #FFCDD2
+e41_2 : setback (negative)
+e41_2 : "The Only Name on the Sheets (BA 41.3)"
+state n42_0 #FFF9C4
+n42_0 : choice · 78w
+state n42_1 #FFF9C4
+n42_1 : choice · 80w
+state n42_10 #FFF9C4
+n42_10 : choice · 80w
+state n42_11 #FFF9C4
+n42_11 : choice · 82w
+state n42_12 #FFF9C4
+n42_12 : choice · 78w
+state n42_2 #FFF9C4
+n42_2 : choice · 82w
+state n42_3 #FFF9C4
+n42_3 : choice · 78w
+state n42_4 #FFF9C4
+n42_4 : choice · 80w
+state n42_5 #FFF9C4
+n42_5 : choice · 82w
+state n42_6 #FFF9C4
+n42_6 : choice · 78w
+state n42_7 #FFF9C4
+n42_7 : choice · 80w
+state n42_8 #FFF9C4
+n42_8 : choice · 82w
+state n42_9 #FFF9C4
+n42_9 : choice · 78w
+state n43_0 #FFF9C4
+n43_0 : choice · 81w
+state n43_1 #FFF9C4
+n43_1 : choice · 83w
+state n43_10 #FFF9C4
+n43_10 : choice · 83w
+state n43_11 #FFF9C4
+n43_11 : choice · 85w
+state n43_12 #FFF9C4
+n43_12 : choice · 81w
+state n43_2 #FFF9C4
+n43_2 : choice · 85w
+state n43_3 #FFF9C4
+n43_3 : choice · 81w
+state n43_4 #FFF9C4
+n43_4 : choice · 83w
+state n43_5 #FFF9C4
+n43_5 : choice · 85w
+state n43_6 #FFF9C4
+n43_6 : choice · 81w
+state n43_7 #FFF9C4
+n43_7 : choice · 83w
+state n43_8 #FFF9C4
+n43_8 : choice · 85w
+state n43_9 #FFF9C4
+n43_9 : choice · 81w
+state e43_0 #FFCDD2
+e43_0 : setback (negative)
+e43_0 : "Short by Three (BA 43.1)"
+state e43_1 #FFCDD2
+e43_1 : setback (negative)
+e43_1 : "The Winder Runs Down (BA 43.2)"
+state e43_2 #FFCDD2
+e43_2 : setback (negative)
+e43_2 : "Never Questioned (BA 43.3)"
+state n44_0 #FFF9C4
+n44_0 : choice · 84w
+state n44_1 #FFF9C4
+n44_1 : choice · 86w
+state n44_10 #FFF9C4
+n44_10 : choice · 86w
+state n44_11 #FFF9C4
+n44_11 : choice · 88w
+state n44_12 #FFF9C4
+n44_12 : choice · 84w
+state n44_2 #FFF9C4
+n44_2 : choice · 88w
+state n44_3 #FFF9C4
+n44_3 : choice · 84w
+state n44_4 #FFF9C4
+n44_4 : choice · 86w
+state n44_5 #FFF9C4
+n44_5 : choice · 88w
+state n44_6 #FFF9C4
+n44_6 : choice · 84w
+state n44_7 #FFF9C4
+n44_7 : choice · 86w
+state n44_8 #FFF9C4
+n44_8 : choice · 88w
+state n44_9 #FFF9C4
+n44_9 : choice · 84w
+state e44_0 #E0E0E0
+e44_0 : discovery (neutral)
+e44_0 : "A Clean Book and No Reference (BA 44.1)"
+state e44_1 #FFCDD2
+e44_1 : setback (negative)
+e44_1 : "The Only Name on the Sheets (BA 44.2)"
+state e44_2 #FFCDD2
+e44_2 : setback (negative)
+e44_2 : "Short by Three (BA 44.3)"
+state e45_0 #C8E6C9
+e45_0 : completion (positive)
+e45_0 : "The Book Agrees With the Manifest (BA 45.1)"
+state e45_1 #C8E6C9
+e45_1 : success (positive)
+e45_1 : "Nothing That Mattered Left Below (BA 45.2)"
+state e45_2 #E0E0E0
+e45_2 : discovery (neutral)
+e45_2 : "Side by Side (BA 45.3)"
+state e45_3 #C8E6C9
+e45_3 : success (positive)
+e45_3 : "Two Hundred and Six (BA 45.4)"
+state e45_4 #FFCDD2
+e45_4 : setback (negative)
+e45_4 : "The Winder Runs Down (BA 45.5)"
+state e45_5 #C8E6C9
+e45_5 : completion (positive)
+e45_5 : "The Account Straight (BA 45.6)"
+state e45_6 #E0E0E0
+e45_6 : discovery (neutral)
+e45_6 : "Accurate and Untrue (BA 45.7)"
+state e45_7 #C8E6C9
+e45_7 : completion (positive)
+e45_7 : "Last Up (BA 45.8)"
+state e45_8 #FFCDD2
+e45_8 : setback (negative)
+e45_8 : "Never Questioned (BA 45.9)"
+state e45_9 #C8E6C9
+e45_9 : completion (positive)
+e45_9 : "Nobody Owed Anything (BA 45.10)"
+n00_0 --> n01_0 : Sign the cartage contract now.
+n01_0 --> n02_0 : Keep the union out of it.
+n01_0 --> n02_1 : Sign the cartage contract now.
+n01_0 --> n02_2 : Put the shift captains in one room.
+n02_0 --> n03_0 : Salvage the assay records from the skip.
+n02_0 --> n03_1 : Keep the union out of it.
+n02_0 --> n03_2 : Sign the cartage contract now.
+n02_1 --> n03_4 : Leave the ponies off and say nothing.
+n02_1 --> n03_5 : Walk the haulage road end to end.
+n02_1 --> n03_6 : Read the manifest end to end first.
+n02_1 --> n03_3 : Order the ponies onto the manifest.
+n02_2 --> n03_2 : Count the men below before anything else...
+n02_2 --> n03_0 : Refuse until you have been down.
+n02_2 --> n03_1 : Salvage the assay records from the skip.
+n03_0 --> n04_0 : Refuse until you have been down.
+n03_0 --> n04_1 : Salvage the assay records from the skip.
+n03_0 --> n04_2 : Keep the union out of it.
+n03_0 --> n04_3 : Sign the cartage contract now.
+n03_1 --> n04_5 : Take the weighbridge clerk aside.
+n03_1 --> n04_6 : Leave the ponies off and say nothing.
+n03_1 --> n04_4 : Walk the haulage road end to end.
+n03_2 --> n04_9 : Have the rope inspected again.
+n03_2 --> n04_7 : Count the men below before anything else...
+n03_2 --> n04_8 : Refuse until you have been down.
+n03_3 --> n04_10 : Send word to the union agent.
+n03_3 --> n04_11 : Set the shift rota for nine days.
+n03_3 --> n04_0 : Take the weighbridge clerk aside.
+n03_4 --> n04_2 : Start the gear moving from the yard.
+n03_4 --> n04_3 : Go down on the first cage.
+n03_4 --> n04_1 : Have the rope inspected again.
+n03_5 --> n04_6 : Sign the cartage contract now.
+n03_5 --> n04_4 : Put the shift captains in one room.
+n03_5 --> n04_5 : Send word to the union agent.
+n03_6 --> n04_7 : Read the manifest end to end first.
+n03_6 --> n04_8 : Order the ponies onto the manifest.
+n03_6 --> n04_9 : Start the gear moving from the yard.
+n04_0 --> n05_0 : Count the men below before anything else...
+n04_0 --> n05_1 : Refuse until you have been down.
+n04_0 --> n05_2 : Salvage the assay records from the skip.
+n04_1 --> n05_4 : Set the shift rota for nine days.
+n04_1 --> n05_5 : Take the weighbridge clerk aside.
+n04_1 --> n05_3 : Leave the ponies off and say nothing.
+n04_10 --> n05_6 : Send word to the union agent.
+n04_10 --> n05_7 : Set the shift rota for nine days.
+n04_10 --> n05_5 : Take the weighbridge clerk aside.
+n04_11 --> n05_10 : Start the gear moving from the yard.
+n04_11 --> n05_8 : Go down on the first cage.
+n04_11 --> n05_9 : Have the rope inspected again.
+n04_2 --> n05_8 : Go down on the first cage.
+n04_2 --> n05_6 : Have the rope inspected again.
+n04_2 --> n05_7 : Count the men below before anything else...
+n04_3 --> n05_9 : Put the shift captains in one room.
+n04_3 --> n05_10 : Send word to the union agent.
+n04_3 --> n05_11 : Set the shift rota for nine days.
+n04_4 --> n05_0 : Order the ponies onto the manifest.
+n04_4 --> n05_1 : Start the gear moving from the yard.
+n04_4 --> n05_12 : Go down on the first cage.
+n04_5 --> n05_4 : Keep the union out of it.
+n04_5 --> n05_2 : Sign the cartage contract now.
+n04_5 --> n05_3 : Put the shift captains in one room.
+n04_6 --> n05_7 : Walk the haulage road end to end.
+n04_6 --> n05_8 : Read the manifest end to end first.
+n04_6 --> n05_5 : Order the ponies onto the manifest.
+n04_6 --> n05_6 : Start the gear moving from the yard.
+n04_7 --> n05_10 : Refuse until you have been down.
+n04_7 --> n05_11 : Salvage the assay records from the skip.
+n04_7 --> n05_9 : Keep the union out of it.
+n04_8 --> n05_1 : Take the weighbridge clerk aside.
+n04_8 --> n05_12 : Leave the ponies off and say nothing.
+n04_8 --> n05_0 : Walk the haulage road end to end.
+n04_9 --> n05_2 : Have the rope inspected again.
+n04_9 --> n05_3 : Count the men below before anything else...
+n04_9 --> n05_4 : Refuse until you have been down.
+n05_0 --> n06_0 : Overrule the engineman.
+n05_0 --> n06_1 : Ask what the rope stretch means.
+n05_0 --> n06_2 : Send the timber down and wait.
+n05_1 --> n06_4 : Ride with the materials against the rule...
+n05_1 --> n06_5 : Send the cage up empty and gain a trip.
+n05_1 --> n06_3 : Fix the bell wire before anything moves.
+n05_10 --> n06_6 : Work the intermittent wire as it is.
+n05_10 --> n06_7 : Ride with the materials against the rule...
+n05_10 --> n06_5 : Send the cage up empty and gain a trip.
+n05_11 --> n06_10 : Check the ladderway yourself.
+n05_11 --> n06_8 : Take the answer and say nothing.
+n05_11 --> n06_9 : Cut the landing inspections and double t...
+n05_12 --> n06_11 : Enforce the man riding rules.
+n05_12 --> n06_12 : Ride down with the first men.
+n05_12 --> n06_0 : Work the intermittent wire as it is.
+n05_12 --> n06_1 : Ride with the materials against the rule...
+n05_2 --> n06_8 : Take the answer and say nothing.
+n05_2 --> n06_6 : Cut the landing inspections and double t...
+n05_2 --> n06_7 : Overrule the engineman.
+n05_3 --> n06_9 : Ride down with the first men.
+n05_3 --> n06_10 : Work the intermittent wire as it is.
+n05_3 --> n06_11 : Ride with the materials against the rule...
+n05_4 --> n06_0 : Keep the inspections and keep the rate.
+n05_4 --> n06_1 : Check the ladderway yourself.
+n05_4 --> n06_12 : Take the answer and say nothing.
+n05_5 --> n06_3 : Put the engineman on your side.
+n05_5 --> n06_4 : Enforce the man riding rules.
+n05_5 --> n06_5 : Ride down with the first men.
+n05_5 --> n06_2 : Work the intermittent wire as it is.
+n05_6 --> n06_6 : Write the ladderway off as unusable.
+n05_6 --> n06_7 : Hold the cage at the bottom.
+n05_6 --> n06_8 : Keep the inspections and keep the rate.
+n05_7 --> n06_10 : Ask what the rope stretch means.
+n05_7 --> n06_11 : Send the timber down and wait.
+n05_7 --> n06_9 : Put the engineman on your side.
+n05_8 --> n06_1 : Send the cage up empty and gain a trip.
+n05_8 --> n06_12 : Fix the bell wire before anything moves.
+n05_8 --> n06_0 : Write the ladderway off as unusable.
+n05_9 --> n06_2 : Cut the landing inspections and double t...
+n05_9 --> n06_3 : Overrule the engineman.
+n05_9 --> n06_4 : Ask what the rope stretch means.
+n06_0 --> n07_0 : Cut the landing inspections and double t...
+n06_1 --> n07_1 : Work the intermittent wire as it is.
+n06_10 --> n07_10 : Ride down with the first men.
+n06_11 --> n07_11 : Keep the inspections and keep the rate.
+n06_12 --> n07_12 : Put the engineman on your side.
+n06_2 --> n07_2 : Check the ladderway yourself.
+n06_3 --> n07_3 : Enforce the man riding rules.
+n06_4 --> n07_4 : Hold the cage at the bottom.
+n06_5 --> n07_5 : Send the timber down and wait.
+n06_6 --> n07_6 : Fix the bell wire before anything moves.
+n06_7 --> n07_7 : Overrule the engineman.
+n06_8 --> n07_8 : Ride with the materials against the rule...
+n06_9 --> n07_9 : Take the answer and say nothing.
+n07_0 --> n08_0 : Take the answer and say nothing.
+n07_0 --> n08_1 : Cut the landing inspections and double t...
+n07_0 --> n08_2 : Overrule the engineman.
+n07_1 --> n08_4 : Ride down with the first men.
+n07_1 --> n08_5 : Work the intermittent wire as it is.
+n07_1 --> n08_3 : Ride with the materials against the rule...
+n07_10 --> n08_7 : Enforce the man riding rules.
+n07_10 --> n08_8 : Ride down with the first men.
+n07_10 --> n08_5 : Work the intermittent wire as it is.
+n07_10 --> n08_6 : Ride with the materials against the rule...
+n07_11 --> n08_11 : Hold the cage at the bottom.
+n07_11 --> n08_9 : Keep the inspections and keep the rate.
+n07_11 --> n08_10 : Check the ladderway yourself.
+n07_12 --> n08_12 : Send the timber down and wait.
+n07_12 --> n08_0 : Put the engineman on your side.
+n07_12 --> n08_1 : Enforce the man riding rules.
+n07_2 --> n08_8 : Keep the inspections and keep the rate.
+n07_2 --> n08_6 : Check the ladderway yourself.
+n07_2 --> n08_7 : Take the answer and say nothing.
+n07_3 --> n08_12 : Put the engineman on your side.
+n07_3 --> n08_9 : Enforce the man riding rules.
+n07_3 --> n08_10 : Ride down with the first men.
+n07_3 --> n08_11 : Work the intermittent wire as it is.
+n07_4 --> n08_1 : Write the ladderway off as unusable.
+n07_4 --> n08_2 : Hold the cage at the bottom.
+n07_4 --> n08_0 : Keep the inspections and keep the rate.
+n07_5 --> n08_5 : Ask what the rope stretch means.
+n07_5 --> n08_3 : Send the timber down and wait.
+n07_5 --> n08_4 : Put the engineman on your side.
+n07_6 --> n08_6 : Send the cage up empty and gain a trip.
+n07_6 --> n08_7 : Fix the bell wire before anything moves.
+n07_6 --> n08_8 : Write the ladderway off as unusable.
+n07_7 --> n08_10 : Cut the landing inspections and double t...
+n07_7 --> n08_11 : Overrule the engineman.
+n07_7 --> n08_9 : Ask what the rope stretch means.
+n07_8 --> n08_1 : Work the intermittent wire as it is.
+n07_8 --> n08_12 : Ride with the materials against the rule...
+n07_8 --> n08_0 : Send the cage up empty and gain a trip.
+n07_9 --> n08_2 : Check the ladderway yourself.
+n07_9 --> n08_3 : Take the answer and say nothing.
+n07_9 --> n08_4 : Cut the landing inspections and double t...
+n08_0 --> n09_0 : Check the ladderway yourself.
+n08_0 --> n09_1 : Take the answer and say nothing.
+n08_0 --> n09_2 : Cut the landing inspections and double t...
+n08_1 --> n09_4 : Enforce the man riding rules.
+n08_1 --> n09_5 : Ride down with the first men.
+n08_1 --> n09_3 : Work the intermittent wire as it is.
+n08_10 --> n09_7 : Put the engineman on your side.
+n08_10 --> n09_8 : Enforce the man riding rules.
+n08_10 --> n09_6 : Ride down with the first men.
+n08_11 --> n09_11 : Write the ladderway off as unusable.
+n08_11 --> n09_9 : Hold the cage at the bottom.
+n08_11 --> n09_10 : Keep the inspections and keep the rate.
+n08_12 --> n09_12 : Ask what the rope stretch means.
+n08_12 --> n09_0 : Send the timber down and wait.
+n08_12 --> n09_1 : Put the engineman on your side.
+n08_2 --> n09_8 : Hold the cage at the bottom.
+n08_2 --> n09_9 : Keep the inspections and keep the rate.
+n08_2 --> n09_6 : Check the ladderway yourself.
+n08_2 --> n09_7 : Take the answer and say nothing.
+n08_3 --> n09_10 : Send the timber down and wait.
+n08_3 --> n09_11 : Put the engineman on your side.
+n08_3 --> n09_12 : Enforce the man riding rules.
+n08_4 --> n09_1 : Fix the bell wire before anything moves.
+n08_4 --> n09_2 : Write the ladderway off as unusable.
+n08_4 --> n09_0 : Hold the cage at the bottom.
+n08_5 --> n09_5 : Overrule the engineman.
+n08_5 --> n09_3 : Ask what the rope stretch means.
+n08_5 --> n09_4 : Send the timber down and wait.
+n08_6 --> n09_6 : Ride with the materials against the rule...
+n08_6 --> n09_7 : Send the cage up empty and gain a trip.
+n08_6 --> n09_8 : Fix the bell wire before anything moves.
+n08_7 --> n09_10 : Take the answer and say nothing.
+n08_7 --> n09_11 : Cut the landing inspections and double t...
+n08_7 --> n09_9 : Overrule the engineman.
+n08_8 --> n09_1 : Ride down with the first men.
+n08_8 --> n09_12 : Work the intermittent wire as it is.
+n08_8 --> n09_0 : Ride with the materials against the rule...
+n08_9 --> n09_3 : Keep the inspections and keep the rate.
+n08_9 --> n09_4 : Check the ladderway yourself.
+n08_9 --> n09_5 : Take the answer and say nothing.
+n08_9 --> n09_2 : Cut the landing inspections and double t...
+n09_0 --> n10_0 : Prop them and move on.
+n09_0 --> n10_1 : Re-splice the rope at the far end.
+n09_0 --> n10_2 : Keep the one man who understands it.
+n09_1 --> n10_4 : Send the ore up first.
+n09_1 --> n10_5 : Accept the short ventilation.
+n09_1 --> n10_6 : Clear the derailed train first.
+n09_1 --> n10_3 : Leave the rail down until the last day.
+n09_10 --> n10_7 : Leave the tubs and go round.
+n09_10 --> n10_8 : Send the ore up first.
+n09_10 --> n10_6 : Accept the short ventilation.
+n09_11 --> n10_11 : Lift the rail behind you as you go.
+n09_11 --> n10_9 : Run on the splice you have.
+n09_11 --> n10_10 : Move the pump column now.
+n09_12 --> n10_12 : Send the men and gear up first.
+n09_12 --> n10_0 : Put a second man on the haulage house.
+n09_12 --> n10_1 : Leave the tubs and go round.
+n09_2 --> n10_9 : Run on the splice you have.
+n09_2 --> n10_7 : Move the pump column now.
+n09_2 --> n10_8 : Prop them and move on.
+n09_3 --> n10_10 : Put a second man on the haulage house.
+n09_3 --> n10_11 : Leave the tubs and go round.
+n09_3 --> n10_12 : Send the ore up first.
+n09_4 --> n10_1 : Leave the pump column to the last.
+n09_4 --> n10_2 : Lift the rail behind you as you go.
+n09_4 --> n10_0 : Run on the splice you have.
+n09_5 --> n10_5 : Re-timber the two bad sets.
+n09_5 --> n10_3 : Send the men and gear up first.
+n09_5 --> n10_4 : Put a second man on the haulage house.
+n09_6 --> n10_6 : Leave the rail down until the last day.
+n09_6 --> n10_7 : Clear the return airway.
+n09_6 --> n10_8 : Leave the pump column to the last.
+n09_7 --> n10_10 : Re-splice the rope at the far end.
+n09_7 --> n10_11 : Keep the one man who understands it.
+n09_7 --> n10_9 : Re-timber the two bad sets.
+n09_8 --> n10_12 : Accept the short ventilation.
+n09_8 --> n10_0 : Clear the derailed train first.
+n09_8 --> n10_1 : Leave the rail down until the last day.
+n09_8 --> n10_2 : Clear the return airway.
+n09_9 --> n10_3 : Move the pump column now.
+n09_9 --> n10_4 : Prop them and move on.
+n09_9 --> n10_5 : Re-splice the rope at the far end.
+n10_0 --> n11_0 : Move the pump column now.
+n10_0 --> n11_1 : Prop them and move on.
+n10_0 --> n11_2 : Re-splice the rope at the far end.
+n10_0 --> n11_3 : Keep the one man who understands it.
+n10_1 --> n11_5 : Leave the tubs and go round.
+n10_1 --> n11_6 : Send the ore up first.
+n10_1 --> n11_4 : Accept the short ventilation.
+n10_10 --> n11_7 : Put a second man on the haulage house.
+n10_10 --> n11_8 : Leave the tubs and go round.
+n10_10 --> n11_6 : Send the ore up first.
+n10_11 --> n11_11 : Leave the pump column to the last.
+n10_11 --> n11_9 : Lift the rail behind you as you go.
+n10_11 --> n11_10 : Run on the splice you have.
+n10_12 --> n11_12 : Re-timber the two bad sets.
+n10_12 --> n11_0 : Send the men and gear up first.
+n10_12 --> n11_1 : Put a second man on the haulage house.
+n10_2 --> n11_9 : Lift the rail behind you as you go.
+n10_2 --> n11_7 : Run on the splice you have.
+n10_2 --> n11_8 : Move the pump column now.
+n10_3 --> n11_10 : Send the men and gear up first.
+n10_3 --> n11_11 : Put a second man on the haulage house.
+n10_3 --> n11_12 : Leave the tubs and go round.
+n10_4 --> n11_1 : Clear the return airway.
+n10_4 --> n11_2 : Leave the pump column to the last.
+n10_4 --> n11_0 : Lift the rail behind you as you go.
+n10_5 --> n11_5 : Keep the one man who understands it.
+n10_5 --> n11_3 : Re-timber the two bad sets.
+n10_5 --> n11_4 : Send the men and gear up first.
+n10_6 --> n11_6 : Clear the derailed train first.
+n10_6 --> n11_7 : Leave the rail down until the last day.
+n10_6 --> n11_8 : Clear the return airway.
+n10_7 --> n11_12 : Prop them and move on.
+n10_7 --> n11_9 : Re-splice the rope at the far end.
+n10_7 --> n11_10 : Keep the one man who understands it.
+n10_7 --> n11_11 : Re-timber the two bad sets.
+n10_8 --> n11_2 : Send the ore up first.
+n10_8 --> n11_0 : Accept the short ventilation.
+n10_8 --> n11_1 : Clear the derailed train first.
+n10_9 --> n11_3 : Run on the splice you have.
+n10_9 --> n11_4 : Move the pump column now.
+n10_9 --> n11_5 : Prop them and move on.
+n11_0 --> n12_0 : Run on the splice you have.
+n11_1 --> n12_1 : Put a second man on the haulage house.
+n11_10 --> n12_10 : Send the men and gear up first.
+n11_11 --> n12_11 : Clear the return airway.
+n11_12 --> n12_12 : Keep the one man who understands it.
+n11_2 --> n12_2 : Leave the pump column to the last.
+n11_3 --> n12_3 : Re-timber the two bad sets.
+n11_4 --> n12_4 : Leave the rail down until the last day.
+n11_5 --> n12_5 : Re-splice the rope at the far end.
+n11_6 --> n12_6 : Accept the short ventilation.
+n11_7 --> n12_7 : Move the pump column now.
+n11_8 --> n12_8 : Leave the tubs and go round.
+n11_9 --> n12_9 : Lift the rail behind you as you go.
+n12_0 --> n13_0 : Lift the rail behind you as you go.
+n12_0 --> n13_1 : Run on the splice you have.
+n12_0 --> e13_0 : Move the pump column now.
+n12_1 --> n13_3 : Send the men and gear up first.
+n12_1 --> e13_1 : Put a second man on the haulage house.
+n12_1 --> n13_2 : Leave the tubs and go round.
+n12_10 --> n13_9 : Re-timber the two bad sets.
+n12_10 --> e13_1 : Send the men and gear up first.
+n12_10 --> n13_8 : Put a second man on the haulage house.
+n12_11 --> e13_2 : Leave the rail down until the last day.
+n12_11 --> n13_10 : Clear the return airway.
+n12_11 --> n13_11 : Leave the pump column to the last.
+n12_12 --> n13_12 : Re-splice the rope at the far end.
+n12_12 --> n13_0 : Keep the one man who understands it.
+n12_12 --> n13_1 : Re-timber the two bad sets.
+n12_12 --> e13_0 : Send the men and gear up first.
+n12_2 --> e13_2 : Clear the return airway.
+n12_2 --> n13_4 : Leave the pump column to the last.
+n12_2 --> n13_5 : Lift the rail behind you as you go.
+n12_3 --> n13_6 : Keep the one man who understands it.
+n12_3 --> n13_7 : Re-timber the two bad sets.
+n12_3 --> e13_0 : Send the men and gear up first.
+n12_4 --> n13_9 : Clear the derailed train first.
+n12_4 --> e13_1 : Leave the rail down until the last day.
+n12_4 --> n13_8 : Clear the return airway.
+n12_5 --> n13_11 : Prop them and move on.
+n12_5 --> n13_12 : Re-splice the rope at the far end.
+n12_5 --> e13_2 : Keep the one man who understands it.
+n12_5 --> n13_10 : Re-timber the two bad sets.
+n12_6 --> n13_0 : Send the ore up first.
+n12_6 --> n13_1 : Accept the short ventilation.
+n12_6 --> e13_0 : Clear the derailed train first.
+n12_7 --> n13_3 : Run on the splice you have.
+n12_7 --> e13_1 : Move the pump column now.
+n12_7 --> n13_2 : Prop them and move on.
+n12_8 --> e13_2 : Put a second man on the haulage house.
+n12_8 --> n13_4 : Leave the tubs and go round.
+n12_8 --> n13_5 : Send the ore up first.
+n12_9 --> n13_6 : Leave the pump column to the last.
+n12_9 --> n13_7 : Lift the rail behind you as you go.
+n12_9 --> e13_0 : Run on the splice you have.
+n13_0 --> n14_0 : Decide alone and take the consequence.
+n13_0 --> n14_1 : Take the decision off the ostler.
+n13_0 --> e14_0 : Move the stable off the return airway.
+n13_1 --> n14_3 : Leave the ponies and carry the loss.
+n13_1 --> e14_1 : Find the hobbling tackle.
+n13_1 --> n14_2 : Put the ponies on the manifest by force.
+n13_10 --> n14_9 : Pay for the trips out of the contract.
+n13_10 --> e14_1 : Leave the ponies and carry the loss.
+n13_10 --> n14_8 : Find the hobbling tackle.
+n13_11 --> e14_2 : Raise every pony, one trip each.
+n13_11 --> n14_10 : Send for the veterinary surgeon.
+n13_11 --> n14_11 : Read out the written instruction.
+n13_11 --> n14_12 : Decide alone and take the consequence.
+n13_12 --> n14_0 : Give the ostler the decision.
+n13_12 --> n14_1 : Raise them without hobbles.
+n13_12 --> e14_0 : Pay for the trips out of the contract.
+n13_2 --> e14_2 : Send for the veterinary surgeon.
+n13_2 --> n14_4 : Read out the written instruction.
+n13_2 --> n14_5 : Decide alone and take the consequence.
+n13_3 --> n14_6 : Raise them without hobbles.
+n13_3 --> n14_7 : Pay for the trips out of the contract.
+n13_3 --> e14_0 : Leave the ponies and carry the loss.
+n13_4 --> n14_8 : Burn the written instruction.
+n13_4 --> n14_9 : Raise every pony, one trip each.
+n13_4 --> n14_10 : Send for the veterinary surgeon.
+n13_4 --> e14_1 : Read out the written instruction.
+n13_5 --> e14_2 : Ask the men to vote it.
+n13_5 --> n14_11 : Give the ostler the decision.
+n13_5 --> n14_12 : Raise them without hobbles.
+n13_6 --> n14_0 : Raise the four that never saw daylight.
+n13_6 --> n14_1 : Do it yourself and do not send for anyon...
+n13_6 --> e14_0 : Burn the written instruction.
+n13_7 --> n14_3 : Take the decision off the ostler.
+n13_7 --> e14_1 : Move the stable off the return airway.
+n13_7 --> n14_2 : Ask the men to vote it.
+n13_8 --> e14_2 : Find the hobbling tackle.
+n13_8 --> n14_4 : Put the ponies on the manifest by force.
+n13_8 --> n14_5 : Raise the four that never saw daylight.
+n13_9 --> n14_6 : Read out the written instruction.
+n13_9 --> n14_7 : Decide alone and take the consequence.
+n13_9 --> e14_0 : Take the decision off the ostler.
+n14_0 --> n15_0 : Read out the written instruction.
+n14_0 --> n15_1 : Decide alone and take the consequence.
+n14_0 --> e15_0 : Take the decision off the ostler.
+n14_1 --> n15_3 : Pay for the trips out of the contract.
+n14_1 --> e15_1 : Leave the ponies and carry the loss.
+n14_1 --> n15_2 : Find the hobbling tackle.
+n14_10 --> n15_10 : Raise them without hobbles.
+n14_10 --> e15_1 : Pay for the trips out of the contract.
+n14_10 --> n15_8 : Leave the ponies and carry the loss.
+n14_10 --> n15_9 : Find the hobbling tackle.
+n14_11 --> e15_2 : Burn the written instruction.
+n14_11 --> n15_11 : Raise every pony, one trip each.
+n14_11 --> n15_12 : Send for the veterinary surgeon.
+n14_12 --> n15_0 : Ask the men to vote it.
+n14_12 --> n15_1 : Give the ostler the decision.
+n14_12 --> e15_0 : Raise them without hobbles.
+n14_2 --> e15_2 : Raise every pony, one trip each.
+n14_2 --> n15_4 : Send for the veterinary surgeon.
+n14_2 --> n15_5 : Read out the written instruction.
+n14_3 --> e15_0 : Give the ostler the decision.
+n14_3 --> n15_6 : Raise them without hobbles.
+n14_3 --> n15_7 : Pay for the trips out of the contract.
+n14_3 --> n15_8 : Leave the ponies and carry the loss.
+n14_4 --> n15_10 : Do it yourself and do not send for anyon...
+n14_4 --> e15_1 : Burn the written instruction.
+n14_4 --> n15_9 : Raise every pony, one trip each.
+n14_5 --> e15_2 : Move the stable off the return airway.
+n14_5 --> n15_11 : Ask the men to vote it.
+n14_5 --> n15_12 : Give the ostler the decision.
+n14_6 --> n15_0 : Put the ponies on the manifest by force.
+n14_6 --> n15_1 : Raise the four that never saw daylight.
+n14_6 --> e15_0 : Do it yourself and do not send for anyon...
+n14_7 --> n15_3 : Decide alone and take the consequence.
+n14_7 --> e15_1 : Take the decision off the ostler.
+n14_7 --> n15_2 : Move the stable off the return airway.
+n14_8 --> e15_2 : Leave the ponies and carry the loss.
+n14_8 --> n15_4 : Find the hobbling tackle.
+n14_8 --> n15_5 : Put the ponies on the manifest by force.
+n14_9 --> n15_6 : Send for the veterinary surgeon.
+n14_9 --> n15_7 : Read out the written instruction.
+n14_9 --> e15_0 : Decide alone and take the consequence.
+n15_0 --> n16_0 : Send for the veterinary surgeon.
+n15_0 --> n16_1 : Read out the written instruction.
+n15_0 --> e16_0 : Decide alone and take the consequence.
+n15_1 --> n16_3 : Raise them without hobbles.
+n15_1 --> e16_1 : Pay for the trips out of the contract.
+n15_1 --> n16_2 : Leave the ponies and carry the loss.
+n15_10 --> n16_10 : Give the ostler the decision.
+n15_10 --> e16_1 : Raise them without hobbles.
+n15_10 --> n16_9 : Pay for the trips out of the contract.
+n15_11 --> e16_2 : Do it yourself and do not send for anyon...
+n15_11 --> n16_11 : Burn the written instruction.
+n15_11 --> n16_12 : Raise every pony, one trip each.
+n15_12 --> n16_0 : Move the stable off the return airway.
+n15_12 --> n16_1 : Ask the men to vote it.
+n15_12 --> e16_0 : Give the ostler the decision.
+n15_2 --> n16_6 : Burn the written instruction.
+n15_2 --> e16_2 : Raise every pony, one trip each.
+n15_2 --> n16_4 : Send for the veterinary surgeon.
+n15_2 --> n16_5 : Read out the written instruction.
+n15_3 --> n16_7 : Ask the men to vote it.
+n15_3 --> n16_8 : Give the ostler the decision.
+n15_3 --> e16_0 : Raise them without hobbles.
+n15_4 --> n16_10 : Raise the four that never saw daylight.
+n15_4 --> e16_1 : Do it yourself and do not send for anyon...
+n15_4 --> n16_9 : Burn the written instruction.
+n15_5 --> e16_2 : Take the decision off the ostler.
+n15_5 --> n16_11 : Move the stable off the return airway.
+n15_5 --> n16_12 : Ask the men to vote it.
+n15_6 --> n16_0 : Find the hobbling tackle.
+n15_6 --> n16_1 : Put the ponies on the manifest by force.
+n15_6 --> e16_0 : Raise the four that never saw daylight.
+n15_7 --> n16_3 : Read out the written instruction.
+n15_7 --> e16_1 : Decide alone and take the consequence.
+n15_7 --> n16_2 : Take the decision off the ostler.
+n15_8 --> e16_2 : Pay for the trips out of the contract.
+n15_8 --> n16_4 : Leave the ponies and carry the loss.
+n15_8 --> n16_5 : Find the hobbling tackle.
+n15_9 --> n16_7 : Raise every pony, one trip each.
+n15_9 --> n16_8 : Send for the veterinary surgeon.
+n15_9 --> e16_0 : Read out the written instruction.
+n15_9 --> n16_6 : Decide alone and take the consequence.
+n16_0 --> n17_0 : Raise every pony, one trip each.
+n16_1 --> n17_1 : Give the ostler the decision.
+n16_10 --> n17_10 : Ask the men to vote it.
+n16_11 --> n17_11 : Raise the four that never saw daylight.
+n16_12 --> n17_12 : Take the decision off the ostler.
+n16_2 --> n17_2 : Do it yourself and do not send for anyon...
+n16_3 --> n17_3 : Move the stable off the return airway.
+n16_4 --> n17_4 : Put the ponies on the manifest by force.
+n16_5 --> n17_5 : Decide alone and take the consequence.
+n16_6 --> n17_6 : Leave the ponies and carry the loss.
+n16_7 --> n17_7 : Send for the veterinary surgeon.
+n16_8 --> n17_8 : Raise them without hobbles.
+n16_9 --> n17_9 : Burn the written instruction.
+n17_0 --> n18_0 : Move the pump column up a level.
+n17_0 --> n18_1 : Clear the ninth level now.
+n17_0 --> n18_2 : Cut the power to the ninth entirely.
+n17_0 --> e18_0 : Work the ninth without a telephone.
+n17_1 --> n18_4 : Abandon the machinery and say so in writ...
+n17_1 --> e18_1 : Let them finish the shift.
+n17_1 --> n18_3 : Go and hear the far end yourself.
+n17_10 --> n18_10 : Fix the ninth level telephone.
+n17_10 --> e18_1 : Abandon the machinery and say so in writ...
+n17_10 --> n18_9 : Let them finish the shift.
+n17_11 --> e18_2 : Leave the pumps where they are.
+n17_11 --> n18_11 : Recover the plant first.
+n17_11 --> n18_12 : Put a man on the rise as a lookout.
+n17_12 --> n18_0 : Climb the rise and check the eighth.
+n17_12 --> n18_1 : Re-splice the cable out of the water.
+n17_12 --> e18_0 : Fix the ninth level telephone.
+n17_2 --> e18_2 : Recover the plant first.
+n17_2 --> n18_5 : Put a man on the rise as a lookout.
+n17_2 --> n18_6 : Move the pump column up a level.
+n17_3 --> n18_7 : Re-splice the cable out of the water.
+n17_3 --> n18_8 : Fix the ninth level telephone.
+n17_3 --> e18_0 : Abandon the machinery and say so in writ...
+n17_4 --> n18_10 : Seal the far end.
+n17_4 --> e18_1 : Leave the pumps where they are.
+n17_4 --> n18_9 : Recover the plant first.
+n17_5 --> e18_2 : Work the ninth without a telephone.
+n17_5 --> n18_11 : Climb the rise and check the eighth.
+n17_5 --> n18_12 : Re-splice the cable out of the water.
+n17_6 --> n18_0 : Take the machinery up in pieces.
+n17_6 --> n18_1 : Get the four men off the face.
+n17_6 --> e18_0 : Seal the far end.
+n17_7 --> e18_1 : Clear the ninth level now.
+n17_7 --> n18_2 : Cut the power to the ninth entirely.
+n17_7 --> n18_3 : Work the ninth without a telephone.
+n17_7 --> n18_4 : Climb the rise and check the eighth.
+n17_8 --> e18_2 : Let them finish the shift.
+n17_8 --> n18_5 : Go and hear the far end yourself.
+n17_8 --> n18_6 : Take the machinery up in pieces.
+n17_9 --> n18_7 : Put a man on the rise as a lookout.
+n17_9 --> n18_8 : Move the pump column up a level.
+n17_9 --> e18_0 : Clear the ninth level now.
+n18_0 --> n19_0 : Put a man on the rise as a lookout.
+n18_0 --> n19_1 : Move the pump column up a level.
+n18_0 --> e19_0 : Clear the ninth level now.
+n18_1 --> n19_3 : Fix the ninth level telephone.
+n18_1 --> e19_1 : Abandon the machinery and say so in writ...
+n18_1 --> n19_2 : Let them finish the shift.
+n18_10 --> n19_9 : Re-splice the cable out of the water.
+n18_10 --> e19_1 : Fix the ninth level telephone.
+n18_10 --> n19_8 : Abandon the machinery and say so in writ...
+n18_11 --> e19_2 : Seal the far end.
+n18_11 --> n19_10 : Leave the pumps where they are.
+n18_11 --> n19_11 : Recover the plant first.
+n18_12 --> n19_12 : Work the ninth without a telephone.
+n18_12 --> n19_0 : Climb the rise and check the eighth.
+n18_12 --> e19_0 : Re-splice the cable out of the water.
+n18_2 --> e19_2 : Leave the pumps where they are.
+n18_2 --> n19_4 : Recover the plant first.
+n18_2 --> n19_5 : Put a man on the rise as a lookout.
+n18_3 --> n19_6 : Climb the rise and check the eighth.
+n18_3 --> n19_7 : Re-splice the cable out of the water.
+n18_3 --> e19_0 : Fix the ninth level telephone.
+n18_4 --> n19_9 : Get the four men off the face.
+n18_4 --> e19_1 : Seal the far end.
+n18_4 --> n19_8 : Leave the pumps where they are.
+n18_5 --> e19_2 : Cut the power to the ninth entirely.
+n18_5 --> n19_10 : Work the ninth without a telephone.
+n18_5 --> n19_11 : Climb the rise and check the eighth.
+n18_6 --> n19_1 : Go and hear the far end yourself.
+n18_6 --> e19_0 : Take the machinery up in pieces.
+n18_6 --> n19_12 : Get the four men off the face.
+n18_6 --> n19_0 : Seal the far end.
+n18_7 --> n19_3 : Move the pump column up a level.
+n18_7 --> e19_1 : Clear the ninth level now.
+n18_7 --> n19_2 : Cut the power to the ninth entirely.
+n18_8 --> e19_2 : Abandon the machinery and say so in writ...
+n18_8 --> n19_4 : Let them finish the shift.
+n18_8 --> n19_5 : Go and hear the far end yourself.
+n18_9 --> n19_6 : Recover the plant first.
+n18_9 --> n19_7 : Put a man on the rise as a lookout.
+n18_9 --> e19_0 : Move the pump column up a level.
+n19_0 --> n20_0 : Recover the plant first.
+n19_0 --> n20_1 : Put a man on the rise as a lookout.
+n19_0 --> e20_0 : Move the pump column up a level.
+n19_1 --> n20_3 : Re-splice the cable out of the water.
+n19_1 --> e20_1 : Fix the ninth level telephone.
+n19_1 --> n20_2 : Abandon the machinery and say so in writ...
+n19_10 --> n20_9 : Climb the rise and check the eighth.
+n19_10 --> e20_1 : Re-splice the cable out of the water.
+n19_10 --> n20_8 : Fix the ninth level telephone.
+n19_11 --> e20_2 : Get the four men off the face.
+n19_11 --> n20_10 : Seal the far end.
+n19_11 --> n20_11 : Leave the pumps where they are.
+n19_12 --> n20_12 : Cut the power to the ninth entirely.
+n19_12 --> n20_0 : Work the ninth without a telephone.
+n19_12 --> n20_1 : Climb the rise and check the eighth.
+n19_12 --> e20_0 : Re-splice the cable out of the water.
+n19_2 --> e20_2 : Seal the far end.
+n19_2 --> n20_4 : Leave the pumps where they are.
+n19_2 --> n20_5 : Recover the plant first.
+n19_3 --> n20_6 : Work the ninth without a telephone.
+n19_3 --> n20_7 : Climb the rise and check the eighth.
+n19_3 --> e20_0 : Re-splice the cable out of the water.
+n19_4 --> n20_9 : Take the machinery up in pieces.
+n19_4 --> e20_1 : Get the four men off the face.
+n19_4 --> n20_8 : Seal the far end.
+n19_5 --> n20_11 : Clear the ninth level now.
+n19_5 --> n20_12 : Cut the power to the ninth entirely.
+n19_5 --> e20_2 : Work the ninth without a telephone.
+n19_5 --> n20_10 : Climb the rise and check the eighth.
+n19_6 --> n20_0 : Let them finish the shift.
+n19_6 --> n20_1 : Go and hear the far end yourself.
+n19_6 --> e20_0 : Take the machinery up in pieces.
+n19_7 --> n20_3 : Put a man on the rise as a lookout.
+n19_7 --> e20_1 : Move the pump column up a level.
+n19_7 --> n20_2 : Clear the ninth level now.
+n19_8 --> e20_2 : Fix the ninth level telephone.
+n19_8 --> n20_4 : Abandon the machinery and say so in writ...
+n19_8 --> n20_5 : Let them finish the shift.
+n19_9 --> n20_6 : Leave the pumps where they are.
+n19_9 --> n20_7 : Recover the plant first.
+n19_9 --> e20_0 : Put a man on the rise as a lookout.
+n20_0 --> n21_0 : Leave the pumps where they are.
+n20_0 --> n21_1 : Recover the plant first.
+n20_0 --> e21_0 : Put a man on the rise as a lookout.
+n20_1 --> n21_3 : Climb the rise and check the eighth.
+n20_1 --> e21_1 : Re-splice the cable out of the water.
+n20_1 --> n21_2 : Fix the ninth level telephone.
+n20_10 --> n21_9 : Work the ninth without a telephone.
+n20_10 --> e21_1 : Climb the rise and check the eighth.
+n20_10 --> n21_8 : Re-splice the cable out of the water.
+n20_11 --> e21_2 : Take the machinery up in pieces.
+n20_11 --> n21_10 : Get the four men off the face.
+n20_11 --> n21_11 : Seal the far end.
+n20_11 --> n21_12 : Leave the pumps where they are.
+n20_12 --> n21_0 : Clear the ninth level now.
+n20_12 --> n21_1 : Cut the power to the ninth entirely.
+n20_12 --> e21_0 : Work the ninth without a telephone.
+n20_2 --> e21_2 : Get the four men off the face.
+n20_2 --> n21_4 : Seal the far end.
+n20_2 --> n21_5 : Leave the pumps where they are.
+n20_3 --> n21_6 : Cut the power to the ninth entirely.
+n20_3 --> n21_7 : Work the ninth without a telephone.
+n20_3 --> e21_0 : Climb the rise and check the eighth.
+n20_4 --> n21_8 : Go and hear the far end yourself.
+n20_4 --> n21_9 : Take the machinery up in pieces.
+n20_4 --> n21_10 : Get the four men off the face.
+n20_4 --> e21_1 : Seal the far end.
+n20_5 --> e21_2 : Move the pump column up a level.
+n20_5 --> n21_11 : Clear the ninth level now.
+n20_5 --> n21_12 : Cut the power to the ninth entirely.
+n20_6 --> n21_0 : Abandon the machinery and say so in writ...
+n20_6 --> n21_1 : Let them finish the shift.
+n20_6 --> e21_0 : Go and hear the far end yourself.
+n20_7 --> n21_3 : Recover the plant first.
+n20_7 --> e21_1 : Put a man on the rise as a lookout.
+n20_7 --> n21_2 : Move the pump column up a level.
+n20_8 --> e21_2 : Re-splice the cable out of the water.
+n20_8 --> n21_4 : Fix the ninth level telephone.
+n20_8 --> n21_5 : Abandon the machinery and say so in writ...
+n20_9 --> n21_6 : Seal the far end.
+n20_9 --> n21_7 : Leave the pumps where they are.
+n20_9 --> e21_0 : Recover the plant first.
+n21_0 --> n22_0 : Leave them on and gain the shift.
+n21_1 --> n22_1 : Recalibrate the sump gauge.
+n21_10 --> n22_10 : Keep the bypass shut.
+n21_11 --> n22_11 : Start breaking the discharge column.
+n21_12 --> n22_12 : Work to the corrected reading.
+n21_2 --> n22_2 : Tell the contractor to wait.
+n21_3 --> n22_3 : Send the first big pump up now.
+n21_4 --> n22_4 : Leave the steam pump under its tarpaulin...
+n21_5 --> n22_5 : Relieve the sump men.
+n21_6 --> n22_6 : Leave the column until the pumps are don...
+n21_7 --> n22_7 : Chalk the water line every hour.
+n21_8 --> n22_8 : Go up and get the schedule changed.
+n21_9 --> n22_9 : Get the steam pump ready.
+n22_0 --> n23_0 : Get the steam pump ready.
+n22_0 --> n23_1 : Leave them on and gain the shift.
+n22_0 --> e23_0 : Chalk the water line every hour.
+n22_1 --> n23_3 : Keep the bypass shut.
+n22_1 --> e23_1 : Recalibrate the sump gauge.
+n22_1 --> n23_2 : Go up and get the schedule changed.
+n22_10 --> n23_10 : Send the first big pump up now.
+n22_10 --> e23_1 : Keep the bypass shut.
+n22_10 --> n23_9 : Recalibrate the sump gauge.
+n22_11 --> e23_2 : Leave the steam pump under its tarpaulin...
+n22_11 --> n23_11 : Start breaking the discharge column.
+n22_11 --> n23_12 : Tell the contractor to wait.
+n22_12 --> n23_0 : Relieve the sump men.
+n22_12 --> n23_1 : Work to the corrected reading.
+n22_12 --> e23_0 : Send the first big pump up now.
+n22_2 --> n23_6 : Start breaking the discharge column.
+n22_2 --> e23_2 : Tell the contractor to wait.
+n22_2 --> n23_4 : Get the steam pump ready.
+n22_2 --> n23_5 : Leave them on and gain the shift.
+n22_3 --> n23_7 : Work to the corrected reading.
+n22_3 --> n23_8 : Send the first big pump up now.
+n22_3 --> e23_0 : Keep the bypass shut.
+n22_4 --> n23_10 : Give the contractor his pumps.
+n22_4 --> e23_1 : Leave the steam pump under its tarpaulin...
+n22_4 --> n23_9 : Start breaking the discharge column.
+n22_5 --> e23_2 : Keep both pumps running to the last day.
+n22_5 --> n23_11 : Relieve the sump men.
+n22_5 --> n23_12 : Work to the corrected reading.
+n22_6 --> n23_0 : Open the bypass to the old workings.
+n22_6 --> n23_1 : Leave the column until the pumps are don...
+n22_6 --> e23_0 : Give the contractor his pumps.
+n22_7 --> n23_3 : Leave them on and gain the shift.
+n22_7 --> e23_1 : Chalk the water line every hour.
+n22_7 --> n23_2 : Keep both pumps running to the last day.
+n22_8 --> e23_2 : Recalibrate the sump gauge.
+n22_8 --> n23_4 : Go up and get the schedule changed.
+n22_8 --> n23_5 : Open the bypass to the old workings.
+n22_9 --> n23_7 : Tell the contractor to wait.
+n22_9 --> n23_8 : Get the steam pump ready.
+n22_9 --> e23_0 : Leave them on and gain the shift.
+n22_9 --> n23_6 : Chalk the water line every hour.
+n23_0 --> n24_0 : Tell the contractor to wait.
+n23_0 --> n24_1 : Get the steam pump ready.
+n23_0 --> e24_0 : Leave them on and gain the shift.
+n23_1 --> n24_3 : Send the first big pump up now.
+n23_1 --> n24_4 : Keep the bypass shut.
+n23_1 --> e24_1 : Recalibrate the sump gauge.
+n23_1 --> n24_2 : Go up and get the schedule changed.
+n23_10 --> n24_10 : Work to the corrected reading.
+n23_10 --> e24_1 : Send the first big pump up now.
+n23_10 --> n24_9 : Keep the bypass shut.
+n23_11 --> e24_2 : Give the contractor his pumps.
+n23_11 --> n24_11 : Leave the steam pump under its tarpaulin...
+n23_11 --> n24_12 : Start breaking the discharge column.
+n23_12 --> n24_0 : Keep both pumps running to the last day.
+n23_12 --> n24_1 : Relieve the sump men.
+n23_12 --> e24_0 : Work to the corrected reading.
+n23_2 --> e24_2 : Leave the steam pump under its tarpaulin...
+n23_2 --> n24_5 : Start breaking the discharge column.
+n23_2 --> n24_6 : Tell the contractor to wait.
+n23_3 --> n24_7 : Relieve the sump men.
+n23_3 --> n24_8 : Work to the corrected reading.
+n23_3 --> e24_0 : Send the first big pump up now.
+n23_4 --> n24_10 : Leave the column until the pumps are don...
+n23_4 --> e24_1 : Give the contractor his pumps.
+n23_4 --> n24_9 : Leave the steam pump under its tarpaulin...
+n23_5 --> e24_2 : Chalk the water line every hour.
+n23_5 --> n24_11 : Keep both pumps running to the last day.
+n23_5 --> n24_12 : Relieve the sump men.
+n23_6 --> n24_0 : Go up and get the schedule changed.
+n23_6 --> n24_1 : Open the bypass to the old workings.
+n23_6 --> e24_0 : Leave the column until the pumps are don...
+n23_7 --> n24_3 : Get the steam pump ready.
+n23_7 --> e24_1 : Leave them on and gain the shift.
+n23_7 --> n24_2 : Chalk the water line every hour.
+n23_8 --> n24_4 : Keep the bypass shut.
+n23_8 --> n24_5 : Recalibrate the sump gauge.
+n23_8 --> n24_6 : Go up and get the schedule changed.
+n23_8 --> e24_2 : Open the bypass to the old workings.
+n23_9 --> n24_7 : Start breaking the discharge column.
+n23_9 --> n24_8 : Tell the contractor to wait.
+n23_9 --> e24_0 : Get the steam pump ready.
+n24_0 --> n25_0 : Start breaking the discharge column.
+n24_0 --> n25_1 : Tell the contractor to wait.
+n24_0 --> n25_2 : Get the steam pump ready.
+n24_0 --> e25_0 : Leave them on and gain the shift.
+n24_1 --> n25_4 : Work to the corrected reading.
+n24_1 --> e25_1 : Send the first big pump up now.
+n24_1 --> n25_3 : Keep the bypass shut.
+n24_10 --> n25_10 : Relieve the sump men.
+n24_10 --> e25_1 : Work to the corrected reading.
+n24_10 --> n25_9 : Send the first big pump up now.
+n24_11 --> e25_2 : Leave the column until the pumps are don...
+n24_11 --> n25_11 : Give the contractor his pumps.
+n24_11 --> n25_12 : Leave the steam pump under its tarpaulin...
+n24_12 --> n25_0 : Chalk the water line every hour.
+n24_12 --> n25_1 : Keep both pumps running to the last day.
+n24_12 --> e25_0 : Relieve the sump men.
+n24_2 --> e25_2 : Give the contractor his pumps.
+n24_2 --> n25_5 : Leave the steam pump under its tarpaulin...
+n24_2 --> n25_6 : Start breaking the discharge column.
+n24_3 --> n25_7 : Keep both pumps running to the last day.
+n24_3 --> n25_8 : Relieve the sump men.
+n24_3 --> e25_0 : Work to the corrected reading.
+n24_4 --> n25_10 : Open the bypass to the old workings.
+n24_4 --> e25_1 : Leave the column until the pumps are don...
+n24_4 --> n25_9 : Give the contractor his pumps.
+n24_5 --> e25_2 : Leave them on and gain the shift.
+n24_5 --> n25_11 : Chalk the water line every hour.
+n24_5 --> n25_12 : Keep both pumps running to the last day.
+n24_6 --> n25_0 : Recalibrate the sump gauge.
+n24_6 --> n25_1 : Go up and get the schedule changed.
+n24_6 --> e25_0 : Open the bypass to the old workings.
+n24_7 --> e25_1 : Tell the contractor to wait.
+n24_7 --> n25_2 : Get the steam pump ready.
+n24_7 --> n25_3 : Leave them on and gain the shift.
+n24_7 --> n25_4 : Chalk the water line every hour.
+n24_8 --> e25_2 : Send the first big pump up now.
+n24_8 --> n25_5 : Keep the bypass shut.
+n24_8 --> n25_6 : Recalibrate the sump gauge.
+n24_9 --> n25_7 : Leave the steam pump under its tarpaulin...
+n24_9 --> n25_8 : Start breaking the discharge column.
+n24_9 --> e25_0 : Tell the contractor to wait.
+n25_0 --> n26_0 : Trace the bypass water to its end.
+n25_0 --> n26_1 : Look for the old adit.
+n25_0 --> e26_0 : Leave the bypass running.
+n25_1 --> n26_3 : Test the air at every junction.
+n25_1 --> e26_1 : Take a rope and go alone.
+n25_1 --> n26_2 : Go in after the two men.
+n25_10 --> n26_9 : Send others and hold the entrance.
+n25_10 --> e26_1 : Test the air at every junction.
+n25_10 --> n26_8 : Take a rope and go alone.
+n25_11 --> e26_2 : Get the plan out of the agents drawer.
+n25_11 --> n26_10 : Write the adit off as a story.
+n25_11 --> n26_11 : Timber the third junction.
+n25_12 --> n26_12 : Push on past the third junction.
+n25_12 --> n26_0 : Close the bypass again.
+n25_12 --> e26_0 : Send others and hold the entrance.
+n25_2 --> e26_2 : Write the adit off as a story.
+n25_2 --> n26_4 : Timber the third junction.
+n25_2 --> n26_5 : Trace the bypass water to its end.
+n25_3 --> n26_6 : Close the bypass again.
+n25_3 --> n26_7 : Send others and hold the entrance.
+n25_3 --> e26_0 : Test the air at every junction.
+n25_4 --> n26_9 : Come out and report it as unsafe.
+n25_4 --> e26_1 : Get the plan out of the agents drawer.
+n25_4 --> n26_8 : Write the adit off as a story.
+n25_5 --> e26_2 : Seal the old workings entirely.
+n25_5 --> n26_10 : Push on past the third junction.
+n25_5 --> n26_11 : Close the bypass again.
+n25_6 --> n26_1 : Work without the plan.
+n25_6 --> e26_0 : Take a rope and one man.
+n25_6 --> n26_12 : Come out and report it as unsafe.
+n25_6 --> n26_0 : Get the plan out of the agents drawer.
+n25_7 --> n26_3 : Look for the old adit.
+n25_7 --> e26_1 : Leave the bypass running.
+n25_7 --> n26_2 : Seal the old workings entirely.
+n25_8 --> e26_2 : Take a rope and go alone.
+n25_8 --> n26_4 : Go in after the two men.
+n25_8 --> n26_5 : Work without the plan.
+n25_9 --> n26_6 : Timber the third junction.
+n25_9 --> n26_7 : Trace the bypass water to its end.
+n25_9 --> e26_0 : Look for the old adit.
+n26_0 --> n27_0 : Timber the third junction.
+n26_1 --> n27_1 : Send others and hold the entrance.
+n26_10 --> n27_10 : Close the bypass again.
+n26_11 --> n27_11 : Come out and report it as unsafe.
+n26_12 --> n27_12 : Seal the old workings entirely.
+n26_2 --> n27_2 : Get the plan out of the agents drawer.
+n26_3 --> n27_3 : Push on past the third junction.
+n26_4 --> n27_4 : Take a rope and one man.
+n26_5 --> n27_5 : Leave the bypass running.
+n26_6 --> n27_6 : Go in after the two men.
+n26_7 --> n27_7 : Trace the bypass water to its end.
+n26_8 --> n27_8 : Test the air at every junction.
+n26_9 --> n27_9 : Write the adit off as a story.
+n27_0 --> n28_0 : Write the adit off as a story.
+n27_0 --> n28_1 : Timber the third junction.
+n27_0 --> e28_0 : Trace the bypass water to its end.
+n27_1 --> n28_3 : Close the bypass again.
+n27_1 --> e28_1 : Send others and hold the entrance.
+n27_1 --> n28_2 : Test the air at every junction.
+n27_10 --> n28_9 : Push on past the third junction.
+n27_10 --> e28_1 : Close the bypass again.
+n27_10 --> n28_8 : Send others and hold the entrance.
+n27_11 --> e28_2 : Take a rope and one man.
+n27_11 --> n28_10 : Come out and report it as unsafe.
+n27_11 --> n28_11 : Get the plan out of the agents drawer.
+n27_11 --> n28_12 : Write the adit off as a story.
+n27_12 --> n28_0 : Leave the bypass running.
+n27_12 --> n28_1 : Seal the old workings entirely.
+n27_12 --> e28_0 : Push on past the third junction.
+n27_2 --> e28_2 : Come out and report it as unsafe.
+n27_2 --> n28_4 : Get the plan out of the agents drawer.
+n27_2 --> n28_5 : Write the adit off as a story.
+n27_3 --> n28_6 : Seal the old workings entirely.
+n27_3 --> n28_7 : Push on past the third junction.
+n27_3 --> e28_0 : Close the bypass again.
+n27_4 --> n28_8 : Work without the plan.
+n27_4 --> n28_9 : Take a rope and one man.
+n27_4 --> n28_10 : Come out and report it as unsafe.
+n27_4 --> e28_1 : Get the plan out of the agents drawer.
+n27_5 --> e28_2 : Look for the old adit.
+n27_5 --> n28_11 : Leave the bypass running.
+n27_5 --> n28_12 : Seal the old workings entirely.
+n27_6 --> n28_0 : Take a rope and go alone.
+n27_6 --> n28_1 : Go in after the two men.
+n27_6 --> e28_0 : Work without the plan.
+n27_7 --> n28_3 : Timber the third junction.
+n27_7 --> e28_1 : Trace the bypass water to its end.
+n27_7 --> n28_2 : Look for the old adit.
+n27_8 --> e28_2 : Send others and hold the entrance.
+n27_8 --> n28_4 : Test the air at every junction.
+n27_8 --> n28_5 : Take a rope and go alone.
+n27_9 --> n28_6 : Get the plan out of the agents drawer.
+n27_9 --> n28_7 : Write the adit off as a story.
+n27_9 --> e28_0 : Timber the third junction.
+n28_0 --> n29_0 : Get the plan out of the agents drawer.
+n28_0 --> n29_1 : Write the adit off as a story.
+n28_0 --> e29_0 : Timber the third junction.
+n28_1 --> n29_3 : Push on past the third junction.
+n28_1 --> e29_1 : Close the bypass again.
+n28_1 --> n29_2 : Send others and hold the entrance.
+n28_10 --> n29_10 : Seal the old workings entirely.
+n28_10 --> e29_1 : Push on past the third junction.
+n28_10 --> n29_8 : Close the bypass again.
+n28_10 --> n29_9 : Send others and hold the entrance.
+n28_11 --> e29_2 : Work without the plan.
+n28_11 --> n29_11 : Take a rope and one man.
+n28_11 --> n29_12 : Come out and report it as unsafe.
+n28_12 --> n29_0 : Look for the old adit.
+n28_12 --> n29_1 : Leave the bypass running.
+n28_12 --> e29_0 : Seal the old workings entirely.
+n28_2 --> e29_2 : Take a rope and one man.
+n28_2 --> n29_4 : Come out and report it as unsafe.
+n28_2 --> n29_5 : Get the plan out of the agents drawer.
+n28_3 --> e29_0 : Leave the bypass running.
+n28_3 --> n29_6 : Seal the old workings entirely.
+n28_3 --> n29_7 : Push on past the third junction.
+n28_3 --> n29_8 : Close the bypass again.
+n28_4 --> n29_10 : Go in after the two men.
+n28_4 --> e29_1 : Work without the plan.
+n28_4 --> n29_9 : Take a rope and one man.
+n28_5 --> e29_2 : Trace the bypass water to its end.
+n28_5 --> n29_11 : Look for the old adit.
+n28_5 --> n29_12 : Leave the bypass running.
+n28_6 --> n29_0 : Test the air at every junction.
+n28_6 --> n29_1 : Take a rope and go alone.
+n28_6 --> e29_0 : Go in after the two men.
+n28_7 --> n29_3 : Write the adit off as a story.
+n28_7 --> e29_1 : Timber the third junction.
+n28_7 --> n29_2 : Trace the bypass water to its end.
+n28_8 --> e29_2 : Close the bypass again.
+n28_8 --> n29_4 : Send others and hold the entrance.
+n28_8 --> n29_5 : Test the air at every junction.
+n28_9 --> n29_6 : Come out and report it as unsafe.
+n28_9 --> n29_7 : Get the plan out of the agents drawer.
+n28_9 --> e29_0 : Write the adit off as a story.
+n29_0 --> n30_0 : Keep the face yourself.
+n29_0 --> n30_1 : Take every man off the cartage.
+n29_0 --> e30_0 : Keep the face silent and listen.
+n29_1 --> n30_3 : Call the borehole rig down.
+n29_1 --> e30_1 : Dig without timbering and gain hours.
+n29_1 --> n30_2 : Answer the agent in writing.
+n29_10 --> n30_10 : Ignore the agent until it is over.
+n29_10 --> e30_1 : Call the borehole rig down.
+n29_10 --> n30_9 : Dig without timbering and gain hours.
+n29_11 --> e30_2 : Dig from this side at once.
+n29_11 --> n30_11 : Hold half the men on the cartage.
+n29_11 --> n30_12 : Get ventilation through the fall first.
+n29_12 --> n30_0 : Wait for the rescue brigade.
+n29_12 --> n30_1 : Answer the knocking.
+n29_12 --> e30_0 : Ignore the agent until it is over.
+n29_2 --> n30_6 : Hold half the men on the cartage.
+n29_2 --> e30_2 : Get ventilation through the fall first.
+n29_2 --> n30_4 : Keep the face yourself.
+n29_2 --> n30_5 : Take every man off the cartage.
+n29_3 --> n30_7 : Answer the knocking.
+n29_3 --> n30_8 : Ignore the agent until it is over.
+n29_3 --> e30_0 : Call the borehole rig down.
+n29_4 --> n30_10 : Dig first and ventilate after.
+n29_4 --> e30_1 : Dig from this side at once.
+n29_4 --> n30_9 : Hold half the men on the cartage.
+n29_5 --> e30_2 : Hand command to the brigade on arrival.
+n29_5 --> n30_11 : Wait for the rescue brigade.
+n29_5 --> n30_12 : Answer the knocking.
+n29_6 --> n30_0 : Send men round through the old workings.
+n29_6 --> n30_1 : Timber the fall before digging.
+n29_6 --> e30_0 : Dig first and ventilate after.
+n29_7 --> n30_3 : Take every man off the cartage.
+n29_7 --> e30_1 : Keep the face silent and listen.
+n29_7 --> n30_2 : Hand command to the brigade on arrival.
+n29_8 --> e30_2 : Dig without timbering and gain hours.
+n29_8 --> n30_4 : Answer the agent in writing.
+n29_8 --> n30_5 : Send men round through the old workings.
+n29_9 --> n30_7 : Get ventilation through the fall first.
+n29_9 --> n30_8 : Keep the face yourself.
+n29_9 --> e30_0 : Take every man off the cartage.
+n29_9 --> n30_6 : Keep the face silent and listen.
+n30_0 --> n31_0 : Get ventilation through the fall first.
+n30_0 --> n31_1 : Keep the face yourself.
+n30_0 --> e31_0 : Take every man off the cartage.
+n30_1 --> n31_3 : Ignore the agent until it is over.
+n30_1 --> n31_4 : Call the borehole rig down.
+n30_1 --> e31_1 : Dig without timbering and gain hours.
+n30_1 --> n31_2 : Answer the agent in writing.
+n30_10 --> n31_10 : Answer the knocking.
+n30_10 --> e31_1 : Ignore the agent until it is over.
+n30_10 --> n31_9 : Call the borehole rig down.
+n30_11 --> e31_2 : Dig first and ventilate after.
+n30_11 --> n31_11 : Dig from this side at once.
+n30_11 --> n31_12 : Hold half the men on the cartage.
+n30_12 --> n31_0 : Hand command to the brigade on arrival.
+n30_12 --> n31_1 : Wait for the rescue brigade.
+n30_12 --> e31_0 : Answer the knocking.
+n30_2 --> e31_2 : Dig from this side at once.
+n30_2 --> n31_5 : Hold half the men on the cartage.
+n30_2 --> n31_6 : Get ventilation through the fall first.
+n30_3 --> n31_7 : Wait for the rescue brigade.
+n30_3 --> n31_8 : Answer the knocking.
+n30_3 --> e31_0 : Ignore the agent until it is over.
+n30_4 --> n31_10 : Timber the fall before digging.
+n30_4 --> e31_1 : Dig first and ventilate after.
+n30_4 --> n31_9 : Dig from this side at once.
+n30_5 --> e31_2 : Keep the face silent and listen.
+n30_5 --> n31_11 : Hand command to the brigade on arrival.
+n30_5 --> n31_12 : Wait for the rescue brigade.
+n30_6 --> n31_0 : Answer the agent in writing.
+n30_6 --> n31_1 : Send men round through the old workings.
+n30_6 --> e31_0 : Timber the fall before digging.
+n30_7 --> n31_3 : Keep the face yourself.
+n30_7 --> e31_1 : Take every man off the cartage.
+n30_7 --> n31_2 : Keep the face silent and listen.
+n30_8 --> n31_4 : Call the borehole rig down.
+n30_8 --> n31_5 : Dig without timbering and gain hours.
+n30_8 --> n31_6 : Answer the agent in writing.
+n30_8 --> e31_2 : Send men round through the old workings.
+n30_9 --> n31_7 : Hold half the men on the cartage.
+n30_9 --> n31_8 : Get ventilation through the fall first.
+n30_9 --> e31_0 : Keep the face yourself.
+n31_0 --> n32_0 : Hold half the men on the cartage.
+n31_1 --> n32_1 : Answer the knocking.
+n31_10 --> n32_10 : Wait for the rescue brigade.
+n31_11 --> n32_11 : Timber the fall before digging.
+n31_12 --> n32_12 : Keep the face silent and listen.
+n31_2 --> n32_2 : Dig first and ventilate after.
+n31_3 --> n32_3 : Hand command to the brigade on arrival.
+n31_4 --> n32_4 : Send men round through the old workings.
+n31_5 --> n32_5 : Take every man off the cartage.
+n31_6 --> n32_6 : Dig without timbering and gain hours.
+n31_7 --> n32_7 : Get ventilation through the fall first.
+n31_8 --> n32_8 : Ignore the agent until it is over.
+n31_9 --> n32_9 : Dig from this side at once.
+n32_0 --> n33_0 : Dig from this side at once.
+n32_0 --> n33_1 : Hold half the men on the cartage.
+n32_0 --> e33_0 : Get ventilation through the fall first.
+n32_1 --> n33_3 : Wait for the rescue brigade.
+n32_1 --> e33_1 : Answer the knocking.
+n32_1 --> n33_2 : Ignore the agent until it is over.
+n32_10 --> n33_9 : Hand command to the brigade on arrival.
+n32_10 --> e33_1 : Wait for the rescue brigade.
+n32_10 --> n33_8 : Answer the knocking.
+n32_11 --> e33_2 : Send men round through the old workings.
+n32_11 --> n33_10 : Timber the fall before digging.
+n32_11 --> n33_11 : Dig first and ventilate after.
+n32_12 --> n33_12 : Take every man off the cartage.
+n32_12 --> n33_0 : Keep the face silent and listen.
+n32_12 --> e33_0 : Hand command to the brigade on arrival.
+n32_2 --> e33_2 : Timber the fall before digging.
+n32_2 --> n33_4 : Dig first and ventilate after.
+n32_2 --> n33_5 : Dig from this side at once.
+n32_3 --> n33_6 : Keep the face silent and listen.
+n32_3 --> n33_7 : Hand command to the brigade on arrival.
+n32_3 --> e33_0 : Wait for the rescue brigade.
+n32_4 --> n33_9 : Answer the agent in writing.
+n32_4 --> e33_1 : Send men round through the old workings.
+n32_4 --> n33_8 : Timber the fall before digging.
+n32_5 --> e33_2 : Keep the face yourself.
+n32_5 --> n33_10 : Take every man off the cartage.
+n32_5 --> n33_11 : Keep the face silent and listen.
+n32_6 --> n33_1 : Call the borehole rig down.
+n32_6 --> e33_0 : Dig without timbering and gain hours.
+n32_6 --> n33_12 : Answer the agent in writing.
+n32_6 --> n33_0 : Send men round through the old workings.
+n32_7 --> n33_3 : Hold half the men on the cartage.
+n32_7 --> e33_1 : Get ventilation through the fall first.
+n32_7 --> n33_2 : Keep the face yourself.
+n32_8 --> e33_2 : Answer the knocking.
+n32_8 --> n33_4 : Ignore the agent until it is over.
+n32_8 --> n33_5 : Call the borehole rig down.
+n32_9 --> n33_6 : Dig first and ventilate after.
+n32_9 --> n33_7 : Dig from this side at once.
+n32_9 --> e33_0 : Hold half the men on the cartage.
+n33_0 --> n34_0 : Tell the men what was amended.
+n33_0 --> n34_1 : Give him the tally book.
+n33_0 --> e34_0 : Take the pump contract offer.
+n33_1 --> n34_3 : Renounce the tonnage bonus in front of w...
+n33_1 --> e34_1 : Accept the amended manifest.
+n33_1 --> n34_2 : Keep the union at bank.
+n33_10 --> n34_9 : Show him the ninth level yourself.
+n33_10 --> e34_1 : Renounce the tonnage bonus in front of w...
+n33_10 --> n34_8 : Accept the amended manifest.
+n33_11 --> e34_2 : Keep the amendment to yourself.
+n33_11 --> n34_10 : Refuse the tally book.
+n33_11 --> n34_11 : Turn the offer down flat.
+n33_12 --> n34_12 : Send the difference in tonnage up to hea...
+n33_12 --> n34_0 : Refuse the amendment in writing.
+n33_12 --> n34_1 : Show him the ninth level yourself.
+n33_12 --> e34_0 : Renounce the tonnage bonus in front of w...
+n33_2 --> e34_2 : Refuse the tally book.
+n33_2 --> n34_4 : Turn the offer down flat.
+n33_2 --> n34_5 : Tell the men what was amended.
+n33_3 --> n34_6 : Refuse the amendment in writing.
+n33_3 --> n34_7 : Show him the ninth level yourself.
+n33_3 --> e34_0 : Renounce the tonnage bonus in front of w...
+n33_4 --> n34_9 : Bring the union agent down anyway.
+n33_4 --> e34_1 : Keep the amendment to yourself.
+n33_4 --> n34_8 : Refuse the tally book.
+n33_5 --> n34_11 : Keep him off the ninth level.
+n33_5 --> n34_12 : Send the difference in tonnage up to hea...
+n33_5 --> e34_2 : Refuse the amendment in writing.
+n33_5 --> n34_10 : Show him the ninth level yourself.
+n33_6 --> n34_0 : Take the tonnage bonus.
+n33_6 --> n34_1 : Copy the tally book first.
+n33_6 --> e34_0 : Bring the union agent down anyway.
+n33_7 --> n34_3 : Give him the tally book.
+n33_7 --> e34_1 : Take the pump contract offer.
+n33_7 --> n34_2 : Keep him off the ninth level.
+n33_8 --> e34_2 : Accept the amended manifest.
+n33_8 --> n34_4 : Keep the union at bank.
+n33_8 --> n34_5 : Take the tonnage bonus.
+n33_9 --> n34_6 : Turn the offer down flat.
+n33_9 --> n34_7 : Tell the men what was amended.
+n33_9 --> e34_0 : Give him the tally book.
+n34_0 --> n35_0 : Turn the offer down flat.
+n34_0 --> n35_1 : Tell the men what was amended.
+n34_0 --> e35_0 : Give him the tally book.
+n34_1 --> n35_3 : Show him the ninth level yourself.
+n34_1 --> e35_1 : Renounce the tonnage bonus in front of w...
+n34_1 --> n35_2 : Accept the amended manifest.
+n34_10 --> n35_9 : Refuse the amendment in writing.
+n34_10 --> e35_1 : Show him the ninth level yourself.
+n34_10 --> n35_8 : Renounce the tonnage bonus in front of w...
+n34_11 --> e35_2 : Bring the union agent down anyway.
+n34_11 --> n35_10 : Keep the amendment to yourself.
+n34_11 --> n35_11 : Refuse the tally book.
+n34_11 --> n35_12 : Turn the offer down flat.
+n34_12 --> n35_0 : Keep him off the ninth level.
+n34_12 --> n35_1 : Send the difference in tonnage up to hea...
+n34_12 --> e35_0 : Refuse the amendment in writing.
+n34_2 --> e35_2 : Keep the amendment to yourself.
+n34_2 --> n35_4 : Refuse the tally book.
+n34_2 --> n35_5 : Turn the offer down flat.
+n34_3 --> n35_6 : Send the difference in tonnage up to hea...
+n34_3 --> n35_7 : Refuse the amendment in writing.
+n34_3 --> e35_0 : Show him the ninth level yourself.
+n34_4 --> n35_8 : Copy the tally book first.
+n34_4 --> n35_9 : Bring the union agent down anyway.
+n34_4 --> n35_10 : Keep the amendment to yourself.
+n34_4 --> e35_1 : Refuse the tally book.
+n34_5 --> e35_2 : Take the pump contract offer.
+n34_5 --> n35_11 : Keep him off the ninth level.
+n34_5 --> n35_12 : Send the difference in tonnage up to hea...
+n34_6 --> n35_0 : Keep the union at bank.
+n34_6 --> n35_1 : Take the tonnage bonus.
+n34_6 --> e35_0 : Copy the tally book first.
+n34_7 --> n35_3 : Tell the men what was amended.
+n34_7 --> e35_1 : Give him the tally book.
+n34_7 --> n35_2 : Take the pump contract offer.
+n34_8 --> e35_2 : Renounce the tonnage bonus in front of w...
+n34_8 --> n35_4 : Accept the amended manifest.
+n34_8 --> n35_5 : Keep the union at bank.
+n34_9 --> n35_6 : Refuse the tally book.
+n34_9 --> n35_7 : Turn the offer down flat.
+n34_9 --> e35_0 : Tell the men what was amended.
+n35_0 --> n36_0 : Refuse the tally book.
+n35_0 --> n36_1 : Turn the offer down flat.
+n35_0 --> e36_0 : Tell the men what was amended.
+n35_1 --> n36_3 : Refuse the amendment in writing.
+n35_1 --> e36_1 : Show him the ninth level yourself.
+n35_1 --> n36_2 : Renounce the tonnage bonus in front of w...
+n35_10 --> n36_10 : Send the difference in tonnage up to hea...
+n35_10 --> e36_1 : Refuse the amendment in writing.
+n35_10 --> n36_8 : Show him the ninth level yourself.
+n35_10 --> n36_9 : Renounce the tonnage bonus in front of w...
+n35_11 --> e36_2 : Copy the tally book first.
+n35_11 --> n36_11 : Bring the union agent down anyway.
+n35_11 --> n36_12 : Keep the amendment to yourself.
+n35_12 --> n36_0 : Take the pump contract offer.
+n35_12 --> n36_1 : Keep him off the ninth level.
+n35_12 --> e36_0 : Send the difference in tonnage up to hea...
+n35_2 --> e36_2 : Bring the union agent down anyway.
+n35_2 --> n36_4 : Keep the amendment to yourself.
+n35_2 --> n36_5 : Refuse the tally book.
+n35_3 --> e36_0 : Keep him off the ninth level.
+n35_3 --> n36_6 : Send the difference in tonnage up to hea...
+n35_3 --> n36_7 : Refuse the amendment in writing.
+n35_3 --> n36_8 : Show him the ninth level yourself.
+n35_4 --> n36_10 : Take the tonnage bonus.
+n35_4 --> e36_1 : Copy the tally book first.
+n35_4 --> n36_9 : Bring the union agent down anyway.
+n35_5 --> e36_2 : Give him the tally book.
+n35_5 --> n36_11 : Take the pump contract offer.
+n35_5 --> n36_12 : Keep him off the ninth level.
+n35_6 --> n36_0 : Accept the amended manifest.
+n35_6 --> n36_1 : Keep the union at bank.
+n35_6 --> e36_0 : Take the tonnage bonus.
+n35_7 --> n36_3 : Turn the offer down flat.
+n35_7 --> e36_1 : Tell the men what was amended.
+n35_7 --> n36_2 : Give him the tally book.
+n35_8 --> e36_2 : Show him the ninth level yourself.
+n35_8 --> n36_4 : Renounce the tonnage bonus in front of w...
+n35_8 --> n36_5 : Accept the amended manifest.
+n35_9 --> n36_6 : Keep the amendment to yourself.
+n35_9 --> n36_7 : Refuse the tally book.
+n35_9 --> e36_0 : Turn the offer down flat.
+n36_0 --> n37_0 : Keep the amendment to yourself.
+n36_1 --> n37_1 : Send the difference in tonnage up to hea...
+n36_10 --> n37_10 : Keep him off the ninth level.
+n36_11 --> n37_11 : Take the tonnage bonus.
+n36_12 --> n37_12 : Give him the tally book.
+n36_2 --> n37_2 : Copy the tally book first.
+n36_3 --> n37_3 : Take the pump contract offer.
+n36_4 --> n37_4 : Keep the union at bank.
+n36_5 --> n37_5 : Tell the men what was amended.
+n36_6 --> n37_6 : Renounce the tonnage bonus in front of w...
+n36_7 --> n37_7 : Refuse the tally book.
+n36_8 --> n37_8 : Refuse the amendment in writing.
+n36_9 --> n37_9 : Bring the union agent down anyway.
+n37_0 --> n38_0 : Let the ostler be last.
+n37_0 --> n38_1 : Send the ponies now or not at all.
+n37_0 --> e38_0 : Send the plant while the cage is free.
+n37_1 --> n38_3 : Get the telephone message up before it d...
+n37_1 --> n38_4 : Order the road lifted behind the last ma...
+n37_1 --> e38_1 : Go up early and run it from bank.
+n37_1 --> n38_2 : Leave the plant and work around it.
+n37_10 --> n38_10 : Stay at the shaft bottom to the last.
+n37_10 --> e38_1 : Get the telephone message up before it d...
+n37_10 --> n38_9 : Order the road lifted behind the last ma...
+n37_11 --> e38_2 : Move the standing plant out of the way.
+n37_11 --> n38_11 : Take the tally book up with the first ca...
+n37_11 --> n38_12 : Put men up the ladderway as well.
+n37_12 --> n38_0 : Work without the telephone from now on.
+n37_12 --> n38_1 : Send the men and abandon the plant.
+n37_12 --> e38_0 : Stay at the shaft bottom to the last.
+n37_2 --> e38_2 : Take the tally book up with the first ca...
+n37_2 --> n38_5 : Put men up the ladderway as well.
+n37_2 --> n38_6 : Let the ostler be last.
+n37_3 --> n38_7 : Send the men and abandon the plant.
+n37_3 --> n38_8 : Stay at the shaft bottom to the last.
+n37_3 --> e38_0 : Get the telephone message up before it d...
+n37_4 --> n38_10 : Keep the ladderway in reserve.
+n37_4 --> e38_1 : Move the standing plant out of the way.
+n37_4 --> n38_9 : Take the tally book up with the first ca...
+n37_5 --> e38_2 : Send the ostler up ahead of you.
+n37_5 --> n38_11 : Work without the telephone from now on.
+n37_5 --> n38_12 : Send the men and abandon the plant.
+n37_6 --> n38_0 : Leave the plant and work around it.
+n37_6 --> n38_1 : Keep the tally book with you.
+n37_6 --> e38_0 : Keep the ladderway in reserve.
+n37_7 --> n38_3 : Send the ponies now or not at all.
+n37_7 --> e38_1 : Send the plant while the cage is free.
+n37_7 --> n38_2 : Send the ostler up ahead of you.
+n37_8 --> n38_4 : Order the road lifted behind the last ma...
+n37_8 --> n38_5 : Go up early and run it from bank.
+n37_8 --> n38_6 : Leave the plant and work around it.
+n37_8 --> e38_2 : Keep the tally book with you.
+n37_9 --> n38_7 : Put men up the ladderway as well.
+n37_9 --> n38_8 : Let the ostler be last.
+n37_9 --> e38_0 : Send the ponies now or not at all.
+n38_0 --> n39_0 : Put men up the ladderway as well.
+n38_0 --> n39_1 : Let the ostler be last.
+n38_0 --> n39_2 : Send the ponies now or not at all.
+n38_0 --> e39_0 : Send the plant while the cage is free.
+n38_1 --> n39_4 : Stay at the shaft bottom to the last.
+n38_1 --> e39_1 : Get the telephone message up before it d...
+n38_1 --> n39_3 : Order the road lifted behind the last ma...
+n38_10 --> n39_10 : Send the men and abandon the plant.
+n38_10 --> e39_1 : Stay at the shaft bottom to the last.
+n38_10 --> n39_9 : Get the telephone message up before it d...
+n38_11 --> e39_2 : Keep the ladderway in reserve.
+n38_11 --> n39_11 : Move the standing plant out of the way.
+n38_11 --> n39_12 : Take the tally book up with the first ca...
+n38_12 --> n39_0 : Send the ostler up ahead of you.
+n38_12 --> n39_1 : Work without the telephone from now on.
+n38_12 --> e39_0 : Send the men and abandon the plant.
+n38_2 --> e39_2 : Move the standing plant out of the way.
+n38_2 --> n39_5 : Take the tally book up with the first ca...
+n38_2 --> n39_6 : Put men up the ladderway as well.
+n38_3 --> n39_7 : Work without the telephone from now on.
+n38_3 --> n39_8 : Send the men and abandon the plant.
+n38_3 --> e39_0 : Stay at the shaft bottom to the last.
+n38_4 --> n39_10 : Keep the tally book with you.
+n38_4 --> e39_1 : Keep the ladderway in reserve.
+n38_4 --> n39_9 : Move the standing plant out of the way.
+n38_5 --> e39_2 : Send the plant while the cage is free.
+n38_5 --> n39_11 : Send the ostler up ahead of you.
+n38_5 --> n39_12 : Work without the telephone from now on.
+n38_6 --> n39_0 : Go up early and run it from bank.
+n38_6 --> n39_1 : Leave the plant and work around it.
+n38_6 --> e39_0 : Keep the tally book with you.
+n38_7 --> e39_1 : Let the ostler be last.
+n38_7 --> n39_2 : Send the ponies now or not at all.
+n38_7 --> n39_3 : Send the plant while the cage is free.
+n38_7 --> n39_4 : Send the ostler up ahead of you.
+n38_8 --> e39_2 : Get the telephone message up before it d...
+n38_8 --> n39_5 : Order the road lifted behind the last ma...
+n38_8 --> n39_6 : Go up early and run it from bank.
+n38_9 --> n39_7 : Take the tally book up with the first ca...
+n38_9 --> n39_8 : Put men up the ladderway as well.
+n38_9 --> e39_0 : Let the ostler be last.
+n39_0 --> n40_0 : Take the tally book up with the first ca...
+n39_0 --> n40_1 : Put men up the ladderway as well.
+n39_0 --> e40_0 : Let the ostler be last.
+n39_1 --> n40_3 : Send the men and abandon the plant.
+n39_1 --> e40_1 : Stay at the shaft bottom to the last.
+n39_1 --> n40_2 : Get the telephone message up before it d...
+n39_10 --> n40_9 : Work without the telephone from now on.
+n39_10 --> e40_1 : Send the men and abandon the plant.
+n39_10 --> n40_8 : Stay at the shaft bottom to the last.
+n39_11 --> e40_2 : Keep the tally book with you.
+n39_11 --> n40_10 : Keep the ladderway in reserve.
+n39_11 --> n40_11 : Move the standing plant out of the way.
+n39_12 --> n40_12 : Send the plant while the cage is free.
+n39_12 --> n40_0 : Send the ostler up ahead of you.
+n39_12 --> e40_0 : Work without the telephone from now on.
+n39_2 --> e40_2 : Keep the ladderway in reserve.
+n39_2 --> n40_4 : Move the standing plant out of the way.
+n39_2 --> n40_5 : Take the tally book up with the first ca...
+n39_3 --> n40_6 : Send the ostler up ahead of you.
+n39_3 --> n40_7 : Work without the telephone from now on.
+n39_3 --> e40_0 : Send the men and abandon the plant.
+n39_4 --> n40_9 : Leave the plant and work around it.
+n39_4 --> e40_1 : Keep the tally book with you.
+n39_4 --> n40_8 : Keep the ladderway in reserve.
+n39_5 --> e40_2 : Send the ponies now or not at all.
+n39_5 --> n40_10 : Send the plant while the cage is free.
+n39_5 --> n40_11 : Send the ostler up ahead of you.
+n39_6 --> n40_1 : Order the road lifted behind the last ma...
+n39_6 --> e40_0 : Go up early and run it from bank.
+n39_6 --> n40_12 : Leave the plant and work around it.
+n39_6 --> n40_0 : Keep the tally book with you.
+n39_7 --> n40_3 : Put men up the ladderway as well.
+n39_7 --> e40_1 : Let the ostler be last.
+n39_7 --> n40_2 : Send the ponies now or not at all.
+n39_8 --> e40_2 : Stay at the shaft bottom to the last.
+n39_8 --> n40_4 : Get the telephone message up before it d...
+n39_8 --> n40_5 : Order the road lifted behind the last ma...
+n39_9 --> n40_6 : Move the standing plant out of the way.
+n39_9 --> n40_7 : Take the tally book up with the first ca...
+n39_9 --> e40_0 : Put men up the ladderway as well.
+n40_0 --> n41_0 : Move the standing plant out of the way.
+n40_0 --> n41_1 : Take the tally book up with the first ca...
+n40_0 --> e41_0 : Put men up the ladderway as well.
+n40_1 --> n41_3 : Work without the telephone from now on.
+n40_1 --> e41_1 : Send the men and abandon the plant.
+n40_1 --> n41_2 : Stay at the shaft bottom to the last.
+n40_10 --> n41_9 : Send the ostler up ahead of you.
+n40_10 --> e41_1 : Work without the telephone from now on.
+n40_10 --> n41_8 : Send the men and abandon the plant.
+n40_11 --> e41_2 : Leave the plant and work around it.
+n40_11 --> n41_10 : Keep the tally book with you.
+n40_11 --> n41_11 : Keep the ladderway in reserve.
+n40_12 --> n41_12 : Send the ponies now or not at all.
+n40_12 --> n41_0 : Send the plant while the cage is free.
+n40_12 --> n41_1 : Send the ostler up ahead of you.
+n40_12 --> e41_0 : Work without the telephone from now on.
+n40_2 --> e41_2 : Keep the tally book with you.
+n40_2 --> n41_4 : Keep the ladderway in reserve.
+n40_2 --> n41_5 : Move the standing plant out of the way.
+n40_3 --> n41_6 : Send the plant while the cage is free.
+n40_3 --> n41_7 : Send the ostler up ahead of you.
+n40_3 --> e41_0 : Work without the telephone from now on.
+n40_4 --> n41_9 : Go up early and run it from bank.
+n40_4 --> e41_1 : Leave the plant and work around it.
+n40_4 --> n41_8 : Keep the tally book with you.
+n40_5 --> n41_11 : Let the ostler be last.
+n40_5 --> n41_12 : Send the ponies now or not at all.
+n40_5 --> e41_2 : Send the plant while the cage is free.
+n40_5 --> n41_10 : Send the ostler up ahead of you.
+n40_6 --> n41_0 : Get the telephone message up before it d...
+n40_6 --> n41_1 : Order the road lifted behind the last ma...
+n40_6 --> e41_0 : Go up early and run it from bank.
+n40_7 --> n41_3 : Take the tally book up with the first ca...
+n40_7 --> e41_1 : Put men up the ladderway as well.
+n40_7 --> n41_2 : Let the ostler be last.
+n40_8 --> e41_2 : Send the men and abandon the plant.
+n40_8 --> n41_4 : Stay at the shaft bottom to the last.
+n40_8 --> n41_5 : Get the telephone message up before it d...
+n40_9 --> n41_6 : Keep the ladderway in reserve.
+n40_9 --> n41_7 : Move the standing plant out of the way.
+n40_9 --> e41_0 : Take the tally book up with the first ca...
+n41_0 --> n42_0 : Hand the tally book to the union.
+n41_1 --> n42_1 : Sign for the recovered pumps.
+n41_10 --> n42_10 : Refuse to sign it.
+n41_11 --> n42_11 : Publish both documents side by side.
+n41_12 --> n42_12 : Refuse to sign for the pumps.
+n41_2 --> n42_2 : Go home and count it tomorrow.
+n41_3 --> n42_3 : Speak to the men at the gate.
+n41_4 --> n42_4 : Put the ponies in the record by name.
+n41_5 --> n42_5 : Hand the tally book to the inquiry.
+n41_6 --> n42_6 : Let the manifest stand alone.
+n41_7 --> n42_7 : Walk the yard and count what came up.
+n41_8 --> n42_8 : Leave the timber to the scrap men.
+n41_9 --> n42_9 : Put the ponies in the record as tonnage.
+n42_0 --> n43_0 : Put the ponies in the record as tonnage.
+n42_0 --> n43_1 : Hand the tally book to the union.
+n42_0 --> e43_0 : Walk the yard and count what came up.
+n42_1 --> n43_3 : Refuse to sign it.
+n42_1 --> e43_1 : Sign for the recovered pumps.
+n42_1 --> n43_2 : Leave the timber to the scrap men.
+n42_10 --> n43_10 : Speak to the men at the gate.
+n42_10 --> e43_1 : Refuse to sign it.
+n42_10 --> n43_8 : Sign for the recovered pumps.
+n42_10 --> n43_9 : Leave the timber to the scrap men.
+n42_11 --> e43_2 : Put the ponies in the record by name.
+n42_11 --> n43_11 : Publish both documents side by side.
+n42_11 --> n43_12 : Go home and count it tomorrow.
+n42_12 --> n43_0 : Hand the tally book to the inquiry.
+n42_12 --> n43_1 : Refuse to sign for the pumps.
+n42_12 --> e43_0 : Speak to the men at the gate.
+n42_2 --> e43_2 : Publish both documents side by side.
+n42_2 --> n43_4 : Go home and count it tomorrow.
+n42_2 --> n43_5 : Put the ponies in the record as tonnage.
+n42_3 --> e43_0 : Refuse to sign for the pumps.
+n42_3 --> n43_6 : Speak to the men at the gate.
+n42_3 --> n43_7 : Refuse to sign it.
+n42_3 --> n43_8 : Sign for the recovered pumps.
+n42_4 --> n43_10 : Take the marked timber before the scrap ...
+n42_4 --> e43_1 : Put the ponies in the record by name.
+n42_4 --> n43_9 : Publish both documents side by side.
+n42_5 --> e43_2 : Say nothing until the inquiry.
+n42_5 --> n43_11 : Hand the tally book to the inquiry.
+n42_5 --> n43_12 : Refuse to sign for the pumps.
+n42_6 --> n43_0 : Sign the company statement.
+n42_6 --> n43_1 : Let the manifest stand alone.
+n42_6 --> e43_0 : Take the marked timber before the scrap ...
+n42_7 --> n43_3 : Hand the tally book to the union.
+n42_7 --> e43_1 : Walk the yard and count what came up.
+n42_7 --> n43_2 : Say nothing until the inquiry.
+n42_8 --> e43_2 : Sign for the recovered pumps.
+n42_8 --> n43_4 : Leave the timber to the scrap men.
+n42_8 --> n43_5 : Sign the company statement.
+n42_9 --> n43_6 : Go home and count it tomorrow.
+n42_9 --> n43_7 : Put the ponies in the record as tonnage.
+n42_9 --> e43_0 : Hand the tally book to the union.
+n43_0 --> n44_0 : Go home and count it tomorrow.
+n43_0 --> n44_1 : Put the ponies in the record as tonnage.
+n43_0 --> e44_0 : Hand the tally book to the union.
+n43_1 --> n44_3 : Speak to the men at the gate.
+n43_1 --> e44_1 : Refuse to sign it.
+n43_1 --> n44_2 : Sign for the recovered pumps.
+n43_10 --> n44_10 : Refuse to sign for the pumps.
+n43_10 --> e44_1 : Speak to the men at the gate.
+n43_10 --> n44_9 : Refuse to sign it.
+n43_11 --> e44_2 : Take the marked timber before the scrap ...
+n43_11 --> n44_11 : Put the ponies in the record by name.
+n43_11 --> n44_12 : Publish both documents side by side.
+n43_12 --> n44_0 : Say nothing until the inquiry.
+n43_12 --> n44_1 : Hand the tally book to the inquiry.
+n43_12 --> e44_0 : Refuse to sign for the pumps.
+n43_2 --> n44_6 : Put the ponies in the record by name.
+n43_2 --> e44_2 : Publish both documents side by side.
+n43_2 --> n44_4 : Go home and count it tomorrow.
+n43_2 --> n44_5 : Put the ponies in the record as tonnage.
+n43_3 --> n44_7 : Hand the tally book to the inquiry.
+n43_3 --> n44_8 : Refuse to sign for the pumps.
+n43_3 --> e44_0 : Speak to the men at the gate.
+n43_4 --> n44_10 : Let the manifest stand alone.
+n43_4 --> e44_1 : Take the marked timber before the scrap ...
+n43_4 --> n44_9 : Put the ponies in the record by name.
+n43_5 --> e44_2 : Walk the yard and count what came up.
+n43_5 --> n44_11 : Say nothing until the inquiry.
+n43_5 --> n44_12 : Hand the tally book to the inquiry.
+n43_6 --> n44_0 : Leave the timber to the scrap men.
+n43_6 --> n44_1 : Sign the company statement.
+n43_6 --> e44_0 : Let the manifest stand alone.
+n43_7 --> n44_3 : Put the ponies in the record as tonnage.
+n43_7 --> e44_1 : Hand the tally book to the union.
+n43_7 --> n44_2 : Walk the yard and count what came up.
+n43_8 --> e44_2 : Refuse to sign it.
+n43_8 --> n44_4 : Sign for the recovered pumps.
+n43_8 --> n44_5 : Leave the timber to the scrap men.
+n43_9 --> n44_7 : Publish both documents side by side.
+n43_9 --> n44_8 : Go home and count it tomorrow.
+n43_9 --> e44_0 : Put the ponies in the record as tonnage.
+n43_9 --> n44_6 : Hand the tally book to the union.
+n44_0 --> e45_0 : Publish both documents side by side.
+n44_0 --> e45_1 : Go home and count it tomorrow.
+n44_0 --> e45_2 : Put the ponies in the record as tonnage.
+n44_1 --> e45_4 : Refuse to sign for the pumps.
+n44_1 --> e45_5 : Speak to the men at the gate.
+n44_1 --> e45_6 : Refuse to sign it.
+n44_1 --> e45_3 : Sign for the recovered pumps.
+n44_10 --> e45_3 : Hand the tally book to the inquiry.
+n44_10 --> e45_4 : Refuse to sign for the pumps.
+n44_10 --> e45_2 : Speak to the men at the gate.
+n44_11 --> e45_7 : Let the manifest stand alone.
+n44_11 --> e45_5 : Take the marked timber before the scrap ...
+n44_11 --> e45_6 : Put the ponies in the record by name.
+n44_12 --> e45_8 : Walk the yard and count what came up.
+n44_12 --> e45_9 : Say nothing until the inquiry.
+n44_12 --> e45_0 : Hand the tally book to the inquiry.
+n44_2 --> e45_9 : Take the marked timber before the scrap ...
+n44_2 --> e45_7 : Put the ponies in the record by name.
+n44_2 --> e45_8 : Publish both documents side by side.
+n44_3 --> e45_0 : Say nothing until the inquiry.
+n44_3 --> e45_1 : Hand the tally book to the inquiry.
+n44_3 --> e45_2 : Refuse to sign for the pumps.
+n44_4 --> e45_4 : Sign the company statement.
+n44_4 --> e45_5 : Let the manifest stand alone.
+n44_4 --> e45_3 : Take the marked timber before the scrap ...
+n44_5 --> e45_8 : Hand the tally book to the union.
+n44_5 --> e45_6 : Walk the yard and count what came up.
+n44_5 --> e45_7 : Say nothing until the inquiry.
+n44_6 --> e45_9 : Sign for the recovered pumps.
+n44_6 --> e45_0 : Leave the timber to the scrap men.
+n44_6 --> e45_1 : Sign the company statement.
+n44_7 --> e45_3 : Go home and count it tomorrow.
+n44_7 --> e45_4 : Put the ponies in the record as tonnage.
+n44_7 --> e45_2 : Hand the tally book to the union.
+n44_8 --> e45_5 : Speak to the men at the gate.
+n44_8 --> e45_6 : Refuse to sign it.
+n44_8 --> e45_7 : Sign for the recovered pumps.
+n44_8 --> e45_8 : Leave the timber to the scrap men.
+n44_9 --> e45_9 : Put the ponies in the record by name.
+n44_9 --> e45_0 : Publish both documents side by side.
+n44_9 --> e45_1 : Go home and count it tomorrow.
+e13_0 --> [*]
+e13_1 --> [*]
+e13_2 --> [*]
+e14_0 --> [*]
+e14_1 --> [*]
+e14_2 --> [*]
+e15_0 --> [*]
+e15_1 --> [*]
+e15_2 --> [*]
+e16_0 --> [*]
+e16_1 --> [*]
+e16_2 --> [*]
+e18_0 --> [*]
+e18_1 --> [*]
+e18_2 --> [*]
+e19_0 --> [*]
+e19_1 --> [*]
+e19_2 --> [*]
+e20_0 --> [*]
+e20_1 --> [*]
+e20_2 --> [*]
+e21_0 --> [*]
+e21_1 --> [*]
+e21_2 --> [*]
+e23_0 --> [*]
+e23_1 --> [*]
+e23_2 --> [*]
+e24_0 --> [*]
+e24_1 --> [*]
+e24_2 --> [*]
+e25_0 --> [*]
+e25_1 --> [*]
+e25_2 --> [*]
+e26_0 --> [*]
+e26_1 --> [*]
+e26_2 --> [*]
+e28_0 --> [*]
+e28_1 --> [*]
+e28_2 --> [*]
+e29_0 --> [*]
+e29_1 --> [*]
+e29_2 --> [*]
+e30_0 --> [*]
+e30_1 --> [*]
+e30_2 --> [*]
+e31_0 --> [*]
+e31_1 --> [*]
+e31_2 --> [*]
+e33_0 --> [*]
+e33_1 --> [*]
+e33_2 --> [*]
+e34_0 --> [*]
+e34_1 --> [*]
+e34_2 --> [*]
+e35_0 --> [*]
+e35_1 --> [*]
+e35_2 --> [*]
+e36_0 --> [*]
+e36_1 --> [*]
+e36_2 --> [*]
+e38_0 --> [*]
+e38_1 --> [*]
+e38_2 --> [*]
+e39_0 --> [*]
+e39_1 --> [*]
+e39_2 --> [*]
+e40_0 --> [*]
+e40_1 --> [*]
+e40_2 --> [*]
+e41_0 --> [*]
+e41_1 --> [*]
+e41_2 --> [*]
+e43_0 --> [*]
+e43_1 --> [*]
+e43_2 --> [*]
+e44_0 --> [*]
+e44_1 --> [*]
+e44_2 --> [*]
+e45_0 --> [*]
+e45_1 --> [*]
+e45_2 --> [*]
+e45_3 --> [*]
+e45_4 --> [*]
+e45_5 --> [*]
+e45_6 --> [*]
+e45_7 --> [*]
+e45_8 --> [*]
+e45_9 --> [*]
+
+legend right
+  The Last Cartage
+  Band 16+ · Tier 1 · ~16 min
+  Topology: gauntlet
+  632 nodes · 88 endings (6+ / 15n / 67-)
+  Production-eligible
+  Scale: long · gamebook
+endlegend
+@enduml

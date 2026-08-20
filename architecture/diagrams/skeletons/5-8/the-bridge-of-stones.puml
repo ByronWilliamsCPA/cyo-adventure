@@ -1,0 +1,241 @@
+@startuml the-bridge-of-stones
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_dawn
+state n_dawn #BBDEFB
+n_dawn : setup · 66w
+state n_bank #BBDEFB
+n_bank : setup · 68w
+state n_stones #D1C4E9
+n_stones : rising · 68w
+state n_st_first #D1C4E9
+n_st_first : rising · 66w
+state n_st_count #D1C4E9
+n_st_count : rising · 64w
+state n_st_mid #D1C4E9
+n_st_mid : rising · 70w
+state n_st_far #D1C4E9
+n_st_far : rising · 68w
+state n_st_back #D1C4E9
+n_st_back : rising · 66w
+state n_ash #D1C4E9
+n_ash : rising · 68w
+state n_ash_bark #D1C4E9
+n_ash_bark : rising · 66w
+state n_ash_reach #D1C4E9
+n_ash_reach : rising · 64w
+state n_ash_sit #D1C4E9
+n_ash_sit : rising · 70w
+state n_ash_far #D1C4E9
+n_ash_far : rising · 68w
+state n_ash_back #D1C4E9
+n_ash_back : rising · 66w
+state n_mender #D1C4E9
+n_mender : rising · 68w
+state n_m_ask #D1C4E9
+n_m_ask : rising · 66w
+state n_m_watch #D1C4E9
+n_m_watch : rising · 64w
+state n_m_barrow #D1C4E9
+n_m_barrow : rising · 70w
+state n_m_rope #D1C4E9
+n_m_rope : rising · 68w
+state n_m_back #D1C4E9
+n_m_back : rising · 66w
+state n_hub_two #D1C4E9
+n_hub_two : rising · 70w
+state n_nell #D1C4E9
+n_nell : rising · 68w
+state n_nell_call #D1C4E9
+n_nell_call : rising · 66w
+state n_nell_bone #D1C4E9
+n_nell_bone : rising · 66w
+state n_nell_side #D1C4E9
+n_nell_side : rising · 64w
+state n_nell_mid #D1C4E9
+n_nell_mid : rising · 70w
+state n_ford #D1C4E9
+n_ford : rising · 68w
+state n_ford_wade #D1C4E9
+n_ford_wade : rising · 66w
+state n_ford_stick #D1C4E9
+n_ford_stick : rising · 66w
+state n_ford_side #D1C4E9
+n_ford_side : rising · 64w
+state n_ford_mid #D1C4E9
+n_ford_mid : rising · 70w
+state n_planks #D1C4E9
+n_planks : rising · 68w
+state n_plank_snag #D1C4E9
+n_plank_snag : rising · 66w
+state n_plank_drag #D1C4E9
+n_plank_drag : rising · 66w
+state n_plank_side #D1C4E9
+n_plank_side : rising · 64w
+state n_plank_mid #D1C4E9
+n_plank_mid : rising · 70w
+state n_hub_three #D1C4E9
+n_hub_three : rising · 70w
+state n_way_stones #D1C4E9
+n_way_stones : rising · 68w
+state n_way_ash #D1C4E9
+n_way_ash : rising · 68w
+state n_way_mender #D1C4E9
+n_way_mender : rising · 68w
+state n_ws_go #D1C4E9
+n_ws_go : rising · 66w
+state n_ws_nell #D1C4E9
+n_ws_nell : rising · 66w
+state n_wa_cross #D1C4E9
+n_wa_cross : rising · 66w
+state n_wa_rail #D1C4E9
+n_wa_rail : rising · 66w
+state n_wm_build #D1C4E9
+n_wm_build : rising · 66w
+state n_wm_fetch #D1C4E9
+n_wm_fetch : rising · 66w
+state e_stones_across #C8E6C9
+e_stones_across : success (positive)
+e_stones_across : "Across on the Stones"
+state e_stones_turnback #E0E0E0
+e_stones_turnback : discovery (neutral)
+e_stones_turnback : "The Middle Stone Was Wrong"
+state e_nell_across #C8E6C9
+e_nell_across : completion (positive)
+e_nell_across : "Nell Comes Over"
+state e_nell_waits #FFCDD2
+e_nell_waits : setback (negative)
+e_nell_waits : "Nell Waits It Out"
+state e_ash_crawl #C8E6C9
+e_ash_crawl : success (positive)
+e_ash_crawl : "Over on the Ash"
+state e_ash_wet #E0E0E0
+e_ash_wet : setback (neutral)
+e_ash_wet : "One Wet Boot"
+state e_ash_rail #C8E6C9
+e_ash_rail : completion (positive)
+e_ash_rail : "A Handrail Made of Tree"
+state e_ash_left #E0E0E0
+e_ash_left : discovery (neutral)
+e_ash_left : "Leave the Ash Where It Fell"
+state e_bridge_built #C8E6C9
+e_bridge_built : completion (positive)
+e_bridge_built : "Two Planks and a Nail"
+state e_bridge_tomorrow #E0E0E0
+e_bridge_tomorrow : discovery (neutral)
+e_bridge_tomorrow : "Finished by Friday"
+state e_fetch_run #C8E6C9
+e_fetch_run : success (positive)
+e_fetch_run : "The Fastest Fetcher in the Dale"
+state e_mender_says #FFCDD2
+e_mender_says : setback (negative)
+e_mender_says : "Nobody Crosses Today"
+n_dawn --> n_bank : Go down to the water.
+n_bank --> n_stones : Look at the stepping stones.
+n_bank --> n_ash : Look at the ash that came down.
+n_bank --> n_mender : Go and find Mr Bhandari.
+n_stones --> n_st_first : Test the first stone.
+n_stones --> n_st_count : Count what is still showing.
+n_st_first --> n_st_mid : Step on and look at the next.
+n_st_count --> n_st_mid : Go out as far as the third.
+n_st_mid --> n_st_far : Try the far stones.
+n_st_mid --> n_st_back : Go back to the grass.
+n_st_far --> n_hub_two : Leave the loose one alone.
+n_st_far --> n_st_back : Get back to the bank.
+n_st_back --> n_hub_two : Tell Ivy what the stones do.
+n_st_back --> n_bank : Start again at the piers.
+n_ash --> n_ash_bark : Try the bark with a hand.
+n_ash --> n_ash_reach : Reach for the big side branch.
+n_ash_bark --> n_ash_sit : Sit down on the trunk.
+n_ash_reach --> n_ash_sit : Sit down and hold on.
+n_ash_sit --> n_ash_far : Shuffle out over the water.
+n_ash_sit --> n_ash_back : Get off at the root end.
+n_ash_far --> n_hub_two : Note where the holding stops.
+n_ash_far --> n_ash_back : Shuffle backwards to the roots.
+n_ash_back --> n_hub_two : Go and compare it with the stones.
+n_ash_back --> n_bank : Walk back down to the piers.
+n_mender --> n_m_ask : Ask him straight out.
+n_mender --> n_m_watch : Watch what he does first.
+n_m_ask --> n_m_barrow : Look in the barrow.
+n_m_watch --> n_m_barrow : Go over to the barrow.
+n_m_barrow --> n_m_rope : Ask about the blue rope.
+n_m_barrow --> n_m_back : Ask how long the mending takes.
+n_m_rope --> n_hub_two : Ask what he actually needs.
+n_m_rope --> n_m_back : Coil the rope back up.
+n_m_back --> n_hub_two : Go and think about Friday.
+n_m_back --> n_bank : Go back and look at the beck.
+n_hub_two --> n_nell : See what Nell will do.
+n_hub_two --> n_ford : Try the ford by the sheep gate.
+n_hub_two --> n_planks : Go and look for the planks.
+n_nell --> n_nell_call : Call her low and slow.
+n_nell --> n_nell_bone : Try the sausage in Ivy's pocket.
+n_nell_call --> n_nell_mid : Watch where she stops.
+n_nell_bone --> n_nell_mid : Hold it up where she can see.
+n_nell_bone --> n_nell_side : Put it on a flat stone at the edge.
+n_nell_side --> n_nell_mid : Measure the gap she will not cross.
+n_nell_mid --> n_hub_three : Go and find something to build with.
+n_nell_mid --> n_hub_two : Go back to the piers first.
+n_ford --> n_ford_wade : Put one boot in.
+n_ford --> n_ford_stick : Poke about with a hazel stick.
+n_ford_wade --> n_ford_mid : Get out and think again.
+n_ford_stick --> n_ford_mid : Work out where the nothing is.
+n_ford_stick --> n_ford_side : Poke along the top end too.
+n_ford_side --> n_ford_mid : Mark it with the stick.
+n_ford_mid --> n_hub_three : Go and get something built instead.
+n_ford_mid --> n_hub_two : Head back up to the piers.
+n_planks --> n_plank_snag : Try the willow roots at the bend.
+n_planks --> n_plank_drag : Look in the shallows further down.
+n_plank_snag --> n_plank_mid : Work it loose.
+n_plank_drag --> n_plank_mid : Keep hauling together.
+n_plank_drag --> n_plank_side : Take turns and rest between.
+n_plank_side --> n_plank_mid : Get it as far as the piers.
+n_plank_mid --> n_hub_three : Go and find Mr Bhandari.
+n_plank_mid --> n_hub_two : Go back for anything else useful.
+n_hub_three --> n_way_stones : Go back to the stepping stones.
+n_hub_three --> n_way_ash : Go back to the fallen ash.
+n_hub_three --> n_way_mender : Go back to the piers.
+n_way_stones --> n_ws_go : Cross on them.
+n_way_stones --> n_ws_nell : Make the gap into a stone.
+n_way_ash --> n_wa_cross : Shuffle the whole way over.
+n_way_ash --> n_wa_rail : Use the branch as a handrail.
+n_way_mender --> n_wm_build : Hold the far end for him.
+n_way_mender --> n_wm_fetch : Run for the long bar.
+n_ws_go --> e_stones_across : Jump the gap.
+n_ws_go --> e_stones_turnback : Stop at the gap.
+n_ws_nell --> e_nell_across : Call her across the new stone.
+n_ws_nell --> e_nell_waits : Leave her to make her own mind up.
+n_wa_cross --> e_ash_crawl : Keep going to the far roots.
+n_wa_cross --> e_ash_wet : Take one hand off to steady.
+n_wa_rail --> e_ash_rail : Tie the blue rope on for the rest.
+n_wa_rail --> e_ash_left : Say it is not a bridge yet.
+n_wm_build --> e_bridge_built : Hold it until the last nail.
+n_wm_build --> e_bridge_tomorrow : Let go to look at the water.
+n_wm_fetch --> e_fetch_run : Run for it.
+n_wm_fetch --> e_mender_says : Ask if it can wait.
+e_stones_across --> [*]
+e_stones_turnback --> [*]
+e_nell_across --> [*]
+e_nell_waits --> [*]
+e_ash_crawl --> [*]
+e_ash_wet --> [*]
+e_ash_rail --> [*]
+e_ash_left --> [*]
+e_bridge_built --> [*]
+e_bridge_tomorrow --> [*]
+e_fetch_run --> [*]
+e_mender_says --> [*]
+
+legend right
+  The Bridge of Stones
+  Band 5-8 · Tier 1 · ~11 min
+  Topology: open_map
+  58 nodes · 12 endings (6+ / 4n / 2-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

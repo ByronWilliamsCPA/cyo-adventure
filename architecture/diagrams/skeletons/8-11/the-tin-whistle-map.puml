@@ -1,0 +1,941 @@
+@startuml the-tin-whistle-map
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> t_open
+state t_open #BBDEFB
+t_open : setup · 55w
+state t_case #BBDEFB
+t_case : setup · 78w
+state hb_ask #BBDEFB
+hb_ask : setup · 98w
+state hb_walk #BBDEFB
+hb_walk : setup · 98w
+state hb_lib #BBDEFB
+hb_lib : setup · 98w
+state ok_box #D1C4E9
+ok_box : rising · 100w
+state ok_photo #D1C4E9
+ok_photo : rising · 100w
+state ok_house #D1C4E9
+ok_house : rising · 100w
+state wm_weigh #D1C4E9
+wm_weigh : rising · 100w
+state wm_river #D1C4E9
+wm_river : rising · 100w
+state wm_bridge #D1C4E9
+wm_bridge : rising · 100w
+state lb_shelf #D1C4E9
+lb_shelf : rising · 100w
+state lb_film #D1C4E9
+lb_film : rising · 100w
+state lb_aisha #D1C4E9
+lb_aisha : rising · 100w
+state ok_names #D1C4E9
+ok_names : rising · 102w
+state ok_receipts #D1C4E9
+ok_receipts : rising · 102w
+state ok_cap #D1C4E9
+ok_cap : rising · 102w
+state wm_rect #D1C4E9
+wm_rect : rising · 102w
+state wm_paint #D1C4E9
+wm_paint : rising · 102w
+state wm_chips #D1C4E9
+wm_chips : rising · 102w
+state lb_plate #D1C4E9
+lb_plate : rising · 102w
+state lb_minutes #D1C4E9
+lb_minutes : rising · 102w
+state lb_date #D1C4E9
+lb_date : rising · 102w
+state ok_vine #D1C4E9
+ok_vine : rising · 104w
+state ok_hurst #D1C4E9
+ok_hurst : rising · 104w
+state ok_search #D1C4E9
+ok_search : rising · 104w
+state ok_order #D1C4E9
+ok_order : rising · 104w
+state wm_measure #D1C4E9
+wm_measure : rising · 104w
+state wm_chapel #D1C4E9
+wm_chapel : rising · 104w
+state wm_alms #D1C4E9
+wm_alms : rising · 104w
+state wm_stand #D1C4E9
+wm_stand : rising · 104w
+state lb_numbers #D1C4E9
+lb_numbers : rising · 104w
+state lb_vance #D1C4E9
+lb_vance : rising · 104w
+state lb_gazette #D1C4E9
+lb_gazette : rising · 104w
+state lb_call #D1C4E9
+lb_call : rising · 104w
+state ok_lot #E0E0E0
+ok_lot : setback (neutral)
+ok_lot : "The Box Went to Auction"
+state wm_wet #E0E0E0
+wm_wet : discovery (neutral)
+wm_wet : "Six Marks and a Wet Afternoon"
+state lb_file #E0E0E0
+lb_file : discovery (neutral)
+lb_file : "A Very Complete File"
+state sx_padlock #D1C4E9
+sx_padlock : rising · 100w
+state sx_six #D1C4E9
+sx_six : rising · 100w
+state sx_bill #D1C4E9
+sx_bill : rising · 100w
+state sx_vance #D1C4E9
+sx_vance : rising · 100w
+state sx_deniz #D1C4E9
+sx_deniz : rising · 100w
+state sx_alms #D1C4E9
+sx_alms : rising · 100w
+state sx_cage #D1C4E9
+sx_cage : rising · 100w
+state sx_chapel #D1C4E9
+sx_chapel : rising · 100w
+state sx_school #D1C4E9
+sx_school : rising · 100w
+state sx_paper #D1C4E9
+sx_paper : rising · 100w
+state sx_tess #D1C4E9
+sx_tess : rising · 100w
+state sx_time #D1C4E9
+sx_time : rising · 100w
+state sy_towpath #D1C4E9
+sy_towpath : rising · 46w
+state sy_steps #D1C4E9
+sy_steps : rising · 46w
+state sy_lamp #D1C4E9
+sy_lamp : rising · 46w
+state sy_plates #D1C4E9
+sy_plates : rising · 104w
+state sy_people #D1C4E9
+sy_people : rising · 104w
+state sy_paper #D1C4E9
+sy_paper : rising · 104w
+state sy_split #D1C4E9
+sy_split : rising · 104w
+state sy_friday #D1C4E9
+sy_friday : rising · 104w
+state sy_bill2 #D1C4E9
+sy_bill2 : rising · 104w
+state pl_chip #D1C4E9
+pl_chip : rising · 84w
+state pl_alms #D1C4E9
+pl_alms : rising · 100w
+state pl_cage #D1C4E9
+pl_cage : rising · 100w
+state pl_chapelp #D1C4E9
+pl_chapelp : rising · 100w
+state pe_bill #D1C4E9
+pe_bill : rising · 84w
+state pe_alms2 #D1C4E9
+pe_alms2 : rising · 100w
+state pe_deniz #D1C4E9
+pe_deniz : rising · 100w
+state pe_school #D1C4E9
+pe_school : rising · 100w
+state pr_minutes #D1C4E9
+pr_minutes : rising · 84w
+state pr_gazette #D1C4E9
+pr_gazette : rising · 100w
+state pr_owner #D1C4E9
+pr_owner : rising · 100w
+state pr_letter #D1C4E9
+pr_letter : rising · 100w
+state pl_clean #D1C4E9
+pl_clean : rising · 104w
+state pl_read #D1C4E9
+pl_read : rising · 104w
+state pl_permission #D1C4E9
+pl_permission : rising · 104w
+state pl_rub #D1C4E9
+pl_rub : rising · 104w
+state pl_depot #D1C4E9
+pl_depot : rising · 104w
+state pe_names #D1C4E9
+pe_names : rising · 104w
+state pe_rub2 #D1C4E9
+pe_rub2 : rising · 104w
+state pe_tune #D1C4E9
+pe_tune : rising · 104w
+state pe_family #D1C4E9
+pe_family : rising · 104w
+state pe_listen #D1C4E9
+pe_listen : rising · 104w
+state pr_clause #D1C4E9
+pr_clause : rising · 104w
+state pr_copy #D1C4E9
+pr_copy : rising · 104w
+state pr_council #D1C4E9
+pr_council : rising · 104w
+state pr_form #D1C4E9
+pr_form : rising · 104w
+state pr_aisha2 #D1C4E9
+pr_aisha2 : rising · 104w
+state pl_crack #E0E0E0
+pl_crack : setback (neutral)
+pl_crack : "Two Screws and a Cracked Plate"
+state pe_versions #E0E0E0
+pe_versions : setback (neutral)
+pe_versions : "Too Many Versions"
+state pr_filed #E0E0E0
+pr_filed : setback (neutral)
+pr_filed : "Filed and Forgotten"
+state pl_five #D1C4E9
+pl_five : rising · 100w
+state pl_sixth #D1C4E9
+pl_sixth : rising · 100w
+state pl_shed #D1C4E9
+pl_shed : rising · 100w
+state pl_show #D1C4E9
+pl_show : rising · 100w
+state pl_replace #D1C4E9
+pl_replace : rising · 100w
+state pe_check #D1C4E9
+pe_check : rising · 100w
+state pe_bring #D1C4E9
+pe_bring : rising · 100w
+state pe_key #D1C4E9
+pe_key : rising · 100w
+state pe_slow #D1C4E9
+pe_slow : rising · 100w
+state pe_write #D1C4E9
+pe_write : rising · 100w
+state pr_deadline #D1C4E9
+pr_deadline : rising · 100w
+state pr_ally #D1C4E9
+pr_ally : rising · 100w
+state pr_insure #D1C4E9
+pr_insure : rising · 100w
+state pr_press #D1C4E9
+pr_press : rising · 100w
+state pr_meet #D1C4E9
+pr_meet : rising · 100w
+state pl_order #D1C4E9
+pl_order : rising · 106w
+state pl_try #D1C4E9
+pl_try : rising · 106w
+state pl_photo #D1C4E9
+pl_photo : rising · 106w
+state pl_hold #D1C4E9
+pl_hold : rising · 106w
+state pl_tell #D1C4E9
+pl_tell : rising · 106w
+state pe_agree #D1C4E9
+pe_agree : rising · 106w
+state pe_last #D1C4E9
+pe_last : rising · 106w
+state pe_witness #D1C4E9
+pe_witness : rising · 106w
+state pe_school2 #D1C4E9
+pe_school2 : rising · 106w
+state pe_vance2 #D1C4E9
+pe_vance2 : rising · 106w
+state pr_case #D1C4E9
+pr_case : rising · 106w
+state pr_ten #D1C4E9
+pr_ten : rising · 106w
+state pr_lock #D1C4E9
+pr_lock : rising · 106w
+state pr_school3 #D1C4E9
+pr_school3 : rising · 106w
+state pr_thursday #D1C4E9
+pr_thursday : rising · 106w
+state pl_five_end #E0E0E0
+pl_five_end : discovery (neutral)
+pl_five_end : "Five Out of Six"
+state pe_band #E0E0E0
+pe_band : discovery (neutral)
+pe_band : "The Band That Was Still There"
+state pr_week #E0E0E0
+pr_week : discovery (neutral)
+pr_week : "A Week That Was Not Given"
+state fn_door #FFE0B2
+fn_door : climax · 108w
+state fn_order2 #FFE0B2
+fn_order2 : climax · 108w
+state fn_bill3 #FFE0B2
+fn_bill3 : climax · 108w
+state fn_vance3 #FFE0B2
+fn_vance3 : climax · 108w
+state fn_witness2 #FFE0B2
+fn_witness2 : climax · 108w
+state fn_light #FFE0B2
+fn_light : climax · 108w
+state fn_school4 #FFE0B2
+fn_school4 : climax · 108w
+state fn_press2 #FFE0B2
+fn_press2 : climax · 108w
+state fn_stop #FFE0B2
+fn_stop : climax · 108w
+state fn_inventory #FFE0B2
+fn_inventory : climax · 108w
+state fn_plates2 #FFE0B2
+fn_plates2 : climax · 108w
+state fn_wait2 #FFE0B2
+fn_wait2 : climax · 108w
+state gx_try #FFE0B2
+gx_try : climax · 112w
+state gx_second #FFE0B2
+gx_second : climax · 112w
+state gx_hinge #FFE0B2
+gx_hinge : climax · 112w
+state gx_ask #FFE0B2
+gx_ask : climax · 112w
+state gx_bill4 #FFE0B2
+gx_bill4 : climax · 112w
+state gx_note #FFE0B2
+gx_note : climax · 112w
+state gx_inside #FFE0B2
+gx_inside : climax · 112w
+state gx_damp #FFE0B2
+gx_damp : climax · 112w
+state gx_lorry #FFE0B2
+gx_lorry : climax · 112w
+state gx_press3 #FFE0B2
+gx_press3 : climax · 112w
+state gx_school5 #FFE0B2
+gx_school5 : climax · 112w
+state gx_return #FFE0B2
+gx_return : climax · 112w
+state gy_sixth #C8E6C9
+gy_sixth : success (positive)
+gy_sixth : "The Sixth Figure"
+state gy_written #C8E6C9
+gy_written : completion (positive)
+gy_written : "Everything Written Down in Time"
+state gy_behind #E0E0E0
+gy_behind : discovery (neutral)
+gy_behind : "What Was Behind the Door"
+state gy_eight #FFCDD2
+gy_eight : setback (negative)
+gy_eight : "Eight in the Morning"
+state hx_open #FFE0B2
+hx_open : climax · 112w
+state hx_list #FFE0B2
+hx_list : climax · 112w
+state hx_carry #FFE0B2
+hx_carry : climax · 112w
+state hx_school6 #FFE0B2
+hx_school6 : climax · 112w
+state hx_lib2 #FFE0B2
+hx_lib2 : climax · 112w
+state hx_alms3 #FFE0B2
+hx_alms3 : climax · 112w
+state hx_bill5 #FFE0B2
+hx_bill5 : climax · 112w
+state hx_repair #FFE0B2
+hx_repair : climax · 112w
+state hx_owner2 #FFE0B2
+hx_owner2 : climax · 112w
+state hx_thanks #FFE0B2
+hx_thanks : climax · 112w
+state hx_plates3 #FFE0B2
+hx_plates3 : climax · 112w
+state hx_play #FFE0B2
+hx_play : climax · 112w
+state hy_third #C8E6C9
+hy_third : success (positive)
+hy_third : "Open on the Third Try"
+state hy_heard #C8E6C9
+hy_heard : success (positive)
+hy_heard : "Bill Hurst Heard It Played"
+state hy_school #C8E6C9
+hy_school : completion (positive)
+hy_school : "Signed Over to the School"
+state hy_list #E0E0E0
+hy_list : completion (neutral)
+hy_list : "A Lorry and a List"
+state hy_date #E0E0E0
+hy_date : discovery (neutral)
+hy_date : "The Combination Was a Date"
+state hy_locked #FFCDD2
+hy_locked : setback (negative)
+hy_locked : "Locked and Cleared"
+state ix_band #FFE0B2
+ix_band : climax · 112w
+state ix_names2 #FFE0B2
+ix_names2 : climax · 112w
+state ix_case #FFE0B2
+ix_case : climax · 112w
+state ix_hand #FFE0B2
+ix_hand : climax · 112w
+state ix_archive #FFE0B2
+ix_archive : climax · 112w
+state ix_map #FFE0B2
+ix_map : climax · 112w
+state ix_whistle #FFE0B2
+ix_whistle : climax · 112w
+state ix_thanks2 #FFE0B2
+ix_thanks2 : climax · 112w
+state ix_next #FFE0B2
+ix_next : climax · 112w
+state iy_again #C8E6C9
+iy_again : success (positive)
+iy_again : "The Padgett Town Band, Second Time"
+state iy_names #C8E6C9
+iy_names : success (positive)
+iy_names : "Twenty-One Names on the Wall"
+state iy_case #C8E6C9
+iy_case : success (positive)
+iy_case : "A Cornet Case With a Name In It"
+state iy_hand #C8E6C9
+iy_hand : completion (positive)
+iy_hand : "Handed Over Properly"
+state iy_archive #C8E6C9
+iy_archive : completion (positive)
+iy_archive : "The Archive Aisha Wanted"
+state iy_menu #E0E0E0
+iy_menu : discovery (neutral)
+iy_menu : "The Plate Under the Menu Board"
+state iy_week #FFCDD2
+iy_week : setback (negative)
+iy_week : "Right Trail, Wrong Week"
+state jz_december #C8E6C9
+jz_december : success (positive)
+jz_december : "First Saturday in December"
+state jz_walked #C8E6C9
+jz_walked : success (positive)
+jz_walked : "The Rounds, Walked Again"
+state jz_plates #C8E6C9
+jz_plates : success (positive)
+jz_plates : "Six Plates Back on Six Walls"
+state jz_whistle #C8E6C9
+jz_whistle : completion (positive)
+jz_whistle : "The Whistle Goes Back in Its Case"
+state jz_belongs #C8E6C9
+jz_belongs : completion (positive)
+jz_belongs : "Everything Where It Belongs"
+state jz_empty #E0E0E0
+jz_empty : completion (neutral)
+jz_empty : "The Store, Empty and Listed"
+state jz_skip #FFCDD2
+jz_skip : setback (negative)
+jz_skip : "The Skip on Friday Morning"
+state jz_late #FFCDD2
+jz_late : setback (negative)
+jz_late : "Nobody Asked in Time"
+state jz_steel #FFCDD2
+jz_steel : setback (negative)
+jz_steel : "The Trail Ends at a Steel Door"
+t_open --> t_case : Open the case and read the card.
+t_case --> hb_ask : Ask Mrs Okonjo about the house.
+t_case --> hb_walk : Start at the nearest mark on the barrel.
+t_case --> hb_lib : Take the card to the library.
+hb_ask --> ok_box : Ask to see the unpriced box.
+hb_ask --> ok_photo : Look at the photographs properly.
+hb_ask --> ok_house : Ask to look round the house itself.
+hb_walk --> wm_weigh : Go to the weighbridge car park.
+hb_walk --> wm_river : Follow the wavy line along the river.
+hb_walk --> wm_bridge : Look at the iron bridge.
+hb_lib --> lb_shelf : Work the local history shelf.
+hb_lib --> lb_film : Get the microfilm reader going.
+hb_lib --> lb_aisha : Ask Aisha what she already knows.
+ok_box --> ok_names : Work out who the names belong to.
+ok_box --> ok_receipts : Read the receipts for what they say.
+ok_box --> ok_cap : Take the band cap to somebody who knew i...
+ok_photo --> ok_names : Work out who the names belong to.
+ok_photo --> ok_receipts : Read the receipts for what they say.
+ok_photo --> ok_cap : Take the band cap to somebody who knew i...
+ok_house --> ok_names : Work out who the names belong to.
+ok_house --> ok_receipts : Read the receipts for what they say.
+ok_house --> ok_cap : Take the band cap to somebody who knew i...
+wm_weigh --> wm_rect : Work out what came off the wall.
+wm_weigh --> wm_paint : Look under the paint.
+wm_weigh --> wm_chips : Ask at the chip shop.
+wm_river --> wm_rect : Work out what came off the wall.
+wm_river --> wm_paint : Look under the paint.
+wm_river --> wm_chips : Ask at the chip shop.
+wm_bridge --> wm_rect : Work out what came off the wall.
+wm_bridge --> wm_paint : Look under the paint.
+wm_bridge --> wm_chips : Ask at the chip shop.
+lb_shelf --> lb_plate : Look at the plate in the drawer.
+lb_shelf --> lb_minutes : Find the council minutes.
+lb_shelf --> lb_date : Find out when the clearance happens.
+lb_film --> lb_plate : Look at the plate in the drawer.
+lb_film --> lb_minutes : Find the council minutes.
+lb_film --> lb_date : Find out when the clearance happens.
+lb_aisha --> lb_plate : Look at the plate in the drawer.
+lb_aisha --> lb_minutes : Find the council minutes.
+lb_aisha --> lb_date : Find out when the clearance happens.
+ok_names --> ok_vine : Find out who Harold Vine was.
+ok_names --> ok_hurst : Go and find Bill Hurst.
+ok_names --> ok_search : Search the house before it is cleared.
+ok_receipts --> ok_order : Put the six stops into the right order.
+ok_receipts --> ok_lot : Leave the box and come back tomorrow.
+ok_receipts --> ok_vine : Find out who Harold Vine was.
+ok_cap --> ok_hurst : Go and find Bill Hurst.
+ok_cap --> ok_search : Search the house before it is cleared.
+ok_cap --> ok_order : Put the six stops into the right order.
+wm_rect --> wm_measure : Measure the marks against a real map.
+wm_rect --> wm_chapel : Go up to the chapel steps.
+wm_rect --> wm_alms : Try the almshouse garden.
+wm_paint --> wm_stand : Go and look at the bandstand.
+wm_paint --> wm_wet : Walk the whole route and leave it at tha...
+wm_paint --> wm_measure : Measure the marks against a real map.
+wm_chips --> wm_chapel : Go up to the chapel steps.
+wm_chips --> wm_alms : Try the almshouse garden.
+wm_chips --> wm_stand : Go and look at the bandstand.
+lb_plate --> lb_numbers : Work out what the six figures are for.
+lb_plate --> lb_vance : Go and see Mr Vance at the parks depot.
+lb_plate --> lb_gazette : Search the Gazette for the last concert.
+lb_minutes --> lb_call : Ring the number on the minutes.
+lb_minutes --> lb_file : Build the file first and act on it later...
+lb_minutes --> lb_numbers : Work out what the six figures are for.
+lb_date --> lb_vance : Go and see Mr Vance at the parks depot.
+lb_date --> lb_gazette : Search the Gazette for the last concert.
+lb_date --> lb_call : Ring the number on the minutes.
+ok_vine --> sx_padlock : Go and look hard at the padlock.
+ok_vine --> sx_six : Count what the six figures must be.
+ok_vine --> sx_bill : Take everything to Bill Hurst.
+ok_hurst --> sx_vance : Get Mr Vance to hold the clearance.
+ok_hurst --> sx_deniz : Get behind the chip shop menu board.
+ok_hurst --> sx_alms : Ask at the almshouses.
+ok_search --> sx_cage : Ask about the cage at the depot.
+ok_search --> sx_chapel : Get into the chapel.
+ok_search --> sx_school : Ask at the school about the instruments.
+ok_order --> sx_paper : Write to the Gazette.
+ok_order --> sx_tess : Get Tess and her bike into it.
+ok_order --> sx_time : Work backwards from Friday morning.
+wm_measure --> sx_padlock : Go and look hard at the padlock.
+wm_measure --> sx_six : Count what the six figures must be.
+wm_measure --> sx_bill : Take everything to Bill Hurst.
+wm_chapel --> sx_vance : Get Mr Vance to hold the clearance.
+wm_chapel --> sx_deniz : Get behind the chip shop menu board.
+wm_chapel --> sx_alms : Ask at the almshouses.
+wm_alms --> sx_cage : Ask about the cage at the depot.
+wm_alms --> sx_chapel : Get into the chapel.
+wm_alms --> sx_school : Ask at the school about the instruments.
+wm_stand --> sx_paper : Write to the Gazette.
+wm_stand --> sx_tess : Get Tess and her bike into it.
+wm_stand --> sx_time : Work backwards from Friday morning.
+lb_numbers --> sx_padlock : Go and look hard at the padlock.
+lb_numbers --> sx_six : Count what the six figures must be.
+lb_numbers --> sx_bill : Take everything to Bill Hurst.
+lb_vance --> sx_vance : Get Mr Vance to hold the clearance.
+lb_vance --> sx_deniz : Get behind the chip shop menu board.
+lb_vance --> sx_alms : Ask at the almshouses.
+lb_gazette --> sx_cage : Ask about the cage at the depot.
+lb_gazette --> sx_chapel : Get into the chapel.
+lb_gazette --> sx_school : Ask at the school about the instruments.
+lb_call --> sx_paper : Write to the Gazette.
+lb_call --> sx_tess : Get Tess and her bike into it.
+lb_call --> sx_time : Work backwards from Friday morning.
+sx_padlock --> sy_towpath : Walk down to the river and think.
+sx_padlock --> sy_steps : Sit on the bandstand steps and lay it al...
+sx_padlock --> sy_lamp : Go home and look at the whistle under a ...
+sx_six --> sy_plates : Go after the plates themselves.
+sx_six --> sy_people : Go after the people who were there.
+sx_six --> sy_paper : Go after the paperwork.
+sx_bill --> sy_split : Split the town with Tess.
+sx_bill --> sy_friday : Work backwards from Friday morning.
+sx_bill --> sy_bill2 : Sit down with Bill and the photographs.
+sx_vance --> sy_towpath : Walk down to the river and think.
+sx_vance --> sy_steps : Sit on the bandstand steps and lay it al...
+sx_vance --> sy_lamp : Go home and look at the whistle under a ...
+sx_deniz --> sy_plates : Go after the plates themselves.
+sx_deniz --> sy_people : Go after the people who were there.
+sx_deniz --> sy_paper : Go after the paperwork.
+sx_alms --> sy_split : Split the town with Tess.
+sx_alms --> sy_friday : Work backwards from Friday morning.
+sx_alms --> sy_bill2 : Sit down with Bill and the photographs.
+sx_cage --> sy_towpath : Walk down to the river and think.
+sx_cage --> sy_steps : Sit on the bandstand steps and lay it al...
+sx_cage --> sy_lamp : Go home and look at the whistle under a ...
+sx_chapel --> sy_plates : Go after the plates themselves.
+sx_chapel --> sy_people : Go after the people who were there.
+sx_chapel --> sy_paper : Go after the paperwork.
+sx_school --> sy_split : Split the town with Tess.
+sx_school --> sy_friday : Work backwards from Friday morning.
+sx_school --> sy_bill2 : Sit down with Bill and the photographs.
+sx_paper --> sy_towpath : Walk down to the river and think.
+sx_paper --> sy_steps : Sit on the bandstand steps and lay it al...
+sx_paper --> sy_lamp : Go home and look at the whistle under a ...
+sx_tess --> sy_plates : Go after the plates themselves.
+sx_tess --> sy_people : Go after the people who were there.
+sx_tess --> sy_paper : Go after the paperwork.
+sx_time --> sy_split : Split the town with Tess.
+sx_time --> sy_friday : Work backwards from Friday morning.
+sx_time --> sy_bill2 : Sit down with Bill and the photographs.
+sy_towpath --> pl_chip : Get the menu board off the chip shop wal...
+sy_steps --> pe_bill : Sit down with Bill Hurst.
+sy_lamp --> pr_minutes : Read the parks minutes properly.
+sy_plates --> pl_chip : Get the menu board off the chip shop wal...
+sy_plates --> pl_alms : Find the plate in the almshouse garden.
+sy_plates --> pl_cage : Look in the cage at the parks depot.
+sy_people --> pl_chapelp : Check the chapel steps for fixing holes.
+sy_people --> pe_bill : Sit down with Bill Hurst.
+sy_people --> pe_alms2 : Talk to the almshouse residents.
+sy_paper --> pe_deniz : Talk to Deniz at the chip shop.
+sy_paper --> pe_school : Ask at the school about the instruments.
+sy_paper --> pr_minutes : Read the parks minutes properly.
+sy_split --> pr_gazette : Search the Gazette for December 1998.
+sy_split --> pr_owner : Find out who owns the store.
+sy_split --> pr_letter : Write to somebody who can stop Friday.
+sy_friday --> pl_chip : Get the menu board off the chip shop wal...
+sy_friday --> pl_alms : Find the plate in the almshouse garden.
+sy_friday --> pl_cage : Look in the cage at the parks depot.
+sy_bill2 --> pl_chapelp : Check the chapel steps for fixing holes.
+sy_bill2 --> pe_bill : Sit down with Bill Hurst.
+sy_bill2 --> pe_alms2 : Talk to the almshouse residents.
+pl_chip --> pl_clean : Clean the paint off carefully.
+pl_chip --> pl_read : Read what the plate actually says.
+pl_chip --> pl_permission : Ask before anything comes off a wall.
+pl_alms --> pl_rub : Take a rubbing instead of the plate.
+pl_alms --> pl_depot : Get Mr Vance to open the cage.
+pl_alms --> pl_crack : Take the chapel plate off and read it in...
+pl_cage --> pl_clean : Clean the paint off carefully.
+pl_cage --> pl_read : Read what the plate actually says.
+pl_cage --> pl_permission : Ask before anything comes off a wall.
+pl_chapelp --> pl_rub : Take a rubbing instead of the plate.
+pl_chapelp --> pl_depot : Get Mr Vance to open the cage.
+pl_chapelp --> pl_crack : Take the chapel plate off and read it in...
+pe_bill --> pe_names : Chase the eleven names on the photograph...
+pe_bill --> pe_rub2 : Go back to Bill with the rubbings.
+pe_bill --> pe_tune : Ask Bill to play the whistle.
+pe_alms2 --> pe_family : Find Harold Vine family.
+pe_alms2 --> pe_listen : Let the almshouse room talk itself out.
+pe_alms2 --> pe_versions : Take the first confident answer and run ...
+pe_deniz --> pe_names : Chase the eleven names on the photograph...
+pe_deniz --> pe_rub2 : Go back to Bill with the rubbings.
+pe_deniz --> pe_tune : Ask Bill to play the whistle.
+pe_school --> pe_family : Find Harold Vine family.
+pe_school --> pe_listen : Let the almshouse room talk itself out.
+pe_school --> pe_versions : Take the first confident answer and run ...
+pr_minutes --> pr_clause : Read what the storage sentence promised.
+pr_minutes --> pr_copy : Get photocopies of everything.
+pr_minutes --> pr_council : Find the one person who can say yes.
+pr_gazette --> pr_form : Fill in the form the proper way.
+pr_gazette --> pr_aisha2 : Get Aisha to write what the library want...
+pr_gazette --> pr_filed : Send it in and wait for an answer.
+pr_owner --> pr_clause : Read what the storage sentence promised.
+pr_owner --> pr_copy : Get photocopies of everything.
+pr_owner --> pr_council : Find the one person who can say yes.
+pr_letter --> pr_form : Fill in the form the proper way.
+pr_letter --> pr_aisha2 : Get Aisha to write what the library want...
+pr_letter --> pr_filed : Send it in and wait for an answer.
+pl_clean --> pl_five : Line up the five you have.
+pl_clean --> pl_sixth : Work out where the sixth one went.
+pl_clean --> pl_shed : Ask about the sheds nobody ever clears.
+pl_read --> pl_show : Show the figures to Bill Hurst.
+pl_read --> pl_replace : Put back everything that came off a wall...
+pl_read --> pl_five : Line up the five you have.
+pl_permission --> pl_sixth : Work out where the sixth one went.
+pl_permission --> pl_shed : Ask about the sheds nobody ever clears.
+pl_permission --> pl_show : Show the figures to Bill Hurst.
+pl_rub --> pl_replace : Put back everything that came off a wall...
+pl_rub --> pl_five : Line up the five you have.
+pl_rub --> pl_sixth : Work out where the sixth one went.
+pl_depot --> pl_shed : Ask about the sheds nobody ever clears.
+pl_depot --> pl_show : Show the figures to Bill Hurst.
+pl_depot --> pl_replace : Put back everything that came off a wall...
+pe_names --> pe_check : Check a memory against a document.
+pe_names --> pe_bring : Bring two of them down to the bandstand.
+pe_names --> pe_key : Ask who had the key in 1998.
+pe_rub2 --> pe_slow : Slow down and do it their way.
+pe_rub2 --> pe_write : Write down what people say while they sa...
+pe_rub2 --> pe_check : Check a memory against a document.
+pe_tune --> pe_bring : Bring two of them down to the bandstand.
+pe_tune --> pe_key : Ask who had the key in 1998.
+pe_tune --> pe_slow : Slow down and do it their way.
+pe_family --> pe_write : Write down what people say while they sa...
+pe_family --> pe_check : Check a memory against a document.
+pe_family --> pe_bring : Bring two of them down to the bandstand.
+pe_listen --> pe_key : Ask who had the key in 1998.
+pe_listen --> pe_slow : Slow down and do it their way.
+pe_listen --> pe_write : Write down what people say while they sa...
+pr_clause --> pr_deadline : Work the clearance date itself.
+pr_clause --> pr_ally : Find an adult who will carry it inside.
+pr_clause --> pr_insure : Answer the question they will ask.
+pr_copy --> pr_press : Give the Gazette something to print.
+pr_copy --> pr_meet : Ask for ten minutes rather than a decisi...
+pr_copy --> pr_deadline : Work the clearance date itself.
+pr_council --> pr_ally : Find an adult who will carry it inside.
+pr_council --> pr_insure : Answer the question they will ask.
+pr_council --> pr_press : Give the Gazette something to print.
+pr_form --> pr_meet : Ask for ten minutes rather than a decisi...
+pr_form --> pr_deadline : Work the clearance date itself.
+pr_form --> pr_ally : Find an adult who will carry it inside.
+pr_aisha2 --> pr_insure : Answer the question they will ask.
+pr_aisha2 --> pr_press : Give the Gazette something to print.
+pr_aisha2 --> pr_meet : Ask for ten minutes rather than a decisi...
+pl_five --> pl_order : Settle the order once and for all.
+pl_five --> pl_try : Take the six figures to the padlock.
+pl_five --> pl_photo : Photograph everything before Friday.
+pl_sixth --> pl_hold : Get the clearance held for a week.
+pl_sixth --> pl_tell : Tell the almshouses what you found.
+pl_sixth --> pl_five_end : Go to the padlock with five figures and ...
+pl_shed --> pl_order : Settle the order once and for all.
+pl_shed --> pl_try : Take the six figures to the padlock.
+pl_shed --> pl_photo : Photograph everything before Friday.
+pl_show --> pl_hold : Get the clearance held for a week.
+pl_show --> pl_tell : Tell the almshouses what you found.
+pl_show --> pl_five_end : Go to the padlock with five figures and ...
+pl_replace --> pl_order : Settle the order once and for all.
+pl_replace --> pl_try : Take the six figures to the padlock.
+pl_replace --> pl_photo : Photograph everything before Friday.
+pe_check --> pe_agree : Get the order agreed by people who were ...
+pe_check --> pe_last : Ask Bill for the last figure.
+pe_check --> pe_witness : Take somebody with you to the padlock.
+pe_bring --> pe_school2 : Get the school to say what it has.
+pe_bring --> pe_vance2 : Put Bill in front of Mr Vance.
+pe_bring --> pe_band : Let the afternoon be about the people.
+pe_key --> pe_agree : Get the order agreed by people who were ...
+pe_key --> pe_last : Ask Bill for the last figure.
+pe_key --> pe_witness : Take somebody with you to the padlock.
+pe_slow --> pe_school2 : Get the school to say what it has.
+pe_slow --> pe_vance2 : Put Bill in front of Mr Vance.
+pe_slow --> pe_band : Let the afternoon be about the people.
+pe_write --> pe_agree : Get the order agreed by people who were ...
+pe_write --> pe_last : Ask Bill for the last figure.
+pe_write --> pe_witness : Take somebody with you to the padlock.
+pr_deadline --> pr_case : Put the whole case on one sheet of paper...
+pr_deadline --> pr_ten : Take the ten minutes with Mr Vance.
+pr_deadline --> pr_lock : Ask permission to try the padlock.
+pr_ally --> pr_school3 : Bring the school in as a home for it.
+pr_ally --> pr_thursday : Spend Thursday getting everyone in one r...
+pr_ally --> pr_week : Ask for the week and take the answer as ...
+pr_insure --> pr_case : Put the whole case on one sheet of paper...
+pr_insure --> pr_ten : Take the ten minutes with Mr Vance.
+pr_insure --> pr_lock : Ask permission to try the padlock.
+pr_press --> pr_school3 : Bring the school in as a home for it.
+pr_press --> pr_thursday : Spend Thursday getting everyone in one r...
+pr_press --> pr_week : Ask for the week and take the answer as ...
+pr_meet --> pr_case : Put the whole case on one sheet of paper...
+pr_meet --> pr_ten : Take the ten minutes with Mr Vance.
+pr_meet --> pr_lock : Ask permission to try the padlock.
+pl_order --> fn_door : Go down to the door on Thursday evening.
+pl_order --> fn_order2 : Fix the order before touching the lock.
+pl_order --> fn_bill3 : Fetch Bill Hurst down to the park.
+pl_try --> fn_vance3 : Get Mr Vance to come and watch.
+pl_try --> fn_witness2 : Bring the two residents and the notebook...
+pl_try --> fn_light : Bring a light and something to write on.
+pl_photo --> fn_school4 : Line the school up to take the instrumen...
+pl_photo --> fn_press2 : Get the Gazette to hold the front of pag...
+pl_photo --> fn_stop : Get the clearance stopped in writing.
+pl_hold --> fn_inventory : Write the list of what should be in ther...
+pl_hold --> fn_plates2 : Get the plates back on their walls first...
+pl_hold --> fn_wait2 : Be there at eight when the lorry comes.
+pl_tell --> fn_door : Go down to the door on Thursday evening.
+pl_tell --> fn_order2 : Fix the order before touching the lock.
+pl_tell --> fn_bill3 : Fetch Bill Hurst down to the park.
+pe_agree --> fn_vance3 : Get Mr Vance to come and watch.
+pe_agree --> fn_witness2 : Bring the two residents and the notebook...
+pe_agree --> fn_light : Bring a light and something to write on.
+pe_last --> fn_school4 : Line the school up to take the instrumen...
+pe_last --> fn_press2 : Get the Gazette to hold the front of pag...
+pe_last --> fn_stop : Get the clearance stopped in writing.
+pe_witness --> fn_inventory : Write the list of what should be in ther...
+pe_witness --> fn_plates2 : Get the plates back on their walls first...
+pe_witness --> fn_wait2 : Be there at eight when the lorry comes.
+pe_school2 --> fn_door : Go down to the door on Thursday evening.
+pe_school2 --> fn_order2 : Fix the order before touching the lock.
+pe_school2 --> fn_bill3 : Fetch Bill Hurst down to the park.
+pe_vance2 --> fn_vance3 : Get Mr Vance to come and watch.
+pe_vance2 --> fn_witness2 : Bring the two residents and the notebook...
+pe_vance2 --> fn_light : Bring a light and something to write on.
+pr_case --> fn_school4 : Line the school up to take the instrumen...
+pr_case --> fn_press2 : Get the Gazette to hold the front of pag...
+pr_case --> fn_stop : Get the clearance stopped in writing.
+pr_ten --> fn_inventory : Write the list of what should be in ther...
+pr_ten --> fn_plates2 : Get the plates back on their walls first...
+pr_ten --> fn_wait2 : Be there at eight when the lorry comes.
+pr_lock --> fn_door : Go down to the door on Thursday evening.
+pr_lock --> fn_order2 : Fix the order before touching the lock.
+pr_lock --> fn_bill3 : Fetch Bill Hurst down to the park.
+pr_school3 --> fn_vance3 : Get Mr Vance to come and watch.
+pr_school3 --> fn_witness2 : Bring the two residents and the notebook...
+pr_school3 --> fn_light : Bring a light and something to write on.
+pr_thursday --> fn_school4 : Line the school up to take the instrumen...
+pr_thursday --> fn_press2 : Get the Gazette to hold the front of pag...
+pr_thursday --> fn_stop : Get the clearance stopped in writing.
+fn_door --> gx_try : Set the six figures and pull.
+fn_door --> gx_second : Try the other order.
+fn_door --> gx_hinge : Look at the door rather than the lock.
+fn_order2 --> gx_ask : Ask Mr Vance to open it himself.
+fn_order2 --> gx_bill4 : Let Bill set the wheels.
+fn_order2 --> gx_note : Write down every attempt.
+fn_bill3 --> gx_inside : Get a light through the gap under the do...
+fn_bill3 --> gx_damp : Find out how wet the store is.
+fn_bill3 --> gx_lorry : Meet the lorry at eight with the folder.
+fn_vance3 --> gx_press3 : Get the photographer in front of the doo...
+fn_vance3 --> gx_school5 : Phone the school before anything else.
+fn_vance3 --> gx_return : Put the trail back the way it was.
+fn_witness2 --> gy_sixth : Set the last wheel where Bill says.
+fn_witness2 --> gy_written : Write it all down before you try anythin...
+fn_witness2 --> gy_behind : Get a torch through the gap and look.
+fn_light --> gy_eight : Leave it until the morning and see.
+fn_light --> gx_try : Set the six figures and pull.
+fn_light --> gx_second : Try the other order.
+fn_school4 --> gx_hinge : Look at the door rather than the lock.
+fn_school4 --> gx_ask : Ask Mr Vance to open it himself.
+fn_school4 --> gx_bill4 : Let Bill set the wheels.
+fn_press2 --> gx_note : Write down every attempt.
+fn_press2 --> gx_inside : Get a light through the gap under the do...
+fn_press2 --> gx_damp : Find out how wet the store is.
+fn_stop --> gx_lorry : Meet the lorry at eight with the folder.
+fn_stop --> gx_press3 : Get the photographer in front of the doo...
+fn_stop --> gx_school5 : Phone the school before anything else.
+fn_inventory --> gx_return : Put the trail back the way it was.
+fn_inventory --> gy_sixth : Set the last wheel where Bill says.
+fn_inventory --> gy_written : Write it all down before you try anythin...
+fn_plates2 --> gy_behind : Get a torch through the gap and look.
+fn_plates2 --> gy_eight : Leave it until the morning and see.
+fn_plates2 --> gx_try : Set the six figures and pull.
+fn_wait2 --> gx_second : Try the other order.
+fn_wait2 --> gx_hinge : Look at the door rather than the lock.
+fn_wait2 --> gx_ask : Ask Mr Vance to open it himself.
+gx_try --> hx_open : Go in and look properly.
+gx_try --> hx_list : List everything before moving anything.
+gx_try --> hx_carry : Get it out of the damp today.
+gx_second --> hx_school6 : Offer the lot to the school.
+gx_second --> hx_lib2 : Offer the paper to the library.
+gx_second --> hx_alms3 : Take the photograph back to the almshous...
+gx_hinge --> hx_bill5 : Let Bill go in first.
+gx_hinge --> hx_repair : Find out what can be saved.
+gx_hinge --> hx_owner2 : Settle who it all belongs to.
+gx_ask --> hx_thanks : Make sure the right people are told firs...
+gx_ask --> hx_plates3 : Put the plates back and say so publicly.
+gx_ask --> hx_play : Get somebody to play something.
+gx_bill4 --> hy_third : Keep trying until the wheels give.
+gx_bill4 --> hy_heard : Clean the cornet and hand it to Bill.
+gx_bill4 --> hy_school : Sign the instruments over to the school.
+gx_note --> hy_list : Make the list and let the lorry take the...
+gx_note --> hy_date : Work out what the numbers actually mean.
+gx_note --> hy_locked : Leave it locked and hope somebody listen...
+gx_inside --> hx_open : Go in and look properly.
+gx_inside --> hx_list : List everything before moving anything.
+gx_inside --> hx_carry : Get it out of the damp today.
+gx_damp --> hx_school6 : Offer the lot to the school.
+gx_damp --> hx_lib2 : Offer the paper to the library.
+gx_damp --> hx_alms3 : Take the photograph back to the almshous...
+gx_lorry --> hx_bill5 : Let Bill go in first.
+gx_lorry --> hx_repair : Find out what can be saved.
+gx_lorry --> hx_owner2 : Settle who it all belongs to.
+gx_press3 --> hx_thanks : Make sure the right people are told firs...
+gx_press3 --> hx_plates3 : Put the plates back and say so publicly.
+gx_press3 --> hx_play : Get somebody to play something.
+gx_school5 --> hy_third : Keep trying until the wheels give.
+gx_school5 --> hy_heard : Clean the cornet and hand it to Bill.
+gx_school5 --> hy_school : Sign the instruments over to the school.
+gx_return --> hy_list : Make the list and let the lorry take the...
+gx_return --> hy_date : Work out what the numbers actually mean.
+gx_return --> hy_locked : Leave it locked and hope somebody listen...
+hx_open --> ix_band : Ask what it would take to start it again...
+hx_open --> ix_names2 : Get the twenty-one names onto something ...
+hx_open --> ix_case : Find out whose cornet case it is.
+hx_list --> ix_hand : Hand everything over properly, with pape...
+hx_list --> ix_archive : Get the paper to the library as an archi...
+hx_list --> ix_map : Make the Rounds walkable again.
+hx_carry --> ix_whistle : Decide what happens to the whistle.
+hx_carry --> ix_thanks2 : Say thank you to everybody who helped.
+hx_carry --> ix_next : Set a date for the first Saturday in Dec...
+hx_school6 --> iy_again : Put the poster up and see who comes.
+hx_school6 --> iy_names : Get the names onto the bandstand.
+hx_school6 --> iy_case : Track down the name inside the case.
+hx_lib2 --> iy_hand : Do the handover on paper, in front of ev...
+hx_lib2 --> iy_archive : Give Aisha the archive she asked for.
+hx_lib2 --> iy_menu : Leave the menu board off and let people ...
+hx_alms3 --> iy_week : Take it to the paper and let the week en...
+hx_alms3 --> ix_band : Ask what it would take to start it again...
+hx_alms3 --> ix_names2 : Get the twenty-one names onto something ...
+hx_bill5 --> ix_case : Find out whose cornet case it is.
+hx_bill5 --> ix_hand : Hand everything over properly, with pape...
+hx_bill5 --> ix_archive : Get the paper to the library as an archi...
+hx_repair --> ix_map : Make the Rounds walkable again.
+hx_repair --> ix_whistle : Decide what happens to the whistle.
+hx_repair --> ix_thanks2 : Say thank you to everybody who helped.
+hx_owner2 --> ix_next : Set a date for the first Saturday in Dec...
+hx_owner2 --> iy_again : Put the poster up and see who comes.
+hx_owner2 --> iy_names : Get the names onto the bandstand.
+hx_thanks --> iy_case : Track down the name inside the case.
+hx_thanks --> iy_hand : Do the handover on paper, in front of ev...
+hx_thanks --> iy_archive : Give Aisha the archive she asked for.
+hx_plates3 --> iy_menu : Leave the menu board off and let people ...
+hx_plates3 --> iy_week : Take it to the paper and let the week en...
+hx_plates3 --> ix_band : Ask what it would take to start it again...
+hx_play --> ix_names2 : Get the twenty-one names onto something ...
+hx_play --> ix_case : Find out whose cornet case it is.
+hx_play --> ix_hand : Hand everything over properly, with pape...
+ix_band --> jz_december : Hold the Rounds on the first Saturday.
+ix_band --> jz_walked : Walk the Rounds with whoever turns up.
+ix_band --> jz_plates : Get all six plates back where they belon...
+ix_names2 --> jz_whistle : Put the whistle back in its case and kee...
+ix_names2 --> jz_belongs : Get every last thing to where it belongs...
+ix_names2 --> jz_empty : Let the store be emptied once it is list...
+ix_case --> jz_skip : Stand and watch the skip go.
+ix_case --> jz_late : Wait until somebody in charge notices.
+ix_case --> jz_steel : Try the lock one more time and go home.
+ix_hand --> jz_december : Hold the Rounds on the first Saturday.
+ix_hand --> jz_walked : Walk the Rounds with whoever turns up.
+ix_hand --> jz_plates : Get all six plates back where they belon...
+ix_archive --> jz_whistle : Put the whistle back in its case and kee...
+ix_archive --> jz_belongs : Get every last thing to where it belongs...
+ix_archive --> jz_empty : Let the store be emptied once it is list...
+ix_map --> jz_skip : Stand and watch the skip go.
+ix_map --> jz_late : Wait until somebody in charge notices.
+ix_map --> jz_steel : Try the lock one more time and go home.
+ix_whistle --> jz_december : Hold the Rounds on the first Saturday.
+ix_whistle --> jz_walked : Walk the Rounds with whoever turns up.
+ix_whistle --> jz_plates : Get all six plates back where they belon...
+ix_thanks2 --> jz_whistle : Put the whistle back in its case and kee...
+ix_thanks2 --> jz_belongs : Get every last thing to where it belongs...
+ix_thanks2 --> jz_empty : Let the store be emptied once it is list...
+ix_next --> jz_skip : Stand and watch the skip go.
+ix_next --> jz_late : Wait until somebody in charge notices.
+ix_next --> jz_steel : Try the lock one more time and go home.
+ok_lot --> [*]
+wm_wet --> [*]
+lb_file --> [*]
+pl_crack --> [*]
+pe_versions --> [*]
+pr_filed --> [*]
+pl_five_end --> [*]
+pe_band --> [*]
+pr_week --> [*]
+gy_sixth --> [*]
+gy_written --> [*]
+gy_behind --> [*]
+gy_eight --> [*]
+hy_third --> [*]
+hy_heard --> [*]
+hy_school --> [*]
+hy_list --> [*]
+hy_date --> [*]
+hy_locked --> [*]
+iy_again --> [*]
+iy_names --> [*]
+iy_case --> [*]
+iy_hand --> [*]
+iy_archive --> [*]
+iy_menu --> [*]
+iy_week --> [*]
+jz_december --> [*]
+jz_walked --> [*]
+jz_plates --> [*]
+jz_whistle --> [*]
+jz_belongs --> [*]
+jz_empty --> [*]
+jz_skip --> [*]
+jz_late --> [*]
+jz_steel --> [*]
+
+legend right
+  The Tin Whistle Map
+  Band 8-11 · Tier 1 · ~11 min
+  Topology: branch_and_bottleneck
+  193 nodes · 35 endings (15+ / 14n / 6-)
+  Production-eligible
+  Scale: long · prose
+endlegend
+@enduml

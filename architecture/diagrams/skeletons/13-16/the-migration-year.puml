@@ -1,0 +1,894 @@
+@startuml the-migration-year
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 60w
+state d01_0 #BBDEFB
+d01_0 : setup · 137w
+state d02_0 #FFF9C4
+d02_0 : choice · 154w
+state d02_1 #FFF9C4
+d02_1 : choice · 137w
+state d02_2 #FFF9C4
+d02_2 : choice · 120w
+state d03_0 #D1C4E9
+d03_0 : rising · 125w
+state d03_1 #D1C4E9
+d03_1 : rising · 154w
+state d03_2 #D1C4E9
+d03_2 : rising · 137w
+state d03_3 #D1C4E9
+d03_3 : rising · 120w
+state d03_4 #D1C4E9
+d03_4 : rising · 149w
+state d04_0 #D1C4E9
+d04_0 : rising · 142w
+state d04_1 #D1C4E9
+d04_1 : rising · 125w
+state d04_2 #D1C4E9
+d04_2 : rising · 154w
+state d04_3 #D1C4E9
+d04_3 : rising · 137w
+state d04_4 #D1C4E9
+d04_4 : rising · 120w
+state d04_5 #D1C4E9
+d04_5 : rising · 149w
+state d05_0 #D1C4E9
+d05_0 : rising · 159w
+state d05_1 #D1C4E9
+d05_1 : rising · 142w
+state d05_2 #D1C4E9
+d05_2 : rising · 125w
+state d05_3 #D1C4E9
+d05_3 : rising · 154w
+state d05_4 #D1C4E9
+d05_4 : rising · 137w
+state d05_5 #D1C4E9
+d05_5 : rising · 120w
+state d05_6 #D1C4E9
+d05_6 : rising · 149w
+state d06_0 #D1C4E9
+d06_0 : rising · 130w
+state d06_1 #D1C4E9
+d06_1 : rising · 159w
+state d06_2 #D1C4E9
+d06_2 : rising · 142w
+state d06_3 #D1C4E9
+d06_3 : rising · 125w
+state d06_4 #D1C4E9
+d06_4 : rising · 154w
+state d06_5 #D1C4E9
+d06_5 : rising · 137w
+state d06_6 #D1C4E9
+d06_6 : rising · 120w
+state d06_7 #D1C4E9
+d06_7 : rising · 149w
+state d07_0 #D1C4E9
+d07_0 : rising · 147w
+state d07_1 #D1C4E9
+d07_1 : rising · 130w
+state d07_2 #D1C4E9
+d07_2 : rising · 159w
+state d07_3 #D1C4E9
+d07_3 : rising · 142w
+state d07_4 #D1C4E9
+d07_4 : rising · 125w
+state d07_5 #D1C4E9
+d07_5 : rising · 154w
+state d07_6 #D1C4E9
+d07_6 : rising · 137w
+state d07_7 #D1C4E9
+d07_7 : rising · 120w
+state d07_8 #ECEFF1
+d07_8 : branch · 149w
+state d08_0 #D1C4E9
+d08_0 : rising · 164w
+state d08_1 #D1C4E9
+d08_1 : rising · 147w
+state d08_2 #D1C4E9
+d08_2 : rising · 130w
+state d08_3 #D1C4E9
+d08_3 : rising · 159w
+state d08_4 #D1C4E9
+d08_4 : rising · 142w
+state d08_5 #D1C4E9
+d08_5 : rising · 125w
+state d08_6 #D1C4E9
+d08_6 : rising · 154w
+state d08_7 #D1C4E9
+d08_7 : rising · 137w
+state d09_0 #D1C4E9
+d09_0 : rising · 135w
+state d09_1 #D1C4E9
+d09_1 : rising · 164w
+state d09_2 #D1C4E9
+d09_2 : rising · 147w
+state d09_3 #D1C4E9
+d09_3 : rising · 130w
+state d09_4 #D1C4E9
+d09_4 : rising · 159w
+state d09_5 #D1C4E9
+d09_5 : rising · 142w
+state d09_6 #D1C4E9
+d09_6 : rising · 125w
+state d09_7 #ECEFF1
+d09_7 : branch · 154w
+state d10_0 #D1C4E9
+d10_0 : rising · 152w
+state d10_1 #D1C4E9
+d10_1 : rising · 135w
+state d10_2 #D1C4E9
+d10_2 : rising · 164w
+state d10_3 #D1C4E9
+d10_3 : rising · 147w
+state d10_4 #D1C4E9
+d10_4 : rising · 130w
+state d10_5 #D1C4E9
+d10_5 : rising · 159w
+state d10_6 #D1C4E9
+d10_6 : rising · 142w
+state d10_7 #D1C4E9
+d10_7 : rising · 125w
+state d10_8 #D1C4E9
+d10_8 : rising · 154w
+state d11_0 #D1C4E9
+d11_0 : rising · 123w
+state d11_1 #D1C4E9
+d11_1 : rising · 152w
+state d11_2 #D1C4E9
+d11_2 : rising · 135w
+state d11_3 #D1C4E9
+d11_3 : rising · 164w
+state d11_4 #D1C4E9
+d11_4 : rising · 147w
+state d11_5 #D1C4E9
+d11_5 : rising · 130w
+state d11_6 #D1C4E9
+d11_6 : rising · 159w
+state d11_7 #D1C4E9
+d11_7 : rising · 142w
+state d12_0 #D1C4E9
+d12_0 : rising · 140w
+state d12_1 #D1C4E9
+d12_1 : rising · 123w
+state d12_2 #D1C4E9
+d12_2 : rising · 152w
+state d12_3 #D1C4E9
+d12_3 : rising · 135w
+state d12_4 #D1C4E9
+d12_4 : rising · 164w
+state d12_5 #D1C4E9
+d12_5 : rising · 147w
+state d12_6 #D1C4E9
+d12_6 : rising · 130w
+state d12_7 #ECEFF1
+d12_7 : branch · 159w
+state d13_0 #D1C4E9
+d13_0 : rising · 157w
+state d13_1 #D1C4E9
+d13_1 : rising · 140w
+state d13_2 #D1C4E9
+d13_2 : rising · 123w
+state d13_3 #D1C4E9
+d13_3 : rising · 152w
+state d13_4 #D1C4E9
+d13_4 : rising · 135w
+state d13_5 #D1C4E9
+d13_5 : rising · 164w
+state d13_6 #D1C4E9
+d13_6 : rising · 147w
+state d13_7 #D1C4E9
+d13_7 : rising · 130w
+state d13_8 #D1C4E9
+d13_8 : rising · 159w
+state d14_0 #ECEFF1
+d14_0 : revelation · 128w
+state d14_1 #D1C4E9
+d14_1 : rising · 157w
+state d14_2 #D1C4E9
+d14_2 : rising · 140w
+state d14_3 #D1C4E9
+d14_3 : rising · 123w
+state d14_4 #D1C4E9
+d14_4 : rising · 152w
+state d14_5 #D1C4E9
+d14_5 : rising · 135w
+state d14_6 #D1C4E9
+d14_6 : rising · 164w
+state d14_7 #D1C4E9
+d14_7 : rising · 147w
+state d15_0 #D1C4E9
+d15_0 : rising · 145w
+state d15_1 #D1C4E9
+d15_1 : rising · 128w
+state d15_2 #D1C4E9
+d15_2 : rising · 157w
+state d15_3 #D1C4E9
+d15_3 : rising · 140w
+state d15_4 #D1C4E9
+d15_4 : rising · 123w
+state d15_5 #D1C4E9
+d15_5 : rising · 152w
+state d15_6 #D1C4E9
+d15_6 : rising · 135w
+state d15_7 #D1C4E9
+d15_7 : rising · 164w
+state d16_0 #D1C4E9
+d16_0 : rising · 162w
+state d16_1 #D1C4E9
+d16_1 : rising · 145w
+state d16_2 #D1C4E9
+d16_2 : rising · 128w
+state d16_3 #D1C4E9
+d16_3 : rising · 157w
+state d16_4 #D1C4E9
+d16_4 : rising · 140w
+state d16_5 #D1C4E9
+d16_5 : rising · 123w
+state d16_6 #D1C4E9
+d16_6 : rising · 152w
+state d16_7 #D1C4E9
+d16_7 : rising · 135w
+state d16_8 #ECEFF1
+d16_8 : branch · 164w
+state d17_0 #D1C4E9
+d17_0 : rising · 133w
+state d17_1 #D1C4E9
+d17_1 : rising · 162w
+state d17_2 #D1C4E9
+d17_2 : rising · 145w
+state d17_3 #D1C4E9
+d17_3 : rising · 128w
+state d17_4 #D1C4E9
+d17_4 : rising · 157w
+state d17_5 #D1C4E9
+d17_5 : rising · 140w
+state d17_6 #D1C4E9
+d17_6 : rising · 123w
+state d17_7 #D1C4E9
+d17_7 : rising · 152w
+state d18_0 #D1C4E9
+d18_0 : rising · 150w
+state d18_1 #D1C4E9
+d18_1 : rising · 133w
+state d18_2 #D1C4E9
+d18_2 : rising · 162w
+state d18_3 #D1C4E9
+d18_3 : rising · 145w
+state d18_4 #D1C4E9
+d18_4 : rising · 128w
+state d18_5 #D1C4E9
+d18_5 : rising · 157w
+state d18_6 #D1C4E9
+d18_6 : rising · 140w
+state d18_7 #D1C4E9
+d18_7 : rising · 123w
+state d18_8 #D1C4E9
+d18_8 : rising · 152w
+state d19_0 #D1C4E9
+d19_0 : rising · 121w
+state d19_1 #D1C4E9
+d19_1 : rising · 150w
+state d19_2 #D1C4E9
+d19_2 : rising · 133w
+state d19_3 #D1C4E9
+d19_3 : rising · 162w
+state d19_4 #D1C4E9
+d19_4 : rising · 145w
+state d19_5 #D1C4E9
+d19_5 : rising · 128w
+state d19_6 #D1C4E9
+d19_6 : rising · 157w
+state d19_7 #D1C4E9
+d19_7 : rising · 140w
+state d20_0 #FFE0B2
+d20_0 : climax · 138w
+state d20_1 #FFE0B2
+d20_1 : climax · 121w
+state d20_2 #ECEFF1
+d20_2 : resolution · 150w
+state d20_3 #ECEFF1
+d20_3 : resolution · 133w
+state d20_4 #ECEFF1
+d20_4 : resolution · 162w
+state d20_5 #ECEFF1
+d20_5 : resolution · 145w
+state e06_0 #FFCDD2
+e06_0 : setback (negative)
+e06_0 : "The Ninety Pound Weekend"
+state e07_0 #E0E0E0
+e07_0 : discovery (neutral)
+e07_0 : "The Flat on the Twenty-Fifth"
+state e08_0 #E0E0E0
+e08_0 : setback (neutral)
+e08_0 : "The Offer at the Kitchen Door"
+state e09_0 #FFCDD2
+e09_0 : setback (negative)
+e09_0 : "Eleven Weeks in English"
+state e09_1 #C8E6C9
+e09_1 : discovery (positive)
+e09_1 : "A Winter, Closed"
+state e10_0 #C8E6C9
+e10_0 : discovery (positive)
+e10_0 : "The Fortnight She Was Needed"
+state e10_1 #E0E0E0
+e10_1 : setback (neutral)
+e10_1 : "Tobi, in the Past Tense"
+state e11_0 #E0E0E0
+e11_0 : setback (neutral)
+e11_0 : "The Year She Asked to Stop"
+state e12_0 #FFCDD2
+e12_0 : setback (negative)
+e12_0 : "The Thing She Did Not Say"
+state e12_1 #E0E0E0
+e12_1 : discovery (neutral)
+e12_1 : "A Blank Page in July"
+state e13_0 #E0E0E0
+e13_0 : setback (neutral)
+e13_0 : "Two Buses, Every Day"
+state e13_1 #C8E6C9
+e13_1 : discovery (positive)
+e13_1 : "Whose Notebook It Was"
+state e14_0 #E0E0E0
+e14_0 : discovery (neutral)
+e14_0 : "What She Would Not Be Handed"
+state e15_0 #C8E6C9
+e15_0 : discovery (positive)
+e15_0 : "Second Sunday, Every Month"
+state e15_1 #FFCDD2
+e15_1 : setback (negative)
+e15_1 : "One Entry and No More"
+state e16_0 #C8E6C9
+e16_0 : discovery (positive)
+e16_0 : "The Smaller and Possible Thing"
+state e16_1 #FFCDD2
+e16_1 : setback (negative)
+e16_1 : "The Fourth City, Unremarked"
+state e17_0 #E0E0E0
+e17_0 : discovery (neutral)
+e17_0 : "The Drawer in Caldy"
+state e17_1 #FFCDD2
+e17_1 : setback (negative)
+e17_1 : "A Year Without a Record"
+state e18_0 #E0E0E0
+e18_0 : setback (neutral)
+e18_0 : "Under a Sheet, Like the Furniture"
+state e19_0 #E0E0E0
+e19_0 : discovery (neutral)
+e19_0 : "Two Books, One Drawer"
+state e19_1 #FFCDD2
+e19_1 : setback (negative)
+e19_1 : "Three Cities, No Letters"
+state e20_0 #C8E6C9
+e20_0 : success (positive)
+e20_0 : "The Migration Year"
+state e20_1 #C8E6C9
+e20_1 : completion (positive)
+e20_1 : "Fifty-Seven Years and Counting"
+state e20_2 #C8E6C9
+e20_2 : success (positive)
+e20_2 : "Not One of the Four Places"
+state e20_3 #C8E6C9
+e20_3 : completion (positive)
+e20_3 : "Good at the First Fortnight"
+state e20_4 #C8E6C9
+e20_4 : completion (positive)
+e20_4 : "Hull, Rotterdam, the Village"
+state e20_5 #E0E0E0
+e20_5 : discovery (neutral)
+e20_5 : "A Notebook Because It Was Hers"
+state e20_6 #E0E0E0
+e20_6 : discovery (neutral)
+e20_6 : "Eleven Months, Four Schools"
+state e20_7 #E0E0E0
+e20_7 : setback (neutral)
+e20_7 : "Nothing Settled by October"
+n_open --> d01_0 : Sit down at the kitchen table in Caldy.
+d01_0 --> d02_0 : Say yes and start packing.
+d01_0 --> d02_1 : Say you are staying with Mamgu.
+d01_0 --> d02_2 : Ask what happens if the year does not wo...
+d02_0 --> d03_0 : Go through the notebook with Mamgu.
+d02_0 --> d03_1 : Work out what actually comes with you.
+d02_0 --> d03_2 : Talk to Bea about staying.
+d02_1 --> d03_3 : Say goodbye to the works.
+d02_1 --> d03_4 : Deal with your own last week of school.
+d02_1 --> d03_0 : Go through the notebook with Mamgu.
+d02_2 --> d03_1 : Work out what actually comes with you.
+d02_2 --> d03_2 : Talk to Bea about staying.
+d02_2 --> d03_3 : Say goodbye to the works.
+d03_0 --> d04_0 : Take the notebook out on the ferry.
+d03_0 --> d04_1 : Arrive at the Hull flat.
+d03_0 --> d04_2 : Ring Bea on the first night.
+d03_1 --> d04_3 : Watch your mother start work.
+d03_1 --> d04_4 : Watch your father not start work.
+d03_1 --> d04_5 : Walk the whole city on the first Saturda...
+d03_2 --> d04_0 : Take the notebook out on the ferry.
+d03_2 --> d04_1 : Arrive at the Hull flat.
+d03_2 --> d04_2 : Ring Bea on the first night.
+d03_2 --> d04_3 : Watch your mother start work.
+d03_3 --> d04_4 : Watch your father not start work.
+d03_3 --> d04_5 : Walk the whole city on the first Saturda...
+d03_3 --> d04_0 : Take the notebook out on the ferry.
+d03_4 --> d04_1 : Arrive at the Hull flat.
+d03_4 --> d04_2 : Ring Bea on the first night.
+d03_4 --> d04_3 : Watch your mother start work.
+d04_0 --> d05_0 : Start at the new school.
+d04_0 --> d05_1 : Say nothing about Caldy for the first fo...
+d04_0 --> d05_2 : Find the nearest water.
+d04_1 --> d05_3 : Take the notebook to school.
+d04_1 --> d05_4 : Ring Mamgu on Sunday.
+d04_1 --> d05_5 : Keep the flat tidy for your father.
+d04_2 --> d05_6 : Let Tobi show you the city.
+d04_2 --> d05_0 : Start at the new school.
+d04_2 --> d05_1 : Say nothing about Caldy for the first fo...
+d04_3 --> d05_2 : Find the nearest water.
+d04_3 --> d05_3 : Take the notebook to school.
+d04_3 --> d05_4 : Ring Mamgu on Sunday.
+d04_4 --> d05_5 : Keep the flat tidy for your father.
+d04_4 --> d05_6 : Let Tobi show you the city.
+d04_4 --> d05_0 : Start at the new school.
+d04_4 --> d05_1 : Say nothing about Caldy for the first fo...
+d04_5 --> d05_2 : Find the nearest water.
+d04_5 --> d05_3 : Take the notebook to school.
+d04_5 --> d05_4 : Ring Mamgu on Sunday.
+d05_0 --> d06_0 : Join the ringing group at the reserve.
+d05_0 --> d06_1 : Tell Tobi about the year.
+d05_0 --> d06_2 : Fall behind in two subjects.
+d05_1 --> d06_3 : Watch your father take the agency shift.
+d05_1 --> d06_4 : Miss Bea's eighteenth.
+d05_1 --> d06_5 : Do the November count.
+d05_1 --> d06_6 : Let the flat be a flat.
+d05_2 --> d06_7 : Ask to go home for a weekend.
+d05_2 --> d06_0 : Join the ringing group at the reserve.
+d05_2 --> d06_1 : Tell Tobi about the year.
+d05_3 --> d06_2 : Fall behind in two subjects.
+d05_3 --> d06_3 : Watch your father take the agency shift.
+d05_3 --> d06_4 : Miss Bea's eighteenth.
+d05_4 --> d06_5 : Do the November count.
+d05_4 --> d06_6 : Let the flat be a flat.
+d05_4 --> d06_7 : Ask to go home for a weekend.
+d05_5 --> d06_0 : Join the ringing group at the reserve.
+d05_5 --> d06_1 : Tell Tobi about the year.
+d05_5 --> d06_2 : Fall behind in two subjects.
+d05_6 --> d06_3 : Watch your father take the agency shift.
+d05_6 --> d06_4 : Miss Bea's eighteenth.
+d05_6 --> d06_5 : Do the November count.
+d05_6 --> d06_6 : Let the flat be a flat.
+d06_0 --> d07_0 : Tell someone about the chemistry.
+d06_0 --> d07_1 : Go out with the ringing group in the dar...
+d06_0 --> e06_0 : Get on the train to Caldy on your own.
+d06_1 --> d07_2 : Sit with your father on a night off.
+d06_1 --> d07_3 : Have the first real row with your mother...
+d06_1 --> d07_4 : Let Tobi read the notebook.
+d06_2 --> d07_5 : Go to the December ringing session anywa...
+d06_2 --> d07_6 : Send Bea something.
+d06_2 --> d07_7 : Work out the Rotterdam paperwork.
+d06_3 --> d07_8 : Decide what to do about Christmas.
+d06_3 --> d07_0 : Tell someone about the chemistry.
+d06_3 --> d07_1 : Go out with the ringing group in the dar...
+d06_3 --> d07_2 : Sit with your father on a night off.
+d06_4 --> d07_3 : Have the first real row with your mother...
+d06_4 --> d07_4 : Let Tobi read the notebook.
+d06_4 --> e06_0 : Get on the train to Caldy on your own.
+d06_5 --> d07_5 : Go to the December ringing session anywa...
+d06_5 --> d07_6 : Send Bea something.
+d06_5 --> d07_7 : Work out the Rotterdam paperwork.
+d06_6 --> d07_8 : Decide what to do about Christmas.
+d06_6 --> d07_0 : Tell someone about the chemistry.
+d06_6 --> d07_1 : Go out with the ringing group in the dar...
+d06_7 --> d07_2 : Sit with your father on a night off.
+d06_7 --> d07_3 : Have the first real row with your mother...
+d06_7 --> d07_4 : Let Tobi read the notebook.
+d07_0 --> d08_0 : Go back to Caldy for Christmas.
+d07_0 --> d08_1 : Show Mamgu the notebook.
+d07_0 --> d08_2 : Ask Bea the direct question.
+d07_0 --> e07_0 : Stay in Hull for Christmas and say it is...
+d07_1 --> d08_3 : See what has happened to the works.
+d07_1 --> d08_4 : Say goodbye to Hull properly.
+d07_1 --> d08_5 : Get the chemistry back.
+d07_2 --> d08_6 : Ring the last of the Hull winter.
+d07_2 --> d08_7 : Ask to come back to Hull in the summer.
+d07_2 --> d08_0 : Go back to Caldy for Christmas.
+d07_3 --> d08_1 : Show Mamgu the notebook.
+d07_3 --> d08_2 : Ask Bea the direct question.
+d07_3 --> d08_3 : See what has happened to the works.
+d07_4 --> d08_4 : Say goodbye to Hull properly.
+d07_4 --> d08_5 : Get the chemistry back.
+d07_4 --> e07_0 : Stay in Hull for Christmas and say it is...
+d07_5 --> d08_6 : Ring the last of the Hull winter.
+d07_5 --> d08_7 : Ask to come back to Hull in the summer.
+d07_5 --> d08_0 : Go back to Caldy for Christmas.
+d07_5 --> d08_1 : Show Mamgu the notebook.
+d07_6 --> d08_2 : Ask Bea the direct question.
+d07_6 --> d08_3 : See what has happened to the works.
+d07_6 --> d08_4 : Say goodbye to Hull properly.
+d07_7 --> d08_5 : Get the chemistry back.
+d07_7 --> d08_6 : Ring the last of the Hull winter.
+d07_7 --> d08_7 : Ask to come back to Hull in the summer.
+d07_8 --> d08_0 : Go back to Caldy for Christmas.
+d07_8 --> d08_1 : Show Mamgu the notebook.
+d07_8 --> d08_2 : Ask Bea the direct question.
+d08_0 --> d09_0 : Leave Hull.
+d08_0 --> d09_1 : Arrive in Rotterdam.
+d08_0 --> e08_0 : Ask to stay in Hull with Tobi's family.
+d08_1 --> d09_2 : Fail the school intake test.
+d08_1 --> d09_3 : Meet Sanne from downstairs.
+d08_1 --> d09_4 : Watch your father start work at last.
+d08_2 --> d09_5 : Find the water here.
+d08_2 --> d09_6 : Try to keep the Hull thing going.
+d08_2 --> d09_7 : Start the language programme.
+d08_2 --> d09_0 : Leave Hull.
+d08_3 --> d09_1 : Arrive in Rotterdam.
+d08_3 --> d09_2 : Fail the school intake test.
+d08_3 --> d09_3 : Meet Sanne from downstairs.
+d08_4 --> d09_4 : Watch your father start work at last.
+d08_4 --> d09_5 : Find the water here.
+d08_4 --> e08_0 : Ask to stay in Hull with Tobi's family.
+d08_5 --> d09_6 : Try to keep the Hull thing going.
+d08_5 --> d09_7 : Start the language programme.
+d08_5 --> d09_0 : Leave Hull.
+d08_6 --> d09_1 : Arrive in Rotterdam.
+d08_6 --> d09_2 : Fail the school intake test.
+d08_6 --> d09_3 : Meet Sanne from downstairs.
+d08_7 --> d09_4 : Watch your father start work at last.
+d08_7 --> d09_5 : Find the water here.
+d08_7 --> d09_6 : Try to keep the Hull thing going.
+d08_7 --> d09_7 : Start the language programme.
+d09_0 --> d10_0 : Let Sanne take you out.
+d09_0 --> d10_1 : Do the four hours a day.
+d09_0 --> e09_0 : Refuse the language programme.
+d09_1 --> d10_2 : Ring Mamgu in the new place.
+d09_1 --> d10_3 : Deal with Bea's exam term.
+d09_1 --> d10_4 : Go out to the dredged ponds.
+d09_2 --> d10_5 : Watch your parents in the new flat.
+d09_2 --> d10_6 : Take the notebook to the language class.
+d09_2 --> e09_1 : Write the Hull pages up properly.
+d09_3 --> d10_7 : Say something in Dutch on purpose.
+d09_3 --> d10_8 : Ask what happens after September.
+d09_3 --> d10_0 : Let Sanne take you out.
+d09_4 --> d10_1 : Do the four hours a day.
+d09_4 --> d10_2 : Ring Mamgu in the new place.
+d09_4 --> d10_3 : Deal with Bea's exam term.
+d09_4 --> e09_0 : Refuse the language programme.
+d09_5 --> d10_4 : Go out to the dredged ponds.
+d09_5 --> d10_5 : Watch your parents in the new flat.
+d09_5 --> d10_6 : Take the notebook to the language class.
+d09_6 --> d10_7 : Say something in Dutch on purpose.
+d09_6 --> d10_8 : Ask what happens after September.
+d09_6 --> e09_1 : Write the Hull pages up properly.
+d09_7 --> d10_0 : Let Sanne take you out.
+d09_7 --> d10_1 : Do the four hours a day.
+d09_7 --> d10_2 : Ring Mamgu in the new place.
+d10_0 --> d11_0 : Finish the language programme.
+d10_0 --> d11_1 : Start in the actual school.
+d10_0 --> e10_0 : Go home for Bea's examinations.
+d10_1 --> d11_2 : Be the foreign one on purpose.
+d10_1 --> d11_3 : Take Sanne to the ponds.
+d10_1 --> d11_4 : Send Mamgu the Rotterdam pages.
+d10_1 --> d11_5 : Watch the summer coming.
+d10_2 --> d11_6 : Sit down with your mother about next yea...
+d10_2 --> d11_7 : Do the last Rotterdam count.
+d10_2 --> e10_1 : Let the messages stop.
+d10_3 --> d11_0 : Finish the language programme.
+d10_3 --> d11_1 : Start in the actual school.
+d10_3 --> d11_2 : Be the foreign one on purpose.
+d10_4 --> d11_3 : Take Sanne to the ponds.
+d10_4 --> d11_4 : Send Mamgu the Rotterdam pages.
+d10_4 --> e10_0 : Go home for Bea's examinations.
+d10_5 --> d11_5 : Watch the summer coming.
+d10_5 --> d11_6 : Sit down with your mother about next yea...
+d10_5 --> d11_7 : Do the last Rotterdam count.
+d10_6 --> d11_0 : Finish the language programme.
+d10_6 --> d11_1 : Start in the actual school.
+d10_6 --> d11_2 : Be the foreign one on purpose.
+d10_6 --> e10_1 : Let the messages stop.
+d10_7 --> d11_3 : Take Sanne to the ponds.
+d10_7 --> d11_4 : Send Mamgu the Rotterdam pages.
+d10_7 --> d11_5 : Watch the summer coming.
+d10_8 --> d11_6 : Sit down with your mother about next yea...
+d10_8 --> d11_7 : Do the last Rotterdam count.
+d10_8 --> d11_0 : Finish the language programme.
+d11_0 --> d12_0 : Leave Rotterdam.
+d11_0 --> d12_1 : Arrive in the village.
+d11_0 --> e11_0 : Ask to repeat the year rather than move ...
+d11_1 --> d12_2 : Go and see Mamgu on the first day.
+d11_1 --> d12_3 : Find Bea changed.
+d11_1 --> d12_4 : Meet Carys.
+d11_2 --> d12_5 : Walk out on to the flats.
+d11_2 --> d12_6 : Deal with the fourth school.
+d11_2 --> d12_7 : Ask your father what happens now.
+d11_3 --> d12_0 : Leave Rotterdam.
+d11_3 --> d12_1 : Arrive in the village.
+d11_3 --> d12_2 : Go and see Mamgu on the first day.
+d11_3 --> d12_3 : Find Bea changed.
+d11_4 --> d12_4 : Meet Carys.
+d11_4 --> d12_5 : Walk out on to the flats.
+d11_4 --> e11_0 : Ask to repeat the year rather than move ...
+d11_5 --> d12_6 : Deal with the fourth school.
+d11_5 --> d12_7 : Ask your father what happens now.
+d11_5 --> d12_0 : Leave Rotterdam.
+d11_6 --> d12_1 : Arrive in the village.
+d11_6 --> d12_2 : Go and see Mamgu on the first day.
+d11_6 --> d12_3 : Find Bea changed.
+d11_7 --> d12_4 : Meet Carys.
+d11_7 --> d12_5 : Walk out on to the flats.
+d11_7 --> d12_6 : Deal with the fourth school.
+d12_0 --> d13_0 : Tell your mother.
+d12_0 --> d13_1 : Go out on the flats with Carys.
+d12_0 --> d13_2 : Take Mamgu out to see the birds.
+d12_0 --> e12_0 : Keep your father's secret.
+d12_1 --> d13_3 : Start the school year.
+d12_1 --> d13_4 : Write to Tobi.
+d12_1 --> d13_5 : Work out where you actually are from.
+d12_2 --> d13_6 : Deal with the money.
+d12_2 --> d13_7 : Get back into the notebook.
+d12_2 --> e12_1 : Stop writing the notebook.
+d12_3 --> d13_8 : Let Carys be a friend rather than a guid...
+d12_3 --> d13_0 : Tell your mother.
+d12_3 --> d13_1 : Go out on the flats with Carys.
+d12_4 --> d13_2 : Take Mamgu out to see the birds.
+d12_4 --> d13_3 : Start the school year.
+d12_4 --> e12_0 : Keep your father's secret.
+d12_5 --> d13_4 : Write to Tobi.
+d12_5 --> d13_5 : Work out where you actually are from.
+d12_5 --> d13_6 : Deal with the money.
+d12_5 --> d13_7 : Get back into the notebook.
+d12_6 --> d13_8 : Let Carys be a friend rather than a guid...
+d12_6 --> d13_0 : Tell your mother.
+d12_6 --> e12_1 : Stop writing the notebook.
+d12_7 --> d13_1 : Go out on the flats with Carys.
+d12_7 --> d13_2 : Take Mamgu out to see the birds.
+d12_7 --> d13_3 : Start the school year.
+d13_0 --> d14_0 : Ask Mamgu about 1968.
+d13_0 --> d14_1 : Put the year to Carys.
+d13_0 --> e13_0 : Go and live with Mamgu.
+d13_1 --> d14_2 : Get the examination year under control.
+d13_1 --> d14_3 : Let Bea in.
+d13_1 --> d14_4 : Answer Tobi's reply.
+d13_2 --> d14_5 : Decide about the notebook.
+d13_2 --> d14_6 : Look at where the family goes in spring.
+d13_2 --> d14_7 : Walk the flats at the turn of the tide.
+d13_2 --> e13_1 : Read the 1968 pages properly.
+d13_3 --> d14_0 : Ask Mamgu about 1968.
+d13_3 --> d14_1 : Put the year to Carys.
+d13_3 --> d14_2 : Get the examination year under control.
+d13_4 --> d14_3 : Let Bea in.
+d13_4 --> d14_4 : Answer Tobi's reply.
+d13_4 --> e13_0 : Go and live with Mamgu.
+d13_5 --> d14_5 : Decide about the notebook.
+d13_5 --> d14_6 : Look at where the family goes in spring.
+d13_5 --> d14_7 : Walk the flats at the turn of the tide.
+d13_6 --> d14_0 : Ask Mamgu about 1968.
+d13_6 --> d14_1 : Put the year to Carys.
+d13_6 --> e13_1 : Read the 1968 pages properly.
+d13_7 --> d14_2 : Get the examination year under control.
+d13_7 --> d14_3 : Let Bea in.
+d13_7 --> d14_4 : Answer Tobi's reply.
+d13_7 --> d14_5 : Decide about the notebook.
+d13_8 --> d14_6 : Look at where the family goes in spring.
+d13_8 --> d14_7 : Walk the flats at the turn of the tide.
+d13_8 --> d14_0 : Ask Mamgu about 1968.
+d14_0 --> d15_0 : Take the notebook and start a second vol...
+d14_0 --> d15_1 : Get the four schools into one story.
+d14_0 --> e14_0 : Refuse the notebook.
+d14_1 --> d15_2 : Set up the winter counts.
+d14_1 --> d15_3 : Have the argument about spring properly.
+d14_1 --> d15_4 : Go and see the works site.
+d14_2 --> d15_5 : Ask Carys to come to Caldy.
+d14_2 --> d15_6 : Keep writing to Tobi.
+d14_2 --> d15_7 : Deal with the anniversary.
+d14_3 --> d15_0 : Take the notebook and start a second vol...
+d14_3 --> d15_1 : Get the four schools into one story.
+d14_3 --> d15_2 : Set up the winter counts.
+d14_4 --> d15_3 : Have the argument about spring properly.
+d14_4 --> d15_4 : Go and see the works site.
+d14_4 --> d15_5 : Ask Carys to come to Caldy.
+d14_4 --> e14_0 : Refuse the notebook.
+d14_5 --> d15_6 : Keep writing to Tobi.
+d14_5 --> d15_7 : Deal with the anniversary.
+d14_5 --> d15_0 : Take the notebook and start a second vol...
+d14_6 --> d15_1 : Get the four schools into one story.
+d14_6 --> d15_2 : Set up the winter counts.
+d14_6 --> d15_3 : Have the argument about spring properly.
+d14_7 --> d15_4 : Go and see the works site.
+d14_7 --> d15_5 : Ask Carys to come to Caldy.
+d14_7 --> d15_6 : Keep writing to Tobi.
+d15_0 --> d16_0 : Do the second Sunday in November.
+d15_0 --> d16_1 : Face the spring move.
+d15_0 --> e15_0 : Take the monthly count and let the rest ...
+d15_1 --> d16_2 : Ask what the family owes each other.
+d15_1 --> d16_3 : Sit an examination in a fourth school.
+d15_1 --> d16_4 : Bring Mamgu the November count.
+d15_1 --> d16_5 : Talk to Sanne.
+d15_2 --> d16_6 : Tell Carys about the move.
+d15_2 --> d16_7 : Look at the whole notebook at once.
+d15_2 --> e15_1 : Let the second volume stay empty.
+d15_3 --> d16_8 : Decide what you are actually asking for.
+d15_3 --> d16_0 : Do the second Sunday in November.
+d15_3 --> d16_1 : Face the spring move.
+d15_4 --> d16_2 : Ask what the family owes each other.
+d15_4 --> d16_3 : Sit an examination in a fourth school.
+d15_4 --> e15_0 : Take the monthly count and let the rest ...
+d15_5 --> d16_4 : Bring Mamgu the November count.
+d15_5 --> d16_5 : Talk to Sanne.
+d15_5 --> d16_6 : Tell Carys about the move.
+d15_6 --> d16_7 : Look at the whole notebook at once.
+d15_6 --> d16_8 : Decide what you are actually asking for.
+d15_6 --> d16_0 : Do the second Sunday in November.
+d15_6 --> e15_1 : Let the second volume stay empty.
+d15_7 --> d16_1 : Face the spring move.
+d15_7 --> d16_2 : Ask what the family owes each other.
+d15_7 --> d16_3 : Sit an examination in a fourth school.
+d16_0 --> d17_0 : Take Mamgu out in the spring.
+d16_0 --> d17_1 : Close the migration year.
+d16_0 --> e16_0 : Ask to be asked.
+d16_1 --> d17_2 : Finish the school year here.
+d16_1 --> d17_3 : Hand the count on.
+d16_1 --> d17_4 : Have the conversation with Bea.
+d16_2 --> d17_5 : Write the last letter to Tobi.
+d16_2 --> d17_6 : Decide what to do with the notebooks.
+d16_2 --> e16_1 : Say nothing and go where you are sent.
+d16_3 --> d17_7 : Say goodbye to the village.
+d16_3 --> d17_0 : Take Mamgu out in the spring.
+d16_3 --> d17_1 : Close the migration year.
+d16_3 --> d17_2 : Finish the school year here.
+d16_4 --> d17_3 : Hand the count on.
+d16_4 --> d17_4 : Have the conversation with Bea.
+d16_4 --> e16_0 : Ask to be asked.
+d16_5 --> d17_5 : Write the last letter to Tobi.
+d16_5 --> d17_6 : Decide what to do with the notebooks.
+d16_5 --> d17_7 : Say goodbye to the village.
+d16_6 --> d17_0 : Take Mamgu out in the spring.
+d16_6 --> d17_1 : Close the migration year.
+d16_6 --> e16_1 : Say nothing and go where you are sent.
+d16_7 --> d17_2 : Finish the school year here.
+d16_7 --> d17_3 : Hand the count on.
+d16_7 --> d17_4 : Have the conversation with Bea.
+d16_8 --> d17_5 : Write the last letter to Tobi.
+d16_8 --> d17_6 : Decide what to do with the notebooks.
+d16_8 --> d17_7 : Say goodbye to the village.
+d16_8 --> d17_0 : Take Mamgu out in the spring.
+d17_0 --> d18_0 : Take the second volume with you.
+d17_0 --> d18_1 : Have Tobi to stay.
+d17_0 --> d18_2 : Make Carys keep her word.
+d17_0 --> e17_0 : Leave both notebooks with Mamgu.
+d17_1 --> d18_3 : Get the results.
+d17_1 --> d18_4 : Sit with your mother on the last evening...
+d17_1 --> d18_5 : Do the last second Sunday.
+d17_2 --> d18_6 : Look at where you are going.
+d17_2 --> d18_7 : Say the true thing to Mamgu.
+d17_2 --> e17_1 : Keep moving and stop counting.
+d17_3 --> d18_8 : Pack the fourth time.
+d17_3 --> d18_0 : Take the second volume with you.
+d17_3 --> d18_1 : Have Tobi to stay.
+d17_4 --> d18_2 : Make Carys keep her word.
+d17_4 --> d18_3 : Get the results.
+d17_4 --> e17_0 : Leave both notebooks with Mamgu.
+d17_5 --> d18_4 : Sit with your mother on the last evening...
+d17_5 --> d18_5 : Do the last second Sunday.
+d17_5 --> d18_6 : Look at where you are going.
+d17_5 --> d18_7 : Say the true thing to Mamgu.
+d17_6 --> d18_8 : Pack the fourth time.
+d17_6 --> d18_0 : Take the second volume with you.
+d17_6 --> e17_1 : Keep moving and stop counting.
+d17_7 --> d18_1 : Have Tobi to stay.
+d17_7 --> d18_2 : Make Carys keep her word.
+d17_7 --> d18_3 : Get the results.
+d18_0 --> d19_0 : Arrive in the fourth place on purpose.
+d18_0 --> d19_1 : Write the first entry.
+d18_0 --> e18_0 : Put the whole year in a box and shut it.
+d18_1 --> d19_2 : Get the count going here.
+d18_1 --> d19_3 : Keep all three of them.
+d18_1 --> d19_4 : Tell your parents what the year was.
+d18_2 --> d19_5 : Go back for Mamgu's birthday.
+d18_2 --> d19_6 : Decide about next summer.
+d18_2 --> d19_7 : Read what you wrote in September.
+d18_2 --> d19_0 : Arrive in the fourth place on purpose.
+d18_3 --> d19_1 : Write the first entry.
+d18_3 --> d19_2 : Get the count going here.
+d18_3 --> d19_3 : Keep all three of them.
+d18_4 --> d19_4 : Tell your parents what the year was.
+d18_4 --> d19_5 : Go back for Mamgu's birthday.
+d18_4 --> e18_0 : Put the whole year in a box and shut it.
+d18_5 --> d19_6 : Decide about next summer.
+d18_5 --> d19_7 : Read what you wrote in September.
+d18_5 --> d19_0 : Arrive in the fourth place on purpose.
+d18_6 --> d19_1 : Write the first entry.
+d18_6 --> d19_2 : Get the count going here.
+d18_6 --> d19_3 : Keep all three of them.
+d18_7 --> d19_4 : Tell your parents what the year was.
+d18_7 --> d19_5 : Go back for Mamgu's birthday.
+d18_7 --> d19_6 : Decide about next summer.
+d18_7 --> d19_7 : Read what you wrote in September.
+d18_8 --> d19_0 : Arrive in the fourth place on purpose.
+d18_8 --> d19_1 : Write the first entry.
+d18_8 --> d19_2 : Get the count going here.
+d19_0 --> d20_0 : Stand at the estuary in October.
+d19_0 --> d20_1 : Take Mamgu's question seriously.
+d19_0 --> e19_0 : Send the second volume back to Caldy.
+d19_1 --> d20_2 : Look at the whole thing from the end.
+d19_1 --> d20_3 : Decide what the notebook is for.
+d19_1 --> d20_4 : Work out who you are now.
+d19_2 --> d20_5 : Choose what happens next.
+d19_2 --> d20_0 : Stand at the estuary in October.
+d19_2 --> e19_1 : Give up on keeping the three of them.
+d19_3 --> d20_1 : Take Mamgu's question seriously.
+d19_3 --> d20_2 : Look at the whole thing from the end.
+d19_3 --> d20_3 : Decide what the notebook is for.
+d19_4 --> d20_4 : Work out who you are now.
+d19_4 --> d20_5 : Choose what happens next.
+d19_4 --> d20_0 : Stand at the estuary in October.
+d19_4 --> e19_0 : Send the second volume back to Caldy.
+d19_5 --> d20_1 : Take Mamgu's question seriously.
+d19_5 --> d20_2 : Look at the whole thing from the end.
+d19_5 --> d20_3 : Decide what the notebook is for.
+d19_6 --> d20_4 : Work out who you are now.
+d19_6 --> d20_5 : Choose what happens next.
+d19_6 --> e19_1 : Give up on keeping the three of them.
+d19_7 --> d20_0 : Stand at the estuary in October.
+d19_7 --> d20_1 : Take Mamgu's question seriously.
+d19_7 --> d20_2 : Look at the whole thing from the end.
+d20_0 --> e20_0 : Let it be a year you chose in the end.
+d20_0 --> e20_1 : Keep the record going.
+d20_0 --> e20_2 : Say the answer out loud.
+d20_1 --> e20_3 : Take what the year actually taught you.
+d20_1 --> e20_4 : Hold on to all three of them.
+d20_1 --> e20_5 : Understand what Mamgu did.
+d20_2 --> e20_6 : Count what the year cost.
+d20_2 --> e20_7 : Let it stay unresolved.
+d20_2 --> e20_0 : Let it be a year you chose in the end.
+d20_3 --> e20_1 : Keep the record going.
+d20_3 --> e20_2 : Say the answer out loud.
+d20_3 --> e20_3 : Take what the year actually taught you.
+d20_4 --> e20_4 : Hold on to all three of them.
+d20_4 --> e20_5 : Understand what Mamgu did.
+d20_4 --> e20_6 : Count what the year cost.
+d20_5 --> e20_7 : Let it stay unresolved.
+d20_5 --> e20_0 : Let it be a year you chose in the end.
+d20_5 --> e20_1 : Keep the record going.
+e06_0 --> [*]
+e07_0 --> [*]
+e08_0 --> [*]
+e09_0 --> [*]
+e09_1 --> [*]
+e10_0 --> [*]
+e10_1 --> [*]
+e11_0 --> [*]
+e12_0 --> [*]
+e12_1 --> [*]
+e13_0 --> [*]
+e13_1 --> [*]
+e14_0 --> [*]
+e15_0 --> [*]
+e15_1 --> [*]
+e16_0 --> [*]
+e16_1 --> [*]
+e17_0 --> [*]
+e17_1 --> [*]
+e18_0 --> [*]
+e19_0 --> [*]
+e19_1 --> [*]
+e20_0 --> [*]
+e20_1 --> [*]
+e20_2 --> [*]
+e20_3 --> [*]
+e20_4 --> [*]
+e20_5 --> [*]
+e20_6 --> [*]
+e20_7 --> [*]
+
+legend right
+  The Migration Year
+  Band 13-16 · Tier 1 · ~14 min
+  Topology: branch_and_bottleneck
+  176 nodes · 30 endings (10+ / 13n / 7-)
+  Production-eligible
+  Scale: long · prose
+endlegend
+@enduml

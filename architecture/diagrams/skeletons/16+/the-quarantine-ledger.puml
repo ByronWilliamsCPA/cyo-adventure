@@ -1,0 +1,664 @@
+@startuml the-quarantine-ledger
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n00_0
+state n00_0 #BBDEFB
+n00_0 : setup · 55w
+state n01_0 #BBDEFB
+n01_0 : setup · 170w
+state n02_0 #BBDEFB
+n02_0 : setup · 185w
+state n02_1 #BBDEFB
+n02_1 : setup · 185w
+state n02_2 #BBDEFB
+n02_2 : setup · 185w
+state n03_0 #BBDEFB
+n03_0 : setup · 185w
+state n03_1 #BBDEFB
+n03_1 : setup · 185w
+state n03_2 #BBDEFB
+n03_2 : setup · 185w
+state n03_3 #BBDEFB
+n03_3 : setup · 185w
+state n04_0 #D1C4E9
+n04_0 : rising · 55w
+state n04_1 #D1C4E9
+n04_1 : rising · 55w
+state n04_2 #D1C4E9
+n04_2 : rising · 55w
+state n04_3 #D1C4E9
+n04_3 : rising · 55w
+state n04_4 #D1C4E9
+n04_4 : rising · 55w
+state n05_0 #D1C4E9
+n05_0 : rising · 170w
+state n05_1 #D1C4E9
+n05_1 : rising · 170w
+state n05_2 #D1C4E9
+n05_2 : rising · 170w
+state n05_3 #D1C4E9
+n05_3 : rising · 170w
+state n05_4 #D1C4E9
+n05_4 : rising · 170w
+state n06_0 #D1C4E9
+n06_0 : rising · 185w
+state n06_1 #D1C4E9
+n06_1 : rising · 185w
+state n06_2 #D1C4E9
+n06_2 : rising · 185w
+state n06_3 #D1C4E9
+n06_3 : rising · 185w
+state n06_4 #D1C4E9
+n06_4 : rising · 185w
+state n06_5 #D1C4E9
+n06_5 : rising · 185w
+state n06_6 #D1C4E9
+n06_6 : rising · 185w
+state n07_0 #D1C4E9
+n07_0 : rising · 185w
+state n07_1 #D1C4E9
+n07_1 : rising · 185w
+state n07_2 #D1C4E9
+n07_2 : rising · 185w
+state n07_3 #D1C4E9
+n07_3 : rising · 185w
+state n07_4 #D1C4E9
+n07_4 : rising · 185w
+state n07_5 #D1C4E9
+n07_5 : rising · 185w
+state n07_6 #D1C4E9
+n07_6 : rising · 185w
+state n08_0 #D1C4E9
+n08_0 : rising · 55w
+state n08_1 #D1C4E9
+n08_1 : rising · 55w
+state n08_2 #D1C4E9
+n08_2 : rising · 55w
+state n08_3 #D1C4E9
+n08_3 : rising · 55w
+state n08_4 #D1C4E9
+n08_4 : rising · 55w
+state n08_5 #D1C4E9
+n08_5 : rising · 55w
+state n08_6 #D1C4E9
+n08_6 : rising · 55w
+state n09_0 #D1C4E9
+n09_0 : rising · 170w
+state n09_1 #D1C4E9
+n09_1 : rising · 170w
+state n09_2 #D1C4E9
+n09_2 : rising · 170w
+state n09_3 #D1C4E9
+n09_3 : rising · 170w
+state n09_4 #D1C4E9
+n09_4 : rising · 170w
+state n09_5 #D1C4E9
+n09_5 : rising · 170w
+state n09_6 #D1C4E9
+n09_6 : rising · 170w
+state n10_0 #D1C4E9
+n10_0 : rising · 185w
+state n10_1 #D1C4E9
+n10_1 : rising · 185w
+state n10_2 #D1C4E9
+n10_2 : rising · 185w
+state n10_3 #D1C4E9
+n10_3 : rising · 185w
+state n10_4 #D1C4E9
+n10_4 : rising · 185w
+state n10_5 #D1C4E9
+n10_5 : rising · 185w
+state n10_6 #D1C4E9
+n10_6 : rising · 185w
+state n11_0 #D1C4E9
+n11_0 : rising · 185w
+state n11_1 #D1C4E9
+n11_1 : rising · 185w
+state n11_2 #D1C4E9
+n11_2 : rising · 185w
+state n11_3 #D1C4E9
+n11_3 : rising · 185w
+state n11_4 #D1C4E9
+n11_4 : rising · 185w
+state n11_5 #D1C4E9
+n11_5 : rising · 185w
+state n12_0 #D1C4E9
+n12_0 : rising · 55w
+state n12_1 #D1C4E9
+n12_1 : rising · 55w
+state n12_2 #D1C4E9
+n12_2 : rising · 55w
+state n12_3 #D1C4E9
+n12_3 : rising · 55w
+state n12_4 #D1C4E9
+n12_4 : rising · 55w
+state n12_5 #D1C4E9
+n12_5 : rising · 55w
+state n13_0 #D1C4E9
+n13_0 : rising · 170w
+state n13_1 #D1C4E9
+n13_1 : rising · 170w
+state n13_2 #D1C4E9
+n13_2 : rising · 170w
+state n13_3 #D1C4E9
+n13_3 : rising · 170w
+state n13_4 #D1C4E9
+n13_4 : rising · 170w
+state n13_5 #D1C4E9
+n13_5 : rising · 170w
+state n14_0 #D1C4E9
+n14_0 : rising · 185w
+state n14_1 #D1C4E9
+n14_1 : rising · 185w
+state n14_2 #D1C4E9
+n14_2 : rising · 185w
+state n14_3 #D1C4E9
+n14_3 : rising · 185w
+state n14_4 #D1C4E9
+n14_4 : rising · 185w
+state n14_5 #D1C4E9
+n14_5 : rising · 185w
+state n15_0 #D1C4E9
+n15_0 : rising · 185w
+state n15_1 #D1C4E9
+n15_1 : rising · 185w
+state n15_2 #D1C4E9
+n15_2 : rising · 185w
+state n15_3 #D1C4E9
+n15_3 : rising · 185w
+state n15_4 #D1C4E9
+n15_4 : rising · 185w
+state n15_5 #D1C4E9
+n15_5 : rising · 185w
+state n16_0 #FFE0B2
+n16_0 : climax · 55w
+state n16_1 #FFE0B2
+n16_1 : climax · 55w
+state n16_2 #FFE0B2
+n16_2 : climax · 55w
+state n16_3 #FFE0B2
+n16_3 : climax · 55w
+state n16_4 #FFE0B2
+n16_4 : climax · 55w
+state n17_0 #FFE0B2
+n17_0 : climax · 170w
+state n17_1 #FFE0B2
+n17_1 : climax · 170w
+state n17_2 #FFE0B2
+n17_2 : climax · 170w
+state n17_3 #FFE0B2
+n17_3 : climax · 170w
+state n17_4 #FFE0B2
+n17_4 : climax · 170w
+state n18_0 #FFE0B2
+n18_0 : climax · 185w
+state n18_1 #FFE0B2
+n18_1 : climax · 185w
+state n18_2 #FFE0B2
+n18_2 : climax · 185w
+state n18_3 #FFE0B2
+n18_3 : climax · 185w
+state n18_4 #FFE0B2
+n18_4 : climax · 185w
+state n19_0 #FFE0B2
+n19_0 : climax · 185w
+state n19_1 #FFE0B2
+n19_1 : climax · 185w
+state n19_2 #FFE0B2
+n19_2 : climax · 185w
+state n19_3 #FFE0B2
+n19_3 : climax · 185w
+state e_m01 #E0E0E0
+e_m01 : setback (neutral)
+e_m01 : "The Milk Goes to the Pit"
+state e_m02 #E0E0E0
+e_m02 : discovery (neutral)
+e_m02 : "What the Queue Was For"
+state e_m03 #FFCDD2
+e_m03 : setback (negative)
+e_m03 : "Too Slow at the Gate"
+state e_m04 #E0E0E0
+e_m04 : discovery (neutral)
+e_m04 : "Forty Holdings, Two Phones"
+state e_m05 #E0E0E0
+e_m05 : setback (neutral)
+e_m05 : "The Fell Feeds Itself"
+state e_m06 #FFCDD2
+e_m06 : setback (negative)
+e_m06 : "The Pens Fill Up"
+state e_m07 #E0E0E0
+e_m07 : discovery (neutral)
+e_m07 : "The Machine That Went Everywhere"
+state e_m08 #FFCDD2
+e_m08 : setback (negative)
+e_m08 : "The Footpath Stays Open"
+state e_m09 #E0E0E0
+e_m09 : discovery (neutral)
+e_m09 : "A Column She Invented"
+state e_m10 #E0E0E0
+e_m10 : setback (neutral)
+e_m10 : "The Market Book Is Not the Market"
+state e_m11 #FFCDD2
+e_m11 : setback (negative)
+e_m11 : "The Trail Goes Cold at the County Line"
+state e_m12 #E0E0E0
+e_m12 : discovery (neutral)
+e_m12 : "Nine Days Before Anyone Looked"
+state e_m13 #FFCDD2
+e_m13 : setback (negative)
+e_m13 : "The File Ends the Cooperation"
+state e_m14 #E0E0E0
+e_m14 : discovery (neutral)
+e_m14 : "What Was Law and What Was Not"
+state e_m15 #E0E0E0
+e_m15 : setback (neutral)
+e_m15 : "The Mats Went Sour"
+state e_m16 #FFCDD2
+e_m16 : setback (negative)
+e_m16 : "Signed on Risk Alone"
+state e_m17 #E0E0E0
+e_m17 : discovery (neutral)
+e_m17 : "The Line Was Already Behind It"
+state e_m18 #E0E0E0
+e_m18 : setback (neutral)
+e_m18 : "Two Introductions"
+state e_m19 #E0E0E0
+e_m19 : discovery (neutral)
+e_m19 : "Four Unaccounted Hours"
+state e_m20 #FFCDD2
+e_m20 : setback (negative)
+e_m20 : "The Rumour Wins"
+state e_m21 #E0E0E0
+e_m21 : discovery (neutral)
+e_m21 : "Two Hundred Chairs"
+state e_m22 #E0E0E0
+e_m22 : setback (neutral)
+e_m22 : "Ninety Minutes and a Photographer"
+state e_m23 #E0E0E0
+e_m23 : discovery (neutral)
+e_m23 : "The Sentence That Helps Him"
+state e_m24 #FFCDD2
+e_m24 : setback (negative)
+e_m24 : "A Road Nobody Washed"
+state e_m25 #E0E0E0
+e_m25 : setback (neutral)
+e_m25 : "The Funeral Crosses"
+state e_m26 #E0E0E0
+e_m26 : discovery (neutral)
+e_m26 : "The Date Two People Disagree About"
+state e_f01 #C8E6C9
+e_f01 : success (positive)
+e_f01 : "The Line Held"
+state e_f02 #C8E6C9
+e_f02 : completion (positive)
+e_f02 : "Thirty Clear Days"
+state e_f03 #C8E6C9
+e_f03 : success (positive)
+e_f03 : "Signed Off Clean"
+state e_f04 #C8E6C9
+e_f04 : completion (positive)
+e_f04 : "The Ledger Balances"
+state e_f05 #C8E6C9
+e_f05 : success (positive)
+e_f05 : "Restocked by Autumn"
+state e_f06 #C8E6C9
+e_f06 : completion (positive)
+e_f06 : "What the Valley Keeps"
+state e_f07 #E0E0E0
+e_f07 : success (neutral)
+e_f07 : "Cleared, and Emptied"
+state e_f08 #E0E0E0
+e_f08 : discovery (neutral)
+e_f08 : "The Source, Found Late"
+state e_f09 #E0E0E0
+e_f09 : discovery (neutral)
+e_f09 : "What the Records Never Said"
+state e_f10 #FFCDD2
+e_f10 : setback (negative)
+e_f10 : "Lifted Too Soon"
+state e_f11 #E0E0E0
+e_f11 : completion (neutral)
+e_f11 : "A Standstill Nobody Forgives"
+state e_f12 #E0E0E0
+e_f12 : setback (neutral)
+e_f12 : "The Inquiry"
+n00_0 --> n01_0 : Get moving.
+n01_0 --> n02_0 : Go straight in and look at the animals.
+n01_0 --> n02_1 : Ask for the movement book before anythin...
+n01_0 --> n02_2 : Walk the boundary first and see how the ...
+n02_0 --> n03_0 : Draw the three kilometre line.
+n02_0 --> n03_1 : Draw the wider surveillance line.
+n02_0 --> n03_2 : Decide which roads to close.
+n02_1 --> n03_1 : Draw the wider surveillance line.
+n02_1 --> n03_2 : Decide which roads to close.
+n02_1 --> n03_3 : Start with the people inside the line.
+n02_2 --> n03_2 : Decide which roads to close.
+n02_2 --> n03_3 : Start with the people inside the line.
+n02_2 --> n03_0 : Draw the three kilometre line.
+n03_0 --> n04_0 : Open the ledger.
+n03_0 --> n04_1 : Start the phone tree.
+n03_0 --> n04_2 : Set up in the hall.
+n03_1 --> n04_1 : Start the phone tree.
+n03_1 --> n04_2 : Set up in the hall.
+n03_1 --> n04_3 : Deal with the tanker.
+n03_2 --> n04_2 : Set up in the hall.
+n03_2 --> n04_3 : Deal with the tanker.
+n03_2 --> n04_4 : Get the signs out.
+n03_3 --> n04_3 : Deal with the tanker.
+n03_3 --> n04_4 : Get the signs out.
+n03_3 --> n04_0 : Open the ledger.
+n04_0 --> n05_0 : Open the door to the queue.
+n04_1 --> n05_1 : Deal with the milk first.
+n04_2 --> n05_2 : Brief the team.
+n04_3 --> n05_3 : Take the first application.
+n04_4 --> n05_4 : Take the call from the regional director...
+n05_0 --> n06_0 : Go up to Cowl Hill.
+n05_0 --> n06_1 : Go to the pig unit at Tarn Foot.
+n05_0 --> n06_2 : Go to the beef unit.
+n05_0 --> e_m01 : Order the milk destroyed and stop there.
+n05_1 --> n06_1 : Go to the pig unit at Tarn Foot.
+n05_1 --> n06_2 : Go to the beef unit.
+n05_1 --> n06_3 : Go to the smallholding at Lowfield.
+n05_2 --> n06_2 : Go to the beef unit.
+n05_2 --> n06_3 : Go to the smallholding at Lowfield.
+n05_2 --> n06_4 : Look at the shared water.
+n05_2 --> e_m02 : Stay with the queue and let the day go.
+n05_3 --> n06_3 : Go to the smallholding at Lowfield.
+n05_3 --> n06_4 : Look at the shared water.
+n05_3 --> n06_5 : Look at the footpath.
+n05_4 --> n06_4 : Look at the shared water.
+n05_4 --> n06_5 : Look at the footpath.
+n05_4 --> n06_6 : Find the contractor machine.
+n06_0 --> n07_0 : Look at the feed problem on the fell.
+n06_0 --> n07_1 : Do the arithmetic at the pig unit.
+n06_0 --> n07_2 : Decide what happens to the milk.
+n06_1 --> n07_1 : Do the arithmetic at the pig unit.
+n06_1 --> n07_2 : Decide what happens to the milk.
+n06_1 --> n07_3 : Sort out fallen stock collection.
+n06_1 --> e_m03 : Get the paperwork right before anything ...
+n06_2 --> n07_2 : Decide what happens to the milk.
+n06_2 --> n07_3 : Sort out fallen stock collection.
+n06_2 --> n07_4 : Go and see the lame heifer.
+n06_3 --> n07_3 : Sort out fallen stock collection.
+n06_3 --> n07_4 : Go and see the lame heifer.
+n06_3 --> n07_5 : Deal with the pony at Lowfield.
+n06_4 --> n07_4 : Go and see the lame heifer.
+n06_4 --> n07_5 : Deal with the pony at Lowfield.
+n06_4 --> n07_6 : Talk to the feed lorry driver.
+n06_4 --> e_m04 : Let the valley tell you what it knows.
+n06_5 --> n07_5 : Deal with the pony at Lowfield.
+n06_5 --> n07_6 : Talk to the feed lorry driver.
+n06_5 --> n07_0 : Look at the feed problem on the fell.
+n06_6 --> n07_6 : Talk to the feed lorry driver.
+n06_6 --> n07_0 : Look at the feed problem on the fell.
+n06_6 --> n07_1 : Do the arithmetic at the pig unit.
+n07_0 --> n08_0 : Sleep four hours at the hall and carry o...
+n07_0 --> n08_1 : Go and confirm the second case yourself.
+n07_0 --> n08_2 : Drive up to the fell before the light go...
+n07_0 --> e_m05 : Leave the fell to sort its own feed.
+n07_1 --> n08_1 : Go and confirm the second case yourself.
+n07_1 --> n08_2 : Drive up to the fell before the light go...
+n07_1 --> n08_3 : Go down to the boundary and see the watc...
+n07_1 --> e_m06 : Hold the line on the pig unit and move n...
+n07_2 --> n08_2 : Drive up to the fell before the light go...
+n07_2 --> n08_3 : Go down to the boundary and see the watc...
+n07_2 --> n08_4 : Take the morning calls from the other co...
+n07_3 --> n08_3 : Go down to the boundary and see the watc...
+n07_3 --> n08_4 : Take the morning calls from the other co...
+n07_3 --> n08_5 : Follow up the anonymous report.
+n07_4 --> n08_4 : Take the morning calls from the other co...
+n07_4 --> n08_5 : Follow up the anonymous report.
+n07_4 --> n08_6 : Sit down with the ledger and read it bac...
+n07_5 --> n08_5 : Follow up the anonymous report.
+n07_5 --> n08_6 : Sit down with the ledger and read it bac...
+n07_5 --> n08_0 : Sleep four hours at the hall and carry o...
+n07_6 --> n08_6 : Sit down with the ledger and read it bac...
+n07_6 --> n08_0 : Sleep four hours at the hall and carry o...
+n07_6 --> n08_1 : Go and confirm the second case yourself.
+n07_6 --> e_m07 : Follow the machine and nothing else.
+n08_0 --> n09_0 : Get the market ledger.
+n08_1 --> n09_1 : Pull the abattoir consignments.
+n08_2 --> n09_2 : Track the insemination round.
+n08_3 --> n09_3 : Find the shearing gang.
+n08_4 --> n09_4 : Reconstruct the tanker route.
+n08_5 --> n09_5 : Chase the walker.
+n08_6 --> n09_6 : Ask the question about wind and vermin.
+n09_0 --> n10_0 : Go to the market office.
+n09_0 --> n10_1 : Find the dealer.
+n09_0 --> n10_2 : Trace the outward buyer.
+n09_1 --> n10_1 : Find the dealer.
+n09_1 --> n10_2 : Trace the outward buyer.
+n09_1 --> n10_3 : Get the haulier tachograph.
+n09_2 --> n10_2 : Trace the outward buyer.
+n09_2 --> n10_3 : Get the haulier tachograph.
+n09_2 --> n10_4 : Chase the unlicensed move.
+n09_3 --> n10_3 : Get the haulier tachograph.
+n09_3 --> n10_4 : Chase the unlicensed move.
+n09_3 --> n10_5 : Look at the summer fair.
+n09_4 --> n10_4 : Chase the unlicensed move.
+n09_4 --> n10_5 : Look at the summer fair.
+n09_4 --> n10_6 : Work the paperwork that does not match.
+n09_5 --> n10_5 : Look at the summer fair.
+n09_5 --> n10_6 : Work the paperwork that does not match.
+n09_5 --> n10_0 : Go to the market office.
+n09_5 --> e_m08 : Accept that the footpath cannot be close...
+n09_6 --> n10_6 : Work the paperwork that does not match.
+n09_6 --> n10_0 : Go to the market office.
+n09_6 --> n10_1 : Find the dealer.
+n09_6 --> e_m09 : Keep writing down what people tell you.
+n10_0 --> n11_0 : Meet the enforcement officer.
+n10_0 --> n11_1 : Go to the roadblock.
+n10_0 --> n11_2 : Decide about prosecution.
+n10_0 --> e_m10 : Trust the market book.
+n10_1 --> n11_1 : Go to the roadblock.
+n10_1 --> n11_2 : Decide about prosecution.
+n10_1 --> n11_3 : Inspect the disinfectant point.
+n10_2 --> n11_2 : Decide about prosecution.
+n10_2 --> n11_3 : Inspect the disinfectant point.
+n10_2 --> n11_4 : Go and see the farmer who refuses.
+n10_2 --> e_m11 : Hand the outward trail to the neighbouri...
+n10_3 --> n11_3 : Inspect the disinfectant point.
+n10_3 --> n11_4 : Go and see the farmer who refuses.
+n10_3 --> n11_5 : Sit down with the police liaison.
+n10_3 --> e_m12 : Put the tachograph next to the fair date...
+n10_4 --> n11_4 : Go and see the farmer who refuses.
+n10_4 --> n11_5 : Sit down with the police liaison.
+n10_4 --> n11_0 : Meet the enforcement officer.
+n10_5 --> n11_5 : Sit down with the police liaison.
+n10_5 --> n11_0 : Meet the enforcement officer.
+n10_5 --> n11_1 : Go to the roadblock.
+n10_6 --> n11_0 : Meet the enforcement officer.
+n10_6 --> n11_1 : Go to the roadblock.
+n10_6 --> n11_2 : Decide about prosecution.
+n11_0 --> n12_0 : Start the second week.
+n11_0 --> n12_1 : Total up the book before going on.
+n11_0 --> n12_2 : Walk the queue at the hall and listen.
+n11_1 --> n12_1 : Total up the book before going on.
+n11_1 --> n12_2 : Walk the queue at the hall and listen.
+n11_1 --> n12_3 : Go back to Halberd and open the gate wit...
+n11_2 --> n12_2 : Walk the queue at the hall and listen.
+n11_2 --> n12_3 : Go back to Halberd and open the gate wit...
+n11_2 --> n12_4 : Read what the papers are printing.
+n11_2 --> e_m13 : Build the prosecution file now.
+n11_3 --> n12_3 : Go back to Halberd and open the gate wit...
+n11_3 --> n12_4 : Read what the papers are printing.
+n11_3 --> n12_5 : Go home for four hours.
+n11_4 --> n12_4 : Read what the papers are printing.
+n11_4 --> n12_5 : Go home for four hours.
+n11_4 --> n12_0 : Start the second week.
+n11_5 --> n12_5 : Go home for four hours.
+n11_5 --> n12_0 : Start the second week.
+n11_5 --> n12_1 : Total up the book before going on.
+n11_5 --> e_m14 : Separate the law from the advice.
+n12_0 --> n13_0 : Sit in on the valuation.
+n12_1 --> n13_1 : Be there for the slaughter team.
+n12_2 --> n13_2 : Decide on disposal.
+n12_3 --> n13_3 : Hear the case for the pedigree line.
+n12_4 --> n13_4 : Face the contiguous cull argument.
+n12_5 --> n13_5 : Go up to the refusal at Cowl Hill.
+n13_0 --> n14_0 : Read the Mereford result.
+n13_0 --> n14_1 : Look at the fell serology.
+n13_0 --> n14_2 : Weigh the inconclusive negative.
+n13_1 --> n14_1 : Look at the fell serology.
+n13_1 --> n14_2 : Weigh the inconclusive negative.
+n13_1 --> n14_3 : Follow up the second strain question.
+n13_2 --> n14_2 : Weigh the inconclusive negative.
+n13_2 --> n14_3 : Follow up the second strain question.
+n13_2 --> n14_4 : Audit the sample chain.
+n13_3 --> n14_3 : Follow up the second strain question.
+n13_3 --> n14_4 : Audit the sample chain.
+n13_3 --> n14_5 : Take on the vaccination question.
+n13_3 --> e_m15 : Write up the disinfectant failure exactl...
+n13_4 --> n14_4 : Audit the sample chain.
+n13_4 --> n14_5 : Take on the vaccination question.
+n13_4 --> n14_0 : Read the Mereford result.
+n13_4 --> e_m16 : Sign the contiguous cull.
+n13_5 --> n14_5 : Take on the vaccination question.
+n13_5 --> n14_0 : Read the Mereford result.
+n13_5 --> n14_1 : Look at the fell serology.
+n13_5 --> e_m17 : Read the fell serology properly.
+n14_0 --> n15_0 : Talk to the reporter.
+n14_0 --> n15_1 : Hold the public meeting.
+n14_0 --> n15_2 : Deal with the rumour.
+n14_1 --> n15_1 : Hold the public meeting.
+n14_1 --> n15_2 : Deal with the rumour.
+n14_1 --> n15_3 : Answer the school and the footpath.
+n14_1 --> e_m18 : Push the second strain question to the l...
+n14_2 --> n15_2 : Deal with the rumour.
+n14_2 --> n15_3 : Answer the school and the footpath.
+n14_2 --> n15_4 : Face the tourist trade.
+n14_3 --> n15_3 : Answer the school and the footpath.
+n14_3 --> n15_4 : Face the tourist trade.
+n14_3 --> n15_5 : Handle the ministerial visit.
+n14_4 --> n15_4 : Face the tourist trade.
+n14_4 --> n15_5 : Handle the ministerial visit.
+n14_4 --> n15_0 : Talk to the reporter.
+n14_4 --> e_m19 : Audit the four hours and write it up.
+n14_5 --> n15_5 : Handle the ministerial visit.
+n14_5 --> n15_0 : Talk to the reporter.
+n14_5 --> n15_1 : Hold the public meeting.
+n15_0 --> n16_0 : Count the days since the last case.
+n15_0 --> n16_1 : Read the reasons column back to yourself...
+n15_0 --> n16_2 : Go and stand at the roadblock a while.
+n15_1 --> n16_1 : Read the reasons column back to yourself...
+n15_1 --> n16_2 : Go and stand at the roadblock a while.
+n15_1 --> n16_3 : Go up for the gathering in the rain.
+n15_1 --> e_m21 : Stand up and take the meeting.
+n15_2 --> n16_2 : Go and stand at the roadblock a while.
+n15_2 --> n16_3 : Go up for the gathering in the rain.
+n15_2 --> n16_4 : Answer the question about a day off.
+n15_2 --> e_m20 : Decline to comment on the rumour.
+n15_3 --> n16_3 : Go up for the gathering in the rain.
+n15_3 --> n16_4 : Answer the question about a day off.
+n15_3 --> n16_0 : Count the days since the last case.
+n15_4 --> n16_4 : Answer the question about a day off.
+n15_4 --> n16_0 : Count the days since the last case.
+n15_4 --> n16_1 : Read the reasons column back to yourself...
+n15_5 --> n16_0 : Count the days since the last case.
+n15_5 --> n16_1 : Read the reasons column back to yourself...
+n15_5 --> n16_2 : Go and stand at the roadblock a while.
+n15_5 --> e_m22 : Give the visit the day it wants.
+n16_0 --> n17_0 : Take the welfare movement licence.
+n16_1 --> n17_1 : Hear the pedigree exemption.
+n16_2 --> n17_2 : Decide about the abattoir slot.
+n16_3 --> n17_3 : Deal with the Sarre goats.
+n16_4 --> n17_4 : Deal with the funeral.
+n17_0 --> n18_0 : Settle the thirty day clock.
+n17_0 --> n18_1 : Do the last surveillance round.
+n17_0 --> n18_2 : Take the pressure from the region.
+n17_0 --> e_m24 : Grant the welfare movement and trust the...
+n17_1 --> n18_1 : Do the last surveillance round.
+n17_1 --> n18_2 : Take the pressure from the region.
+n17_1 --> n18_3 : Write the risk assessment.
+n17_2 --> n18_2 : Take the pressure from the region.
+n17_2 --> n18_3 : Write the risk assessment.
+n17_2 --> n18_4 : Review the ledger.
+n17_3 --> n18_3 : Write the risk assessment.
+n17_3 --> n18_4 : Review the ledger.
+n17_3 --> n18_0 : Settle the thirty day clock.
+n17_3 --> e_m23 : Grant the smallholder his sentence.
+n17_4 --> n18_4 : Review the ledger.
+n17_4 --> n18_0 : Settle the thirty day clock.
+n17_4 --> n18_1 : Do the last surveillance round.
+n18_0 --> n19_0 : Sign it off.
+n18_0 --> n19_1 : Face the disputed entry.
+n18_0 --> n19_2 : Write the report.
+n18_0 --> e_m26 : Settle the clock on the entry as it was ...
+n18_1 --> n19_1 : Face the disputed entry.
+n18_1 --> n19_2 : Write the report.
+n18_1 --> n19_3 : Do the handover.
+n18_2 --> n19_2 : Write the report.
+n18_2 --> n19_3 : Do the handover.
+n18_2 --> n19_0 : Sign it off.
+n18_3 --> n19_3 : Do the handover.
+n18_3 --> n19_0 : Sign it off.
+n18_3 --> n19_1 : Face the disputed entry.
+n18_4 --> n19_0 : Sign it off.
+n18_4 --> n19_1 : Face the disputed entry.
+n18_4 --> n19_2 : Write the report.
+n18_4 --> e_m25 : Let the funeral cross the line.
+n19_0 --> e_f01 : Lift it on the evidence.
+n19_0 --> e_f02 : Let it end quietly.
+n19_0 --> e_f03 : Sign off on the record as written.
+n19_1 --> e_f04 : Close the book.
+n19_1 --> e_f05 : Stay until the restocking.
+n19_1 --> e_f06 : Hand over what the valley learned.
+n19_2 --> e_f07 : Take the earliest defensible date.
+n19_2 --> e_f08 : Keep pulling the thread afterwards.
+n19_2 --> e_f09 : Write the finding about the records.
+n19_3 --> e_f10 : Lift it on the date the region wants.
+n19_3 --> e_f11 : Accept what it costs and finish it.
+n19_3 --> e_f12 : Let the disputed entry stand as it was w...
+e_m01 --> [*]
+e_m02 --> [*]
+e_m03 --> [*]
+e_m04 --> [*]
+e_m05 --> [*]
+e_m06 --> [*]
+e_m07 --> [*]
+e_m08 --> [*]
+e_m09 --> [*]
+e_m10 --> [*]
+e_m11 --> [*]
+e_m12 --> [*]
+e_m13 --> [*]
+e_m14 --> [*]
+e_m15 --> [*]
+e_m16 --> [*]
+e_m17 --> [*]
+e_m18 --> [*]
+e_m19 --> [*]
+e_m20 --> [*]
+e_m21 --> [*]
+e_m22 --> [*]
+e_m23 --> [*]
+e_m24 --> [*]
+e_m25 --> [*]
+e_m26 --> [*]
+e_f01 --> [*]
+e_f02 --> [*]
+e_f03 --> [*]
+e_f04 --> [*]
+e_f05 --> [*]
+e_f06 --> [*]
+e_f07 --> [*]
+e_f08 --> [*]
+e_f09 --> [*]
+e_f10 --> [*]
+e_f11 --> [*]
+e_f12 --> [*]
+
+legend right
+  The Quarantine Ledger
+  Band 16+ · Tier 1 · ~14 min
+  Topology: branch_and_bottleneck
+  141 nodes · 38 endings (6+ / 23n / 9-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

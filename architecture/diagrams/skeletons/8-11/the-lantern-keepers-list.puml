@@ -1,0 +1,618 @@
+@startuml the-lantern-keepers-list
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 55w
+state n_list #BBDEFB
+n_list : setup · 78w
+state bs_hub #BBDEFB
+bs_hub : setup · 100w
+state sf_hub #BBDEFB
+sf_hub : setup · 100w
+state og_hub #BBDEFB
+og_hub : setup · 100w
+state bs_brackets #D1C4E9
+bs_brackets : rising · 100w
+state bs_step #D1C4E9
+bs_step : rising · 100w
+state bs_carry #D1C4E9
+bs_carry : rising · 100w
+state sf_gate #D1C4E9
+sf_gate : rising · 100w
+state sf_slip #D1C4E9
+sf_slip : rising · 100w
+state sf_ovens #D1C4E9
+sf_ovens : rising · 100w
+state og_hinge #D1C4E9
+og_hinge : rising · 100w
+state og_low #D1C4E9
+og_low : rising · 100w
+state og_fruit #D1C4E9
+og_fruit : rising · 100w
+state bs_plugs #D1C4E9
+bs_plugs : rising · 100w
+state bs_wire #D1C4E9
+bs_wire : rising · 100w
+state bs_dot #D1C4E9
+bs_dot : rising · 100w
+state sf_reroute #D1C4E9
+sf_reroute : rising · 100w
+state sf_posts #D1C4E9
+sf_posts : rising · 100w
+state sf_sign #D1C4E9
+sf_sign : rising · 100w
+state og_hooks #D1C4E9
+og_hooks : rising · 100w
+state og_lane #D1C4E9
+og_lane : rising · 100w
+state og_twins #D1C4E9
+og_twins : rising · 100w
+state bs_flight #D1C4E9
+bs_flight : rising · 105w
+state bs_test #D1C4E9
+bs_test : rising · 105w
+state bs_report #D1C4E9
+bs_report : rising · 105w
+state sf_walk #D1C4E9
+sf_walk : rising · 105w
+state sf_permission #D1C4E9
+sf_permission : rising · 105w
+state sf_mark #D1C4E9
+sf_mark : rising · 105w
+state og_hang #D1C4E9
+og_hang : rising · 105w
+state og_check #D1C4E9
+og_check : rising · 105w
+state og_spare #D1C4E9
+og_spare : rising · 105w
+state bs_page #E0E0E0
+bs_page : discovery (neutral)
+bs_page : "The Steps Get Their Own Page"
+state sf_dark #E0E0E0
+sf_dark : setback (neutral)
+sf_dark : "The Turn Left Dark"
+state og_bottom #E0E0E0
+og_bottom : discovery (neutral)
+og_bottom : "The Bottom Half Lit"
+state gt_oil #D1C4E9
+gt_oil : rising · 100w
+state gt_hands #D1C4E9
+gt_hands : rising · 100w
+state gt_walk #D1C4E9
+gt_walk : rising · 100w
+state gt_wind #D1C4E9
+gt_wind : rising · 100w
+state gt_word #D1C4E9
+gt_word : rising · 100w
+state gt_bottom #D1C4E9
+gt_bottom : rising · 100w
+state oil_can #D1C4E9
+oil_can : rising · 100w
+state oil_bench #D1C4E9
+oil_bench : rising · 100w
+state oil_wick #D1C4E9
+oil_wick : rising · 100w
+state pp_doors #D1C4E9
+pp_doors : rising · 100w
+state pp_gate #D1C4E9
+pp_gate : rising · 100w
+state pp_shop #D1C4E9
+pp_shop : rising · 100w
+state pa_survey #D1C4E9
+pa_survey : rising · 100w
+state pa_gaps #D1C4E9
+pa_gaps : rising · 100w
+state pa_ground #D1C4E9
+pa_ground : rising · 100w
+state oil_school #D1C4E9
+oil_school : rising · 105w
+state oil_ration #D1C4E9
+oil_ration : rising · 105w
+state oil_burn #D1C4E9
+oil_burn : rising · 105w
+state oil_borrow #D1C4E9
+oil_borrow : rising · 105w
+state pp_teams #D1C4E9
+pp_teams : rising · 105w
+state pp_teach #D1C4E9
+pp_teach : rising · 105w
+state pp_quad #D1C4E9
+pp_quad : rising · 105w
+state pp_twins #D1C4E9
+pp_twins : rising · 105w
+state pa_spacing #D1C4E9
+pa_spacing : rising · 105w
+state pa_drop #D1C4E9
+pa_drop : rising · 105w
+state pa_paint #D1C4E9
+pa_paint : rising · 105w
+state pa_shelter #D1C4E9
+pa_shelter : rising · 105w
+state oil_spill #E0E0E0
+oil_spill : setback (neutral)
+oil_spill : "Paraffin on the Path"
+state pp_crowd #E0E0E0
+pp_crowd : setback (neutral)
+pp_crowd : "Too Many Hands, Too Late"
+state pa_map #E0E0E0
+pa_map : setback (neutral)
+pa_map : "A Very Good Map of a Dark Hill"
+state oil_line #D1C4E9
+oil_line : rising · 100w
+state oil_shades #D1C4E9
+oil_shades : rising · 100w
+state oil_top #D1C4E9
+oil_top : rising · 100w
+state oil_reserve #D1C4E9
+oil_reserve : rising · 100w
+state pp_rota #D1C4E9
+pp_rota : rising · 100w
+state pp_runner #D1C4E9
+pp_runner : rising · 100w
+state pp_kettle #D1C4E9
+pp_kettle : rising · 100w
+state pp_trewin #D1C4E9
+pp_trewin : rising · 100w
+state pa_hang #D1C4E9
+pa_hang : rising · 100w
+state pa_dim #D1C4E9
+pa_dim : rising · 100w
+state pa_bag #D1C4E9
+pa_bag : rising · 100w
+state pa_post #D1C4E9
+pa_post : rising · 100w
+state oil_relight #D1C4E9
+oil_relight : rising · 105w
+state oil_taper #D1C4E9
+oil_taper : rising · 105w
+state oil_count #D1C4E9
+oil_count : rising · 105w
+state oil_message #D1C4E9
+oil_message : rising · 105w
+state pp_top #D1C4E9
+pp_top : rising · 105w
+state pp_keep #D1C4E9
+pp_keep : rising · 105w
+state pp_pair #D1C4E9
+pp_pair : rising · 105w
+state pp_count #D1C4E9
+pp_count : rising · 105w
+state pa_ninety #D1C4E9
+pa_ninety : rising · 105w
+state pa_blown #D1C4E9
+pa_blown : rising · 105w
+state pa_meet #D1C4E9
+pa_meet : rising · 105w
+state pa_hold #D1C4E9
+pa_hold : rising · 105w
+state oil_fifty #E0E0E0
+oil_fifty : discovery (neutral)
+oil_fifty : "Fifty Lanterns and a Rising Moon"
+state pp_village #E0E0E0
+pp_village : discovery (neutral)
+pp_village : "The Village That Turned Up"
+state pa_gap #E0E0E0
+pa_gap : discovery (neutral)
+pa_gap : "Ninety Paces of Dark"
+state fn_wait #FFE0B2
+fn_wait : climax · 110w
+state fn_signal #FFE0B2
+fn_signal : climax · 110w
+state fn_count #FFE0B2
+fn_count : climax · 110w
+state fn_torch #FFE0B2
+fn_torch : climax · 110w
+state fn_up #FFE0B2
+fn_up : climax · 110w
+state fn_hall #FFE0B2
+fn_hall : climax · 110w
+state fn_ovens #FFE0B2
+fn_ovens : climax · 110w
+state fn_taper #FFE0B2
+fn_taper : climax · 110w
+state fn_hold #FFE0B2
+fn_hold : climax · 110w
+state fx_leeward #FFE0B2
+fx_leeward : climax · 115w
+state fx_bag #FFE0B2
+fx_bag : climax · 115w
+state fx_corner #FFE0B2
+fx_corner : climax · 115w
+state fx_relay #FFE0B2
+fx_relay : climax · 115w
+state fx_watch #FFE0B2
+fx_watch : climax · 115w
+state fx_ankle #FFE0B2
+fx_ankle : climax · 115w
+state fx_gate #FFE0B2
+fx_gate : climax · 115w
+state fx_tally #FFE0B2
+fx_tally : climax · 115w
+state fx_round #FFE0B2
+fx_round : climax · 115w
+state fx_hold_end #C8E6C9
+fx_hold_end : success (positive)
+fx_hold_end : "The Ridge Holds"
+state fx_early_end #C8E6C9
+fx_early_end : success (positive)
+fx_early_end : "Down Before the Rain"
+state fx_count_end #C8E6C9
+fx_count_end : completion (positive)
+fx_count_end : "Every Lantern Counted"
+state fx_list_end #C8E6C9
+fx_list_end : completion (positive)
+fx_list_end : "The List Made True"
+state fx_wind_end #E0E0E0
+fx_wind_end : discovery (neutral)
+fx_wind_end : "What the Wind Does on the Shoulder"
+state fx_short_end #FFCDD2
+fx_short_end : setback (negative)
+fx_short_end : "Two Lanterns Short at the Steps"
+state z_warm #C8E6C9
+z_warm : success (positive)
+z_warm : "Fourteen In and Warm"
+state z_turn #C8E6C9
+z_turn : success (positive)
+z_turn : "The Turn Nobody Missed"
+state z_seen #C8E6C9
+z_seen : success (positive)
+z_seen : "A Ridge You Could See From the Moor"
+state z_quad #C8E6C9
+z_quad : success (positive)
+z_quad : "The Gate Stood Open"
+state z_tally #C8E6C9
+z_tally : completion (positive)
+z_tally : "The Tally Box Filled In"
+state z_hand #C8E6C9
+z_hand : completion (positive)
+z_hand : "Handed Back Better Than It Came"
+state z_page #E0E0E0
+z_page : discovery (neutral)
+z_page : "The Page That Should Have Been There"
+state z_late #E0E0E0
+z_late : setback (neutral)
+z_late : "Lit Late, Lit Anyway"
+state z_shoulder #FFCDD2
+z_shoulder : setback (negative)
+z_shoulder : "The Shoulder Went Dark Again"
+n_open --> n_list : Take the list and pick a section.
+n_list --> bs_hub : Start at the Beacon Steps.
+n_list --> sf_hub : Start at the Sheepfold Turn.
+n_list --> og_hub : Start at the Orchard Gate.
+bs_hub --> bs_brackets : Look at the loose brackets first.
+bs_hub --> bs_step : Deal with the missing step.
+bs_hub --> bs_carry : Carry the crates up while it is dry.
+sf_hub --> sf_gate : Look at the wired gate.
+sf_hub --> sf_slip : Walk the landslip and see what is left.
+sf_hub --> sf_ovens : Go and find Mr Ovens.
+og_hub --> og_hinge : See to the dragging gate.
+og_hub --> og_low : Sort out the low branches.
+og_hub --> og_fruit : Deal with the fallen fruit.
+bs_brackets --> bs_plugs : Hunt down the jar of wall plugs.
+bs_brackets --> bs_wire : Wire the brackets in instead.
+bs_brackets --> bs_dot : Ask Dot Mallow what the shop has.
+bs_step --> bs_plugs : Hunt down the jar of wall plugs.
+bs_step --> bs_wire : Wire the brackets in instead.
+bs_step --> bs_dot : Ask Dot Mallow what the shop has.
+bs_carry --> bs_plugs : Hunt down the jar of wall plugs.
+bs_carry --> bs_wire : Wire the brackets in instead.
+bs_carry --> bs_dot : Ask Dot Mallow what the shop has.
+sf_gate --> sf_reroute : Work out where the lanterns go now.
+sf_gate --> sf_posts : Find something to hang the new ones on.
+sf_gate --> sf_sign : Make the turn obvious in the dark.
+sf_slip --> sf_reroute : Work out where the lanterns go now.
+sf_slip --> sf_posts : Find something to hang the new ones on.
+sf_slip --> sf_sign : Make the turn obvious in the dark.
+sf_ovens --> sf_reroute : Work out where the lanterns go now.
+sf_ovens --> sf_posts : Find something to hang the new ones on.
+sf_ovens --> sf_sign : Make the turn obvious in the dark.
+og_hinge --> og_hooks : Rehang the hooks where they belong.
+og_hinge --> og_lane : Light the last stretch into the lane.
+og_hinge --> og_twins : Take the twins up on their offer.
+og_low --> og_hooks : Rehang the hooks where they belong.
+og_low --> og_lane : Light the last stretch into the lane.
+og_low --> og_twins : Take the twins up on their offer.
+og_fruit --> og_hooks : Rehang the hooks where they belong.
+og_fruit --> og_lane : Light the last stretch into the lane.
+og_fruit --> og_twins : Take the twins up on their offer.
+bs_plugs --> bs_flight : Set the whole flight before the light go...
+bs_plugs --> bs_test : Hang one lantern and watch it in the win...
+bs_plugs --> bs_report : Go down and tell Mrs Trewin what the ste...
+bs_wire --> bs_page : Measure the steps and write them up prop...
+bs_wire --> bs_flight : Set the whole flight before the light go...
+bs_wire --> bs_test : Hang one lantern and watch it in the win...
+bs_dot --> bs_report : Go down and tell Mrs Trewin what the ste...
+bs_dot --> bs_page : Measure the steps and write them up prop...
+bs_dot --> bs_flight : Set the whole flight before the light go...
+sf_reroute --> sf_walk : Walk the new line carrying a crate.
+sf_reroute --> sf_permission : Get the gate question settled properly.
+sf_reroute --> sf_mark : Mark the drop above the slip.
+sf_posts --> sf_dark : Leave the turn for the grown-ups and go ...
+sf_posts --> sf_walk : Walk the new line carrying a crate.
+sf_posts --> sf_permission : Get the gate question settled properly.
+sf_sign --> sf_mark : Mark the drop above the slip.
+sf_sign --> sf_dark : Leave the turn for the grown-ups and go ...
+sf_sign --> sf_walk : Walk the new line carrying a crate.
+og_hooks --> og_hang : Hang the orchard through before dusk.
+og_hooks --> og_check : Walk the orchard the way a walker would.
+og_hooks --> og_spare : Take the spare lanterns up the ridge.
+og_lane --> og_bottom : Finish the orchard beautifully and stop ...
+og_lane --> og_hang : Hang the orchard through before dusk.
+og_lane --> og_check : Walk the orchard the way a walker would.
+og_twins --> og_spare : Take the spare lanterns up the ridge.
+og_twins --> og_bottom : Finish the orchard beautifully and stop ...
+og_twins --> og_hang : Hang the orchard through before dusk.
+bs_flight --> gt_oil : Get the paraffin sorted first.
+bs_flight --> gt_hands : Get more hands onto the ridge.
+bs_flight --> gt_walk : Walk the whole route once, end to end.
+bs_test --> gt_wind : Get ahead of the wind.
+bs_test --> gt_word : Send word up to the walking party.
+bs_test --> gt_bottom : Light the bottom of the route now.
+bs_report --> gt_oil : Get the paraffin sorted first.
+bs_report --> gt_hands : Get more hands onto the ridge.
+bs_report --> gt_walk : Walk the whole route once, end to end.
+sf_walk --> gt_wind : Get ahead of the wind.
+sf_walk --> gt_word : Send word up to the walking party.
+sf_walk --> gt_bottom : Light the bottom of the route now.
+sf_permission --> gt_oil : Get the paraffin sorted first.
+sf_permission --> gt_hands : Get more hands onto the ridge.
+sf_permission --> gt_walk : Walk the whole route once, end to end.
+sf_mark --> gt_wind : Get ahead of the wind.
+sf_mark --> gt_word : Send word up to the walking party.
+sf_mark --> gt_bottom : Light the bottom of the route now.
+og_hang --> gt_oil : Get the paraffin sorted first.
+og_hang --> gt_hands : Get more hands onto the ridge.
+og_hang --> gt_walk : Walk the whole route once, end to end.
+og_check --> gt_wind : Get ahead of the wind.
+og_check --> gt_word : Send word up to the walking party.
+og_check --> gt_bottom : Light the bottom of the route now.
+og_spare --> gt_oil : Get the paraffin sorted first.
+og_spare --> gt_hands : Get more hands onto the ridge.
+og_spare --> gt_walk : Walk the whole route once, end to end.
+gt_oil --> oil_can : Track down the rest of the paraffin.
+gt_oil --> oil_bench : Set up somewhere to fill them.
+gt_oil --> oil_wick : Go through the wicks before filling anyt...
+gt_hands --> pp_doors : Knock on the doors that used to say yes.
+gt_hands --> pp_gate : Catch people at the school gate.
+gt_hands --> pp_shop : Put the word out through the shop.
+gt_walk --> pa_survey : Walk the route with the list and a penci...
+gt_walk --> pa_gaps : Find the dark gaps between lanterns.
+gt_walk --> pa_ground : Look at what the rain has made of the gr...
+gt_wind --> oil_can : Track down the rest of the paraffin.
+gt_wind --> oil_bench : Set up somewhere to fill them.
+gt_wind --> oil_wick : Go through the wicks before filling anyt...
+gt_word --> pp_doors : Knock on the doors that used to say yes.
+gt_word --> pp_gate : Catch people at the school gate.
+gt_word --> pp_shop : Put the word out through the shop.
+gt_bottom --> pa_survey : Walk the route with the list and a penci...
+gt_bottom --> pa_gaps : Find the dark gaps between lanterns.
+gt_bottom --> pa_ground : Look at what the rain has made of the gr...
+oil_can --> oil_school : Go to the school for the missing can.
+oil_can --> oil_ration : Ration what there is across the route.
+oil_can --> oil_burn : Burn one for twenty minutes and watch it...
+oil_bench --> oil_borrow : Ask the village for anything that burns.
+oil_bench --> oil_spill : Fill fast and get the crates moving.
+oil_bench --> oil_school : Go to the school for the missing can.
+oil_wick --> oil_ration : Ration what there is across the route.
+oil_wick --> oil_burn : Burn one for twenty minutes and watch it...
+oil_wick --> oil_borrow : Ask the village for anything that burns.
+pp_doors --> pp_teams : Split whoever comes into teams.
+pp_doors --> pp_teach : Show the new ones how a bracket holds.
+pp_doors --> pp_quad : Bring Mr Ovens in properly.
+pp_gate --> pp_twins : Give the twins a job that is really thei...
+pp_gate --> pp_crowd : Ask everybody and sort it out when they ...
+pp_gate --> pp_teams : Split whoever comes into teams.
+pp_shop --> pp_teach : Show the new ones how a bracket holds.
+pp_shop --> pp_quad : Bring Mr Ovens in properly.
+pp_shop --> pp_twins : Give the twins a job that is really thei...
+pa_survey --> pa_spacing : Respace the lanterns for the real path.
+pa_survey --> pa_drop : Make the drop above the slip safe.
+pa_survey --> pa_paint : Mark the turns with something better tha...
+pa_gaps --> pa_shelter : Find the sheltered hanging points.
+pa_gaps --> pa_map : Finish the survey properly before hangin...
+pa_gaps --> pa_spacing : Respace the lanterns for the real path.
+pa_ground --> pa_drop : Make the drop above the slip safe.
+pa_ground --> pa_paint : Mark the turns with something better tha...
+pa_ground --> pa_shelter : Find the sheltered hanging points.
+oil_school --> oil_line : Run a filling line with the twins.
+oil_school --> oil_shades : Fit the storm shades to the filled ones.
+oil_school --> oil_top : Get the filled crates to the top first.
+oil_ration --> oil_reserve : Hold a reserve back at the hall.
+oil_ration --> oil_line : Run a filling line with the twins.
+oil_ration --> oil_shades : Fit the storm shades to the filled ones.
+oil_burn --> oil_top : Get the filled crates to the top first.
+oil_burn --> oil_reserve : Hold a reserve back at the hall.
+oil_burn --> oil_line : Run a filling line with the twins.
+oil_borrow --> oil_shades : Fit the storm shades to the filled ones.
+oil_borrow --> oil_top : Get the filled crates to the top first.
+oil_borrow --> oil_reserve : Hold a reserve back at the hall.
+pp_teams --> pp_rota : Write the rota where people can see it.
+pp_teams --> pp_runner : Set up a runner between the two ends.
+pp_teams --> pp_kettle : Get the kettle going at the hall.
+pp_teach --> pp_trewin : Put Mrs Trewin where she can see the rid...
+pp_teach --> pp_rota : Write the rota where people can see it.
+pp_teach --> pp_runner : Set up a runner between the two ends.
+pp_quad --> pp_kettle : Get the kettle going at the hall.
+pp_quad --> pp_trewin : Put Mrs Trewin where she can see the rid...
+pp_quad --> pp_rota : Write the rota where people can see it.
+pp_twins --> pp_runner : Set up a runner between the two ends.
+pp_twins --> pp_kettle : Get the kettle going at the hall.
+pp_twins --> pp_trewin : Put Mrs Trewin where she can see the rid...
+pa_spacing --> pa_hang : Hang the top section to the new plan.
+pa_spacing --> pa_dim : Walk it in the half dark and look.
+pa_spacing --> pa_bag : Keep four lanterns for whatever is wrong...
+pa_drop --> pa_post : Get a light onto the sheepfold gate.
+pa_drop --> pa_hang : Hang the top section to the new plan.
+pa_drop --> pa_dim : Walk it in the half dark and look.
+pa_paint --> pa_bag : Keep four lanterns for whatever is wrong...
+pa_paint --> pa_post : Get a light onto the sheepfold gate.
+pa_paint --> pa_hang : Hang the top section to the new plan.
+pa_shelter --> pa_dim : Walk it in the half dark and look.
+pa_shelter --> pa_bag : Keep four lanterns for whatever is wrong...
+pa_shelter --> pa_post : Get a light onto the sheepfold gate.
+oil_line --> oil_relight : Plan for the ones that go out.
+oil_line --> oil_taper : Get the tapers and matches sorted.
+oil_line --> oil_count : Count what is actually lit.
+oil_shades --> oil_message : Get a message to Priya about the timing.
+oil_shades --> oil_fifty : Fill fifty properly and leave the rest e...
+oil_shades --> oil_relight : Plan for the ones that go out.
+oil_top --> oil_taper : Get the tapers and matches sorted.
+oil_top --> oil_count : Count what is actually lit.
+oil_top --> oil_message : Get a message to Priya about the timing.
+oil_reserve --> oil_fifty : Fill fifty properly and leave the rest e...
+oil_reserve --> oil_relight : Plan for the ones that go out.
+oil_reserve --> oil_taper : Get the tapers and matches sorted.
+pp_rota --> pp_top : Have somebody check the top pair.
+pp_rota --> pp_keep : Keep the top half with the team that kno...
+pp_rota --> pp_pair : Send two people up for the signal.
+pp_runner --> pp_count : Get everyone off the hill by six.
+pp_runner --> pp_village : Let the village finish it however it lik...
+pp_runner --> pp_top : Have somebody check the top pair.
+pp_kettle --> pp_keep : Keep the top half with the team that kno...
+pp_kettle --> pp_pair : Send two people up for the signal.
+pp_kettle --> pp_count : Get everyone off the hill by six.
+pp_trewin --> pp_village : Let the village finish it however it lik...
+pp_trewin --> pp_top : Have somebody check the top pair.
+pp_trewin --> pp_keep : Keep the top half with the team that kno...
+pa_hang --> pa_ninety : Close the last gap on the ridge.
+pa_hang --> pa_blown : Go back for the two that blew out.
+pa_hang --> pa_meet : Go up and meet the party at the top.
+pa_dim --> pa_hold : Hold the bottom and let them come down.
+pa_dim --> pa_gap : Leave the shoulder and light everything ...
+pa_dim --> pa_ninety : Close the last gap on the ridge.
+pa_bag --> pa_blown : Go back for the two that blew out.
+pa_bag --> pa_meet : Go up and meet the party at the top.
+pa_bag --> pa_hold : Hold the bottom and let them come down.
+pa_post --> pa_gap : Leave the shoulder and light everything ...
+pa_post --> pa_ninety : Close the last gap on the ridge.
+pa_post --> pa_blown : Go back for the two that blew out.
+oil_relight --> fn_wait : Wait at the top of the steps.
+oil_relight --> fn_signal : Get the phone up to the signal.
+oil_relight --> fn_count : Walk the route counting what is lit.
+oil_taper --> fn_torch : Fetch the head torches from the hall.
+oil_taper --> fn_up : Go up the ridge to meet them.
+oil_taper --> fn_hall : Get the hall ready for fourteen cold peo...
+oil_count --> fn_ovens : Ask Mr Ovens for the quad bike.
+oil_count --> fn_taper : Take a taper to the shoulder.
+oil_count --> fn_hold : Hold the plan and trust the route.
+oil_message --> fn_wait : Wait at the top of the steps.
+oil_message --> fn_signal : Get the phone up to the signal.
+oil_message --> fn_count : Walk the route counting what is lit.
+pp_top --> fn_torch : Fetch the head torches from the hall.
+pp_top --> fn_up : Go up the ridge to meet them.
+pp_top --> fn_hall : Get the hall ready for fourteen cold peo...
+pp_keep --> fn_ovens : Ask Mr Ovens for the quad bike.
+pp_keep --> fn_taper : Take a taper to the shoulder.
+pp_keep --> fn_hold : Hold the plan and trust the route.
+pp_pair --> fn_wait : Wait at the top of the steps.
+pp_pair --> fn_signal : Get the phone up to the signal.
+pp_pair --> fn_count : Walk the route counting what is lit.
+pp_count --> fn_torch : Fetch the head torches from the hall.
+pp_count --> fn_up : Go up the ridge to meet them.
+pp_count --> fn_hall : Get the hall ready for fourteen cold peo...
+pa_ninety --> fn_ovens : Ask Mr Ovens for the quad bike.
+pa_ninety --> fn_taper : Take a taper to the shoulder.
+pa_ninety --> fn_hold : Hold the plan and trust the route.
+pa_blown --> fn_wait : Wait at the top of the steps.
+pa_blown --> fn_signal : Get the phone up to the signal.
+pa_blown --> fn_count : Walk the route counting what is lit.
+pa_meet --> fn_torch : Fetch the head torches from the hall.
+pa_meet --> fn_up : Go up the ridge to meet them.
+pa_meet --> fn_hall : Get the hall ready for fourteen cold peo...
+pa_hold --> fn_ovens : Ask Mr Ovens for the quad bike.
+pa_hold --> fn_taper : Take a taper to the shoulder.
+pa_hold --> fn_hold : Hold the plan and trust the route.
+fn_wait --> fx_leeward : Move the six to the leeward side.
+fn_wait --> fx_bag : Send a pair up with the spare bag.
+fn_wait --> fx_corner : Put a lamp at the orchard corner.
+fn_signal --> fx_relay : Set a relay along the lit stretch.
+fn_signal --> fx_watch : Keep the signal watch at the top step.
+fn_signal --> fx_ankle : Get help to the walker with the ankle.
+fn_count --> fx_gate : Wait at the sheepfold gate with a light.
+fn_count --> fx_tally : Finish the tally and write it down.
+fn_count --> fx_round : Go round once more with the taper.
+fn_torch --> fx_hold_end : Stand where you are and let the ridge do...
+fn_torch --> fx_early_end : Get them down before the weather closes ...
+fn_torch --> fx_count_end : Count them in and check the tally.
+fn_up --> fx_list_end : Rewrite the list while it is all still f...
+fn_up --> fx_wind_end : Stay on the shoulder and watch what the ...
+fn_up --> fx_short_end : Give the turn the last two lanterns.
+fn_hall --> fx_leeward : Move the six to the leeward side.
+fn_hall --> fx_bag : Send a pair up with the spare bag.
+fn_hall --> fx_corner : Put a lamp at the orchard corner.
+fn_ovens --> fx_relay : Set a relay along the lit stretch.
+fn_ovens --> fx_watch : Keep the signal watch at the top step.
+fn_ovens --> fx_ankle : Get help to the walker with the ankle.
+fn_taper --> fx_gate : Wait at the sheepfold gate with a light.
+fn_taper --> fx_tally : Finish the tally and write it down.
+fn_taper --> fx_round : Go round once more with the taper.
+fn_hold --> fx_hold_end : Stand where you are and let the ridge do...
+fn_hold --> fx_early_end : Get them down before the weather closes ...
+fn_hold --> fx_count_end : Count them in and check the tally.
+fx_leeward --> z_warm : Walk them down and get the door open.
+fx_leeward --> z_turn : See them safely round the turn.
+fx_leeward --> z_seen : Get the top pair lit before they clear t...
+fx_bag --> z_quad : Send the quad up with the last crate.
+fx_bag --> z_tally : Fill in the tally box and hang the list ...
+fx_bag --> z_hand : Hand the list back to Mrs Trewin.
+fx_corner --> z_page : Write down what the list should have sai...
+fx_corner --> z_late : Light what is left after they are down.
+fx_corner --> z_shoulder : Leave the shoulder to the wind and go do...
+fx_relay --> z_warm : Walk them down and get the door open.
+fx_relay --> z_turn : See them safely round the turn.
+fx_relay --> z_seen : Get the top pair lit before they clear t...
+fx_watch --> z_quad : Send the quad up with the last crate.
+fx_watch --> z_tally : Fill in the tally box and hang the list ...
+fx_watch --> z_hand : Hand the list back to Mrs Trewin.
+fx_ankle --> z_page : Write down what the list should have sai...
+fx_ankle --> z_late : Light what is left after they are down.
+fx_ankle --> z_shoulder : Leave the shoulder to the wind and go do...
+fx_gate --> z_warm : Walk them down and get the door open.
+fx_gate --> z_turn : See them safely round the turn.
+fx_gate --> z_seen : Get the top pair lit before they clear t...
+fx_tally --> z_quad : Send the quad up with the last crate.
+fx_tally --> z_tally : Fill in the tally box and hang the list ...
+fx_tally --> z_hand : Hand the list back to Mrs Trewin.
+fx_round --> z_page : Write down what the list should have sai...
+fx_round --> z_late : Light what is left after they are down.
+fx_round --> z_shoulder : Leave the shoulder to the wind and go do...
+bs_page --> [*]
+sf_dark --> [*]
+og_bottom --> [*]
+oil_spill --> [*]
+pp_crowd --> [*]
+pa_map --> [*]
+oil_fifty --> [*]
+pp_village --> [*]
+pa_gap --> [*]
+fx_hold_end --> [*]
+fx_early_end --> [*]
+fx_count_end --> [*]
+fx_list_end --> [*]
+fx_wind_end --> [*]
+fx_short_end --> [*]
+z_warm --> [*]
+z_turn --> [*]
+z_seen --> [*]
+z_quad --> [*]
+z_tally --> [*]
+z_hand --> [*]
+z_page --> [*]
+z_late --> [*]
+z_shoulder --> [*]
+
+legend right
+  The Lantern Keepers' List
+  Band 8-11 · Tier 1 · ~10 min
+  Topology: branch_and_bottleneck
+  125 nodes · 24 endings (10+ / 12n / 2-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

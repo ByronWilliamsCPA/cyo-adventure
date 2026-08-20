@@ -1,0 +1,1384 @@
+@startuml the-saltmarsh-run
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_open
+state n_open #BBDEFB
+n_open : setup · 60w
+state n_brief #BBDEFB
+n_brief : setup · 58w
+state n_water #D1C4E9
+n_water : rising · 56w
+state e_000 #FFCDD2
+e_000 : setback (negative)
+e_000 : "A Route You Will Not Use Again"
+state e_001 #FFCDD2
+e_001 : capture (negative)
+e_001 : "Kept in the Chain Store"
+state e_002 #FFCDD2
+e_002 : setback (negative)
+e_002 : "The Wrong Side of the Channel"
+state e_003 #FFCDD2
+e_003 : capture (negative)
+e_003 : "Taken in the Boiler Yard"
+state e_004 #E0E0E0
+e_004 : discovery (neutral)
+e_004 : "The Gauge Nobody Repaired"
+state e_005 #FFCDD2
+e_005 : death (negative)
+e_005 : "The Marsh Closes Over"
+state e_006 #FFCDD2
+e_006 : death (negative)
+e_006 : "Under the Sunk Lighter"
+state e_007 #E0E0E0
+e_007 : setback (neutral)
+e_007 : "The Ledger Goes On Without You"
+state e_008 #FFCDD2
+e_008 : setback (negative)
+e_008 : "Nothing to Show for It"
+state e_009 #FFCDD2
+e_009 : capture (negative)
+e_009 : "Escorted the Rest of the Way"
+state e_010 #FFCDD2
+e_010 : setback (negative)
+e_010 : "Two Hours Short"
+state e_011 #FFCDD2
+e_011 : capture (negative)
+e_011 : "Locked in the Tally Hut"
+state e_012 #E0E0E0
+e_012 : discovery (neutral)
+e_012 : "The Second Set of Tracks"
+state e_013 #FFCDD2
+e_013 : death (negative)
+e_013 : "Cold, Then Nothing"
+state e_014 #FFCDD2
+e_014 : death (negative)
+e_014 : "Down With the Duckboard"
+state e_015 #E0E0E0
+e_015 : setback (neutral)
+e_015 : "Handed Off and Left Behind"
+state e_016 #FFCDD2
+e_016 : setback (negative)
+e_016 : "Ink and Salt Water"
+state e_017 #FFCDD2
+e_017 : capture (negative)
+e_017 : "Stopped at the Tide Gauge"
+state e_018 #FFCDD2
+e_018 : setback (negative)
+e_018 : "The Count Comes Out Wrong"
+state e_019 #FFCDD2
+e_019 : capture (negative)
+e_019 : "Held at the Passing Place"
+state e_020 #E0E0E0
+e_020 : discovery (neutral)
+e_020 : "Whose Name Was on the Route"
+state e_021 #FFCDD2
+e_021 : death (negative)
+e_021 : "The Shell Bank Slides"
+state e_022 #FFCDD2
+e_022 : death (negative)
+e_022 : "The Span Goes First"
+state e_023 #E0E0E0
+e_023 : setback (neutral)
+e_023 : "Turned at the Broken Span"
+state e_024 #FFCDD2
+e_024 : setback (negative)
+e_024 : "The Sluice Comes Down"
+state e_025 #FFCDD2
+e_025 : capture (negative)
+e_025 : "Held Until the Tide Turns"
+state e_026 #C8E6C9
+e_026 : completion (positive)
+e_026 : "The Tide Table Rewritten"
+state e_027 #FFCDD2
+e_027 : capture (negative)
+e_027 : "The Weir Crew Are Patient"
+state e_028 #C8E6C9
+e_028 : success (positive)
+e_028 : "Nine Hours, Nine Miles"
+state e_029 #FFCDD2
+e_029 : setback (negative)
+e_029 : "Empty Satchel, Full Tide"
+state e_030 #C8E6C9
+e_030 : success (positive)
+e_030 : "The Seal Unbroken"
+state e_031 #FFCDD2
+e_031 : setback (negative)
+e_031 : "Beaten to the Weir"
+state e_032 #C8E6C9
+e_032 : completion (positive)
+e_032 : "The Weir Reads It Aloud"
+state e_033 #FFCDD2
+e_033 : capture (negative)
+e_033 : "Detained at the Muster Yard"
+state e_034 #C8E6C9
+e_034 : success (positive)
+e_034 : "Delivered on the Turn"
+state e_035 #FFCDD2
+e_035 : setback (negative)
+e_035 : "The Seal Breaks"
+state e_036 #E0E0E0
+e_036 : discovery (neutral)
+e_036 : "What the Ledger Actually Said"
+state e_037 #FFCDD2
+e_037 : death (negative)
+e_037 : "Caught in the Overspill"
+state e_038 #C8E6C9
+e_038 : completion (positive)
+e_038 : "Both Towns in One Room"
+state e_039 #E0E0E0
+e_039 : setback (neutral)
+e_039 : "Late, But Standing"
+state e_040 #FFCDD2
+e_040 : setback (negative)
+e_040 : "Nobody Believes the Runner"
+state e_041 #E0E0E0
+e_041 : discovery (neutral)
+e_041 : "The Hand That Sealed It"
+state d00_0 #BBDEFB
+d00_0 : setup · 62w
+state d00_1 #BBDEFB
+d00_1 : setup · 68w
+state d00_2 #BBDEFB
+d00_2 : setup · 60w
+state d01_0 #BBDEFB
+d01_0 : setup · 63w
+state d01_1 #BBDEFB
+d01_1 : setup · 66w
+state d01_2 #BBDEFB
+d01_2 : setup · 61w
+state d01_3 #BBDEFB
+d01_3 : setup · 69w
+state d01_4 #BBDEFB
+d01_4 : setup · 64w
+state d02_0 #D1C4E9
+d02_0 : rising · 60w
+state d02_1 #D1C4E9
+d02_1 : rising · 72w
+state d02_2 #D1C4E9
+d02_2 : rising · 65w
+state d02_3 #D1C4E9
+d02_3 : rising · 58w
+state d02_4 #D1C4E9
+d02_4 : rising · 70w
+state d02_5 #D1C4E9
+d02_5 : rising · 63w
+state d02_6 #D1C4E9
+d02_6 : rising · 66w
+state d03_0 #D1C4E9
+d03_0 : rising · 61w
+state d03_1 #D1C4E9
+d03_1 : rising · 69w
+state d03_2 #D1C4E9
+d03_2 : rising · 64w
+state d03_3 #D1C4E9
+d03_3 : rising · 62w
+state d03_4 #D1C4E9
+d03_4 : rising · 68w
+state d03_5 #D1C4E9
+d03_5 : rising · 60w
+state d03_6 #D1C4E9
+d03_6 : rising · 72w
+state d04_0 #D1C4E9
+d04_0 : rising · 65w
+state d04_1 #D1C4E9
+d04_1 : rising · 58w
+state d04_2 #D1C4E9
+d04_2 : rising · 70w
+state d04_3 #D1C4E9
+d04_3 : rising · 63w
+state d04_4 #D1C4E9
+d04_4 : rising · 66w
+state d04_5 #D1C4E9
+d04_5 : rising · 61w
+state d04_6 #D1C4E9
+d04_6 : rising · 69w
+state d05_0 #D1C4E9
+d05_0 : rising · 64w
+state d05_1 #D1C4E9
+d05_1 : rising · 62w
+state d05_2 #D1C4E9
+d05_2 : rising · 68w
+state d05_3 #D1C4E9
+d05_3 : rising · 60w
+state d05_4 #D1C4E9
+d05_4 : rising · 72w
+state d05_5 #D1C4E9
+d05_5 : rising · 65w
+state d05_6 #D1C4E9
+d05_6 : rising · 58w
+state d06_0 #D1C4E9
+d06_0 : rising · 70w
+state d06_1 #D1C4E9
+d06_1 : rising · 63w
+state d06_2 #D1C4E9
+d06_2 : rising · 66w
+state d06_3 #D1C4E9
+d06_3 : rising · 61w
+state d06_4 #D1C4E9
+d06_4 : rising · 69w
+state d06_5 #D1C4E9
+d06_5 : rising · 64w
+state d06_6 #D1C4E9
+d06_6 : rising · 62w
+state d07_0 #D1C4E9
+d07_0 : rising · 68w
+state d07_1 #D1C4E9
+d07_1 : rising · 60w
+state d07_2 #D1C4E9
+d07_2 : rising · 72w
+state d07_3 #D1C4E9
+d07_3 : rising · 65w
+state d07_4 #D1C4E9
+d07_4 : rising · 58w
+state d07_5 #D1C4E9
+d07_5 : rising · 70w
+state d07_6 #D1C4E9
+d07_6 : rising · 63w
+state d08_0 #D1C4E9
+d08_0 : rising · 66w
+state d08_1 #D1C4E9
+d08_1 : rising · 61w
+state d08_2 #D1C4E9
+d08_2 : rising · 69w
+state d08_3 #D1C4E9
+d08_3 : rising · 64w
+state d08_4 #D1C4E9
+d08_4 : rising · 62w
+state d08_5 #D1C4E9
+d08_5 : rising · 68w
+state d08_6 #D1C4E9
+d08_6 : rising · 60w
+state d09_0 #D1C4E9
+d09_0 : rising · 72w
+state d09_1 #D1C4E9
+d09_1 : rising · 65w
+state d09_2 #D1C4E9
+d09_2 : rising · 58w
+state d09_3 #D1C4E9
+d09_3 : rising · 70w
+state d09_4 #D1C4E9
+d09_4 : rising · 63w
+state d09_5 #D1C4E9
+d09_5 : rising · 66w
+state d09_6 #D1C4E9
+d09_6 : rising · 61w
+state d10_0 #D1C4E9
+d10_0 : rising · 69w
+state d10_1 #D1C4E9
+d10_1 : rising · 64w
+state d10_2 #D1C4E9
+d10_2 : rising · 62w
+state d10_3 #D1C4E9
+d10_3 : rising · 68w
+state d10_4 #D1C4E9
+d10_4 : rising · 60w
+state d10_5 #D1C4E9
+d10_5 : rising · 72w
+state d10_6 #D1C4E9
+d10_6 : rising · 65w
+state d11_0 #D1C4E9
+d11_0 : rising · 58w
+state d11_1 #D1C4E9
+d11_1 : rising · 70w
+state d11_2 #D1C4E9
+d11_2 : rising · 63w
+state d11_3 #D1C4E9
+d11_3 : rising · 66w
+state d11_4 #D1C4E9
+d11_4 : rising · 61w
+state d11_5 #D1C4E9
+d11_5 : rising · 69w
+state d11_6 #D1C4E9
+d11_6 : rising · 64w
+state d12_0 #D1C4E9
+d12_0 : rising · 62w
+state d12_1 #D1C4E9
+d12_1 : rising · 68w
+state d12_2 #D1C4E9
+d12_2 : rising · 60w
+state d12_3 #D1C4E9
+d12_3 : rising · 72w
+state d12_4 #D1C4E9
+d12_4 : rising · 65w
+state d12_5 #D1C4E9
+d12_5 : rising · 58w
+state d12_6 #D1C4E9
+d12_6 : rising · 70w
+state d13_0 #D1C4E9
+d13_0 : rising · 63w
+state d13_1 #D1C4E9
+d13_1 : rising · 66w
+state d13_2 #D1C4E9
+d13_2 : rising · 61w
+state d13_3 #D1C4E9
+d13_3 : rising · 69w
+state d13_4 #D1C4E9
+d13_4 : rising · 64w
+state d13_5 #D1C4E9
+d13_5 : rising · 62w
+state d13_6 #D1C4E9
+d13_6 : rising · 68w
+state d14_0 #D1C4E9
+d14_0 : rising · 60w
+state d14_1 #D1C4E9
+d14_1 : rising · 72w
+state d14_2 #D1C4E9
+d14_2 : rising · 65w
+state d14_3 #D1C4E9
+d14_3 : rising · 58w
+state d14_4 #D1C4E9
+d14_4 : rising · 70w
+state d14_5 #D1C4E9
+d14_5 : rising · 63w
+state d14_6 #D1C4E9
+d14_6 : rising · 66w
+state d15_0 #D1C4E9
+d15_0 : rising · 61w
+state d15_1 #D1C4E9
+d15_1 : rising · 69w
+state d15_2 #D1C4E9
+d15_2 : rising · 64w
+state d15_3 #D1C4E9
+d15_3 : rising · 62w
+state d15_4 #D1C4E9
+d15_4 : rising · 68w
+state d15_5 #D1C4E9
+d15_5 : rising · 60w
+state d15_6 #D1C4E9
+d15_6 : rising · 72w
+state d16_0 #D1C4E9
+d16_0 : rising · 65w
+state d16_1 #D1C4E9
+d16_1 : rising · 58w
+state d16_2 #D1C4E9
+d16_2 : rising · 70w
+state d16_3 #D1C4E9
+d16_3 : rising · 63w
+state d16_4 #D1C4E9
+d16_4 : rising · 66w
+state d16_5 #D1C4E9
+d16_5 : rising · 61w
+state d16_6 #D1C4E9
+d16_6 : rising · 69w
+state d17_0 #D1C4E9
+d17_0 : rising · 64w
+state d17_1 #D1C4E9
+d17_1 : rising · 62w
+state d17_2 #D1C4E9
+d17_2 : rising · 68w
+state d17_3 #D1C4E9
+d17_3 : rising · 60w
+state d17_4 #D1C4E9
+d17_4 : rising · 72w
+state d17_5 #D1C4E9
+d17_5 : rising · 65w
+state d17_6 #D1C4E9
+d17_6 : rising · 58w
+state d18_0 #D1C4E9
+d18_0 : rising · 70w
+state d18_1 #D1C4E9
+d18_1 : rising · 63w
+state d18_2 #D1C4E9
+d18_2 : rising · 66w
+state d18_3 #D1C4E9
+d18_3 : rising · 61w
+state d18_4 #D1C4E9
+d18_4 : rising · 69w
+state d18_5 #D1C4E9
+d18_5 : rising · 64w
+state d18_6 #D1C4E9
+d18_6 : rising · 62w
+state d19_0 #D1C4E9
+d19_0 : rising · 68w
+state d19_1 #D1C4E9
+d19_1 : rising · 60w
+state d19_2 #D1C4E9
+d19_2 : rising · 72w
+state d19_3 #D1C4E9
+d19_3 : rising · 65w
+state d19_4 #D1C4E9
+d19_4 : rising · 58w
+state d19_5 #D1C4E9
+d19_5 : rising · 70w
+state d19_6 #D1C4E9
+d19_6 : rising · 63w
+state d20_0 #D1C4E9
+d20_0 : rising · 66w
+state d20_1 #D1C4E9
+d20_1 : rising · 61w
+state d20_2 #D1C4E9
+d20_2 : rising · 69w
+state d20_3 #D1C4E9
+d20_3 : rising · 64w
+state d20_4 #D1C4E9
+d20_4 : rising · 62w
+state d20_5 #D1C4E9
+d20_5 : rising · 68w
+state d20_6 #D1C4E9
+d20_6 : rising · 60w
+state d21_0 #FFE0B2
+d21_0 : climax · 72w
+state d21_1 #FFE0B2
+d21_1 : climax · 65w
+state d21_2 #FFE0B2
+d21_2 : climax · 58w
+state d21_3 #FFE0B2
+d21_3 : climax · 70w
+state d21_4 #FFE0B2
+d21_4 : climax · 63w
+state d21_5 #FFE0B2
+d21_5 : climax · 66w
+state d21_6 #FFE0B2
+d21_6 : climax · 61w
+state d22_0 #FFE0B2
+d22_0 : climax · 69w
+state d22_1 #FFE0B2
+d22_1 : climax · 64w
+state d22_2 #FFE0B2
+d22_2 : climax · 62w
+state d22_3 #FFE0B2
+d22_3 : climax · 68w
+state d22_4 #FFE0B2
+d22_4 : climax · 60w
+state d22_5 #FFE0B2
+d22_5 : climax · 72w
+state d22_6 #FFE0B2
+d22_6 : climax · 65w
+state d23_0 #FFE0B2
+d23_0 : climax · 58w
+state d23_1 #FFE0B2
+d23_1 : climax · 70w
+state d23_2 #FFE0B2
+d23_2 : climax · 63w
+state d23_3 #FFE0B2
+d23_3 : climax · 66w
+state d23_4 #FFE0B2
+d23_4 : climax · 61w
+state d23_5 #FFE0B2
+d23_5 : climax · 69w
+state d23_6 #FFE0B2
+d23_6 : climax · 64w
+state c00_0_1 #D1C4E9
+c00_0_1 : rising · 62w
+state c00_0_2 #D1C4E9
+c00_0_2 : rising · 58w
+state c00_0_3 #D1C4E9
+c00_0_3 : rising · 66w
+state c00_1_1 #D1C4E9
+c00_1_1 : rising · 58w
+state c00_1_2 #D1C4E9
+c00_1_2 : rising · 66w
+state c01_1_2 #D1C4E9
+c01_1_2 : rising · 55w
+state c01_2_1 #D1C4E9
+c01_2_1 : rising · 55w
+state c01_2_2 #D1C4E9
+c01_2_2 : rising · 62w
+state c01_3_1 #D1C4E9
+c01_3_1 : rising · 62w
+state c01_3_2 #D1C4E9
+c01_3_2 : rising · 58w
+state c02_3_1 #D1C4E9
+c02_3_1 : rising · 57w
+state c02_3_2 #D1C4E9
+c02_3_2 : rising · 63w
+state c02_3_3 #D1C4E9
+c02_3_3 : rising · 55w
+state c02_4_1 #D1C4E9
+c02_4_1 : rising · 63w
+state c02_4_2 #D1C4E9
+c02_4_2 : rising · 55w
+state c03_4_1 #D1C4E9
+c03_4_1 : rising · 54w
+state c03_4_2 #D1C4E9
+c03_4_2 : rising · 60w
+state c03_5_1 #D1C4E9
+c03_5_1 : rising · 60w
+state c03_5_2 #D1C4E9
+c03_5_2 : rising · 57w
+state c03_6_1 #D1C4E9
+c03_6_1 : rising · 57w
+state c04_0_1 #D1C4E9
+c04_0_1 : rising · 60w
+state c04_5_2 #D1C4E9
+c04_5_2 : rising · 66w
+state c04_6_1 #D1C4E9
+c04_6_1 : rising · 66w
+state c04_6_2 #D1C4E9
+c04_6_2 : rising · 54w
+state c04_6_3 #D1C4E9
+c04_6_3 : rising · 60w
+state c05_0_1 #D1C4E9
+c05_0_1 : rising · 58w
+state c05_0_2 #D1C4E9
+c05_0_2 : rising · 66w
+state c05_0_3 #D1C4E9
+c05_0_3 : rising · 54w
+state c05_1_1 #D1C4E9
+c05_1_1 : rising · 66w
+state c05_6_2 #D1C4E9
+c05_6_2 : rising · 62w
+state c06_1_2 #D1C4E9
+c06_1_2 : rising · 62w
+state c06_2_1 #D1C4E9
+c06_2_1 : rising · 62w
+state c06_2_2 #D1C4E9
+c06_2_2 : rising · 58w
+state c06_3_1 #D1C4E9
+c06_3_1 : rising · 58w
+state c06_3_2 #D1C4E9
+c06_3_2 : rising · 66w
+state c07_3_1 #D1C4E9
+c07_3_1 : rising · 63w
+state c07_3_2 #D1C4E9
+c07_3_2 : rising · 55w
+state c07_3_3 #D1C4E9
+c07_3_3 : rising · 62w
+state c07_4_1 #D1C4E9
+c07_4_1 : rising · 55w
+state c07_4_2 #D1C4E9
+c07_4_2 : rising · 62w
+state c08_1_1 #D1C4E9
+c08_1_1 : rising · 58w
+state c08_1_2 #D1C4E9
+c08_1_2 : rising · 66w
+state c08_2_1 #D1C4E9
+c08_2_1 : rising · 66w
+state c08_2_2 #D1C4E9
+c08_2_2 : rising · 54w
+state c08_2_3 #D1C4E9
+c08_2_3 : rising · 60w
+state c09_1_2 #D1C4E9
+c09_1_2 : rising · 55w
+state c09_1_3 #D1C4E9
+c09_1_3 : rising · 62w
+state c09_2_1 #D1C4E9
+c09_2_1 : rising · 55w
+state c09_2_2 #D1C4E9
+c09_2_2 : rising · 62w
+state c09_3_1 #D1C4E9
+c09_3_1 : rising · 62w
+state c10_2_2 #D1C4E9
+c10_2_2 : rising · 57w
+state c10_3_1 #D1C4E9
+c10_3_1 : rising · 57w
+state c10_3_2 #D1C4E9
+c10_3_2 : rising · 63w
+state c10_4_1 #D1C4E9
+c10_4_1 : rising · 63w
+state c10_4_2 #D1C4E9
+c10_4_2 : rising · 55w
+state c11_0_1 #D1C4E9
+c11_0_1 : rising · 55w
+state c11_5_1 #D1C4E9
+c11_5_1 : rising · 60w
+state c11_5_2 #D1C4E9
+c11_5_2 : rising · 57w
+state c11_6_1 #D1C4E9
+c11_6_1 : rising · 57w
+state c11_6_2 #D1C4E9
+c11_6_2 : rising · 63w
+state c12_0_1 #D1C4E9
+c12_0_1 : rising · 60w
+state c12_0_2 #D1C4E9
+c12_0_2 : rising · 57w
+state c12_1_1 #D1C4E9
+c12_1_1 : rising · 57w
+state c12_1_2 #D1C4E9
+c12_1_2 : rising · 63w
+state c12_6_2 #D1C4E9
+c12_6_2 : rising · 54w
+state c13_1_1 #D1C4E9
+c13_1_1 : rising · 66w
+state c13_1_2 #D1C4E9
+c13_1_2 : rising · 54w
+state c13_2_1 #D1C4E9
+c13_2_1 : rising · 54w
+state c13_2_2 #D1C4E9
+c13_2_2 : rising · 60w
+state c13_2_3 #D1C4E9
+c13_2_3 : rising · 57w
+state c14_1_1 #D1C4E9
+c14_1_1 : rising · 55w
+state c14_1_2 #D1C4E9
+c14_1_2 : rising · 62w
+state c14_1_3 #D1C4E9
+c14_1_3 : rising · 58w
+state c14_2_1 #D1C4E9
+c14_2_1 : rising · 62w
+state c14_2_2 #D1C4E9
+c14_2_2 : rising · 58w
+state c15_2_1 #D1C4E9
+c15_2_1 : rising · 57w
+state c15_2_2 #D1C4E9
+c15_2_2 : rising · 63w
+state c15_3_1 #D1C4E9
+c15_3_1 : rising · 63w
+state c15_3_2 #D1C4E9
+c15_3_2 : rising · 55w
+state c15_4_1 #D1C4E9
+c15_4_1 : rising · 55w
+state c16_0_1 #D1C4E9
+c16_0_1 : rising · 62w
+state c16_5_1 #D1C4E9
+c16_5_1 : rising · 57w
+state c16_5_2 #D1C4E9
+c16_5_2 : rising · 63w
+state c16_6_1 #D1C4E9
+c16_6_1 : rising · 63w
+state c16_6_2 #D1C4E9
+c16_6_2 : rising · 55w
+state c17_0_1 #D1C4E9
+c17_0_1 : rising · 57w
+state c17_0_2 #D1C4E9
+c17_0_2 : rising · 63w
+state c17_1_1 #D1C4E9
+c17_1_1 : rising · 63w
+state c17_1_2 #D1C4E9
+c17_1_2 : rising · 55w
+state c17_6_2 #D1C4E9
+c17_6_2 : rising · 60w
+state c18_1_1 #D1C4E9
+c18_1_1 : rising · 54w
+state c18_1_2 #D1C4E9
+c18_1_2 : rising · 60w
+state c18_2_1 #D1C4E9
+c18_2_1 : rising · 60w
+state c18_2_2 #D1C4E9
+c18_2_2 : rising · 57w
+state c18_2_3 #D1C4E9
+c18_2_3 : rising · 63w
+state c19_0_2 #D1C4E9
+c19_0_2 : rising · 62w
+state c19_1_1 #D1C4E9
+c19_1_1 : rising · 62w
+state c19_1_2 #D1C4E9
+c19_1_2 : rising · 58w
+state c19_1_3 #D1C4E9
+c19_1_3 : rising · 66w
+state c19_2_1 #D1C4E9
+c19_2_1 : rising · 58w
+state c20_1_2 #D1C4E9
+c20_1_2 : rising · 63w
+state c20_2_1 #D1C4E9
+c20_2_1 : rising · 63w
+state c20_2_2 #D1C4E9
+c20_2_2 : rising · 55w
+state c20_3_1 #D1C4E9
+c20_3_1 : rising · 55w
+state c20_3_2 #D1C4E9
+c20_3_2 : rising · 62w
+state c21_0_1 #D1C4E9
+c21_0_1 : rising · 58w
+state c21_5_1 #D1C4E9
+c21_5_1 : rising · 63w
+state c21_5_2 #D1C4E9
+c21_5_2 : rising · 55w
+state c21_6_1 #D1C4E9
+c21_6_1 : rising · 55w
+state c21_6_2 #D1C4E9
+c21_6_2 : rising · 62w
+state c22_0_1 #D1C4E9
+c22_0_1 : rising · 63w
+state c22_0_2 #D1C4E9
+c22_0_2 : rising · 55w
+state c22_1_1 #D1C4E9
+c22_1_1 : rising · 55w
+state c22_1_2 #D1C4E9
+c22_1_2 : rising · 62w
+state c22_6_2 #D1C4E9
+c22_6_2 : rising · 57w
+n_open --> n_brief : Take the ledger and go
+n_brief --> n_water : Head down to the water
+n_water --> d00_0 : Take the coal wharf
+n_water --> d00_1 : Cut across to the ferry steps
+n_water --> d00_2 : Follow the drain culvert
+d00_0 --> d01_0 : Take the coal wharf
+d00_0 --> c00_0_1 : Cut across to the ferry steps
+d00_0 --> c00_0_2 : Follow the drain culvert
+d00_0 --> c00_0_3 : Work along the tollhouse arch
+d00_1 --> d01_1 : Follow the ferry steps
+d00_1 --> c00_1_1 : Work along the drain culvert
+d00_1 --> c00_1_2 : Drop down to the tollhouse arch
+d00_2 --> d01_2 : Drop down to the drain culvert
+d00_2 --> d01_3 : Push out onto the tollhouse arch
+d00_2 --> d01_4 : Double back to the netting sheds
+d01_0 --> d02_0 : Work along the coal wharf
+d01_0 --> d02_1 : Drop down to the ferry steps
+d01_0 --> d02_2 : Push out onto the drain culvert
+d01_1 --> d02_1 : Push out onto the ferry steps
+d01_1 --> d02_2 : Double back to the drain culvert
+d01_1 --> c01_1_2 : Head for the tollhouse arch
+d01_2 --> d02_2 : Head for the drain culvert
+d01_2 --> c01_2_1 : Wade for the tollhouse arch
+d01_2 --> c01_2_2 : Climb to the netting sheds
+d01_3 --> d02_3 : Climb to the tollhouse arch
+d01_3 --> c01_3_1 : Keep to the netting sheds
+d01_3 --> c01_3_2 : Ride the ebb to the ice house
+d01_4 --> d02_4 : Ride the ebb to the netting sheds
+d01_4 --> d02_5 : Take the ice house
+d01_4 --> d02_6 : Cut across to the slipway
+d01_4 --> d02_0 : Follow the coal wharf
+d02_0 --> d03_0 : Double back to the coal wharf
+d02_0 --> d03_1 : Head for the ferry steps
+d02_0 --> d03_2 : Wade for the drain culvert
+d02_1 --> d03_1 : Wade for the ferry steps
+d02_1 --> d03_2 : Climb to the drain culvert
+d02_1 --> d03_3 : Keep to the tollhouse arch
+d02_2 --> d03_2 : Keep to the drain culvert
+d02_2 --> d03_3 : Ride the ebb to the tollhouse arch
+d02_2 --> d03_4 : Take the netting sheds
+d02_3 --> d03_3 : Take the tollhouse arch
+d02_3 --> c02_3_1 : Cut across to the netting sheds
+d02_3 --> c02_3_2 : Follow the ice house
+d02_3 --> c02_3_3 : Work along the slipway
+d02_4 --> d03_4 : Follow the netting sheds
+d02_4 --> c02_4_1 : Work along the ice house
+d02_4 --> c02_4_2 : Drop down to the slipway
+d02_5 --> d03_5 : Drop down to the ice house
+d02_5 --> d03_6 : Push out onto the slipway
+d02_5 --> d03_0 : Double back to the coal wharf
+d02_6 --> d03_6 : Double back to the slipway
+d02_6 --> d03_0 : Head for the coal wharf
+d02_6 --> d03_1 : Wade for the ferry steps
+d03_0 --> d04_0 : Climb to the cut
+d03_0 --> d04_1 : Keep to the reed line
+d03_0 --> d04_2 : Ride the ebb to the plank walk
+d03_1 --> d04_1 : Ride the ebb to the reed line
+d03_1 --> d04_2 : Take the plank walk
+d03_1 --> d04_3 : Cut across to the eel traps
+d03_2 --> d04_2 : Cut across to the plank walk
+d03_2 --> d04_3 : Follow the eel traps
+d03_2 --> d04_4 : Work along the burnt hide
+d03_2 --> d04_5 : Drop down to the drovers track
+d03_3 --> d04_3 : Work along the eel traps
+d03_3 --> d04_4 : Drop down to the burnt hide
+d03_3 --> d04_5 : Push out onto the drovers track
+d03_4 --> d04_4 : Push out onto the burnt hide
+d03_4 --> c03_4_1 : Double back to the drovers track
+d03_4 --> c03_4_2 : Head for the black pool
+d03_5 --> d04_5 : Head for the drovers track
+d03_5 --> c03_5_1 : Wade for the black pool
+d03_5 --> c03_5_2 : Climb to the cut
+d03_6 --> d04_6 : Climb to the black pool
+d03_6 --> c03_6_1 : Keep to the cut
+d03_6 --> d04_1 : Ride the ebb to the reed line
+d04_0 --> d05_0 : Take the cut
+d04_0 --> c04_0_1 : Cut across to the reed line
+d04_0 --> d05_2 : Follow the plank walk
+d04_1 --> d05_1 : Follow the reed line
+d04_1 --> d05_2 : Work along the plank walk
+d04_1 --> d05_3 : Drop down to the eel traps
+d04_1 --> d05_4 : Push out onto the burnt hide
+d04_2 --> d05_2 : Drop down to the plank walk
+d04_2 --> d05_3 : Push out onto the eel traps
+d04_2 --> d05_4 : Double back to the burnt hide
+d04_3 --> d05_3 : Double back to the eel traps
+d04_3 --> d05_4 : Head for the burnt hide
+d04_3 --> d05_5 : Wade for the drovers track
+d04_4 --> d05_4 : Wade for the burnt hide
+d04_4 --> d05_5 : Climb to the drovers track
+d04_4 --> d05_6 : Keep to the black pool
+d04_5 --> d05_5 : Keep to the drovers track
+d04_5 --> d05_6 : Ride the ebb to the black pool
+d04_5 --> c04_5_2 : Take the cut
+d04_6 --> d05_6 : Take the black pool
+d04_6 --> c04_6_1 : Cut across to the cut
+d04_6 --> c04_6_2 : Follow the reed line
+d04_6 --> c04_6_3 : Work along the plank walk
+d05_0 --> d06_0 : Work along the cut
+d05_0 --> c05_0_1 : Drop down to the reed line
+d05_0 --> c05_0_2 : Push out onto the plank walk
+d05_0 --> c05_0_3 : Double back to the eel traps
+d05_1 --> d06_1 : Push out onto the reed line
+d05_1 --> c05_1_1 : Double back to the plank walk
+d05_1 --> d06_3 : Head for the eel traps
+d05_2 --> d06_2 : Head for the plank walk
+d05_2 --> d06_3 : Wade for the eel traps
+d05_2 --> d06_4 : Climb to the burnt hide
+d05_3 --> d06_3 : Climb to the eel traps
+d05_3 --> d06_4 : Keep to the burnt hide
+d05_3 --> d06_5 : Ride the ebb to the drovers track
+d05_4 --> d06_4 : Ride the ebb to the burnt hide
+d05_4 --> d06_5 : Take the drovers track
+d05_4 --> d06_6 : Cut across to the black pool
+d05_5 --> d06_5 : Cut across to the drovers track
+d05_5 --> d06_6 : Follow the black pool
+d05_5 --> d06_0 : Work along the cut
+d05_5 --> d06_1 : Drop down to the reed line
+d05_6 --> d06_6 : Work along the black pool
+d05_6 --> d06_0 : Drop down to the cut
+d05_6 --> c05_6_2 : Push out onto the reed line
+d06_0 --> d07_0 : Double back to the cut
+d06_0 --> d07_1 : Head for the reed line
+d06_0 --> d07_2 : Wade for the plank walk
+d06_1 --> d07_1 : Wade for the reed line
+d06_1 --> d07_2 : Climb to the plank walk
+d06_1 --> c06_1_2 : Keep to the eel traps
+d06_2 --> d07_2 : Keep to the plank walk
+d06_2 --> c06_2_1 : Ride the ebb to the eel traps
+d06_2 --> c06_2_2 : Take the burnt hide
+d06_3 --> d07_3 : Take the eel traps
+d06_3 --> c06_3_1 : Cut across to the burnt hide
+d06_3 --> c06_3_2 : Follow the drovers track
+d06_4 --> d07_4 : Follow the burnt hide
+d06_4 --> d07_5 : Work along the drovers track
+d06_4 --> d07_6 : Drop down to the black pool
+d06_4 --> d07_0 : Push out onto the cut
+d06_5 --> d07_5 : Drop down to the drovers track
+d06_5 --> d07_6 : Push out onto the black pool
+d06_5 --> d07_0 : Double back to the cut
+d06_6 --> d07_6 : Double back to the black pool
+d06_6 --> d07_0 : Head for the cut
+d06_6 --> d07_1 : Wade for the reed line
+d07_0 --> d08_0 : Climb to the barge hulk
+d07_0 --> d08_1 : Keep to the crane frame
+d07_0 --> d08_2 : Ride the ebb to the tar shed
+d07_1 --> d08_1 : Ride the ebb to the crane frame
+d07_1 --> d08_2 : Take the tar shed
+d07_1 --> d08_3 : Cut across to the boiler yard
+d07_2 --> d08_2 : Cut across to the tar shed
+d07_2 --> d08_3 : Follow the boiler yard
+d07_2 --> d08_4 : Work along the sunk lighter
+d07_3 --> d08_3 : Work along the boiler yard
+d07_3 --> c07_3_1 : Drop down to the sunk lighter
+d07_3 --> c07_3_2 : Push out onto the chain store
+d07_3 --> c07_3_3 : Double back to the dry dock
+d07_4 --> d08_4 : Push out onto the sunk lighter
+d07_4 --> c07_4_1 : Double back to the chain store
+d07_4 --> c07_4_2 : Head for the dry dock
+d07_5 --> d08_5 : Head for the chain store
+d07_5 --> d08_6 : Wade for the dry dock
+d07_5 --> d08_0 : Climb to the barge hulk
+d07_6 --> d08_6 : Climb to the dry dock
+d07_6 --> d08_0 : Keep to the barge hulk
+d07_6 --> d08_1 : Ride the ebb to the crane frame
+d08_0 --> d09_0 : Take the barge hulk
+d08_0 --> e_000 : Gamble on the tar shed
+d08_0 --> e_001 : Force a way through the boiler yard
+d08_1 --> d09_1 : Follow the crane frame
+d08_1 --> c08_1_1 : Work along the tar shed
+d08_1 --> c08_1_2 : Drop down to the boiler yard
+d08_2 --> d09_2 : Drop down to the tar shed
+d08_2 --> c08_2_1 : Push out onto the boiler yard
+d08_2 --> c08_2_2 : Double back to the sunk lighter
+d08_2 --> c08_2_3 : Head for the chain store
+d08_3 --> d09_3 : Double back to the boiler yard
+d08_3 --> d09_4 : Head for the sunk lighter
+d08_3 --> d09_5 : Wade for the chain store
+d08_4 --> d09_4 : Wade for the sunk lighter
+d08_4 --> e_000 : Run flat out for the dry dock
+d08_4 --> e_001 : Trust your feet on the barge hulk
+d08_5 --> d09_5 : Keep to the chain store
+d08_5 --> e_000 : Trust your feet on the barge hulk
+d08_5 --> e_001 : Go straight over the crane frame
+d08_6 --> d09_6 : Take the dry dock
+d08_6 --> e_000 : Go straight over the crane frame
+d08_6 --> e_001 : Break for the tar shed
+d09_0 --> d10_0 : Work along the barge hulk
+d09_0 --> e_003 : Trust your feet on the tar shed
+d09_0 --> e_002 : Go straight over the boiler yard
+d09_1 --> d10_1 : Push out onto the crane frame
+d09_1 --> e_003 : Go straight over the boiler yard
+d09_1 --> c09_1_2 : Head for the boiler yard
+d09_1 --> c09_1_3 : Wade for the sunk lighter
+d09_2 --> d10_2 : Head for the tar shed
+d09_2 --> c09_2_1 : Wade for the boiler yard
+d09_2 --> c09_2_2 : Climb to the sunk lighter
+d09_3 --> d10_3 : Climb to the boiler yard
+d09_3 --> c09_3_1 : Keep to the sunk lighter
+d09_3 --> d10_5 : Ride the ebb to the chain store
+d09_4 --> d10_4 : Ride the ebb to the sunk lighter
+d09_4 --> d10_5 : Take the chain store
+d09_4 --> d10_6 : Cut across to the dry dock
+d09_5 --> d10_5 : Cut across to the chain store
+d09_5 --> e_002 : Swim for the barge hulk
+d09_5 --> e_003 : Chance the far side of the crane frame
+d09_6 --> d10_6 : Work along the dry dock
+d09_6 --> e_002 : Chance the far side of the crane frame
+d09_6 --> e_003 : Run flat out for the tar shed
+d09_6 --> e_002 : Trust your feet on the boiler yard
+d10_0 --> d11_0 : Double back to the barge hulk
+d10_0 --> e_004 : Swim for the tar shed
+d10_0 --> e_005 : Chance the far side of the boiler yard
+d10_0 --> e_004 : Run flat out for the sunk lighter
+d10_1 --> d11_1 : Wade for the crane frame
+d10_1 --> e_005 : Chance the far side of the boiler yard
+d10_1 --> e_004 : Run flat out for the sunk lighter
+d10_2 --> d11_2 : Keep to the tar shed
+d10_2 --> e_005 : Run flat out for the sunk lighter
+d10_2 --> c10_2_2 : Take the sunk lighter
+d10_3 --> d11_3 : Take the boiler yard
+d10_3 --> c10_3_1 : Cut across to the sunk lighter
+d10_3 --> c10_3_2 : Follow the chain store
+d10_4 --> d11_4 : Follow the sunk lighter
+d10_4 --> c10_4_1 : Work along the chain store
+d10_4 --> c10_4_2 : Drop down to the dry dock
+d10_5 --> d11_5 : Drop down to the chain store
+d10_5 --> d11_6 : Push out onto the dry dock
+d10_5 --> d11_0 : Double back to the barge hulk
+d10_5 --> d11_1 : Head for the crane frame
+d10_6 --> d11_6 : Double back to the dry dock
+d10_6 --> e_004 : Gamble on the crane frame
+d10_6 --> e_005 : Force a way through the tar shed
+d11_0 --> d12_0 : Climb to the crystal pans
+d11_0 --> c11_0_1 : Keep to the brine ladder
+d11_0 --> d12_2 : Ride the ebb to the pump house
+d11_1 --> d12_1 : Ride the ebb to the brine ladder
+d11_1 --> d12_2 : Take the pump house
+d11_1 --> e_006 : Force a way through the sunk lighter
+d11_2 --> d12_2 : Cut across to the pump house
+d11_2 --> e_007 : Force a way through the sunk lighter
+d11_2 --> e_006 : Swim for the chain store
+d11_3 --> d12_3 : Work along the salt road
+d11_3 --> e_007 : Swim for the chain store
+d11_3 --> e_006 : Chance the far side of the dry dock
+d11_4 --> d12_4 : Push out onto the wind engine
+d11_4 --> e_007 : Chance the far side of the dry dock
+d11_4 --> e_006 : Run flat out for the barge hulk
+d11_4 --> e_007 : Trust your feet on the crane frame
+d11_5 --> d12_5 : Head for the settling beds
+d11_5 --> c11_5_1 : Wade for the tally hut
+d11_5 --> c11_5_2 : Climb to the crystal pans
+d11_6 --> d12_6 : Climb to the tally hut
+d11_6 --> c11_6_1 : Keep to the crystal pans
+d11_6 --> c11_6_2 : Ride the ebb to the brine ladder
+d12_0 --> d13_0 : Take the crystal pans
+d12_0 --> c12_0_1 : Cut across to the brine ladder
+d12_0 --> c12_0_2 : Follow the pump house
+d12_1 --> d13_1 : Follow the brine ladder
+d12_1 --> c12_1_1 : Work along the pump house
+d12_1 --> c12_1_2 : Drop down to the salt road
+d12_2 --> d13_2 : Drop down to the pump house
+d12_2 --> d13_3 : Push out onto the salt road
+d12_2 --> d13_4 : Double back to the wind engine
+d12_3 --> d13_3 : Double back to the salt road
+d12_3 --> e_008 : Break for the settling beds
+d12_3 --> e_009 : Gamble on the tally hut
+d12_3 --> e_008 : Force a way through the crystal pans
+d12_4 --> d13_4 : Wade for the wind engine
+d12_4 --> e_009 : Gamble on the tally hut
+d12_4 --> e_008 : Force a way through the crystal pans
+d12_5 --> d13_5 : Keep to the settling beds
+d12_5 --> e_009 : Force a way through the crystal pans
+d12_5 --> e_008 : Swim for the brine ladder
+d12_6 --> d13_6 : Take the tally hut
+d12_6 --> e_009 : Swim for the brine ladder
+d12_6 --> c12_6_2 : Follow the brine ladder
+d13_0 --> d14_0 : Work along the crystal pans
+d13_0 --> e_010 : Force a way through the pump house
+d13_0 --> e_011 : Swim for the salt road
+d13_1 --> d14_1 : Push out onto the brine ladder
+d13_1 --> c13_1_1 : Double back to the pump house
+d13_1 --> c13_1_2 : Head for the salt road
+d13_2 --> d14_2 : Head for the pump house
+d13_2 --> c13_2_1 : Wade for the salt road
+d13_2 --> c13_2_2 : Climb to the wind engine
+d13_2 --> c13_2_3 : Keep to the settling beds
+d13_3 --> d14_3 : Climb to the salt road
+d13_3 --> d14_4 : Keep to the wind engine
+d13_3 --> d14_5 : Ride the ebb to the settling beds
+d13_4 --> d14_4 : Ride the ebb to the wind engine
+d13_4 --> e_010 : Trust your feet on the tally hut
+d13_4 --> e_011 : Go straight over the crystal pans
+d13_5 --> d14_5 : Cut across to the settling beds
+d13_5 --> e_010 : Go straight over the crystal pans
+d13_5 --> e_011 : Break for the brine ladder
+d13_6 --> d14_6 : Work along the tally hut
+d13_6 --> e_010 : Break for the brine ladder
+d13_6 --> e_011 : Gamble on the pump house
+d14_0 --> d15_0 : Double back to the crystal pans
+d14_0 --> e_012 : Go straight over the pump house
+d14_0 --> e_013 : Break for the salt road
+d14_1 --> d15_1 : Wade for the brine ladder
+d14_1 --> c14_1_1 : Climb to the pump house
+d14_1 --> c14_1_2 : Keep to the salt road
+d14_1 --> c14_1_3 : Ride the ebb to the wind engine
+d14_2 --> d15_2 : Keep to the pump house
+d14_2 --> c14_2_1 : Ride the ebb to the salt road
+d14_2 --> c14_2_2 : Take the wind engine
+d14_3 --> d15_3 : Take the salt road
+d14_3 --> d15_4 : Cut across to the wind engine
+d14_3 --> d15_5 : Follow the settling beds
+d14_4 --> d15_4 : Follow the wind engine
+d14_4 --> d15_5 : Work along the settling beds
+d14_4 --> e_012 : Chance the far side of the crystal pans
+d14_5 --> d15_5 : Drop down to the settling beds
+d14_5 --> e_013 : Chance the far side of the crystal pans
+d14_5 --> e_012 : Run flat out for the brine ladder
+d14_6 --> d15_6 : Double back to the tally hut
+d14_6 --> e_013 : Run flat out for the brine ladder
+d14_6 --> e_012 : Trust your feet on the pump house
+d14_6 --> e_013 : Go straight over the salt road
+d15_0 --> d16_0 : Climb to the low arches
+d15_0 --> e_015 : Chance the far side of the pump house
+d15_0 --> e_014 : Run flat out for the salt road
+d15_0 --> e_015 : Trust your feet on the wind engine
+d15_1 --> d16_1 : Ride the ebb to the counting stones
+d15_1 --> e_014 : Run flat out for the salt road
+d15_1 --> e_015 : Trust your feet on the wind engine
+d15_2 --> d16_2 : Cut across to the passing place
+d15_2 --> c15_2_1 : Follow the broken span
+d15_2 --> c15_2_2 : Work along the tide gauge
+d15_3 --> d16_3 : Work along the broken span
+d15_3 --> c15_3_1 : Drop down to the tide gauge
+d15_3 --> c15_3_2 : Push out onto the beacon post
+d15_4 --> d16_4 : Push out onto the tide gauge
+d15_4 --> c15_4_1 : Double back to the beacon post
+d15_4 --> d16_6 : Head for the shell bank
+d15_5 --> d16_5 : Head for the beacon post
+d15_5 --> d16_6 : Wade for the shell bank
+d15_5 --> d16_0 : Climb to the low arches
+d15_5 --> e_014 : Swim for the pump house
+d15_6 --> d16_6 : Climb to the shell bank
+d15_6 --> e_015 : Force a way through the brine ladder
+d15_6 --> e_014 : Swim for the pump house
+d16_0 --> d17_0 : Take the low arches
+d16_0 --> c16_0_1 : Cut across to the counting stones
+d16_0 --> d17_2 : Follow the passing place
+d16_1 --> d17_1 : Follow the counting stones
+d16_1 --> d17_2 : Work along the passing place
+d16_1 --> e_016 : Swim for the tide gauge
+d16_2 --> d17_2 : Drop down to the passing place
+d16_2 --> e_017 : Swim for the tide gauge
+d16_2 --> e_016 : Chance the far side of the beacon post
+d16_3 --> d17_3 : Double back to the broken span
+d16_3 --> e_017 : Chance the far side of the beacon post
+d16_3 --> e_016 : Run flat out for the shell bank
+d16_4 --> d17_4 : Wade for the tide gauge
+d16_4 --> e_017 : Run flat out for the shell bank
+d16_4 --> e_016 : Trust your feet on the low arches
+d16_4 --> e_017 : Go straight over the counting stones
+d16_5 --> d17_5 : Keep to the beacon post
+d16_5 --> c16_5_1 : Ride the ebb to the shell bank
+d16_5 --> c16_5_2 : Take the low arches
+d16_6 --> d17_6 : Take the shell bank
+d16_6 --> c16_6_1 : Cut across to the low arches
+d16_6 --> c16_6_2 : Follow the counting stones
+d17_0 --> d18_0 : Work along the low arches
+d17_0 --> c17_0_1 : Drop down to the counting stones
+d17_0 --> c17_0_2 : Push out onto the passing place
+d17_1 --> d18_1 : Push out onto the counting stones
+d17_1 --> c17_1_1 : Double back to the passing place
+d17_1 --> c17_1_2 : Head for the broken span
+d17_2 --> d18_2 : Head for the passing place
+d17_2 --> d18_3 : Wade for the broken span
+d17_2 --> d18_4 : Climb to the tide gauge
+d17_3 --> d18_3 : Climb to the broken span
+d17_3 --> e_018 : Gamble on the beacon post
+d17_3 --> e_019 : Force a way through the shell bank
+d17_3 --> e_018 : Swim for the low arches
+d17_4 --> d18_4 : Ride the ebb to the tide gauge
+d17_4 --> e_019 : Force a way through the shell bank
+d17_4 --> e_018 : Swim for the low arches
+d17_5 --> d18_5 : Cut across to the beacon post
+d17_5 --> e_019 : Swim for the low arches
+d17_5 --> e_018 : Chance the far side of the counting ston...
+d17_6 --> d18_6 : Work along the shell bank
+d17_6 --> e_019 : Chance the far side of the counting ston...
+d17_6 --> c17_6_2 : Push out onto the counting stones
+d18_0 --> d19_0 : Double back to the low arches
+d18_0 --> e_020 : Swim for the passing place
+d18_0 --> e_021 : Chance the far side of the broken span
+d18_1 --> d19_1 : Wade for the counting stones
+d18_1 --> c18_1_1 : Climb to the passing place
+d18_1 --> c18_1_2 : Keep to the broken span
+d18_2 --> d19_2 : Keep to the passing place
+d18_2 --> c18_2_1 : Ride the ebb to the broken span
+d18_2 --> c18_2_2 : Take the tide gauge
+d18_2 --> c18_2_3 : Cut across to the beacon post
+d18_3 --> d19_3 : Take the broken span
+d18_3 --> d19_4 : Cut across to the tide gauge
+d18_3 --> d19_5 : Follow the beacon post
+d18_4 --> d19_4 : Follow the tide gauge
+d18_4 --> e_020 : Go straight over the shell bank
+d18_4 --> e_021 : Break for the low arches
+d18_5 --> d19_5 : Drop down to the beacon post
+d18_5 --> e_020 : Break for the low arches
+d18_5 --> e_021 : Gamble on the counting stones
+d18_6 --> d19_6 : Double back to the shell bank
+d18_6 --> e_020 : Gamble on the counting stones
+d18_6 --> e_021 : Force a way through the passing place
+d19_0 --> d20_0 : Climb to the fish ladder
+d19_0 --> e_023 : Break for the passing place
+d19_0 --> c19_0_2 : Ride the ebb to the keepers house
+d19_1 --> d20_1 : Ride the ebb to the sluice gate
+d19_1 --> c19_1_1 : Take the keepers house
+d19_1 --> c19_1_2 : Cut across to the overspill
+d19_1 --> c19_1_3 : Follow the weir crest
+d19_2 --> d20_2 : Cut across to the keepers house
+d19_2 --> c19_2_1 : Follow the overspill
+d19_2 --> d20_4 : Work along the weir crest
+d19_3 --> d20_3 : Work along the overspill
+d19_3 --> d20_4 : Drop down to the weir crest
+d19_3 --> d20_5 : Push out onto the gauge tower
+d19_4 --> d20_4 : Push out onto the weir crest
+d19_4 --> e_022 : Chance the far side of the shell bank
+d19_4 --> e_023 : Run flat out for the low arches
+d19_5 --> d20_5 : Head for the gauge tower
+d19_5 --> e_022 : Run flat out for the low arches
+d19_5 --> e_023 : Trust your feet on the counting stones
+d19_6 --> d20_6 : Climb to the muster yard
+d19_6 --> e_022 : Trust your feet on the counting stones
+d19_6 --> e_023 : Go straight over the passing place
+d19_6 --> e_022 : Break for the broken span
+d20_0 --> d21_0 : Take the fish ladder
+d20_0 --> e_024 : Run flat out for the keepers house
+d20_0 --> e_025 : Trust your feet on the overspill
+d20_0 --> e_024 : Go straight over the weir crest
+d20_1 --> d21_1 : Follow the sluice gate
+d20_1 --> e_025 : Trust your feet on the overspill
+d20_1 --> c20_1_2 : Drop down to the overspill
+d20_2 --> d21_2 : Drop down to the keepers house
+d20_2 --> c20_2_1 : Push out onto the overspill
+d20_2 --> c20_2_2 : Double back to the weir crest
+d20_3 --> d21_3 : Double back to the overspill
+d20_3 --> c20_3_1 : Head for the weir crest
+d20_3 --> c20_3_2 : Wade for the gauge tower
+d20_4 --> d21_4 : Wade for the weir crest
+d20_4 --> d21_5 : Climb to the gauge tower
+d20_4 --> d21_6 : Keep to the muster yard
+d20_5 --> d21_5 : Keep to the gauge tower
+d20_5 --> d21_6 : Ride the ebb to the muster yard
+d20_5 --> e_024 : Swim for the sluice gate
+d20_5 --> e_025 : Chance the far side of the keepers house
+d20_6 --> d21_6 : Take the muster yard
+d20_6 --> e_024 : Swim for the sluice gate
+d20_6 --> e_025 : Chance the far side of the keepers house
+d21_0 --> d22_0 : Work along the fish ladder
+d21_0 --> c21_0_1 : Drop down to the sluice gate
+d21_0 --> d22_2 : Push out onto the keepers house
+d21_1 --> d22_1 : Push out onto the sluice gate
+d21_1 --> d22_2 : Double back to the keepers house
+d21_1 --> e_026 : Chance the far side of the weir crest
+d21_2 --> d22_2 : Head for the keepers house
+d21_2 --> e_027 : Chance the far side of the weir crest
+d21_2 --> e_026 : Run flat out for the gauge tower
+d21_3 --> d22_3 : Climb to the overspill
+d21_3 --> e_027 : Run flat out for the gauge tower
+d21_3 --> e_026 : Trust your feet on the muster yard
+d21_4 --> d22_4 : Ride the ebb to the weir crest
+d21_4 --> e_027 : Trust your feet on the muster yard
+d21_4 --> e_026 : Go straight over the fish ladder
+d21_4 --> e_027 : Break for the sluice gate
+d21_5 --> d22_5 : Cut across to the gauge tower
+d21_5 --> c21_5_1 : Follow the muster yard
+d21_5 --> c21_5_2 : Work along the fish ladder
+d21_6 --> d22_6 : Work along the muster yard
+d21_6 --> c21_6_1 : Drop down to the fish ladder
+d21_6 --> c21_6_2 : Push out onto the sluice gate
+d22_0 --> d23_0 : Double back to the fish ladder
+d22_0 --> c22_0_1 : Head for the sluice gate
+d22_0 --> c22_0_2 : Wade for the keepers house
+d22_1 --> d23_1 : Wade for the sluice gate
+d22_1 --> c22_1_1 : Climb to the keepers house
+d22_1 --> c22_1_2 : Keep to the overspill
+d22_2 --> d23_2 : Keep to the keepers house
+d22_2 --> d23_3 : Ride the ebb to the overspill
+d22_2 --> d23_4 : Take the weir crest
+d22_3 --> d23_3 : Take the overspill
+d22_3 --> e_028 : Force a way through the gauge tower
+d22_3 --> e_029 : Swim for the muster yard
+d22_3 --> e_028 : Chance the far side of the fish ladder
+d22_4 --> d23_4 : Follow the weir crest
+d22_4 --> e_029 : Swim for the muster yard
+d22_4 --> e_028 : Chance the far side of the fish ladder
+d22_5 --> d23_5 : Drop down to the gauge tower
+d22_5 --> e_029 : Chance the far side of the fish ladder
+d22_5 --> e_028 : Run flat out for the sluice gate
+d22_6 --> d23_6 : Double back to the muster yard
+d22_6 --> e_029 : Run flat out for the sluice gate
+d22_6 --> c22_6_2 : Wade for the sluice gate
+d23_0 --> e_030 : Gamble on the fish ladder
+d23_0 --> e_031 : Force a way through the sluice gate
+d23_0 --> e_032 : Swim for the keepers house
+d23_1 --> e_033 : Chance the far side of the sluice gate
+d23_1 --> e_034 : Run flat out for the keepers house
+d23_1 --> e_035 : Trust your feet on the overspill
+d23_2 --> e_036 : Go straight over the keepers house
+d23_2 --> e_037 : Break for the overspill
+d23_2 --> e_038 : Gamble on the weir crest
+d23_3 --> e_039 : Force a way through the overspill
+d23_3 --> e_040 : Swim for the weir crest
+d23_3 --> e_041 : Chance the far side of the gauge tower
+d23_4 --> e_030 : Run flat out for the weir crest
+d23_4 --> e_031 : Trust your feet on the gauge tower
+d23_4 --> e_032 : Go straight over the muster yard
+d23_5 --> e_033 : Break for the gauge tower
+d23_5 --> e_034 : Gamble on the muster yard
+d23_5 --> e_035 : Force a way through the fish ladder
+d23_6 --> e_036 : Swim for the muster yard
+d23_6 --> e_037 : Chance the far side of the fish ladder
+d23_6 --> e_038 : Run flat out for the sluice gate
+c00_0_1 --> d01_1 : Drop down to the ferry steps
+c00_0_2 --> d01_2 : Push out onto the drain culvert
+c00_0_3 --> d01_3 : Double back to the tollhouse arch
+c00_1_1 --> d01_2 : Push out onto the drain culvert
+c00_1_2 --> d01_3 : Double back to the tollhouse arch
+c01_1_2 --> d02_3 : Head for the tollhouse arch
+c01_2_1 --> d02_3 : Head for the tollhouse arch
+c01_2_2 --> d02_4 : Wade for the netting sheds
+c01_3_1 --> d02_4 : Wade for the netting sheds
+c01_3_2 --> d02_5 : Climb to the ice house
+c02_3_1 --> d03_4 : Climb to the netting sheds
+c02_3_2 --> d03_5 : Keep to the ice house
+c02_3_3 --> d03_6 : Ride the ebb to the slipway
+c02_4_1 --> d03_5 : Keep to the ice house
+c02_4_2 --> d03_6 : Ride the ebb to the slipway
+c03_4_1 --> d04_5 : Ride the ebb to the drovers track
+c03_4_2 --> d04_6 : Take the black pool
+c03_5_1 --> d04_6 : Take the black pool
+c03_5_2 --> d04_0 : Cut across to the cut
+c03_6_1 --> d04_0 : Cut across to the cut
+c04_0_1 --> d05_1 : Wade for the reed line
+c04_5_2 --> d05_0 : Follow the cut
+c04_6_1 --> d05_0 : Follow the cut
+c04_6_2 --> d05_1 : Work along the reed line
+c04_6_3 --> d05_2 : Drop down to the plank walk
+c05_0_1 --> d06_1 : Climb to the reed line
+c05_0_2 --> d06_2 : Keep to the plank walk
+c05_0_3 --> d06_3 : Ride the ebb to the eel traps
+c05_1_1 --> d06_2 : Keep to the plank walk
+c05_6_2 --> d06_1 : Drop down to the reed line
+c06_1_2 --> d07_3 : Take the eel traps
+c06_2_1 --> d07_3 : Take the eel traps
+c06_2_2 --> d07_4 : Cut across to the burnt hide
+c06_3_1 --> d07_4 : Cut across to the burnt hide
+c06_3_2 --> d07_5 : Follow the drovers track
+c07_3_1 --> d08_4 : Follow the sunk lighter
+c07_3_2 --> d08_5 : Work along the chain store
+c07_3_3 --> d08_6 : Drop down to the dry dock
+c07_4_1 --> d08_5 : Work along the chain store
+c07_4_2 --> d08_6 : Drop down to the dry dock
+c08_1_1 --> d09_2 : Cut across to the tar shed
+c08_1_2 --> d09_3 : Follow the boiler yard
+c08_2_1 --> d09_3 : Follow the boiler yard
+c08_2_2 --> d09_4 : Work along the sunk lighter
+c08_2_3 --> d09_5 : Drop down to the chain store
+c09_1_2 --> d10_3 : Work along the boiler yard
+c09_1_3 --> d10_4 : Drop down to the sunk lighter
+c09_2_1 --> d10_3 : Work along the boiler yard
+c09_2_2 --> d10_4 : Drop down to the sunk lighter
+c09_3_1 --> d10_4 : Drop down to the sunk lighter
+c10_2_2 --> d11_4 : Push out onto the sunk lighter
+c10_3_1 --> d11_4 : Push out onto the sunk lighter
+c10_3_2 --> d11_5 : Double back to the chain store
+c10_4_1 --> d11_5 : Double back to the chain store
+c10_4_2 --> d11_6 : Head for the dry dock
+c11_0_1 --> d12_1 : Work along the brine ladder
+c11_5_1 --> d12_6 : Wade for the tally hut
+c11_5_2 --> d12_0 : Climb to the crystal pans
+c11_6_1 --> d12_0 : Climb to the crystal pans
+c11_6_2 --> d12_1 : Keep to the brine ladder
+c12_0_1 --> d13_1 : Drop down to the brine ladder
+c12_0_2 --> d13_2 : Push out onto the pump house
+c12_1_1 --> d13_2 : Push out onto the pump house
+c12_1_2 --> d13_3 : Double back to the salt road
+c12_6_2 --> d13_1 : Ride the ebb to the brine ladder
+c13_1_1 --> d14_2 : Double back to the pump house
+c13_1_2 --> d14_3 : Head for the salt road
+c13_2_1 --> d14_3 : Head for the salt road
+c13_2_2 --> d14_4 : Wade for the wind engine
+c13_2_3 --> d14_5 : Climb to the settling beds
+c14_1_1 --> d15_2 : Head for the pump house
+c14_1_2 --> d15_3 : Wade for the salt road
+c14_1_3 --> d15_4 : Climb to the wind engine
+c14_2_1 --> d15_3 : Wade for the salt road
+c14_2_2 --> d15_4 : Climb to the wind engine
+c15_2_1 --> d16_3 : Climb to the broken span
+c15_2_2 --> d16_4 : Keep to the tide gauge
+c15_3_1 --> d16_4 : Keep to the tide gauge
+c15_3_2 --> d16_5 : Ride the ebb to the beacon post
+c15_4_1 --> d16_5 : Ride the ebb to the beacon post
+c16_0_1 --> d17_1 : Wade for the counting stones
+c16_5_1 --> d17_6 : Cut across to the shell bank
+c16_5_2 --> d17_0 : Follow the low arches
+c16_6_1 --> d17_0 : Follow the low arches
+c16_6_2 --> d17_1 : Work along the counting stones
+c17_0_1 --> d18_1 : Climb to the counting stones
+c17_0_2 --> d18_2 : Keep to the passing place
+c17_1_1 --> d18_2 : Keep to the passing place
+c17_1_2 --> d18_3 : Ride the ebb to the broken span
+c17_6_2 --> d18_1 : Drop down to the counting stones
+c18_1_1 --> d19_2 : Ride the ebb to the passing place
+c18_1_2 --> d19_3 : Take the broken span
+c18_2_1 --> d19_3 : Take the broken span
+c18_2_2 --> d19_4 : Cut across to the tide gauge
+c18_2_3 --> d19_5 : Follow the beacon post
+c19_0_2 --> d20_2 : Take the keepers house
+c19_1_1 --> d20_2 : Take the keepers house
+c19_1_2 --> d20_3 : Cut across to the overspill
+c19_1_3 --> d20_4 : Follow the weir crest
+c19_2_1 --> d20_3 : Cut across to the overspill
+c20_1_2 --> d21_3 : Follow the overspill
+c20_2_1 --> d21_3 : Follow the overspill
+c20_2_2 --> d21_4 : Work along the weir crest
+c20_3_1 --> d21_4 : Work along the weir crest
+c20_3_2 --> d21_5 : Drop down to the gauge tower
+c21_0_1 --> d22_1 : Cut across to the sluice gate
+c21_5_1 --> d22_6 : Double back to the muster yard
+c21_5_2 --> d22_0 : Head for the fish ladder
+c21_6_1 --> d22_0 : Head for the fish ladder
+c21_6_2 --> d22_1 : Wade for the sluice gate
+c22_0_1 --> d23_1 : Follow the sluice gate
+c22_0_2 --> d23_2 : Work along the keepers house
+c22_1_1 --> d23_2 : Work along the keepers house
+c22_1_2 --> d23_3 : Drop down to the overspill
+c22_6_2 --> d23_1 : Climb to the sluice gate
+e_000 --> [*]
+e_001 --> [*]
+e_002 --> [*]
+e_003 --> [*]
+e_004 --> [*]
+e_005 --> [*]
+e_006 --> [*]
+e_007 --> [*]
+e_008 --> [*]
+e_009 --> [*]
+e_010 --> [*]
+e_011 --> [*]
+e_012 --> [*]
+e_013 --> [*]
+e_014 --> [*]
+e_015 --> [*]
+e_016 --> [*]
+e_017 --> [*]
+e_018 --> [*]
+e_019 --> [*]
+e_020 --> [*]
+e_021 --> [*]
+e_022 --> [*]
+e_023 --> [*]
+e_024 --> [*]
+e_025 --> [*]
+e_026 --> [*]
+e_027 --> [*]
+e_028 --> [*]
+e_029 --> [*]
+e_030 --> [*]
+e_031 --> [*]
+e_032 --> [*]
+e_033 --> [*]
+e_034 --> [*]
+e_035 --> [*]
+e_036 --> [*]
+e_037 --> [*]
+e_038 --> [*]
+e_039 --> [*]
+e_040 --> [*]
+e_041 --> [*]
+
+legend right
+  The Saltmarsh Run
+  Band 13-16 · Tier 1 · ~8 min
+  Topology: gauntlet
+  322 nodes · 42 endings (6+ / 9n / 27-)
+  Production-eligible
+  Scale: medium · gamebook
+endlegend
+@enduml
