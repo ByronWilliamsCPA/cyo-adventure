@@ -32,6 +32,7 @@ from scripts.compare_vendors import (
     _book_row,  # pyright: ignore[reportPrivateUsage]
     _fill_completeness,  # pyright: ignore[reportPrivateUsage]
     _load_briefs,  # pyright: ignore[reportPrivateUsage]
+    _load_differentiation,  # pyright: ignore[reportPrivateUsage]
     _load_skeletons,  # pyright: ignore[reportPrivateUsage]
     _load_vendors,  # pyright: ignore[reportPrivateUsage]
     _measure,  # pyright: ignore[reportPrivateUsage]
@@ -558,6 +559,81 @@ def test_load_skeletons_rejects_a_partial_count(tmp_path: Path) -> None:
         _load_skeletons(paths, 3)
 
 
+def _write_differentiation(tmp_path: Path, entries: list[object]) -> Path:
+    """Write a differentiation spec file and return its path."""
+    path = tmp_path / "differentiation.json"
+    _ = path.write_text(json.dumps(entries), encoding="utf-8")
+    return path
+
+
+def test_load_differentiation_renders_the_production_block(tmp_path: Path) -> None:
+    """A spec entry renders through build_differentiation_directive verbatim.
+
+    The point of the flag (AL-498) is measuring the block production would
+    send, so the rendered directive must carry the level's escalation text, the
+    axis's instruction, and the prior titles, not some harness paraphrase.
+    """
+    path = _write_differentiation(
+        tmp_path,
+        [
+            {
+                "level": "leaf",
+                "axis": "awestruck_wonder",
+                "prior_titles": ["The Tin Whistle Map"],
+                "prior_theme_tags": ["canal", "boatyard"],
+            },
+            None,
+        ],
+    )
+
+    directives = _load_differentiation(path, 2)
+
+    assert len(directives) == 2
+    assert "already read every skeleton in this cell" in directives[0]
+    assert "genuinely wondrous" in directives[0]
+    assert "'The Tin Whistle Map'" in directives[0]
+    assert "boatyard, canal" in directives[0]
+    assert directives[1] == ""
+
+
+def test_load_differentiation_rejects_a_count_mismatch(tmp_path: Path) -> None:
+    """One spec for two briefs would silently pair wrong, so it exits."""
+    path = _write_differentiation(tmp_path, [None])
+
+    with pytest.raises(SystemExit):
+        _load_differentiation(path, 2)
+
+
+def test_load_differentiation_rejects_an_unknown_level(tmp_path: Path) -> None:
+    """A level outside the closed vocabulary is an operator typo, not a miss."""
+    path = _write_differentiation(tmp_path, [{"level": "maximal"}, None])
+
+    with pytest.raises(SystemExit):
+        _load_differentiation(path, 2)
+
+
+def test_load_differentiation_rejects_an_unknown_axis(tmp_path: Path) -> None:
+    """An unknown axis key must fail loudly, unlike the worker's tolerant miss.
+
+    In production a missing axis degrades to "no axis" because an axis is a
+    craft hint; here the same silence would measure the no-context block and
+    report it as the directed floor, which is the exact confusion AL-498 exists
+    to end.
+    """
+    path = _write_differentiation(tmp_path, [{"axis": "no_such_axis"}, None])
+
+    with pytest.raises(SystemExit):
+        _load_differentiation(path, 2)
+
+
+def test_load_differentiation_rejects_an_unknown_key(tmp_path: Path) -> None:
+    """A misspelled spec key would silently render the no-context block."""
+    path = _write_differentiation(tmp_path, [{"prior_title": ["x"]}, None])
+
+    with pytest.raises(SystemExit):
+        _load_differentiation(path, 2)
+
+
 @pytest.mark.asyncio
 async def test_compare_vendors_pairs_skeleton_i_with_brief_i() -> None:
     """Every vendor sees the same skeleton for a brief index, and only that one.
@@ -628,6 +704,84 @@ async def test_compare_vendors_uses_an_empty_pii_context() -> None:
 
     assert seen
     assert all(ctx.child_names == frozenset() for ctx in seen)
+
+
+@pytest.mark.asyncio
+async def test_compare_vendors_threads_the_directive_per_brief() -> None:
+    """Each fill receives its own brief's directive, held constant per vendor.
+
+    The directive pairs with the brief the way the skeleton does: if it
+    drifted out of step, a directed pair would differ in directive as well as
+    brief, and the measured delta (AL-498) would be attributable to nothing.
+    """
+    seen: list[tuple[str, object]] = []
+
+    async def _stub(
+        _skeleton: dict[str, object],
+        brief: dict[str, object],
+        _provider: object,
+        _pii: object,
+        **kwargs: object,
+    ) -> object:
+        """Record the (brief, directive) pairing handed to each fill."""
+        seen.append((str(brief["setting"]), kwargs.get("differentiation_directive")))
+        return mock.Mock(status="passed", attempts=0, storybook=_doc(_SHARED))
+
+    with mock.patch("scripts.compare_vendors.fill_skeleton", _stub):
+        await run_comparison(
+            [{"id": "sk-a"}, {"id": "sk-b"}],
+            [{"setting": "a"}, {"setting": "b"}],
+            [
+                Vendor(label="alpha", model="mock", provider_order=()),
+                Vendor(label="beta", model="mock", provider_order=()),
+            ],
+            directives=["directive-a", "directive-b"],
+        )
+
+    assert seen == [
+        ("a", "directive-a"),
+        ("b", "directive-b"),
+        ("a", "directive-a"),
+        ("b", "directive-b"),
+    ]
+
+
+@pytest.mark.asyncio
+async def test_compare_vendors_defaults_to_an_undirected_fill() -> None:
+    """Without directives every fill gets "", byte-identical to prior runs."""
+    seen: list[object] = []
+
+    async def _stub(
+        _skeleton: dict[str, object],
+        _brief: dict[str, object],
+        _provider: object,
+        _pii: object,
+        **kwargs: object,
+    ) -> object:
+        """Record the directive handed to each fill."""
+        seen.append(kwargs.get("differentiation_directive"))
+        return mock.Mock(status="passed", attempts=0, storybook=_doc(_SHARED))
+
+    with mock.patch("scripts.compare_vendors.fill_skeleton", _stub):
+        await run_comparison(
+            [{"id": "sk-a"}, {"id": "sk-b"}],
+            [{"setting": "a"}, {"setting": "b"}],
+            [Vendor(label="alpha", model="mock", provider_order=())],
+        )
+
+    assert seen == ["", ""]
+
+
+@pytest.mark.asyncio
+async def test_compare_vendors_rejects_a_directive_count_mismatch() -> None:
+    """One directive for two briefs is a programming error, not a per-book fault."""
+    with pytest.raises(ValueError, match="pair index-wise"):
+        await run_comparison(
+            [{"id": "sk-a"}, {"id": "sk-b"}],
+            [{"setting": "a"}, {"setting": "b"}],
+            [Vendor(label="alpha", model="mock", provider_order=())],
+            directives=["only-one"],
+        )
 
 
 @pytest.mark.asyncio

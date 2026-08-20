@@ -113,12 +113,15 @@ from typing import TYPE_CHECKING, Any, Final, cast
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.pricing import estimate_cost, price_for
+from cyo_adventure.diversity.query import DifferentiationLevel
 from cyo_adventure.generation.metered import MeteredProvider
 from cyo_adventure.generation.orchestrator import _MAX_TOKENS_PROSE, fill_skeleton
 from cyo_adventure.generation.pii import PiiContext
+from cyo_adventure.generation.prompts import build_differentiation_directive
 from cyo_adventure.generation.provider import build_openrouter_leg, build_provider
 from cyo_adventure.generation.skeleton import resolve_output_cap
 from cyo_adventure.generation.usage import UsageLedger
+from cyo_adventure.generation.variation import axis_for_key
 from cyo_adventure.validator.reading_level import measure_book
 
 if TYPE_CHECKING:
@@ -459,6 +462,119 @@ def _load_briefs(path: Path) -> list[dict[str, object]]:
     return briefs
 
 
+def _load_differentiation(path: Path, brief_count: int) -> list[str]:
+    """Load and render the per-brief differentiation directives (AL-498).
+
+    ``fill_skeleton`` has accepted ``differentiation_directive`` since A6/A7,
+    but this harness never passed it, so every recorded shared-idiom floor is
+    the RAW undirected floor. This loader exists so a run can measure what the
+    directive actually buys: the file is a JSON array, index-aligned with the
+    briefs (the same convention ``--skeleton`` uses), and each entry is either
+    ``null`` (that brief fills undirected, exactly as before) or an object with
+    optional keys ``level``, ``axis``, ``prior_titles`` and ``prior_theme_tags``
+    mirroring the pipeline-written ``authoring_metadata`` keys the worker reads.
+
+    Entries are rendered through the production
+    :func:`~cyo_adventure.generation.prompts.build_differentiation_directive`
+    rather than accepted as free text, so a measured delta is attributable to
+    the block production would send, not to operator prose. Unknown levels and
+    axis keys are hard errors here, unlike the worker's tolerant miss: in the
+    harness a bad key is an operator typo that would silently measure the
+    no-context block and report it as the directed floor.
+
+    Args:
+        path: A JSON array of per-brief directive specs (objects or nulls).
+        brief_count: How many briefs the run has; the array must match it.
+
+    Returns:
+        One rendered directive string per brief; ``""`` for a ``null`` entry.
+
+    Raises:
+        SystemExit: On a count mismatch, an unknown level or axis key, or a
+            malformed entry.
+    """
+    parsed = _load_json(path)
+    if not isinstance(parsed, list):
+        print(f"Error: {path} must contain a JSON array.", file=sys.stderr)
+        sys.exit(1)
+    if len(parsed) != brief_count:  # pyright: ignore[reportUnknownArgumentType]
+        print(
+            f"Error: {path} has {len(parsed)} entries for {brief_count} briefs; "  # pyright: ignore[reportUnknownArgumentType]
+            "they pair index-wise.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    known_levels = {level.value for level in DifferentiationLevel}
+    directives: list[str] = []
+    for i, raw in enumerate(parsed):  # pyright: ignore[reportUnknownVariableType]
+        entry: object = raw  # pyright: ignore[reportUnknownVariableType]
+        if entry is None:
+            directives.append("")
+            continue
+        if not isinstance(entry, dict):
+            print(
+                f"Error: differentiation #{i} must be an object or null.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        spec = cast("dict[str, object]", entry)
+        unknown = sorted(
+            set(spec) - {"level", "axis", "prior_titles", "prior_theme_tags"}
+        )
+        if unknown:
+            print(
+                f"Error: differentiation #{i} has unknown keys: {', '.join(unknown)}.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        level_raw = spec.get("level")
+        if level_raw is not None and (
+            not isinstance(level_raw, str) or level_raw not in known_levels
+        ):
+            print(
+                f"Error: differentiation #{i} level must be one of "
+                f"{', '.join(sorted(known_levels))}.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        axis_raw = spec.get("axis")
+        axis = None
+        if axis_raw is not None:
+            axis = axis_for_key(str(axis_raw))
+            if axis is None:
+                print(
+                    f"Error: differentiation #{i} names unknown axis '{axis_raw}'.",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+        titles = [t for t in _as_str_items(spec.get("prior_titles")) if t]
+        tags = [t for t in _as_str_items(spec.get("prior_theme_tags")) if t]
+        directives.append(
+            build_differentiation_directive(
+                level=level_raw if isinstance(level_raw, str) else None,
+                axis_instruction=axis.instruction if axis is not None else None,
+                prior_titles=titles,
+                prior_theme_tags=tags,
+            )
+        )
+    return directives
+
+
+def _as_str_items(value: object) -> list[str]:
+    """Coerce an optional JSON list to its string members.
+
+    Args:
+        value: A parsed JSON value, expected to be a list of strings or absent.
+
+    Returns:
+        The string members, or ``[]`` for ``None`` or any other shape.
+    """
+    if not isinstance(value, list):
+        return []
+    items = cast("list[object]", value)
+    return [item for item in items if isinstance(item, str)]
+
+
 def _load_skeletons(paths: Sequence[Path], brief_count: int) -> list[dict[str, object]]:
     """Load one skeleton per brief, broadcasting a lone skeleton across all of them.
 
@@ -667,6 +783,7 @@ async def run_comparison(
     settings: Settings | None = None,
     max_tokens: int | None = None,
     out_dir: Path | None = None,
+    directives: Sequence[str] | None = None,
 ) -> list[BookRecord]:
     """Fill the grid once per (vendor, brief) and measure every result.
 
@@ -691,14 +808,30 @@ async def run_comparison(
             an interrupted run keeps everything it has already paid for
             (AL-326). ``None`` keeps the records in memory only, which is what
             the dry-run path and the unit tests want.
+        directives: One rendered differentiation directive per brief, from
+            :func:`_load_differentiation`, or ``None`` to fill undirected
+            (byte-identical to every run before the flag existed). Every vendor
+            sees the same directive for a given brief index, mirroring how the
+            skeleton is held constant across the vendor axis. A run with
+            directives is measuring a different quantity than one without
+            (AL-498: the directed floor against the raw floor), so the two must
+            never be pooled; ``main`` records the directives in the run's
+            metadata for exactly that reason.
 
     Returns:
         One :class:`BookRecord` per (vendor, brief), vendor-major order.
 
     Raises:
-        ValueError: If the skeleton and brief counts disagree, which would
-            silently pair the wrong structure with a premise.
+        ValueError: If the skeleton and brief counts disagree (which would
+            silently pair the wrong structure with a premise), or if the
+            directive count disagrees with the briefs.
     """
+    if directives is not None and len(directives) != len(briefs):
+        message = (
+            f"directives ({len(directives)}) and briefs ({len(briefs)}) must "
+            "be the same length; they pair index-wise"
+        )
+        raise ValueError(message)
     if len(skeletons) != len(briefs):
         message = (
             f"skeletons ({len(skeletons)}) and briefs ({len(briefs)}) must be "
@@ -741,6 +874,9 @@ async def run_comparison(
                     provider,
                     pii,
                     stage1_gate="skipped",
+                    differentiation_directive=(
+                        directives[index] if directives is not None else ""
+                    ),
                 )
             except Exception as exc:  # one book's failure must not void the batch
                 # A comparison over N vendors is expensive; losing every prior
@@ -1487,6 +1623,20 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--differentiation",
+        type=Path,
+        default=None,
+        help=(
+            "JSON array of per-brief differentiation specs, index-aligned with "
+            "--briefs: null for an undirected fill, or an object with optional "
+            "'level' (tree/leaf/catalog), 'axis' (a variation-axis key), "
+            "'prior_titles' and 'prior_theme_tags'. Rendered through the "
+            "production build_differentiation_directive, so the run measures "
+            "the block production would send (AL-498). Omitting the flag "
+            "fills undirected, exactly as every run before it existed."
+        ),
+    )
+    parser.add_argument(
         "--out", required=True, type=Path, help="Directory for report.json and books/."
     )
     parser.add_argument(
@@ -1697,6 +1847,16 @@ def main(argv: list[str] | None = None) -> int:
 
     briefs = _load_briefs(briefs_path)
     skeletons = _load_skeletons(skeleton_paths, len(briefs))
+    differentiation_path: Path | None = (
+        None
+        if args.differentiation is None  # pyright: ignore[reportAny]
+        else Path(str(args.differentiation)).resolve()  # pyright: ignore[reportAny]
+    )
+    directives = (
+        None
+        if differentiation_path is None
+        else _load_differentiation(differentiation_path, len(briefs))
+    )
 
     if mock:
         # A slate given alongside --mock is still loaded and validated, so the
@@ -1748,6 +1908,7 @@ def main(argv: list[str] | None = None) -> int:
             settings=settings,
             max_tokens=max_tokens,
             out_dir=out_dir,
+            directives=directives,
         )
     )
     report = analyze(records)
@@ -1774,6 +1935,11 @@ def main(argv: list[str] | None = None) -> int:
         # comparing a shared-structure figure against that floor.
         "structure_varies": distinct_skeletons > 1,
         "brief_count": len(briefs),
+        # AL-498: a directed run and an undirected run measure different
+        # quantities (the directed floor against the raw floor). The rendered
+        # directives are recorded verbatim so the report says which one it is,
+        # and what each fill was actually told.
+        "differentiation_directives": directives,
         "mock": mock,
         "vendors": [
             {

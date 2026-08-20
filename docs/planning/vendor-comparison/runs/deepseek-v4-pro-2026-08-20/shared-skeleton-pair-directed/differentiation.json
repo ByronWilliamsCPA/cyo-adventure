@@ -1,0 +1,12 @@
+[
+  {
+    "level": "catalog",
+    "axis": "close_interior"
+  },
+  {
+    "level": "catalog",
+    "axis": "wide_observational",
+    "prior_titles": ["The Canal Compass"],
+    "prior_theme_tags": ["canal", "boatyard"]
+  }
+]
