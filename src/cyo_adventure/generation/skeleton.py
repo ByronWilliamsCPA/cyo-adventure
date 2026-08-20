@@ -319,12 +319,25 @@ def commissioned_words_by_node(story: dict[str, object]) -> dict[str, int]:
     ``words=`` directive do not appear, so pre-authored prose never dilutes
     the ratio.
 
+    #ASSUME: data-integrity: the key scheme is a cross-module contract, not an
+    internal detail. ``scripts/check_fill_integrity.py`` reproduces it exactly
+    to join delivered words against commissioned words, so changing how an
+    id-less or duplicate-id node is keyed silently changes that gate's
+    denominator. Duplicate keys ACCUMULATE rather than overwrite so the summed
+    total always equals a plain scan of the bodies, which is what
+    ``expected_output_tokens`` depends on (`AL-429`).
+    #VERIFY: test_commissioned_words_are_reported_per_node,
+    test_the_per_node_keying_preserves_the_flat_word_total, and
+    test_commissioned_words_skip_malformed_shapes.
+
     Args:
         story: The decoded skeleton dict.
 
     Returns:
-        dict[str, int]: Summed ``words=`` targets per node id, for nodes
-            whose body declares at least one.
+        dict[str, int]: Summed ``words=`` targets per node, for nodes whose
+            body declares at least one. Keyed by ``str(node["id"])``, or by
+            ``#<index>`` for a node carrying no id; a key reached more than
+            once accumulates rather than being overwritten.
     """
     targets: dict[str, int] = {}
     nodes = story.get("nodes")

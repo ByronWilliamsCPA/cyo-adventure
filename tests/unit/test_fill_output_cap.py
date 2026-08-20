@@ -244,6 +244,39 @@ def test_commissioned_words_are_reported_per_node() -> None:
 
 
 @pytest.mark.unit
+def test_the_per_node_keying_preserves_the_flat_word_total() -> None:
+    """Duplicate and id-less keys must accumulate, not overwrite.
+
+    ``expected_output_tokens`` folds this map, so an overwrite would make it
+    UNDERstate a duplicate-id skeleton's demand and let ``is_fill_feasible``
+    fail open on a book the backend cannot emit, which is the `AL-429` shape.
+    ``scripts/check_fill_integrity.py`` joins its delivered words on the same
+    keys, so an overwrite would also shrink that gate's denominator.
+    """
+    story: dict[str, object] = {
+        "nodes": [
+            {"id": "dup", "body": "<<FILL role=scene words=100>>"},
+            {"id": "dup", "body": "<<FILL role=scene words=100>>"},
+            {"body": "<<FILL role=scene words=50>>"},
+            {"body": "<<FILL role=scene words=50>>"},
+            {"id": "multi", "body": "<<FILL words=30>>\n<<FILL words=20>>"},
+        ]
+    }
+    assert commissioned_words_by_node(story) == {
+        "dup": 200,
+        "#2": 50,
+        "#3": 50,
+        "multi": 50,
+    }, (
+        "a repeated node id must sum its targets and an id-less node must take "
+        "a positional key; overwriting either loses commissioned words"
+    )
+    # 350 commissioned words at 2.0 tokens/word. Asserted alongside the map so
+    # a keying change that happens to preserve the total is still caught, and a
+    # keying change that silently loses words fails here too.
+    assert expected_output_tokens(story) == 700
+
+
 def test_commissioned_words_skip_malformed_shapes() -> None:
     """Malformed stories yield empty or partial targets, never an exception.
 
