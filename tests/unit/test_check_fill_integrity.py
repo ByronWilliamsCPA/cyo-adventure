@@ -149,6 +149,66 @@ def test_check_fill_integrity_rejects_same_file(tmp_path: Path) -> None:
     assert exit_code == 1
 
 
+def _commissioned_skeleton() -> dict[str, Any]:
+    """Return ``_SKELETON`` with explicit ``words=`` targets on both nodes."""
+    skeleton = copy.deepcopy(_SKELETON)
+    skeleton["nodes"][0]["body"] = "<<FILL role=scene words=100 beats='a fork'>>"
+    skeleton["nodes"][1]["body"] = "<<FILL role=ending words=100 beats='home'>>"
+    return skeleton
+
+
+def _filled_at(words_per_node: int) -> dict[str, Any]:
+    """Return a fill of ``_commissioned_skeleton`` at a chosen delivery length."""
+    filled = copy.deepcopy(_SKELETON)
+    body = " ".join(f"word{i}" for i in range(words_per_node))
+    filled["nodes"][0]["body"] = body
+    filled["nodes"][0]["choices"][0]["label"] = "Go toward the light."
+    filled["nodes"][1]["body"] = body
+    return filled
+
+
+def test_an_underdelivered_fill_fails_the_fill_rate_check(tmp_path: Path) -> None:
+    """A book at 40 percent of its commissioned words is blocked (AL-490).
+
+    The live DeepSeek run delivered 38.9-52.9 percent of three books'
+    commissioned prose and every book passed, because the per-node advisory
+    is soft and the only hard word rule is a ceiling. The story-level ratio
+    is the check that composes those legitimate per-node liberties into an
+    illegitimate whole.
+    """
+    skeleton_path = _write(tmp_path, "skeleton.json", _commissioned_skeleton())
+    filled_path = _write(tmp_path, "filled.json", _filled_at(40))
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 1
+
+
+def test_a_delivered_fill_passes_the_fill_rate_check(tmp_path: Path) -> None:
+    """Delivery near the commissioned total clears the floor."""
+    skeleton_path = _write(tmp_path, "skeleton.json", _commissioned_skeleton())
+    filled_path = _write(tmp_path, "filled.json", _filled_at(95))
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 0
+
+
+def test_min_fill_rate_zero_measures_without_blocking(tmp_path: Path) -> None:
+    """A zero floor reports the ratio but never fails on it."""
+    skeleton_path = _write(tmp_path, "skeleton.json", _commissioned_skeleton())
+    filled_path = _write(tmp_path, "filled.json", _filled_at(40))
+    assert (
+        check_fill_integrity.main([skeleton_path, filled_path, "--min-fill-rate", "0"])
+        == 0
+    )
+
+
+def test_fill_rate_skips_a_skeleton_without_word_targets(tmp_path: Path) -> None:
+    """No ``words=`` directives means no commissioned total, not a zero rate.
+
+    A directive-less skeleton would otherwise divide by zero or read as 0
+    percent delivered; the check must recognise there is nothing to measure.
+    """
+    skeleton_path = _write(tmp_path, "skeleton.json", _SKELETON)
+    filled_path = _write(tmp_path, "filled.json", _filled())
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 0
+
+
 def test_check_fill_integrity_rejects_a_skeleton_with_no_markers(
     tmp_path: Path,
 ) -> None:

@@ -21,6 +21,7 @@ from cyo_adventure.generation.skeleton import (
     MAX_FILL_OUTPUT_TOKENS,
     MODEL_OUTPUT_CAPS,
     active_fill_model,
+    commissioned_words_by_node,
     expected_output_tokens,
     is_fill_feasible,
     resolve_output_cap,
@@ -215,6 +216,31 @@ def test_feasibility_is_measured_against_the_declared_fill_targets() -> None:
     assert expected_output_tokens(story) == 500
     assert is_fill_feasible(story, max_tokens=1000)
     assert not is_fill_feasible(story, max_tokens=100)
+
+
+@pytest.mark.unit
+def test_commissioned_words_are_reported_per_node() -> None:
+    """The per-node breakdown keys on id and skips directive-less nodes.
+
+    The fill-rate check (AL-490/UW-C307) joins these targets against the
+    filled book's node ids, so a node without a ``words=`` directive must be
+    absent (pre-authored prose never dilutes the ratio) and an id-less node
+    must not collapse onto another's key (that overwrite once undercounted
+    ``expected_output_tokens``).
+    """
+    story = {
+        "nodes": [
+            {"id": "a", "body": "<<FILL role=rising words=100 beats='x'>>"},
+            {"id": "b", "body": "already-authored prose, no directive"},
+            {"body": "<<FILL role=rising words=25 beats='y'>>"},
+            {"body": "<<FILL role=rising words=75 beats='z'>>"},
+        ]
+    }
+
+    targets = commissioned_words_by_node(story)
+
+    assert targets == {"a": 100, "#2": 25, "#3": 75}
+    assert sum(targets.values()) == 200
 
 
 @pytest.mark.unit

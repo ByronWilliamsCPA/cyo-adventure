@@ -20,8 +20,15 @@ Three checks for the story-inventory authoring run (see
 2. No ``<<FILL`` markers may remain anywhere in the filled file.
 3. Word stats: per-node counts vs the band's per-node hard max (fail) and the
    story mean vs the band's advisory range (warning only; PL-19 mirrors this).
+4. Story-level fill rate: delivered words over commissioned ``words=`` words,
+   across the nodes that carried a directive (AL-490/UW-C307). The per-node
+   advisory is legitimately soft (a one-line beat is legitimate), but the live
+   DeepSeek run delivered 38.9-52.9 percent of three books' commissioned prose
+   with zero hard findings, so the story-level ratio is a blocking check here,
+   where the skeleton is in hand.
 
-Exits 1 on a structural diff, a leftover marker, or a node over the hard max.
+Exits 1 on a structural diff, a leftover marker, a node over the hard max, or
+a story-level fill rate under ``--min-fill-rate``.
 """
 
 from __future__ import annotations
@@ -32,9 +39,18 @@ import sys
 from pathlib import Path
 from typing import Any, cast
 
+from cyo_adventure.generation.skeleton import commissioned_words_by_node
 from cyo_adventure.validator.band_profile import words_per_node_profile
 
 _FILL_MARKER = "<<FILL"
+
+# Floor for the story-level fill rate, calibrated on every (skeleton, filled)
+# pair on disk on 2026-08-20: nine passing books from three vendors (grok,
+# gemini, sonnet; W4/W5 pool) span 0.715-0.990, and the three under-delivering
+# DeepSeek books (AL-490) span 0.389-0.529. 0.6 splits the gap: it admits
+# every known-good fill and blocks every book the live run proved
+# unpublishable. Revisit with the calibration rerun, not by hand.
+_DEFAULT_MIN_FILL_RATE = 0.6
 
 
 def _load(path: str) -> dict[str, Any] | None:
@@ -175,6 +191,19 @@ def main(argv: list[str] | None = None) -> int:
             "leaf content per WS-0, AL-161)."
         ),
     )
+    parser.add_argument(
+        "--min-fill-rate",
+        type=float,
+        default=_DEFAULT_MIN_FILL_RATE,
+        help=(
+            "Fail when delivered words over commissioned words falls below "
+            "this ratio, measured across the nodes carrying a words= "
+            f"directive (default {_DEFAULT_MIN_FILL_RATE}; pass 0 to "
+            "measure without blocking). AL-490: three books delivering "
+            "38.9-52.9 percent of their commissioned prose passed every "
+            "existing check."
+        ),
+    )
     args = parser.parse_args(argv)
     # #CRITICAL: data-integrity: this check is a comparison, so it is only as
     # good as the independence of its two inputs. A builder bug once wrote the
@@ -275,6 +304,34 @@ def main(argv: list[str] | None = None) -> int:
             f"(target {target_mean}, advisory {advisory_lo}-{advisory_hi}, "
             f"max {per_node_max})\n"
         )
+
+    # Story-level fill rate (AL-490/UW-C307): the per-node advisory is soft on
+    # purpose (a one-line beat is legitimate), but that softness composes into
+    # a whole book at 40 percent of its commissioned prose that nothing
+    # blocks. The ratio is measured over directive-bearing nodes only, so
+    # pre-authored prose neither pads nor dilutes it.
+    commissioned = commissioned_words_by_node(skeleton)
+    if not commissioned:
+        sys.stdout.write(
+            "note  fill-rate: no words= directives in the skeleton, so there "
+            "is no commissioned total to measure against\n"
+        )
+    else:
+        delivered_by_node = dict(counts)
+        delivered = sum(delivered_by_node.get(nid, 0) for nid in commissioned)
+        total = sum(commissioned.values())
+        fill_rate = delivered / total
+        min_fill_rate = float(args.min_fill_rate)
+        line = (
+            f"fill-rate: delivered {delivered} of {total} commissioned words "
+            f"({fill_rate:.1%}) over {len(commissioned)} directive nodes "
+            f"(floor {min_fill_rate})\n"
+        )
+        if fill_rate < min_fill_rate:
+            sys.stderr.write(f"FAIL {line}")
+            failed = True
+        else:
+            sys.stdout.write(f"ok   {line}")
 
     return 1 if failed else 0
 
