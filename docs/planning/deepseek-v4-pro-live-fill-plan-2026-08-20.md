@@ -434,6 +434,86 @@ around did not happen, because book 0 was the leg that failed.
   deterministic and the transient classification is defensible. What remains is
   that a benign preschool premise trips the filter at all, intermittently.
 
+### Corrections established after the first write-up
+
+**Book 0 is a deterministic content filter, not a transient failure.** A direct
+probe of brief 0 against `the-last-cartage` returns `finish_reason:
+'content_filter'` with zero content. Counting the three attempts in the run, three
+in the re-run (397.59s against 397.96s, near-identical) and the probe, that is
+**seven consistent failures**. The earlier reading, that the failure was transient
+because book 1 succeeded on the same skeleton, drew the boundary in the wrong
+place: the failure belongs to the (skeleton, brief) PAIR. Brief 0 describes
+venting a generation ship's agricultural ring and not leaving a living thing
+behind, against a 632-node gamebook whose endings include mass death.
+
+So `content_filter` is sometimes deterministic and sometimes not: book 0 fails
+7 of 7, book 4 failed three times and then passed. Neither of the two earlier
+absolute claims about it was right. The operational consequence is that a brief
+can be permanently unfillable against a given skeleton with no signal saying so,
+and the harness reports it as a generic transient failure.
+
+**`ending.title` is not the only field in dispute; the band fail-state policy is
+too, and that one is about child safety.** `SKILL.md` instructs authors to obey
+"no death endings for 3-5 / 5-8". `band_profile.py` disagrees:
+
+| Band | `forbidden_ending_kinds` |
+| --- | --- |
+| 3-5, 5-8 | capture, death |
+| 8-11 | **death** |
+| 10-13, 13-16, 16+ | none |
+
+**8-11 forbids death endings and the authoring skill does not say so.** An author
+drafting to the skill would believe they are permitted for eight-to-eleven year
+olds. Nothing shipped here, since book 3 has zero death endings, but this is the
+fourth self-disagreement found in this contract after the four-site FK targets and
+the three-site `ending.title` ambiguity, and it is the only one with a safety
+dimension. `band_profile.py` is the source of record; `SKILL.md` should cite it
+rather than restate it.
+
+**Every book mutated something frozen or ambiguous, and a different thing each
+time.** Adding book 3 to the tally: `metadata.themes` changed "music" to
+"navigation". `fill.md` freezes `metadata` explicitly. This one is insidious
+because it looks helpful, the reskin genuinely has no music in it, but it is a
+field the model was told not to touch.
+
+| Book | Frozen or ambiguous field mutated |
+| ---: | --- |
+| 1 | `id` (frozen) |
+| 2 | `title`, 27 of 36 `ending.title` (ambiguous) |
+| 3 | `title`, 15 of 35 `ending.title`, **`metadata.themes` (frozen)** |
+
+### An unfilled rule gap: nothing checks that a body stages its OUTBOUND choices
+
+Book 3's `ok_house` offers "Take the canal cap to somebody who knew it" while its
+body never mentions a cap; the cap is introduced in a sibling node a reader may
+never visit. Another node offers "Split the cut with Sam" where Sam appears only
+on an unvisited branch. This is a direct consequence of the word shortfall: the
+frozen labels assume a body that stages those objects, and a 43-word fill does
+not.
+
+`CG-4` looks like the rule for this and is not. It flags "a decision-child whose
+opening sentence shares no content word with its choice label that leads to it",
+which is strictly **inbound**: does the arriving node echo the choice just taken.
+It did fire on `ok_house`, but for the inbound choice, and nothing in the gate asks
+whether a node's prose introduces what its outbound choices promise. Proposed:
+an outbound companion to `CG-4`. The defect is reader-visible and a fill this
+short produces it systematically.
+
+### A caution on the beats-overlap metric
+
+Book 3 has HIGHER beat-restatement overlap than book 2 (mean 0.668 against 0.51;
+67.9 percent of nodes at 0.60 or above against 34 percent) and reads considerably
+better. So overlap-with-beats does not order books by quality and should not be
+used as a quality proxy. What separated them was elsewhere: book 3 has zero
+duplicate bodies and 191 distinct labels across 466 choices, against book 2's 23
+redundant nodes and three strings covering 89.8 percent of its choices.
+
+Book 3's own distinguishing defect is not measured by any of these: **"you"
+appears in only 12 of its 193 nodes**, against 41 percent in book 1 and 69 percent
+in book 2, whose skeleton beats specify second person explicitly. Six nodes drift
+into "we". The protagonist is absent from their own story, and no rule looks for
+that.
+
 ### Method note: two reviewers, and the disagreement was informative
 
 Running an editorial reviewer and a compliance validator separately paid for
