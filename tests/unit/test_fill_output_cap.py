@@ -244,6 +244,29 @@ def test_commissioned_words_are_reported_per_node() -> None:
 
 
 @pytest.mark.unit
+def test_commissioned_words_skip_malformed_shapes() -> None:
+    """Malformed stories yield empty or partial targets, never an exception.
+
+    ``expected_output_tokens`` runs at selection time over decoded JSON it did
+    not author, so a story with no node list, a non-dict node member, or a
+    non-string body must degrade to "no commissioned words there" rather than
+    raise mid-selection.
+    """
+    assert commissioned_words_by_node({}) == {}
+    assert commissioned_words_by_node({"nodes": "not-a-list"}) == {}
+
+    story = {
+        "nodes": [
+            "not-a-node",
+            {"id": "a", "body": None},
+            {"id": "b", "body": "<<FILL role=rising words=50 beats='x'>>"},
+        ]
+    }
+
+    assert commissioned_words_by_node(story) == {"b": 50}
+
+
+@pytest.mark.unit
 def test_the_provider_model_outranks_the_configured_default() -> None:
     """A per-job model override is only visible on the provider.
 
