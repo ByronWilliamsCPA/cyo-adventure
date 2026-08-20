@@ -211,6 +211,57 @@ _PRICES: dict[tuple[str, str], ModelPrice] = {
         source=_OPENROUTER_API,
         note="read live from https://openrouter.ai/api/v1/models",
     ),
+    # #ASSUME: payment: this row is the price of the PINNED endpoint
+    # (`azure/us`), not of the slug's default route. OpenRouter serves this one
+    # slug from 18 endpoints priced from $0.66 to $1.91 input, and this table is
+    # keyed on (provider, model) so it can hold exactly one of them. Recording
+    # the default route ($1.44/$2.88, which is `novita/fp8`) would UNDERstate a
+    # pinned run's cost by about a quarter (1.44/1.91 = 0.754, 2.88/3.83 =
+    # 0.752), or equivalently the pinned endpoint costs about a third MORE than
+    # the default route; a comparison that exists to price a vendor should not
+    # be wrong about the endpoint it actually paid.
+    #
+    # Endpoint reachability was PROBED, not assumed, on 2026-08-20, because three
+    # of the candidates fail in two different ways that both look like a bad slug:
+    # `alibaba/fp8`, `baidu/fp8` and first-party `deepseek` return 404 "no
+    # endpoints available matching your guardrail restrictions and data policy",
+    # and `coreweave/fp8` and `parasail/fp8`, the only two endpoints declaring a
+    # 1,048,576 output ceiling, returned a persistent 429. `azure/us` is the
+    # reachable pin whose hosting matches the posture the account's own data
+    # policy already expresses by blocking the three above.
+    # #VERIFY: test_deepseek_v4_pro_fixture_carries_the_priced_pin asserts the
+    # committed vendor fixture (this row's only caller) pins
+    # `provider_order: ["azure/us"]` and that this row's note still names that
+    # endpoint; an unpinned run is mispriced here AND exposed to the
+    # per-endpoint output-ceiling spread recorded in
+    # `docs/planning/vendor-comparison/vendors-deepseek-v4-pro.json`
+    # (`_pinning_rationale`): declared ceilings run from 16,384 to 1,048,576
+    # for this one slug. `MODEL_OUTPUT_CAPS` is NOT that record and must not be
+    # read as it: it is keyed per slug and holds a single 393,216 for this
+    # model, and its inability to express the spread is exactly why pinning is
+    # a correctness requirement here rather than reproducibility hygiene.
+    #
+    # #ASSUME: payment: this row is deliberately ABSENT from
+    # `scripts/refresh_pricing.py::_WANTED`, whose own comment otherwise
+    # requires every priced OpenRouter model to be listed there. That script
+    # reads `/api/v1/models`, which reports the slug's DEFAULT route, so a
+    # routine price refresh would silently overwrite this pinned row with
+    # $1.44/$2.88 and reintroduce the ~25 percent understatement above. Re-price
+    # this row by hand from `/models/deepseek/deepseek-v4-pro/endpoints`,
+    # together with the fixture's pin.
+    # #VERIFY: test_deepseek_v4_pro_fixture_carries_the_priced_pin (same test:
+    # it binds the fixture pin to this row, which is what a refresh would break).
+    ("openrouter", "deepseek/deepseek-v4-pro"): ModelPrice(
+        input_usd_per_mtok=Decimal("1.91"),
+        output_usd_per_mtok=Decimal("3.83"),
+        as_of=date(2026, 8, 20),
+        source=_OPENROUTER_API,
+        note=(
+            "read live from https://openrouter.ai/api/v1/models/"
+            "deepseek/deepseek-v4-pro/endpoints; price of the azure/us "
+            "endpoint, which is the pin this project uses for this model"
+        ),
+    ),
     ("openrouter", "qwen/qwen3.6-27b"): ModelPrice(
         input_usd_per_mtok=Decimal("0.6"),
         output_usd_per_mtok=Decimal("3.6"),

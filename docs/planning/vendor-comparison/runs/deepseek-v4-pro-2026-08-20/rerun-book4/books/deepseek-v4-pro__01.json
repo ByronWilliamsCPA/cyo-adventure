@@ -1,0 +1,284 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_last_blue_cup",
+  "version": 1,
+  "title": "The Last Yellow Welly",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "nursery",
+      "looking after things",
+      "sharing",
+      "patience"
+    ],
+    "estimated_minutes": 2,
+    "ending_count": 6,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "loop_and_grow",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_snack",
+  "nodes": [
+    {
+      "id": "n_snack",
+      "body": "The puddle-walk bell rings. Everyone finds their coat hook. The wellies stand in a row by the door. Red, green, blue, and a gap where the yellow one goes. Just an empty spot on the floor.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_snack_0",
+          "label": "Go and look for it.",
+          "target": "n_gap"
+        }
+      ]
+    },
+    {
+      "id": "n_gap",
+      "body": "The yellow welly is the one with the smudge of paint on the toe. It is not on the rack and not in the basket. Jo the helper says it will be somewhere. Welly boots do not walk. There are two good places to start.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_gap_0",
+          "label": "Dig in the dressing-up box.",
+          "target": "n_sand"
+        },
+        {
+          "id": "c_n_gap_1",
+          "label": "Look in the cosy corner.",
+          "target": "n_books"
+        }
+      ]
+    },
+    {
+      "id": "n_sand",
+      "body": "The dressing-up box still has the pirate hat from yesterday on top. Lots of things are buried in it. Digging is okay if the clothes stay in the box. That is a rule. Everyone knows it. No one quite keeps it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_sand_0",
+          "label": "Dig down where the hat is.",
+          "target": "n_dig"
+        },
+        {
+          "id": "c_n_sand_1",
+          "label": "Lift up the big cushion.",
+          "target": "n_cushion"
+        }
+      ]
+    },
+    {
+      "id": "n_books",
+      "body": "The cosy corner has lots of cushions and a low shelf. Things do get left in there. Under the big cushion is warm and dark. It is full of biscuit crumbs and one glove.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_books_0",
+          "label": "Dig down where the hat is.",
+          "target": "n_dig"
+        },
+        {
+          "id": "c_n_books_1",
+          "label": "Lift up the big cushion.",
+          "target": "n_cushion"
+        }
+      ]
+    },
+    {
+      "id": "n_dig",
+      "body": "The digging turns up a wooden spoon, a small plastic cow, and a yellow lid. The lid is yellow. For one whole second it looks just right. Then it is only a lid.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_dig_0",
+          "label": "Ask everybody by the door.",
+          "target": "n_ask"
+        },
+        {
+          "id": "c_n_dig_1",
+          "label": "Go out to the sand pit.",
+          "target": "n_water"
+        }
+      ]
+    },
+    {
+      "id": "n_cushion",
+      "body": "Under the cushions there is no welly, but there is a boot-shaped dry patch on the carpet, the kind a welly leaves when it has been standing somewhere a while.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_cushion_0",
+          "label": "Sit down and put on the red ones.",
+          "target": "n_wait"
+        },
+        {
+          "id": "c_n_cushion_1",
+          "label": "Ask everybody by the door.",
+          "target": "n_ask"
+        }
+      ]
+    },
+    {
+      "id": "n_ask",
+      "body": "Asking out loud who has seen the yellow welly makes the whole line think at once. It is loud. Two people say the sand pit. One person says the moon.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ask_0",
+          "label": "Look behind the big plant pot.",
+          "target": "n_found"
+        },
+        {
+          "id": "c_n_ask_1",
+          "label": "Take the blue welly instead.",
+          "target": "n_share"
+        }
+      ]
+    },
+    {
+      "id": "n_water",
+      "body": "The sand pit has been out in the garden since this morning. It has its buckets, its spades, and its one small digger. In this light, all of it is gritty and all of it looks a bit yellow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_water_0",
+          "label": "Put everything back where it goes.",
+          "target": "e_tidied"
+        },
+        {
+          "id": "c_n_water_1",
+          "label": "Go and tell Jo.",
+          "target": "e_helper"
+        }
+      ]
+    },
+    {
+      "id": "n_wait",
+      "body": "You can sit back down by the door too. The puddle walk is starting and there is a blue welly free. Jo does not make a fuss about it either way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_wait_0",
+          "label": "Take the blue welly instead.",
+          "target": "n_share"
+        },
+        {
+          "id": "c_n_wait_1",
+          "label": "Go back and think again.",
+          "target": "n_gap"
+        }
+      ]
+    },
+    {
+      "id": "n_found",
+      "body": "There it is. It is in the sand pit behind the big plant pot. The paint smudge faces away. That is why no one saw it. It is full of sand and a small plastic bug.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_found_0",
+          "label": "Wash it at the tap.",
+          "target": "e_washed"
+        },
+        {
+          "id": "c_n_found_1",
+          "label": "Take it to the door.",
+          "target": "e_juice"
+        }
+      ]
+    },
+    {
+      "id": "n_share",
+      "body": "The blue welly turns out to be fine. The puddles splash the same from any colour. From here the yellow welly is still missing. The walk is still going on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_share_0",
+          "label": "Let somebody else have it.",
+          "target": "e_swap"
+        },
+        {
+          "id": "c_n_share_1",
+          "label": "Leave it for tomorrow.",
+          "target": "e_tomorrow"
+        }
+      ]
+    },
+    {
+      "id": "e_tidied",
+      "body": "The looking turns into tidying without anyone meaning to. The spoon goes back. The cow goes back. The glove goes in the basket. The nursery is better than it was. But the welly is not found.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_tidied",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Tidying Instead"
+      }
+    },
+    {
+      "id": "e_helper",
+      "body": "Jo is told just where it is not. This turns out to be a big help. She says that is good helping. They go and look at the last place hand in hand.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_helper",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Telling Jo"
+      }
+    },
+    {
+      "id": "e_washed",
+      "body": "The boot is held with both hands and brought to the tap. It is tipped out, washed, and put on the rack in its own spot. The row of boots is right again and the bug goes back in the sand pit.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_washed",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Back in Its Space"
+      }
+    },
+    {
+      "id": "e_juice",
+      "body": "The yellow boot gets to the door at just the right time and is pulled on. Stomping in it is as good as it always is. The paint smudge sits on one toe the way it always does.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_juice",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Yellow Welly at Last"
+      }
+    },
+    {
+      "id": "e_swap",
+      "body": "Someone else in the line likes yellow best too, and the welly goes to them instead. Giving it away turns out to feel surprisingly good, and the blue welly is still perfectly fine.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_swap",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Someone Else's Turn"
+      }
+    },
+    {
+      "id": "e_tomorrow",
+      "body": "The walk is done before the boot is found. That is it for today. Jo writes YELLOW BOOT on the board so that the next day starts with all kids looking.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_tomorrow",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "On the Whiteboard"
+      }
+    }
+  ]
+}

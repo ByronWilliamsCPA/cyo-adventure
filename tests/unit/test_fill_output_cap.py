@@ -21,6 +21,7 @@ from cyo_adventure.generation.skeleton import (
     MAX_FILL_OUTPUT_TOKENS,
     MODEL_OUTPUT_CAPS,
     active_fill_model,
+    commissioned_words_by_node,
     expected_output_tokens,
     is_fill_feasible,
     resolve_output_cap,
@@ -215,6 +216,87 @@ def test_feasibility_is_measured_against_the_declared_fill_targets() -> None:
     assert expected_output_tokens(story) == 500
     assert is_fill_feasible(story, max_tokens=1000)
     assert not is_fill_feasible(story, max_tokens=100)
+
+
+@pytest.mark.unit
+def test_commissioned_words_are_reported_per_node() -> None:
+    """The per-node breakdown keys on id and skips directive-less nodes.
+
+    The fill-rate check (AL-490/UW-C307) joins these targets against the
+    filled book's node ids, so a node without a ``words=`` directive must be
+    absent (pre-authored prose never dilutes the ratio) and an id-less node
+    must not collapse onto another's key (that overwrite once undercounted
+    ``expected_output_tokens``).
+    """
+    story = {
+        "nodes": [
+            {"id": "a", "body": "<<FILL role=rising words=100 beats='x'>>"},
+            {"id": "b", "body": "already-authored prose, no directive"},
+            {"body": "<<FILL role=rising words=25 beats='y'>>"},
+            {"body": "<<FILL role=rising words=75 beats='z'>>"},
+        ]
+    }
+
+    targets = commissioned_words_by_node(story)
+
+    assert targets == {"a": 100, "#2": 25, "#3": 75}
+    assert sum(targets.values()) == 200
+
+
+@pytest.mark.unit
+def test_the_per_node_keying_preserves_the_flat_word_total() -> None:
+    """Duplicate and id-less keys must accumulate, not overwrite.
+
+    ``expected_output_tokens`` folds this map, so an overwrite would make it
+    UNDERstate a duplicate-id skeleton's demand and let ``is_fill_feasible``
+    fail open on a book the backend cannot emit, which is the `AL-429` shape.
+    ``scripts/check_fill_integrity.py`` joins its delivered words on the same
+    keys, so an overwrite would also shrink that gate's denominator.
+    """
+    story: dict[str, object] = {
+        "nodes": [
+            {"id": "dup", "body": "<<FILL role=scene words=100>>"},
+            {"id": "dup", "body": "<<FILL role=scene words=100>>"},
+            {"body": "<<FILL role=scene words=50>>"},
+            {"body": "<<FILL role=scene words=50>>"},
+            {"id": "multi", "body": "<<FILL words=30>>\n<<FILL words=20>>"},
+        ]
+    }
+    assert commissioned_words_by_node(story) == {
+        "dup": 200,
+        "#2": 50,
+        "#3": 50,
+        "multi": 50,
+    }, (
+        "a repeated node id must sum its targets and an id-less node must take "
+        "a positional key; overwriting either loses commissioned words"
+    )
+    # 350 commissioned words at 2.0 tokens/word. Asserted alongside the map so
+    # a keying change that happens to preserve the total is still caught, and a
+    # keying change that silently loses words fails here too.
+    assert expected_output_tokens(story) == 700
+
+
+def test_commissioned_words_skip_malformed_shapes() -> None:
+    """Malformed stories yield empty or partial targets, never an exception.
+
+    ``expected_output_tokens`` runs at selection time over decoded JSON it did
+    not author, so a story with no node list, a non-dict node member, or a
+    non-string body must degrade to "no commissioned words there" rather than
+    raise mid-selection.
+    """
+    assert commissioned_words_by_node({}) == {}
+    assert commissioned_words_by_node({"nodes": "not-a-list"}) == {}
+
+    story = {
+        "nodes": [
+            "not-a-node",
+            {"id": "a", "body": None},
+            {"id": "b", "body": "<<FILL role=rising words=50 beats='x'>>"},
+        ]
+    }
+
+    assert commissioned_words_by_node(story) == {"b": 50}
 
 
 @pytest.mark.unit

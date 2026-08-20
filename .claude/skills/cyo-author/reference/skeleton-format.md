@@ -49,16 +49,24 @@ node past the hard max) and per-skeleton `reading_level` metadata (`flesch_kinca
 This table mirrors those values; a previous revision of this table carried stale ~2x-higher
 Lexile-era numbers that would hard-fail the gate at 3-5 (2026-08-09 review, section 2.1).
 
-| Band / style | Words/node mean | Advisory range | Hard max | FK target | Fail-state policy |
-|--------------|-----------------|----------------|----------|-----------|-------------------|
-| 3-5 | 40 | 28-55 | 90 | 1.0 | NO death/capture; outcomes comic or always-recover |
-| 5-8 | 70 | 50-95 | 155 | 2.5 | NO death/capture; try-again or comic outcomes only |
-| 8-11 | 100 | 70-135 | 220 | 4.5 | Failure and entrapment allowed; adventure-forward tone |
-| 10-13 | 100 | 70-135 | 220 | 5.5 | Horror variety and logical failure allowed |
-| 13-16 prose | 140 | 100-185 | 310 | 7.0 | Resource-based failure; lethal endings allowed |
-| 13-16 gamebook | 65 | 45-90 | 145 | 7.0 | Resource-based failure; lethal endings allowed |
-| 16+ prose | 175 | 125-230 | 385 | 8.0-9.0 | Lethal, resource-based, mature themes allowed |
-| 16+ gamebook | 80 | 55-110 | 175 | 8.0-9.0 | Lethal, resource-based, mature themes allowed |
+Which ending kinds a band FORBIDS is not restated here. The source of record is
+`validator/band_profile.py::_PROFILES` (`forbidden_ending_kinds`), enforced as PL-15 at
+`Severity.ERROR`. A previous revision of this table's fail-state column said "NO
+death/capture" only at 3-5 and 5-8 and gave 8-11 as "failure and entrapment allowed",
+which reads as permitting death endings for eight-to-eleven-year-olds by omission; the
+code forbids `death` at 8-11 too (`AL-493`, 2026-08-20). The tone column below is
+drafting guidance only and carries no policy.
+
+| Band / style | Words/node mean | Advisory range | Hard max | FK target | Tone guidance |
+|--------------|-----------------|----------------|----------|-----------|---------------|
+| 3-5 | 40 | 28-55 | 90 | 1.0 | Outcomes comic or always-recover |
+| 5-8 | 70 | 50-95 | 155 | 2.5 | Try-again or comic outcomes |
+| 8-11 | 100 | 70-135 | 220 | 4.5 | Adventure-forward; setbacks and entrapment |
+| 10-13 | 100 | 70-135 | 220 | 5.5 | Horror variety and logical failure |
+| 13-16 prose | 140 | 100-185 | 310 | 7.0 | Resource-based failure |
+| 13-16 gamebook | 65 | 45-90 | 145 | 7.0 | Resource-based failure |
+| 16+ prose | 175 | 125-230 | 385 | 8.0-9.0 | Resource-based failure, mature themes |
+| 16+ gamebook | 80 | 55-110 | 175 | 8.0-9.0 | Resource-based failure, mature themes |
 
 Do not hand-copy these numbers into a drafting brief: generate the full per-cell constraint
 set with `uv run python scripts/generate_drafting_brief.py <band> <length> <style>`, which
@@ -104,7 +112,7 @@ so no other fields, and there is no `ending.type`):
 | `discovery` | The reader uncovers or learns something; outcome-neutral rather than a clear win or loss. |
 | `setback` | A non-lethal bad outcome: the protagonist fails, retreats, or is otherwise set back, but survives. Allowed at 8-11 and above. |
 | `capture` | A non-lethal entrapment outcome (caught, held, trapped). Allowed at 8-11 and above. |
-| `death` | A lethal outcome. **Allowed only where the band's fail-state policy permits it**: never at 3-5 or 5-8. |
+| `death` | A lethal outcome. **Allowed only where the band's fail-state policy permits it**, which is `validator/band_profile.py::_PROFILES` (`forbidden_ending_kinds`) and not this table: as of 2026-08-20 it is forbidden at 3-5, 5-8 AND 8-11. Read the source, not a restatement (`AL-493`). |
 
 `ending.valence` (how it feels, independent of what happened, `Valence`):
 `positive`, `neutral`, or `negative`.

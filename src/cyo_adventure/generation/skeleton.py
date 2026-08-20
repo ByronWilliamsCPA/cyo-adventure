@@ -308,6 +308,60 @@ _FEASIBILITY_MARGIN = 0.8
 _FILL_WORDS_RE = re.compile(r"words\s*=\s*(\d+)")
 
 
+def commissioned_words_by_node(story: dict[str, object]) -> dict[str, int]:
+    """Return each node's declared ``words=`` fill target, keyed by node id.
+
+    The per-node breakdown exists so a checker holding both the skeleton and
+    the filled story can measure the story-level fill rate (delivered words
+    over commissioned words, `AL-490`/`UW-C307`): the live DeepSeek run showed
+    a fill can deliver 40 percent of its commissioned prose while no per-node
+    rule fires, because the only hard word rule is a ceiling. Nodes without a
+    ``words=`` directive do not appear, so pre-authored prose never dilutes
+    the ratio.
+
+    #ASSUME: data-integrity: the key scheme is a cross-module contract, not an
+    internal detail. ``scripts/check_fill_integrity.py`` reproduces it exactly
+    to join delivered words against commissioned words, so changing how an
+    id-less or duplicate-id node is keyed silently changes that gate's
+    denominator. Duplicate keys ACCUMULATE rather than overwrite so the summed
+    total always equals a plain scan of the bodies, which is what
+    ``expected_output_tokens`` depends on (`AL-429`).
+    #VERIFY: test_commissioned_words_are_reported_per_node,
+    test_the_per_node_keying_preserves_the_flat_word_total, and
+    test_commissioned_words_skip_malformed_shapes.
+
+    Args:
+        story: The decoded skeleton dict.
+
+    Returns:
+        dict[str, int]: Summed ``words=`` targets per node, for nodes whose
+            body declares at least one. Keyed by ``str(node["id"])``, or by
+            ``#<index>`` for a node carrying no id; a key reached more than
+            once accumulates rather than being overwritten.
+    """
+    targets: dict[str, int] = {}
+    nodes = story.get("nodes")
+    if not isinstance(nodes, list):
+        return targets
+    for index, node in enumerate(nodes):  # pyright: ignore[reportUnknownVariableType]
+        if not isinstance(node, dict):
+            continue
+        body = node.get("body")
+        if not isinstance(body, str):
+            continue
+        words = sum(int(m) for m in _FILL_WORDS_RE.findall(body))
+        if not words:
+            continue
+        # An id-less node (a malformed or test skeleton) falls back to a
+        # positional key, and duplicate keys accumulate rather than overwrite:
+        # either way the summed total stays equal to what a plain scan of the
+        # bodies would count, which `expected_output_tokens` depends on.
+        raw_id = node.get("id")
+        key = str(raw_id) if raw_id is not None else f"#{index}"
+        targets[key] = targets.get(key, 0) + words
+    return targets
+
+
 def expected_output_tokens(story: dict[str, object]) -> int:
     """Return the output tokens a one-shot fill of *story* is expected to cost.
 
@@ -321,16 +375,7 @@ def expected_output_tokens(story: dict[str, object]) -> int:
     Returns:
         int: Expected completion tokens for the whole filled document.
     """
-    nodes = story.get("nodes")
-    if not isinstance(nodes, list):
-        return 0
-    words = 0
-    for node in nodes:  # pyright: ignore[reportUnknownVariableType]
-        if not isinstance(node, dict):
-            continue
-        body = node.get("body")
-        if isinstance(body, str):
-            words += sum(int(m) for m in _FILL_WORDS_RE.findall(body))
+    words = sum(commissioned_words_by_node(story).values())
     return math.ceil(words * _TOKENS_PER_FILL_WORD)
 
 

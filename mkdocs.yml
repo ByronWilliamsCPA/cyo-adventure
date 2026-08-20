@@ -250,11 +250,21 @@ nav:
 # and story-structure planning docs resolve into it. Excluding it would turn those
 # into 404s on the site, and MkDocs reports a link to an excluded page at INFO level,
 # so `strict: true` would not catch the breakage.
+# planning/vendor-comparison/ is the cross-vendor fill harness's committed run
+# evidence: briefs, vendor pins, per-book JSON and reports, kept in git so a
+# comparison's figures stay re-derivable. It is excluded for the same reason
+# planning/evidence/ is, and the DeepSeek v4 Pro run took the tree from ~36 KB
+# to ~1.1 MB, so without this entry roughly a megabyte of generated story JSON
+# would be served as public static assets. Non-Markdown files never trip
+# `strict: true`, so a green docs build is not evidence that they stay
+# unpublished; only this entry is.
 exclude_docs: |
   planning/README.md
   planning/project-plan-template.md
   planning/evidence/
   !planning/evidence/sentinel-reinsertion/
+  planning/vendor-comparison/
+  !planning/vendor-comparison/README.md
   template_feedback.md
 
 # Validation

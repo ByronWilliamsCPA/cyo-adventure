@@ -9,9 +9,11 @@ dated and sourced rather than folklore.
 
 from __future__ import annotations
 
+import json
 from dataclasses import FrozenInstanceError
 from datetime import date
 from decimal import Decimal
+from pathlib import Path
 
 import pytest
 
@@ -152,6 +154,35 @@ def test_price_for_keys_on_the_routing_provider_not_the_vendor() -> None:
     """An OpenRouter-routed Anthropic model keys off openrouter, as billed."""
     assert price_for("openrouter", "anthropic/claude-haiku-4.5") is not None
     assert price_for("anthropic", "anthropic/claude-haiku-4.5") is None
+
+
+@pytest.mark.unit
+def test_deepseek_v4_pro_fixture_carries_the_priced_pin() -> None:
+    """The committed vendor fixture pins the exact endpoint its price row assumes.
+
+    The `deepseek/deepseek-v4-pro` row prices the `azure/us` endpoint, not the
+    slug's default route: OpenRouter serves the slug from endpoints priced
+    $0.66 to $1.91 input, so an unpinned run using this row is mispriced. The
+    comparison fixture is the row's only caller today, and its own note says
+    the pin and the price row must move together; this asserts that contract
+    instead of leaving it to memory.
+    """
+    fixture = (
+        Path(__file__).resolve().parents[2]
+        / "docs/planning/vendor-comparison/vendors-deepseek-v4-pro.json"
+    )
+    entries = json.loads(fixture.read_text(encoding="utf-8"))
+    (vendor,) = [e for e in entries if e["model"] == "deepseek/deepseek-v4-pro"]
+    assert vendor["provider_order"] == ["azure/us"], (
+        "vendors-deepseek-v4-pro.json no longer pins azure/us; the "
+        "deepseek/deepseek-v4-pro price row in core/pricing.py prices that "
+        "endpoint specifically and must be repriced with any repin"
+    )
+    price = PRICES[("openrouter", "deepseek/deepseek-v4-pro")]
+    assert "azure/us" in price.note, (
+        "the deepseek/deepseek-v4-pro price row no longer names its pinned "
+        "endpoint; the pin contract above cannot be audited without it"
+    )
 
 
 @pytest.mark.unit
