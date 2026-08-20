@@ -547,8 +547,8 @@ def _load_differentiation(path: Path, brief_count: int) -> list[str]:
                     file=sys.stderr,
                 )
                 sys.exit(1)
-        titles = [t for t in _as_str_items(spec.get("prior_titles")) if t]
-        tags = [t for t in _as_str_items(spec.get("prior_theme_tags")) if t]
+        titles = _require_str_list(spec, "prior_titles", i)
+        tags = _require_str_list(spec, "prior_theme_tags", i)
         directives.append(
             build_differentiation_directive(
                 level=level_raw if isinstance(level_raw, str) else None,
@@ -560,19 +560,37 @@ def _load_differentiation(path: Path, brief_count: int) -> list[str]:
     return directives
 
 
-def _as_str_items(value: object) -> list[str]:
-    """Coerce an optional JSON list to its string members.
+def _require_str_list(spec: dict[str, object], key: str, index: int) -> list[str]:
+    """Return a spec entry's list-of-strings field, or exit on any other shape.
+
+    A scalar where a list belongs, or a non-string member, must be a hard
+    error for the same reason an unknown axis key is: silently dropping the
+    malformed part would run a WEAKER directive than the operator specified
+    and report its convergence as the directed floor.
 
     Args:
-        value: A parsed JSON value, expected to be a list of strings or absent.
+        spec: The differentiation spec entry.
+        key: The field to read (``prior_titles`` or ``prior_theme_tags``).
+        index: The entry's position, for the error message.
 
     Returns:
-        The string members, or ``[]`` for ``None`` or any other shape.
+        The non-empty string members; ``[]`` when the field is absent.
+
+    Raises:
+        SystemExit: If the field is not a list of strings.
     """
-    if not isinstance(value, list):
+    value = spec.get(key)
+    if value is None:
         return []
-    items = cast("list[object]", value)
-    return [item for item in items if isinstance(item, str)]
+    if not isinstance(value, list) or not all(
+        isinstance(item, str) for item in cast("list[object]", value)
+    ):
+        print(
+            f"Error: differentiation #{index} {key} must be a list of strings.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    return [item for item in cast("list[str]", value) if item]
 
 
 def _load_skeletons(paths: Sequence[Path], brief_count: int) -> list[dict[str, object]]:

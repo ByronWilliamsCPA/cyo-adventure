@@ -198,6 +198,25 @@ def test_min_fill_rate_zero_measures_without_blocking(tmp_path: Path) -> None:
     )
 
 
+@pytest.mark.parametrize("floor", ["nan", "-0.5"], ids=["nan", "negative"])
+def test_a_degenerate_fill_rate_floor_is_refused(tmp_path: Path, floor: str) -> None:
+    """A NaN or negative floor would pass every fill, so it is a usage error.
+
+    ``fill_rate < float("nan")`` is False for every ratio and a negative
+    floor sits below every possible delivery; either silently disables the
+    gate while looking configured. Zero stays legal as the documented
+    measure-without-blocking setting.
+    """
+    skeleton_path = _write(tmp_path, "skeleton.json", _commissioned_skeleton())
+    filled_path = _write(tmp_path, "filled.json", _filled_at(40))
+    assert (
+        check_fill_integrity.main(
+            [skeleton_path, filled_path, "--min-fill-rate", floor]
+        )
+        == 1
+    )
+
+
 def test_fill_rate_skips_a_skeleton_without_word_targets(tmp_path: Path) -> None:
     """No ``words=`` directives means no commissioned total, not a zero rate.
 

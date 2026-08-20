@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 from typing import Any, cast
@@ -205,6 +206,18 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     args = parser.parse_args(argv)
+    # A NaN floor compares False against every ratio and a negative one is
+    # below every possible delivery, so either silently disables the gate
+    # while looking configured. Zero stays legal as the documented
+    # measure-without-blocking setting.
+    min_fill_rate = float(args.min_fill_rate)
+    if not math.isfinite(min_fill_rate) or min_fill_rate < 0:
+        sys.stderr.write(
+            f"FAIL inputs: --min-fill-rate {args.min_fill_rate} is not a "
+            "finite, non-negative ratio; a NaN or negative floor would pass "
+            "every fill\n"
+        )
+        return 1
     # #CRITICAL: data-integrity: this check is a comparison, so it is only as
     # good as the independence of its two inputs. A builder bug once wrote the
     # prose story to BOTH paths, and the structural comparison then compared a
@@ -321,7 +334,6 @@ def main(argv: list[str] | None = None) -> int:
         delivered = sum(delivered_by_node.get(nid, 0) for nid in commissioned)
         total = sum(commissioned.values())
         fill_rate = delivered / total
-        min_fill_rate = float(args.min_fill_rate)
         line = (
             f"fill-rate: delivered {delivered} of {total} commissioned words "
             f"({fill_rate:.1%}) over {len(commissioned)} directive nodes "

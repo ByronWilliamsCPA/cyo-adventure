@@ -634,6 +634,28 @@ def test_load_differentiation_rejects_an_unknown_key(tmp_path: Path) -> None:
         _load_differentiation(path, 2)
 
 
+@pytest.mark.parametrize(
+    "field", ["prior_titles", "prior_theme_tags"], ids=["titles", "tags"]
+)
+@pytest.mark.parametrize(
+    "value", ["The Canal Compass", ["The Canal Compass", 7]], ids=["scalar", "mixed"]
+)
+def test_load_differentiation_rejects_a_malformed_list(
+    tmp_path: Path, field: str, value: object
+) -> None:
+    """A scalar or non-string member must fail, not silently weaken the block.
+
+    Dropping the malformed part would run a weaker directive than the
+    operator specified and report its convergence as the directed floor,
+    the same silent-degradation failure the unknown-axis error exists to
+    prevent.
+    """
+    path = _write_differentiation(tmp_path, [{field: value}, None])
+
+    with pytest.raises(SystemExit):
+        _load_differentiation(path, 2)
+
+
 @pytest.mark.asyncio
 async def test_compare_vendors_pairs_skeleton_i_with_brief_i() -> None:
     """Every vendor sees the same skeleton for a brief index, and only that one.
