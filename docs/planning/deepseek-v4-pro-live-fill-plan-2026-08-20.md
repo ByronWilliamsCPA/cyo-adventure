@@ -1,7 +1,7 @@
 # DeepSeek v4 Pro live fill run: 5-sample plan
 
 **Date**: 2026-08-20
-**Status**: executing; pre-flight complete, generation in progress
+**Status**: run complete (3 of 5 passed); two failed legs re-running; reviews in progress
 **Blocks on**: nothing; PR #730 merged 2026-08-20 04:15 UTC
 **Predecessor**: PR #730 (`feat(catalog): cover all 18 offered cells at the strict bar`), whose
 "Follow-up handoff" names this run as the intended next task
@@ -306,6 +306,150 @@ instruction for exactly the case where a family already owns another story on th
 The pair therefore measures the **raw convergence floor the directive exists to counter**, not
 production behavior. That makes it the right baseline and the wrong number to quote as what a
 reader would receive.
+
+## 5.2 Results (run of 2026-08-20)
+
+### Outcome
+
+| # | Skeleton | Band | Status | FK | In band | Latency | Cost |
+| ---: | --- | --- | --- | ---: | ---: | ---: | ---: |
+| 0 | the-last-cartage | 16+ gb | **error** (transient empty 200) | - | - | 398s | unmetered |
+| 1 | the-last-cartage | 16+ gb | passed | 6.67 | 15.5% | 1874s | $1.064 |
+| 2 | the-quarry-signal | 13-16 gb | passed | 3.86 | 5.6% | 687s | $0.538 |
+| 3 | the-tin-whistle-map | 8-11 prose | passed | 4.01 | **73.1%** | 469s | $0.350 |
+| 4 | the-last-blue-cup | 3-5 prose | **error** (`content_filter`) | - | - | 48s | $0.042 |
+
+Three of five passed. Harness cost $1.9943 against an OpenRouter-measured $2.0396,
+so the accounting is accurate to about two percent.
+
+### The root cause: the `words=` directive is not honored
+
+Every book delivered 39 to 53 percent of its commissioned words, and no book had a
+single node over its PL-19 per-node maximum.
+
+| Book | Nodes | Commissioned | Delivered | Ratio | Story mean vs advisory | Below floor |
+| ---: | ---: | ---: | ---: | ---: | --- | ---: |
+| 1 | 632 | 49,953 | 19,423 | 38.9% | 30.7 vs 55-110 | 631/632 |
+| 2 | 267 | 18,888 | 9,997 | 52.9% | 37.4 vs 45-90 | 245/267 |
+| 3 | 193 | 19,574 | 8,353 | 42.7% | 43.3 vs 70-135 | 191/193 |
+
+Per-node correlation between commissioned and delivered words is 0.527, -0.027 and
+-0.405. Book 3 is the sharpest: nodes commissioning 100-124 words returned a mean
+of 40.7 while nodes commissioning 75-99 returned 51.5, so there the directive is
+anti-correlated rather than merely ignored. Delivered length is near-constant per
+book (means 30.7, 37.4, 43.3; sd 5 to 9) against commissioned ranges of 40 to 112.
+An initial hypothesis that delivery degrades with node count is **disproven**:
+632 nodes gave 38.9 percent, 267 gave 52.9, 193 gave 42.7.
+
+### That one cause explains the reading-level split
+
+Short choppy prose lands at low Flesch-Kincaid, so the low band conforms by
+accident and the high bands cannot. Book 3 (8-11, target near 4.5) reached 73.1
+percent of nodes in band; book 2 (13-16, target 7.0) got 5.6 percent and book 1
+(16+, target 9.0) 15.5 percent. **The higher the band, the worse the same defect
+reads.** This is a single defect with a band-dependent symptom, not three
+problems.
+
+### The gate measured all of it and blocked on none
+
+Book 1's gate run: `findings=456 blocked=False`, exit 0, zero repair attempts.
+447 `RL-13`, 7 `CG-4`, 1 `PL-23`, 1 `PL-19`. `PL-19` named the shortfall exactly,
+"story-mean 30.7 words/node is outside the band '16+' gamebook advisory 55-110",
+and `PL-23` caught the consequence, a declared 16-minute read against a derived 6.
+Both are WARNING severity by design: `per_node_max` is an ERROR for every story
+while the story-mean advisory is not, and `band_profile.py` states the reasoning,
+"There is no hard per-node minimum: a one-line beat is legitimate." Defensible per
+node; it composes into a book-level shortfall nothing blocks on.
+
+### Structural drift on fields the contract freezes
+
+Node-level structure was perfect on every book: zero nodes differing outside
+prose. Top-level identity fields drifted anyway, differently each time.
+
+- Book 1 changed the story `id`, `sk_last_cartage` to `sk_last_codex`. `id` is
+  explicitly frozen by `fill.md` and import and skeleton-matching key on it.
+- Book 2 changed the top-level `title`, and 27 of its 36 `ending.title` values.
+- Book 4's probe emitted the correct `id`, so this is sporadic drift, not a
+  systematic transform.
+
+`check_fill_integrity.py` catches all of it and exits 1, correctly.
+
+**`ending.title` is genuinely ambiguous and three sites disagree.** `fill.md`
+freezes only "``id`` on ... any ending block", and `SKILL.md` lists ending titles
+alongside bodies and choice labels as slot-bearing theme content, both of which
+make a reskin legitimate. But `chunking.py`'s `merge_fill_batch` whitelists only
+`body` and choice `label` and explicitly refuses `ending`, and
+`check_fill_integrity.py` compares endings too. So a book that legally reskins its
+ending titles one-shot **cannot be produced by the chunked path**, which since
+`UW-C302` is the degraded path for large and bound fills. The two paths produce
+contractually different books. This is the same shape as the four-site FK-target
+disagreement ruled on 2026-08-18 and wants the same treatment: one site of record.
+
+`schema_version` differs 2.0 to 2.1 on every book, but the model emits 2.0 and
+`Storybook.schema_version` defaults to 2.1, so that is a pipeline stamp and not a
+finding. It does mean the integrity check's structure FAIL fires on every filled
+book, so its verdict is uninformative until you read which field moved.
+
+### Prose defects the gate cannot see
+
+- **Bodies restate their own `beats=` directive with nouns swapped** rather than
+  dramatising it. On book 2, mean content-word overlap between beat and body is
+  0.51, with 34 percent of nodes at 0.60 or above and one ending at 1.00.
+- **Verbatim duplicate prose.** Book 2 has 23 redundant nodes across 11 repeated
+  texts, five of them appearing four times each; `d6_n0` and `d15_n0` are
+  byte-identical.
+- **Choice labels collapse.** Book 2 has 674 choices and 24 distinct labels; the
+  top three account for 605, or 89.8 percent.
+- **Incoherent world physics.** Book 1 keeps the mine's hydraulics: sand ponding
+  upward from a sump like water, and a firedamp safety-lamp beat about flame
+  telling you late, in a building full of vellum. Book 2 keeps quarry apparatus on
+  a lava field and pairs hazards with instructions that do not fit them, "soft,
+  warm mud ... Test every rung before you put your weight on it".
+- **Prose asserting state it cannot know.** Book 2's `end_fixed_trust1` appends
+  "the lamp's last oil burned somewhere your memory will not name yet" to a beat
+  that says nothing about the lamp, on a node reachable at `light` 0 through 3.
+  The gate passed it. This is the defect the tier-2 book was in the grid to find.
+
+### Diversity is good, and the number is not quotable
+
+Within-vendor shared four-grams came in at mean 0.64 and max 1.34 per 1000 leaf
+words, far inside the 4.0 budget. But the three surviving pairs share neither
+skeleton nor band, while the 3.3 calibration is for pairs sharing a band, so this
+is not comparable to that floor. The shared-skeleton pair the run was designed
+around did not happen, because book 0 was the leg that failed.
+
+### The two failures
+
+- **Book 0**, three attempts each returning HTTP 200 with an empty body,
+  `finish_reason=None`, about 130s apiece. Not a size limit: book 1 emitted the
+  same 632-node skeleton at the same cap on the same pin. Probes confirmed that
+  large input, a large `max_tokens`, and both together all succeed. Transient.
+- **Book 4**, `finish_reason='content_filter'` on a 3-5 nursery story about a
+  missing pair of yellow wellington boots, after 3,227 billed output tokens. A
+  content filter firing on the most innocuous book in the grid matters for a
+  children's product. **Correction:** an earlier commit message called a
+  `content_filter` stop deterministic and said the provider wrongly classified it
+  transient. Re-probing the identical prompt returned a complete valid book,
+  "The Last Yellow Welly", at `finish_reason=stop`. So the stop is NOT
+  deterministic and the transient classification is defensible. What remains is
+  that a benign preschool premise trips the filter at all, intermittently.
+
+### Method note: two reviewers, and the disagreement was informative
+
+Running an editorial reviewer and a compliance validator separately paid for
+itself twice. The validator caught the `id` mutation, which the editorial pass had
+no reason to look for. The editorial pass caught the incoherent physics, which
+every mechanical check scored as fine.
+
+Where they disagreed, the mechanical verdict was wrong both times, and for the
+same reason. On book 2 the validator scored theme fidelity PASS having counted
+quarry 0, pit 0, stone 4, rail 3, tower 0; the quarry actually survives as
+stope 16, cribbing 14, timber 17, catwalk 18, rung 18, which the editorial pass
+found by reading. On book 1 the editorial pass overstated the opposite case,
+citing dune 1 and desert 0 while missing sand 220 and scriptorium 104. **A
+mechanical noun-substitution check is only as good as its hand-picked word list**,
+and the honest reading of book 1 is that surface nouns were reskinned densely
+while the source theme's apparatus and physics were retained wholesale.
 
 ## 6. Findings from planning
 
