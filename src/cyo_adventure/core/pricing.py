@@ -211,6 +211,27 @@ _PRICES: dict[tuple[str, str], ModelPrice] = {
         source=_OPENROUTER_API,
         note="read live from https://openrouter.ai/api/v1/models",
     ),
+    # #ASSUME: payment: this row is the price of the PINNED endpoint
+    # (`coreweave/fp8`), not of the slug's default route. OpenRouter serves this
+    # one slug from 18 endpoints priced from $0.66 to $1.91 input, and this table
+    # is keyed on (provider, model) so it can hold exactly one of them. Recording
+    # the default route ($1.44/$2.88, which is `novita/fp8`) would overstate a
+    # pinned run's cost by about 20 percent, and a comparison that exists to
+    # price a vendor should not be wrong about the endpoint it actually paid.
+    # #VERIFY: any run using this row must pass `provider_order:
+    # ["coreweave/fp8"]`; an unpinned run is mispriced here AND exposed to the
+    # per-endpoint output-ceiling spread documented in `MODEL_OUTPUT_CAPS`.
+    ("openrouter", "deepseek/deepseek-v4-pro"): ModelPrice(
+        input_usd_per_mtok=Decimal("1.15"),
+        output_usd_per_mtok=Decimal("2.55"),
+        as_of=date(2026, 8, 20),
+        source=_OPENROUTER_API,
+        note=(
+            "read live from https://openrouter.ai/api/v1/models/"
+            "deepseek/deepseek-v4-pro/endpoints; price of the coreweave/fp8 "
+            "endpoint, which is the pin this project uses for this model"
+        ),
+    ),
     ("openrouter", "qwen/qwen3.6-27b"): ModelPrice(
         input_usd_per_mtok=Decimal("0.6"),
         output_usd_per_mtok=Decimal("3.6"),

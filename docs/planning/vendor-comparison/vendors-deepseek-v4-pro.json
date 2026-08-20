@@ -1,0 +1,11 @@
+[
+  {
+    "label": "deepseek-v4-pro",
+    "model": "deepseek/deepseek-v4-pro",
+    "provider_order": ["coreweave/fp8"],
+    "family": "deepseek",
+    "_price_per_mtok": "1.15 / 2.55",
+    "_endpoint_verified": "2026-08-20, status 0, max_completion_tokens 1048576",
+    "_note": "Pinned to CoreWeave fp8: fp8 rather than fp4, US-hosted, and the largest declared output ceiling of the slug's 18 endpoints. First-party DeepSeek is cheapest at 0.66/1.98 but is not the right default for a children's product on data-residency grounds, the same reasoning that kept the Anthropic and OpenAI legs of vendors.json off their first-party endpoints. Pinning is a CORRECTNESS requirement for this slug, not reproducibility hygiene: OpenRouter serves it with output ceilings from 16,384 (DeepInfra) to 1,048,576 (CoreWeave, Parasail), while MODEL_OUTPUT_CAPS records one per-slug value of 393,216. An unpinned route to the low end asks for eight times what the endpoint emits, truncates non-empty, and per this repo's own correction to that table a non-empty truncation is not leg-fatal, so it burns the whole repair budget on every retry. See the plan's finding F2."
+  }
+]
