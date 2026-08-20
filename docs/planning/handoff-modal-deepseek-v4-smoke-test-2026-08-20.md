@@ -104,3 +104,29 @@ Preconditions: endpoint provisioned (weights are roughly 1 TB, first spin-up is 
 6. Append results to this document on branch `claude/modal-deepseek-v4-smoke-test-x38avp`.
 
 If auth fails with 401/403, the token pair is the wrong type (see finding 1).
+
+## Second session (2026-08-20, Modal leg attempt): blocked on the endpoint URL
+
+Credential preflight passed, with one naming caveat:
+
+- The proxy-token pair is present in the session environment but under nonstandard names:
+  `MODAL_KEY` (value starts `wk-`) and `MIDAL_SECRET` (value starts `ws-`; note the `MIDAL` typo in
+  the variable name). The pair is the correct wk-/ws- proxy type. Before any code-level test through
+  `core/config.py::Settings`, rename them in the environment configuration to `MODAL_PROXY_KEY` /
+  `MODAL_PROXY_SECRET`, and remember env values load only at container start (finding 3).
+
+`MODAL_BASE_URL` is absent, and the session could not recover the endpoint URL from anywhere:
+
+- Not in the environment under any name (all variable names audited), not in the repo or any
+  `claude/*` branch, and no `~/.modal.toml` in the container.
+- Hostname guessing is unverifiable, confirming finding 2: `https://williaby--deepseek-v4-pro.modal.run/`
+  returns the generic edge 404 `modal-http: invalid function call`, byte-identical to a control
+  request against a nonexistent workspace hostname, so a 404 there proves nothing about the
+  endpoint's existence or name.
+- `api.modal.com` is not an HTTP gateway for managed endpoints: `GET /v1/models` and
+  `POST /v1/chat/completions` (with `Modal-Key`/`Modal-Secret` headers) both return HTTP 200 with
+  zero-byte bodies, consistent with a gRPC-only host behind a load balancer.
+
+The Modal leg therefore remains unrun. Unblocking requires exactly one value from a developer
+machine or the dashboard: the endpoint URL from `modal endpoint list --env main`. Everything else
+(allowlist, credentials, call plan) is verified and ready.
