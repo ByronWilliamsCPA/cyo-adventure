@@ -217,6 +217,27 @@ def test_a_degenerate_fill_rate_floor_is_refused(tmp_path: Path, floor: str) -> 
     )
 
 
+def test_fill_rate_joins_id_less_nodes_positionally(tmp_path: Path) -> None:
+    """An id-less directive node still gets credit for its delivered prose.
+
+    The commissioned side keys an id-less node ``#index``; if the delivered
+    side keyed it ``"?"`` (as ``_word_stats`` does for display), the join
+    would miss it, undercount delivery, and fail a fill that delivered in
+    full. The structural check pins node order, which is what makes the
+    positional key comparable.
+    """
+    skeleton = _commissioned_skeleton()
+    del skeleton["nodes"][1]["id"]
+    filled = _filled_at(95)
+    del filled["nodes"][1]["id"]
+    skeleton_path = _write(tmp_path, "skeleton.json", skeleton)
+    filled_path = _write(tmp_path, "filled.json", filled)
+    # Structure check compares stripped copies, so the matching id deletion on
+    # both sides keeps this a fill-rate-only scenario; only the check's own
+    # blocking outcome is asserted.
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 0
+
+
 def test_fill_rate_skips_a_skeleton_without_word_targets(tmp_path: Path) -> None:
     """No ``words=`` directives means no commissioned total, not a zero rate.
 

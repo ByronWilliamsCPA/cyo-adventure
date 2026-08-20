@@ -152,6 +152,40 @@ def _word_stats(filled: dict[str, Any]) -> tuple[list[tuple[str, int]], float]:
     return counts, mean
 
 
+def _delivered_words_by_node(filled: dict[str, Any]) -> dict[str, int]:
+    """Return delivered word counts keyed the way the commissioned side keys.
+
+    The fill-rate join looks these up by the keys
+    ``commissioned_words_by_node`` produces: the node id, or ``#index`` for an
+    id-less node, with duplicate keys accumulating. Reusing ``_word_stats``'s
+    pairs here would key id-less nodes as ``"?"`` and let a ``dict()`` collapse
+    duplicate ids, silently undercounting delivery and failing a fill that
+    delivered in full. The structural check pins the filled story to the
+    skeleton's node order, which is what makes a positional key comparable at
+    all.
+
+    Args:
+        filled: The decoded filled story JSON.
+
+    Returns:
+        Delivered words per commissioned-style node key.
+    """
+    delivered: dict[str, int] = {}
+    nodes = filled.get("nodes")
+    if not isinstance(nodes, list):
+        return delivered
+    for index, node in enumerate(nodes):
+        if not isinstance(node, dict):
+            continue
+        body = node.get("body")
+        if not isinstance(body, str):
+            continue
+        raw_id = node.get("id")
+        key = str(raw_id) if raw_id is not None else f"#{index}"
+        delivered[key] = delivered.get(key, 0) + len(body.split())
+    return delivered
+
+
 def _defers_titles(skeleton: dict[str, Any]) -> bool:
     """Return whether the skeleton wrote any title as a FILL directive.
 
@@ -330,7 +364,7 @@ def main(argv: list[str] | None = None) -> int:
             "is no commissioned total to measure against\n"
         )
     else:
-        delivered_by_node = dict(counts)
+        delivered_by_node = _delivered_words_by_node(filled)
         delivered = sum(delivered_by_node.get(nid, 0) for nid in commissioned)
         total = sum(commissioned.values())
         fill_rate = delivered / total
