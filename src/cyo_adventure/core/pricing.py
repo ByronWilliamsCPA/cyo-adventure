@@ -212,23 +212,32 @@ _PRICES: dict[tuple[str, str], ModelPrice] = {
         note="read live from https://openrouter.ai/api/v1/models",
     ),
     # #ASSUME: payment: this row is the price of the PINNED endpoint
-    # (`coreweave/fp8`), not of the slug's default route. OpenRouter serves this
-    # one slug from 18 endpoints priced from $0.66 to $1.91 input, and this table
-    # is keyed on (provider, model) so it can hold exactly one of them. Recording
-    # the default route ($1.44/$2.88, which is `novita/fp8`) would overstate a
-    # pinned run's cost by about 20 percent, and a comparison that exists to
-    # price a vendor should not be wrong about the endpoint it actually paid.
-    # #VERIFY: any run using this row must pass `provider_order:
-    # ["coreweave/fp8"]`; an unpinned run is mispriced here AND exposed to the
-    # per-endpoint output-ceiling spread documented in `MODEL_OUTPUT_CAPS`.
+    # (`azure/us`), not of the slug's default route. OpenRouter serves this one
+    # slug from 18 endpoints priced from $0.66 to $1.91 input, and this table is
+    # keyed on (provider, model) so it can hold exactly one of them. Recording
+    # the default route ($1.44/$2.88, which is `novita/fp8`) would UNDERstate a
+    # pinned run's cost by about a third, and a comparison that exists to price a
+    # vendor should not be wrong about the endpoint it actually paid.
+    #
+    # Endpoint reachability was PROBED, not assumed, on 2026-08-20, because three
+    # of the candidates fail in two different ways that both look like a bad slug:
+    # `alibaba/fp8`, `baidu/fp8` and first-party `deepseek` return 404 "no
+    # endpoints available matching your guardrail restrictions and data policy",
+    # and `coreweave/fp8` and `parasail/fp8`, the only two endpoints declaring a
+    # 1,048,576 output ceiling, returned a persistent 429. `azure/us` is the
+    # reachable pin whose hosting matches the posture the account's own data
+    # policy already expresses by blocking the three above.
+    # #VERIFY: any run using this row must pass `provider_order: ["azure/us"]`;
+    # an unpinned run is mispriced here AND exposed to the per-endpoint
+    # output-ceiling spread documented in `MODEL_OUTPUT_CAPS`.
     ("openrouter", "deepseek/deepseek-v4-pro"): ModelPrice(
-        input_usd_per_mtok=Decimal("1.15"),
-        output_usd_per_mtok=Decimal("2.55"),
+        input_usd_per_mtok=Decimal("1.91"),
+        output_usd_per_mtok=Decimal("3.83"),
         as_of=date(2026, 8, 20),
         source=_OPENROUTER_API,
         note=(
             "read live from https://openrouter.ai/api/v1/models/"
-            "deepseek/deepseek-v4-pro/endpoints; price of the coreweave/fp8 "
+            "deepseek/deepseek-v4-pro/endpoints; price of the azure/us "
             "endpoint, which is the pin this project uses for this model"
         ),
     ),
