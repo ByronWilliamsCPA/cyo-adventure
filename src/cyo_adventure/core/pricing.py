@@ -227,9 +227,11 @@ _PRICES: dict[tuple[str, str], ModelPrice] = {
     # 1,048,576 output ceiling, returned a persistent 429. `azure/us` is the
     # reachable pin whose hosting matches the posture the account's own data
     # policy already expresses by blocking the three above.
-    # #VERIFY: any run using this row must pass `provider_order: ["azure/us"]`;
-    # an unpinned run is mispriced here AND exposed to the per-endpoint
-    # output-ceiling spread documented in `MODEL_OUTPUT_CAPS`.
+    # #VERIFY: test_deepseek_v4_pro_fixture_carries_the_priced_pin asserts the
+    # committed vendor fixture (this row's only caller) pins
+    # `provider_order: ["azure/us"]` and that this row's note still names that
+    # endpoint; an unpinned run is mispriced here AND exposed to the
+    # per-endpoint output-ceiling spread documented in `MODEL_OUTPUT_CAPS`.
     ("openrouter", "deepseek/deepseek-v4-pro"): ModelPrice(
         input_usd_per_mtok=Decimal("1.91"),
         output_usd_per_mtok=Decimal("3.83"),

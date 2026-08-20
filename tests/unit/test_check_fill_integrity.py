@@ -188,7 +188,9 @@ def test_a_delivered_fill_passes_the_fill_rate_check(tmp_path: Path) -> None:
     assert check_fill_integrity.main([skeleton_path, filled_path]) == 0
 
 
-def test_min_fill_rate_zero_measures_without_blocking(tmp_path: Path) -> None:
+def test_min_fill_rate_zero_measures_without_blocking(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     """A zero floor reports the ratio but never fails on it."""
     skeleton_path = _write(tmp_path, "skeleton.json", _commissioned_skeleton())
     filled_path = _write(tmp_path, "filled.json", _filled_at(40))
@@ -196,9 +198,17 @@ def test_min_fill_rate_zero_measures_without_blocking(tmp_path: Path) -> None:
         check_fill_integrity.main([skeleton_path, filled_path, "--min-fill-rate", "0"])
         == 0
     )
+    assert (
+        "fill-rate: delivered 80 of 200 commissioned words" in capsys.readouterr().out
+    ), (
+        "a zero floor must still measure and report the fill rate; success "
+        "with no fill-rate line means the measurement was skipped, not passed"
+    )
 
 
-@pytest.mark.parametrize("floor", ["nan", "-0.5"], ids=["nan", "negative"])
+@pytest.mark.parametrize(
+    "floor", ["nan", "inf", "-0.5"], ids=["nan", "inf", "negative"]
+)
 def test_a_degenerate_fill_rate_floor_is_refused(tmp_path: Path, floor: str) -> None:
     """A NaN or negative floor would pass every fill, so it is a usage error.
 

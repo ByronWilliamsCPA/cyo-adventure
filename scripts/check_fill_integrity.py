@@ -249,7 +249,7 @@ def main(argv: list[str] | None = None) -> int:
         sys.stderr.write(
             f"FAIL inputs: --min-fill-rate {args.min_fill_rate} is not a "
             "finite, non-negative ratio; a NaN or negative floor would pass "
-            "every fill\n"
+            "every fill, and an infinite one would fail every fill\n"
         )
         return 1
     # #CRITICAL: data-integrity: this check is a comparison, so it is only as
