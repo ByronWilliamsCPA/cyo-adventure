@@ -540,7 +540,7 @@ Five things surfaced while building this plan that are worth recording independe
 `fill_skeleton` derives its own cap for the chunking decision from the **provider's model**:
 
 ```python
-cap = resolve_output_cap(resolved_model)          # provider.model outranks settings
+cap = resolve_output_cap(resolved_model)  # provider.model outranks settings
 chunked = not is_fill_feasible(skeleton, max_tokens=cap)
 ```
 
