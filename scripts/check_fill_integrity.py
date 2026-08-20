@@ -3,7 +3,7 @@
 Usage:
     uv run python scripts/check_fill_integrity.py <skeleton.json> <filled.json>
 
-Three checks for the story-inventory authoring run (see
+Four checks for the story-inventory authoring run (see
 ``docs/planning/story-inventory-initial-run.md`` section 5.1):
 
 1. Structural immutability: with every node ``body`` and every choice
@@ -45,12 +45,25 @@ from cyo_adventure.validator.band_profile import words_per_node_profile
 
 _FILL_MARKER = "<<FILL"
 
-# Floor for the story-level fill rate, calibrated on every (skeleton, filled)
-# pair on disk on 2026-08-20: nine passing books from three vendors (grok,
-# gemini, sonnet; W4/W5 pool) span 0.715-0.990, and the three under-delivering
-# DeepSeek books (AL-490) span 0.389-0.529. 0.6 splits the gap: it admits
-# every known-good fill and blocks every book the live run proved
-# unpublishable. Revisit with the calibration rerun, not by hand.
+# Floor for the story-level fill rate. Calibrated 2026-08-20 against the
+# nine passing books of the W4/W5 vendor pool (grok, gemini, sonnet), which
+# span 0.715-0.990, and the three under-delivering DeepSeek books (AL-490),
+# which span 0.389-0.529.
+#
+# The margin is thinner than that pool alone suggests, so do not read
+# "0.715" as the headroom. Recomputed across all 48 (skeleton, filled) pairs
+# committed anywhere in the tree (``out/``, ``tests/data/diversity_panel/``,
+# and the vendor-comparison runs), the tightest KNOWN-GOOD pair is
+# ``tests/data/diversity_panel/fills/the-sky-ship-stowaway.deep-sea-submarine.filled.json``
+# at 0.635 (0.634 after the per-node capping below), and
+# ``the-lantern-festival.filled.json`` sits at 0.668. So 0.6 clears the
+# tightest good fill by about 0.035, not by 0.115, and two known-good pairs
+# live inside the 0.529-0.715 band this floor was said to "split".
+#
+# It still admits every one of the 48 and blocks every book the live run
+# proved unpublishable, which is the property that matters. But a raise
+# above ~0.63 starts rejecting known-good fills. Revisit with the
+# calibration rerun, not by hand.
 _DEFAULT_MIN_FILL_RATE = 0.6
 
 
@@ -252,6 +265,20 @@ def main(argv: list[str] | None = None) -> int:
             "every fill, and an infinite one would fail every fill\n"
         )
         return 1
+    # A floor above 1.0 is the percent-typo shape (``--min-fill-rate 60``
+    # meaning 60 percent). It passes the finiteness guard above and then
+    # fails EVERY book, including one that delivered its commission in
+    # full, which reads as a vendor finding rather than as the usage error
+    # it is. The two guards are not redundant: the first rejects floors
+    # that silently pass everything, this one rejects a floor that
+    # silently fails everything.
+    if min_fill_rate > 1:
+        sys.stderr.write(
+            f"FAIL inputs: --min-fill-rate {args.min_fill_rate} is above "
+            "1.0, so no fill could satisfy it; the floor is a ratio, not a "
+            "percentage (use 0.6, not 60)\n"
+        )
+        return 1
     # #CRITICAL: data-integrity: this check is a comparison, so it is only as
     # good as the independence of its two inputs. A builder bug once wrote the
     # prose story to BOTH paths, and the structural comparison then compared a
@@ -357,21 +384,72 @@ def main(argv: list[str] | None = None) -> int:
     # a whole book at 40 percent of its commissioned prose that nothing
     # blocks. The ratio is measured over directive-bearing nodes only, so
     # pre-authored prose neither pads nor dilutes it.
+    # #CRITICAL: data-integrity: the blocking ratio must be monotone in
+    # per-node delivery, or a surplus becomes a licence to omit. Summing raw
+    # delivery against the commissioned total lets one over-written node pay
+    # for another that came back empty: ten nodes commissioned at 60 words,
+    # five delivering 120 and five delivering nothing, sums to 600 of 600 and
+    # reports a perfect fill. That is not hypothetical here -- 15 of the 48
+    # committed pairs over-deliver in aggregate (up to 1.19x), so the surplus
+    # to spend is real, and ``Node.body`` carries no ``min_length`` while the
+    # band profile sets no per-node minimum by design, so nothing downstream
+    # catches the blank nodes either. Capping each node's credit at what it
+    # was commissioned makes the ratio fall whenever any node under-delivers.
+    # #VERIFY: test_surplus_on_one_node_cannot_pay_for_an_empty_node and
+    # test_a_dropped_node_body_counts_as_zero_delivery.
     commissioned = commissioned_words_by_node(skeleton)
     if not commissioned:
-        sys.stdout.write(
-            "note  fill-rate: no words= directives in the skeleton, so there "
-            "is no commissioned total to measure against\n"
+        # Distinguish two very different reasons the map came back empty.
+        #
+        # A well-formed skeleton whose directives simply carry no ``words=``
+        # target commissions nothing, so there is genuinely nothing to
+        # measure and a note is right. Older skeletons predate the targets.
+        #
+        # A skeleton whose ``nodes`` is not a list of node objects is a
+        # different animal: the scan could not look at a single node, so the
+        # gate reports success having compared nothing. That is the
+        # vacuous-success shape AL-294 ruled a defect in
+        # ``check_reading_level``, where an unscoreable book was "counted as
+        # a pass" and now fails. ``commissioned_words_by_node`` degrades to
+        # ``{}`` on both, because its caller ``expected_output_tokens`` wants
+        # a relaxed estimate rather than an exception; a BLOCKING gate wants
+        # the opposite, and the two cases must not share an outcome here.
+        raw_nodes = skeleton.get("nodes")
+        scannable = isinstance(raw_nodes, list) and any(
+            isinstance(node, dict) for node in cast("list[object]", raw_nodes)
         )
+        if not scannable:
+            sys.stderr.write(
+                "FAIL fill-rate: the skeleton exposes no node objects to "
+                "scan, so no commissioned total exists and every check above "
+                "compared nothing; this is a malformed skeleton, not a fill "
+                "that delivered\n"
+            )
+            failed = True
+        else:
+            sys.stdout.write(
+                "note  fill-rate: no words= directives in the skeleton, so "
+                "there is no commissioned total to measure against\n"
+            )
     else:
         delivered_by_node = _delivered_words_by_node(filled)
-        delivered = sum(delivered_by_node.get(nid, 0) for nid in commissioned)
         total = sum(commissioned.values())
-        fill_rate = delivered / total
+        # Raw delivery is the headline figure and the one AL-490's journalled
+        # 38.9/52.9/42.7 percent refer to; the capped figure is what gates.
+        raw_delivered = sum(delivered_by_node.get(nid, 0) for nid in commissioned)
+        effective = sum(
+            min(delivered_by_node.get(nid, 0), words)
+            for nid, words in commissioned.items()
+        )
+        raw_rate = raw_delivered / total
+        fill_rate = effective / total
+        capped = ""
+        if abs(raw_rate - fill_rate) >= 0.001:
+            capped = f"; {fill_rate:.1%} once per-node surplus is discounted"
         line = (
-            f"fill-rate: delivered {delivered} of {total} commissioned words "
-            f"({fill_rate:.1%}) over {len(commissioned)} directive nodes "
-            f"(floor {min_fill_rate})\n"
+            f"fill-rate: delivered {raw_delivered} of {total} commissioned "
+            f"words ({raw_rate:.1%}{capped}) over {len(commissioned)} "
+            f"directive nodes (floor {min_fill_rate})\n"
         )
         if fill_rate < min_fill_rate:
             sys.stderr.write(f"FAIL {line}")

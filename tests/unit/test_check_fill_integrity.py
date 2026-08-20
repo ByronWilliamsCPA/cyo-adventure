@@ -209,7 +209,9 @@ def test_min_fill_rate_zero_measures_without_blocking(
 @pytest.mark.parametrize(
     "floor", ["nan", "inf", "-0.5"], ids=["nan", "inf", "negative"]
 )
-def test_a_degenerate_fill_rate_floor_is_refused(tmp_path: Path, floor: str) -> None:
+def test_a_degenerate_fill_rate_floor_is_refused(
+    tmp_path: Path, floor: str, capsys: pytest.CaptureFixture[str]
+) -> None:
     """A NaN or negative floor would pass every fill, so it is a usage error.
 
     ``fill_rate < float("nan")`` is False for every ratio and a negative
@@ -218,12 +220,25 @@ def test_a_degenerate_fill_rate_floor_is_refused(tmp_path: Path, floor: str) -> 
     measure-without-blocking setting.
     """
     skeleton_path = _write(tmp_path, "skeleton.json", _commissioned_skeleton())
-    filled_path = _write(tmp_path, "filled.json", _filled_at(40))
+    # Delivered at 95 percent, i.e. a fill that CLEARS the real floor. With the
+    # 40-percent fixture the `inf` case was vacuous: `0.4 < inf` is True, so it
+    # exited 1 whether or not the guard existed. A passing fill makes each
+    # parameter fail only because the floor was refused as a usage error.
+    filled_path = _write(tmp_path, "filled.json", _filled_at(95))
     assert (
         check_fill_integrity.main(
             [skeleton_path, filled_path, "--min-fill-rate", floor]
         )
         == 1
+    )
+    captured = capsys.readouterr()
+    assert "FAIL inputs: --min-fill-rate" in captured.err, (
+        f"a {floor} floor must be refused at the argument boundary with an "
+        "explanatory error, not silently accepted"
+    )
+    assert "fill-rate: delivered" not in captured.out, (
+        "the run must be refused BEFORE measuring; a fill-rate line means the "
+        "guard ran too late to protect the gate"
     )
 
 
@@ -248,15 +263,113 @@ def test_fill_rate_joins_id_less_nodes_positionally(tmp_path: Path) -> None:
     assert check_fill_integrity.main([skeleton_path, filled_path]) == 0
 
 
-def test_fill_rate_skips_a_skeleton_without_word_targets(tmp_path: Path) -> None:
-    """No ``words=`` directives means no commissioned total, not a zero rate.
+def test_a_directive_less_skeleton_reports_nothing_to_measure(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """No ``words=`` targets commissions nothing, which is not a failure.
 
-    A directive-less skeleton would otherwise divide by zero or read as 0
-    percent delivered; the check must recognise there is nothing to measure.
+    Older skeletons predate the per-node targets, so an absent commission is
+    legitimate and the check says so rather than inventing a zero rate.
     """
     skeleton_path = _write(tmp_path, "skeleton.json", _SKELETON)
     filled_path = _write(tmp_path, "filled.json", _filled())
     assert check_fill_integrity.main([skeleton_path, filled_path]) == 0
+    assert "no words= directives" in capsys.readouterr().out
+
+
+def test_an_unscannable_skeleton_fails_rather_than_passing_vacuously(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A skeleton exposing no node objects must not report success.
+
+    ``commissioned_words_by_node`` degrades to ``{}`` for a malformed node
+    collection because ``expected_output_tokens`` wants a relaxed estimate
+    rather than an exception. A blocking gate wants the opposite: left as a
+    note, every check above reports ``ok`` having compared nothing, which is
+    the vacuous-success shape ``AL-294`` ruled a defect in
+    ``check_reading_level``.
+    """
+    skeleton = copy.deepcopy(_commissioned_skeleton())
+    filled = copy.deepcopy(_filled_at(95))
+    # A dict rather than a list: identical on both sides, so the structural
+    # comparison still passes and only the fill-rate gate can catch it. The
+    # title must itself be a FILL directive so ``_defers_titles`` short-
+    # circuits on it; otherwise that helper iterates the node collection
+    # expecting dicts and raises before this gate is reached.
+    skeleton["title"] = "<<FILL title>>"
+    skeleton["nodes"] = {"n0": skeleton["nodes"][0]}
+    filled["nodes"] = {"n0": filled["nodes"][0]}
+    skeleton_path = _write(tmp_path, "skeleton.json", skeleton)
+    filled_path = _write(tmp_path, "filled.json", filled)
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 1
+    assert "exposes no node objects to scan" in capsys.readouterr().err, (
+        "a skeleton the scan cannot read must fail; reporting ok on a "
+        "comparison that examined nothing manufactures confidence"
+    )
+
+
+def test_surplus_on_one_node_cannot_pay_for_an_empty_node(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Over-delivery must not buy the right to omit another node's prose.
+
+    Both nodes are commissioned at 100 words. The first delivers 200 and the
+    second delivers nothing, so a raw sum reaches 200 of 200 and reports a
+    perfect fill on a book that is half blank. ``Node.body`` carries no
+    ``min_length`` and the band profile sets no per-node minimum by design,
+    so nothing else in the battery catches it either.
+    """
+    skeleton = _commissioned_skeleton()
+    filled = _filled_at(0)
+    filled["nodes"][0]["body"] = " ".join(f"word{i}" for i in range(200))
+    filled["nodes"][1]["body"] = ""
+    skeleton_path = _write(tmp_path, "skeleton.json", skeleton)
+    filled_path = _write(tmp_path, "filled.json", filled)
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 1
+    err = capsys.readouterr().err
+    assert "50.0% once per-node surplus is discounted" in err, (
+        "the blocking ratio must be monotone in per-node delivery: a node "
+        f"credited beyond its commission masks an empty sibling. Got: {err!r}"
+    )
+
+
+def test_a_dropped_node_body_counts_as_zero_delivery(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A filled node with no ``body`` key at all delivers nothing.
+
+    The structural check strips ``body`` from both sides, so a wholly absent
+    body survives it; the fill-rate ratio is what registers the loss.
+    """
+    skeleton_path = _write(tmp_path, "skeleton.json", _commissioned_skeleton())
+    filled = _filled_at(95)
+    del filled["nodes"][1]["body"]
+    filled_path = _write(tmp_path, "filled.json", filled)
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 1
+    assert (
+        "delivered 95 of 200 commissioned words (47.5%)" in capsys.readouterr().err
+    ), "a dropped body must count as zero delivered words, not be skipped"
+
+
+def test_a_fill_rate_floor_above_one_is_refused(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """``--min-fill-rate 60`` is the percent typo, and fails every book.
+
+    It clears the finiteness guard and then rejects even a fill that
+    delivered in full, which reads as a vendor finding rather than the usage
+    error it is.
+    """
+    skeleton_path = _write(tmp_path, "skeleton.json", _commissioned_skeleton())
+    filled_path = _write(tmp_path, "filled.json", _filled_at(100))
+    assert (
+        check_fill_integrity.main([skeleton_path, filled_path, "--min-fill-rate", "60"])
+        == 1
+    )
+    assert "is a ratio, not a percentage" in capsys.readouterr().err, (
+        "a floor above 1.0 must be named as the percent mistake it almost "
+        "always is, not reported as a whole slate under-delivering"
+    )
 
 
 def test_check_fill_integrity_rejects_a_skeleton_with_no_markers(
