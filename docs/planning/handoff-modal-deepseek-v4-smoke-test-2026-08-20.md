@@ -130,3 +130,24 @@ Credential preflight passed, with one naming caveat:
 The Modal leg therefore remains unrun. Unblocking requires exactly one value from a developer
 machine or the dashboard: the endpoint URL from `modal endpoint list --env main`. Everything else
 (allowlist, credentials, call plan) is verified and ready.
+
+Update, later the same session: the owner reports the endpoint spin-up attempt (from mobile)
+FAILED, and creation logs are not visible from a mobile device. So the blocker is now one step
+earlier than the URL: the endpoint does not exist yet. Nothing in the remote session can advance
+this; the session cannot reach Modal's gRPC API (finding 4) and holds only the wk-/ws- proxy pair,
+which cannot authenticate the CLI even if it could.
+
+Next steps, from a developer machine:
+
+1. Re-run `modal endpoint create --name deepseek-v4-pro --model deepseek-ai/DeepSeek-V4-Pro
+   --env main` and read the failure output. Likely suspects for a first spin-up failure at this
+   model size: GPU capacity or quota for the required instance class, workspace billing limits, an
+   RBAC restriction on env `main`, or a stale half-created endpoint with the same name (check
+   `modal endpoint list --env main` and the dashboard before recreating).
+2. Once `modal endpoint list --env main` shows the endpoint live, put its URL in the remote
+   environment configuration as `MODAL_BASE_URL`, and rename the token vars to
+   `MODAL_PROXY_KEY` / `MODAL_PROXY_SECRET` (fixing the `MIDAL_SECRET` typo) in the same edit,
+   since env values load only at container start (finding 3).
+3. Start a fresh session with the smoke-test prompt; the call plan in "Remaining work" above is
+   unchanged and everything else (allowlist, token types, response-shape expectations, OpenRouter
+   baseline) is already verified.
