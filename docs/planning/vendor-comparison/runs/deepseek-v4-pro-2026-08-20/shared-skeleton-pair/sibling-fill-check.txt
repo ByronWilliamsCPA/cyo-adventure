@@ -1,0 +1,27 @@
+shared 4-grams across 2 fills: 1350 (96.3 per 1000 mean leaf words; budget 4.0)
+  x2  home and look at
+  x2  who had the key
+  x2  start it again get
+  x2  once fixed there then
+  x2  thought about it yesterday
+  x2  to be asked for
+  x2  the sound it makes
+  x2  is in a bag
+  x2  outside her door find
+  x2  to print ask for
+  x2  stopped in writing five
+  x2  get the order agreed
+  x2  get a light through
+  x2  the next thirty years
+  x2  takes the case back
+menu frames shared by 2+ fills (same node, same choice position, same opening words): 274
+  fn_bill3[0]: get light
+  fn_bill3[1]: find how
+  fn_door[0]: set six
+  fn_door[1]: try other
+  fn_door[2]: look door
+  fn_inventory[0]: put trail
+  fn_inventory[1]: set last
+  fn_inventory[2]: write before
+  fn_light[0]: leave until
+  fn_light[1]: set six
