@@ -1,0 +1,5555 @@
+{
+  "schema_version": "2.1",
+  "id": "sk_quarry_signal",
+  "version": 1,
+  "title": "The Island Cable",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "rescue",
+      "trust earned in the dark",
+      "the cost of a shortcut",
+      "a storm race"
+    ],
+    "estimated_minutes": 10,
+    "ending_count": 36,
+    "content_flags": {
+      "violence": "moderate",
+      "scariness": "moderate",
+      "peril": "intense"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "gamebook",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "light",
+      "type": "int",
+      "initial": 3,
+      "min": 0,
+      "max": 3,
+      "description": "Oil-lamp reserve. Decreases by 1 at each of three lit-shortcut checkpoints (a culvert, a failing stope, a slab-choked drift). Reachable set at the tower is {0,1,2,3}; read only in ending prose flavor, not gated by condition (the transmitter/trust gates carry the finale)."
+    },
+    {
+      "name": "trust",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "Dell Voss's confidence in you, built at three checkpoints where you look out for Dell over yourself (a failing rail, a catwalk gap, a switchback). Reachable set at the tower is {0,1,2}. Gates the finale's second resolution: trust==2 opens the together ending, ==1 a creditable solo ending, ==0 the estranged ending, on both the fixed and flare branches."
+    },
+    {
+      "name": "transmitter",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether you recovered the tower's spare valve, wedged behind a rockfall at exactly one node partway down. Both values are reachable at the tower. Gates the finale's first resolution: true opens the clean-call branch, false forces the improvised flare branch."
+    }
+  ],
+  "start_node": "n_open",
+  "nodes": [
+    {
+      "id": "n_open",
+      "body": "The last boat left the docks two hours ago. The ash cloud the geologists said would come at midnight is already piling dark over the volcano's shoulder. Pika's lantern beam finds you at the field station gate. The survey crew is three days late. The cable station past the cooling fields is the only working line left on the island. The wind is starting to sound like something breathing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_open_0",
+          "label": "Follow Pika through the gate.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "n_gather",
+      "body": "Pika lays a hand on the chain-link gate and does not swing it open yet. Three routes cross the cooling fields to the cable station: the old lava bench that runs above the vents, the steam-cut gully where the runoff channel used to be, and the service road the relay masts follow. Whatever you pick tonight, you are stuck with it before you take ten steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_gather_0",
+          "label": "Take the lava bench above the vents.",
+          "target": "t_terrace"
+        },
+        {
+          "id": "c_n_gather_1",
+          "label": "Follow the steam-cut gully down.",
+          "target": "t_flood"
+        },
+        {
+          "id": "c_n_gather_2",
+          "label": "Take the relay-mast service road.",
+          "target": "t_crane"
+        }
+      ]
+    },
+    {
+      "id": "t_terrace",
+      "body": "The lava bench steps down in broken black crust. It is easy underfoot but loud. Every step scrapes glassy rock downhill, and the vents below hiss back at you like something keeping count.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t_terrace_0",
+          "label": "Pick up the pace and burn lamp oil.",
+          "target": "p0_00"
+        },
+        {
+          "id": "c_t_terrace_1",
+          "label": "Move slow, feel your way, save fuel.",
+          "target": "p0_01"
+        },
+        {
+          "id": "c_t_terrace_2",
+          "label": "Pick up the pace and burn lamp oil.",
+          "target": "p0_02"
+        }
+      ]
+    },
+    {
+      "id": "t_flood",
+      "body": "The steam-cut gully snakes through the old runoff channel. The mineral water is ankle-deep and stays corpse-cold no matter how many vents steam fifty yards to either side. Every step breaks a skin of sulfur crust you cannot see until you are already through it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t_flood_0",
+          "label": "Move slow, feel your way, save fuel.",
+          "target": "p0_03"
+        },
+        {
+          "id": "c_t_flood_1",
+          "label": "Pick up the pace and burn lamp oil.",
+          "target": "p0_04"
+        },
+        {
+          "id": "c_t_flood_2",
+          "label": "Move slow, feel your way, save fuel.",
+          "target": "p0_05"
+        }
+      ]
+    },
+    {
+      "id": "t_crane",
+      "body": "The service road is a relic of the island's first relay build. It is a packed cinder track with steel lattice masts tilting at every other rise. The nearest one lists so far starboard that its shadow in your lamp beam looks like a man bent double.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t_crane_0",
+          "label": "Pick up the pace and burn lamp oil.",
+          "target": "p0_00"
+        },
+        {
+          "id": "c_t_crane_1",
+          "label": "Move slow, feel your way, save fuel.",
+          "target": "p0_01"
+        },
+        {
+          "id": "c_t_crane_2",
+          "label": "Pick up the pace and burn lamp oil.",
+          "target": "p0_02"
+        }
+      ]
+    },
+    {
+      "id": "p0_00",
+      "body": "The bench craters under each stride but you push hard. The lamp burns high and steady. Pika is two steps ahead, tracing the safe line from memory of a route walked once in daylight three years ago.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p0_00_0",
+          "label": "Keep moving down.",
+          "target": "d0_n0"
+        },
+        {
+          "id": "c_p0_00_1",
+          "label": "Push on without stopping.",
+          "target": "d0_n1"
+        },
+        {
+          "id": "c_p0_00_2",
+          "label": "Drive forward through the ash.",
+          "target": "d0_n2"
+        }
+      ]
+    },
+    {
+      "id": "p0_01",
+      "body": "You pick across the bench like you are walking a frozen lake. You test each crust before your weight follows. The ash settling on your shoulders is the only company the dark lets through behind you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p0_01_0",
+          "label": "Keep moving down.",
+          "target": "d0_n3"
+        },
+        {
+          "id": "c_p0_01_1",
+          "label": "Push on without stopping.",
+          "target": "d0_n4"
+        },
+        {
+          "id": "c_p0_01_2",
+          "label": "Drive forward through the ash.",
+          "target": "d0_n5"
+        }
+      ]
+    },
+    {
+      "id": "p0_02",
+      "body": "You splash through the gully at a dead run. The mineral water is searing cold around your shins. You trust the lamp to find every dry stone before you land on it, because slowing down now means wading alone in the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p0_02_0",
+          "label": "Keep moving down.",
+          "target": "d0_n6"
+        },
+        {
+          "id": "c_p0_02_1",
+          "label": "Push on without stopping.",
+          "target": "d0_n7"
+        },
+        {
+          "id": "c_p0_02_2",
+          "label": "Drive forward through the ash.",
+          "target": "d0_n8"
+        }
+      ]
+    },
+    {
+      "id": "p0_03",
+      "body": "You read every stone with your soles before you trust it, and the cold stays exactly as mean and exactly as patient the whole wade down. The ash has not reached the gully floor yet, and the silence down here is a different kind of heavy.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p0_03_0",
+          "label": "Keep moving down.",
+          "target": "d0_n0"
+        },
+        {
+          "id": "c_p0_03_1",
+          "label": "Push on without stopping.",
+          "target": "d0_n1"
+        },
+        {
+          "id": "c_p0_03_2",
+          "label": "Drive forward through the ash.",
+          "target": "d0_n2"
+        }
+      ]
+    },
+    {
+      "id": "p0_04",
+      "body": "You run the service road under the lean of the nearest mast. You do not look up at the insulator stack still hanging by a single bolt forty feet overhead. The bolt holds.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p0_04_0",
+          "label": "Keep moving down.",
+          "target": "d0_n3"
+        },
+        {
+          "id": "c_p0_04_1",
+          "label": "Push on without stopping.",
+          "target": "d0_n4"
+        },
+        {
+          "id": "c_p0_04_2",
+          "label": "Drive forward through the ash.",
+          "target": "d0_n5"
+        }
+      ]
+    },
+    {
+      "id": "p0_05",
+      "body": "You keep to the cable trench and well clear of the mast's old lean radius. It is the longer arc around the cinder field but the one Pika tracks with a single nod you almost miss in the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p0_05_0",
+          "label": "Keep moving down.",
+          "target": "d0_n6"
+        },
+        {
+          "id": "c_p0_05_1",
+          "label": "Push on without stopping.",
+          "target": "d0_n7"
+        },
+        {
+          "id": "c_p0_05_2",
+          "label": "Drive forward through the ash.",
+          "target": "d0_n8"
+        }
+      ]
+    },
+    {
+      "id": "d0_n0",
+      "body": "A rope ladder lashed across a vent mouth bars the way down; the rungs are slick with condensed steam, and Pika's lamp never wavers from you as you reach for the first one.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n0_0",
+          "label": "Keep moving down.",
+          "target": "d1_n0"
+        },
+        {
+          "id": "c_d0_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d1_n1"
+        },
+        {
+          "id": "c_d0_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d1_n2"
+        }
+      ]
+    },
+    {
+      "id": "d0_n1",
+      "body": "A lava tube, half blocked by old rubble, bars the way down. Pick a path through it, and the vents breathe out hot sulphur that tastes like a lit match held under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n1_0",
+          "label": "Keep moving down.",
+          "target": "d1_n3"
+        },
+        {
+          "id": "c_d0_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d1_n4"
+        },
+        {
+          "id": "c_d0_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d1_n5"
+        }
+      ]
+    },
+    {
+      "id": "d0_n2",
+      "body": "A cable trench turned to warm mud bars the way down. Stay on the firm edge and move fast. Pika checks the survey map by touch, because looking away from you is not yet an option.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n2_0",
+          "label": "Keep moving down.",
+          "target": "d1_n6"
+        },
+        {
+          "id": "c_d0_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d1_n7"
+        },
+        {
+          "id": "c_d0_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d1_n8"
+        }
+      ]
+    },
+    {
+      "id": "d0_n3",
+      "body": "A skylight shaft, with slabs of fallen basalt roof, bars the way down. Duck the low plates and count your breaths. As you slip through the first gap, Pika's lamp never wavers from you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n3_0",
+          "label": "Keep moving down.",
+          "target": "d1_n0"
+        },
+        {
+          "id": "c_d0_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d1_n1"
+        },
+        {
+          "id": "c_d0_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d1_n2"
+        }
+      ]
+    },
+    {
+      "id": "d0_n4",
+      "body": "A catwalk over a steaming crack bars the way down. Step on the cable tray, not the grating. The vents breathe out hot sulphur that tastes like a lit match held under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n4_0",
+          "label": "Keep moving down.",
+          "target": "d1_n3"
+        },
+        {
+          "id": "c_d0_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d1_n4"
+        },
+        {
+          "id": "c_d0_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d1_n5"
+        }
+      ]
+    },
+    {
+      "id": "d0_n5",
+      "body": "A switchback cut into bare rock bars the way down. Hug the cliff wall and ignore the drop. Pika checks the survey map by touch, because looking away from you is not yet an option.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n5_0",
+          "label": "Keep moving down.",
+          "target": "d1_n6"
+        },
+        {
+          "id": "c_d0_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d1_n7"
+        },
+        {
+          "id": "c_d0_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d1_n8"
+        }
+      ]
+    },
+    {
+      "id": "d0_n6",
+      "body": "A tunnel where the wood supports have gone soft blocks the way down. Press your palm on each post you pass. Pika's lamp never wavers from you as the dark grows tighter behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n6_0",
+          "label": "Keep moving down.",
+          "target": "d1_n0"
+        },
+        {
+          "id": "c_d0_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d1_n1"
+        },
+        {
+          "id": "c_d0_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d1_n2"
+        }
+      ]
+    },
+    {
+      "id": "d0_n7",
+      "body": "A culvert barely as wide as your ribs bars the way down. Breathe shallow and keep sliding. The vents breathe out hot sulphur that tastes like a lit match held under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n7_0",
+          "label": "Keep moving down.",
+          "target": "d1_n3"
+        },
+        {
+          "id": "c_d0_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d1_n4"
+        },
+        {
+          "id": "c_d0_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d1_n5"
+        }
+      ]
+    },
+    {
+      "id": "d0_n8",
+      "body": "An iron stair bolted right into the cliff face bars the way down. Climb it by feel instead of using the lamp. Pika checks the survey map by touch, because looking away from you is not yet an option.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d0_n8_0",
+          "label": "Keep moving down.",
+          "target": "d1_n6"
+        },
+        {
+          "id": "c_d0_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d1_n7"
+        },
+        {
+          "id": "c_d0_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d1_n8"
+        }
+      ]
+    },
+    {
+      "id": "d1_n0",
+      "body": "A lava tube, half blocked by old rubble, bars the way down. Stay on the firm edge and move fast. The ash-fall hisses on the rock above you now, closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n0_0",
+          "label": "Keep moving down.",
+          "target": "d2_n0"
+        },
+        {
+          "id": "c_d1_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d2_n1"
+        },
+        {
+          "id": "c_d1_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d2_n2"
+        }
+      ]
+    },
+    {
+      "id": "d1_n1",
+      "body": "A ditch of cables gone soft into warm mud blocks the way down. Duck the low plates and count your breaths. A survey flag from the missing crew turns up here, stuck in the rough rock. It is still bright orange and tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n1_0",
+          "label": "Keep moving down.",
+          "target": "d2_n3"
+        },
+        {
+          "id": "c_d1_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d2_n4"
+        },
+        {
+          "id": "c_d1_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d2_n5"
+        }
+      ]
+    },
+    {
+      "id": "d1_n2",
+      "body": "A skylight shaft where the basalt roof has come down in slabs bars the way down; step the cable tray rather than the grating, and your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n2_0",
+          "label": "Keep moving down.",
+          "target": "d2_n6"
+        },
+        {
+          "id": "c_d1_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d2_n7"
+        },
+        {
+          "id": "c_d1_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d2_n8"
+        }
+      ]
+    },
+    {
+      "id": "d1_n3",
+      "body": "A catwalk over a steaming crack bars the way down. Hug the cliff wall and ignore the drop. The ash-fall hisses on the rock above you now, closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n3_0",
+          "label": "Keep moving down.",
+          "target": "d2_n0"
+        },
+        {
+          "id": "c_d1_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d2_n1"
+        },
+        {
+          "id": "c_d1_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d2_n2"
+        }
+      ]
+    },
+    {
+      "id": "d1_n4",
+      "body": "A sharp turn in a bare lava rock wall blocks the way down. Touch every post you pass with a hand. A flag from the lost team shows up stuck in the rock\u2014still bright orange, still tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n4_0",
+          "label": "Keep moving down.",
+          "target": "d2_n3"
+        },
+        {
+          "id": "c_d1_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d2_n4"
+        },
+        {
+          "id": "c_d1_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d2_n5"
+        }
+      ]
+    },
+    {
+      "id": "d1_n5",
+      "body": "A stope where the timber cribbing has gone soft to the touch bars the way down; breathe shallow and keep sliding, and your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n5_0",
+          "label": "Keep moving down.",
+          "target": "d2_n6"
+        },
+        {
+          "id": "c_d1_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d2_n7"
+        },
+        {
+          "id": "c_d1_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d2_n8"
+        }
+      ]
+    },
+    {
+      "id": "d1_n6",
+      "body": "A tight pipe blocks the way down, barely wider than your ribs. Climb it by feel to save your lamp's oil. The ash-fall hisses on the rock above you now, closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n6_0",
+          "label": "Keep moving down.",
+          "target": "d2_n0"
+        },
+        {
+          "id": "c_d1_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d2_n1"
+        },
+        {
+          "id": "c_d1_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d2_n2"
+        }
+      ]
+    },
+    {
+      "id": "d1_n7",
+      "body": "An iron stair bolted to a steep cliff face blocks the way down. Test each step before you put your full weight on it. A flag from the lost team shows up stuck in the rock\u2014still bright orange, still tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n7_0",
+          "label": "Keep moving down.",
+          "target": "d2_n3"
+        },
+        {
+          "id": "c_d1_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d2_n4"
+        },
+        {
+          "id": "c_d1_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d2_n5"
+        }
+      ]
+    },
+    {
+      "id": "d1_n8",
+      "body": "A rope ladder lashed across a vent mouth bars the way down; pick a thread through the rubble, and your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_n8_0",
+          "label": "Keep moving down.",
+          "target": "d2_n6"
+        },
+        {
+          "id": "c_d1_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d2_n7"
+        },
+        {
+          "id": "c_d1_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d2_n8"
+        }
+      ]
+    },
+    {
+      "id": "d2_n0",
+      "body": "A cable trench has turned into soft, warm mud and bars the way down. Step on the cable tray, not the grating. Somewhere below, groundwater moves across hot rock. It sounds like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n0_0",
+          "label": "Keep moving down.",
+          "target": "d3_n0"
+        },
+        {
+          "id": "c_d2_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d3_n1"
+        },
+        {
+          "id": "c_d2_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d3_n2"
+        }
+      ]
+    },
+    {
+      "id": "d2_n1",
+      "body": "A skylight shaft with a caved-in basalt roof blocks the way down. Hug the cliff and don't look at the drop. The cable station's antenna flashes in your lamp-light for one clean second, high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n1_0",
+          "label": "Keep moving down.",
+          "target": "d3_n3"
+        },
+        {
+          "id": "c_d2_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d3_n4"
+        },
+        {
+          "id": "c_d2_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d3_n5"
+        }
+      ]
+    },
+    {
+      "id": "d2_n2",
+      "body": "A catwalk over a steaming crack in the earth blocks the way down. Touch every post you pass with a hand. The last passage has already closed behind you\u2014the ash is falling faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n2_0",
+          "label": "Keep moving down.",
+          "target": "d3_n6"
+        },
+        {
+          "id": "c_d2_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d3_n7"
+        },
+        {
+          "id": "c_d2_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d3_n8"
+        }
+      ]
+    },
+    {
+      "id": "d2_n3",
+      "body": "The pipe ahead is barely passable when dry. Burning your lamp brighter to see costs real oil. But the tight spot is over before the wick settles back to its old flame.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n3_0",
+          "label": "Keep moving down.",
+          "target": "d3_n0"
+        },
+        {
+          "id": "c_d2_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d3_n1"
+        },
+        {
+          "id": "c_d2_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d3_n2"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "dec",
+          "var": "light",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "d2_n4",
+      "body": "A mine room with soft, rotting wood beams blocks the way down. Climb it by feel to save your lamp's oil. The cable station's antenna flashes in your lamp-light for one clean second, high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n4_0",
+          "label": "Keep moving down.",
+          "target": "d3_n3"
+        },
+        {
+          "id": "c_d2_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d3_n4"
+        },
+        {
+          "id": "c_d2_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d3_n5"
+        }
+      ]
+    },
+    {
+      "id": "d2_n5",
+      "body": "A tight pipe blocks the way down, barely wider than your ribs. Test each step before you put your full weight on it. The last passage has already closed behind you\u2014the ash is falling faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n5_0",
+          "label": "Keep moving down.",
+          "target": "d3_n6"
+        },
+        {
+          "id": "c_d2_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d3_n7"
+        },
+        {
+          "id": "c_d2_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d3_n8"
+        }
+      ]
+    },
+    {
+      "id": "d2_n6",
+      "body": "An iron stair bolted to a steep cliff face blocks the way down. Pick a path through the rubble. Somewhere below, water is moving over hot rock\u2014a sound like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n6_0",
+          "label": "Keep moving down.",
+          "target": "d3_n0"
+        },
+        {
+          "id": "c_d2_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d3_n1"
+        },
+        {
+          "id": "c_d2_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d3_n2"
+        }
+      ]
+    },
+    {
+      "id": "d2_n7",
+      "body": "A rope ladder tied across a vent mouth blocks the way down. Stay on the crusted edge and move fast. For one clean second, the lamp-light catches the cable station antenna high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n7_0",
+          "label": "Keep moving down.",
+          "target": "d3_n3"
+        },
+        {
+          "id": "c_d2_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d3_n4"
+        },
+        {
+          "id": "c_d2_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d3_n5"
+        }
+      ]
+    },
+    {
+      "id": "d2_n8",
+      "body": "An old lava tube, half full of fallen rock, blocks the way down. Duck under the low plates and count your breaths. The last passage behind you has already shut. Ash falls faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_n8_0",
+          "label": "Keep moving down.",
+          "target": "d3_n6"
+        },
+        {
+          "id": "c_d2_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d3_n7"
+        },
+        {
+          "id": "c_d2_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d3_n8"
+        }
+      ]
+    },
+    {
+      "id": "d3_n0",
+      "body": "A skylight shaft with a basalt roof collapsed in slabs bars the way down. Brace a palm against every post you pass. The vents breathe out a sulphur smell. It tastes like a struck match held under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n0_0",
+          "label": "Keep moving down.",
+          "target": "d4_n0"
+        },
+        {
+          "id": "c_d3_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d4_n1"
+        },
+        {
+          "id": "c_d3_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d4_n2"
+        }
+      ]
+    },
+    {
+      "id": "d3_n1",
+      "body": "A catwalk over a steaming crack blocks the way down. Breathe shallow and keep sliding. Pika checks the map by touch. Looking away from you is not an option yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n1_0",
+          "label": "Keep moving down.",
+          "target": "d4_n3"
+        },
+        {
+          "id": "c_d3_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d4_n4"
+        },
+        {
+          "id": "c_d3_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d4_n5"
+        }
+      ]
+    },
+    {
+      "id": "d3_n2",
+      "body": "The path down is blocked by a switchback cut into bare, rough rock. Climb it by feel instead of using your lamp. Pika's lamp stays fixed on you as the darkness deepens behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n2_0",
+          "label": "Keep moving down.",
+          "target": "d4_n6"
+        },
+        {
+          "id": "c_d3_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d4_n7"
+        },
+        {
+          "id": "c_d3_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d4_n8"
+        }
+      ]
+    },
+    {
+      "id": "d3_n3",
+      "body": "The way down is blocked by a stope where the timber supports have grown soft. Test each rung before you put your weight on it. The vents breathe out a sulphur smell, sharp like a struck match held under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n3_0",
+          "label": "Keep moving down.",
+          "target": "d4_n0"
+        },
+        {
+          "id": "c_d3_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d4_n1"
+        },
+        {
+          "id": "c_d3_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d4_n2"
+        }
+      ]
+    },
+    {
+      "id": "d3_n4",
+      "body": "A drain pipe barely wide enough for your ribs blocks the way down. Pick a path through the rubble. Pika checks the map by touch. Looking away from you is not an option yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n4_0",
+          "label": "Keep moving down.",
+          "target": "d4_n3"
+        },
+        {
+          "id": "c_d3_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d4_n4"
+        },
+        {
+          "id": "c_d3_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d4_n5"
+        }
+      ]
+    },
+    {
+      "id": "d3_n5",
+      "body": "An iron stair bolted straight to the cliff face blocks the way down. Stay on the crusted edge and move fast. Pika's lamp never wavers from you as the dark tightens behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n5_0",
+          "label": "Keep moving down.",
+          "target": "d4_n6"
+        },
+        {
+          "id": "c_d3_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d4_n7"
+        },
+        {
+          "id": "c_d3_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d4_n8"
+        }
+      ]
+    },
+    {
+      "id": "d3_n6",
+      "body": "A rope ladder tied across a vent mouth blocks the way down. Duck the low plates and count your breaths. The vents breathe out sulphur that tastes like a struck match under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n6_0",
+          "label": "Keep moving down.",
+          "target": "d4_n0"
+        },
+        {
+          "id": "c_d3_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d4_n1"
+        },
+        {
+          "id": "c_d3_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d4_n2"
+        }
+      ]
+    },
+    {
+      "id": "d3_n7",
+      "body": "An old lava tube, half full of fallen rock, blocks the way down. Step on the cable tray, not the grating. Pika checks the map by touch. Looking away from you is not an option yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n7_0",
+          "label": "Keep moving down.",
+          "target": "d4_n3"
+        },
+        {
+          "id": "c_d3_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d4_n4"
+        },
+        {
+          "id": "c_d3_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d4_n5"
+        }
+      ]
+    },
+    {
+      "id": "d3_n8",
+      "body": "A stretch of cable trench, now just warm mud, bars the way down. Hug the cliff and ignore the drop below. Pika's lamp stays fixed on you as the darkness deepens behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_n8_0",
+          "label": "Keep moving down.",
+          "target": "d4_n6"
+        },
+        {
+          "id": "c_d3_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d4_n7"
+        },
+        {
+          "id": "c_d3_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d4_n8"
+        }
+      ]
+    },
+    {
+      "id": "d4_n0",
+      "body": "A catwalk over a steaming crack blocks the way down. Climb by feel instead of using your lamp. A survey flag from the lost crew is stuck in the rock. It is still bright orange and tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n0_0",
+          "label": "Keep moving down.",
+          "target": "d5_n0"
+        },
+        {
+          "id": "c_d4_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d5_n1"
+        },
+        {
+          "id": "c_d4_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d5_n2"
+        }
+      ]
+    },
+    {
+      "id": "d4_n1",
+      "body": "A switchback cut sideways into bare scoria blocks your way down. Test each rung before you trust it. Your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n1_0",
+          "label": "Keep moving down.",
+          "target": "d5_n3"
+        },
+        {
+          "id": "c_d4_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d5_n4"
+        },
+        {
+          "id": "c_d4_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d5_n5"
+        }
+      ]
+    },
+    {
+      "id": "d4_n2",
+      "body": "A stope with timber cribbing soft to the touch blocks your way down. Pick a thread through the rubble. The ash-fall hisses on the rock above you now, closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n2_0",
+          "label": "Keep moving down.",
+          "target": "d5_n6"
+        },
+        {
+          "id": "c_d4_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d5_n7"
+        },
+        {
+          "id": "c_d4_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d5_n8"
+        }
+      ]
+    },
+    {
+      "id": "d4_n3",
+      "body": "A culvert barely wide enough for your ribs blocks your way down. Stick to the crusted edge and move fast. A survey flag from the missing crew turns up wedged in the scoria \u2014 still bright orange, still tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n3_0",
+          "label": "Keep moving down.",
+          "target": "d5_n0"
+        },
+        {
+          "id": "c_d4_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d5_n1"
+        },
+        {
+          "id": "c_d4_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d5_n2"
+        }
+      ]
+    },
+    {
+      "id": "d4_n4",
+      "body": "An iron stair bolted straight into the scarp face blocks your way down. Duck the low plates and count your breaths. Your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n4_0",
+          "label": "Keep moving down.",
+          "target": "d5_n3"
+        },
+        {
+          "id": "c_d4_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d5_n4"
+        },
+        {
+          "id": "c_d4_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d5_n5"
+        }
+      ]
+    },
+    {
+      "id": "d4_n5",
+      "body": "You brace the failing edge of the cable trench so Pika can cross. Pika notices what that cost you \u2014 a brief flash of doubt from someone who never doubts.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n5_0",
+          "label": "Keep moving down.",
+          "target": "d5_n6"
+        },
+        {
+          "id": "c_d4_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d5_n7"
+        },
+        {
+          "id": "c_d4_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d5_n8"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "d4_n6",
+      "body": "A lava tube half choked with old collapse blocks your way down. Hug the scarp and shut out the drop. A survey flag from the missing crew turns up wedged in the scoria \u2014 still bright orange, still tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n6_0",
+          "label": "Keep moving down.",
+          "target": "d5_n0"
+        },
+        {
+          "id": "c_d4_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d5_n1"
+        },
+        {
+          "id": "c_d4_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d5_n2"
+        }
+      ]
+    },
+    {
+      "id": "d4_n7",
+      "body": "A length of cable trench gone soft into warm mud blocks your way down. Brace every post you pass a palm against. Your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n7_0",
+          "label": "Keep moving down.",
+          "target": "d5_n3"
+        },
+        {
+          "id": "c_d4_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d5_n4"
+        },
+        {
+          "id": "c_d4_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d5_n5"
+        }
+      ]
+    },
+    {
+      "id": "d4_n8",
+      "body": "A skylight shaft, where the basalt roof has fallen in slabs, blocks your way down. Take shallow breaths and keep sliding. The falling ash hisses on the rock above you now, much closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_n8_0",
+          "label": "Keep moving down.",
+          "target": "d5_n6"
+        },
+        {
+          "id": "c_d4_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d5_n7"
+        },
+        {
+          "id": "c_d4_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d5_n8"
+        }
+      ]
+    },
+    {
+      "id": "d5_n0",
+      "body": "A switchback cut sideways into bare scoria blocks your way down. Pick a thread through the rubble. The cable station's antenna catches lamp-light for one clean second, high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n0_0",
+          "label": "Keep moving down.",
+          "target": "d6_n0"
+        },
+        {
+          "id": "c_d5_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d6_n1"
+        },
+        {
+          "id": "c_d5_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d6_n2"
+        }
+      ]
+    },
+    {
+      "id": "d5_n1",
+      "body": "A stope with timber cribbing soft to the touch blocks your way down. Stick to the crusted edge and move fast. The last passage before this one has already closed behind you \u2014 the ash is falling faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n1_0",
+          "label": "Keep moving down.",
+          "target": "d6_n3"
+        },
+        {
+          "id": "c_d5_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d6_n4"
+        },
+        {
+          "id": "c_d5_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d6_n5"
+        }
+      ]
+    },
+    {
+      "id": "d5_n2",
+      "body": "A narrow culvert, barely wide enough for your ribs, blocks your way down. Duck under the low metal plates and count your breaths. Somewhere below, water is moving across hot rock, making a sound like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n2_0",
+          "label": "Keep moving down.",
+          "target": "d6_n6"
+        },
+        {
+          "id": "c_d5_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d6_n7"
+        },
+        {
+          "id": "c_d5_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d6_n8"
+        }
+      ]
+    },
+    {
+      "id": "d5_n3",
+      "body": "An iron stair bolted straight into the scarp face blocks your way down. Step the cable tray rather than the grating. The cable station's antenna catches lamp-light for one clean second, high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n3_0",
+          "label": "Keep moving down.",
+          "target": "d6_n0"
+        },
+        {
+          "id": "c_d5_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d6_n1"
+        },
+        {
+          "id": "c_d5_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d6_n2"
+        }
+      ]
+    },
+    {
+      "id": "d5_n4",
+      "body": "A rope ladder tied across a vent mouth bars the way down. Hug the cliff wall and shut out the drop. The last passage has already closed behind you \u2014 the ash is falling faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n4_0",
+          "label": "Keep moving down.",
+          "target": "d6_n3"
+        },
+        {
+          "id": "c_d5_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d6_n4"
+        },
+        {
+          "id": "c_d5_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d6_n5"
+        }
+      ]
+    },
+    {
+      "id": "d5_n5",
+      "body": "A lava tube half blocked by an old cave-in bars the way down. Brace your palm on each post you pass. Somewhere below, water moves over hot rock. It sounds just like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n5_0",
+          "label": "Keep moving down.",
+          "target": "d6_n6"
+        },
+        {
+          "id": "c_d5_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d6_n7"
+        },
+        {
+          "id": "c_d5_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d6_n8"
+        }
+      ]
+    },
+    {
+      "id": "d5_n6",
+      "body": "A stretch of cable trench has gone to soft mud and bars the way down. Breathe shallow and keep sliding. For one clean second, the lamp-light catches the cable station's antenna, high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n6_0",
+          "label": "Keep moving down.",
+          "target": "d6_n0"
+        },
+        {
+          "id": "c_d5_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d6_n1"
+        },
+        {
+          "id": "c_d5_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d6_n2"
+        }
+      ]
+    },
+    {
+      "id": "d5_n7",
+      "body": "A skylight shaft where the basalt roof has come down in slabs bars the way down; climb it by feel rather than burn the lamp, and the last passage before this one has already closed behind you \u2014 the ash is falling faster than you can retrace.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n7_0",
+          "label": "Keep moving down.",
+          "target": "d6_n3"
+        },
+        {
+          "id": "c_d5_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d6_n4"
+        },
+        {
+          "id": "c_d5_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d6_n5"
+        }
+      ]
+    },
+    {
+      "id": "d5_n8",
+      "body": "A catwalk over a steaming crack bars the way down. Test each rung with your weight before you trust it. Somewhere below, water is moving across hot rock, making a sound like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d5_n8_0",
+          "label": "Keep moving down.",
+          "target": "d6_n6"
+        },
+        {
+          "id": "c_d5_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d6_n7"
+        },
+        {
+          "id": "c_d5_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d6_n8"
+        }
+      ]
+    },
+    {
+      "id": "d6_n0",
+      "body": "A stope where the timber cribbing has gone soft to the touch bars the way down; duck the low plates and count your breaths, and Pika checks the survey map by touch because looking away from you is not an option yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n0_0",
+          "label": "Keep moving down.",
+          "target": "d7_n0"
+        },
+        {
+          "id": "c_d6_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d7_n1"
+        },
+        {
+          "id": "c_d6_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d7_n2"
+        }
+      ]
+    },
+    {
+      "id": "d6_n1",
+      "body": "A culvert, just wide enough for your ribs, bars the way down. Step on the cable tray, not the grating. Pika's lamp never wavers from you as the dark tightens behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n1_0",
+          "label": "Keep moving down.",
+          "target": "d7_n3"
+        },
+        {
+          "id": "c_d6_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d7_n4"
+        },
+        {
+          "id": "c_d6_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d7_n5"
+        }
+      ]
+    },
+    {
+      "id": "d6_n2",
+      "body": "An iron stair bolted right into the cliff face bars the way down. Hug the rock and ignore the drop. The vents breathe out a hot sulfur smell that tastes like a struck match held under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n2_0",
+          "label": "Keep moving down.",
+          "target": "d7_n6"
+        },
+        {
+          "id": "c_d6_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d7_n7"
+        },
+        {
+          "id": "c_d6_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d7_n8"
+        }
+      ]
+    },
+    {
+      "id": "d6_n3",
+      "body": "A rope ladder tied across a vent mouth bars the way down. Touch every post you pass with your palm. Pika checks the survey map by touch, because looking away from you is not yet an option.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n3_0",
+          "label": "Keep moving down.",
+          "target": "d7_n0"
+        },
+        {
+          "id": "c_d6_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d7_n1"
+        },
+        {
+          "id": "c_d6_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d7_n2"
+        }
+      ]
+    },
+    {
+      "id": "d6_n4",
+      "body": "A lava tube half blocked by an old cave-in bars the way down. Breathe shallow and keep sliding. Pika's lamp never wavers from you as the dark tightens behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n4_0",
+          "label": "Keep moving down.",
+          "target": "d7_n3"
+        },
+        {
+          "id": "c_d6_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d7_n4"
+        },
+        {
+          "id": "c_d6_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d7_n5"
+        }
+      ]
+    },
+    {
+      "id": "d6_n5",
+      "body": "A cable trench turned to warm mud bars the way down. Climb it by feel, not by lamp light. The vents breathe out a hot sulfur smell that tastes like a struck match held under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n5_0",
+          "label": "Keep moving down.",
+          "target": "d7_n6"
+        },
+        {
+          "id": "c_d6_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d7_n7"
+        },
+        {
+          "id": "c_d6_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d7_n8"
+        }
+      ]
+    },
+    {
+      "id": "d6_n6",
+      "body": "A shaft where the basalt roof has fallen in slabs bars the way down. Test each rung before you trust it. Pika checks the survey map by touch, because looking away from you is not yet an option.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n6_0",
+          "label": "Keep moving down.",
+          "target": "d7_n0"
+        },
+        {
+          "id": "c_d6_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d7_n1"
+        },
+        {
+          "id": "c_d6_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d7_n2"
+        }
+      ]
+    },
+    {
+      "id": "d6_n7",
+      "body": "A metal walkway over a steaming crack blocks the path down. Pick your way through the broken rock. Pika's lamp stays fixed on you as the darkness closes in behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n7_0",
+          "label": "Keep moving down.",
+          "target": "d7_n3"
+        },
+        {
+          "id": "c_d6_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d7_n4"
+        },
+        {
+          "id": "c_d6_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d7_n5"
+        }
+      ]
+    },
+    {
+      "id": "d6_n8",
+      "body": "A zigzag path cut into bare black rock blocks the way down. Stay on the crusted edge and move fast. The vents breathe out a hot sulfur smell that tastes like a struck match held under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d6_n8_0",
+          "label": "Keep moving down.",
+          "target": "d7_n6"
+        },
+        {
+          "id": "c_d6_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d7_n7"
+        },
+        {
+          "id": "c_d6_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d7_n8"
+        }
+      ]
+    },
+    {
+      "id": "d7_n0",
+      "body": "A culvert barely wide enough for your ribs bars the way down. Hug the rock and ignore the drop. Your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n0_0",
+          "label": "Keep moving down.",
+          "target": "d8_n0"
+        },
+        {
+          "id": "c_d7_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d8_n1"
+        },
+        {
+          "id": "c_d7_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d8_n2"
+        }
+      ]
+    },
+    {
+      "id": "d7_n1",
+      "body": "An iron stair bolted right into the cliff face blocks the way down. Touch every post you pass with your palm. Ash hisses on the rock above you now. It is closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n1_0",
+          "label": "Keep moving down.",
+          "target": "d8_n3"
+        },
+        {
+          "id": "c_d7_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d8_n4"
+        },
+        {
+          "id": "c_d7_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d8_n5"
+        }
+      ]
+    },
+    {
+      "id": "d7_n2",
+      "body": "A rope ladder tied across a vent opening blocks the way down. Breathe lightly and keep moving. You find a survey flag from the missing crew stuck in the rock. The flag is still bright orange and tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n2_0",
+          "label": "Keep moving down.",
+          "target": "d8_n6"
+        },
+        {
+          "id": "c_d7_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d8_n7"
+        },
+        {
+          "id": "c_d7_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d8_n8"
+        }
+      ]
+    },
+    {
+      "id": "d7_n3",
+      "body": "A lava tube half blocked with an old cave-in bars the way down. Climb by touch instead of using the lamp. Your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n3_0",
+          "label": "Keep moving down.",
+          "target": "d8_n0"
+        },
+        {
+          "id": "c_d7_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d8_n1"
+        },
+        {
+          "id": "c_d7_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d8_n2"
+        }
+      ]
+    },
+    {
+      "id": "d7_n4",
+      "body": "The cable trench has turned into soft, warm mud that blocks the way down. Test every rung before you put your weight on it. Ash hisses on the rock above you. It's closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n4_0",
+          "label": "Keep moving down.",
+          "target": "d8_n3"
+        },
+        {
+          "id": "c_d7_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d8_n4"
+        },
+        {
+          "id": "c_d7_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d8_n5"
+        }
+      ]
+    },
+    {
+      "id": "d7_n5",
+      "body": "A skylight shaft where the basalt roof fell in slabs blocks the way down. Pick a path through the rubble. You find a survey flag from the missing crew stuck in the rock. The flag is still bright orange and tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n5_0",
+          "label": "Keep moving down.",
+          "target": "d8_n6"
+        },
+        {
+          "id": "c_d7_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d8_n7"
+        },
+        {
+          "id": "c_d7_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d8_n8"
+        }
+      ]
+    },
+    {
+      "id": "d7_n6",
+      "body": "A metal walkway over a steaming crack blocks the path down. Stay on the crusted edge and move fast. Your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n6_0",
+          "label": "Keep moving down.",
+          "target": "d8_n0"
+        },
+        {
+          "id": "c_d7_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d8_n1"
+        },
+        {
+          "id": "c_d7_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d8_n2"
+        }
+      ]
+    },
+    {
+      "id": "d7_n7",
+      "body": "A zigzag path cut into bare black rock blocks the way down. Duck under the low stone plates and count your breaths. Ash hisses on the rock above you now. It is closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n7_0",
+          "label": "Keep moving down.",
+          "target": "d8_n3"
+        },
+        {
+          "id": "c_d7_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d8_n4"
+        },
+        {
+          "id": "c_d7_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d8_n5"
+        }
+      ]
+    },
+    {
+      "id": "d7_n8",
+      "body": "A mine area with soft timber supports blocks the way down. Step on the cable tray instead of the grating. You find a survey flag from the missing crew stuck in the rock. The flag is still bright orange and tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d7_n8_0",
+          "label": "Keep moving down.",
+          "target": "d8_n6"
+        },
+        {
+          "id": "c_d7_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d8_n7"
+        },
+        {
+          "id": "c_d7_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d8_n8"
+        }
+      ]
+    },
+    {
+      "id": "d8_n0",
+      "body": "An iron stair bolted right into the cliff face blocks the way down. Breathe lightly and keep sliding down. The last passage before this one has already closed behind you. The ash is falling faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n0_0",
+          "label": "Keep moving down.",
+          "target": "d9_n0"
+        },
+        {
+          "id": "c_d8_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d9_n1"
+        },
+        {
+          "id": "c_d8_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d9_n2"
+        }
+      ]
+    },
+    {
+      "id": "d8_n1",
+      "body": "A rope ladder tied over a vent mouth blocks the way down. Climb it by feel and don't waste the lamp. Water moves over hot rock somewhere below. It sounds like a kettle left on the boil.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n1_0",
+          "label": "Keep moving down.",
+          "target": "d9_n3"
+        },
+        {
+          "id": "c_d8_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d9_n4"
+        },
+        {
+          "id": "c_d8_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d9_n5"
+        }
+      ]
+    },
+    {
+      "id": "d8_n2",
+      "body": "A lava tube half blocked by an old rockfall bars the way down. Test each rung before you trust it. The cable station's antenna catches the lamp-light for a clean second high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n2_0",
+          "label": "Keep moving down.",
+          "target": "d9_n6"
+        },
+        {
+          "id": "c_d8_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d9_n7"
+        },
+        {
+          "id": "c_d8_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d9_n8"
+        }
+      ]
+    },
+    {
+      "id": "d8_n3",
+      "body": "A length of cable trench has gone soft into warm mud. It bars the way down. Pick a path through the rubble. The last passage behind you has already closed. Ash is falling faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n3_0",
+          "label": "Keep moving down.",
+          "target": "d9_n0"
+        },
+        {
+          "id": "c_d8_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d9_n1"
+        },
+        {
+          "id": "c_d8_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d9_n2"
+        }
+      ]
+    },
+    {
+      "id": "d8_n4",
+      "body": "A skylight shaft where the basalt roof fell in slabs bars the way down. Stay on the crusted edge and move fast. Water moves over hot rock somewhere below. It sounds just like a kettle left on the boil.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n4_0",
+          "label": "Keep moving down.",
+          "target": "d9_n3"
+        },
+        {
+          "id": "c_d8_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d9_n4"
+        },
+        {
+          "id": "c_d8_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d9_n5"
+        }
+      ]
+    },
+    {
+      "id": "d8_n5",
+      "body": "A catwalk over a steaming crack bars the way down. Duck the low plates and count your breaths. The cable station's antenna catches the lamp-light for a clean second high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n5_0",
+          "label": "Keep moving down.",
+          "target": "d9_n6"
+        },
+        {
+          "id": "c_d8_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d9_n7"
+        },
+        {
+          "id": "c_d8_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d9_n8"
+        }
+      ]
+    },
+    {
+      "id": "d8_n6",
+      "body": "A switchback cuts sideways into bare rock and bars the way down. Step on the cable tray, not the grating. The last passage before this one has already shut behind you. The ash is falling faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n6_0",
+          "label": "Keep moving down.",
+          "target": "d9_n0"
+        },
+        {
+          "id": "c_d8_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d9_n1"
+        },
+        {
+          "id": "c_d8_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d9_n2"
+        }
+      ]
+    },
+    {
+      "id": "d8_n7",
+      "body": "A stope where the timber cribbing has gone soft to the touch bars the way down; hug the scarp and shut out the drop, and somewhere below, groundwater is moving across hot rock \u2014 a sound like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n7_0",
+          "label": "Keep moving down.",
+          "target": "d9_n3"
+        },
+        {
+          "id": "c_d8_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d9_n4"
+        },
+        {
+          "id": "c_d8_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d9_n5"
+        }
+      ]
+    },
+    {
+      "id": "d8_n8",
+      "body": "A culvert barely wide enough for your ribs bars the way down. Press a palm against each post you pass. High above the field, the cable station's antenna catches the lamp-light for one clean second.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d8_n8_0",
+          "label": "Keep moving down.",
+          "target": "d9_n6"
+        },
+        {
+          "id": "c_d8_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d9_n7"
+        },
+        {
+          "id": "c_d8_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d9_n8"
+        }
+      ]
+    },
+    {
+      "id": "d9_n0",
+      "body": "A rope ladder tied across a vent mouth blocks the way down. Test each rung before you trust it. Pika's lamp never leaves you as the darkness tightens behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n0_0",
+          "label": "Keep moving down.",
+          "target": "d10_n0"
+        },
+        {
+          "id": "c_d9_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d10_n1"
+        },
+        {
+          "id": "c_d9_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d10_n2"
+        }
+      ]
+    },
+    {
+      "id": "d9_n1",
+      "body": "A lava tube half choked with old collapse bars the way down; pick a thread through the rubble, and the vents exhale a sulphur breath that tastes like a struck match held under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n1_0",
+          "label": "Keep moving down.",
+          "target": "d10_n3"
+        },
+        {
+          "id": "c_d9_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d10_n4"
+        },
+        {
+          "id": "c_d9_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d10_n5"
+        }
+      ]
+    },
+    {
+      "id": "d9_n2",
+      "body": "A length of cable trench has gone soft into warm mud. It bars the way down. Stick to the hard edge and move fast. Pika checks the survey map by touch. Looking away from you is not an option yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n2_0",
+          "label": "Keep moving down.",
+          "target": "d10_n6"
+        },
+        {
+          "id": "c_d9_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d10_n7"
+        },
+        {
+          "id": "c_d9_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d10_n8"
+        }
+      ]
+    },
+    {
+      "id": "d9_n3",
+      "body": "A skylight shaft where the basalt roof has come down in slabs bars the way down. Duck the low plates and count your breaths. Pika's lamp never wavers from you as the darkness tightens behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n3_0",
+          "label": "Keep moving down.",
+          "target": "d10_n0"
+        },
+        {
+          "id": "c_d9_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d10_n1"
+        },
+        {
+          "id": "c_d9_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d10_n2"
+        }
+      ]
+    },
+    {
+      "id": "d9_n4",
+      "body": "A catwalk over a steaming crack blocks the path down. Step on the cable tray, not the grating. The vents puff out a hot, eggy breath that tastes like a just-struck match held under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n4_0",
+          "label": "Keep moving down.",
+          "target": "d10_n3"
+        },
+        {
+          "id": "c_d9_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d10_n4"
+        },
+        {
+          "id": "c_d9_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d10_n5"
+        }
+      ]
+    },
+    {
+      "id": "d9_n5",
+      "body": "A sharp turn cut into bare, rough rock blocks the path down. Hug the cliff wall and ignore the drop. Pika checks the map by touch because she cannot look away from you yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n5_0",
+          "label": "Keep moving down.",
+          "target": "d10_n6"
+        },
+        {
+          "id": "c_d9_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d10_n7"
+        },
+        {
+          "id": "c_d9_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d10_n8"
+        }
+      ]
+    },
+    {
+      "id": "d9_n6",
+      "body": "The old tunnel supports are too rotten to trust in the dark. You burn the lamp brighter to find a safe path. You are wasting oil you will need later, but the roof groans twice while you are still thinking.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n6_0",
+          "label": "Keep moving down.",
+          "target": "d10_n0"
+        },
+        {
+          "id": "c_d9_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d10_n1"
+        },
+        {
+          "id": "c_d9_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d10_n2"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "dec",
+          "var": "light",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "d9_n7",
+      "body": "A pipe barely wide enough for your ribs blocks the path down. Breathe shallow and keep sliding. The vents puff out a hot, eggy breath that tastes like a just-struck match held under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n7_0",
+          "label": "Keep moving down.",
+          "target": "d10_n3"
+        },
+        {
+          "id": "c_d9_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d10_n4"
+        },
+        {
+          "id": "c_d9_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d10_n5"
+        }
+      ]
+    },
+    {
+      "id": "d9_n8",
+      "body": "An iron stair bolted straight into the cliff face blocks the path down. Climb it by touch instead of using the lamp. Pika checks the map by touch because she cannot look away from you yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d9_n8_0",
+          "label": "Keep moving down.",
+          "target": "d10_n6"
+        },
+        {
+          "id": "c_d9_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d10_n7"
+        },
+        {
+          "id": "c_d9_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d10_n8"
+        }
+      ]
+    },
+    {
+      "id": "d10_n0",
+      "body": "A lava tube half blocked by a cave-in blocks the path down. Stick to the hard edge and move fast. The ash-fall hisses on the rock above you now, closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n0_0",
+          "label": "Keep moving down.",
+          "target": "d11_n0"
+        },
+        {
+          "id": "c_d10_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d11_n1"
+        },
+        {
+          "id": "c_d10_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d11_n2"
+        }
+      ]
+    },
+    {
+      "id": "d10_n1",
+      "body": "A long cable trench gone soft into warm mud blocks the path down. Duck the low plates and count your breaths. A survey flag from the missing crew turns up stuck in the rock. It is still bright orange and tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n1_0",
+          "label": "Keep moving down.",
+          "target": "d11_n3"
+        },
+        {
+          "id": "c_d10_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d11_n4"
+        },
+        {
+          "id": "c_d10_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d11_n5"
+        }
+      ]
+    },
+    {
+      "id": "d10_n2",
+      "body": "The path down is blocked by a skylight shaft where the stone roof caved in. Walk on the cable tray instead of the grating. Your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n2_0",
+          "label": "Keep moving down.",
+          "target": "d11_n6"
+        },
+        {
+          "id": "c_d10_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d11_n7"
+        },
+        {
+          "id": "c_d10_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d11_n8"
+        }
+      ]
+    },
+    {
+      "id": "d10_n3",
+      "body": "A catwalk over a steaming crack blocks the path down. Hug the cliff wall and ignore the drop. The ash-fall hisses on the rock above you now, closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n3_0",
+          "label": "Keep moving down.",
+          "target": "d11_n0"
+        },
+        {
+          "id": "c_d10_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d11_n1"
+        },
+        {
+          "id": "c_d10_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d11_n2"
+        }
+      ]
+    },
+    {
+      "id": "d10_n4",
+      "body": "A sharp turn cut into bare, rough rock blocks the path down. Press your palm on every post you pass to keep steady. You find a survey flag from the missing crew stuck in the rock. It is still bright orange and tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n4_0",
+          "label": "Keep moving down.",
+          "target": "d11_n3"
+        },
+        {
+          "id": "c_d10_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d11_n4"
+        },
+        {
+          "id": "c_d10_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d11_n5"
+        }
+      ]
+    },
+    {
+      "id": "d10_n5",
+      "body": "A stope with soft, rotting wood supports blocks the path down. Take shallow breaths and keep moving forward. Your own breathing becomes the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n5_0",
+          "label": "Keep moving down.",
+          "target": "d11_n6"
+        },
+        {
+          "id": "c_d10_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d11_n7"
+        },
+        {
+          "id": "c_d10_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d11_n8"
+        }
+      ]
+    },
+    {
+      "id": "d10_n6",
+      "body": "A pipe barely wide enough for your ribs blocks the path down. Climb it by touch instead of using the lamp. The ash-fall hisses on the rock above you now, closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n6_0",
+          "label": "Keep moving down.",
+          "target": "d11_n0"
+        },
+        {
+          "id": "c_d10_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d11_n1"
+        },
+        {
+          "id": "c_d10_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d11_n2"
+        }
+      ]
+    },
+    {
+      "id": "d10_n7",
+      "body": "An iron stair bolted to the cliff face blocks the way down. Test each rung before you put your weight on it. A survey flag from the missing crew is wedged in the rough rock. It is still bright orange and tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n7_0",
+          "label": "Keep moving down.",
+          "target": "d11_n3"
+        },
+        {
+          "id": "c_d10_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d11_n4"
+        },
+        {
+          "id": "c_d10_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d11_n5"
+        }
+      ]
+    },
+    {
+      "id": "d10_n8",
+      "body": "A rope ladder lashed across a vent mouth bars the way down; pick a thread through the rubble, and your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d10_n8_0",
+          "label": "Keep moving down.",
+          "target": "d11_n6"
+        },
+        {
+          "id": "c_d10_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d11_n7"
+        },
+        {
+          "id": "c_d10_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d11_n8"
+        }
+      ]
+    },
+    {
+      "id": "d11_n0",
+      "body": "A cable trench has turned into soft, warm mud. It blocks the way down. Step onto the cable tray instead of using the grating. Deep below, water runs over hot rock and sounds like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n0_0",
+          "label": "Keep moving down.",
+          "target": "d12_n0"
+        },
+        {
+          "id": "c_d11_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d12_n1"
+        },
+        {
+          "id": "c_d11_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d12_n2"
+        }
+      ]
+    },
+    {
+      "id": "d11_n1",
+      "body": "A skylight shaft where the basalt roof fell in blocks the way down. Stay close to the cliff and ignore the drop below. For one clean second, the cable station's antenna catches your lamp-light high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n1_0",
+          "label": "Keep moving down.",
+          "target": "d12_n3"
+        },
+        {
+          "id": "c_d11_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d12_n4"
+        },
+        {
+          "id": "c_d11_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d12_n5"
+        }
+      ]
+    },
+    {
+      "id": "d11_n2",
+      "body": "You call out the gap in the walkway to Pika before you test it. Pika puts a hand flat on the rail and nods once. It is as if they have decided your eyes are as good as a lamp now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n2_0",
+          "label": "Keep moving down.",
+          "target": "d12_n6"
+        },
+        {
+          "id": "c_d11_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d12_n7"
+        },
+        {
+          "id": "c_d11_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d12_n8"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "d11_n3",
+      "body": "A switchback cut into bare rock blocks the way down. Breathe in short breaths and keep sliding. Deep below, water moves over hot rock. It sounds like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n3_0",
+          "label": "Keep moving down.",
+          "target": "d12_n0"
+        },
+        {
+          "id": "c_d11_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d12_n1"
+        },
+        {
+          "id": "c_d11_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d12_n2"
+        }
+      ]
+    },
+    {
+      "id": "d11_n4",
+      "body": "A stope where the timber cribbing has gone soft to the touch bars the way down; climb it by feel rather than burn the lamp, and the cable station's antenna catches lamp-light for one clean second, high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n4_0",
+          "label": "Keep moving down.",
+          "target": "d12_n3"
+        },
+        {
+          "id": "c_d11_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d12_n4"
+        },
+        {
+          "id": "c_d11_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d12_n5"
+        }
+      ]
+    },
+    {
+      "id": "d11_n5",
+      "body": "A culvert barely wide enough for your ribs bars the way down; test each rung before you commit to it, and the last passage before this one has already closed behind you \u2014 the ash is falling faster than you can retrace.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n5_0",
+          "label": "Keep moving down.",
+          "target": "d12_n6"
+        },
+        {
+          "id": "c_d11_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d12_n7"
+        },
+        {
+          "id": "c_d11_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d12_n8"
+        }
+      ]
+    },
+    {
+      "id": "d11_n6",
+      "body": "An iron stair bolted to the cliff face blocks the way down. Pick a path through the broken rock. Deep below, water moves over hot rock. It sounds like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n6_0",
+          "label": "Keep moving down.",
+          "target": "d12_n0"
+        },
+        {
+          "id": "c_d11_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d12_n1"
+        },
+        {
+          "id": "c_d11_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d12_n2"
+        }
+      ]
+    },
+    {
+      "id": "d11_n7",
+      "body": "A rope ladder tied across a vent mouth blocks the way down. Stay on the crusted edge and move fast. The cable station's antenna catches lamp-light for a clean second high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n7_0",
+          "label": "Keep moving down.",
+          "target": "d12_n3"
+        },
+        {
+          "id": "c_d11_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d12_n4"
+        },
+        {
+          "id": "c_d11_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d12_n5"
+        }
+      ]
+    },
+    {
+      "id": "d11_n8",
+      "body": "A lava tube half blocked by a cave-in bars the way down. Duck under the low plates and count your breaths. The last passage has closed behind you. The ash is falling faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d11_n8_0",
+          "label": "Keep moving down.",
+          "target": "d12_n6"
+        },
+        {
+          "id": "c_d11_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d12_n7"
+        },
+        {
+          "id": "c_d11_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d12_n8"
+        }
+      ]
+    },
+    {
+      "id": "d12_n0",
+      "body": "A skylight shaft where the basalt roof has come down in slabs bars the way down; brace every post you pass a palm against, and the vents exhale a sulphur breath that tastes like a struck match held under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n0_0",
+          "label": "Keep moving down.",
+          "target": "d13_n0"
+        },
+        {
+          "id": "c_d12_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d13_n1"
+        },
+        {
+          "id": "c_d12_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d13_n2"
+        }
+      ]
+    },
+    {
+      "id": "d12_n1",
+      "body": "A catwalk over a steaming crack blocks the way down. Keep your breathing shallow and slide on. Pika checks the survey map by touch, because she cannot look away from you yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n1_0",
+          "label": "Keep moving down.",
+          "target": "d13_n3"
+        },
+        {
+          "id": "c_d12_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d13_n4"
+        },
+        {
+          "id": "c_d12_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d13_n5"
+        }
+      ]
+    },
+    {
+      "id": "d12_n2",
+      "body": "A switchback cut into bare, rough rock blocks the way down. Climb it by feel instead of using your lamp. Pika's lamp stays fixed on you as the dark grows tight behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n2_0",
+          "label": "Keep moving down.",
+          "target": "d13_n6"
+        },
+        {
+          "id": "c_d12_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d13_n7"
+        },
+        {
+          "id": "c_d12_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d13_n8"
+        }
+      ]
+    },
+    {
+      "id": "d12_n3",
+      "body": "A stope where the timber cribbing has gone soft to the touch bars the way down; test each rung before you commit to it, and the vents exhale a sulphur breath that tastes like a struck match held under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n3_0",
+          "label": "Keep moving down.",
+          "target": "d13_n0"
+        },
+        {
+          "id": "c_d12_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d13_n1"
+        },
+        {
+          "id": "c_d12_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d13_n2"
+        }
+      ]
+    },
+    {
+      "id": "d12_n4",
+      "body": "A round drain, just the width of your ribs, blocks the way down. Find a path through the loose rocks. Pika checks the survey map by touch, because she cannot look away from you yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n4_0",
+          "label": "Keep moving down.",
+          "target": "d13_n3"
+        },
+        {
+          "id": "c_d12_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d13_n4"
+        },
+        {
+          "id": "c_d12_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d13_n5"
+        }
+      ]
+    },
+    {
+      "id": "d12_n5",
+      "body": "An iron stair bolted straight into the cliff face blocks the way down. Stick to the built-up edge and move fast. Pika's lamp stays fixed on you as the dark grows tight behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n5_0",
+          "label": "Keep moving down.",
+          "target": "d13_n6"
+        },
+        {
+          "id": "c_d12_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d13_n7"
+        },
+        {
+          "id": "c_d12_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d13_n8"
+        }
+      ]
+    },
+    {
+      "id": "d12_n6",
+      "body": "A rope ladder tied across an open vent blocks the way down. Duck under the low rock plates and count your breaths. The vents release a smell of sulphur, sharp like a match you hold under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n6_0",
+          "label": "Keep moving down.",
+          "target": "d13_n0"
+        },
+        {
+          "id": "c_d12_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d13_n1"
+        },
+        {
+          "id": "c_d12_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d13_n2"
+        }
+      ]
+    },
+    {
+      "id": "d12_n7",
+      "body": "A lava tube half full of old fallen rock blocks the way down. Step on the cable tray and not the shaking grate. Pika checks the survey map by touch, because she cannot look away from you yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n7_0",
+          "label": "Keep moving down.",
+          "target": "d13_n3"
+        },
+        {
+          "id": "c_d12_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d13_n4"
+        },
+        {
+          "id": "c_d12_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d13_n5"
+        }
+      ]
+    },
+    {
+      "id": "d12_n8",
+      "body": "A cable trench has turned soft into warm mud and bars the way down. Hug the scarp and shut out the drop. Pika's lamp never wavers from you as the dark tightens behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d12_n8_0",
+          "label": "Keep moving down.",
+          "target": "d13_n6"
+        },
+        {
+          "id": "c_d12_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d13_n7"
+        },
+        {
+          "id": "c_d12_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d13_n8"
+        }
+      ]
+    },
+    {
+      "id": "d13_n0",
+      "body": "A catwalk over a steaming crack blocks the way down. Climb it by feel instead of using your lamp. A survey flag from the missing crew turns up, stuck in the rough rock. It is still bright orange and tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n0_0",
+          "label": "Keep moving down.",
+          "target": "d14_n0"
+        },
+        {
+          "id": "c_d13_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d14_n1"
+        },
+        {
+          "id": "c_d13_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d14_n2"
+        }
+      ]
+    },
+    {
+      "id": "d13_n1",
+      "body": "A switchback cut into bare, rough rock blocks the way down. Test each rung before you trust it. Your own breath is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n1_0",
+          "label": "Keep moving down.",
+          "target": "d14_n3"
+        },
+        {
+          "id": "c_d13_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d14_n4"
+        },
+        {
+          "id": "c_d13_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d14_n5"
+        }
+      ]
+    },
+    {
+      "id": "d13_n2",
+      "body": "A mining room with soft timber blocks the way down. Find a path through the loose rocks. The falling ash hisses on the rock above you now. It is closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n2_0",
+          "label": "Keep moving down.",
+          "target": "d14_n6"
+        },
+        {
+          "id": "c_d13_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d14_n7"
+        },
+        {
+          "id": "c_d13_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d14_n8"
+        }
+      ]
+    },
+    {
+      "id": "d13_n3",
+      "body": "A round drain, just the width of your ribs, blocks the way down. Stick to the built-up edge and move fast. A survey flag from the missing crew turns up, stuck in the rough rock. It is still bright orange and tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n3_0",
+          "label": "Keep moving down.",
+          "target": "d14_n0"
+        },
+        {
+          "id": "c_d13_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d14_n1"
+        },
+        {
+          "id": "c_d13_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d14_n2"
+        }
+      ]
+    },
+    {
+      "id": "d13_n4",
+      "body": "A canvas kit bag from the missing crew is wedged behind some fallen basalt slabs. Inside, wrapped in oilcloth to keep it dry, is the cable station's spare line-amplifier valve.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n4_0",
+          "label": "Keep moving down.",
+          "target": "d14_n3"
+        },
+        {
+          "id": "c_d13_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d14_n4"
+        },
+        {
+          "id": "c_d13_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d14_n5"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "transmitter",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "d13_n5",
+      "body": "A rope ladder tied across a vent mouth blocks the way down. Step on the cable tray, not the grating. The ash-fall hisses on the rock above you now, closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n5_0",
+          "label": "Keep moving down.",
+          "target": "d14_n6"
+        },
+        {
+          "id": "c_d13_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d14_n7"
+        },
+        {
+          "id": "c_d13_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d14_n8"
+        }
+      ]
+    },
+    {
+      "id": "d13_n6",
+      "body": "A lava tube, half choked by an old collapse, blocks the way down. Hug the cliff and ignore the drop. A survey flag from the missing crew turns up, wedged in the scoria. It is still bright orange and tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n6_0",
+          "label": "Keep moving down.",
+          "target": "d14_n0"
+        },
+        {
+          "id": "c_d13_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d14_n1"
+        },
+        {
+          "id": "c_d13_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d14_n2"
+        }
+      ]
+    },
+    {
+      "id": "d13_n7",
+      "body": "A length of cable trench, gone soft into warm mud, blocks the way down. Put a palm on every post you pass for support. Across the whole cooling field, your own breathing is the loudest sound.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n7_0",
+          "label": "Keep moving down.",
+          "target": "d14_n3"
+        },
+        {
+          "id": "c_d13_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d14_n4"
+        },
+        {
+          "id": "c_d13_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d14_n5"
+        }
+      ]
+    },
+    {
+      "id": "d13_n8",
+      "body": "A skylight shaft where the basalt roof has fallen in slabs blocks the way down. Breathe shallow and keep sliding. The ash-fall hisses on the rock above you now, closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d13_n8_0",
+          "label": "Keep moving down.",
+          "target": "d14_n6"
+        },
+        {
+          "id": "c_d13_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d14_n7"
+        },
+        {
+          "id": "c_d13_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d14_n8"
+        }
+      ]
+    },
+    {
+      "id": "d14_n0",
+      "body": "A switchback cut sideways into bare scoria blocks the way down. Pick a path through the rubble. For one clean second, the cable station's antenna catches lamp-light, high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n0_0",
+          "label": "Keep moving down.",
+          "target": "d15_n0"
+        },
+        {
+          "id": "c_d14_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d15_n1"
+        },
+        {
+          "id": "c_d14_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d15_n2"
+        }
+      ]
+    },
+    {
+      "id": "d14_n1",
+      "body": "A stope where the timber cribbing has gone soft to the touch blocks the way down. Stick to the crusted edge and move fast. The last passage behind you has already closed. The ash is falling faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n1_0",
+          "label": "Keep moving down.",
+          "target": "d15_n3"
+        },
+        {
+          "id": "c_d14_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d15_n4"
+        },
+        {
+          "id": "c_d14_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d15_n5"
+        }
+      ]
+    },
+    {
+      "id": "d14_n2",
+      "body": "A culvert barely wide enough for your ribs blocks the way down. Duck under the low plates and count your breaths. Somewhere below, groundwater moves across hot rock. It sounds like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n2_0",
+          "label": "Keep moving down.",
+          "target": "d15_n6"
+        },
+        {
+          "id": "c_d14_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d15_n7"
+        },
+        {
+          "id": "c_d14_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d15_n8"
+        }
+      ]
+    },
+    {
+      "id": "d14_n3",
+      "body": "An iron stair bolted straight into the cliff face blocks the way down. Step on the cable tray, not the grating. The cable station's antenna catches lamp-light for one clean second, high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n3_0",
+          "label": "Keep moving down.",
+          "target": "d15_n0"
+        },
+        {
+          "id": "c_d14_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d15_n1"
+        },
+        {
+          "id": "c_d14_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d15_n2"
+        }
+      ]
+    },
+    {
+      "id": "d14_n4",
+      "body": "A rope ladder tied across a vent mouth blocks the way down. Hug the cliff and shut out the drop. The last passage behind you has already closed. The ash is falling faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n4_0",
+          "label": "Keep moving down.",
+          "target": "d15_n3"
+        },
+        {
+          "id": "c_d14_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d15_n4"
+        },
+        {
+          "id": "c_d14_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d15_n5"
+        }
+      ]
+    },
+    {
+      "id": "d14_n5",
+      "body": "A lava tube, half choked by an old collapse, blocks the way down. Put a palm on every post you pass for support. Somewhere below, groundwater moves across hot rock. It sounds like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n5_0",
+          "label": "Keep moving down.",
+          "target": "d15_n6"
+        },
+        {
+          "id": "c_d14_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d15_n7"
+        },
+        {
+          "id": "c_d14_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d15_n8"
+        }
+      ]
+    },
+    {
+      "id": "d14_n6",
+      "body": "A length of cable trench, gone soft into warm mud, blocks the way down. Breathe shallow and keep sliding. The cable station's antenna catches lamp-light for one clean second, high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n6_0",
+          "label": "Keep moving down.",
+          "target": "d15_n0"
+        },
+        {
+          "id": "c_d14_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d15_n1"
+        },
+        {
+          "id": "c_d14_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d15_n2"
+        }
+      ]
+    },
+    {
+      "id": "d14_n7",
+      "body": "A skylight shaft bars the way down. The basalt roof has caved in slabs. Climb by feel rather than burn the lamp. The last passage before this one has already closed behind you. The ash is falling faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n7_0",
+          "label": "Keep moving down.",
+          "target": "d15_n3"
+        },
+        {
+          "id": "c_d14_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d15_n4"
+        },
+        {
+          "id": "c_d14_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d15_n5"
+        }
+      ]
+    },
+    {
+      "id": "d14_n8",
+      "body": "A catwalk over a steaming crack bars the way down. Test each rung before you trust it. Somewhere below, water is moving across hot rock. It sounds like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d14_n8_0",
+          "label": "Keep moving down.",
+          "target": "d15_n6"
+        },
+        {
+          "id": "c_d14_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d15_n7"
+        },
+        {
+          "id": "c_d14_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d15_n8"
+        }
+      ]
+    },
+    {
+      "id": "d15_n0",
+      "body": "A stope where the timber cribbing has gone soft to the touch bars the way down; duck the low plates and count your breaths, and Pika checks the survey map by touch because looking away from you is not an option yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n0_0",
+          "label": "Keep moving down.",
+          "target": "d16_n0"
+        },
+        {
+          "id": "c_d15_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d16_n1"
+        },
+        {
+          "id": "c_d15_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d16_n2"
+        }
+      ]
+    },
+    {
+      "id": "d15_n1",
+      "body": "A tunnel barely wide enough for your ribs bars the way down. Step on the cable tray rather than the grating. Pika's lamp never wavers from you as the dark tightens behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n1_0",
+          "label": "Keep moving down.",
+          "target": "d16_n3"
+        },
+        {
+          "id": "c_d15_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d16_n4"
+        },
+        {
+          "id": "c_d15_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d16_n5"
+        }
+      ]
+    },
+    {
+      "id": "d15_n2",
+      "body": "An iron stair bolted into the cliff face bars the way down. Hug the cliff and shut out the drop. The vents breathe out a sulphur taste. It stings like a struck match held under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n2_0",
+          "label": "Keep moving down.",
+          "target": "d16_n6"
+        },
+        {
+          "id": "c_d15_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d16_n7"
+        },
+        {
+          "id": "c_d15_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d16_n8"
+        }
+      ]
+    },
+    {
+      "id": "d15_n3",
+      "body": "A rope ladder lashed across a vent mouth bars the way down. Put a palm against every post you pass for support. Pika checks the map by touch. Looking away from you is not yet an option.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n3_0",
+          "label": "Keep moving down.",
+          "target": "d16_n0"
+        },
+        {
+          "id": "c_d15_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d16_n1"
+        },
+        {
+          "id": "c_d15_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d16_n2"
+        }
+      ]
+    },
+    {
+      "id": "d15_n4",
+      "body": "A lava tube half choked with old collapse bars the way down. Breathe shallow and keep sliding. Pika's lamp never wavers from you as the dark tightens behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n4_0",
+          "label": "Keep moving down.",
+          "target": "d16_n3"
+        },
+        {
+          "id": "c_d15_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d16_n4"
+        },
+        {
+          "id": "c_d15_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d16_n5"
+        }
+      ]
+    },
+    {
+      "id": "d15_n5",
+      "body": "A length of cable trench turned soft into warm mud bars the way down. Climb it by feel instead of burning the lamp. The vents breathe out a sulphur taste like a struck match under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n5_0",
+          "label": "Keep moving down.",
+          "target": "d16_n6"
+        },
+        {
+          "id": "c_d15_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d16_n7"
+        },
+        {
+          "id": "c_d15_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d16_n8"
+        }
+      ]
+    },
+    {
+      "id": "d15_n6",
+      "body": "A skylight shaft where the basalt roof fell in slabs bars the way down. Test each rung before you commit to it. Pika checks the survey map by touch, because looking away from you is not an option yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n6_0",
+          "label": "Keep moving down.",
+          "target": "d16_n0"
+        },
+        {
+          "id": "c_d15_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d16_n1"
+        },
+        {
+          "id": "c_d15_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d16_n2"
+        }
+      ]
+    },
+    {
+      "id": "d15_n7",
+      "body": "A catwalk over a steaming fissure bars the way down. Pick a thread through the rubble. Pika's lamp never wavers from you as the dark tightens behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n7_0",
+          "label": "Keep moving down.",
+          "target": "d16_n3"
+        },
+        {
+          "id": "c_d15_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d16_n4"
+        },
+        {
+          "id": "c_d15_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d16_n5"
+        }
+      ]
+    },
+    {
+      "id": "d15_n8",
+      "body": "A switchback cut sideways into bare scoria bars the way down. Stick to the crusted edge and move fast. The vents breathe out a sulphur taste like a struck match under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d15_n8_0",
+          "label": "Keep moving down.",
+          "target": "d16_n6"
+        },
+        {
+          "id": "c_d15_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d16_n7"
+        },
+        {
+          "id": "c_d15_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d16_n8"
+        }
+      ]
+    },
+    {
+      "id": "d16_n0",
+      "body": "A culvert barely wide enough for your ribs bars the way down. Hug the scarp and shut out the drop. Your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n0_0",
+          "label": "Keep moving down.",
+          "target": "d17_n0"
+        },
+        {
+          "id": "c_d16_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d17_n1"
+        },
+        {
+          "id": "c_d16_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d17_n2"
+        }
+      ]
+    },
+    {
+      "id": "d16_n1",
+      "body": "The skylight ahead fell down in slabs you cannot read in the dark. Lighting the lamp properly to pick a safe line through the rubble costs another measure of oil. But the fall zone runs thirty yards, and you need to see every yard of it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n1_0",
+          "label": "Keep moving down.",
+          "target": "d17_n3"
+        },
+        {
+          "id": "c_d16_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d17_n4"
+        },
+        {
+          "id": "c_d16_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d17_n5"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "dec",
+          "var": "light",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "d16_n2",
+      "body": "A rope ladder tied across a vent mouth blocks the way down. Breathe shallow and keep sliding. You find a survey flag from the missing crew wedged in the rough rock. The flag is still bright orange and still tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n2_0",
+          "label": "Keep moving down.",
+          "target": "d17_n6"
+        },
+        {
+          "id": "c_d16_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d17_n7"
+        },
+        {
+          "id": "c_d16_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d17_n8"
+        }
+      ]
+    },
+    {
+      "id": "d16_n3",
+      "body": "A lava tube half choked with old collapse blocks the way down. Climb it by feel instead of burning the lamp. Your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n3_0",
+          "label": "Keep moving down.",
+          "target": "d17_n0"
+        },
+        {
+          "id": "c_d16_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d17_n1"
+        },
+        {
+          "id": "c_d16_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d17_n2"
+        }
+      ]
+    },
+    {
+      "id": "d16_n4",
+      "body": "A length of cable trench gone soft into warm mud blocks the way down. Test each rung before you trust it. The ash-fall hisses on the rock above you now, closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n4_0",
+          "label": "Keep moving down.",
+          "target": "d17_n3"
+        },
+        {
+          "id": "c_d16_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d17_n4"
+        },
+        {
+          "id": "c_d16_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d17_n5"
+        }
+      ]
+    },
+    {
+      "id": "d16_n5",
+      "body": "A skylight shaft where the basalt roof has fallen in slabs blocks the way down. Pick a path through the rubble. You find a survey flag from the missing crew wedged in the rough rock. It is still bright orange and still tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n5_0",
+          "label": "Keep moving down.",
+          "target": "d17_n6"
+        },
+        {
+          "id": "c_d16_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d17_n7"
+        },
+        {
+          "id": "c_d16_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d17_n8"
+        }
+      ]
+    },
+    {
+      "id": "d16_n6",
+      "body": "A catwalk over a steaming crack blocks the way down. Stick to the crusted edge and move fast. Your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n6_0",
+          "label": "Keep moving down.",
+          "target": "d17_n0"
+        },
+        {
+          "id": "c_d16_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d17_n1"
+        },
+        {
+          "id": "c_d16_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d17_n2"
+        }
+      ]
+    },
+    {
+      "id": "d16_n7",
+      "body": "A switchback cut sideways into bare rock blocks the way down. Duck the low plates and count your breaths. The ash-fall hisses on the rock above you now, closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n7_0",
+          "label": "Keep moving down.",
+          "target": "d17_n3"
+        },
+        {
+          "id": "c_d16_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d17_n4"
+        },
+        {
+          "id": "c_d16_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d17_n5"
+        }
+      ]
+    },
+    {
+      "id": "d16_n8",
+      "body": "A stope where the timber cribbing has gone soft to the touch blocks the way down. Step on the cable tray rather than the grating. You find a survey flag from the missing crew wedged in the rough rock. It is still bright orange and still tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d16_n8_0",
+          "label": "Keep moving down.",
+          "target": "d17_n6"
+        },
+        {
+          "id": "c_d16_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d17_n7"
+        },
+        {
+          "id": "c_d16_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d17_n8"
+        }
+      ]
+    },
+    {
+      "id": "d17_n0",
+      "body": "An iron stair bolted straight into the steep rock face blocks the way down. Breathe shallow and keep sliding. The last passage behind you has already closed. The ash is falling faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n0_0",
+          "label": "Keep moving down.",
+          "target": "d18_n0"
+        },
+        {
+          "id": "c_d17_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d18_n1"
+        },
+        {
+          "id": "c_d17_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d18_n2"
+        }
+      ]
+    },
+    {
+      "id": "d17_n1",
+      "body": "A rope ladder tied across a vent mouth blocks the way down. Climb it by feel rather than burn the lamp. Somewhere below, groundwater is moving across hot rock. It sounds like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n1_0",
+          "label": "Keep moving down.",
+          "target": "d18_n3"
+        },
+        {
+          "id": "c_d17_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d18_n4"
+        },
+        {
+          "id": "c_d17_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d18_n5"
+        }
+      ]
+    },
+    {
+      "id": "d17_n2",
+      "body": "A lava tube half choked with old collapse blocks the way down. Test each rung before you trust it. The cable station's antenna catches the lamp-light for one clean second, high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n2_0",
+          "label": "Keep moving down.",
+          "target": "d18_n6"
+        },
+        {
+          "id": "c_d17_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d18_n7"
+        },
+        {
+          "id": "c_d17_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d18_n8"
+        }
+      ]
+    },
+    {
+      "id": "d17_n3",
+      "body": "A length of cable trench gone soft into warm mud blocks the way down. Pick a path through the rubble. The last passage behind you has already closed. The ash is falling faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n3_0",
+          "label": "Keep moving down.",
+          "target": "d18_n0"
+        },
+        {
+          "id": "c_d17_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d18_n1"
+        },
+        {
+          "id": "c_d17_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d18_n2"
+        }
+      ]
+    },
+    {
+      "id": "d17_n4",
+      "body": "A skylight shaft where the basalt roof has come down in slabs bars the way down. Stick to the crusted edge and move fast. Somewhere below, groundwater is moving across hot rock. It sounds like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n4_0",
+          "label": "Keep moving down.",
+          "target": "d18_n3"
+        },
+        {
+          "id": "c_d17_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d18_n4"
+        },
+        {
+          "id": "c_d17_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d18_n5"
+        }
+      ]
+    },
+    {
+      "id": "d17_n5",
+      "body": "A catwalk over a steaming crack blocks your path. Duck the low plates and count your breaths. For one clean second, the cable station's antenna catches your lamp-light high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n5_0",
+          "label": "Keep moving down.",
+          "target": "d18_n6"
+        },
+        {
+          "id": "c_d17_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d18_n7"
+        },
+        {
+          "id": "c_d17_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d18_n8"
+        }
+      ]
+    },
+    {
+      "id": "d17_n6",
+      "body": "A switchback cut sideways into bare scoria bars the way down. Step the cable tray rather than the grating. The last passage before this one has already closed behind you. The ash is falling faster than you can retrace.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n6_0",
+          "label": "Keep moving down.",
+          "target": "d18_n0"
+        },
+        {
+          "id": "c_d17_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d18_n1"
+        },
+        {
+          "id": "c_d17_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d18_n2"
+        }
+      ]
+    },
+    {
+      "id": "d17_n7",
+      "body": "A stope where the timber cribbing has gone soft to the touch bars the way down. Hug the scarp and shut out the drop. Somewhere below, groundwater is moving across hot rock. It sounds like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n7_0",
+          "label": "Keep moving down.",
+          "target": "d18_n3"
+        },
+        {
+          "id": "c_d17_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d18_n4"
+        },
+        {
+          "id": "c_d17_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d18_n5"
+        }
+      ]
+    },
+    {
+      "id": "d17_n8",
+      "body": "A drainpipe barely wide enough for your ribs blocks your path. Touch every post you pass with your palm. For one clean second, the cable station's antenna catches your lamp-light high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d17_n8_0",
+          "label": "Keep moving down.",
+          "target": "d18_n6"
+        },
+        {
+          "id": "c_d17_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d18_n7"
+        },
+        {
+          "id": "c_d17_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d18_n8"
+        }
+      ]
+    },
+    {
+      "id": "d18_n0",
+      "body": "A rope ladder lashed across a vent mouth bars the way down. Test each rung before you commit to it. Pika's lamp never wavers from you as the dark tightens behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n0_0",
+          "label": "Keep moving down.",
+          "target": "d19_n0"
+        },
+        {
+          "id": "c_d18_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d19_n1"
+        },
+        {
+          "id": "c_d18_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d19_n2"
+        }
+      ]
+    },
+    {
+      "id": "d18_n1",
+      "body": "A lava tube half choked with old collapse bars the way down; pick a thread through the rubble, and the vents exhale a sulphur breath that tastes like a struck match held under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n1_0",
+          "label": "Keep moving down.",
+          "target": "d19_n3"
+        },
+        {
+          "id": "c_d18_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d19_n4"
+        },
+        {
+          "id": "c_d18_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d19_n5"
+        }
+      ]
+    },
+    {
+      "id": "d18_n2",
+      "body": "A length of cable trench gone soft into warm mud blocks your path. Stick to the crusted edge and move fast. Pika checks the survey map by touch. Looking away from you is not an option yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n2_0",
+          "label": "Keep moving down.",
+          "target": "d19_n6"
+        },
+        {
+          "id": "c_d18_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d19_n7"
+        },
+        {
+          "id": "c_d18_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d19_n8"
+        }
+      ]
+    },
+    {
+      "id": "d18_n3",
+      "body": "A skylight shaft where the basalt roof collapsed in slabs blocks the way down. Duck under the low plates and count your breaths. Pika's lamp never wavers from you as the dark tightens behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n3_0",
+          "label": "Keep moving down.",
+          "target": "d19_n0"
+        },
+        {
+          "id": "c_d18_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d19_n1"
+        },
+        {
+          "id": "c_d18_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d19_n2"
+        }
+      ]
+    },
+    {
+      "id": "d18_n4",
+      "body": "A catwalk over a steaming fissure blocks the way down. Step on the cable tray instead of the grating. The vents exhale a sulphur breath that tastes like a struck match under your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n4_0",
+          "label": "Keep moving down.",
+          "target": "d19_n3"
+        },
+        {
+          "id": "c_d18_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d19_n4"
+        },
+        {
+          "id": "c_d18_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d19_n5"
+        }
+      ]
+    },
+    {
+      "id": "d18_n5",
+      "body": "A sharp turn cut into bare rock blocks your path. Hug the rock wall and ignore the drop. Pika checks the survey map by touch. Looking away from you is not an option yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n5_0",
+          "label": "Keep moving down.",
+          "target": "d19_n6"
+        },
+        {
+          "id": "c_d18_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d19_n7"
+        },
+        {
+          "id": "c_d18_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d19_n8"
+        }
+      ]
+    },
+    {
+      "id": "d18_n6",
+      "body": "A stope where the timber cribbing is soft to the touch blocks the way down. Press your palm against every post you pass. Pika's lamp never wavers from you as the dark tightens behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n6_0",
+          "label": "Keep moving down.",
+          "target": "d19_n0"
+        },
+        {
+          "id": "c_d18_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d19_n1"
+        },
+        {
+          "id": "c_d18_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d19_n2"
+        }
+      ]
+    },
+    {
+      "id": "d18_n7",
+      "body": "You double back to guide Pika through the worst of the switchback. You do not press ahead alone. It costs you nothing but minutes, and Pika remembers. She never keeps a tally out loud.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n7_0",
+          "label": "Keep moving down.",
+          "target": "d19_n3"
+        },
+        {
+          "id": "c_d18_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d19_n4"
+        },
+        {
+          "id": "c_d18_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d19_n5"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "trust",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "d18_n8",
+      "body": "An iron stair bolted into the scarp face blocks the way down. Climb it by feel instead of using the lamp. Pika checks the survey map by touch. It is not safe for her to look away from you yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d18_n8_0",
+          "label": "Keep moving down.",
+          "target": "d19_n6"
+        },
+        {
+          "id": "c_d18_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d19_n7"
+        },
+        {
+          "id": "c_d18_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d19_n8"
+        }
+      ]
+    },
+    {
+      "id": "d19_n0",
+      "body": "A lava tube half-blocked by old rubble bars the way down. Stay on the crusted edge and move fast. Ash hisses on the rock above you now, louder and closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n0_0",
+          "label": "Keep moving down.",
+          "target": "d20_n0"
+        },
+        {
+          "id": "c_d19_n0_1",
+          "label": "Push on without stopping.",
+          "target": "d20_n1"
+        },
+        {
+          "id": "c_d19_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "d20_n2"
+        }
+      ]
+    },
+    {
+      "id": "d19_n1",
+      "body": "A cable trench has a soft patch of warm mud that bars the way down. Duck under the low plates and count your breaths. You spot a survey flag from the missing crew stuck in the rock. It is still bright orange and tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n1_0",
+          "label": "Keep moving down.",
+          "target": "d20_n3"
+        },
+        {
+          "id": "c_d19_n1_1",
+          "label": "Push on without stopping.",
+          "target": "d20_n4"
+        },
+        {
+          "id": "c_d19_n1_2",
+          "label": "Drive forward through the ash.",
+          "target": "d20_n5"
+        }
+      ]
+    },
+    {
+      "id": "d19_n2",
+      "body": "A skylight shaft where the basalt roof collapsed in slabs blocks the way down. Step on the cable tray instead of the grating. Your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n2_0",
+          "label": "Keep moving down.",
+          "target": "d20_n6"
+        },
+        {
+          "id": "c_d19_n2_1",
+          "label": "Push on without stopping.",
+          "target": "d20_n7"
+        },
+        {
+          "id": "c_d19_n2_2",
+          "label": "Drive forward through the ash.",
+          "target": "d20_n8"
+        }
+      ]
+    },
+    {
+      "id": "d19_n3",
+      "body": "A catwalk over a steaming crack in the earth bars the way down. Stay close to the wall and ignore the drop. Ash hisses on the rock above you now, closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n3_0",
+          "label": "Keep moving down.",
+          "target": "d20_n0"
+        },
+        {
+          "id": "c_d19_n3_1",
+          "label": "Push on without stopping.",
+          "target": "d20_n1"
+        },
+        {
+          "id": "c_d19_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "d20_n2"
+        }
+      ]
+    },
+    {
+      "id": "d19_n4",
+      "body": "A bare rock switchback bars the way down. Press a palm against every post as you pass. You find a survey flag from the missing crew stuck in the rock. It is still bright orange and tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n4_0",
+          "label": "Keep moving down.",
+          "target": "d20_n3"
+        },
+        {
+          "id": "c_d19_n4_1",
+          "label": "Push on without stopping.",
+          "target": "d20_n4"
+        },
+        {
+          "id": "c_d19_n4_2",
+          "label": "Drive forward through the ash.",
+          "target": "d20_n5"
+        }
+      ]
+    },
+    {
+      "id": "d19_n5",
+      "body": "A stope where the timber cribbing has gone soft to the touch bars the way down; breathe shallow and keep sliding, and your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n5_0",
+          "label": "Keep moving down.",
+          "target": "d20_n6"
+        },
+        {
+          "id": "c_d19_n5_1",
+          "label": "Push on without stopping.",
+          "target": "d20_n7"
+        },
+        {
+          "id": "c_d19_n5_2",
+          "label": "Drive forward through the ash.",
+          "target": "d20_n8"
+        }
+      ]
+    },
+    {
+      "id": "d19_n6",
+      "body": "A drain pipe just wide enough for your ribs bars the way down. Climb by feel and save your lamp. Ash hisses on the rock above you now, closer than it should be for another hour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n6_0",
+          "label": "Keep moving down.",
+          "target": "d20_n0"
+        },
+        {
+          "id": "c_d19_n6_1",
+          "label": "Push on without stopping.",
+          "target": "d20_n1"
+        },
+        {
+          "id": "c_d19_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "d20_n2"
+        }
+      ]
+    },
+    {
+      "id": "d19_n7",
+      "body": "An iron stair bolted into the cliff face bars the way down. Test each rung before you put your full weight on it. You find a survey flag from the missing crew stuck in the rock. It is still bright orange and tied tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n7_0",
+          "label": "Keep moving down.",
+          "target": "d20_n3"
+        },
+        {
+          "id": "c_d19_n7_1",
+          "label": "Push on without stopping.",
+          "target": "d20_n4"
+        },
+        {
+          "id": "c_d19_n7_2",
+          "label": "Drive forward through the ash.",
+          "target": "d20_n5"
+        }
+      ]
+    },
+    {
+      "id": "d19_n8",
+      "body": "A rope ladder lashed across a vent mouth bars the way down; pick a thread through the rubble, and your own breathing is the loudest sound across the whole cooling field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d19_n8_0",
+          "label": "Keep moving down.",
+          "target": "d20_n6"
+        },
+        {
+          "id": "c_d19_n8_1",
+          "label": "Push on without stopping.",
+          "target": "d20_n7"
+        },
+        {
+          "id": "c_d19_n8_2",
+          "label": "Drive forward through the ash.",
+          "target": "d20_n8"
+        }
+      ]
+    },
+    {
+      "id": "d20_n0",
+      "body": "A soft patch of warm mud in a cable trench bars the way down. Walk on the cable tray, not the grating. Water moves over hot rock deep below. It sounds like a kettle left on for too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n0_0",
+          "label": "Keep moving down.",
+          "target": "tail0_c0"
+        },
+        {
+          "id": "c_d20_n0_1",
+          "label": "Push on without stopping.",
+          "target": "tail0_c1"
+        },
+        {
+          "id": "c_d20_n0_2",
+          "label": "Drive forward through the ash.",
+          "target": "tail0_c2"
+        }
+      ]
+    },
+    {
+      "id": "d20_n1",
+      "body": "A skylight shaft bars the way down. The basalt roof has come down in slabs. Hug the scarp and shut out the drop. For one clean second, the cable station's antenna catches lamp-light high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n1_0",
+          "label": "Keep moving down.",
+          "target": "tail0_c3"
+        },
+        {
+          "id": "c_d20_n1_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail0_death"
+        },
+        {
+          "id": "c_d20_n1_2",
+          "label": "Get pinned trying.",
+          "target": "tail0_capture"
+        }
+      ]
+    },
+    {
+      "id": "d20_n2",
+      "body": "A catwalk over a steaming fissure blocks the way down. Brace your palm on every post you pass. The last passage has already shut behind you. The ash is falling faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n2_0",
+          "label": "Turn back for the field station.",
+          "target": "tail0_setback"
+        },
+        {
+          "id": "c_d20_n2_1",
+          "label": "Back away and search instead.",
+          "target": "tail0_discover"
+        },
+        {
+          "id": "c_d20_n2_2",
+          "label": "Find the crew's bypass.",
+          "target": "tail0_complete"
+        }
+      ]
+    },
+    {
+      "id": "d20_n3",
+      "body": "A switchback cut sideways into bare scoria bars the way down; breathe shallow and keep sliding, and somewhere below, groundwater is moving across hot rock \u2014 a sound like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n3_0",
+          "label": "Keep moving down.",
+          "target": "tail0_c0"
+        },
+        {
+          "id": "c_d20_n3_1",
+          "label": "Push on without stopping.",
+          "target": "tail0_c1"
+        },
+        {
+          "id": "c_d20_n3_2",
+          "label": "Drive forward through the ash.",
+          "target": "tail0_c2"
+        }
+      ]
+    },
+    {
+      "id": "d20_n4",
+      "body": "A stope where the timber cribbing has gone soft to the touch bars the way down; climb it by feel rather than burn the lamp, and the cable station's antenna catches lamp-light for one clean second, high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n4_0",
+          "label": "Keep moving down.",
+          "target": "tail0_c3"
+        },
+        {
+          "id": "c_d20_n4_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail0_death"
+        },
+        {
+          "id": "c_d20_n4_2",
+          "label": "Get pinned trying.",
+          "target": "tail0_capture"
+        }
+      ]
+    },
+    {
+      "id": "d20_n5",
+      "body": "A culvert barely wide enough for your ribs bars the way down. Test each rung before you commit to it. The last passage before this one has already closed behind you. The ash is falling faster than you can retrace.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n5_0",
+          "label": "Turn back for the field station.",
+          "target": "tail0_setback"
+        },
+        {
+          "id": "c_d20_n5_1",
+          "label": "Back away and search instead.",
+          "target": "tail0_discover"
+        },
+        {
+          "id": "c_d20_n5_2",
+          "label": "Find the crew's bypass.",
+          "target": "tail0_complete"
+        }
+      ]
+    },
+    {
+      "id": "d20_n6",
+      "body": "An iron stair bolted straight into the scarp face bars the way down. Pick a thread through the rubble. Somewhere below, groundwater moves across hot rock. It sounds like a kettle left on too long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n6_0",
+          "label": "Keep moving down.",
+          "target": "tail0_c0"
+        },
+        {
+          "id": "c_d20_n6_1",
+          "label": "Push on without stopping.",
+          "target": "tail0_c1"
+        },
+        {
+          "id": "c_d20_n6_2",
+          "label": "Drive forward through the ash.",
+          "target": "tail0_c2"
+        }
+      ]
+    },
+    {
+      "id": "d20_n7",
+      "body": "A rope ladder lashed across a vent mouth blocks the way down. Stick to the crusted edge and move fast. For one clean second, the cable station's antenna catches the lamp-light high above the field.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n7_0",
+          "label": "Keep moving down.",
+          "target": "tail0_c3"
+        },
+        {
+          "id": "c_d20_n7_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail0_death"
+        },
+        {
+          "id": "c_d20_n7_2",
+          "label": "Get pinned trying.",
+          "target": "tail0_capture"
+        }
+      ]
+    },
+    {
+      "id": "d20_n8",
+      "body": "A lava tube half choked with old collapse blocks the way down. Duck the low plates and count your breaths. The last passage has already shut behind you. The ash is falling faster than you can go back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d20_n8_0",
+          "label": "Turn back for the field station.",
+          "target": "tail0_setback"
+        },
+        {
+          "id": "c_d20_n8_1",
+          "label": "Back away and search instead.",
+          "target": "tail0_discover"
+        },
+        {
+          "id": "c_d20_n8_2",
+          "label": "Find the crew's bypass.",
+          "target": "tail0_complete"
+        }
+      ]
+    },
+    {
+      "id": "tail0_c0",
+      "body": "A vent mouth blows a column of ash-laced steam across the path behind you. There is still a way past it if you keep your head and keep moving. Pika's lamp waits just beyond the scald.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail0_c0_0",
+          "label": "Keep moving down.",
+          "target": "tail1_c0"
+        },
+        {
+          "id": "c_tail0_c0_1",
+          "label": "Push on without stopping.",
+          "target": "tail1_c1"
+        },
+        {
+          "id": "c_tail0_c0_2",
+          "label": "Drive forward through the ash.",
+          "target": "tail1_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail0_c1",
+      "body": "A vent mouth blows a column of ash-laced steam across the path behind you. There is still a way past it if you keep your head and keep moving. Pika's lamp waits just beyond the scald.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail0_c1_0",
+          "label": "Keep moving down.",
+          "target": "tail1_c3"
+        },
+        {
+          "id": "c_tail0_c1_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail1_death"
+        },
+        {
+          "id": "c_tail0_c1_2",
+          "label": "Get pinned trying.",
+          "target": "tail1_capture"
+        }
+      ]
+    },
+    {
+      "id": "tail0_c2",
+      "body": "A vent mouth blows a column of ash-laced steam across the path behind you. There is still a way past it if you keep your head and keep moving. Pika's lamp waits just beyond the scald.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail0_c2_0",
+          "label": "Turn back for the field station.",
+          "target": "tail1_setback"
+        },
+        {
+          "id": "c_tail0_c2_1",
+          "label": "Back away and search instead.",
+          "target": "tail1_discover"
+        },
+        {
+          "id": "c_tail0_c2_2",
+          "label": "Find the crew's bypass.",
+          "target": "tail1_complete"
+        }
+      ]
+    },
+    {
+      "id": "tail0_c3",
+      "body": "A vent mouth blows a column of ash-laced steam across the path behind you. There is still a way past it if you keep your head and keep moving. Pika's lamp waits just beyond the scald.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail0_c3_0",
+          "label": "Keep moving down.",
+          "target": "tail1_c0"
+        },
+        {
+          "id": "c_tail0_c3_1",
+          "label": "Push on without stopping.",
+          "target": "tail1_c1"
+        },
+        {
+          "id": "c_tail0_c3_2",
+          "label": "Drive forward through the ash.",
+          "target": "tail1_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail0_death",
+      "body": "A vent mouth blows a cloud of ash and steam across the path behind you. This time it does not stop. The field keeps those who put their weight on bad crust and fail to pull it back in time.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail0_death",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Burned by the Vent"
+      }
+    },
+    {
+      "id": "tail0_capture",
+      "body": "A vent mouth blows a steam-and-ash cloud across the path behind you and pins you fast. You aren't hurt, but you can't get free. Pika has to go for help alone, an hour later, over ground that won't wait.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail0_capture",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Pinned Across the Field"
+      }
+    },
+    {
+      "id": "tail0_setback",
+      "body": "A vent mouth blows a steam-and-ash cloud across the path behind you. There is no way past it tonight. You and Pika turn back for the field station. The cable station is still dark, and the crew is still waiting somewhere beyond it.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail0_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back by the Steam"
+      }
+    },
+    {
+      "id": "tail0_discover",
+      "body": "A vent mouth blows a steam-and-ash cloud across the path behind you. As you back away from it, you find an old telecom cache instead, untouched since the relay build. You also find a route out that is not the cable station, but it is at least a route out.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail0_discover",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Telecom Cache"
+      }
+    },
+    {
+      "id": "tail0_complete",
+      "body": "A vent mouth blows a steam-and-ash cloud across the path behind you, but you and Pika find the crew's old bypass around it. The cable station is still a hard climb away, but you now know you will reach it before the ash cloud closes the island.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail0_complete",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Crew's Old Bypass"
+      }
+    },
+    {
+      "id": "tail1_c0",
+      "body": "The steam-cut gully rises past a safe wading depth, but there is still a way past it if you keep your head and keep moving. Pika's lamp waits just beyond the water.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail1_c0_0",
+          "label": "Keep moving down.",
+          "target": "tail2_c0"
+        },
+        {
+          "id": "c_tail1_c0_1",
+          "label": "Push on without stopping.",
+          "target": "tail2_c1"
+        },
+        {
+          "id": "c_tail1_c0_2",
+          "label": "Drive forward through the ash.",
+          "target": "tail2_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail1_c1",
+      "body": "The steam-cut gully rises past a safe wading depth, but there is still a way past it if you keep your head and keep moving. Pika's lamp waits just beyond the water.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail1_c1_0",
+          "label": "Keep moving down.",
+          "target": "tail2_c3"
+        },
+        {
+          "id": "c_tail1_c1_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail2_death"
+        },
+        {
+          "id": "c_tail1_c1_2",
+          "label": "Get pinned trying.",
+          "target": "tail2_capture"
+        }
+      ]
+    },
+    {
+      "id": "tail1_c2",
+      "body": "The steam-cut gully rises past a safe wading depth, but there is still a way past it if you keep your head and keep moving. Pika's lamp waits just beyond the water.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail1_c2_0",
+          "label": "Turn back for the field station.",
+          "target": "tail2_setback"
+        },
+        {
+          "id": "c_tail1_c2_1",
+          "label": "Back away and search instead.",
+          "target": "tail2_discover"
+        },
+        {
+          "id": "c_tail1_c2_2",
+          "label": "Find the crew's bypass.",
+          "target": "tail2_complete"
+        }
+      ]
+    },
+    {
+      "id": "tail1_c3",
+      "body": "The steam-cut gully rises past a safe wading depth, but there is still a way past it if you keep your head and keep moving. Pika's lamp waits just beyond the water.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail1_c3_0",
+          "label": "Keep moving down.",
+          "target": "tail2_c0"
+        },
+        {
+          "id": "c_tail1_c3_1",
+          "label": "Push on without stopping.",
+          "target": "tail2_c1"
+        },
+        {
+          "id": "c_tail1_c3_2",
+          "label": "Drive forward through the ash.",
+          "target": "tail2_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail1_death",
+      "body": "The steam-cut gully rises past a safe depth to wade and this time it keeps rising. The field keeps the ones who step on the wrong crust and do not pull their weight back in time.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail1_death",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Over the Safe Depth"
+      }
+    },
+    {
+      "id": "tail1_capture",
+      "body": "The steam-cut gully rises past a safe wading depth and pins you fast. You aren't hurt, but you can't get free. Pika has to go for help alone, an hour later, over ground that won't wait.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail1_capture",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Pinned Across the Field"
+      }
+    },
+    {
+      "id": "tail1_setback",
+      "body": "The steam-cut gully rises past a safe wading depth. There is no way past it tonight. You and Pika must go back to the field station. The cable station is still dark, and the crew is still waiting somewhere beyond it.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail1_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back by the Steam"
+      }
+    },
+    {
+      "id": "tail1_discover",
+      "body": "The steam-cut gully gets too deep to wade. You back away and find an old telecom cache instead, untouched since the relay was built. You also spot a way out. It is not the cable station, but at least it is a route out.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail1_discover",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Telecom Cache"
+      }
+    },
+    {
+      "id": "tail1_complete",
+      "body": "The steam-cut gully gets too deep to wade, but you and Pika find the crew's old path around it. The cable station is still a hard climb away, but now you know you will reach it before the ash cloud closes the island.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail1_complete",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Channel That Held"
+      }
+    },
+    {
+      "id": "tail2_c0",
+      "body": "A relay mast snaps and falls across the road behind you. There is still a way past it if you keep your head and keep moving. Pika's lamp is waiting just beyond the fallen steel.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail2_c0_0",
+          "label": "Keep moving down.",
+          "target": "tail3_c0"
+        },
+        {
+          "id": "c_tail2_c0_1",
+          "label": "Push on without stopping.",
+          "target": "tail3_c1"
+        },
+        {
+          "id": "c_tail2_c0_2",
+          "label": "Drive forward through the ash.",
+          "target": "tail3_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail2_c1",
+      "body": "A relay mast snaps and falls across the road behind you. There is still a way past it if you keep your head and keep moving. Pika's lamp is waiting just beyond the fallen steel.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail2_c1_0",
+          "label": "Keep moving down.",
+          "target": "tail3_c3"
+        },
+        {
+          "id": "c_tail2_c1_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail3_death"
+        },
+        {
+          "id": "c_tail2_c1_2",
+          "label": "Get pinned trying.",
+          "target": "tail3_capture"
+        }
+      ]
+    },
+    {
+      "id": "tail2_c2",
+      "body": "A relay mast snaps and falls across the road behind you. There is still a way past it if you keep your head and keep moving. Pika's lamp is waiting just beyond the fallen steel.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail2_c2_0",
+          "label": "Turn back for the field station.",
+          "target": "tail3_setback"
+        },
+        {
+          "id": "c_tail2_c2_1",
+          "label": "Back away and search instead.",
+          "target": "tail3_discover"
+        },
+        {
+          "id": "c_tail2_c2_2",
+          "label": "Find the crew's bypass.",
+          "target": "tail3_complete"
+        }
+      ]
+    },
+    {
+      "id": "tail2_c3",
+      "body": "A relay mast snaps and falls across the road behind you. There is still a way past it if you keep your head and keep moving. Pika's lamp is waiting just beyond the fallen steel.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail2_c3_0",
+          "label": "Keep moving down.",
+          "target": "tail3_c0"
+        },
+        {
+          "id": "c_tail2_c3_1",
+          "label": "Push on without stopping.",
+          "target": "tail3_c1"
+        },
+        {
+          "id": "c_tail2_c3_2",
+          "label": "Drive forward through the ash.",
+          "target": "tail3_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail2_death",
+      "body": "A relay mast finally buckles and comes down across the road behind you and this time it does not stop. The field keeps the ones who step on the wrong crust and do not pull their weight back in time.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail2_death",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Mast"
+      }
+    },
+    {
+      "id": "tail2_capture",
+      "body": "A relay mast snaps and falls across the road behind you and pins you fast. You are not hurt, but you are not free. An hour later, Pika has to go for help alone across ground that will not wait.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail2_capture",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Pinned Across the Field"
+      }
+    },
+    {
+      "id": "tail2_setback",
+      "body": "A relay mast snaps and falls across the road behind you. There is no way past it tonight. You and Pika must go back to the field station. The cable station is still dark, and the crew is still waiting somewhere beyond it.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail2_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back by the Steam"
+      }
+    },
+    {
+      "id": "tail2_discover",
+      "body": "A relay mast snaps and falls across the road behind you. You back away from it and find an old telecom cache instead, untouched since the relay was built. You also spot a way out. It is not the cable station, but at least it is a route out.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail2_discover",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Telecom Cache"
+      }
+    },
+    {
+      "id": "tail2_complete",
+      "body": "A relay mast snaps and falls across the road behind you. Still, you and Pika find the old crew path around it. The cable station remains a hard climb away. You now know that you will reach it before the ash cloud closes the island.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail2_complete",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Mast That Missed"
+      }
+    },
+    {
+      "id": "tail3_c0",
+      "body": "The basalt roof falls in without warning. There is still a way past it if you keep your head and keep moving. Pika's lamp is waiting just beyond the fallen slab.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail3_c0_0",
+          "label": "Keep moving down.",
+          "target": "tail4_c0"
+        },
+        {
+          "id": "c_tail3_c0_1",
+          "label": "Push on without stopping.",
+          "target": "tail4_c1"
+        },
+        {
+          "id": "c_tail3_c0_2",
+          "label": "Drive forward through the ash.",
+          "target": "tail4_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail3_c1",
+      "body": "The basalt roof gives without warning, and there is still a way past it if you keep your head and keep moving, Pika's lamp waiting just beyond the fallen slab.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail3_c1_0",
+          "label": "Keep moving down.",
+          "target": "tail4_c3"
+        },
+        {
+          "id": "c_tail3_c1_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail4_death"
+        },
+        {
+          "id": "c_tail3_c1_2",
+          "label": "Get pinned trying.",
+          "target": "tail4_capture"
+        }
+      ]
+    },
+    {
+      "id": "tail3_c2",
+      "body": "The basalt roof gives without warning, and there is still a way past it if you keep your head and keep moving, Pika's lamp waiting just beyond the fallen slab.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail3_c2_0",
+          "label": "Turn back for the field station.",
+          "target": "tail4_setback"
+        },
+        {
+          "id": "c_tail3_c2_1",
+          "label": "Back away and search instead.",
+          "target": "tail4_discover"
+        },
+        {
+          "id": "c_tail3_c2_2",
+          "label": "Find the crew's bypass.",
+          "target": "tail4_complete"
+        }
+      ]
+    },
+    {
+      "id": "tail3_c3",
+      "body": "The basalt roof gives without warning, and there is still a way past it if you keep your head and keep moving, Pika's lamp waiting just beyond the fallen slab.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail3_c3_0",
+          "label": "Keep moving down.",
+          "target": "tail4_c0"
+        },
+        {
+          "id": "c_tail3_c3_1",
+          "label": "Push on without stopping.",
+          "target": "tail4_c1"
+        },
+        {
+          "id": "c_tail3_c3_2",
+          "label": "Drive forward through the ash.",
+          "target": "tail4_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail3_death",
+      "body": "The basalt roof gives without warning and this time it does not stop; the field keeps the ones who put their weight on the wrong crust and do not pull it back in time.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail3_death",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Basalt"
+      }
+    },
+    {
+      "id": "tail3_capture",
+      "body": "The basalt roof gives way without warning and pins you fast. You are not hurt, but you are stuck. An hour later, Pika has to go for help alone across ground that will not wait.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail3_capture",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Pinned Across the Field"
+      }
+    },
+    {
+      "id": "tail3_setback",
+      "body": "The basalt roof gives way without warning. There is no way past it tonight. You and Pika turn back for the field station. The cable station is still dark. The crew is still waiting somewhere beyond.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail3_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back by the Steam"
+      }
+    },
+    {
+      "id": "tail3_discover",
+      "body": "The basalt roof gives way without warning. As you back away from it, you find an old telecom cache instead, untouched since the relay build. You also find a way out. It is not the cable station, but it is at least a way out.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail3_discover",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Telecom Cache"
+      }
+    },
+    {
+      "id": "tail3_complete",
+      "body": "The basalt roof gives way without warning, but you and Pika find the crew's old path around it. The cable station is still a hard climb away. But now you know you will reach it before the ash cloud closes the island.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail3_complete",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Roof That Held"
+      }
+    },
+    {
+      "id": "tail4_c0",
+      "body": "A crack opens onto nothing but steam and the sound of boiling water. There is still a path past it if you stay calm and keep moving. Pika's lamp waits just past the crack.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail4_c0_0",
+          "label": "Keep moving down.",
+          "target": "tail5_c0"
+        },
+        {
+          "id": "c_tail4_c0_1",
+          "label": "Push on without stopping.",
+          "target": "tail5_c1"
+        },
+        {
+          "id": "c_tail4_c0_2",
+          "label": "Drive forward through the ash.",
+          "target": "tail5_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail4_c1",
+      "body": "A crack opens onto nothing but steam and the sound of boiling water. There is still a path past it if you stay calm and keep moving. Pika's lamp waits just past the crack.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail4_c1_0",
+          "label": "Keep moving down.",
+          "target": "tail5_c3"
+        },
+        {
+          "id": "c_tail4_c1_1",
+          "label": "Trust the wrong hazard.",
+          "target": "tail5_death"
+        },
+        {
+          "id": "c_tail4_c1_2",
+          "label": "Get pinned trying.",
+          "target": "tail5_capture"
+        }
+      ]
+    },
+    {
+      "id": "tail4_c2",
+      "body": "A crack opens onto nothing but steam and the sound of boiling water. There is still a path past it if you stay calm and keep moving. Pika's lamp waits just past the crack.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail4_c2_0",
+          "label": "Turn back for the field station.",
+          "target": "tail5_setback"
+        },
+        {
+          "id": "c_tail4_c2_1",
+          "label": "Back away and search instead.",
+          "target": "tail5_discover"
+        },
+        {
+          "id": "c_tail4_c2_2",
+          "label": "Find the crew's bypass.",
+          "target": "tail5_complete"
+        }
+      ]
+    },
+    {
+      "id": "tail4_c3",
+      "body": "A crack opens onto nothing but steam and the sound of boiling water. There is still a path past it if you stay calm and keep moving. Pika's lamp waits just past the crack.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail4_c3_0",
+          "label": "Keep moving down.",
+          "target": "tail5_c0"
+        },
+        {
+          "id": "c_tail4_c3_1",
+          "label": "Push on without stopping.",
+          "target": "tail5_c1"
+        },
+        {
+          "id": "c_tail4_c3_2",
+          "label": "Drive forward through the ash.",
+          "target": "tail5_c2"
+        }
+      ]
+    },
+    {
+      "id": "tail4_death",
+      "body": "A fissure opens onto nothing but steam and the roar of boiling groundwater. This time it does not stop. The field keeps the ones who put their weight on the wrong crust and don't pull it back in time.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail4_death",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Into the Fissure"
+      }
+    },
+    {
+      "id": "tail4_capture",
+      "body": "A fissure opens onto nothing but steam and the roar of boiling water deep under the ground. It pins you fast. You are not hurt, but you are not free either. An hour later, Pika has to go for help alone over ground that will not wait.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail4_capture",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Pinned Across the Field"
+      }
+    },
+    {
+      "id": "tail4_setback",
+      "body": "A fissure opens onto nothing but steam and the roar of boiling groundwater. There is no way past it tonight. You and Pika turn back for the field station. The cable station is still dark and the crew is still waiting somewhere beyond it.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail4_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back by the Steam"
+      }
+    },
+    {
+      "id": "tail4_discover",
+      "body": "A fissure opens onto nothing but steam and the roar of boiling groundwater. As you back away, you find an old telecom cache. It has been untouched since the relay build. You also find a way out that is not the cable station, but at least it is a way out.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail4_discover",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Telecom Cache"
+      }
+    },
+    {
+      "id": "tail4_complete",
+      "body": "A fissure opens onto nothing but steam and the roar of boiling water deep under the ground. But you and Pika find the crew's old path around it together. The cable station is still a hard climb away. But now you know you will reach it before the ash cloud closes the island.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail4_complete",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Light at the Fissure Edge"
+      }
+    },
+    {
+      "id": "tail5_c0",
+      "body": "The ash cloud's first gust reaches down across the cooling field. There is still a way through it if you keep your head and keep moving. Pika's lamp waits just beyond the grey.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail5_c0_0",
+          "label": "Climb out onto the cinder shelf.",
+          "target": "n_scree"
+        }
+      ]
+    },
+    {
+      "id": "tail5_c1",
+      "body": "The ash cloud's first gust reaches down across the cooling field. There is still a way through it if you keep your head and keep moving. Pika's lamp waits just beyond the grey.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail5_c1_0",
+          "label": "Climb out onto the cinder shelf.",
+          "target": "n_scree"
+        }
+      ]
+    },
+    {
+      "id": "tail5_c2",
+      "body": "The ash cloud's first gust reaches down across the cooling field. There is still a way through it if you keep your head and keep moving. Pika's lamp waits just beyond the grey.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail5_c2_0",
+          "label": "Climb out onto the cinder shelf.",
+          "target": "n_scree"
+        }
+      ]
+    },
+    {
+      "id": "tail5_c3",
+      "body": "The ash cloud's first gust reaches down across the cooling field. There is still a way through it if you keep your head and keep moving. Pika's lamp waits just beyond the grey.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tail5_c3_0",
+          "label": "Climb out onto the cinder shelf.",
+          "target": "n_scree"
+        }
+      ]
+    },
+    {
+      "id": "tail5_death",
+      "body": "The ash cloud's first gust reaches down across the cooling field. This time it does not stop. The field keeps the ones who put their weight on the wrong crust and don't pull it back in time.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail5_death",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Caught by the Gust"
+      }
+    },
+    {
+      "id": "tail5_capture",
+      "body": "The ash cloud's first gust reaches down across the cooling field and pins you fast. You are not hurt, but you are not free either. An hour later, Pika has to go for help alone across ground that will not wait.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail5_capture",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Pinned Across the Field"
+      }
+    },
+    {
+      "id": "tail5_setback",
+      "body": "The ash cloud's first gust reaches down across the cooling field. There is no way past it tonight. You and Pika turn back for the field station. The cable station is still dark and the crew is still waiting somewhere beyond it.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail5_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back by the Steam"
+      }
+    },
+    {
+      "id": "tail5_discover",
+      "body": "The ash cloud's first gust reaches down across the cooling field, and in backing away from it you find an old telecom cache instead, untouched since the relay build, and a route out that is not the cable station but is at least a route out.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail5_discover",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Telecom Cache"
+      }
+    },
+    {
+      "id": "tail5_complete",
+      "body": "The ash cloud's first gust reaches down across the cooling field. But you and Pika find the crew's old bypass around it. The cable station is still a hard climb away. Still, you know you will reach it before the ash cloud closes the island.",
+      "is_ending": true,
+      "ending": {
+        "id": "tail5_complete",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Ahead of the Gust"
+      }
+    },
+    {
+      "id": "n_scree",
+      "body": "Every route ends the same way here. It is a cinder shelf below the old relay hut. The cable station's antenna looks black against the sky. The ash cloud has almost finished closing that sky.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_scree",
+          "label": "Start the climb to the station.",
+          "target": "tower_gate"
+        }
+      ]
+    },
+    {
+      "id": "tower_gate",
+      "body": "The station stair spirals up the outside of the old relay hut. It is rusted through in spots where the sea wind catches it. A cable port hangs open at the top.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tower_gate",
+          "label": "Climb to the cable room.",
+          "target": "tower_resolve_1"
+        }
+      ]
+    },
+    {
+      "id": "tower_resolve_1",
+      "body": "The cable room is just as the crew left it. A line amplifier valve has been missing from the set since the day it failed. Whether you are holding that valve or empty-handed decides everything that happens next.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tr1_fixed",
+          "label": "Seat the valve you carried across the field.",
+          "target": "tower_fixed",
+          "condition": {
+            "==": [
+              {
+                "var": "transmitter"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_tr1_flare",
+          "label": "Strip the lamp and rig a flare instead.",
+          "target": "tower_flare",
+          "condition": {
+            "==": [
+              {
+                "var": "transmitter"
+              },
+              false
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tower_fixed",
+      "body": "The valve seats clean on the first try and the set hums back to life under your hands, the old signal light blinking green for the first time in three days.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tower_fixed",
+          "label": "Send the call.",
+          "target": "tower_resolve_2_fixed"
+        }
+      ]
+    },
+    {
+      "id": "tower_flare",
+      "body": "With no valve to fit, you strip the lamp for its last oil and rig a flare off the station rail instead, the wick spent on one single throw against the advancing cloud.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tower_flare",
+          "label": "Light the flare.",
+          "target": "tower_resolve_2_flare"
+        }
+      ]
+    },
+    {
+      "id": "tower_resolve_2_fixed",
+      "body": "The set is live and the call will go through clean, but what comes back over it, and whether Pika is still beside you to hear it, depends on the whole night behind you now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_trf_2",
+          "label": "Trust carried you both this far.",
+          "target": "end_fixed_trust2",
+          "condition": {
+            "==": [
+              {
+                "var": "trust"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_trf_1",
+          "label": "Trust carried you partway.",
+          "target": "end_fixed_trust1",
+          "condition": {
+            "==": [
+              {
+                "var": "trust"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_trf_0",
+          "label": "Trust never got a foothold.",
+          "target": "end_fixed_trust0",
+          "condition": {
+            "==": [
+              {
+                "var": "trust"
+              },
+              0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tower_resolve_2_flare",
+      "body": "The flare is one shot into a sky already grey with ash, and whether anyone is watching for it, and whether Pika still trusts your aim, depends on the whole night behind you now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_trr_2",
+          "label": "Trust carried you both this far.",
+          "target": "end_flare_trust2",
+          "condition": {
+            "==": [
+              {
+                "var": "trust"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_trr_1",
+          "label": "Trust carried you partway.",
+          "target": "end_flare_trust1",
+          "condition": {
+            "==": [
+              {
+                "var": "trust"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_trr_0",
+          "label": "Trust never got a foothold.",
+          "target": "end_flare_trust0",
+          "condition": {
+            "==": [
+              {
+                "var": "trust"
+              },
+              0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "end_fixed_trust2",
+      "body": "The call goes through clean. So does everything you did to earn it. Pika keys the second channel without being asked. Between you, the whole crew's coordinates go out clear. The mainland dispatch answers before the ash cloud even finishes stacking over the volcano's shoulder.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fixed_trust2",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Clean Call"
+      }
+    },
+    {
+      "id": "end_fixed_trust1",
+      "body": "The call goes through and rescue is moving. Pika stands a little apart at the rail while you make it, glad of the result and still weighing the night it took to get here \u2014 the lamp's last oil burned somewhere your memory will not name yet.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fixed_trust1",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Call Alone"
+      }
+    },
+    {
+      "id": "end_fixed_trust0",
+      "body": "The call goes through, and it is the only thing that does. Pika went back for the field station two hours ago and you send the crew's coordinates out to an empty relay room with nobody beside you to hear the dispatch answer.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fixed_trust0",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Empty Relay Room"
+      }
+    },
+    {
+      "id": "end_flare_trust2",
+      "body": "Pika has the timing of the ash cloud in a way you never could, and calls the exact second to loose the flare. It clears the ridge and hangs for a long orange breath above the cooling field, and someone, somewhere below the fall line, is already watching for it.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_flare_trust2",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Timed to the Ash Cloud"
+      }
+    },
+    {
+      "id": "end_flare_trust1",
+      "body": "The flare clears the ridge and burns for its ten seconds against the cloud. Whether it was seen is a question the night does not answer either way before you have to climb back down onto ground that will not hold still much longer.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_flare_trust1",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Ten Seconds Against the Cloud"
+      }
+    },
+    {
+      "id": "end_flare_trust0",
+      "body": "The flare goes up alone. It is badly timed against a gust that was never going to give you a clean throw. It is gone into the ash with nothing behind it. No one is left on the ridge to have watched for it.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_flare_trust0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost Against the Gust"
+      }
+    }
+  ]
+}
