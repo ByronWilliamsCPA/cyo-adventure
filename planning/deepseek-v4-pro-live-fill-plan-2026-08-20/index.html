@@ -1,0 +1,4804 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/deepseek-v4-pro-live-fill-plan-2026-08-20/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>DeepSeek v4 Pro live fill run: 5-sample plan - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#deepseek-v4-pro-live-fill-run-5-sample-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              DeepSeek v4 Pro live fill run: 5-sample plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../security/assurance-spine/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/kws-test-runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KWS Test-Environment Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/security-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Event Catalog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/assurance-spine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Spine
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/assurance-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Register
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/control-inheritance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Inheritance Map
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/crypto-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cryptographic Inventory
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/red-team-design-review-2026-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Team Design Review
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../research/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Story Structure Diversity
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Story Structure Diversity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-diversity-critical-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Critical Analysis
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-improvement-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Improvement Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-implementation-briefs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Briefs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-why-this-run-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Why this run exists
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-what-the-run-must-prove-and-what-it-cannot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. What the run must prove, and what it cannot
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-pre-flight-in-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Pre-flight, in order
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Pre-flight, in order">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-rebase-onto-merged-main-blocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Rebase onto merged main (blocking)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-add-the-price-row-for-deepseekdeepseek-v4-pro-blocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Add the price row for deepseek/deepseek-v4-pro (blocking)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-add-the-vendor-spec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Add the vendor spec
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-author-five-theme-briefs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Author five theme briefs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-what-actually-happened-at-pre-flight-recorded-2026-08-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 What actually happened at pre-flight (recorded 2026-08-20)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-five-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The five samples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. The five samples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-the-grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 The grid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Conditions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-expected-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Expected cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Command
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-assessment-ladder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Assessment ladder
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Assessment ladder">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-quality-and-diversity-review-rungs-7-and-8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Quality and diversity review (rungs 7 and 8)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#52-results-run-of-2026-08-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Results (run of 2026-08-20)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.2 Results (run of 2026-08-20)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#outcome" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outcome
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-root-cause-the-words-directive-is-not-honored" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The root cause: the words= directive is not honored
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#that-one-cause-explains-the-reading-level-split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        That one cause explains the reading-level split
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-gate-measured-all-of-it-and-blocked-on-none" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The gate measured all of it and blocked on none
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-drift-on-fields-the-contract-freezes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural drift on fields the contract freezes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prose-defects-the-gate-cannot-see" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prose defects the gate cannot see
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diversity-is-good-and-the-number-is-not-quotable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diversity is good, and the number is not quotable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-two-failures-initial-diagnosis-book-0s-verdict-is-superseded-below" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The two failures (initial diagnosis; book 0's verdict is superseded below)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#corrections-established-after-the-first-write-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corrections established after the first write-up
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#an-unfilled-rule-gap-nothing-checks-that-a-body-stages-its-outbound-choices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        An unfilled rule gap: nothing checks that a body stages its OUTBOUND choices
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-caution-on-the-beats-overlap-metric" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A caution on the beats-overlap metric
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-note-two-reviewers-and-the-disagreement-was-informative" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method note: two reviewers, and the disagreement was informative
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-findings-from-planning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Findings from planning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Findings from planning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#f1-the-chunked-bound-path-cannot-be-exercised-by-this-run-and-max-tokens-will-not-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F1. The chunked bound path cannot be exercised by this run, and --max-tokens will not help
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f2-model_output_caps-is-keyed-by-slug-but-the-real-output-ceiling-is-per-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F2. MODEL_OUTPUT_CAPS is keyed by slug, but the real output ceiling is per-endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f3-the-dated-slug-has-no-cap-row-and-declares-no-ceiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F3. The dated slug has no cap row and declares no ceiling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f4-three-stale-claim-corrections-in-730-have-a-fourth-sibling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F4. Three stale-claim corrections in #730 have a fourth sibling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f5-compare_vendorspy-skips-the-stage-1-fidelity-gate-unconditionally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F5. compare_vendors.py skips the Stage 1 fidelity gate unconditionally
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-deliverables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Deliverables
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-open-items-for-the-owner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Open items for the owner
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Open items for the owner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-how-to-validate-the-uw-c302-fix-live-recommend-option-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 How to validate the UW-C302 fix live (recommend: option B)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-does-the-production-path-pin-its-openrouter-endpoint-f2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Does the production path pin its OpenRouter endpoint? (F2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-carried-forward-from-730-unchanged-by-this-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Carried forward from #730, unchanged by this run
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-lessons-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Lessons log
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="deepseek-v4-pro-live-fill-run-5-sample-plan">DeepSeek v4 Pro live fill run: 5-sample plan<a class="headerlink" href="#deepseek-v4-pro-live-fill-run-5-sample-plan" title="Permanent link">&para;</a></h1>
+<p><strong>Date</strong>: 2026-08-20
+<strong>Status</strong>: complete. 3 of 5 passed; both failed legs re-probed (book 0: deterministic
+<code>content_filter</code> for its (skeleton, brief) pair, 7 of 7; book 4: passed on re-probe), reviews
+done, lessons logged as <code>AL-490</code>..<code>AL-498</code> with register rows <code>UW-C307</code>..<code>UW-C315</code>
+<strong>Blocks on</strong>: nothing; PR #730 merged 2026-08-20 04:15 UTC
+<strong>Predecessor</strong>: PR #730 (<code>feat(catalog): cover all 18 offered cells at the strict bar</code>), whose
+"Follow-up handoff" names this run as the intended next task
+<strong>Branch</strong>: <code>claude/pr-730-deepseek-testing-3m9c3v</code></p>
+<hr />
+<h2 id="1-why-this-run-exists">1. Why this run exists<a class="headerlink" href="#1-why-this-run-exists" title="Permanent link">&para;</a></h2>
+<p>PR #730 closed <code>UW-C302</code> by giving a bound fill a chunked path, and brought the skeleton catalog
+to 20 strict-passing books covering all 18 offered production cells. Both are validated by unit
+tests and by the offline strict census. Neither has been validated against a real backend: the
+PR's own handoff note records that egress to <code>openrouter.ai:443</code> was denied by the authoring
+session's network policy, so the live end-to-end fill could not run.</p>
+<p><strong>That constraint no longer holds.</strong> Verified from this session on 2026-08-20:</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET https://openrouter.ai/api/v1/models</code></td>
+<td><code>200</code></td>
+</tr>
+<tr>
+<td><code>OPENROUTER_API_KEY</code> in environment</td>
+<td>present</td>
+</tr>
+<tr>
+<td><code>deepseek/deepseek-v4-pro</code> on OpenRouter</td>
+<td>present, 1,048,576 context, 18 endpoints</td>
+</tr>
+</tbody>
+</table>
+<p>So the run is executable. This document is the plan for it.</p>
+<h2 id="2-what-the-run-must-prove-and-what-it-cannot">2. What the run must prove, and what it cannot<a class="headerlink" href="#2-what-the-run-must-prove-and-what-it-cannot" title="Permanent link">&para;</a></h2>
+<p><strong>In scope.</strong> Five live fills answer four questions that no offline check can:</p>
+<ol>
+<li><strong>Does the strict-clean catalog actually fill?</strong> Twenty skeletons pass <code>--strict</code> at exit 0.
+   Passing the shell gate says the structure is authorable; it does not say a real model will
+   emit prose that then passes the gate. This is the PR's single largest untested claim.</li>
+<li><strong>Does a shared skeleton yield two genuinely different books?</strong> The cyo-author contract
+   forbids noun-substitution (prose that would fit any theme after a find-and-replace is a
+   defect). Nothing has tested that contract against a live model on one skeleton with two
+   briefs. This is what the "at least two on the same skeleton" requirement buys.</li>
+<li><strong>What does a near-cap book actually cost, in tokens and in repairs?</strong> <code>the-last-cartage</code>
+   needs 99,906 declared output tokens against a feasibility ceiling of 104,857, that is 95.3
+   percent of it. The <code>_FEASIBILITY_MARGIN = 0.8</code> constant exists because <code>AL-328</code> measured a
+   leg at 91 percent of its cap and it truncated. The top of the catalog now sits above that
+   measurement, with no live datapoint.</li>
+<li><strong>Do the new state-aware rules hold on live prose?</strong> <code>CG-5</code>, and the state-aware <code>PL-20</code>,
+   <code>PL-25</code>, <code>PL-26</code>, were written and tested against committed shells. A tier-2 stateful book
+   filled live is the first prose they will grade.</li>
+<li><strong>Are the books any good, and are they diverse?</strong> The deciding question for the approach, and
+   the one no deterministic instrument in this repo answers. Addressed by rungs 7 and 8 in
+   section 5.1 rather than by the gate.</li>
+</ol>
+<p><strong>Explicitly out of scope, and why.</strong> Two production-parity gaps are structural in the chosen
+harness and must not be reported as covered:</p>
+<ul>
+<li><strong>The Stage 1 fidelity gate does not run.</strong> <code>compare_vendors.py</code> calls
+  <code>fill_skeleton(..., stage1_gate="skipped")</code>. The production path (<code>generation/worker.py</code>)
+  runs it. So this run measures the deterministic gate, not the fidelity gate.</li>
+<li><strong>The chunked bound path is not reachable.</strong> See finding F1 below; it cannot be exercised
+  by any combination of flags on this harness with this model. The <code>UW-C302</code> fix therefore
+  remains unvalidated live after this run. That is a scope limit, not a defect in the fix.</li>
+</ul>
+<p>Both gaps are carried into section 8 as named follow-ups rather than quietly absorbed.</p>
+<h2 id="3-pre-flight-in-order">3. Pre-flight, in order<a class="headerlink" href="#3-pre-flight-in-order" title="Permanent link">&para;</a></h2>
+<h3 id="31-rebase-onto-merged-main-blocking">3.1 Rebase onto merged <code>main</code> (blocking)<a class="headerlink" href="#31-rebase-onto-merged-main-blocking" title="Permanent link">&para;</a></h3>
+<p>The 20 strict skeletons, <code>fill_subset_bound.md</code>, and the <code>chunked = not is_fill_feasible(...)</code>
+switch are all on PR #730's head and absent from this branch. Confirmed by inspection: this
+branch carries 82 skeletons and no <code>templates/fill_subset_bound.md</code>; #730's head carries 102.</p>
+<p>Running before the rebase would test the old, broken path and produce a result that reads as a
+verdict on the new one.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>fetch<span class="w"> </span>origin<span class="w"> </span>main
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>git<span class="w"> </span>rebase<span class="w"> </span>origin/main<span class="w">          </span><span class="c1"># after #730 merges</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>uv<span class="w"> </span>sync<span class="w"> </span>--all-extras
+</span></code></pre></div>
+<h3 id="32-add-the-price-row-for-deepseekdeepseek-v4-pro-blocking">3.2 Add the price row for <code>deepseek/deepseek-v4-pro</code> (blocking)<a class="headerlink" href="#32-add-the-price-row-for-deepseekdeepseek-v4-pro-blocking" title="Permanent link">&para;</a></h3>
+<p><code>core/pricing.py</code> has rows for <code>deepseek/deepseek-v4-flash</code>,
+<code>~deepseek/deepseek-v4-flash-latest</code>, and <code>deepseek/deepseek-v4-flash-0731</code>. It has <strong>no row
+for any v4-pro spelling</strong>. <code>compare_vendors.py</code> refuses to start when a leg has no complete
+price, which is correct behavior and traces to <code>AL-348</code> (twenty generations recorded
+<code>cost: null</code>). Do not paper over it with <code>--allow-unpriced</code>: a run whose whole point includes
+per-book economics must be able to price itself.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/refresh_pricing.py<span class="w"> </span>--model<span class="w"> </span>deepseek/deepseek-v4-pro
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1"># paste the dated entry into core/pricing.py</span>
+</span></code></pre></div>
+<p>Read live 2026-08-20, the slug's default route prices at $1.44 in / $2.88 out per MTok.
+<strong>Caveat, and it is not cosmetic:</strong> <code>pricing.py</code> is keyed on <code>(provider, model)</code>, so it holds
+one price per slug, while OpenRouter serves this slug from 18 endpoints priced from $0.66 to
+$1.91 in. Pinning CoreWeave (section 4.2) means the recorded cost overstates the real cost by
+roughly 20 percent. Record the pinned endpoint's price and note the pin in the row, rather than
+the default route's.</p>
+<h3 id="33-add-the-vendor-spec">3.3 Add the vendor spec<a class="headerlink" href="#33-add-the-vendor-spec" title="Permanent link">&para;</a></h3>
+<p>Create <code>docs/planning/vendor-comparison/vendors-deepseek-v4-pro.json</code>, following the existing
+<code>vendors.json</code> convention (<code>_snapshot</code>, <code>_price_per_mtok</code>, <code>_note</code> are documentation fields the
+loader ignores):</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">[</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="p">{</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;deepseek-v4-pro&quot;</span><span class="p">,</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;deepseek/deepseek-v4-pro&quot;</span><span class="p">,</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">&quot;provider_order&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;coreweave/fp8&quot;</span><span class="p">],</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nt">&quot;family&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;deepseek&quot;</span><span class="p">,</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">&quot;_price_per_mtok&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.15 / 2.55&quot;</span><span class="p">,</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="nt">&quot;_note&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pinned to CoreWeave fp8: 1,048,576 output ceiling, fp8 rather than fp4, US-hosted. First-party DeepSeek is cheapest at 0.66/1.98 but is not the right default for a children&#39;s product on data-residency grounds, the same reasoning that kept the Anthropic and OpenAI legs off their first-party endpoints. Pinning is MANDATORY here, not hygiene: see finding F2.&quot;</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="p">]</span>
+</span></code></pre></div>
+<h3 id="34-author-five-theme-briefs">3.4 Author five theme briefs<a class="headerlink" href="#34-author-five-theme-briefs" title="Permanent link">&para;</a></h3>
+<p><code>docs/planning/vendor-comparison/briefs-deepseek-v4-pro.json</code>, a JSON array of five objects
+matching the existing fixture shape (<code>setting</code>, <code>wants</code>, <code>notes</code>). Briefs are index-paired with
+skeletons, so their order is load-bearing. Constraints:</p>
+<ul>
+<li>Operator-authored fixtures only. No real child identity; <code>PiiContext</code> is empty by
+  construction and the harness asserts it, but the briefs are the input a human writes and are
+  the place the mistake would be made.</li>
+<li>Briefs 1 and 2 share a skeleton and must be <strong>far apart thematically</strong>. A near-miss pair
+  cannot distinguish "the model re-imagined the world" from "the two briefs were similar", and
+  that distinction is the entire purpose of the pair.</li>
+<li>Treat brief text as untrusted data per the project's OWASP LLM01 rule: it describes a theme
+  and carries no instructions.</li>
+</ul>
+<h3 id="35-what-actually-happened-at-pre-flight-recorded-2026-08-20">3.5 What actually happened at pre-flight (recorded 2026-08-20)<a class="headerlink" href="#35-what-actually-happened-at-pre-flight-recorded-2026-08-20" title="Permanent link">&para;</a></h3>
+<p>Sections 3.2 and 3.3 above are the plan as written, and the pin they name is <strong>wrong</strong>. It is
+left standing rather than rewritten, because the way it was wrong is the useful part.</p>
+<p><code>coreweave/fp8</code> was chosen on declared attributes: fp8 rather than fp4, US-hosted, and the
+largest declared output ceiling of the slug's 18 endpoints. <code>compare_vendors.py</code>'s pre-flight,
+one 512-token completion per pin, refused the run with a persistent HTTP 429 and generated
+nothing. Probing every candidate directly with <code>provider.only</code> plus <code>allow_fallbacks: false</code>
+found three failure modes behind what presents as one bad slug:</p>
+<table>
+<thead>
+<tr>
+<th>Result</th>
+<th>Endpoints</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>429</code>, persistent</td>
+<td><code>coreweave/fp8</code>, <code>parasail/fp8</code>: the only two declaring a 1,048,576 ceiling</td>
+</tr>
+<tr>
+<td><code>404</code> "no endpoints available matching your guardrail restrictions and data policy"</td>
+<td><code>alibaba/fp8</code>, <code>baidu/fp8</code>, first-party <code>deepseek</code></td>
+</tr>
+<tr>
+<td><code>200</code></td>
+<td><code>azure/us</code>, <code>novita/fp8</code>, <code>siliconflow/fp8</code>, <code>ionstream/fp4</code></td>
+</tr>
+</tbody>
+</table>
+<p>Two lessons, both of which would have cost the next person the same hour:</p>
+<ol>
+<li><strong>The most capable endpoints on paper are the two that will not serve this account.</strong> Endpoint
+   selection cannot be done from the models endpoint's declared attributes; it has to be probed.
+   A 512-token probe per candidate costs cents and is now the documented first step.</li>
+<li><strong>Section 3.3's data-residency argument was moot.</strong> It argued against first-party DeepSeek on
+   residency grounds; the account's own data policy already blocks that endpoint, along with both
+   China-hosted resellers. The policy had made the decision the note presented as a judgement
+   call. Checking the policy would have been faster than reasoning about it.</li>
+</ol>
+<p>Pinned instead to <code>azure/us</code>: reachable, US-hosted, matching the posture the data policy
+expresses, and the same reason <code>vendors.json</code> pins its OpenAI leg to Azure. Its 384,000 ceiling
+is ample against the 131,072 resolved cap, so section 4.2's analysis is unchanged. Two costs
+recorded rather than glossed: <code>quantization</code> is <code>unknown</code>, so this leg is not
+quantization-attributable the way an fp8 pin would be; and at $1.91/$3.83 it is the most
+expensive reachable option against <code>novita/fp8</code> at $1.44/$2.88, which raises the run's estimate
+from about $1.03 to about $1.54. On a run of that size, hosting is worth more than the premium.</p>
+<p>The price row follows the pin, not the slug default, so the recorded cost is what was actually
+paid. <strong>The vendor file and the price row must change together</strong>; both name <code>novita/fp8</code> as the
+hand-fallback if Azure rate-limits.</p>
+<h2 id="4-the-five-samples">4. The five samples<a class="headerlink" href="#4-the-five-samples" title="Permanent link">&para;</a></h2>
+<h3 id="41-the-grid">4.1 The grid<a class="headerlink" href="#41-the-grid" title="Permanent link">&para;</a></h3>
+<p>Skeletons pair index-wise with briefs. Slots 1 and 2 are the same skeleton, satisfying the
+"at least two use the same skeleton" requirement at the cell where it is most informative.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Skeleton</th>
+<th>Cell</th>
+<th style="text-align: right;">Nodes</th>
+<th style="text-align: right;">Declared words</th>
+<th style="text-align: right;">Est. output tok</th>
+<th>Why this one</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>16+/the-last-cartage.json</code></td>
+<td>16+ gamebook long</td>
+<td style="text-align: right;">632</td>
+<td style="text-align: right;">49,953</td>
+<td style="text-align: right;">99,906</td>
+<td>Largest in the catalog; 95.3% of the feasibility ceiling</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>16+/the-last-cartage.json</code></td>
+<td>16+ gamebook long</td>
+<td style="text-align: right;">632</td>
+<td style="text-align: right;">49,953</td>
+<td style="text-align: right;">99,906</td>
+<td><strong>Same skeleton, different brief</strong>: the noun-substitution test</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>13-16/the-quarry-signal.json</code></td>
+<td>13-16 gamebook medium</td>
+<td style="text-align: right;">267</td>
+<td style="text-align: right;">18,888</td>
+<td style="text-align: right;">37,776</td>
+<td>The only tier-2 stateful book of the 20; exercises <code>CG-5</code> and state-aware <code>PL-20/25/26</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>8-11/the-tin-whistle-map.json</code></td>
+<td>8-11 prose long</td>
+<td style="text-align: right;">193</td>
+<td style="text-align: right;">19,574</td>
+<td style="text-align: right;">39,148</td>
+<td>Mid-band prose; the band-envelope and Stage D reading-level path</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>3-5/the-last-blue-cup.json</code></td>
+<td>3-5 prose short</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">674</td>
+<td style="text-align: right;">1,348</td>
+<td>Tightest envelope in the system (40-word mean, 90-word per-node max)</td>
+</tr>
+</tbody>
+</table>
+<p>The pair sits on <code>the-last-cartage</code> deliberately. It is the hardest cell, the one whose stale
+headroom claim #730 corrected, and the one where a same-structure pair is most likely to
+converge, because 632 nodes of fixed structure give the model the least room to differ. If the
+pair diverges there, it diverges anywhere. Cost makes this affordable: see 4.3.</p>
+<h3 id="42-conditions">4.2 Conditions<a class="headerlink" href="#42-conditions" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Model</strong>: <code>deepseek/deepseek-v4-pro</code>, pinned to <code>coreweave/fp8</code>, <code>allow_fallbacks: false</code>
+  (superseded before execution: pre-flight probes found <code>coreweave/fp8</code> persistently 429 and the
+  run executed pinned to <code>azure/us</code>; see section 3.5)
+  (the adapter sends this alongside <code>provider_order</code>).</li>
+<li><strong>Output cap</strong>: leave <code>--max-tokens</code> unset. <code>resolve_output_cap</code> yields
+  <code>min(131_072, 393_216) = 131_072</code>; every book in the grid fits. Forcing a cap would make the
+  results non-comparable to the shipped configuration, and see F1 for why it would not buy the
+  chunked path either.</li>
+<li><strong>Throttle</strong>: <code>--throttle 3</code>.</li>
+<li><strong>Repairs</strong>: orchestrator default (3).</li>
+</ul>
+<h3 id="43-expected-cost">4.3 Expected cost<a class="headerlink" href="#43-expected-cost" title="Permanent link">&para;</a></h3>
+<p>Superseded pre-flight estimate, kept for the record: it was computed at the original
+<code>coreweave/fp8</code> price of $1.15 in / $2.55 out per MTok, and the run executed on <code>azure/us</code> at
+$1.91/$3.83 (see section 3.5), which raised the estimate to about $1.54; the measured figure
+in section 5.2 is $1.9943. Input being the skeleton itself:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th style="text-align: right;">Input tok</th>
+<th style="text-align: right;">Output tok</th>
+<th style="text-align: right;">First-pass cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td style="text-align: right;">~99,400</td>
+<td style="text-align: right;">~99,900</td>
+<td style="text-align: right;">~$0.37</td>
+</tr>
+<tr>
+<td>1</td>
+<td style="text-align: right;">~99,400</td>
+<td style="text-align: right;">~99,900</td>
+<td style="text-align: right;">~$0.37</td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align: right;">~36,400</td>
+<td style="text-align: right;">~37,800</td>
+<td style="text-align: right;">~$0.14</td>
+</tr>
+<tr>
+<td>3</td>
+<td style="text-align: right;">~35,300</td>
+<td style="text-align: right;">~39,100</td>
+<td style="text-align: right;">~$0.14</td>
+</tr>
+<tr>
+<td>4</td>
+<td style="text-align: right;">~2,100</td>
+<td style="text-align: right;">~1,300</td>
+<td style="text-align: right;">~$0.01</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><strong>~$1.03</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Worst case, every book taking all three repairs, is roughly four times that: about <strong>$4</strong>. Cost
+is not a constraint on this run and should not shape its design. Record the measured figure
+against this estimate; a large miss is itself a finding, since <code>UsageLedger</code> bills repairs to
+the book that caused them.</p>
+<h3 id="44-command">4.4 Command<a class="headerlink" href="#44-command" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/compare_vendors.py<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>--skeleton<span class="w"> </span>skeletons/16+/the-last-cartage.json<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span>--skeleton<span class="w"> </span>skeletons/16+/the-last-cartage.json<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span>--skeleton<span class="w"> </span>skeletons/13-16/the-quarry-signal.json<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span>--skeleton<span class="w"> </span>skeletons/8-11/the-tin-whistle-map.json<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">  </span>--skeleton<span class="w"> </span>skeletons/3-5/the-last-blue-cup.json<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">  </span>--briefs<span class="w"> </span>docs/planning/vendor-comparison/briefs-deepseek-v4-pro.json<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">  </span>--vendors<span class="w"> </span>docs/planning/vendor-comparison/vendors-deepseek-v4-pro.json<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">  </span>--throttle<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">  </span>--out<span class="w"> </span>docs/planning/vendor-comparison/runs/deepseek-v4-pro-2026-08-20
+</span></code></pre></div>
+<p>Rehearse first with <code>--mock --vendors &lt;same file&gt;</code>, which exercises the analysis path at zero
+cost and, by passing the real vendor file, rehearses the actual leg count and family layout
+rather than a generic stand-in.</p>
+<p><strong>Single-vendor caveat.</strong> <code>compare_vendors.py</code> exists to contrast vendors; with one leg its
+cross-vendor and same-family buckets are empty by construction and its headline comparison is
+undefined. That is expected and is not a failed run. What is used here is its per-book
+machinery: provider pinning, the per-book <code>UsageLedger</code>, book persistence, the journal, and the
+near-cap heuristic. Read <code>report.json</code>'s per-book records, not its summary.</p>
+<h2 id="5-assessment-ladder">5. Assessment ladder<a class="headerlink" href="#5-assessment-ladder" title="Permanent link">&para;</a></h2>
+<p>Run in this order; each rung answers something the one above cannot.</p>
+<table>
+<thead>
+<tr>
+<th>Rung</th>
+<th>Instrument</th>
+<th>Question</th>
+<th>Bar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>scripts/run_story_gate.py &lt;book&gt;</code></td>
+<td>Does the filled book pass the deterministic gate?</td>
+<td>Exit 0, all five</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>scripts/check_fill_integrity.py &lt;skeleton&gt; &lt;book&gt;</code></td>
+<td>Structure preserved, no <code>&lt;&lt;FILL&gt;&gt;</code> left, word stats in band</td>
+<td>Clean, all five</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>scripts/check_sibling_fills.py &lt;book1&gt; &lt;book2&gt; --check</code></td>
+<td><strong>Did the shared skeleton produce two books, or one book twice?</strong></td>
+<td>Default 4.0 shared 4-grams per 1000 leaf words</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>scripts/check_prose_craft.py &lt;books...&gt; --check</code></td>
+<td>Prose defects the gate cannot see</td>
+<td>Script defaults</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>scripts/evaluate_books.py</code></td>
+<td>Compliance and prose-character scoring</td>
+<td>Recorded, not gated</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>report.json</code> per-book</td>
+<td>Cost, attempts, latency, near-cap flag, <code>fill_completeness</code></td>
+<td>Compared against 4.3</td>
+</tr>
+</tbody>
+</table>
+<p>Rung 3 is the run's centerpiece and the reason for the same-skeleton pair. Its budget is
+calibrated: the first pilot's obligation arm scores 2.8 per 1000, its control arm 25, its free
+arm 12.6. A same-skeleton pair is a <strong>shared-structure</strong> figure and is not the 3.3 quantity the
+sibling-fill guard calibrates against, so report it as its own measurement and do not compare it
+to that floor.</p>
+<p>Rung 1 deserves one warning. A gate failure here is ambiguous between "the model wrote bad
+prose" and "the shell gate accepted a skeleton whose fill cannot pass". Separating those needs
+the finding read against the skeleton, not just recorded.</p>
+<h3 id="51-quality-and-diversity-review-rungs-7-and-8">5.1 Quality and diversity review (rungs 7 and 8)<a class="headerlink" href="#51-quality-and-diversity-review-rungs-7-and-8" title="Permanent link">&para;</a></h3>
+<p>Rungs 1 through 6 are deterministic instruments, and not one of them can say whether a book is
+any <em>good</em>. <code>evaluate_books.py</code> says so about itself: the vendor comparison "deliberately says
+nothing about whether a book is any good, and the one quality signal it does carry (a
+Flesch-Kincaid grade) is easy to over-read". Since a stated goal of this run is to establish
+whether the approach produces <strong>high-quality, diverse</strong> books, the ladder needs two rungs that
+read the prose rather than measure it.</p>
+<table>
+<thead>
+<tr>
+<th>Rung</th>
+<th>Reviewer</th>
+<th>Question</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7</td>
+<td>One Fable subagent per book</td>
+<td>Is this a good story? Editorial judgement on prose quality, voice, beat delivery, ending earned or asserted, band fit</td>
+<td>Per-book editorial review</td>
+</tr>
+<tr>
+<td>8</td>
+<td>One Sonnet subagent per book</td>
+<td>Does this book meet every stated criterion? Band envelope, structure preserved, no residual directives, fail-state policy, reading level, theme fidelity</td>
+<td>Per-book pass or fail against a criteria checklist</td>
+</tr>
+</tbody>
+</table>
+<p>The split is deliberate and the two must not be merged. Rung 8 is a compliance question with
+right answers, checkable against the skeleton and the band table; rung 7 is a judgement that has
+no ground truth and would be corrupted by being scored on a checklist. Running one reviewer for
+both invites the checklist to stand in for taste, which is the failure mode that makes a book
+gate-clean and unreadable.</p>
+<p>Two constraints on rung 7, both of which shape the prompt:</p>
+<ul>
+<li><strong>The reviewer must not see the other book of the pair.</strong> Books 0 and 1 share a skeleton, so a
+  reviewer holding both would grade divergence rather than quality, which is rung 3's job and is
+  already measured deterministically. Per-book reviews stay independent; the pair comparison is
+  drawn afterwards from the two reviews plus the sibling-fill number.</li>
+<li><strong>Books are large.</strong> <code>the-last-cartage</code> is 632 nodes; a reviewer cannot read it as a whole and
+  should not pretend to. The prompt directs sampling along a reader's actual path (start node,
+  one full walk to an ending, plus a spread of endings) rather than skimming everything.</li>
+</ul>
+<p>One condition that must be reported alongside rung 7's findings: <code>compare_vendors.py</code> passes no
+<code>differentiation_directive</code>, so it defaults to empty. That block is the pipeline's trusted
+instruction for exactly the case where a family already owns another story on the same skeleton.
+The pair therefore measures the <strong>raw convergence floor the directive exists to counter</strong>, not
+production behavior. That makes it the right baseline and the wrong number to quote as what a
+reader would receive.</p>
+<h2 id="52-results-run-of-2026-08-20">5.2 Results (run of 2026-08-20)<a class="headerlink" href="#52-results-run-of-2026-08-20" title="Permanent link">&para;</a></h2>
+<h3 id="outcome">Outcome<a class="headerlink" href="#outcome" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">#</th>
+<th>Skeleton</th>
+<th>Band</th>
+<th>Status</th>
+<th style="text-align: right;">FK</th>
+<th style="text-align: right;">In band</th>
+<th style="text-align: right;">Latency</th>
+<th style="text-align: right;">Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0</td>
+<td>the-last-cartage</td>
+<td>16+ gb</td>
+<td><strong>error</strong> (transient empty 200)</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">398s</td>
+<td style="text-align: right;">unmetered</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td>the-last-cartage</td>
+<td>16+ gb</td>
+<td>passed</td>
+<td style="text-align: right;">6.67</td>
+<td style="text-align: right;">15.5%</td>
+<td style="text-align: right;">1874s</td>
+<td style="text-align: right;">$1.064</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>the-quarry-signal</td>
+<td>13-16 gb</td>
+<td>passed</td>
+<td style="text-align: right;">3.86</td>
+<td style="text-align: right;">5.6%</td>
+<td style="text-align: right;">687s</td>
+<td style="text-align: right;">$0.538</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>the-tin-whistle-map</td>
+<td>8-11 prose</td>
+<td>passed</td>
+<td style="text-align: right;">4.01</td>
+<td style="text-align: right;"><strong>73.1%</strong></td>
+<td style="text-align: right;">469s</td>
+<td style="text-align: right;">$0.350</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>the-last-blue-cup</td>
+<td>3-5 prose</td>
+<td><strong>error</strong> (<code>content_filter</code>)</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">48s</td>
+<td style="text-align: right;">$0.042</td>
+</tr>
+</tbody>
+</table>
+<p>Three of five passed. Harness cost $1.9943 against an OpenRouter-measured $2.0396,
+so the accounting is accurate to about two percent.</p>
+<h3 id="the-root-cause-the-words-directive-is-not-honored">The root cause: the <code>words=</code> directive is not honored<a class="headerlink" href="#the-root-cause-the-words-directive-is-not-honored" title="Permanent link">&para;</a></h3>
+<p>Every passing book delivered 39 to 53 percent of its commissioned words, and none had a
+single node over its PL-19 per-node maximum.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Book</th>
+<th style="text-align: right;">Nodes</th>
+<th style="text-align: right;">Commissioned</th>
+<th style="text-align: right;">Delivered</th>
+<th style="text-align: right;">Ratio</th>
+<th>Story mean vs advisory</th>
+<th style="text-align: right;">Below floor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">632</td>
+<td style="text-align: right;">49,953</td>
+<td style="text-align: right;">19,423</td>
+<td style="text-align: right;">38.9%</td>
+<td>30.7 vs 55-110</td>
+<td style="text-align: right;">631/632</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">267</td>
+<td style="text-align: right;">18,888</td>
+<td style="text-align: right;">9,997</td>
+<td style="text-align: right;">52.9%</td>
+<td>37.4 vs 45-90</td>
+<td style="text-align: right;">245/267</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">193</td>
+<td style="text-align: right;">19,574</td>
+<td style="text-align: right;">8,353</td>
+<td style="text-align: right;">42.7%</td>
+<td>43.3 vs 70-135</td>
+<td style="text-align: right;">191/193</td>
+</tr>
+</tbody>
+</table>
+<p>Per-node correlation between commissioned and delivered words is 0.527, -0.027 and
+-0.405. Book 3 is the sharpest: nodes commissioning 100-124 words returned a mean
+of 40.7 while nodes commissioning 75-99 returned 51.5, so there the directive is
+anti-correlated rather than merely ignored. Delivered length is near-constant per
+book (means 30.7, 37.4, 43.3; sd 5 to 9) against commissioned ranges of 40 to 112.
+An initial hypothesis that delivery degrades with node count is <strong>disproven</strong>:
+632 nodes gave 38.9 percent, 267 gave 52.9, 193 gave 42.7.</p>
+<h3 id="that-one-cause-explains-the-reading-level-split">That one cause explains the reading-level split<a class="headerlink" href="#that-one-cause-explains-the-reading-level-split" title="Permanent link">&para;</a></h3>
+<p>Short choppy prose lands at low Flesch-Kincaid, so the low band conforms by
+accident and the high bands cannot. Book 3 (8-11, target near 4.5) reached 73.1
+percent of nodes in band; book 2 (13-16, target 7.0) got 5.6 percent and book 1
+(16+, target 9.0) 15.5 percent. <strong>The higher the band, the worse the same defect
+reads.</strong> This is a single defect with a band-dependent symptom, not three
+problems.</p>
+<h3 id="the-gate-measured-all-of-it-and-blocked-on-none">The gate measured all of it and blocked on none<a class="headerlink" href="#the-gate-measured-all-of-it-and-blocked-on-none" title="Permanent link">&para;</a></h3>
+<p>Book 1's gate run: <code>findings=456 blocked=False</code>, exit 0, zero repair attempts.
+447 <code>RL-13</code>, 7 <code>CG-4</code>, 1 <code>PL-23</code>, 1 <code>PL-19</code>. <code>PL-19</code> named the shortfall exactly,
+"story-mean 30.7 words/node is outside the band '16+' gamebook advisory 55-110",
+and <code>PL-23</code> caught the consequence, a declared 16-minute read against a derived 6.
+Both are WARNING severity by design: <code>per_node_max</code> is an ERROR for every story
+while the story-mean advisory is not, and <code>band_profile.py</code> states the reasoning,
+"There is no hard per-node minimum: a one-line beat is legitimate." Defensible per
+node; it composes into a book-level shortfall nothing blocks on.</p>
+<h3 id="structural-drift-on-fields-the-contract-freezes">Structural drift on fields the contract freezes<a class="headerlink" href="#structural-drift-on-fields-the-contract-freezes" title="Permanent link">&para;</a></h3>
+<p>Node-level structure was perfect on every book: zero nodes differing outside
+prose. Top-level identity fields drifted anyway, differently each time.</p>
+<ul>
+<li>Book 1 changed the story <code>id</code>, <code>sk_last_cartage</code> to <code>sk_last_codex</code>. <code>id</code> is
+  explicitly frozen by <code>fill.md</code> and import and skeleton-matching key on it.</li>
+<li>Book 2 changed the top-level <code>title</code>, and 27 of its 36 <code>ending.title</code> values.</li>
+<li>Book 4's probe emitted the correct <code>id</code>, so this is sporadic drift, not a
+  systematic transform.</li>
+</ul>
+<p><code>check_fill_integrity.py</code> catches all of it and exits 1, correctly.</p>
+<p><strong><code>ending.title</code> is genuinely ambiguous and three sites disagree.</strong> <code>fill.md</code>
+freezes only "<code>id</code> on ... any ending block", and <code>SKILL.md</code> lists ending titles
+alongside bodies and choice labels as slot-bearing theme content, both of which
+make a reskin legitimate. But <code>chunking.py</code>'s <code>merge_fill_batch</code> whitelists only
+<code>body</code> and choice <code>label</code> and explicitly refuses <code>ending</code>, and
+<code>check_fill_integrity.py</code> compares endings too. So a book that legally reskins its
+ending titles one-shot <strong>cannot be produced by the chunked path</strong>, which since
+<code>UW-C302</code> is the degraded path for large and bound fills. The two paths produce
+contractually different books. This is the same shape as the four-site FK-target
+disagreement ruled on 2026-08-18 and wants the same treatment: one site of record.</p>
+<p><code>schema_version</code> differs 2.0 to 2.1 on every book, but the model emits 2.0 and
+<code>Storybook.schema_version</code> defaults to 2.1, so that is a pipeline stamp and not a
+finding. It does mean the integrity check's structure FAIL fires on every filled
+book, so its verdict is uninformative until you read which field moved.</p>
+<h3 id="prose-defects-the-gate-cannot-see">Prose defects the gate cannot see<a class="headerlink" href="#prose-defects-the-gate-cannot-see" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Bodies restate their own <code>beats=</code> directive with nouns swapped</strong> rather than
+  dramatising it. On book 2, mean content-word overlap between beat and body is
+  0.51, with 34 percent of nodes at 0.60 or above and one ending at 1.00.</li>
+<li><strong>Verbatim duplicate prose.</strong> Book 2 has 23 redundant nodes across 11 repeated
+  texts, five of them appearing four times each; <code>d6_n0</code> and <code>d15_n0</code> are
+  byte-identical.</li>
+<li><strong>Choice labels collapse.</strong> Book 2 has 674 choices and 24 distinct labels; the
+  top three account for 605, or 89.8 percent.</li>
+<li><strong>Incoherent world physics.</strong> Book 1 keeps the mine's hydraulics: sand ponding
+  upward from a sump like water, and a firedamp safety-lamp beat about flame
+  telling you late, in a building full of vellum. Book 2 keeps quarry apparatus on
+  a lava field and pairs hazards with instructions that do not fit them, "soft,
+  warm mud ... Test every rung before you put your weight on it".</li>
+<li><strong>Prose asserting state it cannot know.</strong> Book 2's <code>end_fixed_trust1</code> appends
+  "the lamp's last oil burned somewhere your memory will not name yet" to a beat
+  that says nothing about the lamp, on a node reachable at <code>light</code> 0 through 3.
+  The gate passed it. This is the defect the tier-2 book was in the grid to find.</li>
+</ul>
+<h3 id="diversity-is-good-and-the-number-is-not-quotable">Diversity is good, and the number is not quotable<a class="headerlink" href="#diversity-is-good-and-the-number-is-not-quotable" title="Permanent link">&para;</a></h3>
+<p>Within-vendor shared four-grams came in at mean 0.64 and max 1.34 per 1000 leaf
+words, far inside the 4.0 budget. But the three surviving pairs share neither
+skeleton nor band, while the 3.3 calibration is for pairs sharing a band, so this
+is not comparable to that floor. The shared-skeleton pair the run was designed
+around did not happen, because book 0 was the leg that failed.</p>
+<h3 id="the-two-failures-initial-diagnosis-book-0s-verdict-is-superseded-below">The two failures (initial diagnosis; book 0's verdict is superseded below)<a class="headerlink" href="#the-two-failures-initial-diagnosis-book-0s-verdict-is-superseded-below" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Book 0</strong>, three attempts each returning HTTP 200 with an empty body,
+  <code>finish_reason=None</code>, about 130s apiece. Not a size limit: book 1 emitted the
+  same 632-node skeleton at the same cap on the same pin. Probes confirmed that
+  large input, a large <code>max_tokens</code>, and both together all succeed. Called
+  transient here; "Corrections established after the first write-up" below
+  overturns this to a deterministic (skeleton, brief) content filter, 7 of 7.</li>
+<li><strong>Book 4</strong>, <code>finish_reason='content_filter'</code> on a 3-5 nursery story about a
+  missing pair of yellow wellington boots, after 3,227 billed output tokens. A
+  content filter firing on the most innocuous book in the grid matters for a
+  children's product. <strong>Correction:</strong> an earlier commit message called a
+  <code>content_filter</code> stop deterministic and said the provider wrongly classified it
+  transient. Re-probing the identical prompt returned a complete valid book,
+  "The Last Yellow Welly", at <code>finish_reason=stop</code>. So the stop is NOT
+  deterministic and the transient classification is defensible. What remains is
+  that a benign preschool premise trips the filter at all, intermittently.</li>
+</ul>
+<h3 id="corrections-established-after-the-first-write-up">Corrections established after the first write-up<a class="headerlink" href="#corrections-established-after-the-first-write-up" title="Permanent link">&para;</a></h3>
+<p><strong>Book 0 is a deterministic content filter, not a transient failure.</strong> A direct
+probe of brief 0 against <code>the-last-cartage</code> returns <code>finish_reason:
+'content_filter'</code> with zero content. Counting the three attempts in the run, three
+in the re-run (397.59s against 397.96s, near-identical) and the probe, that is
+<strong>seven consistent failures</strong>. The earlier reading, that the failure was transient
+because book 1 succeeded on the same skeleton, drew the boundary in the wrong
+place: the failure belongs to the (skeleton, brief) PAIR. Brief 0 describes
+venting a generation ship's agricultural ring and not leaving a living thing
+behind, against a 632-node gamebook whose endings include mass death.</p>
+<p>So <code>content_filter</code> is sometimes deterministic and sometimes not: book 0 fails
+7 of 7, book 4 failed three times and then passed. Neither of the two earlier
+absolute claims about it was right. The operational consequence is that a brief
+can be permanently unfillable against a given skeleton with no signal saying so,
+and the harness reports it as a generic transient failure.</p>
+<p><strong><code>ending.title</code> is not the only field in dispute; the band fail-state policy is
+too, and that one is about child safety.</strong> <code>SKILL.md</code> instructs authors to obey
+"no death endings for 3-5 / 5-8". <code>band_profile.py</code> disagrees:</p>
+<table>
+<thead>
+<tr>
+<th>Band</th>
+<th><code>forbidden_ending_kinds</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3-5, 5-8</td>
+<td>capture, death</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td><strong>death</strong></td>
+</tr>
+<tr>
+<td>10-13, 13-16, 16+</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<p><strong>8-11 forbids death endings and the authoring skill does not say so.</strong> An author
+drafting to the skill would believe they are permitted for eight-to-eleven year
+olds. Nothing shipped here, since book 3 has zero death endings, but this is the
+fourth self-disagreement found in this contract after the four-site FK targets and
+the three-site <code>ending.title</code> ambiguity, and it is the only one with a safety
+dimension. <code>band_profile.py</code> is the source of record; <code>SKILL.md</code> should cite it
+rather than restate it.</p>
+<p><strong>Every book mutated something frozen or ambiguous, and a different thing each
+time.</strong> Adding book 3 to the tally: <code>metadata.themes</code> changed "music" to
+"navigation". <code>fill.md</code> freezes <code>metadata</code> explicitly. This one is insidious
+because it looks helpful, the reskin genuinely has no music in it, but it is a
+field the model was told not to touch.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Book</th>
+<th>Frozen or ambiguous field mutated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>id</code> (frozen)</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>title</code>, 27 of 36 <code>ending.title</code> (ambiguous)</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td><code>title</code>, 15 of 35 <code>ending.title</code>, <strong><code>metadata.themes</code> (frozen)</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="an-unfilled-rule-gap-nothing-checks-that-a-body-stages-its-outbound-choices">An unfilled rule gap: nothing checks that a body stages its OUTBOUND choices<a class="headerlink" href="#an-unfilled-rule-gap-nothing-checks-that-a-body-stages-its-outbound-choices" title="Permanent link">&para;</a></h3>
+<p>Book 3's <code>ok_house</code> offers "Take the canal cap to somebody who knew it" while its
+body never mentions a cap; the cap is introduced in a sibling node a reader may
+never visit. Another node offers "Split the cut with Sam" where Sam appears only
+on an unvisited branch. This is a direct consequence of the word shortfall: the
+frozen labels assume a body that stages those objects, and a 43-word fill does
+not.</p>
+<p><code>CG-4</code> looks like the rule for this and is not. It flags "a decision-child whose
+opening sentence shares no content word with its choice label that leads to it",
+which is strictly <strong>inbound</strong>: does the arriving node echo the choice just taken.
+It did fire on <code>ok_house</code>, but for the inbound choice, and nothing in the gate asks
+whether a node's prose introduces what its outbound choices promise. Proposed:
+an outbound companion to <code>CG-4</code>. The defect is reader-visible and a fill this
+short produces it systematically.</p>
+<h3 id="a-caution-on-the-beats-overlap-metric">A caution on the beats-overlap metric<a class="headerlink" href="#a-caution-on-the-beats-overlap-metric" title="Permanent link">&para;</a></h3>
+<p>Book 3 has HIGHER beat-restatement overlap than book 2 (mean 0.668 against 0.51;
+67.9 percent of nodes at 0.60 or above against 34 percent) and reads considerably
+better. So overlap-with-beats does not order books by quality and should not be
+used as a quality proxy. What separated them was elsewhere: book 3 has zero
+duplicate bodies and 191 distinct labels across 466 choices, against book 2's 23
+redundant nodes and three strings covering 89.8 percent of its choices.</p>
+<p>Book 3's own distinguishing defect is not measured by any of these: <strong>"you"
+appears in only 12 of its 193 nodes</strong>, against 41 percent in book 1 and 69 percent
+in book 2, whose skeleton beats specify second person explicitly. Six nodes drift
+into "we". The protagonist is absent from their own story, and no rule looks for
+that.</p>
+<h3 id="method-note-two-reviewers-and-the-disagreement-was-informative">Method note: two reviewers, and the disagreement was informative<a class="headerlink" href="#method-note-two-reviewers-and-the-disagreement-was-informative" title="Permanent link">&para;</a></h3>
+<p>Running an editorial reviewer and a compliance validator separately paid for
+itself twice. The validator caught the <code>id</code> mutation, which the editorial pass had
+no reason to look for. The editorial pass caught the incoherent physics, which
+every mechanical check scored as fine.</p>
+<p>Where they disagreed, the mechanical verdict was wrong both times, and for the
+same reason. On book 2 the validator scored theme fidelity PASS having counted
+quarry 0, pit 0, stone 4, rail 3, tower 0; the quarry actually survives as
+stope 16, cribbing 14, timber 17, catwalk 18, rung 18, which the editorial pass
+found by reading. On book 1 the editorial pass overstated the opposite case,
+citing dune 1 and desert 0 while missing sand 220 and scriptorium 104. <strong>A
+mechanical noun-substitution check is only as good as its hand-picked word list</strong>,
+and the honest reading of book 1 is that surface nouns were reskinned densely
+while the source theme's apparatus and physics were retained wholesale.</p>
+<h2 id="6-findings-from-planning">6. Findings from planning<a class="headerlink" href="#6-findings-from-planning" title="Permanent link">&para;</a></h2>
+<p>Five things surfaced while building this plan that are worth recording independently of the run.</p>
+<h3 id="f1-the-chunked-bound-path-cannot-be-exercised-by-this-run-and-max-tokens-will-not-help">F1. The chunked bound path cannot be exercised by this run, and <code>--max-tokens</code> will not help<a class="headerlink" href="#f1-the-chunked-bound-path-cannot-be-exercised-by-this-run-and-max-tokens-will-not-help" title="Permanent link">&para;</a></h3>
+<p><code>fill_skeleton</code> derives its own cap for the chunking decision from the <strong>provider's model</strong>:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">cap</span> <span class="o">=</span> <span class="n">resolve_output_cap</span><span class="p">(</span><span class="n">resolved_model</span><span class="p">)</span>  <span class="c1"># provider.model outranks settings</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">chunked</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">is_fill_feasible</span><span class="p">(</span><span class="n">skeleton</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="n">cap</span><span class="p">)</span>
+</span></code></pre></div>
+<p>For v4-pro that is <code>min(131_072, 393_216) = 131_072</code>, and the largest skeleton in the catalog
+needs 99,906 tokens against the 104,857 feasibility ceiling. So <strong>chunking never fires on this
+model for any committed skeleton</strong>.</p>
+<p><code>compare_vendors.py</code>'s <code>--max-tokens</code> does not change that. It installs a <code>_CapOverrideProvider</code>
+that forces the cap on the outbound request and explicitly discards the orchestrator's value.
+The orchestrator still resolves <code>cap</code> from the model and still concludes one-shot is feasible.
+So <code>--max-tokens 30000</code> produces <strong>truncation, not chunking</strong>: exactly the <code>UW-C302</code> failure
+mode, reintroduced by the flag intended to probe it.</p>
+<p>Compounding it, <code>compare_vendors.py</code> passes no <code>slot_bindings</code> to <code>fill_skeleton</code>, so it fills
+raw skeletons and never takes the bound path at all. And all 20 of #730's strict skeletons are
+<strong>plain</strong>; the 7 bound-and-over-cap skeletons that motivated <code>UW-C302</code> (<code>the-skyrail-heist</code>,
+<code>the-year-of-four-banners</code>, <code>the-third-shift</code>, <code>the-salt-archive</code>, <code>the-tricameral-city</code>,
+<code>the-ashfall-expedition</code>, <code>the-pale-road</code>) are all in the older catalog.</p>
+<p>Conclusion: validating <code>fill_subset_bound.md</code> live needs a different driver. Carried to 8.1.</p>
+<h3 id="f2-model_output_caps-is-keyed-by-slug-but-the-real-output-ceiling-is-per-endpoint">F2. <code>MODEL_OUTPUT_CAPS</code> is keyed by slug, but the real output ceiling is per-endpoint<a class="headerlink" href="#f2-model_output_caps-is-keyed-by-slug-but-the-real-output-ceiling-is-per-endpoint" title="Permanent link">&para;</a></h3>
+<p>This is the sharpest finding, and it is a live latent defect rather than an observation.
+<code>MODEL_OUTPUT_CAPS</code> records <code>"deepseek/deepseek-v4-pro": 393_216</code>. OpenRouter's endpoints for
+that one slug, read 2026-08-20, report output ceilings spanning <strong>two orders of magnitude</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th style="text-align: right;">max output tokens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DeepInfra</td>
+<td style="text-align: right;">16,384</td>
+</tr>
+<tr>
+<td>Venice</td>
+<td style="text-align: right;">32,768</td>
+</tr>
+<tr>
+<td>BaseTen</td>
+<td style="text-align: right;">262,144</td>
+</tr>
+<tr>
+<td>DeepSeek, StreamLake, Azure</td>
+<td style="text-align: right;">384,000</td>
+</tr>
+<tr>
+<td>Ionstream, Alibaba, Novita, SiliconFlow, AtlasCloud, Baidu</td>
+<td style="text-align: right;">393,216</td>
+</tr>
+<tr>
+<td>CoreWeave, Parasail</td>
+<td style="text-align: right;">1,048,576</td>
+</tr>
+<tr>
+<td>DigitalOcean, GMICloud, Together, Fireworks</td>
+<td style="text-align: right;">not declared</td>
+</tr>
+</tbody>
+</table>
+<p>An unpinned request can be routed to DeepInfra at 16,384 while the cap table says 393,216 and
+<code>resolve_output_cap</code> returns 131,072. <code>is_fill_feasible</code> then returns True for every skeleton in
+the catalog, the request asks for eight times what the endpoint will emit, and the completion
+truncates non-empty. Per #730's own correction to <code>MODEL_OUTPUT_CAPS</code>, a non-empty truncation is
+not leg-fatal: <code>openrouter.py</code> sets <code>leg_fatal</code> inside <code>if not content:</code>. So it parses as nothing
+and burns the whole repair budget, on every retry.</p>
+<p>This is the <code>AL-428</code> defect ("a missing row on a configured model means the clamp silently does
+nothing") in a dimension the table's own design cannot express: the row is not missing, it is
+<em>right for some endpoints and wrong by 24x for others</em>. The table's documented contract, that
+values are "transcribed from the OpenRouter models endpoint", is satisfied by transcribing the
+slug's headline number, which is the maximum across endpoints rather than a guarantee.</p>
+<p>Two consequences:</p>
+<ol>
+<li><strong>For this run</strong>: provider pinning is a correctness requirement, not reproducibility hygiene.
+   Stated as such in 3.3.</li>
+<li><strong>Beyond it</strong>: any <code>generation_provider="openrouter"</code> deployment that does not pin is exposed.
+   Worth checking whether the production path pins at all. Carried to 8.2.</li>
+</ol>
+<h3 id="f3-the-dated-slug-has-no-cap-row-and-declares-no-ceiling">F3. The dated slug has no cap row and declares no ceiling<a class="headerlink" href="#f3-the-dated-slug-has-no-cap-row-and-declares-no-ceiling" title="Permanent link">&para;</a></h3>
+<p><code>deepseek/deepseek-v4-pro-0813</code> exists on OpenRouter, is absent from <code>MODEL_OUTPUT_CAPS</code>, and
+reports <code>max_completion_tokens: null</code>. It therefore takes the permissive fallback to the full
+131,072 default. This is precisely the "dated-model-id trap" #730's comment names; the trap is
+still open for this model family. Configuring the dated id, which is the natural thing to do for
+reproducibility, silently disables the clamp.</p>
+<h3 id="f4-three-stale-claim-corrections-in-730-have-a-fourth-sibling">F4. Three stale-claim corrections in #730 have a fourth sibling<a class="headerlink" href="#f4-three-stale-claim-corrections-in-730-have-a-fourth-sibling" title="Permanent link">&para;</a></h3>
+<p>PR #730 corrected <code>chunking.py</code>'s largest-skeleton figure to 99,906 tokens, attributing it to
+<code>the-last-cartage</code>. Confirmed independently here: 632 nodes, 49,953 declared words, 99,906
+tokens at 2.0 tokens per fill word. The 4.7 percent headroom against <code>MAX_FILL_OUTPUT_TOKENS</code>
+is real. Worth noting that this margin is now <strong>thinner than the 20 percent
+<code>_FEASIBILITY_MARGIN</code> encodes</strong>, so the largest book in the catalog passes the feasibility
+screen at 95.3 percent of its ceiling, in the region <code>AL-328</code> measured a truncation at (91
+percent). #730 flagged raising the constant as a live question; this run will produce the first
+live datapoint bearing on it, which is an argument for keeping <code>the-last-cartage</code> in the grid.</p>
+<h3 id="f5-compare_vendorspy-skips-the-stage-1-fidelity-gate-unconditionally">F5. <code>compare_vendors.py</code> skips the Stage 1 fidelity gate unconditionally<a class="headerlink" href="#f5-compare_vendorspy-skips-the-stage-1-fidelity-gate-unconditionally" title="Permanent link">&para;</a></h3>
+<p><code>stage1_gate="skipped"</code> is hardcoded at the call site, with no flag. For a vendor comparison
+that is defensible: the fidelity gate would add cost and variance to a measurement about prose
+idiom. For an end-to-end validation it is a real parity gap, and the harness gives no way to
+close it. Carried to 8.1.</p>
+<h2 id="7-deliverables">7. Deliverables<a class="headerlink" href="#7-deliverables" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>docs/planning/vendor-comparison/runs/deepseek-v4-pro-2026-08-20/report.json</code> plus <code>books/</code></li>
+<li>A results section appended to this document: the assessment ladder's six rungs, measured cost
+  against section 4.3, and the sibling-fill number with its interpretation</li>
+<li>Lessons appended to <code>docs/planning/authoring-lessons-log.md</code> (see section 9)</li>
+<li>Register rows for any section 8 open item the owner rules in scope; the row is the
+  completion record, per the register's linkage contract</li>
+</ul>
+<h2 id="8-open-items-for-the-owner">8. Open items for the owner<a class="headerlink" href="#8-open-items-for-the-owner" title="Permanent link">&para;</a></h2>
+<h3 id="81-how-to-validate-the-uw-c302-fix-live-recommend-option-b">8.1 How to validate the <code>UW-C302</code> fix live (recommend: option B)<a class="headerlink" href="#81-how-to-validate-the-uw-c302-fix-live-recommend-option-b" title="Permanent link">&para;</a></h3>
+<p>Per F1 and F5, the chunked bound path and the Stage 1 gate are both unreachable on this harness.
+Three ways forward:</p>
+<ul>
+<li><strong>A. Accept the gap.</strong> The fix has unit coverage and <code>test_a_bound_skeleton_over_a_models_cap_is_still_a_candidate</code>.
+  Cheapest; leaves the path that #730 identifies as having failed on seven committed skeletons
+  with no live datapoint.</li>
+<li><strong>B. Add two flags to <code>compare_vendors.py</code></strong> (<code>--stage1-gate</code>, and bound-fill support that
+  reads a <code>.contract.json</code> sidecar and passes <code>slot_bindings</code>), then run a sixth fill against one
+  of the seven exposed skeletons on a low-cap model such as <code>deepseek/deepseek-v3.2</code> (65,536,
+  giving a 52,429-token budget) so chunking genuinely fires. <strong>Recommended</strong>: small, reuses the
+  metered and persisted harness, and produces the missing datapoint rather than arguing about it.</li>
+<li><strong>C. Drive the worker path directly.</strong> Highest parity, highest setup cost (Redis, RQ, a
+  <code>StoryRequest</code> row). Right eventually, disproportionate for one datapoint.</li>
+</ul>
+<h3 id="82-does-the-production-path-pin-its-openrouter-endpoint-f2">8.2 Does the production path pin its OpenRouter endpoint? (F2)<a class="headerlink" href="#82-does-the-production-path-pin-its-openrouter-endpoint-f2" title="Permanent link">&para;</a></h3>
+<p>Needs checking against <code>generation/providers/openrouter.py</code> and <code>core/config.py</code>. If it does
+not, the exposure in F2 is live in production and the remedy is a decision between pinning and
+making <code>MODEL_OUTPUT_CAPS</code> endpoint-aware. Recommend filing a <code>UW-C*</code> row once established;
+this plan does not assume the answer.</p>
+<h3 id="83-carried-forward-from-730-unchanged-by-this-run">8.3 Carried forward from #730, unchanged by this run<a class="headerlink" href="#83-carried-forward-from-730-unchanged-by-this-run" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The two 16+/long cells still cannot reach their declared node ceiling at the band word target
+  (655 against 750; 300 against 345). An owner call between lowering the ceilings and stating
+  that the top of those envelopes needs a below-target word mean (<code>UW-C302</code>).</li>
+<li><code>L1-7</code>'s branch-depth finding reports a bare graph-wide scalar with no path and no node
+  (<code>UW-C306</code>).</li>
+</ul>
+<h2 id="9-lessons-log">9. Lessons log<a class="headerlink" href="#9-lessons-log" title="Permanent link">&para;</a></h2>
+<p>The project rule is that an authoring run appends its lessons to
+<code>docs/planning/authoring-lessons-log.md</code>, and that a lesson not yet <code>applied</code>, <code>rejected</code>, or
+<code>superseded</code> must also be cited by a <code>UW-C*</code> row in the unscheduled work register.</p>
+<p><strong>No log entries are appended by this plan</strong>, deliberately. This is planning, not a run: the log
+is validated by <code>check_lessons_log.py</code> and cross-checked by <code>check_work_linkage.py</code>, and filing
+open lessons now would create register obligations for findings the owner has not yet ruled on.
+F1 through F5 are staged in section 6 and become log rows, with their register rows, when the
+run executes and its outcome is known. F2 is the one that will qualify regardless of the run's
+result; it is a defect in the shipped configuration, not a lesson about authoring.</p>
+<p><strong>Post-run addendum (2026-08-20)</strong>: the run executed, and the paragraph above now describes
+only the pre-run plan. Nine lessons are logged as <code>AL-490</code> through <code>AL-498</code> in
+<code>docs/planning/authoring-lessons-log.md</code>, each cited by its register row <code>UW-C307</code> through
+<code>UW-C315</code> in <code>docs/planning/unscheduled-work-register.md</code>.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 20, 2026 23:16:06 UTC">August 20, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 20, 2026 23:16:06 UTC">August 20, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -6184,6 +6184,60 @@ substantially the same work under different headings. Do not triple-book.</p>
 <td>3</td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-C307</td>
+<td><code>AL-490</code>: <strong>the serving model does not honour the per-node <code>words=</code> directive, and the gate's only hard word rule is a ceiling.</strong> Measured live on 2026-08-20 across three passing books: 38.9, 52.9 and 42.7 percent of commissioned words delivered; story means 30.7, 37.4, 43.3 against advisories 55-110, 45-90, 70-135; 631/632, 245/267 and 191/193 nodes below the advisory floor; and ZERO nodes over any PL-19 per-node maximum, so every book passed with <code>blocked=False</code>. Per-node correlation between commissioned and delivered was 0.527, -0.027 and -0.405, so in one book the directive is anti-correlated rather than ignored. <code>PL-19</code> fired once per book naming the shortfall exactly and is a WARNING by design, since <code>band_profile.py</code> reasons that "there is no hard per-node minimum: a one-line beat is legitimate". That is defensible per node and composes into a whole book at 40 percent that nothing blocks. Proposed: a blocking story-level FILL-RATE check (delivered over commissioned) distinct from the per-node advisory, measured first in <code>check_fill_integrity.py</code> where the skeleton is in hand, before deciding whether the gate carries it. <strong>Fixed 2026-08-20</strong> (the measured-first step): <code>check_fill_integrity.py</code> blocks under <code>--min-fill-rate</code>, default 0.6, calibrated against the W4/W5 vendor pool (nine passing books from three vendors at 0.715-0.990, the three DeepSeek books at 0.389-0.529); that pool is NOT the headroom, since recomputing across all 48 committed (skeleton, filled) pairs on 2026-08-20 put the tightest known-good pair at 0.635, a real margin of 0.035; PR #731, commit 762aac48. <strong>Still open:</strong> whether the deterministic gate carries the check, which is what keeps this row scheduled.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C308</td>
+<td><code>AL-491</code>: <strong>band conformance without fill rate beside it is misleading in both directions.</strong> The same word shortfall produced 73.1 percent of nodes in band at 8-11 (target 4.5, window 3.0-6.0) and 5.6 and 15.5 percent at 13-16 and 16+, because short choppy prose lands at low Flesch-Kincaid. Reading FK conformance as quality would have scored the 8-11 book healthy while it delivered 42.7 percent of its prose. Proposed: report fill rate alongside in-band percentage everywhere the latter appears, including <code>compare_vendors.py</code>'s per-book row and <code>evaluate_books.py</code>.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C309</td>
+<td><code>AL-492</code>: <strong>a content filter can be deterministic for a (skeleton, brief) pair, and the leg's recorded error hides which.</strong> <code>the-last-cartage</code> with the generation-ship brief failed 7 of 7 (three attempts, three on re-run at 397.59s against 397.96s, plus a direct probe returning <code>finish_reason: 'content_filter'</code>), while the same skeleton with another brief passed in one call; a 3-5 nursery book failed three times on <code>content_filter</code> then passed, so the stop is brief-dependent rather than uniformly deterministic. The run logged <code>finish_reason=None</code> for a prompt the raw API answers <code>content_filter</code> for, and flattened it to "transient failure persisted after 3 attempts". Proposed: surface the provider <code>finish_reason</code> in the recorded error, then decide whether a pair that fails a filter twice should be marked unfillable rather than retried at ~130s per attempt.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C310</td>
+<td><code>AL-493</code>: <strong><code>SKILL.md</code> under-states a child-safety constraint: 8-11 forbids death endings and the skill does not say so.</strong> <code>SKILL.md</code> line 105 says "no death endings for 3-5 / 5-8"; <code>band_profile.py::_PROFILES</code> sets <code>forbidden_ending_kinds</code> to {capture, death} at 3-5 and 5-8, {death} at 8-11, and empty from 10-13 up, so the real line is between 8-11 and 10-13. An author drafting to the skill would believe death endings are permitted for eight-to-eleven year olds. Found when a review protocol derived from <code>SKILL.md</code> told a validating agent the check was NOT APPLICABLE at 8-11 and the agent read the source and contradicted it; nothing shipped, since the book has no death or capture endings. Fourth self-disagreement in this contract after the four-site FK targets (ruled 2026-08-18) and <code>UW-C311</code>. Proposed: <code>SKILL.md</code> cites <code>band_profile.py::_PROFILES</code> rather than restating its values. <strong>Fixed 2026-08-20</strong>: both <code>SKILL.md</code> sites now cite <code>_PROFILES</code> as the source of record and restate no values; PR #731, commit f97c4032.</td>
+<td>now</td>
+<td>done</td>
+</tr>
+<tr>
+<td>UW-C311</td>
+<td><code>AL-494</code>: <strong>three sites disagree about whether <code>ending.title</code> is writable, so the one-shot and chunked paths produce contractually different books.</strong> <code>generation/templates/fill.md</code> freezes "<code>id</code> on ... any ending block" and is silent on <code>ending.title</code>; <code>SKILL.md</code> lists ending titles with node bodies and choice labels as <code>{SLOT}</code>-bearing theme content; but <code>chunking.py::merge_fill_batch</code> whitelists only <code>body</code> and choice <code>label</code> and names <code>ending</code> among the fields a reply cannot alter, and <code>check_fill_integrity.py</code> compares endings. Two books reskinned 27 of 36 and 15 of 35 ending titles. Since <code>UW-C302</code> made chunking the degraded path for large and bound fills, a book that legally reskins its ending titles one-shot cannot be produced chunked, so large books silently lose a theming affordance small ones have. <strong>Owner ruling needed</strong> on whether <code>ending.title</code> is leaf content or frozen structure; then one site of record and the other two citing it, and if it is content, <code>merge_fill_batch</code>'s whitelist must widen.</td>
+<td>4b</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-C312</td>
+<td><code>AL-495</code>: <strong><code>CG-4</code> is inbound-only, so nothing checks that a node's prose stages what its OUTBOUND choices promise.</strong> A body entirely about permission to board a boat offered "Take the canal cap to somebody who knew it" with no cap anywhere in it; another offered "Split the cut with Sam" where Sam appears only on a branch the reader may never visit. <code>CG-4</code> flags a decision-child whose opening sentence shares no content word with the choice that LED TO IT, and duly fired on that node for the inbound choice while the dangling outbound referent went unexamined. A fill delivering 43 words against a 100-word commission produces this systematically, because the frozen labels assume a body that stages those objects. Proposed: an outbound companion to <code>CG-4</code> checking that content words in a node's own choice labels appear in its body, same advisory framing and same false-positive caveat.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C313</td>
+<td><code>AL-496</code>: <strong>beats-overlap does not order books by quality, and the two measurements that would have separated them are not computed at all.</strong> The better-judged book scored HIGHER beats-versus-body overlap (mean 0.668 against 0.51; 67.9 percent of nodes at 0.60+ against 34 percent). What separated them: 23 redundant nodes across 11 repeated texts, two byte-identical bodies, and three strings covering 605 of 674 choice labels (89.8 percent) in the worse book, against zero duplicate bodies and 191 distinct labels across 466 in the better. And the better book's own worst defect appears in neither: "you" occurs in 12 of its 193 nodes, against 41 and 69 percent in the two books whose beats specify second person, with six nodes drifting to "we". Proposed: add duplicate-body and label-diversity counts, and a person/point-of-view consistency check against the declared narrative style or the beats' person. Do not use beats-overlap as a quality proxy.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C314</td>
+<td><code>AL-497</code>: <strong>a closed word list cannot decide noun-substitution, and it failed in both directions on one run.</strong> A mechanical check counted quarry 0, pit 0, stone 4, rail 3, tower 0 and scored theme fidelity PASS on a book where the source theme survived as stope 16, cribbing 14, timber 17, catwalk 18, rung 18. In the other direction an editorial pass cited dune 1, wadi 1, desert 0 to call a book's theme "painted on, thinly" while missing sand 220 and scriptorium 104. The accurate reading of that book was reached by neither alone: surface nouns reskinned densely, the source theme's apparatus and PHYSICS retained wholesale (sand ponding upward from a sump like water; a firedamp safety-lamp beat in a room full of vellum). Proposed: score source-versus-new theme vocabulary as a ratio over an OPEN vocabulary derived from terms frequent in the skeleton and absent from the brief, and keep a reading step for world-physics coherence, which no lexical measure reaches.</td>
+<td>content</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C315</td>
+<td><code>AL-498</code>: <strong>the shared-skeleton diversity floor is 96.3 shared four-grams per 1000 leaf words against a budget of 4.0, and it is invisible to the gate.</strong> Two fills of <code>the-tin-whistle-map</code> from deliberately distant briefs (canal boatyard with an enamel compass; school lost-property with a filed-down swimming medal) produced 1,350 shared four-grams and 274 shared menu frames; <code>check_sibling_fills.py --check</code> exits 1. Against that script's own arms (obligation 2.8, clocktower 9.0, free 12.6, control 25) this is 3.9x the worst and 24x the budget. The shared grams are generic connective prose, which is what noun-substitution looks like with the nouns removed. Both books passed the deterministic gate. Commercially load-bearing because the catalog reuses skeletons across families by design. Bounded by one caveat: <code>compare_vendors.py</code> passes no <code>differentiation_directive</code>, so this is the raw undirected floor, the quantity that directive exists to counter, and nothing in the repo records what it buys. Proposed: re-run this pair with a populated directive and report the delta; then either accept the directive as the lever or reach for per-family structural mutation or a reuse cap. Independently, wire <code>check_sibling_fills.py</code> into the fill pipeline as a same-skeleton sibling gate rather than a manual script. <strong>Progress 2026-08-20</strong>: the committed pair reproduces exactly (1,350 shared four-grams, 96.3 per 1000, exit 1); <code>compare_vendors.py</code> now takes <code>--differentiation</code> (per-brief specs rendered through the production <code>build_differentiation_directive</code>, recorded in report metadata so a directed floor can never be quoted as the raw one), and the best-case directed spec for this exact pair (level catalog, opposed axes <code>close_interior</code>/<code>wide_observational</code>, sibling title carried) is committed at <code>runs/deepseek-v4-pro-2026-08-20/shared-skeleton-pair-directed/differentiation.json</code>; PR #731, commit bfe32ba8. The delta run itself is one <code>compare_vendors.py</code> invocation of that spec against the pair's briefs but could NOT execute from the 2026-08-20 remote session: the environment's network policy answers 403 to CONNECT for <code>openrouter.ai</code>, so preflight refused before spending; run it where OpenRouter is reachable. <strong>Still open:</strong> the delta measurement, the lever decision it feeds, and the pipeline wiring of <code>check_sibling_fills.py</code>.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-d-untracked-github-issues">Cluster D: untracked GitHub issues<a class="headerlink" href="#cluster-d-untracked-github-issues" title="Permanent link">&para;</a></h2>
@@ -7854,7 +7908,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 20, 2026 04:04:23 UTC">August 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 20, 2026 23:16:06 UTC">August 20, 2026</span>
   </span>
 
     
