@@ -8,6 +8,7 @@
   ],
   "structure_varies": true,
   "brief_count": 5,
+  "differentiation_directives": null,
   "mock": false,
   "vendors": [
     {

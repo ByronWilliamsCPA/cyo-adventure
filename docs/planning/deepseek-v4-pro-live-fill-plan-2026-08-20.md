@@ -1,7 +1,9 @@
 # DeepSeek v4 Pro live fill run: 5-sample plan
 
 **Date**: 2026-08-20
-**Status**: run complete (3 of 5 passed); two failed legs re-running; reviews in progress
+**Status**: complete. 3 of 5 passed; both failed legs re-probed (book 0: deterministic
+`content_filter` for its (skeleton, brief) pair, 7 of 7; book 4: passed on re-probe), reviews
+done, lessons logged as `AL-490`..`AL-498` with register rows `UW-C307`..`UW-C315`
 **Blocks on**: nothing; PR #730 merged 2026-08-20 04:15 UTC
 **Predecessor**: PR #730 (`feat(catalog): cover all 18 offered cells at the strict bar`), whose
 "Follow-up handoff" names this run as the intended next task
@@ -182,11 +184,11 @@ Skeletons pair index-wise with briefs. Slots 1 and 2 are the same skeleton, sati
 
 | # | Skeleton | Cell | Nodes | Declared words | Est. output tok | Why this one |
 | --- | --- | --- | ---: | ---: | ---: | --- |
-| 1 | `16+/the-last-cartage.json` | 16+ gamebook long | 632 | 49,953 | 99,906 | Largest in the catalog; 95.3% of the feasibility ceiling |
-| 2 | `16+/the-last-cartage.json` | 16+ gamebook long | 632 | 49,953 | 99,906 | **Same skeleton, different brief**: the noun-substitution test |
-| 3 | `13-16/the-quarry-signal.json` | 13-16 gamebook medium | 267 | 18,888 | 37,776 | The only tier-2 stateful book of the 20; exercises `CG-5` and state-aware `PL-20/25/26` |
-| 4 | `8-11/the-tin-whistle-map.json` | 8-11 prose long | 193 | 19,574 | 39,148 | Mid-band prose; the band-envelope and Stage D reading-level path |
-| 5 | `3-5/the-last-blue-cup.json` | 3-5 prose short | 17 | 674 | 1,348 | Tightest envelope in the system (40-word mean, 90-word per-node max) |
+| 0 | `16+/the-last-cartage.json` | 16+ gamebook long | 632 | 49,953 | 99,906 | Largest in the catalog; 95.3% of the feasibility ceiling |
+| 1 | `16+/the-last-cartage.json` | 16+ gamebook long | 632 | 49,953 | 99,906 | **Same skeleton, different brief**: the noun-substitution test |
+| 2 | `13-16/the-quarry-signal.json` | 13-16 gamebook medium | 267 | 18,888 | 37,776 | The only tier-2 stateful book of the 20; exercises `CG-5` and state-aware `PL-20/25/26` |
+| 3 | `8-11/the-tin-whistle-map.json` | 8-11 prose long | 193 | 19,574 | 39,148 | Mid-band prose; the band-envelope and Stage D reading-level path |
+| 4 | `3-5/the-last-blue-cup.json` | 3-5 prose short | 17 | 674 | 1,348 | Tightest envelope in the system (40-word mean, 90-word per-node max) |
 
 The pair sits on `the-last-cartage` deliberately. It is the hardest cell, the one whose stale
 headroom claim #730 corrected, and the one where a same-structure pair is most likely to
@@ -196,6 +198,8 @@ pair diverges there, it diverges anywhere. Cost makes this affordable: see 4.3.
 ### 4.2 Conditions
 
 - **Model**: `deepseek/deepseek-v4-pro`, pinned to `coreweave/fp8`, `allow_fallbacks: false`
+  (superseded before execution: pre-flight probes found `coreweave/fp8` persistently 429 and the
+  run executed pinned to `azure/us`; see section 3.5)
   (the adapter sends this alongside `provider_order`).
 - **Output cap**: leave `--max-tokens` unset. `resolve_output_cap` yields
   `min(131_072, 393_216) = 131_072`; every book in the grid fits. Forcing a cap would make the
@@ -206,15 +210,18 @@ pair diverges there, it diverges anywhere. Cost makes this affordable: see 4.3.
 
 ### 4.3 Expected cost
 
-At the pinned endpoint's $1.15 in / $2.55 out per MTok, input being the skeleton itself:
+Superseded pre-flight estimate, kept for the record: it was computed at the original
+`coreweave/fp8` price of $1.15 in / $2.55 out per MTok, and the run executed on `azure/us` at
+$1.91/$3.83 (see section 3.5), which raised the estimate to about $1.54; the measured figure
+in section 5.2 is $1.9943. Input being the skeleton itself:
 
 | # | Input tok | Output tok | First-pass cost |
 | --- | ---: | ---: | ---: |
+| 0 | ~99,400 | ~99,900 | ~$0.37 |
 | 1 | ~99,400 | ~99,900 | ~$0.37 |
-| 2 | ~99,400 | ~99,900 | ~$0.37 |
-| 3 | ~36,400 | ~37,800 | ~$0.14 |
-| 4 | ~35,300 | ~39,100 | ~$0.14 |
-| 5 | ~2,100 | ~1,300 | ~$0.01 |
+| 2 | ~36,400 | ~37,800 | ~$0.14 |
+| 3 | ~35,300 | ~39,100 | ~$0.14 |
+| 4 | ~2,100 | ~1,300 | ~$0.01 |
 | | | | **~$1.03** |
 
 Worst case, every book taking all three repairs, is roughly four times that: about **$4**. Cost
@@ -324,7 +331,7 @@ so the accounting is accurate to about two percent.
 
 ### The root cause: the `words=` directive is not honored
 
-Every book delivered 39 to 53 percent of its commissioned words, and no book had a
+Every passing book delivered 39 to 53 percent of its commissioned words, and none had a
 single node over its PL-19 per-node maximum.
 
 | Book | Nodes | Commissioned | Delivered | Ratio | Story mean vs advisory | Below floor |
@@ -418,12 +425,14 @@ skeleton nor band, while the 3.3 calibration is for pairs sharing a band, so thi
 is not comparable to that floor. The shared-skeleton pair the run was designed
 around did not happen, because book 0 was the leg that failed.
 
-### The two failures
+### The two failures (initial diagnosis; book 0's verdict is superseded below)
 
 - **Book 0**, three attempts each returning HTTP 200 with an empty body,
   `finish_reason=None`, about 130s apiece. Not a size limit: book 1 emitted the
   same 632-node skeleton at the same cap on the same pin. Probes confirmed that
-  large input, a large `max_tokens`, and both together all succeed. Transient.
+  large input, a large `max_tokens`, and both together all succeed. Called
+  transient here; "Corrections established after the first write-up" below
+  overturns this to a deterministic (skeleton, brief) content filter, 7 of 7.
 - **Book 4**, `finish_reason='content_filter'` on a 3-5 nursery story about a
   missing pair of yellow wellington boots, after 3,227 billed output tokens. A
   content filter firing on the most innocuous book in the grid matters for a
@@ -630,7 +639,8 @@ close it. Carried to 8.1.
 - A results section appended to this document: the assessment ladder's six rungs, measured cost
   against section 4.3, and the sibling-fill number with its interpretation
 - Lessons appended to `docs/planning/authoring-lessons-log.md` (see section 9)
-- Register rows for anything from section 8 that the owner rules in
+- Register rows for any section 8 open item the owner rules in scope; the row is the
+  completion record, per the register's linkage contract
 
 ## 8. Open items for the owner
 
@@ -677,3 +687,8 @@ open lessons now would create register obligations for findings the owner has no
 F1 through F5 are staged in section 6 and become log rows, with their register rows, when the
 run executes and its outcome is known. F2 is the one that will qualify regardless of the run's
 result; it is a defect in the shipped configuration, not a lesson about authoring.
+
+**Post-run addendum (2026-08-20)**: the run executed, and the paragraph above now describes
+only the pre-run plan. Nine lessons are logged as `AL-490` through `AL-498` in
+`docs/planning/authoring-lessons-log.md`, each cited by its register row `UW-C307` through
+`UW-C315` in `docs/planning/unscheduled-work-register.md`.
