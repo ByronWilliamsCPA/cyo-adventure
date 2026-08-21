@@ -92,5 +92,9 @@
  "D__r3__claude-fable-subagent": {
   "checker_runs": 2,
   "reported": "PASS"
+ },
+ "D__r1__claude-opus-subagent": {
+  "checker_runs": 3,
+  "reported": "PASS"
  }
 }

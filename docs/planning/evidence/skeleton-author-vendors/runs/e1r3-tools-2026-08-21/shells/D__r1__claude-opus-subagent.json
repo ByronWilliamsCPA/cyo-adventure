@@ -1,0 +1,843 @@
+{
+ "schema_version": "2.0",
+ "id": "the-thirty-third-piece",
+ "version": 1,
+ "title": "The Thirty-Third Piece",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "curiosity",
+   "local history",
+   "craftsmanship",
+   "kindness",
+   "memory"
+  ],
+  "estimated_minutes": 4,
+  "ending_count": 13,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "junk-shop-door",
+ "nodes": [
+  {
+   "id": "junk-shop-door",
+   "body": "<<FILL role=setup words=70 beats='Rain drives Wren Abbott into Halloran Curios on Marlow Street, past crates of doorknobs and a barrel of skates, to a hinged wooden chess case open on the glass counter'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "junk-shop-door-a",
+     "label": "Step up to the counter",
+     "target": "shop-counter"
+    }
+   ]
+  },
+  {
+   "id": "shop-counter",
+   "body": "<<FILL role=setup words=75 beats='Wren counts the chess pieces twice and gets thirty-three both times: sixteen dark, seventeen pale, and one pale pawn plainly the wrong wood'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "shop-counter-a",
+     "label": "Count the pieces one more time",
+     "target": "count-again"
+    },
+    {
+     "id": "shop-counter-b",
+     "label": "Ask Mr. Halloran about the set",
+     "target": "ask-halloran"
+    },
+    {
+     "id": "shop-counter-c",
+     "label": "Open the hinged case and look inside",
+     "target": "open-case-lid"
+    }
+   ]
+  },
+  {
+   "id": "count-again",
+   "body": "<<FILL role=explore words=100 beats='Wren lines all thirty-three pieces in rows on the counter, sixteen dark and seventeen pale, and the extra pawn stands a hair taller than its sixteen twins'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "count-again-a",
+     "label": "Pick up the odd pale pawn",
+     "target": "pear-pawn"
+    },
+    {
+     "id": "count-again-b",
+     "label": "Study the tiny carving on its head",
+     "target": "wren-carving"
+    },
+    {
+     "id": "count-again-c",
+     "label": "Turn the odd pawn base up",
+     "target": "scratched-initials"
+    }
+   ]
+  },
+  {
+   "id": "ask-halloran",
+   "body": "<<FILL role=explore words=100 beats='Mr. Halloran, sixty and cheerful, says the set came in with a whole house lot last month; he cannot recall the house but keeps a spiral ledger under the till'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ask-halloran-a",
+     "label": "Ask to see the ledger",
+     "target": "shop-ledger"
+    },
+    {
+     "id": "ask-halloran-b",
+     "label": "Ask about the paper tag on the handle",
+     "target": "estate-tag"
+    },
+    {
+     "id": "ask-halloran-c",
+     "label": "Show him the pale pawn",
+     "target": "pear-pawn"
+    }
+   ]
+  },
+  {
+   "id": "open-case-lid",
+   "body": "<<FILL role=explore words=100 beats='The hinged case smells of pipe smoke; the velvet tray has thirty-two shaped hollows and one pale pawn resting loose on a square of folded newspaper'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "open-case-lid-a",
+     "label": "Read the base of the loose pawn",
+     "target": "scratched-initials"
+    },
+    {
+     "id": "open-case-lid-b",
+     "label": "Untie the paper tag from the handle",
+     "target": "estate-tag"
+    },
+    {
+     "id": "open-case-lid-c",
+     "label": "Compare the pawn head to the others",
+     "target": "wren-carving"
+    }
+   ]
+  },
+  {
+   "id": "pear-pawn",
+   "body": "<<FILL role=explore words=100 beats='The odd pawn is warm pale wood with a faint blush in the grain, not boxwood; Wren remembers the pear tree behind the school and that same soft color'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "pear-pawn-a",
+     "label": "Ask the woodshop teacher what it is",
+     "target": "woodshop-teacher"
+    },
+    {
+     "id": "pear-pawn-b",
+     "label": "Look for the same wood in town",
+     "target": "town-museum"
+    },
+    {
+     "id": "pear-pawn-c",
+     "label": "Search the library for local carvers",
+     "target": "library-desk"
+    }
+   ]
+  },
+  {
+   "id": "wren-carving",
+   "body": "<<FILL role=explore words=100 beats='Where the other pawns wear plain round caps, this one carries a small bird with folded wings and a cocked tail, a wren, cut with a very fine blade'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "wren-carving-a",
+     "label": "Hunt for carved birds at the museum",
+     "target": "town-museum"
+    },
+    {
+     "id": "wren-carving-b",
+     "label": "Ask the school woodshop teacher",
+     "target": "woodshop-teacher"
+    },
+    {
+     "id": "wren-carving-c",
+     "label": "Take the bird to the historical society",
+     "target": "historical-society"
+    }
+   ]
+  },
+  {
+   "id": "scratched-initials",
+   "body": "<<FILL role=explore words=100 beats='Scratched into the pawn base, not carved, are two letters and a year, E B and 1962, the strokes shaky as if made by someone in a hurry or unwell'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "scratched-initials-a",
+     "label": "Take the initials to the historical society",
+     "target": "historical-society"
+    },
+    {
+     "id": "scratched-initials-b",
+     "label": "Search 1962 on the newspaper reels",
+     "target": "microfilm-reels"
+    },
+    {
+     "id": "scratched-initials-c",
+     "label": "Ask the librarian about E B",
+     "target": "library-desk"
+    }
+   ]
+  },
+  {
+   "id": "shop-ledger",
+   "body": "<<FILL role=explore words=100 beats='The ledger is a spiral notebook; the June entry reads house lot, Cobbler Row, six boxes, paid cash, with a smudged sale company stamp beside it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "shop-ledger-a",
+     "label": "Walk up to Cobbler Row",
+     "target": "cobblers-row"
+    },
+    {
+     "id": "shop-ledger-b",
+     "label": "Knock on the house next door",
+     "target": "neighbor-mrs-pike"
+    },
+    {
+     "id": "shop-ledger-c",
+     "label": "Ask the historical society about the address",
+     "target": "historical-society"
+    }
+   ]
+  },
+  {
+   "id": "estate-tag",
+   "body": "<<FILL role=explore words=100 beats='A paper tag tied to the case handle reads BELL in blue pen and a lot number, forty-one, printed on the stiff card stock of an estate sale company'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "estate-tag-a",
+     "label": "Go to the Bell house on Cobbler Row",
+     "target": "cobblers-row"
+    },
+    {
+     "id": "estate-tag-b",
+     "label": "Ask the neighbor who watched the sale",
+     "target": "neighbor-mrs-pike"
+    },
+    {
+     "id": "estate-tag-c",
+     "label": "Search the Bell name in old papers",
+     "target": "microfilm-reels"
+    }
+   ]
+  },
+  {
+   "id": "library-desk",
+   "body": "<<FILL role=decision words=100 beats='At the Fenwick Bay library Miss Ovitt hears about the wren pawn and pulls three things across the desk: a town families file, the 1962 papers, and a burial index'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "library-desk-a",
+     "label": "Open the town families file",
+     "target": "bell-family-file"
+    },
+    {
+     "id": "library-desk-b",
+     "label": "Read the 1962 front pages",
+     "target": "headline-1962"
+    },
+    {
+     "id": "library-desk-c",
+     "label": "Check the burial index",
+     "target": "churchyard-ledger"
+    }
+   ]
+  },
+  {
+   "id": "woodshop-teacher",
+   "body": "<<FILL role=decision words=100 beats='Mr. Ravel in the school woodshop turns the pawn under a bright lamp, says pear wood, hand cut, and adds that pear does not grow wild anywhere near Fenwick Bay'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "woodshop-teacher-a",
+     "label": "Match the grain to a pear blank",
+     "target": "pear-wood-sample"
+    },
+    {
+     "id": "woodshop-teacher-b",
+     "label": "Ask if the museum holds pear carvings",
+     "target": "museum-carving-case"
+    },
+    {
+     "id": "woodshop-teacher-c",
+     "label": "Look up when a town pear tree fell",
+     "target": "headline-1962"
+    }
+   ]
+  },
+  {
+   "id": "historical-society",
+   "body": "<<FILL role=decision words=100 beats='The historical society is one warm room above the bank; a volunteer named Gil pulls open drawers labeled families, burials, and gifts to the town museum'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "historical-society-a",
+     "label": "Open the families drawer",
+     "target": "bell-family-file"
+    },
+    {
+     "id": "historical-society-b",
+     "label": "Open the burials drawer",
+     "target": "churchyard-ledger"
+    },
+    {
+     "id": "historical-society-c",
+     "label": "Ask about carvings given to the museum",
+     "target": "museum-carving-case"
+    }
+   ]
+  },
+  {
+   "id": "cobblers-row",
+   "body": "<<FILL role=decision words=100 beats='Number fourteen Cobbler Row has a SOLD sign, no curtains, and a bird feeder still hooked outside the kitchen glass with the seed long gone'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cobblers-row-a",
+     "label": "Look in the windows of the empty house",
+     "target": "empty-house"
+    },
+    {
+     "id": "cobblers-row-b",
+     "label": "Ask the neighbor for her photographs",
+     "target": "pike-photo-album"
+    },
+    {
+     "id": "cobblers-row-c",
+     "label": "Give up and walk home",
+     "target": "end-shelved"
+    }
+   ]
+  },
+  {
+   "id": "town-museum",
+   "body": "<<FILL role=decision words=100 beats='The Fenwick Bay museum is two rooms behind the fire station; a case of local craft holds spoons, duck decoys, and one small carved bird under dusty glass'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "town-museum-a",
+     "label": "Look closely at the carving case",
+     "target": "museum-carving-case"
+    },
+    {
+     "id": "town-museum-b",
+     "label": "Ask what wood the bird is",
+     "target": "pear-wood-sample"
+    },
+    {
+     "id": "town-museum-c",
+     "label": "Read the 1962 town display",
+     "target": "headline-1962"
+    }
+   ]
+  },
+  {
+   "id": "neighbor-mrs-pike",
+   "body": "<<FILL role=decision words=100 beats='Mrs. Pike, next door for forty years, says the house held a quiet woman who fed birds and played chess by mail, then offers tea and a shoebox of photographs'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "neighbor-mrs-pike-a",
+     "label": "Ask to see the photographs",
+     "target": "pike-photo-album"
+    },
+    {
+     "id": "neighbor-mrs-pike-b",
+     "label": "Ask what happened to the house",
+     "target": "empty-house"
+    },
+    {
+     "id": "neighbor-mrs-pike-c",
+     "label": "Ask for the full family name",
+     "target": "bell-family-file"
+    }
+   ]
+  },
+  {
+   "id": "microfilm-reels",
+   "body": "<<FILL role=decision words=100 beats='The reader hums and glares; Wren spools through Herald reels for 1962, past fish prices and school plays, hunting anywhere the initials E B might sit'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "microfilm-reels-a",
+     "label": "Search the spring front pages",
+     "target": "headline-1962"
+    },
+    {
+     "id": "microfilm-reels-b",
+     "label": "Cross-check the burial listings",
+     "target": "churchyard-ledger"
+    },
+    {
+     "id": "microfilm-reels-c",
+     "label": "Decide the pawn is only a spare",
+     "target": "end-just-a-pawn"
+    }
+   ]
+  },
+  {
+   "id": "bell-family-file",
+   "body": "<<FILL role=decision words=100 beats='The families file holds a thin folder marked BELL: a wedding notice, a school prize list, and a girl named Edith Bell, born 1950, absent from school all of 1962'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "bell-family-file-a",
+     "label": "Follow the name Edith Bell",
+     "target": "name-edith-bell"
+    },
+    {
+     "id": "bell-family-file-b",
+     "label": "Look up Bells in the county book",
+     "target": "phone-book-bells"
+    },
+    {
+     "id": "bell-family-file-c",
+     "label": "Chase the other E B in the file",
+     "target": "end-wrong-trail"
+    }
+   ]
+  },
+  {
+   "id": "pear-wood-sample",
+   "body": "<<FILL role=decision words=100 beats='Mr. Ravel shaves a curl from a spare pear blank and lays it beside the pawn; the grain matches exactly, and he says the tree was local and very old'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "pear-wood-sample-a",
+     "label": "Find who carved with local pear",
+     "target": "ossler-name"
+    },
+    {
+     "id": "pear-wood-sample-b",
+     "label": "Ask the museum curator about pear",
+     "target": "museum-curator"
+    },
+    {
+     "id": "pear-wood-sample-c",
+     "label": "Read where the pear tree stood",
+     "target": "hospital-mention"
+    }
+   ]
+  },
+  {
+   "id": "museum-carving-case",
+   "body": "<<FILL role=decision words=100 beats='The label under the carved bird reads Gift of the Bay Hospital, 1970, carver unknown; the bird is a wren, pale wood, with the same fine blade marks as the pawn'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "museum-carving-case-a",
+     "label": "Ask the curator to open the case",
+     "target": "museum-curator"
+    },
+    {
+     "id": "museum-carving-case-b",
+     "label": "Trace the circled mark under the wing",
+     "target": "ossler-name"
+    },
+    {
+     "id": "museum-carving-case-c",
+     "label": "Match the bird to the ward photo",
+     "target": "ward-photograph"
+    }
+   ]
+  },
+  {
+   "id": "headline-1962",
+   "body": "<<FILL role=decision words=100 beats='A March 1962 front page reads LONG WINTER FILLS CHILDRENS WARD, with a photo of beds by tall windows and a caption about a courtyard pear tree in blossom'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "headline-1962-a",
+     "label": "Read the whole hospital story",
+     "target": "hospital-mention"
+    },
+    {
+     "id": "headline-1962-b",
+     "label": "Blow up the photograph of the ward",
+     "target": "ward-photograph"
+    },
+    {
+     "id": "headline-1962-c",
+     "label": "Trade the story to the Herald editor",
+     "target": "end-story-in-paper"
+    }
+   ]
+  },
+  {
+   "id": "pike-photo-album",
+   "body": "<<FILL role=decision words=100 beats='One album page shows a thin girl in a hospital bed with a chessboard on her knees, and a man in a caretaker coat leaning on a broom beside the tall window'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "pike-photo-album-a",
+     "label": "Study the hospital ward photo",
+     "target": "ward-photograph"
+    },
+    {
+     "id": "pike-photo-album-b",
+     "label": "Ask who the girl in the bed was",
+     "target": "name-edith-bell"
+    },
+    {
+     "id": "pike-photo-album-c",
+     "label": "Thank Mrs. Pike and stop here",
+     "target": "end-kept-quiet"
+    }
+   ]
+  },
+  {
+   "id": "empty-house",
+   "body": "<<FILL role=decision words=100 beats='Through the window of fourteen Cobbler Row: bare floors, a pale square where a picture hung for decades, and a teacup left alone on the kitchen sill'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "empty-house-a",
+     "label": "Look up the owner in the county book",
+     "target": "phone-book-bells"
+    },
+    {
+     "id": "empty-house-b",
+     "label": "Ask the sale company for her name",
+     "target": "name-edith-bell"
+    },
+    {
+     "id": "empty-house-c",
+     "label": "Mail the pawn to the address and hope",
+     "target": "end-good-guess"
+    }
+   ]
+  },
+  {
+   "id": "churchyard-ledger",
+   "body": "<<FILL role=decision words=100 beats='The sexton burial book lists no Edith Bell at all, which means she never died in Fenwick Bay; the same page notes a ward nurse buried in 1998 with honors'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "churchyard-ledger-a",
+     "label": "Follow the living Edith Bell",
+     "target": "name-edith-bell"
+    },
+    {
+     "id": "churchyard-ledger-b",
+     "label": "Look up Bells still in the county",
+     "target": "phone-book-bells"
+    },
+    {
+     "id": "churchyard-ledger-c",
+     "label": "Read what the nurse ward was",
+     "target": "hospital-mention"
+    }
+   ]
+  },
+  {
+   "id": "end-shelved",
+   "body": "<<FILL role=ending words=105 beats='Wren drops the pear pawn in a drawer with the marbles and forgets it for a year; the chess set sells to a stranger and the question closes with no answer'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-shelved",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Drawer"
+   }
+  },
+  {
+   "id": "end-just-a-pawn",
+   "body": "<<FILL role=ending words=105 beats='Wren decides somebody simply carved a spare, buys the set for twelve dollars, and plays all summer with thirty-three pieces and no name to go with them'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-just-a-pawn",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "A Spare Piece"
+   }
+  },
+  {
+   "id": "name-edith-bell",
+   "body": "<<FILL role=climax words=100 beats='Edith Bell is eighty-six now, in room nine at Harrow House; when Wren sets the pear pawn on her table she says quietly, Tobias made that in one night'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "name-edith-bell-a",
+     "label": "Give her the pawn to keep",
+     "target": "end-wrens-pawn"
+    },
+    {
+     "id": "name-edith-bell-b",
+     "label": "Bring her the whole set as well",
+     "target": "end-full-set"
+    },
+    {
+     "id": "name-edith-bell-c",
+     "label": "Ask her to tell the town",
+     "target": "end-story-told"
+    }
+   ]
+  },
+  {
+   "id": "hospital-mention",
+   "body": "<<FILL role=climax words=100 beats='Nurse Ida Frame, eighty-eight, remembers the quarantine winter: a girl lost a white pawn under a radiator and cried, and the caretaker brought a new one by morning'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "hospital-mention-a",
+     "label": "Write the ward story down for good",
+     "target": "end-story-told"
+    },
+    {
+     "id": "hospital-mention-b",
+     "label": "Carry the pawn back to that girl",
+     "target": "end-wrens-pawn"
+    },
+    {
+     "id": "hospital-mention-c",
+     "label": "Thank her and let the piece go",
+     "target": "end-let-it-go"
+    }
+   ]
+  },
+  {
+   "id": "ossler-name",
+   "body": "<<FILL role=climax words=100 beats='The circled O belongs to Tobias Ossler, hospital caretaker; his grandson Dane keeps the old bench at the boat shop, still smelling of pear dust'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ossler-name-a",
+     "label": "Ask Dane to teach you the cut",
+     "target": "end-new-carver"
+    },
+    {
+     "id": "ossler-name-b",
+     "label": "Leave the pawn on the old stump",
+     "target": "end-quiet-thanks"
+    },
+    {
+     "id": "ossler-name-c",
+     "label": "Put the carver name under glass",
+     "target": "end-museum-case"
+    }
+   ]
+  },
+  {
+   "id": "ward-photograph",
+   "body": "<<FILL role=climax words=100 beats='Enlarged, the ward photo shows the girl chessboard missing one white pawn, two small brown wrens on the sill, and the caretaker holding a knife and a pale chip'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ward-photograph-a",
+     "label": "Take the photo and the pawn to her",
+     "target": "end-wrens-pawn"
+    },
+    {
+     "id": "ward-photograph-b",
+     "label": "Hang the photo at the historical society",
+     "target": "end-story-told"
+    },
+    {
+     "id": "ward-photograph-c",
+     "label": "Copy the picture and let it rest",
+     "target": "end-let-it-go"
+    }
+   ]
+  },
+  {
+   "id": "museum-curator",
+   "body": "<<FILL role=climax words=100 beats='Curator Ansel Vey lifts the carved bird from the case, finds the same circled O, and offers the pawn a label, climate glass, and a carver name at last'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "museum-curator-a",
+     "label": "Accept the case and the label",
+     "target": "end-museum-case"
+    },
+    {
+     "id": "museum-curator-b",
+     "label": "Ask that the set stay whole",
+     "target": "end-full-set"
+    },
+    {
+     "id": "museum-curator-c",
+     "label": "Ask to learn the carving instead",
+     "target": "end-new-carver"
+    }
+   ]
+  },
+  {
+   "id": "phone-book-bells",
+   "body": "<<FILL role=climax words=100 beats='Tess Bell answers on the fourth try from a bakery two towns over and says her great-aunt kept one lone chess pawn in a teacup for fifty years'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "phone-book-bells-a",
+     "label": "Drive out and hand it to Edith",
+     "target": "end-wrens-pawn"
+    },
+    {
+     "id": "phone-book-bells-b",
+     "label": "Send the set to the teacup sill",
+     "target": "end-full-set"
+    },
+    {
+     "id": "phone-book-bells-c",
+     "label": "Let the family keep the story",
+     "target": "end-let-it-go"
+    }
+   ]
+  },
+  {
+   "id": "end-wrong-trail",
+   "body": "<<FILL role=ending words=105 beats='Wren follows the initials to a boy named Everett Barlow who never left Fenwick Bay or touched a chessboard, and the pear pawn stays a complete stranger'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-wrong-trail",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Wrong E"
+   }
+  },
+  {
+   "id": "end-good-guess",
+   "body": "<<FILL role=ending words=105 beats='Wren mails the pawn to the last Bell in the county book with a short note, and a polite thank-you postcard comes back that answers nothing at all'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-good-guess",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Sent Blind"
+   }
+  },
+  {
+   "id": "end-story-in-paper",
+   "body": "<<FILL role=ending words=105 beats='The Herald prints the wren pawn on page three; three readers telephone with pieces of the story, and Wren learns the ending out of a newspaper'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-story-in-paper",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Page Three"
+   }
+  },
+  {
+   "id": "end-kept-quiet",
+   "body": "<<FILL role=ending words=105 beats='Wren thanks Mrs. Pike, writes the whole trail into a notebook, and tells nobody; the pawn sits on a shelf and that ward winter stays private'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-kept-quiet",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Notebook"
+   }
+  },
+  {
+   "id": "end-wrens-pawn",
+   "body": "<<FILL role=ending words=105 beats='Edith keeps the pear pawn in the teacup on her sill at Harrow House, and Wren visits on Thursdays to move it one square at a time'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-wrens-pawn",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Wren Pawn"
+   }
+  },
+  {
+   "id": "end-full-set",
+   "body": "<<FILL role=ending words=105 beats='The velvet tray holds thirty-two pieces and the thirty-third stands guard beside the case, sixty-three years after one pawn rolled under a radiator'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-full-set",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Thirty-Two and One"
+   }
+  },
+  {
+   "id": "end-new-carver",
+   "body": "<<FILL role=ending words=105 beats='Wren cuts a clumsy bird, then a better one, and Dane clears a corner of the old bench; a young pear goes into the hospital circle in spring'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-new-carver",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A New Hand"
+   }
+  },
+  {
+   "id": "end-story-told",
+   "body": "<<FILL role=ending words=105 beats='The historical society hangs the ward photo, a rubbing of the tree plaque, and a card naming Tobias Ossler, lettered out by a twelve-year-old'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-story-told",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Told At Last"
+   }
+  },
+  {
+   "id": "end-let-it-go",
+   "body": "<<FILL role=ending words=105 beats='Wren keeps the empty case, gives the odd pawn away, and finds the story lighter to carry once it belongs to more than one person'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-let-it-go",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Lighter to Carry"
+   }
+  },
+  {
+   "id": "end-museum-case",
+   "body": "<<FILL role=ending words=105 beats='The wren pawn goes under glass beside the carved bird, labeled at last with the name Tobias Ossler, and Wren gets a card to the opening'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-museum-case",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Under Glass"
+   }
+  },
+  {
+   "id": "end-quiet-thanks",
+   "body": "<<FILL role=ending words=105 beats='Wren stands the pear pawn on the old stump inside the painted circle and walks away; by morning it is gone, and crumbs lie scattered where it stood'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-quiet-thanks",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Left on the Stump"
+   }
+  }
+ ]
+}
