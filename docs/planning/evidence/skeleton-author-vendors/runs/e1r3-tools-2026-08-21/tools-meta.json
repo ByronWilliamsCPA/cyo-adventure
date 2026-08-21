@@ -100,5 +100,9 @@
  "D__r3__claude-sonnet-subagent": {
   "checker_runs": 4,
   "reported": "PASS"
+ },
+ "D__r1__claude-haiku-subagent": {
+  "checker_runs": 10,
+  "reported": "FAIL"
  }
 }

@@ -1,0 +1,280 @@
+{
+ "schema_version": "2.0",
+ "id": "the-extra-chess-piece",
+ "version": 1,
+ "title": "The Extra Chess Piece",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "sorting_hat",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 6,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "discovery",
+   "mystery",
+   "history",
+   "craftsmanship"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 9,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=75 beats='Wren finds an ornate chess set at her grandmother\\'s junk shop; inside sits an extra ivory queen, carved differently, with initials'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Examine it",
+     "target": "node-003"
+    }
+   ]
+  },
+  {
+   "id": "node-003",
+   "body": "<<FILL role=decision words=75 beats='The set came from an estate sale; it belonged to Aldrich, a musician who collected rare things; online searches find no extra queen; Wren must investigate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c4",
+     "label": "Talk to Mrs. Chen",
+     "target": "node-004"
+    },
+    {
+     "id": "c5",
+     "label": "Visit auction house",
+     "target": "node-008"
+    },
+    {
+     "id": "c6",
+     "label": "Visit Aldrich\\'s house",
+     "target": "node-012"
+    }
+   ]
+  },
+  {
+   "id": "node-004",
+   "body": "<<FILL role=explore words=88 beats='Mrs. Chen remembers Aldrich well; the queen came from Master Volkmann, a Vienna craftsman; Aldrich searched for it his entire life'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c7",
+     "label": "Decide what to do",
+     "target": "node-005"
+    }
+   ]
+  },
+  {
+   "id": "node-005",
+   "body": "<<FILL role=decision words=70 beats='She knows this is rare Volkmann; now she must choose'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c8",
+     "label": "Send to his family",
+     "target": "ending-01"
+    },
+    {
+     "id": "c9",
+     "label": "Donate to museum",
+     "target": "ending-02"
+    },
+    {
+     "id": "c10",
+     "label": "Keep searching",
+     "target": "ending-03"
+    }
+   ]
+  },
+  {
+   "id": "node-008",
+   "body": "<<FILL role=explore words=90 beats='The auction house records show the Snow Queen was lost in processing during Aldrich\\'s estate sale; staff help authenticate it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c11",
+     "label": "Consider options",
+     "target": "node-009"
+    }
+   ]
+  },
+  {
+   "id": "node-009",
+   "body": "<<FILL role=decision words=68 beats='The piece is genuine and valuable; Wren must decide'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c12",
+     "label": "Tell the family",
+     "target": "ending-04"
+    },
+    {
+     "id": "c13",
+     "label": "Donate to Vienna",
+     "target": "ending-05"
+    },
+    {
+     "id": "c14",
+     "label": "Keep for research",
+     "target": "ending-06"
+    }
+   ]
+  },
+  {
+   "id": "node-012",
+   "body": "<<FILL role=explore words=92 beats='Inside Aldrich\\'s workshop, shelves hold dozens of Volkmann pieces; the guide says Aldrich sought this Snow Queen for decades'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c15",
+     "label": "Think about next steps",
+     "target": "node-013"
+    }
+   ]
+  },
+  {
+   "id": "node-013",
+   "body": "<<FILL role=decision words=66 beats='Wren holds Aldrich\\'s dream; now she must choose'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c16",
+     "label": "Contact his family",
+     "target": "ending-07"
+    },
+    {
+     "id": "c17",
+     "label": "Become a collector",
+     "target": "ending-08"
+    },
+    {
+     "id": "c18",
+     "label": "Preserve it",
+     "target": "ending-09"
+    }
+   ]
+  },
+  {
+   "id": "ending-01",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=86 beats='Wren sends the queen to Aldrich\\'s daughter; the woman weeps with joy; her father\\'s greatest dream is complete'>>",
+   "choices": [],
+   "ending": {
+    "id": "e1",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Queen Comes Home"
+   }
+  },
+  {
+   "id": "ending-02",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=88 beats='A museum receives Wren\\'s queen; it becomes the centerpiece of a Volkmann exhibition; her discovery honors Aldrich\\'s memory'>>",
+   "choices": [],
+   "ending": {
+    "id": "e2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Museum Star"
+   }
+  },
+  {
+   "id": "ending-03",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=90 beats='Inspired by Aldrich, Wren becomes a collector; she spends years finding lost Volkmann pieces'>>",
+   "choices": [],
+   "ending": {
+    "id": "e3",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Collector"
+   }
+  },
+  {
+   "id": "ending-04",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=87 beats='Wren auctions the queen for fifty thousand dollars; she establishes a scholarship for young art historians'>>",
+   "choices": [],
+   "ending": {
+    "id": "e4",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Scholarship"
+   }
+  },
+  {
+   "id": "ending-05",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=84 beats='Aldrich\\'s family welcomes the Snow Queen; it completes their father\\'s legendary collection'>>",
+   "choices": [],
+   "ending": {
+    "id": "e5",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Family Gift"
+   }
+  },
+  {
+   "id": "ending-06",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=89 beats='Vienna museum receives Wren\\'s documentation; scholars study Volkmann for years through her discovery'>>",
+   "choices": [],
+   "ending": {
+    "id": "e6",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Scholar"
+   }
+  },
+  {
+   "id": "ending-07",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=85 beats='Wren keeps the queen; she researches Volkmann\\'s entire life; she becomes an expert'>>",
+   "choices": [],
+   "ending": {
+    "id": "e7",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Expert"
+   }
+  },
+  {
+   "id": "ending-08",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=88 beats='The auction brings fifty thousand dollars; Wren funds a foundation supporting lost art recovery'>>",
+   "choices": [],
+   "ending": {
+    "id": "e8",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Foundation"
+   }
+  },
+  {
+   "id": "ending-09",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=86 beats='Aldrich\\'s family calls; Wren helps return the queen to its rightful home'>>",
+   "choices": [],
+   "ending": {
+    "id": "e9",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Rightful Home"
+   }
+  }
+ ]
+}
