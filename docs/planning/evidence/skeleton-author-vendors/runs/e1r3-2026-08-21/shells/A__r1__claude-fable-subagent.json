@@ -87,7 +87,7 @@
     {
      "id": "c-clues-prints",
      "label": "Follow the tiny footprints",
-     "target": "tool-shed"
+     "target": "seed-step"
     }
    ]
   },
@@ -117,6 +117,18 @@
      "id": "c-hedge-lift",
      "label": "Lift her out carefully",
      "target": "end-safe-straw"
+    }
+   ]
+  },
+  {
+   "id": "seed-step",
+   "body": "<<FILL role=transition words=24 beats='the tiny three-toed prints and a dribble of spilled seed cross the sunny yard; the trail slips under the tool shed door, which stands ajar; a soft scuffle sounds inside'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-seedstep-shed",
+     "label": "Push open the shed door",
+     "target": "tool-shed"
     }
    ]
   },
@@ -267,29 +279,12 @@
   },
   {
    "id": "feather-path",
-   "body": "<<FILL role=decision words=36 beats='white feathers dot the path every few steps like breadcrumbs; ahead the path forks; one way winds down past the old oak with roots like giant knuckles; the other drops straight down the grassy bank toward the shining creek, where a faint peep floats up'>>",
+   "body": "<<FILL role=explore words=30 beats='white feathers dot the path every few steps like breadcrumbs; the path drops down a grassy bank toward the shining creek, and a faint peep floats up from the water'>>",
    "is_ending": false,
    "choices": [
-    {
-     "id": "c-feather-oak",
-     "label": "Follow the feathers to the oak",
-     "target": "old-oak"
-    },
     {
      "id": "c-feather-bank",
      "label": "Slide down the grassy bank",
-     "target": "creek-stones"
-    }
-   ]
-  },
-  {
-   "id": "old-oak",
-   "body": "<<FILL role=explore words=20 beats='the old oak stands on roots like giant knuckles; one white feather is stuck to the bark; a peep floats up from the water below'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c-oak-bank",
-     "label": "Climb down the bank",
      "target": "creek-stones"
     }
    ]

@@ -202,7 +202,7 @@
   },
   {
    "id": "n17_lemon_wobble",
-   "body": "<<FILL role=decision words=39 beats='Golondrina hangs level with the lemon tree and climbs no higher, because the courtyard swirls are only leftover wind, weak and always turning; Tomas can feed her more string and trust the small wind she already has, or carry her up the ladder to the flat roof'>>",
+   "body": "<<FILL role=decision words=39 beats='Golondrina hangs level with the lemon tree and climbs no higher, because the courtyard swirls are only leftover wind, weak and always turning; Tomas can feed her more string and trust the small wind he already has, or carry her up the ladder to the gusty flat roof'>>",
    "is_ending": false,
    "choices": [
     {
@@ -213,7 +213,7 @@
     {
      "id": "ch_n17_b",
      "label": "Carry her up the ladder",
-     "target": "n12_rooftop_gust"
+     "target": "n22_end_water_tank"
     }
    ]
   },
@@ -272,7 +272,7 @@
   },
   {
    "id": "n22_end_water_tank",
-   "body": "<<FILL role=ending words=68 beats='Tomas throws Golondrina up one more time without changing anything, and she spins exactly the way she spun before and slaps into the side of the water tank; two spars snap and the bright paper tears from corner to corner; Abuela carries the pieces down the ladder without a word, and much later, sitting on the church wall, she tells him a kite always spins for a reason and next time they will fix the reason first'>>",
+   "body": "<<FILL role=ending words=68 beats='Tomas sends Golondrina up over the flat roof without changing one thing about her, and the warm shove off the hills spins her exactly the way she always spins and slaps her into the side of the water tank; two spars snap and the bright paper tears from corner to corner; Abuela carries the pieces down the ladder without a word, and much later, sitting on the church wall, she tells him a kite always spins for a reason and next time they will fix the reason first'>>",
    "is_ending": true,
    "choices": [],
    "ending": {

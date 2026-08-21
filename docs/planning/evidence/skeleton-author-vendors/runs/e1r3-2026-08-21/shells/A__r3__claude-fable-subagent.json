@@ -80,19 +80,24 @@
   },
   {
    "id": "drag-marks",
-   "body": "<<FILL role=explore words=30 beats='the drag marks slide toward the pines while a blue jay scolds overhead; at a fallen log the trail splits, small fox paw prints hop one way and jay feathers and seed husks scatter the other'>>",
+   "body": "<<FILL role=decision words=38 beats='the drag marks slide toward the pines while a blue jay scolds overhead; fat flakes are already filling the marks in; behind Priya the giant bottom drift waits with its crash dent; she must choose before the trail fades to smooth white'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c07",
-     "label": "Pick a trail at the log",
+     "label": "Keep following the marks",
      "target": "log-fork"
+    },
+    {
+     "id": "c30",
+     "label": "Go back to the big drift",
+     "target": "bottom-drift"
     }
    ]
   },
   {
    "id": "log-fork",
-   "body": "<<FILL role=decision words=38 beats='Arjun grips Priya sleeve at the fallen log; the fox prints hop neatly into the blue pine shadows; the noisy jay flits from branch to branch the other way, fluffed up and loud, as if it wants to be followed'>>",
+   "body": "<<FILL role=decision words=38 beats='Arjun grips Priya sleeve at a fallen log where the trail splits; small fox paw prints hop neatly into the blue pine shadows; the noisy jay flits from branch to branch the other way, fluffed up and loud, as if it wants to be followed'>>",
    "is_ending": false,
    "choices": [
     {
@@ -244,13 +249,18 @@
   },
   {
    "id": "mitten-dig",
-   "body": "<<FILL role=explore words=30 beats='Priya digs at the crash dent; the snow is packed like cold cake; she uncovers a candy wrapper, then a little snow cave where dark shapes hide, a lost hat and something wedged deep that glows red'>>",
+   "body": "<<FILL role=decision words=38 beats='Priya digs at the crash dent; the snow is packed like cold cake and her mittens soak through; she uncovers a candy wrapper, then a little snow cave where something wedged deep glows red; her fingers sting, and the warming hut with its shovels is not far'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c19",
      "label": "Reach for the red thing",
      "target": "snow-cave-reach"
+    },
+    {
+     "id": "c31",
+     "label": "Run for a shovel",
+     "target": "borrow-shovel"
     }
    ]
   },
@@ -403,13 +413,18 @@
   },
   {
    "id": "tow-rope-line",
-   "body": "<<FILL role=explore words=18 beats='Priya and the kids slide along the humming tow rope to the little hut; by its door sits the lost-and-found basket, heaped high with mittens, hats, and scarves'>>",
+   "body": "<<FILL role=decision words=30 beats='Priya and the kids slide along the humming tow rope to the little hut; by its door sits the lost-and-found basket, heaped high with mittens, hats, and scarves; the rope hut man scratches his chin, maybe the boot went into the basket, maybe it still hangs in the maple by the jump'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c28",
      "label": "Dig through the basket",
      "target": "end-rope-basket"
+    },
+    {
+     "id": "c32",
+     "label": "Check the maple instead",
+     "target": "maple-by-the-jump"
     }
    ]
   },
