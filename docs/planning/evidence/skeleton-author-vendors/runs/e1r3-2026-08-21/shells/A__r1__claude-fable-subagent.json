@@ -220,7 +220,7 @@
     {
      "id": "c-lane-feathers",
      "label": "Follow the feathers downhill",
-     "target": "feather-path"
+     "target": "downhill-path"
     }
    ]
   },
@@ -266,30 +266,25 @@
    ]
   },
   {
-   "id": "feather-path",
-   "body": "<<FILL role=decision words=30 beats='white feathers dot the path every few steps like breadcrumbs; a faint peep floats up from the shining creek below; the path splits, one fork dropping straight down a grassy bank, the other running along the top of the bank past an old plank'>>",
+   "id": "downhill-path",
+   "body": "<<FILL role=transition words=18 beats='white feathers dot the sloping path like breadcrumbs; a faint peep floats up from the shining creek below'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c-feather-bank",
-     "label": "Slide down the grassy bank",
-     "target": "creek-stones"
-    },
-    {
-     "id": "c-feather-plank",
-     "label": "Take the path past the plank",
-     "target": "bridge-plank"
+     "id": "c-downhill-follow",
+     "label": "Follow the peep to the creek",
+     "target": "feather-path"
     }
    ]
   },
   {
-   "id": "bridge-plank",
-   "body": "<<FILL role=explore words=30 beats='from the top path Miri can see the whole creek; an old grey plank leans over the water like a tiny bridge; below on the flat middle stepping stone stands a small brown shape, preening; it is Pip'>>",
+   "id": "feather-path",
+   "body": "<<FILL role=explore words=22 beats='from the top of the grassy bank Miri spots a small brown shape preening on the flat middle stepping stone; it is Pip'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c-plank-down",
-     "label": "Creep down to the water",
+     "id": "c-feather-creep",
+     "label": "Creep down the grassy bank",
      "target": "creek-stones"
     }
    ]
