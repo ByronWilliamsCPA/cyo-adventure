@@ -80,9 +80,9 @@ _SKELETON: dict[str, Any] = {
 def _filled() -> dict[str, Any]:
     """Return a filled version of ``_SKELETON`` with bodies/labels replaced.
 
-    Title and ending title are left untouched: ``check_fill_integrity.py``
-    has never treated those as leaf fields (only ``body`` and, after this
-    change, choice ``label``), so a realistic fill leaves them as-authored.
+    Title and ending title are left untouched here so individual tests can
+    opt into rewriting them; since the 2026-08-21 ruling they are leaf
+    fields by default and ``--frozen-titles`` restores the old comparison.
     """
     filled = copy.deepcopy(_SKELETON)
     filled["nodes"][0]["body"] = "You stand at a fork in the path."
@@ -105,24 +105,41 @@ def test_label_rewritten_fill_passes_the_structure_check(tmp_path: Path) -> None
     assert exit_code == 0
 
 
-def test_title_rewrite_flag_permits_book_and_ending_titles(tmp_path: Path) -> None:
-    """With --allow-title-rewrite, storybook and ending titles are leaves.
+def test_title_rewrite_is_legal_by_default_and_frozen_titles_restores_it(
+    tmp_path: Path,
+) -> None:
+    """Storybook and ending titles are leaves by default (ruled 2026-08-21).
 
-    Amendment 4 of the contract-hygiene pass (AL-161): an unslotted title
-    is byte-frozen across bindings and a top recognition channel, so a
-    title-contract fill rewrites both the book title and ending titles.
-    Without the flag the same fill must still fail.
+    The 2026-08-21 ruling (live-structural-round-2026-08-21.md section 8.3)
+    makes both titles leaf content: 15 of 16 measured one-shot fills retitled
+    endings, and AL-161 already showed byte-frozen titles are a sibling
+    recognition channel. A title diff therefore passes without any flag; the
+    deprecated --allow-title-rewrite stays accepted as a no-op; and
+    --frozen-titles restores the pre-ruling comparison for callers that want
+    the old strictness.
     """
     filled = _filled()
     filled["title"] = "The Comet Glyphs"
     filled["nodes"][1]["ending"]["title"] = "Starlight Kept"
     skeleton_path = _write(tmp_path, "skeleton.json", _SKELETON)
     filled_path = _write(tmp_path, "filled.json", filled)
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 0
     assert (
         check_fill_integrity.main([skeleton_path, filled_path, "--allow-title-rewrite"])
         == 0
     )
-    assert check_fill_integrity.main([skeleton_path, filled_path]) == 1
+    assert (
+        check_fill_integrity.main([skeleton_path, filled_path, "--frozen-titles"]) == 1
+    )
+
+
+def test_frozen_titles_still_passes_an_untouched_fill(tmp_path: Path) -> None:
+    """--frozen-titles restores the old comparison, not a new failure mode."""
+    skeleton_path = _write(tmp_path, "skeleton.json", _SKELETON)
+    filled_path = _write(tmp_path, "filled.json", _filled())
+    assert (
+        check_fill_integrity.main([skeleton_path, filled_path, "--frozen-titles"]) == 0
+    )
 
 
 def test_rewritten_target_fails_the_structure_check(tmp_path: Path) -> None:

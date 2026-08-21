@@ -82,6 +82,14 @@ changing. The output must be the full Storybook JSON, not a diff or patch.
 
 Changing any of these fields will cause validation to fail after you respond.
 
+### What you may rewrite
+
+The storybook `title` and each ending's `title` are theme content, like node
+bodies and choice labels (ruled 2026-08-21; the site of record is
+`docs/planning/live-structural-round-2026-08-21.md` section 8.3): retitle them
+into the theme's vocabulary. An ending's `id`, `kind`, and `valence` stay
+exactly as given; only its `title` text is yours to write.
+
 ## Output
 
 Respond with valid JSON only. Do not include prose before or after the JSON.

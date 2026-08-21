@@ -305,6 +305,74 @@ def test_a_choice_target_survives_a_reply_that_tries_to_move_it() -> None:
 
 
 @pytest.mark.unit
+def test_an_ending_title_is_writable_and_the_rest_of_the_ending_is_not() -> None:
+    """``ending.title`` is leaf content (ruled 2026-08-21, section 8.3).
+
+    A reply may retitle an ending into the theme's vocabulary; the ending's
+    ``id``, ``kind``, and ``valence`` carry the PL-15 fail-state policy and
+    come from the skeleton whatever the reply contains.
+    """
+    skeleton = _all_fill_skeleton()
+
+    merged = merge_fill_batch(
+        skeleton,
+        ["n_happy_end"],
+        {
+            "n_happy_end": {
+                "body": "The lighthouse door swings open onto warm lamplight.",
+                "ending_title": "Lamplight Kept",
+                "ending": {"id": "e_evil", "kind": "death", "valence": "negative"},
+            }
+        },
+    )
+
+    ending = cast(
+        "dict[str, object]",
+        next(n for n in _nodes_of(merged) if n["id"] == "n_happy_end")["ending"],
+    )
+    assert ending["title"] == "Lamplight Kept"
+    assert ending["id"] == "e_friends"
+    assert ending["kind"] == "success"
+    assert ending["valence"] == "positive"
+
+
+@pytest.mark.unit
+def test_an_ending_title_for_a_non_ending_node_is_rejected() -> None:
+    """A title aimed at a node with no ending block is a mis-addressed reply."""
+    skeleton = _all_fill_skeleton()
+
+    with pytest.raises(ValidationError, match="no ending block"):
+        merge_fill_batch(
+            skeleton,
+            ["n_start"],
+            {
+                "n_start": {
+                    "body": "A fox waves from the crossroads.",
+                    "ending_title": "The Fox Remembers",
+                }
+            },
+        )
+
+
+@pytest.mark.unit
+def test_a_directive_returned_as_an_ending_title_is_rejected() -> None:
+    """An ending title is reader-visible text; a directive in one is a defect."""
+    skeleton = _all_fill_skeleton()
+
+    with pytest.raises(ValidationError, match="ending title"):
+        merge_fill_batch(
+            skeleton,
+            ["n_happy_end"],
+            {
+                "n_happy_end": {
+                    "body": "The lighthouse door swings open.",
+                    "ending_title": "<<FILL role=ending words=4>>",
+                }
+            },
+        )
+
+
+@pytest.mark.unit
 def test_a_batch_that_omits_a_node_is_rejected() -> None:
     """Partial is the dangerous answer, so it is not an answer.
 
