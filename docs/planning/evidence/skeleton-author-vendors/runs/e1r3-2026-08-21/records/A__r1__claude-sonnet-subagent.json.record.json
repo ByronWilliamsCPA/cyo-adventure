@@ -7,15 +7,16 @@
  "style": "prose",
  "replicate": 1,
  "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
- "attempts": 3,
- "repair_rounds": 2,
- "strict_pass": false,
+ "attempts": 4,
+ "repair_rounds": 3,
+ "strict_pass": true,
  "first_pass_clean": false,
  "parse_failures": 0,
  "findings_lines_per_round": [
   3,
   3,
-  5
+  5,
+  6
  ],
  "graph_check_exit": 0,
  "latency_s": 0.0,
@@ -23,10 +24,10 @@
  "output_tokens": null,
  "reasoning_tokens": null,
  "finish_reasons": [],
- "min_catalog_distance": 0.09160778860453293,
- "mean_catalog_distance": 0.34615053003894347,
+ "min_catalog_distance": 0.08087228760425946,
+ "mean_catalog_distance": 0.3407175997091769,
  "catalog_distance_note": "vs 5 in-cell peers",
- "last_feedback": "ERROR   PL-25  PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'miri-and-the-missing-hen'\nWARNING CG-3   node=first_choice CG-3 grammar: node 'first_choice' is a rendered stop on its own at ~80 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=end_shed_found CG-3 grammar: node 'end_shed_found' is a rendered stop on its own at ~75 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=end_oak_pond_success CG-3 grammar: node 'end_oak_pond_success' is a rendered stop on its own at ~75 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r1__claude-sonnet-subagent.json failed structural validation: PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'miri-and-the-missing-hen'",
+ "last_feedback": "",
  "shell_file": "shells/A__r1__claude-sonnet-subagent.json",
  "error": ""
 }

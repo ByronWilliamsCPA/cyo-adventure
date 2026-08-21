@@ -31,11 +31,23 @@
   }
  },
  "variables": [],
- "start_node": "first_choice",
+ "start_node": "opening",
  "nodes": [
   {
+   "id": "opening",
+   "body": "<<FILL role=setup words=45 beats='Miri looks after the three school hens, Bramble, Clover, and small Nutmeg, over the holiday week; on the second morning the coop gate hangs unlatched and Nutmeg is nowhere in the run, so Miri starts looking around the quiet schoolyard for any sign of her.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_opening_next",
+     "label": "Start the search",
+     "target": "first_choice"
+    }
+   ]
+  },
+  {
    "id": "first_choice",
-   "body": "<<FILL role=setup words=80 beats='Miri looks after the three school hens, Bramble, Clover, and small Nutmeg, over the holiday week; on the second morning the coop gate hangs unlatched and Nutmeg is nowhere in the run, so she decides where in the schoolyard to start searching first: the vegetable garden, the toolshed, or the old oak tree by the pond.'>>",
+   "body": "<<FILL role=decision words=24 beats='Miri has to decide where in the schoolyard to start searching first: the vegetable garden, the toolshed, or the old oak tree by the pond.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -313,7 +325,7 @@
   },
   {
    "id": "end_shed_found",
-   "body": "<<FILL role=ending words=75 beats='Miri lifts the lid all the way and there is Nutmeg, curled up cozy among the rags, having wandered in out of the wind the night before; she scoops the sleepy hen up and the coop latch gets a brand new hook that very afternoon.'>>",
+   "body": "<<FILL role=ending words=65 beats='Miri lifts the lid all the way and there is Nutmeg, curled up cozy among the rags, having wandered in out of the wind the night before; she scoops the sleepy hen up and the coop latch gets a brand new hook that very afternoon.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -424,7 +436,7 @@
   },
   {
    "id": "end_oak_pond_success",
-   "body": "<<FILL role=ending words=75 beats='Miri reaches out slowly and lifts Nutmeg gently off the root before she can wobble into the water; the little hen rides back to the coop tucked inside her jacket, dry and completely unharmed.'>>",
+   "body": "<<FILL role=ending words=65 beats='Miri reaches out slowly and lifts Nutmeg gently off the root before she can wobble into the water; the little hen rides back to the coop tucked inside her jacket, dry and completely unharmed.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {

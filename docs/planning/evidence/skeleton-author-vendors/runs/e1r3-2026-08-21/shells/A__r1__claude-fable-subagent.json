@@ -87,7 +87,7 @@
     {
      "id": "c-clues-prints",
      "label": "Follow the tiny footprints",
-     "target": "seed-step"
+     "target": "tool-shed"
     }
    ]
   },
@@ -121,20 +121,8 @@
    ]
   },
   {
-   "id": "seed-step",
-   "body": "<<FILL role=transition words=24 beats='the tiny three-toed prints and a dribble of spilled seed cross the sunny yard; the trail slips under the tool shed door, which stands ajar; a soft scuffle sounds inside'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c-seedstep-shed",
-     "label": "Push open the shed door",
-     "target": "tool-shed"
-    }
-   ]
-  },
-  {
    "id": "tool-shed",
-   "body": "<<FILL role=decision words=40 beats='the tiny footprints and a thin line of spilled seed lead through the ajar shed door; inside it smells of earth and string; the toppled seed sack dribbles one trail behind the stacked watering cans where something goes peep, and another out a low knothole toward the field'>>",
+   "body": "<<FILL role=decision words=40 beats='the tiny footprints and a dribble of spilled seed cross the sunny yard to the tool shed door, which stands ajar; inside it smells of earth and string; the toppled seed sack dribbles one trail behind the stacked watering cans where something goes peep, and another out a low knothole toward the field'>>",
    "is_ending": false,
    "choices": [
     {
@@ -180,7 +168,7 @@
   },
   {
    "id": "seed-line",
-   "body": "<<FILL role=explore words=28 beats='the seed trail crosses the field edge; seed husks scatter at the mouth of an old rabbit burrow under the fence; a soft rustle sounds deep inside'>>",
+   "body": "<<FILL role=explore words=28 beats='the seed trail slips out the low knothole and crosses the field edge; seed husks scatter at the mouth of an old rabbit burrow under the fence; a soft rustle sounds deep inside'>>",
    "is_ending": false,
    "choices": [
     {
@@ -279,12 +267,29 @@
   },
   {
    "id": "feather-path",
-   "body": "<<FILL role=explore words=30 beats='white feathers dot the path every few steps like breadcrumbs; the path drops down a grassy bank toward the shining creek, and a faint peep floats up from the water'>>",
+   "body": "<<FILL role=decision words=30 beats='white feathers dot the path every few steps like breadcrumbs; a faint peep floats up from the shining creek below; the path splits, one fork dropping straight down a grassy bank, the other running along the top of the bank past an old plank'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c-feather-bank",
      "label": "Slide down the grassy bank",
+     "target": "creek-stones"
+    },
+    {
+     "id": "c-feather-plank",
+     "label": "Take the path past the plank",
+     "target": "bridge-plank"
+    }
+   ]
+  },
+  {
+   "id": "bridge-plank",
+   "body": "<<FILL role=explore words=30 beats='from the top path Miri can see the whole creek; an old grey plank leans over the water like a tiny bridge; below on the flat middle stepping stone stands a small brown shape, preening; it is Pip'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-plank-down",
+     "label": "Creep down to the water",
      "target": "creek-stones"
     }
    ]

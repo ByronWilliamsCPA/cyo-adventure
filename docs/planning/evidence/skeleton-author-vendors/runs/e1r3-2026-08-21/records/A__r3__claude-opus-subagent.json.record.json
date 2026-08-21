@@ -7,8 +7,8 @@
  "style": "prose",
  "replicate": 3,
  "premise": "On the first snowy day, Priya must find her little brother's boot, lost somewhere along the sled run, before their walk home.",
- "attempts": 5,
- "repair_rounds": 4,
+ "attempts": 6,
+ "repair_rounds": 5,
  "strict_pass": false,
  "first_pass_clean": false,
  "parse_failures": 0,
@@ -17,7 +17,8 @@
   10,
   2,
   2,
-  7
+  7,
+  2
  ],
  "graph_check_exit": 0,
  "latency_s": 0.0,
@@ -25,10 +26,10 @@
  "output_tokens": null,
  "reasoning_tokens": null,
  "finish_reasons": [],
- "min_catalog_distance": 0.0754427167315662,
- "mean_catalog_distance": 0.33466376441129103,
+ "min_catalog_distance": 0.12528612717252607,
+ "mean_catalog_distance": 0.31663563399579775,
  "catalog_distance_note": "vs 5 in-cell peers",
- "last_feedback": "WARNING CG-1   node=n19 CG-1 grammar: 12 of 20 non-ending nodes are single-choice, above band '5-8's 50% allowance of 10 in story 'the-lost-red-boot'; the band's cadence is an average, so a long scene is fine only if the story spends decisions elsewhere (advisory only, new-content grammar per ADR-011 section 10)\nstats: nodes=30 endings=10 fill_nodes=30 cell=(5-8, short, prose) topology=time_cave tier=1\nwalk: P(satisfying ending, uniform reader) 91.7% (floor 40% for 5-8 prose)\nclock: declared estimated_minutes 2 vs derived 2 (PL-23 tolerance 25%)\nreconvergence: max in-degree 1 (hard cap 4 for 5-8 time_cave)\nendings depth-qualified: 10 of 10 at depth >= 3 against floor 5\nFAIL strict: CG-1 advisory is blocking for a newly drafted skeleton: CG-1 grammar: 12 of 20 non-ending nodes are single-choice, above band '5-8's 50% allowance of 10 in story 'the-lost-red-boot'; the band's cadence is an average, so a long scene is fine only if the story spends decisions elsewhere (advisory only, new-content grammar per ADR-011 section 10)",
+ "last_feedback": "ERROR   L1-7   L1-7 budget: branch_depth out of range in story 'the-lost-red-boot': 9 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r3__claude-opus-subagent.json failed structural validation: L1-7 budget: branch_depth out of range in story 'the-lost-red-boot': 9 (allowed 0..7)",
  "shell_file": "shells/A__r3__claude-opus-subagent.json",
  "error": ""
 }

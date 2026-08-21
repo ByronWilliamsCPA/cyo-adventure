@@ -69,13 +69,18 @@
   },
   {
    "id": "n03",
-   "body": "<<FILL role=explore words=24 beats='Priya tows the red saucer sled down the packed lane while Arun rides; braided sled tracks cross everywhere; she turns up a striped mitten and a juice lid but no boot'>>",
+   "body": "<<FILL role=decision words=44 beats='Priya tows the red saucer sled down the packed lane while Arun rides; braided sled tracks cross everywhere and she turns up a striped mitten and a juice lid but no boot; below her the lane bottoms out at the gray plow ridge, and behind her the warming hut door keeps swinging open in a puff of cocoa steam'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c05",
      "label": "Keep going to the bottom",
      "target": "n04"
+    },
+    {
+     "id": "c30",
+     "label": "Try the warming hut",
+     "target": "n09"
     }
    ]
   },
@@ -238,13 +243,18 @@
   },
   {
    "id": "n15",
-   "body": "<<FILL role=explore words=24 beats='paw prints stitch a neat line away from the sled run toward the crossing; Mr. Okafor whistles for Biscuit while holding up his orange sign'>>",
+   "body": "<<FILL role=decision words=44 beats='paw prints stitch a neat line away from the sled run toward the crossing while Mr. Okafor whistles for Biscuit and holds up his orange sign; Priya must pick fast, the paw prints heading one way and the churned sled lane dropping away the other, and Arun is already shivering in his one boot'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c22",
      "label": "Follow the paw prints",
      "target": "n16"
+    },
+    {
+     "id": "c31",
+     "label": "Search the sled lane",
+     "target": "n03"
     }
    ]
   },
@@ -267,13 +277,18 @@
   },
   {
    "id": "n17",
-   "body": "<<FILL role=transition words=22 beats='the frozen creek ticks under its skin of ice and the culvert pipe breathes gray air; dry reeds rattle where a tail is swinging'>>",
+   "body": "<<FILL role=decision words=44 beats='the frozen creek ticks under its skin of ice and the culvert pipe breathes gray air; dry reeds rattle down the bank where a tail is swinging; behind them the road bank is steep and slick, and Mr. Okafor is still at the crossing with his orange sign raised'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c25",
      "label": "Step down the bank",
      "target": "n18"
+    },
+    {
+     "id": "c32",
+     "label": "Climb back to the road",
+     "target": "n20"
     }
    ]
   },
