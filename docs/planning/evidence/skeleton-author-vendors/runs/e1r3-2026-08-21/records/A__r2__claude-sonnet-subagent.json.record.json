@@ -7,8 +7,8 @@
  "style": "prose",
  "replicate": 2,
  "premise": "Tomas and his grandmother build a kite for the spring festival, but the wind keeps changing and every new design needs testing.",
- "attempts": 5,
- "repair_rounds": 4,
+ "attempts": 6,
+ "repair_rounds": 5,
  "strict_pass": false,
  "first_pass_clean": false,
  "parse_failures": 0,
@@ -17,7 +17,8 @@
   2,
   3,
   2,
-  7
+  7,
+  2
  ],
  "graph_check_exit": 0,
  "latency_s": 0.0,
@@ -25,10 +26,10 @@
  "output_tokens": null,
  "reasoning_tokens": null,
  "finish_reasons": [],
- "min_catalog_distance": 0.1082935193512688,
- "mean_catalog_distance": 0.35229077628249705,
+ "min_catalog_distance": 0.11472459133916822,
+ "mean_catalog_distance": 0.3474626778666989,
  "catalog_distance_note": "vs 5 in-cell peers",
- "last_feedback": "WARNING CG-1   node=dragon_fix CG-1 grammar: 13 of 20 non-ending nodes are single-choice, above band '5-8's 50% allowance of 10 in story 'tomas-kite-festival'; the band's cadence is an average, so a long scene is fine only if the story spends decisions elsewhere (advisory only, new-content grammar per ADR-011 section 10)\nstats: nodes=29 endings=9 fill_nodes=29 cell=(5-8, short, prose) topology=time_cave tier=1\nwalk: P(satisfying ending, uniform reader) 75.0% (floor 40% for 5-8 prose)\nclock: declared estimated_minutes 2 vs derived 2 (PL-23 tolerance 25%)\nreconvergence: max in-degree 1 (hard cap 4 for 5-8 time_cave)\nendings depth-qualified: 9 of 9 at depth >= 3 against floor 5\nFAIL strict: CG-1 advisory is blocking for a newly drafted skeleton: CG-1 grammar: 13 of 20 non-ending nodes are single-choice, above band '5-8's 50% allowance of 10 in story 'tomas-kite-festival'; the band's cadence is an average, so a long scene is fine only if the story spends decisions elsewhere (advisory only, new-content grammar per ADR-011 section 10)",
+ "last_feedback": "ERROR   PL-25  PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'tomas-kite-festival'\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r2__claude-sonnet-subagent.json failed structural validation: PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'tomas-kite-festival'",
  "shell_file": "shells/A__r2__claude-sonnet-subagent.json",
  "error": ""
 }

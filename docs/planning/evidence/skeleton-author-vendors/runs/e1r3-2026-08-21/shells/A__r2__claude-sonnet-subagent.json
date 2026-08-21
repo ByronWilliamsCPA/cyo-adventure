@@ -41,6 +41,11 @@
      "id": "c-start-1",
      "label": "See the three kite sketches",
      "target": "choose_kite"
+    },
+    {
+     "id": "c-start-2",
+     "label": "Ask Abuela about the changing wind",
+     "target": "choose_kite"
     }
    ]
   },
@@ -74,6 +79,11 @@
     {
      "id": "c-bird-intro-1",
      "label": "See what Abuela suggests",
+     "target": "bird_decision"
+    },
+    {
+     "id": "c-bird-intro-2",
+     "label": "Ask Abuela why the kite dipped",
      "target": "bird_decision"
     }
    ]
@@ -193,6 +203,11 @@
      "id": "c-box-intro-1",
      "label": "See what Abuela suggests",
      "target": "box_decision"
+    },
+    {
+     "id": "c-box-intro-2",
+     "label": "Ask Abuela why the corner tore",
+     "target": "box_decision"
     }
    ]
   },
@@ -310,6 +325,11 @@
     {
      "id": "c-dragon-intro-1",
      "label": "See what Abuela suggests",
+     "target": "dragon_decision"
+    },
+    {
+     "id": "c-dragon-intro-2",
+     "label": "Ask Abuela why the tail dragged",
      "target": "dragon_decision"
     }
    ]

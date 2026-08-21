@@ -111,7 +111,7 @@
     {
      "id": "ch_n06_a",
      "label": "Paste on the old newspaper",
-     "target": "n09_newspaper_test_choice"
+     "target": "n09a_newspaper_sail"
     },
     {
      "id": "ch_n06_b",
@@ -155,8 +155,20 @@
    ]
   },
   {
+   "id": "n09a_newspaper_sail",
+   "body": "<<FILL role=explore words=30 beats='three pasted layers of newspaper make a sail with the headlines running sideways, and Abuela says paper is brave while it is dry and useless the moment it is not'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n09a_a",
+     "label": "Look at the sky",
+     "target": "n09_newspaper_test_choice"
+    }
+   ]
+  },
+  {
    "id": "n09_newspaper_test_choice",
-   "body": "<<FILL role=decision words=68 beats='three pasted layers of newspaper make a sail with headlines running sideways, and Abuela says paper is brave while it is dry and useless the moment it is not; the sky over the valley has gone the flat white color that means the weather cannot make up its mind; Tomas can carry Golondrina out to the wide flat field below town or up the long goat path to Cerro Alto'>>",
+   "body": "<<FILL role=decision words=39 beats='the sky over the valley has gone the flat white color that means the weather cannot make up its mind, and Tomas must pick where to carry Golondrina, out to the wide flat field below town or up the long goat path to Cerro Alto'>>",
    "is_ending": false,
    "choices": [
     {
@@ -190,36 +202,19 @@
   },
   {
    "id": "n11_courtyard_run",
-   "body": "<<FILL role=transition words=30 beats='Tomas runs Golondrina in circles around the courtyard while Pimienta chases the trailing string, and the leftover swirls lift her wobbling up toward the lemon tree branches'>>",
+   "body": "<<FILL role=explore words=30 beats='Tomas runs Golondrina in circles around the courtyard while Pimienta chases the trailing string, and the leftover swirls lift her wobbling up level with the lemon tree and no higher'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch_n11_a",
-     "label": "See how high she goes",
-     "target": "n17_lemon_wobble"
-    }
-   ]
-  },
-  {
-   "id": "n17_lemon_wobble",
-   "body": "<<FILL role=decision words=39 beats='Golondrina hangs level with the lemon tree and climbs no higher, because the courtyard swirls are only leftover wind, weak and always turning; Tomas can feed her more string and trust the small wind he already has, or carry her up the ladder to the gusty flat roof'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch_n17_a",
      "label": "Let out more string",
      "target": "n20_end_lemon_tree"
-    },
-    {
-     "id": "ch_n17_b",
-     "label": "Carry her up the ladder",
-     "target": "n22_end_water_tank"
     }
    ]
   },
   {
    "id": "n20_end_lemon_tree",
-   "body": "<<FILL role=ending words=39 beats='Golondrina steadies above the lemon tree and hangs there in the small courtyard wind, turning slow circles over the washing line; Abuela sits on the step with her cup and watches her grandson hold a whole kite up on one thread'>>",
+   "body": "<<FILL role=ending words=39 beats='Tomas feeds out more string and Golondrina steadies above the lemon tree, hanging in the small courtyard wind and turning slow circles over the washing line; Abuela sits on the step with her cup and watches her grandson hold a whole kite up on one thread'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -308,18 +303,13 @@
   },
   {
    "id": "n14_river_calm",
-   "body": "<<FILL role=decision words=45 beats='down at the Rio Manso the air lies perfectly still and the water looks like poured glass, so heavy Golondrina hangs off the string like wet laundry while a heron watches without moving; Tomas can make his own wind by running the whole bank, or carry her up to the plaza where the air bounces off the church wall'>>",
+   "body": "<<FILL role=transition words=30 beats='down at the Rio Manso the air lies perfectly still and the water looks like poured glass, so heavy Golondrina hangs off the string like wet laundry while a heron watches without moving'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch_n14_a",
      "label": "Walk her along the bank",
      "target": "n24_end_heron_walk"
-    },
-    {
-     "id": "ch_n14_b",
-     "label": "Carry her up to the plaza",
-     "target": "n30_plaza_wall"
     }
    ]
   },
