@@ -503,13 +503,21 @@ of them cheap and one free.
 
 Changes, item by item; everything not listed is unchanged:
 
-- **E1 slate**: `deepseek-v4-pro`, `deepseek-v4-flash`, plus a **session-claude leg** authored by
-  isolated subagents of the session model under the identical shared repair-loop contract (same
-  system prompt, same brief, same feedback, same round cap), at zero provider cost. The
-  session-claude leg is also the production authoring mechanism, so it doubles as the
-  current-practice baseline the original design lacked. `google-gemini-3.1-pro` (the only leg with
-  a proven strict pass) is an optional fourth at roughly +$12; run it only if the three-leg result
-  is close enough that a premium reference would change the decision.
+- **E1 slate**: `deepseek-v4-pro` and `deepseek-v4-flash` as the paid legs (both DeepSeek legs
+  together cost about $1.30 across 36 shells in this session's runs; the halted premium slate's
+  cost was 90% Sonnet 5, Gemini 3.1 Pro, and GPT-5.6-sol), plus **four Anthropic subagent legs**
+  at zero provider cost: `claude-haiku-subagent`, `claude-sonnet-subagent`,
+  `claude-opus-subagent`, `claude-fable-subagent`, each authored by isolated subagents at that
+  model tier under the identical shared repair-loop contract (same system prompt, same brief,
+  same feedback shape, same round cap, driven through the harness's `--emit-prompts` and
+  `--score-shell` modes so the loop is reproducible). This closes a real coverage gap: the fill
+  slate only ever represented Anthropic by Sonnet checkpoints, and the sonnet leg doubles as the
+  current-practice authoring baseline. Declared limitation: subagent legs are tier-labeled, not
+  backend-pinned; the serving snapshot is whatever the harness serves that tier, recorded per
+  run, so subagent legs support tier-level conclusions, not checkpoint-level ones.
+  `google-gemini-3.1-pro` (the only leg with a proven strict pass) stays optional at roughly
+  +$12; run it only if the six-leg result is close enough that a premium reference would change
+  the decision.
 - **E1 grid**: 2 cells (A: 5-8 short; D: 10-13 short) x 3 replicates x 3 legs = 18 shells, round
   cap 6, cap 65536. The 4 already-paid shells from the halted run are reused via `--resume` where
   they fit the reduced grid. Estimated provider cost: **$6-12** (both DeepSeek legs are $2-4 per

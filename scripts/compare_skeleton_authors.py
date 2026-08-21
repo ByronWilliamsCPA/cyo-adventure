@@ -719,6 +719,124 @@ def _summarize(records: list[ShellRecord], out_dir: Path) -> None:
     (out_dir / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def _emit_prompts_mode(args: argparse.Namespace, cells: list[dict[str, Any]]) -> int:
+    """Write the shared system prompt and one author prompt per grid point.
+
+    The input side of a subagent leg (plan section 10): an external driver
+    hands these files verbatim to a model-tier subagent, so the subagent leg
+    authors under byte-identical instructions to the provider legs.
+    """
+    prompt_dir = Path(args.emit_prompts)
+    prompt_dir.mkdir(parents=True, exist_ok=True)
+    (prompt_dir / "system.md").write_text(_AUTHOR_SYSTEM, encoding="utf-8")
+    count = 0
+    for cell in cells:
+        brief_md = _render_markdown(
+            build_brief(cell["band"], cell["length"], cell["style"])
+        )
+        premises = list(cell["premises"])[: args.replicates]
+        for replicate, premise in enumerate(premises, start=1):
+            name = f"{cell['id']}__r{replicate}.prompt.md"
+            (prompt_dir / name).write_text(
+                _author_prompt(brief_md, premise), encoding="utf-8"
+            )
+            count += 1
+    print(f"emitted system.md and {count} author prompts -> {prompt_dir}")
+    return 0
+
+
+def _score_shell_mode(args: argparse.Namespace, cells: list[dict[str, Any]]) -> int:
+    """Score one externally authored shell and accumulate its grid record.
+
+    This is the harness half of a subagent leg (plan section 10): an external
+    driver authors a shell at some model tier, then calls this mode once per
+    authored round. The mode applies the identical strict check the provider
+    legs get, prints the validator feedback (the driver relays it verbatim
+    into the stateless repair prompt), and read-modify-writes the same record
+    file the provider path writes, so ``--resume`` and the summary treat
+    subagent shells uniformly.
+
+    Returns:
+        0 when the shell passes the strict bar, 1 otherwise (including an
+        unparseable shell, which costs the leg a round exactly as it does on
+        the provider path).
+    """
+    cell = next((c for c in cells if c["id"] == args.score_cell), None)
+    if cell is None:
+        print(f"Error: unknown cell '{args.score_cell}'", file=sys.stderr)
+        return 2
+    premises = list(cell["premises"])
+    if not 1 <= args.score_replicate <= len(premises):
+        print(f"Error: replicate out of range for cell {cell['id']}", file=sys.stderr)
+        return 2
+    if not args.out_dir:
+        print("Error: --score-shell requires --out-dir", file=sys.stderr)
+        return 2
+    out_dir = Path(args.out_dir)
+    shell_name = f"{cell['id']}__r{args.score_replicate}__{args.score_leg}.json"
+    record_path = out_dir / "records" / (shell_name + ".record.json")
+    record_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if record_path.exists():
+        data = json.loads(record_path.read_text(encoding="utf-8"))
+        known = {f.name for f in ShellRecord.__dataclass_fields__.values()}
+        record = ShellRecord(**{k: v for k, v in data.items() if k in known})
+    else:
+        record = ShellRecord(
+            leg=args.score_leg,
+            family=args.score_family,
+            cell_id=str(cell["id"]),
+            band=str(cell["band"]),
+            length=str(cell["length"]),
+            style=str(cell["style"]),
+            replicate=args.score_replicate,
+            premise=premises[args.score_replicate - 1],
+        )
+    if record.strict_pass:
+        print("already passed; not rescoring")
+        return 0
+
+    record.attempts += 1
+    raw = Path(args.score_shell).read_text(encoding="utf-8")
+    doc, parse_reason = _extract_json(raw)
+    if doc is None:
+        record.parse_failures += 1
+        feedback = f"(no skeleton to check) {parse_reason}"
+        record.findings_lines_per_round.append(1)
+        passed = False
+    else:
+        shell_path = out_dir / "shells" / shell_name
+        shell_path.parent.mkdir(parents=True, exist_ok=True)
+        shell_path.write_text(
+            json.dumps(doc, indent=1, ensure_ascii=False), encoding="utf-8"
+        )
+        record.shell_file = str(shell_path.relative_to(out_dir))
+        passed, feedback = _strict_check(
+            shell_path, record.band, record.length, record.style
+        )
+        record.findings_lines_per_round.append(len(feedback.splitlines()))
+        code, _ = _run_checker("check_graph_structure.py", [str(shell_path)])
+        record.graph_check_exit = code
+        (
+            record.min_catalog_distance,
+            record.mean_catalog_distance,
+            record.catalog_distance_note,
+        ) = _catalog_distances(doc, record.band, record.length, record.style)
+    record.repair_rounds = record.attempts - 1
+    if passed:
+        record.strict_pass = True
+        record.first_pass_clean = record.attempts == 1
+        record.last_feedback = ""
+    else:
+        record.last_feedback = feedback[:4000]
+    record_path.write_text(
+        json.dumps(asdict(record), indent=1, ensure_ascii=False), encoding="utf-8"
+    )
+    print(feedback)
+    print(f"score: {'PASS' if passed else 'FAIL'} attempts={record.attempts}")
+    return 0 if passed else 1
+
+
 async def run(args: argparse.Namespace) -> int:
     """Execute the harness per the parsed arguments."""
     vendors = _load_vendors(Path(args.vendors))
@@ -894,6 +1012,27 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--out-dir", default="")
     parser.add_argument("--mock", action="store_true")
     parser.add_argument(
+        "--emit-prompts",
+        default="",
+        help=(
+            "Write system.md plus one author prompt per cell x replicate to "
+            "this directory and exit; the input side of a subagent leg."
+        ),
+    )
+    parser.add_argument(
+        "--score-shell",
+        default="",
+        help=(
+            "Score one externally authored shell file and accumulate its "
+            "record in --out-dir; the output side of a subagent leg. "
+            "Requires --score-cell, --score-replicate, --score-leg."
+        ),
+    )
+    parser.add_argument("--score-cell", default="")
+    parser.add_argument("--score-replicate", type=int, default=0)
+    parser.add_argument("--score-leg", default="")
+    parser.add_argument("--score-family", default="anthropic")
+    parser.add_argument(
         "--resume",
         action="store_true",
         help=(
@@ -907,7 +1046,16 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     """CLI entry point."""
-    return asyncio.run(run(_parse_args(argv)))
+    args = _parse_args(argv)
+    if args.emit_prompts or args.score_shell:
+        cells = _load_premises(Path(args.premises))
+        if args.cells:
+            wanted = set(args.cells.split(","))
+            cells = [c for c in cells if c["id"] in wanted]
+        if args.emit_prompts:
+            return _emit_prompts_mode(args, cells)
+        return _score_shell_mode(args, cells)
+    return asyncio.run(run(args))
 
 
 if __name__ == "__main__":
