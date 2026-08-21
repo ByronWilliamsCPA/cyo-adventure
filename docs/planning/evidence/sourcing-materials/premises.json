@@ -1,0 +1,53 @@
+{
+  "_comment": "Machine-readable mirror of the premise table in README.md (S-0, frozen 2026-08-21). The README is the document of record; this file exists so harnesses consume premises structurally instead of parsing markdown. Allocation rule: replicate r of cell <id> uses premises[r-1] for every leg.",
+  "cells": [
+    {
+      "id": "A",
+      "band": "5-8",
+      "length": "short",
+      "style": "prose",
+      "premises": [
+        "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+        "Tomas and his grandmother build a kite for the spring festival, but the wind keeps changing and every new design needs testing.",
+        "On the first snowy day, Priya must find her little brother's boot, lost somewhere along the sled run, before their walk home.",
+        "The class garden's giant pumpkin has a mysterious nibbler, and Sam wants to find out who it is without scaring any animal away."
+      ]
+    },
+    {
+      "id": "B",
+      "band": "8-11",
+      "length": "short",
+      "style": "prose",
+      "premises": [
+        "The town's old carousel breaks a week before the fete, and Nell, the mechanic's apprentice, thinks she can fix it if she can find the missing part.",
+        "While shelving returns, library volunteer Theo finds a fifty-year-old letter tucked in an atlas, addressed to someone who still lives in town.",
+        "A spring tide strands a rockpool full of creatures far up the beach, and Jonah's tide-watching club has one afternoon to move them safely.",
+        "The school orchestra's tuba goes missing on tour day, and Ada traces the mix-up across the town's three delivery vans."
+      ]
+    },
+    {
+      "id": "C",
+      "band": "8-11",
+      "length": "medium",
+      "style": "prose",
+      "premises": [
+        "The neighbourhood street market loses its permit spot, and Rosa organizes the stallholders to find and win a new one before Saturday.",
+        "An old footpath to the river has been fenced off, and twins Leo and June set out to prove the right of way still exists by walking its forgotten course.",
+        "A storm blows a racing pigeon with a numbered leg-ring into Amir's yard, and he sets out to return it to an owner three villages away.",
+        "Great-aunt Bee's famous chutney recipe is half missing, and the family kitchen becomes a test lab to reconstruct it before the county show."
+      ]
+    },
+    {
+      "id": "D",
+      "band": "10-13",
+      "length": "short",
+      "style": "prose",
+      "premises": [
+        "A junk-shop chess set turns out to have one piece too many, carved differently from the rest, and Wren traces where the extra piece began.",
+        "Two nights before opening, the school play's lead quits, and stage manager Cass must re-plan the show around who is left.",
+        "At the harvest swap-market, Idris discovers the tokens everyone trades with have two subtly different mintings, and prices are quietly drifting apart.",
+        "The river-gauge readings Dara's science club submits stop matching the town's official numbers, and finding out why means walking the whole river."
+      ]
+    }
+  ]
+}
