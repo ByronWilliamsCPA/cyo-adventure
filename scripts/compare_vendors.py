@@ -106,6 +106,7 @@ import os
 import statistics
 import sys
 import time
+import unicodedata
 from dataclasses import dataclass, replace
 from itertools import combinations
 from pathlib import Path
@@ -388,6 +389,19 @@ def _load_vendors(path: Path) -> list[Vendor]:
         if not isinstance(label, str) or not isinstance(model, str):
             print(f"Error: vendor #{i} needs string label and model.", file=sys.stderr)
             sys.exit(1)
+        # #ASSUME: data-integrity: an empty or whitespace-only label passes the
+        # bare-name check below (`Path("").name == ""`), and `_book_filename`
+        # then writes `__00.json`, losing the vendor identity the filename
+        # exists to carry. Not an overwrite risk (the fold below catches a
+        # second empty label), so this is a legibility floor, not a money one.
+        # #VERIFY: test_load_vendors_rejects_an_empty_label.
+        if not label.strip():
+            print(
+                f"Error: vendor #{i} label is empty or whitespace-only; the "
+                "book filename would carry no vendor identity.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
         # #CRITICAL: data integrity: _book_filename() names each book's output
         # file `{vendor}__{brief_index:02d}.json`, using the label as the sole
         # identity component. Two vendors sharing a label would silently
@@ -398,10 +412,39 @@ def _load_vendors(path: Path) -> list[Vendor]:
         # provider call is billed.
         # #VERIFY: test_load_vendors_rejects_a_duplicate_label in
         # tests/unit/test_compare_vendors.py.
-        if label in seen_labels:
-            print(f"Error: vendor #{i} reuses label '{label}'.", file=sys.stderr)
+        # #CRITICAL: data-integrity: the label becomes the book filename in
+        # `_book_filename`, so two labels that differ only in case resolve to
+        # ONE file on a case-insensitive filesystem (the macOS and Windows
+        # default) and the second vendor silently overwrites the first vendor's
+        # already-paid-for books. A separator or traversal segment escapes the
+        # output directory entirely. Neither is caught by the exact-match
+        # uniqueness check this replaces.
+        # #VERIFY: test_load_vendors_rejects_case_equivalent_labels and
+        # test_load_vendors_rejects_a_label_that_is_not_a_bare_filename.
+        if label != Path(label).name or label in {".", ".."}:
+            print(
+                f"Error: vendor #{i} label '{label}' is not a bare name; it "
+                "would write outside the books directory.",
+                file=sys.stderr,
+            )
             sys.exit(1)
-        seen_labels.add(label)
+        # #CRITICAL: data-integrity: case folding alone does NOT unify Unicode
+        # normalization forms, so "Cafe\u0301" (NFD) and "Caf\u00e9" (NFC) both
+        # pass a casefold-only check and then resolve to ONE file on macOS,
+        # whose filesystem is normalization-insensitive as well as
+        # case-insensitive. That is the same paid-artifact overwrite the fold
+        # was added to stop, reached through the other equivalence.
+        # #VERIFY: test_load_vendors_rejects_unicode_equivalent_labels.
+        folded = unicodedata.normalize("NFC", label.casefold())
+        if folded in seen_labels:
+            print(
+                f"Error: vendor #{i} reuses label '{label}' (compared without "
+                "case, because a case-insensitive filesystem would collapse "
+                "the two book files into one and lose a paid run).",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        seen_labels.add(folded)
         if not isinstance(order_raw, list):
             print(f"Error: vendor #{i} provider_order must be a list.", file=sys.stderr)
             sys.exit(1)
