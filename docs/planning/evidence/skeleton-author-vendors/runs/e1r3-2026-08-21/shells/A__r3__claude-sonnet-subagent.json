@@ -86,13 +86,18 @@
   },
   {
    "id": "pine_grove",
-   "body": "<<FILL role=transition words=15 beats='Priya and Arjun walk under the snowy pine branches, boots crunching, eyes on the ground for anything red.'>>",
+   "body": "<<FILL role=transition words=25 beats='Priya and Arjun walk under the snowy pine branches, boots crunching, but Priya glances back across the clearing toward the snow fort too, unsure which spot to check first.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "pine_grove_ch1",
      "label": "Look closer among the trees",
      "target": "pine_grove_clue"
+    },
+    {
+     "id": "pine_grove_ch2",
+     "label": "Check the snow fort instead",
+     "target": "snow_fort"
     }
    ]
   },
@@ -204,13 +209,18 @@
   },
   {
    "id": "frozen_pond",
-   "body": "<<FILL role=transition words=15 beats='Priya keeps Arjun a safe distance from the ice, and they walk the snowy bank together, scanning for footprints.'>>",
+   "body": "<<FILL role=transition words=25 beats='Priya keeps Arjun a safe distance from the ice and they walk the snowy bank together, scanning for footprints, though the toboggan track catches her eye from across the field.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "frozen_pond_ch1",
      "label": "Follow the footprints by the reeds",
      "target": "frozen_pond_footprints"
+    },
+    {
+     "id": "frozen_pond_ch2",
+     "label": "Check the toboggan track instead",
+     "target": "toboggan_track"
     }
    ]
   },
@@ -281,13 +291,18 @@
   },
   {
    "id": "toboggan_track_search",
-   "body": "<<FILL role=climax words=15 beats='A patch of snow near the end of the lane looks kicked up and uneven. Priya digs through it while Arjun shivers a little in the cold, waiting to see what turns up.'>>",
+   "body": "<<FILL role=climax words=35 beats='A patch of snow near the end of the lane looks kicked up and uneven. Priya digs through it while Arjun shivers a little in the cold, and the light is starting to fade, making her wonder if it is time to stop.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "toboggan_track_search_ch1",
      "label": "Reach all the way to the bottom",
      "target": "end_found_with_mitten"
+    },
+    {
+     "id": "toboggan_track_search_ch2",
+     "label": "Decide it is too cold to keep digging",
+     "target": "end_dusk_return_tomorrow"
     }
    ]
   },
@@ -327,13 +342,18 @@
   },
   {
    "id": "ranger_station",
-   "body": "<<FILL role=transition words=15 beats='Inside the warm ranger station, a ranger named Mr Oso looks up from his clipboard and waves Priya over.'>>",
+   "body": "<<FILL role=transition words=25 beats='Inside the warm ranger station, a ranger named Mr Oso looks up from his clipboard and waves Priya over, while through the window she spots the ski patrol hut across the lot.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ranger_station_ch1",
      "label": "Ask Mr Oso for help",
      "target": "ranger_search"
+    },
+    {
+     "id": "ranger_station_ch2",
+     "label": "Try the ski patrol hut instead",
+     "target": "ski_patrol_hut"
     }
    ]
   },
@@ -363,13 +383,18 @@
   },
   {
    "id": "ski_patrol_hut",
-   "body": "<<FILL role=transition words=15 beats='The ski patrol hut smells like pine and warm coffee, and a patroller named Dana listens closely as Priya explains.'>>",
+   "body": "<<FILL role=transition words=25 beats='The ski patrol hut smells like pine and warm coffee, and a patroller named Dana listens closely as Priya explains, though the lift operator booth is visible just past the rope tow outside.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ski_patrol_hut_ch1",
      "label": "Tell Dana what happened",
      "target": "patrol_search"
+    },
+    {
+     "id": "ski_patrol_hut_ch2",
+     "label": "Try the lift operator booth instead",
+     "target": "lift_operator_booth"
     }
    ]
   },
