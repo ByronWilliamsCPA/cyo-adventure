@@ -186,6 +186,7 @@ class ShellRecord:
     min_catalog_distance: float | None = None
     mean_catalog_distance: float | None = None
     catalog_distance_note: str = ""
+    last_feedback: str = ""
     shell_file: str = ""
     error: str = ""
 
@@ -301,6 +302,13 @@ def _strict_check(
 ) -> tuple[bool, str]:
     """Run ``check_skeleton.py --strict`` pinned to the cell.
 
+    ``--allow-mvp`` is required, not optional: an authored shell correctly
+    declares ``production_eligible: false`` (promotion is a reviewed human
+    decision, never an authoring-time claim), and cell mode without the flag
+    fails exactly that declaration, making the pass bar unreachable for every
+    leg. The 2026-08-21 smoke run hit this: all four completing legs repaired
+    down to 1-2 real findings and could never pass.
+
     Returns:
         ``(passed, feedback)``.
     """
@@ -309,6 +317,7 @@ def _strict_check(
         [
             str(shell_path),
             "--strict",
+            "--allow-mvp",
             "--band",
             band,
             "--length",
@@ -551,7 +560,9 @@ async def author_shell(
                 record.strict_pass = True
                 record.first_pass_clean = attempt == 0
                 record.repair_rounds = attempt
+                record.last_feedback = ""
                 break
+        record.last_feedback = feedback[:4000]
         previous = completion.text if doc is None else json.dumps(doc)
         prompt = (
             base_prompt
@@ -842,8 +853,13 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument(
         "--max-tokens",
         type=int,
-        default=32_768,
-        help="Completion cap per call; a run condition, recorded in run.json.",
+        default=65_536,
+        help=(
+            "Completion cap per call; a run condition, recorded in run.json. "
+            "Default raised from 32768 after the 2026-08-21 smoke: v4 Flash "
+            "spent the whole 32k cap on hidden reasoning and returned no "
+            "content, and Sonnet 5 truncated twice (the AL-328 shape)."
+        ),
     )
     parser.add_argument("--concurrency", type=int, default=4)
     parser.add_argument("--out-dir", default="")
