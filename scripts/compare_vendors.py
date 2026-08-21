@@ -759,6 +759,56 @@ class _CapOverrideProvider:
         )
 
 
+@dataclass(frozen=True)
+class _ModelStampedProvider:
+    """Carry the leg's model id where the orchestrator can see it.
+
+    ``fill_skeleton`` resolves its output cap (and with it the chunking
+    decision) from ``getattr(provider, "model", None)``, but the OpenRouter
+    adapter exposes only ``complete`` and ``name``, so every wrapper above it
+    forwards ``None`` and the cap silently resolves to the 131,072 default.
+    On this harness that meant `MODEL_OUTPUT_CAPS` was never consulted for any
+    leg: a low-cap model (`deepseek/deepseek-v3.2`, 65,536) was asked for
+    131,072 tokens one-shot, which its endpoint rejected outright (HTTP 400,
+    measured 2026-08-21 at 0.6s per leg), and the chunked path could never
+    engage for any vendor. Stamping the model at the harness boundary makes
+    the leg behave as the orchestrator's own resolution logic intends. The
+    matching production gap (the adapter itself, reached via
+    ``build_provider``) is deliberately NOT fixed here; it is reported in the
+    2026-08-21 round's lessons instead.
+
+    Attributes:
+        inner: The real provider that performs the call.
+        model: The vendor spec's model id, exposed for cap resolution.
+    """
+
+    inner: GenerationProvider
+    model: str
+
+    @property
+    def name(self) -> str | None:
+        """The inner provider's label, forwarded for job stamping."""
+        inner_name: object = getattr(self.inner, "name", None)
+        return inner_name if isinstance(inner_name, str) else None
+
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
+        """Delegate unchanged; this wrapper only carries the model id.
+
+        Args:
+            system: System-role instructions, passed through unchanged.
+            prompt: User-role prompt, passed through unchanged.
+            max_tokens: The caller's cap, passed through unchanged.
+
+        Returns:
+            The inner provider's completion, forwarded unchanged.
+        """
+        return await self.inner.complete(
+            system=system, prompt=prompt, max_tokens=max_tokens
+        )
+
+
 def _build_provider(
     vendor: Vendor,
     settings: Settings,
@@ -791,9 +841,13 @@ def _build_provider(
         base = build_openrouter_leg(
             settings, vendor.model, provider_order=vendor.provider_order
         )
-    if max_tokens is None:
+    if max_tokens is not None:
+        base = _CapOverrideProvider(inner=base, max_tokens=max_tokens)
+    if mock:
         return base
-    return _CapOverrideProvider(inner=base, max_tokens=max_tokens)
+    # Outermost, so `getattr(provider, "model", None)` sees it through every
+    # inner wrapper; see _ModelStampedProvider for why the leg needs it at all.
+    return _ModelStampedProvider(inner=base, model=vendor.model)
 
 
 async def run_comparison(
