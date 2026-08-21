@@ -1,0 +1,259 @@
+{
+ "generated_at": "2026-08-21T04:07:20+00:00",
+ "primary_endpoint": {
+  "name": "repair rounds to strict pass, pooled across cells",
+  "statistic": 0.0,
+  "p_value": 1.0,
+  "permutations": 10000,
+  "seed": 20260821,
+  "note": "every other field in this summary is exploratory and decision-inert per register row S-1"
+ },
+ "legs": {
+  "deepseek-v4-pro": {
+   "shells": 1,
+   "errors": 0,
+   "strict_pass": 0,
+   "first_pass_clean": 0,
+   "repair_rounds": [
+    4
+   ],
+   "output_tokens": 23876,
+   "min_catalog_distance": [
+    0.16112230425586588
+   ]
+  },
+  "deepseek-v4-flash": {
+   "shells": 1,
+   "errors": 1,
+   "strict_pass": 0,
+   "first_pass_clean": 0,
+   "repair_rounds": [],
+   "output_tokens": 0,
+   "min_catalog_distance": []
+  },
+  "anthropic-sonnet-5": {
+   "shells": 1,
+   "errors": 0,
+   "strict_pass": 0,
+   "first_pass_clean": 0,
+   "repair_rounds": [
+    4
+   ],
+   "output_tokens": 148863,
+   "min_catalog_distance": [
+    0.09654258221954837
+   ]
+  },
+  "openai-gpt-5.6-sol": {
+   "shells": 1,
+   "errors": 0,
+   "strict_pass": 0,
+   "first_pass_clean": 0,
+   "repair_rounds": [
+    4
+   ],
+   "output_tokens": 31502,
+   "min_catalog_distance": [
+    0.05557029242176098
+   ]
+  },
+  "google-gemini-3.1-pro": {
+   "shells": 1,
+   "errors": 0,
+   "strict_pass": 0,
+   "first_pass_clean": 0,
+   "repair_rounds": [
+    4
+   ],
+   "output_tokens": 104176,
+   "min_catalog_distance": [
+    0.1335977155461766
+   ]
+  }
+ },
+ "records": [
+  {
+   "leg": "deepseek-v4-pro",
+   "family": "deepseek",
+   "cell_id": "A",
+   "band": "5-8",
+   "length": "short",
+   "style": "prose",
+   "replicate": 1,
+   "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+   "attempts": 5,
+   "repair_rounds": 4,
+   "strict_pass": false,
+   "first_pass_clean": false,
+   "parse_failures": 0,
+   "findings_lines_per_round": [
+    8,
+    8,
+    3,
+    2,
+    2
+   ],
+   "graph_check_exit": 0,
+   "latency_s": 542.23,
+   "input_tokens": 29417,
+   "output_tokens": 23876,
+   "reasoning_tokens": 0,
+   "finish_reasons": [
+    "stop",
+    "stop",
+    "stop",
+    "stop",
+    "stop"
+   ],
+   "min_catalog_distance": 0.16112230425586588,
+   "mean_catalog_distance": 0.35390589474534234,
+   "catalog_distance_note": "vs 5 in-cell peers",
+   "shell_file": "shells/A__r1__deepseek-v4-pro.json",
+   "error": ""
+  },
+  {
+   "leg": "deepseek-v4-flash",
+   "family": "deepseek",
+   "cell_id": "A",
+   "band": "5-8",
+   "length": "short",
+   "style": "prose",
+   "replicate": 1,
+   "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+   "attempts": 0,
+   "repair_rounds": 0,
+   "strict_pass": false,
+   "first_pass_clean": false,
+   "parse_failures": 0,
+   "findings_lines_per_round": [],
+   "graph_check_exit": null,
+   "latency_s": 258.26,
+   "input_tokens": null,
+   "output_tokens": null,
+   "reasoning_tokens": null,
+   "finish_reasons": [],
+   "min_catalog_distance": null,
+   "mean_catalog_distance": null,
+   "catalog_distance_note": "",
+   "shell_file": "shells/A__r1__deepseek-v4-flash.json",
+   "error": "ProviderError: openrouter completion hit the token budget and returned no usable content (finish_reason=length, 32767 of them on reasoning); retrying at the same cap would buy the same wall, so this leg is not retried"
+  },
+  {
+   "leg": "anthropic-sonnet-5",
+   "family": "anthropic",
+   "cell_id": "A",
+   "band": "5-8",
+   "length": "short",
+   "style": "prose",
+   "replicate": 1,
+   "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+   "attempts": 5,
+   "repair_rounds": 4,
+   "strict_pass": false,
+   "first_pass_clean": false,
+   "parse_failures": 2,
+   "findings_lines_per_round": [
+    1,
+    5,
+    8,
+    1,
+    35
+   ],
+   "graph_check_exit": 0,
+   "latency_s": 1439.23,
+   "input_tokens": 32781,
+   "output_tokens": 148863,
+   "reasoning_tokens": 127206,
+   "finish_reasons": [
+    "length",
+    "stop",
+    "stop",
+    "length",
+    "stop"
+   ],
+   "min_catalog_distance": 0.09654258221954837,
+   "mean_catalog_distance": 0.32767993262933826,
+   "catalog_distance_note": "vs 5 in-cell peers",
+   "shell_file": "shells/A__r1__anthropic-sonnet-5.json",
+   "error": ""
+  },
+  {
+   "leg": "openai-gpt-5.6-sol",
+   "family": "openai",
+   "cell_id": "A",
+   "band": "5-8",
+   "length": "short",
+   "style": "prose",
+   "replicate": 1,
+   "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+   "attempts": 5,
+   "repair_rounds": 4,
+   "strict_pass": false,
+   "first_pass_clean": false,
+   "parse_failures": 0,
+   "findings_lines_per_round": [
+    6,
+    6,
+    2,
+    3,
+    8
+   ],
+   "graph_check_exit": 0,
+   "latency_s": 386.83,
+   "input_tokens": 33068,
+   "output_tokens": 31502,
+   "reasoning_tokens": 9298,
+   "finish_reasons": [
+    "stop",
+    "stop",
+    "stop",
+    "stop",
+    "stop"
+   ],
+   "min_catalog_distance": 0.05557029242176098,
+   "mean_catalog_distance": 0.3326989790298351,
+   "catalog_distance_note": "vs 5 in-cell peers",
+   "shell_file": "shells/A__r1__openai-gpt-5.6-sol.json",
+   "error": ""
+  },
+  {
+   "leg": "google-gemini-3.1-pro",
+   "family": "google",
+   "cell_id": "A",
+   "band": "5-8",
+   "length": "short",
+   "style": "prose",
+   "replicate": 1,
+   "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+   "attempts": 5,
+   "repair_rounds": 4,
+   "strict_pass": false,
+   "first_pass_clean": false,
+   "parse_failures": 0,
+   "findings_lines_per_round": [
+    3,
+    6,
+    2,
+    3,
+    9
+   ],
+   "graph_check_exit": 0,
+   "latency_s": 722.23,
+   "input_tokens": 28532,
+   "output_tokens": 104176,
+   "reasoning_tokens": 78216,
+   "finish_reasons": [
+    "stop",
+    "stop",
+    "stop",
+    "stop",
+    "stop"
+   ],
+   "min_catalog_distance": 0.1335977155461766,
+   "mean_catalog_distance": 0.30531081437516294,
+   "catalog_distance_note": "vs 5 in-cell peers",
+   "shell_file": "shells/A__r1__google-gemini-3.1-pro.json",
+   "error": ""
+  }
+ ]
+}

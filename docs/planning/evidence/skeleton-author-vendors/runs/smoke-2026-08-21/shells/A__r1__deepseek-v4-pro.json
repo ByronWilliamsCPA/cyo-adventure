@@ -1,0 +1,515 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "problem-solving",
+   "caring for animals",
+   "community"
+  ],
+  "estimated_minutes": 7,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "n1",
+ "nodes": [
+  {
+   "id": "n1",
+   "body": "<<FILL role=setup words=75 beats='Miri arrives at the empty school to feed Clover, Pip, and tiny Dot the hens for the first morning of holiday care, greeting each hen by name and noticing Dot is the smallest, checking the nesting boxes and finding Clover and Pip settled on their perches but Dot nowhere to be seen'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1a",
+     "label": "Search the henhouse",
+     "target": "n2"
+    },
+    {
+     "id": "c1b",
+     "label": "Call for Dot outside",
+     "target": "n3"
+    }
+   ]
+  },
+  {
+   "id": "n2",
+   "body": "<<FILL role=explore words=68 beats='Miri searches the dusty henhouse corners and under the straw bales, finding nothing but a forgotten marble from last term, checking behind the feed bin where she discovers a few small grey feathers caught on a splinter of wood'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c2a",
+     "label": "Pick up the feathers",
+     "target": "n4"
+    },
+    {
+     "id": "c2b",
+     "label": "Run to tell the caretaker",
+     "target": "n5"
+    }
+   ]
+  },
+  {
+   "id": "n3",
+   "body": "<<FILL role=explore words=72 beats='Miri stands by the henhouse door calling Dot's name softly into the morning air, hearing only the rustle of leaves and the distant hum of a tractor, noticing the vegetable garden gate is swinging open though she is sure she latched it yesterday'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c3a",
+     "label": "Go through the garden gate",
+     "target": "n6"
+    },
+    {
+     "id": "c3b",
+     "label": "Check the hedge",
+     "target": "n7"
+    }
+   ]
+  },
+  {
+   "id": "n4",
+   "body": "<<FILL role=decision words=81 beats='Miri holds the little grey feathers in her palm and remembers Dot always pecked at the compost heap behind the kitchen garden, so she decides to follow the path past the empty classrooms toward the pile of vegetable peelings where she might find the smallest hen scratching for breakfast'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c4a",
+     "label": "Head to the compost heap",
+     "target": "n8"
+    },
+    {
+     "id": "c4b",
+     "label": "Check the kitchen doorway",
+     "target": "n9"
+    },
+    {
+     "id": "c4c",
+     "label": "Look in the tool shed",
+     "target": "n10"
+    }
+   ]
+  },
+  {
+   "id": "n5",
+   "body": "<<FILL role=transition words=65 beats='Miri runs across the playground to the caretaker's cottage, but finds a note on the door saying Mr Finch has gone to the village shop, so she must decide whether to wait or search on her own'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c5a",
+     "label": "Wait for Mr Finch",
+     "target": "n11"
+    },
+    {
+     "id": "c5b",
+     "label": "Search the garden yourself",
+     "target": "n6"
+    }
+   ]
+  },
+  {
+   "id": "n6",
+   "body": "<<FILL role=explore words=74 beats='The vegetable garden is quiet and full of tall beanpoles, and Miri spots a shallow dust-bath hollow scratched into the soil near the cabbages with more tiny grey feathers scattered around the edge'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c6a",
+     "label": "Follow the feather trail",
+     "target": "n12"
+    },
+    {
+     "id": "c6b",
+     "label": "Listen for clucking",
+     "target": "n13"
+    }
+   ]
+  },
+  {
+   "id": "n7",
+   "body": "<<FILL role=explore words=69 beats='Miri walks along the thick hedge at the edge of the playing field, pushing through the long grass where she finds an old football and a blue hair ribbon, but no sign of a small grey hen at all'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c7a",
+     "label": "Climb through the hedge",
+     "target": "n14"
+    },
+    {
+     "id": "c7b",
+     "label": "Try the garden instead",
+     "target": "n6"
+    }
+   ]
+  },
+  {
+   "id": "n8",
+   "body": "<<FILL role=climax words=82 beats='Miri reaches the compost heap and finds Dot sitting contentedly in a warm hollow of leaves, but the little hen has a tangle of garden twine wrapped around one leg and cannot walk back to the henhouse'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c8a",
+     "label": "Untangle the twine",
+     "target": "n15"
+    },
+    {
+     "id": "c8b",
+     "label": "Get scissors",
+     "target": "n16"
+    }
+   ]
+  },
+  {
+   "id": "n9",
+   "body": "<<FILL role=explore words=70 beats='Miri peers through the kitchen window and sees the cook's apron hanging on its hook, but the door is locked and the step is swept clean with no feathers, no scratches, and no sign that any hen has been here this morning'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c9a",
+     "label": "Try the compost heap",
+     "target": "n8"
+    }
+   ]
+  },
+  {
+   "id": "n10",
+   "body": "<<FILL role=explore words=73 beats='The tool shed smells of oil and grass clippings, and Miri finds a coil of green garden twine on the floor beside the lawnmower that looks exactly like the sort of thing a curious hen might peck at and get tangled in'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c10a",
+     "label": "Head to the compost heap",
+     "target": "n8"
+    }
+   ]
+  },
+  {
+   "id": "n11",
+   "body": "<<FILL role=transition words=68 beats='Mr Finch returns with his shopping and listens carefully to Miri's story about the missing hen, then fetches his torch and a pair of gardening gloves from the cupboard under the stairs'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c11a",
+     "label": "Lead him to the compost heap",
+     "target": "n17"
+    },
+    {
+     "id": "c11b",
+     "label": "Show him the feathers",
+     "target": "n4"
+    }
+   ]
+  },
+  {
+   "id": "n12",
+   "body": "<<FILL role=climax words=79 beats='At the back fence Miri discovers a torn scrap of green twine caught on a nail and, just beyond it, Dot pecking happily at a spilled birdseed pile underneath the neighbour's apple tree, too busy eating to notice she is lost'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c12a",
+     "label": "Squeeze through the fence",
+     "target": "n18"
+    },
+    {
+     "id": "c12b",
+     "label": "Call Dot to you",
+     "target": "n19"
+    }
+   ]
+  },
+  {
+   "id": "n13",
+   "body": "<<FILL role=explore words=65 beats='Miri kneels in the garden soil and holds her breath, and after a long silence she hears a faint, familiar cluck coming from the direction of the compost heap behind the beanpoles'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c13a",
+     "label": "Follow the sound",
+     "target": "n8"
+    }
+   ]
+  },
+  {
+   "id": "n14",
+   "body": "<<FILL role=explore words=72 beats='Beyond the hedge is the school's quiet lane, and Miri spots a trail of tiny three-toed footprints in the mud along the verge leading toward the front gate and the big oak tree where crows are cawing loudly'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c14a",
+     "label": "Hurry to the oak tree",
+     "target": "n20"
+    },
+    {
+     "id": "c14b",
+     "label": "Go back through the garden",
+     "target": "n6"
+    }
+   ]
+  },
+  {
+   "id": "n15",
+   "body": "<<FILL role=climax words=83 beats='Miri speaks softly to Dot and carefully works the twine loose with her fingers, and the little hen clucks gratefully and fluffs her feathers before stepping free, looking up at Miri with bright black eyes'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c15a",
+     "label": "Carry Dot home",
+     "target": "n21"
+    },
+    {
+     "id": "c15b",
+     "label": "Check for more twine",
+     "target": "n27"
+    }
+   ]
+  },
+  {
+   "id": "n16",
+   "body": "<<FILL role=transition words=70 beats='Miri races back to the henhouse and finds the scissors in the feed cupboard, but when she returns to the compost heap she sees that the neighbour's black cat has crept into the garden and is watching Dot with wide yellow eyes'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c16a",
+     "label": "Chase the cat away",
+     "target": "n22"
+    },
+    {
+     "id": "c16b",
+     "label": "Pick up Dot first",
+     "target": "n23"
+    }
+   ]
+  },
+  {
+   "id": "n17",
+   "body": "<<FILL role=climax words=78 beats='Mr Finch shines his torch into the hollow of the compost heap and the light catches the gleam of Dot's eyes, and he lifts the tangled hen out with his gloved hands while Miri holds the torch steady'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c17a",
+     "label": "Carry Dot back",
+     "target": "n21"
+    },
+    {
+     "id": "c17b",
+     "label": "Check the rest of the garden",
+     "target": "n28"
+    }
+   ]
+  },
+  {
+   "id": "n18",
+   "body": "<<FILL role=climax words=85 beats='Miri squeezes carefully through the fence slats and scoops Dot into her arms, feeling the little hen's heart beating fast against her palm, and she carries her back through the garden telling her about the nice breakfast waiting in the henhouse'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c18a",
+     "label": "Return Dot home",
+     "target": "n21"
+    },
+    {
+     "id": "c18b",
+     "label": "Check the apple tree",
+     "target": "n29"
+    }
+   ]
+  },
+  {
+   "id": "n19",
+   "body": "<<FILL role=climax words=80 beats='Miri kneels and clucks her tongue the way she does when she brings the hens their corn, and Dot's head pops up from the birdseed pile and she trots through a gap in the fence straight to Miri's outstretched hands'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c19a",
+     "label": "Carry Dot home",
+     "target": "n21"
+    },
+    {
+     "id": "c19b",
+     "label": "Check the lane",
+     "target": "n30"
+    }
+   ]
+  },
+  {
+   "id": "n20",
+   "body": "<<FILL role=climax words=86 beats='Under the oak tree Miri finds Dot trapped inside an upturned flowerpot that must have fallen from the low branch above, and the crows are circling but the little hen is perfectly safe though very cross about missing her breakfast'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c20a",
+     "label": "Lift the flowerpot",
+     "target": "n24"
+    },
+    {
+     "id": "c20b",
+     "label": "Chase the crows away",
+     "target": "n31"
+    }
+   ]
+  },
+  {
+   "id": "n21",
+   "body": "<<FILL role=ending words=78 beats='Miri places Dot gently on the straw beside Clover and Pip, who cluck a noisy welcome, and she fills the feeder with fresh pellets and checks every latch and gate before heading home knowing all three hens are safe'>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "All Three Hens Safe"
+   }
+  },
+  {
+   "id": "n22",
+   "body": "<<FILL role=climax words=84 beats='Miri shouts and waves her arms, and the black cat darts away through the fence, but Dot is frightened and flutters deeper into the compost heap where Miri cannot reach her without climbing onto the pile and sinking into the leaves'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c22a",
+     "label": "Climb in and reach for Dot",
+     "target": "n25"
+    },
+    {
+     "id": "c22b",
+     "label": "Wait quietly for Dot",
+     "target": "n26"
+    }
+   ]
+  },
+  {
+   "id": "n23",
+   "body": "<<FILL role=climax words=80 beats='Miri walks slowly and scoops Dot up before the cat can pounce, then snips the twine with the scissors while holding the little hen firmly but gently against her coat, and the cat yawns and wanders off disappointed'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c23a",
+     "label": "Carry Dot home",
+     "target": "n21"
+    }
+   ]
+  },
+  {
+   "id": "n24",
+   "body": "<<FILL role=ending words=76 beats='Miri lifts the flowerpot and Dot scuttles out scolding loudly, and Miri carries the little hen all the way back checking for any cuts or scratches, finding none, and settles Dot in the henhouse with a special handful of sunflower seeds'>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Dot Found Under the Oak"
+   }
+  },
+  {
+   "id": "n25",
+   "body": "<<FILL role=climax words=82 beats='Miri scrambles onto the compost heap and reaches into the hollow, grabbing Dot firmly but losing her balance so both girl and hen tumble into a soft mound of grass clippings with Dot flapping indignantly but unhurt'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c25a",
+     "label": "Carry Dot home",
+     "target": "n32"
+    }
+   ]
+  },
+  {
+   "id": "n26",
+   "body": "<<FILL role=climax words=79 beats='Miri sits very still on the grass and after a long quiet minute Dot creeps out of the hollow and pecks at Miri's shoelace, and Miri can snip the twine while the little hen is busy untying the knot'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c26a",
+     "label": "Carry Dot home",
+     "target": "n21"
+    }
+   ]
+  },
+  {
+   "id": "n27",
+   "body": "<<FILL role=ending words=72 beats='After freeing Dot, Miri stays in the garden to coil up every scrap of loose twine she can find and tucks it safely inside the tool shed, making the whole school safer for curious hens before giving Dot an extra cuddle'>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e3",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Garden Made Safe"
+   }
+  },
+  {
+   "id": "n28",
+   "body": "<<FILL role=ending words=78 beats='With Dot safely back in the henhouse, Mr Finch helps Miri search the rest of the garden and they discover the loose fence board Dot squeezed through, so Mr Finch nails it back into place while Miri holds the hammer for him'>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e4",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Fence Repaired Together"
+   }
+  },
+  {
+   "id": "n29",
+   "body": "<<FILL role=ending words=75 beats='Miri peeks under the neighbour's apple tree and finds a single warm egg nestled in the grass where Dot must have laid it while she was lost, and she carries both the hen and the egg carefully back to the henhouse'>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e5",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Surprise Egg"
+   }
+  },
+  {
+   "id": "n30",
+   "body": "<<FILL role=ending words=80 beats='After carrying Dot home Miri walks the lane all the way to the village green and back, finding no other lost hens but spotting three different kinds of butterfly and a ladybird, arriving home for her own lunch feeling like a proper explorer'>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e6",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Adventure on the Lane"
+   }
+  },
+  {
+   "id": "n31",
+   "body": "<<FILL role=ending words=81 beats='Miri flaps her arms and shoos the crows away from the oak tree before lifting the flowerpot, and Dot scuttles out unharmed while the crows caw from a safer branch, and Miri tells Dot she was very brave as she carries her home'>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e7",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Brave Dot Rescued"
+   }
+  },
+  {
+   "id": "n32",
+   "body": "<<FILL role=ending words=74 beats='Miri brushes grass clippings from her coat and Dot's feathers, checks the little hen for any hurts, and carries her back to the henhouse where Clover and Pip rush over to inspect their adventurous sister with worried clucks'>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e8",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Tumble But Safe"
+   }
+  }
+ ]
+}

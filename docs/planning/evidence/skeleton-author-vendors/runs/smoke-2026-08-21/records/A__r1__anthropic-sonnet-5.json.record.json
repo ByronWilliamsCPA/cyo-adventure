@@ -1,0 +1,39 @@
+{
+ "leg": "anthropic-sonnet-5",
+ "family": "anthropic",
+ "cell_id": "A",
+ "band": "5-8",
+ "length": "short",
+ "style": "prose",
+ "replicate": 1,
+ "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+ "attempts": 5,
+ "repair_rounds": 4,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 2,
+ "findings_lines_per_round": [
+  1,
+  5,
+  8,
+  1,
+  35
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 1439.23,
+ "input_tokens": 32781,
+ "output_tokens": 148863,
+ "reasoning_tokens": 127206,
+ "finish_reasons": [
+  "length",
+  "stop",
+  "stop",
+  "length",
+  "stop"
+ ],
+ "min_catalog_distance": 0.09654258221954837,
+ "mean_catalog_distance": 0.32767993262933826,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "shell_file": "shells/A__r1__anthropic-sonnet-5.json",
+ "error": ""
+}
