@@ -16,7 +16,6 @@ import re
 from typing import TYPE_CHECKING
 
 from cyo_adventure.core.exceptions import ValidationError
-from cyo_adventure.validator.gate import run_gate
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -96,6 +95,23 @@ def load_skeleton(
             :func:`cyo_adventure.validator.gate.run_gate`'s blocking
             semantics.
     """
+    # Imported here rather than at module scope because `run_gate` is this
+    # module's ONLY heavy dependency, and it pulls
+    # validator.gate -> validator.choice_grammar -> diversity -> diversity.history
+    # -> sqlalchemy. Everything else in this file is pure text and table
+    # lookups, and most importers want only those: `scripts/check_fill_integrity.py`
+    # takes `commissioned_words_by_node`, `scripts/compare_vendors.py` takes
+    # `resolve_output_cap`, and `mutation/floors.py`, `mutation/sample_fill.py`
+    # and `flywheel/strategy.py` take `is_sidecar` or `FILL_MARKER`. At module
+    # scope this import made all of them fail to load without a database driver
+    # installed, and made the offline mutation core, which ADR-020 says reads no
+    # request, database or network, import the deterministic gate transitively.
+    # A local import here is narrower than splitting the module, because
+    # `load_skeleton` is the single gated function and the most widely imported
+    # symbol, so a split would repoint far more call sites than it protects.
+    # #VERIFY: test_the_module_imports_without_a_database_driver.
+    from cyo_adventure.validator.gate import run_gate  # noqa: PLC0415
+
     data: dict[str, object] = json.loads(path.read_text(encoding="utf-8"))
     result = run_gate(data, enforce_grammar=enforce_grammar)
     if report_sink is not None:

@@ -1530,3 +1530,62 @@ def test_main_records_no_directives_for_an_undirected_run(tmp_path: Path) -> Non
     assert report2["differentiation_directives"] is None, (
         "an all-null spec is an undirected run and must not record as directed"
     )
+
+
+def test_load_vendors_rejects_case_equivalent_labels(tmp_path: Path) -> None:
+    """Two labels differing only in case would collapse into one book file.
+
+    `_book_filename` builds the artifact name from the label, so on a
+    case-insensitive filesystem (the macOS and Windows default) the second
+    vendor overwrites the first vendor's already-paid-for books. The exact-match
+    uniqueness check this replaces let the pair through.
+    """
+    path = _write_vendors(
+        tmp_path,
+        [
+            {"label": "Anthropic", "model": "m", "provider_order": ["p"]},
+            {"label": "anthropic", "model": "m2", "provider_order": ["p"]},
+        ],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _load_vendors(path)
+
+    assert excinfo.value.code == 1
+
+
+@pytest.mark.parametrize("label", ["../escape", "sub/dir", ".", ".."])
+def test_load_vendors_rejects_a_label_that_is_not_a_bare_filename(
+    tmp_path: Path, label: str
+) -> None:
+    """A separator or traversal segment escapes the books directory.
+
+    The label is interpolated into the output filename and joined under the run
+    directory, so anything but a bare name writes somewhere the operator did not
+    name.
+    """
+    path = _write_vendors(
+        tmp_path, [{"label": label, "model": "m", "provider_order": ["p"]}]
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _load_vendors(path)
+
+    assert excinfo.value.code == 1
+
+
+def test_load_vendors_still_accepts_distinct_labels(tmp_path: Path) -> None:
+    """The hardening must not reject the ordinary slate.
+
+    Load-bearing for the two rejections above: a case-fold comparison that also
+    rejected genuinely distinct labels would fail every real run.
+    """
+    path = _write_vendors(
+        tmp_path,
+        [
+            {"label": "anthropic", "model": "m", "provider_order": ["p"]},
+            {"label": "grok", "model": "m2", "provider_order": ["p"]},
+        ],
+    )
+
+    assert [v.label for v in _load_vendors(path)] == ["anthropic", "grok"]

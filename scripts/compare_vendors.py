@@ -398,10 +398,31 @@ def _load_vendors(path: Path) -> list[Vendor]:
         # provider call is billed.
         # #VERIFY: test_load_vendors_rejects_a_duplicate_label in
         # tests/unit/test_compare_vendors.py.
-        if label in seen_labels:
-            print(f"Error: vendor #{i} reuses label '{label}'.", file=sys.stderr)
+        # #CRITICAL: data-integrity: the label becomes the book filename in
+        # `_book_filename`, so two labels that differ only in case resolve to
+        # ONE file on a case-insensitive filesystem (the macOS and Windows
+        # default) and the second vendor silently overwrites the first vendor's
+        # already-paid-for books. A separator or traversal segment escapes the
+        # output directory entirely. Neither is caught by the exact-match
+        # uniqueness check this replaces.
+        # #VERIFY: test_load_vendors_rejects_case_equivalent_labels and
+        # test_load_vendors_rejects_a_label_that_is_not_a_bare_filename.
+        if label != Path(label).name or label in {".", ".."}:
+            print(
+                f"Error: vendor #{i} label '{label}' is not a bare name; it "
+                "would write outside the books directory.",
+                file=sys.stderr,
+            )
             sys.exit(1)
-        seen_labels.add(label)
+        if label.casefold() in seen_labels:
+            print(
+                f"Error: vendor #{i} reuses label '{label}' (compared without "
+                "case, because a case-insensitive filesystem would collapse "
+                "the two book files into one and lose a paid run).",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        seen_labels.add(label.casefold())
         if not isinstance(order_raw, list):
             print(f"Error: vendor #{i} provider_order must be a list.", file=sys.stderr)
             sys.exit(1)

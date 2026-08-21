@@ -11,6 +11,8 @@ unless a small-output backend is clamped back down.
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -393,4 +395,40 @@ def test_the_provider_model_outranks_the_configured_default() -> None:
             forbidden=PiiContext(child_names=frozenset()),
         ).model
         is None
+    )
+
+
+@pytest.mark.unit
+def test_the_module_imports_without_a_database_driver() -> None:
+    """`generation.skeleton` must not pull the DB layer at import time.
+
+    `load_skeleton` needs `validator.gate`, which reaches sqlalchemy through
+    `validator.choice_grammar` -> `diversity` -> `diversity.history`. Every other
+    symbol here is pure text and table lookups, and the light importers want only
+    those: `scripts/check_fill_integrity.py`, `scripts/compare_vendors.py`, and
+    the ADR-020 offline mutation core, which is specified to read no request,
+    database or network.
+
+    Run in a subprocess because the in-process test session has already imported
+    sqlalchemy for other suites, so `sys.modules` here can never observe the
+    regression. An in-process assertion would be a check that cannot fail.
+    """
+    probe = (
+        "import sys;"
+        "import cyo_adventure.generation.skeleton as s;"
+        "assert callable(s.commissioned_words_by_node);"
+        "assert callable(s.load_skeleton);"
+        "print('sqlalchemy' in sys.modules)"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", probe],
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=120,
+    )
+    assert result.stdout.strip() == "False", (
+        "importing generation.skeleton pulled the sqlalchemy chain, so the "
+        "script and offline-mutation importers now need a database driver "
+        f"installed to load a pure text helper. stdout={result.stdout!r}"
     )
