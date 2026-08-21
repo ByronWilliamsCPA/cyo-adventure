@@ -1,0 +1,30 @@
+{
+ "leg": "deepseek-v4-pro",
+ "family": "deepseek",
+ "cell_id": "A",
+ "band": "5-8",
+ "length": "short",
+ "style": "prose",
+ "replicate": 1,
+ "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+ "attempts": 1,
+ "repair_rounds": 0,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  3
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 0.0,
+ "input_tokens": null,
+ "output_tokens": null,
+ "reasoning_tokens": null,
+ "finish_reasons": [],
+ "min_catalog_distance": 0.17435038710460168,
+ "mean_catalog_distance": 0.37866122661118423,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "last_feedback": "ERROR   L1-3   node=n24 L1-3 reach: node 'n24' is unreachable from start_node 'n1' in story 'miri-and-the-missing-hen'\nERROR   L1-7   L1-7 budget: branch_depth out of range in story 'miri-and-the-missing-hen': 10 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-tools-2026-08-21/shells/A__r1__deepseek-v4-pro.json failed structural validation: L1-3 reach: node 'n24' is unreachable from start_node 'n1' in story 'miri-and-the-missing-hen'; L1-7 budget: branch_depth out of range in story 'miri-and-the-missing-hen': 10 (allowed 0..7)",
+ "shell_file": "shells/A__r1__deepseek-v4-pro.json",
+ "error": ""
+}

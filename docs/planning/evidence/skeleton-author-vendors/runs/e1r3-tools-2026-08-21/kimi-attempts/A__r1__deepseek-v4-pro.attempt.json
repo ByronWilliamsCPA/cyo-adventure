@@ -1,0 +1,369 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "problem-solving",
+   "kindness to animals",
+   "community help"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 6,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n1",
+ "nodes": [
+  {
+   "id": "n1",
+   "body": "<<FILL role=setup words=70 beats='Miri arrives at school on Monday morning of holiday week, key turns in the lock, she greets the three hens by name: Bramble the big red, Pip the speckled, and Feather the smallest white hen, she fills their water and scatters corn, the coop is warm and safe'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1a",
+     "label": "Check the coop again before you lock up",
+     "target": "n2"
+    },
+    {
+     "id": "c1b",
+     "label": "Head home and come back tomorrow",
+     "target": "n3"
+    }
+   ]
+  },
+  {
+   "id": "n2",
+   "body": "<<FILL role=explore words=70 beats='Miri double-checks the coop latch, counts three fluffy shapes on the roost, notices Feather is sleeping tucked under Bramble wing, everything is in order, she whispers goodnight and locks the school gate'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c2a",
+     "label": "Come back first thing in the morning",
+     "target": "n3"
+    }
+   ]
+  },
+  {
+   "id": "n3",
+   "body": "<<FILL role=transition words=70 beats='Next morning Miri hurries to school, unlocks the gate, hears only two clucks, her heart thumps as she reaches the coop'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c3a",
+     "label": "Run to the coop and count the hens",
+     "target": "n4"
+    }
+   ]
+  },
+  {
+   "id": "n4",
+   "body": "<<FILL role=decision words=70 beats='Miri opens the coop door, Bramble and Pip rush out, Feather the smallest white hen is gone, a few white feathers drift near the back corner, the wire mesh has a small gap near the ground'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c4a",
+     "label": "Search the school garden first",
+     "target": "n5"
+    },
+    {
+     "id": "c4b",
+     "label": "Call your friend Leo to help",
+     "target": "n6"
+    },
+    {
+     "id": "c4c",
+     "label": "Look for Feather near the school gate",
+     "target": "n22"
+    }
+   ]
+  },
+  {
+   "id": "n5",
+   "body": "<<FILL role=explore words=70 beats='Miri searches the vegetable beds, checks under the rosemary bush, finds a trail of tiny scratch marks in the dirt leading toward the compost heap, a white feather is caught on a twig'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c5a",
+     "label": "Follow the scratch marks to the compost",
+     "target": "n7"
+    },
+    {
+     "id": "c5b",
+     "label": "Check the hedge by the fence",
+     "target": "n8"
+    }
+   ]
+  },
+  {
+   "id": "n6",
+   "body": "<<FILL role=explore words=70 beats='Miri runs to Leo house two streets away, Leo grabs his torch and a handful of dried mealworms, they hurry back to school together, Leo says Feather might be hiding somewhere warm'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c6a",
+     "label": "Search the shed behind the playground",
+     "target": "n9"
+    },
+    {
+     "id": "c6b",
+     "label": "Check the school kitchen doorstep",
+     "target": "n10"
+    }
+   ]
+  },
+  {
+   "id": "n7",
+   "body": "<<FILL role=explore words=70 beats='At the compost heap Miri hears a soft cheeping, she peers behind the warm rotting leaves and spots Feather nestled in a hollow, the little hen has made a cosy nest but looks hungry and thirsty'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c7a",
+     "label": "Gently pick up Feather and carry her back",
+     "target": "n11"
+    },
+    {
+     "id": "c7b",
+     "label": "Bring water and corn to Feather here",
+     "target": "n12"
+    }
+   ]
+  },
+  {
+   "id": "n8",
+   "body": "<<FILL role=explore words=70 beats='Miri pushes through the hedge, discovers a gap in the school fence she never noticed before, beyond it lies the neighbour overgrown allotment, a ginger cat is watching from a shed roof'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c8a",
+     "label": "Climb through the gap and look in the allotment",
+     "target": "n13"
+    },
+    {
+     "id": "c8b",
+     "label": "Go back and ask the neighbour for help",
+     "target": "n14"
+    }
+   ]
+  },
+  {
+   "id": "n9",
+   "body": "<<FILL role=explore words=70 beats='The shed is dark and smells of old cricket pads, Leo shines his torch under a stack of cones, two bright eyes blink back, Feather is perched on a folded PE mat, quiet as a mouse'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c9a",
+     "label": "Coax Feather out with the mealworms",
+     "target": "n15"
+    }
+   ]
+  },
+  {
+   "id": "n10",
+   "body": "<<FILL role=explore words=70 beats='The kitchen doorstep is sunny and warm, a saucer of milk sits by the back door, but no Feather, only a few crumbs from yesterday toast, Miri feels a pang of worry'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c10a",
+     "label": "Go back and check the garden hedge",
+     "target": "n8"
+    }
+   ]
+  },
+  {
+   "id": "n11",
+   "body": "<<FILL role=climax words=70 beats='Miri scoops Feather up gently, the hen clucks softly and nestles into her arms, she carries her back to the coop, Bramble and Pip rush over clucking, Miri mends the gap in the wire with garden twine'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c11a",
+     "label": "Sit with the hens until they settle",
+     "target": "n16"
+    }
+   ]
+  },
+  {
+   "id": "n12",
+   "body": "<<FILL role=climax words=70 beats='Miri fetches a small pot of water and a handful of corn, Feather drinks gratefully and pecks at the corn, but when Miri tries to lift her the hen scuttles deeper into the compost'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c12a",
+     "label": "Wait quietly until Feather comes to you",
+     "target": "n17"
+    },
+    {
+     "id": "c12b",
+     "label": "Fetch Bramble to call Feather back",
+     "target": "n18"
+    }
+   ]
+  },
+  {
+   "id": "n13",
+   "body": "<<FILL role=explore words=70 beats='Miri scrambles into the allotment, tall grass and abandoned bean canes everywhere, she spots a flash of white under an old wheelbarrow, the ginger cat is slinking closer'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c13a",
+     "label": "Run and scoop up Feather before the cat reaches her",
+     "target": "n19"
+    },
+    {
+     "id": "c13b",
+     "label": "Clap your hands to scare the cat away",
+     "target": "n20"
+    }
+   ]
+  },
+  {
+   "id": "n14",
+   "body": "<<FILL role=transition words=70 beats='Miri knocks on the neighbour blue door, Mrs Patel answers with a kind smile, she says she saw a little white hen in her allotment this morning and was about to call the school'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c14a",
+     "label": "Follow Mrs Patel into the allotment",
+     "target": "n21"
+    }
+   ]
+  },
+  {
+   "id": "n15",
+   "body": "<<FILL role=climax words=70 beats='Leo shakes the mealworms gently, Feather tilts her head, hops down from the mat and pecks at the treat, Leo scoops her up carefully and they carry her back to the coop together'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c15a",
+     "label": "Help Leo mend the coop gap",
+     "target": "n16"
+    }
+   ]
+  },
+  {
+   "id": "n16",
+   "body": "<<FILL role=ending words=70 beats='Miri watches the three hens settle on the roost, Feather tucked safely between Bramble and Pip, she patches the coop wire properly, locks the gate, and walks home knowing she kept them all safe'>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "All Three Hens Safe"
+   }
+  },
+  {
+   "id": "n17",
+   "body": "<<FILL role=ending words=70 beats='Miri sits perfectly still on the grass, humming a soft tune, after a long while Feather walks out and hops onto her lap, Miri carries her home to the coop as the sun sets'>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Feather Comes Home at Sunset"
+   }
+  },
+  {
+   "id": "n18",
+   "body": "<<FILL role=climax words=70 beats='Miri carries Bramble from the coop to the compost heap, Bramble gives a loud commanding cluck, Feather answers with a cheep and scurries out, the two hens touch beaks'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c18a",
+     "label": "Carry both hens back to the coop",
+     "target": "n16"
+    }
+   ]
+  },
+  {
+   "id": "n19",
+   "body": "<<FILL role=ending words=70 beats='Miri darts forward and grabs Feather just as the cat pounces, the cat skids to a stop and glares, Miri tucks Feather inside her jumper and scrambles back through the fence gap, heart pounding'>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e3",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Brave Rescue"
+   }
+  },
+  {
+   "id": "n20",
+   "body": "<<FILL role=transition words=70 beats='The cat bolts at the clapping, Feather squawks and flaps deeper into the allotment, disappearing behind a stack of old seed trays, Miri cannot see where she went'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c20a",
+     "label": "Call Mrs Patel to help search",
+     "target": "n14"
+    }
+   ]
+  },
+  {
+   "id": "n21",
+   "body": "<<FILL role=ending words=70 beats='Mrs Patel leads Miri to the seed trays, together they lift them aside, Feather is huddled in a clump of dandelions, Mrs Patel picks her up with steady hands and hands her to Miri, who carries her home'>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e4",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Neighbours Helping Neighbours"
+   }
+  },
+  {
+   "id": "n22",
+   "body": "<<FILL role=explore words=70 beats='Miri searches near the school gate, finds a patch of scratched earth and a few white feathers on the pavement, the trail leads toward the staff car park'>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c22a",
+     "label": "Follow the trail into the car park",
+     "target": "n23"
+    }
+   ]
+  },
+  {
+   "id": "n23",
+   "body": "<<FILL role=ending words=70 beats='In the car park Miri finds Feather pecking at spilt popcorn under a teacher car, she shakes the corn bucket and Feather trots out, Miri carries her home and patches the coop wire before dark'>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e5",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Feather in the Car Park"
+   }
+  },
+  {
+   "id": "n24",
+   "body": "<<FILL role=ending words=70 beats='Miri draws a beautiful poster with Feather picture, her mum helps pin copies around the village, the next morning a woman calls to say she found a white hen in her greenhouse and kept her warm all night'>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e6",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Feather Is Found by a Neighbour"
+   }
+  }
+ ]
+}
