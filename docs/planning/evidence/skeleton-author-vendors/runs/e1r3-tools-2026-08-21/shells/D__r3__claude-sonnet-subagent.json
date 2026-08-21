@@ -1,0 +1,405 @@
+{
+ "schema_version": "2.0",
+ "id": "two-mintings-of-harrow-hollow",
+ "version": 1,
+ "title": "The Two Mintings of Harrow Hollow",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "fairness",
+   "trust",
+   "curiosity",
+   "community",
+   "problem-solving"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 12,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=10 beats='Idris is helping weigh grain at a family stall at the harvest swap-market when the price drift between sunwheel and sheaf tokens is first noticed.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_start_brt1",
+     "label": "Start asking questions about the tokens",
+     "target": "brt1"
+    }
+   ]
+  },
+  {
+   "id": "brt1",
+   "body": "<<FILL role=explore words=10 beats='Idris sets down the scale and looks around the market, trying to decide where to begin.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_brt1_brt2",
+     "label": "Walk out into the market rows",
+     "target": "brt2"
+    }
+   ]
+  },
+  {
+   "id": "brt2",
+   "body": "<<FILL role=transition words=10 beats='The rows of stalls are busy with harvest trading, tokens clinking from hand to hand.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_brt2_brt3",
+     "label": "Watch the trading for a moment",
+     "target": "brt3"
+    }
+   ]
+  },
+  {
+   "id": "brt3",
+   "body": "<<FILL role=transition words=10 beats='A pattern in the prices starts to nag at Idris, too odd to be a coincidence.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_brt3_d1",
+     "label": "Decide how to look into it",
+     "target": "d1"
+    }
+   ]
+  },
+  {
+   "id": "d1",
+   "body": "<<FILL role=decision words=90 beats='At the harvest swap-market Idris notices rye bread costs three sunwheel tokens at one stall but four sheaf tokens at the next, though the two token kinds are supposed to trade evenly; Idris must decide how to start figuring out why.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d1_d2",
+     "label": "Ask Auntie Resh about the tokens",
+     "target": "d2"
+    },
+    {
+     "id": "c_d1_d3",
+     "label": "Compare prices at every stall",
+     "target": "d3"
+    },
+    {
+     "id": "c_d1_d4",
+     "label": "Follow the cart to the token-smith shed",
+     "target": "d4"
+    }
+   ]
+  },
+  {
+   "id": "d2",
+   "body": "<<FILL role=decision words=90 beats='Auntie Resh the token-smith turns a sheaf token over in her fingers and admits she has noticed the drift too, saying a second minting went out this season that looks almost identical to the first.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d2_d5",
+     "label": "Help Auntie Resh weigh the tokens right away",
+     "target": "d5"
+    },
+    {
+     "id": "c_d2_d6",
+     "label": "Ask who minted the second batch",
+     "target": "d6"
+    },
+    {
+     "id": "c_d2_d7",
+     "label": "Bring the question straight to Old Ban",
+     "target": "d7"
+    }
+   ]
+  },
+  {
+   "id": "d3",
+   "body": "<<FILL role=decision words=90 beats='Walking stall to stall with a wax slate, Idris finds sellers near the east gate quietly charging less for sheaf tokens than sellers near the well, though none of them seem to know why.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d3_d5",
+     "label": "Post the price pattern by the well",
+     "target": "d5"
+    },
+    {
+     "id": "c_d3_d7",
+     "label": "Ask the east-gate sellers directly",
+     "target": "d7"
+    },
+    {
+     "id": "c_d3_d8",
+     "label": "Take the pattern straight to Old Ban",
+     "target": "d8"
+    }
+   ]
+  },
+  {
+   "id": "d4",
+   "body": "<<FILL role=decision words=90 beats='Idris trails a cart loaded with blank token disks toward a shed at the edge of the market where the press that stamps new tokens is kept.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d4_d6",
+     "label": "Ask to see inside the minting press",
+     "target": "d6"
+    },
+    {
+     "id": "c_d4_d8",
+     "label": "Wait and watch who visits the shed",
+     "target": "d8"
+    },
+    {
+     "id": "c_d4_d5",
+     "label": "Fetch Auntie Resh to look at the press",
+     "target": "d5"
+    }
+   ]
+  },
+  {
+   "id": "d5",
+   "body": "<<FILL role=decision words=90 beats='With the tokens finally laid out together, Idris and the others who came along get ready to settle the question of the two mintings once and for all.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d5_e1",
+     "label": "Weigh the tokens side by side",
+     "target": "e1"
+    },
+    {
+     "id": "c_d5_e2",
+     "label": "Ask Auntie Resh to explain the batch",
+     "target": "e2"
+    },
+    {
+     "id": "c_d5_e3",
+     "label": "Invite Old Ban to see the results",
+     "target": "e3"
+    }
+   ]
+  },
+  {
+   "id": "d6",
+   "body": "<<FILL role=decision words=90 beats='The mark near the rim of the newer tokens points toward a specific press, and Idris wants to know exactly who has been running it this season.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d6_e4",
+     "label": "Trace the mark to the new press",
+     "target": "e4"
+    },
+    {
+     "id": "c_d6_e5",
+     "label": "Ask the token-smith who runs it",
+     "target": "e5"
+    },
+    {
+     "id": "c_d6_e6",
+     "label": "Compare the mark to older tokens",
+     "target": "e6"
+    }
+   ]
+  },
+  {
+   "id": "d7",
+   "body": "<<FILL role=decision words=90 beats='Old Ban the market steward listens carefully as Idris lays out everything found so far about the two mintings and asks what should happen next.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d7_e7",
+     "label": "Lay out everything found so far",
+     "target": "e7"
+    },
+    {
+     "id": "c_d7_e8",
+     "label": "Suggest a public weighing station",
+     "target": "e8"
+    },
+    {
+     "id": "c_d7_e9",
+     "label": "Ask Old Ban to check mint records",
+     "target": "e9"
+    }
+   ]
+  },
+  {
+   "id": "d8",
+   "body": "<<FILL role=decision words=90 beats='Curiosity about the shed and the east-gate sellers pulls in more of the market, and Idris has to decide how to answer everyone at once.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_d8_e10",
+     "label": "Call a market-wide meeting",
+     "target": "e10"
+    },
+    {
+     "id": "c_d8_e11",
+     "label": "Post a running chart by the gate",
+     "target": "e11"
+    },
+    {
+     "id": "c_d8_e12",
+     "label": "Set up a public weighing for everyone",
+     "target": "e12"
+    }
+   ]
+  },
+  {
+   "id": "e1",
+   "body": "<<FILL role=ending words=90 beats='Idris and Auntie Resh set the scales right there at her cart; every sunwheel and sheaf token balances exactly even, and word of the fair weigh-in spreads through the market before the afternoon is out.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Honest Weigh-In"
+   }
+  },
+  {
+   "id": "e2",
+   "body": "<<FILL role=ending words=90 beats='Auntie Resh explains the sheaf tokens simply came from a newer batch stamped upriver this season; once sellers hear the plain explanation, they stop treating the newer tokens as worth less.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Naming the Second Batch"
+   }
+  },
+  {
+   "id": "e3",
+   "body": "<<FILL role=ending words=90 beats='Old Ban confirms the weigh-in results in front of the whole market, and the honest, ordinary explanation settles the matter for good.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e3",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Confirmed at the Platform"
+   }
+  },
+  {
+   "id": "e4",
+   "body": "<<FILL role=ending words=90 beats='Tracing the mark leads straight to the new press upriver, and once the source is named plainly, the price drift stops mattering to anyone.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e4",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Tracing the Mark"
+   }
+  },
+  {
+   "id": "e5",
+   "body": "<<FILL role=ending words=90 beats='The token-smith who runs the new press explains the batch was simply pressed a little later this season, nothing more mysterious than that.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e5",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Later Batch"
+   }
+  },
+  {
+   "id": "e6",
+   "body": "<<FILL role=ending words=90 beats='Comparing the marks side by side shows the two mintings really are worth exactly the same, though it takes a careful eye to tell them apart.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e6",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Careful Eye"
+   }
+  },
+  {
+   "id": "e7",
+   "body": "<<FILL role=ending words=90 beats='Old Ban thanks Idris for bringing everything together so clearly, and the steward takes it from there with the whole market watching.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e7",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Handed to the Steward"
+   }
+  },
+  {
+   "id": "e8",
+   "body": "<<FILL role=ending words=90 beats='The public weighing station becomes a regular fixture of market days, and trust in both kinds of tokens is fully restored by the next harvest swap.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e8",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Open to Anyone"
+   }
+  },
+  {
+   "id": "e9",
+   "body": "<<FILL role=ending words=90 beats='Old Ban matches the odd batch to specific delivery days in the mint records, closing the question with proof anyone can check.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e9",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Mint Records"
+   }
+  },
+  {
+   "id": "e10",
+   "body": "<<FILL role=ending words=90 beats='The market meeting runs long, and by the time everyone agrees on what to do, a few sellers have already grown wary of the newer tokens.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e10",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "A Long Meeting"
+   }
+  },
+  {
+   "id": "e11",
+   "body": "<<FILL role=ending words=90 beats='The chart posted by the gate goes mostly unread for the first few days, and the price drift lingers longer than it should before finally fading.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e11",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Slow Read"
+   }
+  },
+  {
+   "id": "e12",
+   "body": "<<FILL role=ending words=90 beats='The public weighing draws a curious crowd, and seeing the tokens balance evenly convinces almost everyone at the market by the end of the day.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e12",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Curious Crowd"
+   }
+  }
+ ]
+}

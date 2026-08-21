@@ -96,5 +96,9 @@
  "D__r1__claude-opus-subagent": {
   "checker_runs": 3,
   "reported": "PASS"
+ },
+ "D__r3__claude-sonnet-subagent": {
+  "checker_runs": 4,
+  "reported": "PASS"
  }
 }
