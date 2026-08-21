@@ -444,6 +444,37 @@ given reader does not feel they are reading the same book twice. Consequences:
 - Until a lever is measured to reach the bar, same-skeleton books must not be served to the
   same reader; that is an interim serving constraint, not the ruling's end state.
 
+**Experiment status (2026-08-21, same session).** The measurement was set up and is blocked
+only by billing:
+
+- A held chain mutant of `the-tin-whistle-map` (M3 prune x2 plus M2 outcome remap, seeds
+  0/1/0) cleared every acceptance stage and is committed at
+  `out/live-structural-2026-08-21/mutant/the-tin-whistle-map.mutant.json` with its meta
+  sidecar. Its structural delta is small (nodes `lb_file` and `wm_wet` pruned, four ending
+  kinds swapped within positive valence), which is itself informative: this is what an
+  accepted default-parameter chain buys on this parent.
+- Found while composing it: **`M4` with default parameters hangs past 60 seconds on this
+  193-node parent** (its decisions-per-path window enumerates simple paths), while `M2`
+  applies instantly and `M3` in about 3 seconds. The most structural operator in the set is
+  currently impractical at catalog scale with default parameters (`AL-509`/`UW-C321`), which
+  bounds how big a mutant the lever can produce today.
+- The fill run (`out/live-structural-2026-08-21/mutant-pair/`) failed with **HTTP 402 on both
+  legs**: the OpenRouter account's prepaid credits are exhausted (`/api/v1/credits` reads
+  total_usage $400.48 against $400.00 total). Leg 0 had generated 35,866 output tokens
+  before hitting the wall ($0.22 metered). Resume, once the account is topped up, is exactly:
+
+  ```bash
+  uv run python scripts/compare_vendors.py \
+    --skeleton out/live-structural-2026-08-21/mutant/the-tin-whistle-map.mutant.json \
+    --briefs docs/planning/vendor-comparison/runs/deepseek-v4-pro-2026-08-20/shared-skeleton-pair/briefs.json \
+    --vendors docs/planning/vendor-comparison/vendors-deepseek-v4-pro.json \
+    --throttle 3 --out out/live-structural-2026-08-21/mutant-pair-take2
+  ```
+
+  then `check_sibling_fills.py` over three pairs: the mutant's own two fills (its pair floor,
+  against 96.3), mutant-canal versus the committed parent-canal fill (structure isolation),
+  and mutant-medal versus parent-canal (the product condition, against the any-reader bar).
+
 ### 8.2 Freeze split (`UW-C316`): adopted as recommended
 
 - Machine-critical fields (every `id`, `target`, `condition`, `effects`, `on_enter`,
