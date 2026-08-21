@@ -63,18 +63,42 @@ _PRESETS = {
         "leg": "deepseek-v4-pro-modal",
         "family": "deepseek",
     },
+    "openrouter-deepseek-v4-pro": {
+        "base_url": "https://openrouter.ai/api",
+        "model": "deepseek/deepseek-v4-pro",
+        "leg": "deepseek-v4-pro",
+        "family": "deepseek",
+        "auth": "openrouter",
+        "provider_order": ["azure/us"],
+    },
+    "openrouter-deepseek-v4-flash": {
+        "base_url": "https://openrouter.ai/api",
+        "model": "deepseek/deepseek-v4-flash",
+        "leg": "deepseek-v4-flash",
+        "family": "deepseek",
+        "auth": "openrouter",
+        "provider_order": ["novita/fp8"],
+    },
 }
 BASE_URL = ""
 MODEL = ""
 LEG = ""
 FAMILY = ""
+AUTH = "modal"
+PROVIDER_ORDER: tuple[str, ...] = ()
 MAX_TOKENS = 65_536  # the registered e1r3 run condition
 MAX_REPAIR_ROUNDS = 6  # ditto
 CALL_TIMEOUT_S = 900.0
 
 
 def _auth_headers() -> dict[str, str]:
-    """Resolve the wk-/ws- proxy pair without ever printing it."""
+    """Resolve credentials for the selected transport, never printing them."""
+    if AUTH == "openrouter":
+        token = os.environ.get("OPENROUTER_API_KEY") or ""
+        if not token:
+            print("Error: OPENROUTER_API_KEY missing.", file=sys.stderr)
+            raise SystemExit(1)
+        return {"Authorization": f"Bearer {token}"}
     key = os.environ.get("MODAL_PROXY_KEY") or os.environ.get("MODAL_KEY") or ""
     secret = (
         os.environ.get("MODAL_PROXY_SECRET") or os.environ.get("MIDAL_SECRET") or ""
@@ -83,6 +107,16 @@ def _auth_headers() -> dict[str, str]:
         print("Error: Modal proxy token pair missing or malformed.", file=sys.stderr)
         raise SystemExit(1)
     return {"Modal-Key": key, "Modal-Secret": secret}
+
+
+def _pin_payload(payload: dict) -> dict:
+    """Attach the OpenRouter backend pin; no cascade, same as every leg."""
+    if AUTH == "openrouter" and PROVIDER_ORDER:
+        payload["provider"] = {
+            "order": list(PROVIDER_ORDER),
+            "allow_fallbacks": False,
+        }
+    return payload
 
 
 def _complete(client: httpx.Client, system: str, prompt: str) -> tuple[str, dict]:
@@ -95,16 +129,18 @@ def _complete(client: httpx.Client, system: str, prompt: str) -> tuple[str, dict
     handoff's shape findings were all from tiny completions and did not
     surface this. Transient disconnects are retried with backoff.
     """
-    payload = {
-        "model": MODEL,
-        "max_tokens": MAX_TOKENS,
-        "stream": True,
-        "stream_options": {"include_usage": True},
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": prompt},
-        ],
-    }
+    payload = _pin_payload(
+        {
+            "model": MODEL,
+            "max_tokens": MAX_TOKENS,
+            "stream": True,
+            "stream_options": {"include_usage": True},
+            "messages": [
+                {"role": "system", "content": system},
+                {"role": "user", "content": prompt},
+            ],
+        }
+    )
     last_exc: Exception | None = None
     for retry in range(3):
         if retry:
@@ -263,13 +299,15 @@ def _full_check(shell_path: Path, cell_meta: dict) -> tuple[bool, str]:
 
 def _complete_messages(client: httpx.Client, messages: list[dict]) -> tuple[str, dict]:
     """Streamed completion over an explicit message history (tools mode)."""
-    payload = {
-        "model": MODEL,
-        "max_tokens": MAX_TOKENS,
-        "stream": True,
-        "stream_options": {"include_usage": True},
-        "messages": messages,
-    }
+    payload = _pin_payload(
+        {
+            "model": MODEL,
+            "max_tokens": MAX_TOKENS,
+            "stream": True,
+            "stream_options": {"include_usage": True},
+            "messages": messages,
+        }
+    )
     last_exc: Exception | None = None
     for retry in range(3):
         if retry:
@@ -392,11 +430,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     attempt_dir.mkdir(parents=True, exist_ok=True)
 
-    global BASE_URL, MODEL, LEG, FAMILY  # noqa: PLW0603
+    global BASE_URL, MODEL, LEG, FAMILY, AUTH, PROVIDER_ORDER  # noqa: PLW0603
     preset = _PRESETS[args.endpoint]
     BASE_URL = preset["base_url"]
     LEG = preset["leg"]
     FAMILY = preset["family"]
+    AUTH = preset.get("auth", "modal")
+    PROVIDER_ORDER = tuple(preset.get("provider_order", ()))
     with httpx.Client(headers=_auth_headers(), timeout=CALL_TIMEOUT_S) as client:
         models = client.get(f"{BASE_URL}/v1/models")
         models.raise_for_status()
