@@ -45,6 +45,7 @@ from cyo_adventure.generation.chunking import (
 from cyo_adventure.generation.fidelity_gate import run_stage1_gate
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.metered import ledger_of
+from cyo_adventure.generation.normalize_fill import normalize_filled_story
 from cyo_adventure.generation.prompts import (
     FillBatchPayload,
     build_bound_fill_prompt,
@@ -76,7 +77,7 @@ from cyo_adventure.validator.report import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Callable, Mapping
 
     from cyo_adventure.core.config import Settings
     from cyo_adventure.generation.concept import ConceptBrief
@@ -275,6 +276,7 @@ class _RepairContext:
     context: GateContext = "skeleton"
     stage1: _Stage1Config | None = None
     max_tokens: int = _MAX_TOKENS_REPAIR
+    normalize: Callable[[dict[str, object]], dict[str, object]] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -408,6 +410,7 @@ async def _run_one_stage(
     max_tokens: int,
     scale: Scale = "standard",
     context: GateContext = "skeleton",
+    normalize: Callable[[dict[str, object]], dict[str, object]] | None = None,
 ) -> tuple[dict[str, object] | None, GateResult]:
     """Run a single generation stage: call provider, parse JSON, run gate.
 
@@ -430,6 +433,11 @@ async def _run_one_stage(
             ``<<FILL ...>>`` directive. Stage A keeps the ``"skeleton"``
             default because its bodies are one-line beat descriptions by
             design, not prose (see ``prompts/structure.md``).
+        normalize: Optional transform applied to the parsed document BEFORE
+            the gate. The skeleton-fill path passes the freeze-split
+            normalizer (2026-08-21 ruling, section 8.2) so frozen-field
+            drift is restored from the skeleton rather than graded; every
+            other stage leaves it None.
 
     Returns:
         A tuple of ``(doc_or_none, gate_result)``. ``doc_or_none`` is the
@@ -475,6 +483,13 @@ async def _run_one_stage(
         return None, _empty_blocked_gate(context)
 
     doc = cast("dict[str, object]", parsed)
+    # Normalization runs BEFORE the gate (2026-08-21 freeze-split ruling,
+    # live-structural-round-2026-08-21.md section 8.2): frozen-field drift is
+    # restored from the skeleton rather than graded, so a retheme of a frozen
+    # documentation field is a non-event instead of a blocked book or a burned
+    # repair cycle. Only the skeleton-fill path passes a normalizer.
+    if normalize is not None:
+        doc = normalize(doc)
     return doc, run_gate(doc, scale, context=context)
 
 
@@ -868,6 +883,7 @@ async def _run_repair_loop(
             max_tokens=ctx.max_tokens,
             scale=ctx.scale,
             context=ctx.context,
+            normalize=ctx.normalize,
         )
         attempts += 1
         ctx.stage_log.append(f"repair:{attempts}")
@@ -1433,6 +1449,28 @@ async def fill_skeleton(
     # rather than theoretical. Since `UW-C302` it carries bound fills too, which
     # is what makes 7 of those 19 reachable at all.
     chunked = not is_fill_feasible(skeleton, max_tokens=cap)
+
+    def fill_normalizer(doc: dict[str, object]) -> dict[str, object]:
+        """Restore frozen fields from the skeleton (2026-08-21 ruling, 8.2).
+
+        The chunked path never needs this (its merge is a whitelist by
+        construction); the one-shot fill and every repair pass do, so the
+        gate grades a document whose machine-critical fields are the
+        skeleton's own and frozen-field drift stops costing repair cycles.
+        Restorations are logged, not graded: measured across 16 one-shot
+        fills, every frozen mutation was a theme retheme, not sabotage.
+        """
+        result = normalize_filled_story(skeleton, doc)
+        if result.skipped_reason is not None:
+            _logger.warning("fill_normalization_skipped", reason=result.skipped_reason)
+        elif result.restored:
+            _logger.warning(
+                "fill_frozen_fields_restored",
+                count=len(result.restored),
+                restored=list(result.restored[:8]),
+            )
+        return result.document
+
     if chunked:
         try:
             current_doc, gate_result = await _fill_in_batches(
@@ -1486,6 +1524,7 @@ async def fill_skeleton(
             provider=guarded_provider,
             max_tokens=cap,
             context="fill_result",
+            normalize=fill_normalizer,
         )
     _append_stage_log(stage_log, "stage_fill", current_doc, gate_result)
     if chunked and current_doc is None:
@@ -1523,6 +1562,7 @@ async def fill_skeleton(
             # backend whose clamped ceiling is BELOW the 32,000 floor does not
             # also shrink the repair budget for a document that fits it.
             max_tokens=max(_MAX_TOKENS_REPAIR, cap),
+            normalize=fill_normalizer,
         )
         repair_seed = current_doc if current_doc is not None else last_valid_doc
         current_doc, gate_result, attempts, stage1_violations = await _run_repair_loop(

@@ -680,6 +680,44 @@ async def test_fill_skeleton_returns_passed_on_clean_fill() -> None:
 
 
 @pytest.mark.asyncio
+async def test_fill_skeleton_restores_frozen_fields_the_model_drifted() -> None:
+    """Frozen-field drift is normalized away before the gate (ruling 8.2).
+
+    The reply rewrites the story id and swaps an ending kind, the two
+    structure-critical mutation classes the 2026-08-21 live round measured
+    (`AL-499`); a retitled ending is a legal theme rewrite and survives. The
+    outcome's document carries the skeleton's frozen values, so the drift
+    costs no repair cycle and ships nothing.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    filled = copy.deepcopy(VALID_STORY)
+    filled["id"] = "sk_hijacked"
+    nodes = cast("list[dict[str, object]]", filled["nodes"])
+    ending_node = next(n for n in nodes if n.get("is_ending"))
+    ending = cast("dict[str, object]", ending_node["ending"])
+    original_kind = ending["kind"]
+    ending["kind"] = "death" if original_kind != "death" else "success"
+    ending["title"] = "The Lantern Kept"
+    provider = MockProvider(responses=[json.dumps(filled)])
+    pii = PiiContext(child_names=frozenset())
+
+    outcome = await fill_skeleton(skeleton, {"premise": "a fox"}, provider, pii)
+
+    assert outcome.status == "passed"
+    assert outcome.attempts == 0
+    assert outcome.storybook is not None
+    doc = cast("dict[str, object]", outcome.storybook)
+    assert doc["id"] == skeleton["id"]
+    out_nodes = cast("list[dict[str, object]]", doc["nodes"])
+    normalized_ending = cast(
+        "dict[str, object]",
+        next(n["ending"] for n in out_nodes if n.get("is_ending")),
+    )
+    assert normalized_ending["kind"] == original_kind
+    assert normalized_ending["title"] == "The Lantern Kept"
+
+
+@pytest.mark.asyncio
 async def test_fill_skeleton_repair_exhaustion_is_failed_not_a_returned_skeleton() -> (
     None
 ):
