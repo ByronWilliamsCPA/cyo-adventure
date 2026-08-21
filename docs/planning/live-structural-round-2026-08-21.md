@@ -419,3 +419,51 @@ machinery are unaffected); the no-go is specifically for bulk one-shot STORY gen
 against the current contract and instruments. The five defects above are each carried as a
 lesson with a register row; items 2 through 5 are tooling-scale work, and item 1 is a design
 decision the owner already holds (`UW-C315`'s lever question).
+
+## 8. Owner rulings (2026-08-21)
+
+Three rulings were made by the owner on 2026-08-21, in this round's session, on the three
+decisions section 7.5 left open. This section is the site of record for all three; other
+documents cite it rather than restating it.
+
+### 8.1 Reuse (`UW-C315`): the diversity bar is any-reader, not social distance
+
+The owner rejects scoping reuse by social distance. The product intent is a global catalog:
+ideally every book goes into the global skeleton pool and a single reader could pick up ANY
+books that share a skeleton. Therefore same-skeleton reuse must be diverse enough that any
+given reader does not feel they are reading the same book twice. Consequences:
+
+- The bar for a same-skeleton pair is reader-perceived difference for the SAME reader, so the
+  relevant comparators are the cross-skeleton range (1.2 to 3.3 per 1000, which readers
+  experience as different books) versus the measured same-structure floor (96.3 to 202).
+- The differentiation directive is measurably not the lever (section 7.2), so per-family or
+  per-book STRUCTURAL mutation (the ADR-020 machinery) is the only candidate lever, and its
+  effect on the sibling metric is the single most decision-relevant unmeasured number in the
+  catalog plan. The mutation-diversity experiment (mutate a committed skeleton, fill the
+  mutant, score against the committed sibling fill) is now the critical-path measurement.
+- Until a lever is measured to reach the bar, same-skeleton books must not be served to the
+  same reader; that is an interim serving constraint, not the ruling's end state.
+
+### 8.2 Freeze split (`UW-C316`): adopted as recommended
+
+- Machine-critical fields (every `id`, `target`, `condition`, `effects`, `on_enter`,
+  `start_node`, `is_ending`, variable `name`/`type`/`min`/`max`/`initial`, ending
+  `kind`/`valence`) are frozen, and the pipeline stops depending on model obedience: the
+  import path NORMALIZES these fields back from the skeleton after fill, so model drift on
+  them becomes a non-event rather than a shipped defect or a wasted repair cycle.
+- Theme-bearing text is ruled per field: story `title` writable; `variables[].description`
+  writable; `ending.title` writable (section 8.3); `metadata.themes` neither model-written
+  nor kept stale, but re-derived at import time, because it feeds matching and
+  recommendations.
+- `fill.md` may keep instructing the model not to touch frozen fields, but enforcement is
+  normalization plus the integrity check, not the instruction.
+
+### 8.3 `ending.title` (`UW-C311`): leaf content, writable
+
+`ending.title` and the story `title` are leaf content, consistent with the WS-0
+labels-are-leaves principle and the `AL-161` recognition-channel finding. `ending.id`,
+`ending.kind`, and `ending.valence` remain frozen (they carry the PL-15 fail-state policy).
+Implementation: `merge_fill_batch` widens its whitelist to carry ending titles (and the story
+title) so the chunked path stops producing contractually different books;
+`check_fill_integrity` treats title rewrites as legal by default; `fill.md` and `SKILL.md`
+cite this section.
