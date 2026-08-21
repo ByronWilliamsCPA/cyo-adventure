@@ -290,3 +290,27 @@ that context is unbounded, which is false exactly on the low-cap backends the pa
 Take 3 re-targets `the-hollow-sea` (129,926-byte skeleton, 27,068 words, still over the 52,429
 feasibility ceiling, so it chunks with context slack), filled twice from two distant briefs,
 which also yields a same-skeleton chunked pair. Its result is below.
+
+**Take 3 (committed as `chunked-v32-take3/`): a 512-token probe does not qualify an endpoint.**
+With context fitting, both legs failed at the merge: the DigitalOcean endpoint answered the
+~40k-token batch asks with 2,133 and 7,349 output tokens of unusable shape (one reply not a JSON
+object, one an empty mapping covering zero of 190 asked nodes). The same batch prompt sent to
+`novita/fp8` directly returned a complete 77,599-character fenced-JSON batch. So the pre-flight
+convention ("one small completion per pin") passes endpoints that cannot serve large structured
+asks; endpoint qualification needs one representative large ask, not a ping. The pin and price
+row moved to `novita/fp8` together (commit 4f0d0f0-era; see git history).
+
+**Take 4 (committed as `chunked-v32-take4/`): the chunked path produced its first live book, and
+the chunked book is the only measured book with ZERO mutations.** Leg 1 (railway brief) passed
+the gate through the two-batch chunked path in 1,077s at $0.070:
+`check_fill_integrity` reports a CLEAN structural pass (the first of the whole live program),
+0 of 40 ending titles moved, story title kept. Leg 0 (glacier brief) failed at batch 1 with an
+empty mapping on the same pin, while the same brief had succeeded in the direct take-3
+replication, so the empty-batch failure is per-call nondeterminism, not a poisoned pair.
+The `UW-C311` evidence is now concrete in both directions: one-shot v4-pro books reskin ending
+titles in 7 of 8 measured cases, and the chunked path structurally cannot and measurably did
+not. The two paths produce contractually different books today. Costs of the datapoint, stated:
+the chunked book delivered 37.5 percent of its commissioned words (the worst fill rate measured,
+on a model chosen for its cap rather than its prose) and its reading level sits far under the
+13-16 target (2.5 percent of nodes in band), so "the path works" is a statement about contract
+mechanics, not about publishable output from this model.

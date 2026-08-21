@@ -1,0 +1,3124 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_hollow_sea",
+  "version": 1,
+  "title": "The Hollow Sea",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "exploration",
+      "silence and awe",
+      "mastery and inheritance",
+      "the sea"
+    ],
+    "estimated_minutes": 24,
+    "ending_count": 40,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "intense",
+      "peril": "intense"
+    },
+    "topology": "open_map",
+    "length": "long",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "soundings",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "How far into the Hollow Wren has truly pressed: how many of the sea's deep reaches have been sounded to their heart. It climbs one mark (once per reach) each time a crossing is seen through at that reach's departure, caps at 2 below the six-reach count, and never falls. It is the clock the sea mutates under; the Hollow gives its fullest answer at the center only to a boat that has read at least two of its reaches (soundings at max)."
+    },
+    {
+      "name": "supplies",
+      "type": "int",
+      "initial": 3,
+      "min": 0,
+      "max": 3,
+      "description": "Kestrel's stores in quarter-marks: water, lamp-oil, tallow, spare line. Long or hard crossings inside a reach burn them; Cradle Cove and the finale muster renew them to full on arrival. A deep crossing to a reach's heart needs stores of 2 or more; a boat run low can still complete the reach by the honest shallow reading."
+    },
+    {
+      "name": "hull",
+      "type": "bool",
+      "initial": true,
+      "description": "Whether Kestrel's clinker hull is whole or holed. Reef and wreck hazards inside a reach can open a seam; Cradle Cove and the finale muster careen and patch her sound again on arrival. A deep dive or a storm-climb needs a whole boat riding safe below; a holed boat can still complete the reach by the honest shallow reading."
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Dawn at Railshead Junction. You are fifteen. You are an apprentice line-walker aboard the hand-crank inspection trolley Rocinante. You keep the resonance hammer and the survey ledger. Old Surveyor Halbrin is the last living inspector of the Salt-Flat Main. It is an infinite plain that swallows sound. Fen is your age. He is the other hand who works the crank and manages the water skins. You know the Salt-Flat's one strange law as plain fact. A shout, a hammer-tap, or the screech of the hand-brake goes flat and dies a few yards out over the baked earth. It dies more the deeper and farther you go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Start the crank with Halbrin and Fen into the grey morning.",
+          "target": "n_deck"
+        }
+      ]
+    },
+    {
+      "id": "n_deck",
+      "body": "Aboard Rocinante, trundling out of the Junction. Halbrin teaches the first rule of the Salt-Flat. Out here you steer by eye, by hammer, and by hand. You never steer by ear. The silence is a thing to meet with awe, not with fear. You learn the hand-signs the crew uses once the station drops away and speech stops carrying over the hard ground.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_deck_1",
+          "label": "Learn the signs and take up the resonance hammer.",
+          "target": "n_shed"
+        }
+      ]
+    },
+    {
+      "id": "n_shed",
+      "body": "Halbrin's chart-shed is at the Junction. The walls are hung with the great survey of the Salt-Flat. Half of its distances are blank. The subsidence zones, cracked arches, and drowned culverts wait to be read. Halbrin says the season's work is to sound them one by one. He says an inspector is made by the line, not by the shed. He says the craft will die with him unless a pair of young hands takes it up.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_shed_1",
+          "label": "Study the blank reaches and choose where to begin.",
+          "target": "n_launch"
+        }
+      ]
+    },
+    {
+      "id": "n_launch",
+      "body": "Rocinante is provisioned. The water skins are full and the axle is freshly greased. Halbrin names the plan plainly. Cross to the reaches from the Junction and read each one. Then come back to Railshead to re-water and shore the trolley between crossings. The Junction is the one safe breath and the last place sound still works. Everything past the signal gantry is the Salt-Flat, and it is silent.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_launch_1",
+          "label": "Point Rocinante for the signal gantry and the open Salt-Flat.",
+          "target": "n_cove"
+        }
+      ]
+    },
+    {
+      "id": "n_cove",
+      "body": "Railshead Junction is the anchorage and the standing hub. It has the sheltered rail-spur where Rocinante is shunted. It is the last place a voice carries. Halbrin's chart-shed is on the platform. There are water skins, a grease-pot, and shoring posts. This arrival is neutral. It is the same steady Junction however often Rocinante comes home, and in whatever state. The reaches of the Salt-Flat lie beyond the gantry to be read in any order. The supplies are renewed and the trolley is made whole here between them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_cove_1",
+          "label": "Cross to Bell-Arches, where the drowned signal bell hangs.",
+          "target": "bs_shore"
+        },
+        {
+          "id": "c_n_cove_2",
+          "label": "Cross to the Flotant, the floating weed-mat miles wide.",
+          "target": "wl_shore"
+        },
+        {
+          "id": "c_n_cove_3",
+          "label": "Cross to Cinder Tower under its dead black lamp.",
+          "target": "ci_shore"
+        },
+        {
+          "id": "c_n_cove_4",
+          "label": "Cross to the Glass Pan, the mute mirror-flats.",
+          "target": "gf_shore"
+        },
+        {
+          "id": "c_n_cove_5",
+          "label": "Cross to the Drowned Stair over Station-Under.",
+          "target": "ds_shore"
+        },
+        {
+          "id": "c_n_cove_6",
+          "label": "Cross to the Breathing Culvert on the far embankment.",
+          "target": "bc_shore"
+        },
+        {
+          "id": "c_n_cove_7",
+          "label": "Stay at the Junction a while and gather yourself.",
+          "target": "n_galley"
+        },
+        {
+          "id": "c_n_cove_8",
+          "label": "Answer the muster: the Stillness is near.",
+          "target": "fin_muster"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "supplies",
+          "value": 3
+        },
+        {
+          "op": "set",
+          "var": "hull",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "n_galley",
+      "body": "The crew rests at the Junction between crossings. It is the one place the Salt-Flat's silence lets go. Fen's kettle is on the little stove. Halbrin mends a hammer-line by the door. The chart-shed is warm with lamplight. A breath is allowed here. The next reach can wait for it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_galley_1",
+          "label": "Warm up and get back out to the trolley.",
+          "target": "n_cove"
+        },
+        {
+          "id": "c_n_galley_2",
+          "label": "Tell Halbrin the silence has grown too heavy to keep crossing into.",
+          "target": "e_ashore"
+        }
+      ]
+    },
+    {
+      "id": "e_ashore",
+      "body": "Saying it plainly is its own kind of courage. You tell Halbrin the Salt-Flat's silence has grown too heavy to keep cranking into. Halbrin, without one word of blame, gives you the chart-shed and the ledger to keep. The season's soundings will go on with Fen at the hammer. Some plains are too big for a first year. Naming that is the grown thing to do, not the small one. It is dignified. It is a limit honestly met.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ashore",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Put Ashore"
+      }
+    },
+    {
+      "id": "bs_shore",
+      "body": "Rocinante reaches Bell-Arches at first light. It is a low curve of cracked concrete. The heat-haze climbs and falls with no sound at all. Below the surface, the green shadow of a drowned signal-box's bronze bell hangs from its broken beam. Halbrin names the arch at the tiller. This arrival is neutral. It is the same arch whatever crossing brings you here.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_shore_1",
+          "label": "Take the hammer beside Halbrin along the arch's edge.",
+          "target": "bs_help"
+        },
+        {
+          "id": "c_bs_shore_2",
+          "label": "Stand off on the crank and watch the bell-shadow.",
+          "target": "bs_watch"
+        },
+        {
+          "id": "c_bs_shore_3",
+          "label": "Trundle in close to the near gap in the cracked teeth.",
+          "target": "bs_near"
+        }
+      ]
+    },
+    {
+      "id": "bs_help",
+      "body": "You work the resonance hammer along the arch's edge beside Halbrin. The hammer-head comes up scored and scratched by the cracked concrete. You learn to read an arch by the vibrations it leaves on the sensor.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_help_1",
+          "label": "Let Halbrin teach the arch's grain.",
+          "target": "bs_helpb"
+        }
+      ]
+    },
+    {
+      "id": "bs_helpb",
+      "body": "Halbrin teaches the arch's grain by touch, where the concrete bites a wheel and where it lets one by, a chart drawn in scratches on the wax and read with the fingers, not the eye.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_helpb_1",
+          "label": "Bring the trolley over the bell-shadow.",
+          "target": "bs_conv"
+        }
+      ]
+    },
+    {
+      "id": "bs_watch",
+      "body": "Ship the crank and watch the heat-haze climb the arch where the bell hangs. It is a bell that should toll in this weight of air, but it gives back nothing. The silence sits exactly where a voice should be.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_watch_1",
+          "label": "Watch the bronze lip meet the shadow.",
+          "target": "bs_watchb"
+        }
+      ]
+    },
+    {
+      "id": "bs_watchb",
+      "body": "The heat-haze lifts the bell-shadow and drops it. The bronze lip strikes the water. Not one note of it carries. The awe of a plain that can swallow a bell's whole voice settles over you. It is cold and enormous.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_watchb_1",
+          "label": "Bring the trolley over the bell-shadow.",
+          "target": "bs_conv"
+        },
+        {
+          "id": "c_bs_watchb_2",
+          "label": "Stay with the soundless bell as the light climbs.",
+          "target": "e_bs_awe"
+        }
+      ]
+    },
+    {
+      "id": "bs_near",
+      "body": "Fen steers close to the narrow gap between two cracked teeth. The bell's shadow lies quiet and deep there. Fen stands at the front with a hand out to push the concrete away. How hard will you take the gap?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_near_1",
+          "label": "Scrape her through the narrow gap to reach it fast.",
+          "target": "bs_risk",
+          "effects": [
+            {
+              "op": "set",
+              "var": "hull",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": "c_bs_near_2",
+          "label": "Back the crank and go the long clean way around.",
+          "target": "bs_safe"
+        },
+        {
+          "id": "c_bs_near_3",
+          "label": "Push deeper among the teeth as the light shifts.",
+          "target": "bs_reckless"
+        }
+      ]
+    },
+    {
+      "id": "bs_reckless",
+      "body": "The trolley pushes deeper among the cracked teeth as the light shifts on the ground. The concrete closes in on both sides. Fen shouts a warning. It sounds flat and dies just two feet from their mouth.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_reckless_1",
+          "label": "Press on and trust your eye in the closing rock.",
+          "target": "e_bs_risk"
+        },
+        {
+          "id": "c_bs_reckless_2",
+          "label": "Pull back while there is still ground to pull into.",
+          "target": "bs_safe"
+        }
+      ]
+    },
+    {
+      "id": "bs_risk",
+      "body": "Scraping Rocinante through the narrow gap to reach the bell-shadow fast: a cracked tooth opens a seam low in the axle and the grease starts weeping; Fen goes hard to the rag; the trolley holed but afloat and over the bell.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_risk_1",
+          "label": "Hold her over the bell and take stock.",
+          "target": "bs_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "bs_safe",
+      "body": "Backing the crank and taking the long clean ground around the arch's shoulder, slower by half an hour, the chassis whole and dry under you and the bell-shadow reached without a scratch.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_safe_1",
+          "label": "Bring her over the bell.",
+          "target": "bs_conv"
+        }
+      ]
+    },
+    {
+      "id": "bs_conv",
+      "body": "Over the bell-shadow at the slack now, the bronze shadow steady and green below the chassis, the arch quiet all around; it is time to read the drowned bell.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_conv_1",
+          "label": "Ready the gear and read the bell.",
+          "target": "bs_read"
+        },
+        {
+          "id": "c_bs_conv_2",
+          "label": "Let the crew settle the trolley first.",
+          "target": "bs_extra1"
+        }
+      ]
+    },
+    {
+      "id": "bs_extra1",
+      "body": "Fen holds the trolley steady on the crank. Halbrin sets up the sounding gear. The three of you work by hand signals in the silence. A crew that long ago learned to say everything it needs with its hands.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_extra1_1",
+          "label": "Ready the gear and read the bell.",
+          "target": "bs_read"
+        }
+      ]
+    },
+    {
+      "id": "bs_read",
+      "body": "The bell green and close under the chassis, the slack tide holding the trolley steady over it; how you take this reading of a bell that cannot ring.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_read_1",
+          "label": "Decide how to read the drowned bell.",
+          "target": "bs_gate"
+        },
+        {
+          "id": "c_bs_read_2",
+          "label": "Ask Halbrin about the bell first.",
+          "target": "bs_extra2"
+        }
+      ]
+    },
+    {
+      "id": "bs_extra2",
+      "body": "Halbrin signs that the signal bell was rung once for every soul the arch ever took. When the drownings passed all counting, the plain took the bell's own voice too. It could not name them anymore. An arch that keeps a silence on purpose.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_extra2_1",
+          "label": "Decide how to read the drowned bell.",
+          "target": "bs_gate"
+        }
+      ]
+    },
+    {
+      "id": "bs_gate",
+      "body": "The choice over the bell: go down to it with a sound trolley riding above, or read it from the surface with a hammer. The deep way needs a whole chassis under you. The plain gives no allowance for a holed one.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_gate_1",
+          "label": "Go over the side and down to the bell.",
+          "target": "bs_deep1",
+          "condition": {
+            "==": [
+              {
+                "var": "hull"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_bs_gate_2",
+          "label": "Read the bell from the surface with the hammer.",
+          "target": "bs_shallow"
+        }
+      ]
+    },
+    {
+      "id": "bs_deep1",
+      "body": "You go over the side and down the anchor line to the bell. A sound trolley rides safe above you. The water clears as you go down. The bronze grows close and cold. You set your knuckle to its lip and strike it. You feel in your own chest the toll the plain will not let your ears hear.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_deep1_1",
+          "label": "Hang by the bell in the deep hush.",
+          "target": "bs_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "bs_deep2",
+      "body": "You hang by the bell in the total underwater hush. The swallowed toll still rings somewhere behind your ribs. The green light, the cold, and the awe of it hold you longer than your breath should. How long will you stay?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_deep2_1",
+          "label": "Surface, log the reading, and come away.",
+          "target": "bs_done"
+        },
+        {
+          "id": "c_bs_deep2_2",
+          "label": "Stay with the bell one breath too long, and know it.",
+          "target": "e_bs_deep"
+        }
+      ]
+    },
+    {
+      "id": "bs_shallow",
+      "body": "Reading the bell-chamber from the surface, the hammer lowered gently into the bronze mouth, sounding the depth of a swallowed voice, careful and exact, the craft doing what the dive would do and keeping you dry to do it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_shallow_1",
+          "label": "Log the reading and come away.",
+          "target": "bs_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "bs_shallowb",
+      "body": "The hammer takes its reading. The bell and its chamber are recorded. The cracked arch is mapped from above the water. It's a thorough survey. They got all the details without going under.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_shallowb_1",
+          "label": "Stow the gear and come away.",
+          "target": "bs_done"
+        },
+        {
+          "id": "c_bs_shallowb_2",
+          "label": "Sit a while over the sounded bell before you go.",
+          "target": "e_bs_shallow"
+        }
+      ]
+    },
+    {
+      "id": "bs_done",
+      "body": "Rocinante moves away from Bell-Arches. The cracked arch sinks behind them. The bronze bell returns to silence. This arrival is neutral. Whatever happened on the arch, the reading is taken and logged either way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bs_done_1",
+          "label": "Bear away for Railshead Junction to re-store.",
+          "target": "n_cove"
+        },
+        {
+          "id": "c_bs_done_2",
+          "label": "Answer the muster if the Stillness has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_bs_done_3",
+          "label": "Lie off the arch and chart it fully before you leave.",
+          "target": "e_bs_linger"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "soundings",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_bs_awe",
+      "body": "The silent bell watched through a rising tide. The bronze lifted and dropped and never rang. You realize the arch keeps its quiet on purpose. The crew does the same, out of respect. Some things the plain unmakes so they cannot be spoken carelessly. It is awe, not terror. No reading is needed to know this.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bs_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Bell That Cannot Toll"
+      }
+    },
+    {
+      "id": "e_bs_risk",
+      "body": "The cracked teeth close the last ground. Rocinante fetches up hard. A wheel is smashed. The crew hauls her off by main strength with the pump going. No one is hurt and the trolley is saved, but the arch won this reading. It sends them limping to the Junction with nothing charted. An arch does not bluff, and you will remember that. It is grave, not gory.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bs_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Holed on the Teeth"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_bs_deep",
+      "body": "You stayed one breath too long by the bell. The cold and the hush nearly keep you. Halbrin's hand on the line brings you up gasping. Neither of you says a word. The bell has already said the only thing it says. The reading is logged. The lesson under it is deeper than the arch. The Salt-Flat's beauty and its danger are the same thing wearing one face.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bs_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Toll in Your Bones"
+      }
+    },
+    {
+      "id": "e_bs_shallow",
+      "body": "The arch is charted whole from the surface. The bell is sounded. The chamber is measured. The cracked grain of the concrete is drawn clean on the wax. Halbrin reads the log and gives the small nod that is his whole praise. A careful hand kept a whole trolley. Bell-Arches are not just the Salt-Flat's anymore. They are on the chart.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bs_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Sounded from Above"
+      }
+    },
+    {
+      "id": "e_bs_linger",
+      "body": "You lie off the arch until the light turns gold. You chart every tooth and detail of Bell-Arches by hammer and eye. It's the fullest reading the arch has had in a generation. Halbrin watches the young hands work. By sign only, he says the arch will do for an inspector. From Halbrin, that is a coronation.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bs_linger",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Charting the Black Reef"
+      }
+    },
+    {
+      "id": "wl_shore",
+      "body": "Rocinante reaches the edge of the Flotant at noon. It is a raft of floating salt-weed miles wide. It is green and matted. The open hardpan is simply gone. The poles come out. Halbrin says there is a clear, still sump at its heart. No inspector has read it in twenty years. This arrival is neutral. The weed is the same wall, whatever your reason for being here.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_shore_1",
+          "label": "Work the poles with Fen and find the drift lanes.",
+          "target": "wl_help"
+        },
+        {
+          "id": "c_wl_shore_2",
+          "label": "Rest the pole and read the green silence.",
+          "target": "wl_watch"
+        },
+        {
+          "id": "c_wl_shore_3",
+          "label": "Strike off toward a dark seam that might be a fast lane.",
+          "target": "wl_near"
+        }
+      ]
+    },
+    {
+      "id": "wl_help",
+      "body": "Working the poles beside Fen, reading the weed for the drift lanes where it thins to a green soup a trolley can be leaned through, a slow craft of finding ground inside ground.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_help_1",
+          "label": "Let Halbrin teach the current under the weed.",
+          "target": "wl_helpb"
+        }
+      ]
+    },
+    {
+      "id": "wl_helpb",
+      "body": "Halbrin shows how the weed hides the current. A lane that looks solid will part if you set the pole right and lean into it. Patience becomes a way of steering.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_helpb_1",
+          "label": "Push on toward the pale water at the heart.",
+          "target": "wl_conv"
+        }
+      ]
+    },
+    {
+      "id": "wl_watch",
+      "body": "You rest the pole a moment to listen. There is nothing at all to hear. The weed drinks even the drip off the blade. It is a green silence, as total and deep as the middle of the salt.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_watch_1",
+          "label": "Watch the heron lift from the weed.",
+          "target": "wl_watchb"
+        }
+      ]
+    },
+    {
+      "id": "wl_watchb",
+      "body": "A heron stands on the weed a stone's throw off. It lifts. Its great wings beat and beat and make no sound at all. The Salt-Flat shows you a new face of itself. It is a whole living world with the sound switched clean off.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_watchb_1",
+          "label": "Push on toward the pale water at the heart.",
+          "target": "wl_conv"
+        },
+        {
+          "id": "c_wl_watchb_2",
+          "label": "Stay and watch the soundless birds a while.",
+          "target": "e_wl_awe"
+        }
+      ]
+    },
+    {
+      "id": "wl_near",
+      "body": "Striking off toward a darker seam in the weed that might be a fast lane and might be a swallowing trap, Fen doubtful at the prow; how hard you push the trolley into it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_near_1",
+          "label": "Pole the long lee hard around the thickest raft.",
+          "target": "wl_risk",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "supplies",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": "c_wl_near_2",
+          "label": "Wait for the slow drift lane to open of itself.",
+          "target": "wl_safe"
+        },
+        {
+          "id": "c_wl_near_3",
+          "label": "Force the poles straight into the matted thick.",
+          "target": "wl_reckless"
+        }
+      ]
+    },
+    {
+      "id": "wl_reckless",
+      "body": "You shove the poles straight into the thick weed. You force Rocinante forward where there is no path. The weed grips the chassis tightly. You are now too far in to back out easily.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_reckless_1",
+          "label": "Drive her on into the heart of the raft.",
+          "target": "e_wl_risk"
+        },
+        {
+          "id": "c_wl_reckless_2",
+          "label": "Work her back to clear ground while you still can.",
+          "target": "wl_safe"
+        }
+      ]
+    },
+    {
+      "id": "wl_risk",
+      "body": "You pole the long way around the thickest raft. Hours of hard work drink your water and burn the afternoon. Supplies are running low. But the trolley kept moving. The heart of the Flotant draws nearer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_risk_1",
+          "label": "Come up on the pale water at the heart.",
+          "target": "wl_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "wl_safe",
+      "body": "Waiting for the slow drift lane to open, letting the Salt-Flat's own set carry Rocinante through the parting weed, costing time and not supplies, the water skins untouched.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_safe_1",
+          "label": "Come up on the pale water at the heart.",
+          "target": "wl_conv"
+        }
+      ]
+    },
+    {
+      "id": "wl_conv",
+      "body": "Near the heart of the Flotant now, the weed thinning under the poles, a paleness ahead that can only be open water, the clear sump Halbrin promised.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_conv_1",
+          "label": "Come to the edge of the clear sump.",
+          "target": "wl_read"
+        },
+        {
+          "id": "c_wl_conv_2",
+          "label": "Let the crew mend and settle first.",
+          "target": "wl_extra1"
+        }
+      ]
+    },
+    {
+      "id": "wl_extra1",
+      "body": "Fen fixes a pole-lashing that broke. Halbrin guides the trolley from the front. The crew's quiet routine steadies you. It holds you steady in the green hush, like a keel holds its course.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_extra1_1",
+          "label": "Come to the edge of the clear sump.",
+          "target": "wl_read"
+        }
+      ]
+    },
+    {
+      "id": "wl_read",
+      "body": "The edge of the clear sump at the Flotant's heart, mirror-still and ringed all round with weed, the deepest quiet yet; how far into it you go.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_read_1",
+          "label": "Decide how to read the heart-sump.",
+          "target": "wl_gate"
+        },
+        {
+          "id": "c_wl_read_2",
+          "label": "Ask Halbrin about the heart-sump first.",
+          "target": "wl_extra2"
+        }
+      ]
+    },
+    {
+      "id": "wl_extra2",
+      "body": "Halbrin signs that no inspector has read the heart-sump in twenty years. He says you need enough supplies to pole in and then back out. He warns that the weed will not give a trolley with no supplies a second chance to find a lane.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_extra2_1",
+          "label": "Decide how to read the heart-sump.",
+          "target": "wl_gate"
+        }
+      ]
+    },
+    {
+      "id": "wl_gate",
+      "body": "The choice at the sump: pole out to its exact center where the reading is truest, or take the reading honestly from the weeded edge; the center is a long crossing and back, and the weed only lets in a trolley that still has the supplies to leave.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_gate_1",
+          "label": "Pole out to the center of the heart-sump.",
+          "target": "wl_deep1",
+          "condition": {
+            ">=": [
+              {
+                "var": "supplies"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_wl_gate_2",
+          "label": "Read the sump from its weeded edge.",
+          "target": "wl_shallow"
+        }
+      ]
+    },
+    {
+      "id": "wl_deep1",
+      "body": "You pole out across the open mirror to the exact center of the heart-sump. You have supplies enough to get there and back out. The weed slowly closes shut behind you. The stillest water in the whole Salt-Flat slides clear under the wheels.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_deep1_1",
+          "label": "Take the reading at the sump's dead center.",
+          "target": "wl_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "wl_deep2",
+      "body": "At the dead center of the heart-sump, the groundwater a held breath, the hammer going down through water so clear you watch it fall for fathoms; the reading of a lifetime coming up on the wet line, and the weed patient at the rim; how you carry it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_deep2_1",
+          "label": "Log the center reading and pole for home.",
+          "target": "wl_done"
+        },
+        {
+          "id": "c_wl_deep2_2",
+          "label": "Rest in the sump's stillness before you turn back.",
+          "target": "e_wl_deep"
+        }
+      ]
+    },
+    {
+      "id": "wl_shallow",
+      "body": "You read the sump from its weedy edge. You throw the hammer as far as you can. You get an honest, partial sounding of the heart. You do not spend the supplies that the full crossing would cost.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_shallow_1",
+          "label": "Log the edge reading and pole for home.",
+          "target": "wl_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "wl_shallowb",
+      "body": "The edge reading logged, the sump glimpsed and not entered, the water skins kept full for the long pole home; craft chosen over daring, and no shame in the choosing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_shallowb_1",
+          "label": "Turn the trolley and pole for the open plain.",
+          "target": "wl_done"
+        },
+        {
+          "id": "c_wl_shallowb_2",
+          "label": "Hold at the rim a while and take the sump in.",
+          "target": "e_wl_shallow"
+        }
+      ]
+    },
+    {
+      "id": "wl_done",
+      "body": "Rocinante poles back out of the Flotant. The green raft lets her go at last to open ground. The heart-sump seals shut behind, as if it had never opened. This arrival is neutral. The reading is taken and logged either way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wl_done_1",
+          "label": "Bear away for Railshead Junction to re-store.",
+          "target": "n_cove"
+        },
+        {
+          "id": "c_wl_done_2",
+          "label": "Answer the muster if the Stillness has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_wl_done_3",
+          "label": "Drift the weed's edge and chart its lanes before leaving.",
+          "target": "e_wl_linger"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "soundings",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_wl_awe",
+      "body": "You spend a whole afternoon watching the soundless birds work the weed. Herons and terns lift and drop in perfect silence. You stop needing to reach the heart to understand the Flotant. The reading that matters is this: the Salt-Flat is alive. It is merely voiceless. That is a stranger and kinder thing than being dead. Awe wins over terror. The ledger is richer for the watching.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wl_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Soundless Heron"
+      }
+    },
+    {
+      "id": "e_wl_risk",
+      "body": "Rocinante is driven too far into the matted thick. She grips fast and will not answer the poles. The crew spends the daylight and the last supplies hauling her clear, yard by yard. They reach open ground spent and empty-handed. The heart-sump is unread. The weed keeps its twenty-year secret one more season. The Flotant does not fight. It simply holds, and holding was enough. It is grave, not gory.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wl_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Run Dry in the Weed"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_wl_deep",
+      "body": "You rest a long moment at the sump's dead center. The trolley, the crew, and the water are all perfectly still. You feel the twenty unread years lift off the place like a held breath let go. The deepest reading in a generation is logged. Under the figures is a thing no chart holds: a secret kept long enough becomes a kind of grace when it is finally, gently, read.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wl_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Heart of the Weedland"
+      }
+    },
+    {
+      "id": "e_wl_shallow",
+      "body": "The sump is sounded honestly from its rim. The heart is glimpsed and left whole. The supplies are kept for the road home. Halbrin reads the edge figures and nods. An inspector who knows when not to cross is one who comes home to cross again. The Flotant is on the chart now, and the trolley is dry. Both of those are wins.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wl_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Read from the Weed-Edge"
+      }
+    },
+    {
+      "id": "e_wl_linger",
+      "body": "You drift the whole weeded rim until dusk. You chart every drift lane and current-seam of the Flotant. It is a green maze drawn clear for the inspectors who come after. Fen says by sign that it is the best map of the weed anyone has ever kept. Halbrin, watching, keeps a silence that is plainly pride.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_wl_linger",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Green Crossing"
+      }
+    },
+    {
+      "id": "ci_shore",
+      "body": "Rocinante raises Cinder Tower at grey noon. It is a burnt signal tower under a dead black lamp. The approach is fanged with the ribs of old wrecks. The keeper's stair climbs to a cold lens forty years dark. To windward, the sky is the color of a bruise. This arrival is neutral. The tower is the same ruin whatever crossing brings you here.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_shore_1",
+          "label": "Sound the approach with the hammer for the clean gut.",
+          "target": "ci_help"
+        },
+        {
+          "id": "c_ci_shore_2",
+          "label": "Ship the crank and look up at the dead light.",
+          "target": "ci_watch"
+        },
+        {
+          "id": "c_ci_shore_3",
+          "label": "Run for the near siding past the wreck-fangs.",
+          "target": "ci_near"
+        }
+      ]
+    },
+    {
+      "id": "ci_help",
+      "body": "They sound the approach with the hammer. They find the one clean gut through the wreck-fangs. Halbrin reads the ground for iron the way another reads a page. The drowned carriages are charted by the rust they leave on the sensor.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_help_1",
+          "label": "Read the graveyard on the sensor.",
+          "target": "ci_helpb"
+        }
+      ]
+    },
+    {
+      "id": "ci_helpb",
+      "body": "The hammer-head comes up smeared with rust off the drowned wrecks. Halbrin charts the graveyard by touch alone. Each old carriage is named by where it lies and what it leaves on the wax. A whole disaster is read blind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_helpb_1",
+          "label": "Take the trolley ashore under the dead light.",
+          "target": "ci_conv"
+        }
+      ]
+    },
+    {
+      "id": "ci_watch",
+      "body": "You ship the crank to look up at the dead light. It has been forty years without a flame. You listen for the wind striking the tower. You hear it only as a tremble come up through the chassis, never once as a sound.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_watch_1",
+          "label": "Watch the squall walk in off the salt.",
+          "target": "ci_watchb"
+        }
+      ]
+    },
+    {
+      "id": "ci_watchb",
+      "body": "The squall to windward walks nearer. The lightning inside it is silent, a white flare with no thunder anywhere behind it. You feel the doubled awe and dread of a storm that gives no warning you can hear coming.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_watchb_1",
+          "label": "Take the trolley ashore under the dead light.",
+          "target": "ci_conv"
+        },
+        {
+          "id": "c_ci_watchb_2",
+          "label": "Watch the silent storm build a while longer.",
+          "target": "e_ci_awe"
+        }
+      ]
+    },
+    {
+      "id": "ci_near",
+      "body": "Cranking for the near siding straight past the wreck-fangs to beat the coming squall, Fen at the prow calling the old iron by hand-sign; how you take the point.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_near_1",
+          "label": "Run the wreck-fangs to beat the squall ashore.",
+          "target": "ci_risk",
+          "effects": [
+            {
+              "op": "set",
+              "var": "hull",
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": "c_ci_near_2",
+          "label": "Pull the long clean gut that Halbrin sounded.",
+          "target": "ci_safe"
+        },
+        {
+          "id": "c_ci_near_3",
+          "label": "Crowd the point to save the last few minutes.",
+          "target": "ci_reckless"
+        }
+      ]
+    },
+    {
+      "id": "ci_reckless",
+      "body": "We push the trolley to its limit, trying to save time before the storm hits. The wreck-ribs slide past, just inches from our wheels. Our luck is stretched thin, like a thread pulled over the black iron.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_reckless_1",
+          "label": "Shave the last rib and trust the trolley.",
+          "target": "e_ci_risk"
+        },
+        {
+          "id": "c_ci_reckless_2",
+          "label": "Sheer off into the clean ground while there is time.",
+          "target": "ci_safe"
+        }
+      ]
+    },
+    {
+      "id": "ci_risk",
+      "body": "Running Rocinante through the wreck-fangs to beat the squall ashore: an old iron rib takes a long strip off the axle and the grease starts weeping; the trolley holed and leaking, ashore fast but hurt, Fen already at the rag.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_risk_1",
+          "label": "Get her into the lee and take stock.",
+          "target": "ci_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "ci_safe",
+      "body": "Pulling the long clean gut Halbrin sounded, the safe slow way in, the squall gaining behind but the chassis whole and the crew unhurried, the trolley set down gentle in the lee.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_safe_1",
+          "label": "Bring her into the lee under the tower.",
+          "target": "ci_conv"
+        }
+      ]
+    },
+    {
+      "id": "ci_conv",
+      "body": "We are ashore at Cinder Tower, under the dead signal lamp. The storm is close now. The cold glass lens waits at the top of the keeper's stair. The burnt tower holds its breath for the weather.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_conv_1",
+          "label": "Go to the foot of the keeper's stair.",
+          "target": "ci_read"
+        },
+        {
+          "id": "c_ci_conv_2",
+          "label": "Let the crew make the trolley fast first.",
+          "target": "ci_extra1"
+        }
+      ]
+    },
+    {
+      "id": "ci_extra1",
+      "body": "Fen secures the trolley in the shelter of the old signal box. Halbrin looks up the stair with something like grief. He is an old inspector. He knew the last keeper and came out here when the light still burned.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_extra1_1",
+          "label": "Go to the foot of the keeper's stair.",
+          "target": "ci_read"
+        }
+      ]
+    },
+    {
+      "id": "ci_read",
+      "body": "The foot of the keeper's stair, the dead lamp at its head, the silent squall about to break over the tower; whether you climb up into it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_read_1",
+          "label": "Decide whether to climb into the storm.",
+          "target": "ci_gate"
+        },
+        {
+          "id": "c_ci_read_2",
+          "label": "Ask Halbrin about the keeper first.",
+          "target": "ci_extra2"
+        }
+      ]
+    },
+    {
+      "id": "ci_extra2",
+      "body": "Halbrin signs that the keeper tended a light no train could ever see the use of, in a plain where a horn dies in ten yards and a bell in twenty, and tended it forty years anyway out of a pure stubborn care that outlived every reason for it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_extra2_1",
+          "label": "Decide whether to climb into the storm.",
+          "target": "ci_gate"
+        }
+      ]
+    },
+    {
+      "id": "ci_gate",
+      "body": "You have a choice at the stair. You can climb into the breaking squall to light the cold lamp. Or, you can shelter in the signal box and read the keeper's records. To climb, you need a sound trolley safe below. A damaged one will not wait out a storm on this shore.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_gate_1",
+          "label": "Climb the stair and light the dead lamp.",
+          "target": "ci_deep1",
+          "condition": {
+            "==": [
+              {
+                "var": "hull"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_ci_gate_2",
+          "label": "Shelter and read the keeper's left-behind log.",
+          "target": "ci_shallow"
+        }
+      ]
+    },
+    {
+      "id": "ci_deep1",
+      "body": "You climb the keeper's stair into the breaking squall. Your whole trolley is safe in the shelter below. Silent lightning flickers white around the tower. You set a flame in the cold lamp at last. It has been dark for forty years. The wick catches and the light stands up strong.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_deep1_1",
+          "label": "Stand with the flame in the stilled storm.",
+          "target": "ci_deep2"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "ci_deep2",
+      "body": "The lamp is lit. Its beam shines out over a plain that swallows every other signal. The squall rages without a sound around the tower. It is just you, the flame, and the huge silent weather. You feel the awe of a light that no one will see, but that matters anyway. How long will you stand here?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_deep2_1",
+          "label": "Bank the flame, log it, and go down.",
+          "target": "ci_done"
+        },
+        {
+          "id": "c_ci_deep2_2",
+          "label": "Keep the light through the whole silent storm.",
+          "target": "e_ci_deep"
+        }
+      ]
+    },
+    {
+      "id": "ci_shallow",
+      "body": "You shelter in the old signal box as the silent squall passes over. You read the keeper's left-behind log by lamplight. The tower's whole story is written in careful, dead handwriting. It tells of weather, trains, and forty years of solitary faith.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_shallow_1",
+          "label": "Close the log and wait the weather out.",
+          "target": "ci_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "ci_shallowb",
+      "body": "The squall gone through, the signal box yielding up the keeper's records whole, the tower charted from cover without the climb; a sound survey and a dry crew and the keeper's story saved from the damp.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_shallowb_1",
+          "label": "Take the trolley off as the sky clears.",
+          "target": "ci_done"
+        },
+        {
+          "id": "c_ci_shallowb_2",
+          "label": "Sit with the keeper's log until the weather lifts.",
+          "target": "e_ci_shallow"
+        }
+      ]
+    },
+    {
+      "id": "ci_done",
+      "body": "Rocinante waits by Cinder Tower as the weather clears. The last light fades behind you. The wreckage sinks back into the grey sea. Whatever happened on shore, your arrival makes no real difference. You have taken your reading and logged it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ci_done_1",
+          "label": "Bear away for Railshead Junction to re-store.",
+          "target": "n_cove"
+        },
+        {
+          "id": "c_ci_done_2",
+          "label": "Answer the muster if the Stillness has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_ci_done_3",
+          "label": "Lie off the tower and chart the whole wreck-ground.",
+          "target": "e_ci_linger"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "soundings",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_ci_awe",
+      "body": "The silent storm rises to its full height. White fire without thunder walks across the whole windward sky. You learn the deepest thing Cinder Tower can teach. In the Salt-Flat, terror comes without a voice. You must meet it with your eyes and your nerve alone. It is awe over fear. You leave a note in the ledger that is truer than any weather figure.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ci_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Silent Lightning"
+      }
+    },
+    {
+      "id": "e_ci_risk",
+      "body": "The last wreck-rib hits the trolley line. Rocinante drives up hard, with one wheel gone. The crew fights her off into the shelter of the lee. The pump labors with the squall on their backs. No one is lost. The trolley is saved. But the light is unlit and the tower is unread. Rocinante limps Junction-ward, the pump still going. The wrecks do not forgive a thin margin, and you will not forget it. It is grave, not gory.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ci_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Through the Wreck-Fangs"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_ci_deep",
+      "body": "You keep the lamp lit through the whole silent storm. The flame burns in a plain that swallows all signals. No train sees it, and none needs it. But it burns anyway. You come down the stairs changed. You finally understand the keeper. Some care is worth keeping for its own sake, not just for its use. You log a light where the charts have said 'dark' for forty years.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ci_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "A Light No One Will See"
+      }
+    },
+    {
+      "id": "e_ci_shallow",
+      "body": "You read and save the keeper's whole log. It has forty years of weather, written by a careful hand in solitude. You take it before the damp can ruin it. Later, Halbrin reads it and is quiet for a long time. Then he only signs the keeper's name. That name had gone unspoken so long it was almost lost. You have kept this life from being lost twice.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ci_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Keeper's Log"
+      }
+    },
+    {
+      "id": "e_ci_linger",
+      "body": "Lying off Cinder Tower until the light goes, you chart the whole wreck-ground by hammer and eye, every drowned carriage named and set on the wax, a graveyard given at last an honest map so no trolley need join it unwarned; Halbrin watches and signs that the tower has waited forty years for hands that careful, and that they have come.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ci_linger",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Under the Dead Light"
+      }
+    },
+    {
+      "id": "gf_shore",
+      "body": "Rocinante glides onto the Glass Pan at slack tide. It is a mile of mirror-flat salt. The wind should make it ring like glass, but here it lies silent. The salt crust is just a hand's breadth down. The whole sky is doubled perfectly under the wheels. Your arrival is neutral. The pan is the same mirror, no matter how you cross it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_shore_1",
+          "label": "Pole the pan with Fen and find the deep gutters.",
+          "target": "gf_help"
+        },
+        {
+          "id": "c_gf_shore_2",
+          "label": "Rest the pole and stand in the stillness.",
+          "target": "gf_watch"
+        },
+        {
+          "id": "c_gf_shore_3",
+          "label": "Strike out for the bright perfect center.",
+          "target": "gf_near"
+        }
+      ]
+    },
+    {
+      "id": "gf_help",
+      "body": "Poling the pan beside Fen, reading the mirror for the deeper gutter channels that thread the shallows, a strange craft of walking a trolley across a sheet of doubled sky.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_help_1",
+          "label": "Let Halbrin teach the false bottom.",
+          "target": "gf_helpb"
+        }
+      ]
+    },
+    {
+      "id": "gf_helpb",
+      "body": "Halbrin shows you how the doubled sky hides the true crust. Your eyes lie on the pan. Only a hammer tells the truth. So you test every length of ground. You do not trust the beautiful, useless mirror.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_helpb_1",
+          "label": "Bring the trolley toward the pan's center.",
+          "target": "gf_conv"
+        }
+      ]
+    },
+    {
+      "id": "gf_watch",
+      "body": "You rest your pole and stand in the stillness. The pan is so quiet that you hear the blood in your own ears. For a mile in every direction, a single heartbeat is the loudest sound.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_watch_1",
+          "label": "Watch the dust-devil form and fall.",
+          "target": "gf_watchb"
+        }
+      ]
+    },
+    {
+      "id": "gf_watchb",
+      "body": "A dust-devil forms and collapses. The whirl throws two clean rings across the mirror. It makes no sound at all. The silence of a plain that should sing lands on you. It is a pure, eerie wonder. It is beautiful and wrong at the same time.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_watchb_1",
+          "label": "Bring the trolley toward the pan's center.",
+          "target": "gf_conv"
+        },
+        {
+          "id": "c_gf_watchb_2",
+          "label": "Stay in the mute stillness a while longer.",
+          "target": "e_gf_awe"
+        }
+      ]
+    },
+    {
+      "id": "gf_near",
+      "body": "You strike out toward the pan's bright center. The mirror there is flawless. The crust is uncertain under the doubled sky. Your supplies are the only real question out on the bar. How will you make the crossing?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_near_1",
+          "label": "Drag her bodily across the bared bar to the deep gutter.",
+          "target": "gf_risk",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "supplies",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": "c_gf_near_2",
+          "label": "Float the long gutter channel to the center.",
+          "target": "gf_safe"
+        },
+        {
+          "id": "c_gf_near_3",
+          "label": "Pole hard and heedless for the bright center.",
+          "target": "gf_reckless"
+        }
+      ]
+    },
+    {
+      "id": "gf_reckless",
+      "body": "You pole hard and fast toward the bright center. You drive Rocinante until her front wheel hits a hidden bar and sticks fast. The trolley is stuck on the mirror. Salt is already settling away beneath her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_reckless_1",
+          "label": "Drive her on and trust she will roll free.",
+          "target": "e_gf_risk"
+        },
+        {
+          "id": "c_gf_reckless_2",
+          "label": "Back off the bar before the ground leaves you.",
+          "target": "gf_safe"
+        }
+      ]
+    },
+    {
+      "id": "gf_risk",
+      "body": "You pull Rocinante over the bare bar into the deep gutter. For an hour, you drag the painter through ankle-deep crust. You pour the water skins out to lighten her. She crosses, but you use up your supplies.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_risk_1",
+          "label": "Come to the pan's still center.",
+          "target": "gf_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "gf_safe",
+      "body": "You float along the long gutter channel that curls to the center. This is the slow, honest way. You pole gently along the deeper thread. Your supplies stay untouched and the trolley never gets stuck.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_safe_1",
+          "label": "Come to the pan's still center.",
+          "target": "gf_conv"
+        }
+      ]
+    },
+    {
+      "id": "gf_conv",
+      "body": "Near the pan's center now, the mirror is flawless in every direction. The doubled world is perfect above and below the chassis. It is the calmest surface you have ever seen.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_conv_1",
+          "label": "Bring the trolley to the very center.",
+          "target": "gf_read"
+        },
+        {
+          "id": "c_gf_conv_2",
+          "label": "Let the trolley glide to rest first.",
+          "target": "gf_extra1"
+        }
+      ]
+    },
+    {
+      "id": "gf_extra1",
+      "body": "Fen puts the pole down. The trolley glides on its own last bit of way and stops. It is dead centered in the mirror. The three of you hold yourselves still. You don't want to break the perfect sheet with so much as a shifted weight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_extra1_1",
+          "label": "Bring the trolley to the very center.",
+          "target": "gf_read"
+        }
+      ]
+    },
+    {
+      "id": "gf_read",
+      "body": "The exact center of the Glass Pan, sky and doubled sky meeting seamless at the crustline, the plain a single sheet of held light; how far out you take the reading.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_read_1",
+          "label": "Decide how to read the mute mirror.",
+          "target": "gf_gate"
+        },
+        {
+          "id": "c_gf_read_2",
+          "label": "Ask Halbrin about the pan first.",
+          "target": "gf_extra2"
+        }
+      ]
+    },
+    {
+      "id": "gf_extra2",
+      "body": "Halbrin signs to you. He says the old surveys called this the Singing Pan. His grandmother once heard it ring across a whole calm morning. The Salt-Flat took even that song, the last song left in the plain. It happened before Halbrin was born.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_extra2_1",
+          "label": "Decide how to read the mute mirror.",
+          "target": "gf_gate"
+        }
+      ]
+    },
+    {
+      "id": "gf_gate",
+      "body": "The choice on the mirror: pole out to the true optical center where the reading is purest, or take it honestly from the gutter's edge; the center is a wide crossing of bared pan and back, and only a trolley with supplies enough should try to leave it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_gate_1",
+          "label": "Pole out to the true center of the mirror.",
+          "target": "gf_deep1",
+          "condition": {
+            ">=": [
+              {
+                "var": "supplies"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_gf_gate_2",
+          "label": "Read the pan from the gutter's edge.",
+          "target": "gf_shallow"
+        }
+      ]
+    },
+    {
+      "id": "gf_deep1",
+      "body": "You pole out to the true optical center of the pan. You have enough supplies aboard to cross the wide bright mirror and return. The trolley seems to hang in clear air with sky above and sky below. You take the reading in a place that is nothing at all but light and silence.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_deep1_1",
+          "label": "Take the reading where the plain is only light.",
+          "target": "gf_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "gf_deep2",
+      "body": "At the mirror's very heart, the hammer barely dips before it hits bottom. The pan is so shallow and calm it reads back like glass. You log the quiet note of the Singing Pan that sings no more. It is a silence that remembers music. How will you carry this moment?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_deep2_1",
+          "label": "Log the center reading and pole clear.",
+          "target": "gf_done"
+        },
+        {
+          "id": "c_gf_deep2_2",
+          "label": "Rest in the doubled light before turning back.",
+          "target": "e_gf_deep"
+        }
+      ]
+    },
+    {
+      "id": "gf_shallow",
+      "body": "Reading the pan from the gutter's edge, you cast the hammer out across the still shallows. You get an honest sounding of the mirror without the long dry drag to its center. You don't spend the supplies that crossing would cost.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_shallow_1",
+          "label": "Log the gutter reading and pole clear.",
+          "target": "gf_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "gf_shallowb",
+      "body": "You log the gutter reading, leaving the center unbroken and perfect. The water skins stay full. The careful survey is done. The mirror is uncrossed and gleaming. The trolley is ready for the road home.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_shallowb_1",
+          "label": "Find the deep water off the far edge.",
+          "target": "gf_done"
+        },
+        {
+          "id": "c_gf_shallowb_2",
+          "label": "Hold at the gutter and take the mirror in.",
+          "target": "e_gf_shallow"
+        }
+      ]
+    },
+    {
+      "id": "gf_done",
+      "body": "Rocinante reaches the deep water at the far side of the pan. The mirror closes behind her like she was never there. The doubled sky releases her. Her arrival is neither good nor bad. The reading was taken and recorded, regardless.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gf_done_1",
+          "label": "Bear away for Railshead Junction to re-store.",
+          "target": "n_cove"
+        },
+        {
+          "id": "c_gf_done_2",
+          "label": "Answer the muster if the Stillness has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_gf_done_3",
+          "label": "Drift the pan and chart every gutter before leaving.",
+          "target": "e_gf_linger"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "soundings",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_gf_awe",
+      "body": "A long hour is spent in the quiet, perfect stillness. Whirl after soundless whirl ripples the doubled sky. You understand the Glass Pan needs no crossing to be read. It only needs witnessing. The reading that counts is that the Salt-Flat took the last song from the plain. It left the beauty behind. This is the cruelest and most wondrous thing it does. Awe beats unease. The ledger is truer for the hour spent.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_gf_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Splash Without Sound"
+      }
+    },
+    {
+      "id": "e_gf_risk",
+      "body": "Rocinante gets stuck fast on a hidden sandbar. The salt washes away under her. The crew waits a whole day for the crust to fall to free her. They use up their supplies. They free her at the next tide, empty-handed. The center is unread. The Singing Pan keeps its silent peace. The pan does not trap on purpose. It just tells no lies about the bottom. You failed to ask. It is serious, not bloody.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_gf_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Grounded on the Bar"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_gf_deep",
+      "body": "You rest a moment in the doubled light at the mirror's heart. The trolley and crew are suspended between two skies. You log the pan that sang once. You hear, or half-hear, the ghost of that ringing in the quiet. This is the purest reading on the chart. Beneath the figures is a truth the Salt-Flat teaches. Silence can hold a music like a shut shell holds water.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_gf_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Flat That Sang"
+      }
+    },
+    {
+      "id": "e_gf_shallow",
+      "body": "The pan's edge was measured honestly from the gutter. The center was left whole and perfect. The supplies were kept for the pull home. Halbrin reads the edge figures and nods. An inspector who will not break a thing to measure it is the kind the Salt-Flat trusts. The Glass Pan is on the chart. The mirror is unmarred. The trolley is sound. Those are three quiet wins in a row.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_gf_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Read from the Gutter"
+      }
+    },
+    {
+      "id": "e_gf_linger",
+      "body": "You drift on the silent pan until the light grows long and golden. You map every gutter and bar of the Glass Pan. It is a maze of deep lines drawn clear across the doubled sky for future inspectors. Fen signs that no one with this map will ever get stuck here again. Halbrin keeps a proud and total silence. On this pan, that is the only fitting kind.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_gf_linger",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Walking on Light"
+      }
+    },
+    {
+      "id": "ds_shore",
+      "body": "Rocinante drifts over the Drowned Stair at slack noon. Below the clear crust lies a whole station, unbroken. It is Station-Under, with roof-ridges, a signal gantry, and a stone stair going down platform by platform into the deep. A submerged bell-tower leans at its heart. This arrival is neutral. The drowned station is the same whatever crossing brings you here.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_shore_1",
+          "label": "Sound down the stair tread by tread with the hammer.",
+          "target": "ds_help"
+        },
+        {
+          "id": "c_ds_shore_2",
+          "label": "Lie over the gunwale and look down the stair.",
+          "target": "ds_watch"
+        },
+        {
+          "id": "c_ds_shore_3",
+          "label": "Work the trolley over the leaning bell-tower.",
+          "target": "ds_near"
+        }
+      ]
+    },
+    {
+      "id": "ds_help",
+      "body": "Sounding down the drowned stair, tread by tread, with the hammer. Halbrin calls the depths in a low sign. A sunken platform is mapped by honest numbers where the eye can only wonder.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_help_1",
+          "label": "Chart the station room by room from above.",
+          "target": "ds_helpb"
+        }
+      ]
+    },
+    {
+      "id": "ds_helpb",
+      "body": "The hammer-head comes up green with the lichen from a sunken doorway. The station is charted room by room from above. It is a survey of a place no living foot will walk. It is drawn as carefully as if people still waited inside.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_helpb_1",
+          "label": "Bring the trolley over the tower.",
+          "target": "ds_conv"
+        }
+      ]
+    },
+    {
+      "id": "ds_watch",
+      "body": "Lying over the boat's edge, you look straight down the stair into the clear deep. The station goes down, platform by platform, into blue-green darkness. It is so still and whole it might be sleeping, not drowned at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_watch_1",
+          "label": "Watch the silver beetles pour from the tower window.",
+          "target": "ds_watchb"
+        }
+      ]
+    },
+    {
+      "id": "ds_watchb",
+      "body": "A swarm of silver beetles pours from the drowned bell-tower's window. They are silent, bright, and all turn at once, like the station is taking a breath. The awe of a whole living quiet settles over you. This is a place emptied of people and full of quiet life.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_watchb_1",
+          "label": "Bring the trolley over the tower.",
+          "target": "ds_conv"
+        },
+        {
+          "id": "c_ds_watchb_2",
+          "label": "Stay and watch the drowned station a while.",
+          "target": "e_ds_awe"
+        }
+      ]
+    },
+    {
+      "id": "ds_near",
+      "body": "You move the trolley over the leaning bell-tower. You lower the full hammer-line down its shaft to the deepest point in the whole Salt-Flat. The marked line and the daylight raise the question: how do you approach the deep?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_near_1",
+          "label": "Pay out the entire marked line down the tower shaft.",
+          "target": "ds_risk",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "supplies",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": "c_ds_near_2",
+          "label": "Sound only the shallow drowned roofs.",
+          "target": "ds_safe"
+        },
+        {
+          "id": "c_ds_near_3",
+          "label": "Force the hammer down into the black tower window.",
+          "target": "ds_reckless"
+        }
+      ]
+    },
+    {
+      "id": "ds_reckless",
+      "body": "You force the heavy hammer down into the tower's dark window. It gets stuck hard on the drowned bell. Instead of cutting and losing the marked line, you lean out too far after it. The deep green water rises to meet your outstretched hand. Fen's grip is the only thing holding you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_reckless_1",
+          "label": "Lean out the last inch to free the line yourself.",
+          "target": "e_ds_risk"
+        },
+        {
+          "id": "c_ds_reckless_2",
+          "label": "Let the line go and let Fen pull you back inboard.",
+          "target": "ds_safe"
+        }
+      ]
+    },
+    {
+      "id": "ds_risk",
+      "body": "You pay out the entire marked hammer-line down the bell-tower shaft. This is the deepest spot in the Salt-Flat. You burn the spare line and the whole afternoon to get it right. You got the reading. The supplies and the daylight are used up for it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_risk_1",
+          "label": "Bring the reading up over the tower.",
+          "target": "ds_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "ds_safe",
+      "body": "Sounding only the shallow drowned roofs, an easy honest reading of the station's high ground, the deep tower left for another, braver day, the line and the supplies kept whole.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_safe_1",
+          "label": "Hold the trolley over the station's heart.",
+          "target": "ds_conv"
+        }
+      ]
+    },
+    {
+      "id": "ds_conv",
+      "body": "The trolley holds over the leaning bell-tower. The station is clear and whole below. The stair draws your eye down and down. Its depth turns your stomach a little.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_conv_1",
+          "label": "Ready the hammer over the station's heart.",
+          "target": "ds_read"
+        },
+        {
+          "id": "c_ds_conv_2",
+          "label": "Let Fen make you fast first.",
+          "target": "ds_extra1"
+        }
+      ]
+    },
+    {
+      "id": "ds_extra1",
+      "body": "Fen ties you off to the mast out of plain care before there is any more leaning over deep water, and Halbrin watches the tower the way a person watches a grave whose filling they remember, an old grief held steady.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_extra1_1",
+          "label": "Ready the hammer over the station's heart.",
+          "target": "ds_read"
+        }
+      ]
+    },
+    {
+      "id": "ds_read",
+      "body": "You are over the heart of Station-Under. The deep tower is below. The whole station hangs in green light. The reading must be taken. Something in the shape of the drowned bell feels half-known to you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_read_1",
+          "label": "Decide how to read the drowned station.",
+          "target": "ds_gate"
+        },
+        {
+          "id": "c_ds_read_2",
+          "label": "Ask Halbrin about the station first.",
+          "target": "ds_extra2"
+        },
+        {
+          "id": "c_ds_read_3",
+          "label": "Match the drowned bell's shape to a note you have already sounded.",
+          "target": "e_ds_bonus",
+          "condition": {
+            ">=": [
+              {
+                "var": "soundings"
+              },
+              1
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ds_extra2",
+      "body": "Halbrin signs the station's name. He signs that the plain took it whole in a single night, a hundred years ago. It happened in total silence. The bells never once rang, though every rope was pulled. This is the Salt-Flat's oldest grief. It is why inspectors bare their heads over it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_extra2_1",
+          "label": "Decide how to read the drowned station.",
+          "target": "ds_gate"
+        }
+      ]
+    },
+    {
+      "id": "ds_gate",
+      "body": "This is the choice over Station-Under. You can pay the full hammer down the tower to the true floor of the Salt-Flat. Or you can read the drowned roofs and leave the deep unplumbed. The deepest sounding needs line and supplies and enough daylight to do it right. No inspector should start it if they cannot finish it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_gate_1",
+          "label": "Pay the full hammer down to the floor of the Salt-Flat.",
+          "target": "ds_deep1",
+          "condition": {
+            ">=": [
+              {
+                "var": "supplies"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_ds_gate_2",
+          "label": "Read the drowned roofs and leave the deep.",
+          "target": "ds_shallow"
+        }
+      ]
+    },
+    {
+      "id": "ds_deep1",
+      "body": "The full hammer-line is paid down the tower shaft to the floor of the Salt-Flat. You have supplies and daylight enough to see it through. The marked line sings tight fathom after fathom. It goes past any figure logged in a lifetime. The deepest place in the plain comes up as a number on a wet rope.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_deep1_1",
+          "label": "Read the true floor of the Salt-Flat.",
+          "target": "ds_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "ds_deep2",
+      "body": "The hammer is at last on the deepest bottom there is. The whole drowned station hangs in green above it. You log a figure that is the true floor of the Salt-Flat. Awe and grief ride together in that one plain number. How do you carry it up?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_deep2_1",
+          "label": "Log the deep sounding and bare your head.",
+          "target": "ds_done"
+        },
+        {
+          "id": "c_ds_deep2_2",
+          "label": "Hold the line on the floor a long grieving moment.",
+          "target": "e_ds_deep"
+        }
+      ]
+    },
+    {
+      "id": "ds_shallow",
+      "body": "Reading the drowned roofs and the signal gantry, an honest sounding of Station-Under's high streets, the tower and the deep beneath it left unplumbed and holy, the survey kept to the station's shallow bones.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_shallow_1",
+          "label": "Log the roof reading and bare your head.",
+          "target": "ds_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "ds_shallowb",
+      "body": "The roof survey logged, the station charted to its eaves, the deep left unread and undisturbed; craft with a bowed head, the high streets measured and the grave beneath them left in its peace.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_shallowb_1",
+          "label": "Take the trolley off over the sinking stair.",
+          "target": "ds_done"
+        },
+        {
+          "id": "c_ds_shallowb_2",
+          "label": "Hold over the station a while before you go.",
+          "target": "e_ds_shallow"
+        }
+      ]
+    },
+    {
+      "id": "ds_done",
+      "body": "Rocinante drifts away from the Drowned Stair. The station sinks back into the green water below. The stair goes down alone into the dark it came from. This arrival is neutral. The reading is taken. Halbrin bares his head either way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_done_1",
+          "label": "Bear away for Railshead Junction to re-store.",
+          "target": "n_cove"
+        },
+        {
+          "id": "c_ds_done_2",
+          "label": "Answer the muster if the Stillness has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_ds_done_3",
+          "label": "Hold over Station-Under and chart every drowned street.",
+          "target": "e_ds_linger"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "soundings",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_ds_awe",
+      "body": "You spend a long hour over the drowned station. You watch beetles breathe through its windows. You watch the light move down its stair. You understand now. Station-Under needs no sounding to be read. It only needs honoring. The reading that matters is that the Salt-Flat keeps its dead whole, quiet, and full of gentle life. A grief turned tender by a hundred years of green light. Awe over dread. The ledger is richer for the hour.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Town Breathing Fish"
+      }
+    },
+    {
+      "id": "e_ds_risk",
+      "body": "You lean the last inch after a fouled line. You go off balance over the deep. Fen's fist grabs your collar. It drags you back inboard hard onto the floorboards. You are both shaking. The line is cut and lost to the tower. No one drowned. The lesson is enormous. The Salt-Flat's deepest grave will take a careless inspector. It will take them the way it took the station, in one silent instant. You turn for the Junction with nothing logged and everything learned. It is grave, not gory.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Nearly Over the Side"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_ds_deep",
+      "body": "You hold the hammer on the true floor of the Salt-Flat. It is a long, grieving moment. The whole station hangs in green between you and the deepest dark there is. The awe and the sorrow settle into the ledger next to the enormous number. It is the deepest reading any living inspector holds. Beneath it is the oldest lesson the plain keeps. To measure a grave honestly is a way of keeping faith with it.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Floor of the Hollow"
+      }
+    },
+    {
+      "id": "e_ds_shallow",
+      "body": "The station is charted up to its eaves. The grave below is left in peace. The high streets of Station-Under are drawn clean. The deep tower is left unmeasured and honored. Halbrin reads the roof survey. He bares his old grey head over the ledger. He signs. He says the station has waited a hundred years for a kind hand that would measure it gently. He says that hand has come.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Kirktown's High Streets"
+      }
+    },
+    {
+      "id": "e_ds_linger",
+      "body": "You hold over Station-Until until the light fails. You chart every drowned street and lane. It is the fullest map of the sunken station anyone has kept. You draw as tenderly as if the people might read it. Halbrin watches the careful work. He keeps a silence that is grief and pride at once. You are both inspectors over a grave. You are doing the one thing inspectors can. You are seeing it truly.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_linger",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Over the Drowned Stair"
+      }
+    },
+    {
+      "id": "e_ds_bonus",
+      "body": "You have already taken a true sounding elsewhere in the Salt-Flat. You know the drowned bell's shape in the green water. Your hand and eye know it by its kin. You read Station-Under's silenced bell as sister to another the plain has swallowed. This is a recognition only an inspector who has begun to read the whole Salt-Flat could have. The deepest kind of survey is carried between the reaches. You have started to carry it. Awe and quiet mastery. The station's grief is joined to the plain's larger one and understood.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ds_bonus",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Note You Knew"
+      }
+    },
+    {
+      "id": "bc_shore",
+      "body": "Rocinante comes under the far embankment at the ebb. It reaches the Breathing Culvert. This is a great concrete throat. It draws the groundwater in and lets it out in a slow seep like a sleeper's breath. The most total silence in all the Salt-Flat lives back in its dark. This arrival is neutral. The culvert has the same slow breath whatever crossing brings you here.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_shore_1",
+          "label": "Sound the culvert-mouth and time the water's breath.",
+          "target": "bc_help"
+        },
+        {
+          "id": "c_bc_shore_2",
+          "label": "Hold off the mouth and feel the culvert inhale.",
+          "target": "bc_watch"
+        },
+        {
+          "id": "c_bc_shore_3",
+          "label": "Work the trolley in toward the throat itself.",
+          "target": "bc_near"
+        }
+      ]
+    },
+    {
+      "id": "bc_help",
+      "body": "Sounding the culvert-mouth with the hammer, timing the trolley to the groundwater's slow breath, reading how deep the throat must run by the long steady pull of the water going in and coming out.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_help_1",
+          "label": "Let Halbrin teach the breath's rhythm.",
+          "target": "bc_helpb"
+        }
+      ]
+    },
+    {
+      "id": "bc_helpb",
+      "body": "Halbrin teaches the breath's rhythm. Breathe in on the slow count. Breathe out on the slow count. It is a seep you ride and never fight. The culvert keeps its own time. A trolley lives or dies by whether it keeps that time too.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_helpb_1",
+          "label": "Take the trolley into the throat.",
+          "target": "bc_conv"
+        }
+      ]
+    },
+    {
+      "id": "bc_watch",
+      "body": "You hold the trolley back from the opening. You feel the culvert inhale. All the nearby groundwater leans gently into the dark. There is no sound to any of it. It is a breath a mile wide, drawn in perfect silence.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_watch_1",
+          "label": "Ride the culvert's exhale.",
+          "target": "bc_watchb"
+        }
+      ]
+    },
+    {
+      "id": "bc_watchb",
+      "body": "The culvert exhales. The swell lifts Rocinante and sets her down again, as gently as a hand. You understand all at once that the Salt-Flat is not dead, but only sleeping. The awe of that is almost too large a thing to hold in one chest.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_watchb_1",
+          "label": "Take the trolley into the throat.",
+          "target": "bc_conv"
+        },
+        {
+          "id": "c_bc_watchb_2",
+          "label": "Rock on the culvert's slow breath a while longer.",
+          "target": "e_bc_awe"
+        }
+      ]
+    },
+    {
+      "id": "bc_near",
+      "body": "You work the trolley toward the narrowest part, the throat. On the inbreath, you crank along the long, dark passage. You go to where the groundwater almost answers. The lamp-oil and supplies ask a question in the dark: how do you take the throat?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_near_1",
+          "label": "Fight in against a bad outbreath to hold your ground.",
+          "target": "bc_risk",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "supplies",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": "c_bc_near_2",
+          "label": "Wait and ride the culvert's own inbreath in.",
+          "target": "bc_safe"
+        },
+        {
+          "id": "c_bc_near_3",
+          "label": "Crank hard against the breath on your own timing.",
+          "target": "bc_reckless"
+        }
+      ]
+    },
+    {
+      "id": "bc_reckless",
+      "body": "You crank hard against the culvert's outbreath. You force the passage on your own timing. The trolley is pushed back a length for every two you win. The crank labors. The supplies burn for nothing against a seep that simply will not be hurried.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_reckless_1",
+          "label": "Crank on against the breath and spend whatever it costs.",
+          "target": "e_bc_risk"
+        },
+        {
+          "id": "c_bc_reckless_2",
+          "label": "Ship the crank and wait for the breath to turn.",
+          "target": "bc_safe"
+        }
+      ]
+    },
+    {
+      "id": "bc_risk",
+      "body": "Fighting in against a bad breath, burning the lamp-oil and the water to hold the trolley's ground in the dark throat until the seep relents, the supplies spent to make a way the groundwater had not yet offered; in at last, but at a price paid in the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_risk_1",
+          "label": "Come to the turning of the breath.",
+          "target": "bc_conv"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "bc_safe",
+      "body": "You wait. You ride the slow pull of water into the tunnel. The water carries Rocinante inside on its own time. You just steer with the crank. The supplies stay full. The dark takes you gently.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_safe_1",
+          "label": "Come to the turning of the breath.",
+          "target": "bc_conv"
+        }
+      ]
+    },
+    {
+      "id": "bc_conv",
+      "body": "Inside the throat now, the daylight astern shrunk to a coin, the dark ahead where the breath is born and where the Salt-Flat's silence goes from deep to absolute.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_conv_1",
+          "label": "Go on toward the turning of the breath.",
+          "target": "bc_read"
+        },
+        {
+          "id": "c_bc_conv_2",
+          "label": "Let Fen light the stern lamp first.",
+          "target": "bc_extra1"
+        }
+      ]
+    },
+    {
+      "id": "bc_extra1",
+      "body": "Fen lights the stern lamp. Its small flame throws no echo at all. The light pushes into a silence so complete it feels thick, like a substance. The trolley presses through it. The crew works by touch, trust, and the memory of each other's hands.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_extra1_1",
+          "label": "Go on toward the turning of the breath.",
+          "target": "bc_read"
+        }
+      ]
+    },
+    {
+      "id": "bc_read",
+      "body": "Deep in the Breathing Culvert, the groundwater's slow breath turns from in to out. This is the darkest, stillest water in the whole Salt-Flat. How far into the dark will you carry the reading? A sound at the edge of hearing makes you feel you half-know it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_read_1",
+          "label": "Decide how far to read into the dark.",
+          "target": "bc_gate"
+        },
+        {
+          "id": "c_bc_read_2",
+          "label": "Ask Halbrin about the culvert first.",
+          "target": "bc_extra2"
+        },
+        {
+          "id": "c_bc_read_3",
+          "label": "Complete the near-answer with a note you have already sounded.",
+          "target": "e_bc_bonus",
+          "condition": {
+            ">=": [
+              {
+                "var": "soundings"
+              },
+              1
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "bc_extra2",
+      "body": "Halbrin signs that this is as near the Salt-Flat's own voice as any place a trolley can reach. Here on a still day, an inspector can almost hear the groundwater think. No one wise ever claims a single word more about it than that.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_extra2_1",
+          "label": "Decide how far to read into the dark.",
+          "target": "bc_gate"
+        }
+      ]
+    },
+    {
+      "id": "bc_gate",
+      "body": "A choice in the tunnel. Crank all the way to the turning-place, where the groundwater almost answers. Or, take a reading honestly from near the lit mouth. The deep crank needs enough oil and supplies to reach the turning and get back out. The dark keeps no trolley that runs empty.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_gate_1",
+          "label": "Crank the full dark throat to the turning-place.",
+          "target": "bc_deep1",
+          "condition": {
+            ">=": [
+              {
+                "var": "supplies"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_bc_gate_2",
+          "label": "Read the throat from nearer the lit mouth.",
+          "target": "bc_shallow"
+        }
+      ]
+    },
+    {
+      "id": "bc_deep1",
+      "body": "You crank the full length of the dark tunnel by a failing lamp. You have enough oil and supplies to reach the turning-place and pull safely out again. The silence becomes total. The slow water breath is the only movement. The dark is so complete, the trolley seems to float in nothing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_deep1_1",
+          "label": "Take the reading where the groundwater almost answers.",
+          "target": "bc_deep2"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "bc_deep2",
+      "body": "At the throat's turning-place. Absolute dark. Absolute quiet. The groundwater's slow breath is all around. The hammer goes down into water that has never seen light. For one long, held moment, the Salt-Flat seems on the very edge of answering. It seems ready to give back a sound of its own. How do you meet the moment?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_deep2_1",
+          "label": "Log the deep reading and ride the breath out.",
+          "target": "bc_done"
+        },
+        {
+          "id": "c_bc_deep2_2",
+          "label": "Hold in the dark for the answer that almost comes.",
+          "target": "e_bc_deep"
+        }
+      ]
+    },
+    {
+      "id": "bc_shallow",
+      "body": "Reading the culvert from nearer its lit mouth, the hammer cast into the near dark, an honest sounding of the throat's beginning got without the long blind crank to the turning and without spending the oil that crank would burn.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_shallow_1",
+          "label": "Log the mouth reading and ride the breath out.",
+          "target": "bc_shallowb"
+        }
+      ]
+    },
+    {
+      "id": "bc_shallowb",
+      "body": "The mouth reading logged, the deep throat left to its slow breathing, the lamp-oil kept for the pull home; the careful survey done, the culvert's threshold measured and its dark heart left unentered and whole.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_shallowb_1",
+          "label": "Ride the outbreath back to the daylight.",
+          "target": "bc_done"
+        },
+        {
+          "id": "c_bc_shallowb_2",
+          "label": "Rest at the mouth and feel the culvert breathe.",
+          "target": "e_bc_shallow"
+        }
+      ]
+    },
+    {
+      "id": "bc_done",
+      "body": "Rocinante rides the culvert's slow outbreath back into daylight. The throat releases her gently into the grey afternoon. The groundwater's breathing goes on behind in the dark, as it has since before the station drowned. This arrival is neutral. The reading is taken and logged either way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bc_done_1",
+          "label": "Bear away for Railshead Junction to re-store.",
+          "target": "n_cove"
+        },
+        {
+          "id": "c_bc_done_2",
+          "label": "Answer the muster if the Stillness has come.",
+          "target": "fin_muster"
+        },
+        {
+          "id": "c_bc_done_3",
+          "label": "Lie in the culvert-mouth and chart the whole breath.",
+          "target": "e_bc_linger"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "soundings",
+          "value": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "id": "e_bc_awe",
+      "body": "You spend a long time rocking on the culvert's slow breath at the mouth. The groundwater, which is only sleeping, lifts you and sets you down again. After a while, you stop needing the dark throat to understand the Breathing Culvert. The reading that counts is this: the Salt-Flat lives and breathes. It just holds its voice. Its silence is rest, not death. You feel awe, not fear. You leave the ledger with the truest note anyone has kept on the far embankment.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bc_awe",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Sea Breathing"
+      }
+    },
+    {
+      "id": "e_bc_risk",
+      "body": "You keep cranking against the breath until the oil runs out and the water goes with it. Rocinante reaches the turning point spent and dark. She barely has strength left to let the outbreath carry her home. You reach the daylight empty-handed. The deep part is unread. The crew looks hollow-eyed. You learned the tunnel's one lesson the hard way: the culvert only gives itself to a trolley that keeps its own time. The Salt-Flat does not punish. It only refuses to be hurried. That refusal was enough. It is grave, not gory.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bc_risk",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Against the Breath"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "e_bc_deep",
+      "body": "You hold still in the absolute dark, waiting for an answer that almost comes. The groundwater's breath turns slowly all around you. The hammer is down in lightless water. You wait at the very edge of the Salt-Flat's voice. The plain does not quite speak. Somehow, that is the whole enormous gift of it. You log the deepest reading on the far embankment. Beneath it is the truth the culvert keeps: to come this near to a silence and hold steady is its own answer. It needs no other.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bc_deep",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Where the Sea Almost Answers"
+      }
+    },
+    {
+      "id": "e_bc_shallow",
+      "body": "You check the culvert honestly from its lit mouth. You leave the dark tunnel to breathe, unentered. You save the oil for the road home. Halbrin reads the threshold figures and signs approval. An inspector who will stand at the edge of a mystery and not force it is an inspector the Salt-Flat will one day let all the way in. The Breathing Culvert is on the chart. The crew is safe. The dark is left its dignity. Those are three good things.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bc_shallow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Read from the Cave-Mouth"
+      }
+    },
+    {
+      "id": "e_bc_linger",
+      "body": "You lie in the culvert-mouth until the water turns. You chart the whole slow pattern of the breath: its timing, its reach, and its turning. It is the fullest reading of the Breathing Culvert anyone has kept. Fen signs that no trolley carrying this chart will ever be caught by the breath again. Halbrin rocks gently in the dark. He keeps a deep, contented silence that, on the far embankment, is the only right reply.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bc_linger",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Throat of the Hollow"
+      }
+    },
+    {
+      "id": "e_bc_bonus",
+      "body": "Because you have already read a reach of the Salt-Flat, you can almost finish the near-answer trembling at the turning of the breath. You know its kin from another silence the groundwater keeps. You meet the culvert's half-voice with a knowing only a beginner inspector could carry into the dark. The reaches speak to one another for those who have listened to more than one. You have begun to hear the whole plain at once. It brings awe and quiet mastery. The culvert's near-voice is answered by the memory of every reach you've already read.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_bc_bonus",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Voice You Half-Know"
+      }
+    },
+    {
+      "id": "fin_muster",
+      "body": "Back at Railshead Junction on the eve of the Stillness, Halbrin gathers the crew in the chart-shed. He says the dark of the moon comes tomorrow. Once in a lifetime, the whole Salt-Flat falls to a dead flat calm. Rocinante will go to the line's center to read it one last time before Halbrin grows too old to go. The inspectors from the near line are being called in. Your arrival is neutral. You have entered from any reach, or from none, in whatever state Rocinante came home. There is work, and it needs every hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_muster_1",
+          "label": "Sit at the table and hear the plan.",
+          "target": "fin_brief"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "supplies",
+          "value": 3
+        },
+        {
+          "op": "set",
+          "var": "hull",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "fin_brief",
+      "body": "The plan is on the chart-shed table, three tasks deep. First, ready the deep sounding-gear for the center reading. Second, prepare the Junction and shore up Rocinante for the crossing. Third, crank the near line to call the old inspectors. Every task is real. None are small. Pick where your hands go first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_brief_1",
+          "label": "Ready the deep sounding-gear.",
+          "target": "fin_line"
+        },
+        {
+          "id": "c_fin_brief_2",
+          "label": "Shore Rocinante and ready the Junction.",
+          "target": "fin_shore"
+        },
+        {
+          "id": "c_fin_brief_3",
+          "label": "Crank the line and rouse the inspectors.",
+          "target": "fin_crew"
+        }
+      ]
+    },
+    {
+      "id": "fin_line",
+      "body": "The sounding-gear bench in the shed: the deep hammer, the great coil of marked line, the wax cup; two hands' worth of careful work before the still water comes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_line_1",
+          "label": "Wax and re-mark the deep hammer.",
+          "target": "fin_line_a"
+        },
+        {
+          "id": "c_fin_line_2",
+          "label": "Splice the spare line for the full depth.",
+          "target": "fin_line_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_line_a",
+      "body": "You wax and re-mark the deep hammer, fathom by fathom. You set the leather markers true down the whole length. This way, the center reading can be called clean off the wet line in the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_line_a_1",
+          "label": "Set the last markers and test the hammer.",
+          "target": "fin_line_a2"
+        }
+      ]
+    },
+    {
+      "id": "fin_line_a2",
+      "body": "The hammer is marked to Halbrin's exact satisfaction. The wax cup is filled and warm. The gear that will read the plain's own heart is ready by your hands. Every fathom-mark has been checked twice against the shed ruler.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_line_a2_1",
+          "label": "Lay the gear ready in the stern.",
+          "target": "fin_line_j"
+        }
+      ]
+    },
+    {
+      "id": "fin_line_b",
+      "body": "Splicing the spare line onto the main so the deep hammer can reach the Salt-Flat's true floor at the center, the splice rolled long and even under the palm.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_line_b_1",
+          "label": "Serve the splice and test it on the beam.",
+          "target": "fin_line_b2"
+        }
+      ]
+    },
+    {
+      "id": "fin_line_b2",
+      "body": "You serve and test the splice against the shed beam. It holds a full strong pull without a shiver. The line is long enough now for the deepest water. It is coiled down clean and ready to run.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_line_b2_1",
+          "label": "Lay the gear ready in the stern.",
+          "target": "fin_line_j"
+        }
+      ]
+    },
+    {
+      "id": "fin_line_j",
+      "body": "The sounding-gear was ready in Rocinante's stern. It was coiled, clean, and tied off. The deep hammer was lashed where a cold hand could find it blind. Everything waited now for the still water.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_line_j_1",
+          "label": "Report the gear ready to Halbrin.",
+          "target": "fin_line_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_line_r",
+      "body": "Halbrin checks the gear over once by hand and says nothing at all, which from Halbrin is the whole of praise; one task done for the morning, and the most important one made sure.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_line_r_1",
+          "label": "The dark of the moon comes on the ebb.",
+          "target": "fin_tide"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore",
+      "body": "The Junction is at low water. Rocinante is hauled out on the hard. You need to see to the chassis and make the spur ready. A fleet has not gathered here in thirty years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_1",
+          "label": "Shore Rocinante and pay her axles.",
+          "target": "fin_shore_a"
+        },
+        {
+          "id": "c_fin_shore_2",
+          "label": "Set the leading lights for the gathering.",
+          "target": "fin_shore_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_a",
+      "body": "You shore Rocinante over on the hard. You pay her axles with hot grease. You work the iron along every seam. This makes her roll tight and dry for the long crossing to the center.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_a_1",
+          "label": "Pay the main axle and let her cool.",
+          "target": "fin_shore_a2"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_a2",
+      "body": "The seams payed and the main axle sound, the trolley that will carry three to the center made whole for it, the smell of hot grease and the tide creeping back up the hard to float her clean and tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_a2_1",
+          "label": "Float her and moor her ready.",
+          "target": "fin_shore_j"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_b",
+      "body": "You set two shore-marks and the leading lights. They will guide the gathered trolleys into Railshead Junction through the dark of the moon. The one safe lane into the notch is finally marked out.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_b_1",
+          "label": "Line the lights up true and light them.",
+          "target": "fin_shore_b2"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_b2",
+      "body": "The leading lights are set and lit. They line up dead true. The single safe lane into the spur is marked. A fleet has not come home together in a generation. The near line is ready to receive its own.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_b2_1",
+          "label": "Walk the Junction once more, then report.",
+          "target": "fin_shore_j"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_j",
+      "body": "The Junction is ready. Rocinante floats, tight at her mooring. The spur is set to receive the inspectors. The near line is ready for a thing it has not done since before you were born.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_j_1",
+          "label": "Report the Junction ready to Halbrin.",
+          "target": "fin_shore_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_shore_r",
+      "body": "Halbrin walks the track at dusk. He lays a hand on Rocinante's front and gives a small nod. That nod means 'go on.' One task is done. The trolley and the Junction are both ready for the morning.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_shore_r_1",
+          "label": "The dark of the moon comes on the ebb.",
+          "target": "fin_tide"
+        }
+      ]
+    },
+    {
+      "id": "fin_crew",
+      "body": "The near line has scattered spurs. Old inspectors live there. They are surveyors who swallowed their hammers long ago. They have not worked the line since. We carry a word down a silent track.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crew_1",
+          "label": "Crank spur to spur carrying Halbrin's word.",
+          "target": "fin_crew_a"
+        },
+        {
+          "id": "c_fin_crew_2",
+          "label": "Crank out to old Inspector Halloran and ask him plainly.",
+          "target": "fin_crew_b"
+        }
+      ]
+    },
+    {
+      "id": "fin_crew_a",
+      "body": "We crank spur to spur with Halbrin's word. The Stillness is coming. Rocinante is going to the center. The Salt-Flat's inspectors should be there to see the last of the old reading.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crew_a_1",
+          "label": "Carry the word down the whole near line.",
+          "target": "fin_crew_a2"
+        }
+      ]
+    },
+    {
+      "id": "fin_crew_a2",
+      "body": "The word travels down the line. The Salt-Flat answers in its own way. A hand is lifted from a doorway. A trolley is uncovered. A lamp is set in a window. The near track turns toward the morning. It is like heads turning toward a bell.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crew_a2_1",
+          "label": "Bring the tally back to Halbrin.",
+          "target": "fin_crew_j"
+        }
+      ]
+    },
+    {
+      "id": "fin_crew_b",
+      "body": "Cranking out to old Inspector Halloran, who has not put to line since the last inspector he trained was lost to a squall, and asking him plainly, at his own door, to come.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crew_b_1",
+          "label": "Wait at his door while he decides.",
+          "target": "fin_crew_b2"
+        }
+      ]
+    },
+    {
+      "id": "fin_crew_b2",
+      "body": "Halloran hears you out at his door, looks a long time at the flat evening plain he has not crossed in years, and then takes his old hammer down off its nail without one word; the hardest yes on the whole line, given at last.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crew_b2_1",
+          "label": "Bring the tally back to Halbrin.",
+          "target": "fin_crew_j"
+        }
+      ]
+    },
+    {
+      "id": "fin_crew_j",
+      "body": "The inspectors gather along the near line. Their lamps come on in the dusk. Trolleys are uncovered and checked. An old craft comes out of retirement for one last job.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crew_j_1",
+          "label": "Report the gathering to Halbrin.",
+          "target": "fin_crew_r"
+        }
+      ]
+    },
+    {
+      "id": "fin_crew_r",
+      "body": "Halbrin reads the tally of who is coming. He folds it away and signs it. Then it is a proper gathering. One task is done. The line is roused. It has slept through thirty years of quiet mornings.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_crew_r_1",
+          "label": "The dark of the moon comes on the ebb.",
+          "target": "fin_tide"
+        }
+      ]
+    },
+    {
+      "id": "fin_tide",
+      "body": "It is the dark of the moon. The Stillness comes, just as Halbrin said it would. The whole Salt-Flat goes dead flat from spur to spur. The wind dies. The plain holds its breath under a starless sky. This arrival does not change our tasks. All three tasks were seen to by many hands. The morning shows it. The gear is ready. The trolley is tight. The inspectors' lamps are strung along the near line. The gathered trolleys wait at the Junction mouth. They wait for Rocinante to lead them out.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_tide_1",
+          "label": "Take the lead of the little fleet.",
+          "target": "fin_dark"
+        }
+      ]
+    },
+    {
+      "id": "fin_dark",
+      "body": "The inspectors' trolleys fall in behind Rocinante. It is the grey time before dawn. They are a small silent fleet. They crank out onto a plain with no horizon. The stilled water and the stilled sky run together. They become one seamless grey. The trolleys are hung in the middle of it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_dark_1",
+          "label": "Pull on for the Salt-Flat's center.",
+          "target": "fin_row"
+        }
+      ]
+    },
+    {
+      "id": "fin_row",
+      "body": "Rocinante cranks for the Salt-Flat's center. No inspector goes there except at a Stillness. The near line is gone behind us. The silence grows with every length. Soon, even the wheels turning on the rails make no sound. The world empties itself of sound around the trolley. Awe beats terror. The crew stays steady and small. They are in a hush the size of the sky. They are doing the oldest work of their craft.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_row_1",
+          "label": "Draw near the exact center.",
+          "target": "fin_gather"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "fin_gather",
+      "body": "The fleet waits back. Rocinante alone goes on to the exact center. Halbrin, Fen, and you are on board. The groundwater is a sheet of grey glass in every direction. The deepest quiet the Salt-Flat holds closes over the trolley. It is like water closing over a dropped stone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_gather_1",
+          "label": "Ready the deep hammer at the center.",
+          "target": "fin_still"
+        }
+      ]
+    },
+    {
+      "id": "fin_still",
+      "body": "Dead center in the Stillness, the groundwater perfectly still and perfectly silent, the deep hammer ready in your hands and a life of surveying narrowed to this one reading; how it is taken, and whose hands take it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_still_1",
+          "label": "Lower the hammer yourself, and let the Salt-Flat answer.",
+          "target": "fin_read",
+          "condition": {
+            ">=": [
+              {
+                "var": "soundings"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_fin_still_2",
+          "label": "Take the honest partial reading Halbrin guides your hands through.",
+          "target": "fin_partial"
+        },
+        {
+          "id": "c_fin_still_3",
+          "label": "Give the hammer to Halbrin and keep the ledger and the watch.",
+          "target": "fin_keepn"
+        }
+      ]
+    },
+    {
+      "id": "fin_read",
+      "body": "You bring the hammer down from your own hands into the Salt-Flat's still heart. You have read its reaches. You have learned the bell, the weed, the drowned station, and the breathing dark. The plain takes the wet line and gives something back up it. A sounding of its own rises through the rope into your palms. It is not only depth. It is a kind of answer. Halbrin's face is wet in the grey light. The craft passes whole into young hands in one silent moment. Awe wins over terror. It is the largest quiet the plain ever keeps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_read_1",
+          "label": "Hold the answer, and log it.",
+          "target": "fin_rise"
+        }
+      ],
+      "safety_scope": [
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "fin_rise",
+      "body": "The answer held a moment in the still dark air, then written into the ledger in a hand that only shakes a little, the fullest sounding any living inspector has ever taken rising off the page as plain figures with something enormous folded inside them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_rise_1",
+          "label": "Look to Halbrin as the groundwater begins, faintly, to breathe.",
+          "target": "fin_answered"
+        }
+      ]
+    },
+    {
+      "id": "fin_answered",
+      "body": "The answer is logged. The Stillness holds one moment more. Then the first far seep stirs at the rim of the world. What Halbrin says decides how the morning is carried home. He stands at the center of a plain that answered.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_answered_1",
+          "label": "Take the name Halbrin offers: the next inspector of the Salt-Flat.",
+          "target": "e_fin_charter"
+        },
+        {
+          "id": "c_fin_answered_2",
+          "label": "Say the plain's own sounding will take a life to understand, and mean it.",
+          "target": "e_fin_answer"
+        },
+        {
+          "id": "c_fin_answered_3",
+          "label": "Let the craft be simply passed, whole, in the quiet.",
+          "target": "e_fin_pass"
+        }
+      ]
+    },
+    {
+      "id": "fin_partial",
+      "body": "Halbrin's old hands guided yours on the line. A true figure was won from a first Stillness. It is not the plain's whole answer, but it is no small thing. The crew held the great silence together at the still center of the world.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_partial_1",
+          "label": "Log the reading and hold the silence.",
+          "target": "fin_settle"
+        }
+      ]
+    },
+    {
+      "id": "fin_settle",
+      "body": "The partial reading is settled into the ledger. A real sounding is got and set down plain. The Stillness begins to ease as the far seep wakes. The crew breathes again in a groundwater that is, very slowly, beginning to breathe with them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_settle_1",
+          "label": "Let the morning end at the center.",
+          "target": "fin_afterp"
+        }
+      ]
+    },
+    {
+      "id": "fin_afterp",
+      "body": "The partial reading logged, the Stillness turning back toward motion, a real thing won honestly from the plain's one still morning; how the reading is carried home.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_afterp_1",
+          "label": "Call it a true figure, honestly got, and enough.",
+          "target": "e_fin_true"
+        },
+        {
+          "id": "c_fin_afterp_2",
+          "label": "Turn for home on the waking seep with the fleet.",
+          "target": "e_fin_home"
+        }
+      ]
+    },
+    {
+      "id": "fin_keepn",
+      "body": "Halbrin takes the deep hammer. He reads the Salt-Flat one last time. You keep the ledger in a steady hand. The succession is plain in the sharing. The master's final sounding is called low and sure. It is written down clean at the center of the stilled groundwater.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_keepn_1",
+          "label": "Enter the master's last reading in the ledger.",
+          "target": "fin_hush"
+        }
+      ]
+    },
+    {
+      "id": "fin_hush",
+      "body": "Halbrin's last reading is entered whole in your ledger. The two of you work the old way one final time. The Stillness holds just long enough for the ink to dry. The watch is kept. The record is made. The craft is witnessed at its close.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_hush_1",
+          "label": "Let the morning end at the center.",
+          "target": "fin_afterk"
+        }
+      ]
+    },
+    {
+      "id": "fin_afterk",
+      "body": "The master's last sounding closed in the ledger, the Stillness easing toward motion, the succession quiet and sure between the old hands and the young; how the morning is carried home.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fin_afterk_1",
+          "label": "Say the ledger kept true is the inspector's other half, and mean it.",
+          "target": "e_fin_watch"
+        },
+        {
+          "id": "c_fin_afterk_2",
+          "label": "Enter the last sounding, close the book, and turn for home.",
+          "target": "e_fin_log"
+        }
+      ]
+    },
+    {
+      "id": "e_fin_charter",
+      "body": "Mabe\u2019s hands take yours on the wet line. In the grey light their face is wet, and they sign not a word. They do not need to. You have read the Hollow\u2014the bell that will not toll, the weed-locked lagoon, the drowned town, the cave that breathes\u2014and now the Hollow has read you back. The silence, in that moment, is not absence but a name. Mabe lifts your hand, still gripping the lead, and holds it up to the watching fleet. It is not a coronation. It is a fact. You are the charter of the Hollow. You row home at the head of the little fleet, the waking swell lifting Kestrel with the same gentleness the cave used, the log open on your knees. The sea\u2019s own sounding is folded into the figures, a quiet you will spend a lifetime learning to hear. The bell, the weed, the town, the dark\u2014all of it, read and kept. Some mornings are not just mornings. They are a whole life beginning, and this one signs its name at the bottom of the log, complete.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_charter",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Next Charter"
+      }
+    },
+    {
+      "id": "e_fin_answer",
+      "body": "You close the log. The figures are plain. The depth is a number. But the thing that came up the line, the answer the Hollow gave back to hands that had learned its reaches, is not a number. It is a silence that holds a shape. You will spend a lifetime understanding what the sea returned in that one still moment, and you already know that the understanding will be the whole of the craft. The fleet turns for home behind Kestrel, the old boats falling into line. The sea breathes again, a slow swell rising under the grey sky. You row, and the answer rides in the log not like a trophy but like a coal banked in the hearth, a quiet warmth that will last through every chart you will ever draw.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_answer",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Sea's Own Sounding"
+      }
+    },
+    {
+      "id": "e_fin_pass",
+      "body": "No ceremony. No word. Mabe\u2019s hand rests on your shoulder, and that is all. For the first time in years, the old sounder\u2019s face is easy, the lines of care smoothed by the grey light. The Hollow has been read to its very heart by the hands that will keep reading it. That is the succession. It is done. Kestrel turns, leading the fleet home over a sea just beginning to swell, the first long breaths of the returning tide. You look back once at the center, already fading into seamless grey. The craft did not end there. It changed hands, quiet and whole and sure, the way the best of the Hollow\u2019s things are always done.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_pass",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Passed Whole"
+      }
+    },
+    {
+      "id": "e_fin_true",
+      "body": "A true figure, honestly won. The Stilling met and held, no more claimed than was really got. You look at the number in the log, still damp from your hand, and know it for what it is: a first charter\u2019s honest morning at the center of the world. It is enough. More than enough, for a beginning. You stow the lead, coil the line. Kestrel turns for home in the waking light, the fleet falling in around her. The whole Hollow still lies ahead to learn, every reef and drowned street and silent cave. But for now, there is this: a real reading in the book, the boat sound beneath you, and Mabe\u2019s hand, warm and steady on your young shoulder, saying all the rest.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_true",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "A True Figure"
+      }
+    },
+    {
+      "id": "e_fin_home",
+      "body": "The Stilling is over. At the rim of the world, the first long swell stirs, and the sea begins to breathe again. You give the sign, and the fleet turns for home, Kestrel moving easily at their head. The reading is taken. The season is closed. You row on the returning tide\u2019s gentle push, the old boats keeping station behind you, their sounders grey and silent in the dawn. It is enough for one life\u2019s beginning. A Stilling seen. A center reached. A figure got, plain and true. The near shore rises ahead, a dark line against the grey, and you see the pinprick lamps of Cradle Cove still lit, waiting to welcome their own home.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_home",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "Rowing Home on the Breath"
+      }
+    },
+    {
+      "id": "e_fin_watch",
+      "body": "You held the log steady. You wrote down the figures as Mabe called them, the master\u2019s last sounding of the Hollow. The ink is dry now. The watch was kept true. The record is clean. As Kestrel turns for home and the Stilling eases, you understand something new. A charter is also the one who keeps the log. The one who makes the reading last past the hands that took it. The craft is not only in the lead and the line; it is in the ink and the careful hand. The succession rides home in your book as surely as it rides in the memory of the deep water, and both of them, you know, will hold.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_watch",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Log Kept True"
+      }
+    },
+    {
+      "id": "e_fin_log",
+      "body": "You close the log. Mabe\u2019s final sounding\u2014the Hollow measured one last time by the old hands before they stopped\u2014lies entered on the page, the figures plain, the damp from the line already fading. The book holds what the sea gave. Nothing more, nothing less. You stow it carefully in the stern locker. Kestrel turns, riding the first slow swell of the waking tide, the fleet falling in behind. You row, and you know, with a certainty that sits quiet in your chest, that the craft did not die at the center of the sea this morning. It changed hands. And that, you understand now, looking back at the grey water, is the only way a craft ever lives.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_fin_log",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Last Sounding Entered"
+      }
+    }
+  ]
+}
