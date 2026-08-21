@@ -18,7 +18,7 @@ budget is too small; that empty content is treated as a failed round exactly
 like unparseable output, never as prose.
 
 Usage:
-    uv run python docs/planning/evidence/skeleton-author-vendors/modal_kimi_leg.py \
+    uv run python scripts/modal_kimi_leg.py \
         --cell A --replicates 3 \
         --prompts <dir from --emit-prompts> \
         --out-dir docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21
@@ -36,8 +36,8 @@ from pathlib import Path
 
 import httpx
 
-_REPO_ROOT = Path(__file__).resolve().parents[4]
-_SCRIPTS = _REPO_ROOT / "scripts"
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+_SCRIPTS = Path(__file__).resolve().parent
 for _p in (str(_REPO_ROOT), str(_SCRIPTS)):
     if _p not in sys.path:
         sys.path.insert(0, _p)
