@@ -1,0 +1,912 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_bridge_of_stones",
+  "version": 1,
+  "title": "The Boardwalk After the Storm",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "water",
+      "testing before trusting",
+      "asking for help",
+      "looking after an animal"
+    ],
+    "estimated_minutes": 11,
+    "ending_count": 12,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "mild"
+    },
+    "topology": "open_map",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_dawn",
+  "nodes": [
+    {
+      "id": "n_dawn",
+      "body": "The wind stops before sunrise. The first thing you hear is the lagoon sucking at the mangrove roots. It is as loud as a train. Out on the boardwalk, the air tastes of salt and torn leaves. Three planks between you and the oyster shed hang sideways in the water. The rest of the walk dips so low the sea runs right over it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_dawn_0",
+          "label": "Go down to the boardwalk.",
+          "target": "n_bank"
+        }
+      ]
+    },
+    {
+      "id": "n_bank",
+      "body": "The two main posts of the boardwalk still stand tall above the tide. But the rails between them are empty, like a ladder with no rungs. On the oyster shed side, old dog Pebble lies just where she lay last night. Her chin is on her paws. She waits. Pebble has never once paddled in saltwater on purpose.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_bank_0",
+          "label": "Look at the low crossing posts.",
+          "target": "n_stones"
+        },
+        {
+          "id": "c_n_bank_1",
+          "label": "Look at the pandanus that came down.",
+          "target": "n_ash"
+        },
+        {
+          "id": "c_n_bank_2",
+          "label": "Go and find Old Man Diego.",
+          "target": "n_mender"
+        }
+      ]
+    },
+    {
+      "id": "n_stones",
+      "body": "The old crossing posts sit in a line down-tide of the boardwalk. They are eight mangrove stumps put there long before anyone can recall. Five of them show this morning. Their tops are slick with weed. The rest are somewhere under all that grey-green water.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_stones_0",
+          "label": "Test the first stump with your boot.",
+          "target": "n_st_first"
+        },
+        {
+          "id": "c_n_stones_1",
+          "label": "Count what is still showing.",
+          "target": "n_st_count"
+        }
+      ]
+    },
+    {
+      "id": "n_st_first",
+      "body": "The first stump is dry on top. It does not shift at all when you lean on it with one hand. This is the whole test and it takes about two seconds. A little crab runs out from under it and stares.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_st_first_0",
+          "label": "Step on and look at the next one.",
+          "target": "n_st_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_st_count",
+      "body": "Count out from the mangrove bank. One stump. Two. Three. Then a wide space where a stump ought to be. Then a stump that leans at a funny angle. Then nothing but the pull of the tide and the sound of a tern laughing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_st_count_0",
+          "label": "Go out as far as the third stump.",
+          "target": "n_st_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_st_mid",
+      "body": "Standing on the second stump, the water sounds new. It is less like rain and more like a thinking thing. The third stump is close. You can reach it. The water over it is only as deep as your ankle.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_st_mid_0",
+          "label": "Try the far stumps.",
+          "target": "n_st_far"
+        },
+        {
+          "id": "c_n_st_mid_1",
+          "label": "Go back to the mud.",
+          "target": "n_st_back"
+        }
+      ]
+    },
+    {
+      "id": "n_st_far",
+      "body": "The fourth stump tips when you put any weight on it at all. It tips just a bit, like a wobbly tooth. A wobbly stump in a running tide is a thing your auntie has a whole speech about. You can hear it in your head right now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_st_far_0",
+          "label": "Leave the wobbly one alone.",
+          "target": "n_hub_two"
+        },
+        {
+          "id": "c_n_st_far_1",
+          "label": "Get back to the mud.",
+          "target": "n_st_back"
+        }
+      ]
+    },
+    {
+      "id": "n_st_back",
+      "body": "Back on the mud with two wet socks and one piece of good news. The stumps go two thirds of the way across. Then they stop being stumps and start being a gamble. The tide is still running out, but not as fast as your heart.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_st_back_0",
+          "label": "Tell Kai what the stumps do.",
+          "target": "n_hub_two"
+        },
+        {
+          "id": "c_n_st_back_1",
+          "label": "Start again at the boardwalk posts.",
+          "target": "n_bank"
+        }
+      ]
+    },
+    {
+      "id": "n_ash",
+      "body": "A big pandanus tree came down in the night above the bend. It lies clean across the channel with its roots in the air. A wall of mud is still stuck to them. It is greasy with rain and full of snapped-off leaf spikes that catch on your shorts.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ash_0",
+          "label": "Try the trunk with a hand.",
+          "target": "n_ash_bark"
+        },
+        {
+          "id": "c_n_ash_1",
+          "label": "Reach for the big prop root.",
+          "target": "n_ash_reach"
+        }
+      ]
+    },
+    {
+      "id": "n_ash_bark",
+      "body": "The bark is loose in rings. It peels away like the skin off a boiled fruit. Underneath, it is pale and slippery. It smells of wet rope and old mud from the bottom of the lagoon.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ash_bark_0",
+          "label": "Sit down on the trunk.",
+          "target": "n_ash_sit"
+        }
+      ]
+    },
+    {
+      "id": "n_ash_reach",
+      "body": "From the root end, there is a prop root thicker than your arm. It does not move at all when you pull it. This makes it a handrail. Right now, you need anything you can get.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ash_reach_0",
+          "label": "Sit down and hold on.",
+          "target": "n_ash_sit"
+        }
+      ]
+    },
+    {
+      "id": "n_ash_sit",
+      "body": "Sitting on the trunk and shuffling forward is slow. It is not pretty. But it is steady. Kai says this is just how Old Man Diego crosses the channel when the boardwalk is out. He is a grown man who has mended every jetty in this lagoon.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ash_sit_0",
+          "label": "Shuffle out over the water.",
+          "target": "n_ash_far"
+        },
+        {
+          "id": "c_n_ash_sit_1",
+          "label": "Get off at the root end.",
+          "target": "n_ash_back"
+        }
+      ]
+    },
+    {
+      "id": "n_ash_far",
+      "body": "Over the middle the trunk narrows and the prop roots thin out, and there is nothing to hold at all on the last stretch, which is exactly the stretch that crosses the deep part where the water goes dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ash_far_0",
+          "label": "Note where the holding stops.",
+          "target": "n_hub_two"
+        },
+        {
+          "id": "c_n_ash_far_1",
+          "label": "Shuffle backwards to the roots.",
+          "target": "n_ash_back"
+        }
+      ]
+    },
+    {
+      "id": "n_ash_back",
+      "body": "You are back at the root end. You have bark in both sleeves. A leaf spike scratched your knee. The pandanus looks a lot less like a bridge now. It looks a lot more like a tree that fell over. That is what it is.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ash_back_0",
+          "label": "Go and compare it with the stumps.",
+          "target": "n_hub_two"
+        },
+        {
+          "id": "c_n_ash_back_1",
+          "label": "Walk back down to the boardwalk posts.",
+          "target": "n_bank"
+        }
+      ]
+    },
+    {
+      "id": "n_mender",
+      "body": "Old Man Diego mends the jetties all along this lagoon. He is down at the boardwalk posts. He has a barrow and a coil of wire. He looks like a person who has seen this thing happen twice before. He has.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_mender_0",
+          "label": "Ask him straight out.",
+          "target": "n_m_ask"
+        },
+        {
+          "id": "c_n_mender_1",
+          "label": "Watch what he does first.",
+          "target": "n_m_watch"
+        }
+      ]
+    },
+    {
+      "id": "n_m_ask",
+      "body": "You ask straight out. You get a straight answer. The loose planks are down past the oyster shed. The posts are as strong as a bell. He is short of two long planks and a second pair of hands.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_m_ask_0",
+          "label": "Look in the barrow.",
+          "target": "n_m_barrow"
+        }
+      ]
+    },
+    {
+      "id": "n_m_watch",
+      "body": "Watching is a way of asking. He lays a spirit level on the near post. He taps in a wooden wedge two times. He never looks at the tide as if it worried him. It does not worry him.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_m_watch_0",
+          "label": "Go over to the barrow.",
+          "target": "n_m_barrow"
+        }
+      ]
+    },
+    {
+      "id": "n_m_barrow",
+      "body": "In the barrow is a coil of yellow rope. There is a hammer with a smooth handle. There is one plank that is too short. There is a thermos of tea. The tea is not for sharing with children. Not at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_m_barrow_0",
+          "label": "Ask about the yellow rope.",
+          "target": "n_m_rope"
+        },
+        {
+          "id": "c_n_m_barrow_1",
+          "label": "Ask how long the mending takes.",
+          "target": "n_m_back"
+        }
+      ]
+    },
+    {
+      "id": "n_m_rope",
+      "body": "The rope goes across well when it is thrown. It makes a fine line to hang a shirt on. But a rope is not a boardwalk. Old Man Diego says so before anyone can say it might be.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_m_rope_0",
+          "label": "Ask what he actually needs.",
+          "target": "n_hub_two"
+        },
+        {
+          "id": "c_n_m_rope_1",
+          "label": "Coil the rope back up.",
+          "target": "n_m_back"
+        }
+      ]
+    },
+    {
+      "id": "n_m_back",
+      "body": "On his own the mending will take him until Friday, and Friday is a very long way away from an old oyster-farm dog sitting on the wrong side of the channel in the salt wind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_m_back_0",
+          "label": "Go and think about Friday.",
+          "target": "n_hub_two"
+        },
+        {
+          "id": "c_n_m_back_1",
+          "label": "Go back and look at the water.",
+          "target": "n_bank"
+        }
+      ]
+    },
+    {
+      "id": "n_hub_two",
+      "body": "By mid-morning the tide has stopped coming in. Everyone sees it at the same time. Pebble has moved once. She went as far as the old mooring post. She is still watching this side of the channel without blinking.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_hub_two_0",
+          "label": "See what Pebble will do.",
+          "target": "n_nell"
+        },
+        {
+          "id": "c_n_hub_two_1",
+          "label": "Try the mudflat by the shell midden.",
+          "target": "n_ford"
+        },
+        {
+          "id": "c_n_hub_two_2",
+          "label": "Go and look for the loose planks.",
+          "target": "n_planks"
+        }
+      ]
+    },
+    {
+      "id": "n_nell",
+      "body": "Pebble is old and grey around the nose. She has never gone into salt water on purpose. She stands up when you shout across at her. She stretches her front legs out long. Then she sits right back down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_nell_0",
+          "label": "Call her low and slow.",
+          "target": "n_nell_call"
+        },
+        {
+          "id": "c_n_nell_1",
+          "label": "Try the dried fish in Kai's pocket.",
+          "target": "n_nell_bone"
+        }
+      ]
+    },
+    {
+      "id": "n_nell_call",
+      "body": "Calling works better low and slow than loud. Her ears come forward, she walks down to the water, puts one paw in and takes it straight out again. Then she does it again, two times, to be certain.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_nell_call_0",
+          "label": "Watch where she stops.",
+          "target": "n_nell_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_nell_bone",
+      "body": "Kai has half a dried fish left from breakfast. It is a plan or a bribe. It depends on who is telling the story later. It smells stronger than the mud. That is a big thing to say.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_nell_bone_0",
+          "label": "Hold it up where she can see.",
+          "target": "n_nell_mid"
+        },
+        {
+          "id": "c_n_nell_bone_1",
+          "label": "Put it on a flat shell at the edge.",
+          "target": "n_nell_side"
+        }
+      ]
+    },
+    {
+      "id": "n_nell_side",
+      "body": "Waving it about does nothing at all. Leaving it on the oyster shell does something, and Pebble comes right down to the very edge of the water and stops there with her nose pointed at it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_nell_side_0",
+          "label": "Measure the gap she will not cross.",
+          "target": "n_nell_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_nell_mid",
+      "body": "The gap Pebble will not cross is about three of her own lengths. It is fast, shallow water. No amount of calling or fish will change that. What might change it is something solid. She needs to put her feet on it, one step at a time.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_nell_mid_0",
+          "label": "Go and find something to build with.",
+          "target": "n_hub_three"
+        },
+        {
+          "id": "c_n_nell_mid_1",
+          "label": "Go back to the boardwalk posts first.",
+          "target": "n_hub_two"
+        }
+      ]
+    },
+    {
+      "id": "n_ford",
+      "body": "The channel spreads out wide and flat below the shell pile. It is over grey sand. In the dry time, this is the place to cross. Nobody even thinks about it. Today it looks different.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ford_0",
+          "label": "Put one boot in.",
+          "target": "n_ford_wade"
+        },
+        {
+          "id": "c_n_ford_1",
+          "label": "Poke about with a mangrove stick.",
+          "target": "n_ford_stick"
+        }
+      ]
+    },
+    {
+      "id": "n_ford_wade",
+      "body": "You put one boot in, up to the ankle. Then you step in up to your shin. The tide pushes hard against your leg. It is much stronger than it looked from the mud. A small school of fish scatters past your knees.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ford_wade_0",
+          "label": "Get out and think again.",
+          "target": "n_ford_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_ford_stick",
+      "body": "You push a mangrove stick in at arm's length. It finds sand. Then it finds nothing at all. Then it finds sand again. In three pokes you have the whole map of the mudflat. The nothing is in the middle.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ford_stick_0",
+          "label": "Work out where the nothing is.",
+          "target": "n_ford_mid"
+        },
+        {
+          "id": "c_n_ford_stick_1",
+          "label": "Poke along the top edge too.",
+          "target": "n_ford_side"
+        }
+      ]
+    },
+    {
+      "id": "n_ford_side",
+      "body": "The nothing is a hole the storm dug out. It sits right where the dry path runs. That's the sort of thing the tide does when no one is watching. A jellyfish drifts in the hole like a soft white flag.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ford_side_0",
+          "label": "Mark it with the stick.",
+          "target": "n_ford_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_ford_mid",
+      "body": "The top end of the mudflat can be crossed. The bottom end cannot. You cannot tell which is which from the bank. So this is a place to bring a grown-up, not a place to try with just boots and a stick.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ford_mid_0",
+          "label": "Go and get something built instead.",
+          "target": "n_hub_three"
+        },
+        {
+          "id": "c_n_ford_mid_1",
+          "label": "Head back up to the boardwalk posts.",
+          "target": "n_hub_two"
+        }
+      ]
+    },
+    {
+      "id": "n_planks",
+      "body": "Planks do not just go away. They travel. The channel runs on for half a mile past the oyster sheds. It has three bends out by the mangroves. Things always wash up there sooner or later.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_planks_0",
+          "label": "Try the mangrove roots at the bend.",
+          "target": "n_plank_snag"
+        },
+        {
+          "id": "c_n_planks_1",
+          "label": "Look in the shallows further down.",
+          "target": "n_plank_drag"
+        }
+      ]
+    },
+    {
+      "id": "n_plank_snag",
+      "body": "At the second bend, a plank is jammed upright in the mangrove roots. It looks like a fence post. It's the right length. It still has old nail holes in the end. They are rusty marks, like a map of where it belongs.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_plank_snag_0",
+          "label": "Work it loose.",
+          "target": "n_plank_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_plank_drag",
+      "body": "The second plank lies flat in the shallows. Mud covers one end. It takes both of you leaning back hard to shift it just a hand span up the sand. An oyster is stuck to it like a small grey hat.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_plank_drag_0",
+          "label": "Keep hauling together.",
+          "target": "n_plank_mid"
+        },
+        {
+          "id": "c_n_plank_drag_1",
+          "label": "Take turns and rest between.",
+          "target": "n_plank_side"
+        }
+      ]
+    },
+    {
+      "id": "n_plank_side",
+      "body": "Taking turns works if you stop fighting about whose turn it is. The plank comes up the mudflat in stages. You take a proper sit-down between each one. The oyster hat stays on the whole way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_plank_side_0",
+          "label": "Get it as far as the boardwalk posts.",
+          "target": "n_plank_mid"
+        }
+      ]
+    },
+    {
+      "id": "n_plank_mid",
+      "body": "Two planks lie on the mud beside the boardwalk posts. It is not a bridge, either. But it is the whole change from Friday to today. Every single person there can see that it is. Even Pebble barks once.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_plank_mid_0",
+          "label": "Go and find Old Man Diego.",
+          "target": "n_hub_three"
+        },
+        {
+          "id": "c_n_plank_mid_1",
+          "label": "Go back for anything else useful.",
+          "target": "n_hub_two"
+        }
+      ]
+    },
+    {
+      "id": "n_hub_three",
+      "body": "The light has gone low and gold. The channel is a whole hand lower than it was at breakfast. There is time to do just one thing right before you are called in for supper. The mud cools under your bare feet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_hub_three_0",
+          "label": "Go back to the mangrove stumps.",
+          "target": "n_way_stones"
+        },
+        {
+          "id": "c_n_hub_three_1",
+          "label": "Go back to the fallen pandanus.",
+          "target": "n_way_ash"
+        },
+        {
+          "id": "c_n_hub_three_2",
+          "label": "Go back to the boardwalk posts.",
+          "target": "n_way_mender"
+        }
+      ]
+    },
+    {
+      "id": "n_way_stones",
+      "body": "The stumps are showing. There are six now instead of five. The wobbly one is still wobbly. The last gap is still a gap. The tide slides hard through the middle of it, green and quiet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_way_stones_0",
+          "label": "Try to cross on them.",
+          "target": "n_ws_go"
+        },
+        {
+          "id": "c_n_way_stones_1",
+          "label": "Make the gap into a stump.",
+          "target": "n_ws_nell"
+        }
+      ]
+    },
+    {
+      "id": "n_way_ash",
+      "body": "The pandanus has not moved. It will not move until someone comes with a saw. The top of the trunk is greasy. Rain hit it all night. The big prop root is quite dry on the bottom side.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_way_ash_0",
+          "label": "Shuffle the whole way over.",
+          "target": "n_wa_cross"
+        },
+        {
+          "id": "c_n_way_ash_1",
+          "label": "Use the prop root as a handrail.",
+          "target": "n_wa_rail"
+        }
+      ]
+    },
+    {
+      "id": "n_way_mender",
+      "body": "Old Man Diego has the first plank up on the posts and is holding it steady with one knee, which is not a thing that any person can go on doing for very long. The yellow rope is over his shoulder now, ready.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_way_mender_0",
+          "label": "Hold the far end for him.",
+          "target": "n_wm_build"
+        },
+        {
+          "id": "c_n_way_mender_1",
+          "label": "Run for the long iron bar.",
+          "target": "n_wm_fetch"
+        }
+      ]
+    },
+    {
+      "id": "n_ws_go",
+      "body": "Test each stump with a hand before you step on it. Take the wobbly one right at the flat mud side. Then comes the gap. The tide pushes through it, green and cool. A white egret watches.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ws_go_0",
+          "label": "Jump the gap.",
+          "target": "e_stones_across"
+        },
+        {
+          "id": "c_n_ws_go_1",
+          "label": "Stop at the gap.",
+          "target": "e_stones_turnback"
+        }
+      ]
+    },
+    {
+      "id": "n_ws_nell",
+      "body": "A rolled coral rock in the gap makes a sixth stump. It is low and wet but solid. Pebble watches the whole job from the far side. Her head is tipped over. One ear is inside out.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ws_nell_0",
+          "label": "Call her across the new stump.",
+          "target": "e_nell_across"
+        },
+        {
+          "id": "c_n_ws_nell_1",
+          "label": "Leave her to make her own mind up.",
+          "target": "e_nell_waits"
+        }
+      ]
+    },
+    {
+      "id": "n_wa_cross",
+      "body": "Sit on the trunk with both hands flat. Shuffle along. The bark comes away in strips. The deep water slides past below. It is hard to look at. A fruit bat flaps up from the far side.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_wa_cross_0",
+          "label": "Keep going to the far roots.",
+          "target": "e_ash_crawl"
+        },
+        {
+          "id": "c_n_wa_cross_1",
+          "label": "Take one hand off to steady.",
+          "target": "e_ash_wet"
+        }
+      ]
+    },
+    {
+      "id": "n_wa_rail",
+      "body": "The big prop root sits exactly at hand height above the trunk for the first half of the crossing and then it does not, and what to do about the second half is the whole question. The water is deeper there, and darker.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_wa_rail_0",
+          "label": "Tie the yellow rope on for the rest.",
+          "target": "e_ash_rail"
+        },
+        {
+          "id": "c_n_wa_rail_1",
+          "label": "Say it is not a bridge yet.",
+          "target": "e_ash_left"
+        }
+      ]
+    },
+    {
+      "id": "n_wm_build",
+      "body": "Holding the far end of a plank dead steady while somebody else drives a nail through it is a proper job, and it is extremely obvious to everyone standing in the mud when it has been done badly. The hammer rings out over the water.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_wm_build_0",
+          "label": "Hold it until the last nail.",
+          "target": "e_bridge_built"
+        },
+        {
+          "id": "c_n_wm_build_1",
+          "label": "Let go to look at the water.",
+          "target": "e_bridge_tomorrow"
+        }
+      ]
+    },
+    {
+      "id": "n_wm_fetch",
+      "body": "What is needed is the long iron bar. It hangs on a hook by his shed door. The shed is eleven minutes away if you walk on the mud track. It is much less than that if you run.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_wm_fetch_0",
+          "label": "Run for it.",
+          "target": "e_fetch_run"
+        },
+        {
+          "id": "c_n_wm_fetch_1",
+          "label": "Ask if it can wait.",
+          "target": "e_mender_says"
+        }
+      ]
+    },
+    {
+      "id": "e_stones_across",
+      "body": "The jump is shorter than it looked and the landing stump is flat and rough with barnacles and holds. From the far mangrove bank the channel looks like something that has been crossed rather than something that cannot be, and Pebble arrives at a gallop.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_stones_across",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Across on the Stumps"
+      }
+    },
+    {
+      "id": "e_stones_turnback",
+      "body": "Standing at the gap and deciding not to jump it turns out to be a decision rather than a failure, and the useful thing learned is exactly which stump is wrong and exactly how wrong it is. You draw a map in the mud for later.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_stones_turnback",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Middle Stump Was Wrong"
+      }
+    },
+    {
+      "id": "e_nell_across",
+      "body": "Pebble puts one paw on the new rock. Then she puts all four on. She comes over in a rush with her ears flat. She stands and shakes saltwater all over everyone. That is the price of getting an oyster-farm dog back where she belongs.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_nell_across",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Pebble Comes Over"
+      }
+    },
+    {
+      "id": "e_nell_waits",
+      "body": "Pebble will not use the new rock today and no talk can change her mind. She goes back to the post. Old Man Diego says he will toss her a fish over the water until the path is done. It is not the same as having her home.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_nell_waits",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Pebble Waits It Out"
+      }
+    },
+    {
+      "id": "e_ash_crawl",
+      "body": "The last bit lasts about nine seconds. It feels much longer. Then you find roots to grab and mud to stand on. You are on the bank that was on the far side a minute ago. The fruit bat is still up in the sky.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_ash_crawl",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Over on the Pandanus"
+      }
+    },
+    {
+      "id": "e_ash_wet",
+      "body": "One hand slips and the trunk turns. One leg goes in up to the knee, then the other hand grabs hold. The way back on the trunk is short, cold, and done with great care. Your boot makes a squish sound all the way home.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_ash_wet",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "One Wet Boot"
+      }
+    },
+    {
+      "id": "e_ash_rail",
+      "body": "The yellow rope makes the rest of the crossing just like the first part. By supper, three people have gone over it. Old Man Diego checks the knot and says nothing. Saying nothing is his way of saying a lot.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_ash_rail",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Handrail Made of Pandanus"
+      }
+    },
+    {
+      "id": "e_ash_left",
+      "body": "Saying that the tree is not a bridge yet is hard to say out loud. It is harder than just crossing it. But those words get a saw and two grown-ups down to the bend before dark. The bats are just waking up.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_ash_left",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Leave the Pandanus Where It Fell"
+      }
+    },
+    {
+      "id": "e_bridge_built",
+      "body": "Two planks, eleven nails and one small pair of hands holding the far end absolutely still. The first person over is Old Man Diego, the second is Pebble going the other way, and the third and fourth are you and Kai at a run, laughing.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_bridge_built",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Two Planks and a Nail"
+      }
+    },
+    {
+      "id": "e_bridge_tomorrow",
+      "body": "The plank slips and the nail bends. The job must wait until morning. What gets learned is that holding it was the real job. A bent nail is not as big a mess as it seems at the time. Diego writes a note in his little book.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_bridge_tomorrow",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Finished by Friday"
+      }
+    },
+    {
+      "id": "e_fetch_run",
+      "body": "It takes less than eleven minutes each way. The iron bar gets here before the sky turns gold. The stone for the post comes true under it with one long groan. The whole thing is level. We can build on it in the morning.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_fetch_run",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Fastest Fetcher in the Lagoon"
+      }
+    },
+    {
+      "id": "e_mender_says",
+      "body": "It can wait, he says, and it will have to. No one goes across a stream this high on a day like this for a dog that is dry under an old post. The iron bar stays where it is and so does every one else.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_mender_says",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Nobody Crosses Today"
+      }
+    }
+  ]
+}

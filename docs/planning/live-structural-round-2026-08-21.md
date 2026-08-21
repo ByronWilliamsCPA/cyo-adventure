@@ -254,3 +254,39 @@ Secondary observations from the same two books, feeding the round's other questi
 - Outbound dangling rates 0.760 and 0.738, consistent with the fill shortfall mechanism.
 - Narrative person split again on the same skeleton: second-person node rates 0.648 vs 0.254,
   confirming 7.1's unpinned-person finding under the directed condition too.
+
+### 7.3 Run C: the chunked path took three takes to reach, and the blockers are the finding
+
+**Take 1 (committed as `chunked-v32/`): the cap table is never consulted on any OpenRouter leg,
+harness or production.** Both legs died in 0.6s with a flattened "HTTP 400 (invalid or
+unavailable model)". Root cause, proven by direct construction: `OpenRouterProvider` exposes only
+`complete` and `name`; it has no `model` attribute. `MeteredProvider` and `PiiGuardedProvider`
+both dutifully forward `.model` by `getattr`, so they forward `None`, and
+`fill_skeleton`'s `resolve_output_cap(provider.model)` resolves the permissive 131,072 default
+for EVERY OpenRouter model. Consequences: `MODEL_OUTPUT_CAPS` is dead configuration on the
+`openrouter` backend (the `AL-428` "clamp silently does nothing" defect, reintroduced one layer
+up); the `UW-C302` chunked path can never engage on the one backend with low-cap models; and
+Stage B over-asks every low-ceiling endpoint. The direct-`anthropic` adapter DOES expose
+`.model` (property, `providers/anthropic.py`), which is why the orchestrator's own cap tests
+pass: they exercise the adapter that has the attribute. This answers the predecessor's 8.2
+question (does the production path pin or clamp?) worse than either hypothesis: on openrouter
+the clamp is not mis-keyed, it is blind. Fixed at the harness boundary only
+(`_ModelStampedProvider` in `compare_vendors.py`, commit 956dec9); the adapter itself is
+deliberately left for the register row.
+
+**Take 2 (committed as `chunked-v32-take2/`): the chunked path has no context accounting, and it
+overflowed by exactly one token.** With the model visible, the cap resolved to 65,536, chunking
+engaged, and the first batch call was rejected: the raw provider error (surfaced only by
+monkeypatching the HTTP client; the adapter flattens 400 bodies) reads "maximum context length is
+163840 tokens. However, you requested 58983 output tokens and your prompt contains at least
+104858 input tokens, for a total of at least 163841". `plan_fill_batches` bounds each batch's
+OUTPUT under the cap, but the batch prompt carries the whole document, so input grows with
+skeleton size while nothing checks input + ask against the endpoint's context window. Every
+committed v3.2 endpoint has the same 163,840 context, so no pin escapes it for a skeleton this
+large (`the-hollow-crown-gambit`'s batch prompt alone is ~104.9k tokens). The feasibility
+machinery reasons entirely in output tokens; the chunked path it gates inherits the assumption
+that context is unbounded, which is false exactly on the low-cap backends the path exists for.
+
+Take 3 re-targets `the-hollow-sea` (129,926-byte skeleton, 27,068 words, still over the 52,429
+feasibility ceiling, so it chunks with context slack), filled twice from two distant briefs,
+which also yields a same-skeleton chunked pair. Its result is below.

@@ -1,0 +1,632 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_big_cardboard_box",
+  "version": 1,
+  "title": "The First Snow Friend",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "play",
+      "imagination",
+      "home",
+      "making things",
+      "sharing"
+    ],
+    "estimated_minutes": 3,
+    "ending_count": 18,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "time_cave",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_doorstep",
+  "nodes": [
+    {
+      "id": "n_doorstep",
+      "body": "Overnight the whole garden went quiet. You open the back door. The snow has made a round white hill right in the middle of the grass. It is taller than you. It smells of cold and nothing. The top is smooth and a tiny twig is poking out. You walk all the way around it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_peek_inside",
+          "label": "Look closely at the snow.",
+          "target": "n_tip_out"
+        }
+      ]
+    },
+    {
+      "id": "n_tip_out",
+      "body": "Your big sister scoops her hand through the snow. It breaks apart into soft crumbs. When it is flat and ready, she pats the middle with her hand. It makes a deep, muffled thump. The snow is so fresh that every sound goes small and soft. It is like the world is wrapped in cotton wool.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_decide",
+          "label": "Decide what to build.",
+          "target": "n_two_ways"
+        }
+      ]
+    },
+    {
+      "id": "n_two_ways",
+      "body": "The heap can be two things. You get to pick. Rolled into a big ball, it makes a round, kind body. It sits on the grass like it waits for food. Piled up high, it makes a tall pile that sways a bit. It looks like a giant who just woke up. Both look great.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_on_side",
+          "label": "Roll it into a round body.",
+          "target": "n_on_side"
+        },
+        {
+          "id": "c_stand_up",
+          "label": "Pile it up tall.",
+          "target": "n_stand_up"
+        }
+      ]
+    },
+    {
+      "id": "n_on_side",
+      "body": "The snow rolls up with a soft scrunch. Now the friend has a round body and no head yet. Patches of green grass show through where the snow is thin. You kneel down and press your cheek near it. The far side glints a little where the morning sun is just finding the garden.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_how_to_enter",
+          "label": "Get ready to build the head.",
+          "target": "n_door_or_in"
+        }
+      ]
+    },
+    {
+      "id": "n_door_or_in",
+      "body": "Your sister brings a carrot from the kitchen and holds it up. She says a nose is the most key part. But the snow is still just a round lump. A whole face has to come first. You can add a pair of pebble eyes. Or you can give the friend a twiggy mouth.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cut_door",
+          "label": "Find two pebble eyes.",
+          "target": "n_flap_cut"
+        },
+        {
+          "id": "c_crawl_in",
+          "label": "Pick a mouth from a twig.",
+          "target": "n_crawl_in"
+        }
+      ]
+    },
+    {
+      "id": "n_flap_cut",
+      "body": "Two grey pebbles from the path are pressed into the snow where the eyes go. They stare back at you from a face that is only a blank round ball. It needs one more thing to be a real face: a scarf wrapped high, or a hat from the hall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_knocker",
+          "label": "Wrap on a scarf.",
+          "target": "n_knocker"
+        },
+        {
+          "id": "c_letter_slot",
+          "label": "Find a hat.",
+          "target": "n_letter_slot"
+        }
+      ]
+    },
+    {
+      "id": "n_knocker",
+      "body": "The scarf is long and has stripes. Your sister winds it around the friend's neck three times. Now the friend looks snug and grand. But it still needs one thing. Your sister holds out the carrot. The next-door cat watches from the fence with big, round eyes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_grown_up_knocks",
+          "label": "Let your sister add the nose.",
+          "target": "n_end_knock_knock"
+        },
+        {
+          "id": "c_cat_knocks",
+          "label": "See what the cat does.",
+          "target": "n_end_cat_den"
+        }
+      ]
+    },
+    {
+      "id": "n_end_knock_knock",
+      "body": "Your sister pokes the carrot in with a soft sound. The face is done now. It has two pebble eyes, a striped scarf, and a long orange nose. You both step back and say hi. The snow friend does not speak, but it looks like it might. You think it is the best friend in the whole yard.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_knock_knock",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Face at Last"
+      }
+    },
+    {
+      "id": "n_end_cat_den",
+      "body": "The cat drops from the fence and walks on the snow. It sniffs the pebble eyes and nudges the carrot with its nose. Then it sits by the snow friend as if this is its new spot. There is no room for you to hug the friend now. You lie in the snow and look at one very glad cat.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_cat_den",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Cat Finds a Friend"
+      }
+    },
+    {
+      "id": "n_letter_slot",
+      "body": "The hat is a wool hat from the closet. It is too big for the snow friend. You push it down and it hides the pebble eyes. Your sister pushes it back up. A hand can just fit under it. You think a gift should go under the hat.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_post_something",
+          "label": "Put a secret under the hat.",
+          "target": "n_post"
+        }
+      ]
+    },
+    {
+      "id": "n_post",
+      "body": "Your sister asks what kind of secret the snow friend should keep. A folded drawing would fit under the wool hat. Dry leaves from back of the shed would fit too. The wind blew them on the grass this morning.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_post_drawing",
+          "label": "Hide a folded drawing.",
+          "target": "n_end_secret_post"
+        },
+        {
+          "id": "c_post_leaves",
+          "label": "Hide the beech leaves.",
+          "target": "n_end_leaf_letters"
+        }
+      ]
+    },
+    {
+      "id": "n_end_secret_post",
+      "body": "A folded drawing goes under the hat. It is of the snow friend with a small you next to it. You lift the hat and look at it once more. The paper has got a bit wet. You tuck it back in and pat the hat down. The snow friend is now a secret keeper.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_secret_post",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Secret Under the Hat"
+      }
+    },
+    {
+      "id": "n_end_leaf_letters",
+      "body": "Brown beech leaves go under the hat one at a time. They rustle against the snow. They smell like the shed floor and the cold. Soon there is a little pile of leaves tucked under the wool. The snow friend looks like it is wearing a small, quiet crown that only you know about.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_leaf_letters",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Crown of Leaves"
+      }
+    },
+    {
+      "id": "n_crawl_in",
+      "body": "A bent twig is pushed in where the mouth goes. The friend has a lopsided grin now. It looks glad and a bit daft. Two things would make it better. It could have glove hands on sticks. Or a row of small stones down the front for buttons.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_get_torch",
+          "label": "Make glove hands.",
+          "target": "n_torch"
+        },
+        {
+          "id": "c_cut_window",
+          "label": "Press in stone buttons.",
+          "target": "n_window"
+        }
+      ]
+    },
+    {
+      "id": "n_torch",
+      "body": "Two sticks go into the sides. Your own gloves go on the ends. The snow friend has hands now. They are purple and wave a bit. Your sister says a third arm on top would make it look like a snow tree. There is an old hat on the hook by the back door too.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_poke_stars",
+          "label": "Add a third arm on top.",
+          "target": "n_end_star_roof"
+        },
+        {
+          "id": "c_fetch_blanket",
+          "label": "Fetch the hat from the hook.",
+          "target": "n_blanket"
+        }
+      ]
+    },
+    {
+      "id": "n_end_star_roof",
+      "body": "A third stick goes on top of the snow friend's head. Your sister's glove goes on the end. Now it has three hands all waving in different ways. You hold your own cold hand up next to it. The three gloves wave back. You lie flat on the snow. You think it is the silliest friend you have ever made.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_star_roof",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Friend with Three Hands"
+      }
+    },
+    {
+      "id": "n_blanket",
+      "body": "The hat goes on the snow friend's head. It flops down past the twiggy grin. The whole face hides under the wool. Only the carrot nose still pokes out. It is the quietest friend in the whole garden now. It smells of warm wool and cold snow mixed up.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_settle_in",
+          "label": "Settle the hat nicely.",
+          "target": "n_snug"
+        }
+      ]
+    },
+    {
+      "id": "n_snug",
+      "body": "You push the hat back up so the pebble eyes can see. The glove hands hang straight down. The friend looks very snug in the cold. You could make up a song and sing it to the friend. Or you could just sit still and watch the robin on the fence.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_have_story",
+          "label": "Sing a made-up song.",
+          "target": "n_end_story_den"
+        },
+        {
+          "id": "c_lie_down",
+          "label": "Sit quietly together.",
+          "target": "n_end_box_nap"
+        }
+      ]
+    },
+    {
+      "id": "n_end_story_den",
+      "body": "You make up a song. It is about a snow friend who stays in the garden until spring. Your sister joins in and hums the tune she does not know yet. The song is wobbly. The words do not rhyme. But the snow friend keeps its twiggy grin the whole time. It does not mind at all.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_story_den",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Song for the Snow Friend"
+      }
+    },
+    {
+      "id": "n_end_box_nap",
+      "body": "You sit down in the snow next to the friend. You do not say a thing. The robin on the fence flies off. A crow calls from the roof. The snow friend's carrot nose drips very slowly. One drip at a time. You sit until your hands are cold. Then your sister says it is time for toast.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_box_nap",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Sitting in the Quiet"
+      }
+    },
+    {
+      "id": "n_window",
+      "body": "You press small grey stones down the front of the snow friend. You do it one by one. They make a neat row of buttons from the scarf to the grass. The friend looks dressed now and very neat. It faces the kitchen window where the light is on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look_out",
+          "label": "Look where the friend is facing.",
+          "target": "n_window_view"
+        }
+      ]
+    },
+    {
+      "id": "n_window_view",
+      "body": "The snow friend looks right at the house. Turn it one way and it sees the kitchen window. You can see your breakfast plate still on the table. Turn it the other way and it sees the front garden. The postman walks up the path in big black boots.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_watch_street",
+          "label": "Watch the postman coming.",
+          "target": "n_end_bus_window"
+        },
+        {
+          "id": "c_watch_kitchen",
+          "label": "Wave at the kitchen window.",
+          "target": "n_end_wave_home"
+        }
+      ]
+    },
+    {
+      "id": "n_end_bus_window",
+      "body": "The postman comes up the path. He does not see the snow friend until he is right next to it. He stops, laughs, and says hello. He taps the hat very softly with one finger. Then he walks on. The snow friend stands very still. It does not move at all. You pat its round body.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bus_window",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Postman Says Hello"
+      }
+    },
+    {
+      "id": "n_end_wave_home",
+      "body": "You wave one glove hand at the kitchen window. Your mum is inside. She waves back but she does not see you well. You wave again. She waves again. It turns into a game for the rest of the day. One wave out. One wave back. You do it until the window is all steamy and you cannot see in.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_wave_home",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Waving Through the Window"
+      }
+    },
+    {
+      "id": "n_stand_up",
+      "body": "You pile the snow up high. It is taller than you by a whole head. It wobbles when you pat it. You could climb onto the garden bench. Then you could jump down on top and see what happens. Or you could dress the tall pile first while it stays still.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_climb_in_now",
+          "label": "Jump on top.",
+          "target": "n_end_flat_puddle"
+        },
+        {
+          "id": "c_draw_first",
+          "label": "Dress it up first.",
+          "target": "n_draw_first"
+        }
+      ]
+    },
+    {
+      "id": "n_end_flat_puddle",
+      "body": "You climb onto the bench and jump. The tall pile leans, and leans. It crumbles down slowly like a tired animal. It ends up flat on the grass. You sit in the middle of it, laughing. Your sister laughs too and nobody is cold yet. The snow sparkles all around you.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_flat_puddle",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Sparkly Puddle"
+      }
+    },
+    {
+      "id": "n_draw_first",
+      "body": "You find sticks and pine cones. You find two long bits of old ribbon from the kitchen drawer. The tall pile gets stripes of ribbon and pine cone spots. You stand back to look. From here, all the trim could make it two very different things.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_what_machine",
+          "label": "Decide what it will be.",
+          "target": "n_what_tower"
+        }
+      ]
+    },
+    {
+      "id": "n_what_tower",
+      "body": "The pine cones could be the knobs on a snow rocket. The rocket points at the sky. Or they could be the buttons on a snow lift. The lift has a whole building to visit. The pile waits in the garden to find out which it is today.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_be_rocket",
+          "label": "Make it a snow rocket.",
+          "target": "n_rocket"
+        },
+        {
+          "id": "c_be_lift",
+          "label": "Make it a snow lift.",
+          "target": "n_lift"
+        }
+      ]
+    },
+    {
+      "id": "n_rocket",
+      "body": "You pick a pine cone for the launch button. You both stare at it with a serious look. Your sister is ready to count down. Or you could push a smooth round hole right through the middle. Then you can see the back of the garden first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_countdown",
+          "label": "Count down to liftoff.",
+          "target": "n_end_countdown"
+        },
+        {
+          "id": "c_cut_porthole",
+          "label": "Push a round peephole.",
+          "target": "n_porthole"
+        }
+      ]
+    },
+    {
+      "id": "n_end_countdown",
+      "body": "Ten, nine, eight. Your sister shouts the numbers into the cold air. On zero you both jump. The snow falls off the top in a white shower. You do it four more times. Each time more snow falls off. The garden gets more and more snowy. You cannot take off without making a big mess.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_countdown",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Liftoff in the Garden"
+      }
+    },
+    {
+      "id": "n_porthole",
+      "body": "You push a round hole high up. You have to stand on tiptoe to see through. One eye at a time fits. Through the hole the fence looks small and far away. It looks the way the garden looks from an upstairs window when you are only small.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look_through",
+          "label": "Look through the peephole.",
+          "target": "n_out_the_window"
+        }
+      ]
+    },
+    {
+      "id": "n_out_the_window",
+      "body": "The peephole can point at anything. Swung round to the top of the garden, it holds the bare apple tree. It holds a single frosty apple still clinging on. Swung the other way, it holds the back door and a face looking out at you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_see_moon",
+          "label": "Look at the frosty apple.",
+          "target": "n_end_moon_garden"
+        },
+        {
+          "id": "c_see_mirror",
+          "label": "Look at the back door.",
+          "target": "n_end_helmet"
+        }
+      ]
+    },
+    {
+      "id": "n_end_moon_garden",
+      "body": "The apple is tiny and brown. It is covered in spikes of frost. The peephole holds it just so, like a picture in a frame. You keep one eye there for a long time. The sun comes out. The frost on the apple does not melt. You do not move. You are keeping the picture safe.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_moon_garden",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Frosty Apple Picture"
+      }
+    },
+    {
+      "id": "n_end_helmet",
+      "body": "Through the peephole the back door swings open. Your dad comes out. He is holding a mug of tea. He does not know you are spying on him through a snow rocket. He waves at the whole garden. You wave a purple glove hand back. He nearly spills his tea but then he laughs.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_helmet",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "Spying on the Back Door"
+      }
+    },
+    {
+      "id": "n_lift",
+      "body": "You write numbers in the snow next to the pine cones. You press them with a stern finger. The top button goes to the green shed. The play jungle is there. The bottom button goes down to the dark room. It is dark and full of echoes down there.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_press_top",
+          "label": "Press the top pine cone.",
+          "target": "n_top_floor"
+        },
+        {
+          "id": "c_press_bottom",
+          "label": "Press the bottom pine cone.",
+          "target": "n_basement"
+        }
+      ]
+    },
+    {
+      "id": "n_top_floor",
+      "body": "You hum a rising hum. Your sister plays the part of the lift. She says the floor numbers out loud. They keep getting higher. The humming gets very high. Then your sister says ping. It stops all at once.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_doors_open",
+          "label": "Step out of the lift.",
+          "target": "n_ping"
+        }
+      ]
+    },
+    {
+      "id": "n_ping",
+      "body": "Ping says your sister and the snow lift doors are not real. They can open on a jungle floor with soft green plants. Or they can open on more lift music and a long ride up.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_roof_garden",
+          "label": "Step out into the jungle.",
+          "target": "n_end_roof_garden"
+        },
+        {
+          "id": "c_more_music",
+          "label": "Keep riding the lift.",
+          "target": "n_end_lift_music"
+        }
+      ]
+    },
+    {
+      "id": "n_end_roof_garden",
+      "body": "The jungle is the hot house. It is warm and smells of dirt. There is a big fern to hide in. There is a can for a warm rain. You make a full jungle in there. Then your toes get cold and your sister says it is time to eat.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_roof_garden",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Greenhouse Jungle"
+      }
+    },
+    {
+      "id": "n_end_lift_music",
+      "body": "The doors shut again. Your sister hums lift music with no tune at all. Floor after floor goes past. None of them is the right one. It is the dumbest song in the garden. It goes on until your noses are both pink. Your humming sounds like a tipsy bee.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_lift_music",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Lift Music in the Snow"
+      }
+    },
+    {
+      "id": "n_basement",
+      "body": "The hum goes down. It gets low and deep. The snow pile sounds odd when you hum low next to it. It buzzes on your lips. The pine cone at the very bottom has no mark by it at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_stop_basement",
+          "label": "Stop at the cellar.",
+          "target": "n_end_cellar_giggle"
+        },
+        {
+          "id": "c_go_deeper",
+          "label": "Press the pine cone with no number.",
+          "target": "n_deeper"
+        }
+      ]
+    },
+    {
+      "id": "n_end_cellar_giggle",
+      "body": "The not real doors let you out in the dark cold room. It is full of nothing. You say hello in a low voice. Your sister says hello back all buzzy. Then you both start to giggle. The words sound so stern. The lift has to shut its doors. You both might fall down from so much joy.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_cellar_giggle",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Cellar With Nothing In It"
+      }
+    },
+    {
+      "id": "n_deeper",
+      "body": "Past the cold room the count stops. The hum goes so low your neck feels funny. A thing is down here. Your sister asks if it has claws or wings.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_feet",
+          "label": "Say it has claws.",
+          "target": "n_end_dinosaur_floor"
+        },
+        {
+          "id": "c_fins",
+          "label": "Say it has wings.",
+          "target": "n_end_paper_sea"
+        }
+      ]
+    },
+    {
+      "id": "n_end_dinosaur_floor",
+      "body": "The doors let you out on a floor of hot mud. Big slow steps go by. You do not go out. It is too big in there. The pine cone doors shut. The lift takes a long time to come back. That is fine with all of you.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_dinosaur_floor",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Floor With the Footsteps"
+      }
+    },
+    {
+      "id": "n_end_paper_sea",
+      "body": "The doors open into the sky. The whole floor is a slow white cloud. Something wide soars past it. Then a handful of loose snow is tossed onto your head by your sister. It is nearly the same thing. The garden fills up with cold wings and laughs.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_paper_sea",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Snowfall of Wings"
+      }
+    }
+  ]
+}
