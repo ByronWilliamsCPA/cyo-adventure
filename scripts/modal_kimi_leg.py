@@ -73,35 +73,66 @@ def _auth_headers() -> dict[str, str]:
 
 
 def _complete(client: httpx.Client, system: str, prompt: str) -> tuple[str, dict]:
-    """One chat completion; returns (content, usage-ish metadata)."""
-    response = client.post(
-        f"{BASE_URL}/v1/chat/completions",
-        json={
-            "model": MODEL,
-            "max_tokens": MAX_TOKENS,
-            "messages": [
-                {"role": "system", "content": system},
-                {"role": "user", "content": prompt},
-            ],
-        },
-    )
-    response.raise_for_status()
-    body = response.json()
-    choice = body["choices"][0]
-    content = choice["message"].get("content") or ""
-    usage = body.get("usage") or {}
-    meta = {
-        "finish_reason": choice.get("finish_reason"),
-        "prompt_tokens": usage.get("prompt_tokens"),
-        "completion_tokens": usage.get("completion_tokens"),
-        "reasoning_tokens": usage.get("reasoning_tokens"),
+    """One chat completion via SSE streaming; returns (content, metadata).
+
+    Streaming is load-bearing, not cosmetic: the first non-streamed
+    multi-minute authoring call was dropped with "server disconnected
+    without sending a response" (2026-08-21), because something on the
+    path does not hold an idle connection for the full generation. The
+    handoff's shape findings were all from tiny completions and did not
+    surface this. Transient disconnects are retried with backoff.
+    """
+    payload = {
+        "model": MODEL,
+        "max_tokens": MAX_TOKENS,
+        "stream": True,
+        "stream_options": {"include_usage": True},
+        "messages": [
+            {"role": "system", "content": system},
+            {"role": "user", "content": prompt},
+        ],
     }
-    if not content.strip() and choice.get("finish_reason") == "length":
-        # Empty-string content under length is the Modal budget signature;
-        # returning it as-is would hand an empty shell downstream as if it
-        # were output. The caller treats it as a failed round.
-        content = ""
-    return content, meta
+    last_exc: Exception | None = None
+    for retry in range(3):
+        if retry:
+            time.sleep(5 * 2**retry)
+        try:
+            parts: list[str] = []
+            finish_reason = None
+            usage: dict = {}
+            with client.stream(
+                "POST", f"{BASE_URL}/v1/chat/completions", json=payload
+            ) as response:
+                response.raise_for_status()
+                for line in response.iter_lines():
+                    if not line.startswith("data:"):
+                        continue
+                    data = line[5:].strip()
+                    if not data or data == "[DONE]":
+                        continue
+                    chunk = json.loads(data)
+                    if chunk.get("usage"):
+                        usage = chunk["usage"]
+                    for choice in chunk.get("choices") or []:
+                        delta = choice.get("delta") or {}
+                        piece = delta.get("content")
+                        if piece:
+                            parts.append(piece)
+                        if choice.get("finish_reason"):
+                            finish_reason = choice["finish_reason"]
+            content = "".join(parts)
+            meta = {
+                "finish_reason": finish_reason,
+                "prompt_tokens": usage.get("prompt_tokens"),
+                "completion_tokens": usage.get("completion_tokens"),
+                "reasoning_tokens": usage.get("reasoning_tokens"),
+            }
+            # Empty content under length is the Modal budget signature; the
+            # caller treats it as a failed round, never as output.
+            return content, meta
+        except (httpx.TransportError, httpx.HTTPStatusError) as exc:
+            last_exc = exc
+    raise RuntimeError(f"kimi call failed after retries: {last_exc}")
 
 
 def _score(
