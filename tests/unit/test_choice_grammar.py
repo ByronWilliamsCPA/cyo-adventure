@@ -22,6 +22,7 @@ from cyo_adventure.validator.choice_grammar import (
     check_choiceless_run_cap,
     check_fill_gate_acknowledgment,
     check_options_per_choice,
+    check_outbound_staging,
     check_visible_run_cap,
     check_words_per_stop,
 )
@@ -1182,3 +1183,67 @@ class TestVisibleRunCycleMeasurement:
         }
 
         assert runs == {("c0", "c1")}, f"unstable across repeats: {runs}"
+
+
+class TestOutboundStaging:
+    """CG-6: a decision body must stage what its own choice labels promise."""
+
+    def _nodes(self, body: str) -> list[dict[str, object]]:
+        return [
+            {
+                "id": "n0",
+                "body": body,
+                "is_ending": False,
+                "choices": [
+                    {"id": "c0", "label": "Climb the tower.", "target": "n_tower"},
+                    {"id": "c1", "label": "Enter the cave.", "target": "n_cave"},
+                ],
+            },
+            _ending_node("n_tower", "e_tower", body="You climb the tall tower."),
+            _ending_node("n_cave", "e_cave", body="You enter the cool cave."),
+        ]
+
+    def test_a_body_that_stages_both_labels_is_silent(self) -> None:
+        story = _story(
+            "8-11",
+            self._nodes("The tower leans over the mouth of the cave."),
+            "n0",
+            ending_count=2,
+        )
+        report = check_outbound_staging(story)
+        assert report.findings == []
+
+    def test_a_dangling_outbound_label_fires_per_choice(self) -> None:
+        """The AL-495 shape: prose about a boat, choices about a cap and Sam."""
+        story = _story(
+            "8-11",
+            self._nodes("Rain drums on the boatyard shed all morning."),
+            "n0",
+            ending_count=2,
+        )
+        report = check_outbound_staging(story)
+        assert [f.rule_id for f in report.findings] == ["CG-6", "CG-6"]
+        assert {f.choice_id for f in report.findings} == {"c0", "c1"}
+        assert all(f.severity is Severity.WARNING for f in report.findings)
+
+    def test_an_unfilled_body_is_skipped(self) -> None:
+        story = _story(
+            "8-11",
+            self._nodes("<<FILL role=choice words=40 beats='pick'>>"),
+            "n0",
+            ending_count=2,
+        )
+        report = check_outbound_staging(story)
+        assert report.findings == []
+
+    def test_the_fill_result_flag_runs_cg6_through_the_combinator(self) -> None:
+        story = _story(
+            "8-11",
+            self._nodes("Rain drums on the shed all morning."),
+            "n0",
+            ending_count=2,
+        )
+        silent = check_choice_grammar(story)
+        run = check_choice_grammar(story, is_fill_result=True)
+        assert [f for f in silent.findings if f.rule_id == "CG-6"] == []
+        assert [f for f in run.findings if f.rule_id == "CG-6"] != []

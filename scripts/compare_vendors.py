@@ -119,7 +119,10 @@ from cyo_adventure.generation.orchestrator import _MAX_TOKENS_PROSE, fill_skelet
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.prompts import build_differentiation_directive
 from cyo_adventure.generation.provider import build_openrouter_leg, build_provider
-from cyo_adventure.generation.skeleton import resolve_output_cap
+from cyo_adventure.generation.skeleton import (
+    commissioned_words_by_node,
+    resolve_output_cap,
+)
 from cyo_adventure.generation.usage import UsageLedger
 from cyo_adventure.generation.variation import axis_for_key
 from cyo_adventure.validator.reading_level import measure_book
@@ -216,7 +219,14 @@ class BookRecord:
             proxy available until #701 lands.
         grade: Whole-book Flesch-Kincaid grade, or ``None`` when the book had
             too little scorable prose or declared no reading-level band.
-        in_band: Fraction of scorable nodes inside the declared band.
+        in_band: Fraction of scorable nodes inside the declared band. Never
+            read this without ``fill_rate`` beside it: the 2026-08-21 grid
+            measured a thin book conforming BECAUSE it was thin and a full
+            book out of band, so either number alone misleads
+            (`AL-491`/`AL-500`/`UW-C308`).
+        fill_rate: Delivered scorable words over the skeleton's commissioned
+            ``words=`` total, or ``None`` when the skeleton commissions
+            nothing.
         leaf_words: Total scorable leaf words.
         doc: The filled Storybook dict, or ``None`` on a total failure.
         error: Truncated exception text when ``status == "error"``.
@@ -248,6 +258,7 @@ class BookRecord:
     latency_s: float
     grade: float | None
     in_band: float | None
+    fill_rate: float | None
     leaf_words: int
     doc: dict[str, Any] | None
     error: str | None
@@ -968,6 +979,7 @@ async def run_comparison(
                         latency_s=round(time.monotonic() - started, 2),
                         grade=None,
                         in_band=None,
+                        fill_rate=None,
                         leaf_words=0,
                         doc=None,
                         error=str(exc)[:512],
@@ -980,6 +992,9 @@ async def run_comparison(
                 grade, in_band, words = (
                     _measure(doc) if doc is not None else (None, None, 0)
                 )
+                commissioned = sum(
+                    commissioned_words_by_node(dict(skeletons[index])).values()
+                )
                 records.append(
                     BookRecord(
                         vendor=vendor.label,
@@ -990,6 +1005,7 @@ async def run_comparison(
                         latency_s=round(time.monotonic() - started, 2),
                         grade=grade,
                         in_band=in_band,
+                        fill_rate=(words / commissioned) if commissioned else None,
                         leaf_words=words,
                         doc=doc,
                         error=None,
@@ -1013,6 +1029,7 @@ async def run_comparison(
             print(
                 f"[{vendor.label} #{index}] status={last.status} "
                 f"fk={last.grade} in_band={last.in_band} "
+                f"fill_rate={last.fill_rate} "
                 f"latency={last.latency_s}s{detail}",
                 file=sys.stderr,
                 flush=True,
@@ -1369,14 +1386,16 @@ def _print_report(
     width = max((len(r.vendor) for r in report.books), default=0)
     width = max(width, len("vendor"))
     print(
-        f"{'vendor':<{width}}{'book':>6}{'status':>14}{'FK':>7}{'in-band':>9}{'sec':>8}"
+        f"{'vendor':<{width}}{'book':>6}{'status':>14}{'FK':>7}{'in-band':>9}"
+        f"{'fill':>7}{'sec':>8}"
     )
     for record in report.books:
         grade = "-" if record.grade is None else f"{record.grade:.2f}"
         in_band = "-" if record.in_band is None else f"{record.in_band:.0%}"
+        fill_rate = "-" if record.fill_rate is None else f"{record.fill_rate:.0%}"
         print(
             f"{record.vendor:<{width}}{record.brief_index:>6}{record.status:>14}"
-            f"{grade:>7}{in_band:>9}{record.latency_s:>8.1f}"
+            f"{grade:>7}{in_band:>9}{fill_rate:>7}{record.latency_s:>8.1f}"
         )
     print()
     print("Shared four-grams per 1000 leaf words (different-brief pairs):")
@@ -1520,6 +1539,7 @@ def _book_row(record: BookRecord) -> dict[str, object]:
         "latency_s": record.latency_s,
         "grade": record.grade,
         "in_band": record.in_band,
+        "fill_rate": record.fill_rate,
         "leaf_words": record.leaf_words,
         "fill_completeness": round(record.fill_completeness, 3),
         "complete": record.complete,

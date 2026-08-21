@@ -50,6 +50,8 @@ import argparse
 import json
 import re
 import sys
+from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, NamedTuple, cast
 
@@ -738,6 +740,38 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("fills", nargs="+", help="One or more filled story JSON files.")
     parser.add_argument(
+        "--max-redundant-nodes",
+        type=int,
+        default=0,
+        help=(
+            "Fail when more than this many nodes repeat another node's exact "
+            "body (default 0: the known-good corpus has zero duplicate "
+            "bodies, while the worst live book had 23; AL-496/UW-C313)."
+        ),
+    )
+    parser.add_argument(
+        "--max-top3-label-share",
+        type=float,
+        default=0.5,
+        help=(
+            "Fail when the three most common label strings cover more than "
+            "this share of all labels, on books with at least 40 labels "
+            "(default 0.5: known-good books run 0.02-0.27, the worst live "
+            "book 0.898; AL-496/UW-C313)."
+        ),
+    )
+    parser.add_argument(
+        "--min-gamebook-second-person",
+        type=float,
+        default=0.5,
+        help=(
+            "Fail a gamebook whose second-person node rate falls below this "
+            "floor (default 0.5: committed gamebooks run 0.715-1.0; prose "
+            "books are reported but never gated, since nothing pins their "
+            "person; AL-507/UW-C313)."
+        ),
+    )
+    parser.add_argument(
         "--max-unstable-nodes",
         type=int,
         default=0,
@@ -805,6 +839,118 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+# Label-collapse is only meaningful with enough labels to collapse: a 6-label
+# picture book legitimately has a top-3 share of 0.5+.
+_TOP3_MIN_LABELS = 40
+
+
+@dataclass(frozen=True)
+class SamenessReport:
+    """Duplicate-body and label-diversity counts for one book (UW-C313).
+
+    Attributes:
+        repeated_texts: Distinct body strings appearing on 2+ nodes.
+        redundant_nodes: Nodes beyond the first carrying a repeated body.
+        labels: Total choice labels.
+        distinct_labels: Distinct label strings.
+        top3_share: Share of all labels covered by the three most common
+            strings; 0.0 when the book has no labels.
+    """
+
+    repeated_texts: int
+    redundant_nodes: int
+    labels: int
+    distinct_labels: int
+    top3_share: float
+
+
+def sameness_report(story: dict[str, Any]) -> SamenessReport:
+    """Count duplicate bodies and label collapse (AL-496/UW-C313).
+
+    The worst live book measured had 23 redundant nodes across 11 repeated
+    texts and three label strings covering 89.8 percent of 674 choices; the
+    known-good corpus has zero duplicate bodies and top-3 shares of 2 to 20
+    percent.
+
+    Args:
+        story: Decoded filled-story JSON.
+
+    Returns:
+        SamenessReport: The counts.
+    """
+    nodes = cast("list[dict[str, Any]]", story.get("nodes") or [])
+    bodies = [
+        cast("str", node.get("body") or "").strip()
+        for node in nodes
+        if cast("str", node.get("body") or "").strip()
+    ]
+    body_counts = Counter(bodies)
+    dup = {text: count for text, count in body_counts.items() if count > 1}
+    labels = [
+        cast("str", choice.get("label") or "")
+        for node in nodes
+        for choice in cast("list[dict[str, Any]]", node.get("choices") or [])
+        if choice.get("label")
+    ]
+    label_counts = Counter(labels)
+    top3 = sum(count for _, count in label_counts.most_common(3))
+    return SamenessReport(
+        repeated_texts=len(dup),
+        redundant_nodes=sum(count - 1 for count in dup.values()),
+        labels=len(labels),
+        distinct_labels=len(label_counts),
+        top3_share=(top3 / len(labels)) if labels else 0.0,
+    )
+
+
+_SECOND_PERSON_RE = re.compile(r"\b(you|your|yours|yourself)\b", re.IGNORECASE)
+
+
+@dataclass(frozen=True)
+class PersonReport:
+    """Second-person presence for one book (AL-507/UW-C313).
+
+    Attributes:
+        nodes: Nodes with non-empty prose.
+        second_person_nodes: Nodes whose body contains a second-person token.
+        rate: ``second_person_nodes / nodes``; 0.0 for an empty book.
+    """
+
+    nodes: int
+    second_person_nodes: int
+    rate: float
+
+
+def person_report(story: dict[str, Any]) -> PersonReport:
+    """Measure second-person presence per node (AL-507/UW-C313).
+
+    Calibration (2026-08-21): committed gamebooks run 0.715 to 1.0,
+    committed third-person prose 0.0 to 0.27, and three live fills of one
+    prose skeleton scattered to 0.07, 0.13 and 0.72 because nothing pins
+    narrative person for prose. Reported, not gated: the rule-worthy
+    comparison is against a DECLARED person, which the contract does not
+    yet carry; until it does, a gamebook far below the gamebook band is
+    the actionable signal.
+
+    Args:
+        story: Decoded filled-story JSON.
+
+    Returns:
+        PersonReport: The per-node second-person rate.
+    """
+    nodes = [
+        cast("str", node.get("body") or "")
+        for node in cast("list[dict[str, Any]]", story.get("nodes") or [])
+        if cast("str", node.get("body") or "").strip()
+    ]
+    hits = sum(1 for body in nodes if _SECOND_PERSON_RE.search(body))
+    return PersonReport(
+        nodes=len(nodes),
+        second_person_nodes=hits,
+        rate=(hits / len(nodes)) if nodes else 0.0,
+    )
+
+
 def _report(story: dict[str, Any], name: str, args: argparse.Namespace) -> bool:
     """Print all three detector reports for one book.
 
@@ -861,7 +1007,40 @@ def _report(story: dict[str, Any], name: str, args: argparse.Namespace) -> bool:
     )
     for hit in told.hits:
         sys.stdout.write(f"       {hit.node_id}: {hit.phrase}\n")
-    return breached or over_told
+    breached = breached or over_told
+
+    same = sameness_report(story)
+    over_same = same.redundant_nodes > cast("int", args.max_redundant_nodes) or (
+        same.labels >= _TOP3_MIN_LABELS
+        and same.top3_share > cast("float", args.max_top3_label_share)
+    )
+    marker = "FAIL" if over_same else "ok  "
+    sys.stdout.write(
+        f"  {marker} sameness: {same.redundant_nodes} redundant nodes over "
+        f"{same.repeated_texts} repeated texts (budget "
+        f"{args.max_redundant_nodes}); {same.distinct_labels}/{same.labels} "
+        f"distinct labels, top-3 share {same.top3_share:.1%} (budget "
+        f"{args.max_top3_label_share:.0%})\n"
+    )
+    breached = breached or over_same
+
+    person = person_report(story)
+    style = cast(
+        "str",
+        cast("dict[str, Any]", story.get("metadata") or {}).get("narrative_style")
+        or "",
+    )
+    low_gamebook = style == "gamebook" and person.rate < cast(
+        "float", args.min_gamebook_second_person
+    )
+    marker = "FAIL" if low_gamebook else "ok  "
+    sys.stdout.write(
+        f"  {marker} person: second-person in "
+        f"{person.second_person_nodes}/{person.nodes} nodes "
+        f"({person.rate:.1%}; gamebook floor "
+        f"{args.min_gamebook_second_person:.0%}, prose reported only)\n"
+    )
+    return breached or low_gamebook
 
 
 def main(argv: list[str] | None = None) -> int:

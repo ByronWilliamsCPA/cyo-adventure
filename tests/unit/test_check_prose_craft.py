@@ -331,7 +331,14 @@ def test_main_exits_zero_for_a_clean_book_under_check(tmp_path: Path) -> None:
     path = _write(
         tmp_path,
         "clean.json",
-        _story([_node("n1", _PAST_BODY), _node("n2", _PAST_BODY)]),
+        _story(
+            [
+                _node("n1", _PAST_BODY),
+                # A distinct second body: identical bodies are now a real
+                # sameness finding (AL-496/UW-C313), not a fixture shortcut.
+                _node("n2", _PAST_BODY + " The lantern burned low."),
+            ]
+        ),
     )
     assert main([path, "--check"]) == 0
 
@@ -390,3 +397,42 @@ def test_moral_tags_with_a_zero_tail_scans_nothing() -> None:
     }
     assert moral_tags(story, tail_sentences=0) == []
     assert moral_tags(story, tail_sentences=4)
+
+
+@pytest.mark.unit
+def test_sameness_report_counts_duplicates_and_label_collapse() -> None:
+    """AL-496's shape: repeated bodies and three labels covering everything."""
+    from scripts.check_prose_craft import sameness_report
+
+    story = _story(
+        [
+            _node("n1", _PAST_BODY),
+            _node("n2", _PAST_BODY),
+            _node("n3", _PAST_BODY + " The lantern burned low."),
+        ]
+    )
+    for node in story["nodes"]:
+        node["choices"] = [
+            {"id": f"c_{node['id']}", "label": "Press on.", "target": "n1"}
+        ]
+    report = sameness_report(story)
+    assert report.repeated_texts == 1
+    assert report.redundant_nodes == 1
+    assert report.distinct_labels == 1
+    assert report.top3_share == 1.0
+
+
+@pytest.mark.unit
+def test_person_report_measures_second_person_rate() -> None:
+    from scripts.check_prose_craft import person_report
+
+    story = _story(
+        [
+            _node("n1", "You lift the latch and step through."),
+            _node("n2", "The corridor smelled of rain."),
+        ]
+    )
+    report = person_report(story)
+    assert report.nodes == 2
+    assert report.second_person_nodes == 1
+    assert report.rate == 0.5
