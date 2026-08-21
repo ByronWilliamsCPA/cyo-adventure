@@ -19,415 +19,431 @@
    "responsibility",
    "teamwork",
    "problem-solving",
-   "courage"
+   "courage",
+   "friendship"
   ],
-  "estimated_minutes": 4,
-  "ending_count": 9,
+  "estimated_minutes": 3,
+  "ending_count": 10,
   "content_flags": {
    "violence": "none",
-   "scariness": "mild",
+   "scariness": "none",
    "peril": "mild"
   }
  },
  "variables": [],
- "start_node": "coop_morning",
+ "start_node": "first_choice",
  "nodes": [
   {
-   "id": "coop_morning",
-   "body": "<<FILL role=setup words=35 beats='Miri arrives at the henhouse behind Birchwood Primary on the second morning of the school holiday and finds Bramble and Clover pacing by the wire door, but the smallest hen, Nutmeg, is missing and the gate latch hangs unhooked.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch_coop_start",
-     "label": "Start the search",
-     "target": "first_choice"
-    }
-   ]
-  },
-  {
    "id": "first_choice",
-   "body": "<<FILL role=decision words=30 beats='Miri looks around the schoolyard for a place to start: the vegetable garden with its tall bean poles, the toolshed with its half-open door, or the old oak tree by the pond where Nutmeg likes to dust bathe.'>>",
+   "body": "<<FILL role=setup words=80 beats='Miri looks after the three school hens, Bramble, Clover, and small Nutmeg, over the holiday week; on the second morning the coop gate hangs unlatched and Nutmeg is nowhere in the run, so she decides where in the schoolyard to start searching first: the vegetable garden, the toolshed, or the old oak tree by the pond.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch_first_garden",
      "label": "Search the vegetable garden",
-     "target": "garden_walk"
+     "target": "garden_arrive"
     },
     {
      "id": "ch_first_shed",
      "label": "Check the toolshed",
-     "target": "shed_walk"
+     "target": "shed_arrive"
     },
     {
      "id": "ch_first_oak",
      "label": "Look by the old oak tree",
-     "target": "oak_walk"
+     "target": "oak_arrive"
     }
    ]
   },
   {
-   "id": "garden_walk",
-   "body": "<<FILL role=explore words=35 beats='Miri pushes through the tall bean poles in the vegetable garden, checking each shadowy row for a flash of speckled brown feathers, and spots two places worth a closer look.'>>",
+   "id": "garden_arrive",
+   "body": "<<FILL role=explore words=25 beats='Miri jogs to the vegetable garden behind the school, where tall bean poles cast long morning shadows, and starts checking every row for a flash of speckled brown feathers.'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch_gardenwalk_decision",
-     "label": "Look closer in the garden",
-     "target": "garden_decision"
+     "id": "ch_gardenarrive_next",
+     "label": "Look around the garden",
+     "target": "garden_entry"
     }
    ]
   },
   {
-   "id": "garden_decision",
-   "body": "<<FILL role=decision words=30 beats='Two clues catch Miri eye at once: a gap worn into the back fence and a trail of feathers drifting toward the compost heap, and she must choose which lead to follow.'>>",
+   "id": "garden_entry",
+   "body": "<<FILL role=decision words=44 beats='Two clues catch her attention at the same time: a gap worn low in the back fence, and a trail of loose feathers drifting toward the compost heap in the corner.'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch_gardendecision_gap",
+     "id": "ch_gardenentry_fence",
      "label": "Check the gap in the fence",
-     "target": "garden_reveal"
+     "target": "garden_fence"
     },
     {
-     "id": "ch_gardendecision_hub",
+     "id": "ch_gardenentry_compost",
      "label": "Follow the feathers to the compost heap",
-     "target": "hub_compost"
+     "target": "garden_compost_look"
     }
    ]
   },
   {
-   "id": "garden_reveal",
-   "body": "<<FILL role=climax words=30 beats='Miri kneels by the gap and finds tufts of down snagged on the wire; Nutmeg must have squeezed through here in the night, and the trail leads off into the darkening neighboring field.'>>",
+   "id": "garden_fence",
+   "body": "<<FILL role=decision words=65 beats='Kneeling by the gap, Miri finds soft tufts of down snagged on the wire; the trail leads off into the neighboring field, but the grass out there is tall and the light will not last much longer, so she weighs going in alone against waiting for backup.'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch_gardenreveal_end",
-     "label": "Follow the trail past the fence",
-     "target": "end_garden_early"
+     "id": "ch_gardenfence_climb",
+     "label": "Climb through into the field",
+     "target": "garden_field_gate"
+    },
+    {
+     "id": "ch_gardenfence_call",
+     "label": "Call for Deshawn first",
+     "target": "garden_call_deshawn"
     }
    ]
   },
   {
-   "id": "end_garden_early",
-   "body": "<<FILL role=ending words=35 beats='Miri follows the trail until the light fades and the field grows too dark to search safely; Nutmeg is still missing, but Miri marks the spot to start again first thing tomorrow.'>>",
+   "id": "garden_field_gate",
+   "body": "<<FILL role=decision words=55 beats='The gap in the fence is narrow, and Miri has to choose how to get through it before the trail of down goes cold in the tall grass on the other side.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_gardenfieldgate_over",
+     "label": "Climb straight over the fence",
+     "target": "end_garden_field"
+    },
+    {
+     "id": "ch_gardenfieldgate_squeeze",
+     "label": "Squeeze through the gap",
+     "target": "end_garden_field"
+    }
+   ]
+  },
+  {
+   "id": "end_garden_field",
+   "body": "<<FILL role=ending words=70 beats='Miri pushes into the field and there is Nutmeg, pecking happily at seeds in the tall grass just past the fence, completely unbothered by the whole search; she scoops up the little hen and carries her home for a well earned breakfast.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "e1",
-    "valence": "negative",
-    "kind": "setback",
-    "title": "A Long Search Ahead"
+    "valence": "positive",
+    "kind": "success",
+    "title": "Found in the Field"
    }
   },
   {
-   "id": "shed_walk",
-   "body": "<<FILL role=explore words=35 beats='The toolshed door creaks as Miri peers inside; rakes and buckets crowd the dim space, but an old toolbox with its lid ajar and a cracked window at the back both catch her eye.'>>",
+   "id": "garden_call_deshawn",
+   "body": "<<FILL role=transition words=25 beats='Miri calls over the fence to her friend Deshawn, who lives next door and comes running with his boots already on, ready to help search the field together.'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch_shedwalk_decision",
-     "label": "Look closer in the shed",
-     "target": "shed_decision"
+     "id": "ch_gardencalldeshawn_next",
+     "label": "Wait for Deshawn to join",
+     "target": "garden_deshawn_decision"
     }
    ]
   },
   {
-   "id": "shed_decision",
-   "body": "<<FILL role=decision words=30 beats='Two places to check first inside the toolshed, and only a moment to decide between the toolbox and the cracked window.'>>",
+   "id": "garden_deshawn_decision",
+   "body": "<<FILL role=decision words=44 beats='With Deshawn beside her, Miri has two plans for finding Nutmeg once they are through the gap: heading straight into the field where the down trail leads, or checking the thick hedge running along the fence line first.'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch_sheddecision_toolbox",
-     "label": "Look inside the toolbox",
-     "target": "shed_detail"
+     "id": "ch_gardendeshawn_field",
+     "label": "Search the field together",
+     "target": "end_garden_together"
     },
     {
-     "id": "ch_sheddecision_window",
-     "label": "Check the cracked window",
-     "target": "hub_compost"
+     "id": "ch_gardendeshawn_hedge",
+     "label": "Check the hedge together",
+     "target": "end_garden_together"
     }
    ]
   },
   {
-   "id": "shed_detail",
-   "body": "<<FILL role=transition words=20 beats='Miri creeps closer to the old wooden toolbox, its lid propped open just a crack, and hears the faintest rustle from somewhere inside among the folded rags.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch_sheddetail_reveal",
-     "label": "Lift the lid",
-     "target": "shed_reveal"
-    }
-   ]
-  },
-  {
-   "id": "shed_reveal",
-   "body": "<<FILL role=climax words=20 beats='Miri lifts the toolbox lid all the way and there is Nutmeg, curled up cozy among the rags, having wandered in out of the wind the night before.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch_shedreveal_end",
-     "label": "Scoop Nutmeg up",
-     "target": "end_shed_early"
-    }
-   ]
-  },
-  {
-   "id": "end_shed_early",
-   "body": "<<FILL role=ending words=25 beats='Miri carries sleepy Nutmeg back to Bramble and Clover, who cluck a noisy happy welcome, and the coop latch gets a new hook that very afternoon so it cannot happen again.'>>",
+   "id": "end_garden_together",
+   "body": "<<FILL role=ending words=70 beats='Together Miri and Deshawn spot a small shape moving low in the grass near the hedge; it is Nutmeg, tired but unhurt, and Deshawn laughs that two searchers are much better than one as they walk her home between them.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "e2",
     "valence": "positive",
     "kind": "success",
-    "title": "Cozy in the Toolbox"
+    "title": "Two Searchers Are Better"
    }
   },
   {
-   "id": "oak_walk",
-   "body": "<<FILL role=explore words=35 beats='Miri jogs to the old oak tree that leans over the school pond, where Nutmeg loves to scratch for bugs, and spots a ripple by the water and a dark hollow low in the trunk.'>>",
+   "id": "garden_compost_look",
+   "body": "<<FILL role=transition words=25 beats='Miri follows the drifting feathers past the bean poles until she stands right at the edge of the compost heap, listening for any small sound of scratching.'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch_oakwalk_decision",
-     "label": "Look closer by the oak tree",
-     "target": "oak_decision"
+     "id": "ch_gardencompostlook_next",
+     "label": "Look closer at the compost heap",
+     "target": "garden_compost"
     }
    ]
   },
   {
-   "id": "oak_decision",
-   "body": "<<FILL role=decision words=30 beats='Two clues wait by the oak tree, and Miri must pick one to check first: the rippling water or the shadowy hollow in the trunk.'>>",
+   "id": "garden_compost",
+   "body": "<<FILL role=decision words=44 beats='The compost heap is warm and a little smelly, and Miri has to choose whether to dig carefully through the leafy pile itself or check the old wheelbarrow tipped over beside it.'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch_oakdecision_pond",
-     "label": "Peek at the edge of the pond",
-     "target": "oak_detail"
+     "id": "ch_gardencompost_dig",
+     "label": "Dig carefully through the compost",
+     "target": "end_garden_compost"
     },
     {
-     "id": "ch_oakdecision_hollow",
-     "label": "Look in the tree hollow",
-     "target": "hub_compost"
+     "id": "ch_gardencompost_wheelbarrow",
+     "label": "Check under the wheelbarrow",
+     "target": "end_garden_wheelbarrow"
     }
    ]
   },
   {
-   "id": "oak_detail",
-   "body": "<<FILL role=transition words=20 beats='Miri tiptoes toward the water where a low root pokes above the surface, and something small and speckled brown is perched right on top of it, feathers fluffed in the morning sun.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch_oakdetail_reveal",
-     "label": "Look closer at the root",
-     "target": "oak_reveal"
-    }
-   ]
-  },
-  {
-   "id": "oak_reveal",
-   "body": "<<FILL role=climax words=20 beats='It is Nutmeg, sunning herself safely on the low root, unharmed and unbothered by all the fuss, clucking a small contented cluck at the sight of Miri.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch_oakreveal_end",
-     "label": "Lift Nutmeg to safety",
-     "target": "end_oak_early"
-    }
-   ]
-  },
-  {
-   "id": "end_oak_early",
-   "body": "<<FILL role=ending words=25 beats='Nutmeg rides back to the coop tucked inside the jacket worn by Miri, and spends the rest of the holiday morning dust bathing right where everyone can see her.'>>",
+   "id": "end_garden_compost",
+   "body": "<<FILL role=ending words=70 beats='Miri digs gently through the warm leaves and finds Nutmeg burrowed in, pecking for worms and looking thoroughly pleased with herself; muddy but happy, the little hen rides home tucked in the crook of her arm.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "e3",
     "valence": "positive",
-    "kind": "success",
-    "title": "Sunning by the Pond"
+    "kind": "discovery",
+    "title": "Digging for Worms"
    }
   },
   {
-   "id": "hub_compost",
-   "body": "<<FILL role=decision words=65 beats='By the compost heap, the clues finally line up, and so does Miri friend Deshawn, who heard the search from his yard next door; together they hear one faint cluck drifting from somewhere close by, though the sound could be coming from the hedge tunnel, the rain barrel, or Mr. Ostrow shed across the yard.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch_hub_hedge",
-     "label": "Follow the sound to the hedge tunnel",
-     "target": "hedge_walk"
-    },
-    {
-     "id": "ch_hub_barrel",
-     "label": "Check behind the rain barrel",
-     "target": "barrel_walk"
-    },
-    {
-     "id": "ch_hub_caretaker",
-     "label": "Ask Mr. Ostrow for help",
-     "target": "caretaker_walk"
-    }
-   ]
-  },
-  {
-   "id": "hedge_walk",
-   "body": "<<FILL role=explore words=35 beats='Miri and Deshawn crouch at the mouth of the old hedge tunnel that runs along the schoolyard fence, listening for another cluck before deciding how to go in.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch_hedgewalk_decision",
-     "label": "Listen at the hedge tunnel",
-     "target": "hedge_decision"
-    }
-   ]
-  },
-  {
-   "id": "hedge_decision",
-   "body": "<<FILL role=decision words=30 beats='The tunnel is narrow, so the two of them weigh two plans before choosing one: crawling in after the sound, or waiting and calling softly.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch_hedgedecision_crawl",
-     "label": "Crawl through the tunnel",
-     "target": "end_hedge_crawl"
-    },
-    {
-     "id": "ch_hedgedecision_call",
-     "label": "Call softly and wait",
-     "target": "end_hedge_call"
-    }
-   ]
-  },
-  {
-   "id": "end_hedge_crawl",
-   "body": "<<FILL role=ending words=65 beats='Miri crawls in on hands and knees and finds Nutmeg gently tangled by one foot in a loop of twig; a few careful tugs and the little hen hops free into the open air, clucking happily as Deshawn cheers from outside the hedge.'>>",
+   "id": "end_garden_wheelbarrow",
+   "body": "<<FILL role=ending words=70 beats='Tipping the wheelbarrow back gently, Miri finds Nutmeg curled in the dry patch underneath, sheltered from the morning dew; the little hen blinks up at her and steps calmly into her waiting hands.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "e4",
     "valence": "positive",
-    "kind": "success",
-    "title": "Free from the Hedge"
+    "kind": "discovery",
+    "title": "Dry Under the Wheelbarrow"
    }
   },
   {
-   "id": "end_hedge_call",
-   "body": "<<FILL role=ending words=65 beats='Miri calls softly and waits, but the cluck fades further away down the tunnel, too far to follow before the light starts to fade; she and Deshawn tie a bright ribbon on the hedge to mark the spot and promise to try again first thing tomorrow.'>>",
+   "id": "shed_arrive",
+   "body": "<<FILL role=explore words=25 beats='Miri hurries to the toolshed at the far end of the yard, where the door creaks open on its hinge, and starts checking the shadowy corners for any sign of Nutmeg.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_shedarrive_next",
+     "label": "Look around the toolshed",
+     "target": "shed_entry"
+    }
+   ]
+  },
+  {
+   "id": "shed_entry",
+   "body": "<<FILL role=decision words=44 beats='Inside, rakes and buckets crowd the dim space, but two things catch her eye right away: a cracked window at the back letting in a thin beam of light, and an old toolbox with its lid propped open.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_shedentry_window",
+     "label": "Check the cracked window",
+     "target": "shed_window_gate"
+    },
+    {
+     "id": "ch_shedentry_toolbox",
+     "label": "Look inside the toolbox",
+     "target": "shed_toolbox_look"
+    }
+   ]
+  },
+  {
+   "id": "shed_window_gate",
+   "body": "<<FILL role=decision words=55 beats='The cracked window looks out toward the fence, and Miri is not sure whether to peer through the gap first or push the stiff frame open for a better look.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_shedwindowgate_peer",
+     "label": "Peer through the crack",
+     "target": "end_shed_window"
+    },
+    {
+     "id": "ch_shedwindowgate_push",
+     "label": "Push the window open",
+     "target": "end_shed_window"
+    }
+   ]
+  },
+  {
+   "id": "end_shed_window",
+   "body": "<<FILL role=ending words=65 beats='Miri finds only a few loose feathers caught on the cracked frame, proof Nutmeg passed this way but nothing more; the trail goes cold here, so she marks the spot and heads off to check the toolbox instead.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "e5",
-    "valence": "neutral",
-    "kind": "completion",
-    "title": "A Cluck for Tomorrow"
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Cold Trail"
    }
   },
   {
-   "id": "barrel_walk",
-   "body": "<<FILL role=explore words=35 beats='Deshawn leads the way to the old rain barrel behind the toolshed, where a scuffle of feathers is caught on the splintered wood along the rim.'>>",
+   "id": "shed_toolbox_look",
+   "body": "<<FILL role=transition words=25 beats='Miri creeps closer to the old wooden toolbox, its lid propped open just a crack, and hears the faintest rustle from somewhere inside among the folded rags.'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch_barrelwalk_decision",
-     "label": "Look closer at the rain barrel",
-     "target": "barrel_decision"
+     "id": "ch_shedtoolboxlook_next",
+     "label": "Creep closer to the toolbox",
+     "target": "shed_toolbox"
     }
    ]
   },
   {
-   "id": "barrel_decision",
-   "body": "<<FILL role=decision words=30 beats='The barrel stands tall, so the two of them weigh two ways to check inside it: peeking over the rim, or carefully tipping the water out.'>>",
+   "id": "shed_toolbox",
+   "body": "<<FILL role=decision words=44 beats='Something is moving inside the toolbox, and Miri has to decide whether to lift the lid slowly and quietly or call out first to see if anything answers.'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch_barreldecision_peek",
-     "label": "Peek over the rim",
-     "target": "end_barrel_peek"
+     "id": "ch_shedtoolbox_lift",
+     "label": "Lift the lid slowly",
+     "target": "end_shed_found"
     },
     {
-     "id": "ch_barreldecision_tip",
-     "label": "Carefully tip the water out",
-     "target": "end_barrel_tip"
+     "id": "ch_shedtoolbox_call",
+     "label": "Call out before lifting the lid",
+     "target": "end_shed_startled"
     }
    ]
   },
   {
-   "id": "end_barrel_peek",
-   "body": "<<FILL role=ending words=65 beats='Miri stands on tiptoe and finds Nutmeg roosting calmly on the rim of the barrel, having climbed up overnight to stay dry above the wet grass; she lifts the little hen down to cheers from Deshawn, who says the whole search had been her idea all along.'>>",
+   "id": "end_shed_found",
+   "body": "<<FILL role=ending words=75 beats='Miri lifts the lid all the way and there is Nutmeg, curled up cozy among the rags, having wandered in out of the wind the night before; she scoops the sleepy hen up and the coop latch gets a brand new hook that very afternoon.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "e6",
     "valence": "positive",
     "kind": "success",
-    "title": "Roosting on the Rim"
+    "title": "Cozy in the Toolbox"
    }
   },
   {
-   "id": "end_barrel_tip",
-   "body": "<<FILL role=ending words=65 beats='Deshawn helps tip the barrel, but only a small splash of water and a startled frog come out; soaked shoes and no hen, though the frog makes them both laugh, and they head off together to check the hedge tunnel next.'>>",
+   "id": "end_shed_startled",
+   "body": "<<FILL role=ending words=65 beats='Miri calls out softly, and a startled Nutmeg pokes her head up from behind a folded tarp on the shelf above the toolbox, having roosted there instead; a little surprised laugh from Miri brings the hen fluttering safely down.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "e7",
-    "valence": "negative",
-    "kind": "setback",
-    "title": "Soggy Shoes, No Hen"
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "A Surprise on the Shelf"
    }
   },
   {
-   "id": "caretaker_walk",
-   "body": "<<FILL role=explore words=35 beats='Miri and Deshawn find Mr. Ostrow, the school caretaker, sweeping the front steps, and tell him about Nutmeg; he sets down his broom and offers to help them look right away.'>>",
+   "id": "oak_arrive",
+   "body": "<<FILL role=explore words=25 beats='Miri runs to the old oak tree that leans over the school pond, where Nutmeg loves to scratch for bugs, and starts scanning the roots and low branches.'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch_caretakerwalk_decision",
-     "label": "Ask Mr. Ostrow where to look",
-     "target": "caretaker_decision"
+     "id": "ch_oakarrive_next",
+     "label": "Look around the oak tree",
+     "target": "oak_entry"
     }
    ]
   },
   {
-   "id": "caretaker_decision",
-   "body": "<<FILL role=decision words=30 beats='Mr. Ostrow knows two good places to check and lets Miri pick one first: his own garden shed, or his cat, Soot, who has been curled up on the porch all morning.'>>",
+   "id": "oak_entry",
+   "body": "<<FILL role=decision words=44 beats='Two spots by the oak tree are worth checking first: the shadowy hollow low in the trunk, and the edge of the pond where a low root pokes above the water.'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch_caretakerdecision_shed",
-     "label": "Look in his shed",
-     "target": "end_caretaker_shed"
+     "id": "ch_oakentry_hollow",
+     "label": "Check the tree hollow",
+     "target": "oak_hollow_gate"
     },
     {
-     "id": "ch_caretakerdecision_cat",
-     "label": "Ask about the cat, Soot",
-     "target": "end_caretaker_cat"
+     "id": "ch_oakentry_pond",
+     "label": "Look by the pond edge",
+     "target": "oak_pond_look"
     }
    ]
   },
   {
-   "id": "end_caretaker_shed",
-   "body": "<<FILL role=ending words=65 beats='Mr. Ostrow unlocks his shed and there is Nutmeg, tucked into a folded tarp for warmth, having slipped in through a gap he promises to fix that very afternoon; she clucks a greeting at the sudden daylight.'>>",
+   "id": "oak_hollow_gate",
+   "body": "<<FILL role=decision words=55 beats='The hollow in the trunk is dark and just wide enough for a small hen to hide in, and Miri has to choose how carefully to check inside it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_oakhollowgate_peek",
+     "label": "Peek into the hollow",
+     "target": "end_oak_hollow"
+    },
+    {
+     "id": "ch_oakhollowgate_reach",
+     "label": "Reach carefully inside",
+     "target": "end_oak_hollow"
+    }
+   ]
+  },
+  {
+   "id": "end_oak_hollow",
+   "body": "<<FILL role=ending words=65 beats='Tucked deep in the hollow, Nutmeg is dozing soundly, safe from the morning chill; she blinks awake at the light and steps out onto her open palm without any fuss at all.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "e8",
     "valence": "positive",
     "kind": "discovery",
-    "title": "Safe in the Shed"
+    "title": "Dozing in the Hollow"
    }
   },
   {
-   "id": "end_caretaker_cat",
-   "body": "<<FILL role=ending words=65 beats='Sure enough, behind the porch cushion, Nutmeg is dozing safely against the side of sleepy Soot the cat, warm and unbothered; from then on the two of them share that same sunny spot every day of the holiday.'>>",
+   "id": "oak_pond_look",
+   "body": "<<FILL role=transition words=25 beats='Miri tiptoes toward the water where a low root pokes above the surface, and something small and speckled brown is perched right on top of it in the morning sun.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_oakpondlook_next",
+     "label": "Tiptoe toward the water",
+     "target": "oak_pond"
+    }
+   ]
+  },
+  {
+   "id": "oak_pond",
+   "body": "<<FILL role=decision words=44 beats='It is Nutmeg, sunning herself on the low root, and Miri has to decide whether to reach for her right away or wait quietly so the little hen does not startle into the pond.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_oakpond_reach",
+     "label": "Reach for her on the root",
+     "target": "end_oak_pond_success"
+    },
+    {
+     "id": "ch_oakpond_wait",
+     "label": "Wait quietly and let her come",
+     "target": "end_oak_pond_wait"
+    }
+   ]
+  },
+  {
+   "id": "end_oak_pond_success",
+   "body": "<<FILL role=ending words=75 beats='Miri reaches out slowly and lifts Nutmeg gently off the root before she can wobble into the water; the little hen rides back to the coop tucked inside her jacket, dry and completely unharmed.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "e9",
     "valence": "positive",
-    "kind": "discovery",
-    "title": "Safe with a New Friend"
+    "kind": "success",
+    "title": "Lifted from the Root"
+   }
+  },
+  {
+   "id": "end_oak_pond_wait",
+   "body": "<<FILL role=ending words=70 beats='Miri crouches quietly and waits, and after a long moment Nutmeg hops down from the root and toddles right over on her own, clucking a small contented cluck at the sight of a familiar face.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e10",
+    "valence": "positive",
+    "kind": "success",
+    "title": "She Comes on Her Own"
    }
   }
  ]
