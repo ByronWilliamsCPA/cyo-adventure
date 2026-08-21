@@ -19,7 +19,7 @@
    "responsibility",
    "patience and observation",
    "kindness to animals",
-   "community helpers"
+   "helpful neighbours"
   ],
   "estimated_minutes": 5,
   "ending_count": 10,
@@ -34,7 +34,7 @@
  "nodes": [
   {
    "id": "holiday-monday",
-   "body": "<<FILL role=setup words=60 beats='Holiday Monday morning at last: the playground lies empty and sunny, the yellow hen notebook rides in the bike basket, and Miri has the three school hens all to herself for the whole week'>>",
+   "body": "<<FILL role=setup words=58 beats='Holiday Monday at last: the playground lies empty and sunny, the yellow hen notebook rides in the bike basket, and Miri has Hazel, Pepper, and little Pip all to herself for the whole week'>>",
    "is_ending": false,
    "choices": [
     {
@@ -51,13 +51,13 @@
   },
   {
    "id": "gate-count",
-   "body": "<<FILL role=explore words=58 beats='From the gate Miri counts one Hazel, one Pepper, and no Pip at all; the little side door of the coop hangs open a crack and a single white feather sits on the wiggly old latch'>>",
+   "body": "<<FILL role=explore words=56 beats='From the gate Miri counts one Hazel and one Pepper but no Pip at all; the little side door of the coop hangs open a crack, and one white feather clings to the wiggly old latch'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch-gatecount-a",
-     "label": "Step inside for a closer look",
-     "target": "quiet-coop"
+     "label": "Follow the feathers over the field",
+     "target": "field-feathers"
     },
     {
      "id": "ch-gatecount-b",
@@ -68,63 +68,80 @@
   },
   {
    "id": "quiet-coop",
-   "body": "<<FILL role=decision words=68 beats='Inside the run only Hazel and Pepper bustle up to the fence; tiny Pip is nowhere; one white feather twirls down through the sunbeams, tiny prints speckle the dust bath, and the treat tin waits heavy in her pocket'>>",
+   "body": "<<FILL role=explore words=60 beats='Inside the run only Hazel and Pepper bustle up to the fence; tiny Pip is nowhere; one white feather twirls down through the sunbeams, tiny prints speckle the dust bath, and the treat tin waits heavy in her pocket'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch-coop-a",
-     "label": "Follow the white feathers over the field",
+     "id": "ch-quiet-a",
+     "label": "Follow the tiny muddy prints",
      "target": "field-feathers"
     },
     {
-     "id": "ch-coop-b",
+     "id": "ch-quiet-b",
      "label": "Search the old gardening shed",
      "target": "shed-approach"
     },
     {
-     "id": "ch-coop-c",
-     "label": "Slip out the little gate to the lane",
-     "target": "lane-gate"
-    }
-   ]
-  },
-  {
-   "id": "field-feathers",
-   "body": "<<FILL role=decision words=62 beats='Two more white feathers tremble on the fence wire; three-toed prints dot the mud by the kale bed and head out over the dewy field, and the treat tin in one pocket gives a hopeful little rattle'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-field-a",
-     "label": "Follow the tiny muddy prints",
-     "target": "muddy-tracks"
-    },
-    {
-     "id": "ch-field-b",
+     "id": "ch-quiet-c",
      "label": "Shake the treat tin loudly",
      "target": "tin-rattle"
     }
    ]
   },
   {
-   "id": "muddy-tracks",
-   "body": "<<FILL role=decision words=62 beats='The prints cross the empty running track into the long grass toward the orchard; off to the left the old gardening shed stands with its door ajar, and high above the whole field a skylark sings'>>",
+   "id": "field-feathers",
+   "body": "<<FILL role=explore words=58 beats='Two more white feathers tremble on the fence wire; three-toed prints dot the mud by the kale bed and hurry out over the dewy field, while high above the empty playground a skylark sings'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch-tracks-a",
-     "label": "Tiptoe on into the orchard",
+     "id": "ch-field-a",
+     "label": "Tiptoe on toward the orchard",
      "target": "orchard-peeps"
     },
     {
-     "id": "ch-tracks-b",
-     "label": "Look inside the old shed first",
-     "target": "shed-approach"
+     "id": "ch-field-b",
+     "label": "Track the prints round the shed",
+     "target": "wild-strip"
+    }
+   ]
+  },
+  {
+   "id": "shed-approach",
+   "body": "<<FILL role=explore words=58 beats='At the old gardening shed the crooked door hangs on one squeaky hinge; three-toed scuffs mark the dusty step, one white feather lies on the flowerpot shelf, and a broken board at the back shows the wild strip'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-shedapp-a",
+     "label": "Creak in through the shed door",
+     "target": "shed-inside"
+    },
+    {
+     "id": "ch-shedapp-b",
+     "label": "Squeeze through the broken board",
+     "target": "wild-strip"
+    }
+   ]
+  },
+  {
+   "id": "lane-gate",
+   "body": "<<FILL role=transition words=54 beats='The little gate swings into an empty lane smelling of cut grass; opposite stands a cottage with a blue door under yellow roses, its garden gate wide open, and the ditch below runs green and jungly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-lanegate-a",
+     "label": "Cross to the cottage garden",
+     "target": "cottage-garden"
+    },
+    {
+     "id": "ch-lanegate-b",
+     "label": "Search the jungly green ditch",
+     "target": "lane-ditch"
     }
    ]
   },
   {
    "id": "tin-rattle",
-   "body": "<<FILL role=decision words=62 beats='A big shake of the tin brings Hazel and Pepper thundering over but no Pip; the rattle echoes oddly off the old shed wall, while one last white feather points the way toward the orchard trees'>>",
+   "body": "<<FILL role=decision words=60 beats='One big shake brings Hazel and Pepper thundering over but no Pip; the rattle echoes oddly off the old shed wall, and one last white feather lying on the fence rail points toward the orchard trees'>>",
    "is_ending": false,
    "choices": [
     {
@@ -134,269 +151,269 @@
     },
     {
      "id": "ch-tin-b",
-     "label": "Tiptoe rattling toward the shed",
-     "target": "shed-approach"
+     "label": "Tiptoe rattling into the shed",
+     "target": "shed-inside"
     }
    ]
   },
   {
    "id": "orchard-peeps",
-   "body": "<<FILL role=decision words=68 beats='Under the apple trees the windfalls wear small neat pecks; one thin thread of a peep floats from the bramble thicket, and a rusty wheelbarrow heaped with dry leaves wears one white tail feather on its handle'>>",
+   "body": "<<FILL role=decision words=62 beats='Under the apple trees the windfalls wear small neat pecks; one thin thread of a peep floats from the bramble thicket, and a rusty wheelbarrow heaped with dry leaves wears one white tail feather on its handle'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch-peeps-a",
+     "id": "ch-orchard-a",
      "label": "Part the brambles toward the peep",
      "target": "bramble-pip"
     },
     {
-     "id": "ch-peeps-b",
+     "id": "ch-orchard-b",
      "label": "Peek into the leaf-filled wheelbarrow",
-     "target": "leaf-warm"
+     "target": "leaf-nest"
     }
    ]
   },
   {
-   "id": "bramble-pip",
-   "body": "<<FILL role=climax words=68 beats='Deep in the green canes sits Pip, small and blazing with hen outrage, one leg wrapped twice in a prickly runner; Miri slips off her cardigan and lays it open on the grass like a little bed'>>",
+   "id": "shed-inside",
+   "body": "<<FILL role=decision words=60 beats='Torch beam, cobwebs, one small white feather; a blue bucket in the middle of the floor wobbles once entirely by itself, and behind the flowerpot crates something tiny hustles and scratches in the dark'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch-bramble-a",
-     "label": "Unwrap the prickly runner loop by loop",
-     "target": "end-cardigan"
-    },
-    {
-     "id": "ch-bramble-b",
-     "label": "Rattle the tin till she hops free",
-     "target": "end-tin-parade"
-    }
-   ]
-  },
-  {
-   "id": "leaf-warm",
-   "body": "<<FILL role=climax words=66 beats='Curled in the warm leaves like a teapot cosy, fast asleep with one wing over her face, sits Pip; under that wing three speckled eggs glow, and the school egg box waits empty on the shed shelf'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-leaf-a",
-     "label": "Carry hen and eggs home snug",
-     "target": "end-egg-box"
-    },
-    {
-     "id": "ch-leaf-b",
-     "label": "Fetch Mr Finch and the hay basket",
-     "target": "end-nest-basket"
-    }
-   ]
-  },
-  {
-   "id": "shed-approach",
-   "body": "<<FILL role=decision words=66 beats='The shed smells of dust and old raincoats; flowerpots rattle softly in the gloom, a blue bucket in the middle of the floor wobbles once entirely by itself, and a broken board gapes onto the wild strip out back'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-shed-a",
-     "label": "Creak in toward the blue bucket",
-     "target": "bucket-corner"
-    },
-    {
-     "id": "ch-shed-b",
-     "label": "Squeeze through the broken board",
-     "target": "wild-strip"
-    }
-   ]
-  },
-  {
-   "id": "bucket-corner",
-   "body": "<<FILL role=decision words=66 beats='Torch beam, cobwebs, one small white feather; the blue bucket wobbles again on the dusty floor, and from behind the stack of flowerpot crates comes a tiny scratchy hustle, like somebody rebuilding a nest in a hurry'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-bucket-a",
+     "id": "ch-shedin-a",
      "label": "Lift the wobbling blue bucket",
-     "target": "dusty-rocket"
+     "target": "bucket-rocket"
     },
     {
-     "id": "ch-bucket-b",
+     "id": "ch-shedin-b",
      "label": "Peek behind the flowerpot crates",
-     "target": "crate-peek"
-    }
-   ]
-  },
-  {
-   "id": "crate-peek",
-   "body": "<<FILL role=explore words=60 beats='Behind the crates: four amazed mice, one old scarf, and a drift of white feathers; a last feather floats out through the broken board, and the scratch marks lead round in hopeful little circles'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-crate-a",
-     "label": "Follow the feather out the back",
-     "target": "wild-strip"
-    },
-    {
-     "id": "ch-crate-b",
-     "label": "Go lift that blue bucket after all",
-     "target": "dusty-rocket"
+     "target": "crate-nest"
     }
    ]
   },
   {
    "id": "wild-strip",
-   "body": "<<FILL role=transition words=62 beats='Nettles, one old football, one white feather and no hen; the marks circle twice and simply stop; over the hedge the lane smells of cut grass, and up at the run the evening light is gathering'>>",
+   "body": "<<FILL role=explore words=60 beats='Nettles, one old football, one white feather; the little prints circle twice round the rusty wheelbarrow and stop; over the hedge gap drifts a smell of strawberries, sweet as jam'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch-wild-a",
-     "label": "Trudge back up to the coop",
-     "target": "coop-countdown"
+     "label": "Look in the rusty wheelbarrow",
+     "target": "leaf-nest"
     },
     {
      "id": "ch-wild-b",
-     "label": "Rattle the tin at the hedge gap",
-     "target": "gate-serenade"
-    }
-   ]
-  },
-  {
-   "id": "dusty-rocket",
-   "body": "<<FILL role=climax words=68 beats='Miri lifts the bucket very slowly; FWOOF; out rockets Pip in a burst of dust and feathers with a grey cobweb perched on her comb like a little hat, and the shed door stands wide to the sunny field'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-rocket-a",
-     "label": "Catch the dusty little rocket",
-     "target": "end-bucket"
-    },
-    {
-     "id": "ch-rocket-b",
-     "label": "Race her back up to the run",
-     "target": "coop-countdown"
-    }
-   ]
-  },
-  {
-   "id": "lane-gate",
-   "body": "<<FILL role=transition words=58 beats='The little gate swings into an empty lane smelling of cut grass; opposite stands a cottage with a blue door under yellow roses, its garden gate wide, and the ditch runs green and jungly'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-lane-a",
-     "label": "Cross the lane to the blue door",
-     "target": "cottage-garden"
-    },
-    {
-     "id": "ch-lane-b",
-     "label": "Search the jungly green ditch",
-     "target": "lane-ditch"
-    }
-   ]
-  },
-  {
-   "id": "lane-ditch",
-   "body": "<<FILL role=explore words=60 beats='In the long grass of the ditch one downy white feather clings to a dock leaf; something rustles upstream toward the cottage garden, and downstream the ditch bends round toward the wild strip behind the school'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-ditch-a",
-     "label": "Nose along toward the cottage garden",
-     "target": "cottage-garden"
-    },
-    {
-     "id": "ch-ditch-b",
-     "label": "Follow the ditch round to the wild strip",
-     "target": "wild-strip"
+     "label": "Slip through the hedge gap",
+     "target": "berry-bandit"
     }
    ]
   },
   {
    "id": "cottage-garden",
-   "body": "<<FILL role=decision words=64 beats='Tiny dusty prints cross the path and vanish among the strawberry rows; a kitchen window stands open; from somewhere in the garden comes one small, satisfied, strawberry-flavoured burp'>>",
+   "body": "<<FILL role=decision words=60 beats='Tiny dusty prints cross the path and vanish among the strawberry rows; a kitchen window stands open, two glasses wait on the sill, and from the reddest corner comes one small satisfied burp'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch-cottage-a",
      "label": "Tiptoe between the strawberry rows",
-     "target": "berry-rows"
+     "target": "berry-bandit"
     },
     {
      "id": "ch-cottage-b",
      "label": "Knock on the little blue door",
-     "target": "blue-knock"
+     "target": "kitchen-box"
     }
    ]
   },
   {
-   "id": "berry-rows",
-   "body": "<<FILL role=decision words=64 beats='Half the best berries wear neat beak marks and red smears dot the leaves; the reddest, leafiest corner jerks once, goes still, then jerks again; the gate stands open behind and the tin is heavy in one pocket'>>",
+   "id": "lane-ditch",
+   "body": "<<FILL role=explore words=58 beats='In the long grass of the ditch one downy feather clings to a dock leaf and red juice spots three stones; something small rustles upstream toward the cottage garden, where the little blue door waits under yellow roses'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch-rows-a",
-     "label": "Peek at the rustling red corner",
-     "target": "berry-corner"
+     "id": "ch-ditch-a",
+     "label": "Creep up into the strawberry rows",
+     "target": "berry-bandit"
     },
     {
-     "id": "ch-rows-b",
-     "label": "Rattle the tin from the gate",
-     "target": "gate-serenade"
+     "id": "ch-ditch-b",
+     "label": "Climb out and try the blue door",
+     "target": "kitchen-box"
     }
    ]
   },
   {
-   "id": "berry-corner",
-   "body": "<<FILL role=decision words=64 beats='In a crater of pecked berries stands Pip, beak crimson to the wattles, attempting to look completely innocent; she hiccups; the whole corner of the garden smells wonderfully of strawberry'>>",
+   "id": "bramble-pip",
+   "body": "<<FILL role=climax words=66 beats='Deep in the green canes sits Pip, small and blazing with hen outrage, one leg wrapped twice in a prickly runner; Miri slips off her cardigan and spreads it open on the grass like a little bed'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch-corner-a",
-     "label": "Scoop up the sticky little bandit",
-     "target": "sticky-scoop"
+     "id": "ch-bramble-a",
+     "label": "Unwrap the runner loop by loop",
+     "target": "homeward-cardigan"
     },
     {
-     "id": "ch-corner-b",
-     "label": "Rattle the tin and stroll for home",
-     "target": "gate-serenade"
+     "id": "ch-bramble-b",
+     "label": "Rattle the tin till she hops free",
+     "target": "tin-parade"
     }
    ]
   },
   {
-   "id": "sticky-scoop",
-   "body": "<<FILL role=climax words=62 beats='Pip rides tucked under one arm like a sticky football, leaving red footprints up one sleeve; the kitchen door opens and there stands Mrs Plum with a tea towel, laughing before a word is said'>>",
+   "id": "leaf-nest",
+   "body": "<<FILL role=climax words=64 beats='Curled in the warm leaves like a teapot cosy, fast asleep with one wing over her face, sits Pip; under that wing, warm as toast, glow three speckled eggs, and the school egg box waits empty on the shed shelf'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch-sticky-a",
-     "label": "Own up and promise a punnet",
-     "target": "end-bandit"
+     "id": "ch-leaf-a",
+     "label": "Fetch Mr Finch and the hay basket",
+     "target": "hay-basket"
     },
     {
-     "id": "ch-sticky-b",
-     "label": "Come in for stripey-glass lemonade",
+     "id": "ch-leaf-b",
+     "label": "Carry hen and eggs gently home",
+     "target": "homeward-queen"
+    }
+   ]
+  },
+  {
+   "id": "bucket-rocket",
+   "body": "<<FILL role=climax words=66 beats='Miri lifts the bucket very slowly; FWOOF; out rockets Pip in a burst of dust and feathers with a grey cobweb perched on her comb like a little hat, and the shed door stands wide to the sunny field'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-rocket-a",
+     "label": "Catch the dusty little rocket",
+     "target": "dusty-carry"
+    },
+    {
+     "id": "ch-rocket-b",
+     "label": "Race her up the field with the tin",
+     "target": "tin-parade"
+    }
+   ]
+  },
+  {
+   "id": "crate-nest",
+   "body": "<<FILL role=climax words=64 beats='Behind the crates, on a long-lost striped scarf, Pip lies fast asleep with dust on her wings and a grey cobweb cocked over one eye, while four amazed mice peer out from the scarf pockets'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-crate-a",
+     "label": "Scoop up scarf and sleepy hen",
+     "target": "dusty-carry"
+    },
+    {
+     "id": "ch-crate-b",
+     "label": "Tuck her into the cardigan nest",
+     "target": "homeward-cardigan"
+    }
+   ]
+  },
+  {
+   "id": "berry-bandit",
+   "body": "<<FILL role=climax words=62 beats='In a crater of pecked berries stands Pip, beak crimson to the wattles, trying hard to look like a garden ornament; she hiccups; the whole corner of the garden smells wonderfully of strawberry'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-berry-a",
+     "label": "Knock at the blue door with her",
      "target": "stripey-glasses"
+    },
+    {
+     "id": "ch-berry-b",
+     "label": "Carry the sticky bandit home",
+     "target": "homeward-cardigan"
     }
    ]
   },
   {
-   "id": "blue-knock",
-   "body": "<<FILL role=decision words=64 beats='The little blue door opens almost at once; Mrs Plum stands there holding a tea towel, and beside the warm stove in a cardboard box sits a small round white hen eating toast crusts like a queen at breakfast'>>",
+   "id": "kitchen-box",
+   "body": "<<FILL role=climax words=62 beats='The little blue door opens almost at once; Mrs Plum stands there holding a tea towel, and beside the warm stove in a cardboard box sits a small round white hen eating toast crusts like a queen at breakfast'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch-knock-a",
-     "label": "Carry the queen straight home",
-     "target": "queen-carried"
-    },
-    {
-     "id": "ch-knock-b",
+     "id": "ch-box-a",
      "label": "Stay for stripey-glass lemonade",
      "target": "stripey-glasses"
+    },
+    {
+     "id": "ch-box-b",
+     "label": "Carry the queen home to the coop",
+     "target": "homeward-queen"
+    }
+   ]
+  },
+  {
+   "id": "homeward-cardigan",
+   "body": "<<FILL role=transition words=62 beats='Pip rides home tucked snug in the cardigan nest with one small head poking out; the sun slides gold over the field, the yellow notebook has one empty line left, and the evening count still waits'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-cardigan-a",
+     "label": "Tuck her in with her sisters",
+     "target": "end-cardigan"
+    },
+    {
+     "id": "ch-cardigan-b",
+     "label": "Do the evening count out loud",
+     "target": "end-full-count"
+    }
+   ]
+  },
+  {
+   "id": "tin-parade",
+   "body": "<<FILL role=transition words=62 beats='One good rattle of the tin and Pip falls in behind in a wobbly line, pausing for one butterfly, one puddle, and one long thoughtful look at the sky, while Hazel and Pepper mutter along the fence'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-parade-a",
+     "label": "March everyone straight to the run",
+     "target": "end-tin-parade"
+    },
+    {
+     "id": "ch-parade-b",
+     "label": "Let her dawdle home at dusk",
+     "target": "end-dusk"
+    }
+   ]
+  },
+  {
+   "id": "hay-basket",
+   "body": "<<FILL role=transition words=64 beats='Mr Finch slides the three speckled eggs into the hay-lined basket, steady as anything, while a cross but calm Pip supervises from the wheelbarrow handle and the school egg box stands open and ready'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-hay-a",
+     "label": "Start the eggs in the incubator",
+     "target": "end-egg-box"
+    },
+    {
+     "id": "ch-hay-b",
+     "label": "Carry the whole nest home together",
+     "target": "end-nest-basket"
+    }
+   ]
+  },
+  {
+   "id": "dusty-carry",
+   "body": "<<FILL role=transition words=60 beats='Pip rides home in two gentle arms, sneezing small feathery sneezes, deeply offended and loudly alive; up at the run the light goes honey-gold and two worried hens pace the fence line'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-dusty-a",
+     "label": "Settle her in, cobweb hat and all",
+     "target": "end-bucket"
+    },
+    {
+     "id": "ch-dusty-b",
+     "label": "Count three hens before tea",
+     "target": "end-full-count"
     }
    ]
   },
   {
    "id": "stripey-glasses",
-   "body": "<<FILL role=climax words=66 beats='In the warm kitchen Mrs Plum pours lemonade into stripey glasses and declares the little hen the politest burglar she has ever met; Pip hiccups toast-crumb hiccups from her cardboard throne, faintly pink about the beak'>>",
+   "body": "<<FILL role=transition words=62 beats='In the warm kitchen Mrs Plum pours lemonade into stripey glasses and declares the little hen the politest burglar she has ever met; Pip hiccups toast-crumb hiccups, faintly pink about the beak'>>",
    "is_ending": false,
    "choices": [
     {
@@ -406,31 +423,14 @@
     },
     {
      "id": "ch-stripey-b",
-     "label": "Walk the sleepy queen home",
-     "target": "queen-carried"
+     "label": "Wash the sticky bandit before bed",
+     "target": "end-bandit"
     }
    ]
   },
   {
-   "id": "gate-serenade",
-   "body": "<<FILL role=transition words=64 beats='One good rattle of the tin and out of the green pops a small white shape; Pip falls in behind in a wobbly line, pausing for one butterfly, one puddle, and one long thoughtful look at the sky'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-song-a",
-     "label": "Let her dawdle all the way home",
-     "target": "end-dusk"
-    },
-    {
-     "id": "ch-song-b",
-     "label": "March everyone straight to the run",
-     "target": "coop-countdown"
-    }
-   ]
-  },
-  {
-   "id": "queen-carried",
-   "body": "<<FILL role=transition words=60 beats='Pip rides home in a cardigan sling through the low gold light; by the coop waits Mr Finch with the red toolbox, and together they size up the wiggly old latch while Hazel and Pepper mutter at the fence'>>",
+   "id": "homeward-queen",
+   "body": "<<FILL role=transition words=60 beats='The walk home goes slow and careful through the low gold light; beside the coop waits Mr Finch with his red toolbox, and together they size up the wiggly old latch while Hazel and Pepper mutter at the fence'>>",
    "is_ending": false,
    "choices": [
     {
@@ -446,25 +446,8 @@
    ]
   },
   {
-   "id": "coop-countdown",
-   "body": "<<FILL role=decision words=66 beats='Back at the run the light goes honey-gold; Hazel and Pepper pace the fence; the coop door still leans on its tired old latch; the yellow notebook has one empty line left and the evening count cannot wait'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-countdown-a",
-     "label": "Slide the latch and count the hens",
-     "target": "end-full-count"
-    },
-    {
-     "id": "ch-countdown-b",
-     "label": "Call Mr Finch about the latch",
-     "target": "end-new-latch"
-    }
-   ]
-  },
-  {
    "id": "end-cardigan",
-   "body": "<<FILL role=ending words=86 beats='Loop by loop the prickly runner unwinds and Pip tumbles snug into the waiting cardigan; Hazel and Pepper rush up scolding and clucking at the very same time; tucked into fresh straw between her sisters, Pip falls asleep before the evening count is done, and Miri ticks every box in the yellow notebook twice'>>",
+   "body": "<<FILL role=ending words=84 beats='Freed from the runner, Pip tumbles snug from the cardigan into fresh straw right between her sisters, and Hazel and Pepper scold and cluck at the very same time; she falls asleep before the evening count is done, and Miri ticks every box in the yellow notebook twice'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -476,7 +459,7 @@
   },
   {
    "id": "end-tin-parade",
-   "body": "<<FILL role=ending words=86 beats='One excited flap and Pip lands free in a burst of straw and enormous dignity; at the rattle of the treat tin she follows in a wobbly line across the field, pausing for a butterfly and a puddle; through the little gate she marches like a small white soldier, and the coop door clicks on three safe hens exactly at teatime'>>",
+   "body": "<<FILL role=ending words=84 beats='Through the little gate she marches like a small white soldier with the treat tin rattling ahead of her; the coop door clicks shut on three safe hens exactly at teatime, and Miri writes one new rule in the yellow notebook: a lost hen follows her tummy'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -488,7 +471,7 @@
   },
   {
    "id": "end-egg-box",
-   "body": "<<FILL role=ending words=86 beats='Pip snuggles into the cardigan while three warm speckled eggs ride home in the school egg box on a bed of straw; by Tuesday the little incubator lamp glows in the science cupboard under a new sign: QUIET PLEASE, EGGS THINKING; the yellow notebook says day one, warm; day two, still thinking'>>",
+   "body": "<<FILL role=ending words=82 beats='By Tuesday the little incubator lamp glows warm in the science cupboard under a new sign: QUIET PLEASE, EGGS THINKING; the egg box rides home each night on the handlebars, and the yellow notebook says day one, warm; day two, still thinking'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -500,7 +483,7 @@
   },
   {
    "id": "end-nest-basket",
-   "body": "<<FILL role=ending words=84 beats='Mr Finch slides the three speckled eggs into the hay-lined basket while a cross but calm Pip supervises from the wheelbarrow handle; together they carry everyone home across the sunny field, and when term starts the whole class crowds round the yellow notebook to hear how the smallest hen became a mother'>>",
+   "body": "<<FILL role=ending words=82 beats='Together they carry the hay basket across the sunny field while Pip supervises from the arm of Mr Finch; when term starts the whole class crowds round the yellow notebook to hear how the smallest hen in the school became a mother of three'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -512,19 +495,19 @@
   },
   {
    "id": "end-bucket",
-   "body": "<<FILL role=ending words=78 beats='Pip rides home sneezing in two gentle arms, deeply offended and loudly alive; the evening count reads three out of three, and the grey cobweb hat stays on the classroom windowsill all week as a tiny trophy of the great shed rescue'>>",
+   "body": "<<FILL role=ending words=78 beats='The evening count reads three out of three, loud and clear; the little grey cobweb hat stays on the classroom windowsill all week as a tiny trophy of the great shed rescue, and Pip never explains anything, not once, not ever'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "ending-bucket",
     "valence": "positive",
     "kind": "success",
-    "title": "The Bucket Rocket"
+    "title": "The Great Shed Rescue"
    }
   },
   {
    "id": "end-full-count",
-   "body": "<<FILL role=ending words=78 beats='Miri counts out loud for the yellow notebook: Hazel one, Pepper two, Pip three, three out of three safe and sound; at the bottom of the page she writes the first rule of hen-keeping: chickens come home when they are ready, and not one minute sooner'>>",
+   "body": "<<FILL role=ending words=78 beats='Miri counts out loud for the yellow notebook: Hazel one, Pepper two, Pip three, three out of three safe and sound; at the bottom of the page she writes the first rule of hen-keeping: chickens come home when they are ready, and not a minute sooner'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -536,7 +519,7 @@
   },
   {
    "id": "end-bandit",
-   "body": "<<FILL role=ending words=76 beats='There is outraged splashing at the sink and jammy footprints on the step; at the evening count there are three clean hens; the whole coop smells faintly of strawberries, and Miri promises Mrs Plum the very first punnet of next summer'>>",
+   "body": "<<FILL role=ending words=78 beats='There is outraged splashing at the sink and small wet footprints on the step; the evening count reads three out of three, one hen smelling faintly of soap, and Miri promises Mrs Plum the very first punnet of next summer as a thank you'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -547,8 +530,20 @@
    }
   },
   {
+   "id": "end-lemonade",
+   "body": "<<FILL role=ending words=80 beats='Glasses clink and Pip hiccups toast-crumb hiccups while Mrs Plum laughs until her eyes crinkle; Miri cycles home through the warm dusk with cake in the basket and one sleepy hen riding in a box on the back, telling the whole unbelievable story to the wind'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-lemonade",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Lemonade and Toast Crusts"
+   }
+  },
+  {
    "id": "end-dusk",
-   "body": "<<FILL role=ending words=80 beats='Pip refuses to hurry; she inspects three daisies, a puddle, and a pale moon coming up like an egg; long past teatime she strolls through her own little gate on her own four toes and settles into the straw, and Miri writes in the yellow notebook that small hens keep mysterious schedules'>>",
+   "body": "<<FILL role=ending words=80 beats='Pip refuses to hurry; she inspects three daisies, a puddle, and a pale moon coming up like an egg; long past teatime she strolls through her own little gate on her own four toes and settles into the straw, and Miri writes that small hens keep mysterious schedules'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -559,20 +554,8 @@
    }
   },
   {
-   "id": "end-lemonade",
-   "body": "<<FILL role=ending words=78 beats='Glasses clink and Pip hiccups toast-crumb hiccups while Mrs Plum laughs until her eyes crinkle; Miri cycles home with cake in the basket and one sleepy hen riding in a box on the back, telling the whole unbelievable story to the wind'>>",
-   "is_ending": true,
-   "choices": [],
-   "ending": {
-    "id": "ending-lemonade",
-    "valence": "positive",
-    "kind": "success",
-    "title": "Lemonade and Toast Crusts"
-   }
-  },
-  {
    "id": "end-new-latch",
-   "body": "<<FILL role=ending words=76 beats='Click, click, click: the strong new latch stands firm under tugs from Miri, from Mr Finch, and from one deeply offended Pepper; the notebook closes on three safe hens, and the Official Hen Detective of the school coop sleeps like a log'>>",
+   "body": "<<FILL role=ending words=76 beats='Click, click, click: the strong new latch stands firm under tugs from Miri, from Mr Finch, and from one deeply offended Pepper; the notebook closes on three safe hens, and the official hen detective of the school coop sleeps like a log'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
