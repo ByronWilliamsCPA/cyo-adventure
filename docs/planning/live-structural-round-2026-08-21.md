@@ -172,4 +172,52 @@ new skeletons.
 
 ## 7. Results
 
+### 7.1 Offline results (no network; computed while Run A executed)
+
+**The mutation census instrument reproduces the predecessor's findings exactly**, which validates
+it before it grades anything new: book 1 `story.id` only; book 2 `title` plus 27/36 ending
+titles; book 3 `metadata.themes` plus `title` plus 15/35 ending titles. Extending it to the two
+raw shared-skeleton pair books and the book-4 rerun (all committed by the predecessor run but
+never censused): pair book 0 reskinned `title` plus 10/35 ending titles, pair book 1 `title`
+plus 21/35, rerun-book4 `title` plus 2/6; none of the three touched a frozen field. Prior-model
+tally across all six committed v4-pro one-shot books: **frozen-field mutation 2/6, ambiguous-field
+drift (title or ending.title) 5/6**. Run B extends the denominator.
+
+**Outbound-choice staging (AL-495/UW-C312) separates cleanly and the defect tracks fill rate.**
+A prototype outbound companion to `CG-4` (content-word overlap between a node's own choice labels
+and its body, same caveat as CG-4) scores the 39 committed known-good fills at **median 0.037
+dangling rate** (range 0.000 to 0.327; the high tail is the two 551-node twins and other
+gamebooks, where terse labels legitimately paraphrase). The five live v4-pro books score
+**0.690 to 0.854**. A factor-of-20 separation on committed data means the rule is buildable and
+the live fills are systematically breaking it, as AL-495 predicted from the word shortfall.
+
+**Sibling convergence: shared structure is the driver, and it is not a DeepSeek idiom.** Pairwise
+`check_sibling_fills` across every same-band pair of committed filled books (70 pairs): median
+**1.2** shared four-grams per 1000, and only one pair exceeds 13. That one pair is
+`the-harrowstone-keep` x `the-sunken-temple`: two deliberately distinct committed books (different
+ids, titles, themes; exactly one byte-identical body out of 551) that share a 551-node structure,
+and they score **202.0 per 1000**, twice the DeepSeek pair's 96.3. So the convergence `UW-C315`
+measures is intrinsic to filling a shared structure, not a vendor defect, and cross-skeleton
+same-band reuse is comfortably inside budget while same-skeleton reuse is 24-50x over it,
+whoever the author is. This sharpens what Run A's directed delta has to prove.
+
+**Fill rate varies book-to-book on one (skeleton, model) pair.** The raw pair's two books,
+re-scored with the new `--min-fill-rate` floor: book 0 delivers 65.2 percent (passes 0.6),
+book 1 delivers 42.9 percent (fails). Same skeleton, same model, same pin, same undirected
+condition: the floor is a coin flip at this vendor's delivery variance, which is itself a
+bulk-relevant fact.
+
+**Protagonist presence is measurable, but the rule has to key on the declared person, not a
+universal floor.** Across 31 committed fills, gamebooks score second-person node rates of 0.715
+to 1.0 while third-person prose books sit at 0.0 to 0.27, so a single threshold cannot serve
+both. The beats themselves carry the signal: skeletons whose `beats=` text uses second-person
+pronouns at a high rate (0.45 to 0.69 on the two live gamebooks) got fills whose second-person
+rate tracks it closely (0.448 and 0.88), while `the-tin-whistle-map`'s beats are only 0.03
+second-person, and its three fills scatter to 0.073, 0.13 and 0.715. So AL-496's "worst defect"
+book was not violating a stated contract: the contract never pins narrative person for prose,
+and same-skeleton siblings can legitimately land in DIFFERENT persons. That unpinned degree of
+freedom is the finding.
+
+### 7.2 Live results
+
 Appended after execution.
