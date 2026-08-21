@@ -1265,6 +1265,36 @@ until D-6 reports.**
 
 ---
 
+## F. Skeleton sourcing programme (S rows)
+
+Registered 2026-08-21 per the
+[skeleton sourcing test plan](./skeleton-sourcing-test-plan-2026-08-21.md), whose preamble gates any
+spend on these rows landing first, margins included. Sources: the plan itself (revision 2, written
+after an adversarial review; its section 9 records the review). The margins, floors, and ceilings
+below are the proposer's (the plan's author) and are fixed as of this commit; amending one after its
+experiment has produced artifacts voids that experiment's pre-registration and must be recorded here
+as such.
+
+**Declared deviation at registration time (S-0).** `recognition-protocol-pilot/protocol.py`
+pre-registered its known-answer validation against the three D-7c same-armature pairs and a
+D-7c-vs-W16 control, but those six books were never committed: PR #715 merged the rigs and READMEs,
+the fills stayed on the deleted working branch. S-0 therefore re-bases the validation on artifacts
+that exist on main: same-armature pairs `d7-stratified-plan/filled_C vs filled_D` and
+`d7b-bare-names/filled_C vs filled_D` (same 26-node armature, independently authored decisional
+strata), and a cross-graph control `d7-stratified-plan/filled_C vs
+mutation-per-request-pilot/book-s-the-midnight-museum` (different graph, different world, same band;
+the original control also varied band, this one cannot). With two same-armature pairs instead of
+three, the pass rule tightens from 2-of-3 to 2-of-2; 1-of-2 is a failed validation, not a partial.
+
+| ID | Test | Question it settles | Method | Cost | Falsifier / margins (fixed at registration) | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| S-0 | Instrument validation and shared materials (plan E0) | Is the frozen recognition protocol a usable instrument, and are the shared materials (premise list, allocation rule, E3 briefs) fixed before any arm runs? | Run `recognition-protocol-pilot/protocol.py` on the re-based pairs above, two counterbalanced raters per pair (rater A reads C then D, rater B reads D then C), verdicts checked with `protocol.py validate` before recording. Build `evidence/sourcing-materials/` (premise list, counterbalanced allocation rule, 6 E3 briefs of which 2 catalog-unservable). | 6 rater runs, 0 fills | Both same-armature pairs must be called same-adventure by both raters with first-yes at or before scene 5; the control must not be called same-adventure by either rater. Any miss = instrument fails; E2/E4 perceptual confirmations are blocked and every perceptual claim inherited from the mutation pilot is marked unconfirmed. | queued |
+| S-1 | Skeleton-authoring model screen (plan E1) | Does model selection separate on skeleton structure at gross resolution? | 5 legs (deepseek-v4-pro, deepseek-v4-flash, anthropic-sonnet-5, openai-gpt-5.6-sol, google-gemini-3.1-pro) x 4 cells (3 cheap-band, 1 hard-band) x 4 replicates = 80 shells via `compare_skeleton_authors.py` with the shared repair-loop contract; briefs from `generate_drafting_brief.py`; premises per S-0's allocation rule. | proposer: ~80 shells; cheap cells ~5-20k tokens/shell, hard cell ~100-350k tokens/shell with repair (Q-3d curve) | **Primary endpoint only**: repair rounds to strict pass, pooled across cells, permutation test over leg assignment, 10,000 permutations, alpha 0.05. Falsifier: no leg pair separates at that level; then the model axis is dropped and downstream arms use the cheapest strict-passing leg. All other endpoints exploratory, decision-inert. | queued |
+| S-2 | Stratified reuse viability (plan E2) | Can a shared structural stratum plus per-request decisional strata produce books that are not the same book? | Precondition: D-7c's deferred no-notes arm (2 fills) to fix the stratum configuration. Then 1 structural stratum, 4-6 decisional strata (S-1's winner), 4-6 fills, deterministic screens first, recognition confirmation (post S-0) on the most-similar pair. | 2 + 4-6 fills, 2 raters confirmation | (a) condition-mean shared grams > 4.0 per 1000 across all pairs (worst pair reported; a lone same-archetype worst-pair breach triggers premise-allocation review, not arm death); (b) both raters land same-adventure at or before position 4 on the most-similar pair. Either fires = S2 out. | blocked on S-0, S-1 |
+| S-3 | Bespoke vs catalog end-to-end (plan E3) | Does per-request bespoke generation beat the existing catalog where it should (premise fit), at what cost? | 6 fixed briefs (S-0), 2 catalog-unservable; S0 arm via production `skeleton_match`, S3 arm via S-1's winner with the E1 repair contract; identical fill configuration including `differentiation_directive`; blind panel plus forced-choice premise-fit identification (6-brief lineup, chance 1/6). | ~6 bespoke shells (hard-band Q-3d pricing), 12-18 fills, 3 judges | **E3fit margin**: S3 beats S0 by >= 0.25 chance-corrected premise-fit accuracy, or by >= +0.5 z on the blind panel's judged quality; either suffices. **E3cov**: on the 2 unservable briefs, S0 not identifiable above chance while S3 is. Bespoke falsifier: neither margin met while marginal cost/book exceeds S0's. | blocked on S-0, S-1 |
+| S-4 | Repeat-reader distinctness (plan E4) | Does any per-request arm buy variety a repeat reader can perceive, and how fast does full reuse fail? | 3 arms x 4-request in-cell sequences under production recency weighting, plus one cross-profile connected-family pair; deterministic sequence measures decide, adjacent-pair recognition (post S-0) confirms. | 3 x 4 books, mostly reused from S-2/S-3 artifacts; 2 raters confirmation | **E4null (fires against S2/S3)**: generated-arm sequences fail to beat S0's non-repeat pairs on at least 2 of 3 deterministic measures by the margins: pairwise solution transfer strictly lower; shared grams lower by >= 25%; structural_distance higher by >= 0.05. **S0 falsifier**: any same-skeleton adjacent pair confirmed recognized at or before position 4 (both raters). | blocked on S-0 |
+| S-5 | Safety floor and sourcing economics (plan E5) | May unreviewed shells reach children at all, and what does each arm actually cost? | Adversarial shell corpus (~15-20 shells: six `check_graph_structure` failure classes plus AL-227/AL-228-shaped defects, seeded into bespoke-style and S2-composed shells); gate catch-rate; marginal plus amortized accounting over S-1..S-4 artifacts. | corpus authoring + gate runs, 0 raters | **Safety floor (blocking, decision rule R1)**: catch-rate 100% on the six structural failure classes and >= 90% on the seeded AL-227/AL-228 defect class, else no decision rule shipping unreviewed shells may be selected. **Cost ceilings**: request-path amortized cost <= 2x S0's amortized cost per delivered book (S0 amortization basis: 50 delivered books per catalog skeleton, promotion review priced at 2 review-hours per skeleton); added request-path latency p90 <= 15 minutes on the existing async queue. | blocked on S-1..S-4 for accounting; corpus buildable now |
+
 ## Duplicate map
 
 The research brief's section 8.4 families, and where each is actually tracked:
