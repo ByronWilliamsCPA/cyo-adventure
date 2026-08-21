@@ -1629,3 +1629,70 @@ def test_load_vendors_rejects_an_empty_label(tmp_path: Path, label: str) -> None
         _load_vendors(path)
 
     assert excinfo.value.code == 1
+
+
+@pytest.mark.parametrize(
+    "label",
+    [
+        "x\x00y",
+        "line\nbreak",
+        "bell\x07",
+        "gpt-4:free",
+        "star*",
+        "quest?",
+        'quo"te',
+        "pipe|x",
+        "lt<gt>",
+    ],
+)
+def test_load_vendors_rejects_a_label_with_an_unsafe_character(
+    tmp_path: Path, label: str
+) -> None:
+    """A label that cannot be a filename must be refused BEFORE the run is billed.
+
+    `_load_vendors` exists to reject at load time; `persist_book`'s own note
+    records `AL-326`, where three books and 1,869 seconds of billed provider
+    time were lost because a write failed. A label carrying a NUL fails the
+    write on every platform, and Win32 rejects `< > : " | ? * \\ /` plus every
+    character below 0x20 in a path component, so a spec authored on Linux can be
+    unrunnable on Windows. Either way the failure lands after the spend, which
+    is the loss this guard is for.
+    """
+    path = _write_vendors(
+        tmp_path, [{"label": label, "model": "m", "provider_order": ["p"]}]
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _load_vendors(path)
+
+    assert excinfo.value.code == 1
+
+
+def test_load_vendors_accepts_the_labels_the_committed_specs_use(
+    tmp_path: Path,
+) -> None:
+    """The character guard must not refuse any real vendor label.
+
+    Load-bearing for the rejections above: a guard that also refused the
+    committed specs would fail every real run. These are the exact labels in
+    `docs/planning/vendor-comparison/vendors.json` and
+    `vendors-deepseek-v4-pro.json`.
+    """
+    labels = [
+        "anthropic-sonnet-4.6",
+        "anthropic-sonnet-5",
+        "openai-gpt-5.6-sol",
+        "xai-grok-4.6",
+        "moonshot-kimi-k3",
+        "google-gemini-3.1-pro",
+        "deepseek-v4-pro",
+    ]
+    path = _write_vendors(
+        tmp_path,
+        [
+            {"label": label, "model": f"m{n}", "provider_order": ["p"]}
+            for n, label in enumerate(labels)
+        ],
+    )
+
+    assert [v.label for v in _load_vendors(path)] == labels
