@@ -115,6 +115,33 @@ class OpenRouterProvider:
         """Return the leg label used in logs and the worker provider record."""
         return f"openrouter:{self._model}"
 
+    @property
+    def model(self) -> str:
+        """The model id this leg targets, exposed for cap resolution.
+
+        # #CRITICAL: external resources: cap resolution reads
+        # ``getattr(provider, "model", None)``, and every wrapper
+        # (``MeteredProvider``, ``PiiGuardedProvider``) forwards this
+        # attribute by getattr. Until 2026-08-21 this adapter did not expose
+        # it, so the resolved model was None wherever no ``Settings``
+        # fallback applies: ``generate_story``'s Stage B (which resolves
+        # from the provider alone, and whose own AL-436 comment wrongly
+        # assumed the adapter declared its model) over-asked every low-cap
+        # OpenRouter model, and settings-less callers such as
+        # ``scripts/compare_vendors.py`` resolved the permissive 131,072
+        # default, which made ``MODEL_OUTPUT_CAPS`` unreachable and kept the
+        # ``UW-C302`` chunked path from ever engaging there (measured: HTTP
+        # 400 in 0.6s on ``deepseek/deepseek-v3.2``; `AL-502`/`UW-C318`).
+        # ``fill_skeleton``'s worker call passes ``settings`` and so fell
+        # back to the CONFIGURED model, which is correct until a leg's model
+        # differs from the configuration (the provider-override paths).
+        # #VERIFY: test_provider_contract.py::
+        # test_every_provider_adapter_exposes_its_model asserts every adapter
+        # exposes this property, so the next adapter cannot reintroduce the
+        # blind spot.
+        """
+        return self._model
+
     def _build_messages(self, system: str, user: str) -> list[dict[str, object]]:
         """Build the chat messages, marking the system block cacheable for Anthropic.
 

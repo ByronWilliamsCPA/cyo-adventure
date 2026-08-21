@@ -101,6 +101,17 @@ class ModalProvider:
         """Return the leg label used in logs and the worker provider record."""
         return f"modal:{self._model}"
 
+    @property
+    def model(self) -> str:
+        """The model id this leg targets, exposed for cap resolution.
+
+        Every adapter exposes this so ``resolve_output_cap`` sees the leg's
+        real model through the provider wrappers rather than falling back to
+        the configured default (`AL-502`/`UW-C318`; the contract is asserted
+        by test_provider_contract.py).
+        """
+        return self._model
+
     async def complete(
         self, *, system: str, prompt: str, max_tokens: int
     ) -> Completion:
