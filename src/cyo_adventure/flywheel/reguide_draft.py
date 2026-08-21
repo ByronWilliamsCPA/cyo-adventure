@@ -39,6 +39,7 @@ from importlib.resources import files
 from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.core.exceptions import BusinessLogicError
+from cyo_adventure.generation.prompts import neutralize_prompt_payload
 from cyo_adventure.mutation.ops import ReguideTarget
 from cyo_adventure.mutation.reguide import ReguideResolutions, ResolvedReguide
 from cyo_adventure.storybook.sentinels import strip_sentinels
@@ -544,7 +545,18 @@ def render_draft_prompt(  # noqa: PLR0913 -- one cohesive prompt renderer
     text = (
         _load_template()
         .replace("{target_kind}", item.target.value)
-        .replace("{catalog_content}", catalog_content)
+        # #CRITICAL: security: `catalog_content` carries `_story_context`, the
+        # parent's start-node body, which is model-written prose. The split below
+        # requires EXACTLY one `_USER_MARKER`, so a body holding that literal
+        # forges a second one and raises `BusinessLogicError` here: the same
+        # class `AL-501` closed across `generation/prompts.py`, in the one other
+        # module that assembles a prompt from the same templates package. The
+        # generation pass neutralizes payloads on the way INTO a prompt, but
+        # nothing strips the marker from a stored node body, so a published
+        # story can carry it and reach this builder.
+        # #VERIFY: test_flywheel_reguide_draft.py::
+        # test_a_parent_body_carrying_the_stage_marker_cannot_split_the_prompt.
+        .replace("{catalog_content}", neutralize_prompt_payload(catalog_content))
     )
     parts = text.split(_USER_MARKER)
     if len(parts) != 2:

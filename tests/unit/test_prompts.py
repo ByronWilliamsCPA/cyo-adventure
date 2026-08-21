@@ -24,6 +24,7 @@ from pathlib import Path
 import pytest
 
 from cyo_adventure.core.exceptions import BusinessLogicError
+from cyo_adventure.flywheel import reguide_draft as reguide_draft_module
 from cyo_adventure.generation import prompts as prompts_module
 from cyo_adventure.generation.concept import (
     AnchorContext,
@@ -863,11 +864,14 @@ _CODE_DERIVED_TOKENS = frozenset(
         "_DRAFTING_GUIDE_PLACEHOLDER",
         "{budget_constraints}",
         "{slot_table}",
-        "{violations_block}",
         "{reading_target}",
-        "{failing_node_ids}",
-        "{fidelity_violations}",
-        "{validator_report}",
+        # `reguide_draft.py`'s only other payload: `item.target.value`, one of
+        # the three `ReguideTarget` StrEnum literals ("node"/"choice"/"ending").
+        "{target_kind}",
+        # No failure-feedback token is exempt any more. `{violations_block}`,
+        # `{fidelity_violations}`, `{validator_report}` and `{failing_node_ids}`
+        # were all listed here and none qualified; see
+        # TestFailureFeedbackCannotForgeTheMarker for the provenance of each.
     }
 )
 
@@ -905,7 +909,12 @@ def _raw_payload_substitutions(module_path: Path) -> list[str]:
         func = node.func
         if not isinstance(func, ast.Attribute) or func.attr != "replace":
             continue
-        if len(node.args) != 2:
+        # `< 2`, not `!= 2`: `str.replace(old, new, count)` is a valid third
+        # form, and skipping it left the guard blind to a raw payload written as
+        # `.replace("{token}", payload, 1)`. No such call exists today, so this
+        # is the guard doing its actual job (catching a payload not yet written)
+        # rather than a live defect.
+        if len(node.args) < 2:
             continue
         name = _replace_token_name(node.args[0])
         if name is None or name in _CODE_DERIVED_TOKENS:
@@ -913,7 +922,7 @@ def _raw_payload_substitutions(module_path: Path) -> list[str]:
         wrapped = any(
             isinstance(inner, ast.Call)
             and isinstance(inner.func, ast.Name)
-            and inner.func.id == "_neutralize_fence"
+            and inner.func.id in {"_neutralize_fence", "neutralize_prompt_payload"}
             for inner in ast.walk(node.args[1])
         )
         if not wrapped:
@@ -1060,3 +1069,137 @@ class TestEveryDynamicPayloadIsNeutralized:
             "the fence terminator; wrap the value or add the token to "
             "_CODE_DERIVED_TOKENS with a reason:\n" + "\n".join(raw)
         )
+
+    def test_the_guard_inspects_a_counted_replace(self, tmp_path: Path) -> None:
+        """The guard itself must be falsifiable, per `AL-502`.
+
+        `str.replace(old, new, count)` is a valid third form, and an `!= 2`
+        argument-count check skipped it entirely, so a raw payload written as
+        `.replace("{token}", payload, 1)` was invisible. Exercised against a
+        synthetic module rather than the real one, because no counted call exists
+        in `prompts.py` today: asserting through the real file would be a check
+        that cannot fail, which is the exact trap `AL-502` records.
+        """
+        module = tmp_path / "synthetic_prompts.py"
+        module.write_text(
+            "def build() -> str:\n"
+            '    return _load_template("x.md").replace("{filled_story}", payload, 1)\n',
+            encoding="utf-8",
+        )
+
+        raw = _raw_payload_substitutions(module)
+
+        assert raw == ["line 2: .replace('{filled_story}', ...)"], (
+            "a counted .replace() is not being inspected, so a raw payload "
+            "written with an explicit count would pass the guard unnoticed"
+        )
+
+    def test_reguide_draft_neutralizes_every_dynamic_payload(self) -> None:
+        """The guard must cover EVERY module that assembles one of these prompts.
+
+        Scoping the guard to `prompts.py` left the same forgery class live in
+        `flywheel/reguide_draft.py`, which loads from the same templates package,
+        splits on the same `<!-- @user -->` marker, and raises the same
+        `BusinessLogicError`. A guard that only watches one of two call sites
+        certifies the module it reads, not the class it claims to close.
+        """
+        raw = _raw_payload_substitutions(Path(reguide_draft_module.__file__))
+        assert not raw, (
+            "these .replace() calls in reguide_draft.py interpolate a dynamic "
+            "payload without a neutralizer, so the payload can forge the stage "
+            "marker:\n" + "\n".join(raw)
+        )
+
+
+@pytest.mark.unit
+class TestFailureFeedbackCannotForgeTheMarker:
+    """Failure feedback is a dynamic payload, and the first pass misclassified it.
+
+    `{fidelity_violations}`, `{validator_report}` and `{violations_block}` were
+    listed in `_CODE_DERIVED_TOKENS` as "built from validated ids and literals,
+    never from free text". None of the three is:
+
+    - `{fidelity_violations}` carries `run_semantic_fidelity_check`'s `notes`,
+      which is whatever the review model returned inside a JSON string, so
+      `json.loads` hands back the literal marker.
+    - `{validator_report}` carries `validator/gate.py`'s L1-1 message, which
+      interpolates a Pydantic `ValidationError`; its `str()` includes
+      `input_value=`, so the rejected document's own text lands in the prompt.
+    - `{violations_block}` carries "binding contains undeclared slot '{slot_id}'"
+      from `_completeness_violations`, and that id is a KEY of the model's parsed
+      bind response. `_parse_bind_response` checks that values are strings and
+      never that keys are declared slot ids (covered in `test_prompts_bound.py`,
+      which already owns the contract fixture).
+
+    Each case asserts through the public builder, because the defect was which
+    argument the builder passed, not the neutralizer.
+    """
+
+    def test_a_fidelity_violation_note_cannot_forge_the_marker(self) -> None:
+        """A review model's free-text note must not split the repair prompt."""
+        prompt = build_fidelity_repair_prompt(
+            json.dumps({"id": "s", "nodes": []}),
+            [f"semantic fidelity check: {_FORGED}"],
+        )
+
+        assert isinstance(prompt, StagePrompt)
+        assert _USER_MARKER not in prompt.user
+        assert "Rosa" in prompt.user, "the note must still reach the model"
+
+    def test_a_validator_report_message_cannot_forge_the_marker(self) -> None:
+        """A finding message echoing rejected input must not split the prompt."""
+        prompt = build_repair_prompt(
+            json.dumps({"id": "s", "nodes": []}),
+            [
+                {
+                    "rule_id": "L1-1",
+                    "message": (
+                        "document failed Pydantic parse after L1: "
+                        f"input_value='{_FORGED}'"
+                    ),
+                }
+            ],
+        )
+
+        assert isinstance(prompt, StagePrompt)
+        assert _USER_MARKER not in prompt.user
+        assert "Rosa" in prompt.user, "the report must still reach the model"
+
+    def test_a_node_id_is_not_format_constrained_so_it_must_be_neutralized(
+        self,
+    ) -> None:
+        """`{failing_node_ids}` is forgeable, contrary to how it reads.
+
+        It looks like the one exempt failure-feedback token, and the first fix
+        for this finding left it exempt on the reasoning that node ids are
+        pattern-constrained. They are not. The schema pattern
+        `^[a-z][a-z0-9_]*$` applies ONLY to `Variable.name` and `Effect.var`;
+        `Node.id`, `Choice.id` and `Ending.id` are `Field(min_length=1)` with no
+        pattern, and no validator rule constrains their format. So a node id
+        spelling the stage marker is schema-VALID and reaches
+        `build_repair_prompt`.
+
+        This asserts the schema state AND the behaviour, because the schema is
+        the reason the token is not exempt: if `Node.id` ever gains a pattern,
+        the first assertion fails and the exemption can be revisited
+        deliberately rather than by assumption.
+        """
+        schema = json.loads(
+            (
+                Path(__file__).resolve().parents[2] / "schema" / "storybook.schema.json"
+            ).read_text(encoding="utf-8")
+        )
+        node_id_schema = schema["$defs"]["Node"]["properties"]["id"]
+        assert "pattern" not in node_id_schema, (
+            "Node.id now carries a pattern; re-derive whether "
+            "{failing_node_ids} still needs neutralizing"
+        )
+
+        prompt = build_repair_prompt(
+            json.dumps({"id": "s", "nodes": []}),
+            [{"rule_id": "L2-7", "node_id": _FORGED, "message": "beat missing"}],
+        )
+
+        assert isinstance(prompt, StagePrompt)
+        assert _USER_MARKER not in prompt.user
+        assert "Rosa" in prompt.user, "the node id must still reach the model"

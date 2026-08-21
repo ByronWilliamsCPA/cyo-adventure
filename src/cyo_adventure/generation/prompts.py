@@ -61,6 +61,7 @@ __all__ = [
     "build_reading_level_repair_prompt",
     "build_repair_prompt",
     "build_structure_prompt",
+    "neutralize_prompt_payload",
 ]
 
 # ---------------------------------------------------------------------------
@@ -195,9 +196,28 @@ def _neutralize_fence(text: str) -> str:
     # ``{approved_skeleton}``, ``{filled_story}``, ``{nodes_to_fill}`` and
     # ``{differentiation_directive}`` (whose ``prior_titles`` descend from a
     # family's own published story titles, validated only ``min_length=1``).
+    # #CRITICAL: security: FAILURE FEEDBACK is dynamic too, which the first pass
+    # of this rule got wrong: ``{fidelity_violations}``, ``{validator_report}``,
+    # ``{violations_block}`` and ``{failing_node_ids}`` were listed as
+    # code-derived and none of them is.
+    # ``{fidelity_violations}`` carries ``run_semantic_fidelity_check``'s
+    # ``notes``, which is unconstrained review-model text. ``{validator_report}``
+    # carries ``validator/gate.py``'s L1-1 message, which interpolates a Pydantic
+    # ``ValidationError`` whose ``str()`` echoes ``input_value=``, so the
+    # offending document's own text lands in the prompt. ``{violations_block}``
+    # carries ``_completeness_violations``'s "binding contains undeclared slot
+    # '{slot_id}'", and that id is a KEY of the model's parsed bind response:
+    # ``_parse_bind_response`` validates only that values are strings, never that
+    # keys are declared slot ids. ``{failing_node_ids}`` looks exempt and is not:
+    # the only ids this schema pattern-constrains are ``Variable.name`` and
+    # ``Effect.var`` (``models.py`` ``Field(pattern=r"^[a-z][a-z0-9_]*$")``),
+    # while ``Node.id``, ``Choice.id`` and ``Ending.id`` are
+    # ``Field(min_length=1)`` with no pattern and no validator rule on their
+    # format, so a node id spelling either delimiter is schema-VALID.
+    # #VERIFY: TestFailureFeedbackCannotForgeTheMarker covers all four paths.
     # Code-derived tokens are deliberately NOT routed here: ``{slot_table}``,
-    # ``{budget_constraints}``, ``{reading_target}`` and ``{failing_node_ids}``
-    # are built from validated ids and literals, never from free text.
+    # ``{budget_constraints}`` and ``{reading_target}`` are built from contract
+    # data and literals, never from free text or model-supplied ids.
     # #VERIFY: test_prompts_neutralize_every_dynamic_payload.
 
     Args:
@@ -219,6 +239,25 @@ def _neutralize_fence(text: str) -> str:
     return text.replace(_FENCE_TERMINATOR, _FENCE_TERMINATOR_DEFANGED).replace(
         _USER_MARKER, _USER_MARKER_DEFANGED
     )
+
+
+def neutralize_prompt_payload(text: str) -> str:
+    """Defang the two prompt delimiters in a payload, for other assembling modules.
+
+    Public entry point to :func:`_neutralize_fence`. It exists because
+    ``flywheel/reguide_draft.py`` assembles its own prompt from the same
+    ``generation/templates`` package and splits on the same ``<!-- @user -->``
+    marker, so it needs the identical defang. Sharing this function rather than
+    re-deriving it there is the point of `AL-501`: the forgery class reappeared
+    three times precisely because neutralization was a per-site decision.
+
+    Args:
+        text: The payload about to be interpolated into a prompt template.
+
+    Returns:
+        The payload with both delimiters rendered inert.
+    """
+    return _neutralize_fence(text)
 
 
 def _drafting_guide() -> str:
@@ -904,7 +943,10 @@ def build_bind_prompt(
             _THEME_BRIEF_PLACEHOLDER,
             _neutralize_fence(json.dumps(dict(theme_brief), indent=2)),
         )
-        .replace("{violations_block}", _violations_block(violations))
+        .replace(
+            "{violations_block}",
+            _neutralize_fence(_violations_block(violations)),
+        )
     )
     return _split_stage_prompt(text)
 
@@ -951,7 +993,10 @@ def build_interpret_bind_prompt(
             _THEME_BRIEF_PLACEHOLDER,
             _neutralize_fence(json.dumps(dict(theme_brief), indent=2)),
         )
-        .replace("{violations_block}", _violations_block(violations))
+        .replace(
+            "{violations_block}",
+            _neutralize_fence(_violations_block(violations)),
+        )
     )
     return _split_stage_prompt(text)
 
@@ -1080,7 +1125,7 @@ def build_fidelity_repair_prompt(
     text = (
         _load_template("fidelity_repair.md")
         .replace("{filled_story}", _neutralize_fence(filled_json))
-        .replace("{fidelity_violations}", violations_block)
+        .replace("{fidelity_violations}", _neutralize_fence(violations_block))
     )
     return _split_stage_prompt(text)
 
@@ -1220,7 +1265,7 @@ def build_repair_prompt(
     text = (
         _load_template("repair.md")
         .replace("{approved_skeleton}", _neutralize_fence(storybook_json))
-        .replace("{validator_report}", validator_report)
-        .replace("{failing_node_ids}", failing_node_ids)
+        .replace("{validator_report}", _neutralize_fence(validator_report))
+        .replace("{failing_node_ids}", _neutralize_fence(failing_node_ids))
     )
     return _split_stage_prompt(text)
