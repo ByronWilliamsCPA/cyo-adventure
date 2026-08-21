@@ -7,15 +7,16 @@
  "style": "prose",
  "replicate": 3,
  "premise": "On the first snowy day, Priya must find her little brother's boot, lost somewhere along the sled run, before their walk home.",
- "attempts": 3,
- "repair_rounds": 2,
+ "attempts": 4,
+ "repair_rounds": 3,
  "strict_pass": false,
  "first_pass_clean": false,
  "parse_failures": 0,
  "findings_lines_per_round": [
   14,
   5,
-  6
+  6,
+  4
  ],
  "graph_check_exit": 0,
  "latency_s": 0.0,
@@ -23,10 +24,10 @@
  "output_tokens": null,
  "reasoning_tokens": null,
  "finish_reasons": [],
- "min_catalog_distance": null,
- "mean_catalog_distance": null,
- "catalog_distance_note": "shell not coercible against any of 5 peers",
- "last_feedback": "ERROR   L1-3   node=ending_004 L1-3 reach: node 'ending_004' is unreachable from start_node 'node_001' in story 'priyas-snowy-boot-quest'\nERROR   L1-3   node=node_017 L1-3 reach: node 'node_017' is unreachable from start_node 'node_001' in story 'priyas-snowy-boot-quest'\nERROR   L1-3   node=node_019 L1-3 reach: node 'node_019' is unreachable from start_node 'node_001' in story 'priyas-snowy-boot-quest'\nERROR   L1-7   L1-7 budget: ending_count out of range in story 'priyas-snowy-boot-quest': 5 (allowed 6..6)\nERROR   L1-7   L1-7 budget: branch_depth out of range in story 'priyas-snowy-boot-quest': 8 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r3__claude-haiku-subagent.json failed structural validation: L1-3 reach: node 'ending_004' is unreachable from start_node 'node_001' in story 'priyas-snowy-boot-quest'; L1-3 reach: node 'node_017' is unreachable from start_node 'node_001' in story 'priyas-snowy-boot-quest'; L1-3 reach: node 'node_019' is unreachable from start_node 'node_001' in story 'priyas-snowy-boot-quest'; L1-7 budget: ending_count out of range in story 'priyas-snowy-boot-quest': 5 (allowed 6..6); L1-7 budget: branch_depth out of range in story 'priyas-snowy-boot-quest': 8 (allowed 0..7)",
+ "min_catalog_distance": 0.13144501375415016,
+ "mean_catalog_distance": 0.3385685526460877,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "last_feedback": "ERROR   L1-3   node=ending_005 L1-3 reach: node 'ending_005' is unreachable from start_node 'node_001' in story 'priyas-snowy-boot-quest'\nERROR   L1-3   node=node_018 L1-3 reach: node 'node_018' is unreachable from start_node 'node_001' in story 'priyas-snowy-boot-quest'\nERROR   L1-7   L1-7 budget: branch_depth out of range in story 'priyas-snowy-boot-quest': 8 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r3__claude-haiku-subagent.json failed structural validation: L1-3 reach: node 'ending_005' is unreachable from start_node 'node_001' in story 'priyas-snowy-boot-quest'; L1-3 reach: node 'node_018' is unreachable from start_node 'node_001' in story 'priyas-snowy-boot-quest'; L1-7 budget: branch_depth out of range in story 'priyas-snowy-boot-quest': 8 (allowed 0..7)",
  "shell_file": "shells/A__r3__claude-haiku-subagent.json",
  "error": ""
 }

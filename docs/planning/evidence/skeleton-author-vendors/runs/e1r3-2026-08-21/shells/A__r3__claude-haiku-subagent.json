@@ -197,6 +197,11 @@
      "id": "choice_011a",
      "label": "Pull out the red fabric",
      "target": "node_015"
+    },
+    {
+     "id": "choice_011b",
+     "label": "Ask the ranger if more boots came in",
+     "target": "ending_006"
     }
    ]
   },
@@ -226,13 +231,13 @@
   },
   {
    "id": "node_014",
-   "body": "<<FILL role=decision words=70 beats='Priya has searched many places but found nothing. She wonders if the boot flew off into deep powder or slid down quickly to a different spot. Mom says it is getting late. Priya feels worried about time running out. What should she do?'>>",
+   "body": "<<FILL role=decision words=70 beats='Priya has searched many places but found nothing. She wonders where the boot could be. Mom says time is getting late. Priya feels worried about time running out. What should she do?'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "choice_014a",
-     "label": "Search deeper in the snow",
-     "target": "node_018"
+     "label": "Remember the parking lot area",
+     "target": "node_017"
     },
     {
      "id": "choice_014b",
@@ -285,7 +290,7 @@
     {
      "id": "choice_018a",
      "label": "Try to pull the boot out",
-     "target": "node_020"
+     "target": "ending_005"
     }
    ]
   },
@@ -298,18 +303,6 @@
      "id": "choice_019a",
      "label": "Head home with Mom",
      "target": "ending_004"
-    }
-   ]
-  },
-  {
-   "id": "node_020",
-   "body": "<<FILL role=climax words=72 beats='Priya pulls and pulls. Her mittens are wet and slippery. The boot comes free with a soft pop. Snow falls around it. She holds the boot up. It is wet but found. Priya feels happy and tired. Now time to go home.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "choice_020a",
-     "label": "Go home with Mom",
-     "target": "ending_005"
     }
    ]
   },
@@ -363,7 +356,7 @@
   },
   {
    "id": "ending_005",
-   "body": "<<FILL role=ending words=72 beats='Priya walks into the house with the wet boot. Mom makes hot cocoa while the boot dries by the heater. Priya tells Maya the whole story. Maya laughs and thanks Priya for never giving up. They drink cocoa together. Priya feels proud.'>>",
+   "body": "<<FILL role=ending words=72 beats='Priya pulls and pulls. Her mittens are wet and slippery. The boot comes free with a soft pop. Snow falls around it. She holds the boot up. At home, Mom makes hot cocoa while the boot dries. Priya tells Maya everything. She feels proud and happy.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -371,6 +364,18 @@
     "valence": "positive",
     "kind": "success",
     "title": "Boot Found in the Deep Snow"
+   }
+  },
+  {
+   "id": "ending_006",
+   "body": "<<FILL role=ending words=68 beats='The ranger smiles kindly. She says three other boots came in this week, but none match Maya\\'s. She tells Priya to check tomorrow afternoon. That evening, Priya feels hopeful. She goes home and tells Maya everything. Together they plan to return.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_006",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Promise to Return Tomorrow"
    }
   }
  ]

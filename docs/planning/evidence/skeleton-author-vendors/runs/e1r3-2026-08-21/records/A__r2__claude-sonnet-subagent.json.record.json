@@ -1,0 +1,30 @@
+{
+ "leg": "claude-sonnet-subagent",
+ "family": "anthropic",
+ "cell_id": "A",
+ "band": "5-8",
+ "length": "short",
+ "style": "prose",
+ "replicate": 2,
+ "premise": "Tomas and his grandmother build a kite for the spring festival, but the wind keeps changing and every new design needs testing.",
+ "attempts": 1,
+ "repair_rounds": 0,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  13
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 0.0,
+ "input_tokens": null,
+ "output_tokens": null,
+ "reasoning_tokens": null,
+ "finish_reasons": [],
+ "min_catalog_distance": 0.15287345429689927,
+ "mean_catalog_distance": 0.3359477337916042,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "last_feedback": "ERROR   PL-18  PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'tomas-kite-festival'\nERROR   PL-25  PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'tomas-kite-festival'\nWARNING PL-23  PL-23 clock: declared estimated_minutes 4 differs from the derived fastest-finish clock 3 min (291 words on the shortest satisfying path at 90 wpm) by 33% in story 'tomas-kite-festival' (advisory only)\nWARNING CG-1   node=trees_snag_fix CG-1 grammar: 13 of 22 non-ending nodes are single-choice, above band '5-8's 50% allowance of 11 in story 'tomas-kite-festival'; the band's cadence is an average, so a long scene is fine only if the story spends decisions elsewhere (advisory only, new-content grammar per ADR-011 section 10)\nWARNING CG-3   node=start CG-3 grammar: node 'start' is a rendered stop on its own at ~85 words, above band '5-8' words-per-stop ceiling 70 in story 'tomas-kite-festival' (advisory only)\nWARNING CG-3   node=bird_spot_test CG-3 grammar: node 'bird_spot_test' is a rendered stop on its own at ~90 words, above band '5-8' words-per-stop ceiling 70 in story 'tomas-kite-festival' (advisory only)\nWARNING CG-3   node=bird_ending_setback CG-3 grammar: node 'bird_ending_setback' is a rendered stop on its own at ~90 words, above band '5-8' words-per-stop ceiling 70 in story 'tomas-kite-festival' (advisory only)\nWARNING CG-3   node=box_test CG-3 grammar: node 'box_test' is a rendered stop on its own at ~90 words, above band '5-8' words-per-stop ceiling 70 in story 'tomas-kite-festival' (advisory only)\nWARNING CG-3   node=box_ending_setback CG-3 grammar: node 'box_ending_setback' is a rendered stop on its own at ~90 words, above band '5-8' words-per-stop ceiling 70 in story 'tomas-kite-festival' (advisory only)\nWARNING CG-3   node=dragon_test CG-3 grammar: node 'dragon_test' is a rendered stop on its own at ~90 words, above band '5-8' words-per-stop ceiling 70 in story 'tomas-kite-festival' (advisory only)\nWARNING CG-3   node=dragon_ending_setback CG-3 grammar: node 'dragon_ending_setback' is a rendered stop on its own at ~90 words, above band '5-8' words-per-stop ceiling 70 in story 'tomas-kite-festival' (advisory only)\nWARNING CG-3   node=trees_test CG-3 grammar: node 'trees_test' is a rendered stop on its own at ~88 words, above band '5-8' words-per-stop ceiling 70 in story 'tomas-kite-festival' (advisory only)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r2__claude-sonnet-subagent.json failed structural validation: PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'tomas-kite-festival'; PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'tomas-kite-festival'",
+ "shell_file": "shells/A__r2__claude-sonnet-subagent.json",
+ "error": ""
+}

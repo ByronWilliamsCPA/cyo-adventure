@@ -175,6 +175,11 @@
      "id": "c_feathers_1",
      "label": "Approach gently",
      "target": "n_woods_rescue"
+    },
+    {
+     "id": "c_feathers_2",
+     "label": "Mark the spot and search again tomorrow",
+     "target": "n_ending_lost_lucy"
     }
    ]
   },
@@ -192,6 +197,11 @@
      "id": "c_pond_2",
      "label": "Find a grownup nearby",
      "target": "n_find_adult"
+    },
+    {
+     "id": "c_pond_3",
+     "label": "Come back to search tomorrow",
+     "target": "n_ending_lucy_return"
     }
    ]
   },
