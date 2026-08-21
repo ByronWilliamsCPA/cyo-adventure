@@ -21,7 +21,7 @@
    "artistry",
    "belonging"
   ],
-  "estimated_minutes": 7,
+  "estimated_minutes": 6,
   "ending_count": 17,
   "content_flags": {
    "violence": "none",
@@ -616,13 +616,13 @@
     },
     {
      "id": "c_027_b",
-     "label": "Trace the Ashworth family",
-     "target": "n_023"
+     "label": "Go to the museum with this information",
+     "target": "n_029"
     },
     {
      "id": "c_027_c",
-     "label": "Go to the museum with this information",
-     "target": "n_029"
+     "label": "Tell Mira about the care home",
+     "target": "n_031"
     }
    ]
   },
@@ -665,8 +665,8 @@
     },
     {
      "id": "c_029_c",
-     "label": "Find the Ashworth family first",
-     "target": "n_023"
+     "label": "Ask the curator to display it with Elaras diary",
+     "target": "n_039"
     }
    ]
   },
@@ -784,13 +784,13 @@
     },
     {
      "id": "c_036_b",
-     "label": "Ask if she wants it returned to the Ashworths",
-     "target": "n_025"
+     "label": "Show her a photograph of the complete museum set",
+     "target": "n_041"
     },
     {
      "id": "c_036_c",
-     "label": "Show her a photograph of the complete museum set",
-     "target": "n_041"
+     "label": "Ask her to write down the story for Mira",
+     "target": "n_042"
     }
    ]
   },
@@ -862,6 +862,18 @@
     "valence": "positive",
     "kind": "completion",
     "title": "Bridging Generations"
+   }
+  },
+  {
+   "id": "n_042",
+   "body": "<<FILL role=ending words=110 beats='The elderly collector writes a letter to Mira about Elara and the fox; Wren delivers it; Mira reads it aloud in the family workshop; tears fall on the applewood shavings'> >",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_008",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Letter from the Past"
    }
   }
  ]
