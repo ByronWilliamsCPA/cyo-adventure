@@ -92,7 +92,19 @@
   },
   {
    "id": "cane-splint",
-   "body": "<<FILL role=climax words=66 beats='They splint the snapped stick with a thin garden cane and strong glue; on festival morning the mended kite flies but dips left whenever a gust shoves it; the sea wind comes in big pushes over the crowded field; Grandma Rosa holds out her weathered hand and offers to take the line with Tomas, or he can wrestle the dipping kite by himself'>>",
+   "body": "<<FILL role=transition words=28 beats='They splint the snapped stick with a thin garden cane and strong glue, wind string tight around the joint, and leave the mended red kite to dry overnight by the warm stove'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-splint-morning",
+     "label": "Take it to the festival",
+     "target": "splint-festival"
+    }
+   ]
+  },
+  {
+   "id": "splint-festival",
+   "body": "<<FILL role=climax words=40 beats='On festival morning the mended diamond flies but dips left whenever a gust shoves it; the sea wind comes in big pushes over the crowded field; Grandma Rosa holds out her weathered hand and offers to take the line with Tomas'>>",
    "is_ending": false,
    "choices": [
     {
@@ -108,8 +120,49 @@
    ]
   },
   {
+   "id": "gusty-solo",
+   "body": "<<FILL role=decision words=60 beats='Tomas plants his feet and fights the line alone while the mended kite dips harder with every shove of wind; his arms shake, the cane splint creaks, and a giant gust rolls across the field toward him; Grandma Rosa calls over the crowd that her hands are ready the moment he wants them'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-solo-hold",
+     "label": "Hold on tight by himself",
+     "target": "end-torn-sail"
+    },
+    {
+     "id": "c-solo-call",
+     "label": "Wave Grandma Rosa over to help",
+     "target": "end-last-catch"
+    }
+   ]
+  },
+  {
+   "id": "four-hands",
+   "body": "<<FILL role=transition words=30 beats='Four hands take one line; Grandma Rosa leans when Tomas leans, and the dipping kite steadies between them as the gusts keep pushing across the festival field'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-hands-on",
+     "label": "Steer it together",
+     "target": "end-flying-together"
+    }
+   ]
+  },
+  {
    "id": "cedar-rebuild",
-   "body": "<<FILL role=climax words=66 beats='Grandma Rosa planes two cedar strips thin and smooth, and Tomas rebuilds the diamond lighter and straighter than before; on festival morning the wind blows brisk and even off the sea, and the new kite tugs at the line like a puppy; the judges ring the first bell, little kids crowd the fence, and Tomas must pick how this flight will go'>>",
+   "body": "<<FILL role=transition words=28 beats='Grandma Rosa planes two cedar strips thin and smooth, and Tomas rebuilds the diamond frame lighter and straighter than before, gluing fresh red paper tight as a drum'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-cedar-morning",
+     "label": "Take it to the festival",
+     "target": "festival-cedar"
+    }
+   ]
+  },
+  {
+   "id": "festival-cedar",
+   "body": "<<FILL role=climax words=40 beats='On festival morning the wind blows brisk and even off the sea and the new cedar kite tugs at the line like a puppy; the judges ring the first bell, little kids crowd the fence, and Tomas must pick how this flight will go'>>",
    "is_ending": false,
    "choices": [
     {
@@ -126,6 +179,42 @@
      "id": "c-cedar-kids",
      "label": "Let the little kids hold the line",
      "target": "sharing-line"
+    }
+   ]
+  },
+  {
+   "id": "high-launch",
+   "body": "<<FILL role=transition words=30 beats='Tomas lets the line run out turn after turn and the light cedar kite climbs past every other kite until it is a red speck above the whole festival'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-high-on",
+     "label": "Let it climb to the very top",
+     "target": "end-blue-ribbon"
+    }
+   ]
+  },
+  {
+   "id": "low-glide",
+   "body": "<<FILL role=transition words=30 beats='Tomas keeps the line short and the kite low, holding it flat and calm while wobbling kites dive and crash all around the festival field'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-low-on",
+     "label": "Hold it steady",
+     "target": "end-steady-sky"
+    }
+   ]
+  },
+  {
+   "id": "sharing-line",
+   "body": "<<FILL role=transition words=30 beats='One by one the little kids take the humming line in both hands while Tomas stands behind each of them, calling out when to pull and when to let the wind work'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-share-on",
+     "label": "Cheer them on",
+     "target": "end-kite-teacher"
     }
    ]
   },
@@ -160,7 +249,19 @@
   },
   {
    "id": "wind-lesson",
-   "body": "<<FILL role=climax words=66 beats='Grandma Rosa shows Tomas how the ridge trees and the bakery flag tell where the wind will jump next, and he calls three gusts right before the leaves even move; on festival morning kites crowd the sky like confetti and the flags keep swinging to new directions; the first bell rings across the field, and Tomas watches for his moment'>>",
+   "body": "<<FILL role=transition words=28 beats='Grandma Rosa shows Tomas how the ridge trees and the bakery flag tell where the wind will jump next, and he practices until he calls three gusts right before the leaves even move'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-lesson-morning",
+     "label": "Take it to the festival",
+     "target": "festival-wind"
+    }
+   ]
+  },
+  {
+   "id": "festival-wind",
+   "body": "<<FILL role=climax words=40 beats='On festival morning kites crowd the sky like confetti and the flags keep swinging to new directions; the first bell rings across the field and Grandma Rosa asks Tomas whether his box kite should fly now or wait for kinder air'>>",
    "is_ending": false,
    "choices": [
     {
@@ -172,98 +273,6 @@
      "id": "c-lesson-sunset",
      "label": "Wait for the calm sunset round",
      "target": "sunset-wait"
-    },
-    {
-     "id": "c-lesson-crowd",
-     "label": "Squeeze into the crowd right now",
-     "target": "crowd-launch"
-    }
-   ]
-  },
-  {
-   "id": "knot-and-vents",
-   "body": "<<FILL role=climax words=66 beats='Tomas reties every bridle string with the fisherman knot Grandma Rosa learned on the harbor docks, and they cut small vent flaps so big gusts blow through instead of tearing the paper; festival morning brings a hard pushing wind that snaps the square flags straight out; at the field Grandma Rosa asks what kind of line this wind needs'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c-vents-reef",
-     "label": "Fly on a short, reefed line",
-     "target": "reefed-line"
-    },
-    {
-     "id": "c-vents-spool",
-     "label": "Let out the whole spool",
-     "target": "full-spool"
-    }
-   ]
-  },
-  {
-   "id": "gusty-solo",
-   "body": "<<FILL role=decision words=30 beats='Tomas plants his feet and fights the line alone; the mended kite dips harder with every shove of wind; his arms shake as one giant gust rolls in, and Grandma Rosa calls that her hands are ready if he wants them'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c-solo-on",
-     "label": "Hold on tight by himself",
-     "target": "end-torn-sail"
-    },
-    {
-     "id": "c-solo-call",
-     "label": "Wave Grandma Rosa over to help",
-     "target": "end-flying-together"
-    }
-   ]
-  },
-  {
-   "id": "four-hands",
-   "body": "<<FILL role=transition words=30 beats='Four hands take one line; Grandma Rosa leans when Tomas leans, and the dipping kite steadies between them as the gusts keep pushing across the festival field'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c-hands-on",
-     "label": "Steer it together",
-     "target": "end-flying-together"
-    }
-   ]
-  },
-  {
-   "id": "high-launch",
-   "body": "<<FILL role=decision words=30 beats='Tomas lets the line run out turn after turn, and the light cedar kite climbs past every other kite; near the last turns of the spool the string starts to strain and hum in his hands'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c-high-on",
-     "label": "Let it climb to the very top",
-     "target": "end-blue-ribbon"
-    },
-    {
-     "id": "c-high-ease",
-     "label": "Ease off and hold it steady",
-     "target": "end-steady-sky"
-    }
-   ]
-  },
-  {
-   "id": "low-glide",
-   "body": "<<FILL role=transition words=30 beats='Tomas keeps the line short and the kite low, holding it flat and calm while wobbling kites dive and crash all around the festival field'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c-low-on",
-     "label": "Hold it steady",
-     "target": "end-steady-sky"
-    }
-   ]
-  },
-  {
-   "id": "sharing-line",
-   "body": "<<FILL role=transition words=30 beats='One by one the little kids take the humming line in both hands while Tomas stands behind each of them, calling out when to pull and when to let the wind work'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c-share-on",
-     "label": "Cheer them on",
-     "target": "end-kite-teacher"
     }
    ]
   },
@@ -292,19 +301,31 @@
    ]
   },
   {
-   "id": "crowd-launch",
-   "body": "<<FILL role=decision words=30 beats='Tomas squeezes into a small gap between kites and launches; the wind swings and his line drifts toward the striped kite of a girl named Mia; the ridge trees promise clear air at the open edge of the field'>>",
+   "id": "knot-and-vents",
+   "body": "<<FILL role=transition words=28 beats='Tomas reties every bridle string with the fisherman knot Grandma Rosa learned on the harbor docks, and they cut small vent flaps so big gusts blow through the box kite instead of tearing it'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c-crowd-on",
-     "label": "Keep flying in the crowd",
-     "target": "end-tangled-lines"
+     "id": "c-vents-morning",
+     "label": "Take it to the festival",
+     "target": "festival-hardwind"
+    }
+   ]
+  },
+  {
+   "id": "festival-hardwind",
+   "body": "<<FILL role=climax words=40 beats='Festival morning brings a hard pushing wind that snaps the square flags straight out and sends weak kites tumbling into the grass; at the field edge Grandma Rosa hands Tomas the old spool and asks what kind of line this wind needs'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-vents-reef",
+     "label": "Fly on a short, reefed line",
+     "target": "reefed-line"
     },
     {
-     "id": "c-crowd-edge",
-     "label": "Walk the kite to the open edge",
-     "target": "end-wind-reader"
+     "id": "c-vents-spool",
+     "label": "Let out the whole spool",
+     "target": "full-spool"
     }
    ]
   },
@@ -322,24 +343,19 @@
   },
   {
    "id": "full-spool",
-   "body": "<<FILL role=decision words=30 beats='The box kite hauls line off the old spool up and up until the string sings like a guitar; the spool jumps and jerks in Tomas hands as the last turns come loose'>>",
+   "body": "<<FILL role=transition words=30 beats='Tomas lets the box kite haul line off the old spool up and up until the string sings like a guitar and the last turns jump loose in his hands'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c-spool-on",
      "label": "Let it climb to the last turn",
      "target": "end-runaway-kite"
-    },
-    {
-     "id": "c-spool-reel",
-     "label": "Reel it back down low",
-     "target": "end-humming-kite"
     }
    ]
   },
   {
    "id": "end-torn-sail",
-   "body": "<<FILL role=ending words=38 beats='A hard gust rips the sail corner to corner and the kite sinks to the grass; Tomas blinks back tears; Grandma Rosa folds the torn kite gently and promises they will build a stronger one together next spring'>>",
+   "body": "<<FILL role=ending words=60 beats='A hard gust rips the red sail corner to corner and the kite sinks into the trampled grass; Tomas blinks back hot tears while the crowd sighs; Grandma Rosa kneels beside him, folds the torn kite as gently as a blanket, tucks the cane splint in her apron pocket, and promises they will build a stronger kite together next spring'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -347,6 +363,18 @@
     "valence": "negative",
     "kind": "setback",
     "title": "The Torn Sail"
+   }
+  },
+  {
+   "id": "end-last-catch",
+   "body": "<<FILL role=ending words=60 beats='Tomas waves both arms and Grandma Rosa is there in three quick steps, her strong hands closing over his on the line just as the giant gust slams down; together they lean back and the mended kite climbs instead of tearing; it dances over the festival all morning, and Tomas learns that asking for help is its own kind of strong'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-last-catch",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Last-Second Catch"
    }
   },
   {
@@ -419,18 +447,6 @@
     "valence": "neutral",
     "kind": "completion",
     "title": "The Sunset Flight"
-   }
-  },
-  {
-   "id": "end-tangled-lines",
-   "body": "<<FILL role=ending words=38 beats='The two lines cross and both kites spiral gently down to the grass; Tomas and Mia untangle string for ages, trade kite-fixing tricks, and plan to fly together tomorrow while Grandma Rosa shares her churros'>>",
-   "is_ending": true,
-   "choices": [],
-   "ending": {
-    "id": "ending-tangled-lines",
-    "valence": "neutral",
-    "kind": "setback",
-    "title": "Tangled but Smiling"
    }
   },
   {

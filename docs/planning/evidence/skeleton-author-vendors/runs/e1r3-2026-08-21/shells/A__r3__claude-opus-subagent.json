@@ -22,7 +22,7 @@
    "winter play",
    "problem solving"
   ],
-  "estimated_minutes": 2,
+  "estimated_minutes": 3,
   "ending_count": 10,
   "content_flags": {
    "violence": "none",
@@ -98,19 +98,24 @@
   },
   {
    "id": "n05",
-   "body": "<<FILL role=explore words=22 beats='Priya chips at the crusted plow ridge with the edge of the saucer sled; a boot toe appears, but it is black and far too big for Arun'>>",
+   "body": "<<FILL role=decision words=66 beats='Priya chips at the crusted plow ridge with the edge of the saucer sled; a boot toe appears, but it is black and far too big for Arun; wet snow slides down inside her sleeve and the ridge runs on for the whole length of the lane; Arun points back along the run at the frozen hay bales, where Wren is already tipping one up with the nose of her long toboggan'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c08",
      "label": "Dig deeper into the ridge",
      "target": "n06"
+    },
+    {
+     "id": "c30",
+     "label": "Try the frozen hay bales",
+     "target": "n07"
     }
    ]
   },
   {
    "id": "n06",
-   "body": "<<FILL role=decision words=46 beats='the crust breaks open into a hollow that smells like cold stone; something red shows far back in the dark; Biscuit the crossing dog trots up with his nose working hard; the fingers of Priya sting through wet mittens'>>",
+   "body": "<<FILL role=decision words=66 beats='the crust breaks open into a hollow that smells like cold stone; something red shows far back in the dark; Biscuit the crossing dog trots up with his nose working hard and whines to be let at the gap; the fingers of Priya sting through wet mittens and the hollow is deeper than her whole arm'>>",
    "is_ending": false,
    "choices": [
     {
@@ -127,13 +132,18 @@
   },
   {
    "id": "n07",
-   "body": "<<FILL role=transition words=24 beats='behind the frozen hay bales the wind whistles through a dark gap; Wren tips one bale up with the nose of the long toboggan'>>",
+   "body": "<<FILL role=decision words=66 beats='behind the frozen hay bales the wind whistles through a dark gap; Wren tips one bale up with the nose of the long toboggan and holds it there while straw and old sled wax spill out; nothing red shows yet; Wren says she is towing the toboggan up to the warming hut next, and the hut is where lost things end up'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c11",
      "label": "Look under the tipped bale",
      "target": "end-03"
+    },
+    {
+     "id": "c31",
+     "label": "Ride up to the warming hut",
+     "target": "n08"
     }
    ]
   },
@@ -209,13 +219,18 @@
   },
   {
    "id": "n13",
-   "body": "<<FILL role=transition words=24 beats='the crate holds odd gloves, one ski, a purple boot, and a scarf gone crunchy with ice; Priya digs to the bottom with both arms'>>",
+   "body": "<<FILL role=decision words=66 beats='the crate holds odd gloves, one ski, a purple boot, and a scarf gone crunchy with ice; Priya digs to the bottom with both arms and a small red toe shows under the crunchy scarf; the hut clock reads five to four; Mrs. Delgado waits with her pencil up, ready to hush the whole hut and ask everyone at once instead'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c19",
      "label": "Check the heel of the red one",
      "target": "end-06"
+    },
+    {
+     "id": "c32",
+     "label": "Have her call the whole hut",
+     "target": "n10"
     }
    ]
   },
@@ -344,7 +359,7 @@
   },
   {
    "id": "end-03",
-   "body": "<<FILL role=ending words=44 beats='under the tipped bale lie only straw, a juice lid, and one cracked sled runner; the four whistle rolls across Maple Hill; Wren promises to watch for red tomorrow; Arun walks to the blue car with a bread bag over his wet sock'>>",
+   "body": "<<FILL role=ending words=64 beats='under the tipped bale lie only straw, a juice lid, and one cracked sled runner; the four whistle rolls across Maple Hill; Wren writes the number of Grandma Nita on the back of her glove and promises to watch for red all weekend; Arun walks to the blue car with a bread bag pulled over his wet sock'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -380,7 +395,7 @@
   },
   {
    "id": "end-06",
-   "body": "<<FILL role=ending words=44 beats='wedged sideways under the crunchy scarf lies a small red boot; Priya turns the heel over and there is the peeling yellow star; Arun says the star is his proof; Mrs. Delgado crosses a line off her clipboard'>>",
+   "body": "<<FILL role=ending words=64 beats='wedged sideways under the crunchy scarf lies a small red boot; Priya turns the heel over and there is the peeling yellow star; Arun says the star is his proof; Mrs. Delgado crosses a line off her clipboard and holds the hut door open for them; they reach the blue car while the whistle is still blowing'>>",
    "is_ending": true,
    "choices": [],
    "ending": {

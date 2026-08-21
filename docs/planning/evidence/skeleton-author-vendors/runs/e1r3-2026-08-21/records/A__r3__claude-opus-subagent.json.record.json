@@ -7,14 +7,15 @@
  "style": "prose",
  "replicate": 3,
  "premise": "On the first snowy day, Priya must find her little brother's boot, lost somewhere along the sled run, before their walk home.",
- "attempts": 2,
- "repair_rounds": 1,
+ "attempts": 3,
+ "repair_rounds": 2,
  "strict_pass": false,
  "first_pass_clean": false,
  "parse_failures": 0,
  "findings_lines_per_round": [
   3,
-  10
+  10,
+  2
  ],
  "graph_check_exit": 0,
  "latency_s": 0.0,
@@ -22,10 +23,10 @@
  "output_tokens": null,
  "reasoning_tokens": null,
  "finish_reasons": [],
- "min_catalog_distance": 0.060442716731566204,
- "mean_catalog_distance": 0.328663764411291,
+ "min_catalog_distance": 0.11028612717252606,
+ "mean_catalog_distance": 0.31063563399579774,
  "catalog_distance_note": "vs 5 in-cell peers",
- "last_feedback": "WARNING PL-23  PL-23 clock: declared estimated_minutes 2 differs from the derived fastest-finish clock 3 min (268 words on the shortest satisfying path at 90 wpm) by 33% in story 'the-lost-red-boot' (advisory only)\nWARNING CG-1   node=n18 CG-1 grammar: 12 of 20 non-ending nodes are single-choice, above band '5-8's 50% allowance of 10 in story 'the-lost-red-boot'; the band's cadence is an average, so a long scene is fine only if the story spends decisions elsewhere (advisory only, new-content grammar per ADR-011 section 10)\nskeleton clock: PL-23 estimated_minutes 2 is UNDER-DECLARED vs the derived fastest-finish clock 3 min (268 words at 90 wpm) by 33% (tolerance 25%)\nstats: nodes=30 endings=10 fill_nodes=30 cell=(5-8, short, prose) topology=time_cave tier=1\nwalk: P(satisfying ending, uniform reader) 83.3% (floor 40% for 5-8 prose)\nclock: declared estimated_minutes 2 vs derived 3 (PL-23 tolerance 25%)\nreconvergence: max in-degree 1 (hard cap 4 for 5-8 time_cave)\nendings depth-qualified: 10 of 10 at depth >= 3 against floor 5\nFAIL strict: PL-23 advisory is blocking for a newly drafted skeleton: PL-23 clock: declared estimated_minutes 2 differs from the derived fastest-finish clock 3 min (268 words on the shortest satisfying path at 90 wpm) by 33% in story 'the-lost-red-boot' (advisory only)\nFAIL strict: CG-1 advisory is blocking for a newly drafted skeleton: CG-1 grammar: 12 of 20 non-ending nodes are single-choice, above band '5-8's 50% allowance of 10 in story 'the-lost-red-boot'; the band's cadence is an average, so a long scene is fine only if the story spends decisions elsewhere (advisory only, new-content grammar per ADR-011 section 10)",
+ "last_feedback": "ERROR   L1-7   L1-7 budget: branch_depth out of range in story 'the-lost-red-boot': 12 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r3__claude-opus-subagent.json failed structural validation: L1-7 budget: branch_depth out of range in story 'the-lost-red-boot': 12 (allowed 0..7)",
  "shell_file": "shells/A__r3__claude-opus-subagent.json",
  "error": ""
 }

@@ -414,23 +414,11 @@
     {
      "id": "c-trees-test-trust",
      "label": "Trust the gentle breeze",
-     "target": "trees_pre_ending"
+     "target": "trees_ending_success"
     },
     {
      "id": "c-trees-test-step-back",
      "label": "Step back from the trees",
-     "target": "trees_snag_fix"
-    }
-   ]
-  },
-  {
-   "id": "trees_pre_ending",
-   "body": "<<FILL role=transition words=20 beats='Tomas holds steady as the kite settles into the gentle breeze, dipping once near a branch before catching the air cleanly and pulling away.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c-trees-pre-ending-1",
-     "label": "Let it settle into the breeze",
      "target": "trees_ending_success"
     }
    ]
@@ -446,18 +434,6 @@
     "kind": "completion",
     "title": "Easy Circles by the Trees"
    }
-  },
-  {
-   "id": "trees_snag_fix",
-   "body": "<<FILL role=transition words=20 beats='Tomas steps back from the low branches just as the kite dips again, and Abuela hurries over to help walk the string clear of the treeline together until the kite settles into the same easy, circling breeze.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c-trees-snag-fix-1",
-     "label": "Walk it clear together",
-     "target": "trees_ending_success"
-    }
-   ]
   },
   {
    "id": "help_chain",
