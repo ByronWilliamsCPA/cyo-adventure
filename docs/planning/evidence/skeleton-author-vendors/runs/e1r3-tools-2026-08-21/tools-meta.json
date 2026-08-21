@@ -38,5 +38,10 @@
  "A__r3__claude-sonnet-subagent": {
   "checker_runs": 10,
   "reported": "PASS"
+ },
+ "A__r1__claude-sonnet-subagent": {
+  "checker_runs": 10,
+  "reported": "FAIL",
+  "note": "stuck on PL-18 admissibility; built reconvergent graphs while declaring time_cave instead of converging to a pure tree"
  }
 }
