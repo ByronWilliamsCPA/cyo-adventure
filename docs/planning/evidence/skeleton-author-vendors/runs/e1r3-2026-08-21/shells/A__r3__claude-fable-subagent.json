@@ -52,7 +52,7 @@
     {
      "id": "c02",
      "label": "Search the run yourselves",
-     "target": "walk-the-run"
+     "target": "run-fork"
     },
     {
      "id": "c03",
@@ -62,20 +62,8 @@
    ]
   },
   {
-   "id": "walk-the-run",
-   "body": "<<FILL role=explore words=30 beats='Priya holds Arjun mittened hand and walks the packed run uphill; snow squeaks under her boots; halfway up she spots drag marks curving toward the pines, and below sits the giant drift where every sled crashes'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c04",
-     "label": "Study the clues",
-     "target": "run-fork"
-    }
-   ]
-  },
-  {
    "id": "run-fork",
-   "body": "<<FILL role=decision words=38 beats='two clues, drag marks sliding off the run edge into the pine trees, and the huge bottom drift with the dent where Arjun tumbled off; the falling snow is already softening both, so Priya can chase only one'>>",
+   "body": "<<FILL role=decision words=44 beats='Priya holds Arjun mittened hand and walks the squeaky packed run uphill, eyes sweeping the snow; two clues appear, drag marks sliding off the run edge toward the pine trees, and the huge bottom drift with the dent where Arjun tumbled off; the falling snow is already softening both, so Priya can chase only one'>>",
    "is_ending": false,
    "choices": [
     {
@@ -374,12 +362,29 @@
   },
   {
    "id": "jo-remembers",
-   "body": "<<FILL role=explore words=22 beats='Jo leads everyone toward the jump; a rider named Sana giggles and says the boot bounced off her tow rope, so she hung it in the maple there'>>",
+   "body": "<<FILL role=decision words=30 beats='Jo leads everyone toward the jump; a rider named Sana giggles and says the boot bounced off her tow rope, so she hung it in the maple there; Priya could dash straight to that maple, or sweep the tow rope line on the way in case it dropped again'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c26",
      "label": "Run to that maple",
+     "target": "maple-by-the-jump"
+    },
+    {
+     "id": "c29",
+     "label": "Sweep the tow rope line",
+     "target": "tow-rope-line"
+    }
+   ]
+  },
+  {
+   "id": "tow-rope-line",
+   "body": "<<FILL role=explore words=24 beats='Priya and the kids walk the humming tow rope line kicking up powder; they find Arjun dropped mitten and a candy cane, but no boot, so it must still be hanging in the maple by the jump'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c30",
+     "label": "Head to the maple",
      "target": "maple-by-the-jump"
     }
    ]

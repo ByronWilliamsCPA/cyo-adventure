@@ -1,0 +1,30 @@
+{
+ "leg": "claude-sonnet-subagent",
+ "family": "anthropic",
+ "cell_id": "A",
+ "band": "5-8",
+ "length": "short",
+ "style": "prose",
+ "replicate": 1,
+ "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+ "attempts": 1,
+ "repair_rounds": 0,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  3
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 0.0,
+ "input_tokens": null,
+ "output_tokens": null,
+ "reasoning_tokens": null,
+ "finish_reasons": [],
+ "min_catalog_distance": null,
+ "mean_catalog_distance": null,
+ "catalog_distance_note": "shell not coercible against any of 5 peers",
+ "last_feedback": "ERROR   L1-1   L1-1 schema: document does not conform to Storybook schema at 'metadata/estimated_minutes': 4.6 is not of type 'integer'\nERROR   L1-7   L1-7 budget: branch_depth out of range in story 'miri-and-the-missing-hen': 9 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r1__claude-sonnet-subagent.json failed structural validation: L1-1 schema: document does not conform to Storybook schema at 'metadata/estimated_minutes': 4.6 is not of type 'integer'; L1-7 budget: branch_depth out of range in story 'miri-and-the-missing-hen': 9 (allowed 0..7)",
+ "shell_file": "shells/A__r1__claude-sonnet-subagent.json",
+ "error": ""
+}
