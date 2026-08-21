@@ -314,3 +314,108 @@ the chunked book delivered 37.5 percent of its commissioned words (the worst fil
 on a model chosen for its cap rather than its prose) and its reading level sits far under the
 13-16 target (2.5 percent of nodes in band), so "the path works" is a statement about contract
 mechanics, not about publishable output from this model.
+
+### 7.4 Run B: the ten-book grid
+
+Eight of ten books passed the gate; two legs died with the harness's flattened "transient
+failure persisted" and were re-probed directly: book 2 (`the-seedling-thief` x the aquarium
+hermit-crab brief) is a zero-content `content_filter` stop, and book 7 (`the-observatory-shift`
+x the flood-warden brief) is a zero-content HTTP 200 with `finish_reason: None`, the same
+signature the predecessor's book 0 showed before it proved to be a filter. Two of ten benign
+children's briefs, against the predecessor's two of five: the pair-failure rate is holding
+around 20 to 40 percent and the harness still cannot name it (`UW-C309`).
+
+Per-book instrument results (fill rate is delivered/commissioned; staging is the dangling
+outbound-label rate whose known-good median is 0.037; person is the second-person node rate):
+
+| # | Skeleton (band) | Fill rate | Floor | FK / in-band | Staging | Person | Frozen mutated | Ambiguous mutated |
+| ---: | --- | ---: | :-: | --- | ---: | ---: | --- | --- |
+| 0 | market-morning (3-5) | 124.6% | ok | 0.79 / 71% | 0.100 | 1.000 | none | title, 5/6 endings |
+| 1 | big-cardboard-box (3-5) | 117.0% | ok | 0.97 / 84% | 0.029 | 0.932 | none | title, 18/18 endings |
+| 2 | seedling-thief (5-8) | failed leg: content_filter, 0 content | | | | | | |
+| 3 | bridge-of-stones (5-8) | 62.8% | ok | 2.20 / 50% | 0.652 | 0.379 | none | title, 8/12 endings |
+| 4 | half-hour-call (8-11) | 58.9% | FAIL | 3.90 / 67% | 0.710 | 0.098 | none | 4/14 endings |
+| 5 | lantern-keepers-list (8-11) | 44.1% | FAIL | 3.63 / 65% | 0.740 | 0.104 | none | title, 15/24 endings |
+| 6 | glass-comet (10-13, t2) | 48.8% | FAIL | 4.89 / 67% | 0.345 | 0.581 | **variables, metadata.themes** | title, 8/20 endings |
+| 7 | observatory-shift (10-13) | failed leg: empty 200, finish None | | | | | | |
+| 8 | iron-spire-trial (13-16 gb, t2) | 56.7% | FAIL | 5.27 / 43% | 0.279 | 0.834 | **variables, metadata.themes** | title, 63/79 endings |
+| 9 | quarantine-ledger (16+) | 136.4% | ok | 8.38 / 50% | 0.726 | 0.035 | none | title, 11/38 endings |
+
+Four load-bearing patterns:
+
+1. **The fill-rate defect is band-shaped, not a constant.** 3-5 over-delivers (117 to 125
+   percent), 16+ prose delivers everything and more (136.4 percent raw, 95.3 percent once
+   per-node surplus is capped, FK 8.38 in range), and every band from 5-8 through 13-16
+   delivers 44 to 63 percent. The predecessor measured its "words= is not honored" defect
+   almost entirely on gamebooks and mid bands; this grid adds the two ends and the constant-
+   shortfall story does not survive them. The floor's coin-flip zone is specifically the
+   middle bands.
+2. **Both tier-2 books, and only the tier-2 books, mutated `variables`.** In both cases the
+   mutation is confined to `description` text, rethemed to the brief (plates to glass slides,
+   crown-seal to brass grommet); names, types, bounds and initials are intact, so conditions
+   still evaluate. `fill.md` freezes `variables` wholesale. The pattern with `metadata.themes`
+   (also rethemed in the same two books, and in the predecessor's book 3) is now clear: **the
+   model reliably rethems every theme-bearing text field the contract happens to freeze**, and
+   the freeze mixes machine-critical fields with documentation prose in one block.
+3. **The outbound-staging defect is not only a fill-rate symptom.** Book 9 delivered 136
+   percent and still dangles 72.6 percent of its outbound labels (known-good median 0.037).
+   Short fills guarantee the defect (books 3-5 at 0.65-0.74) but full delivery does not cure
+   it; `UW-C312`'s rule is needed on its own merits.
+4. **Live same-band different-skeleton pairs are inside budget: mean 1.27, max 3.30 per 1000
+   over 28 pairs**, agreeing with the committed-book sweep (median 1.2). Cross-skeleton reuse
+   is diversity-safe even for this vendor; ALL the convergence risk is concentrated on
+   same-skeleton reuse.
+
+### 7.5 The round's tally and the bulk recommendation
+
+**Frozen-field mutation rate (the round's headline question): 4 of 16 one-shot v4-pro books
+(25 percent) mutated at least one frozen field; 15 of 16 (94 percent) mutated an ambiguous one
+(story title or ending titles).** The frozen mutations are: one story `id` rewrite
+(predecessor book 1), and three theme-bearing-documentation reskins (`metadata.themes` x3,
+`variables[].description` x2). The one chunked book measured is the only book with zero
+mutations of any kind, because its merge is a whitelist. So the answer to "is frozen-field
+mutation a per-book coin flip?" is: **structure-critical mutation is rare (1 of 16); frozen
+theme-text mutation is common (3 of 16, and 2 of 2 on tier-2 skeletons where variable
+descriptions exist to retheme); ambiguous-field drift is near-universal (15 of 16).** At bulk
+scale, per hundred one-shot books, that is roughly six books violating the letter of the freeze
+on theme text, one book with a corrupted identity field, and ninety-four books whose titles
+differ from their skeletons under a contract that cannot say whether that is legal.
+
+**Cost**: measured $3.28 metered (Run A $0.719, Run B $2.432, takes 3-4 $0.133) plus roughly
+$0.45 unmetered probing and replication, about **$3.75 total against the $2.85 estimate**,
+inside the twice-estimate stop rule. The grid alone ran 57 percent over its line item, almost
+entirely book 9's 136-percent delivery and 2,810-second latency, which is worth knowing for
+bulk budgeting: a 16+ prose book can cost 3x a mid-band book of the same node count.
+
+**Go or no-go on bulk generation: NO-GO as currently configured**, on five specific defects
+that would replicate across a bulk catalog, in priority order:
+
+1. **Same-skeleton reuse produces near-duplicate books and no existing lever fixes it.** Raw
+   96.3, best-case directed 110.7, careful hand-authored twins 202, against a budget of 4.0;
+   the directive is measurably not the lever (`UW-C315`). Bulk reuse of one skeleton across
+   families ships recognizably the same book until a structural lever (ADR-020 per-family
+   mutation, or a reuse cap) exists and is measured. Cross-skeleton reuse is safe (1.27 mean).
+2. **The mid-band fill-rate hole.** Every 5-8 to 13-16 one-shot book delivered 44 to 63
+   percent; four of eight grid books fail the new floor. In bulk, half the mid-band catalog
+   fails integrity or ships thin (and the deterministic gate alone blocks none of it).
+3. **The contract cannot say what a legal reskin is.** Near-universal title/ending-title
+   drift, plus systematic retheming of frozen documentation fields (`metadata.themes`,
+   `variables[].description`), plus one id corruption. Until the freeze is split into
+   machine-critical (hard, gate-enforced) versus theme-bearing (explicitly writable or
+   explicitly kept), bulk books will randomly violate whichever reading the tooling assumes
+   (`UW-C311` generalizes).
+4. **A fifth to two-fifths of (skeleton, brief) pairs die with zero content on benign
+   children's briefs**, reported as a generic transient failure (`UW-C309`). Bulk needs the
+   real `finish_reason` surfaced and a pair-level unfillable policy before it can even
+   budget.
+5. **The chunked path and the cap machinery are not production-ready on OpenRouter**: the
+   adapter's missing `.model` disables the clamp and chunking entirely, the path has no
+   context accounting, and endpoint qualification by small probe is insufficient. Any bulk
+   plan that includes books over ~52k output tokens on a low-cap backend is running on a path
+   that has produced exactly one live book ever, behind a harness-only fix.
+
+None of these blocks bulk *skeleton* authoring (the offline strict census and mutation
+machinery are unaffected); the no-go is specifically for bulk one-shot STORY generation
+against the current contract and instruments. The five defects above are each carried as a
+lesson with a register row; items 2 through 5 are tooling-scale work, and item 1 is a design
+decision the owner already holds (`UW-C315`'s lever question).
