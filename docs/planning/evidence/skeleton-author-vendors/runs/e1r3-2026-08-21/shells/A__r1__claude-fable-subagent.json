@@ -76,7 +76,7 @@
   },
   {
    "id": "coop-clues",
-   "body": "<<FILL role=decision words=40 beats='one warm brown egg sits in the empty nest; a loose board wobbles; tiny three-toed footprints cross the dusty floor toward the pophole; behind the nesting boxes a knothole in the wall holds a snag of pale fluff'>>",
+   "body": "<<FILL role=decision words=40 beats='one warm brown egg sits in the empty nest; a loose board wobbles; tiny three-toed footprints cross the dusty floor and out the pophole toward the tool shed; behind the nesting boxes a knothole in the wall holds a snag of pale fluff'>>",
    "is_ending": false,
    "choices": [
     {
@@ -87,7 +87,7 @@
     {
      "id": "c-clues-prints",
      "label": "Follow the tiny footprints",
-     "target": "footprints"
+     "target": "tool-shed"
     }
    ]
   },
@@ -121,20 +121,8 @@
    ]
   },
   {
-   "id": "footprints",
-   "body": "<<FILL role=explore words=28 beats='the little prints march out the pophole and across the yard; a thin line of spilled seed joins them; both lead straight to the tool shed door standing ajar'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c-prints-shed",
-     "label": "Slip into the tool shed",
-     "target": "tool-shed"
-    }
-   ]
-  },
-  {
    "id": "tool-shed",
-   "body": "<<FILL role=decision words=40 beats='the shed smells of earth and string; the seed sack has toppled and spilled; one seed line dribbles behind the stacked watering cans where something goes peep; another trickles out through a low knothole toward the field'>>",
+   "body": "<<FILL role=decision words=40 beats='the tiny footprints and a thin line of spilled seed lead through the ajar shed door; inside it smells of earth and string; the toppled seed sack dribbles one trail behind the stacked watering cans where something goes peep, and another out a low knothole toward the field'>>",
    "is_ending": false,
    "choices": [
     {
