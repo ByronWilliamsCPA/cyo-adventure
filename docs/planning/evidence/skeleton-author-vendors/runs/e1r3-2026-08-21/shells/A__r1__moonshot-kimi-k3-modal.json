@@ -63,13 +63,18 @@
   },
   {
    "id": "field-feathers",
-   "body": "<<FILL role=explore words=30 beats='Two more white feathers tremble on the fence wire; in the mud by the kale bed Miri finds tiny three-toed hen prints heading out across the dewy playing field'>>",
+   "body": "<<FILL role=decision words=30 beats='Two more white feathers tremble on the fence wire; tiny three-toed hen prints dot the mud by the kale bed and head out over the dewy field, and the treat tin in Miri's pocket gives a hopeful little rattle'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c-field-1",
+     "id": "c-field-a",
      "label": "Follow the tiny muddy prints",
      "target": "field-tracks"
+    },
+    {
+     "id": "c-field-b",
+     "label": "Shake the treat tin across the grass",
+     "target": "shed-door"
     }
    ]
   },
@@ -196,13 +201,18 @@
   },
   {
    "id": "bucket-lift",
-   "body": "<<FILL role=climax words=25 beats='Miri lifts the bucket very slowly; FWOOF; out rockets Pip in a burst of dust and feathers with a grey cobweb perched on her comb like a little hat'>>",
+   "body": "<<FILL role=climax words=30 beats='Miri lifts the bucket very slowly; FWOOF; out rockets Pip in a burst of dust and feathers with a grey cobweb perched on her comb like a little hat, and the shed door stands wide to the sunny field'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c-bucket-1",
+     "id": "c-bucket-a",
      "label": "Catch the dusty little rocket",
      "target": "end-bucket"
+    },
+    {
+     "id": "c-bucket-b",
+     "label": "Watch her zoom out the shed door",
+     "target": "end-full-count"
     }
    ]
   },
@@ -249,13 +259,18 @@
   },
   {
    "id": "berry-rows",
-   "body": "<<FILL role=explore words=30 beats='Half the best berries wear neat beak marks and red smears dot the leaves; the reddest, leafiest corner of the row jerks once, goes still, then jerks again'>>",
+   "body": "<<FILL role=decision words=30 beats='Half the best berries wear neat beak marks and red smears dot the leaves; the reddest, leafiest corner of the row jerks once, goes still, then jerks again; the little garden gate stands open behind Miri and the treat tin is heavy in her pocket'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c-berryrows-1",
+     "id": "c-berryrows-a",
      "label": "Peek at the reddest rustling corner",
      "target": "berry-corner"
+    },
+    {
+     "id": "c-berryrows-b",
+     "label": "Rattle the treat tin from the gate",
+     "target": "gate-serenade"
     }
    ]
   },
@@ -302,7 +317,7 @@
   },
   {
    "id": "blue-knock",
-   "body": "<<FILL role=explore words=30 beats='The blue door opens before the second knock; Mrs Plum stands there holding a tea towel, and behind her in a cardboard box beside the warm stove sits a small round white hen eating toast crusts'>>",
+   "body": "<<FILL role=explore words=30 beats='The little blue door opens almost at once; Mrs Plum stands there holding a tea towel, and behind her in a cardboard box beside the warm stove sits a small round white hen eating toast crusts'>>",
    "is_ending": false,
    "choices": [
     {
@@ -355,7 +370,7 @@
   },
   {
    "id": "end-cardigan",
-   "body": "<<FILL role=ending words=94 beats='Loop by loop the prickly runner unwinds and Pip tumbles snug into the waiting cardigan, laced with prickles and trembling; all the way across the empty playground Hazel and Pepper rush up scolding and clucking at the very same time; tucked into her own corner on fresh straw with the others hemming her in like bookends, Pip falls asleep before the evening count is even finished; Miri ticks every box in the yellow notebook twice, and tomorrow the latch gets checked first thing'>>",
+   "body": "<<FILL role=ending words=66 beats='Loop by loop the prickly runner unwinds and Pip tumbles snug into the waiting cardigan; Hazel and Pepper rush up scolding and clucking at the very same time; tucked into fresh straw between her sisters, Pip falls asleep before the evening count is done, and Miri ticks every box in the yellow notebook twice'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -367,7 +382,7 @@
   },
   {
    "id": "end-tin-parade",
-   "body": "<<FILL role=ending words=94 beats='One excited flap, the last loop slips, and Pip lands free in a burst of straw and enormous dignity; at the rattle of the treat tin she follows in a wobbly straight line across the field, pausing for one butterfly and one puddle; through the little gate she marches like a small white soldier while the tin rings, and the coop door clicks shut on three safe hens exactly at teatime; in the notebook Miri writes: smallest hens cause the biggest adventures'>>",
+   "body": "<<FILL role=ending words=66 beats='One excited flap and Pip lands free in a burst of straw and enormous dignity; at the rattle of the treat tin she follows in a wobbly line across the field, pausing for one butterfly and one puddle; through the little gate she marches like a small white soldier, and the coop door clicks shut on three safe hens exactly at teatime'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -379,7 +394,7 @@
   },
   {
    "id": "end-egg-box",
-   "body": "<<FILL role=ending words=94 beats='Pip snuggles into the cardigan while the three warm speckled eggs ride home in the school egg box on a bed of straw; by Tuesday the science cupboard hums gently under the little incubator lamp, and a new sign goes up on the classroom door: QUIET PLEASE, EGGS THINKING; Pip inspects them daily like a doctor on rounds, and Miri writes egg reports in the yellow notebook: day one, warm; day two, warm; day three, still thinking'>>",
+   "body": "<<FILL role=ending words=66 beats='Pip snuggles into the cardigan while the three warm speckled eggs ride home in the school egg box on a bed of straw; by Tuesday the little incubator lamp glows in the science cupboard under a new sign: QUIET PLEASE, EGGS THINKING; Miri writes egg reports in the yellow notebook: day one, warm; day two, still thinking'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -391,7 +406,7 @@
   },
   {
    "id": "end-nest-basket",
-   "body": "<<FILL role=ending words=94 beats='Mr Finch arrives with the hay-lined basket and slides the three speckled eggs onto the straw while a cross but calm Pip supervises from the wheelbarrow handle; together they carry everyone home across the field, and all holiday week the incubator hums in the science cupboard while Miri keeps careful watch; when the new term starts, the whole class gathers round the yellow notebook to hear exactly how the smallest hen became a mother'>>",
+   "body": "<<FILL role=ending words=66 beats='Mr Finch slides the three speckled eggs into the hay-lined basket while a cross but calm Pip supervises from the wheelbarrow handle; together they carry everyone home across the sunny field, and when the new term starts the whole class gathers round the yellow notebook to hear how the smallest hen became a mother'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -415,7 +430,7 @@
   },
   {
    "id": "end-full-count",
-   "body": "<<FILL role=ending words=44 beats='Miri squeezes back through the broken board with one feather and no hen, until at the coop she stops dead: there stands Pip, cool as anything, scratching by the fence; the notebook reads Hazel one, Pepper two, Pip three, and underneath: chickens come home when they are ready'>>",
+   "body": "<<FILL role=ending words=44 beats='Miri trudges back up to the coop with one white feather in her pocket and stops dead: there stands Pip, cool as anything, scratching by the fence; the notebook reads Hazel one, Pepper two, Pip three, and underneath: chickens come home when they are ready'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
