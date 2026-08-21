@@ -475,6 +475,30 @@ only by billing:
   against 96.3), mutant-canal versus the committed parent-canal fill (structure isolation),
   and mutant-medal versus parent-canal (the product condition, against the any-reader bar).
 
+**Experiment result (2026-08-21, credits restored): the mutation lever, at its current
+operating envelope, does not move the floor at all.** Both mutant fills passed the gate
+($0.73 for the pair; both delivered ~41 percent of commission, the mid-band hole again).
+The three comparisons, all on the canonical `check_sibling_fills` instrument:
+
+| Pair | Shared 4-grams | Per 1000 |
+| --- | ---: | ---: |
+| Mutant pair (canal vs medal briefs, both on the mutant) | 2,764 | 242.8 |
+| Mutant-canal vs parent-canal (same brief, structures differ) | 2,138 | 156.3 |
+| Mutant-medal vs parent-canal (the product condition) | 1,493 | 108.1 |
+| Baseline: un-mutated pair (raw, 2026-08-20) | 1,350 | 96.3 |
+| Budget | | 4.0 |
+
+The product condition, with a structural mutation AND deliberately distant briefs, came back
+WORSE than the same-structure baseline. Every same-skeleton-family pair now measured (96.3
+raw, 110.7 directed, 202 hand-authored twins, and the three above) sits in a 96-243 band,
+24 to 60 times budget, regardless of directive, author, or a prune-scale mutation.
+Conclusion for section 8.1's ruling: a 2-node prune plus outcome remap, which per `AL-510`
+is the LARGEST mutant the machinery can currently produce on this parent (M4 insert is
+categorically ineligible on window-breaching catalog parents, `UW-C322`), is not the lever.
+Reaching the any-reader bar needs structural change on a different scale, which is gated on
+the `UW-C322` owner decision, or the interim same-skeleton-per-reader serving constraint
+becomes the standing policy.
+
 ### 8.2 Freeze split (`UW-C316`): adopted as recommended
 
 - Machine-critical fields (every `id`, `target`, `condition`, `effects`, `on_enter`,
