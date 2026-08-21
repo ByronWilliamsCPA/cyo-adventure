@@ -38,9 +38,13 @@ Fixed before any rater ran; full statements in `protocol.py`'s docstring.
 
 - `protocol.py`: prompt builder, blinding, reading order, verdict schema, and the
   verdict validator.
-- `verdict_<pair>.json`: one rater verdict per pair. Not yet present: no rater has run.
+- `verdict_<pair>.json`: one rater verdict per pair. Present as of 2026-08-21: six verdicts, two
+  counterbalanced raters over three pairs, run under register row `S-0` with the pair re-basing
+  that row declares (the pre-registered D-7c/W16 books were never committed; PR #715 merged rigs
+  only).
 - `results.md`: the validation outcome, written after the verdicts and never edited.
-  Not yet present.
+  **Present: the validation FAILED on its control.** See `results.md` for the full account and the
+  three steps that would unblock the instrument.
 
 ## Running it
 

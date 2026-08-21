@@ -1,0 +1,7 @@
+{
+  "per_scene": ["no", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes"],
+  "first_yes_position": 2,
+  "same_adventure": "yes",
+  "distinctness_1_to_5": 1,
+  "strongest_signal": "Scene 2 offers the identical three-way opening choice (study the coded note / search the walls / ask the keeper) at the same sealed tower, and every scene after maps one-to-one onto Book One's hub, four test rooms, dial with the same four options, and matching endings."
+}
