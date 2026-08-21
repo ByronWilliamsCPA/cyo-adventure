@@ -214,3 +214,27 @@ two adapter-level items before any real use: treat empty-string content like nul
 nothing is wired into the production cascade. The DeepSeek V4 Pro comparison proper remains open
 until that endpoint provisions; rerun this exact call plan against it when it does (the shape
 checks above then need re-verifying on that model's responses).
+
+## DeepSeek V4 Pro endpoint verdict (2026-08-21): not viable as a managed endpoint
+
+A second provisioning attempt got further than the first: endpoint
+`ep-k7GKhWPbAoEy4PZ19TvKXf` at
+`https://williaby--ep-deepseek-v4-pro-server.us-west.modal.direct`, with the dashboard reporting
+"App deployed in 194.827s". It never left the "Starting up" phase. From this session the endpoint
+answered HTTP 503 with an empty body to every authenticated request (`/v1/models` and
+`/v1/chat/completions`) across more than 15 minutes of continuous 10-20s retries. The owner then
+confirmed the root cause from the Modal side: the 8 GPUs the model requires could not be
+provisioned on this workspace.
+
+Verdict: DeepSeek V4 Pro is NOT viable as a Modal managed endpoint for us today. The blocking
+constraint is GPU capacity for an 8-GPU deployment, not auth, transport, or adapter shape (all
+proven against the shared Kimi-K3 endpoint above). Client-side note for any retry: during
+provisioning the endpoint 503s immediately rather than queueing requests, so a single long
+`--max-time` call never captures cold start; time-to-ready has to be measured by polling, and
+callers hitting a not-yet-ready endpoint need 503 retry handling.
+
+Planned follow-up, deliberately out of scope here: experiment with DeepSeek V4 Pro as a Modal
+container (a custom app deployment like the earlier `cyo-standard` one) rather than a managed
+endpoint. Until then, the DeepSeek comparison column stays OpenRouter-only, and the measured Modal
+numbers in the table above stand in via Kimi-K3. Remember to stop the stuck endpoint in the
+dashboard so it does not keep retrying provisioning.
