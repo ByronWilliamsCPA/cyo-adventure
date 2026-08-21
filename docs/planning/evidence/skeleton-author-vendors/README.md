@@ -20,7 +20,14 @@ primary endpoint and falsifier; the harness docstring carries the shared repair-
   shell coerced and scored against the in-cell catalog (min structural distance 0.056-0.161).
 - `runs/smoke2-2026-08-21/`: **harness validation, excluded from S-1 analysis.** Same single-shell
   grid re-run after both fixes (cap 65536, `--allow-mvp`), to confirm the pass bar is reachable
-  before the registered 80-shell run. Results in that directory's `summary.md`.
+  before the registered 80-shell run. Result: the bar is reachable (Gemini 3.1 Pro passed at 2
+  repair rounds; v4 Flash completed under the raised cap), and the four cap-limited legs ended on
+  genuine, distinct findings (PL-18 topology admissibility for Sonnet 5 and GPT-5.6; an L1-2
+  dangling ref plus L1-7 ending-count overshoot for v4 Pro; an integer-type schema miss for
+  Flash). Design consequence, fixed before the registered run: a round cap of 4 censors most
+  legs at the cap and starves the primary endpoint of range, so the registered run uses 6.
+- `runs/e1-2026-08-21/`: **the registered S-1 run.** 4 cells x 4 replicates x 5 legs, cap 65536,
+  6 repair rounds, conditions in `run.json`; analysis per the register row's pre-registration.
 
 Smoke shells share cell A's replicate-1 premise with the registered run by design (the S-0
 allocation rule is frozen); the smokes are excluded from analysis because their run conditions

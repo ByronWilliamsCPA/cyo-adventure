@@ -1,0 +1,497 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "open_map",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "problem solving",
+   "care for animals",
+   "patience",
+   "observation"
+  ],
+  "estimated_minutes": 2.5,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n_intro",
+ "nodes": [
+  {
+   "id": "n_intro",
+   "body": "<<FILL role=setup words=20 beats='Miri opens the henhouse door on Monday morning. Clover and Butter cluck and peck. Pip is not in her nesting box. Miri sets down the feed bucket and calls.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_intro_first",
+     "label": "Look around the henhouse",
+     "target": "n_first_decision"
+    }
+   ]
+  },
+  {
+   "id": "n_first_decision",
+   "body": "<<FILL role=decision words=50 beats='Miri looks around the henhouse. Pip is nowhere. The smallest hen, gray as a raincloud, is missing. Miri must find Pip before the holiday dinner bell. One way leads back inside the coop, the other to the yard.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_start_coop",
+     "label": "Check the henhouse again",
+     "target": "n_coop"
+    },
+    {
+     "id": "c_start_yard",
+     "label": "Search the yard first",
+     "target": "n_yard"
+    }
+   ]
+  },
+  {
+   "id": "n_coop",
+   "body": "<<FILL role=explore words=70 beats='Inside the henhouse, Clover walks in a circle and Butter watches the door. Miri checks every nesting box. She finds an empty box with hay pushed flat and warm. She finds a gray feather by the feed sack. The back door of the coop is a little open. Miri thinks Pip got out while the door was ajar.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_coop_feedbag",
+     "label": "Peek behind the feed sack",
+     "target": "n_feedbag"
+    },
+    {
+     "id": "c_coop_feather",
+     "label": "Follow the gray feather",
+     "target": "n_feather"
+    }
+   ]
+  },
+  {
+   "id": "n_yard",
+   "body": "<<FILL role=explore words=70 beats='Miri steps into the schoolyard. The grass is wet with morning dew. Fresh scratch marks run from the henhouse to the hedge. A row of small footprints crosses the mud. Miri cups her hands and calls Pip. A blackbird answers but Pip does not. The hedge rustles, then stops.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_yard_hedge",
+     "label": "Follow the tracks to the hedge",
+     "target": "n_hedge"
+    },
+    {
+     "id": "c_yard_swings",
+     "label": "Check the swings and sandbox",
+     "target": "n_swings"
+    }
+   ]
+  },
+  {
+   "id": "n_feedbag",
+   "body": "<<FILL role=explore words=70 beats='Behind the big feed sack, Miri finds a loose board in the henhouse wall. The board has a hole just big enough for a small hen. Straw is scattered through the hole. Miri presses her ear to the opening and hears a soft cluck far away. The cluck could be Pip, or it could be the wind.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_feedbag_hole",
+     "label": "Look through the hole",
+     "target": "n_hole"
+    },
+    {
+     "id": "c_feedbag_dad",
+     "label": "Run and tell Dad",
+     "target": "n_dad_talk"
+    }
+   ]
+  },
+  {
+   "id": "n_feather",
+   "body": "<<FILL role=explore words=70 beats='The gray feather floats on the air and lands near the gate. Miri picks it up. Its tip is bent, as if Pip dragged it through a bush. More feathers glitter on the path to the old oak. Some go toward the vegetable garden. Miri thinks Pip left a trail on purpose.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_feather_oak",
+     "label": "Follow the trail to the old oak",
+     "target": "n_oak"
+    },
+    {
+     "id": "c_feather_garden",
+     "label": "Turn toward the garden",
+     "target": "n_garden"
+    }
+   ]
+  },
+  {
+   "id": "n_hedge",
+   "body": "<<FILL role=explore words=70 beats='The hedge is thick and green. Miri kneels and parts the lower branches. She sees a dark gap under the roots. A tiny feather clings to a spider web. Beyond the hedge, the neighbor garden has a fence with a loose board. Miri wonders which way a small hen would wriggle.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hedge_bramble",
+     "label": "Push through the brambles",
+     "target": "n_bramble"
+    },
+    {
+     "id": "c_hedge_fence",
+     "label": "Check the loose fence board",
+     "target": "n_fence"
+    }
+   ]
+  },
+  {
+   "id": "n_swings",
+   "body": "<<FILL role=explore words=70 beats='Near the swings, the sandbox is quiet. The slide gleams with dew. Miri sees dust on the ground, round and flat, like a hen took a dust bath. The dust bath is fresh. Pip must have been here only minutes ago. Miri looks from the sandbox to the slide and tries to guess where Pip went.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_swings_sandbox",
+     "label": "Dig in the sandbox",
+     "target": "n_sandbox"
+    },
+    {
+     "id": "c_swings_slide",
+     "label": "Look under the slide",
+     "target": "n_slide"
+    }
+   ]
+  },
+  {
+   "id": "n_hole",
+   "body": "<<FILL role=explore words=70 beats='Miri lies flat and peeks through the hole. A dark tunnel runs under the henhouse wall. It is cool and dry. At the far end, light shines through a tangle of roots. A gray feather rests on a stone. The tunnel splits: one way slopes to the garden, the other way curves toward the shed.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hole_tunnel_garden",
+     "label": "Crawl toward the garden",
+     "target": "n_tunnel_garden"
+    },
+    {
+     "id": "c_hole_tunnel_shed",
+     "label": "Crawl toward the shed",
+     "target": "n_tunnel_shed"
+    }
+   ]
+  },
+  {
+   "id": "n_dad_talk",
+   "body": "<<FILL role=decision words=70 beats='Dad puts down his toolbox and listens. He says Pip is clever and probably hid from the morning noise. Dad promises to help after he finishes one board. Miri can wait by the coop or keep looking in the backyard. She wants to find Pip now, not later.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_dad_coop",
+     "label": "Wait by the coop with Dad",
+     "target": "n_coop_stoop"
+    },
+    {
+     "id": "c_dad_backyard",
+     "label": "Search the backyard",
+     "target": "n_backyard"
+    }
+   ]
+  },
+  {
+   "id": "n_oak",
+   "body": "<<FILL role=explore words=70 beats='At the old oak, leaves scatter under a gentle wind. Miri finds a hollow in the roots, just the size of a hen. The hollow is warm and lined with dry grass. Two more gray feathers rest at the opening. A trail leads past the hollow toward the garden gate. The garden gate is unlatched.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_oak_gate",
+     "label": "Try the garden gate",
+     "target": "n_garden_gate"
+    },
+    {
+     "id": "c_oak_hollow",
+     "label": "Search the hollow roots",
+     "target": "n_old_tree"
+    }
+   ]
+  },
+  {
+   "id": "n_garden",
+   "body": "<<FILL role=explore words=70 beats='The vegetable garden has rows of beans and lettuce. Miri spots nibbled leaves, small and neat. A dusty hen print marks the path between the plants. The print points past the garden gate. Another print points back toward the backyard. Miri has two clues but no Pip yet.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_garden_gate",
+     "label": "Follow the print toward the old oak",
+     "target": "n_old_tree"
+    },
+    {
+     "id": "c_garden_backyard",
+     "label": "Circle into the backyard",
+     "target": "n_backyard"
+    }
+   ]
+  },
+  {
+   "id": "n_bramble",
+   "body": "<<FILL role=explore words=70 beats='Miri pushes through the brambles with her sleeves down. A scrap of gray fluff hangs on a thorn. Beyond the brambles, the old oak spreads its branches. A narrow path winds back to the gate. The path is smooth, as if a hen walks here every day.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bramble_oak",
+     "label": "Head toward the old oak",
+     "target": "n_oak"
+    }
+   ]
+  },
+  {
+   "id": "n_fence",
+   "body": "<<FILL role=explore words=70 beats='The fence board is loose. Behind it, Miri sees a neat backyard with a compost bin and a shed. The neighbor hen is not there today. A bucket of water stands by the back step. The fence gap is wide enough for Pip. Miri slips through and lands softly in the yard.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fence_oak",
+     "label": "Walk toward the old oak",
+     "target": "n_oak"
+    },
+    {
+     "id": "c_fence_stoop",
+     "label": "Circle back to the coop",
+     "target": "n_coop_stoop"
+    }
+   ]
+  },
+  {
+   "id": "n_sandbox",
+   "body": "<<FILL role=explore words=70 beats='Miri kneels by the sandbox and brushes sand away. She finds a small pebble, a bottle cap, and one gray feather. The sand is cool and damp. No Pip. Miri stands and shakes sand from her hands. A sound comes from the garden gate, like a soft cluck.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_sandbox_gate",
+     "label": "Go toward the old oak",
+     "target": "n_old_tree"
+    },
+    {
+     "id": "c_sandbox_backyard",
+     "label": "Head back to the backyard",
+     "target": "n_backyard"
+    }
+   ]
+  },
+  {
+   "id": "n_slide",
+   "body": "<<FILL role=explore words=70 beats='Under the slide, Miri finds a leaf nest shaped like a bowl. The nest is empty, but a tiny feather rests inside. The slide pole has a muddy scratch. It looks like Pip climbed up nearby, then changed her mind. The trail heads toward the old oak and the backyard.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_slide_oak",
+     "label": "Follow toward the old oak",
+     "target": "n_old_tree"
+    },
+    {
+     "id": "c_slide_backyard",
+     "label": "Follow toward the backyard",
+     "target": "n_backyard"
+    }
+   ]
+  },
+  {
+   "id": "n_tunnel_garden",
+   "body": "<<FILL role=explore words=70 beats='The tunnel opens beside a row of bean poles. Miri sits up in the garden and brushes dirt from her knees. Pip is not in the tunnel. Fresh pecks dot the bean leaves. A path leads to the compost bin, and another path winds to the old oak. Pip may be at either place.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tunnel_garden_oak",
+     "label": "Run to the old oak",
+     "target": "n_old_tree"
+    },
+    {
+     "id": "c_tunnel_garden_stoop",
+     "label": "Circle back to the coop",
+     "target": "n_coop_stoop"
+    }
+   ]
+  },
+  {
+   "id": "n_tunnel_shed",
+   "body": "<<FILL role=explore words=70 beats='The tunnel ends behind the shed. Miri sees cobwebs and a pile of flowerpots. A gray feather sits on an overturned pot. The shed door is closed, but the gate to the garden stands open. The step to the coop leads back home. Miri listens for a cluck.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tunnel_shed_gate",
+     "label": "Head toward the old oak",
+     "target": "n_old_tree"
+    },
+    {
+     "id": "c_tunnel_shed_coop",
+     "label": "Circle back to the coop step",
+     "target": "n_coop_stoop"
+    }
+   ]
+  },
+  {
+   "id": "n_backyard",
+   "body": "<<FILL role=climax words=70 beats='The backyard is sunny and quiet. A compost bin hums with flies. Miri hears a tiny peck and a rustle. Her heart beats fast. There is a flowerpot turned on its side, and a hollow under the back step. Pip could be feasting or hiding. Miri moves closer without scaring her.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_backyard_compost",
+     "label": "Peek behind the compost bin",
+     "target": "e_compost_snack"
+    },
+    {
+     "id": "c_backyard_pot",
+     "label": "Look under the overturned pot",
+     "target": "e_secret_nest"
+    }
+   ]
+  },
+  {
+   "id": "n_old_tree",
+   "body": "<<FILL role=climax words=70 beats='The old oak stands at the edge of the yard. Miri steps over roots and listens. A soft purr comes from the hollow root. Inside the hollow is a round shadow. On the other side, the bean tent is draped with green leaves. Something rustles in both places. Miri takes one slow step.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_oldtree_hollow",
+     "label": "Look into the hollow root",
+     "target": "e_hollow_oak"
+    },
+    {
+     "id": "c_oldtree_bean",
+     "label": "Peek into the bean tent",
+     "target": "e_bean_tent_friend"
+    }
+   ]
+  },
+  {
+   "id": "n_garden_gate",
+   "body": "<<FILL role=climax words=70 beats='The garden gate swings open. Rows of lettuce are dotted with tiny bite marks. A gray feather lies on the path. Near the gate, a bowl of water sparkles. Miri hears a happy cluck from the lettuce row. She kneels and holds out her hand.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_gate_lettuce",
+     "label": "Follow the nibbled lettuce",
+     "target": "e_garden_snack"
+    },
+    {
+     "id": "c_gate_water",
+     "label": "Wait by the water bowl",
+     "target": "e_late_breakfast"
+    }
+   ]
+  },
+  {
+   "id": "n_coop_stoop",
+   "body": "<<FILL role=climax words=70 beats='Miri sits on the coop step and holds a handful of corn. The yard smells of warm hay. She waits, quiet and still. A shadow moves near the fence. Miri does not chase it. She makes a soft hen call. The shadow stops at the gate.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_coop_open",
+     "label": "Open the henhouse door",
+     "target": "e_pip_comes_home"
+    },
+    {
+     "id": "c_coop_still",
+     "label": "Stay very still and wait",
+     "target": "e_wait_until_dusk"
+    }
+   ]
+  },
+  {
+   "id": "e_compost_snack",
+   "body": "<<FILL role=ending words=70 beats='Behind the compost bin, Pip pecks at a corncob with great care. Her head bobs up when she sees Miri. She clucks hello with a crumb on her beak. Miri scoops Pip up gently. Pip is warm and light. Miri carries the smallest hen back to the henhouse and latches the door.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e_compost_snack",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Compost Snack"
+   }
+  },
+  {
+   "id": "e_secret_nest",
+   "body": "<<FILL role=ending words=70 beats='Under the overturned flowerpot, Pip sits in a hidden nest of leaves and straw. Two pale eggs rest against her chest. Pip puffs her feathers and looks proud. Miri smiles and does not touch the eggs. She sets a bowl of water near the nest. Pip has a secret home and a safe place to sit.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e_secret_nest",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Secret Nest"
+   }
+  },
+  {
+   "id": "e_hollow_oak",
+   "body": "<<FILL role=ending words=70 beats='Inside the hollow root, Pip is curled in a round nest of grass. Her eyes are closed. She breathes soft and slow. Miri kneels and says Pip softly. Pip opens one eye, then tucks her head back down. Miri decides to let Pip rest. She will tell Dad to check again at sunset.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e_hollow_oak",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Hollow Oak"
+   }
+  },
+  {
+   "id": "e_bean_tent_friend",
+   "body": "<<FILL role=ending words=70 beats='Miri parts the bean leaves and finds Pip nestled between two bean poles. Pip has pulled down a dry leaf and made a little tent. She clucks as if to say look at my fort. Miri laughs and offers corn. Pip eats from her palm. They walk back to the coop together, side by side.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e_bean_tent_friend",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Bean Tent Friend"
+   }
+  },
+  {
+   "id": "e_garden_snack",
+   "body": "<<FILL role=ending words=70 beats='Miri follows the nibbled lettuce to a patch of clover. Pip is there, gobbling clover with tiny rapid pecks. When she sees Miri, she runs to her and hops into the feed bucket. Miri carries the bucket and Pip back to the henhouse. Pip never misses the holiday snack. Everything is fine.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e_garden_snack",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Garden Snack"
+   }
+  },
+  {
+   "id": "e_late_breakfast",
+   "body": "<<FILL role=ending words=70 beats='Miri waits by the water bowl as the sun climbs higher. After a long while, Pip strolls out from the bean tent and drinks three sips. Pip does not look sorry. Miri laughs and walks behind Pip to the coop. They are a little late for breakfast, but everyone is safe and fed.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e_late_breakfast",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Late Breakfast"
+   }
+  },
+  {
+   "id": "e_pip_comes_home",
+   "body": "<<FILL role=ending words=70 beats='Miri opens the henhouse door after she calls Pip. Pip walks out from behind the fence and struts to the door. Clover and Butter cluck a welcome. Miri sprinkles corn and counts the hens. One, two, three. Pip is home. The holiday week is safe, and the smallest hen is tucked in for the night.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e_pip_comes_home",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Pip Comes Home"
+   }
+  },
+  {
+   "id": "e_wait_until_dusk",
+   "body": "<<FILL role=ending words=70 beats='Miri stays very still until the shadows grow long. Pip does not come out. The sun sets and the yard turns blue. Miri goes inside for supper with a sad feeling. Dad says they will search again tomorrow. The henhouse has two hens tonight, and one quiet empty nest.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e_wait_until_dusk",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "One Empty Nest"
+   }
+  }
+ ]
+}
