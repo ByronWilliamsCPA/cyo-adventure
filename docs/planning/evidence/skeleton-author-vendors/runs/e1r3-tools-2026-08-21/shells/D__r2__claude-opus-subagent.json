@@ -1,0 +1,895 @@
+{
+ "schema_version": "2.0",
+ "id": "two-nights-to-curtain",
+ "version": 1,
+ "title": "Two Nights to Curtain",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "teamwork",
+   "leadership",
+   "improvisation",
+   "friendship",
+   "resilience"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "l00_0",
+ "nodes": [
+  {
+   "id": "l00_0",
+   "body": "<<FILL role=setup words=70 beats='Thursday night at Kestrel Middle School, two days before The Lantern of Bellweather Hollow opens; stage manager Cass Ibarra crosses the dark stage with the prompt book against her chest, checking the brass lantern in its tape outline on the prop table while the fog machine warms up and the ghost light hums'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l00_0_1",
+     "label": "Head into the green room for notes",
+     "target": "l00_1"
+    }
+   ]
+  },
+  {
+   "id": "l00_1",
+   "body": "<<FILL role=decision words=75 beats='At 7:52 pm Devon Pike sets the Captain Wren script down on the makeup counter and tells the green room he is done; twenty-six people go quiet; Cass still has the Saturday call sheet clipped inside her prompt book and no lead actor to put on it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l00_1_1",
+     "label": "Follow Devon into the hallway and ask why",
+     "target": "l01_0"
+    },
+    {
+     "id": "c_l00_1_2",
+     "label": "Call the whole cast onto the stage right now",
+     "target": "l01_1"
+    },
+    {
+     "id": "c_l00_1_3",
+     "label": "Open the prompt book and hunt for a cover",
+     "target": "l01_2"
+    }
+   ]
+  },
+  {
+   "id": "l01_0",
+   "body": "<<FILL role=explore words=100 beats='Cass catches Devon by the trophy case and he will not look up; he says the words are fine and the balcony speech is not; June Alcott waits at the shop door holding the callboard marker and pretending to read the fire map'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l01_0_1",
+     "label": "Ask what happens at the balcony speech",
+     "target": "l02_0"
+    },
+    {
+     "id": "c_l01_0_2",
+     "label": "Go back and tell the cast the truth",
+     "target": "l02_1"
+    },
+    {
+     "id": "c_l01_0_3",
+     "label": "Look for whoever already knows the lines",
+     "target": "l02_2"
+    }
+   ]
+  },
+  {
+   "id": "l01_1",
+   "body": "<<FILL role=explore words=100 beats='Cass gathers the company on the apron under the work lights and says out loud that Devon has quit two nights before opening; Bram Kowalski wants to cancel Saturday; Priya Raghavan says two nights is enough time if somebody decides something tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l01_1_1",
+     "label": "Ask who already knows Captain Wren by heart",
+     "target": "l02_2"
+    },
+    {
+     "id": "c_l01_1_2",
+     "label": "Let Theo speak from the light booth",
+     "target": "l02_3"
+    },
+    {
+     "id": "c_l01_1_3",
+     "label": "Read the blocking notes June wrote in the margins",
+     "target": "l02_4"
+    }
+   ]
+  },
+  {
+   "id": "l01_2",
+   "body": "<<FILL role=explore words=100 beats='Cass opens the prompt book under the ghost light and reads the crew list backward twice; there is no understudy column anywhere in it; the brass lantern sits on the prop table inside its tape outline where Devon left it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l01_2_1",
+     "label": "Read the margin notes beside the Innkeeper scenes",
+     "target": "l02_4"
+    },
+    {
+     "id": "c_l01_2_2",
+     "label": "Go find Devon and ask the real question",
+     "target": "l02_0"
+    },
+    {
+     "id": "c_l01_2_3",
+     "label": "Bring the problem to the whole company",
+     "target": "l02_1"
+    }
+   ]
+  },
+  {
+   "id": "l02_0",
+   "body": "<<FILL role=explore words=100 beats='Devon admits he blanks at the balcony speech every single run, and that the silence afterward is worse than the forgetting; Cass writes the twelve words of the cue line into the prompt book while he talks'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l02_0_1",
+     "label": "Try Marisol at the ghost light",
+     "target": "l03_0"
+    },
+    {
+     "id": "c_l02_0_2",
+     "label": "Give Theo a shot on the empty stage",
+     "target": "l03_1"
+    },
+    {
+     "id": "c_l02_0_3",
+     "label": "Time Priya doubling two roles",
+     "target": "l03_2"
+    }
+   ]
+  },
+  {
+   "id": "l02_1",
+   "body": "<<FILL role=explore words=100 beats='The company argues on the apron for six minutes; Bram wants to cancel, Priya offers to double the Innkeeper and Captain Wren, and Marisol Ruiz says nothing at all and keeps folding the Wren coat over her arm'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l02_1_1",
+     "label": "Time Priya doubling two roles",
+     "target": "l03_2"
+    },
+    {
+     "id": "c_l02_1_2",
+     "label": "Split the Wren lines across the ensemble",
+     "target": "l03_3"
+    },
+    {
+     "id": "c_l02_1_3",
+     "label": "Ask Devon to come back for two nights",
+     "target": "l03_4"
+    }
+   ]
+  },
+  {
+   "id": "l02_2",
+   "body": "<<FILL role=explore words=100 beats='Cass finds Marisol behind the costume rack mouthing the lantern speech word for word while she pins a hem; Marisol says she only ever wanted to sew, and asks Cass please not to make this a thing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l02_2_1",
+     "label": "Split the Wren lines across the ensemble",
+     "target": "l03_4"
+    },
+    {
+     "id": "c_l02_2_2",
+     "label": "Call Ms. Otto and the principal tonight",
+     "target": "l03_5"
+    },
+    {
+     "id": "c_l02_2_3",
+     "label": "Put Marisol under the ghost light",
+     "target": "l03_0"
+    }
+   ]
+  },
+  {
+   "id": "l02_3",
+   "body": "<<FILL role=explore words=100 beats='Theo Nakagawa leans out of the light booth window and says he has run this show forty times and knows every line of it; the trouble is that the board still needs a pair of hands on Saturday night'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l02_3_1",
+     "label": "Put Theo on the empty stage and listen",
+     "target": "l03_1"
+    },
+    {
+     "id": "c_l02_3_2",
+     "label": "Time Priya doubling two roles",
+     "target": "l03_2"
+    },
+    {
+     "id": "c_l02_3_3",
+     "label": "Split the Wren lines across the ensemble",
+     "target": "l03_3"
+    }
+   ]
+  },
+  {
+   "id": "l02_4",
+   "body": "<<FILL role=explore words=100 beats='June shows Cass the prompt book margins where Priya has been copying the Wren blocking in tiny pencil for three weeks; every Innkeeper scene is marked with a star and a number of seconds'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l02_4_1",
+     "label": "Split the Wren lines across the ensemble",
+     "target": "l03_3"
+    },
+    {
+     "id": "c_l02_4_2",
+     "label": "Ask Devon back for two nights only",
+     "target": "l03_4"
+    },
+    {
+     "id": "c_l02_4_3",
+     "label": "Call Ms. Otto and the principal tonight",
+     "target": "l03_5"
+    }
+   ]
+  },
+  {
+   "id": "l03_0",
+   "body": "<<FILL role=decision words=100 beats='Cass sets the brass lantern in the middle of the stage and asks Marisol to read the lantern speech under the ghost light, while the crew pretends very hard to be busy with the fly rail'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l03_0_1",
+     "label": "Listen to the whole lantern speech",
+     "target": "l04_0"
+    },
+    {
+     "id": "c_l03_0_2",
+     "label": "Push straight to the balcony speech",
+     "target": "l04_1"
+    },
+    {
+     "id": "c_l03_0_3",
+     "label": "Stop and ask Theo to read instead",
+     "target": "l04_2"
+    }
+   ]
+  },
+  {
+   "id": "l03_1",
+   "body": "<<FILL role=decision words=100 beats='Theo climbs down from the booth and reads Captain Wren on the empty stage while the light board sits dark behind him and nobody in the building touches the fog cue'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l03_1_1",
+     "label": "Ask who would run the board Saturday",
+     "target": "l04_2"
+    },
+    {
+     "id": "c_l03_1_2",
+     "label": "Compare Theo with Priya doubling",
+     "target": "l04_3"
+    },
+    {
+     "id": "c_l03_1_3",
+     "label": "Try the ensemble split instead",
+     "target": "l04_4"
+    }
+   ]
+  },
+  {
+   "id": "l03_2",
+   "body": "<<FILL role=decision words=100 beats='Cass starts a stopwatch and walks Priya through the Innkeeper exit, the coat, the boots, and the Wren entrance, while June counts the buttons out loud from the quick-change booth'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l03_2_1",
+     "label": "Watch the ensemble try it as a chorus",
+     "target": "l04_4"
+    },
+    {
+     "id": "c_l03_2_2",
+     "label": "Go ask Devon for two nights",
+     "target": "l04_5"
+    },
+    {
+     "id": "c_l03_2_3",
+     "label": "Stop the whole thing and cancel",
+     "target": "l04_6"
+    }
+   ]
+  },
+  {
+   "id": "l03_3",
+   "body": "<<FILL role=decision words=100 beats='Cass chalks the six ensemble names on the deck and gives each of them a block of Wren lines to read in turn, while Bram builds a crate for whoever is speaking to stand on'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l03_3_1",
+     "label": "Stop the whole thing and cancel",
+     "target": "l04_6"
+    },
+    {
+     "id": "c_l03_3_2",
+     "label": "Hear Marisol read the lantern speech",
+     "target": "l04_0"
+    },
+    {
+     "id": "c_l03_3_3",
+     "label": "Test the balcony speech with Marisol",
+     "target": "l04_1"
+    }
+   ]
+  },
+  {
+   "id": "l03_4",
+   "body": "<<FILL role=decision words=100 beats='Cass finds Devon in the parking lot unlocking his bike and asks for two nights only: no rehearsal photos, no video, just Saturday and the pickup call an hour before curtain'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l03_4_1",
+     "label": "Test the balcony speech with Marisol",
+     "target": "l04_1"
+    },
+    {
+     "id": "c_l03_4_2",
+     "label": "Ask who would run the board Saturday",
+     "target": "l04_2"
+    },
+    {
+     "id": "c_l03_4_3",
+     "label": "Time the Priya double one more time",
+     "target": "l04_3"
+    }
+   ]
+  },
+  {
+   "id": "l03_5",
+   "body": "<<FILL role=decision words=100 beats='Ms. Ottoline Vance is hoarse with flu on the phone and gives one instruction, decide by nine and post it; down the hall Mr. Ferraro says the band concert owns Sunday and Saturday is the only door left'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l03_5_1",
+     "label": "Time the Priya double one more time",
+     "target": "l04_3"
+    },
+    {
+     "id": "c_l03_5_2",
+     "label": "Watch the ensemble try it as a chorus",
+     "target": "l04_4"
+    },
+    {
+     "id": "c_l03_5_3",
+     "label": "Ask Devon for two nights only",
+     "target": "l04_5"
+    }
+   ]
+  },
+  {
+   "id": "l04_0",
+   "body": "<<FILL role=explore words=100 beats='Marisol reads the lantern speech and the crew stops moving; the hiss of the fog machine is the only sound in the house; but if Marisol acts, the costume table has no lead two nights before opening'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l04_0_1",
+     "label": "Write a new Friday call sheet tonight",
+     "target": "l05_0"
+    },
+    {
+     "id": "c_l04_0_2",
+     "label": "Sew snaps into the Innkeeper coat",
+     "target": "l05_1"
+    },
+    {
+     "id": "c_l04_0_3",
+     "label": "Teach Hollis the light board tonight",
+     "target": "l05_2"
+    }
+   ]
+  },
+  {
+   "id": "l04_1",
+   "body": "<<FILL role=explore words=100 beats='Marisol reaches the balcony speech and stops in exactly the place Devon stops; she says the words are on the page and not in her mouth; Cass marks the spot in the prompt book with a red sticker'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l04_1_1",
+     "label": "Teach Hollis the light board tonight",
+     "target": "l05_2"
+    },
+    {
+     "id": "c_l04_1_2",
+     "label": "Run the balcony speech with Devon alone",
+     "target": "l05_3"
+    },
+    {
+     "id": "c_l04_1_3",
+     "label": "Rebuild Act Two around one narrator",
+     "target": "l05_4"
+    }
+   ]
+  },
+  {
+   "id": "l04_2",
+   "body": "<<FILL role=explore words=100 beats='Theo is a real Captain Wren, but the fog cue and the rope-and-pulley moon both live in his hands; nobody else at Kestrel has touched the light board once all season long'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l04_2_1",
+     "label": "Rebuild Act Two around one narrator",
+     "target": "l05_4"
+    },
+    {
+     "id": "c_l04_2_2",
+     "label": "Ask June what she has been learning",
+     "target": "l05_5"
+    },
+    {
+     "id": "c_l04_2_3",
+     "label": "Let Friday end with the slot still empty",
+     "target": "l05_6"
+    }
+   ]
+  },
+  {
+   "id": "l04_3",
+   "body": "<<FILL role=explore words=100 beats='The stopwatch says the Priya change runs forty seconds long; the Innkeeper scene would end in a gap of dead stage with the paper moon still swinging over nobody at all'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l04_3_1",
+     "label": "Let Friday end with the slot still empty",
+     "target": "l05_6"
+    },
+    {
+     "id": "c_l04_3_2",
+     "label": "Write a new Friday call sheet tonight",
+     "target": "l05_0"
+    },
+    {
+     "id": "c_l04_3_3",
+     "label": "Sew snaps into the Innkeeper coat",
+     "target": "l05_1"
+    }
+   ]
+  },
+  {
+   "id": "l04_4",
+   "body": "<<FILL role=explore words=100 beats='Six voices share Captain Wren and the blocking scatters; the ensemble crosses collide at the stone well, Bram has to move his crate twice on one page, and the lantern gets handed off three times'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l04_4_1",
+     "label": "Sew snaps into the Innkeeper coat",
+     "target": "l05_1"
+    },
+    {
+     "id": "c_l04_4_2",
+     "label": "Teach Hollis the light board tonight",
+     "target": "l05_2"
+    },
+    {
+     "id": "c_l04_4_3",
+     "label": "Run the balcony speech with Devon alone",
+     "target": "l05_3"
+    }
+   ]
+  },
+  {
+   "id": "l04_5",
+   "body": "<<FILL role=explore words=100 beats='Devon says maybe, and the condition is that nobody watches him rehearse the balcony speech: not the cast, not June, not Cass, and not even the ghost light standing center stage'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l04_5_1",
+     "label": "Run the balcony speech with Devon alone",
+     "target": "l05_3"
+    },
+    {
+     "id": "c_l04_5_2",
+     "label": "Rebuild Act Two around one narrator",
+     "target": "l05_4"
+    },
+    {
+     "id": "c_l04_5_3",
+     "label": "Ask June what she has been learning",
+     "target": "l05_5"
+    }
+   ]
+  },
+  {
+   "id": "l04_6",
+   "body": "<<FILL role=ending words=95 beats='Cass walks to the office and tells Mr. Ferraro to cancel Saturday; the callboard comes down, the fog machine gets unplugged, and the brass lantern goes back into its crate with the Wren coat folded on top of it'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_the_night_cass_said_stop",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Night Cass Said Stop"
+   }
+  },
+  {
+   "id": "l05_0",
+   "body": "<<FILL role=decision words=100 beats='Cass sits alone in the empty house at nine at night and builds a Friday call sheet that names every person, every scene, and every minute between 3:40 and 6:00, with the gaps circled in red'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l05_0_1",
+     "label": "Run the Saturday tech-through at nine",
+     "target": "l06_0"
+    },
+    {
+     "id": "c_l05_0_2",
+     "label": "Solve the coat that fits nobody",
+     "target": "l06_1"
+    },
+    {
+     "id": "c_l05_0_3",
+     "label": "Test the fog machine before anything else",
+     "target": "l06_2"
+    }
+   ]
+  },
+  {
+   "id": "l05_1",
+   "body": "<<FILL role=decision words=100 beats='Marisol sews snaps into the Innkeeper coat at the shop table while Priya practices the exit path in socks; by the eleventh try the stopwatch reads thirty-one seconds and holds there'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l05_1_1",
+     "label": "Test the fog machine before anything else",
+     "target": "l06_2"
+    },
+    {
+     "id": "c_l05_1_2",
+     "label": "Post the final cast list at noon",
+     "target": "l06_3"
+    },
+    {
+     "id": "c_l05_1_3",
+     "label": "Give Marisol the lantern and the role",
+     "target": "l06_4"
+    }
+   ]
+  },
+  {
+   "id": "l05_2",
+   "body": "<<FILL role=decision words=100 beats='Hollis the custodian sits at the light board after hours with Theo, learning the moon fader and the fog button; he hits the moon perfectly and misses the fog every time, because one is a look and one is a count'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l05_2_1",
+     "label": "Give Marisol the lantern and the role",
+     "target": "l06_4"
+    },
+    {
+     "id": "c_l05_2_2",
+     "label": "Move Saturday into the rehearsal room",
+     "target": "l06_5"
+    },
+    {
+     "id": "c_l05_2_3",
+     "label": "Run the Saturday tech-through at nine",
+     "target": "l06_0"
+    }
+   ]
+  },
+  {
+   "id": "l05_3",
+   "body": "<<FILL role=decision words=100 beats='Cass kills every light in the house and sits in row M while Devon runs the balcony speech to an empty room; his voice does not stop once, and then the back door opens'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l05_3_1",
+     "label": "Solve the coat that fits nobody",
+     "target": "l06_1"
+    },
+    {
+     "id": "c_l05_3_2",
+     "label": "Test the fog machine before anything else",
+     "target": "l06_2"
+    },
+    {
+     "id": "c_l05_3_3",
+     "label": "Post the final cast list at noon",
+     "target": "l06_3"
+    }
+   ]
+  },
+  {
+   "id": "l05_4",
+   "body": "<<FILL role=decision words=100 beats='Cass rebuilds Act Two around one narrator line spoken from the stone well, and the six ensemble voices finally have a place to stand and a reason to open their mouths'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l05_4_1",
+     "label": "Post the final cast list at noon",
+     "target": "l06_3"
+    },
+    {
+     "id": "c_l05_4_2",
+     "label": "Give Marisol the lantern and the role",
+     "target": "l06_4"
+    },
+    {
+     "id": "c_l05_4_3",
+     "label": "Move Saturday into the rehearsal room",
+     "target": "l06_5"
+    }
+   ]
+  },
+  {
+   "id": "l05_5",
+   "body": "<<FILL role=ending words=100 beats='Cass discovers that June has quietly learned every part in the play from the prompt book margins all season; Saturday slides one week and Kestrel Middle School starts naming real understudies for the first time'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_the_understudy_nobody_listed",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Understudy Nobody Listed"
+   }
+  },
+  {
+   "id": "l05_6",
+   "body": "<<FILL role=ending words=95 beats='Friday ends with an empty slot on the callboard where Captain Wren should be; Saturday happens in the cafeteria as a seated reading for families, and the auditorium stays dark behind a locked door'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_two_nights_no_wren",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Two Nights, No Wren"
+   }
+  },
+  {
+   "id": "l06_0",
+   "body": "<<FILL role=transition words=100 beats='Saturday at nine in the morning the house is empty and cold; Cass calls the tech-through from row M with a headset on and a pencil pushed behind her ear, and Devon walks in at ten carrying a camping lantern'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l06_0_1",
+     "label": "Open the house at 6:45",
+     "target": "l07_0"
+    },
+    {
+     "id": "c_l06_0_2",
+     "label": "Steady the wings before the first entrance",
+     "target": "l07_1"
+    },
+    {
+     "id": "c_l06_0_3",
+     "label": "Get to Act Two and the balcony speech",
+     "target": "l07_2"
+    }
+   ]
+  },
+  {
+   "id": "l06_1",
+   "body": "<<FILL role=transition words=100 beats='The Wren coat was cut for Devon and fits nobody else; Bram pulls off his own leather tool belt, Marisol cinches the waist with it, and from row M it reads like it was made that way'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l06_1_1",
+     "label": "Get to Act Two and the balcony speech",
+     "target": "l07_2"
+    },
+    {
+     "id": "c_l06_1_2",
+     "label": "Hand Theo the role and the stage",
+     "target": "l07_3"
+    },
+    {
+     "id": "c_l06_1_3",
+     "label": "Post the real reason on the callboard",
+     "target": "l07_4"
+    }
+   ]
+  },
+  {
+   "id": "l06_2",
+   "body": "<<FILL role=transition words=100 beats='The fog machine floods the stage during the tech-through and the paper moon disappears; Theo tapes a kitchen timer to the housing with a hard limit of eight seconds and an index card that says count out loud'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l06_2_1",
+     "label": "Post the real reason on the callboard",
+     "target": "l07_4"
+    },
+    {
+     "id": "c_l06_2_2",
+     "label": "Open the house at 6:45",
+     "target": "l07_0"
+    },
+    {
+     "id": "c_l06_2_3",
+     "label": "Steady the wings before the first entrance",
+     "target": "l07_1"
+    }
+   ]
+  },
+  {
+   "id": "l06_3",
+   "body": "<<FILL role=transition words=100 beats='At noon Cass writes the final cast list on the callboard in marker instead of pencil, and then stands there on purpose while the whole company reads it over her shoulder'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l06_3_1",
+     "label": "Steady the wings before the first entrance",
+     "target": "l07_1"
+    },
+    {
+     "id": "c_l06_3_2",
+     "label": "Get to Act Two and the balcony speech",
+     "target": "l07_2"
+    },
+    {
+     "id": "c_l06_3_3",
+     "label": "Hand Theo the role and the stage",
+     "target": "l07_3"
+    }
+   ]
+  },
+  {
+   "id": "l06_4",
+   "body": "<<FILL role=ending words=100 beats='Marisol steps out of the costume shop and into the role of Captain Wren; she carries the brass lantern all the way through the balcony speech on Saturday and the box of hem pins stays shut in the drawer'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_marisol_takes_the_lantern",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Marisol Takes the Lantern"
+   }
+  },
+  {
+   "id": "l06_5",
+   "body": "<<FILL role=ending words=95 beats='Saturday becomes a script-in-hand reading in the rehearsal room with forty folding chairs and no fog at all; the story of Bellweather Hollow gets told from end to end and the lanterns stay on the shelf'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_the_reading_in_the_rehearsal_room",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Reading in the Rehearsal Room"
+   }
+  },
+  {
+   "id": "l07_0",
+   "body": "<<FILL role=climax words=100 beats='At 6:45 the doors open and the sound of a real audience comes into the house for the first time all season; Cass says places in ten and feels the deck change under her sneakers'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l07_0_1",
+     "label": "Watch the full house rise at the bow",
+     "target": "l08_0"
+    },
+    {
+     "id": "c_l07_0_2",
+     "label": "Let six voices finish the speech together",
+     "target": "l08_1"
+    },
+    {
+     "id": "c_l07_0_3",
+     "label": "Bring the curtain down small and true",
+     "target": "l08_2"
+    }
+   ]
+  },
+  {
+   "id": "l07_1",
+   "body": "<<FILL role=climax words=100 beats='The brass lantern is gone from its tape outline and Devon is shaking in the wings with thirty seconds left; Cass has room for one sentence and no time at all to pick a second one'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l07_1_1",
+     "label": "Let six voices finish the speech together",
+     "target": "l08_1"
+    },
+    {
+     "id": "c_l07_1_2",
+     "label": "Bring the curtain down small and true",
+     "target": "l08_2"
+    },
+    {
+     "id": "c_l07_1_3",
+     "label": "Watch the full house rise at the bow",
+     "target": "l08_0"
+    }
+   ]
+  },
+  {
+   "id": "l07_2",
+   "body": "<<FILL role=climax words=100 beats='Act Two is running and the rope-and-pulley moon sticks halfway across the painted sky; Bram is on the fly rail, June is whispering a dropped cue from the prompt corner, and the balcony speech is three pages away'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_l07_2_1",
+     "label": "Bring the curtain down small and true",
+     "target": "l08_2"
+    },
+    {
+     "id": "c_l07_2_2",
+     "label": "Watch the full house rise at the bow",
+     "target": "l08_0"
+    },
+    {
+     "id": "c_l07_2_3",
+     "label": "Let six voices finish the speech together",
+     "target": "l08_1"
+    }
+   ]
+  },
+  {
+   "id": "l07_3",
+   "body": "<<FILL role=ending words=100 beats='Theo leaves the light board to play Captain Wren while Hollis runs every cue from the laminated script taped to the booth rail; the fog lands on the count and the curtain call is loud enough to hear in the parking lot'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_theo_steps_off_the_board",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Theo Steps Off the Board"
+   }
+  },
+  {
+   "id": "l07_4",
+   "body": "<<FILL role=ending words=100 beats='With permission from Devon, Cass posts the real reason he quit right beside the cast list on the callboard; the company decides together what Saturday is going to be, and nobody in the building is guessing anymore'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_the_callboard_truth",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Callboard Truth"
+   }
+  },
+  {
+   "id": "l08_0",
+   "body": "<<FILL role=ending words=105 beats='The bow lands and the whole house stands up; Cass watches from the booth with the prompt book closed for the first time in two nights, while Ms. Otto claps from the back row in a scarf'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_opening_night_full_house",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Opening Night, Full House"
+   }
+  },
+  {
+   "id": "l08_1",
+   "body": "<<FILL role=ending words=100 beats='Six voices carry Captain Wren through the balcony speech together and the audience leans forward in the dark; afterward Cass writes all six names on the callboard where one name used to be'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_the_ensemble_wren",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Ensemble Wren"
+   }
+  },
+  {
+   "id": "l08_2",
+   "body": "<<FILL role=ending words=95 beats='The show finishes small and clean with half the cues cut and no fog at all; the story arrives whole, the company bows, and Cass calls it a night that counted for something'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_a_quieter_curtain",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "A Quieter Curtain"
+   }
+  }
+ ]
+}
