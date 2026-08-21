@@ -7,8 +7,8 @@
  "style": "prose",
  "replicate": 3,
  "premise": "On the first snowy day, Priya must find her little brother's boot, lost somewhere along the sled run, before their walk home.",
- "attempts": 5,
- "repair_rounds": 4,
+ "attempts": 6,
+ "repair_rounds": 5,
  "strict_pass": false,
  "first_pass_clean": false,
  "parse_failures": 0,
@@ -17,7 +17,8 @@
   5,
   6,
   4,
-  2
+  2,
+  6
  ],
  "graph_check_exit": 0,
  "latency_s": 0.0,
@@ -25,10 +26,10 @@
  "output_tokens": null,
  "reasoning_tokens": null,
  "finish_reasons": [],
- "min_catalog_distance": 0.13294257580745122,
- "mean_catalog_distance": 0.33739989282672267,
+ "min_catalog_distance": 0.1377433176416346,
+ "mean_catalog_distance": 0.3418254174666953,
  "catalog_distance_note": "vs 5 in-cell peers",
- "last_feedback": "ERROR   L1-7   L1-7 budget: branch_depth out of range in story 'priyas-snowy-boot-quest': 8 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r3__claude-haiku-subagent.json failed structural validation: L1-7 budget: branch_depth out of range in story 'priyas-snowy-boot-quest': 8 (allowed 0..7)",
+ "last_feedback": "ERROR   PL-18  PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'priyas-snowy-boot-quest'\nERROR   PL-25  PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'priyas-snowy-boot-quest'\nWARNING PL-23  PL-23 clock: declared estimated_minutes 8 differs from the derived fastest-finish clock 5 min (466 words on the shortest satisfying path at 90 wpm) by 60% in story 'priyas-snowy-boot-quest' (advisory only)\nWARNING CG-3   node=ending_003 CG-3 grammar: node 'ending_003' is a rendered stop on its own at ~72 words, above band '5-8' words-per-stop ceiling 70 in story 'priyas-snowy-boot-quest' (advisory only)\nWARNING CG-3   node=ending_005 CG-3 grammar: node 'ending_005' is a rendered stop on its own at ~72 words, above band '5-8' words-per-stop ceiling 70 in story 'priyas-snowy-boot-quest' (advisory only)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r3__claude-haiku-subagent.json failed structural validation: PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'priyas-snowy-boot-quest'; PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'priyas-snowy-boot-quest'",
  "shell_file": "shells/A__r3__claude-haiku-subagent.json",
  "error": ""
 }

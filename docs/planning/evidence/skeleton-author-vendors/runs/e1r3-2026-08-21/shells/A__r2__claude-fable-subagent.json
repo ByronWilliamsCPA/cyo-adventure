@@ -199,13 +199,18 @@
   },
   {
    "id": "gusty-solo",
-   "body": "<<FILL role=transition words=30 beats='Tomas plants his feet and fights the line alone; the mended kite dips harder with every shove of wind; his arms shake as one giant gust rolls in off the sea'>>",
+   "body": "<<FILL role=decision words=30 beats='Tomas plants his feet and fights the line alone; the mended kite dips harder with every shove of wind; his arms shake as one giant gust rolls in, and Grandma Rosa calls that her hands are ready if he wants them'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c-solo-on",
-     "label": "Hold on tight",
+     "label": "Hold on tight by himself",
      "target": "end-torn-sail"
+    },
+    {
+     "id": "c-solo-call",
+     "label": "Wave Grandma Rosa over to help",
+     "target": "end-flying-together"
     }
    ]
   },
@@ -223,13 +228,18 @@
   },
   {
    "id": "high-launch",
-   "body": "<<FILL role=transition words=30 beats='Tomas lets the line run out turn after turn, and the light cedar kite climbs past every other kite until it is a red speck against the blue'>>",
+   "body": "<<FILL role=decision words=30 beats='Tomas lets the line run out turn after turn, and the light cedar kite climbs past every other kite; near the last turns of the spool the string starts to strain and hum in his hands'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c-high-on",
-     "label": "Watch it climb",
+     "label": "Let it climb to the very top",
      "target": "end-blue-ribbon"
+    },
+    {
+     "id": "c-high-ease",
+     "label": "Ease off and hold it steady",
+     "target": "end-steady-sky"
     }
    ]
   },
@@ -283,13 +293,18 @@
   },
   {
    "id": "crowd-launch",
-   "body": "<<FILL role=transition words=30 beats='Tomas squeezes into a small gap between kites and launches; the wind swings again, and his line drifts toward the striped kite of a girl named Mia'>>",
+   "body": "<<FILL role=decision words=30 beats='Tomas squeezes into a small gap between kites and launches; the wind swings and his line drifts toward the striped kite of a girl named Mia; the ridge trees promise clear air at the open edge of the field'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c-crowd-on",
      "label": "Keep flying in the crowd",
      "target": "end-tangled-lines"
+    },
+    {
+     "id": "c-crowd-edge",
+     "label": "Walk the kite to the open edge",
+     "target": "end-wind-reader"
     }
    ]
   },
@@ -307,13 +322,18 @@
   },
   {
    "id": "full-spool",
-   "body": "<<FILL role=transition words=30 beats='The box kite hauls line off the old spool up and up until the string sings like a guitar and the spool jumps and jerks in Tomas hands'>>",
+   "body": "<<FILL role=decision words=30 beats='The box kite hauls line off the old spool up and up until the string sings like a guitar; the spool jumps and jerks in Tomas hands as the last turns come loose'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c-spool-on",
      "label": "Let it climb to the last turn",
      "target": "end-runaway-kite"
+    },
+    {
+     "id": "c-spool-reel",
+     "label": "Reel it back down low",
+     "target": "end-humming-kite"
     }
    ]
   },

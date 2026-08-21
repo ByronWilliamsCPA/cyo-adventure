@@ -21,8 +21,8 @@
    "winter wonder",
    "asking for help"
   ],
-  "estimated_minutes": 5,
-  "ending_count": 9,
+  "estimated_minutes": 2,
+  "ending_count": 10,
   "content_flags": {
    "violence": "none",
    "scariness": "none",
@@ -30,110 +30,90 @@
   }
  },
  "variables": [],
- "start_node": "hilltop-missing-boot",
+ "start_node": "hilltop-first-snow",
  "nodes": [
   {
-   "id": "hilltop-missing-boot",
-   "body": "<<FILL role=setup words=70 beats='First snow blankets Maple Hill; Priya and her little brother Arjun climb off the sled laughing; Arjun wiggles one bare striped sock, the red boot with the yellow star is gone; Mom said be home before the streetlights wink on; fat flakes keep falling and will soon hide everything along the sled run'>>",
+   "id": "hilltop-first-snow",
+   "body": "<<FILL role=setup words=30 beats='first snow blankets Maple Hill; Priya and her little brother Arjun whoosh down the sled run one last time, laughing; fat flakes fall fast and Mom said be home before the streetlights wink on'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c01",
-     "label": "Search along the sled run",
+     "label": "Hop off at the bottom",
+     "target": "sock-in-the-snow"
+    }
+   ]
+  },
+  {
+   "id": "sock-in-the-snow",
+   "body": "<<FILL role=decision words=38 beats='at the bottom Arjun wiggles one bare striped sock; the red boot with the yellow star is gone somewhere along the sled run; falling snow will soon hide everything, so Priya must pick a plan fast'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c02",
+     "label": "Search the run yourselves",
      "target": "walk-the-run"
     },
     {
-     "id": "c02",
-     "label": "Dig in the bottom drift",
-     "target": "bottom-drift"
-    },
-    {
      "id": "c03",
-     "label": "Ask the hill kids for help",
+     "label": "Ask the hill kids",
      "target": "ask-the-kids"
     }
    ]
   },
   {
    "id": "walk-the-run",
-   "body": "<<FILL role=explore words=65 beats='Priya holds Arjun mittened hand and walks the packed sled run uphill; snow squeaks under her boots; she spots two clues, long drag marks curving off the run edge and the bumpy jump where sleds pop into the air'>>",
+   "body": "<<FILL role=explore words=30 beats='Priya holds Arjun mittened hand and walks the packed run uphill; snow squeaks under her boots; halfway up she spots drag marks curving toward the pines, and below sits the giant drift where every sled crashes'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c04",
+     "label": "Study the clues",
+     "target": "run-fork"
+    }
+   ]
+  },
+  {
+   "id": "run-fork",
+   "body": "<<FILL role=decision words=38 beats='two clues, drag marks sliding off the run edge into the pine trees, and the huge bottom drift with the dent where Arjun tumbled off; the falling snow is already softening both, so Priya can chase only one'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c05",
      "label": "Follow the drag marks",
      "target": "drag-marks"
     },
     {
-     "id": "c05",
-     "label": "Check the bumpy jump",
-     "target": "bumpy-jump"
+     "id": "c06",
+     "label": "Dig the big bottom drift",
+     "target": "bottom-drift"
     }
    ]
   },
   {
    "id": "drag-marks",
-   "body": "<<FILL role=explore words=65 beats='the drag marks curve toward the pine trees; a blue jay scolds from a snowy branch; at a fallen log the marks split, small paw prints hop one way and a long sled scrape slides the other'>>",
+   "body": "<<FILL role=explore words=30 beats='the drag marks slide toward the pines while a blue jay scolds overhead; at a fallen log the trail splits, small fox paw prints hop one way and jay feathers and seed husks scatter the other'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c06",
-     "label": "Follow the paw prints",
-     "target": "fox-prints"
-    },
-    {
      "id": "c07",
-     "label": "Follow the sled scrape",
-     "target": "hollow-log"
+     "label": "Pick a trail at the log",
+     "target": "log-fork"
     }
    ]
   },
   {
-   "id": "bumpy-jump",
-   "body": "<<FILL role=explore words=65 beats='at the bumpy jump the snow is chewed up by a hundred sled landings; Priya digs at loose chunks with her mittens and finds a bottle cap but nothing red; nearby, small paw prints and a long sled scrape both lead toward the pines'>>",
+   "id": "log-fork",
+   "body": "<<FILL role=decision words=38 beats='Arjun grips Priya sleeve at the fallen log; the fox prints hop neatly into the blue pine shadows; the noisy jay flits from branch to branch the other way, fluffed up and loud, as if it wants to be followed'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c08",
-     "label": "Track the paw prints",
-     "target": "fox-prints"
+     "label": "Follow the fox prints",
+     "target": "deer-path-den"
     },
     {
      "id": "c09",
-     "label": "Trace the sled scrape",
-     "target": "hollow-log"
-    }
-   ]
-  },
-  {
-   "id": "fox-prints",
-   "body": "<<FILL role=decision words=65 beats='the paw prints belong to a red fox; they hop neatly over the fallen log and into the blue pine shadows; Arjun grips Priya sleeve; the afternoon light is turning orange and the pines look deep and quiet'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c10",
-     "label": "Slip past the fallen log",
-     "target": "deer-path-den"
-    },
-    {
-     "id": "c11",
-     "label": "Circle around the pines",
-     "target": "jay-clearing"
-    }
-   ]
-  },
-  {
-   "id": "hollow-log",
-   "body": "<<FILL role=decision words=65 beats='the sled scrape ends at a hollow log dusted with snow; inside Priya finds a striped mitten but no boot; a blue jay lands close, fluffed up and loud, hopping deeper into the pines as if it wants to be followed'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c12",
-     "label": "Squeeze past the hollow log",
-     "target": "deer-path-den"
-    },
-    {
-     "id": "c13",
      "label": "Follow the noisy jay",
      "target": "jay-clearing"
     }
@@ -141,86 +121,30 @@
   },
   {
    "id": "deer-path-den",
-   "body": "<<FILL role=explore words=65 beats='past the log a narrow deer path threads the pines; the fox prints look fresh; Arjun toes are cold so Priya wraps her scarf around his sock; ahead rises a snowy mound with a dark round doorway, a fox den'>>",
+   "body": "<<FILL role=explore words=30 beats='a narrow deer path threads the pines; Priya wraps her scarf around Arjun cold sock; ahead rises a snowy mound with a dark round doorway, a fox den, and something small and red rests on its roof'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c14",
+     "id": "c10",
      "label": "Tiptoe toward the den",
      "target": "boot-on-den-roof"
-    },
-    {
-     "id": "c15",
-     "label": "Watch from a snowy log",
-     "target": "watch-from-log"
-    }
-   ]
-  },
-  {
-   "id": "jay-clearing",
-   "body": "<<FILL role=explore words=65 beats='the blue jay flits from tree to tree, leading them around the pines into a quiet clearing; in the middle sits a snowy mound with a dark round doorway, and on its roof rests something small and red'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c16",
-     "label": "Tiptoe closer",
-     "target": "boot-on-den-roof"
-    },
-    {
-     "id": "c17",
-     "label": "Wait and watch first",
-     "target": "watch-from-log"
     }
    ]
   },
   {
    "id": "boot-on-den-roof",
-   "body": "<<FILL role=climax words=70 beats='there on the den roof sits the red boot with the yellow star, half filled with snow; two pointed ears poke up from the doorway below; Priya must be gentle and quiet; Arjun presses both mittens over his mouth to hold in a squeal'>>",
+   "body": "<<FILL role=climax words=38 beats='the red boot with the yellow star sits on the den roof, half filled with snow; two pointed ears poke up from the doorway below; Arjun presses both mittens over his mouth to hold in a squeal'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c18",
-     "label": "Reach for it slowly",
+     "id": "c11",
+     "label": "Reach for the boot slowly",
      "target": "end-gentle-lift"
     },
     {
-     "id": "c19",
-     "label": "Wait for the fox to leave",
-     "target": "den-roof-slip"
-    }
-   ]
-  },
-  {
-   "id": "watch-from-log",
-   "body": "<<FILL role=climax words=70 beats='crouched behind a snowy log they watch the fox trot out, sniff the red boot on the den roof, and curl up beside the doorway; the sky is going pink; Priya counts to ten and weighs a slow brave step against a loud shoo'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c20",
-     "label": "Step out slow and calm",
-     "target": "end-gentle-lift"
-    },
-    {
-     "id": "c21",
-     "label": "Clap your mittens to shoo it",
-     "target": "den-roof-slip"
-    }
-   ]
-  },
-  {
-   "id": "den-roof-slip",
-   "body": "<<FILL role=climax words=70 beats='the fox slips down into the den; Priya climbs the mound but the soft snow crumbles near the doorway; the red boot tips and starts to slide toward the dark hole while Arjun squeaks behind her'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c22",
-     "label": "Grab it quick",
+     "id": "c12",
+     "label": "Peek in the doorway first",
      "target": "end-fox-kits"
-    },
-    {
-     "id": "c23",
-     "label": "Back away carefully",
-     "target": "end-boot-in-den"
     }
    ]
   },
@@ -238,7 +162,7 @@
   },
   {
    "id": "end-fox-kits",
-   "body": "<<FILL role=ending words=70 beats='Priya catches the boot at the very edge of the hole and peeks inside; three fuzzy fox kits blink back at her; she and Arjun grin, back away on tiptoe, and race home with the boot and the best secret on Maple Hill'>>",
+   "body": "<<FILL role=ending words=70 beats='Priya peeks past the boot into the den and three fuzzy fox kits blink back at her; she lifts the boot gently while Arjun waves a tiny hello; they tiptoe away, buckle the boot on his cold foot, and race home carrying the best secret on Maple Hill'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -249,190 +173,119 @@
    }
   },
   {
-   "id": "end-boot-in-den",
-   "body": "<<FILL role=ending words=70 beats='the boot slides into the den, too deep and dark to reach; Priya wraps Arjun foot in her scarf and pulls him home on the sled; Mom says foxes trade treasures back sometimes, so they plan to check the clearing right after breakfast'>>",
+   "id": "jay-clearing",
+   "body": "<<FILL role=explore words=30 beats='the jay leads them around the pines into a quiet clearing with one tall spruce; high on a springy branch, swinging in the wind, hangs the red boot with the yellow star, well past mitten reach'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c13",
+     "label": "Find a way to reach it",
+     "target": "spruce-branch"
+    }
+   ]
+  },
+  {
+   "id": "spruce-branch",
+   "body": "<<FILL role=climax words=38 beats='every gust flips the boot a little higher on the springy branch; the jay perches beside it looking proud of its shiny red treasure; Arjun jumps and jumps below while the sky turns dim pink'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c14",
+     "label": "Toss soft snowballs at it",
+     "target": "end-powder-plop"
+    },
+    {
+     "id": "c15",
+     "label": "Wait for the wind",
+     "target": "end-jay-keeps"
+    }
+   ]
+  },
+  {
+   "id": "end-powder-plop",
+   "body": "<<FILL role=ending words=70 beats='three soft snowballs and the boot pops off the branch, spins in the air, and plops deep into the powder with a poof; the jay squawks; digging it out takes a long cold while, so Priya and Arjun hurry home with the found boot, a little late and very snowy'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
-    "id": "e-boot-in-den",
+    "id": "e-powder-plop",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Plop in the Powder"
+   }
+  },
+  {
+   "id": "end-jay-keeps",
+   "body": "<<FILL role=ending words=70 beats='the wind will not drop the boot and the light is nearly gone; Priya ties her spare red mitten to the spruce trunk to mark the tree and pulls Arjun home on the sled, his sock wrapped snug in her scarf; tomorrow after breakfast they will come back with Dad and the long rake'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-jay-keeps",
     "valence": "negative",
     "kind": "setback",
-    "title": "The Den Keeps It"
+    "title": "The Jay Keeps It Tonight"
    }
   },
   {
    "id": "bottom-drift",
-   "body": "<<FILL role=explore words=65 beats='at the bottom of the run every sled crashes into one giant drift taller than Priya; Arjun hops on his booted foot and points at the dent where he tumbled off on their last ride; the snow is starting to fall faster'>>",
+   "body": "<<FILL role=explore words=30 beats='at the bottom every sled crashes into one giant drift taller than Priya; Arjun points at the dent where he tumbled off on their last ride; the snow falls faster and starts to fill the dent in'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c24",
-     "label": "Dig where Arjun crashed",
+     "id": "c16",
+     "label": "Make a digging plan",
+     "target": "dig-plan"
+    }
+   ]
+  },
+  {
+   "id": "dig-plan",
+   "body": "<<FILL role=decision words=38 beats='Priya sizes up the giant drift; she could dig right at the crash dent with her mittens before the snow fills it, or run to the warming hut and borrow a shovel from Mr. Okafor first'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c17",
+     "label": "Dig with your mittens now",
      "target": "mitten-dig"
     },
     {
-     "id": "c25",
-     "label": "Get better tools first",
+     "id": "c18",
+     "label": "Borrow a shovel first",
      "target": "borrow-shovel"
     }
    ]
   },
   {
    "id": "mitten-dig",
-   "body": "<<FILL role=explore words=65 beats='Priya digs at the crash dent with her mittens; the snow is packed like cold cake; she finds a scrap of yellow that turns out to be only a candy wrapper, and her fingers are getting cold fast'>>",
+   "body": "<<FILL role=explore words=30 beats='Priya digs at the crash dent; the snow is packed like cold cake; she uncovers a candy wrapper, then a little snow cave where dark shapes hide, a lost hat and something wedged deep that glows red'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c26",
-     "label": "Keep digging deeper",
-     "target": "snow-cave"
-    },
-    {
-     "id": "c27",
-     "label": "Dig along the crash line",
-     "target": "crash-line-dent"
+     "id": "c19",
+     "label": "Reach for the red thing",
+     "target": "snow-cave-reach"
     }
    ]
   },
   {
-   "id": "borrow-shovel",
-   "body": "<<FILL role=explore words=65 beats='Mr. Okafor is scraping the warming hut steps; he lends Priya his small blue shovel and tucks a hand warmer into each of her mittens; back at the big drift she must pick a place to start'>>",
+   "id": "snow-cave-reach",
+   "body": "<<FILL role=climax words=38 beats='the red boot is wedged under a hard crust ledge deep in the little snow cave; one strong pull could pop it free or bring the drift wall slumping down; Arjun holds Priya other hand tight'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c28",
-     "label": "Start where the sleds hit",
-     "target": "snow-cave"
-    },
-    {
-     "id": "c29",
-     "label": "Start along the drift edge",
-     "target": "crash-line-dent"
-    }
-   ]
-  },
-  {
-   "id": "snow-cave",
-   "body": "<<FILL role=decision words=65 beats='a few big scoops open a little snow cave in the drift; inside are dark shapes, a lost hat and a frozen juice box; the hole runs deeper than Priya arm can reach, and Arjun begs to wiggle inside'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c30",
-     "label": "Let Arjun wiggle in",
-     "target": "drift-hollow"
-    },
-    {
-     "id": "c31",
-     "label": "Widen the hole first",
-     "target": "shovel-clink"
-    }
-   ]
-  },
-  {
-   "id": "crash-line-dent",
-   "body": "<<FILL role=decision words=65 beats='along the crash line Priya finds a boot shaped dent stamped in the snow, with a drag trough leading into the heart of the drift; the falling snow is already softening its edges, so they must move fast'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c32",
-     "label": "Follow the trough in",
-     "target": "drift-hollow"
-    },
-    {
-     "id": "c33",
-     "label": "Dig straight down here",
-     "target": "shovel-clink"
-    }
-   ]
-  },
-  {
-   "id": "drift-hollow",
-   "body": "<<FILL role=explore words=65 beats='the narrow snow tunnel opens into a hollow packed hard by crashing sleds; Arjun squeals, because under a milky crust ledge something small glows red; it is wedged in deep where the snow is hardest'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c34",
-     "label": "Chip the crust gently",
-     "target": "deep-wedged-boot"
-    },
-    {
-     "id": "c35",
-     "label": "Have Arjun spot your reach",
-     "target": "spotter-reach"
-    }
-   ]
-  },
-  {
-   "id": "shovel-clink",
-   "body": "<<FILL role=explore words=65 beats='a big scoop thuds on something hard, but it is only a frozen thermos lid; underneath it the snow turns loose and sugary, and the very tip of a red toe peeks out; the sky is getting dimmer'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c36",
-     "label": "Scoop fast before dark",
-     "target": "deep-wedged-boot"
-    },
-    {
-     "id": "c37",
-     "label": "Reach in while Arjun spots",
-     "target": "spotter-reach"
-    }
-   ]
-  },
-  {
-   "id": "deep-wedged-boot",
-   "body": "<<FILL role=climax words=70 beats='the red boot with the yellow star sits deep in the drift hole, packed in hard; one strong pull could pop it free or bring the whole drift wall slumping down; Priya braces her knees and blows on her mittens'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c38",
-     "label": "One big pull",
+     "id": "c20",
+     "label": "One big careful pull",
      "target": "end-big-pull"
     },
     {
-     "id": "c39",
-     "label": "Dig around it more",
-     "target": "drift-slump"
-    }
-   ]
-  },
-  {
-   "id": "spotter-reach",
-   "body": "<<FILL role=climax words=70 beats='Arjun lies on his tummy at the hole calling left, left, there; Priya reaches until her whole shoulder is in the snow and her mitten brushes the boot heel; she can almost hook it with two fingers'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c40",
-     "label": "Grab it and pull now",
-     "target": "end-big-pull"
-    },
-    {
-     "id": "c41",
-     "label": "Clear more snow first",
-     "target": "drift-slump"
-    }
-   ]
-  },
-  {
-   "id": "drift-slump",
-   "body": "<<FILL role=climax words=70 beats='the drift groans and slumps; a whoosh of powder buries the hole and Priya arm to the elbow; she can still feel the boot heel with two fingers while Arjun grabs her other hand and digs in his heels'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c42",
-     "label": "Hold on and heave",
-     "target": "end-soggy-boot"
-    },
-    {
-     "id": "c43",
-     "label": "Let go and dig again",
-     "target": "end-flag-for-morning"
+     "id": "c21",
+     "label": "Yank it out fast",
+     "target": "end-drift-slump"
     }
    ]
   },
   {
    "id": "end-big-pull",
-   "body": "<<FILL role=ending words=70 beats='pop, the boot bursts free in a shower of snow and Priya thumps down laughing; they shake it empty, warm it on a hand warmer, and buckle it onto Arjun hopping foot; two sets of boot prints march home before the streetlights'>>",
+   "body": "<<FILL role=ending words=70 beats='pop, the boot bursts free in a shower of snow and Priya thumps down laughing; they shake it empty, rub Arjun toes warm, and buckle the boot on his hopping foot; two sets of boot prints march up the lane and home before the streetlights wink on'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -443,8 +296,61 @@
    }
   },
   {
+   "id": "end-drift-slump",
+   "body": "<<FILL role=ending words=70 beats='the drift groans and slumps, burying the boot arm deep in heavy snow just as the light fades; Priya plants a tall stick to mark the spot, wraps Arjun sock in her scarf, and pulls him home on the sled; the boot must wait under the drift until morning'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-drift-slump",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Marked for Morning"
+   }
+  },
+  {
+   "id": "borrow-shovel",
+   "body": "<<FILL role=explore words=30 beats='Mr. Okafor is scraping the warming hut steps; he lends Priya his small blue shovel and tucks a hand warmer into each of her mittens; back at the drift the crash dent is almost filled in'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c22",
+     "label": "Start digging with the shovel",
+     "target": "shovel-clink"
+    }
+   ]
+  },
+  {
+   "id": "shovel-clink",
+   "body": "<<FILL role=climax words=38 beats='a big scoop thuds on something hard, only a frozen thermos lid; under it the snow turns loose and sugary and the very tip of a red toe peeks out; the sky is getting dimmer'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c23",
+     "label": "Scoop wide around the boot",
+     "target": "end-shovel-scoop"
+    },
+    {
+     "id": "c24",
+     "label": "Grab the toe and wiggle",
+     "target": "end-soggy-boot"
+    }
+   ]
+  },
+  {
+   "id": "end-shovel-scoop",
+   "body": "<<FILL role=ending words=70 beats='Priya scoops a neat ring the way Mr. Okafor showed her and the boot lifts out dry and whole; she pops a warm hand warmer inside before buckling it on Arjun foot; they return the little blue shovel with a cheer and march home warm before the streetlights wink on'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-shovel-scoop",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Neat Blue Shovel"
+   }
+  },
+  {
    "id": "end-soggy-boot",
-   "body": "<<FILL role=ending words=70 beats='together they heave the boot out, but it is soaked and icy inside, no good for a small foot tonight; Priya tucks it in her coat and pulls Arjun home on the sled; the boot is found, and tomorrow it will dry by the radiator'>>",
+   "body": "<<FILL role=ending words=70 beats='the boot wiggles free but it is soaked and icy inside, no good for a small foot tonight; Priya tucks it in her coat, wraps Arjun foot in her scarf, and pulls him home on the sled; the boot is found, and tomorrow it will dry toasty by the radiator'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -455,221 +361,68 @@
    }
   },
   {
-   "id": "end-flag-for-morning",
-   "body": "<<FILL role=ending words=70 beats='the drift settles solid and the light is nearly gone; Mr. Okafor plants his ski pole to mark the spot and promises the drift will still be there at sunrise; Arjun rides home on the sled, one sock wrapped snug in Priya warm scarf'>>",
-   "is_ending": true,
-   "choices": [],
-   "ending": {
-    "id": "e-flag-for-morning",
-    "valence": "negative",
-    "kind": "setback",
-    "title": "Marked for Morning"
-   }
-  },
-  {
    "id": "ask-the-kids",
-   "body": "<<FILL role=explore words=65 beats='the hill kids crowd around; big Jo with the green sled remembers Arjun boot flying off near the jump at noon; Jo offers two ideas, check the lost and found in the warming hut or make a kid line and sweep the whole run'>>",
+   "body": "<<FILL role=explore words=22 beats='the hill kids crowd around; big Jo with the green sled remembers Arjun boot flying off near the bumpy jump at noon'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c44",
-     "label": "Try the warming hut",
-     "target": "warming-hut"
-    },
-    {
-     "id": "c45",
-     "label": "Make a search line",
-     "target": "kid-line-search"
+     "id": "c25",
+     "label": "Listen to Jo",
+     "target": "jo-remembers"
     }
    ]
   },
   {
-   "id": "warming-hut",
-   "body": "<<FILL role=explore words=65 beats='the warming hut smells like cocoa; Mr. Okafor tips out the lost and found basket, mittens, two hats, one green boot, but nothing red; he points Priya back toward the jump because the daylight is fading fast'>>",
+   "id": "jo-remembers",
+   "body": "<<FILL role=explore words=22 beats='Jo leads everyone toward the jump; a rider named Sana giggles and says the boot bounced off her tow rope, so she hung it in the maple there'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c46",
-     "label": "Hurry to the jump",
-     "target": "churned-jump"
-    },
-    {
-     "id": "c47",
-     "label": "Ask who sledded at noon",
-     "target": "toboggan-clue"
-    }
-   ]
-  },
-  {
-   "id": "kid-line-search",
-   "body": "<<FILL role=explore words=65 beats='six kids link arms and walk the run slowly downhill, kicking through soft snow; someone turns up a lost scarf; then Jo whistles, deep sled tracks and flying snow spray lead away from the run right at the jump'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c48",
-     "label": "Head to the jump",
-     "target": "churned-jump"
-    },
-    {
-     "id": "c49",
-     "label": "Ask about the noon sledders",
-     "target": "toboggan-clue"
-    }
-   ]
-  },
-  {
-   "id": "churned-jump",
-   "body": "<<FILL role=decision words=65 beats='near the jump the snow is churned and plowed where the big noon toboggan train thundered through; two leads are left, the huge snow spray pile at the run edge, or the toboggan riders themselves, still sledding by the fence'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c50",
-     "label": "Search the spray pile",
-     "target": "spray-pile"
-    },
-    {
-     "id": "c51",
-     "label": "Ask the toboggan riders",
-     "target": "sled-train-kids"
-    }
-   ]
-  },
-  {
-   "id": "toboggan-clue",
-   "body": "<<FILL role=decision words=65 beats='a helper remembers the toboggan train, four sleds roped together that plowed the whole run at noon and scooped snow like a snowplow; anything it hit got shoved to the spray pile at the run edge, unless a rider picked it up'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c52",
-     "label": "Dig the spray pile",
-     "target": "spray-pile"
-    },
-    {
-     "id": "c53",
-     "label": "Find the toboggan riders",
-     "target": "sled-train-kids"
-    }
-   ]
-  },
-  {
-   "id": "spray-pile",
-   "body": "<<FILL role=explore words=65 beats='Priya digs through the spray pile, lifting snow clumps like giant snowballs; one heavy clump is only ice around a juice box; then Arjun tugs her sleeve and points up, a spot of red hangs in a maple by the jump'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c54",
+     "id": "c26",
      "label": "Run to that maple",
-     "target": "boot-in-maple"
-    },
-    {
-     "id": "c55",
-     "label": "Check every maple",
-     "target": "scan-the-maples"
+     "target": "maple-by-the-jump"
     }
    ]
   },
   {
-   "id": "sled-train-kids",
-   "body": "<<FILL role=explore words=65 beats='a rider named Sana giggles and says a little red boot bounced off their tow rope at the jump, so they hung it up high where it would not get squashed; she cannot remember which maple tree it was'>>",
+   "id": "maple-by-the-jump",
+   "body": "<<FILL role=climax words=24 beats='the red boot with the yellow star dangles from a low maple branch just past mitten reach; Jo offers a boost while the other kids circle under it'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c56",
-     "label": "Run to the tallest maple",
-     "target": "boot-in-maple"
+     "id": "c27",
+     "label": "Take a boost from Jo",
+     "target": "end-jo-boost"
     },
     {
-     "id": "c57",
-     "label": "Scan the trees together",
-     "target": "scan-the-maples"
+     "id": "c28",
+     "label": "Bend the branch down together",
+     "target": "end-whole-hill"
     }
    ]
   },
   {
-   "id": "boot-in-maple",
-   "body": "<<FILL role=climax words=70 beats='at the tallest maple the red boot with the yellow star dangles from a low branch, swinging in the wind just past mitten reach; Arjun jumps and jumps under it while Jo comes puffing up the slope with the green sled'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c58",
-     "label": "Get a boost from Jo",
-     "target": "end-two-finger-rescue"
-    },
-    {
-     "id": "c59",
-     "label": "Knock it down with snowballs",
-     "target": "boot-in-powder"
-    }
-   ]
-  },
-  {
-   "id": "scan-the-maples",
-   "body": "<<FILL role=climax words=70 beats='kids circle the maples shouting out every red thing, a ribbon, a bird feeder, then the real boot bouncing on a springy branch; each gust flips it a little higher, so grabbing it will take a careful plan'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c60",
-     "label": "Bend the branch down slowly",
-     "target": "end-two-finger-rescue"
-    },
-    {
-     "id": "c61",
-     "label": "Shake the trunk together",
-     "target": "boot-in-powder"
-    }
-   ]
-  },
-  {
-   "id": "boot-in-powder",
-   "body": "<<FILL role=climax words=70 beats='the boot pops off the branch, spins in the air, and plops deep into the soft spray pile with a poof; everyone freezes, then bursts out laughing; now it is a digging race against the dimming winter sky'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c62",
-     "label": "Everyone dig one big spot",
-     "target": "end-whole-hill-helped"
-    },
-    {
-     "id": "c63",
-     "label": "Dig alone where it sank",
-     "target": "end-slow-way"
-    }
-   ]
-  },
-  {
-   "id": "end-two-finger-rescue",
-   "body": "<<FILL role=ending words=70 beats='Jo boosts Priya up while helpers bend the springy branch low; she hooks the boot with two fingers and down it comes to a huge cheer; Arjun stomps his warm booted feet all the way home, telling Mom the maple tree tried to keep his boot'>>",
+   "id": "end-jo-boost",
+   "body": "<<FILL role=ending words=70 beats='Jo boosts Priya up and she hooks the boot with two fingers; down it comes to a huge cheer; Arjun stomps his warm booted feet all the way home, telling Mom the maple tree tried to keep his boot and big Jo helped rescue it before the streetlights'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
-    "id": "e-two-finger-rescue",
+    "id": "e-jo-boost",
     "valence": "positive",
     "kind": "success",
     "title": "Two Finger Rescue"
    }
   },
   {
-   "id": "end-whole-hill-helped",
-   "body": "<<FILL role=ending words=70 beats='the kid crew scoops one giant crater in the spray pile and Jo lifts out the boot like a trophy; high fives go all around; walking home under the first streetlights, Priya thanks every helper on Maple Hill by name'>>",
+   "id": "end-whole-hill",
+   "body": "<<FILL role=ending words=70 beats='six kids bend the springy branch low, slow and giggling, until the boot drops right into Priya open mittens; high fives go all around the maple; walking home under the first streetlights, Priya thanks every helper on Maple Hill by name and Arjun wiggles his warm toes'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
-    "id": "e-whole-hill-helped",
+    "id": "e-whole-hill",
     "valence": "positive",
     "kind": "completion",
     "title": "The Whole Hill Helped"
-   }
-  },
-  {
-   "id": "end-slow-way",
-   "body": "<<FILL role=ending words=70 beats='digging alone takes a long, long time; Priya finally pulls the boot out just as the streetlights blink on, and they hurry home with frosty toes; the boot is found, and next time she will let the whole hill help from the start'>>",
-   "is_ending": true,
-   "choices": [],
-   "ending": {
-    "id": "e-slow-way",
-    "valence": "neutral",
-    "kind": "completion",
-    "title": "Found the Slow Way"
    }
   }
  ]

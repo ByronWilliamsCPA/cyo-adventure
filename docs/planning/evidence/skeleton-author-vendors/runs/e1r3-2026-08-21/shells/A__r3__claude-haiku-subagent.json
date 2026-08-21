@@ -236,11 +236,16 @@
    "choices": [
     {
      "id": "choice_014a",
-     "label": "Remember the parking lot area",
-     "target": "node_017"
+     "label": "Search the deep snowbank",
+     "target": "node_018"
     },
     {
      "id": "choice_014b",
+     "label": "Check the parking lot area",
+     "target": "node_019"
+    },
+    {
+     "id": "choice_014c",
      "label": "Head back and think",
      "target": "node_013"
     }
@@ -271,25 +276,8 @@
    ]
   },
   {
-   "id": "node_017",
-   "body": "<<FILL role=explore words=62 beats='Priya thinks hard. She remembers snow had blown near the parking lot edge. She walks to that spot with Mom. In the white snow beside the parking line, she spots a dark shape. Is it the boot?'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "choice_017a",
-     "label": "Search deeper in the snowbank",
-     "target": "node_018"
-    },
-    {
-     "id": "choice_017b",
-     "label": "Run to the dark shape",
-     "target": "node_019"
-    }
-   ]
-  },
-  {
    "id": "node_018",
-   "body": "<<FILL role=explore words=65 beats='Priya pushes into the deep snow along the slope. It is cold and hard to walk. She sees something dark peeking out from the white. Wait, she sees the boot edge under the snow. It is stuck between ice patches.'>>",
+   "body": "<<FILL role=climax words=70 beats='Priya remembers the parking lot area and thinks hard. She pushes into the deep snow along the snowy slope. It is cold and hard to walk. She sees something dark peeking out. Wait, she sees the boot edge under the snow. It is stuck between ice patches.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -301,7 +289,7 @@
   },
   {
    "id": "node_019",
-   "body": "<<FILL role=climax words=68 beats='Priya reaches the dark shape. It is the boot! It landed by the parking lot and got covered with drifted snow. She picks it up and shakes off the snow. The boot is cold but okay. She found it! Time to go home.'>>",
+   "body": "<<FILL role=climax words=68 beats='Priya walks to the parking lot area, thinking hard about where the boot could have gone. She reaches for a dark shape in the snow. It is the boot! It landed by the parking lot and got covered with drifted snow. She picks it up and shakes off the snow.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -373,7 +361,7 @@
   },
   {
    "id": "ending_006",
-   "body": "<<FILL role=ending words=68 beats='The ranger smiles kindly. She says three other boots came in this week, but none match Maya\\'s. She tells Priya to check tomorrow afternoon. That evening, Priya feels hopeful. She goes home and tells Maya everything. Together they plan to return.'>>",
+   "body": "<<FILL role=ending words=68 beats='The ranger smiles kindly. She says three other boots came in this week, but none match Maya\\'s. She tells Priya to check back tomorrow afternoon. That evening, Priya feels hopeful. She goes home and tells Maya everything. Together they plan to return.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
