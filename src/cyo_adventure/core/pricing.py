@@ -262,6 +262,32 @@ _PRICES: dict[tuple[str, str], ModelPrice] = {
             "endpoint, which is the pin this project uses for this model"
         ),
     ),
+    # Pinned-endpoint price, like the v4-pro row above: this run enablement row
+    # prices the `digitalocean` endpoint, the pin the 2026-08-21 chunked-path
+    # leg uses (`docs/planning/vendor-comparison/vendors-deepseek-v32.json`).
+    # Probed 2026-08-21: digitalocean, novita/fp8 and siliconflow/fp8 return
+    # 200; `atlas-cloud/fp8` returns 404 "no endpoints available matching your
+    # guardrail restrictions and data policy". DigitalOcean is the reachable
+    # US-hosted endpoint with a 128,000 declared output ceiling, above the
+    # slug's 65,536 `MODEL_OUTPUT_CAPS` row, so the resolved cap stays honest.
+    # #ASSUME: payment: deliberately absent from
+    # `scripts/refresh_pricing.py::_WANTED` for the same reason as the v4-pro
+    # row: a refresh reads the slug's default route and would overwrite this
+    # pinned price. Re-price by hand from
+    # /models/deepseek/deepseek-v3.2/endpoints together with the fixture's pin.
+    # #VERIFY: re-run the endpoint probe before reusing this pin; the
+    # vendor fixture and this row must change together.
+    ("openrouter", "deepseek/deepseek-v3.2"): ModelPrice(
+        input_usd_per_mtok=Decimal("0.25"),
+        output_usd_per_mtok=Decimal("0.80"),
+        as_of=date(2026, 8, 21),
+        source=_OPENROUTER_API,
+        note=(
+            "read live from https://openrouter.ai/api/v1/models/"
+            "deepseek/deepseek-v3.2/endpoints; price of the digitalocean "
+            "endpoint, which is the pin the 2026-08-21 chunked-path leg uses"
+        ),
+    ),
     ("openrouter", "qwen/qwen3.6-27b"): ModelPrice(
         input_usd_per_mtok=Decimal("0.6"),
         output_usd_per_mtok=Decimal("3.6"),

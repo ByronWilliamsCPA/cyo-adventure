@@ -105,10 +105,13 @@ what rate); books 4+5 and 6+7 form same-band different-skeleton pairs for `check
 context on whether 96.3 is a shared-skeleton phenomenon or a model idiom; books 6 and 8 are the
 tier-2 state-aware samples.
 
-### Run C: chunked path, first live datapoint (one book, v3.2, low cap)
+### Run C: chunked path, first live datapoints (two books, v3.2, low cap)
 
-- Skeleton: `skeletons/13-16/the-hollow-crown-gambit.json` (434 nodes, 28,426 words, plain,
-  tier 1 so state-awareness does not confound the path question)
+- Skeletons: `skeletons/13-16/the-hollow-crown-gambit.json` (434 nodes, 28,426 words) and
+  `skeletons/16+/the-obsidian-relay.json` (393 nodes, 32,652 words); both plain, both tier 1 so
+  state-awareness does not confound the path question, both over the 52,429-token feasibility
+  ceiling so both chunk. (Two books rather than one because `compare_vendors.py` requires at
+  least two briefs; the second doubles the chunked-path evidence for about ten cents.)
 - Model: `deepseek/deepseek-v3.2` (cap row 65,536; feasibility ceiling 52,429 < 56,852 expected
   tokens, so `fill_skeleton` takes the chunked path with no new harness flags)
 - Pre-flight: probe v3.2 endpoints (candidates with declared ceiling >= 65,536: DigitalOcean
@@ -139,10 +142,10 @@ plan became $1.99 measured).
 | Endpoint probes (~12 x 32 tokens) | $0.05 | $0.05 |
 | Run A (2 x tin-whistle-map, directive overhead) | $0.75 | $0.95 |
 | Run B (10 books, 92,870 words, ~206k in / ~186k out) | $1.10 | $1.55 |
-| Run C (v3.2, ~120k in / ~57k out at ~$0.27/$0.40) | $0.06 | $0.15 |
-| **Total expected** | | **~$2.70** |
+| Run C (v3.2 x 2 books, ~270k in / ~122k out at $0.25/$0.80) | $0.17 | $0.30 |
+| **Total expected** | | **~$2.85** |
 
-**Stop rule**: if measured spend exceeds **$5.40** (twice the estimate), stop and report, per the
+**Stop rule**: if measured spend exceeds **$5.70** (twice the estimate), stop and report, per the
 round's instructions. Content-filter failures (`AL-492`) are budgeted inside the repair margin and
 classified by (skeleton, brief) pair, never by brief or skeleton alone.
 
