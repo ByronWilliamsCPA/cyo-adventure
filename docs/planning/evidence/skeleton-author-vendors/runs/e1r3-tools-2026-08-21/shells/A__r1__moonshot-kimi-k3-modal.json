@@ -1,0 +1,462 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "animal care",
+   "patience",
+   "looking closely",
+   "community"
+  ],
+  "estimated_minutes": 2,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=20 beats='Holiday-week job: Miri feeds the school hens Bella, Dot and little brown Pip, and checks their corn, water and latch.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_start_go",
+     "label": "Zip up and hurry to school",
+     "target": "morning_check"
+    }
+   ]
+  },
+  {
+   "id": "morning_check",
+   "body": "<<FILL role=setup words=20 beats='The coop door swings open. Only Bella and Dot shuffle out. One brown feather lies by the gate. Little Pip is nowhere, and breakfast is going cold.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_morning_clues",
+     "label": "Count the clues before you dash off",
+     "target": "first_decision"
+    }
+   ]
+  },
+  {
+   "id": "first_decision",
+   "body": "<<FILL role=decision words=30 beats='Miri thinks hard. The coop had a tipped water pot and a loose plank. The school garden has pecked cabbage leaves. The playground gate stands open one crack. Three places to start.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fd_coop",
+     "label": "Look inside the henhouse",
+     "target": "coop_search"
+    },
+    {
+     "id": "c_fd_garden",
+     "label": "Search the school garden",
+     "target": "g_peek"
+    },
+    {
+     "id": "c_fd_gate",
+     "label": "Check the playground gate",
+     "target": "t_step"
+    }
+   ]
+  },
+  {
+   "id": "coop_search",
+   "body": "<<FILL role=decision words=70 beats='Inside the coop, Bella and Dot sit cross and clucky on the perch. The water pot is tipped over, a loose plank wiggles beside the pop-hole, and small brown feathers drift across the straw. The feather trail slips out through the pop-hole toward the fence. Or maybe this is a two-person job. What does Miri do?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_coop_pophole",
+     "label": "Crawl out through the pop-hole",
+     "target": "meadow_corner"
+    },
+    {
+     "id": "c_coop_ade",
+     "label": "Run for Mr Ade the caretaker",
+     "target": "c_ade"
+    }
+   ]
+  },
+  {
+   "id": "meadow_corner",
+   "body": "<<FILL role=decision words=70 beats='Through the bent fence flap is a tussocky meadow corner. Thistles prickle Miri's socks, the long grass smells of warm dust, and a Pip-sized gap threads under the hedge. Nearby lies the round dust-bath hollow, pale in the sunshine. Both could hide one small hen. Which way?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_meadow_hedge",
+     "label": "Creep along the hedge bottom",
+     "target": "c_hhy"
+    },
+    {
+     "id": "c_meadow_dust",
+     "label": "Rest beside the sunny dust-bath hollow",
+     "target": "c_ddy"
+    }
+   ]
+  },
+  {
+   "id": "c_hhy",
+   "body": "<<FILL role=explore words=30 beats='A rustle - a rabbit bursts out and bolts away! Where it sat, one brown feather clings to a nettle, and from under the hedge comes a cross, grumbly cluck.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hhy_forward",
+     "label": "Creep closer to the grumbly cluck",
+     "target": "c_hhn"
+    }
+   ]
+  },
+  {
+   "id": "c_hhn",
+   "body": "<<FILL role=decision words=40 beats='Deep under the hedge sits Pip, flat as a pancake and very grumbly, keeping warm a secret nest of seven speckled eggs. She will not budge for anybody. How should Miri move her?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hhn_cardigan",
+     "label": "Lift Pip, nest and all, in your cardigan",
+     "target": "end_secret_nest"
+    },
+    {
+     "id": "c_hhn_basket",
+     "label": "Fetch the egg basket and a blanket",
+     "target": "end_egg_basket"
+    }
+   ]
+  },
+  {
+   "id": "c_ddy",
+   "body": "<<FILL role=explore words=30 beats='The hollow is still warm, with three small feathers lodged in the dust. Something small and round wiggles just past the long grass, muttering to itself.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ddy_forward",
+     "label": "Crouch very low and wait",
+     "target": "c_ddn"
+    }
+   ]
+  },
+  {
+   "id": "c_ddn",
+   "body": "<<FILL role=decision words=30 beats='The muttering shape is puffed up like a grey teapot, dust-bathing in the sun. Pounce, or play it the corn-bucket way?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ddn_part",
+     "label": "Part the long grass very slowly",
+     "target": "end_dust_bath"
+    },
+    {
+     "id": "c_ddn_corn",
+     "label": "Back away and shake the corn bucket",
+     "target": "end_corn_home"
+    }
+   ]
+  },
+  {
+   "id": "c_ade",
+   "body": "<<FILL role=explore words=30 beats='Mr Ade comes with his toolbox, a landing net and the corn bucket. He shows Miri where something shoved the fence wire loose, and says no hen runs from corn for long.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ade_corn",
+     "label": "Shake the corn bucket softly",
+     "target": "end_corn_home"
+    }
+   ]
+  },
+  {
+   "id": "g_peek",
+   "body": "<<FILL role=explore words=25 beats='Through the squeaky side gate: pecked cabbage leaves, the greenhouse door standing ajar, and the compost bin rocking very slightly all by itself.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_peek_tiptoe",
+     "label": "Tiptoe between the cabbages",
+     "target": "garden_choice"
+    }
+   ]
+  },
+  {
+   "id": "garden_choice",
+   "body": "<<FILL role=decision words=45 beats='A warm tomato smell drifts out of the greenhouse. The compost bin rocks again - wobble, wobble. And by the outside tap, Mrs Bell the dinner lady is potting marigolds and humming. Three good ideas, one missing hen.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_garden_greenhouse",
+     "label": "Peek inside the greenhouse",
+     "target": "g_green"
+    },
+    {
+     "id": "c_garden_bin",
+     "label": "Lift the rocking compost bin",
+     "target": "end_prickly_hen"
+    },
+    {
+     "id": "c_garden_bell",
+     "label": "Ask Mrs Bell what she saw",
+     "target": "g_ask"
+    }
+   ]
+  },
+  {
+   "id": "g_green",
+   "body": "<<FILL role=explore words=30 beats='Inside, the air is damp and warm. On a bale of straw in a sunbeam, between two tomato rows, something soft and brown is snoring.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_green_kneel",
+     "label": "Tiptoe closer to the snoring shape",
+     "target": "g_green2"
+    }
+   ]
+  },
+  {
+   "id": "g_green2",
+   "body": "<<FILL role=decision words=40 beats='It is Pip, fast asleep like a feathery teapot on the warm straw, one wing over her eyes. Wrap her up and carry her home, or wake her gently?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_gh2_sweater",
+     "label": "Carry her home in a sweater sling",
+     "target": "end_warm_toast"
+    },
+    {
+     "id": "c_gh2_tomato",
+     "label": "Wake her with a rolling cherry tomato",
+     "target": "end_tomato_trick"
+    }
+   ]
+  },
+  {
+   "id": "g_ask",
+   "body": "<<FILL role=explore words=20 beats='Mrs Bell wipes her hands and listens kindly. She saw the weed barrow trundle past with something small and brown riding on top.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ask_barrow",
+     "label": "Find the weed barrow by the shed",
+     "target": "g_ask2"
+    }
+   ]
+  },
+  {
+   "id": "g_ask2",
+   "body": "<<FILL role=decision words=25 beats='The barrow stands by the shed, its weed pile rising and falling like something breathing underneath. Beside it, the compost bin gives one small wobble. Which heap first?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ask2_lift",
+     "label": "Lift the weeds one handful at a time",
+     "target": "end_barrow_nap"
+    },
+    {
+     "id": "c_ask2_bin",
+     "label": "Tip the wobbling compost bin instead",
+     "target": "end_prickly_hen"
+    }
+   ]
+  },
+  {
+   "id": "t_step",
+   "body": "<<FILL role=decision words=25 beats='The playground gate stands open one crack. Three-toed prints scuff the mud by the post, and one brown feather trembles on the latch. Where first?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_step_look",
+     "label": "Step through the gate and look down",
+     "target": "gate_choice"
+    },
+    {
+     "id": "c_step_cone",
+     "label": "Hurry straight to the upside-down cone",
+     "target": "t_cn"
+    }
+   ]
+  },
+  {
+   "id": "gate_choice",
+   "body": "<<FILL role=decision words=45 beats='The prints loop away toward the little wildlife pond. But another feather lies past the bike sheds, where an orange traffic cone is sitting very oddly upside-down. Which clue first?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_gate_prints",
+     "label": "Follow the prints to the pond",
+     "target": "t_prints"
+    },
+    {
+     "id": "c_gate_cone",
+     "label": "Check the upside-down cone",
+     "target": "t_cn"
+    }
+   ]
+  },
+  {
+   "id": "t_prints",
+   "body": "<<FILL role=explore words=30 beats='The prints loop all around the pond. The duck platform wobbles, and out of the reeds floats a very offended quack - except quacks do not usually begin with a cluck.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_prints_peek",
+     "label": "Creep closer to the duck platform",
+     "target": "end_pond_duck"
+    }
+   ]
+  },
+  {
+   "id": "t_cn",
+   "body": "<<FILL role=decision words=30 beats='Between the bikes, the upturned orange cone has one brown tail feather poking under its rim, rising and falling with tiny snores. Greet the cone, or answer that pond quack first?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cn_lift",
+     "label": "Lift the cone slowly",
+     "target": "end_sleepy_cone"
+    },
+    {
+     "id": "c_cn_pond",
+     "label": "Slip away toward the pond instead",
+     "target": "end_pond_duck"
+    }
+   ]
+  },
+  {
+   "id": "end_dust_bath",
+   "body": "<<FILL role=ending words=40 beats='It is Pip, dust-bathing like a splashing teapot, grey and happy. Miri scoops her up, warm and powdery, and tells her the hollow can have her tomorrow - inside a mended fence.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_dust_bath",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Sunny Dust Bath"
+   }
+  },
+  {
+   "id": "end_secret_nest",
+   "body": "<<FILL role=ending words=70 beats='Pip rides home in Miri's cardigan, eggs and all, grumbling like far-off thunder but safe. Mr Ade settles the nest in a straw-lined box, and on Monday the whole class takes turns guessing which speckled egg will be first to cheep. Pip pretends not to care, and sits back down like a small brown queen.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_secret_nest",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Pip's Secret Nest"
+   }
+  },
+  {
+   "id": "end_egg_basket",
+   "body": "<<FILL role=ending words=70 beats='Mr Ade brings the old egg basket and a flannel blanket, and together he and Miri lift the whole nest while Pip rides along, too proud to squawk. At show-and-tell, Miri counts seven speckled eggs and one very pleased hen, and Bella and Dot inspect the basket like two fussy aunties.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_egg_basket",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Seven Speckled Eggs"
+   }
+  },
+  {
+   "id": "end_corn_home",
+   "body": "<<FILL role=ending words=40 beats='Rattle, rattle goes the corn bucket by the run. In the gold light, here comes Pip up the path with leaves in her tail, at top hen speed. Miri shuts three hens in safe. Latched means latched.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_corn_home",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Home for Corn"
+   }
+  },
+  {
+   "id": "end_prickly_hen",
+   "body": "<<FILL role=ending words=70 beats='Miri lifts the bin slowly. Inside sits a rolled-up hedgehog, blinking - not Pip at all! But behind it, asleep in a heap of grass clippings, is one small brown hen. The hedgehog trundles off under the cabbages, Miri carries Pip home past the pecked leaves, and two garden friends are found in one bin-tipping morning.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_prickly_hen",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Prickly Hen"
+   }
+  },
+  {
+   "id": "end_warm_toast",
+   "body": "<<FILL role=ending words=70 beats='Miri wraps Pip in her sweater and carries her, warm as toast, past the cabbages and home to the coop. Pip only wakes enough to mutter once. Bella and Dot look her over, and the tomato plants are safe for another week. Miri writes one line in the hen diary: found asleep in a sunbeam.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_warm_toast",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Warm as Toast"
+   }
+  },
+  {
+   "id": "end_tomato_trick",
+   "body": "<<FILL role=ending words=70 beats='Miri rolls one cherry tomato down the straw. Pip wakes, pecks - and another tomato rolls, and another, all the way out of the greenhouse and up the garden path. By the last tomato they are at the coop, where Pip's own supper bowl waits, and Miri laughs so hard she nearly drops the tomatoes.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_tomato_trick",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Tomato Trick"
+   }
+  },
+  {
+   "id": "end_barrow_nap",
+   "body": "<<FILL role=ending words=30 beats='Under the weeds sits Pip, snug as a feathery potato. Mrs Bell brings a basket, and Pip rides to the coop like cargo, muttering. Weeds, says Mr Ade, are nobody's nest.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_barrow_nap",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Barrow Nap"
+   }
+  },
+  {
+   "id": "end_pond_duck",
+   "body": "<<FILL role=ending words=40 beats='On the duck platform, squashed between two very offended ducks, sits Pip, copying every duck face. Miri offers one handful of corn, and Pip hops straight into her arms. That is how a small hen spent a morning learning to be a duck.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_pond_duck",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Duckface Pip"
+   }
+  },
+  {
+   "id": "end_sleepy_cone",
+   "body": "<<FILL role=ending words=40 beats='Miri lifts the cone, and Pip blinks up into the light: she has napped through the whole search like a feathery road worker off duty. On Monday the class draws the cone on a poster, and it stays by the shed as the official Pip alarm.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_sleepy_cone",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Sleepy Cone"
+   }
+  }
+ ]
+}

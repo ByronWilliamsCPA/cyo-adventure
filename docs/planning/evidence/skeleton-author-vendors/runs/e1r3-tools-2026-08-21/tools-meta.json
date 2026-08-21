@@ -48,5 +48,17 @@
   "checker_runs": 10,
   "reported": "FAIL",
   "note": "same PL-18 loop as r1; its terminal-convergence designs shared ending nodes, which the checker counts as reconvergence, so no design read as a tree; cites brief note UW-C306"
+ },
+ "A__r1__moonshot-kimi-k3-modal": {
+  "checker_runs": 10,
+  "reported": "FAIL"
+ },
+ "A__r2__moonshot-kimi-k3-modal": {
+  "checker_runs": 8,
+  "reported": "PASS"
+ },
+ "A__r3__moonshot-kimi-k3-modal": {
+  "checker_runs": 7,
+  "reported": "PASS"
  }
 }

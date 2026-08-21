@@ -1,8 +1,8 @@
 {
- "generated_at": "2026-08-21T13:49:37+00:00",
+ "generated_at": "2026-08-21T17:23:57+00:00",
  "primary_endpoint": {
   "name": "repair rounds to strict pass, pooled across cells",
-  "statistic": 2.4,
+  "statistic": 2.5,
   "p_value": 1.0,
   "permutations": 10000,
   "seed": 20260821,
@@ -98,6 +98,23 @@
    ],
    "output_tokens": 123684,
    "min_catalog_distance": []
+  },
+  "moonshot-kimi-k3-modal": {
+   "shells": 3,
+   "errors": 0,
+   "strict_pass": 0,
+   "first_pass_clean": 0,
+   "repair_rounds": [
+    6,
+    6,
+    6
+   ],
+   "output_tokens": 0,
+   "min_catalog_distance": [
+    0.1357198321847087,
+    0.07411139531029212,
+    0.11154258221954835
+   ]
   }
  },
  "records": [
@@ -331,6 +348,42 @@
    "error": ""
   },
   {
+   "leg": "moonshot-kimi-k3-modal",
+   "family": "moonshot",
+   "cell_id": "A",
+   "band": "5-8",
+   "length": "short",
+   "style": "prose",
+   "replicate": 1,
+   "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+   "attempts": 7,
+   "repair_rounds": 6,
+   "strict_pass": false,
+   "first_pass_clean": false,
+   "parse_failures": 0,
+   "findings_lines_per_round": [
+    3,
+    3,
+    15,
+    2,
+    2,
+    2,
+    13
+   ],
+   "graph_check_exit": 0,
+   "latency_s": 0.0,
+   "input_tokens": null,
+   "output_tokens": null,
+   "reasoning_tokens": null,
+   "finish_reasons": [],
+   "min_catalog_distance": 0.1357198321847087,
+   "mean_catalog_distance": 0.3248029766798591,
+   "catalog_distance_note": "vs 5 in-cell peers",
+   "last_feedback": "ERROR   PL-18  PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'miri-and-the-missing-hen'\nERROR   PL-25  PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'miri-and-the-missing-hen'\nWARNING CG-3   node=end-cardigan CG-3 grammar: node 'end-cardigan' is a rendered stop on its own at ~84 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=end-tin-parade CG-3 grammar: node 'end-tin-parade' is a rendered stop on its own at ~84 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=end-egg-box CG-3 grammar: node 'end-egg-box' is a rendered stop on its own at ~82 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=end-nest-basket CG-3 grammar: node 'end-nest-basket' is a rendered stop on its own at ~82 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=end-bucket CG-3 grammar: node 'end-bucket' is a rendered stop on its own at ~78 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=end-full-count CG-3 grammar: node 'end-full-count' is a rendered stop on its own at ~78 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=end-bandit CG-3 grammar: node 'end-bandit' is a rendered stop on its own at ~78 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=end-lemonade CG-3 grammar: node 'end-lemonade' is a rendered stop on its own at ~80 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=end-dusk CG-3 grammar: node 'end-dusk' is a rendered stop on its own at ~80 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=end-new-latch CG-3 grammar: node 'end-new-latch' is a rendered stop on its own at ~76 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r1__moonshot-kimi-k3-modal.json failed structural validation: PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'miri-and-the-missing-hen'; PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'miri-and-the-missing-hen'",
+   "shell_file": "shells/A__r1__moonshot-kimi-k3-modal.json",
+   "error": ""
+  },
+  {
    "leg": "claude-fable-subagent",
    "family": "anthropic",
    "cell_id": "A",
@@ -519,6 +572,42 @@
    "error": ""
   },
   {
+   "leg": "moonshot-kimi-k3-modal",
+   "family": "moonshot",
+   "cell_id": "A",
+   "band": "5-8",
+   "length": "short",
+   "style": "prose",
+   "replicate": 2,
+   "premise": "Tomas and his grandmother build a kite for the spring festival, but the wind keeps changing and every new design needs testing.",
+   "attempts": 7,
+   "repair_rounds": 6,
+   "strict_pass": false,
+   "first_pass_clean": false,
+   "parse_failures": 0,
+   "findings_lines_per_round": [
+    3,
+    16,
+    2,
+    2,
+    2,
+    10,
+    3
+   ],
+   "graph_check_exit": 0,
+   "latency_s": 0.0,
+   "input_tokens": null,
+   "output_tokens": null,
+   "reasoning_tokens": null,
+   "finish_reasons": [],
+   "min_catalog_distance": 0.07411139531029212,
+   "mean_catalog_distance": 0.327798897880279,
+   "catalog_distance_note": "vs 5 in-cell peers",
+   "last_feedback": "ERROR   PL-25  PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'tomas-and-the-changing-wind'\nWARNING CG-1   node=n20-spool-count CG-1 grammar: 12 of 21 non-ending nodes are single-choice, above band '5-8's 50% allowance of 10 in story 'tomas-and-the-changing-wind'; the band's cadence is an average, so a long scene is fine only if the story spends decisions elsewhere (advisory only, new-content grammar per ADR-011 section 10)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r2__moonshot-kimi-k3-modal.json failed structural validation: PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'tomas-and-the-changing-wind'",
+   "shell_file": "shells/A__r2__moonshot-kimi-k3-modal.json",
+   "error": ""
+  },
+  {
    "leg": "claude-fable-subagent",
    "family": "anthropic",
    "cell_id": "A",
@@ -660,6 +749,42 @@
    "catalog_distance_note": "vs 5 in-cell peers",
    "last_feedback": "WARNING CG-1   node=ski_patrol_hut CG-1 grammar: 14 of 21 non-ending nodes are single-choice, above band '5-8's 50% allowance of 10 in story 'priya-arjun-lost-boot'; the band's cadence is an average, so a long scene is fine only if the story spends decisions elsewhere (advisory only, new-content grammar per ADR-011 section 10)\nstats: nodes=31 endings=10 fill_nodes=31 cell=(5-8, short, prose) topology=time_cave tier=1\nwalk: P(satisfying ending, uniform reader) 100.0% (floor 40% for 5-8 prose)\nclock: declared estimated_minutes 2 vs derived 2 (PL-23 tolerance 25%)\nreconvergence: max in-degree 1 (hard cap 4 for 5-8 time_cave)\nendings depth-qualified: 10 of 10 at depth >= 3 against floor 5\nFAIL strict: CG-1 advisory is blocking for a newly drafted skeleton: CG-1 grammar: 14 of 21 non-ending nodes are single-choice, above band '5-8's 50% allowance of 10 in story 'priya-arjun-lost-boot'; the band's cadence is an average, so a long scene is fine only if the story spends decisions elsewhere (advisory only, new-content grammar per ADR-011 section 10)",
    "shell_file": "shells/A__r3__claude-sonnet-subagent.json",
+   "error": ""
+  },
+  {
+   "leg": "moonshot-kimi-k3-modal",
+   "family": "moonshot",
+   "cell_id": "A",
+   "band": "5-8",
+   "length": "short",
+   "style": "prose",
+   "replicate": 3,
+   "premise": "On the first snowy day, Priya must find her little brother's boot, lost somewhere along the sled run, before their walk home.",
+   "attempts": 7,
+   "repair_rounds": 6,
+   "strict_pass": false,
+   "first_pass_clean": false,
+   "parse_failures": 0,
+   "findings_lines_per_round": [
+    2,
+    3,
+    22,
+    2,
+    7,
+    3,
+    7
+   ],
+   "graph_check_exit": 0,
+   "latency_s": 0.0,
+   "input_tokens": null,
+   "output_tokens": null,
+   "reasoning_tokens": null,
+   "finish_reasons": [],
+   "min_catalog_distance": 0.11154258221954835,
+   "mean_catalog_distance": 0.3239216908710965,
+   "catalog_distance_note": "vs 5 in-cell peers",
+   "last_feedback": "WARNING CG-1   node=bridge-spot CG-1 grammar: 11 of 19 non-ending nodes are single-choice, above band '5-8's 50% allowance of 9 in story 'priya-and-the-runaway-boot'; the band's cadence is an average, so a long scene is fine only if the story spends decisions elsewhere (advisory only, new-content grammar per ADR-011 section 10)\nstats: nodes=29 endings=10 fill_nodes=29 cell=(5-8, short, prose) topology=time_cave tier=1\nwalk: P(satisfying ending, uniform reader) 83.3% (floor 40% for 5-8 prose)\nclock: declared estimated_minutes 2 vs derived 2 (PL-23 tolerance 25%)\nreconvergence: max in-degree 1 (hard cap 4 for 5-8 time_cave)\nendings depth-qualified: 10 of 10 at depth >= 3 against floor 5\nFAIL strict: CG-1 advisory is blocking for a newly drafted skeleton: CG-1 grammar: 11 of 19 non-ending nodes are single-choice, above band '5-8's 50% allowance of 9 in story 'priya-and-the-runaway-boot'; the band's cadence is an average, so a long scene is fine only if the story spends decisions elsewhere (advisory only, new-content grammar per ADR-011 section 10)",
+   "shell_file": "shells/A__r3__moonshot-kimi-k3-modal.json",
    "error": ""
   }
  ]
