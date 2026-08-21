@@ -1,0 +1,4011 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_iron_spire_trial",
+  "version": 1,
+  "title": "The Mast-Trial of the Northern Fleet",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "the formal mast-trial",
+      "disciplined nerve",
+      "lethal missteps",
+      "conduct carried up the rigging"
+    ],
+    "estimated_minutes": 30,
+    "ending_count": 79,
+    "content_flags": {
+      "violence": "moderate",
+      "scariness": "intense",
+      "peril": "intense"
+    },
+    "topology": "gauntlet",
+    "length": "medium",
+    "narrative_style": "gamebook",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "standing",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "The trial-master's judgment of the climber's conduct. Monotone +1 at each of the two conduct checkpoints (the Quarterdeck Roll and the Bosun's Light) when the honourable choice is taken; the expedient survivable choice grants nothing. Reachable set at the summit is {0,1,2}. Gates the summit's naming: standing==2 opens the honour check, ==1 the true ascent, <=0 the unnamed summit."
+    },
+    {
+      "name": "grip",
+      "type": "int",
+      "initial": 3,
+      "min": 0,
+      "max": 3,
+      "description": "Physical reserve in the arms for the hard pitches. Monotone decreasing: -1 each time the climber takes a gamble-slip on a climbing checkpoint (the Weather Shrouds, the Lubber's Hole, the Futtock-Stave), where the clean line costs nothing. Reachable set at the Topmast Overhang is {0,1,2,3}. Gates the honest clean-line resolution of the overhang: on the clean line grip>=2 tops out and grip<=1 falls, but the standard gamble-slip bypasses the grip check (as at every checkpoint), so an under-gripped climber can still summit by nerve. grip therefore gates the clean climb, not survival absolutely; it does not differentiate the wins."
+    },
+    {
+      "name": "token",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the climber holds the bo'sun's brass grommet. Set true only by the correct report at the Bosun's Post; every survivable alternative (slip past, gamble) leaves it false. Both values reachable at the Top-Gallant Gate, where it partitions the passage (grommet opens it clean, no-grommet forces the lubber's hatch). Required true, with standing==2, for the highest summit name."
+    }
+  ],
+  "start_node": "setup0",
+  "nodes": [
+    {
+      "id": "setup0",
+      "body": "You stand on the frost-rimed cobbles of the harbour quay, the morning of the mast-trial. Before you, the Northern Fleet's flagship \u2013 a four-masted bark \u2013 towers against a pale sky, its rigging glazed with last night's ice. The great mainmast rises into a bank of winter cloud, every yardarm a stage, every shroud watched from the deck below by the mates who will judge your climb. The trial is one true path to the truck, climbed alone. Many are called to go aloft this morning; few will come down named.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_setup0",
+          "label": "Step to the mainmast ratlines.",
+          "target": "setup1"
+        }
+      ]
+    },
+    {
+      "id": "setup1",
+      "body": "The bosun, his breath clouding in the cold, states the one law before you begin: the mast is climbed by conduct and by nerve, and it keeps those who fail either. There is no coming back down a stage once passed \u2013 only the next yard, and the next, all the way to the truck or not at all. The ice on the shrouds catches the thin light, and the wind off the harbour already has your face.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_setup1",
+          "label": "Fall in for the quarterdeck roll.",
+          "target": "muster_ap0"
+        }
+      ]
+    },
+    {
+      "id": "muster_ap0",
+      "body": "The quarterdeck is open to the harbour wind, its after-rail looking down onto the iron bitts of the quay where the drop waits. The first mate reads the names from the ship's book and marks each candidate's bearing before the first ratline is touched. The crew stands silent along the rail, and the cold makes every breath a small white flag.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_ap0",
+          "label": "Stand your ground.",
+          "target": "muster_gate"
+        }
+      ]
+    },
+    {
+      "id": "muster_pass",
+      "body": "You give your name clearly and without a waver. The first mate takes his chalk and puts a quick, neat mark beside it on the slate. You walk to the mast with your name safe and your manner already earning you respect.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_pass",
+          "label": "Turn to the mainmast shrouds.",
+          "target": "curtain_ap0"
+        }
+      ]
+    },
+    {
+      "id": "muster_degrade",
+      "body": "You shove forward out of the line, shouldering past a smaller candidate to reach the ratlines first. The mates let you pass, but the first mate notes it in cold silence, making no mark at all beside your name. You climb unrecorded, your bearing already spent.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_degrade",
+          "label": "Take the ice-slicked ratlines.",
+          "target": "curtain_ap0"
+        }
+      ]
+    },
+    {
+      "id": "muster_f0_c0",
+      "body": "The mistake lands: the rail you vaulted stood between the crowded deck and the drop to the frozen quay. For one heartbeat, your boots are on the wrong side of the ship.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f0_c0",
+          "label": "The drop opens below you.",
+          "target": "muster_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "muster_f0_c1",
+      "body": "One breath in which the whole trial narrows to the cold air and the iron bitts below. The harbour water is frozen and the stones are hard, and the fall is the only thing still moving.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f0_c1",
+          "label": "The fall comes.",
+          "target": "muster_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "muster_f0_end",
+      "body": "Your vault carries you over the rail and onto the old iron of the quay below. The quarterdeck keeps the one who would not stand its form, and the trial ends before the ratlines are even touched.",
+      "is_ending": true,
+      "ending": {
+        "id": "muster_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Over the Quarter-Rail"
+      },
+      "choices": []
+    },
+    {
+      "id": "muster_f1_c0",
+      "body": "The mistake lands: a marlinspike answers a raised hand on the quarterdeck. The mate who shoved you back into line is armed with old iron, and the blow is already coming.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f1_c0",
+          "label": "The spike finds you.",
+          "target": "muster_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "muster_f1_c1",
+      "body": "There is a moment the whole motion could be taken back, and then it cannot. The quarterdeck falls silent, and the only sound is the wind in the rigging and the small, heavy noise of the spike.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f1_c1",
+          "label": "The quarterdeck recedes.",
+          "target": "muster_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "muster_f1_end",
+      "body": "The mate's marlinspike cuts you down where you stand. Striking out at the quarterdeck roll is the shortest trial of all; insolence at the muster is answered before the first ratline is climbed.",
+      "is_ending": true,
+      "ending": {
+        "id": "muster_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Struck at the Roll"
+      },
+      "choices": []
+    },
+    {
+      "id": "muster_f2_c0",
+      "body": "The mistake lands: delay is death here. The first mate's count does not wait for a waverer, and the after-rail is no place to stand idle while the rest of the line pushes forward.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f2_c0",
+          "label": "The rail is at your back.",
+          "target": "muster_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "muster_f2_c1",
+      "body": "A chance to step into the open comes and then goes while you wait at the deck's edge. One hand is half-raised, and the press of others builds behind you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f2_c1",
+          "label": "The line surges.",
+          "target": "muster_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "muster_f2_end",
+      "body": "The crowd surges at the closing call of the roll and carries you back over the unrailed after-edge. The quarterdeck takes the one who would not stand its form, and the frozen quay hears the trial end.",
+      "is_ending": true,
+      "ending": {
+        "id": "muster_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Backed Off the After-Rail"
+      },
+      "choices": []
+    },
+    {
+      "id": "muster_fd_c0",
+      "body": "The mistake lands: the first mate's word is the quarterdeck's law. You open your mouth to argue your place, and the whole roll turns to look at you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_fd_c0",
+          "label": "The mates close in.",
+          "target": "muster_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "muster_fd_c1",
+      "body": "The answer comes fast and is final, the mates' hands already on your arms. No one draws out any cruelty; the quarterdeck does not debate its own order.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_fd_c1",
+          "label": "The rail looms.",
+          "target": "muster_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "muster_fd_end",
+      "body": "Arguing the roll is refusing the trial outright. The mates take you off the deck and the drop to the frozen quay below hears it end. The trial keeps its own peace, and it keeps it finally.",
+      "is_ending": true,
+      "ending": {
+        "id": "muster_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Argued Off the Deck"
+      },
+      "choices": []
+    },
+    {
+      "id": "muster_slip",
+      "body": "You ghost into the tail of the file while the mates' eyes are on the forward candidates, and you climb uncounted. No mark for you and none against, only the icy ratlines ahead and the wind already worrying the shrouds.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_slip",
+          "label": "Reach for the frozen shrouds.",
+          "target": "curtain_ap0"
+        }
+      ]
+    },
+    {
+      "id": "muster_cap",
+      "body": "You let the line close forward and lower your hands when the mates look your way. The trial ends before the first ratline, but you keep your life for the lowering of your head, and the cold wind off the harbour is still yours to breathe.",
+      "is_ending": true,
+      "ending": {
+        "id": "muster_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Held at the Quarterdeck"
+      },
+      "choices": []
+    },
+    {
+      "id": "muster_seen",
+      "body": "You are seen but still moving off the quarterdeck, the mates' eyes on your back and the roll nearly closed. One breath to choose which way you leave this deck; only the hard, quiet way keeps the trial alive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_seen_slip",
+          "label": "Fall in quiet at the back and go uncounted.",
+          "target": "muster_slip"
+        },
+        {
+          "id": "c_muster_seen_fight",
+          "label": "Argue your place aloud with the first mate.",
+          "target": "muster_fd_c0"
+        },
+        {
+          "id": "c_muster_seen_cap",
+          "label": "Stand down and let the mates hold you.",
+          "target": "muster_cap"
+        }
+      ]
+    },
+    {
+      "id": "muster_gate",
+      "body": "You are on the quarterdeck. The law here is bearing: stand the form, answer your name when it is read from the ship's book, and keep off the after-rail. Those who jostle for place, mouth off to a mate, or crowd the rail are struck from the trial or over it. Hold the form and be counted; any other way is a fall to the quay or cold iron from a mate.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_ok",
+          "label": "Stand the form and answer plain when named.",
+          "target": "muster_pass",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "standing",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_muster_exp",
+          "label": "Push to the head of the line to climb first.",
+          "target": "muster_degrade"
+        },
+        {
+          "id": "c_muster_f0",
+          "label": "Vault the after-rail to skip the count.",
+          "target": "muster_f0_c0"
+        },
+        {
+          "id": "c_muster_f1",
+          "label": "Strike back at the mate who shoves you.",
+          "target": "muster_f1_c0"
+        },
+        {
+          "id": "c_muster_f2",
+          "label": "Hang back at the rail until the count ends.",
+          "target": "muster_f2_c0"
+        },
+        {
+          "id": "c_muster_gamble",
+          "label": "Chance it and slip the count unseen.",
+          "target": "muster_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "curtain_ap0",
+      "body": "The first true pitch is the weather shrouds, a sheer ladder of tarred hemp and frozen ratlines that runs up the mainmast's lower section. The ropes are glazed with ice from the overnight freeze, and one graded climbing line \u2013 drier line, a touch thicker, the safe hold \u2013 weaves up through the rigging where old hands have worked it clear. The rest is slick and overhung with frozen spray, and it drops clean to the deck.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_ap0",
+          "label": "Look up into the frozen rigging.",
+          "target": "curtain_gate"
+        }
+      ]
+    },
+    {
+      "id": "curtain_pass",
+      "body": "The graded line of dry rope brings you over the futtock-plate with your reserve unspent. The lower shrouds are under you now, and the masthead is a stage nearer through the cold air.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_pass",
+          "label": "Get your breath on the futtock-plate.",
+          "target": "warden_ap0"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f0_c0",
+      "body": "The mistake lands: the ice-sheathed rope away from the graded line offers nothing to a closing hand. Your glove skates over a frozen shroud that might as well be glass.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f0_c0",
+          "label": "The grip fails.",
+          "target": "curtain_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f0_c1",
+      "body": "One held breath in which the whole trial narrows to the grip that is not there. The rope burns through your glove and then it is gone, and the deck is a long way down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f0_c1",
+          "label": "The shroud lets you go.",
+          "target": "curtain_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f0_end",
+      "body": "The smooth, iced shroud gives no hold and you peel off it into the harbour air. The weather shrouds keep the one who scorned the worked line and trusted the frozen rope.",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Iced Shroud"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_f1_c0",
+      "body": "The mistake lands: swinging out under the futtock-plate to bypass the crowd leaves you hanging over open air, the ship's deck a small square far below and nothing but the harbour wind between.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f1_c0",
+          "label": "The overhang takes your weight.",
+          "target": "curtain_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f1_c1",
+      "body": "The arms know the truth a heartbeat before the hands let go. The cold has stolen what the swing demanded, and the rope is slipping through your gloves with a slowness that is worse than a snap.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f1_c1",
+          "label": "The rope runs out.",
+          "target": "curtain_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f1_end",
+      "body": "Under the futtock-plate your weight comes off the rigging entirely. There is only the drop to the deck, and the cold wind singing through the shrouds where you hung a moment ago.",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Futtock-Plate"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_f2_c0",
+      "body": "The mistake lands: a lunge past a good hold is a bet against the frozen hemp. You throw a hand up toward a darker line you took for a safe rope, leaving the graded line behind you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f2_c0",
+          "label": "The lunge stretches out.",
+          "target": "curtain_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f2_c1",
+      "body": "The dark line was just a shadow of ice on a stay, not a rope you could grip. Your hand closes on frozen nothing, and the whole world tilts outward from the mast.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f2_c1",
+          "label": "The hand finds only air.",
+          "target": "curtain_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f2_end",
+      "body": "The high, dark line is a glazed stay too slick to hold weight. You come off it into the long fall, and the weather shrouds keep the climber who reached too far from the graded rope.",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "A Lunge Too Far Aloft"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_f3_c0",
+      "body": "The mistake lands: delay is death on a frozen shroud. You spread your weight and stop, trying to let the burn leave your arms, and the cold finds still fingers faster than rest finds strength.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f3_c0",
+          "label": "The cold seeps in.",
+          "target": "curtain_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f3_c1",
+      "body": "The strength leaks out of held arms while you cling and do not move. The ice on the ropes is melting against your gloves and re-freezing, and every second you hang still is a second the cold takes from you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f3_c1",
+          "label": "Your grip opens on its own.",
+          "target": "curtain_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f3_end",
+      "body": "Hanging still on the frozen shrouds spends the very reserve the pitch demands. Your grip opens of its own accord, the fingers too cold to know they are letting go, and the mast lets you drop.",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Frozen on the Shrouds"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_f4_c0",
+      "body": "The mistake lands: a backstay is not a shroud and will not hold a climbing brace. You lean into the stay that runs behind the mast and try to bridge the gap, but the angle is completely wrong.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f4_c0",
+          "label": "The stay pulls you out.",
+          "target": "curtain_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f4_c1",
+      "body": "Your boots slip the polished ratline and the stay takes your full weight at a slant that opens onto nothing. There is nothing else to trust now, and the trust was misplaced from the first step onto it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f4_c1",
+          "label": "The stay swings free.",
+          "target": "curtain_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f4_end",
+      "body": "The backstay is at too shallow an angle to bridge against the mast. Your brace skates off it, and the whole weight of your mistake pulls you out into the cold air. The mast takes you.",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Backstay"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_fd_c0",
+      "body": "The mistake lands: the futtock-plate's outer edge is the mast's cruelest ground. It is iced, overhung, and swept by the wind that has been working on it all night.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_fd_c0",
+          "label": "You swing out over the edge.",
+          "target": "curtain_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_fd_c1",
+      "body": "The hands know before the mind does. The rope you swung for is a sleeve of ice, and the swing has committed your weight to a hold that was never going to catch it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_fd_c1",
+          "label": "The hold was never there.",
+          "target": "curtain_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_fd_end",
+      "body": "Free of the graded line over the outer futtock edge, there is no recovery. Your swing takes you past the last dry rope and out into the harbour air, and the weather shrouds keep the one who dared the iced edge.",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Free of the Worked Line"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_slip",
+      "body": "The old cargo hoist-line crumbles under your hands, the frozen hemp shedding splinters into your gloves. You climb it on failing strength, the rope sawing at your palms, and haul over the futtock-plate with your arms half-gone but the plate made. You lie on the cold wood, gasping, and the lower shrouds are below you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_slip",
+          "label": "Roll onto the futtock-plate.",
+          "target": "warden_ap0"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "dec",
+          "var": "grip",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "curtain_cap",
+      "body": "You cling to a frozen ratline and call down into the wind. A mate on the futtock-plate ropes you off the shrouds, the line biting under your arms. The trial is over for you, but you come down to the deck alive, and the cold air is still yours.",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Roped Off the Shrouds"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_seen",
+      "body": "You are seen but still moving off the weather shrouds, a mate's voice carrying up from the deck. One breath to choose which hold you reach for next; only the hard, quiet way keeps the trial alive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_seen_slip",
+          "label": "Scrabble the rotten hoist-line and haul over hard.",
+          "target": "curtain_slip"
+        },
+        {
+          "id": "c_curtain_seen_fight",
+          "label": "Swing the outer futtock edge for speed.",
+          "target": "curtain_fd_c0"
+        },
+        {
+          "id": "c_curtain_seen_cap",
+          "label": "Freeze on the shrouds and call to be roped down.",
+          "target": "curtain_cap"
+        }
+      ]
+    },
+    {
+      "id": "curtain_gate",
+      "body": "You are on the weather shrouds. Take the graded line, hand to hand on the dry rope worked by old hands, and it will bear you to the futtock-plate. Anywhere off the line the hemp is frozen glass or overhung with ice and gives nothing back but the fall. Find the dry holds, keep to them, never trust a glazed shroud.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_ok",
+          "label": "Climb the graded line, dry hold to dry hold.",
+          "target": "curtain_pass"
+        },
+        {
+          "id": "c_curtain_f0",
+          "label": "Take an ice-sheathed shroud to save the climb.",
+          "target": "curtain_f0_c0"
+        },
+        {
+          "id": "c_curtain_f1",
+          "label": "Swing out under the futtock-plate to pass fast.",
+          "target": "curtain_f1_c0"
+        },
+        {
+          "id": "c_curtain_f2",
+          "label": "Lunge for a dark line above the graded holds.",
+          "target": "curtain_f2_c0"
+        },
+        {
+          "id": "c_curtain_f3",
+          "label": "Rest spread on the shrouds to gather your nerve.",
+          "target": "curtain_f3_c0"
+        },
+        {
+          "id": "c_curtain_f4",
+          "label": "Brace against the backstay to rest your arms.",
+          "target": "curtain_f4_c0"
+        },
+        {
+          "id": "c_curtain_gamble",
+          "label": "Chance the rotten hoist-line to the side.",
+          "target": "curtain_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "warden_ap0",
+      "body": "Above the weather shrouds is the bosun's post, a small platform with a lashed gate. The bosun who holds this post keeps a brass grommet. This ring will open the top-gallant gate near the truck. He gives it only to a climber who reports in proper sea-form: name, rate, and stages already climbed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_ap0",
+          "label": "Face the lashed gate.",
+          "target": "warden_gate"
+        }
+      ]
+    },
+    {
+      "id": "warden_pass",
+      "body": "The bosun hears the true report, nods once, and presses the brass grommet into your palm \u2013 a small ring, cold from the air, that you close your fist around. He slashes the lashing on the gate and swings it wide. You climb with the top-gallant gate already half won.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_pass",
+          "label": "Pocket the grommet and climb on.",
+          "target": "portcullis_ap0"
+        }
+      ]
+    },
+    {
+      "id": "warden_degrade",
+      "body": "You go by the post while the bosun's back is turned, ducking under the lashed gate before he turns around. No grommet in your hand, but the gate is behind you and the topmast shrouds go on up into the grey.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_degrade",
+          "label": "Reach for the topmast ratlines.",
+          "target": "portcullis_ap0"
+        }
+      ]
+    },
+    {
+      "id": "warden_f0_c0",
+      "body": "The mistake lands: the bosun knows every name on the trial roll, and the one you give is not on it. He looks at you across the platform, and the look is the whole judgment.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f0_c0",
+          "label": "The bosun's hand moves.",
+          "target": "warden_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "warden_f0_c1",
+      "body": "The lie is caught in the space of a single breath. The bosun does not raise his voice; he does not need to. The platform is very small, and the drop off it is the full height of the lower mast.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f0_c1",
+          "label": "The bosun steps forward.",
+          "target": "warden_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "warden_f0_end",
+      "body": "A false report at the bosun's post is a climber who should not be on the mast. The bosun's knife settles it there, and the trial ends on the small, cold platform with the wind for a witness.",
+      "is_ending": true,
+      "ending": {
+        "id": "warden_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Caught in the False Report"
+      },
+      "choices": []
+    },
+    {
+      "id": "warden_f1_c0",
+      "body": "The mistake lands: the grommet is the bosun's to give, never to take. Your hand darts for the brass ring on his belt while he is still talking, and the whole platform sees it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f1_c0",
+          "label": "Your fingers close on air.",
+          "target": "warden_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "warden_f1_c1",
+      "body": "The reach is answered before the fingers close. The bosun's hand is faster than yours, and the knife is already in it. There is a single, short sound, and then the wind again.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f1_c1",
+          "label": "The grommet stays on his belt.",
+          "target": "warden_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "warden_f1_end",
+      "body": "Grabbing at the brass grommet draws the bosun's knife. The post keeps the one who would steal the trial's token, and the cold platform is the last deck you stand on.",
+      "is_ending": true,
+      "ending": {
+        "id": "warden_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Grasped at the Grommet"
+      },
+      "choices": []
+    },
+    {
+      "id": "warden_f2_c0",
+      "body": "The mistake lands: the gate's lashing is hemp and tar, but the bosun is not alone on his post. You throw your shoulder against the barred gate, and the noise carries across the whole mast.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f2_c0",
+          "label": "The lashing holds.",
+          "target": "warden_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "warden_f2_c1",
+      "body": "The din brings the whole platform's crew down on you in a moment. The bosun's mates come off the rail, and the platform is suddenly very crowded and very quiet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f2_c1",
+          "label": "They have you.",
+          "target": "warden_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "warden_f2_end",
+      "body": "Forcing the bosun's gate brings the whole post crew down on you. You never cross the platform, and the trial ends at the lashing you tried to break.",
+      "is_ending": true,
+      "ending": {
+        "id": "warden_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Forced at the Bosun's Post"
+      },
+      "choices": []
+    },
+    {
+      "id": "warden_fd_c0",
+      "body": "The mistake lands: nothing is claimed as a right in this rigging. You raise your voice and demand the grommet, and the bosun's face closes like a hatch.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_fd_c0",
+          "label": "Your demand hangs in the cold air.",
+          "target": "warden_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "warden_fd_c1",
+      "body": "The bosun's post has no patience for a raised voice. His answer is quick, spare, and already in motion. The harbour wind carries the sound away before it ever reaches the deck.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_fd_c1",
+          "label": "The knife answers.",
+          "target": "warden_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "warden_fd_end",
+      "body": "Demanding what must be earned marks you unfit for the mast. The bosun's knife puts you off the platform, and the trial ends at the post where you argued instead of reported.",
+      "is_ending": true,
+      "ending": {
+        "id": "warden_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Denied at the Bosun's Post"
+      },
+      "choices": []
+    },
+    {
+      "id": "warden_slip",
+      "body": "You edge the crumbling outer rail around the platform, the frozen wood groaning under your hands, no grommet and no leave. A hand's width of rail is all that keeps you off the drop, and then you gain the topmast shrouds beyond, your heart hammering against your ribs.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_slip",
+          "label": "Swing onto the topmast ratlines.",
+          "target": "portcullis_ap0"
+        }
+      ]
+    },
+    {
+      "id": "warden_cap",
+      "body": "You kneel on the cold platform wood, and the bosun lashes the gate shut against you for good. The trial ends at the post, and you keep your breath and the sight of the harbour below, grey and still and far away.",
+      "is_ending": true,
+      "ending": {
+        "id": "warden_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Barred at the Bosun's Post"
+      },
+      "choices": []
+    },
+    {
+      "id": "warden_seen",
+      "body": "You are seen but still moving off the bosun's post, his eyes on your back and the gate still lashed. One breath to choose how you leave this platform; only the hard, quiet way keeps the trial alive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_seen_slip",
+          "label": "Traverse the outer rail past the post.",
+          "target": "warden_slip"
+        },
+        {
+          "id": "c_warden_seen_fight",
+          "label": "Demand the grommet as your right, loudly.",
+          "target": "warden_fd_c0"
+        },
+        {
+          "id": "c_warden_seen_cap",
+          "label": "Kneel at the gate and yield to the bosun.",
+          "target": "warden_cap"
+        }
+      ]
+    },
+    {
+      "id": "warden_gate",
+      "body": "You are at the bosun's post. Report yourself in the trial's proper form \u2013 name, rate, the stages climbed \u2013 and the bosun hands you the brass grommet that opens the top-gallant gate above. Report wrong, or reach past the bosun, or force the gate, and the post answers the way the mast answers everything. Give the true report and take the grommet, or climb on without it and meet the top-gallant gate bare.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_ok",
+          "label": "Report in proper form and receive the brass grommet.",
+          "target": "warden_pass",
+          "effects": [
+            {
+              "op": "set",
+              "var": "token",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_warden_exp",
+          "label": "Slip past the lashed gate without reporting.",
+          "target": "warden_degrade"
+        },
+        {
+          "id": "c_warden_f0",
+          "label": "Give a false name to shortcut the report.",
+          "target": "warden_f0_c0"
+        },
+        {
+          "id": "c_warden_f1",
+          "label": "Snatch the grommet from the bosun's belt.",
+          "target": "warden_f1_c0"
+        },
+        {
+          "id": "c_warden_f2",
+          "label": "Batter the lashed gate open and climb through.",
+          "target": "warden_f2_c0"
+        },
+        {
+          "id": "c_warden_gamble",
+          "label": "Chance the outer rail around the barred gate.",
+          "target": "warden_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "portcullis_ap0",
+      "body": "The topmast shrouds pass under the cargo gantry. This is a heavy iron block-and-tackle that rides up and down on a worn ratchet. The block drops on a slow, countable beat before the gear winds it back up. The iron falls through the climbing channel to the deck.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_ap0",
+          "label": "Watch the block's rhythm.",
+          "target": "portcullis_gate"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_pass",
+      "body": "You are through and clear as the cargo block comes down behind you. The iron bites empty channel, the ratchet clanks through its cycle, and the topmast shrouds climb on into the grey sky.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_pass",
+          "label": "Climb on up the topmast.",
+          "target": "chimney_ap0"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f0_c0",
+      "body": "The mistake lands: the ratchet's count was already past the safe beat when you started your move. The block is coming down, and you are still in the channel beneath it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f0_c0",
+          "label": "The block is falling.",
+          "target": "portcullis_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f0_c1",
+      "body": "One breath in which the whole trial narrows to the falling iron. The block is a ton of cast metal, and the ratchet song is the last thing you hear before the shadow covers you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f0_c1",
+          "label": "The shadow falls.",
+          "target": "portcullis_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f0_end",
+      "body": "The cargo block comes down as you pass beneath. The iron finds the channel and the climber in it, and the trial ends under the gantry.",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Falling Block"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_f1_c0",
+      "body": "The mistake lands: the channel under the block is the one place never to stand. You stop halfway through to judge the ratchet's timing, and the iron is already on its way down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f1_c0",
+          "label": "The block is coming.",
+          "target": "portcullis_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f1_c1",
+      "body": "The block is moving before your mind finishes the sum. The ratchet's click is faster than you counted, and the shadow on the channel is spreading.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f1_c1",
+          "label": "The channel narrows to a point.",
+          "target": "portcullis_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f1_end",
+      "body": "You stop dead in the channel, exactly where the block comes to rest. The cargo gantry keeps anyone who pauses beneath its load.",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Halted in the Channel"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_f2_c0",
+      "body": "The mistake lands: the old ratchet will not be cheated. You jam a belaying pin into the gear to hold the block up, and for one second the iron teeth bite on it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f2_c0",
+          "label": "The pin groans.",
+          "target": "portcullis_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f2_c1",
+      "body": "The wedge fails in the instant it is trusted. The belaying pin shears with a sound like a small, dry shot, and the block resumes its fall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f2_c1",
+          "label": "The block drops full weight.",
+          "target": "portcullis_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f2_end",
+      "body": "The ratchet shears your wedge and the block drops with its full weight. Jamming the cargo gantry only jams the climber beneath it.",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Against the Ratchet"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_f3_c0",
+      "body": "The mistake lands: delay is death. The beat does not slow, and the climbers pressing up the shrouds behind you leave you no room as the block starts its fall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f3_c0",
+          "label": "The shrouds fill behind you.",
+          "target": "portcullis_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f3_c1",
+      "body": "The climbers behind you are climbing on your heels, and the channel mouth is the only way out. There is no room to step back, and the block is coming down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f3_c1",
+          "label": "The block and the crowd meet.",
+          "target": "portcullis_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f3_end",
+      "body": "Waiting for the ratchet to finish just traps you at the channel opening when time runs out. The iron does not care that you planned to be careful.",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Waiting at the Gantry"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_f4_c0",
+      "body": "The mistake lands: the rising block carries a climber into the gantry's iron crossbeam. You grab the block as it goes up, and the top of the channel is approaching fast.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f4_c0",
+          "label": "The crossbeam fills your view.",
+          "target": "portcullis_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f4_c1",
+      "body": "The gap above closes faster than you can let go. The iron beam is solid, and the block rises at a steady pace that does not slow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f4_c1",
+          "label": "The gap is gone.",
+          "target": "portcullis_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f4_end",
+      "body": "Riding the block upward crushes you against the iron crossbeam it seals into. The mechanism keeps anyone who rides it.",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Into the Crossbeam"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_fd_c0",
+      "body": "The mistake strikes: no one beats the block on its downward beat. You race toward the channel, but the iron is already falling.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_fd_c0",
+          "label": "You are in the channel.",
+          "target": "portcullis_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_fd_c1",
+      "body": "The iron is faster than your legs. The shadow of the block overtakes you from above, and the ratchet song is already ending.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_fd_c1",
+          "label": "The block wins the race.",
+          "target": "portcullis_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_fd_end",
+      "body": "Racing the falling block is a race you have already lost. The iron comes down on the running climber, and the gantry keeps anyone who tries to outrun it.",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Beaten by the Block"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_slip",
+      "body": "You dive the closing gap and feel the block graze your heel, the iron ripping through your boot. It draws blood and no more, and you are through onto the topmast shrouds, gasping and clutching the ratlines.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_slip",
+          "label": "Get your boots on the ratline.",
+          "target": "chimney_ap0"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_cap",
+      "body": "You step off the beat and a mate stops you with a hand on your shoulder, guiding you back down the shrouds. The trial ends at the cargo gantry, and you are whole, your breath misting the cold air.",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Barred at the Gantry"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_seen",
+      "body": "You are seen but still moving off the cargo gantry, the block's ratchet counting down. One breath to choose your next move; only the hard, quiet way keeps the trial alive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_seen_slip",
+          "label": "Throw yourself through on the closing beat.",
+          "target": "portcullis_slip"
+        },
+        {
+          "id": "c_portcullis_seen_fight",
+          "label": "Sprint it and beat the falling block.",
+          "target": "portcullis_fd_c0"
+        },
+        {
+          "id": "c_portcullis_seen_cap",
+          "label": "Step back and let the mate bar you out.",
+          "target": "portcullis_cap"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_gate",
+      "body": "You are at the cargo gantry. The block falls and rises on a fixed count, and the only safe passage is to go through cleanly while it is up and clear of the channel. Caught halfway, or under it as it falls, and the iron comes down where you stand. Read the beat, cross clean, never be beneath it on the drop.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_ok",
+          "label": "Cross clean on the up-beat, all the way through.",
+          "target": "portcullis_pass"
+        },
+        {
+          "id": "c_portcullis_f0",
+          "label": "Dash under as the block begins to fall.",
+          "target": "portcullis_f0_c0"
+        },
+        {
+          "id": "c_portcullis_f1",
+          "label": "Stop halfway to judge the ratchet's timing.",
+          "target": "portcullis_f1_c0"
+        },
+        {
+          "id": "c_portcullis_f2",
+          "label": "Wedge the ratchet to hold the block up.",
+          "target": "portcullis_f2_c0"
+        },
+        {
+          "id": "c_portcullis_f3",
+          "label": "Wait for a later, slower beat to cross.",
+          "target": "portcullis_f3_c0"
+        },
+        {
+          "id": "c_portcullis_f4",
+          "label": "Climb the block itself as it rises.",
+          "target": "portcullis_f4_c0"
+        },
+        {
+          "id": "c_portcullis_gamble",
+          "label": "Chance the last of the up-beat and go now.",
+          "target": "portcullis_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "chimney_ap0",
+      "body": "The route enters the lubber's hole, a tight gap between the mast and the top deck. You climb it by pressing your back against one side and your boots against the other. It runs up into the dark. The wood is slick with frozen spray, and the drop opens below you into the ship's hollow core.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_ap0",
+          "label": "Squeeze into the dark cleft.",
+          "target": "chimney_gate"
+        }
+      ]
+    },
+    {
+      "id": "chimney_pass",
+      "body": "You bridge out of the top of the hole onto the topsail platform, breathing hard but whole. The lubber's hole is below you now, a dark square in the white wood, and the wind is cleaner up here.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_pass",
+          "label": "Stand on the topsail platform.",
+          "target": "arrowslits_ap0"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f0_c0",
+      "body": "The mistake lands: the lubber's hole holds nothing for a face-climber. You abandon the bridge and try to pull yourself up one side, and the smooth, frozen wood offers no grip at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f0_c0",
+          "label": "The wood slips under your hands.",
+          "target": "chimney_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f0_c1",
+      "body": "The balance goes in an instant and there is only the dark cleft below. Your boots lose the far wall, and the bridge that was holding you becomes a single, failing handhold.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f0_c1",
+          "label": "The hole opens beneath you.",
+          "target": "chimney_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f0_end",
+      "body": "Abandoning the bridge for the face, you have nothing pressing back. The lubber's hole drops you down its own dark throat, and the trial ends in the hollow of the mast.",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Down the Lubber's Hole"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_f1_c0",
+      "body": "The mistake strikes: the wooden chock you trusted was only resting in the crack, frozen in place but not fixed. You pull on it, and it shifts under your weight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f1_c0",
+          "label": "The chock comes loose.",
+          "target": "chimney_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f1_c1",
+      "body": "The wood shifts and the hold becomes a falling thing. It tumbles past you into the dark, and your hand is suddenly holding nothing, the bridge broken on one side.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f1_c1",
+          "label": "The bridge collapses.",
+          "target": "chimney_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f1_end",
+      "body": "The loose chock tears free under your pull. The lubber's hole keeps the climber who trusted frozen deadwood.",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "On a Loose Chock"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_f2_c0",
+      "body": "The mistake lands: the cleft is wider than a single span. You try to stem the whole width at once, legs reaching for both walls, and the stretch is too much.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f2_c0",
+          "label": "Your legs reach their limit.",
+          "target": "chimney_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f2_c1",
+      "body": "Your boots reach their limit and past it in the same moment. The pressure that was holding you against both walls releases, and there is only air between your feet and the wood.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f2_c1",
+          "label": "The gap wins.",
+          "target": "chimney_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f2_end",
+      "body": "Trying to brace the whole width at once breaks your hold apart. You slip into the gap and the dark takes you, the lubber's hole closing over your head.",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Split in the Hole"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_f3_c0",
+      "body": "The mistake lands: delay is death in the cleft. You wedge yourself still to rest, the pressure of the bridge holding you in place, and the cold and the strain begin their slow work.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f3_c0",
+          "label": "The cold finds your legs.",
+          "target": "chimney_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f3_c1",
+      "body": "The cold and the strain unstitch the hold while you hang unmoving. The burn in your thighs becomes a tremble, and the tremble becomes a slow, spreading weakness.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f3_c1",
+          "label": "Your legs begin to shake.",
+          "target": "chimney_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f3_end",
+      "body": "Wedged still in the lubber's hole, your braced strength drains until the bridge gives. The cleft does not hurry, and it does not need to. The dark takes you slowly.",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Wedged and Spent in the Hole"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_f4_c0",
+      "body": "The mistake lands: speed in the lubber's hole is a bridge half-set. You rush the dark, pressing and stepping faster than your balance can follow, and one boot finds only slick wood.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f4_c0",
+          "label": "Your boot skates on ice.",
+          "target": "chimney_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f4_c1",
+      "body": "A rushed press finds no purchase and the balance is gone. Your boot skates a frozen patch on the far wall, and the bridge that was carrying you upward becomes a slide into the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f4_c1",
+          "label": "The dark swallows you.",
+          "target": "chimney_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f4_end",
+      "body": "Hurrying the dark, one boot skates a frozen face and the bridge collapses. The lubber's hole takes the climber who would not go slow.",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Rushed in the Hole"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_fd_c0",
+      "body": "The mistake lands: a jump in the lubber's hole leaves both walls entirely. You spring for the top of the cleft, and for one heartbeat you touch neither side.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_fd_c0",
+          "label": "You are free of the walls.",
+          "target": "chimney_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_fd_c1",
+      "body": "For one beat you touch neither face, suspended in the dark with nothing pressing back. The walls are suddenly far apart, and the gap is waiting.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_fd_c1",
+          "label": "The gap receives you.",
+          "target": "chimney_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_fd_end",
+      "body": "A bridge-jump that misses touches nothing at all. The lubber's hole keeps the one who left both walls at once.",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Between Both Walls"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_slip",
+      "body": "The hole flares wide near the top and you fight it with everything left, your arms burning and your legs cramping. You claw over the lip onto the topsail platform with your reserve all but gone, lying flat on the frozen wood and gasping.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_slip",
+          "label": "Get to your knees on the platform.",
+          "target": "arrowslits_ap0"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "dec",
+          "var": "grip",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "chimney_cap",
+      "body": "You jam yourself fast in the cleft and shout up into the dark. A rope comes down from the topsail platform and takes you off the trial, alive if not climbing, pulled up into the grey light.",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Roped from the Hole"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_seen",
+      "body": "You are seen but still moving off the lubber's hole, a mate's lantern swinging above. One breath to choose your next hold; only the hard, quiet way keeps the trial alive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_seen_slip",
+          "label": "Thrash the flared slot and beach on the platform.",
+          "target": "chimney_slip"
+        },
+        {
+          "id": "c_chimney_seen_fight",
+          "label": "Bridge-jump the last of the cleft to the top.",
+          "target": "chimney_fd_c0"
+        },
+        {
+          "id": "c_chimney_seen_cap",
+          "label": "Wedge fast and shout for a rope from above.",
+          "target": "chimney_cap"
+        }
+      ]
+    },
+    {
+      "id": "chimney_gate",
+      "body": "You are in the lubber's hole. Bridge it steady, back to one wall and boots to the other, and shuffle up in balance. Lose the bridge, or trust a loose chock, or hurry the moves, and the cleft drops you the way it has dropped others. Keep the bridge, test each press, never rush the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_ok",
+          "label": "Bridge the hole steady, testing each press.",
+          "target": "chimney_pass"
+        },
+        {
+          "id": "c_chimney_f0",
+          "label": "Face-climb one wall to move up quicker.",
+          "target": "chimney_f0_c0"
+        },
+        {
+          "id": "c_chimney_f1",
+          "label": "Trust a loose chock for a high pull.",
+          "target": "chimney_f1_c0"
+        },
+        {
+          "id": "c_chimney_f2",
+          "label": "Stem wide across the full gap at once.",
+          "target": "chimney_f2_c0"
+        },
+        {
+          "id": "c_chimney_f3",
+          "label": "Rest wedged in the cleft to catch your breath.",
+          "target": "chimney_f3_c0"
+        },
+        {
+          "id": "c_chimney_f4",
+          "label": "Chimney it fast to be out of the dark sooner.",
+          "target": "chimney_f4_c0"
+        },
+        {
+          "id": "c_chimney_gamble",
+          "label": "Chance the flared exit slot direct.",
+          "target": "chimney_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "arrowslits_ap0",
+      "body": "The topsail platform leads to a narrow rope gallery cut across the yard. Watchers with crossbows hold the trees above. The dark mouths of their weapons track across the rope. Only one shadowed strip along the yard's base runs clear of their line of fire.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_ap0",
+          "label": "Step onto the footrope.",
+          "target": "arrowslits_gate"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_pass",
+      "body": "You cross the footrope pressed low to the yard's base and reach the far mast-hoop untouched. The crosstrees stay silent behind you, the bolts still sheathed, and the wind is the only sound.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_pass",
+          "label": "Grip the mast-hoop and climb on.",
+          "target": "murderholes_ap0"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f0_c0",
+      "body": "The mistake lands: the open span of the footrope is exactly the arc the crosstrees command. You step out from under the yard, and the whole gallery is a clear lane of fire.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f0_c0",
+          "label": "You are in the open span.",
+          "target": "arrowslits_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f0_c1",
+      "body": "One breath in which the whole trial narrows to the bowstrings above. You hear the creak of the cords drawing back, and the footrope under your boots is the only ground there is.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f0_c1",
+          "label": "The strings release.",
+          "target": "arrowslits_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f0_end",
+      "body": "Out in the open, you are an easy target for the men in the crosstrees. The walkway keeps the climber who stayed in the yard's shadow safe.",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "In the Open Span"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_f1_c0",
+      "body": "The mistake lands: speed in the light is still in the light. You put your head down and run the footrope flat out, and the crosstrees track you the whole way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f1_c0",
+          "label": "The footrope bounces under you.",
+          "target": "arrowslits_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f1_c1",
+      "body": "The bolts find the runner before the mast-hoop does. The crosstrees have practised this, and a sprinting target on a straight rope is the easiest mark they are given.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f1_c1",
+          "label": "The bolts take you.",
+          "target": "arrowslits_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f1_end",
+      "body": "A head-down rush across the open rope outruns nothing. The crosstrees take the one who traded cover for haste.",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Down the Open Rope"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_f2_c0",
+      "body": "The mistake lands: you cannot bait a manned crosstree. You shout a taunt up at the mates to draw their fire and waste their bolts, and the bowstrings snap back at once.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f2_c0",
+          "label": "Your voice carries up the mast.",
+          "target": "arrowslits_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f2_c1",
+      "body": "The answer is a volley, not a wasted shot. The crosstrees do not fire blind, and a shouting climber is a target painted with their own voice.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f2_c1",
+          "label": "The volley is loosed.",
+          "target": "arrowslits_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f2_end",
+      "body": "Drawing the crosstrees' eye draws their aim. The footrope gallery answers a taunt the only way it can.",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Marked on the Footrope"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_f3_c0",
+      "body": "The mistake lands: delay is death here. The crosstrees are never unmanned and the watch does not stand down. You huddle in a gap between two blocks, waiting for a shift change that will not come.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f3_c0",
+          "label": "The niche is very small.",
+          "target": "arrowslits_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f3_c1",
+      "body": "The climbers behind you crowd the niche and spill you into the light. A boot in your back pushes you off the block, and suddenly you are standing in the open span.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f3_c1",
+          "label": "The crosstrees see you.",
+          "target": "arrowslits_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f3_end",
+      "body": "The crosstrees keep a standing watch that outlasts any wait. Huddling in the niche only pins you until the press behind shows you to them.",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Flushed from the Niche"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_f4_c0",
+      "body": "The mistake lands: above the crosstrees is the mates' own platform. You try to climb around the footrope gallery by scaling the yardarm itself, and the top of the climb is the worst place to arrive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f4_c0",
+          "label": "You top out onto the crosstrees.",
+          "target": "arrowslits_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f4_c1",
+      "body": "The top of the climb brings you up onto the manned crosstrees themselves. The mates turn from their firing positions, and you are standing in the middle of the watch.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f4_c1",
+          "label": "The mates turn to face you.",
+          "target": "arrowslits_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f4_end",
+      "body": "Hauling over the crosstrees brings you up onto the manned platform itself. The gallery's keepers are waiting where you top out, and the trial ends among them.",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Onto the Crosstrees"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_fd_c0",
+      "body": "The mistake lands: the open footrope belongs to the crosstrees. You break from the shadow and sprint the rope flat out, and the bolts are already in the air.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_fd_c0",
+          "label": "You are running in the light.",
+          "target": "arrowslits_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_fd_c1",
+      "body": "The runner is the easiest mark of all. The crosstrees track your sprint and loose, and the bolts arrive before you have taken ten steps.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_fd_c1",
+          "label": "The bolts find their mark.",
+          "target": "arrowslits_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_fd_end",
+      "body": "Running flat out in the open is a straight line for a levelled crossbow. The crosstrees keep the arc where the runner fell.",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Run Down on the Footrope"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_slip",
+      "body": "You time the gap between two volleys and go low and fast, a bolt splintering the yard beside your shoulder as you make the far mast-hoop. The wood sprays splinters into your cheek, but you are through.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_slip",
+          "label": "Grab the mast-hoop.",
+          "target": "murderholes_ap0"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_cap",
+      "body": "You stop and raise your hands in the shadow strip under the yard. The crosstrees hold their bolts, and a mate comes down the rope to take you off the mast. You are breathing, and the trial ends here, with the wind still in your face.",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Halted at the Crosstrees"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_seen",
+      "body": "You are seen but still moving off the footrope gallery, the crosstrees tracking your movement. One breath to choose your next step; only the hard, quiet way keeps the trial alive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_seen_slip",
+          "label": "Dash low between the loosing beats.",
+          "target": "arrowslits_slip"
+        },
+        {
+          "id": "c_arrowslits_seen_fight",
+          "label": "Break into the open and run flat out.",
+          "target": "arrowslits_fd_c0"
+        },
+        {
+          "id": "c_arrowslits_seen_cap",
+          "label": "Show your hands and stand still to be taken.",
+          "target": "arrowslits_cap"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_gate",
+      "body": "You are on the footrope gallery. The crosstrees fire loose at anything that shows in the open span, but a shadowed strip along the yard's base sits under their downward arc where a bolt cannot reach. Keep low in the shadow and move steady. Step into the open, or draw their eye, and the crosstrees answer at once.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_ok",
+          "label": "Keep to the shadow strip, low and steady.",
+          "target": "arrowslits_pass"
+        },
+        {
+          "id": "c_arrowslits_f0",
+          "label": "Cross the open span quickly in the light.",
+          "target": "arrowslits_f0_c0"
+        },
+        {
+          "id": "c_arrowslits_f1",
+          "label": "Rush the footrope all at once, head down.",
+          "target": "arrowslits_f1_c0"
+        },
+        {
+          "id": "c_arrowslits_f2",
+          "label": "Taunt the crosstrees to waste their bolts.",
+          "target": "arrowslits_f2_c0"
+        },
+        {
+          "id": "c_arrowslits_f3",
+          "label": "Wait in a niche for the watch to stand down.",
+          "target": "arrowslits_f3_c0"
+        },
+        {
+          "id": "c_arrowslits_f4",
+          "label": "Climb above the crosstrees to pass over them.",
+          "target": "arrowslits_f4_c0"
+        },
+        {
+          "id": "c_arrowslits_gamble",
+          "label": "Chance a fast low dash between two volleys.",
+          "target": "arrowslits_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "murderholes_ap0",
+      "body": "The mast-hoop opens into a low, hollow path through the core of the topmast. Overhead, it is pierced by holes where the mates above can drop hot sand and loose chain. The decking is set with worn safe-marks, the only places the drops cannot reach.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_ap0",
+          "label": "Look up at the telltale holes.",
+          "target": "murderholes_gate"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_pass",
+      "body": "You follow the safe-marks the length of the passage and out the far end onto the open deck. The telltale holes drop their loads on empty wood behind you, the sand hissing down where you stood a moment before.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_pass",
+          "label": "Step out into the grey light.",
+          "target": "oath_ap0"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f0_c0",
+      "body": "The mistake lands: the middle line runs hole to hole. You leave the safe-marks and walk the passage straight down the centre, and the telltale holes above you are the exact line of the drop.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f0_c0",
+          "label": "You are walking under the holes.",
+          "target": "murderholes_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f0_c1",
+      "body": "One breath in which the whole trial narrows to the dark openings above. The sand and chain are already falling, and the passage has nowhere to hide.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f0_c1",
+          "label": "The load falls.",
+          "target": "murderholes_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f0_end",
+      "body": "The straight middle path is exactly the one the warning holes overlook. The passage claims the climber who ignored the marks and walked down the centre.",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Beneath the Telltales"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_f1_c0",
+      "body": "The mistake lands: under a telltale hole is the one place death falls. You stop directly beneath a dark opening to shelter from the passage's length, and the light above the hole changes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f1_c0",
+          "label": "The light above you dims.",
+          "target": "murderholes_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f1_c1",
+      "body": "The light above the opening dims an instant before the load comes. A shadow blocks the hole, and then the hot sand is falling straight down onto the spot where you stand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f1_c1",
+          "label": "The sand pours down.",
+          "target": "murderholes_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f1_end",
+      "body": "Sheltering beneath a telltale hole puts you under the mates' drop. The passage answers from above, and the load finds the one who stood still beneath it.",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Opening"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_f2_c0",
+      "body": "The mistake lands: the wall line crosses three holes unseen. You feel your way forward along the dark passage wall, blind in the gloom, and you cannot see the telltales above.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f2_c0",
+          "label": "You cannot see the holes.",
+          "target": "murderholes_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f2_c1",
+      "body": "The safe-marks were the sight you gave up when you left them. The dark keeps its holes, and you walk under three of them before the first load falls.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f2_c1",
+          "label": "The first load drops.",
+          "target": "murderholes_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f2_end",
+      "body": "Groping the wall blind carries you under holes you never see. The load finds you between one step and the next.",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Blind Under the Telltales"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_f3_c0",
+      "body": "The mistake lands now: hesitation is death. A safe-mark is safe only while you keep moving. You pause on a worn circle of decking to wait out a drop, and the mates above have all the sand, chain, and time they need.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f3_c0",
+          "label": "You are standing still on the mark.",
+          "target": "murderholes_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f3_c1",
+      "body": "The mates above have all the sand and stone and time they need. They work in relays that never pause, and a stationary target on a safe-mark only lets the next relay range you in.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f3_c1",
+          "label": "The next relay sights you.",
+          "target": "murderholes_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f3_end",
+      "body": "The warning holes are worked in relays that never pause. Halting even on a true mark only lets the next shift find you waiting there.",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Stalled on the Mark"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_f4_c0",
+      "body": "The mistake lands: the telltale holes need no aiming, only a body below. You charge forward fast, hoping to outrun the drops, and your boots scatter off the safe-marks into the open floor.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f4_c0",
+          "label": "You are off the marks.",
+          "target": "murderholes_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f4_c1",
+      "body": "The load is already falling as your legs commit to the run. Sand and chain pour down from openings you never even saw, and the passage fills with the sound of it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f4_c1",
+          "label": "The load finds you.",
+          "target": "murderholes_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f4_end",
+      "body": "A charge scatters you off the safe-marks into the holes' reach. The passage keeps the one who traded the line for speed.",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Safe-Marks"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_fd_c0",
+      "body": "The mistake lands: nothing outruns a drop from straight above. You sprint the middle of the passage at full speed, and the telltales open the whole length of the ceiling.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_fd_c0",
+          "label": "The whole ceiling opens.",
+          "target": "murderholes_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_fd_c1",
+      "body": "The load falls faster than your legs can carry. The sand and chain come down the whole length of the passage at once, and there is nowhere your sprint can take you that the drops do not already cover.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_fd_c1",
+          "label": "The passage fills.",
+          "target": "murderholes_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_fd_end",
+      "body": "The middle sprint runs the whole gauntlet of holes at once. The telltales keep the one who dared their length.",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Down the Middle"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_slip",
+      "body": "You read the shifting light at the openings and weave the marks at speed, hot sand hissing down a pace behind your heels and chain rattling off the deck where you stood. You burst out the far end, gasping.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_slip",
+          "label": "Catch your breath on the open deck.",
+          "target": "oath_ap0"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_cap",
+      "body": "You stand on a safe-mark and shout your surrender upward. The mates hold their load, and a voice calls down for you to stay still. They bring you out, alive, into the grey light.",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Yielded in the Passage"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_seen",
+      "body": "You are seen but still moving off the telltale passage, the holes above you still dark. One breath to choose your next step; only the hard, quiet way keeps the trial alive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_seen_slip",
+          "label": "Weave the marks fast on a read of the light.",
+          "target": "murderholes_slip"
+        },
+        {
+          "id": "c_murderholes_seen_fight",
+          "label": "Sprint the middle and outrun the drops.",
+          "target": "murderholes_fd_c0"
+        },
+        {
+          "id": "c_murderholes_seen_cap",
+          "label": "Halt on a mark and call up your surrender.",
+          "target": "murderholes_cap"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_gate",
+      "body": "You are under the telltale holes. The safe-marks in the decking trace the one line the holes above cannot reach. Step mark to mark and the drops fall wide of you. Stray off the marks, or dawdle under a hole, or crowd forward blind, and the mates loose their load where you stand. Follow the marks, never linger beneath a hole.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_ok",
+          "label": "Step mark to mark, clear of every hole.",
+          "target": "murderholes_pass"
+        },
+        {
+          "id": "c_murderholes_f0",
+          "label": "Run the passage straight down the middle.",
+          "target": "murderholes_f0_c0"
+        },
+        {
+          "id": "c_murderholes_f1",
+          "label": "Shelter directly under a hole to think.",
+          "target": "murderholes_f1_c0"
+        },
+        {
+          "id": "c_murderholes_f2",
+          "label": "Feel forward blind along the wall.",
+          "target": "murderholes_f2_c0"
+        },
+        {
+          "id": "c_murderholes_f3",
+          "label": "Pause on a safe-mark to wait out a drop.",
+          "target": "murderholes_f3_c0"
+        },
+        {
+          "id": "c_murderholes_f4",
+          "label": "Charge through fast before they can aim.",
+          "target": "murderholes_f4_c0"
+        },
+        {
+          "id": "c_murderholes_gamble",
+          "label": "Chance a fast weave between two holes.",
+          "target": "murderholes_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "oath_ap0",
+      "body": "The passage ends at the bosun's light, a wide lantern platform before the upper rigging where a climber is asked to keep the fleet's oath. A mate sets a wounded rival across the narrow walk, laid on the cold wood in your path, and the test is whether you stop for them or step over.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_ap0",
+          "label": "Look down at the wounded climber.",
+          "target": "oath_gate"
+        }
+      ]
+    },
+    {
+      "id": "oath_pass",
+      "body": "You get the wounded climber to safe planking, lifting them out of the walkway, and only then take the topgallant ratlines. The mate at the light marks the oath kept, and you climb named for it, the cold wind a little cleaner around you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_pass",
+          "label": "Climb the topgallant ratlines.",
+          "target": "spiral_ap0"
+        }
+      ]
+    },
+    {
+      "id": "oath_degrade",
+      "body": "You go around the fallen rival, stepping wide on the platform's edge, and climb on. No mate stops you, but the oath goes unkept and you carry that up the mast unmarked, the brass of the lantern watching your back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_degrade",
+          "label": "Take the topgallant ratlines.",
+          "target": "spiral_ap0"
+        }
+      ]
+    },
+    {
+      "id": "oath_f0_c0",
+      "body": "The mistake lands: the mates watch the bosun's light closest of all. You step onto the wounded climber's back to gain height for the ratlines, and the whole platform sees it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f0_c0",
+          "label": "Your boot comes down.",
+          "target": "oath_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "oath_f0_c1",
+      "body": "The act is judged in the space of a breath. The mate at the lantern does not speak; the knife is already in his hand, and the platform is very small.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f0_c1",
+          "label": "The mate steps toward you.",
+          "target": "oath_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "oath_f0_end",
+      "body": "Standing on a fallen climber to gain the ratlines is the one thing the trial will not carry. The platform's mates end it there, and the trial keeps the one who broke the fleet's oldest law.",
+      "is_ending": true,
+      "ending": {
+        "id": "oath_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "On a Fallen Rival"
+      },
+      "choices": []
+    },
+    {
+      "id": "oath_f1_c0",
+      "body": "The mistake lands: the platform's edge drops the full height of the mast. You shove a waiting rival off the side for advantage, and the mate at the lantern sees the whole motion.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f1_c0",
+          "label": "The rival falls away.",
+          "target": "oath_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "oath_f1_c1",
+      "body": "There is a moment it could be unchosen, and then it is done. The mate is already moving, and the platform's edge is very close.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f1_c1",
+          "label": "The mate reaches you.",
+          "target": "oath_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "oath_f1_end",
+      "body": "A shove for advantage answers for two lives at once. The mate puts you off the platform after the one you sent, and the trial ends at the lantern's edge.",
+      "is_ending": true,
+      "ending": {
+        "id": "oath_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Bosun's Light"
+      },
+      "choices": []
+    },
+    {
+      "id": "oath_f2_c0",
+      "body": "The mistake lands: delay is death. The bosun's light is no place to loiter, and the upper mates are counting. You wait for someone else to clear the wounded climber, and the moment to act passes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f2_c0",
+          "label": "You are still standing there.",
+          "target": "oath_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "oath_f2_c1",
+      "body": "The moment to act passes while you stand back and let it. The mate at the lantern has counted the seconds, and the count is done.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f2_c1",
+          "label": "The mate's count runs out.",
+          "target": "oath_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "oath_f2_end",
+      "body": "The bosun's light is a test that a wait only fails slowly. The upper mates strike the idle climber from the trial at the count's end.",
+      "is_ending": true,
+      "ending": {
+        "id": "oath_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Struck for Waiting"
+      },
+      "choices": []
+    },
+    {
+      "id": "oath_fd_c0",
+      "body": "The mistake lands: the oath is not argued on the mast. You open your mouth to dispute the test, claiming it does not bind you, and the mate at the lantern silences you with a look.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_fd_c0",
+          "label": "The mate's hand rises.",
+          "target": "oath_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "oath_fd_c1",
+      "body": "The mates have no ear for argument. The knife is quick and final, and the lantern's platform is the last deck you stand on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_fd_c1",
+          "label": "The knife answers.",
+          "target": "oath_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "oath_fd_end",
+      "body": "Disputing the oath at its own lantern marks you unfit to climb on. The mate takes you off the platform, and the trial ends there.",
+      "is_ending": true,
+      "ending": {
+        "id": "oath_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Argued Off the Light"
+      },
+      "choices": []
+    },
+    {
+      "id": "oath_slip",
+      "body": "You take the crumbling outer rail around the platform's edge and rejoin the ratlines beyond, the test neither passed nor failed, only avoided. The lantern's light falls on your back as you climb away.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_slip",
+          "label": "Swing onto the topgallant shrouds.",
+          "target": "spiral_ap0"
+        }
+      ]
+    },
+    {
+      "id": "oath_cap",
+      "body": "You sit with the wounded climber on the cold platform and let the trial go. The mates bring you both down, the climb given up but your name your own, and the lantern's light is warm on your back as you wait for the rope.",
+      "is_ending": true,
+      "ending": {
+        "id": "oath_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Stood Down at the Light"
+      },
+      "choices": []
+    },
+    {
+      "id": "oath_seen",
+      "body": "You are seen but still moving off the bosun's light, the mate's lantern tracking you. One breath to choose how you leave this platform; only the hard, quiet way keeps the trial alive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_seen_slip",
+          "label": "Skirt the rail around the platform unseen.",
+          "target": "oath_slip"
+        },
+        {
+          "id": "c_oath_seen_fight",
+          "label": "Argue the oath does not bind you here.",
+          "target": "oath_fd_c0"
+        },
+        {
+          "id": "c_oath_seen_cap",
+          "label": "Sit down beside the hurt rival and give up the climb.",
+          "target": "oath_cap"
+        }
+      ]
+    },
+    {
+      "id": "oath_gate",
+      "body": "You are at the bosun's light. The test here is the oath itself, kept, not spoken: a climber of the trial lies hurt across the way, and the honourable hold is to see them safe before you climb on. Step over them, or use them, or shove past for advantage, and you climb dishonoured though you climb on. Keep the oath and bear them clear, or take the quick road and wear the cost.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_ok",
+          "label": "Bear the hurt climber clear before you go on.",
+          "target": "oath_pass",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "standing",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_oath_exp",
+          "label": "Step over the hurt climber and press on alone.",
+          "target": "oath_degrade"
+        },
+        {
+          "id": "c_oath_f0",
+          "label": "Use the wounded rival as a step up.",
+          "target": "oath_f0_c0"
+        },
+        {
+          "id": "c_oath_f1",
+          "label": "Shove a waiting rival off the platform edge.",
+          "target": "oath_f1_c0"
+        },
+        {
+          "id": "c_oath_f2",
+          "label": "Wait for another climber to clear the way first.",
+          "target": "oath_f2_c0"
+        },
+        {
+          "id": "c_oath_gamble",
+          "label": "Chance the narrow rail around the whole test.",
+          "target": "oath_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "spiral_ap0",
+      "body": "The upper mast is climbed by the futtock-stave, a spiral ladder of round rungs open on its inner side to the hollow core of the topgallant. The rungs are worn round and slick with frozen spray, and there is no rail above the drop that falls the whole height of the ship.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_ap0",
+          "label": "Grip the first frozen rung.",
+          "target": "spiral_gate"
+        }
+      ]
+    },
+    {
+      "id": "spiral_pass",
+      "body": "You wind up the outer edge of the ladder to the head of the futtock-stave, the hollow core behind you now. The truck of the mast is close, and the wind is a steady pressure at your back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_pass",
+          "label": "Step onto the topmast crosstrees.",
+          "target": "sheer_ap0"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f0_c0",
+      "body": "The mistake lands: the inner rungs are worn to slicks over the hollow core. You reach for the short side of the spiral to cut the climb, and the rung under your boot is rounded ice.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f0_c0",
+          "label": "Your boot slips.",
+          "target": "spiral_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f0_c1",
+      "body": "One breath in which the whole trial narrows to the open hollow below. The worn rung gives underfoot, and the core of the topgallant is waiting.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f0_c1",
+          "label": "The rung lets you go.",
+          "target": "spiral_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f0_end",
+      "body": "The worn inner rung gives underfoot above the core. The futtock-stave sheds the climber who cut its short side.",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Into the Hollow Core"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_f1_c0",
+      "body": "The mistake lands: you cannot keep your footing on wet, round rungs. You try to race up the ladder, and the first rung your boot hits is slick with frozen spray.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f1_c0",
+          "label": "Your boots skid.",
+          "target": "spiral_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f1_c1",
+      "body": "The boot goes and there is only the core to meet. Your hands catch at nothing, and the spiral ladder spins past you as you fall into the hollow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f1_c1",
+          "label": "The core receives you.",
+          "target": "spiral_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f1_end",
+      "body": "The slick rungs take a runner's feet from under them. The futtock-stave drops the one who hurried its turns.",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Slick Rungs"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_f2_c0",
+      "body": "The mistake lands: leaning over the core gives it your weight. You lean out to look up the mast's hollow center, trying to see how far you have left, and your balance tips past the point of return.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f2_c0",
+          "label": "Your weight shifts outward.",
+          "target": "spiral_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f2_c1",
+      "body": "The balance tips past return in a single beat. Your centre of gravity crosses the inner edge, and the hollow is suddenly the only direction left.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f2_c1",
+          "label": "You are falling inward.",
+          "target": "spiral_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f2_end",
+      "body": "Leaning into the hollow to look up sends your weight the one way it must not go. The core takes you, and the futtock-stave spins away above.",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Over the Core"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_f3_c0",
+      "body": "The mistake lands: delay is death on the futtock-stave. The slick rung is no seat above a drop with no rail, and you stop to rest your burning legs.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f3_c0",
+          "label": "You sit on the cold rung.",
+          "target": "spiral_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f3_c1",
+      "body": "The strength you meant to save leaks out of stalled legs on the frozen turn. The cold seeps up from the rung, and your thighs begin to tremble.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f3_c1",
+          "label": "Your legs give way.",
+          "target": "spiral_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f3_end",
+      "body": "Resting on the unrailed ladder only makes you stiff over the core. A stiff climber on slick rungs is a fall waiting to happen.",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Stalled on the Stave"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_f4_c0",
+      "body": "The mistake lands: a vault on the futtock-stave lands blind on worn wood. You try to skip two rungs at a time, and the leading foot comes down on the slick inner lip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f4_c0",
+          "label": "Your foot lands wrong.",
+          "target": "spiral_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f4_c1",
+      "body": "The leading foot finds the slick inner edge and nothing beyond. The rung is ice, and the hollow is on the other side of it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f4_c1",
+          "label": "The rung slips away.",
+          "target": "spiral_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f4_end",
+      "body": "Vaulting the rungs lands you on the worn inner edge you meant to avoid. The ladder sheds you into the core.",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Vaulted to the Core"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_fd_c0",
+      "body": "The mistake lands: even the outer edge will not hold a run. You sprint the ladder on the wide rungs, and the slick wood catches up with you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_fd_c0",
+          "label": "Your boots skid on a wide rung.",
+          "target": "spiral_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_fd_c1",
+      "body": "The wide rungs are still slick and still unrailed. The patch of frozen spray you hit was invisible at speed, and now it is the only ground under your boots.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_fd_c1",
+          "label": "The slick takes you.",
+          "target": "spiral_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_fd_end",
+      "body": "Even a flat run on the good edge will find one wet rung too many. The futtock-stave keeps the one who ran its full height.",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Run Off the Stave"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_slip",
+      "body": "You scramble the worn inner turns on legs that have almost nothing left, catching the outer rail twice over the hollow before the ladder-head takes you in. You collapse onto the crosstrees, your arms spent and your heart hammering.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_slip",
+          "label": "Lie on the crosstrees, gasping.",
+          "target": "sheer_ap0"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "dec",
+          "var": "grip",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "spiral_cap",
+      "body": "You freeze to the outer rail and a mate comes down from above to bring you off. The trial ends on the futtock-stave, and you come down its length alive, the ladder passing under your boots in reverse.",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Brought Down the Stave"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_seen",
+      "body": "You are seen but still moving off the futtock-stave, a mate's voice carrying down from the crosstrees. One breath to choose your next rung; only the hard, quiet way keeps the trial alive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_seen_slip",
+          "label": "Scramble the inner turns on failing legs.",
+          "target": "spiral_slip"
+        },
+        {
+          "id": "c_spiral_seen_fight",
+          "label": "Run the outer edge flat out to the top.",
+          "target": "spiral_fd_c0"
+        },
+        {
+          "id": "c_spiral_seen_cap",
+          "label": "Freeze against the rail and wait to be brought down.",
+          "target": "spiral_cap"
+        }
+      ]
+    },
+    {
+      "id": "spiral_gate",
+      "body": "You are on the futtock-stave. Take it on the outer edge where the rungs are widest and the rail is at your shoulder, one steady hand to the wood. Drift to the worn inner edge, or hurry the slick turns, or lean out over the core, and the ladder sheds you into the hollow. Hold the outer edge, keep a hand to the rail, never trust the inner rung.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_ok",
+          "label": "Climb the outer edge, a hand to the rail.",
+          "target": "spiral_pass"
+        },
+        {
+          "id": "c_spiral_f0",
+          "label": "Cut the inner edge to climb the short way.",
+          "target": "spiral_f0_c0"
+        },
+        {
+          "id": "c_spiral_f1",
+          "label": "Take the slick rungs at a run.",
+          "target": "spiral_f1_c0"
+        },
+        {
+          "id": "c_spiral_f2",
+          "label": "Lean out over the core to see the way up.",
+          "target": "spiral_f2_c0"
+        },
+        {
+          "id": "c_spiral_f3",
+          "label": "Sit on a rung to rest your burning legs.",
+          "target": "spiral_f3_c0"
+        },
+        {
+          "id": "c_spiral_f4",
+          "label": "Vault two rungs at a time to gain height.",
+          "target": "spiral_f4_c0"
+        },
+        {
+          "id": "c_spiral_gamble",
+          "label": "Chance a fast scramble up the inner turns.",
+          "target": "spiral_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "sheer_ap0",
+      "body": "Above the ladder-head the rigging rises into the topmast overhang. It is a single outward-leaning piece of mast. Only a hard set of handholds crosses it, demanding everything the arms saved for this moment. The wood is bare, with nothing to grip, and glazed with ice.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_ap0",
+          "label": "Look up at the overhanging ice.",
+          "target": "sheer_gate"
+        }
+      ]
+    },
+    {
+      "id": "sheer_pass",
+      "body": "You top the overhang with the very last of your reserve and pull onto the high crosstrees. The sheer pitch is under you, the ice a memory on your gloves, and the truck of the mast is all but reached.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_pass",
+          "label": "Stand on the high crosstrees.",
+          "target": "highgate_ap0"
+        }
+      ]
+    },
+    {
+      "id": "sheer_gf_c0",
+      "body": "The mistake lands: the reserve you needed here was left on the rungs and shrouds below. You start the clean line of handholds, and your arms are already empty.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_gf_c0",
+          "label": "Your arms begin to shake.",
+          "target": "sheer_gf_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_gf_c1",
+      "body": "Your arms give out at the crux, and there is nothing held back to save you. The last good hold is just above, but your fingers are opening before they even reach it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_gf_c1",
+          "label": "The hold remains out of reach.",
+          "target": "sheer_gf_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_gf_end",
+      "body": "Your arms, tired from the lower climbs, fail on the crux hold of the overhang. The sheer pitch keeps any climber who came to it empty, and the ice takes you.",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_gf_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Spent on the Overhang"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_resolve",
+      "body": "Arm over arm along the sole clean line, everything you kept back now spent into the overhang. The ice cracks under your gloves, and each handhold is a decision. Whether the last reach comes off depends on what your arms still hold after all the mast below.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_hold",
+          "label": "Your reserve holds; you top out.",
+          "target": "sheer_pass",
+          "condition": {
+            ">=": [
+              {
+                "var": "grip"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_sheer_spent",
+          "label": "Your arms are spent; the reach fails.",
+          "target": "sheer_gf_c0",
+          "condition": {
+            "<=": [
+              {
+                "var": "grip"
+              },
+              1
+            ]
+          }
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "sheer_f0_c0",
+      "body": "The mistake lands: off the clean line the overhang has nothing at all. You fling a hand sideways for a hold that is not there, and the ice-sheathed wood offers only a blank face.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f0_c0",
+          "label": "Your hand closes on ice.",
+          "target": "sheer_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f0_c1",
+      "body": "The hand closes on air and the wall is already gone. The fling has taken your weight off the last good hold, and the overhang is leaning you out into nothing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f0_c1",
+          "label": "The mast slips away.",
+          "target": "sheer_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f0_end",
+      "body": "A swing off the proper sequence finds only blank overhang. The sheer pitch keeps the one who left the clean line.",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Clean Line"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_f1_c0",
+      "body": "The mistake lands: delay is death on an overhang. Hanging spends the arms faster than climbing them, and you stop to gather yourself, arms burning, legs dangling over the drop.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f1_c0",
+          "label": "You are hanging still.",
+          "target": "sheer_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f1_c1",
+      "body": "The reserve drains from loaded arms in the time it takes to breathe twice. The burn becomes a tremble, and the tremble becomes a slow, unstoppable opening of your fingers.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f1_c1",
+          "label": "Your fingers open.",
+          "target": "sheer_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f1_end",
+      "body": "There is no resting on a sheer overhang. Hanging to gather yourself only empties the arms that were already nearly spent, and the ice takes what is left.",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Hung Out on the Overhang"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_f2_c0",
+      "body": "The mistake lands: the dead-eye you swung on was never fixed to the mast. You grab a loose block to shortcut the crux, and it shifts under your weight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f2_c0",
+          "label": "The block pulls free.",
+          "target": "sheer_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f2_c1",
+      "body": "The wood parts from the mast in the hand that trusts it. The dead-eye comes away with a groan of old iron, and your hold becomes a falling thing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f2_c1",
+          "label": "The block tumbles past you.",
+          "target": "sheer_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f2_end",
+      "body": "The loose dead-eye pulls off the overhang as you weight it. The sheer pitch keeps the climber who swung on rotten wood.",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "On a Loose Block"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_f3_c0",
+      "body": "The mistake lands: the overhang is not passed by force. You try to batter your way straight up, burning through the holds, and the power runs out where the mast leans furthest.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f3_c0",
+          "label": "Your strength gives out.",
+          "target": "sheer_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f3_c1",
+      "body": "Power runs out where the wall leans furthest and there is no more. Your arms are empty, and the overhang is still above you, waiting.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f3_c1",
+          "label": "You are hanging on nothing.",
+          "target": "sheer_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f3_end",
+      "body": "Forcing the overhang straight up burns through your arms in a rush and leaves you hanging with nothing left. The pitch keeps you.",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Forced at the Overhang"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_fd_c0",
+      "body": "The mistake lands: a throw for the top leaves the mast behind. You lunge everything for the high crosstrees, and for one long beat you touch nothing at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_fd_c0",
+          "label": "You are in the air.",
+          "target": "sheer_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_fd_c1",
+      "body": "For one beat there is no hold and no hope of one. The crosstrees are above you, and your hands are closing on grey sky.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_fd_c1",
+          "label": "The sky takes you.",
+          "target": "sheer_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_fd_end",
+      "body": "An all-or-nothing throw off the overhang fails to catch anything. The sheer pitch holds the one who staked everything on a lunge.",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Thrown Off the Top"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_slip",
+      "body": "You take the greasy backstay-crack off to the side and fight it on nerve where the arms have failed, jamming your fists into the gap and gasping over the lip onto the high crosstrees with nothing at all left. The ice cracks under you as you lie flat.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_slip",
+          "label": "Get your breath on the high crosstrees.",
+          "target": "highgate_ap0"
+        }
+      ]
+    },
+    {
+      "id": "sheer_cap",
+      "body": "You down-climb to the futtock-stave and call the overhang beyond you. A mate comes down from the crosstrees and brings you off, the truck unreached but your life kept, the wind still cold on your face.",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Turned Back at the Overhang"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_seen",
+      "body": "You are seen but still moving off the sheer pitch, a mate's lantern swinging from the crosstrees above. One breath to choose your next hold; only the hard, quiet way keeps the trial alive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_seen_slip",
+          "label": "Fight up the greasy backstay on nerve alone.",
+          "target": "sheer_slip"
+        },
+        {
+          "id": "c_sheer_seen_fight",
+          "label": "Throw for the crosstrees and commit everything.",
+          "target": "sheer_fd_c0"
+        },
+        {
+          "id": "c_sheer_seen_cap",
+          "label": "Down-climb and call the pitch beyond you.",
+          "target": "sheer_cap"
+        }
+      ]
+    },
+    {
+      "id": "sheer_gate",
+      "body": "You are at the sheer pitch. There is one clean line of handholds across the overhang, and it takes real reserve in the arms to make, reserve that a climber who scrabbled and gambled the lower pitches has already spent. Climb the clean line if you have the strength left for it. Force it any other way and the overhang keeps you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_ok",
+          "label": "Climb the clean line of holds, arm over arm.",
+          "target": "sheer_resolve"
+        },
+        {
+          "id": "c_sheer_f0",
+          "label": "Fling for a far hold off the clean line.",
+          "target": "sheer_f0_c0"
+        },
+        {
+          "id": "c_sheer_f1",
+          "label": "Rest hanging on your arms mid-pitch.",
+          "target": "sheer_f1_c0"
+        },
+        {
+          "id": "c_sheer_f2",
+          "label": "Swing on a loose dead-eye to shortcut the crux.",
+          "target": "sheer_f2_c0"
+        },
+        {
+          "id": "c_sheer_f3",
+          "label": "Batter your way straight up the overhang.",
+          "target": "sheer_f3_c0"
+        },
+        {
+          "id": "c_sheer_gamble",
+          "label": "Chance the greasy backstay-crack instead.",
+          "target": "sheer_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "highgate_ap0",
+      "body": "The high crosstrees end at the top-gallant gate, a brass-fitted hatch set flush in the mast that seals the last approach to the truck. It opens to the bosun's grommet pressed to its lock, and to nothing else short of the bare mast itself.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_ap0",
+          "label": "Examine the brass lock.",
+          "target": "highgate_gate"
+        }
+      ]
+    },
+    {
+      "id": "highgate_pass_sealed",
+      "body": "The brass grommet fits the lock and the top-gallant gate swings inward. You pass it clean and named, the last climb open above you, the cold brass still warm from your palm.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_pass_sealed",
+          "label": "Step through the open gate.",
+          "target": "beacon_ap0"
+        }
+      ]
+    },
+    {
+      "id": "highgate_pass_forced",
+      "body": "With no grommet to show, you force the low lubber's hatch beside the gate and drag yourself through into the last approach, unsealed and marked by the forcing, your jacket torn on the rough wood, but through.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_pass_forced",
+          "label": "Crawl out the far side.",
+          "target": "beacon_ap0"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f0_c0",
+      "body": "The mistake lands: the mast beside the top-gallant gate is holdless and sheer. You try to climb around it on the bare wood, and the ice offers nothing to a hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f0_c0",
+          "label": "Your hand slips on ice.",
+          "target": "highgate_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f0_c1",
+      "body": "One breath in which the whole trial narrows to the open air. The bare mast is a column of ice, and the hand that reached for it has found only the harbour wind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f0_c1",
+          "label": "The mast lets you go.",
+          "target": "highgate_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f0_end",
+      "body": "The mast around the top-gallant gate offers nothing to a hand. It drops the climber who scorned both grommet and hatch.",
+      "is_ending": true,
+      "ending": {
+        "id": "highgate_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Around the Top-Gallant Gate"
+      },
+      "choices": []
+    },
+    {
+      "id": "highgate_f1_c0",
+      "body": "The mistake lands: the top-gallant gate is brass set in the living mast. You throw your shoulder against the locked hatch, and the noise echoes down the whole mast.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f1_c0",
+          "label": "The hatch jars but holds.",
+          "target": "highgate_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f1_c1",
+      "body": "The effort spends the last of you against a hatch that will not move. The brass lock is stronger than your shoulder, and the noise has already carried to the mates above.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f1_c1",
+          "label": "The mates are coming.",
+          "target": "highgate_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f1_end",
+      "body": "Battering the locked gate wins nothing but the mates' notice. The last crosstree's guard answers the din, and the trial ends at the hatch you tried to break.",
+      "is_ending": true,
+      "ending": {
+        "id": "highgate_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Broken on the Gate"
+      },
+      "choices": []
+    },
+    {
+      "id": "highgate_f2_c0",
+      "body": "The mistake lands: delay is death at the top-gallant gate. No one climbs up behind to open it, and the crosstrees are exposed to the wind. You wait, and the cold finds you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f2_c0",
+          "label": "The wind picks up.",
+          "target": "highgate_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f2_c1",
+      "body": "The cold and the wind off the truck work on a climber who only stands still. The gate's brass frosts over while you wait, and your hands grow too numb to hold on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f2_c1",
+          "label": "Your hands go numb.",
+          "target": "highgate_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f2_end",
+      "body": "The top-gallant gate opens for no one who waits. The exposed crosstrees take the one who stood in the wind expecting rescue that the trial never sends.",
+      "is_ending": true,
+      "ending": {
+        "id": "highgate_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Frozen at the Gate"
+      },
+      "choices": []
+    },
+    {
+      "id": "highgate_fd_c0",
+      "body": "The mistake lands: you did not pry the brass lock. You jam a spike into the mechanism to force the bolt, and the metal shrieks.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_fd_c0",
+          "label": "The spike shears.",
+          "target": "highgate_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "highgate_fd_c1",
+      "body": "The spike shears off, but the bolt holds firm. The noise of the breaking metal echoes up the mast, and the mates above are already moving.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_fd_c1",
+          "label": "The mates descend.",
+          "target": "highgate_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "highgate_fd_end",
+      "body": "Forcing the lock only breaks the tool and rouses the mates above. The high crosstree's guard comes down on the gate, and the trial ends there.",
+      "is_ending": true,
+      "ending": {
+        "id": "highgate_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Sprung at the Lock"
+      },
+      "choices": []
+    },
+    {
+      "id": "highgate_slip",
+      "body": "You take the crumbling mast-hoop above the gate's lintel and drop down the far side into the last approach, over the gate rather than through it, filthy with old tar and scraped raw, but past.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_slip",
+          "label": "Drop onto the last deck.",
+          "target": "beacon_ap0"
+        }
+      ]
+    },
+    {
+      "id": "highgate_cap",
+      "body": "You set your back to the cold brass and wait, and the mates come and take you off the crosstrees. The truck goes unreached, your life kept, the wind still singing in the rigging.",
+      "is_ending": true,
+      "ending": {
+        "id": "highgate_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Taken at the Top-Gallant Gate"
+      },
+      "choices": []
+    },
+    {
+      "id": "highgate_seen",
+      "body": "You are seen but still moving off the top-gallant gate, the brass lock cold at your back. One breath to choose how you pass this hatch; only the hard, quiet way keeps the trial alive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_seen_slip",
+          "label": "Climb the mast-hoop above the lintel and drop through.",
+          "target": "highgate_slip"
+        },
+        {
+          "id": "c_highgate_seen_fight",
+          "label": "Pry the lock with a spike to force the bolt.",
+          "target": "highgate_fd_c0"
+        },
+        {
+          "id": "c_highgate_seen_cap",
+          "label": "Set your back to the gate and wait to be taken.",
+          "target": "highgate_cap"
+        }
+      ]
+    },
+    {
+      "id": "highgate_gate",
+      "body": "You are at the top-gallant gate. If you carry the bosun's brass grommet from his post, press it to the lock and the gate opens clean to the last climb. If you do not, the only way on is the old lubber's hatch beside it, low and blind and forced by hand, a passage that leaves you the way it takes those who come unsealed. Open the gate the way your climb allows, and do not try the mast around it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_sealed",
+          "label": "Press the brass grommet to the lock and pass clean.",
+          "target": "highgate_pass_sealed",
+          "condition": {
+            "==": [
+              {
+                "var": "token"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_highgate_forced",
+          "label": "Work the old lubber's hatch by hand and squeeze through.",
+          "target": "highgate_pass_forced",
+          "condition": {
+            "==": [
+              {
+                "var": "token"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_highgate_f0",
+          "label": "Climb the bare mast around the sealed gate.",
+          "target": "highgate_f0_c0"
+        },
+        {
+          "id": "c_highgate_f1",
+          "label": "Batter the brass gate off its hinges.",
+          "target": "highgate_f1_c0"
+        },
+        {
+          "id": "c_highgate_f2",
+          "label": "Wait at the gate for someone to open it.",
+          "target": "highgate_f2_c0"
+        },
+        {
+          "id": "c_highgate_gamble",
+          "label": "Chance the crumbling mast-hoop above the lintel.",
+          "target": "highgate_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "beacon_ap0",
+      "body": "The last approach opens onto the beacon platform just under the truck. It is swept by the wind and lit by the trial's own masthead lantern in an iron cage. A narrow plank walk runs across it to the final ratline. On either hand lies the drop to the harbour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_ap0",
+          "label": "Step onto the plank walk.",
+          "target": "beacon_gate"
+        }
+      ]
+    },
+    {
+      "id": "beacon_pass",
+      "body": "You cross the plank low against the wind and reach the foot of the truck's ladder. The beacon streams its fire behind you, the lantern swinging in the gale, and the summit is one flight up.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_pass",
+          "label": "Grip the truck ladder.",
+          "target": "summit_ap0"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f0_c0",
+      "body": "The mistake lands: stepping wide of the plank is a step out over the drop. You move to the side to skirt the streaming lantern, and your boot finds only air beyond the wood.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f0_c0",
+          "label": "Your boot goes over the edge.",
+          "target": "beacon_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f0_c1",
+      "body": "You have one breath in which the whole trial narrows to the open air on either hand. The plank is narrow, and the step you took has put your weight on the wrong side of it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f0_c1",
+          "label": "The wind takes your balance.",
+          "target": "beacon_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f0_end",
+      "body": "A step wide of the plank puts a boot over the edge in the gale. The beacon platform gives the strayed climber to the wind.",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Wide of the Plank"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_f1_c0",
+      "body": "The miss is a fact: a climber standing up is a full sail to the gale. You stand tall to steady yourself against the gust, and the wind takes you like it takes a loose topsail.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f1_c0",
+          "label": "The gust hits you full on.",
+          "target": "beacon_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f1_c1",
+      "body": "The gust catches an upright body just as wind catches a flag. Your stance turns into a lever, which gives the gale all the hold it needs.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f1_c1",
+          "label": "The gale plucks you off.",
+          "target": "beacon_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f1_end",
+      "body": "Standing into the wind on the open plank offers it your whole weight. The gust plucks you off the platform.",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Taken by the Gale"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_f2_c0",
+      "body": "The mistake lands: the lantern cage is iron and burning. You press toward it for shelter from the wind, and the heat is a wall as hard as any wood.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f2_c0",
+          "label": "The iron sears your shoulder.",
+          "target": "beacon_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f2_c1",
+      "body": "The heat is a wall as hard as any stone. You recoil from the burning cage, and the recoil takes you back off the narrow plank into the wind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f2_c1",
+          "label": "You stagger back.",
+          "target": "beacon_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f2_end",
+      "body": "Pressing to the lantern cage for shelter drives you against burning iron and back off the narrow plank. The platform keeps you.",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Against the Lantern Cage"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_f3_c0",
+      "body": "The mistake lands: delay is death on the platform. The truck wind does not drop and the exposure only tells. You wait for a lull, and the cold and the gale wear you down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f3_c0",
+          "label": "The wind does not let up.",
+          "target": "beacon_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f3_c1",
+      "body": "The cold and the gale wear a waiting climber down where they crouch. The plank is very exposed, and the wind has been blowing all morning and will not stop for you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f3_c1",
+          "label": "Your legs give out.",
+          "target": "beacon_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f3_end",
+      "body": "The wind off the truck blows without let, and a climber who waits it out only stiffens on the exposed plank until a gust finds them anyway.",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Worn Off the Plank"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_f4_c0",
+      "body": "The mistake lands: the edge is the wind's own working. You crawl the very rim to stay low, and the frozen wood crumbles under your hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f4_c0",
+          "label": "The rim gives way.",
+          "target": "beacon_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f4_c1",
+      "body": "The crumbling edge gives way under a hand placed too far out. The rim splinters and your weight follows, sliding out over the drop.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f4_c1",
+          "label": "The splinters fall away.",
+          "target": "beacon_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f4_end",
+      "body": "Hugging the extreme edge to duck the gale puts your weight on crumbling wood. The plank's rim gives and the platform takes you.",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Plank's Rim"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_fd_c0",
+      "body": "The mistake lands: upright on the plank is upright in the wind. You break into a run, standing tall, and the gale has your whole body to push against.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_fd_c0",
+          "label": "You are running into the wind.",
+          "target": "beacon_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_fd_c1",
+      "body": "The gale needs no more than a standing body. The gust catches you mid-stride, and the plank is suddenly a narrow strip in a world of moving air.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_fd_c1",
+          "label": "The gust sweeps you sideways.",
+          "target": "beacon_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_fd_end",
+      "body": "Running the plank standing tall gives the wind your whole self. The beacon platform keeps the one who ran it standing.",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Run Off the Plank"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_slip",
+      "body": "You read a lull and dash the plank low and fast, a gust catching you at the last stride and slamming you into the truck ladder. You are bruised and holding on, but across, the wind roaring past your ears.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_slip",
+          "label": "Hold tight to the ladder.",
+          "target": "summit_ap0"
+        }
+      ]
+    },
+    {
+      "id": "beacon_cap",
+      "body": "You drop flat to the wood and signal, and the mates come out along the plank to bring you in. The truck goes unclimbed, you live, the lantern light warm on your back as they carry you down.",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Fetched Off the Beacon Platform"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_seen",
+      "body": "You are seen but still moving off the beacon platform, the lantern swinging in the gale. One breath to choose your next step; only the hard, quiet way keeps the trial alive.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_seen_slip",
+          "label": "Dash the plank low on a falling gust.",
+          "target": "beacon_slip"
+        },
+        {
+          "id": "c_beacon_seen_fight",
+          "label": "Run the plank upright to beat the next gust.",
+          "target": "beacon_fd_c0"
+        },
+        {
+          "id": "c_beacon_seen_cap",
+          "label": "Drop flat and signal the mates to fetch you.",
+          "target": "beacon_cap"
+        }
+      ]
+    },
+    {
+      "id": "beacon_gate",
+      "body": "You are on the beacon platform. The plank to the truck ladder is the one sure footing, run straight and low against the wind with the lantern at your back. Step wide toward either drop, or stand tall into the gale, or crowd the fire-cage, and the platform gives you to the wind. Hold the plank, stay low, never fight the gust standing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_ok",
+          "label": "Cross the plank low, straight, and steady.",
+          "target": "beacon_pass"
+        },
+        {
+          "id": "c_beacon_f0",
+          "label": "Step wide to skirt the streaming lantern.",
+          "target": "beacon_f0_c0"
+        },
+        {
+          "id": "c_beacon_f1",
+          "label": "Stand tall to steady yourself against the gust.",
+          "target": "beacon_f1_c0"
+        },
+        {
+          "id": "c_beacon_f2",
+          "label": "Shelter against the hot lantern cage from the wind.",
+          "target": "beacon_f2_c0"
+        },
+        {
+          "id": "c_beacon_f3",
+          "label": "Wait for the wind to drop before crossing.",
+          "target": "beacon_f3_c0"
+        },
+        {
+          "id": "c_beacon_f4",
+          "label": "Crawl the very edge to stay out of the wind.",
+          "target": "beacon_f4_c0"
+        },
+        {
+          "id": "c_beacon_gamble",
+          "label": "Chance a low dash on a lull in the gale.",
+          "target": "beacon_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "summit_ap0",
+      "body": "The truck ladder brings you out onto the summit of the mainmast, the harbour spread grey and small below, the whole trial fallen away into the wind. The first mate waits at the truck to name the climb you made, and a climb is named by how it was made, not only that it was.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_summit_ap0",
+          "label": "Stand before the truck.",
+          "target": "summit_gate"
+        }
+      ]
+    },
+    {
+      "id": "summit_gate",
+      "body": "Before he says the name of your climb, the first mate reads how you held yourself the whole way up. He sees every hidden rung you took, every oath you kept or broke, and the silent chalk marks on the bosun's slate. The single word he speaks is built from that. What he saw decides which word it is: the climb of one who kept every rule, the climb of one who kept some, or the climb of one who kept the mast but not its trust.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_summit_honor",
+          "label": "You kept every form: stand for the truck.",
+          "target": "summit_honor_check",
+          "condition": {
+            "==": [
+              {
+                "var": "standing"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_summit_credit",
+          "label": "You kept some faith, not all: stand and be named.",
+          "target": "win_creditable",
+          "condition": {
+            "==": [
+              {
+                "var": "standing"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_summit_shamed",
+          "label": "You kept the mast but not its faith: stand unnamed.",
+          "target": "win_shamed",
+          "condition": {
+            "<=": [
+              {
+                "var": "standing"
+              },
+              0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "summit_honor_check",
+      "body": "One thing stands between you and the trial's highest name: did you carry the bosun's brass ring all the way from his platform to the truck, or did you come the last part without it? The first mate looks at your hand. The glint of brass, or the lack of it, opens the only door that remains.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honor_sealed",
+          "label": "You carried the brass grommet to the truck: take the highest name.",
+          "target": "win_honor",
+          "condition": {
+            "==": [
+              {
+                "var": "token"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_honor_unsealed",
+          "label": "You reached the truck unsealed: take the strong name, one short.",
+          "target": "win_creditable",
+          "condition": {
+            "==": [
+              {
+                "var": "token"
+              },
+              false
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "win_honor",
+      "body": "Standing tall with the cold brass ring in your hand, you are named to the Northern Fleet's truck with every part of the trial kept. The first mate speaks the highest name the mast gives, \u2018master's hand,\u2019 and it is yours fully and without a star. The wind off the harbor is clean, and the name he gives you will go into the fleet's book, the rarest entry the rigging allows.",
+      "is_ending": true,
+      "ending": {
+        "id": "win_honor",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Named to the Truck"
+      },
+      "choices": []
+    },
+    {
+      "id": "win_creditable",
+      "body": "You stand at the truck after finishing the whole deadly climb, keeping true on the way, though one mark escaped you. Maybe the ring was not gained, a rule was missed, or a rival was left on the platform. The first mate names you a true climber of the fleet, a climb done with honor and just one step short of the best word. The name is good, and it is yours, and the cold wind is the same wind that blows on the master's hand.",
+      "is_ending": true,
+      "ending": {
+        "id": "win_creditable",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A True Ascent"
+      },
+      "choices": []
+    },
+    {
+      "id": "win_shamed",
+      "body": "You reached the truck of the Northern Fleet and the mast let you live, but you climbed it cutting every corner it offered, and the first mate reads that and stays silent. He looks at you, and the look is the whole judgment. You have the summit and not the name, the climb survived but not honoured. No cruelty in the silence, only the cold weight of a truck reached and unspoken, the wind the only voice.",
+      "is_ending": true,
+      "ending": {
+        "id": "win_shamed",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Unnamed Truck"
+      },
+      "choices": []
+    }
+  ]
+}
