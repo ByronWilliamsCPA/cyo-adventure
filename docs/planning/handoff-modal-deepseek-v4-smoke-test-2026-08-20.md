@@ -151,3 +151,66 @@ Next steps, from a developer machine:
 3. Start a fresh session with the smoke-test prompt; the call plan in "Remaining work" above is
    unchanged and everything else (allowlist, token types, response-shape expectations, OpenRouter
    baseline) is already verified.
+
+## Modal leg results (2026-08-21, run against a shared Kimi-K3 endpoint)
+
+The DeepSeek V4 Pro endpoint still fails to provision, so the Modal leg ran as a path validation
+against a shared endpoint the owner spun up for testing: `moonshotai/Kimi-K3` at
+`https://williaby--ep-kimi-k3-server.us-west.modal.direct`. Same transport, same auth, same
+OpenAI-compatible surface; the latency and shape findings transfer, the model does not. Kimi K3 is
+also a reasoning model, so it reproduces the reasoning-budget behavior directly.
+
+**URL pattern discovered (resolves finding 2's "not guessable"):** managed endpoints live on
+`https://<workspace>--<endpoint-name>.<region>.modal.direct`, NOT `*.modal.run`. That is why every
+`*.modal.run` guess returned the generic edge 404. The `modal.direct` domain works through the
+remote environment's gateway as of this session. `GET <base>/v1/models` with `Modal-Key` /
+`Modal-Secret` headers is a cheap auth-and-liveness preflight (200 with a model card here,
+`{"error":"proxy auth required"}` / 401 without credentials); the wk-/ws- pair in this session's
+env authenticated live, closing finding 1's loop.
+
+**Startup:** not measurable from here; the endpoint was already warm when this session first
+called it. The owner's dashboard log showed just under 7 seconds to start, and as a SHARED
+endpoint it bills per token, with no dedicated GPU-second cost for startup. That changes the cost
+model relative to the dedicated-endpoint assumption in the earlier research: the
+cost-per-catalog-fill estimate needs a per-token price comparison against OpenRouter, not a
+GPU-second amortization, unless we end up on a dedicated deployment after all.
+
+Prompt "Reply with the single word: ok", `max_tokens: 10` except the last row. All calls HTTP 200:
+
+| Call | Model / provider | Latency | prompt/completion tokens (reasoning) | `message.content` |
+| ---- | ---------------- | ------- | ------------------------------------ | ----------------- |
+| Modal 1 (pre-warmed) | Kimi-K3, Modal shared | 1.27 s | 92 / 10 (13) | `""` (length) |
+| Modal warm 1 | Kimi-K3, Modal shared | 2.44 s | 92 / 10 (10) | `""` (length) |
+| Modal warm 2 | Kimi-K3, Modal shared | 1.36 s | 92 / 10 (12) | `""` (length) |
+| Modal, max_tokens 100 | Kimi-K3, Modal shared | 1.60 s | 92 / 42 (31) | `"ok"` (stop) |
+| OpenRouter 1-3 (2026-08-20) | DeepSeek V4 Pro, Novita | 1.55-2.29 s | 90 / 9-10 | `"ok"` then `null` x2 |
+
+Warm latency is in the same band as OpenRouter for a trivial completion. Raw JSON bodies were
+captured in the session scratchpad (kimi-cold/warm1/warm2/mt100.json); key fields are reproduced
+below.
+
+**Shape check against `generation/providers/_base.py`:**
+
+- `dig_usage`: PASSES as-is. `usage.prompt_tokens` and `usage.completion_tokens` are present as
+  ints on every call. No `cost` field (unlike OpenRouter), so `cost_usd` stays None and spend
+  accounting must come from Modal billing, not the response.
+- `dig_content`: structurally fine, but the budget-exhaustion signature DIFFERS from OpenRouter.
+  OpenRouter returned `content: null` (dig_content returns None); Modal returns `content: ""`, an
+  empty STRING, which dig_content passes through as a valid str. Any "treat null content +
+  finish_reason length as a budget problem" fix must also treat EMPTY content the same way, or the
+  Modal path will hand an empty story fragment downstream as if it were prose.
+- Reasoning accounting also differs: Modal reports `usage.reasoning_tokens` at the top level of
+  `usage` (OpenRouter nests it as `completion_tokens_details.reasoning_tokens`), reports
+  `prompt_tokens_details.cached_tokens`, and interleaves the reasoning text itself as
+  `message.reasoning_content` (the model card advertises `interleaved.field: reasoning_content`).
+  On the max_tokens 100 call, reasoning_tokens (31) exceeded max_tokens 10's whole budget, so
+  budget sizing must cover reasoning plus content, matching the OpenRouter finding.
+
+**Read on usability:** the Modal leg is usable as-is through the existing `MODAL_*` config
+surface: OpenAI-compatible chat completions at `<MODAL_BASE_URL>/v1/chat/completions`,
+`Modal-Key`/`Modal-Secret` headers with the wk-/ws- pair, and `dig_usage` working unchanged. The
+two adapter-level items before any real use: treat empty-string content like null content under
+`finish_reason: "length"`, and do not expect a `cost` field. Still experimental-only per ADR-010;
+nothing is wired into the production cascade. The DeepSeek V4 Pro comparison proper remains open
+until that endpoint provisions; rerun this exact call plan against it when it does (the shape
+checks above then need re-verifying on that model's responses).
