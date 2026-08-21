@@ -39,12 +39,29 @@
    "choices": [
     {
      "id": "c-start-1",
-     "label": "See the three kite sketches",
-     "target": "choose_kite"
+     "label": "Step outside to check the windsock",
+     "target": "outside_check"
     },
     {
      "id": "c-start-2",
-     "label": "Ask Abuela about the changing wind",
+     "label": "Ask Abuela which sketch to try first",
+     "target": "outside_check"
+    }
+   ]
+  },
+  {
+   "id": "outside_check",
+   "body": "<<FILL role=explore words=30 beats='Tomas and Abuela step into the yard where the windsock swings from north to south twice before settling on a new direction entirely; Abuela says the shifting wind means whatever kite they build has to prove itself outside, so today is for testing, not guessing.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-outside-1",
+     "label": "Go back in to see the sketches",
+     "target": "choose_kite"
+    },
+    {
+     "id": "c-outside-2",
+     "label": "Ask which design to build first",
      "target": "choose_kite"
     }
    ]

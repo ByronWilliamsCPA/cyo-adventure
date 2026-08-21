@@ -7,8 +7,8 @@
  "style": "prose",
  "replicate": 2,
  "premise": "Tomas and his grandmother build a kite for the spring festival, but the wind keeps changing and every new design needs testing.",
- "attempts": 6,
- "repair_rounds": 5,
+ "attempts": 7,
+ "repair_rounds": 6,
  "strict_pass": false,
  "first_pass_clean": false,
  "parse_failures": 0,
@@ -18,7 +18,8 @@
   3,
   2,
   7,
-  2
+  2,
+  3
  ],
  "graph_check_exit": 0,
  "latency_s": 0.0,
@@ -26,10 +27,10 @@
  "output_tokens": null,
  "reasoning_tokens": null,
  "finish_reasons": [],
- "min_catalog_distance": 0.11472459133916822,
- "mean_catalog_distance": 0.3474626778666989,
+ "min_catalog_distance": 0.10582712420088067,
+ "mean_catalog_distance": 0.3410430678680492,
  "catalog_distance_note": "vs 5 in-cell peers",
- "last_feedback": "ERROR   PL-25  PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'tomas-kite-festival'\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r2__claude-sonnet-subagent.json failed structural validation: PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'tomas-kite-festival'",
+ "last_feedback": "ERROR   PL-25  PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'tomas-kite-festival'\nWARNING PL-23  PL-23 clock: declared estimated_minutes 2 differs from the derived fastest-finish clock 3 min (232 words on the shortest satisfying path at 90 wpm) by 33% in story 'tomas-kite-festival' (advisory only)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r2__claude-sonnet-subagent.json failed structural validation: PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'tomas-kite-festival'",
  "shell_file": "shells/A__r2__claude-sonnet-subagent.json",
  "error": ""
 }
