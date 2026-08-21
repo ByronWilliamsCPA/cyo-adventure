@@ -7,14 +7,15 @@
  "style": "prose",
  "replicate": 3,
  "premise": "On the first snowy day, Priya must find her little brother's boot, lost somewhere along the sled run, before their walk home.",
- "attempts": 3,
- "repair_rounds": 2,
+ "attempts": 4,
+ "repair_rounds": 3,
  "strict_pass": false,
  "first_pass_clean": false,
  "parse_failures": 0,
  "findings_lines_per_round": [
   11,
   3,
+  2,
   2
  ],
  "graph_check_exit": 0,
@@ -24,9 +25,9 @@
  "reasoning_tokens": null,
  "finish_reasons": [],
  "min_catalog_distance": 0.09988500005215695,
- "mean_catalog_distance": 0.29068626765577577,
+ "mean_catalog_distance": 0.29119488652848474,
  "catalog_distance_note": "vs 5 in-cell peers",
- "last_feedback": "ERROR   L1-7   L1-7 budget: branch_depth out of range in story 'priya-arjun-lost-boot': 9 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r3__claude-sonnet-subagent.json failed structural validation: L1-7 budget: branch_depth out of range in story 'priya-arjun-lost-boot': 9 (allowed 0..7)",
+ "last_feedback": "ERROR   PL-18  PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'priya-arjun-lost-boot'\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r3__claude-sonnet-subagent.json failed structural validation: PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'priya-arjun-lost-boot'",
  "shell_file": "shells/A__r3__claude-sonnet-subagent.json",
  "error": ""
 }

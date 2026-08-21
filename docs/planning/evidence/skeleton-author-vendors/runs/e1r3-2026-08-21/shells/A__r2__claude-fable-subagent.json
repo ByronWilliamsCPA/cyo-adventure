@@ -138,13 +138,18 @@
   },
   {
    "id": "four-hands",
-   "body": "<<FILL role=transition words=30 beats='Four hands take one line; Grandma Rosa leans when Tomas leans, and the dipping kite steadies between them as the gusts keep pushing across the festival field'>>",
+   "body": "<<FILL role=decision words=32 beats='Four hands take one line; Grandma Rosa leans when Tomas leans and the dipping kite steadies between them; she grins over the gusts and asks whether they should fly for the fun of it or chase the judges ribbon together'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c-hands-on",
-     "label": "Steer it together",
+     "label": "Steer it together for fun",
      "target": "end-flying-together"
+    },
+    {
+     "id": "c-hands-ribbon",
+     "label": "Go for a big climb together",
+     "target": "end-blue-ribbon"
     }
    ]
   },
@@ -184,37 +189,52 @@
   },
   {
    "id": "high-launch",
-   "body": "<<FILL role=transition words=30 beats='Tomas lets the line run out turn after turn and the light cedar kite climbs past every other kite until it is a red speck above the whole festival'>>",
+   "body": "<<FILL role=decision words=32 beats='Tomas lets the line run out turn after turn until the light cedar kite is a red speck above the whole festival; up that high the gusts shove harder, and Grandma Rosa asks whether it should climb on or come down safe'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c-high-on",
      "label": "Let it climb to the very top",
      "target": "end-blue-ribbon"
-    }
-   ]
-  },
-  {
-   "id": "low-glide",
-   "body": "<<FILL role=transition words=30 beats='Tomas keeps the line short and the kite low, holding it flat and calm while wobbling kites dive and crash all around the festival field'>>",
-   "is_ending": false,
-   "choices": [
+    },
     {
-     "id": "c-low-on",
-     "label": "Hold it steady",
+     "id": "c-high-reel",
+     "label": "Reel it down before the big gusts",
      "target": "end-steady-sky"
     }
    ]
   },
   {
+   "id": "low-glide",
+   "body": "<<FILL role=decision words=32 beats='Tomas keeps the line short and the kite low, holding it flat and calm while wobbling kites dive and crash all around the field; at the last bell the judge with the blue sash watches, and Tomas wonders if steady or high wins the day'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-low-on",
+     "label": "Hold it low and steady",
+     "target": "end-steady-sky"
+    },
+    {
+     "id": "c-low-climb",
+     "label": "Let it climb at the last bell",
+     "target": "end-blue-ribbon"
+    }
+   ]
+  },
+  {
    "id": "sharing-line",
-   "body": "<<FILL role=transition words=30 beats='One by one the little kids take the humming line in both hands while Tomas stands behind each of them, calling out when to pull and when to let the wind work'>>",
+   "body": "<<FILL role=decision words=32 beats='One by one the little kids take the humming line in both hands while Tomas stands behind each of them, calling out when to pull; then the final round bell rings, and Grandma Rosa asks if he wants the line back for one flight of their own'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c-share-on",
-     "label": "Cheer them on",
+     "label": "Cheer the little kids on",
      "target": "end-kite-teacher"
+    },
+    {
+     "id": "c-share-rosa",
+     "label": "Fly the last round with Grandma Rosa",
+     "target": "end-flying-together"
     }
    ]
   },
@@ -278,25 +298,35 @@
   },
   {
    "id": "window-launch",
-   "body": "<<FILL role=transition words=30 beats='Tomas watches the ridge trees, calls the wind window out loud, and launches the box kite the very moment the moving air sweeps down across the field'>>",
+   "body": "<<FILL role=decision words=32 beats='Tomas watches the ridge trees, calls the wind window out loud, and launches the box kite the very moment the moving air sweeps down across the field; the window will not stay open long, and a smooth golden evening is coming'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c-window-on",
      "label": "Ride the wind window",
      "target": "end-wind-reader"
+    },
+    {
+     "id": "c-window-evening",
+     "label": "Ease it down and wait for evening",
+     "target": "end-sunset-flight"
     }
    ]
   },
   {
    "id": "sunset-wait",
-   "body": "<<FILL role=transition words=30 beats='They let the wild morning rounds go by, eat warm churros while the band plays, and carry the box kite out when the evening air turns smooth and golden'>>",
+   "body": "<<FILL role=decision words=32 beats='They let the wild morning rounds go by, eat warm churros while the band plays, and carry the box kite out when the evening air turns smooth and golden; Tomas checks the ridge trees one last time for a jump in the wind'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c-sunset-on",
-     "label": "Launch at sunset",
+     "label": "Launch in the golden calm",
      "target": "end-sunset-flight"
+    },
+    {
+     "id": "c-sunset-window",
+     "label": "Call one last wind window",
+     "target": "end-wind-reader"
     }
    ]
   },
@@ -331,25 +361,35 @@
   },
   {
    "id": "reefed-line",
-   "body": "<<FILL role=transition words=30 beats='On the short reefed line the box kite sits steady as a table in the hard wind, humming while little kids gather underneath with their mouths open'>>",
+   "body": "<<FILL role=decision words=32 beats='On the short reefed line the box kite sits steady as a table in the hard wind, humming while little kids gather underneath with their mouths open; Grandma Rosa taps the fat spool and asks if steady is enough or if he wants more sky'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c-reef-on",
      "label": "Keep it low and steady",
      "target": "end-humming-kite"
+    },
+    {
+     "id": "c-reef-climb",
+     "label": "Let out line for a climb",
+     "target": "end-runaway-kite"
     }
    ]
   },
   {
    "id": "full-spool",
-   "body": "<<FILL role=transition words=30 beats='Tomas lets the box kite haul line off the old spool up and up until the string sings like a guitar and the last turns jump loose in his hands'>>",
+   "body": "<<FILL role=decision words=32 beats='Tomas lets the box kite haul line off the old spool up and up until the string sings like a guitar; only a few turns are left on the wood, and Grandma Rosa warns that the last stretch of line is the oldest'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c-spool-on",
      "label": "Let it climb to the last turn",
      "target": "end-runaway-kite"
+    },
+    {
+     "id": "c-spool-reel",
+     "label": "Reel it back before the last turn",
+     "target": "end-humming-kite"
     }
    ]
   },
@@ -439,7 +479,7 @@
   },
   {
    "id": "end-sunset-flight",
-   "body": "<<FILL role=ending words=38 beats='They miss the big morning contest and Tomas feels a small pang; but at sunset the tricky wind finally settles smooth and warm, and their kite floats alone in the orange sky over the quiet square'>>",
+   "body": "<<FILL role=ending words=38 beats='The big rounds go by without a ribbon for them and Tomas feels a small pang; but at sunset the tricky wind finally settles smooth and warm, and their kite floats alone in the orange sky over the quiet square'>>",
    "is_ending": true,
    "choices": [],
    "ending": {

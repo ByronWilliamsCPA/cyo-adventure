@@ -125,8 +125,8 @@
     },
     {
      "id": "pine_grove_search_ch2",
-     "label": "Give up here and find a grownup",
-     "target": "ask_grownup"
+     "label": "Decide it's time to head home instead",
+     "target": "end_home_without_boot"
     }
    ]
   },
@@ -217,8 +217,8 @@
     },
     {
      "id": "frozen_pond_search_ch2",
-     "label": "Give up and find a grownup instead",
-     "target": "ask_grownup"
+     "label": "Decide it is getting too late to keep looking",
+     "target": "end_dusk_return_tomorrow"
     }
    ]
   },

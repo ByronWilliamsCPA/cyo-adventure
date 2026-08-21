@@ -7,13 +7,14 @@
  "style": "prose",
  "replicate": 3,
  "premise": "On the first snowy day, Priya must find her little brother's boot, lost somewhere along the sled run, before their walk home.",
- "attempts": 3,
- "repair_rounds": 2,
+ "attempts": 4,
+ "repair_rounds": 3,
  "strict_pass": false,
  "first_pass_clean": false,
  "parse_failures": 0,
  "findings_lines_per_round": [
   3,
+  2,
   2,
   2
  ],
@@ -23,10 +24,10 @@
  "output_tokens": null,
  "reasoning_tokens": null,
  "finish_reasons": [],
- "min_catalog_distance": 0.12631328591872326,
- "mean_catalog_distance": 0.3129022400932989,
+ "min_catalog_distance": 0.0763531570205024,
+ "mean_catalog_distance": 0.33592684534074196,
  "catalog_distance_note": "vs 5 in-cell peers",
- "last_feedback": "ERROR   PL-18  PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'priya-first-snow-boot-hunt'\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r3__claude-fable-subagent.json failed structural validation: PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'priya-first-snow-boot-hunt'",
+ "last_feedback": "ERROR   L1-7   L1-7 budget: branch_depth out of range in story 'priya-first-snow-boot-hunt': 8 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r3__claude-fable-subagent.json failed structural validation: L1-7 budget: branch_depth out of range in story 'priya-first-snow-boot-hunt': 8 (allowed 0..7)",
  "shell_file": "shells/A__r3__claude-fable-subagent.json",
  "error": ""
 }

@@ -52,7 +52,7 @@
     {
      "id": "c02",
      "label": "Search the run yourselves",
-     "target": "run-fork"
+     "target": "up-the-squeaky-run"
     },
     {
      "id": "c03",
@@ -62,8 +62,20 @@
    ]
   },
   {
+   "id": "up-the-squeaky-run",
+   "body": "<<FILL role=explore words=25 beats='Priya takes Arjun mittened hand and starts up the squeaky packed run; snowflakes land on their hoods; every lump of white could be hiding one small red boot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c04",
+     "label": "Look for clues",
+     "target": "run-fork"
+    }
+   ]
+  },
+  {
    "id": "run-fork",
-   "body": "<<FILL role=decision words=44 beats='Priya holds Arjun mittened hand and walks the squeaky packed run uphill, eyes sweeping the snow; two clues appear, drag marks sliding off the run edge toward the pine trees, and the huge bottom drift with the dent where Arjun tumbled off; the falling snow is already softening both, so Priya can chase only one'>>",
+   "body": "<<FILL role=decision words=44 beats='halfway up two clues appear, drag marks sliding off the run edge toward the pine trees, and the huge bottom drift below with the dent where Arjun tumbled off; the falling snow is already softening both, so Priya can chase only one'>>",
    "is_ending": false,
    "choices": [
     {
@@ -297,36 +309,19 @@
   },
   {
    "id": "borrow-shovel",
-   "body": "<<FILL role=explore words=30 beats='Mr. Okafor is scraping the warming hut steps; he lends Priya his small blue shovel and tucks a hand warmer into each of her mittens; back at the drift the crash dent is almost filled in'>>",
+   "body": "<<FILL role=explore words=18 beats='Mr. Okafor is scraping the warming hut steps; he lends Priya his small blue shovel and tucks a warm hand warmer into each of her mittens'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c22",
-     "label": "Start digging with the shovel",
-     "target": "shovel-clink"
-    }
-   ]
-  },
-  {
-   "id": "shovel-clink",
-   "body": "<<FILL role=climax words=38 beats='a big scoop thuds on something hard, only a frozen thermos lid; under it the snow turns loose and sugary and the very tip of a red toe peeks out; the sky is getting dimmer'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c23",
-     "label": "Scoop wide around the boot",
+     "label": "Dig a neat ring",
      "target": "end-shovel-scoop"
-    },
-    {
-     "id": "c24",
-     "label": "Grab the toe and wiggle",
-     "target": "end-soggy-boot"
     }
    ]
   },
   {
    "id": "end-shovel-scoop",
-   "body": "<<FILL role=ending words=70 beats='Priya scoops a neat ring the way Mr. Okafor showed her and the boot lifts out dry and whole; she pops a warm hand warmer inside before buckling it on Arjun foot; they return the little blue shovel with a cheer and march home warm before the streetlights wink on'>>",
+   "body": "<<FILL role=ending words=50 beats='back at the drift Priya scoops a neat wide ring the way Mr. Okafor showed her and the red boot lifts out dry and whole; a warm hand warmer goes inside before it buckles onto Arjun hopping foot; they return the little blue shovel with a cheer and march home before the streetlights wink on'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -337,24 +332,12 @@
    }
   },
   {
-   "id": "end-soggy-boot",
-   "body": "<<FILL role=ending words=70 beats='the boot wiggles free but it is soaked and icy inside, no good for a small foot tonight; Priya tucks it in her coat, wraps Arjun foot in her scarf, and pulls him home on the sled; the boot is found, and tomorrow it will dry toasty by the radiator'>>",
-   "is_ending": true,
-   "choices": [],
-   "ending": {
-    "id": "e-soggy-boot",
-    "valence": "neutral",
-    "kind": "completion",
-    "title": "Soggy Boot Sled Ride"
-   }
-  },
-  {
    "id": "ask-the-kids",
    "body": "<<FILL role=explore words=22 beats='the hill kids crowd around; big Jo with the green sled remembers Arjun boot flying off near the bumpy jump at noon'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c25",
+     "id": "c23",
      "label": "Listen to Jo",
      "target": "jo-remembers"
     }
@@ -362,30 +345,18 @@
   },
   {
    "id": "jo-remembers",
-   "body": "<<FILL role=decision words=30 beats='Jo leads everyone toward the jump; a rider named Sana giggles and says the boot bounced off her tow rope, so she hung it in the maple there; Priya could dash straight to that maple, or sweep the tow rope line on the way in case it dropped again'>>",
+   "body": "<<FILL role=decision words=30 beats='Jo leads everyone toward the bumpy jump; a rider named Sana saw the boot fly high, maybe somebody hung it in the maple by the jump, or maybe a grown-up dropped it in the rope hut lost-and-found basket; the light is going, so Priya picks where to look'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c26",
+     "id": "c24",
      "label": "Run to that maple",
      "target": "maple-by-the-jump"
     },
     {
-     "id": "c29",
-     "label": "Sweep the tow rope line",
+     "id": "c25",
+     "label": "Check the lost-and-found",
      "target": "tow-rope-line"
-    }
-   ]
-  },
-  {
-   "id": "tow-rope-line",
-   "body": "<<FILL role=explore words=24 beats='Priya and the kids walk the humming tow rope line kicking up powder; they find Arjun dropped mitten and a candy cane, but no boot, so it must still be hanging in the maple by the jump'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c30",
-     "label": "Head to the maple",
-     "target": "maple-by-the-jump"
     }
    ]
   },
@@ -395,12 +366,12 @@
    "is_ending": false,
    "choices": [
     {
-     "id": "c27",
+     "id": "c26",
      "label": "Take a boost from Jo",
      "target": "end-jo-boost"
     },
     {
-     "id": "c28",
+     "id": "c27",
      "label": "Bend the branch down together",
      "target": "end-whole-hill"
     }
@@ -428,6 +399,30 @@
     "valence": "positive",
     "kind": "completion",
     "title": "The Whole Hill Helped"
+   }
+  },
+  {
+   "id": "tow-rope-line",
+   "body": "<<FILL role=explore words=18 beats='Priya and the kids slide along the humming tow rope to the little hut; by its door sits the lost-and-found basket, heaped high with mittens, hats, and scarves'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c28",
+     "label": "Dig through the basket",
+     "target": "end-rope-basket"
+    }
+   ]
+  },
+  {
+   "id": "end-rope-basket",
+   "body": "<<FILL role=ending words=50 beats='under a green scarf at the very bottom of the basket sits the red boot with the yellow star; Priya shakes out the snow, rubs Arjun toes warm, and buckles the boot on; they thank the rope hut man and every helper, then stomp home before the streetlights wink on'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-rope-basket",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Lost-and-Found Basket"
    }
   }
  ]
