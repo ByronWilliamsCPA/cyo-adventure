@@ -1,0 +1,40 @@
+{
+ "leg": "google-gemini-3.1-pro",
+ "family": "google",
+ "cell_id": "A",
+ "band": "5-8",
+ "length": "short",
+ "style": "prose",
+ "replicate": 1,
+ "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+ "attempts": 5,
+ "repair_rounds": 4,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  2,
+  3,
+  10,
+  19,
+  2
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 803.54,
+ "input_tokens": 30555,
+ "output_tokens": 114317,
+ "reasoning_tokens": 86931,
+ "finish_reasons": [
+  "stop",
+  "stop",
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "min_catalog_distance": 0.15796904219471578,
+ "mean_catalog_distance": 0.31386959382504787,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "last_feedback": "ERROR   PL-25  PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'miri-and-the-missing-hen'\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1-2026-08-21/shells/A__r1__google-gemini-3.1-pro.json failed structural validation: PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'miri-and-the-missing-hen'",
+ "shell_file": "shells/A__r1__google-gemini-3.1-pro.json",
+ "error": "ProviderError: openrouter returned leg-fatal HTTP 402 (authentication or credit failure)"
+}

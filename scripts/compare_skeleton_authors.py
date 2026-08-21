@@ -760,6 +760,7 @@ async def run(args: argparse.Namespace) -> int:
         json.dumps(
             {
                 "started_at": datetime.now(UTC).isoformat(timespec="seconds"),
+                "resumed": bool(args.resume),
                 "mock": args.mock,
                 "vendors": [v.label for v in vendors],
                 "cells": [c["id"] for c in cells],
@@ -778,6 +779,32 @@ async def run(args: argparse.Namespace) -> int:
     for cell in cells:
         brief = build_brief(cell["band"], cell["length"], cell["style"])
         briefs[cell["id"]] = _render_markdown(brief)
+
+    # #ASSUME: external resources: a paid run can die mid-grid (the
+    # 2026-08-21 registered run hit HTTP 402 when the OpenRouter account ran
+    # out of credits, 4 shells in). --resume keeps every cleanly completed
+    # shell and re-runs only errored or missing ones, so paid artifacts are
+    # never re-bought.
+    # #VERIFY: a resumed shell is identified by its (cell, replicate, leg)
+    # record having an empty error field; conditions are re-recorded in
+    # run.json with a resumed_at stamp.
+    kept: list[ShellRecord] = []
+    done_keys: set[tuple[str, int, str]] = set()
+    if args.resume:
+        record_dir = out_dir / "records"
+        known = {f.name for f in ShellRecord.__dataclass_fields__.values()}
+        for record_file in sorted(record_dir.glob("*.record.json")):
+            try:
+                data = json.loads(record_file.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            if not isinstance(data, dict) or data.get("error"):
+                continue
+            fields_only = {k: v for k, v in data.items() if k in known}
+            prior = ShellRecord(**fields_only)
+            kept.append(prior)
+            done_keys.add((prior.cell_id, prior.replicate, prior.leg))
+        print(f"resume: keeping {len(kept)} completed shells")
 
     semaphore = asyncio.Semaphore(args.concurrency)
     tasks: list[asyncio.Task[ShellRecord]] = []
@@ -803,6 +830,8 @@ async def run(args: argparse.Namespace) -> int:
         premises = list(cell["premises"])[: args.replicates]
         for replicate, premise in enumerate(premises, start=1):
             for vendor in vendors:
+                if (str(cell["id"]), replicate, vendor.label) in done_keys:
+                    continue
                 record = ShellRecord(
                     leg=vendor.label,
                     family=vendor.lineage(),
@@ -826,7 +855,7 @@ async def run(args: argparse.Namespace) -> int:
                     )
                 )
 
-    records = list(await asyncio.gather(*tasks))
+    records = [*kept, *(await asyncio.gather(*tasks))]
     _summarize(records, out_dir)
     passes = sum(r.strict_pass for r in records)
     errors = sum(bool(r.error) for r in records)
@@ -864,6 +893,14 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--concurrency", type=int, default=4)
     parser.add_argument("--out-dir", default="")
     parser.add_argument("--mock", action="store_true")
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help=(
+            "Keep cleanly completed shells already in --out-dir and author "
+            "only the errored or missing grid points."
+        ),
+    )
     parser.add_argument("--preflight-only", action="store_true")
     return parser.parse_args(argv)
 

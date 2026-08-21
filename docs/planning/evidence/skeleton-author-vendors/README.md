@@ -26,8 +26,17 @@ primary endpoint and falsifier; the harness docstring carries the shared repair-
   dangling ref plus L1-7 ending-count overshoot for v4 Pro; an integer-type schema miss for
   Flash). Design consequence, fixed before the registered run: a round cap of 4 censors most
   legs at the cap and starves the primary endpoint of range, so the registered run uses 6.
-- `runs/e1-2026-08-21/`: **the registered S-1 run.** 4 cells x 4 replicates x 5 legs, cap 65536,
-  6 repair rounds, conditions in `run.json`; analysis per the register row's pre-registration.
+- `runs/e1-2026-08-21/`: **the registered S-1 run, HALTED on provider credits after 4 of 80
+  shells.** 4 cells x 4 replicates x 5 legs, cap 65536, 6 repair rounds, conditions in `run.json`.
+  76 shells failed with OpenRouter HTTP 402: the account's prepaid credits were exhausted
+  ($400.92 used of $400.00 at the time of the run; the balance was nearly spent before this
+  session, and the two smokes tipped it). No result may be read from this directory's
+  `summary.md`: the 4 completed shells (2 v4 Pro, 1 v4 Flash, 1 GPT-5.6, all cell A) are kept and
+  the permutation test over them is meaningless. When credits are restored, resume with the same
+  conditions and out-dir: `uv run python scripts/compare_skeleton_authors.py --replicates 4
+  --max-repair-rounds 6 --concurrency 5 --resume --out-dir
+  docs/planning/evidence/skeleton-author-vendors/runs/e1-2026-08-21`. The `--resume` flag keeps
+  cleanly completed shells and re-authors only errored or missing grid points.
 
 Smoke shells share cell A's replicate-1 premise with the registered run by design (the S-0
 allocation rule is frozen); the smokes are excluded from analysis because their run conditions

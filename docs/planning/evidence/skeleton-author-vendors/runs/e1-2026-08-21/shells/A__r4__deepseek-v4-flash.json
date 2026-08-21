@@ -1,0 +1,603 @@
+{
+ "schema_version": "2.0",
+ "id": "the-pumpkin-nibbler",
+ "version": 1,
+ "title": "The Pumpkin Nibbler",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "open_map",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.2,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "curiosity",
+   "patience",
+   "nature",
+   "problem-solving",
+   "kindness"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "pumpkin_discovery",
+ "nodes": [
+  {
+   "id": "pumpkin_discovery",
+   "body": "<<FILL role=setup words=70 beats='Sam sees the giant pumpkin in the class garden has a big bite taken out of it. The class is excited. Sam wants to find out who did it without scaring any animal away.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "clue_search",
+     "label": "Look for clues around the pumpkin",
+     "target": "clue_search"
+    },
+    {
+     "id": "friend_consult",
+     "label": "Ask a friend what they saw",
+     "target": "friend_consult"
+    }
+   ]
+  },
+  {
+   "id": "clue_search",
+   "body": "<<FILL role=explore words=72 beats='Sam kneels by the pumpkin. The dirt shows tiny footprints leading away. A few fur strands hang on a rough edge of the fence.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "check_fence",
+     "label": "Check the fence for more fur",
+     "target": "fence_investigation"
+    },
+    {
+     "id": "check_leaf",
+     "label": "Look under the big leaf nearby",
+     "target": "leaf_exploration"
+    },
+    {
+     "id": "follow_trail",
+     "label": "Follow the tiny footprints",
+     "target": "trail_follow"
+    }
+   ]
+  },
+  {
+   "id": "friend_consult",
+   "body": "<<FILL role=decision words=65 beats='Sam runs to find Mia. Mia says she saw something brown near the pumpkin at sunset. She thinks it might be a rabbit or a squirrel.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "sunset_watch",
+     "label": "Plan to watch at sunset with a snack",
+     "target": "sunset_watch_prep"
+    },
+    {
+     "id": "compost_check",
+     "label": "Check the compost heap for nibble marks",
+     "target": "compost_explore"
+    }
+   ]
+  },
+  {
+   "id": "fence_investigation",
+   "body": "<<FILL role=decision words=68 beats='Sam finds more fur on the fence. It is soft and gray. A small hole near the ground could be an entrance.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "look_fur",
+     "label": "Carefully collect the fur to show the class",
+     "target": "fur_examine"
+    },
+    {
+     "id": "look_feet",
+     "label": "Look for footprints on the other side",
+     "target": "feet_investigation"
+    }
+   ]
+  },
+  {
+   "id": "leaf_exploration",
+   "body": "<<FILL role=explore words=64 beats='Under the big leaf, Sam finds a small tunnel of trampled grass. A single acorn lies nearby.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "hide_leaf",
+     "label": "Hide under the leaf and wait",
+     "target": "hide_and_observe"
+    },
+    {
+     "id": "check_under",
+     "label": "Gently lift the leaf to see what is underneath",
+     "target": "under_leaf_discovry"
+    }
+   ]
+  },
+  {
+   "id": "trail_follow",
+   "body": "<<FILL role=transition words=66 beats='Sam follows the footprints past the bean poles and around a puddle. They lead toward the old stone wall.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "go_hed",
+     "label": "Follow the trail to the garden shed",
+     "target": "shed_investigation"
+    },
+    {
+     "id": "go_wall",
+     "label": "Follow the trail to the stone wall",
+     "target": "wall_investigation"
+    }
+   ]
+  },
+  {
+   "id": "sunset_watch_prep",
+   "body": "<<FILL role=setup words=60 beats='Sam and Mia sit quietly behind the big bush. The sun sets. They watch the pumpkin. Soon they see a small shape hop out.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "camera_idea",
+     "label": "Whipser to take a picture",
+     "target": "take_picture"
+    },
+    {
+     "id": "stay_uiet",
+     "label": "Stay very still and watch",
+     "target": "watch_quietly"
+    }
+   ]
+  },
+  {
+   "id": "compost_explore",
+   "body": "<<FILL role=explore words=62 beats='At the compost heap, Sam sees fresh nibbles on a carrot top. Something is hiding behind the pile.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "check_beind",
+     "label": "Peek behind the pile",
+     "target": "behind_compost"
+    },
+    {
+     "id": "lure_out",
+     "label": "Sprinkle seeds to lure it out",
+     "target": "lure_and_wait"
+    }
+   ]
+  },
+  {
+   "id": "fur_examine",
+   "body": "<<FILL role=climax words=60 beats='Sam examines the fur with a magnifying glass. It matches the class pet rabbit that escaped last week. The nibbler is Fluffy!'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "tell_tacher",
+     "label": "Run to tell the teacher",
+     "target": "tell_teacher_ending"
+    },
+    {
+     "id": "catch_gentley",
+     "label": "Try to catch Fluffy gently",
+     "target": "catch_rabbit_ending"
+    }
+   ]
+  },
+  {
+   "id": "feet_investigation",
+   "body": "<<FILL role=explore words=65 beats='On the other side of the fence, Sam sees tiny footprints going toward the wildflower patch. Some flowers are bent.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "follow_owers",
+     "label": "Follow the bent flowers",
+     "target": "follow_flowers_ending"
+    },
+    {
+     "id": "go_back",
+     "label": "Go back and try a different clue",
+     "target": "back_to_pumpkin_ending"
+    }
+   ]
+  },
+  {
+   "id": "hide_and_observe",
+   "body": "<<FILL role=watcher words=68 beats='Sam hides under the leaf and waits. After a while, a squirrel comes to nibble on an acorn. It does not see the pumpkin.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "squirl_watcher",
+     "label": "Watch the squirrel some more",
+     "target": "squirrel_ending"
+    },
+    {
+     "id": "go_back_leaf",
+     "label": "Sneak out and check other spots",
+     "target": "back_from_leaf"
+    }
+   ]
+  },
+  {
+   "id": "under_leaf_discovry",
+   "body": "<<FILL role=reveal words=66 beats='Sam lifts the leaf carefully. A small rabbit is munching a fallen pumkin chunk. It looks up with big eyes.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "stay_silent",
+     "label": "Stay very still and smile",
+     "target": "rabbit_meet_ending"
+    },
+    {
+     "id": "whisper_sam",
+     "label": "Whisper hello to the rabbit",
+     "target": "whisper_ending"
+    }
+   ]
+  },
+  {
+   "id": "shed_investigation",
+   "body": "<<FILL role=explore words=65 beats='The tracks lead to the garden shed. The door is slightly open. A tuft of fur is on the doorframe.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "peek_inside",
+     "label": "Peek inside carefully",
+     "target": "peek_shed_ending"
+    },
+    {
+     "id": "call_inside",
+     "label": "Call out softly",
+     "target": "call_shed_ending"
+    }
+   ]
+  },
+  {
+   "id": "wall_investigation",
+   "body": "<<FILL role=transition words=64 beats='The trail ends at a hole under the wall. Inside the hole, something rustles. Sam hears tiny crunching sounds.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "peek_hole",
+     "label": "Peek into the hole",
+     "target": "peek_hole_ending"
+    },
+    {
+     "id": "leave_snack",
+     "label": "Leave a small piece of apple near the hole",
+     "target": "leave_snack_ending"
+    }
+   ]
+  },
+  {
+   "id": "take_picture",
+   "body": "<<FILL role=climax words=68 beats='Sam snaps a photo just as the animal turns. It is a baby sqirrel with a pumkin seed in its mouth. The picture is perfect!'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "show_class",
+     "label": "Show the photo to the class",
+     "target": "photo_ending"
+    },
+    {
+     "id": "watch_more",
+     "label": "Keep watching quietly",
+     "target": "watch_more_ending"
+    }
+   ]
+  },
+  {
+   "id": "watch_quietly",
+   "body": "<<FILL role=climax words=66 beats='Sam watches as a rabbit hops up to the pumpkin and nibbles a piece. It is very gentle. Sam feels happy to see it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "tell_mia",
+     "label": "Whisper to Mia that it is a rabbit",
+     "target": "tell_mia_ending"
+    },
+    {
+     "id": "continue_watching",
+     "label": "Watch a little longer",
+     "target": "watch_continue_ending"
+    }
+   ]
+  },
+  {
+   "id": "behind_compost",
+   "body": "<<FILL role=climax words=64 beats='Behind the pile, a hedgehog is munching on a fallen apple. It snorts and rolls into a ball.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "tell_friend",
+     "label": "Carefully tell your friends",
+     "target": "hedgehog_ending"
+    },
+    {
+     "id": "leave_peace",
+     "label": "Leave it alone and come back later",
+     "target": "leave_hedgehog_ending"
+    }
+   ]
+  },
+  {
+   "id": "lure_and_wait",
+   "body": "<<FILL role=wait words=60 beats='Sam sprinkles seeds and steps back. A squirrel darts out, grabs a seed, and scampers away. Not a nibbler after all.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "try_futiher",
+     "label": "Try luring with something else",
+     "target": "lure_again_ending"
+    },
+    {
+     "id": "give_up",
+     "label": "Give up and go inside",
+     "target": "give_up_ending"
+    }
+   ]
+  },
+  {
+   "id": "back_from_leaf",
+   "body": "<<FILL role=transition words=58 beats='Sam quietly creeps out from under the leaf and goes back to the pumpkin patch to think.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "check_ompost",
+     "label": "Check the compost heap",
+     "target": "compost_explore"
+    },
+    {
+     "id": "ask_friend_again",
+     "label": "Ask a different friend",
+     "target": "friend_consult"
+    }
+   ]
+  },
+  {
+   "id": "back_to_pumpkin",
+   "body": "<<FILL role=decision words=62 beats='Sam returns to the pumpkin and sees a new nibble mark. Maybe it is a bird? Sam notices a blue jay on the fence.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "watch_jay",
+     "label": "Watch the blue jay for a while",
+     "target": "jay_watch_ending"
+    },
+    {
+     "id": "climb_fence",
+     "label": "Climb on the fence to see better",
+     "target": "climb_fence_ending"
+    }
+   ]
+  },
+  {
+   "id": "tell_tacher_ending",
+   "body": "<<FILL role=ending words=60 beats='Sam runs to find the teacher. They both go to the shed and find Fluffy. The class is thrilled. Fluffy is back home!'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "tell_tacher_ending",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Fluffy is Found!"
+   }
+  },
+  {
+   "id": "catch_rabbit_ending",
+   "body": "<<FILL role=ending words=58 beats='Sam gently calls Fluffy. The rabbit hops closer and lets Sam pet it. Sam carries it back to the classroom.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "catch_rabbit_ending",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Sam Snuggles the Rabbit"
+   }
+  },
+  {
+   "id": "follow_flowers_ending",
+   "body": "<<FILL role=ending words=57 beats='Sam follows the bent flowers right to a rabbit's nest with three baby rabbits. They are nibbling on dandelions.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "follow_flowers_ending",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Baby Rabbits!"
+   }
+  },
+  {
+   "id": "squirrel_ending",
+   "body": "<<FILL role=ending words=62 beats='Sam watches the squirrel for a long time. It finally hops to the pumpkin and takes a small bite. The nibbler is a squirrel!'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "squirrel_ending",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Nibbler Is a Squirrel"
+   }
+  },
+  {
+   "id": "rabbit_meet_ending",
+   "body": "<<FILL role=ending words=60 beats='The rabbit nibbles a bit more, then hops away. Sam quietly tells the class the next day. They decide to leave seeds out.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "rabbit_meet_ending",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Friendly Rabbit"
+   }
+  },
+  {
+   "id": "whisper_ending",
+   "body": "<<FILL role=ending words=56 beats='Sam whispers hello. The rabbit twitches its nose and hops closer. Sam gives it a tiny piece of carrot.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "whisper_ending",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Making a New Friend"
+   }
+  },
+  {
+   "id": "peek_shed_ending",
+   "body": "<<FILL role=ending words=59 beats='Sam peeks inside the shed and sees a nest of straw. A mother rabbit is sitting with babies. Sam closes the door quietly.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "peek_shed_ending",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Nest in the Shed"
+   }
+  },
+  {
+   "id": "call_shed_ending",
+   "body": "<<FILL role=ending words=58 beats='Sam calls softly. A rabbit pokes its head out. It seems friendly. Sam gives it a lettuce leaf from the garden.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "call_shed_ending",
+    "valence": "neutral",
+    "kind": "success",
+    "title": "Rabbit at the Door"
+   }
+  },
+  {
+   "id": "peek_hole_ending",
+   "body": "<<FILL role=ending words=55 beats='Sam peeks into the hole and sees a baby squirrel with a pumpkin seed in its paws. It is the nibbler!'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "peek_hole_ending",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Caught in the Act"
+   }
+  },
+  {
+   "id": "leave_snack_ending",
+   "body": "<<FILL role=ending words=57 beats='Sam leaves the apple piece and steps back. A squirrel comes out, takes it, and ignores the pumpkin. It was not the nibbler.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "leave_snack_ending",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Wrong Animal"
+   }
+  },
+  {
+   "id": "photo_ending",
+   "body": "<<FILL role=ending words=60 beats='Sam shows the photo to the class. Everyone is impressed. They name the squirrel Nibbles. The class decides to share the pumpkin.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "photo_ending",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Photo Proof"
+   }
+  },
+  {
+   "id": "watch_more_ending",
+   "body": "<<FILL role=ending words=58 beats='Sam keeps watching and sees the squirrel take a few more bites. The pumpkin still has plenty. Sam leaves a note for the class.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "watch_more_ending",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Sharing With Wildlife"
+   }
+  },
+  {
+   "id": "tell_mia_ending",
+   "body": "<<FILL role=ending words=59 beats='Sam whispers the news to Mia. They both watch the rabbit finish its meal. The mystery is solved.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "tell_mia_ending",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Solved Together"
+   }
+  },
+  {
+   "id": "watch_continue_ending",
+   "body": "<<FILL role=ending words=57 beats='Sam watches until the rabbit leaves. Sam checks the pumpkin: it has a big chunk missing. Sam decides to let the animal have some.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "watch_continue_ending",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Animal's Feast"
+   }
+  },
+  {
+   "id": "hedgehog_ending",
+   "body": "<<FILL role=ending words=56 beats='Sam hurries to tell Mia about the hedgehog. They decide to leave it alone. It is not a pumpkin nibbler, but still fun.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "hedgehog_ending",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Prickly Surprise"
+   }
+  },
+  {
+   "id": "leave_hedgehog_ending",
+   "body": "<<FILL role=ending words=55 beats='Sam leaves the hedghog alone and goes back to the pumpkin. The mystery remains, but Sam feels good about being kind.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "leave_hedgehog_ending",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Kind to All Animals"
+   }
+  },
+  {
+   "id": "lure_again_ending",
+   "body": "<<FILL role=ending words=57 beats='Sam tries luring with a piece of pumpkin. A rabbit comes out! But it is scared by a noise and runs away. Maybe tomorrow.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "lure_again_ending",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Scared Away"
+   }
+  },
+  {
+   "id": "give_up_ending",
+   "body": "<<FILL role=ending words=56 beats='Sam gives up and goes inside. The next day, the pumpkin has more bites. The nibber never shows its self.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "give_up_ending",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Mystery Unsolved"
+   }
+  },
+  {
+   "id": "jay_watch_ending",
+   "body": "<<FILL role=ending words=58 beats='Sam watches the blue jay. It does not go near the pumkin. Sam gives up and heads inside. Maybe tomorrow Sam will try again.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "jay_watch_ending",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Distracted by a Bird"
+   }
+  },
+  {
+   "id": "climb_fence_ending",
+   "body": "<<FILL role=ending words=58 beats='Sam clims on the fence but slips and lands softly in the flower bed. The noise scares away any animal. Sam is dirty but fine.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "climb_fence_ending",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Oops! A Scare"
+   }
+  }
+ ]
+}

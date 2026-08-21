@@ -1,0 +1,587 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-kite-festival",
+ "version": 1,
+ "title": "Tomas and the Wind-Changing Kite",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "perseverance",
+   "creativity",
+   "collaboration",
+   "spring festivals"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 7,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n01",
+ "nodes": [
+  {
+   "id": "n01",
+   "body": "<<FILL role=setup words=68 beats='Tomas and his grandmother Lola unpack her sewing box on the porch. The spring festival is tomorrow. Lola shows Tomas a bamboo frame and a bolt of yellow silk. Tomas remembers last years kite that tore in a gust. Lola says the wind has its own ideas, so a kite must be ready to change. A wind chime tinkles.'>>",
+   "is_ending": false,
+   "choices": []
+  },
+  {
+   "id": "n01a",
+   "body": "<<FILL role=explore words=68 beats='The porch table is covered with spools of thread and scraps of colored paper. Lola asks Tomas what shape he imagines flying high above the festival crowd. Tomas pictures a big steady diamond and a quick little box. Lola says both shapes fly differently and asks him to choose one to start.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c01a",
+     "label": "Build a big diamond kite",
+     "target": "n02"
+    },
+    {
+     "id": "c01b",
+     "label": "Build a quick box kite",
+     "target": "n03"
+    }
+   ]
+  },
+  {
+   "id": "n02",
+   "body": "<<FILL role=explore words=68 beats='Lola smiles and cuts the yellow silk into a large diamond. Tomas pastes the edges with flour glue while Lola ties the bamboo cross-spars with red thread. The diamond kite looks grand and steady. Tomas imagines it floating high above the festival field. The sun warms their hands.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c02a",
+     "label": "Take it to the field now",
+     "target": "n04"
+    },
+    {
+     "id": "c02b",
+     "label": "Add a long ribbon tail first",
+     "target": "n05"
+    }
+   ]
+  },
+  {
+   "id": "n03",
+   "body": "<<FILL role=explore words=68 beats='Lola finds a diagram in an old book. Together they fold the silk into a small box shape and glue six short bamboo rods across the corners. Tomas holds the tight little frame up to the light. It looks quick and nimble, hardly bigger than his hand. The chime tinkles again.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c03a",
+     "label": "Paint racing stripes on it",
+     "target": "n06"
+    },
+    {
+     "id": "c03b",
+     "label": "Try it in the yard now",
+     "target": "n07"
+    }
+   ]
+  },
+  {
+   "id": "n04",
+   "body": "<<FILL role=explore words=68 beats='Tomas and Lola carry the big diamond kite to the green field. Banners flap in a strong breeze. Tomas lifts the kite and Lola holds the line. A gust catches the wide silk face immediately. The kite tugs hard against Tomas hands, leaping upward like a living thing. Tomas laughs with surprise.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c04a",
+     "label": "Let out more string to go higher",
+     "target": "n08"
+    },
+    {
+     "id": "c04b",
+     "label": "Steady the kite and watch it settle",
+     "target": "n09"
+    }
+   ]
+  },
+  {
+   "id": "n05",
+   "body": "<<FILL role=explore words=68 beats='Lola ties a long ribbon tail to the diamond kite from her scrap bag. The ribbon is striped red and white. Tomas carries the kite outside and the breeze lifts it immediately. The ribbon snakes behind in the air, keeping the big kite steady even when the wind buffets sideways. Tomas cheers.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c05a",
+     "label": "Test how high it can fly",
+     "target": "n10"
+    },
+    {
+     "id": "c05b",
+     "label": "Try flying over the garden",
+     "target": "n11"
+    }
+   ]
+  },
+  {
+   "id": "n06",
+   "body": "<<FILL role=explore words=68 beats='Tomas dips a brush in red paint and draws racing stripes along the box kite sides. Lola adds a blue lightning bolt. The paint dries quickly in the sun. The little kite looks fast standing still. Tomas names it Flash Arrow and Lola claps her hands. They head outside to launch it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c06a",
+     "label": "Launch Flash Arrow now",
+     "target": "n12"
+    },
+    {
+     "id": "c06b",
+     "label": "Add a second coat of paint",
+     "target": "n13"
+    }
+   ]
+  },
+  {
+   "id": "n07",
+   "body": "<<FILL role=explore words=68 beats='In the yard the box kite catches the wind and buzzes upward like a dragonfly. It darts left and right when Tomas tugs the line. The quick little kite loops and spins. Lola watches from the porch step, shading her eyes. The wind is playful and changes direction without warning.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c07a",
+     "label": "Try a loop-the-loop trick",
+     "target": "n14"
+    },
+    {
+     "id": "c07b",
+     "label": "Fly it beyond the fence",
+     "target": "n15"
+    }
+   ]
+  },
+  {
+   "id": "n08",
+   "body": "<<FILL role=decision words=68 beats='The diamond kite climbs fast as Tomas feeds out the string. Suddenly the wind shifts direction and the kite shudders. The big flat face catches the new cross-wind wrong. The frame groans and one bamboo spar bends. Tomas sees the silk wrinkle. Lola calls out to react quickly.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c08a",
+     "label": "Pull in the string and land it",
+     "target": "n16"
+    },
+    {
+     "id": "c08b",
+     "label": "Run with the wind to steady it",
+     "target": "n17"
+    }
+   ]
+  },
+  {
+   "id": "n09",
+   "body": "<<FILL role=decision words=68 beats='Tomas keeps the string tight and feels the diamond kite tug gently. The wind smooths into a steady hum. Lola points out how the kite rocks like a slow cradle. Tomas learns the feel of a balanced flight. The field feels peaceful in the morning light.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c09a",
+     "label": "Let the kite ride the steady wind",
+     "target": "n18"
+    },
+    {
+     "id": "c09b",
+     "label": "Bring it down and add a tail",
+     "target": "n19"
+    }
+   ]
+  },
+  {
+   "id": "n10",
+   "body": "<<FILL role=decision words=68 beats='The diamond kite with the ribbon tail flies beautifully until the wind dies suddenly to a whisper. The kite wobbles and begins to sink toward a row of oak trees. The ribbon dangles limp. Tomas feels the string go slack in his palms. Lola points at the treetops with a frown.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c10a",
+     "label": "Pump the string to catch a breeze",
+     "target": "n20"
+    },
+    {
+     "id": "c10b",
+     "label": "Coax the kite toward open ground",
+     "target": "n21"
+    }
+   ]
+  },
+  {
+   "id": "n11",
+   "body": "<<FILL role=explore words=68 beats='Tomas walks the kite over the vegetable patch and the ribbon tail tickles the tops of Lolas tomato stakes. A crow caws and flies off. The diamond kite wobbles but the tail keeps it from spinning. Tomas laughs as the shadow dances over the lettuce rows.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c11a",
+     "label": "Keep flying over the garden",
+     "target": "n22"
+    }
+   ]
+  },
+  {
+   "id": "n12",
+   "body": "<<FILL role=decision words=68 beats='Flash Arrow shoots up but the wind turns gusty. A hard puff hits the small kite sideways and it tumbles, spinning toward the garden fence. Tomas tugs the line but the box kite overcorrects. The blue lightning bolt flashes in the sun as the kite flutters wildly. Lola gasps.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c12a",
+     "label": "Reel in fast to reset it",
+     "target": "n23"
+    },
+    {
+     "id": "c12b",
+     "label": "Slack the line and let it settle",
+     "target": "n24"
+    }
+   ]
+  },
+  {
+   "id": "n13",
+   "body": "<<FILL role=transition words=68 beats='The extra paint coat makes the colors shine wet and glossy. Tomas and Lola wait for it to dry by telling kite stories. Lola tells of a kite she flew across the river as a girl. The sun shifts behind the porch. When the paint is dry the kite feels heavier and tougher.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c13a",
+     "label": "Launch the toughened Flash Arrow",
+     "target": "n25"
+    }
+   ]
+  },
+  {
+   "id": "n14",
+   "body": "<<FILL role=decision words=68 beats='Tomas yanks the line to make the box kite loop. The kite twirls but the jerky motion snaps the thread on one corner. The box shape collapses on one side and the little kite flops into a spiral. Lola cries out and Tomas holds the line tightly, thinking fast.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c14a",
+     "label": "Guide it down gently",
+     "target": "n26"
+    },
+    {
+     "id": "c14b",
+     "label": "Try to pop the shape open again",
+     "target": "n27"
+    }
+   ]
+  },
+  {
+   "id": "n15",
+   "body": "<<FILL role=explore words=68 beats='Tomas runs along the fence line and the box kite follows above the neighboring field. A flock of sparrows scatters. The little kite chases the wind over the tall grass and Lola walks along behind, calling advice about keeping the line smooth.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c15a",
+     "label": "Fly back toward the porch",
+     "target": "n28"
+    }
+   ]
+  },
+  {
+   "id": "n16",
+   "body": "<<FILL role=climax words=68 beats='Tomas pulls the string steadily and the big kite descends wobbling to the grass. Lola catches the bamboo frame before it hits. The spar is only slightly bent. They walk back to the porch and Lola strengthens the cross with extra thread. Tomas pats the yellow silk smooth again.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c16a",
+     "label": "Return to the field to try again",
+     "target": "n29"
+    }
+   ]
+  },
+  {
+   "id": "n17",
+   "body": "<<FILL role=climax words=68 beats='Tomas sprints across the field keeping the kite ahead of the wind shift. The diamond face straightens and rides the new gust upward. Lola cheers from the sideline. The big kite soars higher than before, a steady yellow jewel against the blue spring sky. Tomas beams with pride.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c17a",
+     "label": "Wave to the arriving festival crowd",
+     "target": "n30"
+    }
+   ]
+  },
+  {
+   "id": "n18",
+   "body": "<<FILL role=explore words=68 beats='The diamond kite floats calmly in the steady breeze. Tomas sits beside Lola on the grass and they watch its shadow drift across the clover. The kite asks nothing, just hangs like a quiet thought. Tomas feels the string pulse gently with every breath of wind.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c18a",
+     "label": "Continue flying at the festival",
+     "target": "n31"
+    }
+   ]
+  },
+  {
+   "id": "n19",
+   "body": "<<FILL role=transition words=68 beats='Tomas brings the kite down and Lola attaches a short tassel tail from the scrap bag. The tail adds just a whisper of drag. Tomas relaunches the diamond and it feels even more steady, swaying like a ship in a calm harbor. Lola calls it their finest flying morning.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c19a",
+     "label": "Fly the improved kite at the festival",
+     "target": "n32"
+    }
+   ]
+  },
+  {
+   "id": "n20",
+   "body": "<<FILL role=climax words=68 beats='Tomas pumps the string with quick flicks of his wrist. The ribbon tail catches a tiny puff of moving air. The diamond kite lifts shakily above the oak branches. A new breeze arrives and the kite climbs away from the trees. Lola exhales and claps her hands together in relief.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c20a",
+     "label": "Wave to the arriving festival crowd",
+     "target": "n33"
+    }
+   ]
+  },
+  {
+   "id": "n21",
+   "body": "<<FILL role=climax words=68 beats='Tomas walks sideways pulling the kite toward the open meadow. The string stays slack but the kite floats just above the grass tips. The ribbon tail drags through daisies. Before the treeline the kite touches down softly on a patch of clover. Lola walks over smiling about the soft landing.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c21a",
+     "label": "Try a new design from the book",
+     "target": "n34"
+    }
+   ]
+  },
+  {
+   "id": "n22",
+   "body": "<<FILL role=ending words=68 beats='The ribbon-tied diamond kite bobs over the garden until sunset. Tomas hands the line to Lola and picks a few tomatoes for supper. The kite is a constant companion above their work. When the stars come out they reel it in, the silk smelling of fresh air and leaves.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end01",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Garden Companion"
+   }
+  },
+  {
+   "id": "n23",
+   "body": "<<FILL role=climax words=68 beats='Tomas reels Flash Arrow in quickly. The line hums and the small kite zips down to his waiting hands. He checks the frame and finds no damage. Lola suggests adding a small stabilizer tail for the gusty wind. Tomas nods and they head back to the porch workshop to make the fix.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c23a",
+     "label": "Add the stabilizer and test again",
+     "target": "n35"
+    }
+   ]
+  },
+  {
+   "id": "n24",
+   "body": "<<FILL role=climax words=68 beats='Tomas lets the string go slack and Flash Arrow tumbles slowly onto the soft garden soil beside the marigolds. The kite lands intact but dirty. Lola brushes off the silk and finds a tiny tear near one corner. Tomas feels his heart sink a little but Lola says tears are easy to mend.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c24a",
+     "label": "Mend the tear together",
+     "target": "n36"
+    }
+   ]
+  },
+  {
+   "id": "n25",
+   "body": "<<FILL role=decision words=68 beats='The thicker Flash Arrow rises more slowly but holds its shape in the gusty wind. When a hard puff hits, the kite shudders but does not tumble. Tomas whoops. Lola points at how the extra paint weight steadies the small frame against the bullying breeze.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c25a",
+     "label": "Fly it through the strongest gusts",
+     "target": "n37"
+    },
+    {
+     "id": "c25b",
+     "label": "Try a trick in the wind",
+     "target": "n38"
+    }
+   ]
+  },
+  {
+   "id": "n26",
+   "body": "<<FILL role=climax words=68 beats='Tomas guides the broken box kite downward with steady hands. It spirals gently and lands in the soft clover behind Lolas garden. The collapsed corner is just a loose knot. Lola reties the thread and the box pops back into shape. The kite is ready to fly again in moments.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c26a",
+     "label": "Launch it again with a smoother touch",
+     "target": "n39"
+    }
+   ]
+  },
+  {
+   "id": "n27",
+   "body": "<<FILL role=climax words=68 beats='Tomas snaps the line hard trying to pop the box open, but the tangle tightens and the kite spins faster. The bamboo rods clatter together and the silk wraps around itself. The kite falls in a crumpled heap near the fence. Lola walks over carrying her sewing kit with a patient smile.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c27a",
+     "label": "Untangle the wreckage with Lola",
+     "target": "n40"
+    }
+   ]
+  },
+  {
+   "id": "n28",
+   "body": "<<FILL role=ending words=68 beats='Tomas guides the box kite back to the porch. It loops once around the wind chime and lands softly on the railing. Lola laughs and says the kite was saying hello. Tomas cradles the small kite and feels it still trembling from the flight. The chime rings a final note.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end02",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Hello to the Wind Chime"
+   }
+  },
+  {
+   "id": "n29",
+   "body": "<<FILL role=ending words=68 beats='Tomas and Lola return to the festival field with the repaired diamond kite. The late afternoon wind is gentle and steady. The yellow kite rises smoothly above the tents and Tomas holds the line proudly. Lola wraps her arm around his shoulder. Other children point up at the bright diamond dancing in the sky.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end03",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Bright Diamond Returns"
+   }
+  },
+  {
+   "id": "n30",
+   "body": "<<FILL role=ending words=68 beats='The big kite hangs high and steady. Festival families arrive with picnic baskets and their own kites. Tomas waves and the crowd cheers at the beautiful yellow diamond. A judge pins a blue ribbon on Tomas shirt for Best Kite. Lola beams and says the kite found the right wind after all.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end04",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Blue Ribbon on Festival Day"
+   }
+  },
+  {
+   "id": "n31",
+   "body": "<<FILL role=ending words=68 beats='Tomas flies the steady diamond kite above the festival crowd all afternoon. The kite bobs in gentle arcs while children chase its shadow. Tomas gives his friend Mia a turn on the line. Lola unpacks a picnic and says a kite that flies calmly is the best kind of friend.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end05",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Calmest Kite"
+   }
+  },
+  {
+   "id": "n32",
+   "body": "<<FILL role=ending words=68 beats='The diamond kite with the tassel tail flies beautifully through the festival hour. Tomas lets out all the string and the kite becomes a tiny golden speck. Lola calls it their joint masterpiece. As the sun sets, Tomas reels in slowly, already dreaming of next years designs.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end06",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Golden Speck at Sunset"
+   }
+  },
+  {
+   "id": "n33",
+   "body": "<<FILL role=ending words=68 beats='The diamond kite with its ribbon tail floats over the festival tents like a friendly guardian. Tomas walks the field letting children chase the ribbon shadow across the grass. The kite stays aloft all afternoon through every change in the breeze. Lola sits in a folding chair watching and smiling.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end07",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Guardian of the Festival"
+   }
+  },
+  {
+   "id": "n34",
+   "body": "<<FILL role=ending words=68 beats='Tomas and Lola page through the old kite book together and find a design for a tiny swallow kite. They trace the pattern and cut it from leftover red silk. By sunset the swallow kite darts and swoops above the garden, chasing real swallows home to their nests. Tomas feels full of new ideas.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end08",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A New Kite from the Book"
+   }
+  },
+  {
+   "id": "n35",
+   "body": "<<FILL role=ending words=68 beats='Flash Arrow with its new stabilizer tail handles the gusty wind perfectly. Tomas flies the little box kite between the festival tents, weaving figure-eights around the flagpoles. The quick small design impresses the older kids. Lola tells everyone Tomas tested until the kite was unbeatable. Tomas grins.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end09",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Flash Arrow the Unbeatable"
+   }
+  },
+  {
+   "id": "n36",
+   "body": "<<FILL role=ending words=68 beats='Lola stitches the tiny tear with red thread and it becomes a bright scar on Flash Arrows side. Tomas says it looks tough now. They fly the mended kite in the evening festival glow and it zips through the calm air like a racing bee. Tomas tells Lola the scar makes it his favorite kite.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end10",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Tough Little Scar"
+   }
+  },
+  {
+   "id": "n37",
+   "body": "<<FILL role=ending words=68 beats='The toughened Flash Arrow punches through every gust the festival wind throws. Tomas guides it through the strongest blast and the kite slices the air with a whistle. A few other kids lower their kites to watch. Lola says Flash Arrow was born for tough winds. Tomas beams.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end11",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Born for Tough Winds"
+   }
+  },
+  {
+   "id": "n38",
+   "body": "<<FILL role=ending words=68 beats='Tomas tries a smooth figure-eight with the sturdy box kite. The heavier frame holds the shape and the trick comes out perfectly. The kite traces the number sideways in the sky. Lola applauds and says Tomas taught Flash Arrow a new dance. Tomas promises to invent ten more.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end12",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Flash Arrows New Dance"
+   }
+  },
+  {
+   "id": "n39",
+   "body": "<<FILL role=ending words=68 beats='Tomas launches the box kite with a soft flick of his wrist. It rises smoothly and holds steady through every wind shift. The loop-the-loop works this time, a perfect circle painted against the clouds. Lola applauds from the garden bench. Tomas calls the trick the Spring Twirl and teaches it to a friend.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end13",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Spring Twirl"
+   }
+  },
+  {
+   "id": "n40",
+   "body": "<<FILL role=ending words=68 beats='Tomas and Lola spend the rest of the morning carefully unknotting the tangled kite. The silk needs a patch and one bamboo rod is replaced. By festival time the rebuilt box kite, now named Phoenix, rises from its own wreckage. Tomas tells Lola every kite deserves a second chance.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end14",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Phoenix Rises"
+   }
+  }
+ ]
+}

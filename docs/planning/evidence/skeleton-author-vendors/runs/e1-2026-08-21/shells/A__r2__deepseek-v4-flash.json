@@ -1,0 +1,512 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-kite-spring-festival",
+ "version": 1,
+ "title": "Tomas and the Spring Kite",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 4.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "family",
+   "perseverance",
+   "wind",
+   "kite",
+   "festival"
+  ],
+  "estimated_minutes": 6,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "build_kite",
+ "nodes": [
+  {
+   "id": "build_kite",
+   "body": "<<FILL role=setup words=70 beats='Tomas and Grandma cut bamboo and glue paper in the shed. She shows him how to balance the kite frame.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "test_now_choice",
+     "label": "Test the kite now",
+     "target": "test_now"
+    },
+    {
+     "id": "decorate_choice",
+     "label": "Decorate it with feathers",
+     "target": "decorate"
+    }
+   ]
+  },
+  {
+   "id": "test_now",
+   "body": "<<FILL role=explore words=70 beats='Tomas runs across the yard. The kite lifts a little then drops. He feels the wind.'>>",
+   "is_endng": false,
+   "choices": [
+    {
+     "id": "high_test_choice",
+     "label": "Launch it high",
+     "target": "high_test"
+    },
+    {
+     "id": "low_test_choice",
+     "label": "Keep it low",
+     "target": "low_test"
+    }
+   ]
+  },
+  {
+   "id": "decrate",
+   "body": "<<FILL role=explore words=70 beats='Tomas glues feathers on the tail. Grandma smiles. The kite looks colorful and ready.'>>",
+   "is_edng": false,
+   "choices": [
+    {
+     "id": "decor_high_choice",
+     "label": "Test it high after decorating",
+     "target": "decor_high"
+    },
+    {
+     "id": "decor_low_choice",
+     "label": "Test it low after decorating",
+     "target": "decor_low"
+    }
+   ]
+  },
+  {
+   "id": "high_test",
+   "body": "<<FILL role=decision words=70 beats='The kite shoots up. A gust tilts it left. Tomas must choose fast how to adjust.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "add_tail_choice",
+     "label": "Add a paper tail",
+     "target": "add_tail"
+    },
+    {
+     "id": "no_tail_choice",
+     "label": "Leave it plain",
+     "target": "no_tail"
+    }
+   ]
+  },
+  {
+   "id": "low_test",
+   "body": "<<FILL role=decision words=70 beats='The kite stays close to the ground. The wind is soft. Tomas can add something or fly like this.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "add_weight_choice",
+     "label": "Add a small weight",
+     "target": "add_weight"
+    },
+    {
+     "id": "no_weight_choice",
+     "label": "No weight",
+     "target": "no_weight"
+    }
+   ]
+  },
+  {
+   "id": "decor_high",
+   "body": "<<FILL role=decision words=70 beats='After decorating, Tomas launches high. The extra feathers flutter. He must decide next.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "decor_tail_choice",
+     "label": "Make the tail longer",
+     "target": "decor_tail"
+    },
+    {
+     "id": "decor_light_choice",
+     "label": "Keep it light with feathers",
+     "target": "decor_light"
+    }
+   ]
+  },
+  {
+   "id": "decor_low",
+   "body": "<<FILL role=decision words=70 beats='The decorated kite flies low. It bobs nicely. Tomas can add weight or leave it plain.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "decor_weight_choice",
+     "label": "Add a weight",
+     "target": "decor_weight"
+    },
+    {
+     "id": "decor_plain_choice",
+     "label": "Keep it plain",
+     "target": "decor_plain"
+    }
+   ]
+  },
+  {
+   "id": "add_tail",
+   "body": "<<FILL role=transition words=70 beats='Grandma ties a paper tail. The kite feels heavier but more balanced.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "to_pull_or_let",
+     "label": "Continue",
+     "target": "pull_or_let"
+    }
+   ]
+  },
+  {
+   "id": "no_tail",
+   "body": "<<FILL role=transition words=70 beats='They leave the kite plain. It is light and quick in the air.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "to_pull_or_let",
+     "label": "Continue",
+     "target": "pull_or_let"
+    }
+   ]
+  },
+  {
+   "id": "add_weight",
+   "body": "<<FILL role=transition words=70 beats='Grandma adds a small clip. The kite sits lower now.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "to_steady_or_change",
+     "label": "Continue",
+     "target": "steady_or_change"
+    }
+   ]
+  },
+  {
+   "id": "no_weight",
+   "body": "<<FILL role=transition words=70 beats='The kite stays light. Tomas feels every puff of wind.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "to_steady_or_change",
+     "label": "Continue",
+     "target": "steady_or_change"
+    }
+   ]
+  },
+  {
+   "id": "decor_tail",
+   "body": "<<FILL role=transition words=70 beats='Tomas adds a long, colorful tail. It drags behind.'>>",
+   "is_edng": false,
+   "choices": [
+    {
+     "id": "to_fly_high_or_low",
+     "label": "Continue",
+     "target": "fly_high_or_low"
+    }
+   ]
+  },
+  {
+   "id": "decor_light",
+   "body": "<<FILL role=transition words=70 beats='The feathers are light. The kite dances in the breeze.'>>",
+   "is_edng": false,
+   "choices": [
+    {
+     "id": "to_fly_high_or_low",
+     "label": "Continue",
+     "target": "fly_high_or_low"
+    }
+   ]
+  },
+  {
+   "id": "decor_weight",
+   "body": "<<FILL role=transition words=70 beats='A small weight makes the decorated kite steady. Tomas likes the feel.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "to_land_soar",
+     "label": "Continue",
+     "target": "land_or_soar"
+    }
+   ]
+  },
+  {
+   "id": "decor_plain",
+   "body": "<<FILL role=transition words=70 beats='The plain kite is simple. Tomas watches it fly.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "to_land_soar",
+     "label": "Continue",
+     "target": "land_or_soar"
+    }
+   ]
+  },
+  {
+   "id": "pull_or_let",
+   "body": "<<FILL role=transition words=70 beats='Tomas holds the line. The wind tugs. He prepares to decide.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "to_pull_line",
+     "label": "Continue",
+     "target": "pullline"
+    }
+   ]
+  },
+  {
+   "id": "steady_or_change",
+   "body": "<<FILL role=transition words=70 beats='The kite flies steadily. Tomas feels a change coming.'>>",
+   "is_edng": false,
+   "choices": [
+    {
+     "id": "to_steady_flight",
+     "label": "Continue",
+     "target": "steady_flight"
+    }
+   ]
+  },
+  {
+   "id": "fly_high_or_low",
+   "body": "<<FILL role=transition words=70 beats='The kite goes up and down. Tomas watches the wind shift.'>>",
+   "is_edng": false,
+   "choices": [
+    {
+     "id": "to_high_flight",
+     "label": "Continue",
+     "target": "high_flight"
+    }
+   ]
+  },
+  {
+   "id": "land_or_soar",
+   "body": "<<FILL role=transition words=70 beats='Tomas grips the line. The kite is ready for a final move.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "to_land_now",
+     "label": "Continue",
+     "target": "land_now"
+    }
+   ]
+  },
+  {
+   "id": "pull_line",
+   "body": "<<FILL role=explore words=70 beats='Tomas pulls the line. The kite strains and creaks. He must make a final choice.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "to_decision_pull_or_slack",
+     "label": "Decide",
+     "target": "decide_pull_or_slack"
+    }
+   ]
+  },
+  {
+   "id": "steady_flight",
+   "body": "<<FILL role=explore words=70 beats='The kite glides smoothly. A stronger breeze hints of change.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "to_decision_keep_or_adjust",
+     "label": "Decide",
+     "target": "decide_keep_or_adjust"
+    }
+   ]
+  },
+  {
+   "id": "high_flight",
+   "body": "<<FILL role=explore words=70 beats='High above, the kite loops. Tomas sees the festival field below.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "to_decision_fly_or_reel",
+     "label": "Decide",
+     "target": "decide_fly_or_reel"
+    }
+   ]
+  },
+  {
+   "id": "land_now",
+   "body": "<<FILL role=explore words=70 beats='Tomas prepares to land. The kite is close. He must act quickly.'>>",
+   "ais_ending": false,
+   "choices": [
+    {
+     "id": "to_decision_stop_or_run",
+     "label": "Decide",
+     "target": "decide_stop_or_run"
+    }
+   ]
+  },
+  {
+   "id": "decide_pull_or_slack",
+   "body": "<<FILL role=decision words=70 beats='Tomas yanks or loosens. The kite wobbles. He makes his move.'>>",
+   "is_edng": false,
+   "choices": [
+    {
+     "id": "pull_hard_choice",
+     "label": "Pull hard",
+     "target": "ending_pull_hard"
+    },
+    {
+     "id": "slack_choice",
+     "label": "Let slack",
+     "target": "ending_slack"
+    }
+   ]
+  },
+  {
+   "id": "decide_keep_or_adjust",
+   "body": "<<FILL role=decision words=70 beats='Tomas can fly on or tweak the tail. The wind is tricky.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "keep_choice",
+     "label": "Keep flying",
+     "target": "ending_keep"
+    },
+    {
+     "id": "adjust_choice",
+     "label": "Adjust the tail",
+     "target": "ending_adjust"
+    }
+   ]
+  },
+  {
+   "id": "decide_fly_or_reel",
+   "body": "<<FILL role=decision words=70 beats='Tomas decides to go higher or bring it down. The wind gusts.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "fly_choice",
+     "label": "Fly higher",
+     "target": "ending_fly"
+    },
+    {
+     "id": "reel_choice",
+     "label": "Reel it in",
+     "target": "ending_reel"
+    }
+   ]
+  },
+  {
+   "id": "decide_stop_or_run",
+   "body": "<<FILL role=decision words=70 beats='Tomas stops to land or runs to catch the breeze. The kite swoops.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "stop_choice",
+     "label": "Stop and land",
+     "target": "ending_stop"
+    },
+    {
+     "id": "run_choice",
+     "label": "Run with it",
+     "target": "ending_run"
+    }
+   ]
+  },
+  {
+   "id": "ending_pull_hard",
+   "body": "<<FILL role=ending words=70 beats='Tomas pulls too hard. The string snaps and the kite flies away. He sighs.'>>",
+   "is_eding": true,
+   "choices": [],
+   "ending": {
+    "id": "pull_hard_end",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Pulled Too Hard"
+   }
+  },
+  {
+   "id": "ending_slack",
+   "body": "<<FILL role=ending words=70 beats='Tomas lets slack. The kite steadys and soars high. A beautiful flight.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "slack_end",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Steady Flight"
+   }
+  },
+  {
+   "id": "ending_keep",
+   "body": "<<FILL role=ending words=70 beats='Tomas keeps flying. The kite bobs gently. Grand ma smiles. A peaceful afternoon.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "keep_end",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Calm Flight"
+   }
+  },
+  {
+   "id": "ending_adjust",
+   "body": "<<FILL role=ending words=70 beats='Tomas ties a knot to adjust the tail. The kite flies straighter. He learns a new trick.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "adjust_end",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "New Trick"
+   }
+  },
+  {
+   "id": "ending_fly",
+   "body": "<<FILL role=ending words=70 beats='Tomas launches higher. The kite catches a thermal and soars. The festival crowd cheers.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "fly_end",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Soaring High"
+   }
+  },
+  {
+   "id": "ending_reel",
+   "body": "<<FILL role=ending words=70 beats='Tomas reels fast. The kite dips behind a tree. It is lost in the branches.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "reel_end",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Lost Kite"
+   }
+  },
+  {
+   "id": "ending_stop",
+   "body": "<<FILL role=ending words=70 beats='Tomas lands the kite carefully. It rests on the grass. They pack up for the festival.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "stop_end",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Safe Landing"
+   }
+  },
+  {
+   "id": "ending_run",
+   "body": "<<FILL role=ending words=70 beats='Tomas runs. The kite swings into a bush. The tail tears. He pauses.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "run_end",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Tree Trouble"
+   }
+  }
+ ]
+}
