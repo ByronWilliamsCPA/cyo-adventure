@@ -22,7 +22,7 @@
    "staying calm",
    "asking for help"
   ],
-  "estimated_minutes": 2,
+  "estimated_minutes": 3,
   "ending_count": 10,
   "content_flags": {
    "violence": "none",
@@ -296,13 +296,18 @@
   },
   {
    "id": "crawl-under-the-thorns",
-   "body": "<<FILL role=climax words=34 beats='Miri pulls her jumper sleeves down over both hands and elbows her way under the thorn arch until she can see Pip, dusty and cross in the leaf litter, one wing width past her fingertips'>>",
+   "body": "<<FILL role=decision words=34 beats='Miri pulls her jumper sleeves down over both hands and elbows under the thorn arch until she can see Pip, dusty and cross, one wing width past her fingertips; she can stretch that last bit or wriggle back out for the corn tin'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "crawl-under-the-thorns-c1",
      "label": "Reach out and gather Pip up",
      "target": "ending-carried-home"
+    },
+    {
+     "id": "crawl-under-the-thorns-c2",
+     "label": "Back out and lay corn",
+     "target": "ending-the-corn-trail"
     }
    ]
   },
