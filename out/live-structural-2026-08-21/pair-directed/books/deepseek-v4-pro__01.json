@@ -1,0 +1,3858 @@
+{
+  "schema_version": "2.1",
+  "id": "sk_tin_whistle_map",
+  "version": 1,
+  "title": "The Lost Medal",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "local history",
+      "persistence",
+      "music",
+      "neighbours",
+      "curiosity"
+    ],
+    "estimated_minutes": 11,
+    "ending_count": 35,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "long",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "t_open",
+  "nodes": [
+    {
+      "id": "t_open",
+      "body": "The lost-property office at St Jude's hides under the stage in the main hall. On the last day of summer term, they bring everything out. Three long tables hold unclaimed PE kit, lunchboxes, and single gloves. It all goes to the charity shop at four. In a cardboard tray of broken watches and pen lids sits a brass swimming medal gone dull grey at the edges. The name on the front has been filed clean off. Inside the ribbon clasp, so small you need the window light to read it, a date is scratched with something sharp.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t_open_0",
+          "label": "Open the logbook and find the entry.",
+          "target": "t_case"
+        }
+      ]
+    },
+    {
+      "id": "t_case",
+      "body": "The lost-property logbook is a ring-binder with pages gone soft at the corners. The entry for the medal is eleven months old. It is written in a handwriting nobody in the office uses any more. There are six words: SWIM GALA. Under them is a name that is not a pupil's name and a date. Mr Okonkwo, the caretaker running the clearance, says it came out of locker 47. That locker was emptied in the autumn. The year stamped on the medal is forty years older than the oldest child in the school.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t_case_0",
+          "label": "Ask Mr Okonkwo about the locker.",
+          "target": "hb_ask"
+        },
+        {
+          "id": "c_t_case_1",
+          "label": "Start with the date inside the clasp.",
+          "target": "hb_walk"
+        },
+        {
+          "id": "c_t_case_2",
+          "label": "Take the medal and logbook to the library.",
+          "target": "hb_lib"
+        }
+      ]
+    },
+    {
+      "id": "hb_ask",
+      "body": "Mr Okonkwo has had the keys to every room in St Jude's for fifteen years. He can name the teacher who emptied locker 47 without looking at a file. The locker belonged to a supply teacher called Mrs Brennan. She left at October half-term. There is one box of her classroom things still in the caretaker's cupboard. It has never been priced for the charity run.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hb_ask_0",
+          "label": "Ask to see the box that is still in the cupboard.",
+          "target": "ok_box"
+        },
+        {
+          "id": "c_hb_ask_1",
+          "label": "Look at the old school photographs properly.",
+          "target": "ok_photo"
+        },
+        {
+          "id": "c_hb_ask_2",
+          "label": "Ask to look inside the empty locker.",
+          "target": "ok_house"
+        }
+      ]
+    },
+    {
+      "id": "hb_walk",
+      "body": "Held up to the strip-light, the date scratched inside the clasp shows the year of a swimming gala. The medal was won for third place in backstroke. The name filed off the front means the medal belongs to a person, and the person is what matters. The nearest person who might know is sitting in the school office right now. Mrs Delgado has worked at St Jude's longer than the floor tiles.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hb_walk_0",
+          "label": "Go to the school office and ask Mrs Delgado.",
+          "target": "wm_weigh"
+        },
+        {
+          "id": "c_hb_walk_1",
+          "label": "Follow the date back through the old registers.",
+          "target": "wm_river"
+        },
+        {
+          "id": "c_hb_walk_2",
+          "label": "Look at the honours board in the corridor.",
+          "target": "wm_bridge"
+        }
+      ]
+    },
+    {
+      "id": "hb_lib",
+      "body": "Fenwick Library keeps the local schools record on three shelves and a film reader. The reader takes fifty-pence coins. Aisha sits behind the desk. She has waited most of a year for someone to ask her a question with a swimming gala in it. She has already pulled the St Jude's folder before you finish saying what the medal looks like.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hb_lib_0",
+          "label": "Work through the schools archive shelf.",
+          "target": "lb_shelf"
+        },
+        {
+          "id": "c_hb_lib_1",
+          "label": "Get the microfilm reader going.",
+          "target": "lb_film"
+        },
+        {
+          "id": "c_hb_lib_2",
+          "label": "Ask Aisha what she already knows.",
+          "target": "lb_aisha"
+        }
+      ]
+    },
+    {
+      "id": "ok_box",
+      "body": "The box from the caretaker's cupboard lives under a shelf of cleaning supplies. It holds a whistle on a green lanyard. It also holds two school photos with names written on the back. There is a paper wallet of receipts for minibus hire, pool booking fees, and one repaired starting-block timer. Nothing in it says Mrs Brennan's name out loud. But everything in it points at a person who ran a school swimming club for years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_box_0",
+          "label": "Work out who the names belong to.",
+          "target": "ok_names"
+        },
+        {
+          "id": "c_ok_box_1",
+          "label": "Read the receipts for what they say.",
+          "target": "ok_receipts"
+        },
+        {
+          "id": "c_ok_box_2",
+          "label": "Take the school photograph to somebody who might know.",
+          "target": "ok_cap"
+        }
+      ]
+    },
+    {
+      "id": "ok_photo",
+      "body": "Two colour photos show a school swimming team standing on a poolside somewhere. Eighteen children in goggles. On the back, in soft pencil, are twelve names and the words INTER-SCHOOL FINAL. The pool in the picture is not the leisure centre pool and is not anywhere obvious. The tiles are a colour nobody builds pools in any more.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_photo_0",
+          "label": "Work out who the names belong to.",
+          "target": "ok_names"
+        },
+        {
+          "id": "c_ok_photo_1",
+          "label": "Read the receipts for what they say.",
+          "target": "ok_receipts"
+        },
+        {
+          "id": "c_ok_photo_2",
+          "label": "Take the school photograph to somebody who might know.",
+          "target": "ok_cap"
+        }
+      ]
+    },
+    {
+      "id": "ok_house",
+      "body": "Locker 47 stands empty at the end of the changing-room corridor. The key hangs on a hook in the office. There are rules about who may open it and under what circumstances. Mr Okonkwo will open it for someone who asks him properly. He will walk straight past it for someone who tries to look through the vents on their own.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_house_0",
+          "label": "Work out who the names belong to.",
+          "target": "ok_names"
+        },
+        {
+          "id": "c_ok_house_1",
+          "label": "Read the receipts for what they say.",
+          "target": "ok_receipts"
+        },
+        {
+          "id": "c_ok_house_2",
+          "label": "Take the school photograph to somebody who might know.",
+          "target": "ok_cap"
+        }
+      ]
+    },
+    {
+      "id": "wm_weigh",
+      "body": "Mrs Delgado is the school secretary. She has been at St Jude's since the building had asbestos in it. She remembers the year on the medal. She can name three children from that year-group without checking a file. She can also name the swimming teacher. That is two words that change the shape of the afternoon entirely.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_weigh_0",
+          "label": "Work out who the swimming teacher was.",
+          "target": "wm_rect"
+        },
+        {
+          "id": "c_wm_weigh_1",
+          "label": "Look under the name badge on the medal.",
+          "target": "wm_paint"
+        },
+        {
+          "id": "c_wm_weigh_2",
+          "label": "Ask in the PE office.",
+          "target": "wm_chips"
+        }
+      ]
+    },
+    {
+      "id": "wm_river",
+      "body": "The school registers run back forty years in a cupboard in the office. The year scratched inside the clasp matches a year when St Jude's won the inter-school gala for the first time. The swimming teacher that year was a Miss Carter. She left the school three summers later. Her name does not appear anywhere else in the cupboard at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_river_0",
+          "label": "Work out who the swimming teacher was.",
+          "target": "wm_rect"
+        },
+        {
+          "id": "c_wm_river_1",
+          "label": "Look under the name badge on the medal.",
+          "target": "wm_paint"
+        },
+        {
+          "id": "c_wm_river_2",
+          "label": "Ask in the PE office.",
+          "target": "wm_chips"
+        }
+      ]
+    },
+    {
+      "id": "wm_bridge",
+      "body": "The school honours board in the main corridor lists every inter-school trophy since 1962. The swimming trophy for the year on the medal has a blank space for the winner's name. It was not removed, just never filled in. Beside it, a smaller plaque for an inter-house gala has also never been engraved. That is two different mysteries, or one very specific one.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_bridge_0",
+          "label": "Work out who the swimming teacher was.",
+          "target": "wm_rect"
+        },
+        {
+          "id": "c_wm_bridge_1",
+          "label": "Look under the name badge on the medal.",
+          "target": "wm_paint"
+        },
+        {
+          "id": "c_wm_bridge_2",
+          "label": "Ask in the PE office.",
+          "target": "wm_chips"
+        }
+      ]
+    },
+    {
+      "id": "lb_shelf",
+      "body": "The schools record holds a file on St Jude's. In it are programmes, team lists, and a typed news sheet from the autumn term. In the November issue, a bit about the inter-school gala lists all six races. It records only the times, not the winners. The page has been folded for forty years with the names on the inside.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_shelf_0",
+          "label": "Look at the old trophy in the cabinet.",
+          "target": "lb_plate"
+        },
+        {
+          "id": "c_lb_shelf_1",
+          "label": "Find the old school governors' minutes.",
+          "target": "lb_minutes"
+        },
+        {
+          "id": "c_lb_shelf_2",
+          "label": "Find out when the charity collection happens.",
+          "target": "lb_date"
+        }
+      ]
+    },
+    {
+      "id": "lb_film",
+      "body": "The film reader takes fifty-pence coins. It holds the Fenwick Gazette back to 1950. Every July the paper prints a photo of the inter-school gala. Eighteen children stand on the poolside in goggles. One grown-up holds a clipboard, as if something big is about to be said.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_film_0",
+          "label": "Look at the old trophy in the cabinet.",
+          "target": "lb_plate"
+        },
+        {
+          "id": "c_lb_film_1",
+          "label": "Find the old school governors' minutes.",
+          "target": "lb_minutes"
+        },
+        {
+          "id": "c_lb_film_2",
+          "label": "Find out when the charity collection happens.",
+          "target": "lb_date"
+        }
+      ]
+    },
+    {
+      "id": "lb_aisha",
+      "body": "Aisha has sat behind that desk for four years. She keeps a drawer of things people brought in and never came back for. Inside, wrapped in a paper envelope, is a small shield-shaped trophy. It has a swimmer on it. The name of the school is engraved on the back, but not on the front. It came in with a house clearance. It has been sitting there waiting for this exact chat.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_aisha_0",
+          "label": "Look at the old trophy in the cabinet.",
+          "target": "lb_plate"
+        },
+        {
+          "id": "c_lb_aisha_1",
+          "label": "Find the old school governors' minutes.",
+          "target": "lb_minutes"
+        },
+        {
+          "id": "c_lb_aisha_2",
+          "label": "Find out when the charity collection happens.",
+          "target": "lb_date"
+        }
+      ]
+    },
+    {
+      "id": "ok_names",
+      "body": "Twelve names are on the back of a photo. Three of them are still on the school's old-student contact list. One of them is the name of the woman who runs the corner shop near the leisure centre. A name on a team sheet is not a person until someone goes and asks. The shop is open until five.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_names_0",
+          "label": "Find out who Mrs Brennan was.",
+          "target": "ok_vine"
+        },
+        {
+          "id": "c_ok_names_1",
+          "label": "Go and find Pat Okeke.",
+          "target": "ok_hurst"
+        },
+        {
+          "id": "c_ok_names_2",
+          "label": "Search the locker properly before it is cleaned.",
+          "target": "ok_search"
+        }
+      ]
+    },
+    {
+      "id": "ok_receipts",
+      "body": "A receipt is a dull document that cannot lie: pool hire in July, a starting-block timer repaired in the autumn term, and a replacement whistle bought in the last week of November, three days before the inter-school final that Mrs Brennan's team went to but did not win. The medal is dated for the gala after that one, which nobody has mentioned yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_receipts_0",
+          "label": "Put the six events into the right order.",
+          "target": "ok_order"
+        },
+        {
+          "id": "c_ok_receipts_1",
+          "label": "Leave the box and come back tomorrow.",
+          "target": "ok_lot"
+        },
+        {
+          "id": "c_ok_receipts_2",
+          "label": "Find out who Mrs Brennan was.",
+          "target": "ok_vine"
+        }
+      ]
+    },
+    {
+      "id": "ok_cap",
+      "body": "The school photo has a green border. It has a small logo of the old leisure pool that shut in the nineties. Perhaps four people left in Fenwick would know the team on sight. One of them works in the corner shop. One of them is Pat Okeke, who was the team captain the year after.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_cap_0",
+          "label": "Go and find Pat Okeke.",
+          "target": "ok_hurst"
+        },
+        {
+          "id": "c_ok_cap_1",
+          "label": "Search the locker properly before it is cleaned.",
+          "target": "ok_search"
+        },
+        {
+          "id": "c_ok_cap_2",
+          "label": "Put the six events into the right order.",
+          "target": "ok_order"
+        }
+      ]
+    },
+    {
+      "id": "wm_rect",
+      "body": "Miss Carter's name is on the back of a team sheet from the gala. It is in pencil. She is not on any staff list after that year. Someone in this school knows why she left. Someone else knows if she kept the medal. Neither of them is in the building this afternoon.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_rect_0",
+          "label": "Match the medal to the team sheet properly.",
+          "target": "wm_measure"
+        },
+        {
+          "id": "c_wm_rect_1",
+          "label": "Go up to the old pool building on West Street.",
+          "target": "wm_chapel"
+        },
+        {
+          "id": "c_wm_rect_2",
+          "label": "Try the retirement home on the park.",
+          "target": "wm_alms"
+        }
+      ]
+    },
+    {
+      "id": "wm_paint",
+      "body": "A name filed off a medal is still a name. The ghost of the letters shows under a bright light or a fingernail. Two letters are not like the others. They are a B and an R. They do not match Miss Carter. They do not match anyone on the team sheet either.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_paint_0",
+          "label": "Go and look at the old pool building properly.",
+          "target": "wm_stand"
+        },
+        {
+          "id": "c_wm_paint_1",
+          "label": "Walk the whole trail and leave it at that.",
+          "target": "wm_wet"
+        },
+        {
+          "id": "c_wm_paint_2",
+          "label": "Match the medal to the team sheet properly.",
+          "target": "wm_measure"
+        }
+      ]
+    },
+    {
+      "id": "wm_chips",
+      "body": "The PE office wall has a noticeboard. It is screwed on at just the height an old team list would sit. Mr Davison, the head of PE, has never once taken it down. The office is full of staff at break and lunch. It is totally empty during the lesson hours in between.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_chips_0",
+          "label": "Go up to the old pool building on West Street.",
+          "target": "wm_chapel"
+        },
+        {
+          "id": "c_wm_chips_1",
+          "label": "Try the retirement home on the park.",
+          "target": "wm_alms"
+        },
+        {
+          "id": "c_wm_chips_2",
+          "label": "Go and look at the old pool building properly.",
+          "target": "wm_stand"
+        }
+      ]
+    },
+    {
+      "id": "lb_plate",
+      "body": "The shield-shaped trophy reads INTER-SCHOOL BACKSTROKE. Under it is a single name. On the back, someone has engraved a date and the words NOT COLLECTED. It came from a house clearance in Fenwick. It has been in a drawer for nine months. It was waiting for someone to ask the right question about it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_plate_0",
+          "label": "Work out why the name was never engraved properly.",
+          "target": "lb_numbers"
+        },
+        {
+          "id": "c_lb_plate_1",
+          "label": "Go and see Mr Okafor at the leisure centre.",
+          "target": "lb_vance"
+        },
+        {
+          "id": "c_lb_plate_2",
+          "label": "Search the Gazette for the last gala.",
+          "target": "lb_gazette"
+        }
+      ]
+    },
+    {
+      "id": "lb_minutes",
+      "body": "The old school governors' minutes live in a lever-arch file. They are as dull as anything ever written down. In the summer-term set, page three has a single line. It is about clearing the old sports gear from the pool store. This is ahead of the building's demolition.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_minutes_0",
+          "label": "Ring the number on the minutes.",
+          "target": "lb_call"
+        },
+        {
+          "id": "c_lb_minutes_1",
+          "label": "Build the file first and act on it later.",
+          "target": "lb_file"
+        },
+        {
+          "id": "c_lb_minutes_2",
+          "label": "Work out why the name was never engraved properly.",
+          "target": "lb_numbers"
+        }
+      ]
+    },
+    {
+      "id": "lb_date",
+      "body": "The charity shop van is booked for half past three. The collection crew are on a schedule. A store cupboard that has been cleared is cleared. Whatever is still in the old pool building goes into boxes. Then it goes into a van. Nobody in the school will ever know whose medal it was.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_date_0",
+          "label": "Go and see Mr Okafor at the leisure centre.",
+          "target": "lb_vance"
+        },
+        {
+          "id": "c_lb_date_1",
+          "label": "Search the Gazette for the last gala.",
+          "target": "lb_gazette"
+        },
+        {
+          "id": "c_lb_date_2",
+          "label": "Ring the number on the minutes.",
+          "target": "lb_call"
+        }
+      ]
+    },
+    {
+      "id": "ok_vine",
+      "body": "Mrs Brennan taught at St Jude's for four years. She ran the swimming club every Tuesday evening. She left a locker with one shelf of coaching manuals. There were no photos on the inside door. The staff who worked with her knew her first name. They knew not much else. That is its own kind of fact about a person who did not stay anywhere long.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_vine_0",
+          "label": "Go and look hard at the pool-store padlock.",
+          "target": "sx_padlock"
+        },
+        {
+          "id": "c_ok_vine_1",
+          "label": "Work out what the filed-off letters must be.",
+          "target": "sx_six"
+        },
+        {
+          "id": "c_ok_vine_2",
+          "label": "Take everything to Pat Okeke.",
+          "target": "sx_bill"
+        }
+      ]
+    },
+    {
+      "id": "ok_hurst",
+      "body": "Pat Okeke was the school swim captain the year after the medal was won. Now she runs the corner shop near the leisure centre. Everyone who says her name says the same two things in the same order. They say she will remember all about that year. They also say you should go and ask her before half past three.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_hurst_0",
+          "label": "Get Mr Okafor to hold the charity collection.",
+          "target": "sx_vance"
+        },
+        {
+          "id": "c_ok_hurst_1",
+          "label": "Get behind the PE noticeboard.",
+          "target": "sx_deniz"
+        },
+        {
+          "id": "c_ok_hurst_2",
+          "label": "Ask at the retirement home on the park.",
+          "target": "sx_alms"
+        }
+      ]
+    },
+    {
+      "id": "ok_search",
+      "body": "There is one afternoon left before the locker is emptied for good. The places worth looking are the underside of the shelf, the gap behind the peg rail, and the floor of the vent duct. This is where every child in every locker room has hidden things they did not want taken away. The key is still on its hook.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_search_0",
+          "label": "Ask about the locked cupboard at the leisure centre.",
+          "target": "sx_cage"
+        },
+        {
+          "id": "c_ok_search_1",
+          "label": "Get into the old pool building.",
+          "target": "sx_chapel"
+        },
+        {
+          "id": "c_ok_search_2",
+          "label": "Ask at the secondary school about the swimming trophies.",
+          "target": "sx_school"
+        }
+      ]
+    },
+    {
+      "id": "ok_order",
+      "body": "The team list shows six races. The medal is dated for a different gala. Only one of those two galas is the one Miss Carter's team really swam in. The other is the one somebody wrote the medal for later. They sat at a desk with the wrong programme in front of them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_order_0",
+          "label": "Write to the Gazette.",
+          "target": "sx_paper"
+        },
+        {
+          "id": "c_ok_order_1",
+          "label": "Get Tess and her bike into it.",
+          "target": "sx_tess"
+        },
+        {
+          "id": "c_ok_order_2",
+          "label": "Work backwards from half past three.",
+          "target": "sx_time"
+        }
+      ]
+    },
+    {
+      "id": "wm_measure",
+      "body": "Measured with a ruler against the team sheet, four of the six medal-winners' names match children in the photo. The other two do not. This either means the medal was given to the wrong person, or the photo was taken at a different gala. One of the names is a surname that still shows up on the school list today.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_measure_0",
+          "label": "Go and look hard at the pool-store padlock.",
+          "target": "sx_padlock"
+        },
+        {
+          "id": "c_wm_measure_1",
+          "label": "Work out what the filed-off letters must be.",
+          "target": "sx_six"
+        },
+        {
+          "id": "c_wm_measure_2",
+          "label": "Take everything to Pat Okeke.",
+          "target": "sx_bill"
+        }
+      ]
+    },
+    {
+      "id": "wm_chapel",
+      "body": "The old pool building on West Street has been shut since the leisure centre opened. Its front steps are wide, worn, and exactly the steps in the photo. A board that once held the pool times is still fixed by the door. The board itself is long gone, and the screw-holes are full of white filler.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_chapel_0",
+          "label": "Get Mr Okafor to hold the charity collection.",
+          "target": "sx_vance"
+        },
+        {
+          "id": "c_wm_chapel_1",
+          "label": "Get behind the PE noticeboard.",
+          "target": "sx_deniz"
+        },
+        {
+          "id": "c_wm_chapel_2",
+          "label": "Ask at the retirement home on the park.",
+          "target": "sx_alms"
+        }
+      ]
+    },
+    {
+      "id": "wm_alms",
+      "body": "The Park View retirement home is through a cut-through off the high street, and on its common-room wall, half behind a yucca plant that nobody has repotted since the plant was a good idea, is a framed photograph of a school swimming team that matches the one in the box exactly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_alms_0",
+          "label": "Ask about the locked cupboard at the leisure centre.",
+          "target": "sx_cage"
+        },
+        {
+          "id": "c_wm_alms_1",
+          "label": "Get into the old pool building.",
+          "target": "sx_chapel"
+        },
+        {
+          "id": "c_wm_alms_2",
+          "label": "Ask at the secondary school about the swimming trophies.",
+          "target": "sx_school"
+        }
+      ]
+    },
+    {
+      "id": "wm_stand",
+      "body": "The old pool building sits at the end of West Street. Its paint is peeling and there is a steel door set into the brick at the side. On the door is a four-digit padlock, made orange by rust. Someone tried to force it with a driver and gave up. The sign above says PLANT ROOM, but the sign is newer than the lock by about twenty years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_stand_0",
+          "label": "Write to the Gazette.",
+          "target": "sx_paper"
+        },
+        {
+          "id": "c_wm_stand_1",
+          "label": "Get Tess and her bike into it.",
+          "target": "sx_tess"
+        },
+        {
+          "id": "c_wm_stand_2",
+          "label": "Work backwards from half past three.",
+          "target": "sx_time"
+        }
+      ]
+    },
+    {
+      "id": "lb_numbers",
+      "body": "Six events, six winners, one name filed off a medal, and a four-digit padlock on a steel door. The two letters showing under the filing are a B and an R. They match exactly one child on the 1960s team sheet. Someone tried to erase the evidence and stopped halfway. That is a bigger clue than the name itself.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_numbers_0",
+          "label": "Go and look hard at the pool-store padlock.",
+          "target": "sx_padlock"
+        },
+        {
+          "id": "c_lb_numbers_1",
+          "label": "Work out what the filed-off letters must be.",
+          "target": "sx_six"
+        },
+        {
+          "id": "c_lb_numbers_2",
+          "label": "Take everything to Pat Okeke.",
+          "target": "sx_bill"
+        }
+      ]
+    },
+    {
+      "id": "lb_vance",
+      "body": "Mr Okafor runs the leisure centre from an office behind the sports hall. He has a clipboard, a van, and a charity pick-up booked for half past three. He has been told twice this year by the council that everything in the old pool store is unsafe.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_vance_0",
+          "label": "Get Mr Okafor to hold the charity collection.",
+          "target": "sx_vance"
+        },
+        {
+          "id": "c_lb_vance_1",
+          "label": "Get behind the PE noticeboard.",
+          "target": "sx_deniz"
+        },
+        {
+          "id": "c_lb_vance_2",
+          "label": "Ask at the retirement home on the park.",
+          "target": "sx_alms"
+        }
+      ]
+    },
+    {
+      "id": "lb_gazette",
+      "body": "The last school gala at the old pool ran in the summer of 1979. The local paper gave it six column inches and a photo of twelve children. There had once been twenty-four. The caption listed only the school names and not the children's.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_gazette_0",
+          "label": "Ask about the locked cupboard at the leisure centre.",
+          "target": "sx_cage"
+        },
+        {
+          "id": "c_lb_gazette_1",
+          "label": "Get into the old pool building.",
+          "target": "sx_chapel"
+        },
+        {
+          "id": "c_lb_gazette_2",
+          "label": "Ask at the secondary school about the swimming trophies.",
+          "target": "sx_school"
+        }
+      ]
+    },
+    {
+      "id": "lb_call",
+      "body": "The number on the governors' minutes goes through to a desk that has moved twice. The person who answers is helpful but can do nothing. They can say exactly which one person in the council can help. That person's name, when you get it, is worth the whole phone call.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_call_0",
+          "label": "Write to the Gazette.",
+          "target": "sx_paper"
+        },
+        {
+          "id": "c_lb_call_1",
+          "label": "Get Tess and her bike into it.",
+          "target": "sx_tess"
+        },
+        {
+          "id": "c_lb_call_2",
+          "label": "Work backwards from half past three.",
+          "target": "sx_time"
+        }
+      ]
+    },
+    {
+      "id": "ok_lot",
+      "body": "The box from the caretaker's cupboard goes into the charity run at three. A dozen other boxes go with it. By the time anyone sees what was inside, the whistle, the photos, and the receipts are in three different bags. They sit in a van heading for the main depot. The medal stays in your pocket. Every other thing that could have proved anything is gone.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_ok_lot",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Box Went to the Charity Shop"
+      }
+    },
+    {
+      "id": "wm_wet",
+      "body": "The four names turn out to be four real people. Searching between them takes two hours in the rain and answers nothing at all. Two have moved, one has died, and one is on holiday until August. The medal goes back into your pocket. It is a very complete list of a school that has moved on.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_wm_wet",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Four Names and No Answers"
+      }
+    },
+    {
+      "id": "lb_file",
+      "body": "By half past two there is a folder. It holds the six events, the dates, the minutes and a copy of the shield trophy. It is truly good work. The charity van comes at half past three all the same. The folder goes onto the school's old shelf. Someone will find it in twenty years and wonder what it is.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_lb_file",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Very Complete Folder"
+      }
+    },
+    {
+      "id": "sx_padlock",
+      "body": "The door on the old pool building is steel set into brick. The lock is a four-wheel kind, orange with rust. It turns freely on the first two digits and hardly at all on the last two. That fact is worth more than any guess about who might have set it forty years ago.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_padlock_0",
+          "label": "Walk down to the canal and think.",
+          "target": "sy_towpath"
+        },
+        {
+          "id": "c_sx_padlock_1",
+          "label": "Sit on the school steps and lay it all out.",
+          "target": "sy_steps"
+        },
+        {
+          "id": "c_sx_padlock_2",
+          "label": "Go home and look at the medal under a lamp.",
+          "target": "sy_lamp"
+        }
+      ]
+    },
+    {
+      "id": "sx_six",
+      "body": "Six events, six winners. One name filed off the medal. The library shield gives one name. The two ghost letters under the filing give a last name that is still on the school roll. That leaves a problem of order and a problem of who is who. They are most likely the same problem.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_six_0",
+          "label": "Go after the trophies themselves.",
+          "target": "sy_plates"
+        },
+        {
+          "id": "c_sx_six_1",
+          "label": "Go after the people who were there.",
+          "target": "sy_people"
+        },
+        {
+          "id": "c_sx_six_2",
+          "label": "Go after the paperwork.",
+          "target": "sy_paper"
+        }
+      ]
+    },
+    {
+      "id": "sx_bill",
+      "body": "Pat Okeke is seventy-eight. He runs the corner shop near the leisure centre and cannot hold onto what day of the week it is. Yet he can still name every child in that picture and every race they swam in. He does not pause to check the back of the print.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_bill_0",
+          "label": "Split the town with Tess.",
+          "target": "sy_split"
+        },
+        {
+          "id": "c_sx_bill_1",
+          "label": "Work backwards from half past three.",
+          "target": "sy_friday"
+        },
+        {
+          "id": "c_sx_bill_2",
+          "label": "Sit down with Pat and the photographs.",
+          "target": "sy_bill2"
+        }
+      ]
+    },
+    {
+      "id": "sx_vance",
+      "body": "Mr Okafor books a charity slot. It costs him a phone call, a cross helper, and a note on a form. Only one thing moves him. It is a person with a real reason, not just a feeling. He also needs a name to put in the blank space on the form.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_vance_0",
+          "label": "Walk down to the canal and think.",
+          "target": "sy_towpath"
+        },
+        {
+          "id": "c_sx_vance_1",
+          "label": "Sit on the school steps and lay it all out.",
+          "target": "sy_steps"
+        },
+        {
+          "id": "c_sx_vance_2",
+          "label": "Go home and look at the medal under a lamp.",
+          "target": "sy_lamp"
+        }
+      ]
+    },
+    {
+      "id": "sx_deniz",
+      "body": "Four screws, a noticeboard and a wall that nobody has looked at since the eighties. Mr Davison will take it down at morning break. He will do it between the staff meeting and the Year 9 lesson. He will not do it at lunchtime when the office is full of people eating sandwiches.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_deniz_0",
+          "label": "Go after the trophies themselves.",
+          "target": "sy_plates"
+        },
+        {
+          "id": "c_sx_deniz_1",
+          "label": "Go after the people who were there.",
+          "target": "sy_people"
+        },
+        {
+          "id": "c_sx_deniz_2",
+          "label": "Go after the paperwork.",
+          "target": "sy_paper"
+        }
+      ]
+    },
+    {
+      "id": "sx_alms",
+      "body": "Twelve people live here. It is a Wednesday afternoon and there is a tin of shortbread. Two of them stood on poolside at the last big school gala. One has the team photo framed on her dressing-table. She has been waiting for somebody to ask about it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_alms_0",
+          "label": "Split the town with Tess.",
+          "target": "sy_split"
+        },
+        {
+          "id": "c_sx_alms_1",
+          "label": "Work backwards from half past three.",
+          "target": "sy_friday"
+        },
+        {
+          "id": "c_sx_alms_2",
+          "label": "Sit down with Pat and the photographs.",
+          "target": "sy_bill2"
+        }
+      ]
+    },
+    {
+      "id": "sx_cage",
+      "body": "In theory, the leisure centre keeps old fittings in a metal cage behind the boiler room. Nobody has ever had to explain this system out loud. They took down the old school trophy from the 1979 gala when the show case was swapped. It is still in there. It still lists the winner's name.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_cage_0",
+          "label": "Walk down to the canal and think.",
+          "target": "sy_towpath"
+        },
+        {
+          "id": "c_sx_cage_1",
+          "label": "Sit on the school steps and lay it all out.",
+          "target": "sy_steps"
+        },
+        {
+          "id": "c_sx_cage_2",
+          "label": "Go home and look at the medal under a lamp.",
+          "target": "sy_lamp"
+        }
+      ]
+    },
+    {
+      "id": "sx_chapel",
+      "body": "The old pool building is locked on weekdays. The key lives with a caretaker who is out until four. The steps outside it are the steps in the photo. That is the first thing anyone has actually proved this afternoon.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_chapel_0",
+          "label": "Go after the trophies themselves.",
+          "target": "sy_plates"
+        },
+        {
+          "id": "c_sx_chapel_1",
+          "label": "Go after the people who were there.",
+          "target": "sy_people"
+        },
+        {
+          "id": "c_sx_chapel_2",
+          "label": "Go after the paperwork.",
+          "target": "sy_paper"
+        }
+      ]
+    },
+    {
+      "id": "sx_school",
+      "body": "Half of Fenwick thinks the old school swim prizes went to the secondary school in 1979. The other half thinks a dealer took them. The secondary school's PE cupboard holds a shield. It has ST JUDE'S INTER-SCHOOL GALA cut into a blank plate that was never filled in.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_school_0",
+          "label": "Split the town with Tess.",
+          "target": "sy_split"
+        },
+        {
+          "id": "c_sx_school_1",
+          "label": "Work backwards from half past three.",
+          "target": "sy_friday"
+        },
+        {
+          "id": "c_sx_school_2",
+          "label": "Sit down with Pat and the photographs.",
+          "target": "sy_bill2"
+        }
+      ]
+    },
+    {
+      "id": "sx_paper",
+      "body": "The Gazette prints on Wednesday and comes out on Thursday. It takes a letter up to Tuesday lunchtime. So one short piece in it would land in three hundred letterboxes just one day too late to matter. The charity van's plan was set in June and is not moved by a story not yet in print.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_paper_0",
+          "label": "Walk down to the canal and think.",
+          "target": "sy_towpath"
+        },
+        {
+          "id": "c_sx_paper_1",
+          "label": "Sit on the school steps and lay it all out.",
+          "target": "sy_steps"
+        },
+        {
+          "id": "c_sx_paper_2",
+          "label": "Go home and look at the medal under a lamp.",
+          "target": "sy_lamp"
+        }
+      ]
+    },
+    {
+      "id": "sx_tess",
+      "body": "Tess can bike across the whole town in twenty minutes. She has no time for standing in doorways being polite to grown-ups. This makes her either the best helper for this afternoon or the worst. She is in the playground now, eating an ice lolly and watching the charity van being loaded.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_tess_0",
+          "label": "Go after the trophies themselves.",
+          "target": "sy_plates"
+        },
+        {
+          "id": "c_sx_tess_1",
+          "label": "Go after the people who were there.",
+          "target": "sy_people"
+        },
+        {
+          "id": "c_sx_tess_2",
+          "label": "Go after the paperwork.",
+          "target": "sy_paper"
+        }
+      ]
+    },
+    {
+      "id": "sx_time",
+      "body": "The charity van is booked for half past three. That leaves two hours, one break-time, and a lunchtime. Written down as a list of minutes, it stops being impossible and starts being tight. It is not a pile of worries anymore. The medal is warm in your hand from being held all morning.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_time_0",
+          "label": "Split the town with Tess.",
+          "target": "sy_split"
+        },
+        {
+          "id": "c_sx_time_1",
+          "label": "Work backwards from half past three.",
+          "target": "sy_friday"
+        },
+        {
+          "id": "c_sx_time_2",
+          "label": "Sit down with Pat and the photographs.",
+          "target": "sy_bill2"
+        }
+      ]
+    },
+    {
+      "id": "sy_towpath",
+      "body": "The canal path at lunchtime is empty. The water is the color of stewed tea. Walking the length of it once with the medal in a pocket turns six separate questions into one question with an order to it. The order is a list of names, and the names are all that matter now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_towpath_0",
+          "label": "Get the noticeboard off the PE office wall.",
+          "target": "pl_chip"
+        }
+      ]
+    },
+    {
+      "id": "sy_steps",
+      "body": "The school front steps stay dry under the canopy. They are wide enough to lay out the medal, the shield, the photos, and the receipts side by side. Laid out like that, they stop being odd bits and start being a trail. A trail with a single name still missing from the middle of it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_steps_0",
+          "label": "Sit down with Pat Okeke.",
+          "target": "pe_bill"
+        }
+      ]
+    },
+    {
+      "id": "sy_lamp",
+      "body": "Under the classroom lamp the medal gives up one more mark that daylight never would. It is a faint scratch inside the clasp. It is not a date at all but a set of initials. The same initials as the last name on the school register, written by someone who meant them to last.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_lamp_0",
+          "label": "Read the governors' minutes properly.",
+          "target": "pr_minutes"
+        }
+      ]
+    },
+    {
+      "id": "sy_plates",
+      "body": "Four shield-shaped trophies, one cage and a display cabinet stand between here and six named winners. A shield in the hand is a name nobody can argue about. That is worth more this afternoon than being told things by grown-ups who were not there.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_plates_0",
+          "label": "Get the noticeboard off the PE office wall.",
+          "target": "pl_chip"
+        },
+        {
+          "id": "c_sy_plates_1",
+          "label": "Find the photograph in the retirement home.",
+          "target": "pl_alms"
+        },
+        {
+          "id": "c_sy_plates_2",
+          "label": "Look in the cage at the leisure centre.",
+          "target": "pl_cage"
+        }
+      ]
+    },
+    {
+      "id": "sy_people",
+      "body": "Twenty-four children stood on that poolside for the photo. Twelve of them swam in the last gala. The ones still in Fenwick are within a mile of this bench. They are mostly indoors and mostly glad to be asked. Most of them are in the retirement home on the park or the corner shop on West Street.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_people_0",
+          "label": "Check the pool building steps for fixing holes.",
+          "target": "pl_chapelp"
+        },
+        {
+          "id": "c_sy_people_1",
+          "label": "Sit down with Pat Okeke.",
+          "target": "pe_bill"
+        },
+        {
+          "id": "c_sy_people_2",
+          "label": "Talk to the retirement home residents.",
+          "target": "pe_alms2"
+        }
+      ]
+    },
+    {
+      "id": "sy_paper",
+      "body": "The store under the old pool belongs to someone on a form somewhere. The clearance is a line in a set of minutes. Both of those can be changed by the right words in the right ear before half past three. The words are waiting in the logbook and the medal is the proof.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_paper_0",
+          "label": "Talk to Mr Davison in the PE office.",
+          "target": "pe_deniz"
+        },
+        {
+          "id": "c_sy_paper_1",
+          "label": "Ask at the secondary school about the trophies.",
+          "target": "pe_school"
+        },
+        {
+          "id": "c_sy_paper_2",
+          "label": "Read the governors' minutes properly.",
+          "target": "pr_minutes"
+        }
+      ]
+    },
+    {
+      "id": "sy_split",
+      "body": "Two people covering different halves of Fenwick get through twice as much and learn half as much each. The whole thing works only if there is a time and a place agreed for putting the halves back together. The school gates at half past two is the clear answer. Clear is what works under a deadline.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_split_0",
+          "label": "Search the Gazette for the summer of 1979.",
+          "target": "pr_gazette"
+        },
+        {
+          "id": "c_sy_split_1",
+          "label": "Find out who owns the old pool store.",
+          "target": "pr_owner"
+        },
+        {
+          "id": "c_sy_split_2",
+          "label": "Write to somebody who can stop the charity van.",
+          "target": "pr_letter"
+        }
+      ]
+    },
+    {
+      "id": "sy_friday",
+      "body": "Half past three, a van, two volunteers and a charity shop on the other side of town. Everything anyone does between now and then either moves that or does not. Written as a countdown, it sorts the useful jobs from the nice-to-know ones. It leaves about ninety minutes for the useful ones.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_friday_0",
+          "label": "Get the noticeboard off the PE office wall.",
+          "target": "pl_chip"
+        },
+        {
+          "id": "c_sy_friday_1",
+          "label": "Find the photograph in the retirement home.",
+          "target": "pl_alms"
+        },
+        {
+          "id": "c_sy_friday_2",
+          "label": "Look in the cage at the leisure centre.",
+          "target": "pl_cage"
+        }
+      ]
+    },
+    {
+      "id": "sy_bill2",
+      "body": "Photos work on Pat Okeke in a way that questions do not. Put one in her hands and the names come out in order, with the events attached. The trick is having something to write on before she starts. The shop counter is littered with till roll and a pencil that works, just.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_bill2_0",
+          "label": "Check the pool building steps for fixing holes.",
+          "target": "pl_chapelp"
+        },
+        {
+          "id": "c_sy_bill2_1",
+          "label": "Sit down with Pat Okeke.",
+          "target": "pe_bill"
+        },
+        {
+          "id": "c_sy_bill2_2",
+          "label": "Talk to the retirement home residents.",
+          "target": "pe_alms2"
+        }
+      ]
+    },
+    {
+      "id": "pl_chip",
+      "body": "Four screws, a noticeboard, and a wall. Nobody has looked at it since the eighties. Behind it is a rectangle of different-colored paint. A team list is still pinned to it. It is yellowed and curling. It names every child in the photo. The handwriting matches the back of the print exactly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_chip_0",
+          "label": "Copy the list down carefully.",
+          "target": "pl_clean"
+        },
+        {
+          "id": "c_pl_chip_1",
+          "label": "Read what the team list actually says.",
+          "target": "pl_read"
+        },
+        {
+          "id": "c_pl_chip_2",
+          "label": "Ask before anything comes off a wall.",
+          "target": "pl_permission"
+        }
+      ]
+    },
+    {
+      "id": "pl_alms",
+      "body": "In the common room of the retirement home there is a photo. No one sees it any more. It is half hidden by an old yucca plant. The people on the committee have strong feelings about that plant. The photo matches the one in the box, but the frame has never been opened.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_alms_0",
+          "label": "Take a photograph of it instead of the frame.",
+          "target": "pl_rub"
+        },
+        {
+          "id": "c_pl_alms_1",
+          "label": "Get Mr Okafor to open the cage.",
+          "target": "pl_depot"
+        },
+        {
+          "id": "c_pl_alms_2",
+          "label": "Take the pool building name-board off and read it indoors.",
+          "target": "pl_crack"
+        }
+      ]
+    },
+    {
+      "id": "pl_cage",
+      "body": "The metal cage behind the boiler room holds forty old locker doors, a starting block, four lane ropes and a cardboard box of small engraved things that nobody has catalogued since the system was invented. The inter-school backstroke shield is in there, still shiny, still engraved with a name.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_cage_0",
+          "label": "Copy the list down carefully.",
+          "target": "pl_clean"
+        },
+        {
+          "id": "c_pl_cage_1",
+          "label": "Read what the team list actually says.",
+          "target": "pl_read"
+        },
+        {
+          "id": "c_pl_cage_2",
+          "label": "Ask before anything comes off a wall.",
+          "target": "pl_permission"
+        }
+      ]
+    },
+    {
+      "id": "pl_chapelp",
+      "body": "Four filled holes at name-board height beside the old pool building steps, plugged with filler a shade too pale, and the caretaker who filled them is the caretaker who is out until four and who remembers exactly what the board said before the council took it down in the eighties.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_chapelp_0",
+          "label": "Take a photograph of it instead of the frame.",
+          "target": "pl_rub"
+        },
+        {
+          "id": "c_pl_chapelp_1",
+          "label": "Get Mr Okafor to open the cage.",
+          "target": "pl_depot"
+        },
+        {
+          "id": "c_pl_chapelp_2",
+          "label": "Take the pool building name-board off and read it indoors.",
+          "target": "pl_crack"
+        }
+      ]
+    },
+    {
+      "id": "pe_bill",
+      "body": "Put a team photo into Pat Okeke's hands and twelve names come out, in order. She knows their events, too. But ask her what day it is, and the shop goes quiet. Both things are true at once. One does not cancel the other. And the names she says are the ones that matter.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_bill_0",
+          "label": "Chase the twelve names on the photograph.",
+          "target": "pe_names"
+        },
+        {
+          "id": "c_pe_bill_1",
+          "label": "Go back to Pat with the list from the wall.",
+          "target": "pe_rub2"
+        },
+        {
+          "id": "c_pe_bill_2",
+          "label": "Ask Pat whose medal it really is.",
+          "target": "pe_tune"
+        }
+      ]
+    },
+    {
+      "id": "pe_alms2",
+      "body": "Twelve residents, a Wednesday afternoon, and a tin of shortbread. Among them are two people who stood on poolside at the last inter-school gala. One has the team photograph framed on her dressing-table. She can name every child in it without her glasses on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_alms2_0",
+          "label": "Find Mrs Brennan's family.",
+          "target": "pe_family"
+        },
+        {
+          "id": "c_pe_alms2_1",
+          "label": "Let the common room talk itself out.",
+          "target": "pe_listen"
+        },
+        {
+          "id": "c_pe_alms2_2",
+          "label": "Take the first confident answer and run with it.",
+          "target": "pe_versions"
+        }
+      ]
+    },
+    {
+      "id": "pe_deniz",
+      "body": "Mr Davison took the PE office from a predecessor who took it from the old school building, and everything that came with it is in a filing cabinet in the corner, including team sheets nobody has read since the seventies and a small brass key to a cupboard nobody can identify.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_deniz_0",
+          "label": "Chase the twelve names on the photograph.",
+          "target": "pe_names"
+        },
+        {
+          "id": "c_pe_deniz_1",
+          "label": "Go back to Pat with the list from the wall.",
+          "target": "pe_rub2"
+        },
+        {
+          "id": "c_pe_deniz_2",
+          "label": "Ask Pat whose medal it really is.",
+          "target": "pe_tune"
+        }
+      ]
+    },
+    {
+      "id": "pe_school",
+      "body": "The secondary school PE cupboard holds a shield with ST JUDE'S INTER-SCHOOL GALA on a blank plate that was never filled in, and nobody currently working in the building knows how it got there or whose name was supposed to go on the front of it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_school_0",
+          "label": "Find Mrs Brennan's family.",
+          "target": "pe_family"
+        },
+        {
+          "id": "c_pe_school_1",
+          "label": "Let the common room talk itself out.",
+          "target": "pe_listen"
+        },
+        {
+          "id": "c_pe_school_2",
+          "label": "Take the first confident answer and run with it.",
+          "target": "pe_versions"
+        }
+      ]
+    },
+    {
+      "id": "pr_minutes",
+      "body": "Page three, item seven. It is a single line about clearing the old sports gear from the pool building before it is knocked down. At the bottom of the page there is a name, a department, and a sentence. The committee noted it and would review the plan in September. September is three months away. The charity van comes at half past three.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_minutes_0",
+          "label": "Read what the review sentence actually meant.",
+          "target": "pr_clause"
+        },
+        {
+          "id": "c_pr_minutes_1",
+          "label": "Get photocopies of everything.",
+          "target": "pr_copy"
+        },
+        {
+          "id": "c_pr_minutes_2",
+          "label": "Find the one person who can say yes.",
+          "target": "pr_council"
+        }
+      ]
+    },
+    {
+      "id": "pr_gazette",
+      "body": "Six column inches. A photo of twelve kids on the poolside. And a last bit that says the trophies would be stored until the school swim club could start again. Somebody wrote that sentence and meant it. It has been in a filing drawer at the Gazette office ever since.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_gazette_0",
+          "label": "Fill in the form the proper way.",
+          "target": "pr_form"
+        },
+        {
+          "id": "c_pr_gazette_1",
+          "label": "Get Aisha to write what the library wants.",
+          "target": "pr_aisha2"
+        },
+        {
+          "id": "c_pr_gazette_2",
+          "label": "Send it in and wait for an answer.",
+          "target": "pr_filed"
+        }
+      ]
+    },
+    {
+      "id": "pr_owner",
+      "body": "The old pool building is council property. The store room inside it is council property, too. What is inside that store room might not be. This is a point no one in Fenwick has ever written down. The shield in the cage is a clue no one has gone after. To go after it would need a form that does not exist.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_owner_0",
+          "label": "Read what the review sentence actually meant.",
+          "target": "pr_clause"
+        },
+        {
+          "id": "c_pr_owner_1",
+          "label": "Get photocopies of everything.",
+          "target": "pr_copy"
+        },
+        {
+          "id": "c_pr_owner_2",
+          "label": "Find the one person who can say yes.",
+          "target": "pr_council"
+        }
+      ]
+    },
+    {
+      "id": "pr_letter",
+      "body": "A letter that arrives at half past two is a letter that arrives too late, so this is an email, a phone call and a person standing in a doorway, and only the third of those has ever moved a booked charity van. The doorway is Mr Okafor's, and the person is you, with the medal in your hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_letter_0",
+          "label": "Fill in the form the proper way.",
+          "target": "pr_form"
+        },
+        {
+          "id": "c_pr_letter_1",
+          "label": "Get Aisha to write what the library wants.",
+          "target": "pr_aisha2"
+        },
+        {
+          "id": "c_pr_letter_2",
+          "label": "Send it in and wait for an answer.",
+          "target": "pr_filed"
+        }
+      ]
+    },
+    {
+      "id": "pl_clean",
+      "body": "Copying a list from a yellow sheet of paper takes care. You need a steady hand and a pencil, and you must not tear it. A clumsy move for just ten wrong seconds turns a list that lasted forty years into a list that is torn through the middle of the names. The photo on your phone is your backup. And the backup is everything.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_clean_0",
+          "label": "Line up the five names you have.",
+          "target": "pl_five"
+        },
+        {
+          "id": "c_pl_clean_1",
+          "label": "Work out where the sixth winner's trophy went.",
+          "target": "pl_sixth"
+        },
+        {
+          "id": "c_pl_clean_2",
+          "label": "Ask about the lofts nobody ever clears.",
+          "target": "pl_shed"
+        }
+      ]
+    },
+    {
+      "id": "pl_read",
+      "body": "It says BACKSTROKE WINNER. Under it is a name. It is either Brennan or Berman. It depends on how the fold in the paper falls. That is the sort of problem a filed-off medal does not forgive. A four-digit lock will not solve it either.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_read_0",
+          "label": "Show the names to Pat Okeke.",
+          "target": "pl_show"
+        },
+        {
+          "id": "c_pl_read_1",
+          "label": "Put back everything that came off a wall.",
+          "target": "pl_replace"
+        },
+        {
+          "id": "c_pl_read_2",
+          "label": "Line up the five names you have.",
+          "target": "pl_five"
+        }
+      ]
+    },
+    {
+      "id": "pl_permission",
+      "body": "A team list on a wall belongs to the wall. The wall belongs to the school. Asking is very different from not asking. Asking means you get help all afternoon. Not asking means the head teacher phones before the final bell.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_permission_0",
+          "label": "Work out where the sixth winner's trophy went.",
+          "target": "pl_sixth"
+        },
+        {
+          "id": "c_pl_permission_1",
+          "label": "Ask about the lofts nobody ever clears.",
+          "target": "pl_shed"
+        },
+        {
+          "id": "c_pl_permission_2",
+          "label": "Show the names to Pat Okeke.",
+          "target": "pl_show"
+        }
+      ]
+    },
+    {
+      "id": "pl_rub",
+      "body": "A phone camera and a steady hand lift the names off a photograph without lifting the photograph off anything, and a digital copy can be carried to Pat Okeke, printed and argued over without anybody being responsible for a frame that belongs to a retirement home's common room and a yucca plant that is technically a resident.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_rub_0",
+          "label": "Put back everything that came off a wall.",
+          "target": "pl_replace"
+        },
+        {
+          "id": "c_pl_rub_1",
+          "label": "Line up the five names you have.",
+          "target": "pl_five"
+        },
+        {
+          "id": "c_pl_rub_2",
+          "label": "Work out where the sixth winner's trophy went.",
+          "target": "pl_sixth"
+        }
+      ]
+    },
+    {
+      "id": "pl_depot",
+      "body": "The cage has its own padlock. Mr Okafor has the key on a ring with forty others. First, he wants a reason. He also wants a name. And he wants about four minutes of you being straight with him. The shield in the cage was put there by accident. But getting it out again is no accident at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_depot_0",
+          "label": "Ask about the lofts nobody ever clears.",
+          "target": "pl_shed"
+        },
+        {
+          "id": "c_pl_depot_1",
+          "label": "Show the names to Pat Okeke.",
+          "target": "pl_show"
+        },
+        {
+          "id": "c_pl_depot_2",
+          "label": "Put back everything that came off a wall.",
+          "target": "pl_replace"
+        }
+      ]
+    },
+    {
+      "id": "pe_names",
+      "body": "Twelve people were there. Five have died. Four have moved away. Two are in the retirement home. One works behind the counter of the corner shop. And one is Pat Okeke. Finding all that out took an afternoon. It took eight polite chats. Most people were surprised to be asked about a swim gala from forty years ago.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_names_0",
+          "label": "Check a memory against a document.",
+          "target": "pe_check"
+        },
+        {
+          "id": "c_pe_names_1",
+          "label": "Bring two of them down to the old pool building.",
+          "target": "pe_bring"
+        },
+        {
+          "id": "c_pe_names_2",
+          "label": "Ask who had the padlock combination in 1979.",
+          "target": "pe_key"
+        }
+      ]
+    },
+    {
+      "id": "pe_rub2",
+      "body": "The list from the wall in front of her does what questions cannot. She reads the names aloud, then the events, then tells you which child won which medal and who the missing name belongs to. The missing name is the one filed off the brass, and she says it like it has been sitting behind her teeth for forty years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_rub2_0",
+          "label": "Slow down and do it their way.",
+          "target": "pe_slow"
+        },
+        {
+          "id": "c_pe_rub2_1",
+          "label": "Write down what people say while they say it.",
+          "target": "pe_write"
+        },
+        {
+          "id": "c_pe_rub2_2",
+          "label": "Check a memory against a document.",
+          "target": "pe_check"
+        }
+      ]
+    },
+    {
+      "id": "pe_tune",
+      "body": "She takes the medal. She looks at the filed-off front for a long moment. Then she says a name. The room seems to know it before anyone else does. It is the name of a child who swam backstroke and won. Then they moved away before the engraving was done. It is not on the team sheet. It is not on the honours board. And it is for sure the name that was filed off.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_tune_0",
+          "label": "Bring two of them down to the old pool building.",
+          "target": "pe_bring"
+        },
+        {
+          "id": "c_pe_tune_1",
+          "label": "Ask who had the padlock combination in 1979.",
+          "target": "pe_key"
+        },
+        {
+          "id": "c_pe_tune_2",
+          "label": "Slow down and do it their way.",
+          "target": "pe_slow"
+        }
+      ]
+    },
+    {
+      "id": "pe_family",
+      "body": "There is a nephew in Scotland. He has never been to Fenwick. He is more than happy to talk about an aunt. Nobody has asked about her for eleven years. In his attic, he has two boxes of her teaching things. The name on the boxes is Brennan. The date he gives for her leaving St Jude's is a match. It matches the year of the medal.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_family_0",
+          "label": "Write down what people say while they say it.",
+          "target": "pe_write"
+        },
+        {
+          "id": "c_pe_family_1",
+          "label": "Check a memory against a document.",
+          "target": "pe_check"
+        },
+        {
+          "id": "c_pe_family_2",
+          "label": "Bring two of them down to the old pool building.",
+          "target": "pe_bring"
+        }
+      ]
+    },
+    {
+      "id": "pe_listen",
+      "body": "Asking a straight question in that common room gets you one answer. But letting the room talk for twenty minutes gets you nine. Four of those nine answers are wrong. And two are things nobody would ever have thought to ask for. One of the wrong ones points straight at the truth. That is the kind of wrong you can use.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_listen_0",
+          "label": "Ask who had the padlock combination in 1979.",
+          "target": "pe_key"
+        },
+        {
+          "id": "c_pe_listen_1",
+          "label": "Slow down and do it their way.",
+          "target": "pe_slow"
+        },
+        {
+          "id": "c_pe_listen_2",
+          "label": "Write down what people say while they say it.",
+          "target": "pe_write"
+        }
+      ]
+    },
+    {
+      "id": "pr_clause",
+      "body": "'Stored until the club can be restarted' is not a sentence a council uses by chance. It shows up in the Gazette. It is in the governors' minutes. And it is on a typed note taped inside the pool store door in a photo from 1990. The note is yellow and curling. The photo is in Aisha's drawer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_clause_0",
+          "label": "Work the charity van time itself.",
+          "target": "pr_deadline"
+        },
+        {
+          "id": "c_pr_clause_1",
+          "label": "Find an adult who will carry the argument inside.",
+          "target": "pr_ally"
+        },
+        {
+          "id": "c_pr_clause_2",
+          "label": "Answer the question they will ask.",
+          "target": "pr_insure"
+        }
+      ]
+    },
+    {
+      "id": "pr_copy",
+      "body": "It costs ten pence a sheet. The librarian stamps the date on the back. A photocopy with a date stamp does something in a meeting that a phone screen held across a desk never does. The copies go into the folder with the medal and the team list. All at once the folder is a case instead of a hunch.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_copy_0",
+          "label": "Give the Gazette something to print.",
+          "target": "pr_press"
+        },
+        {
+          "id": "c_pr_copy_1",
+          "label": "Ask for ten minutes rather than a decision.",
+          "target": "pr_meet"
+        },
+        {
+          "id": "c_pr_copy_2",
+          "label": "Work the charity van time itself.",
+          "target": "pr_deadline"
+        }
+      ]
+    },
+    {
+      "id": "pr_council",
+      "body": "Four people are involved. Three of them can only say no. Finding the fourth takes two phone calls. It also takes the courage to ask plainly who is really allowed to say yes to a forty-year-old swimming medal and the stuff in a closed pool store. The answer, when it comes, is one person with a name you already have.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_council_0",
+          "label": "Find an adult who will carry the argument inside.",
+          "target": "pr_ally"
+        },
+        {
+          "id": "c_pr_council_1",
+          "label": "Answer the question they will ask.",
+          "target": "pr_insure"
+        },
+        {
+          "id": "c_pr_council_2",
+          "label": "Give the Gazette something to print.",
+          "target": "pr_press"
+        }
+      ]
+    },
+    {
+      "id": "pr_form",
+      "body": "There is a form to ask the council to clear things out. It is one page long. It wants a reason in less than fifty words. No one ever said the fifty words are the whole argument. The words are 'a swimming medal from a past pupil, now named, waiting to go to family.' That is eighteen words. It is enough if the right person reads it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_form_0",
+          "label": "Ask for ten minutes rather than a decision.",
+          "target": "pr_meet"
+        },
+        {
+          "id": "c_pr_form_1",
+          "label": "Work the charity van time itself.",
+          "target": "pr_deadline"
+        },
+        {
+          "id": "c_pr_form_2",
+          "label": "Find an adult who will carry the argument inside.",
+          "target": "pr_ally"
+        }
+      ]
+    },
+    {
+      "id": "pr_aisha2",
+      "body": "A library says it would take a school swim club's old papers. This changes the question. It was 'what do we do with this old gear?' Now it is 'where does this go?' Aisha will write that in one paragraph on headed paper. The paper is already in the drawer. The stamp is in her hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_aisha2_0",
+          "label": "Answer the question they will ask.",
+          "target": "pr_insure"
+        },
+        {
+          "id": "c_pr_aisha2_1",
+          "label": "Give the Gazette something to print.",
+          "target": "pr_press"
+        },
+        {
+          "id": "c_pr_aisha2_2",
+          "label": "Ask for ten minutes rather than a decision.",
+          "target": "pr_meet"
+        }
+      ]
+    },
+    {
+      "id": "pl_crack",
+      "body": "The name board comes away with the second screw. A corner of the frame comes with it. What is left is a cracked board and a hole in the pool building wall. Now there must be a talk with the caretaker that goes just as badly as it should. The name is easy to read. No one in the street is glad about how it became easy to read. The name is the right one. The way it was found is wrong.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pl_crack",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Two Screws and a Cracked Board"
+      }
+    },
+    {
+      "id": "pe_versions",
+      "body": "Five people tell five sure but fully different tales of who won the backstroke medal. The afternoon goes on picking between them. By the time anyone thinks to check a printed programme, the library has shut for lunch. Half past three is all that is left.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pe_versions",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Too Many Versions"
+      }
+    },
+    {
+      "id": "pr_filed",
+      "body": "The form goes in at two o'clock. They make a note of it at ten past. It is read on the next Tuesday. That is six days after a charity van and two helpers made the question pointless. The note back is polite. It comes in an envelope with a window. It thanks you for caring about local heritage.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pr_filed",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Filed and Forgotten"
+      }
+    },
+    {
+      "id": "pl_five",
+      "body": "Five names and five winners. The order rests on if the gala ran breaststroke first or freestyle last. Those two orders do not match in two events out of six. The programme in the library will settle it. The library is a twelve-minute walk away. The charity van is loading its last boxes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_five_0",
+          "label": "Settle the order once and for all.",
+          "target": "pl_order"
+        },
+        {
+          "id": "c_pl_five_1",
+          "label": "Take the four-digit year to the padlock.",
+          "target": "pl_try"
+        },
+        {
+          "id": "c_pl_five_2",
+          "label": "Photograph everything before half past three.",
+          "target": "pl_photo"
+        }
+      ]
+    },
+    {
+      "id": "pl_sixth",
+      "body": "The backstroke shield came off the wall when the pool closed. It never reached the cage at the leisure centre. The man who did the work retired to the coast. He answers his phone about half the time. The other half the time, the phone rings out over the sound of seagulls. The person who knows the answer cannot be reached.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_sixth_0",
+          "label": "Get the charity van held for an hour.",
+          "target": "pl_hold"
+        },
+        {
+          "id": "c_pl_sixth_1",
+          "label": "Tell the retirement home what you found.",
+          "target": "pl_tell"
+        },
+        {
+          "id": "c_pl_sixth_2",
+          "label": "Go to the padlock with five names and a guess.",
+          "target": "pl_five_end"
+        }
+      ]
+    },
+    {
+      "id": "pl_shed",
+      "body": "In a town this size, there are maybe nine lofts holding all that was too key to throw out. The people who own them know just what is in them. They will not be rushed by anyone. One loft is above the corner shop. Pat Okeke has not been up there since her husband died.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_shed_0",
+          "label": "Settle the order once and for all.",
+          "target": "pl_order"
+        },
+        {
+          "id": "c_pl_shed_1",
+          "label": "Take the four-digit year to the padlock.",
+          "target": "pl_try"
+        },
+        {
+          "id": "c_pl_shed_2",
+          "label": "Photograph everything before half past three.",
+          "target": "pl_photo"
+        }
+      ]
+    },
+    {
+      "id": "pl_show",
+      "body": "Pat cannot tell you what she had for breakfast. But she can tell you the backstroke winner was called Miriam Okri. That name is not on any list. It is not on any shield. It is not in the photo. It is a memory with a whole swim gala stuck to it. She says it like she has been waiting to say it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_show_0",
+          "label": "Get the charity van held for an hour.",
+          "target": "pl_hold"
+        },
+        {
+          "id": "c_pl_show_1",
+          "label": "Tell the retirement home what you found.",
+          "target": "pl_tell"
+        },
+        {
+          "id": "c_pl_show_2",
+          "label": "Go to the padlock with five names and a guess.",
+          "target": "pl_five_end"
+        }
+      ]
+    },
+    {
+      "id": "pl_replace",
+      "body": "Every board that came down goes back up with the right screws. This must happen before anything else. Doing it right costs twenty minutes from an afternoon with forty left. The noticeboard in the PE office goes back just as it was. The team list is still tucked behind it. The screws are tightened by hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_replace_0",
+          "label": "Settle the order once and for all.",
+          "target": "pl_order"
+        },
+        {
+          "id": "c_pl_replace_1",
+          "label": "Take the four-digit year to the padlock.",
+          "target": "pl_try"
+        },
+        {
+          "id": "c_pl_replace_2",
+          "label": "Photograph everything before half past three.",
+          "target": "pl_photo"
+        }
+      ]
+    },
+    {
+      "id": "pe_check",
+      "body": "A memory and a team sheet disagree about the second event. The team sheet was typed the week it happened. The memory has had forty years to tidy itself up. That does not always make the team sheet right. The team sheet has a typo in the third event. If it can be wrong about one, it can be wrong about two.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_check_0",
+          "label": "Get the order agreed by people who were there.",
+          "target": "pe_agree"
+        },
+        {
+          "id": "c_pe_check_1",
+          "label": "Ask Pat for the missing name.",
+          "target": "pe_last"
+        },
+        {
+          "id": "c_pe_check_2",
+          "label": "Take somebody with you to the padlock.",
+          "target": "pe_witness"
+        }
+      ]
+    },
+    {
+      "id": "pe_bring",
+      "body": "Two people stood on that poolside for the photo. One uses a walking stick. One uses a wheeled frame. They spend half an hour of a bright day together. They stand in front of the steel door on West Street and start to argue about the year the padlock was put on. One recalls the brand of the lock. The other recalls the shop that sold it. That is a different kind of fact, but it is still a fact.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_bring_0",
+          "label": "Get the secondary school to say what it has.",
+          "target": "pe_school2"
+        },
+        {
+          "id": "c_pe_bring_1",
+          "label": "Put Pat in front of Mr Okafor.",
+          "target": "pe_vance2"
+        },
+        {
+          "id": "c_pe_bring_2",
+          "label": "Let the afternoon be about the people.",
+          "target": "pe_band"
+        }
+      ]
+    },
+    {
+      "id": "pe_key",
+      "body": "Someone locked that door in the summer of 1979. They set the mix of numbers some place. A locksmith came out six weeks before. This means a single person set the lock, on a single day, for a solid reason. The reason was to keep the trophies safe. The person was the swimming teacher.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_key_0",
+          "label": "Get the order agreed by people who were there.",
+          "target": "pe_agree"
+        },
+        {
+          "id": "c_pe_key_1",
+          "label": "Ask Pat for the missing name.",
+          "target": "pe_last"
+        },
+        {
+          "id": "c_pe_key_2",
+          "label": "Take somebody with you to the padlock.",
+          "target": "pe_witness"
+        }
+      ]
+    },
+    {
+      "id": "pe_slow",
+      "body": "This talk works at a speed that is slow. It is slower than any day with a charity van. Going at this pace costs an hour. It buys help that keeps showing up later. The help is a phone number for a nephew in Scotland. It is also a key to a filing cabinet that no one has opened in years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_slow_0",
+          "label": "Get the secondary school to say what it has.",
+          "target": "pe_school2"
+        },
+        {
+          "id": "c_pe_slow_1",
+          "label": "Put Pat in front of Mr Okafor.",
+          "target": "pe_vance2"
+        },
+        {
+          "id": "c_pe_slow_2",
+          "label": "Let the afternoon be about the people.",
+          "target": "pe_band"
+        }
+      ]
+    },
+    {
+      "id": "pe_write",
+      "body": "A notebook on the table changes what a common room says and how carefully, and by the third visit the residents are correcting each other for the notebook rather than for you. One of them produces a programme from the 1979 gala, folded into a book on the sideboard, that nobody has asked about in forty years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_write_0",
+          "label": "Get the order agreed by people who were there.",
+          "target": "pe_agree"
+        },
+        {
+          "id": "c_pe_write_1",
+          "label": "Ask Pat for the missing name.",
+          "target": "pe_last"
+        },
+        {
+          "id": "c_pe_write_2",
+          "label": "Take somebody with you to the padlock.",
+          "target": "pe_witness"
+        }
+      ]
+    },
+    {
+      "id": "pr_deadline",
+      "body": "A charity collection can be moved. It can be stopped. Or it can just skip the part of the store that is truly junk. These are three things to ask, and three chances of a yes. To just skip that part is the smallest ask. Mr Okafor can say yes to it right there, no phone call needed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_deadline_0",
+          "label": "Put the whole case on one sheet of paper.",
+          "target": "pr_case"
+        },
+        {
+          "id": "c_pr_deadline_1",
+          "label": "Take the ten minutes with Mr Okafor.",
+          "target": "pr_ten"
+        },
+        {
+          "id": "c_pr_deadline_2",
+          "label": "Ask permission to try the padlock.",
+          "target": "pr_lock"
+        }
+      ]
+    },
+    {
+      "id": "pr_ally",
+      "body": "A person already in the building is worth six letters. They are believed. They are also a bit cross about the council's plan to knock things down. There are two people like that in Fenwick. One is a school governor. The other is Mrs Delgado in the office. She has been waiting for someone to ask the right thing all day.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_ally_0",
+          "label": "Bring the secondary school in as a home for the trophies.",
+          "target": "pr_school3"
+        },
+        {
+          "id": "c_pr_ally_1",
+          "label": "Spend the afternoon getting everyone in one room.",
+          "target": "pr_thursday"
+        },
+        {
+          "id": "c_pr_ally_2",
+          "label": "Ask for the day and take the answer as final.",
+          "target": "pr_week"
+        }
+      ]
+    },
+    {
+      "id": "pr_insure",
+      "body": "The first thing an official says about an old pool store is about blame. They ask who pays if someone gets hurt there. Having an answer ready changes things. It is the gap between a talk and a shut door. The answer is 'the council, until the clearing is done.' Saying it fast makes the next question easy.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_insure_0",
+          "label": "Put the whole case on one sheet of paper.",
+          "target": "pr_case"
+        },
+        {
+          "id": "c_pr_insure_1",
+          "label": "Take the ten minutes with Mr Okafor.",
+          "target": "pr_ten"
+        },
+        {
+          "id": "c_pr_insure_2",
+          "label": "Ask permission to try the padlock.",
+          "target": "pr_lock"
+        }
+      ]
+    },
+    {
+      "id": "pr_press",
+      "body": "A photo of a brass medal is a story. A name, a date, and a charity van booked for 3:30 is also a story. A local paper will run it at lunch. Two people will read it by two o'clock. They are the two who most needed to have read it at one. One runs the council's leisure group. The other is the head of the governors. Both of them own phones.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_press_0",
+          "label": "Bring the secondary school in as a home for the trophies.",
+          "target": "pr_school3"
+        },
+        {
+          "id": "c_pr_press_1",
+          "label": "Spend the afternoon getting everyone in one room.",
+          "target": "pr_thursday"
+        },
+        {
+          "id": "c_pr_press_2",
+          "label": "Ask for the day and take the answer as final.",
+          "target": "pr_week"
+        }
+      ]
+    },
+    {
+      "id": "pr_meet",
+      "body": "No one with a clipboard says yes to a child. But quite a few of them will give you ten minutes on a Wednesday lunch. Ten minutes with the medal on the desk is not the same as ten minutes without it. The medal is the proof. The medal is always the proof.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_meet_0",
+          "label": "Put the whole case on one sheet of paper.",
+          "target": "pr_case"
+        },
+        {
+          "id": "c_pr_meet_1",
+          "label": "Take the ten minutes with Mr Okafor.",
+          "target": "pr_ten"
+        },
+        {
+          "id": "c_pr_meet_2",
+          "label": "Ask permission to try the padlock.",
+          "target": "pr_lock"
+        }
+      ]
+    },
+    {
+      "id": "pl_order",
+      "body": "The team sheet, the medal, and the care home program give three orders. Only one order was swum by twelve children on a Wednesday in 1979. The tie-breaker is which order the shield engraver used. The shield in Aisha's drawer has a date on its back. That date matches just one of the three.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_order_0",
+          "label": "Go down to the door on Wednesday afternoon.",
+          "target": "fn_door"
+        },
+        {
+          "id": "c_pl_order_1",
+          "label": "Fix the order before touching the lock.",
+          "target": "fn_order2"
+        },
+        {
+          "id": "c_pl_order_2",
+          "label": "Fetch Pat Okeke down to the old pool building.",
+          "target": "fn_bill3"
+        }
+      ]
+    },
+    {
+      "id": "pl_try",
+      "body": "Four digits. Cold fingers. One order to try. Every wrong try costs nothing. It only brings a slight sick feeling. You watch the last wheel stop in the wrong spot. The year of the gala is the first guess. The year of the gala is wrong.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_try_0",
+          "label": "Get Mr Okafor to come and watch.",
+          "target": "fn_vance3"
+        },
+        {
+          "id": "c_pl_try_1",
+          "label": "Bring the two residents and the notebook.",
+          "target": "fn_witness2"
+        },
+        {
+          "id": "c_pl_try_2",
+          "label": "Bring a torch and something to write on.",
+          "target": "fn_light"
+        }
+      ]
+    },
+    {
+      "id": "pl_photo",
+      "body": "A photo of a medal on a team sheet proves whose it was. After half past three, that is the only proof anyone will have. It is the only proof of anything inside that pool store. The charity van takes the rest. The photo is what stays. It is the photo. And the name Pat said aloud in the shop.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_photo_0",
+          "label": "Line the secondary school up to take the trophies.",
+          "target": "fn_school4"
+        },
+        {
+          "id": "c_pl_photo_1",
+          "label": "Get the Gazette to hold the front of page five.",
+          "target": "fn_press2"
+        },
+        {
+          "id": "c_pl_photo_2",
+          "label": "Get the charity van stopped in writing.",
+          "target": "fn_stop"
+        }
+      ]
+    },
+    {
+      "id": "pl_hold",
+      "body": "An hour is one phone call to a helper and one line on a form. It is also a grown-up choosing to look a bit silly. They do this on the word of someone who brought them a brass medal. And a list of names on a till roll from the corner shop.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_hold_0",
+          "label": "Write the list of what should be in there.",
+          "target": "fn_inventory"
+        },
+        {
+          "id": "c_pl_hold_1",
+          "label": "Get the noticeboard back on the wall first.",
+          "target": "fn_plates2"
+        },
+        {
+          "id": "c_pl_hold_2",
+          "label": "Be there at half past three when the van comes.",
+          "target": "fn_wait2"
+        }
+      ]
+    },
+    {
+      "id": "pl_tell",
+      "body": "The team list behind their yucca plant is the one from the gala. Twelve residents have walked past it for years. They really want to be told about it, and soon, before anyone else is. Two of them start to cry before you finish. It is not the sad kind of crying.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_tell_0",
+          "label": "Go down to the door on Wednesday afternoon.",
+          "target": "fn_door"
+        },
+        {
+          "id": "c_pl_tell_1",
+          "label": "Fix the order before touching the lock.",
+          "target": "fn_order2"
+        },
+        {
+          "id": "c_pl_tell_2",
+          "label": "Fetch Pat Okeke down to the old pool building.",
+          "target": "fn_bill3"
+        }
+      ]
+    },
+    {
+      "id": "pe_agree",
+      "body": "Four people who swam in it sit at one table with one sheet of paper. Twenty minutes later, there is an order. Three of them will defend it. The fourth will grumble about it. This is as close to proof as this town gets. The grumble is about the relay order. The relay order does not change the medal.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_agree_0",
+          "label": "Get Mr Okafor to come and watch.",
+          "target": "fn_vance3"
+        },
+        {
+          "id": "c_pe_agree_1",
+          "label": "Bring the two residents and the notebook.",
+          "target": "fn_witness2"
+        },
+        {
+          "id": "c_pe_agree_2",
+          "label": "Bring a torch and something to write on.",
+          "target": "fn_light"
+        }
+      ]
+    },
+    {
+      "id": "pe_last",
+      "body": "The sixth event was the relay. Its winner's name was never put on a shield. If it is written down anywhere, it is in the head of the woman who set the lock. Or in the head of the man who watched her do it. The man came before Mr Okafor. The woman is Mrs Brennan. Neither of them lives in Fenwick anymore.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_last_0",
+          "label": "Line the secondary school up to take the trophies.",
+          "target": "fn_school4"
+        },
+        {
+          "id": "c_pe_last_1",
+          "label": "Get the Gazette to hold the front of page five.",
+          "target": "fn_press2"
+        },
+        {
+          "id": "c_pe_last_2",
+          "label": "Get the charity van stopped in writing.",
+          "target": "fn_stop"
+        }
+      ]
+    },
+    {
+      "id": "pe_witness",
+      "body": "Opening a door on council land with nobody watching is one story. Opening it with two people and a notebook watching is a different story. The difference matters most if the door opens. If it opens, the first thing anyone sees is a witness. A witness makes it a true find. Not just a rumour.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_witness_0",
+          "label": "Write the list of what should be in there.",
+          "target": "fn_inventory"
+        },
+        {
+          "id": "c_pe_witness_1",
+          "label": "Get the noticeboard back on the wall first.",
+          "target": "fn_plates2"
+        },
+        {
+          "id": "c_pe_witness_2",
+          "label": "Be there at half past three when the van comes.",
+          "target": "fn_wait2"
+        }
+      ]
+    },
+    {
+      "id": "pe_school2",
+      "body": "The PE cupboard holds a shield, two relay batons, and a medal case. A name is taped inside the case. The secondary school will admit to all of it right away. They just need to be asked a question that does not sound mean. The question is, 'Did you know these came from St Jude's?' The answer is no, but they want to give them back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_school2_0",
+          "label": "Go down to the door on Wednesday afternoon.",
+          "target": "fn_door"
+        },
+        {
+          "id": "c_pe_school2_1",
+          "label": "Fix the order before touching the lock.",
+          "target": "fn_order2"
+        },
+        {
+          "id": "c_pe_school2_2",
+          "label": "Fetch Pat Okeke down to the old pool building.",
+          "target": "fn_bill3"
+        }
+      ]
+    },
+    {
+      "id": "pe_vance2",
+      "body": "Mr Okafor has been told the pool store holds old, worn-out gear. A woman of seventy-eight can name what is behind that door from memory. A clipboard cannot survive that. He puts the clipboard down on the desk. It stays there for the rest of the talk.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_vance2_0",
+          "label": "Get Mr Okafor to come and watch.",
+          "target": "fn_vance3"
+        },
+        {
+          "id": "c_pe_vance2_1",
+          "label": "Bring the two residents and the notebook.",
+          "target": "fn_witness2"
+        },
+        {
+          "id": "c_pe_vance2_2",
+          "label": "Bring a torch and something to write on.",
+          "target": "fn_light"
+        }
+      ]
+    },
+    {
+      "id": "pr_case",
+      "body": "Six events. Five shields. One team photo. One line from the meeting notes. One name said out loud in a corner shop. If all this does not fit on one page, it will not last. Someone will have to read it while standing in a hallway, before the charity van leaves.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_case_0",
+          "label": "Line the secondary school up to take the trophies.",
+          "target": "fn_school4"
+        },
+        {
+          "id": "c_pr_case_1",
+          "label": "Get the Gazette to hold the front of page five.",
+          "target": "fn_press2"
+        },
+        {
+          "id": "c_pr_case_2",
+          "label": "Get the charity van stopped in writing.",
+          "target": "fn_stop"
+        }
+      ]
+    },
+    {
+      "id": "pr_ten",
+      "body": "He listens with the clipboard down. No one has seen that before. He asks just two questions. Both are about who will look after the trophies later. He does not ask if any of the story is true. The story is true. The medal is in your hand, warm from being held. The truth is the easy part of this.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_ten_0",
+          "label": "Write the list of what should be in there.",
+          "target": "fn_inventory"
+        },
+        {
+          "id": "c_pr_ten_1",
+          "label": "Get the noticeboard back on the wall first.",
+          "target": "fn_plates2"
+        },
+        {
+          "id": "c_pr_ten_2",
+          "label": "Be there at half past three when the van comes.",
+          "target": "fn_wait2"
+        }
+      ]
+    },
+    {
+      "id": "pr_lock",
+      "body": "Trying a lock when you are allowed to takes one sentence. Trying it when you are not allowed also takes one sentence. Only one of those things can be said again later in front of anyone. The sentence is, 'Mr Okafor said I could.' It is the only thing between this afternoon and a call to the school.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_lock_0",
+          "label": "Go down to the door on Wednesday afternoon.",
+          "target": "fn_door"
+        },
+        {
+          "id": "c_pr_lock_1",
+          "label": "Fix the order before touching the lock.",
+          "target": "fn_order2"
+        },
+        {
+          "id": "c_pr_lock_2",
+          "label": "Fetch Pat Okeke down to the old pool building.",
+          "target": "fn_bill3"
+        }
+      ]
+    },
+    {
+      "id": "pr_school3",
+      "body": "A trophy in a cupboard is a problem. A trophy in a school display case is a fix. A head teacher who sees a photo in the paper will find room for a swimming shield by the end of the week. The photo is the one from 1979. The shield is the one from the cage.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_school3_0",
+          "label": "Get Mr Okafor to come and watch.",
+          "target": "fn_vance3"
+        },
+        {
+          "id": "c_pr_school3_1",
+          "label": "Bring the two residents and the notebook.",
+          "target": "fn_witness2"
+        },
+        {
+          "id": "c_pr_school3_2",
+          "label": "Bring a torch and something to write on.",
+          "target": "fn_light"
+        }
+      ]
+    },
+    {
+      "id": "pr_thursday",
+      "body": "The residents, the school, the library, Mr Okafor, and a woman of seventy-eight, all in one room for half an hour. This is harder to set up than any of it. It settles more than the rest of it put together. The room is the shared space at Park View. The shortbread tin is still open.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_thursday_0",
+          "label": "Line the secondary school up to take the trophies.",
+          "target": "fn_school4"
+        },
+        {
+          "id": "c_pr_thursday_1",
+          "label": "Get the Gazette to hold the front of page five.",
+          "target": "fn_press2"
+        },
+        {
+          "id": "c_pr_thursday_2",
+          "label": "Get the charity van stopped in writing.",
+          "target": "fn_stop"
+        }
+      ]
+    },
+    {
+      "id": "pl_five_end",
+      "body": "Five shields. Five winners. One gap. A lock that wants all four numbers. The five get a photo, a story, and a spot on the library noticeboard. At half past three the charity van comes. The store is cleared. The sixth name stops being a big deal to everyone but the person still holding the medal. The medal stays in your pocket. The name Pat said stays in your head.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pl_five_end",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Five Out of Six"
+      }
+    },
+    {
+      "id": "pe_band",
+      "body": "By mid-afternoon the common room is full. People who last shared a room in 1979 are here. There is tea and a photo album. Pat says the name of the child who won the medal out loud. Then the room says it back. The charity van comes at half past three. Nobody in that room can honestly say the day was wasted. The medal stays on the table. The name stays in the room.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pe_band",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Team That Was Still There"
+      }
+    },
+    {
+      "id": "pr_week",
+      "body": "The day is refused at half past one. The reasons are mostly good. The refusal is polite, clear, and firm. The pool store is cleared at half past three into a charity van. The two boxes of paperwork in it go to the library. Somebody at least asked that question in time. The medal goes back into your pocket. The name goes into the folder on Aisha's desk.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pr_week",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Day That Was Not Given"
+      }
+    },
+    {
+      "id": "fn_door",
+      "body": "West Street is empty at ten to three. The steel door on the old pool building is colder than the brick around it. The padlock hangs there with four digits and forty years of rust on it. Across town, the charity van is being loaded. The medal is in your pocket. The name is in your head.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_door_0",
+          "label": "Set the four digits and pull.",
+          "target": "gx_try"
+        },
+        {
+          "id": "c_fn_door_1",
+          "label": "Try the other order.",
+          "target": "gx_second"
+        },
+        {
+          "id": "c_fn_door_2",
+          "label": "Look at the door rather than the lock.",
+          "target": "gx_hinge"
+        }
+      ]
+    },
+    {
+      "id": "fn_order2",
+      "body": "There are two orders and one door. Standing in front of a padlock is the worst place to decide between them. Five minutes with the notebook now is worth twenty tries later. The notebook has a page with the year of the gala on it. It is written in four different ways. Three of them are crossed out.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_order2_0",
+          "label": "Ask Mr Okafor to open it himself.",
+          "target": "gx_ask"
+        },
+        {
+          "id": "c_fn_order2_1",
+          "label": "Let Pat set the digits.",
+          "target": "gx_bill4"
+        },
+        {
+          "id": "c_fn_order2_2",
+          "label": "Write down every attempt.",
+          "target": "gx_note"
+        }
+      ]
+    },
+    {
+      "id": "fn_bill3",
+      "body": "Getting Pat from the corner shop to West Street takes twenty minutes. She needs a coat and a person on each side. She has not been down this road since the pool closed. She stands in front of the steel door. She names the year it was put in before anyone asks her. This is a fact nobody else in Fenwick could have given.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_bill3_0",
+          "label": "Get a torch through the gap under the door.",
+          "target": "gx_inside"
+        },
+        {
+          "id": "c_fn_bill3_1",
+          "label": "Find out how damp the store is.",
+          "target": "gx_damp"
+        },
+        {
+          "id": "c_fn_bill3_2",
+          "label": "Meet the charity van at half past three with the folder.",
+          "target": "gx_lorry"
+        }
+      ]
+    },
+    {
+      "id": "fn_vance3",
+      "body": "Mr Okafor lives six minutes away. He finishes work at three. Coming back out on a Wednesday to watch a child try a padlock is either the easiest yes of his week or the silliest. The medal is in your hand when you ask him. His answer is yes before you can even finish the question.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_vance3_0",
+          "label": "Get the photographer in front of the door.",
+          "target": "gx_press3"
+        },
+        {
+          "id": "c_fn_vance3_1",
+          "label": "Phone the secondary school before anything else.",
+          "target": "gx_school5"
+        },
+        {
+          "id": "c_fn_vance3_2",
+          "label": "Put the trail back the way it was.",
+          "target": "gx_return"
+        }
+      ]
+    },
+    {
+      "id": "fn_witness2",
+      "body": "Two people stood on that poolside in 1979. You have a walking stick, a wheeled frame, and a notebook. Whatever happens at that door happens in front of someone. That person can say later what it was. The notebook is open. The page is blank. The pen is in your hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_witness2_0",
+          "label": "Set the last digit where Pat says.",
+          "target": "gy_sixth"
+        },
+        {
+          "id": "c_fn_witness2_1",
+          "label": "Write it all down before you try anything.",
+          "target": "gy_written"
+        },
+        {
+          "id": "c_fn_witness2_2",
+          "label": "Get a torch through the gap and look.",
+          "target": "gy_behind"
+        }
+      ]
+    },
+    {
+      "id": "fn_light",
+      "body": "You have a torch, a pencil, and a sheet with four digits on it. Cold fingers and a lit phone screen have lost more codes than wrong numbers ever have. The torch is from the caretaker's cupboard. The pencil is from the office. Both of them are borrowed with permission.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_light_0",
+          "label": "Leave it until the morning and see.",
+          "target": "gy_eight"
+        },
+        {
+          "id": "c_fn_light_1",
+          "label": "Set the four digits and pull.",
+          "target": "gx_try"
+        },
+        {
+          "id": "c_fn_light_2",
+          "label": "Try the other order.",
+          "target": "gx_second"
+        }
+      ]
+    },
+    {
+      "id": "fn_school4",
+      "body": "The head teacher will say yes to a display case and a photo. He will say no to a van full of unknown damp stuff. So the ask has to be clear. Being clear means knowing what is behind the door first. The door is still locked. The charity van is still coming. The ask is not ready.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_school4_0",
+          "label": "Look at the door rather than the lock.",
+          "target": "gx_hinge"
+        },
+        {
+          "id": "c_fn_school4_1",
+          "label": "Ask Mr Okafor to open it himself.",
+          "target": "gx_ask"
+        },
+        {
+          "id": "c_fn_school4_2",
+          "label": "Let Pat set the digits.",
+          "target": "gx_bill4"
+        }
+      ]
+    },
+    {
+      "id": "fn_press2",
+      "body": "The paper goes to press at noon on Wednesday. There is a photographer who will come out at three o'clock. He will come for a story with a charity van in it. This is the only deadline in this town that nobody can move. The photographer's name is Clive. He is already in the car park when you phone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_press2_0",
+          "label": "Write down every attempt.",
+          "target": "gx_note"
+        },
+        {
+          "id": "c_fn_press2_1",
+          "label": "Get a torch through the gap under the door.",
+          "target": "gx_inside"
+        },
+        {
+          "id": "c_fn_press2_2",
+          "label": "Find out how damp the store is.",
+          "target": "gx_damp"
+        }
+      ]
+    },
+    {
+      "id": "fn_stop",
+      "body": "A phone call moves a volunteer. An email stops a van. By Wednesday lunchtime the only thing that will beat a half-past-three deadline is a sentence somebody has typed and sent. The sentence is in Mrs Delgado's outbox. The attachment is a photograph of the medal.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_stop_0",
+          "label": "Meet the charity van at half past three with the folder.",
+          "target": "gx_lorry"
+        },
+        {
+          "id": "c_fn_stop_1",
+          "label": "Get the photographer in front of the door.",
+          "target": "gx_press3"
+        },
+        {
+          "id": "c_fn_stop_2",
+          "label": "Phone the secondary school before anything else.",
+          "target": "gx_school5"
+        }
+      ]
+    },
+    {
+      "id": "fn_inventory",
+      "body": "You have twelve names, six shields, a relay baton, and a box of programmes. A list made before the door opens is worth ten times a list made after. The list is on the back of the till roll from the corner shop. Pat's handwriting is spikier than you expected.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_inventory_0",
+          "label": "Put the trail back the way it was.",
+          "target": "gx_return"
+        },
+        {
+          "id": "c_fn_inventory_1",
+          "label": "Set the last digit where Pat says.",
+          "target": "gy_sixth"
+        },
+        {
+          "id": "c_fn_inventory_2",
+          "label": "Write it all down before you try anything.",
+          "target": "gy_written"
+        }
+      ]
+    },
+    {
+      "id": "fn_plates2",
+      "body": "It takes one noticeboard, one team list, a screwdriver, and twenty minutes on a Wednesday. Doing it before the door, not after, is the difference between a trail and a raid. The screwdriver belongs to Mr Okonkwo. The permission is given in writing on the back of a lost-property slip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_plates2_0",
+          "label": "Get a torch through the gap and look.",
+          "target": "gy_behind"
+        },
+        {
+          "id": "c_fn_plates2_1",
+          "label": "Leave it until the morning and see.",
+          "target": "gy_eight"
+        },
+        {
+          "id": "c_fn_plates2_2",
+          "label": "Set the four digits and pull.",
+          "target": "gx_try"
+        }
+      ]
+    },
+    {
+      "id": "fn_wait2",
+      "body": "It is half past three. There is a van, two volunteers, a clipboard, and a stack of charity-shop boxes. One person stands in the way with a folder. That person is either an obstruction or the reason the whole thing goes differently. The folder has the medal, the list, and the sentence from the governors' minutes. You hold it out in front of you like a shield.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_wait2_0",
+          "label": "Try the other order.",
+          "target": "gx_second"
+        },
+        {
+          "id": "c_fn_wait2_1",
+          "label": "Look at the door rather than the lock.",
+          "target": "gx_hinge"
+        },
+        {
+          "id": "c_fn_wait2_2",
+          "label": "Ask Mr Okafor to open it himself.",
+          "target": "gx_ask"
+        }
+      ]
+    },
+    {
+      "id": "gx_try",
+      "body": "Four digits. Your fingers are cold. The last one is stiff and needs both thumbs. The shackle either lifts or it does not. If it lifts, it makes a small brass sound. It sounds like a thing giving up an argument it has been having with the weather since 1979. The door swings open. You smell chlorine that has been trapped in the dark for forty years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_try_0",
+          "label": "Go in and look properly.",
+          "target": "hx_open"
+        },
+        {
+          "id": "c_gx_try_1",
+          "label": "List everything before moving anything.",
+          "target": "hx_list"
+        },
+        {
+          "id": "c_gx_try_2",
+          "label": "Get it out of the damp today.",
+          "target": "hx_carry"
+        }
+      ]
+    },
+    {
+      "id": "gx_second",
+      "body": "The second order takes forty seconds to set. The whole rest of the day rests on it. Nobody standing there does not know that. The second order is the relay order from the team sheet. And it is wrong. The wrongness of it lands in the pit of your stomach. It lands before the shackle even has time to fail.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_second_0",
+          "label": "Offer the trophies to the secondary school.",
+          "target": "hx_school6"
+        },
+        {
+          "id": "c_gx_second_1",
+          "label": "Offer the paper archive to the library.",
+          "target": "hx_lib2"
+        },
+        {
+          "id": "c_gx_second_2",
+          "label": "Take the team photograph back to the retirement home.",
+          "target": "hx_alms3"
+        }
+      ]
+    },
+    {
+      "id": "gx_hinge",
+      "body": "The padlock hangs on a hasp. The hasp is screwed into a frame. That frame has been out in forty winters. There is a difference between a locked door and a door that is merely shut. The difference is four screws and whether anybody is allowed to touch them. Mr Okafor is allowed. And Mr Okafor is standing right there.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_hinge_0",
+          "label": "Let Pat go in first.",
+          "target": "hx_bill5"
+        },
+        {
+          "id": "c_gx_hinge_1",
+          "label": "Find out what can be saved.",
+          "target": "hx_repair"
+        },
+        {
+          "id": "c_gx_hinge_2",
+          "label": "Settle who it all belongs to.",
+          "target": "hx_owner2"
+        }
+      ]
+    },
+    {
+      "id": "gx_ask",
+      "body": "He has bolt croppers in the van. He has the authority to use them and a reason not to. The sentence that moves him is not about the trophies at all. It is about what the governors' minutes of 1979 actually promised. The promise was 'stored until the club can be restarted.' And the club is standing in front of him. She is seventy-eight years old and holding a till roll.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_ask_0",
+          "label": "Make sure the right people are told first.",
+          "target": "hx_thanks"
+        },
+        {
+          "id": "c_gx_ask_1",
+          "label": "Put the noticeboard back and say so publicly.",
+          "target": "hx_plates3"
+        },
+        {
+          "id": "c_gx_ask_2",
+          "label": "Get somebody to swim something.",
+          "target": "hx_play"
+        }
+      ]
+    },
+    {
+      "id": "gx_bill4",
+      "body": "Her hands are not steady and her memory is not either, and she sets three of the four digits without looking at the paper and stops dead on the fourth with her thumb on the wheel. The fourth digit, she says, is the age of the child who won the medal. The medal is for the under-tens, and the child was nine. She turns the wheel to nine, and the shackle lifts.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_bill4_0",
+          "label": "Keep trying until the wheels give.",
+          "target": "hy_third"
+        },
+        {
+          "id": "c_gx_bill4_1",
+          "label": "Clean the shield and hand it to Pat.",
+          "target": "hy_heard"
+        },
+        {
+          "id": "c_gx_bill4_2",
+          "label": "Sign the trophies over to the secondary school.",
+          "target": "hy_school"
+        }
+      ]
+    },
+    {
+      "id": "gx_note",
+      "body": "A padlock has ten thousand answers. About nine are ones anybody would set. You keep a written list of what has been tried. This stops the ninth attempt from repeating the third. The list is on the back of the governors' minutes photocopy. Every failed attempt is a line through a year. It could have been the combination, but wasn't.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_note_0",
+          "label": "Make the list and let the van take the rest.",
+          "target": "hy_list"
+        },
+        {
+          "id": "c_gx_note_1",
+          "label": "Work out what the numbers actually mean.",
+          "target": "hy_date"
+        },
+        {
+          "id": "c_gx_note_2",
+          "label": "Leave it locked and hope somebody listens.",
+          "target": "hy_locked"
+        }
+      ]
+    },
+    {
+      "id": "gx_inside",
+      "body": "The gap under the door is two fingers deep. It shows a concrete floor, the corner of a cardboard box, and something round and metal. It might have been a shield for forty years. Or it might have been a puddle for eight. The puddle glints in the torchlight. The glint is brass, not water.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_inside_0",
+          "label": "Go in and look properly.",
+          "target": "hx_open"
+        },
+        {
+          "id": "c_gx_inside_1",
+          "label": "List everything before moving anything.",
+          "target": "hx_list"
+        },
+        {
+          "id": "c_gx_inside_2",
+          "label": "Get it out of the damp today.",
+          "target": "hx_carry"
+        }
+      ]
+    },
+    {
+      "id": "gx_damp",
+      "body": "The wall above the door has been running with damp. It has been wet since the pool roof was condemned. Whatever is in there has had forty winters of it and no fresh air at all. The boxes inside are cardboard. And cardboard does not win arguments with damp.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_damp_0",
+          "label": "Offer the trophies to the secondary school.",
+          "target": "hx_school6"
+        },
+        {
+          "id": "c_gx_damp_1",
+          "label": "Offer the paper archive to the library.",
+          "target": "hx_lib2"
+        },
+        {
+          "id": "c_gx_damp_2",
+          "label": "Take the team photograph back to the retirement home.",
+          "target": "hx_alms3"
+        }
+      ]
+    },
+    {
+      "id": "gx_lorry",
+      "body": "Two helpers, a charity van, and a clipboard. You have a folder with pictures. You also have a photocopy of the notes and a brass medal. You have about ninety seconds to say the useful thing. The useful thing is 'this is for someone still alive.' Saying it stops the first box from being lifted.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_lorry_0",
+          "label": "Let Pat go in first.",
+          "target": "hx_bill5"
+        },
+        {
+          "id": "c_gx_lorry_1",
+          "label": "Find out what can be saved.",
+          "target": "hx_repair"
+        },
+        {
+          "id": "c_gx_lorry_2",
+          "label": "Settle who it all belongs to.",
+          "target": "hx_owner2"
+        }
+      ]
+    },
+    {
+      "id": "gx_press3",
+      "body": "A photographer, a swimming shield, and a seventy-eight-year-old woman in a St Jude's polo shirt. In this town, that is a front page. And a front page on Thursday is a week later than the charity van. It is also an entire year earlier than forgetting. The photographer's name is Clive. He is already on his knees in front of the door.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_press3_0",
+          "label": "Make sure the right people are told first.",
+          "target": "hx_thanks"
+        },
+        {
+          "id": "c_gx_press3_1",
+          "label": "Put the noticeboard back and say so publicly.",
+          "target": "hx_plates3"
+        },
+        {
+          "id": "c_gx_press3_2",
+          "label": "Get somebody to swim something.",
+          "target": "hx_play"
+        }
+      ]
+    },
+    {
+      "id": "gx_school5",
+      "body": "The head teacher answers at ten to three. Wednesday afternoons are like that. She says yes to a specific list. She asks who is going to carry it. That is a question that has an answer only if somebody thought about it yesterday. The answer is 'the caretaker and two volunteers.' And the volunteers are already at the door.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_school5_0",
+          "label": "Keep trying until the wheels give.",
+          "target": "hy_third"
+        },
+        {
+          "id": "c_gx_school5_1",
+          "label": "Clean the shield and hand it to Pat.",
+          "target": "hy_heard"
+        },
+        {
+          "id": "c_gx_school5_2",
+          "label": "Sign the trophies over to the secondary school.",
+          "target": "hy_school"
+        }
+      ]
+    },
+    {
+      "id": "gx_return",
+      "body": "The notice board is back on the PE office wall. The medal is in your pocket. The team list was copied for the library. No matter what happens at half past three, St Jude's day ends with its swim story back on the walls where anyone can walk it. The trail is done and the name is known.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_return_0",
+          "label": "Make the list and let the van take the rest.",
+          "target": "hy_list"
+        },
+        {
+          "id": "c_gx_return_1",
+          "label": "Work out what the numbers actually mean.",
+          "target": "hy_date"
+        },
+        {
+          "id": "c_gx_return_2",
+          "label": "Leave it locked and hope somebody listens.",
+          "target": "hy_locked"
+        }
+      ]
+    },
+    {
+      "id": "gy_sixth",
+      "body": "The fourth digit was never on a shield. It was the age of the child who won the medal. Pat says it like a name. The lock opens on the first pull. The door swings wide onto forty years of dark. It smells of old boxes. Brass trophies gleam, stacked in a box on the floor. The backstroke shield is on top. It is still shiny and still has the name Miriam Okri carved on it.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_gy_sixth",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Fourth Digit"
+      }
+    },
+    {
+      "id": "gy_written",
+      "body": "By quarter past three there is a single sheet. It has six events, six names, two orders, and every source for each. A copy of it goes through the library letterbox. No matter what happens when the charity van leaves, the trail itself can no longer be tossed in a skip. The medal is in your pocket. The name is on the sheet. Both of those things last for ever.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_gy_written",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Everything Written Down in Time"
+      }
+    },
+    {
+      "id": "gy_behind",
+      "body": "Behind the door is a display board with a cracked frame. There are four boxes of programmes. A stack of team sheets has turned to grey pulp on one edge. A typed card is taped to the inside of the door. It says the club will be back. It is less than the town recalls and more than the clipboard was told. The medal fits the gap on the board exactly.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_gy_behind",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What Was Behind the Door"
+      }
+    },
+    {
+      "id": "gy_eight",
+      "body": "The van is early and the helpers are quick. The store is empty by twenty to four. The boxes leave West Street at four. A display board is packed inside them. No one took a photo of it. The padlock, still locked, hangs on the open metal loop. The door swings shut behind the last helper.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_gy_eight",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Half Past Three"
+      }
+    },
+    {
+      "id": "hx_open",
+      "body": "A concrete floor and a smell of chlorine. The smell has lasted longer than anyone who used it. Four boxes sit along the wall. A display board is tipped on its side. The light from the door reaches about half the room. The first box holds a shield. The second box holds six shields. They are still stacked as they were. Each shield still has a name carved on it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_open_0",
+          "label": "Ask what it would take to start the club again.",
+          "target": "ix_band"
+        },
+        {
+          "id": "c_hx_open_1",
+          "label": "Get the twelve names onto something permanent.",
+          "target": "ix_names2"
+        },
+        {
+          "id": "c_hx_open_2",
+          "label": "Find out whose medal case it is.",
+          "target": "ix_case"
+        }
+      ]
+    },
+    {
+      "id": "hx_list",
+      "body": "A list made in a doorway with a torch is better than one made later from memory. It is the only record of a room shut since 1979. The list has six shields. It has a display board, three relay batons, and a box of paper that may once have been programmes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_list_0",
+          "label": "Hand everything over properly, with paper.",
+          "target": "ix_hand"
+        },
+        {
+          "id": "c_hx_list_1",
+          "label": "Get the paper to the library as an archive.",
+          "target": "ix_archive"
+        },
+        {
+          "id": "c_hx_list_2",
+          "label": "Make the gala trail walkable again.",
+          "target": "ix_map"
+        }
+      ]
+    },
+    {
+      "id": "hx_carry",
+      "body": "Everything inside has seen forty winters. Another two weeks while grown-ups decide would cost more than moving it now. Moving it needs hands, a dry floor, and a yes. The hands are yours and Tess's. The dry floor is the hall outside the PE office. The yes is Mr Okafor's, given ten minutes ago in that hall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_carry_0",
+          "label": "Decide what happens to the medal.",
+          "target": "ix_whistle"
+        },
+        {
+          "id": "c_hx_carry_1",
+          "label": "Say thank you to everybody who helped.",
+          "target": "ix_thanks2"
+        },
+        {
+          "id": "c_hx_carry_2",
+          "label": "Set a date for the first Saturday after term starts.",
+          "target": "ix_next"
+        }
+      ]
+    },
+    {
+      "id": "hx_school6",
+      "body": "A secondary school with a glass case and six swimming shields. It is a school with a trophy case for the first time in years. A school with a van full of wet cardboard is a caretaker with a problem. Which one it turns out to be is set today. The head teacher makes the choice. She stands in the hallway with a phone in her hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_school6_0",
+          "label": "Put the poster up and see who comes.",
+          "target": "iy_again"
+        },
+        {
+          "id": "c_hx_school6_1",
+          "label": "Get the names onto the display board.",
+          "target": "iy_names"
+        },
+        {
+          "id": "c_hx_school6_2",
+          "label": "Track down the name inside the medal case.",
+          "target": "iy_case"
+        }
+      ]
+    },
+    {
+      "id": "hx_lib2",
+      "body": "The programmes, the team sheets, and the photos are for the archive, not the trophy case. Aisha has a box, a shelf, and a date stamp waiting for just this. The box is acid-free. The shelf is the school's own history store. The date stamp is ready before you finish saying what is in the first box.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_lib2_0",
+          "label": "Do the handover on paper, in front of everybody.",
+          "target": "iy_hand"
+        },
+        {
+          "id": "c_hx_lib2_1",
+          "label": "Give Aisha the archive she asked for.",
+          "target": "iy_archive"
+        },
+        {
+          "id": "c_hx_lib2_2",
+          "label": "Leave the noticeboard off and let people see.",
+          "target": "iy_menu"
+        }
+      ]
+    },
+    {
+      "id": "hx_alms3",
+      "body": "In the third box is a team photo from 1979. Twelve names are written on the back. Two of those people live four hundred steps away in the old folk's home by the park. They have not seen it in forty years. The photo is still in its frame. The glass is not even cracked.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_alms3_0",
+          "label": "Take it to the paper and let the day end.",
+          "target": "iy_week"
+        },
+        {
+          "id": "c_hx_alms3_1",
+          "label": "Ask what it would take to start the club again.",
+          "target": "ix_band"
+        },
+        {
+          "id": "c_hx_alms3_2",
+          "label": "Get the twelve names onto something permanent.",
+          "target": "ix_names2"
+        }
+      ]
+    },
+    {
+      "id": "hx_bill5",
+      "body": "She stands in the doorway for a while saying nothing. Then she names what is in the room before the torch reaches it, in order. She even names a relay baton. It turns out to be right where she says, behind the third box on the left. It is the baton she ran with in 1979. Her name is on it in marker pen, still clear after forty years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_bill5_0",
+          "label": "Find out whose medal case it is.",
+          "target": "ix_case"
+        },
+        {
+          "id": "c_hx_bill5_1",
+          "label": "Hand everything over properly, with paper.",
+          "target": "ix_hand"
+        },
+        {
+          "id": "c_hx_bill5_2",
+          "label": "Get the paper to the library as an archive.",
+          "target": "ix_archive"
+        }
+      ]
+    },
+    {
+      "id": "hx_repair",
+      "body": "A cracked display board is still a display board. A green relay baton just needs an afternoon with a cloth. Pulped programmes are gone. It takes one person who knows swimming trophies and about an hour to tell which is which. That person is Pat. She is already sorting the first box into keep and skip before anyone asks.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_repair_0",
+          "label": "Make the gala trail walkable again.",
+          "target": "ix_map"
+        },
+        {
+          "id": "c_hx_repair_1",
+          "label": "Decide what happens to the medal.",
+          "target": "ix_whistle"
+        },
+        {
+          "id": "c_hx_repair_2",
+          "label": "Say thank you to everybody who helped.",
+          "target": "ix_thanks2"
+        }
+      ]
+    },
+    {
+      "id": "hx_owner2",
+      "body": "The swimming club was a school club. The club had a teacher in charge. The teacher left. What that means for six shields in a council pool store is a question nobody in Fenwick has ever had to answer out loud. The answer comes from the council's leisure team. 'Possession is nine-tenths, and the school still exists. So the trophies are the school's.'",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_owner2_0",
+          "label": "Set a date for the first Saturday after term starts.",
+          "target": "ix_next"
+        },
+        {
+          "id": "c_hx_owner2_1",
+          "label": "Put the poster up and see who comes.",
+          "target": "iy_again"
+        },
+        {
+          "id": "c_hx_owner2_2",
+          "label": "Get the names onto the display board.",
+          "target": "iy_names"
+        }
+      ]
+    },
+    {
+      "id": "hx_thanks",
+      "body": "The people who should hear about this before the Gazette does are a short list. Everyone on it is over seventy. Getting that order right costs one afternoon. It buys about thirty years of goodwill. The list is Pat, the two residents who came to the door, Mrs Delgado in the office, and Aisha at the library. In that order.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_thanks_0",
+          "label": "Track down the name inside the medal case.",
+          "target": "iy_case"
+        },
+        {
+          "id": "c_hx_thanks_1",
+          "label": "Do the handover on paper, in front of everybody.",
+          "target": "iy_hand"
+        },
+        {
+          "id": "c_hx_thanks_2",
+          "label": "Give Aisha the archive she asked for.",
+          "target": "iy_archive"
+        }
+      ]
+    },
+    {
+      "id": "hx_plates3",
+      "body": "One noticeboard back on the PE office wall and a bit in the paper saying what it is turns a private trail into something the whole school can walk. They can do it on a Monday morning with a copied team sheet. The team sheet has twelve names on it. The medal in your pocket matches one of them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_plates3_0",
+          "label": "Leave the noticeboard off and let people see.",
+          "target": "iy_menu"
+        },
+        {
+          "id": "c_hx_plates3_1",
+          "label": "Take it to the paper and let the day end.",
+          "target": "iy_week"
+        },
+        {
+          "id": "c_hx_plates3_2",
+          "label": "Ask what it would take to start the club again.",
+          "target": "ix_band"
+        }
+      ]
+    },
+    {
+      "id": "hx_play",
+      "body": "There is a shield in there that will gleam with an hour of work. There is a woman who can still name the child who won it. There is a school with a pool that has been doing nothing all summer. The pool is open for another week before the summer break. The shield would fit in the display case outside the hall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_play_0",
+          "label": "Get the twelve names onto something permanent.",
+          "target": "ix_names2"
+        },
+        {
+          "id": "c_hx_play_1",
+          "label": "Find out whose medal case it is.",
+          "target": "ix_case"
+        },
+        {
+          "id": "c_hx_play_2",
+          "label": "Hand everything over properly, with paper.",
+          "target": "ix_hand"
+        }
+      ]
+    },
+    {
+      "id": "hy_third",
+      "body": "The third order is the one on the team sheet for the gala. It opens the lock at twenty past three on Wednesday. Two residents, a notebook, and a woman of seventy-eight stand on the path behind. Nobody says anything at all for a moment. The door swings open. The first thing anyone sees is the display board with the missing shield still in its bracket.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_hy_third",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Open on the Third Try"
+      }
+    },
+    {
+      "id": "hy_heard",
+      "body": "Pat Okeke works for an hour with a cloth and a bottle of metal shine. She holds up the backstroke shield on West Street on a Wednesday afternoon in front of six people. Three of the home windows open across the park. They stay open until she reads the name out loud. The name is Miriam Okri. It has been waiting behind her teeth for forty years.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_hy_heard",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Pat Okeke Read It Aloud"
+      }
+    },
+    {
+      "id": "hy_school",
+      "body": "The head teacher signs for six shields, a display board and three relay batons on the Wednesday they booked the charity van. The van takes the real junk and nothing else. There is a swimming club again by the autumn. It is not very fast yet. The medals in the display case are the old ones, polished. The new ones are still to be won.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_hy_school",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Signed Over to the School"
+      }
+    },
+    {
+      "id": "hy_list",
+      "body": "The store is emptied on time with a list made first. Six shields, a display board and a box of programmes come out before the charity van does. Everything else goes. It is not the day anybody hoped for. It is not the day that would have happened if the van had been booked for Thursday. The medal stays in your pocket. The list stays in the library. Both are enough.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_hy_list",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "A Van and a List"
+      }
+    },
+    {
+      "id": "hy_date",
+      "body": "The four digits are a year. It is written the way a swimming teacher would think of it. It is the year the club was founded. Once that is seen it cannot be unseen. It is also seen at twenty past four on Wednesday afternoon. That is fifty minutes after the charity van. The padlock is still hanging on the open door. The store is empty. The code is suddenly clear and totally useless.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_hy_date",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Combination Was a Year"
+      }
+    },
+    {
+      "id": "hy_locked",
+      "body": "Nobody with power is standing on West Street at half past three. The folder is in a bag on a school peg. The store is cleared by twenty to four. The padlock was the whole problem. But it was never really the problem. The problem was the charity van plan. The plan was set in June.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_hy_locked",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Locked and Cleared"
+      }
+    },
+    {
+      "id": "ix_band",
+      "body": "Twelve shields, a display board, a lane in the school pool, and one adult willing to be in charge. Every one of those things is in Fenwick except the last. That is the one you have to ask for out loud. The adult is Mrs Delgado. The asking is done in the office after the last bell. Her answer is, 'I used to swim for the county, you know.'",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_band_0",
+          "label": "Hold the gala on the first Saturday back.",
+          "target": "jz_december"
+        },
+        {
+          "id": "c_ix_band_1",
+          "label": "Walk the trail with whoever turns up.",
+          "target": "jz_walked"
+        },
+        {
+          "id": "c_ix_band_2",
+          "label": "Get all the shields back where they belong.",
+          "target": "jz_plates"
+        }
+      ]
+    },
+    {
+      "id": "ix_names2",
+      "body": "A photo with names in pencil on the back is one wet winter from being twelve strangers. A printed board in the school hall costs less than the pool clean-up would have. The board will go up outside the hall. The names will be safe under a plastic sheet, and the damp will never touch them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_names2_0",
+          "label": "Put the medal back in its case and keep the story.",
+          "target": "jz_whistle"
+        },
+        {
+          "id": "c_ix_names2_1",
+          "label": "Get every last thing to where it belongs.",
+          "target": "jz_belongs"
+        },
+        {
+          "id": "c_ix_names2_2",
+          "label": "Let the pool store be emptied once it is listed.",
+          "target": "jz_empty"
+        }
+      ]
+    },
+    {
+      "id": "ix_case",
+      "body": "A name is inked inside the lid of the medal case. It is not on the 1979 team photo. So it means either a later swimmer or an earlier one. Either way, someone in this town shares the last name. The last name is Okri, and the first name is Miriam. The case has been waiting in a pool store for its owner to come back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_case_0",
+          "label": "Stand and watch the van go.",
+          "target": "jz_skip"
+        },
+        {
+          "id": "c_ix_case_1",
+          "label": "Wait until somebody in charge notices.",
+          "target": "jz_late"
+        },
+        {
+          "id": "c_ix_case_2",
+          "label": "Try the lock one more time and go home.",
+          "target": "jz_steel"
+        }
+      ]
+    },
+    {
+      "id": "ix_hand",
+      "body": "A signature, a list, a date, and two copies. It takes twenty minutes that nobody wants to spend at the end of a day like this. It settles the question for the next thirty years. The signature is the head teacher's. The list is the items from the doorway. The date is today's.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_hand_0",
+          "label": "Hold the gala on the first Saturday back.",
+          "target": "jz_december"
+        },
+        {
+          "id": "c_ix_hand_1",
+          "label": "Walk the trail with whoever turns up.",
+          "target": "jz_walked"
+        },
+        {
+          "id": "c_ix_hand_2",
+          "label": "Get all the shields back where they belong.",
+          "target": "jz_plates"
+        }
+      ]
+    },
+    {
+      "id": "ix_archive",
+      "body": "A team sheet from 1979, a run of programs, and two boxes of photos. This makes an archive rather than a pile. An archive gets a shelf, a number, and someone in charge of it. The number is on a sticker on the box. The someone is Aisha. The shelf is in the school's archive where the damp cannot reach it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_archive_0",
+          "label": "Put the medal back in its case and keep the story.",
+          "target": "jz_whistle"
+        },
+        {
+          "id": "c_ix_archive_1",
+          "label": "Get every last thing to where it belongs.",
+          "target": "jz_belongs"
+        },
+        {
+          "id": "c_ix_archive_2",
+          "label": "Let the pool store be emptied once it is listed.",
+          "target": "jz_empty"
+        }
+      ]
+    },
+    {
+      "id": "ix_map",
+      "body": "Six shields, a copied team sheet, and a paragraph in the paper. By the next Saturday, people are walking from the PE noticeboard to the old pool. They have lived here forty years and never known the way. The walk takes twenty minutes. It ends at the steel door on West Street, which is now open.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_map_0",
+          "label": "Stand and watch the van go.",
+          "target": "jz_skip"
+        },
+        {
+          "id": "c_ix_map_1",
+          "label": "Wait until somebody in charge notices.",
+          "target": "jz_late"
+        },
+        {
+          "id": "c_ix_map_2",
+          "label": "Try the lock one more time and go home.",
+          "target": "jz_steel"
+        }
+      ]
+    },
+    {
+      "id": "ix_whistle",
+      "body": "It came from a cardboard tray in the lost-and-found room for free. It is the only thing in the whole story that is truly yours. That makes it the one choice nobody else gets a say in. The medal sits in your palm, heavy and cool. The name filed off the front is now a name you know.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_whistle_0",
+          "label": "Hold the gala on the first Saturday back.",
+          "target": "jz_december"
+        },
+        {
+          "id": "c_ix_whistle_1",
+          "label": "Walk the trail with whoever turns up.",
+          "target": "jz_walked"
+        },
+        {
+          "id": "c_ix_whistle_2",
+          "label": "Get all the shields back where they belong.",
+          "target": "jz_plates"
+        }
+      ]
+    },
+    {
+      "id": "ix_thanks2",
+      "body": "Twelve doorsteps, one library desk, one corner shop, one leisure center office, and one old folks' common room. Doing it in person costs an afternoon. It is the part everyone remembers later. The biscuit tin at Park View is still open. The tea is still warm. The photo is back in its frame on the wall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_thanks2_0",
+          "label": "Put the medal back in its case and keep the story.",
+          "target": "jz_whistle"
+        },
+        {
+          "id": "c_ix_thanks2_1",
+          "label": "Get every last thing to where it belongs.",
+          "target": "jz_belongs"
+        },
+        {
+          "id": "c_ix_thanks2_2",
+          "label": "Let the pool store be emptied once it is listed.",
+          "target": "jz_empty"
+        }
+      ]
+    },
+    {
+      "id": "ix_next",
+      "body": "A date on a poster is a promise. Six people with three shields and a team sheet can keep it. The first Saturday after term starts is seven weeks off. The poster goes up in the corridor outside the hall. The team sheet is pinned right next to it. The names on it belong to people who are still in Fenwick.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_next_0",
+          "label": "Stand and watch the van go.",
+          "target": "jz_skip"
+        },
+        {
+          "id": "c_ix_next_1",
+          "label": "Wait until somebody in charge notices.",
+          "target": "jz_late"
+        },
+        {
+          "id": "c_ix_next_2",
+          "label": "Try the lock one more time and go home.",
+          "target": "jz_steel"
+        }
+      ]
+    },
+    {
+      "id": "iy_again",
+      "body": "Nineteen children come to the first swim club in the school pool. Eleven of them have never done a racing turn. The noise is really terrible. Pat Okeke sits at the side in her polo shirt. She says it is just how the last one started. Then she gets in the water to show them the backstroke start. She is still faster than half of them.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_iy_again",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The St Jude's Swimming Club, Second Time"
+      }
+    },
+    {
+      "id": "iy_names",
+      "body": "A board goes up inside the school hall with twelve names on it from the 1979 team and six from the new club, and the two lists share one name. People stop and read it, which is the entire point of writing names on boards. The name they stop at is Miriam Okri, and underneath it, in smaller letters, it says 'medal returned, summer term'. The medal is in a display case beside the board, and it is no longer filed off.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_iy_names",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Twelve Names on the Wall"
+      }
+    },
+    {
+      "id": "iy_case",
+      "body": "The name in the medal case belongs to a gran in the next street. She swam until she was twelve. She has not said so out loud in forty years. She takes the case back. Then, after two weeks, she brings it to a club practice. She stands at the poolside in her coat. She watches the backstroke for a whole hour without saying a word. Then she says she will come again next week.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_iy_case",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Medal Case With a Name In It"
+      }
+    },
+    {
+      "id": "iy_hand",
+      "body": "Two copies, one signature each, a list of twelve things, and a date. It is done on a Wednesday afternoon in the school hall with the residents watching. It is the least exciting twenty minutes of the whole two weeks. It is the only reason none of it falls apart later. Pat Okeke signs for the old club. The head teacher signs for the school. The list is the same one that was written in a doorway with a torch.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_iy_hand",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Handed Over Properly"
+      }
+    },
+    {
+      "id": "iy_archive",
+      "body": "A team sheet from 1979. Four hundred photos. A set of programmes. One medal with the name filed off. All of these are listed, numbered, and sit on a shelf with a date stamp on the back of every sheet. Aisha puts the medal photo in the display case by the door. The caption says 'found in lost property, returned to the club'. The medal itself stays in the archive box. The name stays in the record.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_iy_archive",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Archive Aisha Wanted"
+      }
+    },
+    {
+      "id": "iy_menu",
+      "body": "Mr Davison leaves the noticeboard bare. He moves the team list a foot to the left. For about a month, people come into the PE office. They look at the paper and change for games while they are there. Then they stop. The team list stays. It goes yellow and curls up, but the names on it are still clear to read.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_iy_menu",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The List Under the Noticeboard"
+      }
+    },
+    {
+      "id": "iy_week",
+      "body": "The story runs on Thursday. It sits under a photo of an empty pool store and a charity van. It is a good piece of writing about something that has already happened. Four people write in. They say they would have helped if anybody had asked them on Tuesday. The medal stays in your pocket. The name stays in your head. The Gazette runs a fix the next week with the name spelled right.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_iy_week",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Right Trail, Wrong Day"
+      }
+    },
+    {
+      "id": "jz_december",
+      "body": "Twelve swimmers. One borrowed stopwatch. One photocopied team sheet. Six brass shields. The club races all six events in the school pool. They time badly at each one. More people come to watch than anybody thought. Half of them are from the retirement home. They have brought their own folding chairs and a flask of tea.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_jz_december",
+        "valence": "positive",
+        "kind": "success",
+        "title": "First Saturday Back"
+      }
+    },
+    {
+      "id": "jz_walked",
+      "body": "Forty people walk the trail from the PE noticeboard to West Street. They go on a Saturday in September behind a woman of seventy-eight. She stops at each shield and says who won it. At the old pool building, the door is now a brick wall. Everybody stands on the pavement and listens anyway. The medal is in your hand. Pat names the child it belonged to. The name carries on the wind up West Street.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_jz_walked",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Trail, Walked Again"
+      }
+    },
+    {
+      "id": "jz_plates",
+      "body": "Five shields go back onto five noticeboards with the right screws. The sixth is the one in the library. It is polished and put in a new display case in the school hall. The gap in the honours board is still there. Underneath it, someone has pinned a typed note. It says the name of the backstroke winner was Miriam Okri. This is better than an engraving.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_jz_plates",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Six Shields Back on Display"
+      }
+    },
+    {
+      "id": "jz_whistle",
+      "body": "The medal goes back into the lost-property tray for about ten seconds. Then you pick it up again and put it in your pocket. It lives on a shelf in your room. You take it out about once a week and turn it over in your hands. It is the only thing in this story that ends up exactly where it started. Yet it means something completely different. The name filed off the front is not a mystery any more. It is a name you know.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_jz_whistle",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Medal Stays in Your Pocket"
+      }
+    },
+    {
+      "id": "jz_belongs",
+      "body": "Shields to the school. Paper to the library. Photo to the retirement home. Noticeboard back to the PE office. The medal goes to the archive with a note saying who found it. It takes three weeks of small, dull errands. Nothing is left in a bag under anybody's desk. Pat Okeke puts the note in the archive box herself. Her handwriting is more spiky than the archivist's. The note says exactly what happened.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_jz_belongs",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Everything Where It Belongs"
+      }
+    },
+    {
+      "id": "jz_empty",
+      "body": "The pool store comes out onto the pavement, gets listed, photographed and divided into keep and skip in front of two volunteers who are being paid by the hour and are surprisingly interested, and the room underneath the old pool building ends the day swept, dry and empty. The list is filed with the council, and the photograph is in the Gazette, and the empty room is just a room again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_jz_empty",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Store, Empty and Listed"
+      }
+    },
+    {
+      "id": "jz_skip",
+      "body": "The charity van leaves West Street at four. It holds six shields and a display board. There is a photo of it going, taken from the corner. The Gazette will not print it. There is nothing to say about it. The photo is on your phone. The phone is in your pocket. The medal is beside it, warm against the plastic.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_jz_skip",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Van on Wednesday Afternoon"
+      }
+    },
+    {
+      "id": "jz_late",
+      "body": "Three separate adults would have stopped it. None of them were told. Asking felt like a bigger thing on Tuesday than it was the next Monday. That is when all three said so, one after the other. Their names were in the folder. The folder was on a classroom peg. The asking was never done.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_jz_late",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Nobody Asked in Time"
+      }
+    },
+    {
+      "id": "jz_steel",
+      "body": "The last order is wrong. The wheels go back to zero. The trail ran from a cardboard tray in lost property through six shields and forty years. It ends at a steel door on West Street. A charity van is booked for half past three. The medal is in your hand. The name is in your head. The door is still locked. The van engine starts in the distance. The sound of it is the end of the afternoon.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_jz_steel",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Trail Ends at a Steel Door"
+      }
+    }
+  ]
+}

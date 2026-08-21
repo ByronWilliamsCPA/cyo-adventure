@@ -1,0 +1,106 @@
+{
+  "skeletons": [
+    "the-tin-whistle-map.json"
+  ],
+  "structure_varies": false,
+  "brief_count": 2,
+  "differentiation_directives": [
+    "**Craft direction for this telling.** Stay close to the protagonist's interior. Prefer what they notice, want, and fear in the moment over any wider view of the scene.\n\n**This family has read this skeleton more than once already for a similar theme.** Treat every surface as needing replacement: place, era, cast, the nature of the obstacle, and the imagery used to describe it. A reskin will read as a repeat.",
+    "**Craft direction for this telling.** Keep a slight observational distance. Let the place and the other characters carry as much of each scene as the protagonist's feelings do.\n\n**This family has read this skeleton more than once already for a similar theme.** Treat every surface as needing replacement: place, era, cast, the nature of the obstacle, and the imagery used to describe it. A reskin will read as a repeat.\n\nStories this family already owns on this skeleton: 'The Canal Compass'. Do not reuse their settings, character names, or central images. Only the titles are given, deliberately: you are being told what to differ from, not what those stories said.\n\nThemes already covered for this family: boatyard, canal."
+  ],
+  "mock": false,
+  "vendors": [
+    {
+      "label": "deepseek-v4-pro",
+      "model": "deepseek/deepseek-v4-pro",
+      "provider_order": [
+        "azure/us"
+      ],
+      "family": "deepseek"
+    }
+  ],
+  "books": [
+    {
+      "vendor": "deepseek-v4-pro",
+      "family": "deepseek",
+      "brief_index": 0,
+      "status": "passed",
+      "attempts": 0,
+      "latency_s": 436.24,
+      "grade": 4.412403370706958,
+      "in_band": 0.8963730569948186,
+      "leaf_words": 9793,
+      "fill_completeness": 1.0,
+      "complete": true,
+      "max_tokens": 131072,
+      "output_tokens": 46474,
+      "reasoning_tokens": 0,
+      "near_cap": false,
+      "reading_level_degraded": false,
+      "reading_level_nodes_dropped": 0,
+      "cost": 0.29938929,
+      "cost_complete": true,
+      "cost_unavailable_reason": "",
+      "file": "books/deepseek-v4-pro__00.json",
+      "error": null
+    },
+    {
+      "vendor": "deepseek-v4-pro",
+      "family": "deepseek",
+      "brief_index": 1,
+      "status": "passed",
+      "attempts": 0,
+      "latency_s": 675.82,
+      "grade": 3.64256539694491,
+      "in_band": 0.6010362694300518,
+      "leaf_words": 11522,
+      "fill_completeness": 1.0,
+      "complete": true,
+      "max_tokens": 131072,
+      "output_tokens": 62459,
+      "reasoning_tokens": 0,
+      "near_cap": false,
+      "reading_level_degraded": false,
+      "reading_level_nodes_dropped": 0,
+      "cost": 0.419585,
+      "cost_complete": true,
+      "cost_unavailable_reason": "",
+      "file": "books/deepseek-v4-pro__01.json",
+      "error": null
+    }
+  ],
+  "within_vendor": {
+    "deepseek-v4-pro": {
+      "pairs": 1.0,
+      "mean_per_1000": 110.68,
+      "median_per_1000": 110.68,
+      "max_per_1000": 110.68
+    }
+  },
+  "cross_vendor": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "same_brief_cross_vendor": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "same_family_cross_model": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "same_family_same_brief": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "excluded_incomplete": [],
+  "verdict": "not measured: need both within-vendor and cross-vendor pairs"
+}

@@ -218,6 +218,39 @@ book was not violating a stated contract: the contract never pins narrative pers
 and same-skeleton siblings can legitimately land in DIFFERENT persons. That unpinned degree of
 freedom is the finding.
 
-### 7.2 Live results
+### 7.2 Run A: the directed delta (UW-C315). The directive is not the lever.
 
-Appended after execution.
+Both directed fills passed the gate first-attempt; measured cost $0.7190 against the $0.75
+estimate. The delta:
+
+| Condition | Shared 4-grams | Per 1000 mean leaf words |
+| --- | ---: | ---: |
+| Raw undirected pair (2026-08-20, committed) | 1,350 | 96.3 |
+| Best-case directed pair (this run) | 1,565 | **110.7** |
+| Budget | | 4.0 |
+
+The strongest spec the production `build_differentiation_directive` can emit (catalog level,
+opposed axes, sibling title carried) moved the number the WRONG way: +16 percent in absolute
+shared grams on near-identical delivered volume (mean leaf words 10,575 raw vs 10,657 directed),
++15 percent normalized. Both measurements used the same instrument and normalization
+(`compare_vendors`' internal figure for the raw pair is 96.28, matching the committed
+`check_sibling_fills` 96.3). Combined with 7.1's finding that the committed hand-authored
+same-skeleton twins score 202.0, the conclusion is decision-grade: **shared-structure convergence
+is intrinsic and the differentiation directive does not counter it.** Cross-family skeleton reuse
+needs a structural lever (per-family skeleton mutation per ADR-020 machinery, or a reuse cap),
+not a prompt block. `check_sibling_fills` still belongs in the pipeline as the detector either
+way.
+
+Secondary observations from the same two books, feeding the round's other questions:
+
+- Both books under-delivered and FAIL the new floor: 50.0 and 58.9 percent fill rate. With the
+  raw pair's 65.2/42.9, four fills of this (skeleton, model) pair span 42.9 to 65.2 percent,
+  straddling 0.6: the floor is a per-book coin flip at this vendor's delivery variance.
+- Mutation census: zero frozen-field mutations in either book; ending titles reskinned in both
+  (13/35 and 21/35); book 1 also retitled the story. Book 0 kept the skeleton's title "The Tin
+  Whistle Map" on a book whose object is an enamel compass, so BOTH behaviors are reader-visible
+  defects depending on the unresolved `UW-C311` ruling: a reskinned title violates the freeze
+  reading, a kept title mislabels the re-themed book.
+- Outbound dangling rates 0.760 and 0.738, consistent with the fill shortfall mechanism.
+- Narrative person split again on the same skeleton: second-person node rates 0.648 vs 0.254,
+  confirming 7.1's unpinned-person finding under the directed condition too.
