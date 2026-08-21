@@ -1637,12 +1637,24 @@ def test_load_vendors_rejects_an_empty_label(tmp_path: Path, label: str) -> None
         "x\x00y",
         "line\nbreak",
         "bell\x07",
+        "del\x7f",
         "gpt-4:free",
         "star*",
         "quest?",
         'quo"te',
         "pipe|x",
         "lt<gt>",
+        # The separators are deliberately redundant with the bare-name check
+        # below them, and the two cases are NOT equivalent evidence. On POSIX
+        # only `\\` isolates the character guard, because a backslash is a legal
+        # POSIX filename character and nothing else refuses it; disabling the
+        # guard makes that case fail. `/` stays refused either way, since the
+        # bare-name check catches it too, so it is a portability control rather
+        # than a falsifiable test of this guard on this platform. Both are kept
+        # because the guard's point is that neither separator survives on
+        # EITHER platform, not just the one where it happens to be native.
+        "sub/dir",
+        "sub\\dir",
     ],
 )
 def test_load_vendors_rejects_a_label_with_an_unsafe_character(
