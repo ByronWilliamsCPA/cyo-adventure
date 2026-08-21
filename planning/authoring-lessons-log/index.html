@@ -6538,8 +6538,8 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>tooling</td>
 <td><strong>The generation prompt templates carry untrusted content inside a delimiter fence that nothing sanitises, which <code>moderation/stages.py</code> does sanitise for exactly this reason.</strong> Adding a prompt that carries model-written node prose surfaced the asymmetry: <code>moderation/stages.py</code> has <code>_sanitize_delimited</code>, while every template in <code>generation/prompts.py</code> interpolates into <code>&lt;&lt;&lt;UNTRUSTED_USER_INPUT ... &gt;&gt;&gt;END_UNTRUSTED_USER_INPUT</code> with no treatment at all. A body holding the literal terminator closes the fence early and addresses the model directly, and prose is a worse channel than the JSON briefs the other templates carry, because <code>json.dumps</code> escapes quotes and newlines but not that token. The narrower residual hole is real too: <code>build_fill_prompt</code> and <code>build_bound_fill_prompt</code> interpolate <code>{theme_brief}</code> into the same fence, and although an attacker must first get the string through screening intake, nothing between intake and the prompt would stop it.</td>
 <td>Neutralise the terminator at every site that interpolates into the fence, not only the new one. Done here for the reading-level prompt (<code>_neutralize_fence</code>); the two fill prompts are tracked separately rather than widened into this change. Generalised check: a delimiter is a security boundary only if something enforces that the delimiter cannot appear in the delimited content, and the enforcement belongs next to the interpolation, not in the instructions asking the model to be careful.</td>
-<td>open</td>
-<td><code>UW-C228</code></td>
+<td>applied</td>
+<td><code>prompts.py::_neutralize_fence</code> routes every dynamic payload including <code>{theme_brief}</code>; PR #732 closes <code>UW-C228</code></td>
 </tr>
 <tr>
 <td>AL-313</td>
@@ -8401,6 +8401,106 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>open</td>
 <td><code>UW-C315</code>; <code>docs/planning/vendor-comparison/runs/deepseek-v4-pro-2026-08-20/shared-skeleton-pair/sibling-fill-check.txt</code></td>
 </tr>
+<tr>
+<td>AL-499</td>
+<td>2026-08-21</td>
+<td>PR #731 review, run-plan findings F2/F3</td>
+<td>validator</td>
+<td><strong><code>MODEL_OUTPUT_CAPS</code> is keyed per model SLUG while the real output ceiling is per ENDPOINT, and the table cannot express the difference.</strong> OpenRouter serves <code>deepseek/deepseek-v4-pro</code> from 18 endpoints declaring ceilings from 16,384 to 1,048,576 while the table holds one value of 393,216, so an unpinned route to a low endpoint over-asks by up to 8x. The over-ask truncates NON-EMPTY, which <code>AL-479</code> establishes is not leg-fatal, so it spends the whole repair budget instead of failing fast. This is why endpoint pinning is a correctness requirement for that slug rather than reproducibility hygiene, recorded in <code>vendors-deepseek-v4-pro.json::_pinning_rationale</code>. The run plan said this finding "will qualify regardless of the run's result" and section 8.2 said to file a register row; neither happened when AL-490..AL-498 were filed, and no gate can catch that omission, because <code>check_lessons_log.py</code> and <code>check_work_linkage.py</code> validate rows that exist rather than rows that should.</td>
+<td>Decide whether the cap table is re-keyed on (provider, model, endpoint) or whether an endpoint-spread slug must carry a pin in <code>core/config.py</code> enforced by a test. Until then a per-slug row is a floor, not a ceiling, and should say so.</td>
+<td>open</td>
+<td><code>UW-C316</code></td>
+</tr>
+<tr>
+<td>AL-500</td>
+<td>2026-08-21</td>
+<td>PR #731 review, run-plan finding F3</td>
+<td>validator</td>
+<td><strong>A dated or pinned model id took the permissive cap fallback, and the table documented the trap without closing it.</strong> <code>deepseek/deepseek-chat-v3.1-0813</code> matched no row and resolved to the 131,072 default against its undated row's real 32,768, four times what the backend emits. The comment above <code>MODEL_OUTPUT_CAPS</code> named this exact id as the live route into the fallback and said "pin a variant in <code>core/config.py</code> only together with its own row here", so the defect was known and unguarded. Adding a row for each dated variant was the obvious fix and the wrong one: the table is partial by construction and its own rule is that entries are looked up rather than inferred, so a guessed ceiling would be worse than none.</td>
+<td>Make the resolver fall back to the undated row when an exact lookup misses. It can only LOWER a cap, so the error direction becomes engaging the chunked path early rather than asking for prose the endpoint will not emit.</td>
+<td>applied</td>
+<td><code>skeleton.py::resolve_output_cap</code> and <code>test_fill_output_cap.py::test_a_dated_variant_inherits_its_undated_row</code>; commit <code>a214180</code></td>
+</tr>
+<tr>
+<td>AL-501</td>
+<td>2026-08-21</td>
+<td>PR #731 review, prompt-assembly audit</td>
+<td>tooling</td>
+<td><strong>Delimiter neutralization was applied per site, so the same forgery class reappeared three times: <code>AL-434</code>, then <code>AL-488</code>, then three more raw payloads.</strong> <code>_neutralize_fence</code> defangs the fence terminator and the stage marker, and forging the marker is the worse of the two because <code>_split_stage_prompt</code> raises <code>BusinessLogicError</code>, which is not a <code>ValidationError</code> and so escapes the fill path into an RQ job retrying a deterministic failure forever. Still raw were <code>{differentiation_directive}</code> (carrying <code>prior_titles</code>, which descend from a family's own published story titles, validated only <code>min_length=1</code>, and which sits in the TRUSTED region of <code>fill.md</code> after the fence closes), <code>{skeleton_with_fill_directives}</code> (carrying validated slot values that <code>validator/slots.py</code> does not screen for the marker) and <code>{theme_brief}</code> (the open <code>#EDGE</code> in that function's own docstring, <code>UW-C228</code>). Position relative to the fence never decided the risk: <code>{slot_bindings}</code> sits OUTSIDE the fence and was neutralized anyway.</td>
+<td>Make neutralization a uniform rule for every dynamic payload rather than a per-site decision, and add a structural test that parses the module and fails on a new raw <code>.replace()</code>. Breadth is free because the function is two literal replacements, so a well-formed payload is byte-identical.</td>
+<td>applied</td>
+<td><code>prompts.py::_neutralize_fence</code> and <code>test_prompts.py::TestEveryDynamicPayloadIsNeutralized</code>; commit <code>f7c815e</code>; retires <code>UW-C228</code></td>
+</tr>
+<tr>
+<td>AL-502</td>
+<td>2026-08-21</td>
+<td>PR #731 review and its remediation sweep</td>
+<td>process</td>
+<td><strong>Three tests written in this repo in two days passed while the defect they targeted was present, each for a different structural reason.</strong> The <code>inf</code> parameter of <code>test_a_degenerate_fill_rate_floor_is_refused</code> used a 40 percent fixture, so <code>0.4 &lt; inf</code> failed the run with OR without the finiteness guard. A structural guard over prompt substitutions scanned LINES, so it was blind to the multi-line <code>.replace()</code> the differentiation directive actually uses, and it passed while that exact site was raw. A version-segment assertion called <code>resolve_output_cap</code> on ids that all have exact rows, so the fallback it meant to constrain never executed. None was caught by review; all three were caught by reverting the fix and watching the test still pass.</td>
+<td>Falsify every new test by reverting the fix it covers before committing, and prefer asserting the unit that encodes the decision (a pattern, a parsed AST) over asserting through a caller that may short-circuit before reaching it.</td>
+<td>applied</td>
+<td><code>test_fill_output_cap.py::test_a_version_segment_is_not_read_as_a_date</code> and <code>test_prompts.py::_raw_payload_substitutions</code> document the corrected forms; commits <code>f7c815e</code>, <code>a214180</code></td>
+</tr>
+<tr>
+<td>AL-503</td>
+<td>2026-08-21</td>
+<td>PR #712 findings, still live on main</td>
+<td>tooling</td>
+<td><strong>The vendor comparison harness could silently overwrite a paid run.</strong> <code>_load_vendors</code> compared labels by exact string while <code>_book_filename</code> interpolates the label into the book filename, so two labels differing only in case resolved to ONE file on a case-insensitive filesystem (the macOS and Windows default) and the second vendor overwrote the first vendor's already-generated books. A label carrying a path separator or a traversal segment wrote outside the run directory. Both were reported on PR #712 and both were still true on main, which is the general lesson: a finding parked on an open PR is not quarantined, it ships when that PR's siblings merge.</td>
+<td>Compare labels case-folded and require a bare filename. More broadly, treat an unresolved finding on an open PR as live on main unless the code says otherwise.</td>
+<td>applied</td>
+<td><code>compare_vendors.py::_load_vendors</code> and <code>test_compare_vendors.py::test_load_vendors_rejects_case_equivalent_labels</code>; commit <code>58e5cc0</code></td>
+</tr>
+<tr>
+<td>AL-504</td>
+<td>2026-08-21</td>
+<td>PR #732 review, prompt-payload classification audit</td>
+<td>tooling</td>
+<td><strong>The exemption list a structural guard reads is itself unverified code, and four of its nine entries were wrong.</strong> <code>_CODE_DERIVED_TOKENS</code> was introduced alongside the AST guard and described as "built from validated ids and literals, never from free text". Four failure-feedback tokens in it were not: <code>{fidelity_violations}</code> carries <code>run_semantic_fidelity_check</code>'s <code>notes</code>, unconstrained review-model text; <code>{validator_report}</code> carries <code>validator/gate.py</code>'s L1-1 message, which interpolates a Pydantic <code>ValidationError</code> whose <code>str()</code> echoes <code>input_value=</code>; <code>{violations_block}</code> carries <code>_completeness_violations</code>'s "binding contains undeclared slot '{slot_id}'", where the id is a KEY of the model's parsed bind response and <code>_parse_bind_response</code> validates only that VALUES are strings; and <code>{failing_node_ids}</code> looks exempt but is not, because the <code>^[a-z][a-z0-9_]*$</code> pattern in the schema constrains only <code>Variable.name</code> and <code>Effect.var</code>, while <code>Node.id</code> is <code>Field(min_length=1)</code> with no pattern. Adding the guard therefore made the module read as fully covered while certifying four live holes, which is worse than the un-guarded state a reader would have checked by hand.</td>
+<td>An exemption is a claim about provenance and needs the same evidence as a finding: trace each exempt token to its constructor and cite the line that constrains it, rather than reasoning from the token's name. Where the constraint is a schema pattern, assert the pattern in the test so a loosened schema fails instead of silently widening the exemption.</td>
+<td>applied</td>
+<td><code>prompts.py::_neutralize_fence</code> docstring and <code>test_prompts.py::TestFailureFeedbackCannotForgeTheMarker</code>; the exemption set now holds only <code>{slot_table}</code>, <code>{budget_constraints}</code>, <code>{reading_target}</code> and <code>{target_kind}</code></td>
+</tr>
+<tr>
+<td>AL-505</td>
+<td>2026-08-21</td>
+<td>PR #732 review, prompt-assembly audit</td>
+<td>tooling</td>
+<td><strong>A structural guard scoped to one module certifies that module, not the class it claims to close.</strong> <code>AL-501</code> generalised neutralization across <code>generation/prompts.py</code> and added an AST guard over that file. <code>flywheel/reguide_draft.py</code> loads from the same <code>generation/templates</code> package, defines the same <code>_USER_MARKER = "&lt;!-- @user --&gt;"</code>, splits on it inline, and raises the same <code>BusinessLogicError</code> on a count mismatch, and it interpolated <code>{catalog_content}</code> raw. That block carries <code>_story_context</code>, the parent story's start-node BODY, which is model-written prose. The generation pass neutralizes payloads on the way INTO a prompt, but nothing strips the marker from a stored node body, so a published story can carry one and reach this builder. The guard could not see it, and the PR's own docstring correctly said "every dynamic payload in this module", which reads as coverage of the class.</td>
+<td>Enumerate the call sites of an invariant before scoping its guard: grep for the delimiter literal and the templates package, not just the module you are editing. Extending the guard to take a module path and running it over both modules cost two lines and immediately surfaced a second unclassified payload (<code>{target_kind}</code>, which is genuinely an enum value).</td>
+<td>applied</td>
+<td><code>reguide_draft.py::render_draft_prompt</code> shares <code>prompts.neutralize_prompt_payload</code>; <code>test_prompts.py::test_reguide_draft_neutralizes_every_dynamic_payload</code> extends the guard to both modules</td>
+</tr>
+<tr>
+<td>AL-506</td>
+<td>2026-08-21</td>
+<td>PR #732 review, output-cap resolver</td>
+<td>validator</td>
+<td><strong>The dated-variant fallback closed one of two suffix forms, and the one left open is the one this repo configures.</strong> <code>AL-500</code> made <code>resolve_output_cap</code> fall back to the undated row via <code>-\d{4,8}$</code>, which fixes <code>deepseek/deepseek-chat-v3.1-0813</code>. OpenRouter's routing and tier variants use a <code>:suffix</code> instead, miss their row identically, and take the permissive 131,072: <code>anthropic/claude-haiku-4.5:free</code> resolves against its own row's 64,000. These slugs are live here, not hypothetical: <code>scripts/yield_harness.py</code> documents <code>--model google/gemma-4-31b-it:free</code>, ADR-003 names <code>:free</code> endpoints, <code>test_worker.py</code> sets <code>openrouter_fallback_model</code> to one, and <code>core/config.py</code> ships <code>ollama_model = "qwen2.5:14b"</code>. The fix's own <code>#CRITICAL</code> note described the trap as closed.</td>
+<td>When a fix generalises an exact-match miss, enumerate the suffix FORMS a real id takes in this repo (grep the configured slugs) rather than the one form the reproducing example happened to use. Strip most-specific first so a dated variant of a tiered slug still resolves.</td>
+<td>applied</td>
+<td><code>skeleton.py::resolve_output_cap</code> and <code>test_fill_output_cap.py::test_a_routing_variant_inherits_its_base_row</code></td>
+</tr>
+<tr>
+<td>AL-507</td>
+<td>2026-08-21</td>
+<td>PR #732 review, vendor-label hardening</td>
+<td>tooling</td>
+<td><strong>Case folding does not unify Unicode normalization, so the collision the fold closed stayed open through the other equivalence.</strong> <code>AL-503</code> compared vendor labels case-folded to stop a second vendor overwriting the first's paid books on a case-insensitive filesystem. <code>"Cafe\u0301"</code> (NFD) and <code>"Caf\u00e9"</code> (NFC) casefold to DIFFERENT strings, so the pair passes, and macOS is normalization-insensitive as well as case-insensitive, so both filenames resolve to one file: the same money loss by the same mechanism. Separately, an empty or whitespace-only label passes the bare-name check, because <code>Path("").name == ""</code> equals the label and <code>""</code> is not <code>"."</code> or <code>".."</code>, and <code>_book_filename</code> then writes <code>__00.json</code>, naming no vendor.</td>
+<td>Build ONE key for a filesystem-equivalence check and apply it to both the membership test and the insertion: <code>unicodedata.normalize("NFC", label.casefold())</code>. When hardening an identifier that becomes a filename, enumerate the filesystem's equivalence classes (case, normalization, empty, reserved) rather than the one that produced the report.</td>
+<td>applied</td>
+<td><code>compare_vendors.py::_load_vendors</code> and <code>test_compare_vendors.py::test_load_vendors_rejects_unicode_equivalent_labels</code> plus <code>::test_load_vendors_rejects_an_empty_label</code></td>
+</tr>
+<tr>
+<td>AL-508</td>
+<td>2026-08-21</td>
+<td>PR #732 review, falsification of the new tests</td>
+<td>process</td>
+<td><strong><code>git checkout -- &lt;file&gt;</code> restores from the index, so using it to undo a deliberate test-falsification revert silently discarded four files of uncommitted fixes.</strong> The falsification loop <code>AL-502</code> mandates was scripted as "revert the fix, run the test, <code>git checkout</code> to restore". With nothing staged, <code>git checkout --</code> restores HEAD, not the pre-revert working state, so the first iteration wiped every uncommitted source edit and the remaining iterations reported anchor misses rather than test results. The loss was silent: the test FILES were untracked-clean and still present, so the suite still collected, and only a <code>git diff --stat</code> showed the source fixes were gone. A substring grep made it worse by reading <code>_DATED_VARIANT_SUFFIX_RE</code> as a match for <code>_VARIANT_SUFFIX_RE</code>, briefly suggesting the fix had survived.</td>
+<td>Falsify against an explicit backup, never against git: copy each file to a scratch path first and restore from that copy. When verifying whether an edit survived, use <code>git diff --stat</code> on the specific path rather than a grep for a token that is a substring of a pre-existing one.</td>
+<td>applied</td>
+<td>the falsification of all eleven new tests in PR #732 was re-run against scratch-path backups; every one failed with its fix reverted</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -8440,7 +8540,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 20, 2026 23:16:06 UTC">August 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 21, 2026 03:33:02 UTC">August 21, 2026</span>
   </span>
 
     
