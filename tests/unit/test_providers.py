@@ -381,6 +381,39 @@ class TestOpenRouterProvider:
         assert calls == 3
 
     @pytest.mark.asyncio
+    async def test_exhaustion_error_names_the_last_attempts_cause(self) -> None:
+        """The exhaustion message carries the final attempt's own error.
+
+        Harness journals record ``str(exc)``, and the flattened message hid
+        the raw cause of every zero-content stop: 4 of 15 live (skeleton,
+        brief) pairs were lost to `content_filter` or finish_reason=None
+        replies journalled only as "transient failure persisted"
+        (AL-492/AL-501/UW-C309). An empty 200 whose finish_reason is
+        `content_filter` must surface that reason in the raised message.
+        """
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(
+                200,
+                json={
+                    "choices": [
+                        {
+                            "message": {"content": ""},
+                            "finish_reason": "content_filter",
+                        }
+                    ]
+                },
+            )
+
+        provider = _openrouter(handler, max_retries=2)
+        with pytest.raises(
+            ProviderError,
+            match=r"persisted after 2 attempts \(last: .*content_filter",
+        ) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
     async def test_connect_error_is_transient_and_retried(self) -> None:
         """A transport error (connect/timeout) is transient and retried."""
         calls = 0
