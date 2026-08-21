@@ -161,7 +161,7 @@
    "choices": [
     {
      "id": "ch-test-repair",
-     "label": "Quick test of the repaired kite",
+     "label": "Test the repaired kite",
      "target": "improvement-session"
     }
    ]
@@ -184,20 +184,25 @@
    "is_ending": false,
    "choices": [
     {
-     "id": "ch-adjust",
-     "label": "Make final adjustments before the festival",
-     "target": "final-prep"
+     "id": "ch-ready-for-festival",
+     "label": "Head to the festival with their kite",
+     "target": "travel-to-festival"
+    },
+    {
+     "id": "ch-one-more-adjustment",
+     "label": "Make one more quick adjustment",
+     "target": "final-adjustment"
     }
    ]
   },
   {
-   "id": "final-prep",
-   "body": "<<FILL role=explore words=69 beats='Tomas and Abuela bring the kite down and sit in the grass. They talk about everything they learned. The kite shows real promise now. They feel ready for the festival this afternoon.'>>",
+   "id": "final-adjustment",
+   "body": "<<FILL role=transition words=65 beats='Tomas and Abuela tighten a loose knot and check the frame one more time. The kite looks perfect. They smile at their work. The afternoon sun reminds them the festival is starting soon.'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch-pack-up",
-     "label": "Pack up and head to the festival",
+     "id": "ch-go-festival",
+     "label": "Head to the festival now",
      "target": "travel-to-festival"
     }
    ]
@@ -273,99 +278,63 @@
    }
   },
   {
-   "id": "happy-memory-ending",
-   "body": "<<FILL role=ending words=72 beats='Whether the kite flew perfectly or crashed, Tomas knew something special happened. He built a kite with his grandmother. They solved problems together. They laughed at the wind. Those memories are the real prize.'>>",
+   "id": "teamwork-celebration-ending",
+   "body": "<<FILL role=ending words=72 beats='Whether the kite flew perfectly or crashed, Tomas knew something special happened. He built a kite with his grandmother. They solved problems together. They laughed at the wind. Those memories are the real treasure.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
-    "id": "end-memory",
+    "id": "end-teamwork",
     "valence": "positive",
     "kind": "discovery",
-    "title": "The Real Prize"
+    "title": "Memories Matter Most"
    }
   },
   {
-   "id": "skill-learned-ending",
-   "body": "<<FILL role=ending words=70 beats='Tomas looked at his hands after the contest. He could tie knots now. He understood how wind worked. He knew how to repair things. Abuela had taught him so much. He felt proud of his new skills.'>>",
+   "id": "skills-pride-ending",
+   "body": "<<FILL role=ending words=70 beats='Tomas looked at his hands after the contest. He could tie knots now. He understood how wind worked. He knew how to repair things. Abuela had taught him so much. He felt truly proud of his new skills.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
-    "id": "end-skill",
+    "id": "end-skills",
     "valence": "positive",
     "kind": "completion",
-    "title": "New Skills Earned"
+    "title": "Skills for Tomorrow"
    }
   },
   {
-   "id": "try-again-ending",
-   "body": "<<FILL role=ending words=74 beats='After the contest ended, Tomas and Abuela walked home with their kite. The afternoon sun made long shadows. Tomas already thought about next year's festival. They would build a better kite. This was just the beginning.'>>",
+   "id": "next-year-ending",
+   "body": "<<FILL role=ending words=74 beats='After the contest ended, Tomas and Abuela walked home with their kite. The afternoon sun made long shadows. Tomas already thought about next year's festival. They would build an even better kite. This was just the beginning of their kite adventures.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
-    "id": "end-try-again",
+    "id": "end-next-year",
     "valence": "positive",
     "kind": "discovery",
     "title": "Just the Beginning"
    }
   },
   {
-   "id": "together-matters-ending",
-   "body": "<<FILL role=ending words=71 beats='The contest results didn't matter as much as Tomas thought they would. What mattered was working with Abuela. They had built something together. They had laughed together. They had tried together. That was everything.'>>",
+   "id": "bond-deepened-ending",
+   "body": "<<FILL role=ending words=71 beats='The contest results didn't matter as much as Tomas thought they would. What mattered was working with Abuela. They had built something together. They had laughed together. They had tried together. That was everything to him.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
-    "id": "end-together",
+    "id": "end-bond",
     "valence": "positive",
     "kind": "completion",
-    "title": "Together Matters Most"
+    "title": "Closer Than Before"
    }
   },
   {
-   "id": "explore-more-designs",
-   "body": "<<FILL role=explore words=67 beats='Back home after the festival, Tomas brought out paper and crayons. He sketched new kite designs. Abuela showed him designs from her country. They talked about next year. The building and learning would continue.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-future-plans",
-     "label": "Plan the next adventure together",
-     "target": "future-building-ending"
-    }
-   ]
-  },
-  {
-   "id": "future-building-ending",
-   "body": "<<FILL role=ending words=68 beats='Tomas and Abuela made big plans. They would experiment with new materials. They would test their designs in different seasons. Building kites would be their special thing together.'>>",
+   "id": "wisdom-gained-ending",
+   "body": "<<FILL role=ending words=70 beats='Tomas understood the wind differently now. It wasn't something to fear. It was something to learn from and work with. Every gust had taught him. Abuela had shown him how to listen and adapt like nature itself.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
-    "id": "end-future",
+    "id": "end-wisdom",
     "valence": "positive",
     "kind": "discovery",
-    "title": "Adventures Continue"
-   }
-  },
-  {
-   "id": "pride-in-craft-ending",
-   "body": "<<FILL role=ending words=72 beats='Looking back, Tomas felt proud of the kite they built. The design was their own. Every knot was tied by their hands. Every choice about how to reinforce it was theirs. They made something real together.'>>",
-   "is_ending": true,
-   "choices": [],
-   "ending": {
-    "id": "end-craft",
-    "valence": "positive",
-    "kind": "completion",
-    "title": "Proud of Our Work"
-   }
-  },
-  {
-   "id": "wind-lesson-ending",
-   "body": "<<FILL role=ending words=70 beats='Tomas understood the wind differently now. It wasn't an enemy. It was something to learn from and work with. Every gust taught him. Abuela had shown him how to listen to what nature said.'>>",
-   "is_ending": true,
-   "choices": [],
-   "ending": {
-    "id": "end-wind",
-    "valence": "positive",
-    "kind": "discovery",
-    "title": "Understanding Wind"
+    "title": "Understanding Nature"
    }
   }
  ]
