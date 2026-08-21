@@ -1589,3 +1589,43 @@ def test_load_vendors_still_accepts_distinct_labels(tmp_path: Path) -> None:
     )
 
     assert [v.label for v in _load_vendors(path)] == ["anthropic", "grok"]
+
+
+def test_load_vendors_rejects_unicode_equivalent_labels(tmp_path: Path) -> None:
+    """Case folding alone does not unify Unicode normalization forms.
+
+    "Cafe\u0301" (NFD) and "Caf\u00e9" (NFC) casefold to DIFFERENT strings, so a
+    fold-only check accepts the pair, and macOS then resolves both book
+    filenames to one file: the same paid-artifact overwrite the fold was added
+    to stop, reached through the other equivalence.
+    """
+    path = _write_vendors(
+        tmp_path,
+        [
+            {"label": "Cafe\u0301", "model": "m", "provider_order": ["p"]},
+            {"label": "Caf\u00e9", "model": "m2", "provider_order": ["p"]},
+        ],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _load_vendors(path)
+
+    assert excinfo.value.code == 1
+
+
+@pytest.mark.parametrize("label", ["", "   ", "\t"])
+def test_load_vendors_rejects_an_empty_label(tmp_path: Path, label: str) -> None:
+    """An empty label passes the bare-name check and loses vendor identity.
+
+    `Path("").name == ""` equals the label, and `""` is not `"."` or `".."`, so
+    the traversal guard lets it through and `_book_filename` writes
+    `__00.json`: a valid file naming no vendor.
+    """
+    path = _write_vendors(
+        tmp_path, [{"label": label, "model": "m", "provider_order": ["p"]}]
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _load_vendors(path)
+
+    assert excinfo.value.code == 1

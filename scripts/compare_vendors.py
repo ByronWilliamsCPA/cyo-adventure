@@ -106,6 +106,7 @@ import os
 import statistics
 import sys
 import time
+import unicodedata
 from dataclasses import dataclass, replace
 from itertools import combinations
 from pathlib import Path
@@ -388,6 +389,19 @@ def _load_vendors(path: Path) -> list[Vendor]:
         if not isinstance(label, str) or not isinstance(model, str):
             print(f"Error: vendor #{i} needs string label and model.", file=sys.stderr)
             sys.exit(1)
+        # #ASSUME: data-integrity: an empty or whitespace-only label passes the
+        # bare-name check below (`Path("").name == ""`), and `_book_filename`
+        # then writes `__00.json`, losing the vendor identity the filename
+        # exists to carry. Not an overwrite risk (the fold below catches a
+        # second empty label), so this is a legibility floor, not a money one.
+        # #VERIFY: test_load_vendors_rejects_an_empty_label.
+        if not label.strip():
+            print(
+                f"Error: vendor #{i} label is empty or whitespace-only; the "
+                "book filename would carry no vendor identity.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
         # #CRITICAL: data integrity: _book_filename() names each book's output
         # file `{vendor}__{brief_index:02d}.json`, using the label as the sole
         # identity component. Two vendors sharing a label would silently
@@ -414,7 +428,15 @@ def _load_vendors(path: Path) -> list[Vendor]:
                 file=sys.stderr,
             )
             sys.exit(1)
-        if label.casefold() in seen_labels:
+        # #CRITICAL: data-integrity: case folding alone does NOT unify Unicode
+        # normalization forms, so "Cafe\u0301" (NFD) and "Caf\u00e9" (NFC) both
+        # pass a casefold-only check and then resolve to ONE file on macOS,
+        # whose filesystem is normalization-insensitive as well as
+        # case-insensitive. That is the same paid-artifact overwrite the fold
+        # was added to stop, reached through the other equivalence.
+        # #VERIFY: test_load_vendors_rejects_unicode_equivalent_labels.
+        folded = unicodedata.normalize("NFC", label.casefold())
+        if folded in seen_labels:
             print(
                 f"Error: vendor #{i} reuses label '{label}' (compared without "
                 "case, because a case-insensitive filesystem would collapse "
@@ -422,7 +444,7 @@ def _load_vendors(path: Path) -> list[Vendor]:
                 file=sys.stderr,
             )
             sys.exit(1)
-        seen_labels.add(label.casefold())
+        seen_labels.add(folded)
         if not isinstance(order_raw, list):
             print(f"Error: vendor #{i} provider_order must be a list.", file=sys.stderr)
             sys.exit(1)
