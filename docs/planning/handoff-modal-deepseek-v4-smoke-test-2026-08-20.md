@@ -1,6 +1,7 @@
 ---
 title: Handoff, Modal DeepSeek V4 Pro smoke test
-description: State of the Modal-vs-OpenRouter provider comparison after the 2026-08-20 session.
+description: State of the Modal-vs-OpenRouter provider comparison after the 2026-08-20 and 2026-08-21
+  sessions, including the shared Kimi-K3 validation and the failed DeepSeek V4 Pro endpoint provisioning.
 ---
 
 # Handoff: Modal DeepSeek V4 Pro smoke test (2026-08-20)
@@ -34,7 +35,9 @@ apply to both providers (see below).
 2. **`core/config.py::Settings` expects `MODAL_PROXY_KEY` / `MODAL_PROXY_SECRET`**
    (`src/cyo_adventure/core/config.py`, around lines 585-599), plus `MODAL_BASE_URL` and optional
    `MODAL_MODEL`. `MODAL_BASE_URL` is the endpoint URL from the Modal dashboard or
-   `modal endpoint list`; there is no guessable URL pattern for managed endpoints.
+   `modal endpoint list`. (Historical note: this finding originally said there is no guessable URL
+   pattern; the 2026-08-21 session resolved the pattern as
+   `https://<workspace>--<endpoint-name>.<region>.modal.direct`, see the Modal leg results below.)
 3. **Remote-session env vars load only at container start.** Values added to the Claude environment
    configuration do not appear in an already-running session; the network allowlist, by contrast,
    is enforced live at the gateway. A session started before a credential change must hand off to a
@@ -49,10 +52,15 @@ apply to both providers (see below).
    ```
 
 5. **Network allowlist** for the remote environment now admits `modal.com`, `*.modal.run`, and
-   `openrouter.ai` (all verified 200 through the gateway on 2026-08-20).
-6. **Security follow-up: rotate the OpenRouter API key.** The key value was echoed into the
-   2026-08-20 session transcript by a shell-expansion mistake during an env check. Rotate it at
-   openrouter.ai and update the environment variable once the comparison finishes.
+   `openrouter.ai` (all verified 200 through the gateway on 2026-08-20), plus `*.modal.direct`,
+   the domain managed endpoints actually serve on (verified working through the gateway on
+   2026-08-21; see the Modal leg results below).
+6. **Security follow-up: revoke the OpenRouter API key NOW.** The key value was echoed into the
+   2026-08-20 session transcript by a shell-expansion mistake during an env check, so the
+   credential stays usable until revoked. The comparison this rotation originally waited on is
+   finished: revoke the exposed key at openrouter.ai immediately, create a replacement, update the
+   environment variable, and record completion here. Do not copy the exposed value into any
+   further artifact.
 
 ## OpenRouter leg results (2026-08-20, complete)
 
@@ -79,9 +87,13 @@ DeepSeek V4 Pro is a reasoning model: it spends completion tokens in a `reasonin
 `content`. With a small `max_tokens`, generation halts mid-reasoning (`finish_reason: "length"`) and
 `choices[0].message.content` is `null`. Consequences for `generation/providers/_base.py`:
 
-- `dig_content`-style extraction that requires non-empty `content` must treat `content: null` with
-  `finish_reason: "length"` as a budget problem (retry with a larger budget), not a malformed
-  response.
+- `dig_content`-style extraction that requires non-empty `content` should treat `content: null`
+  with `finish_reason: "length"` as a budget problem, not a malformed response. Note the
+  implemented contract today is different: `OpenRouterProvider.complete` marks a
+  `finish_reason: "length"` empty response leg-fatal, so the retry loop stops after one attempt
+  (retries never enlarge `max_tokens`) and `FallbackProvider` moves to the next leg. The
+  larger-budget follow-up retry is a PROPOSED change; whoever picks it up must implement and test
+  it, or explicitly keep the leg-fatal behavior and document it as the accepted policy.
 - Token/cost accounting must account for `completion_tokens` including reasoning tokens.
 - The same check must be repeated against the Modal endpoint response shape once it is live; also
   verify `usage.prompt_tokens` / `usage.completion_tokens` are present at all there.
@@ -203,8 +215,10 @@ below.
   `usage` (OpenRouter nests it as `completion_tokens_details.reasoning_tokens`), reports
   `prompt_tokens_details.cached_tokens`, and interleaves the reasoning text itself as
   `message.reasoning_content` (the model card advertises `interleaved.field: reasoning_content`).
-  On the max_tokens 100 call, reasoning_tokens (31) exceeded max_tokens 10's whole budget, so
-  budget sizing must cover reasoning plus content, matching the OpenRouter finding.
+  The unconstrained reply cost 42 completion tokens (31 of them reasoning) on the max_tokens 100
+  call, while the max_tokens 10 calls spent their entire 10-token budget on reasoning (10-13
+  reasoning tokens reported) and produced empty content; budget sizing must cover reasoning plus
+  content, matching the OpenRouter finding.
 
 **Read on usability:** the Modal leg is usable as-is through the existing `MODAL_*` config
 surface: OpenAI-compatible chat completions at `<MODAL_BASE_URL>/v1/chat/completions`,
