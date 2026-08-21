@@ -23,7 +23,7 @@
    "persistence"
   ],
   "estimated_minutes": 2,
-  "ending_count": 9,
+  "ending_count": 10,
   "content_flags": {
    "violence": "none",
    "scariness": "none",
@@ -86,18 +86,13 @@
   },
   {
    "id": "pine_grove",
-   "body": "<<FILL role=transition words=25 beats='Priya and Arjun walk under the snowy pine branches, boots crunching, but Priya glances back across the clearing toward the snow fort too, unsure which spot to check first.'>>",
+   "body": "<<FILL role=transition words=25 beats='Priya and Arjun walk under the snowy pine branches, boots crunching through fresh powder, scanning the ground on both sides of the narrow path for any flash of red.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "pine_grove_ch1",
      "label": "Look closer among the trees",
      "target": "pine_grove_clue"
-    },
-    {
-     "id": "pine_grove_ch2",
-     "label": "Check the snow fort instead",
-     "target": "snow_fort"
     }
    ]
   },
@@ -209,18 +204,13 @@
   },
   {
    "id": "frozen_pond",
-   "body": "<<FILL role=transition words=25 beats='Priya keeps Arjun a safe distance from the ice and they walk the snowy bank together, scanning for footprints, though the toboggan track catches her eye from across the field.'>>",
+   "body": "<<FILL role=transition words=25 beats='Priya keeps Arjun a safe distance from the ice and they walk the snowy bank together, scanning the ground near the reeds for footprints or a bright flash of red.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "frozen_pond_ch1",
      "label": "Follow the footprints by the reeds",
      "target": "frozen_pond_footprints"
-    },
-    {
-     "id": "frozen_pond_ch2",
-     "label": "Check the toboggan track instead",
-     "target": "toboggan_track"
     }
    ]
   },
@@ -302,7 +292,7 @@
     {
      "id": "toboggan_track_search_ch2",
      "label": "Decide it is too cold to keep digging",
-     "target": "end_dusk_return_tomorrow"
+     "target": "end_toboggan_too_cold"
     }
    ]
   },
@@ -316,6 +306,18 @@
     "valence": "positive",
     "kind": "discovery",
     "title": "Two Treasures at Once"
+   }
+  },
+  {
+   "id": "end_toboggan_too_cold",
+   "body": "<<FILL role=ending words=50 beats='The cold bites at Arjuns fingers and the sky is turning grey. Priya zips his coat up tight and they leave the toboggan lane behind, agreeing to come back with warmer mittens and more daylight to finish the search.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_toboggan_too_cold",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Too Cold to Keep Digging"
    }
   },
   {
@@ -342,18 +344,13 @@
   },
   {
    "id": "ranger_station",
-   "body": "<<FILL role=transition words=25 beats='Inside the warm ranger station, a ranger named Mr Oso looks up from his clipboard and waves Priya over, while through the window she spots the ski patrol hut across the lot.'>>",
+   "body": "<<FILL role=transition words=25 beats='Inside the warm ranger station, a ranger named Mr Oso looks up from his clipboard and waves Priya over, glad to help with a missing boot.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ranger_station_ch1",
      "label": "Ask Mr Oso for help",
      "target": "ranger_search"
-    },
-    {
-     "id": "ranger_station_ch2",
-     "label": "Try the ski patrol hut instead",
-     "target": "ski_patrol_hut"
     }
    ]
   },
@@ -383,18 +380,13 @@
   },
   {
    "id": "ski_patrol_hut",
-   "body": "<<FILL role=transition words=25 beats='The ski patrol hut smells like pine and warm coffee, and a patroller named Dana listens closely as Priya explains, though the lift operator booth is visible just past the rope tow outside.'>>",
+   "body": "<<FILL role=transition words=25 beats='The ski patrol hut smells like pine and warm coffee, and a patroller named Dana listens closely as Priya explains what happened to Arjuns boot.'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ski_patrol_hut_ch1",
      "label": "Tell Dana what happened",
      "target": "patrol_search"
-    },
-    {
-     "id": "ski_patrol_hut_ch2",
-     "label": "Try the lift operator booth instead",
-     "target": "lift_operator_booth"
     }
    ]
   },
