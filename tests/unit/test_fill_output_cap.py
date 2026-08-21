@@ -195,6 +195,31 @@ def test_a_dated_variant_inherits_its_undated_row() -> None:
 
 
 @pytest.mark.unit
+def test_a_routing_variant_inherits_its_base_row() -> None:
+    """An OpenRouter `:variant` suffix is the same miss as a date stamp.
+
+    Closing only the dated form left the suffix form this repo actually
+    configures wide open: `scripts/yield_harness.py` documents
+    `--model google/gemma-4-31b-it:free`, ADR-003 names `:free` endpoints, and
+    `test_worker.py` sets `openrouter_fallback_model` to a `:free` slug. So
+    `anthropic/claude-haiku-4.5:free` matched no row and took the permissive
+    131,072 against its own row's 64,000, which is exactly the over-ask the
+    `#CRITICAL` note on `resolve_output_cap` describes.
+    """
+    assert resolve_output_cap("anthropic/claude-haiku-4.5:free") == 64_000, (
+        "a routing variant still takes the permissive default, so the clamp is "
+        "a no-op on the suffix form this repo configures"
+    )
+    assert resolve_output_cap("anthropic/claude-sonnet-4.6:nitro") == 128_000
+    # Both suffix forms at once: strip the tier, then the date stamp.
+    assert resolve_output_cap("deepseek/deepseek-chat-v3.1-0813:free") == 32_768
+    # An unknown base still falls through to the default rather than inventing one.
+    assert (
+        resolve_output_cap("qwen/qwen-never-heard-of-it:free") == MAX_FILL_OUTPUT_TOKENS
+    )
+
+
+@pytest.mark.unit
 def test_a_version_segment_is_not_read_as_a_date() -> None:
     """The suffix pattern must not eat a one-digit version segment.
 

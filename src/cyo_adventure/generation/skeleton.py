@@ -238,6 +238,13 @@ MAX_FILL_OUTPUT_TOKENS = 131_072
 # like `claude-sonnet-4-6` or `claude-haiku-4-5` is NOT mistaken for one.
 _DATED_VARIANT_SUFFIX_RE = re.compile(r"-\d{4,8}$")
 
+# An OpenRouter routing or tier variant, as in `anthropic/claude-haiku-4.5:free`
+# or `...:nitro`. The same exact-lookup miss as a date stamp, in the suffix form
+# this repo actually configures: `scripts/yield_harness.py` documents
+# `--model google/gemma-4-31b-it:free`, ADR-003 names `:free` endpoints, and
+# `core/config.py` ships `ollama_model = "qwen2.5:14b"`.
+_VARIANT_SUFFIX_RE = re.compile(r":[^:]+$")
+
 MODEL_OUTPUT_CAPS: dict[str, int] = {
     "deepseek/deepseek-v4-pro": 393_216,
     "deepseek/deepseek-v4-flash": 384_000,
@@ -314,10 +321,19 @@ def resolve_output_cap(
         # asking for prose the endpoint will not emit. A variant whose real
         # ceiling is HIGHER than its base still needs its own row, because this
         # table is looked up and never inferred.
-        # #VERIFY: test_a_dated_variant_inherits_its_undated_row.
-        base = _DATED_VARIANT_SUFFIX_RE.sub("", model)
-        if base != model:
-            cap = MODEL_OUTPUT_CAPS.get(base)
+        # A trailing `:variant` is the SAME miss in the other suffix form, and
+        # it is the one this repo configures: closing only the dated form left
+        # `anthropic/claude-haiku-4.5:free` resolving to 131,072 against its
+        # row's 64,000. Both are stripped, most-specific candidate first, so a
+        # dated variant of a tiered slug still finds its base row.
+        # #VERIFY: test_a_dated_variant_inherits_its_undated_row and
+        # test_a_routing_variant_inherits_its_base_row.
+        candidate = model
+        for pattern in (_VARIANT_SUFFIX_RE, _DATED_VARIANT_SUFFIX_RE):
+            candidate = pattern.sub("", candidate)
+            if candidate in MODEL_OUTPUT_CAPS:
+                cap = MODEL_OUTPUT_CAPS[candidate]
+                break
     return min(default, cap if cap is not None else default)
 
 
