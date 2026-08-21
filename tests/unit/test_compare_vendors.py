@@ -32,6 +32,7 @@ from scripts.compare_vendors import (
     _book_row,  # pyright: ignore[reportPrivateUsage]
     _fill_completeness,  # pyright: ignore[reportPrivateUsage]
     _load_briefs,  # pyright: ignore[reportPrivateUsage]
+    _load_differentiation,  # pyright: ignore[reportPrivateUsage]
     _load_skeletons,  # pyright: ignore[reportPrivateUsage]
     _load_vendors,  # pyright: ignore[reportPrivateUsage]
     _measure,  # pyright: ignore[reportPrivateUsage]
@@ -41,6 +42,7 @@ from scripts.compare_vendors import (
     _verdict,  # pyright: ignore[reportPrivateUsage]
     _write_outputs,  # pyright: ignore[reportPrivateUsage]
     analyze,
+    main,
     preflight,
     run_comparison,
     unpopulable_fields,
@@ -558,6 +560,103 @@ def test_load_skeletons_rejects_a_partial_count(tmp_path: Path) -> None:
         _load_skeletons(paths, 3)
 
 
+def _write_differentiation(tmp_path: Path, entries: list[object]) -> Path:
+    """Write a differentiation spec file and return its path."""
+    path = tmp_path / "differentiation.json"
+    _ = path.write_text(json.dumps(entries), encoding="utf-8")
+    return path
+
+
+def test_load_differentiation_renders_the_production_block(tmp_path: Path) -> None:
+    """A spec entry renders through build_differentiation_directive verbatim.
+
+    The point of the flag (AL-498) is measuring the block production would
+    send, so the rendered directive must carry the level's escalation text, the
+    axis's instruction, and the prior titles, not some harness paraphrase.
+    """
+    path = _write_differentiation(
+        tmp_path,
+        [
+            {
+                "level": "leaf",
+                "axis": "awestruck_wonder",
+                "prior_titles": ["The Tin Whistle Map"],
+                "prior_theme_tags": ["canal", "boatyard"],
+            },
+            None,
+        ],
+    )
+
+    directives = _load_differentiation(path, 2)
+
+    assert len(directives) == 2
+    assert "already read every skeleton in this cell" in directives[0]
+    assert "genuinely wondrous" in directives[0]
+    assert "'The Tin Whistle Map'" in directives[0]
+    assert "boatyard, canal" in directives[0]
+    assert directives[1] == ""
+
+
+def test_load_differentiation_rejects_a_count_mismatch(tmp_path: Path) -> None:
+    """One spec for two briefs would silently pair wrong, so it exits."""
+    path = _write_differentiation(tmp_path, [None])
+
+    with pytest.raises(SystemExit):
+        _load_differentiation(path, 2)
+
+
+def test_load_differentiation_rejects_an_unknown_level(tmp_path: Path) -> None:
+    """A level outside the closed vocabulary is an operator typo, not a miss."""
+    path = _write_differentiation(tmp_path, [{"level": "maximal"}, None])
+
+    with pytest.raises(SystemExit):
+        _load_differentiation(path, 2)
+
+
+def test_load_differentiation_rejects_an_unknown_axis(tmp_path: Path) -> None:
+    """An unknown axis key must fail loudly, unlike the worker's tolerant miss.
+
+    In production a missing axis degrades to "no axis" because an axis is a
+    craft hint; here the same silence would measure the no-context block and
+    report it as the directed floor, which is the exact confusion AL-498 exists
+    to end.
+    """
+    path = _write_differentiation(tmp_path, [{"axis": "no_such_axis"}, None])
+
+    with pytest.raises(SystemExit):
+        _load_differentiation(path, 2)
+
+
+def test_load_differentiation_rejects_an_unknown_key(tmp_path: Path) -> None:
+    """A misspelled spec key would silently render the no-context block."""
+    path = _write_differentiation(tmp_path, [{"prior_title": ["x"]}, None])
+
+    with pytest.raises(SystemExit):
+        _load_differentiation(path, 2)
+
+
+@pytest.mark.parametrize(
+    "field", ["prior_titles", "prior_theme_tags"], ids=["titles", "tags"]
+)
+@pytest.mark.parametrize(
+    "value", ["The Canal Compass", ["The Canal Compass", 7]], ids=["scalar", "mixed"]
+)
+def test_load_differentiation_rejects_a_malformed_list(
+    tmp_path: Path, field: str, value: object
+) -> None:
+    """A scalar or non-string member must fail, not silently weaken the block.
+
+    Dropping the malformed part would run a weaker directive than the
+    operator specified and report its convergence as the directed floor,
+    the same silent-degradation failure the unknown-axis error exists to
+    prevent.
+    """
+    path = _write_differentiation(tmp_path, [{field: value}, None])
+
+    with pytest.raises(SystemExit):
+        _load_differentiation(path, 2)
+
+
 @pytest.mark.asyncio
 async def test_compare_vendors_pairs_skeleton_i_with_brief_i() -> None:
     """Every vendor sees the same skeleton for a brief index, and only that one.
@@ -628,6 +727,84 @@ async def test_compare_vendors_uses_an_empty_pii_context() -> None:
 
     assert seen
     assert all(ctx.child_names == frozenset() for ctx in seen)
+
+
+@pytest.mark.asyncio
+async def test_compare_vendors_threads_the_directive_per_brief() -> None:
+    """Each fill receives its own brief's directive, held constant per vendor.
+
+    The directive pairs with the brief the way the skeleton does: if it
+    drifted out of step, a directed pair would differ in directive as well as
+    brief, and the measured delta (AL-498) would be attributable to nothing.
+    """
+    seen: list[tuple[str, object]] = []
+
+    async def _stub(
+        _skeleton: dict[str, object],
+        brief: dict[str, object],
+        _provider: object,
+        _pii: object,
+        **kwargs: object,
+    ) -> object:
+        """Record the (brief, directive) pairing handed to each fill."""
+        seen.append((str(brief["setting"]), kwargs.get("differentiation_directive")))
+        return mock.Mock(status="passed", attempts=0, storybook=_doc(_SHARED))
+
+    with mock.patch("scripts.compare_vendors.fill_skeleton", _stub):
+        await run_comparison(
+            [{"id": "sk-a"}, {"id": "sk-b"}],
+            [{"setting": "a"}, {"setting": "b"}],
+            [
+                Vendor(label="alpha", model="mock", provider_order=()),
+                Vendor(label="beta", model="mock", provider_order=()),
+            ],
+            directives=["directive-a", "directive-b"],
+        )
+
+    assert seen == [
+        ("a", "directive-a"),
+        ("b", "directive-b"),
+        ("a", "directive-a"),
+        ("b", "directive-b"),
+    ]
+
+
+@pytest.mark.asyncio
+async def test_compare_vendors_defaults_to_an_undirected_fill() -> None:
+    """Without directives every fill gets "", byte-identical to prior runs."""
+    seen: list[object] = []
+
+    async def _stub(
+        _skeleton: dict[str, object],
+        _brief: dict[str, object],
+        _provider: object,
+        _pii: object,
+        **kwargs: object,
+    ) -> object:
+        """Record the directive handed to each fill."""
+        seen.append(kwargs.get("differentiation_directive"))
+        return mock.Mock(status="passed", attempts=0, storybook=_doc(_SHARED))
+
+    with mock.patch("scripts.compare_vendors.fill_skeleton", _stub):
+        await run_comparison(
+            [{"id": "sk-a"}, {"id": "sk-b"}],
+            [{"setting": "a"}, {"setting": "b"}],
+            [Vendor(label="alpha", model="mock", provider_order=())],
+        )
+
+    assert seen == ["", ""]
+
+
+@pytest.mark.asyncio
+async def test_compare_vendors_rejects_a_directive_count_mismatch() -> None:
+    """One directive for two briefs is a programming error, not a per-book fault."""
+    with pytest.raises(ValueError, match="pair index-wise"):
+        await run_comparison(
+            [{"id": "sk-a"}, {"id": "sk-b"}],
+            [{"setting": "a"}, {"setting": "b"}],
+            [Vendor(label="alpha", model="mock", provider_order=())],
+            directives=["only-one"],
+        )
 
 
 @pytest.mark.asyncio
@@ -1211,3 +1388,244 @@ def test_the_book_row_carries_the_conditions_the_book_was_written_under() -> Non
     assert row["complete"] is True
     assert row["reading_level_degraded"] is True
     assert row["reading_level_nodes_dropped"] == 3
+
+
+def _mock_run_files(tmp_path: Path) -> tuple[str, str]:
+    """Write the briefs and skeleton a ``--mock`` grid needs."""
+    briefs = [
+        {"slot": 0, "theme": "a canal boatyard", "keepsake": "an enamel compass"},
+        {"slot": 1, "theme": "a school lost-property room", "keepsake": "a medal"},
+    ]
+    briefs_path = tmp_path / "briefs.json"
+    briefs_path.write_text(json.dumps(briefs), encoding="utf-8")
+    skeleton = {
+        "schema_version": "2.0",
+        "id": "sk_mock",
+        "version": 1,
+        "title": "A Mock Adventure",
+        "metadata": {
+            "age_band": "8-11",
+            "reading_level": {"scheme": "flesch_kincaid", "target": 4.5},
+            "tier": 1,
+            "estimated_minutes": 5,
+            "ending_count": 1,
+            "topology": "gauntlet",
+        },
+        "start_node": "n1",
+        "variables": {},
+        "nodes": [
+            {
+                "id": "n1",
+                "body": "<<FILL role=scene words=100 beats='a fork'>>",
+                "is_ending": False,
+                "choices": [{"label": "<<FILL label>>", "target": "n2"}],
+            },
+            {
+                "id": "n2",
+                "body": "<<FILL role=ending words=100 beats='home'>>",
+                "is_ending": True,
+                "choices": [],
+                "ending": {"id": "e1", "title": "Home", "kind": "success"},
+            },
+        ],
+    }
+    skeleton_path = tmp_path / "sk_mock.json"
+    skeleton_path.write_text(json.dumps(skeleton), encoding="utf-8")
+    return str(briefs_path), str(skeleton_path)
+
+
+def test_main_records_the_rendered_directives_in_the_report(tmp_path: Path) -> None:
+    """``--differentiation`` must reach the report metadata, not just the fills.
+
+    This is the whole anti-conflation guard for `UW-C315`: a directed run whose
+    ``report.json`` does not say it was directed can be pooled with a raw floor
+    later. Nothing else exercises ``main``'s flag wiring, so a slip anywhere
+    between the argument and the metadata key is otherwise invisible.
+    """
+    briefs_path, skeleton_path = _mock_run_files(tmp_path)
+    spec_path = tmp_path / "diff.json"
+    spec_path.write_text(
+        json.dumps(
+            [
+                {"level": "leaf", "axis": "awestruck_wonder", "prior_titles": ["A"]},
+                None,
+            ]
+        ),
+        encoding="utf-8",
+    )
+    out_dir = tmp_path / "out"
+    assert (
+        main(
+            [
+                "--skeleton",
+                skeleton_path,
+                "--briefs",
+                briefs_path,
+                "--mock",
+                "--out",
+                str(out_dir),
+                "--differentiation",
+                str(spec_path),
+            ]
+        )
+        == 0
+    )
+    report = json.loads((out_dir / "report.json").read_text(encoding="utf-8"))
+    recorded = cast("list[str] | None", report["differentiation_directives"])
+    assert recorded is not None, (
+        "a directed run must record its directives; a null here lets the "
+        "directed floor be quoted as the raw one (AL-498)"
+    )
+    assert len(recorded) == 2
+    assert recorded[0], "brief 0 was given a directive and must render one"
+    assert recorded[1] == "", "a null spec entry is an undirected fill"
+
+
+def test_main_records_no_directives_for_an_undirected_run(tmp_path: Path) -> None:
+    """Without the flag the metadata key must be null, not an empty-string list.
+
+    ``[null, null]`` renders as ``["", ""]``, which is byte-identical in effect
+    to passing no flag, so a truthy list there would make a consumer testing
+    ``if metadata["differentiation_directives"]`` read a raw run as directed.
+    """
+    briefs_path, skeleton_path = _mock_run_files(tmp_path)
+    out_dir = tmp_path / "out"
+    assert (
+        main(
+            [
+                "--skeleton",
+                skeleton_path,
+                "--briefs",
+                briefs_path,
+                "--mock",
+                "--out",
+                str(out_dir),
+            ]
+        )
+        == 0
+    )
+    report = json.loads((out_dir / "report.json").read_text(encoding="utf-8"))
+    assert report["differentiation_directives"] is None
+
+    all_null = tmp_path / "null.json"
+    all_null.write_text(json.dumps([None, None]), encoding="utf-8")
+    out2 = tmp_path / "out2"
+    assert (
+        main(
+            [
+                "--skeleton",
+                skeleton_path,
+                "--briefs",
+                briefs_path,
+                "--mock",
+                "--out",
+                str(out2),
+                "--differentiation",
+                str(all_null),
+            ]
+        )
+        == 0
+    )
+    report2 = json.loads((out2 / "report.json").read_text(encoding="utf-8"))
+    assert report2["differentiation_directives"] is None, (
+        "an all-null spec is an undirected run and must not record as directed"
+    )
+
+
+def test_load_vendors_rejects_case_equivalent_labels(tmp_path: Path) -> None:
+    """Two labels differing only in case would collapse into one book file.
+
+    `_book_filename` builds the artifact name from the label, so on a
+    case-insensitive filesystem (the macOS and Windows default) the second
+    vendor overwrites the first vendor's already-paid-for books. The exact-match
+    uniqueness check this replaces let the pair through.
+    """
+    path = _write_vendors(
+        tmp_path,
+        [
+            {"label": "Anthropic", "model": "m", "provider_order": ["p"]},
+            {"label": "anthropic", "model": "m2", "provider_order": ["p"]},
+        ],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _load_vendors(path)
+
+    assert excinfo.value.code == 1
+
+
+@pytest.mark.parametrize("label", ["../escape", "sub/dir", ".", ".."])
+def test_load_vendors_rejects_a_label_that_is_not_a_bare_filename(
+    tmp_path: Path, label: str
+) -> None:
+    """A separator or traversal segment escapes the books directory.
+
+    The label is interpolated into the output filename and joined under the run
+    directory, so anything but a bare name writes somewhere the operator did not
+    name.
+    """
+    path = _write_vendors(
+        tmp_path, [{"label": label, "model": "m", "provider_order": ["p"]}]
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _load_vendors(path)
+
+    assert excinfo.value.code == 1
+
+
+def test_load_vendors_still_accepts_distinct_labels(tmp_path: Path) -> None:
+    """The hardening must not reject the ordinary slate.
+
+    Load-bearing for the two rejections above: a case-fold comparison that also
+    rejected genuinely distinct labels would fail every real run.
+    """
+    path = _write_vendors(
+        tmp_path,
+        [
+            {"label": "anthropic", "model": "m", "provider_order": ["p"]},
+            {"label": "grok", "model": "m2", "provider_order": ["p"]},
+        ],
+    )
+
+    assert [v.label for v in _load_vendors(path)] == ["anthropic", "grok"]
+
+
+def test_load_vendors_rejects_unicode_equivalent_labels(tmp_path: Path) -> None:
+    """Case folding alone does not unify Unicode normalization forms.
+
+    "Cafe\u0301" (NFD) and "Caf\u00e9" (NFC) casefold to DIFFERENT strings, so a
+    fold-only check accepts the pair, and macOS then resolves both book
+    filenames to one file: the same paid-artifact overwrite the fold was added
+    to stop, reached through the other equivalence.
+    """
+    path = _write_vendors(
+        tmp_path,
+        [
+            {"label": "Cafe\u0301", "model": "m", "provider_order": ["p"]},
+            {"label": "Caf\u00e9", "model": "m2", "provider_order": ["p"]},
+        ],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _load_vendors(path)
+
+    assert excinfo.value.code == 1
+
+
+@pytest.mark.parametrize("label", ["", "   ", "\t"])
+def test_load_vendors_rejects_an_empty_label(tmp_path: Path, label: str) -> None:
+    """An empty label passes the bare-name check and loses vendor identity.
+
+    `Path("").name == ""` equals the label, and `""` is not `"."` or `".."`, so
+    the traversal guard lets it through and `_book_filename` writes
+    `__00.json`: a valid file naming no vendor.
+    """
+    path = _write_vendors(
+        tmp_path, [{"label": label, "model": "m", "provider_order": ["p"]}]
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _load_vendors(path)
+
+    assert excinfo.value.code == 1

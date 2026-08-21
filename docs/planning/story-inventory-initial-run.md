@@ -160,8 +160,13 @@ gate cannot judge. Each category is pass/fail with cited node ids.
 1. **Age-appropriateness of language**: vocabulary, sentence length, and syntax match
    the band and the skeleton's `reading_level` target.
 2. **Fail-state and content policy**: prose never exceeds the band's content-flag
-   ceiling in tone (a "mild peril" flag must read mild); no death/capture framing for
-   3-5/5-8 even in near-miss phrasing; scariness stays within band.
+   ceiling in tone (a "mild peril" flag must read mild); no framing of an ending kind
+   the band forbids, even in near-miss phrasing; scariness stays within band.
+   The forbidden kinds per band are `validator/band_profile.py::_PROFILES`
+   (`forbidden_ending_kinds`), which is the source of record: do not restate them
+   here. This rubric previously said "no death/capture framing for 3-5/5-8", which
+   omitted that 8-11 forbids `death` too, and a reviewer working from that line
+   would mark a death ending in an 8-11 book as in-policy (`AL-493`).
 3. **Beats fidelity**: each node's prose delivers the `beats=` intent of the original
    `<<FILL>>` directive (reviewer receives the skeleton for side-by-side comparison).
 4. **Choice setup**: every choice label on a node is a natural, discoverable action

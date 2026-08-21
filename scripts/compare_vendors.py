@@ -106,6 +106,7 @@ import os
 import statistics
 import sys
 import time
+import unicodedata
 from dataclasses import dataclass, replace
 from itertools import combinations
 from pathlib import Path
@@ -113,12 +114,15 @@ from typing import TYPE_CHECKING, Any, Final, cast
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.pricing import estimate_cost, price_for
+from cyo_adventure.diversity.query import DifferentiationLevel
 from cyo_adventure.generation.metered import MeteredProvider
 from cyo_adventure.generation.orchestrator import _MAX_TOKENS_PROSE, fill_skeleton
 from cyo_adventure.generation.pii import PiiContext
+from cyo_adventure.generation.prompts import build_differentiation_directive
 from cyo_adventure.generation.provider import build_openrouter_leg, build_provider
 from cyo_adventure.generation.skeleton import resolve_output_cap
 from cyo_adventure.generation.usage import UsageLedger
+from cyo_adventure.generation.variation import axis_for_key
 from cyo_adventure.validator.reading_level import measure_book
 
 if TYPE_CHECKING:
@@ -385,6 +389,19 @@ def _load_vendors(path: Path) -> list[Vendor]:
         if not isinstance(label, str) or not isinstance(model, str):
             print(f"Error: vendor #{i} needs string label and model.", file=sys.stderr)
             sys.exit(1)
+        # #ASSUME: data-integrity: an empty or whitespace-only label passes the
+        # bare-name check below (`Path("").name == ""`), and `_book_filename`
+        # then writes `__00.json`, losing the vendor identity the filename
+        # exists to carry. Not an overwrite risk (the fold below catches a
+        # second empty label), so this is a legibility floor, not a money one.
+        # #VERIFY: test_load_vendors_rejects_an_empty_label.
+        if not label.strip():
+            print(
+                f"Error: vendor #{i} label is empty or whitespace-only; the "
+                "book filename would carry no vendor identity.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
         # #CRITICAL: data integrity: _book_filename() names each book's output
         # file `{vendor}__{brief_index:02d}.json`, using the label as the sole
         # identity component. Two vendors sharing a label would silently
@@ -395,10 +412,39 @@ def _load_vendors(path: Path) -> list[Vendor]:
         # provider call is billed.
         # #VERIFY: test_load_vendors_rejects_a_duplicate_label in
         # tests/unit/test_compare_vendors.py.
-        if label in seen_labels:
-            print(f"Error: vendor #{i} reuses label '{label}'.", file=sys.stderr)
+        # #CRITICAL: data-integrity: the label becomes the book filename in
+        # `_book_filename`, so two labels that differ only in case resolve to
+        # ONE file on a case-insensitive filesystem (the macOS and Windows
+        # default) and the second vendor silently overwrites the first vendor's
+        # already-paid-for books. A separator or traversal segment escapes the
+        # output directory entirely. Neither is caught by the exact-match
+        # uniqueness check this replaces.
+        # #VERIFY: test_load_vendors_rejects_case_equivalent_labels and
+        # test_load_vendors_rejects_a_label_that_is_not_a_bare_filename.
+        if label != Path(label).name or label in {".", ".."}:
+            print(
+                f"Error: vendor #{i} label '{label}' is not a bare name; it "
+                "would write outside the books directory.",
+                file=sys.stderr,
+            )
             sys.exit(1)
-        seen_labels.add(label)
+        # #CRITICAL: data-integrity: case folding alone does NOT unify Unicode
+        # normalization forms, so "Cafe\u0301" (NFD) and "Caf\u00e9" (NFC) both
+        # pass a casefold-only check and then resolve to ONE file on macOS,
+        # whose filesystem is normalization-insensitive as well as
+        # case-insensitive. That is the same paid-artifact overwrite the fold
+        # was added to stop, reached through the other equivalence.
+        # #VERIFY: test_load_vendors_rejects_unicode_equivalent_labels.
+        folded = unicodedata.normalize("NFC", label.casefold())
+        if folded in seen_labels:
+            print(
+                f"Error: vendor #{i} reuses label '{label}' (compared without "
+                "case, because a case-insensitive filesystem would collapse "
+                "the two book files into one and lose a paid run).",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        seen_labels.add(folded)
         if not isinstance(order_raw, list):
             print(f"Error: vendor #{i} provider_order must be a list.", file=sys.stderr)
             sys.exit(1)
@@ -457,6 +503,142 @@ def _load_briefs(path: Path) -> list[dict[str, object]]:
         )
         sys.exit(1)
     return briefs
+
+
+def _load_differentiation(path: Path, brief_count: int) -> list[str]:
+    """Load and render the per-brief differentiation directives (AL-498).
+
+    ``fill_skeleton`` has accepted ``differentiation_directive`` since A6/A7,
+    but this harness never passed it, so every recorded shared-idiom floor is
+    the RAW undirected floor. This loader exists so a run can measure what the
+    directive actually buys: the file is a JSON array, index-aligned with the
+    briefs (the same convention ``--skeleton`` uses), and each entry is either
+    ``null`` (that brief fills undirected, exactly as before) or an object with
+    optional keys ``level``, ``axis``, ``prior_titles`` and ``prior_theme_tags``
+    mirroring the pipeline-written ``authoring_metadata`` keys the worker reads.
+
+    Entries are rendered through the production
+    :func:`~cyo_adventure.generation.prompts.build_differentiation_directive`
+    rather than accepted as free text, so a measured delta is attributable to
+    the block production would send, not to operator prose. Unknown levels and
+    axis keys are hard errors here, unlike the worker's tolerant miss: in the
+    harness a bad key is an operator typo that would silently measure the
+    no-context block and report it as the directed floor.
+
+    Args:
+        path: A JSON array of per-brief directive specs (objects or nulls).
+        brief_count: How many briefs the run has; the array must match it.
+
+    Returns:
+        One rendered directive string per brief; ``""`` for a ``null`` entry.
+
+    Raises:
+        SystemExit: On a count mismatch, an unknown level or axis key, or a
+            malformed entry.
+    """
+    parsed = _load_json(path)
+    if not isinstance(parsed, list):
+        print(f"Error: {path} must contain a JSON array.", file=sys.stderr)
+        sys.exit(1)
+    if len(parsed) != brief_count:  # pyright: ignore[reportUnknownArgumentType]
+        # pyright: ignore on its own line: appended to the f-string above it
+        # the comment pushes the source line to 127 characters, and neither
+        # `ruff format` (it cannot split a trailing comment) nor E501 (ignored
+        # as formatter-handled) will catch that.
+        entry_count = len(parsed)  # pyright: ignore[reportUnknownArgumentType]
+        print(
+            f"Error: {path} has {entry_count} entries for {brief_count} "
+            "briefs; they pair index-wise.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    known_levels = {level.value for level in DifferentiationLevel}
+    directives: list[str] = []
+    for i, raw in enumerate(parsed):  # pyright: ignore[reportUnknownVariableType]
+        entry: object = raw  # pyright: ignore[reportUnknownVariableType]
+        if entry is None:
+            directives.append("")
+            continue
+        if not isinstance(entry, dict):
+            print(
+                f"Error: differentiation #{i} must be an object or null.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        spec = cast("dict[str, object]", entry)
+        unknown = sorted(
+            set(spec) - {"level", "axis", "prior_titles", "prior_theme_tags"}
+        )
+        if unknown:
+            print(
+                f"Error: differentiation #{i} has unknown keys: {', '.join(unknown)}.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        level_raw = spec.get("level")
+        if level_raw is not None and (
+            not isinstance(level_raw, str) or level_raw not in known_levels
+        ):
+            print(
+                f"Error: differentiation #{i} level must be one of "
+                f"{', '.join(sorted(known_levels))}.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        axis_raw = spec.get("axis")
+        axis = None
+        if axis_raw is not None:
+            axis = axis_for_key(str(axis_raw))
+            if axis is None:
+                print(
+                    f"Error: differentiation #{i} names unknown axis '{axis_raw}'.",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+        titles = _require_str_list(spec, "prior_titles", i)
+        tags = _require_str_list(spec, "prior_theme_tags", i)
+        directives.append(
+            build_differentiation_directive(
+                level=level_raw if isinstance(level_raw, str) else None,
+                axis_instruction=axis.instruction if axis is not None else None,
+                prior_titles=titles,
+                prior_theme_tags=tags,
+            )
+        )
+    return directives
+
+
+def _require_str_list(spec: dict[str, object], key: str, index: int) -> list[str]:
+    """Return a spec entry's list-of-strings field, or exit on any other shape.
+
+    A scalar where a list belongs, or a non-string member, must be a hard
+    error for the same reason an unknown axis key is: silently dropping the
+    malformed part would run a WEAKER directive than the operator specified
+    and report its convergence as the directed floor.
+
+    Args:
+        spec: The differentiation spec entry.
+        key: The field to read (``prior_titles`` or ``prior_theme_tags``).
+        index: The entry's position, for the error message.
+
+    Returns:
+        The non-empty string members; ``[]`` when the field is absent.
+
+    Raises:
+        SystemExit: If the field is not a list of strings.
+    """
+    value = spec.get(key)
+    if value is None:
+        return []
+    if not isinstance(value, list) or not all(
+        isinstance(item, str) for item in cast("list[object]", value)
+    ):
+        print(
+            f"Error: differentiation #{index} {key} must be a list of strings.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    return [item for item in cast("list[str]", value) if item]
 
 
 def _load_skeletons(paths: Sequence[Path], brief_count: int) -> list[dict[str, object]]:
@@ -667,6 +849,7 @@ async def run_comparison(
     settings: Settings | None = None,
     max_tokens: int | None = None,
     out_dir: Path | None = None,
+    directives: Sequence[str] | None = None,
 ) -> list[BookRecord]:
     """Fill the grid once per (vendor, brief) and measure every result.
 
@@ -691,14 +874,30 @@ async def run_comparison(
             an interrupted run keeps everything it has already paid for
             (AL-326). ``None`` keeps the records in memory only, which is what
             the dry-run path and the unit tests want.
+        directives: One rendered differentiation directive per brief, from
+            :func:`_load_differentiation`, or ``None`` to fill undirected
+            (byte-identical to every run before the flag existed). Every vendor
+            sees the same directive for a given brief index, mirroring how the
+            skeleton is held constant across the vendor axis. A run with
+            directives is measuring a different quantity than one without
+            (AL-498: the directed floor against the raw floor), so the two must
+            never be pooled; ``main`` records the directives in the run's
+            metadata for exactly that reason.
 
     Returns:
         One :class:`BookRecord` per (vendor, brief), vendor-major order.
 
     Raises:
-        ValueError: If the skeleton and brief counts disagree, which would
-            silently pair the wrong structure with a premise.
+        ValueError: If the skeleton and brief counts disagree (which would
+            silently pair the wrong structure with a premise), or if the
+            directive count disagrees with the briefs.
     """
+    if directives is not None and len(directives) != len(briefs):
+        message = (
+            f"directives ({len(directives)}) and briefs ({len(briefs)}) must "
+            "be the same length; they pair index-wise"
+        )
+        raise ValueError(message)
     if len(skeletons) != len(briefs):
         message = (
             f"skeletons ({len(skeletons)}) and briefs ({len(briefs)}) must be "
@@ -741,6 +940,9 @@ async def run_comparison(
                     provider,
                     pii,
                     stage1_gate="skipped",
+                    differentiation_directive=(
+                        directives[index] if directives is not None else ""
+                    ),
                 )
             except Exception as exc:  # one book's failure must not void the batch
                 # A comparison over N vendors is expensive; losing every prior
@@ -1126,7 +1328,12 @@ def _pairs(summary: dict[str, float]) -> str:
     return f"{count} pair" if count == 1 else f"{count} pairs"
 
 
-def _print_report(report: ComparisonReport, *, structure_varies: bool = True) -> None:
+def _print_report(
+    report: ComparisonReport,
+    *,
+    structure_varies: bool = True,
+    directed: bool = False,
+) -> None:
     """Print the human-readable summary to stdout.
 
     Args:
@@ -1135,6 +1342,12 @@ def _print_report(report: ComparisonReport, *, structure_varies: bool = True) ->
             not, the within-vendor number is a shared-structure figure and the
             printer says so, because 3.3 is the obvious thing a reader will
             compare it against and that comparison would not be like for like.
+        directed: Whether any fill was given a differentiation directive. A
+            directed run measures the DIRECTED floor, not the raw one
+            (`AL-498`), so the two must never be pooled. Recording that in the
+            report metadata alone is not enough: the console summary is what an
+            operator reads and pastes into a calibration record, so it has to
+            carry the same caveat.
     """
     print("=" * 72)
     print("Cross-vendor fill comparison")
@@ -1156,15 +1369,22 @@ def _print_report(report: ComparisonReport, *, structure_varies: bool = True) ->
         )
     print()
     print("Shared four-grams per 1000 leaf words (different-brief pairs):")
-    if structure_varies:
-        print(
-            "  within-vendor pairs share nothing but the model and the band, "
-            "the condition the 3.3 floor was measured under."
-        )
-    else:
+    if not structure_varies:
         print(
             "  one skeleton for every brief: within-vendor pairs share "
             "structure, so these are NOT comparable to the 3.3 floor."
+        )
+    elif directed:
+        print(
+            "  a differentiation directive was injected into these fills, so "
+            "this is the DIRECTED floor and is NOT comparable to the 3.3 "
+            "floor, which was measured undirected."
+        )
+    else:
+        print(
+            "  within-vendor pairs share nothing but the model and the band, "
+            "and no differentiation directive was passed: the condition the "
+            "3.3 floor was measured under."
         )
     # "within " is 7 characters, so padding the bucket names to 7 wider than the
     # widest vendor label keeps both kinds of row sharing one "mean" column.
@@ -1487,6 +1707,20 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--differentiation",
+        type=Path,
+        default=None,
+        help=(
+            "JSON array of per-brief differentiation specs, index-aligned with "
+            "--briefs: null for an undirected fill, or an object with optional "
+            "'level' (tree/leaf/catalog), 'axis' (a variation-axis key), "
+            "'prior_titles' and 'prior_theme_tags'. Rendered through the "
+            "production build_differentiation_directive, so the run measures "
+            "the block production would send (AL-498). Omitting the flag "
+            "fills undirected, exactly as every run before it existed."
+        ),
+    )
+    parser.add_argument(
         "--out", required=True, type=Path, help="Directory for report.json and books/."
     )
     parser.add_argument(
@@ -1697,6 +1931,16 @@ def main(argv: list[str] | None = None) -> int:
 
     briefs = _load_briefs(briefs_path)
     skeletons = _load_skeletons(skeleton_paths, len(briefs))
+    differentiation_path: Path | None = (
+        None
+        if args.differentiation is None  # pyright: ignore[reportAny]
+        else Path(str(args.differentiation)).resolve()  # pyright: ignore[reportAny]
+    )
+    directives = (
+        None
+        if differentiation_path is None
+        else _load_differentiation(differentiation_path, len(briefs))
+    )
 
     if mock:
         # A slate given alongside --mock is still loaded and validated, so the
@@ -1748,6 +1992,7 @@ def main(argv: list[str] | None = None) -> int:
             settings=settings,
             max_tokens=max_tokens,
             out_dir=out_dir,
+            directives=directives,
         )
     )
     report = analyze(records)
@@ -1765,7 +2010,14 @@ def main(argv: list[str] | None = None) -> int:
             ),
         )
     distinct_skeletons = len({p.name for p in skeleton_paths})
-    _print_report(report, structure_varies=distinct_skeletons > 1)
+    _print_report(
+        report,
+        structure_varies=distinct_skeletons > 1,
+        # Any non-empty rendered directive makes this a directed run. An
+        # all-null spec renders every entry as "", which is byte-identical to
+        # passing no flag at all, so it must NOT read as directed.
+        directed=bool(directives) and any(directives),
+    )
     meta: dict[str, object] = {
         "skeletons": [p.name for p in skeleton_paths],
         # A within-vendor pair is only the 3.3 quantity ("sharing nothing but
@@ -1774,6 +2026,16 @@ def main(argv: list[str] | None = None) -> int:
         # comparing a shared-structure figure against that floor.
         "structure_varies": distinct_skeletons > 1,
         "brief_count": len(briefs),
+        # AL-498: a directed run and an undirected run measure different
+        # quantities (the directed floor against the raw floor). The rendered
+        # directives are recorded verbatim so the report says which one it is,
+        # and what each fill was actually told.
+        # An all-null spec renders every entry as "", which is exactly what
+        # passing no flag does, so record None rather than a truthy list of
+        # empty strings that a consumer's `if meta[...]` would read as directed.
+        "differentiation_directives": (
+            directives if directives and any(directives) else None
+        ),
         "mock": mock,
         "vendors": [
             {
