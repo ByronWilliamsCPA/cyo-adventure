@@ -420,6 +420,29 @@ against the current contract and instruments. The five defects above are each ca
 lesson with a register row; items 2 through 5 are tooling-scale work, and item 1 is a design
 decision the owner already holds (`UW-C315`'s lever question).
 
+## 7.6 The mid-band fill-rate hole is substantially vendor-shaped (UW-C317)
+
+With credits restored, the two worst mid-band grid pairs were re-run on the production-family
+model (`anthropic/claude-sonnet-5`, amazon-bedrock/global pin, probed):
+
+| Pair (identical skeleton and brief) | v4-pro fill rate | sonnet-5 fill rate | v4-pro in-band | sonnet-5 in-band |
+| --- | ---: | ---: | ---: | ---: |
+| the-half-hour-call (8-11, balloon night-glow) | 58.9% (floor FAIL) | **66.7%** (pass) | 67% | **90%** (FK 4.18 on a 4.5 target) |
+| the-iron-spire-trial (13-16 gb, mast-trial) | 56.7% (floor FAIL) | **80.4%** (pass) | 43% | **61%** (FK 6.60 on a 7.0 target) |
+
+Both sonnet books passed the gate first-attempt at $3.27 for the pair (the 13-16 gamebook book
+alone cost $2.43 at bedrock prices, a 7x unit-cost premium over v4-pro worth carrying into any
+bulk budget). Neither book delivers its full commission, so the `words=` directive is
+under-honored everywhere, but the floor-relevant hole is v4-pro's: the production-family model
+clears the 0.6 floor on exactly the pairs v4-pro fails, with band conformance to match. The
+sonnet same-band cross-skeleton pair also measured 0.99 per 1000, inside budget, consistent
+with every other cross-skeleton measurement. Both books rethemed their titles and ending
+titles, now legal under ruling 8.3, and their frozen fields are clean by construction: these
+are the first books filled through the section 8.2 normalizer, so frozen drift, if the model
+produced any, was restored before the gate rather than measured. The mutation census therefore
+stops being a model-behavior instrument on normalized books, which is the ruling doing its job;
+the normalizer's own restoration log is the behavior signal going forward.
+
 ## 8. Owner rulings (2026-08-21)
 
 Three rulings were made by the owner on 2026-08-21, in this round's session, on the three
