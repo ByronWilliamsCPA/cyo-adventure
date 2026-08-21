@@ -48,13 +48,26 @@ from compare_skeleton_authors import (  # noqa: E402
     _extract_json,
 )
 
-BASE_URL = os.environ.get(
-    "MODAL_KIMI_BASE_URL",
-    "https://williaby--ep-kimi-k3-server.us-west.modal.direct",
-)
-MODEL = "moonshotai/Kimi-K3"
-LEG = "moonshot-kimi-k3-modal"
-FAMILY = "moonshot"
+_PRESETS = {
+    "kimi": {
+        "base_url": "https://williaby--ep-kimi-k3-server.us-west.modal.direct",
+        "model": "moonshotai/Kimi-K3",
+        "leg": "moonshot-kimi-k3-modal",
+        "family": "moonshot",
+    },
+    "deepseek-v4-pro": {
+        "base_url": (
+            "https://williaby--ep-deepseek-v4-pro-server.us-west.modal.direct"
+        ),
+        "model": "",  # resolved from /v1/models at preflight
+        "leg": "deepseek-v4-pro-modal",
+        "family": "deepseek",
+    },
+}
+BASE_URL = ""
+MODEL = ""
+LEG = ""
+FAMILY = ""
 MAX_TOKENS = 65_536  # the registered e1r3 run condition
 MAX_REPAIR_ROUNDS = 6  # ditto
 CALL_TIMEOUT_S = 900.0
@@ -212,6 +225,7 @@ def run_grid_point(
 def main(argv: list[str] | None = None) -> int:
     """CLI entry point."""
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser.add_argument("--endpoint", default="kimi", choices=sorted(_PRESETS))
     parser.add_argument("--cell", required=True)
     parser.add_argument("--replicates", type=int, default=3)
     parser.add_argument("--prompts", required=True)
@@ -226,9 +240,19 @@ def main(argv: list[str] | None = None) -> int:
     )
     attempt_dir.mkdir(parents=True, exist_ok=True)
 
+    global BASE_URL, MODEL, LEG, FAMILY  # noqa: PLW0603
+    preset = _PRESETS[args.endpoint]
+    BASE_URL = preset["base_url"]
+    LEG = preset["leg"]
+    FAMILY = preset["family"]
     with httpx.Client(headers=_auth_headers(), timeout=CALL_TIMEOUT_S) as client:
         models = client.get(f"{BASE_URL}/v1/models")
         models.raise_for_status()
+        served = [m.get("id") for m in models.json().get("data", [])]
+        MODEL = preset["model"] or (served[0] if served else "")
+        if not MODEL or (preset["model"] and preset["model"] not in served):
+            print(f"Error: endpoint serves {served}", file=sys.stderr)
+            return 1
         print(f"preflight ok: {BASE_URL} serves {MODEL}", flush=True)
         for replicate in range(1, args.replicates + 1):
             run_grid_point(
