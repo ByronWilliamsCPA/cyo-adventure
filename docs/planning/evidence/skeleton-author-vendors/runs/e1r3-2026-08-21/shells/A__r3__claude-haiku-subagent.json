@@ -277,6 +277,11 @@
    "choices": [
     {
      "id": "choice_017a",
+     "label": "Search deeper in the snowbank",
+     "target": "node_018"
+    },
+    {
+     "id": "choice_017b",
      "label": "Run to the dark shape",
      "target": "node_019"
     }

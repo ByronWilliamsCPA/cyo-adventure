@@ -7,15 +7,16 @@
  "style": "prose",
  "replicate": 2,
  "premise": "Tomas and his grandmother build a kite for the spring festival, but the wind keeps changing and every new design needs testing.",
- "attempts": 3,
- "repair_rounds": 2,
+ "attempts": 4,
+ "repair_rounds": 3,
  "strict_pass": false,
  "first_pass_clean": false,
  "parse_failures": 0,
  "findings_lines_per_round": [
   3,
   2,
-  5
+  5,
+  3
  ],
  "graph_check_exit": 0,
  "latency_s": 0.0,
@@ -26,7 +27,7 @@
  "min_catalog_distance": null,
  "mean_catalog_distance": null,
  "catalog_distance_note": "shell not coercible against any of 5 peers",
- "last_feedback": "ERROR   L1-3   node=design-learning-ending L1-3 reach: node 'design-learning-ending' is unreachable from start_node 'morning-at-home' in story 'tomas-kite-festival'\nERROR   L1-3   node=strong-foundation-ending L1-3 reach: node 'strong-foundation-ending' is unreachable from start_node 'morning-at-home' in story 'tomas-kite-festival'\nERROR   L1-7   L1-7 budget: ending_count out of range in story 'tomas-kite-festival': 7 (allowed 8..8)\nERROR   L1-7   L1-7 budget: branch_depth out of range in story 'tomas-kite-festival': 10 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r2__claude-haiku-subagent.json failed structural validation: L1-3 reach: node 'design-learning-ending' is unreachable from start_node 'morning-at-home' in story 'tomas-kite-festival'; L1-3 reach: node 'strong-foundation-ending' is unreachable from start_node 'morning-at-home' in story 'tomas-kite-festival'; L1-7 budget: ending_count out of range in story 'tomas-kite-festival': 7 (allowed 8..8); L1-7 budget: branch_depth out of range in story 'tomas-kite-festival': 10 (allowed 0..7)",
+ "last_feedback": "ERROR   L1-7   L1-7 budget: ending_count out of range in story 'tomas-kite-festival': 7 (allowed 8..8)\nERROR   L1-7   L1-7 budget: branch_depth out of range in story 'tomas-kite-festival': 9 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r2__claude-haiku-subagent.json failed structural validation: L1-7 budget: ending_count out of range in story 'tomas-kite-festival': 7 (allowed 8..8); L1-7 budget: branch_depth out of range in story 'tomas-kite-festival': 9 (allowed 0..7)",
  "shell_file": "shells/A__r2__claude-haiku-subagent.json",
  "error": ""
 }

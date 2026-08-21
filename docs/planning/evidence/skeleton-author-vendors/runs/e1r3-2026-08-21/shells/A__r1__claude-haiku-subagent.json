@@ -7,7 +7,7 @@
   "age_band": "5-8",
   "length": "short",
   "narrative_style": "prose",
-  "topology": "branch_and_bottleneck",
+  "topology": "time_cave",
   "tier": 1,
   "production_eligible": false,
   "reading_level": {
@@ -22,7 +22,7 @@
    "farm animals",
    "adventure"
   ],
-  "estimated_minutes": 12,
+  "estimated_minutes": 5,
   "ending_count": 7,
   "content_flags": {
    "violence": "none",
@@ -39,8 +39,13 @@
    "is_ending": false,
    "choices": [
     {
-     "id": "c_enter_henhouse",
-     "label": "Open the henhouse door",
+     "id": "c_enter_fast",
+     "label": "Rush to the henhouse",
+     "target": "n_opening"
+    },
+    {
+     "id": "c_enter_slow",
+     "label": "Walk slowly and look around",
      "target": "n_opening"
     }
    ]
@@ -139,6 +144,11 @@
      "id": "c_park_tog_1",
      "label": "Follow the feathers trail",
      "target": "n_feathers_trail"
+    },
+    {
+     "id": "c_park_tog_2",
+     "label": "Mark the spot and ask for help",
+     "target": "n_find_adult"
     }
    ]
   },
@@ -151,6 +161,11 @@
      "id": "c_bush_1",
      "label": "Keep looking by the pond",
      "target": "n_pond_area"
+    },
+    {
+     "id": "c_bush_2",
+     "label": "Head to the orchards",
+     "target": "n_orchard_search"
     }
    ]
   },
@@ -273,6 +288,11 @@
     {
      "id": "c_adult_1",
      "label": "Thank her and go home",
+     "target": "n_ending_adult_help"
+    },
+    {
+     "id": "c_adult_2",
+     "label": "Search together in the garden",
      "target": "n_ending_adult_help"
     }
    ]

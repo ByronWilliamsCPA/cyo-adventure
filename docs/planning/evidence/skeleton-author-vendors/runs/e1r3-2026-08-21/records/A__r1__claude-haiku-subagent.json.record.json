@@ -7,8 +7,8 @@
  "style": "prose",
  "replicate": 1,
  "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
- "attempts": 5,
- "repair_rounds": 4,
+ "attempts": 6,
+ "repair_rounds": 5,
  "strict_pass": false,
  "first_pass_clean": false,
  "parse_failures": 0,
@@ -17,7 +17,8 @@
   10,
   3,
   5,
-  4
+  4,
+  3
  ],
  "graph_check_exit": 0,
  "latency_s": 0.0,
@@ -25,10 +26,10 @@
  "output_tokens": null,
  "reasoning_tokens": null,
  "finish_reasons": [],
- "min_catalog_distance": 0.34459794169352115,
- "mean_catalog_distance": 0.3958607967841978,
+ "min_catalog_distance": 0.15043519738405398,
+ "mean_catalog_distance": 0.3527287018846401,
  "catalog_distance_note": "vs 5 in-cell peers",
- "last_feedback": "ERROR   PL-29  PL-29 topology: band '5-8' may not declare 'branch_and_bottleneck' (allowed: ['loop_and_grow', 'open_map', 'time_cave']) in story 'missing-hen-lucy'\nWARNING PL-23  PL-23 clock: declared estimated_minutes 12 differs from the derived fastest-finish clock 5 min (480 words on the shortest satisfying path at 90 wpm) by 140% in story 'missing-hen-lucy' (advisory only)\nWARNING CG-1   node=n_wade_rescue CG-1 grammar: 10 of 17 non-ending nodes are single-choice, above band '5-8's 50% allowance of 8 in story 'missing-hen-lucy'; the band's cadence is an average, so a long scene is fine only if the story spends decisions elsewhere (advisory only, new-content grammar per ADR-011 section 10)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r1__claude-haiku-subagent.json failed structural validation: PL-29 topology: band '5-8' may not declare 'branch_and_bottleneck' (allowed: ['loop_and_grow', 'open_map', 'time_cave']) in story 'missing-hen-lucy'",
+ "last_feedback": "ERROR   PL-18  PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'missing-hen-lucy'\nERROR   PL-25  PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'missing-hen-lucy'\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r1__claude-haiku-subagent.json failed structural validation: PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'missing-hen-lucy'; PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'missing-hen-lucy'",
  "shell_file": "shells/A__r1__claude-haiku-subagent.json",
  "error": ""
 }
