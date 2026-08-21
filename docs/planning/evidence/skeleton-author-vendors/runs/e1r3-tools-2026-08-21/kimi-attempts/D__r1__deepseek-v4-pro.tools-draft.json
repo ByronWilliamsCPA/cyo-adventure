@@ -616,13 +616,13 @@
     },
     {
      "id": "c_027_b",
-     "label": "Go to the museum with this information",
-     "target": "n_029"
+     "label": "Trace the Ashworth family",
+     "target": "n_023"
     },
     {
      "id": "c_027_c",
-     "label": "Tell Mira about the care home",
-     "target": "n_031"
+     "label": "Go to the museum with this information",
+     "target": "n_029"
     }
    ]
   },
@@ -665,8 +665,8 @@
     },
     {
      "id": "c_029_c",
-     "label": "Ask the curator to display it with Elaras diary",
-     "target": "n_039"
+     "label": "Find the Ashworth family first",
+     "target": "n_023"
     }
    ]
   },
