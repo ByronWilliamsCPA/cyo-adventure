@@ -80,7 +80,7 @@
   },
   {
    "id": "drag-marks",
-   "body": "<<FILL role=decision words=38 beats='the drag marks slide toward the pines while a blue jay scolds overhead; fat flakes are already filling the marks in; behind Priya the giant bottom drift waits with its crash dent; she must choose before the trail fades to smooth white'>>",
+   "body": "<<FILL role=decision words=38 beats='the drag marks slide toward the pines while a blue jay scolds overhead, flapping off toward a gap in the trees; fat flakes are already filling the marks in; Priya must choose fast, keep tracking the fading marks or chase the loud jay toward its clearing'>>",
    "is_ending": false,
    "choices": [
     {
@@ -90,8 +90,8 @@
     },
     {
      "id": "c30",
-     "label": "Go back to the big drift",
-     "target": "bottom-drift"
+     "label": "Chase the scolding jay",
+     "target": "jay-clearing"
     }
    ]
   },
