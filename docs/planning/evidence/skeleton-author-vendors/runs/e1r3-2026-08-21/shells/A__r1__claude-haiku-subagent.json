@@ -1,0 +1,509 @@
+{
+ "schema_version": "2.0",
+ "id": "missing-hen-lucy",
+ "version": 1,
+ "title": "Where Is Lucy?",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 3,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "problem-solving",
+   "responsibility",
+   "kindness",
+   "farm animals",
+   "adventure"
+  ],
+  "estimated_minutes": 12,
+  "ending_count": 7,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "n_opening",
+ "nodes": [
+  {
+   "id": "n_opening",
+   "body": "<<FILL role=setup words=70 beats='Miri arrives Monday morning to feed the three school hens. Big brown Bess clucks hello. Orange Pepper pecks grain. But small gray Lucy is gone from the henhouse.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_opening_1",
+     "label": "Look around the yard first",
+     "target": "n_yard_search"
+    },
+    {
+     "id": "c_opening_2",
+     "label": "Tell the teacher right away",
+     "target": "n_tell_teacher"
+    }
+   ]
+  },
+  {
+   "id": "n_yard_search",
+   "body": "<<FILL role=explore words=70 beats='Miri searches behind the toolshed and by the gate. She finds a gap in the fence near the rose bushes. A chicken could squeeze through there easily.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_yard_1",
+     "label": "Check the park across the street",
+     "target": "n_park"
+    },
+    {
+     "id": "c_yard_2",
+     "label": "Walk to the neighboring houses",
+     "target": "n_neighbors"
+    }
+   ]
+  },
+  {
+   "id": "n_tell_teacher",
+   "body": "<<FILL role=explore words=70 beats='Mrs. Chen listens carefully and nods. She says Lucy might have escaped through the fence. She gives Miri a bag of sunflower seeds. Lucy loves these seeds.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tell_1",
+     "label": "Search the park with the seeds",
+     "target": "n_park_with_seeds"
+    },
+    {
+     "id": "c_tell_2",
+     "label": "Check the neighbors first",
+     "target": "n_neighbors"
+    }
+   ]
+  },
+  {
+   "id": "n_park",
+   "body": "<<FILL role=explore words=70 beats='The park is full of trees and bushes. Miri walks the paths calling Lucy softly. A girl riding a bike notices her and stops.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_park_1",
+     "label": "Ask the girl if she saw a hen",
+     "target": "n_girl_help"
+    },
+    {
+     "id": "c_park_2",
+     "label": "Keep searching the bushes alone",
+     "target": "n_bushes_alone"
+    }
+   ]
+  },
+  {
+   "id": "n_park_with_seeds",
+   "body": "<<FILL role=explore words=70 beats='Miri shakes the seed bag through the park calling Lucy. Birds come, but not Lucy. She sits by the pond feeling worried and tired.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_park_seeds_1",
+     "label": "Check the pond edge carefully",
+     "target": "n_pond_edge"
+    },
+    {
+     "id": "c_park_seeds_2",
+     "label": "Go search the old garden",
+     "target": "n_old_garden"
+    }
+   ]
+  },
+  {
+   "id": "n_neighbors",
+   "body": "<<FILL role=explore words=70 beats='Miri walks to the blue house next to school. An old man is sweeping his porch. He smiles and asks what she is looking for.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_neigh_1",
+     "label": "Tell him about Lucy",
+     "target": "n_old_man"
+    },
+    {
+     "id": "c_neigh_2",
+     "label": "Ask if he saw anything strange",
+     "target": "n_old_man_ask"
+    }
+   ]
+  },
+  {
+   "id": "n_girl_help",
+   "body": "<<FILL role=explore words=70 beats='The girl says she just arrived. She has never seen a chicken here. But she smiles and offers to help search with Miri.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_girl_1",
+     "label": "Search the woods together",
+     "target": "n_woods_together"
+    }
+   ]
+  },
+  {
+   "id": "n_bushes_alone",
+   "body": "<<FILL role=explore words=60 beats='Miri pushes through tall bushes. A rabbit darts out. Only leaves and dirt, no hen here.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bush_1",
+     "label": "Keep looking farther",
+     "target": "n_tired_searching"
+    }
+   ]
+  },
+  {
+   "id": "n_pond_edge",
+   "body": "<<FILL role=explore words=70 beats='At the pond Miri sees ducks and a turtle. Then a flutter of gray and white. Lucy is on a rock in the middle of the water!'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pond_1",
+     "label": "Wade in and reach Lucy",
+     "target": "n_wade_in"
+    },
+    {
+     "id": "c_pond_2",
+     "label": "Find a grownup to help",
+     "target": "n_pond_help"
+    }
+   ]
+  },
+  {
+   "id": "n_old_garden",
+   "body": "<<FILL role=explore words=70 beats='The overgrown garden is quiet. Miri hears soft peeping. Between weeds and old fence rails, Lucy pecks at seeds happily.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ogarden_1",
+     "label": "Gently call Lucy over",
+     "target": "n_garden_reunion"
+    }
+   ]
+  },
+  {
+   "id": "n_old_man",
+   "body": "<<FILL role=explore words=70 beats='When Miri says Lucy is missing, his eyes light up. He tells her a small gray hen visited his yard yesterday morning and ate from his garden.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_osman_1",
+     "label": "Ask to search his garden",
+     "target": "n_mans_garden"
+    }
+   ]
+  },
+  {
+   "id": "n_old_man_ask",
+   "body": "<<FILL role=explore words=70 beats='He says maybe he saw a gray bird on Monday. He is not quite sure. He invites Miri to look around his house and yard.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_osmanask_1",
+     "label": "Search his yard with him",
+     "target": "n_mans_garden"
+    }
+   ]
+  },
+  {
+   "id": "n_woods_together",
+   "body": "<<FILL role=explore words=70 beats='The girl and Miri search deeper into the trees. Bright sun comes through the leaves. They find feathers under an old oak tree.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_woods_1",
+     "label": "Follow the trail of feathers",
+     "target": "n_feathers_found"
+    }
+   ]
+  },
+  {
+   "id": "n_tired_searching",
+   "body": "<<FILL role=decision words=70 beats='The sun is setting. Miri sits on a park bench tired. An older girl sits down next to her and asks if something is wrong.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tired_1",
+     "label": "Tell the girl about Lucy",
+     "target": "n_girl_sits"
+    },
+    {
+     "id": "c_tired_2",
+     "label": "Go home for today",
+     "target": "n_give_up_day1"
+    }
+   ]
+  },
+  {
+   "id": "n_wade_in",
+   "body": "<<FILL role=decision words=70 beats='Cold water splashes Miri. She wades slowly toward the rock. Lucy flaps and squawks. Miri reaches her and grabs her muddy but safe.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_wade_1",
+     "label": "Run back to school with Lucy",
+     "target": "n_ending_found_wet"
+    }
+   ]
+  },
+  {
+   "id": "n_pond_help",
+   "body": "<<FILL role=explore words=70 beats='Miri finds a man fixing his fence. She tells him about Lucy. He smiles and gives her a long stick to help with the rescue.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pond_help_1",
+     "label": "Use the stick to help Lucy",
+     "target": "n_stick_rescue"
+    }
+   ]
+  },
+  {
+   "id": "n_garden_reunion",
+   "body": "<<FILL role=climax words=70 beats='Lucy looks up and clucks happily. She hops toward Miri. Miri scoops her up warm and dusty from her rest in the garden.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_garden_reunion_1",
+     "label": "Carry Lucy home to school",
+     "target": "n_ending_found_garden"
+    }
+   ]
+  },
+  {
+   "id": "n_mans_garden",
+   "body": "<<FILL role=climax words=70 beats='In his big vegetable garden, Miri spots gray feathers and wings. Under a tomato plant Lucy sleeps in a cozy dust bath.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_mans_garden_1",
+     "label": "Gently scoop Lucy up",
+     "target": "n_ending_found_mans_garden"
+    }
+   ]
+  },
+  {
+   "id": "n_feathers_found",
+   "body": "<<FILL role=explore words=70 beats='The feathers are from another bird, not Lucy. But ahead by the stream, something moves. A small gray bird shape in the ferns!'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_feathers_1",
+     "label": "Quietly chase it",
+     "target": "n_chase_lucy_woods"
+    }
+   ]
+  },
+  {
+   "id": "n_girl_sits",
+   "body": "<<FILL role=explore words=70 beats='The girl listens and says she wants to help. She knows many kids in the neighborhood. They search together until her mom picks her up.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_girl_sits_1",
+     "label": "Ask her mom to help tomorrow",
+     "target": "n_mom_helps"
+    }
+   ]
+  },
+  {
+   "id": "n_give_up_day1",
+   "body": "<<FILL role=transition words=70 beats='Miri walks home sad. Mrs. Chen will be upset. Maybe Lucy will come back. Miri cannot sleep that night, worried about Lucy alone outside.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_giveup_1",
+     "label": "Search again at dawn Tuesday",
+     "target": "n_tuesday_dawn"
+    }
+   ]
+  },
+  {
+   "id": "n_stick_rescue",
+   "body": "<<FILL role=climax words=70 beats='With the long stick, Miri carefully hooks Lucy and pulls her to shore. Lucy squawks and flaps. The man helps Miri carry her back safe.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_stick_1",
+     "label": "Thank the man and rush home",
+     "target": "n_ending_stick_rescue"
+    }
+   ]
+  },
+  {
+   "id": "n_ending_found_wet",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Mrs. Chen laughs at soaking wet Miri and muddy Lucy. Lucy is safe and hungry. Miri learns that small hens can be tough. She fixes the fence gap.'>>",
+   "choices": [],
+   "ending": {
+    "id": "e_found_wet",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Wet Rescue"
+   }
+  },
+  {
+   "id": "n_ending_found_garden",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Mrs. Chen hugs Miri and praises her bravery. Lucy clucks happily in the henhouse. Miri thanks the neighbors. Lucy stays closer to home.'>>",
+   "choices": [],
+   "ending": {
+    "id": "e_found_garden",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Found in the Garden"
+   }
+  },
+  {
+   "id": "n_ending_found_mans_garden",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Lucy wakes and clucks at Miri. The old man gives tomatoes to take home. Lucy has made a friend. Miri visits him and Lucy every week.'>>",
+   "choices": [],
+   "ending": {
+    "id": "e_found_mans_garden",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A New Friend Helps"
+   }
+  },
+  {
+   "id": "n_chase_lucy_woods",
+   "body": "<<FILL role=climax words=70 beats='Lucy runs deeper into the trees. Miri and the girl follow, calling and calling. Lucy stops by a stream and waits for them.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_chase_1",
+     "label": "Slowly approach Lucy",
+     "target": "n_calm_lucy_woods"
+    }
+   ]
+  },
+  {
+   "id": "n_mom_helps",
+   "body": "<<FILL role=explore words=70 beats='The girl's mom is kind and friendly. She drives them around calling for Lucy. No sign of her, but she promises to help search tomorrow too.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_mom_1",
+     "label": "Make missing hen posters",
+     "target": "n_make_posters"
+    }
+   ]
+  },
+  {
+   "id": "n_tuesday_dawn",
+   "body": "<<FILL role=transition words=70 beats='Tuesday morning, Miri checks the fence area with bread crumbs. The sun rises pink over the school yard. She calls Lucy softly.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tues_1",
+     "label": "Scatter crumbs and listen carefully",
+     "target": "n_crumbs_call"
+    }
+   ]
+  },
+  {
+   "id": "n_ending_stick_rescue",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Mrs. Chen thanks the kind man. Lucy is safe and excited to see Bess and Pepper. Miri feels brave. She learns to never give up.'>>",
+   "choices": [],
+   "ending": {
+    "id": "e_stick_rescue",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Brave Rescue"
+   }
+  },
+  {
+   "id": "n_calm_lucy_woods",
+   "body": "<<FILL role=climax words=70 beats='Miri kneels down slowly and whispers soft clucks. Lucy stops running and hops toward her. Miri catches her warm and safe.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_calm_1",
+     "label": "Carry Lucy out of the woods",
+     "target": "n_ending_woods_found"
+    }
+   ]
+  },
+  {
+   "id": "n_make_posters",
+   "body": "<<FILL role=transition words=70 beats='Miri and the girl draw Lucy's picture and write her name. They hang posters around the neighborhood. That evening, a neighbor calls!'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_poster_1",
+     "label": "Run to the neighbor's house fast",
+     "target": "n_neighbor_call"
+    }
+   ]
+  },
+  {
+   "id": "n_crumbs_call",
+   "body": "<<FILL role=explore words=70 beats='Miri scatters bread crumbs around the fence and calls softly. Nothing at first. Then a familiar cluck and Lucy walks out from behind the shed.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_crumbs_1",
+     "label": "Scoop up Lucy gently",
+     "target": "n_ending_tuesday_found"
+    }
+   ]
+  },
+  {
+   "id": "n_ending_woods_found",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Miri and the girl bring Lucy back to school. Mrs. Chen is relieved and grateful. The girl becomes Miri's best friend. They help care for Lucy.'>>",
+   "choices": [],
+   "ending": {
+    "id": "e_woods_found",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Friend in Need"
+   }
+  },
+  {
+   "id": "n_neighbor_call",
+   "body": "<<FILL role=climax words=70 beats='Mrs. Lee from down the street has Lucy! Lucy got stuck behind boxes in her shed. Mrs. Lee fed her and kept her safe and warm.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_neighbor_1",
+     "label": "Thank Mrs. Lee and take Lucy home",
+     "target": "n_ending_poster_found"
+    }
+   ]
+  },
+  {
+   "id": "n_ending_tuesday_found",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Miri hugs Lucy tight. Lucy was hiding behind the shed the whole time, scared. Miri fixes the shed door so it stays open. Lucy is home.'>>",
+   "choices": [],
+   "ending": {
+    "id": "e_tuesday_found",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Hidden All Along"
+   }
+  },
+  {
+   "id": "n_ending_poster_found",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='The posters worked! Mrs. Lee was happy to help. Lucy gets treats. Miri learns that asking for help makes a big difference. The girl stays her friend.'>>",
+   "choices": [],
+   "ending": {
+    "id": "e_poster_found",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Help Brings Lucy Home"
+   }
+  }
+ ]
+}

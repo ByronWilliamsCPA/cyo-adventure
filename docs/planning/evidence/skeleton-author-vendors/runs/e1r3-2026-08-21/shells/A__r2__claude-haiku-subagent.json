@@ -1,0 +1,638 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-kite-festival",
+ "version": 1,
+ "title": "Tomas's Kite for the Spring Festival",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "loop_and_grow",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 4.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "creativity",
+   "teamwork",
+   "perseverance",
+   "family bonds",
+   "festival celebration"
+  ],
+  "estimated_minutes": 8,
+  "ending_count": 7,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "morning-at-home",
+ "nodes": [
+  {
+   "id": "morning-at-home",
+   "body": "<<FILL role=setup words=70 beats='Tomas wakes up excited about the spring festival. His grandmother Abuela is in the kitchen making breakfast. Tomas tells her about the big kite-flying contest happening this afternoon at the field.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-quick-kite",
+     "label": "Ask Abuela if they can make a kite right now",
+     "target": "plan-kite"
+    },
+    {
+     "id": "ch-worried",
+     "label": "Tell Abuela they won't have enough time to build a kite",
+     "target": "worried-time"
+    }
+   ]
+  },
+  {
+   "id": "worried-time",
+   "body": "<<FILL role=explore words=68 beats='Tomas worries they won't have time. Abuela smiles and says she saved special sticks and string for months. She was waiting for the right day to use them with him.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-hopeful",
+     "label": "Feel hopeful and excited again",
+     "target": "plan-kite"
+    }
+   ]
+  },
+  {
+   "id": "plan-kite",
+   "body": "<<FILL role=decision words=75 beats='At the table, Tomas and Abuela sketch kite designs with pencils. Tomas suggests a big diamond kite. Abuela mentions a traditional box kite from her childhood. They could also try a simple triangular design that's easy to control.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-diamond",
+     "label": "Build the diamond kite",
+     "target": "gather-materials-diamond"
+    },
+    {
+     "id": "ch-box",
+     "label": "Build the box kite",
+     "target": "gather-materials-box"
+    },
+    {
+     "id": "ch-triangle",
+     "label": "Build the triangle kite",
+     "target": "gather-materials-triangle"
+    }
+   ]
+  },
+  {
+   "id": "gather-materials-diamond",
+   "body": "<<FILL role=explore words=72 beats='Tomas and Abuela gather two long sticks and string from the garage. They find old plastic bags and cut them. Abuela ties the bags to the sticks to make the kite body. Tomas carefully knots the string for flying the kite.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-launch-diamond",
+     "label": "Go outside to test the diamond kite",
+     "target": "first-test-flight"
+    }
+   ]
+  },
+  {
+   "id": "gather-materials-box",
+   "body": "<<FILL role=explore words=74 beats='Building a box kite is harder than they thought. Abuela finds four sturdy sticks and they shape them into a square. Tomas helps wrap colored tape around the corners. They use cloth cut into panels and tie them on with strong twine.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-launch-box",
+     "label": "Take the box kite outside to test it",
+     "target": "first-test-flight"
+    }
+   ]
+  },
+  {
+   "id": "gather-materials-triangle",
+   "body": "<<FILL role=explore words=70 beats='Tomas picks three sticks and arranges them in a triangle shape. Abuela ties them at the corners with strong twine. They stretch light cloth over the frame. Abuela says simple designs often work the best for catching wind.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-launch-triangle",
+     "label": "Test the triangle kite outside",
+     "target": "first-test-flight"
+    }
+   ]
+  },
+  {
+   "id": "first-test-flight",
+   "body": "<<FILL role=explore words=73 beats='They go to the empty field behind Abuela's house. The wind is soft and gentle in the morning. Tomas holds the kite while Abuela unwinds the string. Tomas releases the kite. It wobbles and then catches the wind.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-flies-good",
+     "label": "The kite soars high into the sky",
+     "target": "kite-flying-well"
+    },
+    {
+     "id": "ch-flies-bad",
+     "label": "The kite spins and falls quickly",
+     "target": "kite-crashes"
+    }
+   ]
+  },
+  {
+   "id": "kite-flying-well",
+   "body": "<<FILL role=explore words=72 beats='The kite dances in the wind and climbs higher. Tomas laughs as he holds the string. The kite is doing great. But then the wind shifts direction suddenly. Clouds move across the sky. The wind is changing constantly.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-keep-flying",
+     "label": "Keep flying and see what happens next",
+     "target": "wind-changes-strong"
+    },
+    {
+     "id": "ch-bring-down",
+     "label": "Bring the kite down to study it carefully",
+     "target": "study-design"
+    }
+   ]
+  },
+  {
+   "id": "kite-crashes",
+   "body": "<<FILL role=explore words=70 beats='The kite crashes to the ground. Tomas runs to pick it up. One of the sticks is cracked. Abuela kneels down beside him and points out where the frame weakened. Maybe they need stronger materials for better testing.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-fix-it",
+     "label": "Repair the kite with new materials",
+     "target": "repair-kite"
+    },
+    {
+     "id": "ch-new-design",
+     "label": "Build a completely different kite design",
+     "target": "new-kite-design"
+    }
+   ]
+  },
+  {
+   "id": "wind-changes-strong",
+   "body": "<<FILL role=explore words=75 beats='The wind becomes stronger and choppier than before. The kite jerks and tugs hard on the string in Tomas's hands. The kite swings wildly side to side. It's beautiful but also scary. Abuela stands ready to help if something goes wrong.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-hold-tight",
+     "label": "Hold the string and manage the wild flying",
+     "target": "manage-wild-wind"
+    },
+    {
+     "id": "ch-land-safely",
+     "label": "Run closer to land the kite safely",
+     "target": "landing-kite"
+    }
+   ]
+  },
+  {
+   "id": "study-design",
+   "body": "<<FILL role=explore words=71 beats='They bring the kite down safely and sit in the grass. Abuela traces her finger along the frame and cloth. She talks about how wind pushes and pulls differently. The kite needs to be stronger in certain places for better testing.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-reinforce",
+     "label": "Add extra support to make it stronger",
+     "target": "strengthen-kite"
+    },
+    {
+     "id": "ch-lighter",
+     "label": "Make it lighter using thinner materials",
+     "target": "lighten-kite"
+    }
+   ]
+  },
+  {
+   "id": "repair-kite",
+   "body": "<<FILL role=explore words=69 beats='Abuela finds a spare stick in her craft box that is exactly the right size. She shows Tomas how to lash it to the cracked stick with strong twine. Tomas helps by holding both sticks steady. The frame feels solid again.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-test-repaired",
+     "label": "Test the repaired kite again",
+     "target": "second-test-flight"
+    }
+   ]
+  },
+  {
+   "id": "new-kite-design",
+   "body": "<<FILL role=explore words=72 beats='Back inside, Tomas and Abuela spread materials on the table again. Tomas wants something completely different this time. Maybe a smaller kite that won't be so hard to control. Or one with a long tail to help balance it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-small-tail",
+     "label": "Build a smaller kite with a flowing tail",
+     "target": "build-tail-kite"
+    },
+    {
+     "id": "ch-sturdy-big",
+     "label": "Build a bigger, sturdier kite from stronger materials",
+     "target": "build-strong-kite"
+    }
+   ]
+  },
+  {
+   "id": "manage-wild-wind",
+   "body": "<<FILL role=explore words=70 beats='Tomas holds the string firmly. His arms strain but he doesn't let go. The kite dances and flips in the strong gusts. It's hard to control but thrilling. Abuela cheers for him. Then the wind eases. The kite steadies.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-triumph",
+     "label": "Feel proud of keeping the kite flying",
+     "target": "moment-of-pride"
+    },
+    {
+     "id": "ch-scared",
+     "label": "Worry the kite might break in the strong wind",
+     "target": "landing-kite"
+    }
+   ]
+  },
+  {
+   "id": "landing-kite",
+   "body": "<<FILL role=explore words=68 beats='Tomas lets out string slowly and walks backward to land the kite. It descends gently into the soft grass without any damage. Tomas feels relieved. He and Abuela sit down to rest and talk about what they learned today.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-analyze",
+     "label": "Discuss how to improve the kite design",
+     "target": "lessons-learned"
+    },
+    {
+     "id": "ch-time-check",
+     "label": "Check the time and worry about the festival",
+     "target": "time-pressure"
+    }
+   ]
+  },
+  {
+   "id": "strengthen-kite",
+   "body": "<<FILL role=explore words=71 beats='Abuela brings tape and strong twine. They wrap extra bands around the corners and joints where the kite shows stress. Tomas helps reinforce the connection between the frame and cloth. The kite now feels much sturdier in their hands.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-test-strong",
+     "label": "Test the stronger kite outside again",
+     "target": "second-test-flight"
+    }
+   ]
+  },
+  {
+   "id": "lighten-kite",
+   "body": "<<FILL role=explore words=69 beats='Abuela finds tissue-thin paper in her art supplies. They carefully replace the heavier cloth with lighter material. The kite is now so light it almost floats. Tomas lifts it and feels how much easier it is to hold.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-test-light",
+     "label": "Test the lighter kite in the field",
+     "target": "second-test-flight"
+    }
+   ]
+  },
+  {
+   "id": "second-test-flight",
+   "body": "<<FILL role=explore words=71 beats='Back in the field, Tomas launches the improved kite. This time it climbs more smoothly. The wind is lighter than before. The kite floats more steadily now. But Tomas can still feel it pulling in unpredictable ways.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-steady",
+     "label": "The kite flies with steady balance",
+     "target": "balanced-kite-flight"
+    },
+    {
+     "id": "ch-still-bad",
+     "label": "The kite still wobbles and spins too much",
+     "target": "still-unstable-flight"
+    }
+   ]
+  },
+  {
+   "id": "build-tail-kite",
+   "body": "<<FILL role=explore words=71 beats='They build a kite half the size of the first one. From cloth scraps they fashion a long, flowing tail. Abuela explains that the tail helps the kite stay balanced by dragging below and keeping things centered in the wind.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-launch-tail",
+     "label": "Launch the small kite with the tail",
+     "target": "tail-flight-test"
+    }
+   ]
+  },
+  {
+   "id": "build-strong-kite",
+   "body": "<<FILL role=explore words=73 beats='Tomas wants to build something bigger and impressive for the festival. They gather every strong stick and strip of cloth they can find. Abuela warns that bigger kites are harder to fly. But Tomas is confident. Together they construct a huge kite.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-launch-big",
+     "label": "Take the big, strong kite outside to test it",
+     "target": "big-kite-test"
+    }
+   ]
+  },
+  {
+   "id": "moment-of-pride",
+   "body": "<<FILL role=transition words=70 beats='The kite soars in the strong wind. Tomas feels like he and the kite are dancing together. The string sings in his hands. This is what flying should feel like. Abuela laughs and claps. They both know this kite is ready for the festival.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-to-festival",
+     "label": "Head to the spring festival to compete",
+     "target": "festival-day"
+    }
+   ]
+  },
+  {
+   "id": "lessons-learned",
+   "body": "<<FILL role=explore words=70 beats='Tomas and Abuela sit under the shade tree. They talk about what the changing wind taught them. Abuela tells stories about flying kites in her childhood. Tomas realizes kite flying is about learning together, not just winning.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-revise",
+     "label": "Use these lessons to revise the kite once more",
+     "target": "final-redesign"
+    },
+    {
+     "id": "ch-accept",
+     "label": "Accept the kite as it is and trust their work",
+     "target": "acceptance-choice"
+    }
+   ]
+  },
+  {
+   "id": "time-pressure",
+   "body": "<<FILL role=explore words=69 beats='Tomas checks Abuela's watch. The festival starts in just two hours. They don't have time to test and rebuild the kite many more times. Abuela says they need to make a choice now about moving forward.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-quick-fix",
+     "label": "Make one quick fix and head to the festival",
+     "target": "quick-fix-final"
+    },
+    {
+     "id": "ch-go-now",
+     "label": "Leave for the festival with the kite as it is",
+     "target": "hurry-to-festival"
+    }
+   ]
+  },
+  {
+   "id": "balanced-kite-flight",
+   "body": "<<FILL role=explore words=70 beats='The improved kite stays level and true. Tomas can feel it responding to every small shift of his hands on the string. This is what they were working toward. The design works. The repairs held strong.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-feel-ready",
+     "label": "Feel confident the kite is ready for the festival",
+     "target": "confidence-ready"
+    }
+   ]
+  },
+  {
+   "id": "still-unstable-flight",
+   "body": "<<FILL role=explore words=70 beats='The repaired kite still tilts and dips unpredictably. It seems like the original design itself has a flaw that repairs cannot fix. Tomas feels frustrated. Abuela puts a hand on his shoulder and says sometimes a fresh start helps.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-try-new",
+     "label": "Start completely fresh with a new design",
+     "target": "radical-redesign"
+    }
+   ]
+  },
+  {
+   "id": "tail-flight-test",
+   "body": "<<FILL role=explore words=71 beats='The small kite with the long tail lifts off easily. The tail streams below like a beautiful ribbon in the wind. The kite rises smoothly and steadily. It's easier to control than the bigger kite. The tail really does help.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-tail-wins",
+     "label": "The tail design is working perfectly well",
+     "target": "tail-success-ending"
+    }
+   ]
+  },
+  {
+   "id": "big-kite-test",
+   "body": "<<FILL role=explore words=70 beats='Tomas and Abuela carry the huge kite to the field together. When Tomas releases it, the kite lurches upward with tremendous power. But it's very hard to steer. The wind grabs it and pulls in different directions.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-control",
+     "label": "Try to control the powerful kite carefully",
+     "target": "control-power"
+    },
+    {
+     "id": "ch-too-much",
+     "label": "The kite is too powerful to handle safely",
+     "target": "too-powerful-ending"
+    }
+   ]
+  },
+  {
+   "id": "final-redesign",
+   "body": "<<FILL role=explore words=71 beats='Tomas and Abuela go home with new ideas from their learning. They reshape the frame slightly using their new knowledge. They adjust how the cloth attaches. They add a small tail. Every change is based on what they learned from testing.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-final-test",
+     "label": "Test the redesigned kite one last time",
+     "target": "final-flight-test"
+    }
+   ]
+  },
+  {
+   "id": "acceptance-choice",
+   "body": "<<FILL role=transition words=69 beats='Tomas looks at the kite they made together. It has repairs and patches but it's theirs. Abuela says the best kite is the one you make with someone you love. Tomas agrees completely. They're ready for the festival now.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-go-fest",
+     "label": "Head to the festival to fly the kite proudly",
+     "target": "festival-day"
+    }
+   ]
+  },
+  {
+   "id": "quick-fix-final",
+   "body": "<<FILL role=explore words=68 beats='Abuela quickly tightens the string connections. Tomas adds extra wraps of tape at the weak corners. It's not a full rebuild but it should help them at the festival. They pack up the kite and rush out the door.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-rush",
+     "label": "Rush to the festival with the quick-fixed kite",
+     "target": "festival-day"
+    }
+   ]
+  },
+  {
+   "id": "hurry-to-festival",
+   "body": "<<FILL role=explore words=69 beats='Tomas and Abuela hurry to the festival carrying their untested kite. They didn't have time for another test flight. Tomas feels nervous about flying it for the first time in front of everyone. But Abuela believes in their work together.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-enter",
+     "label": "Enter the contest and test the kite in front of others",
+     "target": "festival-day"
+    }
+   ]
+  },
+  {
+   "id": "confidence-ready",
+   "body": "<<FILL role=explore words=68 beats='Tomas stands tall with the kite string in his hands. He and Abuela worked hard together. They tested. They learned. They fixed problems. The kite is ready. He feels proud and confident about the festival.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-head-fest",
+     "label": "Happily head to the spring festival now",
+     "target": "festival-day"
+    }
+   ]
+  },
+  {
+   "id": "radical-redesign",
+   "body": "<<FILL role=explore words=70 beats='Back at the table, they start completely fresh with new materials. This time they build a hexagon-shaped kite instead of traditional designs. Different sticks arranged differently. Abuela helps but lets Tomas lead the new design.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-hex-test",
+     "label": "Test the new hexagon kite design outdoors",
+     "target": "hexagon-test"
+    }
+   ]
+  },
+  {
+   "id": "control-power",
+   "body": "<<FILL role=explore words=70 beats='Tomas holds tight to the string. His muscles strain. The huge kite pulls powerfully. But slowly he gets better control. He leans back and manages the power with his whole body. Abuela watches proudly. This kite demands real respect and skill.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-power-fest",
+     "label": "Take the powerful kite to the festival",
+     "target": "festival-day"
+    }
+   ]
+  },
+  {
+   "id": "final-flight-test",
+   "body": "<<FILL role=explore words=71 beats='The redesigned kite takes to the air beautifully. All their improvements work together. The tail helps balance. The reinforced frame holds strong. The adjusted cloth angle catches the wind perfectly now.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-to-fest-final",
+     "label": "Head to the festival with confidence",
+     "target": "festival-day"
+    }
+   ]
+  },
+  {
+   "id": "hexagon-test",
+   "body": "<<FILL role=explore words=70 beats='The hexagon kite launches and immediately feels different from all their other designs. The shape distributes wind differently across its surfaces. It's more stable than the others. Tomas and Abuela smile. This new design is a real breakthrough.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-hex-fest",
+     "label": "Take the breakthrough hexagon kite to the festival",
+     "target": "festival-day"
+    }
+   ]
+  },
+  {
+   "id": "festival-day",
+   "body": "<<FILL role=climax words=75 beats='Tomas and Abuela arrive at the spring festival. The field is filled with children flying colorful kites. The contest is beginning. Tomas holds his kite proudly. He feels nervous and excited. Every lesson he learned prepares him for this moment right now.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-contest-fly",
+     "label": "Launch the kite in the official festival contest",
+     "target": "contest-outcome"
+    }
+   ]
+  },
+  {
+   "id": "contest-outcome",
+   "body": "<<FILL role=explore words=72 beats='Tomas stands on the festival field. Dozens of kites fly around him. The wind picks up and shifts. Tomas launches his kite. It rises high. The crowd watches carefully. The wind swirls around them. Everything they prepared for comes down to this.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-win",
+     "label": "The kite dances perfectly and impresses everyone",
+     "target": "victory-ending"
+    },
+    {
+     "id": "ch-good",
+     "label": "The kite flies well but doesn't win the contest",
+     "target": "respectable-ending"
+    },
+    {
+     "id": "ch-crash",
+     "label": "The kite crashes despite all their preparation",
+     "target": "failure-ending"
+    }
+   ]
+  },
+  {
+   "id": "victory-ending",
+   "body": "<<FILL role=ending words=80 beats='The judges notice Tomas's kite immediately. It flies with grace and control. It stays airborne longer and higher than most others. The wind shifts and the kite adapts beautifully every time. Tomas wins the blue ribbon. Abuela hugs him tight. They celebrate their masterpiece together under the festival sun.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-victory",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Festival Champion"
+   }
+  },
+  {
+   "id": "respectable-ending",
+   "body": "<<FILL role=ending words=78 beats='Tomas's kite flies well and stays in the air throughout the contest. It doesn't win first place but receives special recognition for teamwork and creative effort. Tomas feels proud of what he and Abuela built together. Winning wasn't everything. The time and learning together mattered most.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-respectable",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Different Kind of Win"
+   }
+  },
+  {
+   "id": "failure-ending",
+   "body": "<<FILL role=ending words=76 beats='Despite all their preparation, the kite wobbles and falls during the contest. Tomas feels disappointed at first. But Abuela reminds him of everything they learned and discovered together. Failure taught them more than success could ever teach. Next year they'll build something even better.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-failure",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Learning Through Failure"
+   }
+  },
+  {
+   "id": "too-powerful-ending",
+   "body": "<<FILL role=ending words=75 beats='The huge kite is too powerful for Tomas to control safely. The string yanks hard and he nearly loses his footing. Abuela quickly helps bring it down before anything breaks. They both laugh about how powerful the kite is. Maybe smaller designs are smarter choices.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-too-big",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Size Matters in Flying"
+   }
+  },
+  {
+   "id": "tail-success-ending",
+   "body": "<<FILL role=ending words=76 beats='The small kite with the beautiful flowing tail becomes the surprise hit of the festival today. Many judges comment on its elegant design and perfect balance. Tomas and Abuela didn't build the biggest kite but they built the smartest one. Sometimes clever and small beats big and strong.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-tail-success",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Elegance Wins"
+   }
+  }
+ ]
+}
