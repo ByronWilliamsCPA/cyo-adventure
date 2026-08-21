@@ -217,6 +217,11 @@ MAX_FILL_OUTPUT_TOKENS = 131_072
 # new default to `core/config.py` without a row here fails the suite.
 # #VERIFY: test_fill_output_cap.py::test_a_small_output_model_clamps_the_cap_down
 # covers the clamp and ::test_an_unknown_model_gets_the_default the passthrough.
+# A trailing date or build stamp on a model id, as in
+# `deepseek/deepseek-chat-v3.1-0813`. Four to eight digits so a version segment
+# like `claude-sonnet-4-6` or `claude-haiku-4-5` is NOT mistaken for one.
+_DATED_VARIANT_SUFFIX_RE = re.compile(r"-\d{4,8}$")
+
 MODEL_OUTPUT_CAPS: dict[str, int] = {
     "deepseek/deepseek-v4-pro": 393_216,
     "deepseek/deepseek-v4-flash": 384_000,
@@ -279,7 +284,25 @@ def resolve_output_cap(
     """
     if model is None:
         return default
-    return min(default, MODEL_OUTPUT_CAPS.get(model, default))
+    cap = MODEL_OUTPUT_CAPS.get(model)
+    if cap is None:
+        # #CRITICAL: data-integrity: a dated or pinned variant does not match
+        # its own undated row, and the comment above MODEL_OUTPUT_CAPS names
+        # that as the live way into the permissive fallback:
+        # `deepseek/deepseek-chat-v3.1-0813` took 131,072 against a real 32,768,
+        # four times what the backend can emit, and the over-ask truncates
+        # NON-EMPTY, which `AL-479` establishes is not leg-fatal and therefore
+        # spends the whole repair budget. Falling back to the undated row is
+        # strictly safer than the default: it can only lower the cap, so the
+        # error direction is engaging the chunked path too early rather than
+        # asking for prose the endpoint will not emit. A variant whose real
+        # ceiling is HIGHER than its base still needs its own row, because this
+        # table is looked up and never inferred.
+        # #VERIFY: test_a_dated_variant_inherits_its_undated_row.
+        base = _DATED_VARIANT_SUFFIX_RE.sub("", model)
+        if base != model:
+            cap = MODEL_OUTPUT_CAPS.get(base)
+    return min(default, cap if cap is not None else default)
 
 
 _TOKENS_PER_FILL_WORD = 2.0

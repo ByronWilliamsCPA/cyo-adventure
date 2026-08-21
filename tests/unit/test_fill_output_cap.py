@@ -17,6 +17,7 @@ import pytest
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.generation.skeleton import (
+    _DATED_VARIANT_SUFFIX_RE,
     _FILL_WORDS_RE,
     MAX_FILL_OUTPUT_TOKENS,
     MODEL_OUTPUT_CAPS,
@@ -94,13 +95,24 @@ def test_every_configured_default_model_has_a_cap() -> None:
     ceilings of 64,000 and 128,000, so `fill_skeleton` over-asked and
     `is_fill_feasible` never refused anything (`AL-428`).
 
-    `ollama_model` is exempt on purpose: a locally-served model's output ceiling
-    is set by the deployment's runtime configuration, not by a vendor, so there
-    is no value to look up. Adding any new default to `core/config.py` fails
-    this test until it is either given a row or added here deliberately.
+    The candidate set is DERIVED from `Settings`, not listed here. A hardcoded
+    tuple made the docstring's promise false: it named three fields, so the
+    exemption below could never fire and a newly added default was checked only
+    if someone also edited the tuple. Five of the eight `*_model` fields were
+    outside it, including `review_openrouter_model`.
+
+    Exemptions, each because no vendor fill ceiling exists to look up rather
+    than for convenience: the two `ollama` fields are locally served, so the
+    ceiling is the deployment's runtime configuration; `cover_model` is an image
+    model, and this table governs fill output tokens. A `None` default is
+    skipped, which covers `modal_model`.
     """
-    exempt = {"ollama_model"}
-    fields = ("openrouter_model", "openrouter_fallback_model", "anthropic_model")
+    exempt = {"ollama_model", "review_ollama_model", "cover_model"}
+    fields = tuple(name for name in Settings.model_fields if name.endswith("_model"))
+    assert set(exempt) <= set(fields), (
+        f"exempt names no longer in Settings: {set(exempt) - set(fields)}"
+    )
+    assert len(fields) > len(exempt), "derivation found no checkable model field"
     missing = [
         (name, default)
         for name in fields
@@ -160,6 +172,45 @@ def test_the_fill_word_pattern_matches_the_mutation_core() -> None:
     accounting into the other.
     """
     assert _FILL_WORDS_RE.pattern == _MUTATION_FILL_WORDS_RE.pattern
+
+
+@pytest.mark.unit
+def test_a_dated_variant_inherits_its_undated_row() -> None:
+    """A dated or pinned variant must not take the permissive default.
+
+    The comment above `MODEL_OUTPUT_CAPS` names this as the live route into the
+    fallback: `deepseek/deepseek-chat-v3.1-0813` matched no row and resolved to
+    131,072 against a real 32,768, four times what the backend emits. The
+    over-ask truncates non-empty, which `AL-479` establishes is not leg-fatal,
+    so it spends the entire repair budget instead of failing fast.
+    """
+    assert resolve_output_cap("deepseek/deepseek-chat-v3.1-0813") == 32_768, (
+        "a dated variant still takes the permissive default, so the clamp is a "
+        "no-op on exactly the ids most likely to be pinned in config"
+    )
+    # An exact row always wins over the fallback.
+    assert resolve_output_cap("deepseek/deepseek-r1-0528") == 32_768
+
+
+@pytest.mark.unit
+def test_a_version_segment_is_not_read_as_a_date() -> None:
+    """The suffix pattern must not eat a one-digit version segment.
+
+    Asserted against the PATTERN, not through `resolve_output_cap`. Every id of
+    this shape in the table today (`claude-sonnet-4-6`, `claude-haiku-4-5`) has
+    its own exact row, so the fallback never runs for them and a resolver-level
+    assertion here would pass under any bound at all: it could not fail. The
+    bound is defensive against a future table that holds a base row like
+    `claude-sonnet-4` while a caller asks for `claude-sonnet-4-6`, where a
+    greedy `-\\d+$` would silently inherit the wrong ceiling.
+    """
+    assert _DATED_VARIANT_SUFFIX_RE.search("deepseek/deepseek-chat-v3.1-0813")
+    assert _DATED_VARIANT_SUFFIX_RE.search("claude-sonnet-4-6") is None, (
+        "a one-digit version segment is being read as a date stamp, so a model "
+        "id would inherit its base model's ceiling instead of its own"
+    )
+    assert _DATED_VARIANT_SUFFIX_RE.search("claude-haiku-4-5") is None
+    assert _DATED_VARIANT_SUFFIX_RE.search("anthropic/claude-haiku-4.5") is None
 
 
 @pytest.mark.unit
