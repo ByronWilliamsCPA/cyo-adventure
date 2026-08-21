@@ -1,0 +1,545 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-festival-kite",
+ "version": 1,
+ "title": "The Kite That Chased the Wind",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "perseverance",
+   "family teamwork",
+   "creative problem solving",
+   "patience"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 7,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "workshop-morning",
+ "nodes": [
+  {
+   "id": "workshop-morning",
+   "body": "<<FILL role=setup words=75 beats='Tomas and Grandma Rosa sit at the kitchen table with paper scraps, string, and bamboo sticks; the spring festival kite contest is on Saturday; the wind sock on the porch flips north, then east, then flat; they must pick a kite shape that can handle a wind that keeps changing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-workshop-diamond",
+     "label": "Build a red diamond kite",
+     "target": "diamond-frame"
+    },
+    {
+     "id": "c-workshop-box",
+     "label": "Build a box kite",
+     "target": "box-frame"
+    }
+   ]
+  },
+  {
+   "id": "diamond-frame",
+   "body": "<<FILL role=explore words=70 beats='They cross two bamboo sticks, tie the middle tight, and glue red tissue paper over the frame; the window rattles as the wind teases them; Grandma Rosa says a diamond kite is quick but jumpy, and Tomas wonders whether to test it right away or steady it with a tail first'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-diamond-hill",
+     "label": "Test it on Windy Hill",
+     "target": "hill-gust"
+    },
+    {
+     "id": "c-diamond-tail",
+     "label": "Braid a tail for it first",
+     "target": "tail-workshop"
+    }
+   ]
+  },
+  {
+   "id": "box-frame",
+   "body": "<<FILL role=explore words=70 beats='They roll stiff paper into tubes and build a box kite with open ends; Grandma Rosa says box kites love strong wind; outside, the pine tops on the ridge sway one way and then the other, so the two of them will need to test it and check every string'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-box-meadow",
+     "label": "Test it in the low meadow",
+     "target": "meadow-lull"
+    },
+    {
+     "id": "c-box-knots",
+     "label": "Ask Grandma to check the knots",
+     "target": "knot-lesson"
+    }
+   ]
+  },
+  {
+   "id": "hill-gust",
+   "body": "<<FILL role=explore words=70 beats='First test on Windy Hill; the kite leaps up, then a sudden gust snaps one bamboo stick with a crack; the red diamond flops down on the grass; Tomas holds the broken stick and thinks about how to make the kite fly again'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-gust-mend",
+     "label": "Mend the stick with a garden cane",
+     "target": "mend-cane"
+    },
+    {
+     "id": "c-gust-rebuild",
+     "label": "Rebuild the frame with new wood",
+     "target": "cedar-rebuild"
+    }
+   ]
+  },
+  {
+   "id": "tail-workshop",
+   "body": "<<FILL role=explore words=65 beats='Back at the table they braid a tail from cloth scraps of an old apron; too short and the kite will spin, too heavy and it will sag; while they braid, the wind outside dies flat and then puffs hard again, and one bamboo stick bends worryingly when Tomas flexes it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-tail-frame",
+     "label": "Make the frame lighter too",
+     "target": "cedar-rebuild"
+    },
+    {
+     "id": "c-tail-double",
+     "label": "Tie on a second ribbon tail",
+     "target": "double-tail"
+    }
+   ]
+  },
+  {
+   "id": "meadow-lull",
+   "body": "<<FILL role=explore words=70 beats='They test the box kite in the low meadow, but the air goes completely still and the kite sits down in the clover; Grandma Rosa points at the ridge, where the treetops still flutter, and says the wind is up there hiding; Tomas wants to learn its tricks'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-meadow-window",
+     "label": "Learn to spot the moving air",
+     "target": "wind-window"
+    },
+    {
+     "id": "c-meadow-knots",
+     "label": "Check every knot while waiting",
+     "target": "knot-drill"
+    }
+   ]
+  },
+  {
+   "id": "knot-lesson",
+   "body": "<<FILL role=explore words=65 beats='Grandma Rosa tugs the bridle strings and one knot slips loose; she teaches Tomas the fisherman knot she learned as a girl on the harbor docks; while they practice, the flag over the bakery snaps around to a brand new direction'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-lesson-drill",
+     "label": "Practice the knot until it holds",
+     "target": "knot-drill"
+    },
+    {
+     "id": "c-lesson-vents",
+     "label": "Cut vent flaps for big gusts",
+     "target": "vent-flaps"
+    }
+   ]
+  },
+  {
+   "id": "mend-cane",
+   "body": "<<FILL role=decision words=70 beats='They splint the snapped stick with a thin garden cane and strong glue; the mended kite is a little heavier now, but the joint holds when Tomas presses it; outside, the evening wind swirls in slow circles around Windy Hill, hard to predict'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-mend-dusk",
+     "label": "Try a practice flight at dusk",
+     "target": "dusk-practice"
+    },
+    {
+     "id": "c-mend-rest",
+     "label": "Rest the kite until festival morning",
+     "target": "festival-morning-hill"
+    }
+   ]
+  },
+  {
+   "id": "cedar-rebuild",
+   "body": "<<FILL role=decision words=75 beats='Grandma Rosa planes two cedar strips thin and smooth, and Tomas rebuilds the diamond frame lighter and straighter than before; wood shavings curl like little waves on the floor; the new kite feels eager in his hands, tugging even at the breeze from the open door'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-cedar-dusk",
+     "label": "Test the new frame at dusk",
+     "target": "dusk-practice"
+    },
+    {
+     "id": "c-cedar-save",
+     "label": "Save it for the festival",
+     "target": "festival-morning-hill"
+    }
+   ]
+  },
+  {
+   "id": "double-tail",
+   "body": "<<FILL role=decision words=60 beats='They tie on two ribbon tails instead of one, and the kite hangs perfectly balanced from the ceiling hook; outside the wind shifts again, blowing in from the sea now and smelling like rain; Tomas taps the tails and watches them swing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-double-dusk",
+     "label": "Fly it once before dark",
+     "target": "dusk-practice"
+    },
+    {
+     "id": "c-double-wait",
+     "label": "Wait for festival morning",
+     "target": "festival-morning-hill"
+    }
+   ]
+  },
+  {
+   "id": "wind-window",
+   "body": "<<FILL role=decision words=70 beats='Grandma Rosa shows Tomas how the ridge trees tell where the wind flows, still air down in the meadow but a moving river of air up high; Tomas practices calling out when a wind window opens and closes; three times he calls it right before the leaves even move'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-window-lane",
+     "label": "Practice in the lane tonight",
+     "target": "lane-practice"
+    },
+    {
+     "id": "c-window-rest",
+     "label": "Rest up for the festival",
+     "target": "festival-morning-flags"
+    }
+   ]
+  },
+  {
+   "id": "knot-drill",
+   "body": "<<FILL role=decision words=65 beats='Tomas reties every bridle knot with the fisherman knot until each one holds; Grandma Rosa tugs each string as hard as she can and nothing slips; it takes twelve tries and his fingers are sore, but the box kite is tight as a drum'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-drill-lane",
+     "label": "Try the kite in the lane",
+     "target": "lane-practice"
+    },
+    {
+     "id": "c-drill-sleep",
+     "label": "Sleep and fly tomorrow",
+     "target": "festival-morning-flags"
+    }
+   ]
+  },
+  {
+   "id": "vent-flaps",
+   "body": "<<FILL role=decision words=65 beats='They cut small vent flaps in the box kite panels so big gusts can blow through instead of tearing the paper; careful scissor lines, tape at every corner; Grandma Rosa blows through a flap to test it and the paper puffs like a tiny sail'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-vents-lane",
+     "label": "Test the vents tonight",
+     "target": "lane-practice"
+    },
+    {
+     "id": "c-vents-safe",
+     "label": "Keep it safe until morning",
+     "target": "festival-morning-flags"
+    }
+   ]
+  },
+  {
+   "id": "festival-morning-hill",
+   "body": "<<FILL role=transition words=70 beats='Festival morning; overnight the wind changed again and now blows brisk and steady off the sea; banners fill the square, churro carts steam, and the red diamond kite waits by the door; Grandma Rosa asks whether they should hurry to the hill or join the parade'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-fmh-early",
+     "label": "Hurry to the hilltop early",
+     "target": "hilltop-early"
+    },
+    {
+     "id": "c-fmh-parade",
+     "label": "March in with the parade",
+     "target": "crowd-field"
+    }
+   ]
+  },
+  {
+   "id": "dusk-practice",
+   "body": "<<FILL role=transition words=75 beats='A practice flight at dusk on Windy Hill; the diamond kite climbs well but keeps dipping to the left, again and again; Grandma Rosa squints at the bridle strings by lantern light and says one string may be a whisker too long; it is getting late and tomorrow is the festival'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-dusk-fix",
+     "label": "Fix the bridle by lantern light",
+     "target": "lantern-fix"
+    },
+    {
+     "id": "c-dusk-sleep",
+     "label": "Leave it and get some sleep",
+     "target": "dipping-kite"
+    }
+   ]
+  },
+  {
+   "id": "festival-morning-flags",
+   "body": "<<FILL role=transition words=70 beats='Festival morning; the flags over the square snap hard in a big pushing wind; the box kite hums softly as Tomas carries it to the field; Grandma Rosa watches the flags and says a wind like this needs a plan for the line'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-fmf-reef",
+     "label": "Fly on a short, reefed line",
+     "target": "reefed-line"
+    },
+    {
+     "id": "c-fmf-full",
+     "label": "Let out the whole spool",
+     "target": "full-spool"
+    }
+   ]
+  },
+  {
+   "id": "lane-practice",
+   "body": "<<FILL role=transition words=75 beats='Evening practice in the lane behind the bakery; the box kite hums in the wind like a happy bee; the neighbor girl Mia is there with her striped kite and offers to lend her smooth wooden reel, much nicer than the old sticking spool Tomas has been using'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-lane-borrow",
+     "label": "Borrow the smooth reel from Mia",
+     "target": "side-by-side"
+    },
+    {
+     "id": "c-lane-own",
+     "label": "Stick with the old wooden spool",
+     "target": "old-spool"
+    }
+   ]
+  },
+  {
+   "id": "hilltop-early",
+   "body": "<<FILL role=climax words=75 beats='They reach Windy Hill first, with dew still on the grass; the sea wind blows long and even at last; the red diamond kite tugs at the line like a puppy ready to run; far below, the judges set up their table and the contest bell waits'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-early-high",
+     "label": "Let out the line for a high climb",
+     "target": "end-blue-ribbon"
+    },
+    {
+     "id": "c-early-steady",
+     "label": "Fly low and rock-steady",
+     "target": "end-steady-sky"
+    }
+   ]
+  },
+  {
+   "id": "crowd-field",
+   "body": "<<FILL role=climax words=70 beats='They arrive with the parade and kites already crowd the sky like confetti; lines cross and dip everywhere over the festival field; a judge rings the first bell; there is one small gap in the crowd of kites, or they could wait for the quieter round at sunset'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-crowd-gap",
+     "label": "Squeeze into a gap and launch",
+     "target": "end-tangled-lines"
+    },
+    {
+     "id": "c-crowd-wait",
+     "label": "Wait for the quiet sunset round",
+     "target": "end-sunset-flight"
+    }
+   ]
+  },
+  {
+   "id": "lantern-fix",
+   "body": "<<FILL role=climax words=75 beats='By lantern light they shorten the left bridle string by two finger widths; at dawn the kite flies straight as an arrow over the garden fence, no dip at all; Tomas whoops; at the festival field the judges are calling for the high-flying contest and the fun-flying field is open too'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-fix-contest",
+     "label": "Enter the high-flying contest",
+     "target": "end-blue-ribbon"
+    },
+    {
+     "id": "c-fix-joy",
+     "label": "Fly it with Grandma just for joy",
+     "target": "end-flying-together"
+    }
+   ]
+  },
+  {
+   "id": "dipping-kite",
+   "body": "<<FILL role=climax words=70 beats='At the festival the kite still dips left every time the wind pushes; the gusts come in big shoves off the sea; Grandma Rosa holds out her weathered hand and offers to hold the line with him, or Tomas can wrestle the dipping kite through the gusts alone'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-dip-alone",
+     "label": "Fly it alone through the gusts",
+     "target": "end-torn-sail"
+    },
+    {
+     "id": "c-dip-share",
+     "label": "Share the line with Grandma",
+     "target": "end-flying-together"
+    }
+   ]
+  },
+  {
+   "id": "reefed-line",
+   "body": "<<FILL role=climax words=75 beats='On the short reefed line the box kite sits steady as a table even in the hard wind; little kids gather under it, mouths open; the judge with the blue sash strolls over to watch; Tomas can enter the steady-flying contest or show the little kids how the kite drinks the wind'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-reef-contest",
+     "label": "Enter the steady-flying contest",
+     "target": "end-steady-sky"
+    },
+    {
+     "id": "c-reef-teach",
+     "label": "Show the little kids how it works",
+     "target": "end-wind-readers"
+    }
+   ]
+  },
+  {
+   "id": "full-spool",
+   "body": "<<FILL role=climax words=70 beats='The box kite hauls line off the spool, up and up, until the string hums like a guitar and the spool jumps in Tomas hands; Grandma Rosa calls a warning over the wind that the line is near its end and the gusts are getting meaner'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-full-last",
+     "label": "Let it climb to the very last turn",
+     "target": "end-torn-sail"
+    },
+    {
+     "id": "c-full-help",
+     "label": "Ask Grandma to hold the reel too",
+     "target": "end-flying-together"
+    }
+   ]
+  },
+  {
+   "id": "side-by-side",
+   "body": "<<FILL role=climax words=75 beats='With the smooth borrowed reel the box kite flies calm and true beside Mia and her striped kite; the two kites ride the same river of air over the festival field; Mia wants to try a looping trick together, but the flags along the square are starting to snap in a new direction'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-side-trick",
+     "label": "Try a looping trick together",
+     "target": "end-tangled-lines"
+    },
+    {
+     "id": "c-side-flags",
+     "label": "Watch the flags and pick the calm lane",
+     "target": "end-wind-readers"
+    }
+   ]
+  },
+  {
+   "id": "old-spool",
+   "body": "<<FILL role=climax words=70 beats='The old wooden spool sticks and jerks as the line runs out; the morning contest wind is fast and mean, but Grandma Rosa says the sunset round will be calmer and kinder to a sticky spool; the first bell rings across the field'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-spool-morning",
+     "label": "Enter the wild morning round",
+     "target": "end-steady-sky"
+    },
+    {
+     "id": "c-spool-sunset",
+     "label": "Wait and fly in the sunset calm",
+     "target": "end-sunset-flight"
+    }
+   ]
+  },
+  {
+   "id": "end-blue-ribbon",
+   "body": "<<FILL role=ending words=80 beats='The red diamond kite climbs higher than every other kite at the festival, a red speck against the blue; the judge pins a blue ribbon to Tomas jacket while Grandma Rosa cheers loudest of all; Tomas remembers every snapped stick and every fix, and grins because the changing wind finally blew their way'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-blue-ribbon",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Blue Ribbon"
+   }
+  },
+  {
+   "id": "end-steady-sky",
+   "body": "<<FILL role=ending words=75 beats='Their kite is not the highest in the sky, but it is the steadiest, holding its place while other kites wobble and dive; the crowd claps and the judge with the blue sash says steady beats lucky every time; Grandma Rosa squeezes Tomas shoulder as they win the steady-flier prize'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-steady-sky",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Steady in the Sky"
+   }
+  },
+  {
+   "id": "end-wind-readers",
+   "body": "<<FILL role=ending words=80 beats='Tomas shows the little kids how the box kite drinks the wind and how treetops and flags tell you where the wind will jump next; he realizes he can read the changing wind now, the very thing that ruined every test all week; Grandma Rosa laughs and says the festival just found its youngest wind teacher'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-wind-readers",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Wind Readers"
+   }
+  },
+  {
+   "id": "end-flying-together",
+   "body": "<<FILL role=ending words=80 beats='Four hands on one line; Tomas and Grandma Rosa steer through every gust together, leaning and laughing as the kite swoops and settles; they do not win a single ribbon and do not care; the kite they built and fixed together dances over the festival all afternoon long'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-flying-together",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Flying Together"
+   }
+  },
+  {
+   "id": "end-sunset-flight",
+   "body": "<<FILL role=ending words=70 beats='They miss the big morning contest, and Tomas feels a small pang about that; but at sunset the tricky wind finally settles smooth and warm; their kite floats in the orange sky over the quiet square, the last kite flying; not a prize day, Grandma Rosa says, but a very good flying day'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-sunset-flight",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Sunset Flight"
+   }
+  },
+  {
+   "id": "end-tangled-lines",
+   "body": "<<FILL role=ending words=75 beats='Two kite lines cross, wrap, and both kites spiral gently down to the grass; Tomas and Mia sit untangling string for ages and end up laughing about it; they trade kite-fixing tricks, plan to fly again tomorrow, and share churros with Grandma Rosa while the festival band plays'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-tangled-lines",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Tangled but Smiling"
+   }
+  },
+  {
+   "id": "end-torn-sail",
+   "body": "<<FILL role=ending words=70 beats='A hard gust rips the sail from corner to corner and the kite sinks slowly to the grass; Tomas blinks back tears as the crowd sighs; Grandma Rosa folds the torn kite as gently as a blanket and promises that next spring they will build an even stronger one, together'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-torn-sail",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Torn Sail"
+   }
+  }
+ ]
+}

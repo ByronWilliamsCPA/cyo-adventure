@@ -7,14 +7,15 @@
  "style": "prose",
  "replicate": 1,
  "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
- "attempts": 2,
- "repair_rounds": 1,
+ "attempts": 3,
+ "repair_rounds": 2,
  "strict_pass": false,
  "first_pass_clean": false,
  "parse_failures": 0,
  "findings_lines_per_round": [
   2,
-  10
+  10,
+  3
  ],
  "graph_check_exit": 0,
  "latency_s": 0.0,
@@ -22,10 +23,10 @@
  "output_tokens": null,
  "reasoning_tokens": null,
  "finish_reasons": [],
- "min_catalog_distance": null,
- "mean_catalog_distance": null,
- "catalog_distance_note": "shell not coercible against any of 5 peers",
- "last_feedback": "ERROR   L1-3   node=n_ending_quiet_garden_found L1-3 reach: node 'n_ending_quiet_garden_found' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'\nERROR   L1-3   node=n_ending_shed_found L1-3 reach: node 'n_ending_shed_found' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'\nERROR   L1-3   node=n_old_shed L1-3 reach: node 'n_old_shed' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'\nERROR   L1-3   node=n_opening_2 L1-3 reach: node 'n_opening_2' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'\nERROR   L1-3   node=n_quiet_garden L1-3 reach: node 'n_quiet_garden' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'\nERROR   L1-3   node=n_quiet_garden_rescue L1-3 reach: node 'n_quiet_garden_rescue' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'\nERROR   L1-3   node=n_search_route L1-3 reach: node 'n_search_route' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'\nERROR   L1-3   node=n_shed_rescue L1-3 reach: node 'n_shed_rescue' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'\nERROR   L1-7   L1-7 budget: ending_count out of range in story 'missing-hen-lucy': 6 (allowed 7..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r1__claude-haiku-subagent.json failed structural validation: L1-3 reach: node 'n_ending_quiet_garden_found' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'; L1-3 reach: node 'n_ending_shed_found' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'; L1-3 reach: node 'n_old_shed' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'; L1-3 reach: node 'n_opening_2' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'; L1-3 reach: node 'n_quiet_garden' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'; L1-3 reach: node 'n_quiet_garden_rescue' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'; L1-3 reach: node 'n_search_route' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'; L1-3 reach: node 'n_shed_rescue' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'; L1-7 budget: ending_count out of range in story 'missing-hen-lucy': 6 (allowed 7..7)",
+ "min_catalog_distance": 0.1520869793190536,
+ "mean_catalog_distance": 0.36466294622558587,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "last_feedback": "ERROR   L1-3   node=n_ending_lost_lucy L1-3 reach: node 'n_ending_lost_lucy' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'\nERROR   L1-3   node=n_ending_lucy_return L1-3 reach: node 'n_ending_lucy_return' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r1__claude-haiku-subagent.json failed structural validation: L1-3 reach: node 'n_ending_lost_lucy' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'; L1-3 reach: node 'n_ending_lucy_return' is unreachable from start_node 'n_opening' in story 'missing-hen-lucy'",
  "shell_file": "shells/A__r1__claude-haiku-subagent.json",
  "error": ""
 }

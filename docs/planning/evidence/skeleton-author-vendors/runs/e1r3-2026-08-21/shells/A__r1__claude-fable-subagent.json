@@ -1,0 +1,551 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "animal care",
+   "problem solving",
+   "helping neighbors",
+   "perseverance"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 7,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=62 beats='Miri unlatches the school coop on the first holiday morning; Clover and Butter hurry out for corn; the smallest hen Pip is not on her perch; Miri counts twice and her tummy flips; three places to look'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-start-coop",
+     "label": "Look inside the coop",
+     "target": "coop"
+    },
+    {
+     "id": "c-start-garden",
+     "label": "Search the garden",
+     "target": "garden"
+    },
+    {
+     "id": "c-start-gate",
+     "label": "Check the gate",
+     "target": "gate"
+    }
+   ]
+  },
+  {
+   "id": "coop",
+   "body": "<<FILL role=explore words=58 beats='inside the coop it smells of warm straw; one brown egg sits in the empty nest of Pip; a floorboard wobbles; tiny three-toed footprints cross the dust toward the back wall'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-coop-boxes",
+     "label": "Peek behind the nesting boxes",
+     "target": "nesting-boxes"
+    },
+    {
+     "id": "c-coop-prints",
+     "label": "Follow the tiny footprints",
+     "target": "footprints"
+    }
+   ]
+  },
+  {
+   "id": "garden",
+   "body": "<<FILL role=explore words=60 beats='bean rows scratched up; a small white feather caught on a sunflower stem; Clover pecks and clucks near the rhubarb patch as if she knows something'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-garden-feather",
+     "label": "Follow the feather trail",
+     "target": "feather-trail"
+    },
+    {
+     "id": "c-garden-rhubarb",
+     "label": "Look under the rhubarb leaves",
+     "target": "rhubarb"
+    }
+   ]
+  },
+  {
+   "id": "gate",
+   "body": "<<FILL role=explore words=60 beats='the gate latch hangs open a crack just wide enough for a small hen; Mr. Okafor waves from next door with his dog Biscuit; a smudge of pale fluff clings to the gatepost'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-gate-okafor",
+     "label": "Ask Mr. Okafor for help",
+     "target": "ask-okafor"
+    },
+    {
+     "id": "c-gate-gap",
+     "label": "Squeeze through the gap",
+     "target": "through-gap"
+    }
+   ]
+  },
+  {
+   "id": "nesting-boxes",
+   "body": "<<FILL role=explore words=60 beats='a dusty corner behind the nesting boxes; a knothole in the wall boards with pale fluff snagged on it; on tiptoe Miri sees the big hedge pressing against the coop outside'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-boxes-hedge",
+     "label": "Crawl into the hedge",
+     "target": "hedge-tunnel"
+    },
+    {
+     "id": "c-boxes-shed",
+     "label": "Check the tool shed",
+     "target": "tool-shed"
+    }
+   ]
+  },
+  {
+   "id": "footprints",
+   "body": "<<FILL role=explore words=58 beats='the footprints march out the pophole and split in two; one line heads straight for the shed door; the other wobbles away toward the old oak on the hill'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-prints-shed",
+     "label": "Follow prints to the shed",
+     "target": "tool-shed"
+    },
+    {
+     "id": "c-prints-oak",
+     "label": "Follow prints to the oak",
+     "target": "old-oak"
+    }
+   ]
+  },
+  {
+   "id": "feather-trail",
+   "body": "<<FILL role=explore words=62 beats='little white feathers every few steps like breadcrumbs; the trail forks where the hedge begins; one last feather far off flutters on the creek path below the old oak'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-feather-hedge",
+     "label": "Duck into the hedge",
+     "target": "hedge-tunnel"
+    },
+    {
+     "id": "c-feather-creek",
+     "label": "Follow the creek path",
+     "target": "old-oak"
+    }
+   ]
+  },
+  {
+   "id": "rhubarb",
+   "body": "<<FILL role=explore words=60 beats='rhubarb leaves like umbrellas; underneath is a scratched hollow that is still warm; Butter squawks at the fence toward the yard of Mr. Okafor; the shed door stands ajar'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-rhubarb-shed",
+     "label": "Slip into the shed",
+     "target": "tool-shed"
+    },
+    {
+     "id": "c-rhubarb-fence",
+     "label": "Hurry to the fence",
+     "target": "okafor-yard"
+    }
+   ]
+  },
+  {
+   "id": "ask-okafor",
+   "body": "<<FILL role=explore words=65 beats='Mr. Okafor listens while Biscuit sniffs the gatepost; he saw a small brown hen scoot past his beans at sunrise; he offers to search his own yard together or points his walking stick up at the old oak'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-ask-yard",
+     "label": "Search his yard together",
+     "target": "okafor-yard"
+    },
+    {
+     "id": "c-ask-oak",
+     "label": "Run to the old oak",
+     "target": "old-oak"
+    }
+   ]
+  },
+  {
+   "id": "through-gap",
+   "body": "<<FILL role=explore words=58 beats='Miri wriggles through the gap just like a hen would; she lands in the narrow lane between hedge and fence; the hedge rustles on one side; the gate to the neighbor yard waits on the other'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-gap-hedge",
+     "label": "Follow the rustling hedge",
+     "target": "hedge-tunnel"
+    },
+    {
+     "id": "c-gap-yard",
+     "label": "Open the neighbor gate",
+     "target": "okafor-yard"
+    }
+   ]
+  },
+  {
+   "id": "hedge-tunnel",
+   "body": "<<FILL role=decision words=62 beats='a green tunnel runs through the hedge, cool and dim; white fluff hangs on the thorns; deeper in there is a dark hollow; off to one side comes a scritch-scratch sound near the compost corner'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-hedge-hollow",
+     "label": "Go deeper to the hollow",
+     "target": "hedge-hollow"
+    },
+    {
+     "id": "c-hedge-scratch",
+     "label": "Follow the scratching sound",
+     "target": "compost-corner"
+    }
+   ]
+  },
+  {
+   "id": "tool-shed",
+   "body": "<<FILL role=decision words=60 beats='the shed smells of earth and string; the seed sack has toppled and spilled a line of seed; the line runs behind the watering cans and dribbles out through a low knothole'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-shed-sack",
+     "label": "Look behind the seed sack",
+     "target": "shed-search"
+    },
+    {
+     "id": "c-shed-trail",
+     "label": "Follow the seed trail outside",
+     "target": "compost-corner"
+    }
+   ]
+  },
+  {
+   "id": "okafor-yard",
+   "body": "<<FILL role=decision words=65 beats='the yard of Mr. Okafor has tidy bean poles and a big compost bin; Biscuit trots with his nose to the ground; Mr. Okafor points past his fence to where the creek glitters'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-yard-biscuit",
+     "label": "Follow Biscuit",
+     "target": "compost-corner"
+    },
+    {
+     "id": "c-yard-creek",
+     "label": "Head for the creek",
+     "target": "creek-bank"
+    }
+   ]
+  },
+  {
+   "id": "old-oak",
+   "body": "<<FILL role=decision words=62 beats='the old oak stands with roots like giant knuckles; a white feather is stuck to the bark; below the slope the creek shines over stepping stones; a faint peep comes from somewhere close'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-oak-roots",
+     "label": "Search between the roots",
+     "target": "oak-roots"
+    },
+    {
+     "id": "c-oak-creek",
+     "label": "Climb down to the creek",
+     "target": "creek-bank"
+    }
+   ]
+  },
+  {
+   "id": "hedge-hollow",
+   "body": "<<FILL role=decision words=60 beats='a little room inside the hedge; feathers and a scooped nest shape in the dry leaves; behind a curtain of brambles comes soft clucking; a narrow tunnel keeps going toward the field'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-hollow-bramble",
+     "label": "Lift the bramble curtain",
+     "target": "bramble-nest"
+    },
+    {
+     "id": "c-hollow-tunnel",
+     "label": "Follow the tunnel on",
+     "target": "burrow-door"
+    }
+   ]
+  },
+  {
+   "id": "shed-search",
+   "body": "<<FILL role=decision words=62 beats='behind the sack the seed is everywhere; a watering can lies on its side and rocks a little, with a muffled peep inside; the seed line also dribbles out the knothole toward the field'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-search-can",
+     "label": "Tip the watering can gently",
+     "target": "watering-can"
+    },
+    {
+     "id": "c-search-hole",
+     "label": "Squeeze out after the seed",
+     "target": "burrow-door"
+    }
+   ]
+  },
+  {
+   "id": "compost-corner",
+   "body": "<<FILL role=decision words=65 beats='by the compost bin the scratching is loud; the lid sits crooked as if something pushed it; a watering can by the tap wobbles all by itself; Miri holds her breath and listens'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-compost-lid",
+     "label": "Open the compost lid slowly",
+     "target": "compost-lid"
+    },
+    {
+     "id": "c-compost-can",
+     "label": "Check the watering can",
+     "target": "watering-can"
+    }
+   ]
+  },
+  {
+   "id": "oak-roots",
+   "body": "<<FILL role=decision words=62 beats='between two big roots is a hollow lined with leaves; white feathers and one warm spot in the middle; from the creek below, a peep echoes off the stones'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-roots-reach",
+     "label": "Reach in softly",
+     "target": "root-nest"
+    },
+    {
+     "id": "c-roots-stones",
+     "label": "Look toward the stepping stones",
+     "target": "stepping-stones"
+    }
+   ]
+  },
+  {
+   "id": "creek-bank",
+   "body": "<<FILL role=decision words=60 beats='pebbles crunch on the creek bank; the stepping stones shine with wet moss; on the flat middle stone a small brown shape preens its feathers; up the slope the oak roots make dark hollows'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-bank-stones",
+     "label": "Cross the stepping stones",
+     "target": "stepping-stones"
+    },
+    {
+     "id": "c-bank-roots",
+     "label": "Check the roots above",
+     "target": "root-nest"
+    }
+   ]
+  },
+  {
+   "id": "watering-can",
+   "body": "<<FILL role=climax words=58 beats='the can rocks and out blinks Pip, dusty all over with seed stuck to her beak; she is wedged in snug and looks quite cross about it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-can-scoop",
+     "label": "Scoop her up gently",
+     "target": "end-safe-straw"
+    },
+    {
+     "id": "c-can-hop",
+     "label": "Let her hop out herself",
+     "target": "end-long-way"
+    }
+   ]
+  },
+  {
+   "id": "bramble-nest",
+   "body": "<<FILL role=climax words=62 beats='behind the brambles sits Pip, fluffed up in the scooped nest and refusing to move; she is sitting on something small and round; her feathers puff bigger when Miri reaches near'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-bramble-peek",
+     "label": "Peek under her wing",
+     "target": "end-secret-egg"
+    },
+    {
+     "id": "c-bramble-lift",
+     "label": "Lift her out carefully",
+     "target": "end-safe-straw"
+    }
+   ]
+  },
+  {
+   "id": "burrow-door",
+   "body": "<<FILL role=climax words=60 beats='at the field edge the trail stops at an old rabbit burrow; seed husks are scattered at its dark mouth; a soft rustle comes from inside, too deep to see'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-burrow-seed",
+     "label": "Scatter seed and wait",
+     "target": "end-rabbit-door"
+    },
+    {
+     "id": "c-burrow-mend",
+     "label": "Head back and mend the gap",
+     "target": "end-feathers-footprints"
+    }
+   ]
+  },
+  {
+   "id": "compost-lid",
+   "body": "<<FILL role=climax words=62 beats='the lid comes up on warm dark compost, wriggly worms, and Pip in the middle of a worm feast with dusty wings; she squawks, very surprised to be found'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-lid-help",
+     "label": "Call for help walking her home",
+     "target": "end-hen-parade"
+    },
+    {
+     "id": "c-lid-reach",
+     "label": "Reach in fast",
+     "target": "end-long-way"
+    }
+   ]
+  },
+  {
+   "id": "root-nest",
+   "body": "<<FILL role=climax words=60 beats='in the leaf-lined hollow between the roots Pip nestles low on a hidden nest; the tip of a smooth warm egg peeks out beneath her; the creek chatters just below the slope'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-root-gentle",
+     "label": "Lift the leaves gently",
+     "target": "end-secret-egg"
+    },
+    {
+     "id": "c-root-grab",
+     "label": "Grab her quickly",
+     "target": "end-muddy-boots"
+    }
+   ]
+  },
+  {
+   "id": "stepping-stones",
+   "body": "<<FILL role=climax words=58 beats='Pip preens on the flat middle stone while water burbles around her; the stones are slick with wet moss; from the path Mr. Okafor calls hello, with Biscuit at his heel'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-stones-call",
+     "label": "Wait and call Pip softly",
+     "target": "end-hen-parade"
+    },
+    {
+     "id": "c-stones-leap",
+     "label": "Leap across fast",
+     "target": "end-muddy-boots"
+    }
+   ]
+  },
+  {
+   "id": "end-safe-straw",
+   "body": "<<FILL role=ending words=68 beats='Miri carries Pip home warm against her jumper; Clover and Butter fuss a loud welcome at the coop door; Pip settles onto her own perch; Miri latches everything twice and grins; three hens, counted and safe'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-safe-straw",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Safe in the Straw"
+   }
+  },
+  {
+   "id": "end-secret-egg",
+   "body": "<<FILL role=ending words=68 beats='under Pip sits one small perfect egg; the little hen had made herself a secret nest; Miri carries hen and egg home and builds Pip a snug nesting box of her very own; Pip settles in like a queen; mystery solved'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-secret-egg",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Secret Egg"
+   }
+  },
+  {
+   "id": "end-hen-parade",
+   "body": "<<FILL role=ending words=66 beats='Mr. Okafor walks on one side, Biscuit trots slow and proud on the other, and Miri herds Pip up the lane; Clover and Butter join the line at the gate; the whole parade marches to the coop; corn for everyone'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-hen-parade",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Hen Parade"
+   }
+  },
+  {
+   "id": "end-feathers-footprints",
+   "body": "<<FILL role=ending words=65 beats='Miri wedges a board across the gate gap and hammers it snug; while she works, Pip strolls back all by herself, dusty and pleased; Miri never finds out where she went, but the gap is mended and tomorrow she will watch closer'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-feathers-footprints",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Feathers and Footprints"
+   }
+  },
+  {
+   "id": "end-long-way",
+   "body": "<<FILL role=ending words=66 beats='Pip leads Miri on a zigzag march past the beans, around the shed, and through the gate; at last Pip trots into the coop all by herself; hen and girl are both tired and hungry; Miri writes the whole adventure in the hen notebook'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-long-way",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Long Way Home"
+   }
+  },
+  {
+   "id": "end-muddy-boots",
+   "body": "<<FILL role=ending words=65 beats='Miri slips on the wet bank with a splash; Pip flutters safely up the slope; Mr. Okafor helps Miri out and walks her home; Pip is already back in the coop looking smug; Miri cleans her muddy boots and learns to move slowly around hens'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-muddy-boots",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Muddy Boots"
+   }
+  },
+  {
+   "id": "end-rabbit-door",
+   "body": "<<FILL role=ending words=68 beats='the seed trail works; Pip pokes out of the burrow, pecking her way seed by seed right up to Miri; scooped up warm and safe; home before lunch with the best story ever, the hen who tried the rabbit door'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-rabbit-door",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Rabbit Door"
+   }
+  }
+ ]
+}

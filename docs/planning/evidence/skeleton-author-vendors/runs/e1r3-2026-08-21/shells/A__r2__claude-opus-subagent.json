@@ -1,0 +1,744 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-and-the-changing-wind",
+ "version": 1,
+ "title": "Tomas and the Changing Wind",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.2,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "perseverance",
+   "family",
+   "invention",
+   "patience",
+   "festival"
+  ],
+  "estimated_minutes": 8,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n01_workshop_night",
+ "nodes": [
+  {
+   "id": "n01_workshop_night",
+   "body": "<<FILL role=setup words=85 beats='Tomas and Abuela Rosa clear the workshop table the night before the Vela Verde spring festival; Abuela lays out three bundles for the kite frame and says the wind on Cerro Alto never blows the same way twice; Pimienta the cat bats a spool of waxed string across the tiles; Tomas has one night to build a kite that can fly in whatever wind shows up'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n01_a",
+     "label": "Pick the bamboo sticks",
+     "target": "n02_bamboo_frame"
+    },
+    {
+     "id": "ch_n01_b",
+     "label": "Pick the river reeds",
+     "target": "n03_reed_frame"
+    },
+    {
+     "id": "ch_n01_c",
+     "label": "Pick the old broom strips",
+     "target": "n04_broom_frame"
+    }
+   ]
+  },
+  {
+   "id": "n02_bamboo_frame",
+   "body": "<<FILL role=explore words=70 beats='Tomas bends a bamboo stick over his knee and it springs back perfectly straight; Abuela ties the cross spar with waxed string and tugs each corner to test it; the frame is light and springy but the joints creak when he lifts it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n02_a",
+     "label": "Cover it with papel picado",
+     "target": "n05_picado_sail"
+    },
+    {
+     "id": "ch_n02_b",
+     "label": "Cover it with the blue apron",
+     "target": "n06_apron_sail"
+    }
+   ]
+  },
+  {
+   "id": "n03_reed_frame",
+   "body": "<<FILL role=explore words=70 beats='the river reeds are so light Tomas can balance the whole frame on one finger; Abuela warns that reeds drink water and go soft as noodles; they prop the finished frame near the stove to dry while they work'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n03_a",
+     "label": "Cover it with papel picado",
+     "target": "n05_picado_sail"
+    },
+    {
+     "id": "ch_n03_b",
+     "label": "Cover it with newspaper",
+     "target": "n07_newspaper_sail"
+    }
+   ]
+  },
+  {
+   "id": "n04_broom_frame",
+   "body": "<<FILL role=explore words=70 beats='Tomas splits the old broom handle into flat strips while Abuela guides the knife with her hand over his; the strips are strong and heavy and smell like cedar; Abuela says a heavy kite is not a bad kite, it is a kite that needs a big wind'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n04_a",
+     "label": "Cover it with the blue apron",
+     "target": "n06_apron_sail"
+    },
+    {
+     "id": "ch_n04_b",
+     "label": "Cover it with newspaper",
+     "target": "n07_newspaper_sail"
+    }
+   ]
+  },
+  {
+   "id": "n05_picado_sail",
+   "body": "<<FILL role=explore words=70 beats='they glue bright papel picado over the frame, orange and pink, and Tomas snips a swallow shape into one corner; the paper crackles like a small fire every time it moves; Abuela names the kite Golondrina, little swallow'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n05_a",
+     "label": "Test her in the courtyard",
+     "target": "n08_courtyard_test"
+    },
+    {
+     "id": "ch_n05_b",
+     "label": "Test her from the rooftop",
+     "target": "n09_rooftop_test"
+    }
+   ]
+  },
+  {
+   "id": "n06_apron_sail",
+   "body": "<<FILL role=explore words=70 beats='Abuela cuts up her old blue apron, the one with the flour stain shaped like a duck, and Tomas stitches it to the frame with big crooked stitches; the cloth is soft and much heavier than paper; Abuela says nothing about the stain and Tomas notices'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n06_a",
+     "label": "Test her in the courtyard",
+     "target": "n08_courtyard_test"
+    },
+    {
+     "id": "ch_n06_b",
+     "label": "Test her from the rooftop",
+     "target": "n09_rooftop_test"
+    }
+   ]
+  },
+  {
+   "id": "n07_newspaper_sail",
+   "body": "<<FILL role=explore words=70 beats='they paste three layers of old newspaper over the frame and the headlines run sideways across the kite; Tomas worries the paper will tear like wet bread; Abuela says paper is brave when it is dry and useless when it is not'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n07_a",
+     "label": "Test her in the courtyard",
+     "target": "n08_courtyard_test"
+    },
+    {
+     "id": "ch_n07_b",
+     "label": "Test her from the rooftop",
+     "target": "n09_rooftop_test"
+    }
+   ]
+  },
+  {
+   "id": "n08_courtyard_test",
+   "body": "<<FILL role=explore words=75 beats='Tomas runs Golondrina around the courtyard while Pimienta chases the string; the kite lifts to the height of the lemon tree, wobbles hard from side to side, and skids down onto the tiles; Abuela watches the chimney smoke instead of the kite and says the wind here is only leftovers'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n08_a",
+     "label": "Add a long rag tail",
+     "target": "n10_add_tail"
+    },
+    {
+     "id": "ch_n08_b",
+     "label": "Move the bridle knot up",
+     "target": "n11_move_bridle"
+    },
+    {
+     "id": "ch_n08_c",
+     "label": "Cut a vent in the sail",
+     "target": "n12_cut_vent"
+    }
+   ]
+  },
+  {
+   "id": "n09_rooftop_test",
+   "body": "<<FILL role=explore words=75 beats='from the flat rooftop the wind arrives in warm pushes off the hills; Golondrina jumps up fast, spins twice like a dropped plate, and dives straight at the water tank; Abuela holds Tomas by the belt loop and laughs until she has to sit down'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n09_a",
+     "label": "Add a long rag tail",
+     "target": "n10_add_tail"
+    },
+    {
+     "id": "ch_n09_b",
+     "label": "Move the bridle knot up",
+     "target": "n11_move_bridle"
+    },
+    {
+     "id": "ch_n09_c",
+     "label": "Stretch a lighter sail",
+     "target": "n13_swap_sail"
+    }
+   ]
+  },
+  {
+   "id": "n10_add_tail",
+   "body": "<<FILL role=decision words=70 beats='Tomas tears an old bedsheet into strips and knots a tail as long as he is tall, with a bow every hand width; Abuela says a tail is not decoration, it is a promise to the wind; Pimienta steals the very last strip and hides under the table with it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n10_a",
+     "label": "Fly her on Cerro Alto",
+     "target": "n14_hill_test_gusty"
+    },
+    {
+     "id": "ch_n10_b",
+     "label": "Fly her by the Rio Manso",
+     "target": "n15_river_test_calm"
+    }
+   ]
+  },
+  {
+   "id": "n11_move_bridle",
+   "body": "<<FILL role=decision words=70 beats='Abuela shows Tomas that the bridle knot decides where the kite looks; he slides the knot two fingers higher and the nose tips down when he holds the string up; they mark the new spot with a loop of red thread so they can find it again'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n11_a",
+     "label": "Fly her on Cerro Alto",
+     "target": "n14_hill_test_gusty"
+    },
+    {
+     "id": "ch_n11_b",
+     "label": "Fly her by the Rio Manso",
+     "target": "n15_river_test_calm"
+    }
+   ]
+  },
+  {
+   "id": "n12_cut_vent",
+   "body": "<<FILL role=decision words=70 beats='Tomas cuts a half moon vent near the top of the sail so a hard wind can spill through instead of shoving; the first cut comes out crooked and Abuela tells him to keep it; air whistles through the hole like a tiny flute'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n12_a",
+     "label": "Fly her on Cerro Alto",
+     "target": "n14_hill_test_gusty"
+    },
+    {
+     "id": "ch_n12_b",
+     "label": "Fly her in the plaza",
+     "target": "n16_plaza_test_crowd"
+    }
+   ]
+  },
+  {
+   "id": "n13_swap_sail",
+   "body": "<<FILL role=decision words=70 beats='they peel the heavy sail off and stretch thin tissue paper over the frame instead, thin enough to see Tomas fingers through; the whole kite now weighs less than a bread roll; Abuela folds the leftover cloth away and says keep it, we may need it by morning'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n13_a",
+     "label": "Fly her by the Rio Manso",
+     "target": "n15_river_test_calm"
+    },
+    {
+     "id": "ch_n13_b",
+     "label": "Fly her in the plaza",
+     "target": "n16_plaza_test_crowd"
+    }
+   ]
+  },
+  {
+   "id": "n14_hill_test_gusty",
+   "body": "<<FILL role=explore words=75 beats='on Cerro Alto the afternoon wind comes in shoves, quiet and then hard; Golondrina climbs above the goat path and the string starts to sing against Tomas thumb; then a gust hits from the side and folds her over, and Tomas has about one second to decide what his hands do'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n14_a",
+     "label": "Let out more string",
+     "target": "n18_steady_climb"
+    },
+    {
+     "id": "ch_n14_b",
+     "label": "Hold tight and pull hard",
+     "target": "n17_gust_snap"
+    },
+    {
+     "id": "ch_n14_c",
+     "label": "Run downhill with her",
+     "target": "n19_tangle_tree"
+    }
+   ]
+  },
+  {
+   "id": "n15_river_test_calm",
+   "body": "<<FILL role=explore words=75 beats='down by the Rio Manso the air lies completely still and the water looks like glass; Golondrina hangs off the end of the string like wet laundry and will not lift; a heron watches from the reeds without moving at all, which Tomas decides is rude'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n15_a",
+     "label": "Wait for the evening breeze",
+     "target": "n18_steady_climb"
+    },
+    {
+     "id": "ch_n15_b",
+     "label": "Stand still and be patient",
+     "target": "n20_dead_calm"
+    },
+    {
+     "id": "ch_n15_c",
+     "label": "Run along the muddy bank",
+     "target": "n21_reed_snag"
+    }
+   ]
+  },
+  {
+   "id": "n16_plaza_test_crowd",
+   "body": "<<FILL role=explore words=75 beats='the plaza is already filling with festival stalls and Lucia and three cousins crowd in to watch; the wind bounces off the church wall and comes back in swirls that go every direction at once; Golondrina rises fast and straight toward the big jacaranda tree'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n16_a",
+     "label": "Fly her over the stalls",
+     "target": "n22_crowd_lift"
+    },
+    {
+     "id": "ch_n16_b",
+     "label": "Fly her past the jacaranda",
+     "target": "n19_tangle_tree"
+    },
+    {
+     "id": "ch_n16_c",
+     "label": "Wait until the plaza empties",
+     "target": "n20_dead_calm"
+    }
+   ]
+  },
+  {
+   "id": "n17_gust_snap",
+   "body": "<<FILL role=transition words=70 beats='the gust wins and the cross spar cracks with a sound like a bitten carrot; Golondrina comes down in the yellow grass with one wing bent backward; Tomas swallows hard and does not say anything, and Abuela sits down beside him on a warm rock and waits'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n17_a",
+     "label": "Splint the broken spar",
+     "target": "n23_splint_spar"
+    },
+    {
+     "id": "ch_n17_b",
+     "label": "Build a smaller kite",
+     "target": "n24_smaller_kite"
+    }
+   ]
+  },
+  {
+   "id": "n18_steady_climb",
+   "body": "<<FILL role=transition words=70 beats='Golondrina finds a smooth layer of air and climbs until she is a bright speck over the whole valley; the string pulls steady and even, like a fish that has stopped fighting; Abuela says quietly, now remember exactly what you did, every single part of it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n18_a",
+     "label": "Carry her home to rest",
+     "target": "n25_festival_dawn"
+    },
+    {
+     "id": "ch_n18_b",
+     "label": "Teach Lucia to fly her",
+     "target": "n26_teach_lucia"
+    }
+   ]
+  },
+  {
+   "id": "n19_tangle_tree",
+   "body": "<<FILL role=transition words=70 beats='the string catches the jacaranda and Golondrina hangs up in the purple flowers three branches above Tomas head; Pimienta climbs halfway up the trunk and then refuses to go any further; petals keep drifting down onto Tomas face while he stares up at her'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n19_a",
+     "label": "Build a smaller kite",
+     "target": "n24_smaller_kite"
+    },
+    {
+     "id": "ch_n19_b",
+     "label": "Climb up and free her",
+     "target": "n27_climb_for_height"
+    }
+   ]
+  },
+  {
+   "id": "n20_dead_calm",
+   "body": "<<FILL role=transition words=70 beats='the wind stops completely, not a leaf and not a flag and not one strand of Tomas hair; Golondrina lies flat on the ground looking like a dropped umbrella; Abuela sits on the wall and says the wind is only taking a nap, and naps end'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n20_a",
+     "label": "Teach Lucia to fly her",
+     "target": "n26_teach_lucia"
+    },
+    {
+     "id": "ch_n20_b",
+     "label": "Try a running launch",
+     "target": "n28_run_launch"
+    }
+   ]
+  },
+  {
+   "id": "n21_reed_snag",
+   "body": "<<FILL role=transition words=70 beats='the tail drags through the reeds and rips a long tear straight across the sail; river mud smears the bright paper brown; Tomas pinches the two flaps together with his thumbs as if that could hold, and it cannot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n21_a",
+     "label": "Patch the tear tonight",
+     "target": "n29_patch_sail"
+    },
+    {
+     "id": "ch_n21_b",
+     "label": "Build a smaller kite",
+     "target": "n24_smaller_kite"
+    }
+   ]
+  },
+  {
+   "id": "n22_crowd_lift",
+   "body": "<<FILL role=transition words=70 beats='a swirl off the church wall lifts Golondrina hard and she skims low over the candy stall and knocks a paper flag loose; Don Marco the festival caller catches the falling string with two fingers and hands it back to Tomas with one eyebrow up'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n22_a",
+     "label": "Move to the empty corner",
+     "target": "n28_run_launch"
+    },
+    {
+     "id": "ch_n22_b",
+     "label": "Climb the jacaranda for clear air",
+     "target": "n27_climb_for_height"
+    }
+   ]
+  },
+  {
+   "id": "n23_splint_spar",
+   "body": "<<FILL role=decision words=70 beats='Abuela wraps the cracked bamboo spar in cloth strips and hot glue from the pot on the stove, then binds the whole splint with waxed string; Tomas holds it steady for eleven entire minutes without moving; the mended spar comes out a little fatter and a little stronger than before'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n23_a",
+     "label": "Take her to the plaza workbench",
+     "target": "n32_workbench_last_fix"
+    },
+    {
+     "id": "ch_n23_b",
+     "label": "Head for the parade gate",
+     "target": "n31_parade_gusty_gate"
+    }
+   ]
+  },
+  {
+   "id": "n24_smaller_kite",
+   "body": "<<FILL role=decision words=70 beats='they start over with a kite the size of a dinner plate, built from the scraps already on the table; small Golondrina takes barely an hour and needs almost no wind at all to lift; Pimienta sits squarely on the paper pattern the entire time'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n24_a",
+     "label": "Fly her in the dawn field",
+     "target": "n30_dawn_calm_field"
+    },
+    {
+     "id": "ch_n24_b",
+     "label": "Mend big Golondrina too",
+     "target": "n32_workbench_last_fix"
+    }
+   ]
+  },
+  {
+   "id": "n25_festival_dawn",
+   "body": "<<FILL role=decision words=70 beats='Tomas carries Golondrina home tucked under his arm like a sleeping bird and props her beside his bed; he wakes on festival morning before the roosters do; Abuela is already up making atole and watching the flag on the church, which is barely moving'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n25_a",
+     "label": "Go early to the quiet field",
+     "target": "n30_dawn_calm_field"
+    },
+    {
+     "id": "ch_n25_b",
+     "label": "Go straight to the parade gate",
+     "target": "n31_parade_gusty_gate"
+    }
+   ]
+  },
+  {
+   "id": "n26_teach_lucia",
+   "body": "<<FILL role=decision words=70 beats='Tomas shows Lucia the red thread on the bridle and how to feel the pull with two fingers instead of grabbing with a fist; Lucia crashes twice and then holds Golondrina steady for a count of thirty; they trade turns until the sun goes orange behind Cerro Alto'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n26_a",
+     "label": "Plan to launch together",
+     "target": "n33_two_hands_launch"
+    },
+    {
+     "id": "ch_n26_b",
+     "label": "Meet at the dawn field",
+     "target": "n30_dawn_calm_field"
+    }
+   ]
+  },
+  {
+   "id": "n27_climb_for_height",
+   "body": "<<FILL role=decision words=70 beats='Tomas climbs the jacaranda trunk while Abuela holds the ladder braced with her whole weight, up above the heads and the stalls and the swirling wall wind; purple petals stick to his sleeves; from up there he can finally see every festival flag in the plaza pointing the same direction'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n27_a",
+     "label": "Launch from the parade gate",
+     "target": "n31_parade_gusty_gate"
+    },
+    {
+     "id": "ch_n27_b",
+     "label": "Come down and launch with Abuela",
+     "target": "n33_two_hands_launch"
+    }
+   ]
+  },
+  {
+   "id": "n28_run_launch",
+   "body": "<<FILL role=decision words=70 beats='Tomas runs the whole length of the plaza with the string over his shoulder, making his own wind out of nothing; Golondrina stays up for six steps, then eight, then simply stays; his lungs burn and he is grinning so wide his cheeks ache'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n28_a",
+     "label": "Save your legs for the dawn field",
+     "target": "n30_dawn_calm_field"
+    },
+    {
+     "id": "ch_n28_b",
+     "label": "Ask Lucia to hold the other end",
+     "target": "n33_two_hands_launch"
+    }
+   ]
+  },
+  {
+   "id": "n29_patch_sail",
+   "body": "<<FILL role=decision words=70 beats='at the kitchen table Tomas glues a patch cut from the old blue apron over the tear, so Golondrina now has one bright wing and one blue one with a duck shaped flour stain; Abuela says the patch is the part people will remember'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n29_a",
+     "label": "Dry her on the plaza workbench",
+     "target": "n32_workbench_last_fix"
+    },
+    {
+     "id": "ch_n29_b",
+     "label": "Show the blue wing to Lucia",
+     "target": "n33_two_hands_launch"
+    }
+   ]
+  },
+  {
+   "id": "n30_dawn_calm_field",
+   "body": "<<FILL role=climax words=75 beats='festival morning on the dawn field and the air is dead still, every banner hanging like wet socks; forty kites lie waiting on the wet grass with forty owners standing over them; Don Marco announces the parade starts in one hour, wind or no wind, and Tomas has to choose how to spend that hour'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n30_a",
+     "label": "Wait for the noon breeze",
+     "target": "n34_end_high_flyer"
+    },
+    {
+     "id": "ch_n30_b",
+     "label": "Walk the parade holding her up",
+     "target": "n36_end_calm_day_walk"
+    },
+    {
+     "id": "ch_n30_c",
+     "label": "Show the little kids the bridle",
+     "target": "n37_end_teach_others"
+    }
+   ]
+  },
+  {
+   "id": "n31_parade_gusty_gate",
+   "body": "<<FILL role=climax words=75 beats='at the parade gate the wind pours down off Cerro Alto in hard shoves that snap the banners straight out; two kites go up and one comes back down in pieces; Abuela puts her hand on Tomas shoulder and says you have already met this wind twice, you know what it does'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n31_a",
+     "label": "Let out all the string",
+     "target": "n34_end_high_flyer"
+    },
+    {
+     "id": "ch_n31_b",
+     "label": "Hold on with both hands",
+     "target": "n39_end_lost_to_sky"
+    },
+    {
+     "id": "ch_n31_c",
+     "label": "Fly beside the yellow kite",
+     "target": "n35_end_shared_prize"
+    }
+   ]
+  },
+  {
+   "id": "n32_workbench_last_fix",
+   "body": "<<FILL role=climax words=75 beats='the long workbench beside the church is crowded with kite makers trading glue and string and advice nobody asked for; Tomas has ten minutes and room for exactly one more repair; Abuela lays out her tools in a row and then steps back and lets him pick'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n32_a",
+     "label": "Try the old bowline trick",
+     "target": "n38_end_repair_master"
+    },
+    {
+     "id": "ch_n32_b",
+     "label": "Write down every fix so far",
+     "target": "n40_end_wind_notebook"
+    },
+    {
+     "id": "ch_n32_c",
+     "label": "Launch before the glue dries",
+     "target": "n41_end_stayed_down"
+    }
+   ]
+  },
+  {
+   "id": "n33_two_hands_launch",
+   "body": "<<FILL role=climax words=75 beats='Tomas and Lucia stand thirty paces apart at the top of the field, one holding Golondrina and one holding the string spool; Abuela counts down from three in her big market voice; the whole village turns to watch the first kite of the parade go up'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n33_a",
+     "label": "Launch with Lucia on the string",
+     "target": "n35_end_shared_prize"
+    },
+    {
+     "id": "ch_n33_b",
+     "label": "Launch on Abuelas count of three",
+     "target": "n34_end_high_flyer"
+    },
+    {
+     "id": "ch_n33_c",
+     "label": "Teach the cousins to launch too",
+     "target": "n37_end_teach_others"
+    }
+   ]
+  },
+  {
+   "id": "n34_end_high_flyer",
+   "body": "<<FILL role=ending words=70 beats='the string runs out to the very last knot and Golondrina climbs higher than the church bell tower, a bright orange speck over the whole green valley; the crowd tips their heads back all at once; Tomas feels the steady pull in both hands and does not let go, and Abuela does not say a word'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e01_high_flyer",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Golondrina Over the Valley"
+   }
+  },
+  {
+   "id": "n35_end_shared_prize",
+   "body": "<<FILL role=ending words=70 beats='Golondrina and the yellow kite circle each other over the plaza for a full hour without tangling once; Don Marco ties the blue festival ribbon around both strings at the same time and writes two names on it; Abuela claps loud enough to be heard from the bell tower'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e02_shared_prize",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Two Names on the Ribbon"
+   }
+  },
+  {
+   "id": "n36_end_calm_day_walk",
+   "body": "<<FILL role=ending words=70 beats='no wind comes all day, so Tomas walks the entire parade route holding Golondrina up on two flat hands like a tray of sweet bread; small children follow behind him in a line to see the swallow shape; Abuela says a kite that got seen is not a kite that failed'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e03_calm_day_walk",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "A Day With No Wind"
+   }
+  },
+  {
+   "id": "n37_end_teach_others",
+   "body": "<<FILL role=ending words=70 beats='Tomas kneels on the wet grass showing six small cousins where the bridle knot goes and why a tail is a promise to the wind; by noon there are seven wobbling kites in the sky and not one of them is his; Abuela watches from the shade and says absolutely nothing, which is how Tomas knows'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e04_kite_school",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Kite School"
+   }
+  },
+  {
+   "id": "n38_end_repair_master",
+   "body": "<<FILL role=ending words=70 beats='Abuela finally shows Tomas the bowline her own mother taught her, the knot that holds tight under pull and unties clean with one tug; the mended Golondrina flies better than she ever did new; Tomas practices the knot on the parade route until his fingers can do it without looking'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e05_bowline_trick",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Trick Abuela Knew"
+   }
+  },
+  {
+   "id": "n39_end_lost_to_sky",
+   "body": "<<FILL role=ending words=70 beats='the biggest gust snaps the string with a pop like a broken guitar wire and Golondrina sails away over Cerro Alto, orange and blue and getting smaller; Tomas watches until he cannot find her against the clouds; Abuela says she is still flying somewhere out there, and that counts for something'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e06_string_lets_go",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The String Lets Go"
+   }
+  },
+  {
+   "id": "n40_end_wind_notebook",
+   "body": "<<FILL role=ending words=70 beats='Tomas fills a whole notebook page with every fix they tried, the rag tail and the bridle knot and the vent and the blue patch, and what the wind did after each one; next spring he will not be starting from nothing; Abuela signs her name at the bottom of the page like a witness'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e07_wind_notebook",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Wind Notebook"
+   }
+  },
+  {
+   "id": "n41_end_stayed_down",
+   "body": "<<FILL role=ending words=70 beats='the glue is still tacky when Tomas launches and the patched sail peels open on the very first pull; Golondrina never gets above his shoulders and the parade goes past without her; Abuela sits with him on the church wall and says next year, we wait for the glue, and Tomas writes that down'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e08_stayed_down",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Kite That Stayed Down"
+   }
+  }
+ ]
+}

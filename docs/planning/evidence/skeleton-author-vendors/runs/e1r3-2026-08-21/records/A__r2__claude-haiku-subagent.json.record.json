@@ -7,13 +7,14 @@
  "style": "prose",
  "replicate": 2,
  "premise": "Tomas and his grandmother build a kite for the spring festival, but the wind keeps changing and every new design needs testing.",
- "attempts": 1,
- "repair_rounds": 0,
+ "attempts": 2,
+ "repair_rounds": 1,
  "strict_pass": false,
  "first_pass_clean": false,
  "parse_failures": 0,
  "findings_lines_per_round": [
-  3
+  3,
+  2
  ],
  "graph_check_exit": 0,
  "latency_s": 0.0,
@@ -21,10 +22,10 @@
  "output_tokens": null,
  "reasoning_tokens": null,
  "finish_reasons": [],
- "min_catalog_distance": null,
- "mean_catalog_distance": null,
- "catalog_distance_note": "shell not coercible against any of 5 peers",
- "last_feedback": "ERROR   L1-7   L1-7 budget: ending_count out of range in story 'tomas-kite-festival': 5 (allowed 7..7)\nERROR   L1-7   L1-7 budget: branch_depth out of range in story 'tomas-kite-festival': 14 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r2__claude-haiku-subagent.json failed structural validation: L1-7 budget: ending_count out of range in story 'tomas-kite-festival': 5 (allowed 7..7); L1-7 budget: branch_depth out of range in story 'tomas-kite-festival': 14 (allowed 0..7)",
+ "min_catalog_distance": 0.10202985671453822,
+ "mean_catalog_distance": 0.2601073255658336,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "last_feedback": "ERROR   L1-7   L1-7 budget: branch_depth out of range in story 'tomas-kite-festival': 13 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r2__claude-haiku-subagent.json failed structural validation: L1-7 budget: branch_depth out of range in story 'tomas-kite-festival': 13 (allowed 0..7)",
  "shell_file": "shells/A__r2__claude-haiku-subagent.json",
  "error": ""
 }

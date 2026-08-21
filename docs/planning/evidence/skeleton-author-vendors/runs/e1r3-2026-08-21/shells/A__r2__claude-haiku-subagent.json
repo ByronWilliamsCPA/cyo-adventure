@@ -353,11 +353,6 @@
     {
      "id": "ch-revise",
      "label": "Use these lessons to revise the kite once more",
-     "target": "final-redesign"
-    },
-    {
-     "id": "ch-accept",
-     "label": "Accept the kite as it is and trust their work",
      "target": "acceptance-choice"
     }
    ]
@@ -373,9 +368,9 @@
      "target": "quick-fix-final"
     },
     {
-     "id": "ch-go-now",
-     "label": "Leave for the festival with the kite as it is",
-     "target": "hurry-to-festival"
+     "id": "ch-give-up",
+     "label": "Decide the time pressure is too much to continue",
+     "target": "time-pressure-ending"
     }
    ]
   },
@@ -397,9 +392,9 @@
    "is_ending": false,
    "choices": [
     {
-     "id": "ch-try-new",
-     "label": "Start completely fresh with a new design",
-     "target": "radical-redesign"
+     "id": "ch-accept-flaw",
+     "label": "Accept that this design has a fundamental flaw",
+     "target": "design-flaw-ending"
     }
    ]
   },
@@ -433,18 +428,6 @@
    ]
   },
   {
-   "id": "final-redesign",
-   "body": "<<FILL role=explore words=71 beats='Tomas and Abuela go home with new ideas from their learning. They reshape the frame slightly using their new knowledge. They adjust how the cloth attaches. They add a small tail. Every change is based on what they learned from testing.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-final-test",
-     "label": "Test the redesigned kite one last time",
-     "target": "final-flight-test"
-    }
-   ]
-  },
-  {
    "id": "acceptance-choice",
    "body": "<<FILL role=transition words=69 beats='Tomas looks at the kite they made together. It has repairs and patches but it's theirs. Abuela says the best kite is the one you make with someone you love. Tomas agrees completely. They're ready for the festival now.'>>",
    "is_ending": false,
@@ -469,18 +452,6 @@
    ]
   },
   {
-   "id": "hurry-to-festival",
-   "body": "<<FILL role=explore words=69 beats='Tomas and Abuela hurry to the festival carrying their untested kite. They didn't have time for another test flight. Tomas feels nervous about flying it for the first time in front of everyone. But Abuela believes in their work together.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-enter",
-     "label": "Enter the contest and test the kite in front of others",
-     "target": "festival-day"
-    }
-   ]
-  },
-  {
    "id": "confidence-ready",
    "body": "<<FILL role=explore words=68 beats='Tomas stands tall with the kite string in his hands. He and Abuela worked hard together. They tested. They learned. They fixed problems. The kite is ready. He feels proud and confident about the festival.'>>",
    "is_ending": false,
@@ -493,18 +464,6 @@
    ]
   },
   {
-   "id": "radical-redesign",
-   "body": "<<FILL role=explore words=70 beats='Back at the table, they start completely fresh with new materials. This time they build a hexagon-shaped kite instead of traditional designs. Different sticks arranged differently. Abuela helps but lets Tomas lead the new design.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-hex-test",
-     "label": "Test the new hexagon kite design outdoors",
-     "target": "hexagon-test"
-    }
-   ]
-  },
-  {
    "id": "control-power",
    "body": "<<FILL role=explore words=70 beats='Tomas holds tight to the string. His muscles strain. The huge kite pulls powerfully. But slowly he gets better control. He leans back and manages the power with his whole body. Abuela watches proudly. This kite demands real respect and skill.'>>",
    "is_ending": false,
@@ -512,30 +471,6 @@
     {
      "id": "ch-power-fest",
      "label": "Take the powerful kite to the festival",
-     "target": "festival-day"
-    }
-   ]
-  },
-  {
-   "id": "final-flight-test",
-   "body": "<<FILL role=explore words=71 beats='The redesigned kite takes to the air beautifully. All their improvements work together. The tail helps balance. The reinforced frame holds strong. The adjusted cloth angle catches the wind perfectly now.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-to-fest-final",
-     "label": "Head to the festival with confidence",
-     "target": "festival-day"
-    }
-   ]
-  },
-  {
-   "id": "hexagon-test",
-   "body": "<<FILL role=explore words=70 beats='The hexagon kite launches and immediately feels different from all their other designs. The shape distributes wind differently across its surfaces. It's more stable than the others. Tomas and Abuela smile. This new design is a real breakthrough.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-hex-fest",
-     "label": "Take the breakthrough hexagon kite to the festival",
      "target": "festival-day"
     }
    ]
@@ -632,6 +567,30 @@
     "valence": "positive",
     "kind": "success",
     "title": "Elegance Wins"
+   }
+  },
+  {
+   "id": "time-pressure-ending",
+   "body": "<<FILL role=ending words=74 beats='The time pressure weighs too heavily. Tomas and Abuela realize they're not confident enough to fly the kite in the contest. They decide to skip the festival this year. But they laugh knowing they built something wonderful together and can try again whenever they want.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-time-pressure",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Sometimes Waiting Is Wisdom"
+   }
+  },
+  {
+   "id": "design-flaw-ending",
+   "body": "<<FILL role=ending words=73 beats='Tomas and Abuela accept that the design simply doesn't work well no matter what they try to fix. That's okay. They learned valuable lessons about wind and balance and persistence. Abuela says every failed design teaches a lesson that successful ones cannot.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-design-flaw",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Wisdom in the Flaws"
    }
   }
  ]

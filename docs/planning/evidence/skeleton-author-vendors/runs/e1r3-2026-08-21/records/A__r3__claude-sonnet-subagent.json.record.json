@@ -1,0 +1,30 @@
+{
+ "leg": "claude-sonnet-subagent",
+ "family": "anthropic",
+ "cell_id": "A",
+ "band": "5-8",
+ "length": "short",
+ "style": "prose",
+ "replicate": 3,
+ "premise": "On the first snowy day, Priya must find her little brother's boot, lost somewhere along the sled run, before their walk home.",
+ "attempts": 1,
+ "repair_rounds": 0,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  11
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 0.0,
+ "input_tokens": null,
+ "output_tokens": null,
+ "reasoning_tokens": null,
+ "finish_reasons": [],
+ "min_catalog_distance": 0.11728302441316321,
+ "mean_catalog_distance": 0.3026864556072667,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "last_feedback": "ERROR   PL-18  PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'priya-arjun-lost-boot'\nERROR   PL-25  PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'priya-arjun-lost-boot'\nWARNING CG-3   node=start CG-3 grammar: node 'start' is a rendered stop on its own at ~75 words, above band '5-8' words-per-stop ceiling 70 in story 'priya-arjun-lost-boot' (advisory only)\nWARNING CG-3   node=hub_footprints CG-3 grammar: node 'hub_footprints' is a rendered stop on its own at ~75 words, above band '5-8' words-per-stop ceiling 70 in story 'priya-arjun-lost-boot' (advisory only)\nWARNING CG-3   node=hub_ranger_tip CG-3 grammar: node 'hub_ranger_tip' is a rendered stop on its own at ~75 words, above band '5-8' words-per-stop ceiling 70 in story 'priya-arjun-lost-boot' (advisory only)\nWARNING CG-3   node=sled_shed CG-3 grammar: node 'sled_shed' is a rendered stop on its own at ~85 words, above band '5-8' words-per-stop ceiling 70 in story 'priya-arjun-lost-boot' (advisory only)\nWARNING CG-3   node=creek_bridge CG-3 grammar: node 'creek_bridge' is a rendered stop on its own at ~80 words, above band '5-8' words-per-stop ceiling 70 in story 'priya-arjun-lost-boot' (advisory only)\nWARNING CG-3   node=lost_found_bin CG-3 grammar: node 'lost_found_bin' is a rendered stop on its own at ~85 words, above band '5-8' words-per-stop ceiling 70 in story 'priya-arjun-lost-boot' (advisory only)\nWARNING CG-3   node=hot_cocoa_stand CG-3 grammar: node 'hot_cocoa_stand' is a rendered stop on its own at ~80 words, above band '5-8' words-per-stop ceiling 70 in story 'priya-arjun-lost-boot' (advisory only)\nWARNING CG-3   node=ski_rental_desk CG-3 grammar: node 'ski_rental_desk' is a rendered stop on its own at ~80 words, above band '5-8' words-per-stop ceiling 70 in story 'priya-arjun-lost-boot' (advisory only)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r3__claude-sonnet-subagent.json failed structural validation: PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'priya-arjun-lost-boot'; PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'priya-arjun-lost-boot'",
+ "shell_file": "shells/A__r3__claude-sonnet-subagent.json",
+ "error": ""
+}

@@ -23,7 +23,7 @@
    "responsibility"
   ],
   "estimated_minutes": 8,
-  "ending_count": 8,
+  "ending_count": 6,
   "content_flags": {
    "violence": "none",
    "scariness": "mild",
@@ -221,11 +221,6 @@
      "id": "choice_013a",
      "label": "Go straight home",
      "target": "ending_001"
-    },
-    {
-     "id": "choice_013b",
-     "label": "Check one more spot",
-     "target": "node_017"
     }
    ]
   },
@@ -376,42 +371,6 @@
     "valence": "positive",
     "kind": "success",
     "title": "Boot Found in the Deep Snow"
-   }
-  },
-  {
-   "id": "ending_006",
-   "body": "<<FILL role=ending words=64 beats='Priya goes home knowing she tried her absolute best on the snowy hill. Mom says that sometimes lost things stay lost. But she is proud Priya never gave up hope. Maybe spring will bring the boot back. Priya believes in tomorrow.'>>",
-   "is_ending": true,
-   "choices": [],
-   "ending": {
-    "id": "end_006",
-    "valence": "neutral",
-    "kind": "setback",
-    "title": "The Boot Stays Lost in the Snow"
-   }
-  },
-  {
-   "id": "ending_007",
-   "body": "<<FILL role=ending words=66 beats='Priya walks away from the shack without looking inside. At home, she tells Maya that she could not find the boot. Maya says it is okay and gets another boot from the closet. That night, Priya feels a little regret but knows she tried.'>>",
-   "is_ending": true,
-   "choices": [],
-   "ending": {
-    "id": "end_007",
-    "valence": "neutral",
-    "kind": "discovery",
-    "title": "A Boot Found Another Way"
-   }
-  },
-  {
-   "id": "ending_008",
-   "body": "<<FILL role=ending words=70 beats='Priya and Mom search for what feels like hours but the boot stays hidden. As the sun gets low and cold sets in, they decide it\\'s time to head home. Priya is tired but glad they looked together. Maybe someone will find it for them.'>>",
-   "is_ending": true,
-   "choices": [],
-   "ending": {
-    "id": "end_008",
-    "valence": "neutral",
-    "kind": "setback",
-    "title": "The Search Ends with Winter Coming"
    }
   }
  ]
