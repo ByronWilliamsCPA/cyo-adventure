@@ -84,5 +84,9 @@
  "A__r3__deepseek-v4-flash": {
   "checker_runs": 10,
   "reported": "PASS"
+ },
+ "D__r3__claude-haiku-subagent": {
+  "checker_runs": 6,
+  "reported": "PASS"
  }
 }

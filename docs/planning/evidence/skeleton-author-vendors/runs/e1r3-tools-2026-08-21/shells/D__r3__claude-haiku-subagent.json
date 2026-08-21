@@ -1,0 +1,550 @@
+{
+ "schema_version": "2.0",
+ "id": "harvest-token-mystery",
+ "version": 1,
+ "title": "The Token Mystery at Harvest Market",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "open_map",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "discovery",
+   "honesty",
+   "justice",
+   "observation"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 18,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "n1",
+ "nodes": [
+  {
+   "id": "n1",
+   "body": "<<FILL role=setup words=70 beats='Idris arrives at the harvest swap-market; the marketplace buzzes with traders exchanging tokens'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1a",
+     "label": "Ask other traders about their tokens",
+     "target": "n2"
+    }
+   ]
+  },
+  {
+   "id": "n2",
+   "body": "<<FILL role=explore words=70 beats='Idris learns prices shift based on which token is offered; someone is making counterfeits'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c2a",
+     "label": "Talk to Elsa the token-maker",
+     "target": "n3"
+    },
+    {
+     "id": "c2b",
+     "label": "Watch the scale-master closely",
+     "target": "n4"
+    },
+    {
+     "id": "c2c",
+     "label": "Ask Mara the grain trader",
+     "target": "n5"
+    }
+   ]
+  },
+  {
+   "id": "n3",
+   "body": "<<FILL role=explore words=99 beats='Elsa admits someone stole her stamping tools; she found counterfeits in the market; she is afraid but wants justice'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c3a",
+     "label": "Help find the thief together",
+     "target": "n6"
+    },
+    {
+     "id": "c3b",
+     "label": "Report immediately to council",
+     "target": "n7"
+    },
+    {
+     "id": "c3c",
+     "label": "Track the tokens back to source",
+     "target": "n8"
+    }
+   ]
+  },
+  {
+   "id": "n4",
+   "body": "<<FILL role=explore words=98 beats='The scale-master exchanges tokens with a stranger; he palms certain tokens secretly; he looks nervous and guilty'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c4a",
+     "label": "Confront him with questions",
+     "target": "n9"
+    },
+    {
+     "id": "c4b",
+     "label": "Follow the stranger",
+     "target": "n10"
+    },
+    {
+     "id": "c4c",
+     "label": "Tell Elsa what you saw",
+     "target": "n11"
+    }
+   ]
+  },
+  {
+   "id": "n5",
+   "body": "<<FILL role=explore words=97 beats='Mara whispers that she lost tokens to the scheme; she lost real silver and got counterfeits instead'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c5a",
+     "label": "Work with Mara to find proof",
+     "target": "n12"
+    },
+    {
+     "id": "c5b",
+     "label": "Report to the market council",
+     "target": "n13"
+    },
+    {
+     "id": "c5c",
+     "label": "Search the market together",
+     "target": "n14"
+    }
+   ]
+  },
+  {
+   "id": "n6",
+   "body": "<<FILL role=transition words=96 beats='Elsa and Idris discover the scale-master visited her stall at night; he took the tools but left evidence'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c6a",
+     "label": "Confront the scale-master",
+     "target": "n15"
+    },
+    {
+     "id": "c6b",
+     "label": "Find who he gave tools to",
+     "target": "n16"
+    },
+    {
+     "id": "c6c",
+     "label": "Report to the council",
+     "target": "n13"
+    }
+   ]
+  },
+  {
+   "id": "n7",
+   "body": "<<FILL role=transition words=100 beats='The council takes Elsa's claim seriously; they decide to search for the thief; they ask Idris for more details'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c7a",
+     "label": "Identify the scale-master as suspect",
+     "target": "n17"
+    },
+    {
+     "id": "c7b",
+     "label": "Search the market with guards",
+     "target": "n18"
+    },
+    {
+     "id": "c7c",
+     "label": "Help investigate with Elsa",
+     "target": "n6"
+    }
+   ]
+  },
+  {
+   "id": "n8",
+   "body": "<<FILL role=transition words=99 beats='By examining token stamps and dates, Idris traces them to the scale-master's workshop area'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c8a",
+     "label": "Search the workshop",
+     "target": "n19"
+    },
+    {
+     "id": "c8b",
+     "label": "Confront the scale-master",
+     "target": "n20"
+    },
+    {
+     "id": "c8c",
+     "label": "Tell the council",
+     "target": "n7"
+    }
+   ]
+  },
+  {
+   "id": "n9",
+   "body": "<<FILL role=decision words=100 beats='The scale-master denies everything when confronted; vendors gather around to listen; he becomes nervous and evasive'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c9a",
+     "label": "Show him the mismatched tokens",
+     "target": "n21"
+    },
+    {
+     "id": "c9b",
+     "label": "Demand he surrender to council",
+     "target": "n22"
+    },
+    {
+     "id": "c9c",
+     "label": "Ask about his cousin",
+     "target": "n11"
+    }
+   ]
+  },
+  {
+   "id": "n10",
+   "body": "<<FILL role=decision words=101 beats='Idris follows the stranger to a hidden workshop; he finds fresh counterfeits and Elsa's stolen stamping tools there'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c10a",
+     "label": "Bring proof to the council",
+     "target": "n23"
+    },
+    {
+     "id": "c10b",
+     "label": "Confront the workshop worker",
+     "target": "n24"
+    },
+    {
+     "id": "c10c",
+     "label": "Watch and gather more evidence",
+     "target": "n8"
+    }
+   ]
+  },
+  {
+   "id": "n11",
+   "body": "<<FILL role=decision words=98 beats='Elsa is shocked and joins Idris in confronting the scale-master; she identifies her stolen tools'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c11a",
+     "label": "He admits guilt and confesses",
+     "target": "n25"
+    },
+    {
+     "id": "c11b",
+     "label": "He tries to escape",
+     "target": "n26"
+    },
+    {
+     "id": "c11c",
+     "label": "Demand he show the cousin",
+     "target": "n9"
+    }
+   ]
+  },
+  {
+   "id": "n12",
+   "body": "<<FILL role=transition words=99 beats='Mara and Idris find proof that the scale-master distributed all the fake tokens'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c12a",
+     "label": "Report to the council",
+     "target": "n27"
+    },
+    {
+     "id": "c12b",
+     "label": "Catch him at his next trade",
+     "target": "n28"
+    },
+    {
+     "id": "c12c",
+     "label": "Confront him directly",
+     "target": "n9"
+    }
+   ]
+  },
+  {
+   "id": "n13",
+   "body": "<<FILL role=transition words=100 beats='The council investigates Mara's claim; they find evidence of theft and fraud'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c13a",
+     "label": "Search for the scale-master",
+     "target": "n29"
+    },
+    {
+     "id": "c13b",
+     "label": "Find who makes the fakes",
+     "target": "n30"
+    },
+    {
+     "id": "c13c",
+     "label": "Arrest the scale-master now",
+     "target": "n17"
+    }
+   ]
+  },
+  {
+   "id": "n14",
+   "body": "<<FILL role=transition words=97 beats='Searching together, they discover both the scale-master and a workshop making counterfeits'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c14a",
+     "label": "Capture both immediately",
+     "target": "n31"
+    },
+    {
+     "id": "c14b",
+     "label": "Get council help first",
+     "target": "n32"
+    },
+    {
+     "id": "c14c",
+     "label": "Confirm scale-master's guilt",
+     "target": "n12"
+    }
+   ]
+  },
+  {
+   "id": "n15",
+   "body": "<<FILL role=climax words=98 beats='The scale-master admits he took the tools for his cousin who makes counterfeits'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e1",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Confession from Thief"
+   }
+  },
+  {
+   "id": "n16",
+   "body": "<<FILL role=climax words=99 beats='Idris learns the scale-master gave Elsa's tools to his cousin who runs a metalwork shop'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e2",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Cousin Identified"
+   }
+  },
+  {
+   "id": "n17",
+   "body": "<<FILL role=climax words=100 beats='The council arrests the scale-master based on Idris and Elsa's evidence; they search for the cousin'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e3",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Scale-Master Arrested"
+   }
+  },
+  {
+   "id": "n18",
+   "body": "<<FILL role=climax words=99 beats='Council guards find the counterfeiting workshop; they arrest the cousin and recover all stolen materials'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e4",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Workshop Raided"
+   }
+  },
+  {
+   "id": "n19",
+   "body": "<<FILL role=climax words=98 beats='At the workshop, Idris finds the cousin making counterfeits; he is arrested when guards arrive'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e5",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Caught Red-Handed"
+   }
+  },
+  {
+   "id": "n20",
+   "body": "<<FILL role=climax words=100 beats='The scale-master becomes angry but is overpowered by vendors; he is taken to the council for judgment'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e6",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Taken to Council"
+   }
+  },
+  {
+   "id": "n21",
+   "body": "<<FILL role=climax words=99 beats='The tokens prove everything; vendors declare the scale-master guilty; he is arrested by council guards'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e7",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Tokens Prove Guilt"
+   }
+  },
+  {
+   "id": "n22",
+   "body": "<<FILL role=climax words=101 beats='The scale-master resists but surrenders; the council sentences him for theft and fraud'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e8",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Sentenced to Banishment"
+   }
+  },
+  {
+   "id": "n23",
+   "body": "<<FILL role=climax words=100 beats='The council believes Idris and arrests both the scale-master and his cousin; counterfeiting ends'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e9",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Both Arrested"
+   }
+  },
+  {
+   "id": "n24",
+   "body": "<<FILL role=climax words=99 beats='The cousin confesses when confronted; he reveals his brother the scale-master organized the scheme'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e10",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Brother Named"
+   }
+  },
+  {
+   "id": "n25",
+   "body": "<<FILL role=climax words=98 beats='The scale-master admits everything; both he and his cousin are arrested and banished'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e11",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Full Confession"
+   }
+  },
+  {
+   "id": "n26",
+   "body": "<<FILL role=climax words=100 beats='The scale-master flees but is caught by vendors at the road; the council arrests him'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e12",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Escape Prevented"
+   }
+  },
+  {
+   "id": "n27",
+   "body": "<<FILL role=climax words=99 beats='The council acts on the evidence; they arrest the scale-master and search for the cousin'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e13",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Council Acts"
+   }
+  },
+  {
+   "id": "n28",
+   "body": "<<FILL role=climax words=101 beats='Idris and Mara catch the scale-master making a fraudulent trade; the council takes him into custody'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e14",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Caught in Action"
+   }
+  },
+  {
+   "id": "n29",
+   "body": "<<FILL role=climax words=100 beats='Council guards find and arrest the scale-master; his cousin is arrested at the metalwork shop'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e15",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Both Found"
+   }
+  },
+  {
+   "id": "n30",
+   "body": "<<FILL role=climax words=98 beats='The council discovers the cousin making counterfeits; both criminals are arrested together'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e16",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Source Found"
+   }
+  },
+  {
+   "id": "n31",
+   "body": "<<FILL role=climax words=99 beats='Idris and traders capture both men; the council recovers all stolen materials and counterfeits'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e17",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "All Captured"
+   }
+  },
+  {
+   "id": "n32",
+   "body": "<<FILL role=climax words=100 beats='Council guards help arrest both the scale-master and cousin; the market is declared safe again'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e18",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Market Saved"
+   }
+  }
+ ]
+}

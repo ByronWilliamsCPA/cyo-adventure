@@ -1,0 +1,806 @@
+{
+ "schema_version": "2.0",
+ "id": "the-extra-piece",
+ "version": 1,
+ "title": "The Extra Piece",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "curiosity",
+   "craftsmanship",
+   "local history",
+   "persistence",
+   "intergenerational friendship"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 16,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n00",
+ "nodes": [
+  {
+   "id": "n00",
+   "body": "<<FILL role=setup words=125 beats='Wren, twelve, collector of odd things with stories, spends her birthday coins at the Odds and Ends shop on Tanner Row on a chess set rattling in a biscuit tin; on the bus home she counts thirty-two pale machine-smooth pieces, and then, impossibly, a thirty-third: a thumb-high dark bird, knife-cut, smelling faintly of salt, made by a completely different hand than all the rest.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n00-1",
+     "label": "Count the pieces twice more on the bus",
+     "target": "n00b"
+    },
+    {
+     "id": "c-n00-2",
+     "label": "Hold the dark bird up to the window light",
+     "target": "n00b"
+    },
+    {
+     "id": "c-n00-3",
+     "label": "Turn it over and over until home",
+     "target": "n00b"
+    }
+   ]
+  },
+  {
+   "id": "n00b",
+   "body": "<<FILL role=setup words=110 beats='That night the tin empties across the kitchen table into pale ranks, and the dark bird stands apart like a punctuation mark; under the sewing-drawer loupe the mismatch is plain, knife work beside lathe work, and Wren knows the set has been keeping a secret; the only question is which thread to pull first.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n00b-1",
+     "label": "Line up and compare every single piece",
+     "target": "n1a"
+    },
+    {
+     "id": "c-n00b-2",
+     "label": "Carry the tin back to Mrs Barrow",
+     "target": "n1b"
+    },
+    {
+     "id": "c-n00b-3",
+     "label": "Show the dark bird to Gran Eda",
+     "target": "n1c"
+    }
+   ]
+  },
+  {
+   "id": "n1a",
+   "body": "<<FILL role=explore words=100 beats='On sheets of paper Wren lines up thirty-two pale ranks; the thirty-third, a thumb-high dark bird on a turned base, has feathers cut in three clean slashes, and under the loupe its tool marks read like handwriting teaching itself to be brave.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n1a-1",
+     "label": "Peel back the paper lining of the tin",
+     "target": "n2c"
+    },
+    {
+     "id": "c-n1a-2",
+     "label": "Feel along the seam of the base",
+     "target": "n2d"
+    },
+    {
+     "id": "c-n1a-3",
+     "label": "Study the base under the loupe",
+     "target": "n2a"
+    }
+   ]
+  },
+  {
+   "id": "n1b",
+   "body": "<<FILL role=explore words=100 beats='Mrs Barrow polishes her glasses: the tin came in a tea chest from the Pell Street auction rooms, unsorted, and she slips Wren a proper jeweler loupe for a closer look at whatever is hiding in it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n1b-1",
+     "label": "Ask Mr Okafor about the wood",
+     "target": "n2b"
+    },
+    {
+     "id": "c-n1b-2",
+     "label": "Read the paper lining of the tin",
+     "target": "n2c"
+    },
+    {
+     "id": "c-n1b-3",
+     "label": "Test the wobbly base",
+     "target": "n2d"
+    }
+   ]
+  },
+  {
+   "id": "n1c",
+   "body": "<<FILL role=explore words=100 beats='Gran Eda holds the dark bird up to the lamp and turns it the way she turns fabric at the market: knife-cut, harbor wood, older than everything else in the tin, the sort of trifle market stalls once sold for luck.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n1c-1",
+     "label": "Ask Mr Okafor to name the wood",
+     "target": "n2b"
+    },
+    {
+     "id": "c-n1c-2",
+     "label": "Check beneath the turned base",
+     "target": "n2a"
+    },
+    {
+     "id": "c-n1c-3",
+     "label": "Ease open the wobbly base",
+     "target": "n2d"
+    }
+   ]
+  },
+  {
+   "id": "n2a",
+   "body": "<<FILL role=explore words=95 beats='Under the loupe the base shows two carved letters, E M, and one wave line pressed deeper than the grain, as if meant to outlast the wood itself.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n2a-1",
+     "label": "Search old auction catalogs",
+     "target": "n3a"
+    },
+    {
+     "id": "c-n2a-2",
+     "label": "Ask the rec hall chess club",
+     "target": "n3b"
+    },
+    {
+     "id": "c-n2a-3",
+     "label": "Show the marks at the museum",
+     "target": "n3c"
+    }
+   ]
+  },
+  {
+   "id": "n2b",
+   "body": "<<FILL role=explore words=95 beats='Mr Okafor the violin repairer turns the piece like contraband: old harbor oak, salt-cured, whittled by knife, nothing like the lathe-spun boxwood of the other thirty-two.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n2b-1",
+     "label": "Ask Mr Venn at chess night",
+     "target": "n3b"
+    },
+    {
+     "id": "c-n2b-2",
+     "label": "Ask Dot about carvers marks",
+     "target": "n3c"
+    },
+    {
+     "id": "c-n2b-3",
+     "label": "Ask Gran Eda about harbor wood",
+     "target": "n3d"
+    }
+   ]
+  },
+  {
+   "id": "n2c",
+   "body": "<<FILL role=explore words=95 beats='The tin lining parts at one corner: half an auction ticket, Pell Street Rooms, Lot 17, box of games, 1962, the consignor name worn clean away.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n2c-1",
+     "label": "Take the ticket stub to the museum",
+     "target": "n3c"
+    },
+    {
+     "id": "c-n2c-2",
+     "label": "Ask Gran Eda about Lot 17",
+     "target": "n3d"
+    },
+    {
+     "id": "c-n2c-3",
+     "label": "Dig up the 1962 auction records",
+     "target": "n3a"
+    }
+   ]
+  },
+  {
+   "id": "n2d",
+   "body": "<<FILL role=explore words=95 beats='The base gives along a hairline seam; inside waits a rolled scrap of hand-drawn tide chart, penciled North Jetty, spring tides, with one careful arrow.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n2d-1",
+     "label": "Ask Gran Eda about North Jetty",
+     "target": "n3d"
+    },
+    {
+     "id": "c-n2d-2",
+     "label": "Match the scrap to library charts",
+     "target": "n3a"
+    },
+    {
+     "id": "c-n2d-3",
+     "label": "Show the tide scrap to Mr Venn",
+     "target": "n3b"
+    }
+   ]
+  },
+  {
+   "id": "n3a",
+   "body": "<<FILL role=explore words=100 beats='Ms Reeve at the library wheels out the microfiche: Lot 17 reads chess set and sundries, and the consignor line survives as one letter only, M.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n3a-1",
+     "label": "Spread every clue on one table",
+     "target": "m1"
+    },
+    {
+     "id": "c-n3a-2",
+     "label": "Weigh what the M could mean",
+     "target": "m2"
+    },
+    {
+     "id": "c-n3a-3",
+     "label": "Set the scrap against old charts",
+     "target": "m3"
+    }
+   ]
+  },
+  {
+   "id": "n3b",
+   "body": "<<FILL role=decision words=100 beats='Rec hall chess night smells of coffee; Mr Venn, ninety-one, cradles the dark bird and gives her name whole: Elsie Moss, who called it her spare player.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n3b-1",
+     "label": "Pin her name on the clue table",
+     "target": "m1"
+    },
+    {
+     "id": "c-n3b-2",
+     "label": "Decide which lead to chase first",
+     "target": "m2"
+    },
+    {
+     "id": "c-n3b-3",
+     "label": "Line up her dates and tides",
+     "target": "m3"
+    }
+   ]
+  },
+  {
+   "id": "n3c",
+   "body": "<<FILL role=explore words=100 beats='At the maritime museum, volunteer Dot sets the bird beside carved gulls and explains the old boatyard custom of small whittled birds carried as luck at sea.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n3c-1",
+     "label": "Add the custom to the notes",
+     "target": "m1"
+    },
+    {
+     "id": "c-n3c-2",
+     "label": "Rank the three strongest leads",
+     "target": "m2"
+    },
+    {
+     "id": "c-n3c-3",
+     "label": "Check the scrap against the Petrel",
+     "target": "m3"
+    }
+   ]
+  },
+  {
+   "id": "n3d",
+   "body": "<<FILL role=decision words=100 beats='Gran Eda knows the knife-work on sight: a market girl once sold whittled wrens at stall nine, five down from the man who sold eels.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n3d-1",
+     "label": "Write stall nine on the clue wall",
+     "target": "m1"
+    },
+    {
+     "id": "c-n3d-2",
+     "label": "Choose the next place to look",
+     "target": "m2"
+    },
+    {
+     "id": "c-n3d-3",
+     "label": "Match the arrow to harbor ledgers",
+     "target": "m3"
+    }
+   ]
+  },
+  {
+   "id": "m1",
+   "body": "<<FILL role=transition words=95 beats='The notebook becomes a map of the town of Elsie Moss: stall nine, the club room, the boatyard, the jetty, the lighthouse, all pinned in red thread.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-m1-1",
+     "label": "Open the boatyard ledgers",
+     "target": "p1"
+    },
+    {
+     "id": "c-m1-2",
+     "label": "Find the Petrel crew lists",
+     "target": "p2"
+    },
+    {
+     "id": "c-m1-3",
+     "label": "Read the lighthouse logs",
+     "target": "p3"
+    }
+   ]
+  },
+  {
+   "id": "m2",
+   "body": "<<FILL role=decision words=100 beats='Club minutes, March 1955, thank Miss E Moss for the gift of a spare, a dark wren set beside the board for courage in the final; now Wren must choose a direction.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-m2-1",
+     "label": "Trace Tom the deckhand",
+     "target": "p2"
+    },
+    {
+     "id": "c-m2-2",
+     "label": "Climb through the keepers logbook",
+     "target": "p3"
+    },
+    {
+     "id": "c-m2-3",
+     "label": "See what stall nine became",
+     "target": "p4"
+    }
+   ]
+  },
+  {
+   "id": "m3",
+   "body": "<<FILL role=transition words=95 beats='The tide scrap matches harbor records exactly: North Jetty waved the mail boat Petrel out at dawn, and the penciled arrow marks her berth to the inch.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-m3-1",
+     "label": "Follow the Petrel repair records",
+     "target": "p3"
+    },
+    {
+     "id": "c-m3-2",
+     "label": "Walk down to the old stall",
+     "target": "p4"
+    },
+    {
+     "id": "c-m3-3",
+     "label": "Search Moss and Sons ledgers",
+     "target": "p1"
+    }
+   ]
+  },
+  {
+   "id": "p1",
+   "body": "<<FILL role=explore words=100 beats='The boatyard ledgers of Moss and Sons list caulking and paint for the Petrel, and one margin carries a pencil bird practicing the same three feather slashes.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-p1-1",
+     "label": "Count how many wrens she carved",
+     "target": "q1"
+    },
+    {
+     "id": "c-p1-2",
+     "label": "Write to the last Moss relative",
+     "target": "q2"
+    },
+    {
+     "id": "c-p1-3",
+     "label": "Search the 1962 leftover crates",
+     "target": "q3"
+    }
+   ]
+  },
+  {
+   "id": "p2",
+   "body": "<<FILL role=decision words=100 beats='Crew lists name Tom Moss, deckhand, brother of Elsie; the old dockers called him lucky, and lucky men, Dot said, always carried something small and carved.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-p2-1",
+     "label": "Assemble the five-wren theory",
+     "target": "q1"
+    },
+    {
+     "id": "c-p2-2",
+     "label": "Send a letter to June Abernathy",
+     "target": "q2"
+    },
+    {
+     "id": "c-p2-3",
+     "label": "Rest a week at the chess board",
+     "target": "e6a"
+    }
+   ]
+  },
+  {
+   "id": "p3",
+   "body": "<<FILL role=explore words=100 beats='The lighthouse log of 1955 records a visitor: Miss Moss climbs two hundred steps to trade the keepers a carved wren for soup on a gray afternoon.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-p3-1",
+     "label": "Contact the living family",
+     "target": "q2"
+    },
+    {
+     "id": "c-p3-2",
+     "label": "Go down into the auction crates",
+     "target": "q3"
+    },
+    {
+     "id": "c-p3-3",
+     "label": "Cross the jetty in a gale",
+     "target": "e6b"
+    }
+   ]
+  },
+  {
+   "id": "p4",
+   "body": "<<FILL role=decision words=100 beats='Stall nine is a café now above the slipway, and behind its counter hangs a market photograph with five small wrens lined up on a chessboard rail, dated 1956.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-p4-1",
+     "label": "Face the crates below the auction rooms",
+     "target": "q3"
+    },
+    {
+     "id": "c-p4-2",
+     "label": "Build the theory of five",
+     "target": "q1"
+    },
+    {
+     "id": "c-p4-3",
+     "label": "Pocket the wren, story solved enough",
+     "target": "e6c"
+    }
+   ]
+  },
+  {
+   "id": "q1",
+   "body": "<<FILL role=decision words=105 beats='The picture assembles in the notebook: five wrens, one per harbor on the Petrel run, carved as a traveling luck set; the biscuit tin holds number one, and a collector named Pike is asking.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-q1-1",
+     "label": "Bring Elsie the wren herself",
+     "target": "r1"
+    },
+    {
+     "id": "c-q1-2",
+     "label": "Open the oilskin tin from the wall",
+     "target": "r2"
+    },
+    {
+     "id": "c-q1-3",
+     "label": "Record old Sal, the last deck boy",
+     "target": "e7a"
+    }
+   ]
+  },
+  {
+   "id": "q2",
+   "body": "<<FILL role=decision words=100 beats='June phones, laughing and crying at once: Aunt Elsie is eighty-four, sharp as tacks, living at the harbor care home, and she will see the bird; that same week Pike doubles his offer.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-q2-1",
+     "label": "Lay the wren in Elsie's palm",
+     "target": "r2"
+    },
+    {
+     "id": "c-q2-2",
+     "label": "Set the lamp room parcel beside her",
+     "target": "r3"
+    },
+    {
+     "id": "c-q2-3",
+     "label": "Take the money and go",
+     "target": "e7b"
+    }
+   ]
+  },
+  {
+   "id": "q3",
+   "body": "<<FILL role=decision words=100 beats='Between the basement crates waits a folded cloth board, edges embroidered with five harbor names, three pockets still holding the ghost-shape of what once sat inside; two smiling skeptics call it junk.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-q3-1",
+     "label": "Match the parcel to the pockets",
+     "target": "r3"
+    },
+    {
+     "id": "c-q3-2",
+     "label": "Carry the board to Elsie",
+     "target": "r1"
+    },
+    {
+     "id": "c-q3-3",
+     "label": "Let the skeptics be right",
+     "target": "e7c"
+    },
+    {
+     "id": "c-q3-4",
+     "label": "Give the set to the chess club",
+     "target": "e7d"
+    }
+   ]
+  },
+  {
+   "id": "r1",
+   "body": "<<FILL role=climax words=110 beats='Elsie Moss, white-haired and bolt upright, takes the dark wren, tilts it to the light, and tells it end to end: five wrens carved in the winter of 1953 as luck for Tom aboard the Petrel, this one meant to come home last.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-r1-1",
+     "label": "Open five perches at the museum",
+     "target": "e8a"
+    },
+    {
+     "id": "c-r1-2",
+     "label": "Read the true label aloud",
+     "target": "e8b"
+    },
+    {
+     "id": "c-r1-3",
+     "label": "Lend the wren for one school day",
+     "target": "e8c"
+    }
+   ]
+  },
+  {
+   "id": "r2",
+   "body": "<<FILL role=climax words=110 beats='The oilskin tin opens on folded tissue: two more wrens, patient as stones, and a note reading for the set that wanders, with love, from stall nine; on the table the count of known birds climbs to three.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-r2-1",
+     "label": "Take the last Thursday lesson",
+     "target": "e8d"
+    },
+    {
+     "id": "c-r2-2",
+     "label": "Read the timeline to the tide",
+     "target": "e8e"
+    },
+    {
+     "id": "c-r2-3",
+     "label": "Open the case with one perch empty",
+     "target": "e8f"
+    }
+   ]
+  },
+  {
+   "id": "r3",
+   "body": "<<FILL role=climax words=105 beats='List, scrap, and ledger align arrow to name; the lamp room parcel holds the jetty wren, and a thin 1962 letter from Tom explains where the last one went: in the gale I gave the wren back to the sea, he wrote, and it worked.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-r3-1",
+     "label": "Pass the knife to a new carver",
+     "target": "e8g"
+    },
+    {
+     "id": "c-r3-2",
+     "label": "Keep one wren on the windowsill",
+     "target": "e8h"
+    },
+    {
+     "id": "c-r3-3",
+     "label": "Break the news of the fifth perch",
+     "target": "e8i"
+    }
+   ]
+  },
+  {
+   "id": "e6a",
+   "body": "<<FILL role=ending words=95 beats='The set goes to the rec hall in its biscuit tin, with a card: count them, then ask; the club children do exactly that, every Thursday, loudly and forever.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e6a",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "For the Club Room"
+   }
+  },
+  {
+   "id": "e6b",
+   "body": "<<FILL role=ending words=95 beats='The wind takes the tide scrap off the jetty rail and lays it on the water; Wren dries the wren in both hands, one clue poorer, and learns what the word fragile means.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e6b",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Blown Off Course"
+   }
+  },
+  {
+   "id": "e6c",
+   "body": "<<FILL role=ending words=100 beats='Wren keeps the wren in the ranks; from now on every chess set that passes through these hands gets counted to thirty-three, and the odd one always plays.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e6c",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Thirty-Third Piece"
+   }
+  },
+  {
+   "id": "e7a",
+   "body": "<<FILL role=ending words=105 beats='Sal Doria, once deck boy on the Petrel, talks into the recorder: Tom kissed a little wooden bird before every watch, and we teased him, and we approved; the tape goes to the library, the mystery happily unfinished.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e7a",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Crew Remembers"
+   }
+  },
+  {
+   "id": "e7b",
+   "body": "<<FILL role=ending words=100 beats='Money changes hands in a velvet hush; weeks later the wren appears online marked rare harbor oddity, priced past any pocket-money apology Wren can imagine.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e7b",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Highest Bidder"
+   }
+  },
+  {
+   "id": "e7c",
+   "body": "<<FILL role=ending words=100 beats='The skeptics laugh politely and move on; Wren stops chasing provenance, keeps the piece on the windowsill, and lets it face the weather it came from.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e7c",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Worthless Whittling"
+   }
+  },
+  {
+   "id": "e7d",
+   "body": "<<FILL role=ending words=100 beats='The club votes the wren their mascot; every final it stands beside the clock exactly as it did in 1955, and the minutes thank Miss Moss once more, sixty years late.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e7d",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Lucky Fifth Man"
+   }
+  },
+  {
+   "id": "e8a",
+   "body": "<<FILL role=ending words=110 beats='Five perches wait behind museum glass; Elsie cuts the ribbon with the knife that carved them, and the applause comes down like returning rain over the harbor.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e8a",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Harbor Made Whole"
+   }
+  },
+  {
+   "id": "e8b",
+   "body": "<<FILL role=ending words=110 beats='The label finally reads true: carved by Elsie Moss to bring a brother home from every harbor; the count of thirty-three was a promise all along, and now everyone who reads it knows.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e8b",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Homecoming Wren"
+   }
+  },
+  {
+   "id": "e8c",
+   "body": "<<FILL role=ending words=100 beats='Pip loses the wren somewhere in the leaf-piles behind the school; dusk shuts the park; Pip cries; Wren says it was only wood, and both of them know better.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e8c",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Lost in the Leaves"
+   }
+  },
+  {
+   "id": "e8d",
+   "body": "<<FILL role=ending words=110 beats='At midnight the practice wren stands, slightly lopsided, plainly beloved; the biscuit tin set gains a thirty-fourth piece, and Elsie declares the tradition of one too many begun again.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e8d",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Piece Wren Carved"
+   }
+  },
+  {
+   "id": "e8e",
+   "body": "<<FILL role=ending words=110 beats='At North Jetty, recorder running, Wren reads the whole timeline aloud; the tide climbs the piling and erases the first arrow with approval, five harbors folding into one story.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e8e",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Five Harbors, One Story"
+   }
+  },
+  {
+   "id": "e8f",
+   "body": "<<FILL role=ending words=100 beats='The exhibit opens with the outbound perch left empty on its blue cloth sea; visitors ask about the gap more than anything, which is its own kind of exhibit.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e8f",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "One Empty Perch"
+   }
+  },
+  {
+   "id": "e8g",
+   "body": "<<FILL role=ending words=105 beats='Elsie leaves her own knife lying by the shavings, which is how honors look; Wren carves on, and the first finished wren sits beside hers without apologizing.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e8g",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Knife Passed On"
+   }
+  },
+  {
+   "id": "e8h",
+   "body": "<<FILL role=ending words=100 beats='The search ends gently: one wren keeps the windowsill, the museum keeps the records, and some evenings the small dark bird feels exactly like company.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e8h",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "A Wren for the Window"
+   }
+  },
+  {
+   "id": "e8i",
+   "body": "<<FILL role=ending words=100 beats='Tom gave the outbound wren to the sea and came home anyway; the case closes over four birds and a letter, and the fifth, everyone agrees, is where it chose to be.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e8i",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Given Back to the Sea"
+   }
+  }
+ ]
+}

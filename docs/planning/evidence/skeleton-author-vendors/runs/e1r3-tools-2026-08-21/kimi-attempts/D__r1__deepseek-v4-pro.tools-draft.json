@@ -1,0 +1,868 @@
+{
+ "schema_version": "2.0",
+ "id": "the-thirty-third-piece",
+ "version": 1,
+ "title": "The Thirty-Third Piece",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 7.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "curiosity",
+   "history",
+   "artistry",
+   "belonging"
+  ],
+  "estimated_minutes": 7,
+  "ending_count": 17,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "n_001",
+ "nodes": [
+  {
+   "id": "n_001",
+   "body": "<<FILL role=setup words=110 beats='Wren discovers an old chess set in a junk shop; the owner insists it has thirty-three pieces; Wren notices the extra piece is a carved fox, not a standard chess piece'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_001_a",
+     "label": "Ask the shopkeeper about the fox piece",
+     "target": "n_002"
+    },
+    {
+     "id": "c_001_b",
+     "label": "Buy the whole chess set",
+     "target": "n_003"
+    },
+    {
+     "id": "c_001_c",
+     "label": "Examine the fox piece closely",
+     "target": "n_004"
+    }
+   ]
+  },
+  {
+   "id": "n_002",
+   "body": "<<FILL role=explore words=105 beats='The shopkeeper says the set came from an estate sale in Thistlewell; he knows nothing about the fox piece but remembers a faded label on the box that said Ravensmere'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_002_a",
+     "label": "Travel to Thistlewell",
+     "target": "n_005"
+    },
+    {
+     "id": "c_002_b",
+     "label": "Research Ravensmere at the library",
+     "target": "n_006"
+    },
+    {
+     "id": "c_002_c",
+     "label": "Buy the set and ask more questions",
+     "target": "n_003"
+    }
+   ]
+  },
+  {
+   "id": "n_003",
+   "body": "<<FILL role=transition words=90 beats='Wren pays for the chess set; the shopkeeper wraps it in brown paper; Wren feels the weight of the extra piece and decides where to go next'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_003_a",
+     "label": "Go to the library to research the set",
+     "target": "n_006"
+    },
+    {
+     "id": "c_003_b",
+     "label": "Head straight to Thistlewell",
+     "target": "n_005"
+    },
+    {
+     "id": "c_003_c",
+     "label": "Show the fox piece to a local antiques dealer",
+     "target": "n_007"
+    }
+   ]
+  },
+  {
+   "id": "n_004",
+   "body": "<<FILL role=explore words=115 beats='Wren holds the fox piece under the shop light; its eyes are tiny garnets; the base has a carved initial R; the wood is applewood; a tiny scroll is hidden in a hollow under the base'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_004_a",
+     "label": "Remove the tiny scroll",
+     "target": "n_008"
+    },
+    {
+     "id": "c_004_b",
+     "label": "Ask the shopkeeper about the initial R",
+     "target": "n_002"
+    },
+    {
+     "id": "c_004_c",
+     "label": "Buy the set and leave",
+     "target": "n_003"
+    }
+   ]
+  },
+  {
+   "id": "n_005",
+   "body": "<<FILL role=transition words=100 beats='Wren catches a bus to Thistlewell; the town is small and quiet; a sign points to an old carvers guildhall; a woman sweeping the steps notices the box and smiles'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_005_a",
+     "label": "Speak to the woman at the guildhall",
+     "target": "n_009"
+    },
+    {
+     "id": "c_005_b",
+     "label": "Find the estate-sale house",
+     "target": "n_010"
+    },
+    {
+     "id": "c_005_c",
+     "label": "Visit the Thistlewell library",
+     "target": "n_011"
+    }
+   ]
+  },
+  {
+   "id": "n_006",
+   "body": "<<FILL role=explore words=110 beats='Wren searches library records for Ravensmere; it was a small artists colony that disbanded in the 1930s; one article mentions a woodcarver named Rowan who made animal chess pieces for his daughter'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_006_a",
+     "label": "Go to Thistlewell to find Rowans descendants",
+     "target": "n_005"
+    },
+    {
+     "id": "c_006_b",
+     "label": "Search for more of Rowans carvings",
+     "target": "n_012"
+    },
+    {
+     "id": "c_006_c",
+     "label": "Return to the junk shop with this information",
+     "target": "n_013"
+    }
+   ]
+  },
+  {
+   "id": "n_007",
+   "body": "<<FILL role=explore words=105 beats='The antiques dealer examines the fox piece with a loupe; she says it is early twentieth-century, probably made by a carver in a defunct colony called Ravensmere; the garnets are unusual'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_007_a",
+     "label": "Head to Thistlewell to find the colony site",
+     "target": "n_005"
+    },
+    {
+     "id": "c_007_b",
+     "label": "Ask the dealer to help trace the carver",
+     "target": "n_012"
+    },
+    {
+     "id": "c_007_c",
+     "label": "Take the fox piece to the library for research",
+     "target": "n_006"
+    }
+   ]
+  },
+  {
+   "id": "n_008",
+   "body": "<<FILL role=decision words=90 beats='Wren unrolls the tiny scroll; it is a note in faded ink: Fox to guard the white queen, Rowan made me, 1924; Wren now has a carver name and a year'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_008_a",
+     "label": "Go to Thistlewell to find Rowan's story",
+     "target": "n_005"
+    },
+    {
+     "id": "c_008_b",
+     "label": "Research Rowan at the library",
+     "target": "n_006"
+    },
+    {
+     "id": "c_008_c",
+     "label": "Show the scroll to the shopkeeper",
+     "target": "n_013"
+    }
+   ]
+  },
+  {
+   "id": "n_009",
+   "body": "<<FILL role=explore words=110 beats='The woman is the guildhall caretaker; she says Ravensmere was a community of woodcarvers in Thornwood; Rowan was her great-uncle; the colony dissolved when the founder died'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_009_a",
+     "label": "Ask to see Rowans old workshop",
+     "target": "n_014"
+    },
+    {
+     "id": "c_009_b",
+     "label": "Learn more about the colony history",
+     "target": "n_015"
+    },
+    {
+     "id": "c_009_c",
+     "label": "Show her the fox piece",
+     "target": "n_016"
+    }
+   ]
+  },
+  {
+   "id": "n_010",
+   "body": "<<FILL role=explore words=105 beats='Wren finds the estate-sale house; a neighbour says the previous owner collected local art; Wren spots a carving of a badger on the garden gate that matches the fox style'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_010_a",
+     "label": "Follow the path into Thornwood",
+     "target": "n_017"
+    },
+    {
+     "id": "c_010_b",
+     "label": "Visit the guildhall to ask about the badger carving",
+     "target": "n_009"
+    },
+    {
+     "id": "c_010_c",
+     "label": "Knock on the neighbours door",
+     "target": "n_018"
+    }
+   ]
+  },
+  {
+   "id": "n_011",
+   "body": "<<FILL role=explore words=100 beats='The Thistlewell library has a local-history room; Wren finds a photograph of the Ravensmere carvers in 1923; Rowan stands beside a young girl holding a chessboard with animal pieces'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_011_a",
+     "label": "Search for the girls name in town records",
+     "target": "n_019"
+    },
+    {
+     "id": "c_011_b",
+     "label": "Head to the guildhall with the photograph",
+     "target": "n_009"
+    },
+    {
+     "id": "c_011_c",
+     "label": "Look for the cabin site in Thornwood",
+     "target": "n_017"
+    }
+   ]
+  },
+  {
+   "id": "n_012",
+   "body": "<<FILL role=explore words=110 beats='Wren traces more of Rowans work through auction records; a hedgehog piece sold to a museum in Thornwood; the museum holds a small collection of Ravensmere carvings'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_012_a",
+     "label": "Visit the Thornwood museum",
+     "target": "n_020"
+    },
+    {
+     "id": "c_012_b",
+     "label": "Continue searching for the chess set history",
+     "target": "n_006"
+    },
+    {
+     "id": "c_012_c",
+     "label": "Go to Thistlewell and find the guildhall",
+     "target": "n_009"
+    }
+   ]
+  },
+  {
+   "id": "n_013",
+   "body": "<<FILL role=transition words=95 beats='Wren returns to the junk shop; the shopkeeper remembers a woman from Thistlewell sold the set while clearing her grandmothers attic; Wren writes down her name'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_013_a",
+     "label": "Travel to Thistlewell to find the woman",
+     "target": "n_005"
+    },
+    {
+     "id": "c_013_b",
+     "label": "Research the grandmothers family name",
+     "target": "n_006"
+    },
+    {
+     "id": "c_013_c",
+     "label": "Search for the house in Thornwood",
+     "target": "n_017"
+    }
+   ]
+  },
+  {
+   "id": "n_014",
+   "body": "<<FILL role=explore words=115 beats='The caretaker leads Wren to a small workshop behind the guildhall; it is filled with old tools and unfinished carvings; a half-carved owl sits on the bench; the style matches the fox'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_014_a",
+     "label": "Search the workshop for Rowans journals",
+     "target": "n_021"
+    },
+    {
+     "id": "c_014_b",
+     "label": "Ask the caretaker about Rowans daughter",
+     "target": "n_015"
+    },
+    {
+     "id": "c_014_c",
+     "label": "Examine the owl carving closely",
+     "target": "n_022"
+    }
+   ]
+  },
+  {
+   "id": "n_015",
+   "body": "<<FILL role=explore words=110 beats='The caretaker says Rowans daughter was named Elara; she loved chess and her father made her a special set with woodland animals; Elara moved away in 1935 but left the set behind'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_015_a",
+     "label": "Trace where Elara moved to",
+     "target": "n_023"
+    },
+    {
+     "id": "c_015_b",
+     "label": "Ask what happened to the rest of the set",
+     "target": "n_024"
+    },
+    {
+     "id": "c_015_c",
+     "label": "Visit the Ravensmere cabin site in Thornwood",
+     "target": "n_017"
+    }
+   ]
+  },
+  {
+   "id": "n_016",
+   "body": "<<FILL role=decision words=95 beats='Wren places the fox piece in the caretakers hand; she gasps; she says the garnet eyes were a gift from Elaras mother; the piece was believed lost when the set was sold decades ago'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_016_a",
+     "label": "Offer to return the fox piece to the family",
+     "target": "n_025"
+    },
+    {
+     "id": "c_016_b",
+     "label": "Ask to see the rest of the original chess set",
+     "target": "n_024"
+    },
+    {
+     "id": "c_016_c",
+     "label": "Learn more about Elaras story",
+     "target": "n_015"
+    }
+   ]
+  },
+  {
+   "id": "n_017",
+   "body": "<<FILL role=explore words=110 beats='Wren walks into Thornwood; the Ravensmere cabins are mostly ruins but one has been restored as the Thornwood Museum of Woodcarving; inside are animal chess pieces in a glass case'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_017_a",
+     "label": "Enter the museum",
+     "target": "n_020"
+    },
+    {
+     "id": "c_017_b",
+     "label": "Return to Thistlewell for more information",
+     "target": "n_009"
+    },
+    {
+     "id": "c_017_c",
+     "label": "Search the cabin ruins for clues",
+     "target": "n_026"
+    }
+   ]
+  },
+  {
+   "id": "n_018",
+   "body": "<<FILL role=explore words=105 beats='The neighbour is an elderly man; the collector was his sister, the granddaughter of a Ravensmere carver; she sold the chess set reluctantly when she moved into care; he has a letter'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_018_a",
+     "label": "Read the letter",
+     "target": "n_027"
+    },
+    {
+     "id": "c_018_b",
+     "label": "Ask about the granddaughter",
+     "target": "n_019"
+    },
+    {
+     "id": "c_018_c",
+     "label": "Visit the Thornwood museum",
+     "target": "n_020"
+    }
+   ]
+  },
+  {
+   "id": "n_019",
+   "body": "<<FILL role=explore words=100 beats='Wren searches town records; the girl in the photograph was Elara; she married and moved to Brightmere; her descendants still live there; the family name is Ashworth'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_019_a",
+     "label": "Travel to Brightmere to find the Ashworths",
+     "target": "n_028"
+    },
+    {
+     "id": "c_019_b",
+     "label": "Visit the workshop to learn more",
+     "target": "n_014"
+    },
+    {
+     "id": "c_019_c",
+     "label": "Check the museum for Ashworth history",
+     "target": "n_020"
+    }
+   ]
+  },
+  {
+   "id": "n_020",
+   "body": "<<FILL role=explore words=115 beats='The Thornwood museum curator shows Wren a collection of Rowans animal chess pieces; a badger, a hare, an owl, a hedgehog; a note says the set had thirty-two animal pieces plus a fox guard'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_020_a",
+     "label": "Tell the curator about the fox piece",
+     "target": "n_029"
+    },
+    {
+     "id": "c_020_b",
+     "label": "Ask why the set was separated",
+     "target": "n_024"
+    },
+    {
+     "id": "c_020_c",
+     "label": "Search for Elaras family",
+     "target": "n_023"
+    }
+   ]
+  },
+  {
+   "id": "n_021",
+   "body": "<<FILL role=explore words=105 beats='Wren finds a drawer of Rowans journals; an entry from 1924 describes carving the fox for Elara as a surprise; it was meant to guard her white queen; he used applewood from their garden'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_021_a",
+     "label": "Read more journal entries about Elara",
+     "target": "n_015"
+    },
+    {
+     "id": "c_021_b",
+     "label": "Look for Elaras current family",
+     "target": "n_023"
+    },
+    {
+     "id": "c_021_c",
+     "label": "Show the journal to the caretaker",
+     "target": "n_025"
+    }
+   ]
+  },
+  {
+   "id": "n_022",
+   "body": "<<FILL role=explore words=95 beats='The owl carving has the same garnet eyes as the fox; a label says For Elara, who watches over the night games; Wren realises each animal piece had a personal dedication'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_022_a",
+     "label": "Ask the caretaker about other pieces",
+     "target": "n_024"
+    },
+    {
+     "id": "c_022_b",
+     "label": "Search for Elaras descendants",
+     "target": "n_023"
+    },
+    {
+     "id": "c_022_c",
+     "label": "Visit the museum to see the full collection",
+     "target": "n_020"
+    }
+   ]
+  },
+  {
+   "id": "n_023",
+   "body": "<<FILL role=explore words=110 beats='Wren traces the Ashworth family to Brightmere; a woman named Mira Ashworth answers the door; she is Elaras great-granddaughter; she has heard stories about a special chess set'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_023_a",
+     "label": "Show Mira the fox piece",
+     "target": "n_030"
+    },
+    {
+     "id": "c_023_b",
+     "label": "Ask about Elaras life",
+     "target": "n_031"
+    },
+    {
+     "id": "c_023_c",
+     "label": "Offer to reunite the fox with the museum set",
+     "target": "n_025"
+    }
+   ]
+  },
+  {
+   "id": "n_024",
+   "body": "<<FILL role=explore words=110 beats='Wren learns the chess set was sold in 1935 when Elara left; the museum acquired most of the pieces decades later; the fox was missing because Elara took it with her as a keepsake'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_024_a",
+     "label": "Find Elaras family to tell them about the fox",
+     "target": "n_023"
+    },
+    {
+     "id": "c_024_b",
+     "label": "Go to the museum with this story",
+     "target": "n_029"
+    },
+    {
+     "id": "c_024_c",
+     "label": "Return the fox to the museum collection",
+     "target": "n_032"
+    }
+   ]
+  },
+  {
+   "id": "n_025",
+   "body": "<<FILL role=decision words=100 beats='Wren decides to reunite the fox piece with the Ashworth family; Mira is the rightful keeper of the story; the caretaker agrees the piece should go to Elaras descendants'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_025_a",
+     "label": "Give the fox piece to Mira",
+     "target": "n_033"
+    },
+    {
+     "id": "c_025_b",
+     "label": "Bring the fox to the museum for a reunion with the set",
+     "target": "n_034"
+    },
+    {
+     "id": "c_025_c",
+     "label": "Ask Mira to visit the museum with the fox",
+     "target": "n_035"
+    }
+   ]
+  },
+  {
+   "id": "n_026",
+   "body": "<<FILL role=explore words=105 beats='Wren searches the Thornwood cabin ruins; beneath a fallen beam is a small metal box; it contains a letter from Rowan to Elara, promising to make her a chess set full of woodland friends'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_026_a",
+     "label": "Take the letter to the museum",
+     "target": "n_020"
+    },
+    {
+     "id": "c_026_b",
+     "label": "Find Elaras family to share the letter",
+     "target": "n_023"
+    },
+    {
+     "id": "c_026_c",
+     "label": "Give the letter to the caretaker",
+     "target": "n_025"
+    }
+   ]
+  },
+  {
+   "id": "n_027",
+   "body": "<<FILL role=explore words=110 beats='The letter is from the collector to her grandson; she explains the fox piece was Elaras favourite and was passed down; the collector sold the set but kept the fox, which later went missing'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_027_a",
+     "label": "Find the woman in the care home",
+     "target": "n_036"
+    },
+    {
+     "id": "c_027_b",
+     "label": "Trace the Ashworth family",
+     "target": "n_023"
+    },
+    {
+     "id": "c_027_c",
+     "label": "Go to the museum with this information",
+     "target": "n_029"
+    }
+   ]
+  },
+  {
+   "id": "n_028",
+   "body": "<<FILL role=transition words=95 beats='Wren takes a train to Brightmere; the town is by the sea; the Ashworth house is a cottage with a garden full of apple trees; Mira is expecting Wren after a phone call'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_028_a",
+     "label": "Show Mira the fox piece",
+     "target": "n_030"
+    },
+    {
+     "id": "c_028_b",
+     "label": "Ask Mira about her family history",
+     "target": "n_031"
+    },
+    {
+     "id": "c_028_c",
+     "label": "Suggest visiting the museum together",
+     "target": "n_035"
+    }
+   ]
+  },
+  {
+   "id": "n_029",
+   "body": "<<FILL role=explore words=110 beats='The curator is astonished to see the fox piece; it completes the Ravensmere chess set after nearly ninety years; she says the museum would love to display it alongside the other pieces'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_029_a",
+     "label": "Donate the fox piece to the museum",
+     "target": "n_032"
+    },
+    {
+     "id": "c_029_b",
+     "label": "Arrange a loan so the family keeps ownership",
+     "target": "n_037"
+    },
+    {
+     "id": "c_029_c",
+     "label": "Find the Ashworth family first",
+     "target": "n_023"
+    }
+   ]
+  },
+  {
+   "id": "n_030",
+   "body": "<<FILL role=climax words=115 beats='Wren places the fox piece in Miras palm; she weeps; it is the piece her grandmother Elara spoke of in her final years; Mira has a photograph of Elara holding the very same fox'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_030_a",
+     "label": "Leave the fox with Mira",
+     "target": "n_033"
+    },
+    {
+     "id": "c_030_b",
+     "label": "Visit the museum with Mira",
+     "target": "n_035"
+    },
+    {
+     "id": "c_030_c",
+     "label": "Ask Mira to tell Elaras full story",
+     "target": "n_031"
+    }
+   ]
+  },
+  {
+   "id": "n_031",
+   "body": "<<FILL role=explore words=110 beats='Mira tells Wren about Elara; she was an artist who never forgot her fathers gift; she taught her children to carve; the Ashworth family still keeps a workshop with applewood carvings'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_031_a",
+     "label": "Ask to see the family workshop",
+     "target": "n_038"
+    },
+    {
+     "id": "c_031_b",
+     "label": "Return the fox piece to Mira",
+     "target": "n_033"
+    },
+    {
+     "id": "c_031_c",
+     "label": "Take Mira to the museum",
+     "target": "n_035"
+    }
+   ]
+  },
+  {
+   "id": "n_032",
+   "body": "<<FILL role=ending words=110 beats='Wren donates the fox piece to the Thornwood museum; it is placed in the glass case beside the badger, the hare, the owl, and the hedgehog; the label now reads The Ravensmere Chess Set, Complete'> >",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_001",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Complete and on Display"
+   }
+  },
+  {
+   "id": "n_033",
+   "body": "<<FILL role=ending words=115 beats='Wren leaves the fox piece with Mira; she places it on her mantelpiece beside Elaras photograph; the fox has come home after nearly a century; Wren feels the warmth of a story finished'> >",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_002",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Home with Family"
+   }
+  },
+  {
+   "id": "n_034",
+   "body": "<<FILL role=ending words=110 beats='Wren brings the fox to the museum and places it in the empty slot in the display case; the curator photographs the complete set for the local paper; the caption reads Lost Fox Returns to Ravensmere'> >",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_003",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Reunited in the Museum"
+   }
+  },
+  {
+   "id": "n_035",
+   "body": "<<FILL role=climax words=115 beats='Mira and Wren visit the museum together; Mira places the fox in the case with the other pieces; the curator invites the Ashworth family to a special exhibition about Rowan and Elara'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_035_a",
+     "label": "Leave the fox on permanent loan to the museum",
+     "target": "n_037"
+    },
+    {
+     "id": "c_035_b",
+     "label": "Let Mira take the fox home",
+     "target": "n_033"
+    },
+    {
+     "id": "c_035_c",
+     "label": "Ask the museum to display it with the family story",
+     "target": "n_039"
+    }
+   ]
+  },
+  {
+   "id": "n_036",
+   "body": "<<FILL role=explore words=105 beats='Wren visits the care home and meets the elderly collector; she is lucid and delighted; she explains she sold the chess set to pay for her care but always hoped someone would find the fox'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_036_a",
+     "label": "Tell her the fox is safe with the family",
+     "target": "n_040"
+    },
+    {
+     "id": "c_036_b",
+     "label": "Ask if she wants it returned to the Ashworths",
+     "target": "n_025"
+    },
+    {
+     "id": "c_036_c",
+     "label": "Show her a photograph of the complete museum set",
+     "target": "n_041"
+    }
+   ]
+  },
+  {
+   "id": "n_037",
+   "body": "<<FILL role=ending words=110 beats='Mira arranges a permanent loan to the museum; the fox stays in the display case but belongs to the Ashworth family; a small plaque tells Elaras story; Wren visits whenever she is in Thornwood'> >",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_004",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Permanent Loan"
+   }
+  },
+  {
+   "id": "n_038",
+   "body": "<<FILL role=explore words=110 beats='Mira shows Wren the family workshop; it smells of applewood and varnish; carvings of foxes, owls, and badgers line the shelves; Elaras tradition lives on in every generation'> >",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_038_a",
+     "label": "Leave the fox with Mira",
+     "target": "n_033"
+    },
+    {
+     "id": "c_038_b",
+     "label": "Suggest a family exhibition at the museum",
+     "target": "n_039"
+    },
+    {
+     "id": "c_038_c",
+     "label": "Arrange a museum loan of the fox",
+     "target": "n_037"
+    }
+   ]
+  },
+  {
+   "id": "n_039",
+   "body": "<<FILL role=ending words=115 beats='The museum creates a new exhibition: The Carvers of Ravensmere; the complete chess set is the centrepiece; Miras family lends their own carvings; Wrens name appears in the acknowledgements'> >",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_005",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Living Legacy"
+   }
+  },
+  {
+   "id": "n_040",
+   "body": "<<FILL role=ending words=110 beats='Wren tells the elderly collector that the fox is now with Elaras great-granddaughter; the woman smiles and says her grandmother would be proud; Wren leaves with a sense of quiet completion'> >",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_006",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Grandmothers Wish"
+   }
+  },
+  {
+   "id": "n_041",
+   "body": "<<FILL role=ending words=105 beats='Wren shows the collector a photograph of the complete set in the museum; she weeps with joy; Wren promises to bring Mira to visit; the fox has bridged three generations'> >",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_007",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Bridging Generations"
+   }
+  }
+ ]
+}
