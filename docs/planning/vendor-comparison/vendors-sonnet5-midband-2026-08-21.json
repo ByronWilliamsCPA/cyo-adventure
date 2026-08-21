@@ -1,0 +1,13 @@
+[
+  {
+    "label": "anthropic-sonnet-5",
+    "model": "anthropic/claude-sonnet-5",
+    "provider_order": [
+      "amazon-bedrock/global"
+    ],
+    "family": "anthropic",
+    "_snapshot": "anthropic/claude-sonnet-5-20260630",
+    "_price_per_mtok": "2.00 / 10.00",
+    "_note": "Eight endpoints across Anthropic, Google, Amazon Bedrock and Azure. Cheaper than 4.6 and the checkpoint the pipeline actually runs, so it is the one a diversification strategy would be applied to. Bedrock for the same reason as the 4.6 leg: first-party Anthropic is blocked by account data policy, and both Anthropic legs must share a stack."
+  }
+]
