@@ -1,0 +1,588 @@
+{
+ "schema_version": "2.0",
+ "id": "light-marks-of-brackenford",
+ "version": 1,
+ "title": "The Light Marks of Brackenford",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 6.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "curiosity",
+   "honesty",
+   "fairness",
+   "friendship"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 15,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "setup",
+ "nodes": [
+  {
+   "id": "setup",
+   "body": "<<FILL role=setup words=70 beats='Last week of the harvest fair in Brackenford. Idris counts change at the honey stall of Aunt Sefa and two brass grain-marks ring differently on the counter, one bright, one dull.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "setup-go",
+     "label": "Look closer at the two tokens",
+     "target": "s1-hub"
+    }
+   ]
+  },
+  {
+   "id": "s1-hub",
+   "body": "<<FILL role=decision words=75 beats='Idris compares the two tokens: the heavy mark shows seven grains on the wheat sheaf, the light one only six, with a shiny rim. A wool-buyer waits for her change.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s1-hub-o1",
+     "label": "Show the tokens to Aunt Sefa",
+     "target": "s1-a"
+    },
+    {
+     "id": "s1-hub-o2",
+     "label": "Mark the tokens and keep both",
+     "target": "s1-b"
+    },
+    {
+     "id": "s1-hub-o3",
+     "label": "Ask the wool-buyer about her change",
+     "target": "s1-c"
+    }
+   ]
+  },
+  {
+   "id": "s1-a",
+   "body": "<<FILL role=decision words=120 beats='Aunt Sefa squints at both tokens, says mind the stall not the metal, but lets Idris keep the odd light mark tucked in a wax wrap for later.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s1-a-o1",
+     "label": "Let it go and mind the stall",
+     "target": "end-1a"
+    },
+    {
+     "id": "s1-a-o2",
+     "label": "Take the tokens to Petra after closing",
+     "target": "s1-a1"
+    },
+    {
+     "id": "s1-a-o3",
+     "label": "Listen to the talk at the cider stand",
+     "target": "s1-ab"
+    }
+   ]
+  },
+  {
+   "id": "s1-b",
+   "body": "<<FILL role=decision words=120 beats='Idris scratches a tiny bee into each token to mark it, swaps them out of the till for coins of his own, and plans a fair test after closing.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s1-b-o1",
+     "label": "Hear the gossip at the cider stand",
+     "target": "s1-ab"
+    },
+    {
+     "id": "s1-b-o2",
+     "label": "Trade your own coins for every light mark",
+     "target": "end-1b"
+    },
+    {
+     "id": "s1-b-o3",
+     "label": "Show Petra the marked tokens at closing",
+     "target": "s1-bc"
+    }
+   ]
+  },
+  {
+   "id": "s1-c",
+   "body": "<<FILL role=decision words=120 beats='The wool-buyer says the eel stall gave her light change all week, and prices creep at some stalls: nine light marks for a honey pot that costs eight heavy ones.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s1-c-o1",
+     "label": "Accuse the eel-seller right now",
+     "target": "end-1c"
+    },
+    {
+     "id": "s1-c-o2",
+     "label": "Find Petra and plan a proper test",
+     "target": "s1-bc"
+    },
+    {
+     "id": "s1-c-o3",
+     "label": "Quietly ask other stallholders",
+     "target": "s1-c1"
+    }
+   ]
+  },
+  {
+   "id": "end-1a",
+   "body": "<<FILL role=ending words=130 beats='Idris drops the question, trades honestly through the last fair days, and rides home with Aunt Sefa; the odd token sits forgotten in a drawer until next season.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-1a",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "A Day at the Market"
+   }
+  },
+  {
+   "id": "end-1b",
+   "body": "<<FILL role=ending words=130 beats='Idris quietly swaps his own heavy coins for every light mark that crosses the stall, protecting the customers one by one until his purse is empty; the fair ends with kind words from Aunt Sefa and the mystery unsolved.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-1b",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Empty Purse"
+   }
+  },
+  {
+   "id": "end-1c",
+   "body": "<<FILL role=ending words=130 beats='With no proof Idris accuses Dorrin the eel-seller before a crowd; Dorrin empties his till to show fair change, Aunt Sefa apologizes for her nephew, and Idris is sent home early.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-1c",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Wrong Accusation"
+   }
+  },
+  {
+   "id": "s1-a1",
+   "body": "<<FILL role=transition words=70 beats='Shift done, Idris hurries down Scale Lane with both tokens in the wax wrap, rehearsing what to tell Petra about grains and rims.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s1-a1-go",
+     "label": "Hurry to the scale workshop",
+     "target": "s2-hub"
+    }
+   ]
+  },
+  {
+   "id": "s1-ab",
+   "body": "<<FILL role=transition words=70 beats='At the cider stand the talk confirms it: several rows now quote two prices, one for heavy marks and one for light, and nobody remembers deciding that.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s1-ab-go",
+     "label": "Take the question to the beam balance",
+     "target": "s2-hub"
+    }
+   ]
+  },
+  {
+   "id": "s1-bc",
+   "body": "<<FILL role=transition words=70 beats='At closing Petra turns a light mark over twice and bets her best file that it is underweight; she says the beam balance in the workshop of her father will settle it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s1-bc-go",
+     "label": "Go weigh the tokens properly",
+     "target": "s2-hub"
+    }
+   ]
+  },
+  {
+   "id": "s1-c1",
+   "body": "<<FILL role=transition words=70 beats='Three stallholders admit quietly quoting two prices; each thought the Guild had approved it, and each is relieved somebody is finally asking questions.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s1-c1-go",
+     "label": "Gather the tokens and find Petra",
+     "target": "s2-hub"
+    }
+   ]
+  },
+  {
+   "id": "s2-hub",
+   "body": "<<FILL role=decision words=75 beats='Evening in the workshop of Master Halvard the scale-maker. Tokens gleam beside the beam balance while Petra sets out brass weights and Idris lines up the marked tokens.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s2-hub-o1",
+     "label": "Weigh a big sample on the balance",
+     "target": "s2-a"
+    },
+    {
+     "id": "s2-hub-o2",
+     "label": "Study the stamps under the lens",
+     "target": "s2-b"
+    },
+    {
+     "id": "s2-hub-o3",
+     "label": "Shadow Treasurer Varro tomorrow",
+     "target": "s2-c"
+    }
+   ]
+  },
+  {
+   "id": "s2-a",
+   "body": "<<FILL role=decision words=120 beats='The fine balance shows every six-grain mark two grains short of the seven-grain minting; Petra logs forty tokens in a neat column, and every light one comes from this season.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s2-a-o1",
+     "label": "Post the findings on the Guild notice board",
+     "target": "end-2a"
+    },
+    {
+     "id": "s2-a-o2",
+     "label": "Ask Master Quill to certify the weights",
+     "target": "s2-a1"
+    },
+    {
+     "id": "s2-a-o3",
+     "label": "Take the numbers to the minthouse",
+     "target": "s2-ab"
+    }
+   ]
+  },
+  {
+   "id": "s2-b",
+   "body": "<<FILL role=decision words=120 beats='Under the bench lens the light stamp shows six grains and a blunt letter R in BRACKENFORD; the old stamp has seven grains and crisp letters. Two different dies made these tokens.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s2-b-o1",
+     "label": "Show clerk Onnie the two stamps",
+     "target": "s2-ab"
+    },
+    {
+     "id": "s2-b-o2",
+     "label": "Leave it with the minthouse ledger note",
+     "target": "end-2b"
+    },
+    {
+     "id": "s2-b-o3",
+     "label": "Set a granary watch for tonight",
+     "target": "s2-bc"
+    }
+   ]
+  },
+  {
+   "id": "s2-c",
+   "body": "<<FILL role=decision words=120 beats='They shadow Treasurer Varro: locked satchels at noon, the river door, and a glittering trail of brass filings dribbled along the path to the old granary by the ford.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s2-c-o1",
+     "label": "Creep up to the counting house window",
+     "target": "end-2c"
+    },
+    {
+     "id": "s2-c-o2",
+     "label": "Follow the barrow to the granary",
+     "target": "s2-bc"
+    },
+    {
+     "id": "s2-c-o3",
+     "label": "Send Petra inside with a mended scale",
+     "target": "s2-c1"
+    }
+   ]
+  },
+  {
+   "id": "end-2a",
+   "body": "<<FILL role=ending words=130 beats='Idris posts the weighing table on the Guild notice board; stallholders start checking their change, the Guild pays a small finder fee, and the fair feels a shade fairer.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-2a",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Two Grains Short"
+   }
+  },
+  {
+   "id": "end-2b",
+   "body": "<<FILL role=ending words=130 beats='Clerk Onnie checks the die ledger, finds no new die ordered since spring, and files a formal report; she lends Idris the old mint history, and Idris writes the tale of the seven-grain die for the school ledger.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-2b",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Ledger Note"
+   }
+  },
+  {
+   "id": "end-2c",
+   "body": "<<FILL role=ending words=130 beats='A shutter swings, lamplight catches Idris at the counting house glass, and Varro sees exactly who is watching; by morning the room is scrubbed, every sack is gone, and the trail is cold.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-2c",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Spotted at the Window"
+   }
+  },
+  {
+   "id": "s2-a1",
+   "body": "<<FILL role=transition words=70 beats='Master Quill the assayer weighs both mintings three times, signs a chit certifying two grains light, and warns that a chit proves shortness, not the hand behind it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s2-a1-go",
+     "label": "Carry the chit to the Harvest Court",
+     "target": "fin-hub"
+    }
+   ]
+  },
+  {
+   "id": "s2-ab",
+   "body": "<<FILL role=transition words=70 beats='Clerk Onnie unlocks the master die case: seven grains, crisp letters, honest wear. Whatever struck the light tokens was never kept in the minthouse, and she says so in writing.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s2-ab-go",
+     "label": "Bring her letter to the Harvest Court",
+     "target": "fin-hub"
+    }
+   ]
+  },
+  {
+   "id": "s2-bc",
+   "body": "<<FILL role=transition words=70 beats='From the granary loft they watch Varro feed seven-grain marks to a hand press while Fenn the die-cutter stamps six-grain blanks; warden Brona and her lanterns ring the doors before dawn.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s2-bc-go",
+     "label": "Go with the wardens to the court",
+     "target": "fin-hub"
+    }
+   ]
+  },
+  {
+   "id": "s2-c1",
+   "body": "<<FILL role=transition words=70 beats='Delivering the mended scale, Petra memorizes the open exchange ledger: reminting fees, week after week, in the same sloped hand that signs for Treasurer Varro.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "s2-c1-go",
+     "label": "Take the copied page to the court",
+     "target": "fin-hub"
+    }
+   ]
+  },
+  {
+   "id": "fin-hub",
+   "body": "<<FILL role=decision words=75 beats='Morning, the Harvest Court on the green. Wardens have crated the granary press, two false dies, and the fee ledger; Varro pleads lawful reminting while Guildmother Ashe calls for evidence.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "fin-hub-o1",
+     "label": "Lay out the chain of proof yourself",
+     "target": "fin-a"
+    },
+    {
+     "id": "fin-hub-o2",
+     "label": "Let Fenn the die-cutter speak first",
+     "target": "fin-b"
+    },
+    {
+     "id": "fin-hub-o3",
+     "label": "Call for the great market scale",
+     "target": "fin-c"
+    }
+   ]
+  },
+  {
+   "id": "fin-a",
+   "body": "<<FILL role=decision words=120 beats='Idris asks to speak and lays the chain in order: the two-grain gap, the two stamps, the filings trail, the fee ledger, the granary night, each link handed to the next.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "fin-a-o1",
+     "label": "Hand the court the fee ledger last",
+     "target": "fin-ea1"
+    },
+    {
+     "id": "fin-a-o2",
+     "label": "Offer the council a quiet settlement",
+     "target": "fin-ea2"
+    },
+    {
+     "id": "fin-a-o3",
+     "label": "Let Varro answer each link in turn",
+     "target": "fin-ea3"
+    }
+   ]
+  },
+  {
+   "id": "fin-b",
+   "body": "<<FILL role=decision words=120 beats='Ashe offers Fenn leniency to speak; the die-cutter turns the locked die box over in his hands, looking from Varro to the crowd and back again.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "fin-b-o1",
+     "label": "Back the story of Fenn with the ledger",
+     "target": "fin-eb1"
+    },
+    {
+     "id": "fin-b-o2",
+     "label": "Let Varro cross-question Fenn",
+     "target": "fin-eb2"
+    },
+    {
+     "id": "fin-b-o3",
+     "label": "Ask Fenn to open the die box himself",
+     "target": "fin-eb3"
+    }
+   ]
+  },
+  {
+   "id": "fin-c",
+   "body": "<<FILL role=decision words=120 beats='Idris asks for the great market scale: let a hundred of each minting be weighed before everyone, so the tokens themselves can testify.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "fin-c-o1",
+     "label": "Weigh the tokens and rule at once",
+     "target": "fin-ec1"
+    },
+    {
+     "id": "fin-c-o2",
+     "label": "Ask only for a recall of light marks",
+     "target": "fin-ec2"
+    },
+    {
+     "id": "fin-c-o3",
+     "label": "Let Varro run the weighing himself",
+     "target": "fin-ec3"
+    }
+   ]
+  },
+  {
+   "id": "fin-ea1",
+   "body": "<<FILL role=ending words=140 beats='The chain holds; the court finds Varro took the missing grains, he repays the metal from his own strongbox, and the mint strikes a new seven-grain die with milled edges no shaving can hide.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-a1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Honest Mark"
+   }
+  },
+  {
+   "id": "fin-ea2",
+   "body": "<<FILL role=ending words=140 beats='The council settles quietly: metal returned, no trial, no names cried on the green; the market steadies season by season, and Idris pockets one light mark to remember what quiet costs.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-a2",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "A Quiet Settlement"
+   }
+  },
+  {
+   "id": "fin-ea3",
+   "body": "<<FILL role=ending words=140 beats='Given the floor link by link, Varro talks each piece into fog, lawful fees here, routine reminting there; the court adjourns undecided, the treasurer resigns with honors, and Idris learns not to hand a clever man the order of battle.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-a3",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Talked in Circles"
+   }
+  },
+  {
+   "id": "fin-eb1",
+   "body": "<<FILL role=ending words=140 beats='Fenn tells how Varro brought him shaved brass and a drawing of a six-grain sheaf; the ledger backs every date, Varro forfeits goods and office, and Idris helps design the new stamp for the mint.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-b1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The New Seven-Grain Stamp"
+   }
+  },
+  {
+   "id": "fin-eb2",
+   "body": "<<FILL role=ending words=140 beats='Varro lays every fault on Fenn and the court, weary, half believes him; the journeyman bears the sentence while the treasurer resigns with honors, and Idris learns proof must name the hand that profits.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-b2",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Scapegoat"
+   }
+  },
+  {
+   "id": "fin-eb3",
+   "body": "<<FILL role=ending words=140 beats='Fenn opens the box: two dies, one honest, one six-grain, both cut to order under his hand; he names the day, the price, and the man who paid it, and the whole truth costs both men fairly and mends the market.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-b3",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Whole Truth"
+   }
+  },
+  {
+   "id": "fin-ec1",
+   "body": "<<FILL role=ending words=140 beats='The great scale settles it before the whole fair, a hundred light marks two grains short on the beam for all to see; the court rules at once, and Idris and Petra are named junior weighers of Brackenford with brass badges.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-c1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Junior Weighers of Brackenford"
+   }
+  },
+  {
+   "id": "fin-ec2",
+   "body": "<<FILL role=ending words=140 beats='The court orders every grain-mark recalled and reweighed at the minthouse window; the market is mended coin by coin, though the unnamed hand behind the light marks slips quietly out of Brackenford.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-c2",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Recall"
+   }
+  },
+  {
+   "id": "fin-ec3",
+   "body": "<<FILL role=ending words=140 beats='Varro runs the weighing with gracious hands and a thumb nobody catches on the beam; the mintings balance, the crowd drifts off, and only Petra sees, too late, the smear of wax on the pan.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-c3",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Tipped Beam"
+   }
+  }
+ ]
+}
