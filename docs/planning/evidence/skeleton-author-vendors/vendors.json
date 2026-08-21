@@ -10,9 +10,10 @@
   {
     "label": "deepseek-v4-flash",
     "model": "deepseek/deepseek-v4-flash",
-    "provider_order": [],
+    "provider_order": ["novita/fp8"],
     "family": "deepseek",
-    "_note": "No committed pin exists for this slug; core/pricing.py carries an unpinned price row. Preflight MUST probe endpoints and a pin MUST be written here before the paid run; an empty provider_order is acceptable only for --mock. Same-family pair with the pro leg is the version/tier control, not a cross-vendor pair."
+    "_endpoint_probe": "2026-08-21: /endpoints lists no azure endpoint for this slug; alibaba/fp8, baidu/fp8 and first-party are excluded by the account data policy per the pro leg's probe. novita/fp8 chosen: US-hosted, fp8 (quantization-attributable, unlike the pro leg's azure pin), 393216 output ceiling, and already documented as the pro leg's hand-fallback. Verified reachable by this harness's preflight before the first paid call.",
+    "_note": "Same-family pair with the pro leg is the version/tier control, not a cross-vendor pair."
   },
   {
     "label": "anthropic-sonnet-5",
