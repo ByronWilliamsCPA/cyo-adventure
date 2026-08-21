@@ -487,6 +487,58 @@ accurate against their primary sources.
 
 ---
 
+## 10. Budget revision (2026-08-21, revision 3)
+
+Declared after the registered S-1 run halted on provider credits at 4 of 80 shells and before any
+primary-endpoint result existed (the 4 completed shells' exploratory records had been seen; that is
+the full extent of data contact). The owner capped programme spend well below the original
+estimate, so the experiments are re-scoped to what the sourcing decision actually turns on. Target:
+**the whole programme at or under ~$40 of provider credit**, likely ~$25-30.
+
+**What the decision turns on, restated.** The production question is not "which of five labs
+authors the best skeleton"; it is (a) does skeleton authoring need the pro tier or is the flash
+tier sufficient, (b) does either beat the current practice (a Claude session authoring via the
+cyo-author skill mechanism), and (c) which sourcing architecture wins. That needs three legs, two
+of them cheap and one free.
+
+Changes, item by item; everything not listed is unchanged:
+
+- **E1 slate**: `deepseek-v4-pro`, `deepseek-v4-flash`, plus a **session-claude leg** authored by
+  isolated subagents of the session model under the identical shared repair-loop contract (same
+  system prompt, same brief, same feedback, same round cap), at zero provider cost. The
+  session-claude leg is also the production authoring mechanism, so it doubles as the
+  current-practice baseline the original design lacked. `google-gemini-3.1-pro` (the only leg with
+  a proven strict pass) is an optional fourth at roughly +$12; run it only if the three-leg result
+  is close enough that a premium reference would change the decision.
+- **E1 grid**: 2 cells (A: 5-8 short; D: 10-13 short) x 3 replicates x 3 legs = 18 shells, round
+  cap 6, cap 65536. The 4 already-paid shells from the halted run are reused via `--resume` where
+  they fit the reduced grid. Estimated provider cost: **$6-12** (both DeepSeek legs are $2-4 per
+  million output tokens; smoke shells ran 40-130k output tokens).
+- **E1 inference, honestly downgraded**: at 6-9 observations per leg the permutation screen detects
+  only gross differences; the register row already frames E1 as a gross-difference screen and that
+  framing now carries more weight. A null is a cost bound, not equivalence.
+- **E2**: unchanged in shape (it was never expensive); fills with v4 Pro. Estimated **$5-8**.
+- **E3**: descoped. 4 briefs (2 servable, 2 unservable) x 2 arms = 8 fills. The three-judge blind
+  quality panel is **deferred**; the primary judged endpoint becomes the forced-choice premise-fit
+  identification, scored by two v4-flash judges (the tier already trusted for first-pass review),
+  plus the deterministic endpoints (fill-rate, gate findings, cost). The quality-panel margin in
+  row `S-3` is suspended until someone funds the panel; the premise-fit margin stands. Estimated
+  **$8-12**.
+- **E4**: built entirely from E2/E3 artifacts plus catalog fills that already exist; recognition
+  raters are session subagents (free); deterministic measures decide, as already required by the
+  E0 outcome. Estimated **$0-4**.
+- **E5**: adversarial shell corpus is authored by session subagents and scored by the local gate:
+  **$0** provider cost.
+- **Spend guard**: every live invocation of `compare_skeleton_authors.py` is preceded by a credits
+  check (`/api/v1/credits`) and the run report records the before/after balance, so a halt like
+  the 2026-08-21 one is a announced stop, not 76 silent 402s.
+
+The decision framework in section 6 is unchanged: nothing in this revision touches a margin that
+gates an architecture choice except the suspended S-3 quality-panel margin, whose role is covered
+by the premise-fit margin that remains.
+
+---
+
 ## Related
 
 - [Diversity test register](./diversity-test-register.md), conventions and the architecture rows this
