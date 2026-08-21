@@ -8,4 +8,6 @@ Primary endpoint (S-1): between-leg statistic 0.000, p = 1.0000 (10000 permutati
 | claude-haiku-subagent | 3 | 0 | 2 | 2 | 0.00 | 0 | 0.138 |
 | claude-opus-subagent | 3 | 0 | 3 | 3 | 0.00 | 0 | 0.051 |
 | claude-sonnet-subagent | 3 | 0 | 1 | 1 | 0.00 | 0 | 0.083 |
+| deepseek-v4-flash | 3 | 0 | 1 | 1 | 0.00 | 0 | 0.150 |
+| deepseek-v4-pro | 3 | 0 | 0 | 0 | 0.00 | 0 | 0.172 |
 | moonshot-kimi-k3-modal | 3 | 0 | 2 | 2 | 0.00 | 0 | 0.063 |

@@ -72,5 +72,17 @@
  "A__r3__deepseek-v4-pro": {
   "checker_runs": 10,
   "reported": "FAIL"
+ },
+ "A__r1__deepseek-v4-flash": {
+  "checker_runs": 2,
+  "reported": "FAIL"
+ },
+ "A__r2__deepseek-v4-flash": {
+  "checker_runs": 5,
+  "reported": "FAIL"
+ },
+ "A__r3__deepseek-v4-flash": {
+  "checker_runs": 10,
+  "reported": "PASS"
  }
 }

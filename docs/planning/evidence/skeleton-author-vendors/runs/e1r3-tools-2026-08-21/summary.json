@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-21T17:23:57+00:00",
+ "generated_at": "2026-08-21T22:53:16+00:00",
  "primary_endpoint": {
   "name": "repair rounds to strict pass, pooled across cells",
   "statistic": 0.0,
@@ -75,6 +75,38 @@
     0.17973524904194882,
     0.16563077501212578,
     0.08332560780813031
+   ]
+  },
+  "deepseek-v4-flash": {
+   "shells": 3,
+   "errors": 0,
+   "strict_pass": 1,
+   "first_pass_clean": 1,
+   "repair_rounds": [
+    0,
+    0,
+    0
+   ],
+   "output_tokens": 0,
+   "min_catalog_distance": [
+    0.14993603639645947
+   ]
+  },
+  "deepseek-v4-pro": {
+   "shells": 3,
+   "errors": 0,
+   "strict_pass": 0,
+   "first_pass_clean": 0,
+   "repair_rounds": [
+    0,
+    0,
+    0
+   ],
+   "output_tokens": 0,
+   "min_catalog_distance": [
+    0.17435038710460168,
+    0.1718633442007023,
+    0.3080119552856712
    ]
   },
   "moonshot-kimi-k3-modal": {
@@ -214,6 +246,66 @@
    "catalog_distance_note": "vs 5 in-cell peers",
    "last_feedback": "ERROR   PL-18  PL-18 topology: declared 'open_map' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'miri-and-the-missing-hen'\nWARNING PL-23  PL-23 clock: declared estimated_minutes 2 differs from the derived fastest-finish clock 3 min (250 words on the shortest satisfying path at 90 wpm) by 33% in story 'miri-and-the-missing-hen' (advisory only)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-tools-2026-08-21/shells/A__r1__claude-sonnet-subagent.json failed structural validation: PL-18 topology: declared 'open_map' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'miri-and-the-missing-hen'",
    "shell_file": "shells/A__r1__claude-sonnet-subagent.json",
+   "error": ""
+  },
+  {
+   "leg": "deepseek-v4-flash",
+   "family": "deepseek",
+   "cell_id": "A",
+   "band": "5-8",
+   "length": "short",
+   "style": "prose",
+   "replicate": 1,
+   "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+   "attempts": 1,
+   "repair_rounds": 0,
+   "strict_pass": false,
+   "first_pass_clean": false,
+   "parse_failures": 0,
+   "findings_lines_per_round": [
+    16
+   ],
+   "graph_check_exit": 0,
+   "latency_s": 0.0,
+   "input_tokens": null,
+   "output_tokens": null,
+   "reasoning_tokens": null,
+   "finish_reasons": [],
+   "min_catalog_distance": null,
+   "mean_catalog_distance": null,
+   "catalog_distance_note": "shell not coercible against any of 5 peers",
+   "last_feedback": "ERROR   L1-2   node=friend L1-2 ref: target 'playground' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'friend')\nERROR   L1-2   node=shed L1-2 ref: target 'bushes' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'shed')\nERROR   L1-2   node=shed L1-2 ref: target 'field' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'shed')\nERROR   L1-2   node=tree L1-2 ref: target 'nest_inspect' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'tree')\nERROR   L1-2   node=tree L1-2 ref: target 'tree_top' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'tree')\nERROR   L1-2   node=woods L1-2 ref: target 'investigate' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'woods')\nERROR   L1-2   node=woods L1-2 ref: target 'follow_cluck' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'woods')\nERROR   L1-4   node=start L1-4 term: node 'start' no path to any ending in story 'miri-and-the-missing-hen'\nERROR   L1-4   node=garden L1-4 term: node 'garden' no path to any ending in story 'miri-and-the-missing-hen'\nERROR   L1-4   node=friend L1-4 term: node 'friend' no path to any ending in story 'miri-and-the-missing-hen'\nERROR   L1-4   node=shed L1-4 term: node 'shed' no path to any ending in story 'miri-and-the-missing-hen'\nERROR   L1-4   node=tree L1-4 term: node 'tree' no path to any ending in story 'miri-and-the-missing-hen'\nERROR   L1-4   node=woods L1-4 term: node 'woods' no path to any ending in story 'miri-and-the-missing-hen'\nERROR   L1-7   L1-7 budget: ending_count out of range in story 'miri-and-the-missing-hen': 0 (allowed 8..8)\nWARNING L1-7   L1-7 budget: node_count out of range in story 'miri-and-the-missing-hen': 6 (allowed 8..45)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-tools-2026-08-21/shells/A__r1__deepseek-v4-flash.json failed structural validation: L1-2 ref: target 'playground' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'friend'); L1-2 ref: target 'bushes' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'shed'); L1-2 ref: target 'field' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'shed'); L1-2 ref: target 'nest_inspect' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'tree'); L1-2 ref: target 'tree_top' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'tree'); L1-2 ref: target 'investigate' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'woods'); L1-2 ref: target 'follow_cluck' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'woods'); L1-4 term: node 'start' no path to any ending in story 'miri-and-the-missing-hen'; L1-4 term: node 'garden' no path to any ending in story 'miri-and-the-missing-hen'; L1-4 term: node 'friend' no path to any ending in story 'miri-and-the-missing-hen'; L1-4 term: node 'shed' no path to any ending in story 'miri-and-the-missing-hen'; L1-4 term: node 'tree' no path to any ending in story 'miri-and-the-missing-hen'; L1-4 term: node 'woods' no path to any ending in story 'miri-and-the-missing-hen'; L1-7 budget: ending_count out of range in story 'miri-and-the-missing-hen': 0 (allowed 8..8)",
+   "shell_file": "shells/A__r1__deepseek-v4-flash.json",
+   "error": ""
+  },
+  {
+   "leg": "deepseek-v4-pro",
+   "family": "deepseek",
+   "cell_id": "A",
+   "band": "5-8",
+   "length": "short",
+   "style": "prose",
+   "replicate": 1,
+   "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+   "attempts": 1,
+   "repair_rounds": 0,
+   "strict_pass": false,
+   "first_pass_clean": false,
+   "parse_failures": 0,
+   "findings_lines_per_round": [
+    3
+   ],
+   "graph_check_exit": 0,
+   "latency_s": 0.0,
+   "input_tokens": null,
+   "output_tokens": null,
+   "reasoning_tokens": null,
+   "finish_reasons": [],
+   "min_catalog_distance": 0.17435038710460168,
+   "mean_catalog_distance": 0.37866122661118423,
+   "catalog_distance_note": "vs 5 in-cell peers",
+   "last_feedback": "ERROR   L1-3   node=n24 L1-3 reach: node 'n24' is unreachable from start_node 'n1' in story 'miri-and-the-missing-hen'\nERROR   L1-7   L1-7 budget: branch_depth out of range in story 'miri-and-the-missing-hen': 10 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-tools-2026-08-21/shells/A__r1__deepseek-v4-pro.json failed structural validation: L1-3 reach: node 'n24' is unreachable from start_node 'n1' in story 'miri-and-the-missing-hen'; L1-7 budget: branch_depth out of range in story 'miri-and-the-missing-hen': 10 (allowed 0..7)",
+   "shell_file": "shells/A__r1__deepseek-v4-pro.json",
    "error": ""
   },
   {
@@ -367,6 +459,66 @@
    "error": ""
   },
   {
+   "leg": "deepseek-v4-flash",
+   "family": "deepseek",
+   "cell_id": "A",
+   "band": "5-8",
+   "length": "short",
+   "style": "prose",
+   "replicate": 2,
+   "premise": "Tomas and his grandmother build a kite for the spring festival, but the wind keeps changing and every new design needs testing.",
+   "attempts": 1,
+   "repair_rounds": 0,
+   "strict_pass": false,
+   "first_pass_clean": false,
+   "parse_failures": 0,
+   "findings_lines_per_round": [
+    3
+   ],
+   "graph_check_exit": 0,
+   "latency_s": 0.0,
+   "input_tokens": null,
+   "output_tokens": null,
+   "reasoning_tokens": null,
+   "finish_reasons": [],
+   "min_catalog_distance": null,
+   "mean_catalog_distance": null,
+   "catalog_distance_note": "shell not coercible against any of 5 peers",
+   "last_feedback": "ERROR   L1-7   L1-7 budget: ending_count out of range in story 'tomas-kite-festival': 4 (allowed 7..7)\nERROR   L1-7   L1-7 budget: branch_depth out of range in story 'tomas-kite-festival': 10 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-tools-2026-08-21/shells/A__r2__deepseek-v4-flash.json failed structural validation: L1-7 budget: ending_count out of range in story 'tomas-kite-festival': 4 (allowed 7..7); L1-7 budget: branch_depth out of range in story 'tomas-kite-festival': 10 (allowed 0..7)",
+   "shell_file": "shells/A__r2__deepseek-v4-flash.json",
+   "error": ""
+  },
+  {
+   "leg": "deepseek-v4-pro",
+   "family": "deepseek",
+   "cell_id": "A",
+   "band": "5-8",
+   "length": "short",
+   "style": "prose",
+   "replicate": 2,
+   "premise": "Tomas and his grandmother build a kite for the spring festival, but the wind keeps changing and every new design needs testing.",
+   "attempts": 1,
+   "repair_rounds": 0,
+   "strict_pass": false,
+   "first_pass_clean": false,
+   "parse_failures": 0,
+   "findings_lines_per_round": [
+    6
+   ],
+   "graph_check_exit": 0,
+   "latency_s": 0.0,
+   "input_tokens": null,
+   "output_tokens": null,
+   "reasoning_tokens": null,
+   "finish_reasons": [],
+   "min_catalog_distance": 0.1718633442007023,
+   "mean_catalog_distance": 0.37077312710497345,
+   "catalog_distance_note": "vs 5 in-cell peers",
+   "last_feedback": "ERROR   PL-18  PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'tomas-and-the-changing-wind'\nERROR   PL-25  PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'tomas-and-the-changing-wind'\nWARNING PL-23  PL-23 clock: declared estimated_minutes 6 differs from the derived fastest-finish clock 4 min (352 words on the shortest satisfying path at 90 wpm) by 50% in story 'tomas-and-the-changing-wind' (advisory only)\nWARNING CG-1   node=n22 CG-1 grammar: 11 of 18 non-ending nodes are single-choice, above band '5-8's 50% allowance of 9 in story 'tomas-and-the-changing-wind'; the band's cadence is an average, so a long scene is fine only if the story spends decisions elsewhere (advisory only, new-content grammar per ADR-011 section 10)\nWARNING CG-3   node=n1 CG-3 grammar: node 'n1' is a rendered stop on its own at ~90 words, above band '5-8' words-per-stop ceiling 70 in story 'tomas-and-the-changing-wind' (advisory only)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-tools-2026-08-21/shells/A__r2__deepseek-v4-pro.json failed structural validation: PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'tomas-and-the-changing-wind'; PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'tomas-and-the-changing-wind'",
+   "shell_file": "shells/A__r2__deepseek-v4-pro.json",
+   "error": ""
+  },
+  {
    "leg": "moonshot-kimi-k3-modal",
    "family": "moonshot",
    "cell_id": "A",
@@ -514,6 +666,66 @@
    "catalog_distance_note": "vs 5 in-cell peers",
    "last_feedback": "",
    "shell_file": "shells/A__r3__claude-sonnet-subagent.json",
+   "error": ""
+  },
+  {
+   "leg": "deepseek-v4-flash",
+   "family": "deepseek",
+   "cell_id": "A",
+   "band": "5-8",
+   "length": "short",
+   "style": "prose",
+   "replicate": 3,
+   "premise": "On the first snowy day, Priya must find her little brother's boot, lost somewhere along the sled run, before their walk home.",
+   "attempts": 1,
+   "repair_rounds": 0,
+   "strict_pass": true,
+   "first_pass_clean": true,
+   "parse_failures": 0,
+   "findings_lines_per_round": [
+    6
+   ],
+   "graph_check_exit": 0,
+   "latency_s": 0.0,
+   "input_tokens": null,
+   "output_tokens": null,
+   "reasoning_tokens": null,
+   "finish_reasons": [],
+   "min_catalog_distance": 0.14993603639645947,
+   "mean_catalog_distance": 0.30378969084442664,
+   "catalog_distance_note": "vs 5 in-cell peers",
+   "last_feedback": "",
+   "shell_file": "shells/A__r3__deepseek-v4-flash.json",
+   "error": ""
+  },
+  {
+   "leg": "deepseek-v4-pro",
+   "family": "deepseek",
+   "cell_id": "A",
+   "band": "5-8",
+   "length": "short",
+   "style": "prose",
+   "replicate": 3,
+   "premise": "On the first snowy day, Priya must find her little brother's boot, lost somewhere along the sled run, before their walk home.",
+   "attempts": 1,
+   "repair_rounds": 0,
+   "strict_pass": false,
+   "first_pass_clean": false,
+   "parse_failures": 0,
+   "findings_lines_per_round": [
+    4
+   ],
+   "graph_check_exit": 0,
+   "latency_s": 0.0,
+   "input_tokens": null,
+   "output_tokens": null,
+   "reasoning_tokens": null,
+   "finish_reasons": [],
+   "min_catalog_distance": 0.3080119552856712,
+   "mean_catalog_distance": 0.3636940683417079,
+   "catalog_distance_note": "vs 5 in-cell peers",
+   "last_feedback": "ERROR   PL-29  PL-29 topology: band '5-8' may not declare 'branch_and_bottleneck' (allowed: ['loop_and_grow', 'open_map', 'time_cave']) in story 'priyas-snowy-search'\nERROR   PL-25  PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'priyas-snowy-search'\nWARNING PL-23  PL-23 clock: declared estimated_minutes 3 differs from the derived fastest-finish clock 2 min (225 words on the shortest satisfying path at 90 wpm) by 50% in story 'priyas-snowy-search' (advisory only)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-tools-2026-08-21/shells/A__r3__deepseek-v4-pro.json failed structural validation: PL-29 topology: band '5-8' may not declare 'branch_and_bottleneck' (allowed: ['loop_and_grow', 'open_map', 'time_cave']) in story 'priyas-snowy-search'; PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'priyas-snowy-search'",
+   "shell_file": "shells/A__r3__deepseek-v4-pro.json",
    "error": ""
   },
   {
