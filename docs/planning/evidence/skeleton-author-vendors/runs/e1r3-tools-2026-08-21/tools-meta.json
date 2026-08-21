@@ -2,5 +2,13 @@
  "A__r1__claude-haiku-subagent": {
   "checker_runs": 5,
   "reported": "PASS"
+ },
+ "A__r2__claude-fable-subagent": {
+  "checker_runs": 4,
+  "reported": "PASS"
+ },
+ "A__r3__claude-opus-subagent": {
+  "checker_runs": 5,
+  "reported": "PASS"
  }
 }
