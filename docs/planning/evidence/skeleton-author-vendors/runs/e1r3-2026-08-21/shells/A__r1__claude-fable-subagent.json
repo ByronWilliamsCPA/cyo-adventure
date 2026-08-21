@@ -267,13 +267,18 @@
   },
   {
    "id": "feather-path",
-   "body": "<<FILL role=explore words=20 beats='white feathers every few steps like breadcrumbs; the path slopes down past the old oak toward the shining creek'>>",
+   "body": "<<FILL role=decision words=36 beats='white feathers dot the path every few steps like breadcrumbs; ahead the path forks; one way winds down past the old oak with roots like giant knuckles; the other drops straight down the grassy bank toward the shining creek, where a faint peep floats up'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c-feather-creek",
-     "label": "Hurry down to the oak",
+     "id": "c-feather-oak",
+     "label": "Follow the feathers to the oak",
      "target": "old-oak"
+    },
+    {
+     "id": "c-feather-bank",
+     "label": "Slide down the grassy bank",
+     "target": "creek-stones"
     }
    ]
   },

@@ -190,13 +190,30 @@
   },
   {
    "id": "n11_courtyard_run",
-   "body": "<<FILL role=climax words=30 beats='Tomas runs Golondrina in circles around the courtyard while Pimienta chases the trailing string, and the leftover swirls lift her wobbling up toward the lemon tree branches'>>",
+   "body": "<<FILL role=transition words=30 beats='Tomas runs Golondrina in circles around the courtyard while Pimienta chases the trailing string, and the leftover swirls lift her wobbling up toward the lemon tree branches'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch_n11_a",
+     "label": "See how high she goes",
+     "target": "n17_lemon_wobble"
+    }
+   ]
+  },
+  {
+   "id": "n17_lemon_wobble",
+   "body": "<<FILL role=decision words=39 beats='Golondrina hangs level with the lemon tree and climbs no higher, because the courtyard swirls are only leftover wind, weak and always turning; Tomas can feed her more string and trust the small wind she already has, or carry her up the ladder to the flat roof'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n17_a",
      "label": "Let out more string",
      "target": "n20_end_lemon_tree"
+    },
+    {
+     "id": "ch_n17_b",
+     "label": "Carry her up the ladder",
+     "target": "n12_rooftop_gust"
     }
    ]
   },
@@ -226,7 +243,7 @@
   },
   {
    "id": "n13_rooftop_fix",
-   "body": "<<FILL role=climax words=39 beats='those spins mean she has nothing to steady her, Abuela says, and a kite that turns like that is asking for a tail; but the sun is nearly down, and Tomas could also just aim her away from the tank and throw her once more'>>",
+   "body": "<<FILL role=decision words=39 beats='those spins mean she has nothing to steady her, Abuela says, and a kite that turns like that is asking for a tail; but the sun is nearly down, and Tomas could also just aim her away from the tank and throw her once more'>>",
    "is_ending": false,
    "choices": [
     {
@@ -291,13 +308,18 @@
   },
   {
    "id": "n14_river_calm",
-   "body": "<<FILL role=climax words=30 beats='down at the Rio Manso the air lies perfectly still and the water looks like poured glass, so heavy Golondrina hangs off the string like wet laundry while a heron watches without moving'>>",
+   "body": "<<FILL role=decision words=45 beats='down at the Rio Manso the air lies perfectly still and the water looks like poured glass, so heavy Golondrina hangs off the string like wet laundry while a heron watches without moving; Tomas can make his own wind by running the whole bank, or carry her up to the plaza where the air bounces off the church wall'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "ch_n14_a",
      "label": "Walk her along the bank",
      "target": "n24_end_heron_walk"
+    },
+    {
+     "id": "ch_n14_b",
+     "label": "Carry her up to the plaza",
+     "target": "n30_plaza_wall"
     }
    ]
   },
@@ -327,7 +349,7 @@
   },
   {
    "id": "n15_hill_fix",
-   "body": "<<FILL role=climax words=68 beats='on Cerro Alto the wind comes in hard quiet shoves and every goat on the slope faces the same way; Golondrina climbs above the goat path and the string sings against Tomas thumb, and then it begins to fray where it rubs the sharp edge of the spool; Abuela can teach him the knot her own mother taught her, or they can stop right here and write down every single thing they have learned before the frayed string decides for them'>>",
+   "body": "<<FILL role=decision words=68 beats='on Cerro Alto the wind comes in hard quiet shoves and every goat on the slope faces the same way; Golondrina climbs above the goat path and the string sings against Tomas thumb, and then it begins to fray where it rubs the sharp edge of the spool; Abuela can teach him the knot her own mother taught her, or they can stop right here and write down every single thing they have learned before the frayed string decides for them'>>",
    "is_ending": false,
    "choices": [
     {

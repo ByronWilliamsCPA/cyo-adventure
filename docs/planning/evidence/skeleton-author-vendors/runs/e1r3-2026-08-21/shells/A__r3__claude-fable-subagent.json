@@ -52,7 +52,7 @@
     {
      "id": "c02",
      "label": "Search the run yourselves",
-     "target": "up-the-squeaky-run"
+     "target": "run-fork"
     },
     {
      "id": "c03",
@@ -62,20 +62,8 @@
    ]
   },
   {
-   "id": "up-the-squeaky-run",
-   "body": "<<FILL role=explore words=25 beats='Priya takes Arjun mittened hand and starts up the squeaky packed run; snowflakes land on their hoods; every lump of white could be hiding one small red boot'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c04",
-     "label": "Look for clues",
-     "target": "run-fork"
-    }
-   ]
-  },
-  {
    "id": "run-fork",
-   "body": "<<FILL role=decision words=44 beats='halfway up two clues appear, drag marks sliding off the run edge toward the pine trees, and the huge bottom drift below with the dent where Arjun tumbled off; the falling snow is already softening both, so Priya can chase only one'>>",
+   "body": "<<FILL role=decision words=44 beats='Priya takes Arjun mittened hand and squeaks partway up the packed run; two clues appear, drag marks sliding off the run edge toward the pine trees, and the huge bottom drift below with the dent where Arjun tumbled off; the falling snow is softening both, so Priya can chase only one'>>",
    "is_ending": false,
    "choices": [
     {
@@ -351,12 +339,24 @@
     {
      "id": "c24",
      "label": "Run to that maple",
-     "target": "maple-by-the-jump"
+     "target": "bumpy-jump"
     },
     {
      "id": "c25",
      "label": "Check the lost-and-found",
      "target": "tow-rope-line"
+    }
+   ]
+  },
+  {
+   "id": "bumpy-jump",
+   "body": "<<FILL role=explore words=30 beats='the whole pack of kids tramps past the bumpy jump, its ice ramp shiny with new snow; Sana points to where the boot sailed like a little red bird; ahead the old maple by the jump wears white sleeves on every branch'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c29",
+     "label": "Hurry to the maple",
+     "target": "maple-by-the-jump"
     }
    ]
   },
