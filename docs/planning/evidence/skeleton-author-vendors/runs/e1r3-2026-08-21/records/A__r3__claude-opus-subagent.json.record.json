@@ -7,8 +7,8 @@
  "style": "prose",
  "replicate": 3,
  "premise": "On the first snowy day, Priya must find her little brother's boot, lost somewhere along the sled run, before their walk home.",
- "attempts": 6,
- "repair_rounds": 5,
+ "attempts": 7,
+ "repair_rounds": 6,
  "strict_pass": false,
  "first_pass_clean": false,
  "parse_failures": 0,
@@ -18,6 +18,7 @@
   2,
   2,
   7,
+  2,
   2
  ],
  "graph_check_exit": 0,
@@ -26,10 +27,10 @@
  "output_tokens": null,
  "reasoning_tokens": null,
  "finish_reasons": [],
- "min_catalog_distance": 0.12528612717252607,
- "mean_catalog_distance": 0.31663563399579775,
+ "min_catalog_distance": 0.1257277342038315,
+ "mean_catalog_distance": 0.29426766165087137,
  "catalog_distance_note": "vs 5 in-cell peers",
- "last_feedback": "ERROR   L1-7   L1-7 budget: branch_depth out of range in story 'the-lost-red-boot': 9 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r3__claude-opus-subagent.json failed structural validation: L1-7 budget: branch_depth out of range in story 'the-lost-red-boot': 9 (allowed 0..7)",
+ "last_feedback": "ERROR   PL-18  PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'the-lost-red-boot'\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-2026-08-21/shells/A__r3__claude-opus-subagent.json failed structural validation: PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'the-lost-red-boot'",
  "shell_file": "shells/A__r3__claude-opus-subagent.json",
  "error": ""
 }
