@@ -10,5 +10,13 @@
  "A__r3__claude-opus-subagent": {
   "checker_runs": 5,
   "reported": "PASS"
+ },
+ "A__r2__claude-haiku-subagent": {
+  "checker_runs": 10,
+  "reported": "PASS"
+ },
+ "A__r3__claude-haiku-subagent": {
+  "checker_runs": 10,
+  "reported": "FAIL"
  }
 }

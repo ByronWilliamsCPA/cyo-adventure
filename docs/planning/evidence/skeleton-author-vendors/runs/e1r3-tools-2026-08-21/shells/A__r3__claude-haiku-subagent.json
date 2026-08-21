@@ -1,0 +1,467 @@
+{
+ "schema_version": "2.0",
+ "id": "priyas-lost-boot",
+ "version": 1,
+ "title": "Priya's Lost Boot",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "loop_and_grow",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 4,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "perseverance",
+   "sisterhood",
+   "winter adventure"
+  ],
+  "estimated_minutes": 8,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n1",
+ "nodes": [
+  {
+   "id": "n1",
+   "body": "<<FILL role=setup words=75 beats='Priya and Arjun wake to fresh snow on their street; their boots sit by the door, ready for sledding on Meadow Hill; after three runs down the sled run, Arjun realizes one boot is missing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1a",
+     "label": "What should they do",
+     "target": "n1b"
+    }
+   ]
+  },
+  {
+   "id": "n1b",
+   "body": "<<FILL role=transition words=60 beats='Priya feels worried; she must decide: should she search alone first, or should she get Mom to help right away'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1b1",
+     "label": "Search alone first",
+     "target": "n2"
+    },
+    {
+     "id": "c1b2",
+     "label": "Get Mom immediately",
+     "target": "n3"
+    }
+   ]
+  },
+  {
+   "id": "n2",
+   "body": "<<FILL role=explore words=68 beats='Priya climbs back up Meadow Hill; she sees three possible paths the boot could have taken down the slope'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c2a",
+     "label": "Try the left side",
+     "target": "n4"
+    },
+    {
+     "id": "c2b",
+     "label": "Search the main path",
+     "target": "n5"
+    },
+    {
+     "id": "c2c",
+     "label": "Search very carefully",
+     "target": "n25"
+    }
+   ]
+  },
+  {
+   "id": "n3",
+   "body": "<<FILL role=transition words=64 beats='Priya runs home and finds Mom making cocoa; Mom listens and grabs her coat; they head back to the hill together'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c3a",
+     "label": "Search together",
+     "target": "n6"
+    }
+   ]
+  },
+  {
+   "id": "n4",
+   "body": "<<FILL role=explore words=69 beats='The left slope is steep; Priya carefully walks down and spots something caught in bramble bushes; she climbs through and finds Arjun's boot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c4a",
+     "label": "Race home with it",
+     "target": "n7"
+    }
+   ]
+  },
+  {
+   "id": "n5",
+   "body": "<<FILL role=explore words=68 beats='Priya follows the main sled path down; she sees a flash of red fabric in the snow near the bottom'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c5a",
+     "label": "Dig to check it out",
+     "target": "n8"
+    },
+    {
+     "id": "c5b",
+     "label": "Keep searching to the fence",
+     "target": "n9"
+    },
+    {
+     "id": "c5c",
+     "label": "Search another way",
+     "target": "n12"
+    }
+   ]
+  },
+  {
+   "id": "n6",
+   "body": "<<FILL role=explore words=68 beats='Priya and Mom walk down the main path together; Mom spots the boot at the bottom near the fence; they pull it free from the snow'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c6a",
+     "label": "Head home together",
+     "target": "n10"
+    }
+   ]
+  },
+  {
+   "id": "n7",
+   "body": "<<FILL role=ending words=68 beats='Priya arrives home with the muddy boot held high like a prize; Arjun cheers and hugs her; Mom makes hot cocoa and calls Priya brave and clever'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Brave Sister"
+   }
+  },
+  {
+   "id": "n8",
+   "body": "<<FILL role=explore words=70 beats='Priya brushes away the snow and finds a lost scarf, not the boot; disappointed, she continues down to the very bottom'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c8a",
+     "label": "Keep searching at the fence",
+     "target": "n9"
+    }
+   ]
+  },
+  {
+   "id": "n9",
+   "body": "<<FILL role=explore words=66 beats='At the bottom near the fence, Priya spots her brother's boot lying in a snow bank; it is wet but in one piece'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c9a",
+     "label": "Grab it and run home",
+     "target": "n11"
+    }
+   ]
+  },
+  {
+   "id": "n10",
+   "body": "<<FILL role=ending words=66 beats='At home, Priya and Mom rinse the boot while Arjun watches excited; Mom hugs Priya and says good teamwork solved the puzzle'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Team Victory"
+   }
+  },
+  {
+   "id": "n11",
+   "body": "<<FILL role=ending words=68 beats='Priya races home with the wet boot; Arjun jumps with joy when she arrives; that night they celebrate with cocoa'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e3",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Quick Thinking"
+   }
+  },
+  {
+   "id": "n12",
+   "body": "<<FILL role=decision words=62 beats='The sun is setting and snow falls faster; Priya has searched but found no boot; she feels tired and hears Mom calling'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c12a",
+     "label": "Keep searching",
+     "target": "n13"
+    },
+    {
+     "id": "c12b",
+     "label": "Give up for today",
+     "target": "n14"
+    },
+    {
+     "id": "c12c",
+     "label": "Ask Mom for help",
+     "target": "n26"
+    }
+   ]
+  },
+  {
+   "id": "n13",
+   "body": "<<FILL role=explore words=66 beats='As darkness falls, Priya spots something glinting near the brambles; she climbs down and finds the boot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c13a",
+     "label": "Run home with it",
+     "target": "n15"
+    },
+    {
+     "id": "c13b",
+     "label": "Check it carefully first",
+     "target": "n29"
+    }
+   ]
+  },
+  {
+   "id": "n14",
+   "body": "<<FILL role=transition words=64 beats='Priya runs home as darkness falls; Mom is waiting; without hesitation, Mom gets her coat'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c14a",
+     "label": "Search with Mom",
+     "target": "n16"
+    },
+    {
+     "id": "c14b",
+     "label": "Rest and search tomorrow",
+     "target": "n27"
+    }
+   ]
+  },
+  {
+   "id": "n15",
+   "body": "<<FILL role=ending words=66 beats='Priya arrives home frozen but victorious; Mom wraps her in blankets; they celebrate with the biggest cup of cocoa ever'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e4",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Frozen Hero"
+   }
+  },
+  {
+   "id": "n16",
+   "body": "<<FILL role=explore words=65 beats='With the flashlight, Priya and Mom search the slope; the beam catches something in the brambles; Mom frees the boot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c16a",
+     "label": "Walk home",
+     "target": "n17"
+    }
+   ]
+  },
+  {
+   "id": "n17",
+   "body": "<<FILL role=ending words=65 beats='Priya holds the boot tight as they walk home in darkness; inside, the family sits by the stove and Priya tells the whole story'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e5",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Persistence Pays Off"
+   }
+  },
+  {
+   "id": "n18",
+   "body": "<<FILL role=decision words=62 beats='Priya has searched everywhere but the boot seems lost; evening falls and fresh snow covers the slope'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c18a",
+     "label": "Give up",
+     "target": "n19"
+    },
+    {
+     "id": "c18b",
+     "label": "Search tomorrow",
+     "target": "n20"
+    }
+   ]
+  },
+  {
+   "id": "n19",
+   "body": "<<FILL role=ending words=62 beats='At dinner, Mom says they will buy new boots; Priya feels sad but knows she tried very hard'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e6",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "A Lesson Learned"
+   }
+  },
+  {
+   "id": "n20",
+   "body": "<<FILL role=transition words=60 beats='Morning brings sunshine; Priya wakes determined; she eats breakfast and asks Mom to search'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c20a",
+     "label": "Search together",
+     "target": "n21"
+    },
+    {
+     "id": "c20b",
+     "label": "Search alone first",
+     "target": "n28"
+    }
+   ]
+  },
+  {
+   "id": "n21",
+   "body": "<<FILL role=explore words=64 beats='In the bright morning, the boot is easier to spot; Priya and Mom quickly see it at the bottom'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c21a",
+     "label": "Get the boot",
+     "target": "n22"
+    }
+   ]
+  },
+  {
+   "id": "n22",
+   "body": "<<FILL role=ending words=62 beats='At home, Arjun promises to care for his boots; Priya feels proud; the family celebrates with a special dinner'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e7",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Sunshine Rescue"
+   }
+  },
+  {
+   "id": "n23",
+   "body": "<<FILL role=explore words=64 beats='Priya walks down the slope looking carefully; she trips over something hard in the snow'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c23a",
+     "label": "Look down",
+     "target": "n24"
+    },
+    {
+     "id": "c23b",
+     "label": "Think about it differently",
+     "target": "n30"
+    }
+   ]
+  },
+  {
+   "id": "n24",
+   "body": "<<FILL role=ending words=64 beats='She finds the boot right in the middle of the path; Priya laughs at her luck; she takes it home and celebrates'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e8",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Lucky Discovery"
+   }
+  },
+  {
+   "id": "n25",
+   "body": "<<FILL role=explore words=60 beats='Priya sits at the top of the hill; from here she can see the whole slope'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c25a",
+     "label": "Continue searching",
+     "target": "n23"
+    }
+   ]
+  },
+  {
+   "id": "n26",
+   "body": "<<FILL role=explore words=58 beats='Priya takes a break and looks down the slope; she takes a deep breath and chooses her next path'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c26a",
+     "label": "Search more carefully",
+     "target": "n12"
+    }
+   ]
+  },
+  {
+   "id": "n27",
+   "body": "<<FILL role=explore words=60 beats='Priya searches the right side with the pine trees; the snow is very deep and quiet here'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c27a",
+     "label": "Go back and check the main path",
+     "target": "n5"
+    }
+   ]
+  },
+  {
+   "id": "n28",
+   "body": "<<FILL role=explore words=59 beats='Priya walks down the slope slowly, looking at every shadow and bump in the snow'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c28a",
+     "label": "Keep looking",
+     "target": "n23"
+    }
+   ]
+  },
+  {
+   "id": "n29",
+   "body": "<<FILL role=explore words=60 beats='Priya searches the left side again more carefully this time looking at every detail'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c29a",
+     "label": "Check the brambles",
+     "target": "n4"
+    }
+   ]
+  },
+  {
+   "id": "n30",
+   "body": "<<FILL role=explore words=60 beats='Priya thinks hard about where Arjun sledded most and searches that area very carefully'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c30a",
+     "label": "Find it",
+     "target": "n18"
+    }
+   ]
+  }
+ ]
+}
