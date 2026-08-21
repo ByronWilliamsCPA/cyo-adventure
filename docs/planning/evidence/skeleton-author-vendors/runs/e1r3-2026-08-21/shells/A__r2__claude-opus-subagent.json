@@ -145,7 +145,7 @@
     {
      "id": "ch_n08_a",
      "label": "Test her in the plaza",
-     "target": "n23_end_plaza_flag"
+     "target": "n30_plaza_wall"
     },
     {
      "id": "ch_n08_b",
@@ -232,7 +232,7 @@
     {
      "id": "ch_n13_a",
      "label": "Stitch on a rag tail",
-     "target": "n17_tail_stitch"
+     "target": "n21_end_tail_promise"
     },
     {
      "id": "ch_n13_b",
@@ -242,20 +242,8 @@
    ]
   },
   {
-   "id": "n17_tail_stitch",
-   "body": "<<FILL role=transition words=30 beats='Tomas tears an old bedsheet into strips and knots a tail as long as he is tall, with a bow at every hand width, while Pimienta steals the very last strip'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch_n17_a",
-     "label": "Send her up with the tail",
-     "target": "n21_end_tail_promise"
-    }
-   ]
-  },
-  {
    "id": "n21_end_tail_promise",
-   "body": "<<FILL role=ending words=39 beats='with the tail snapping behind her Golondrina stops spinning and climbs straight off the rooftop into the last blue light; Abuela says a tail is not decoration, it is a promise to the wind, and Tomas can feel that promise pulling in both hands'>>",
+   "body": "<<FILL role=ending words=39 beats='Tomas tears an old bedsheet into strips and knots a tail as long as he is tall, and with it snapping behind her Golondrina stops spinning and climbs straight off the rooftop into the last blue light; a tail is a promise to the wind, Abuela says, and Tomas feels it pull'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
@@ -278,8 +266,20 @@
    }
   },
   {
+   "id": "n30_plaza_wall",
+   "body": "<<FILL role=transition words=30 beats='in the plaza the wind bounces off the church wall and comes back in swirls that go every direction at once, so heavy Golondrina rises fast and then slides sideways straight over the candy stall'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_n30_a",
+     "label": "Reel her back in",
+     "target": "n23_end_plaza_flag"
+    }
+   ]
+  },
+  {
    "id": "n23_end_plaza_flag",
-   "body": "<<FILL role=ending words=68 beats='in the plaza the wind bounces off the church wall and comes back in swirls that go every direction at once; Golondrina rises fast, slides sideways over the candy stall, and knocks a paper flag loose before Don Marco the festival caller catches her string with two fingers; he hands it back with one eyebrow up, and Abuela decides the plaza is a place for eating and not for flying, so they walk the apron kite home with a long scrape down her side'>>",
+   "body": "<<FILL role=ending words=39 beats='Golondrina knocks a paper flag loose before Don Marco the festival caller catches her string with two fingers and hands it back with one eyebrow up; Abuela decides the plaza is a place for eating and not for flying, so they walk the scraped apron kite home'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
