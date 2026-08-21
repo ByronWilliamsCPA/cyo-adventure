@@ -2,11 +2,13 @@
   {
     "label": "deepseek-v3.2-chunked",
     "model": "deepseek/deepseek-v3.2",
-    "provider_order": ["digitalocean"],
+    "provider_order": [
+      "novita/fp8"
+    ],
     "family": "deepseek",
-    "_price_per_mtok": "0.25 / 0.80",
-    "_endpoint_verified": "2026-08-21: 200 on a 32-token probe, served by DigitalOcean; declared max_completion_tokens 128000, quantization unknown",
-    "_note": "Pinned to digitalocean for the Run C chunked-path leg of live-structural-round-2026-08-21.md. Probed 2026-08-21 with provider.only plus allow_fallbacks:false: digitalocean, novita/fp8 and siliconflow/fp8 returned 200; atlas-cloud/fp8 returned 404 'no endpoints available matching your guardrail restrictions and data policy'. DigitalOcean is the reachable US-hosted endpoint whose 128,000 declared ceiling clears the slug's 65,536 MODEL_OUTPUT_CAPS row with headroom, so every chunked batch call fits its real ceiling; novita/fp8 declares exactly 65,536 (no headroom over the resolved cap) and siliconflow does not match the hosting posture the account's data policy expresses. Quantization is unknown, so this leg is not quantization-attributable. Hand-fallback if DigitalOcean rate-limits: novita/fp8 at 0.269/0.40, which requires updating this file AND the price row in core/pricing.py together.",
+    "_price_per_mtok": "0.269 / 0.40",
+    "_endpoint_verified": "2026-08-21: digitalocean passed a 32-token probe but returned 2,133- and 7,349-token malformed replies to ~40k-token chunked batch asks (take 3); novita/fp8 returned a complete 77,599-char fenced-JSON batch for the identical prompt, so the pin moved to novita/fp8 (declared max_completion_tokens 65,536, fp8)",
+    "_note": "Pinned to novita/fp8 for Run C take 4. Take 3 proved a small probe does not qualify an endpoint for large structured asks: digitalocean (quantization unknown) answered the 512-token pre-flight and then failed every ~40k-token batch with short malformed output, while novita/fp8 served the identical batch prompt correctly. Novita declares exactly the 65,536 resolved cap (no headroom above it), which is acceptable because chunked batch asks stay under the cap by the 0.8 feasibility margin. Price row in core/pricing.py moved together with this pin, per the file contract.",
     "_pinning_rationale": "Same F2 reasoning as the v4-pro fixture: MODEL_OUTPUT_CAPS is keyed per slug (65,536 for this one) while the slug's endpoints declare ceilings from 7,168 (SambaNova) to 163,840; an unpinned route below the resolved cap truncates non-empty and burns the repair budget. The whole point of this leg is that the 65,536 cap makes the chunked path fire on an over-cap skeleton, so the pin must be an endpoint whose real ceiling is at or above the cap."
   }
 ]

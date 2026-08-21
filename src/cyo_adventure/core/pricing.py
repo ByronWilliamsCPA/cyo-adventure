@@ -278,14 +278,16 @@ _PRICES: dict[tuple[str, str], ModelPrice] = {
     # #VERIFY: re-run the endpoint probe before reusing this pin; the
     # vendor fixture and this row must change together.
     ("openrouter", "deepseek/deepseek-v3.2"): ModelPrice(
-        input_usd_per_mtok=Decimal("0.25"),
-        output_usd_per_mtok=Decimal("0.80"),
+        input_usd_per_mtok=Decimal("0.269"),
+        output_usd_per_mtok=Decimal("0.40"),
         as_of=date(2026, 8, 21),
         source=_OPENROUTER_API,
         note=(
             "read live from https://openrouter.ai/api/v1/models/"
-            "deepseek/deepseek-v3.2/endpoints; price of the digitalocean "
-            "endpoint, which is the pin the 2026-08-21 chunked-path leg uses"
+            "deepseek/deepseek-v3.2/endpoints; price of the novita/fp8 "
+            "endpoint, the pin the 2026-08-21 chunked-path leg uses after "
+            "digitalocean passed its 512-token probe and then failed every "
+            "large chunked batch ask with short malformed output (take 3)"
         ),
     ),
     ("openrouter", "qwen/qwen3.6-27b"): ModelPrice(
