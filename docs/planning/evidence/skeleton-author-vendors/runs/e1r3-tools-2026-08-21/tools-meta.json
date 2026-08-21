@@ -26,5 +26,9 @@
  "A__r2__claude-opus-subagent": {
   "checker_runs": 6,
   "reported": "PASS"
+ },
+ "A__r1__claude-fable-subagent": {
+  "checker_runs": 6,
+  "reported": "PASS"
  }
 }

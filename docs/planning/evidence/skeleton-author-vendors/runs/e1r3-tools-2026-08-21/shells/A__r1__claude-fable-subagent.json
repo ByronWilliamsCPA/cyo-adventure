@@ -1,0 +1,454 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "open_map",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "problem-solving",
+   "caring for animals",
+   "asking for help"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "holiday-morning",
+ "nodes": [
+  {
+   "id": "holiday-morning",
+   "body": "<<FILL role=setup words=30 beats='It is the first morning of the holiday week and Miri has the big job of looking after the three school hens; she carries the feed bucket down the dewy path to the coop, calling good morning to Clover, Buttercup, and little Pip'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-holiday-morning-1",
+     "label": "Open the coop door",
+     "target": "empty-roost"
+    }
+   ]
+  },
+  {
+   "id": "empty-roost",
+   "body": "<<FILL role=decision words=38 beats='Clover and Buttercup hop down from the roost for breakfast, but Pip, the smallest hen, is nowhere; the door was latched all night, yet a cool draft slips in low along the coop wall, something rattles out toward the garden shed, and tiny gray feathers dot the grass toward the woodpile'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-empty-roost-1",
+     "label": "Search inside the coop",
+     "target": "warm-straw"
+    },
+    {
+     "id": "c-empty-roost-2",
+     "label": "Check the garden and shed",
+     "target": "dewy-fence-path"
+    },
+    {
+     "id": "c-empty-roost-3",
+     "label": "Follow the feathers",
+     "target": "feather-line"
+    }
+   ]
+  },
+  {
+   "id": "warm-straw",
+   "body": "<<FILL role=transition words=16 beats='Inside the coop the straw is warm and the thin cool draft comes from somewhere low in the back wall'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-warm-straw-1",
+     "label": "Follow the cool draft",
+     "target": "coop-clues"
+    }
+   ]
+  },
+  {
+   "id": "coop-clues",
+   "body": "<<FILL role=decision words=50 beats='The draft comes from a loose board low in the coop wall that wobbles when Miri touches it, and the middle nesting box straw is pressed into a warm empty bowl; Pip squeezed out somewhere, but Miri could also step back outside and try a different clue'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-coop-clues-1",
+     "label": "Wiggle the loose board",
+     "target": "squeeze-hole"
+    },
+    {
+     "id": "c-coop-clues-2",
+     "label": "Step back and think again",
+     "target": "empty-roost"
+    }
+   ]
+  },
+  {
+   "id": "squeeze-hole",
+   "body": "<<FILL role=transition words=16 beats='The board swings aside to show a hen-sized squeeze-hole leading straight into the yard next door'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-squeeze-hole-1",
+     "label": "Peek through the hole",
+     "target": "next-door-yard"
+    }
+   ]
+  },
+  {
+   "id": "next-door-yard",
+   "body": "<<FILL role=decision words=50 beats='Through the hole Miri sees the tidy backyard of Mrs. Otto, with wind chimes and a watering can by the porch; one soft cluck floats across the grass, but Miri cannot tell if it came from near the house or from the shadowy gap under the porch step'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-next-door-yard-1",
+     "label": "Knock and ask Mrs. Otto",
+     "target": "cornered-cluck"
+    },
+    {
+     "id": "c-next-door-yard-2",
+     "label": "Peer under the porch step",
+     "target": "porch-shadow"
+    },
+    {
+     "id": "c-next-door-yard-3",
+     "label": "Squeeze back to the coop",
+     "target": "empty-roost"
+    }
+   ]
+  },
+  {
+   "id": "cornered-cluck",
+   "body": "<<FILL role=climax words=60 beats='Mrs. Otto comes out in garden gloves and joins the hunt with a stepstool and a tin of oats; behind the watering can they find Pip, dusty but unhurt, crouched against the porch and ready to dart; Mrs. Otto shakes oats into her palm while Miri creeps closer, hardly breathing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-cornered-cluck-1",
+     "label": "Lift Pip over the fence",
+     "target": "e-over-the-fence"
+    },
+    {
+     "id": "c-cornered-cluck-2",
+     "label": "Check where Pip was hiding",
+     "target": "e-hidden-egg"
+    }
+   ]
+  },
+  {
+   "id": "e-over-the-fence",
+   "body": "<<FILL role=ending words=66 beats='Mrs. Otto lifts Pip gently over the fence and into the arms of Miri, where the little hen settles like a warm loaf; back in the coop Clover and Buttercup fuss a noisy greeting; before breakfast is over Miri wedges a brick against the loose board so the adventure stays a one-time thing'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-over-the-fence",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Over the Fence"
+   }
+  },
+  {
+   "id": "e-hidden-egg",
+   "body": "<<FILL role=ending words=64 beats='In the shadowy spot where Pip was hiding, Miri finds a small brown egg, still warm; the little hen made herself a secret nest next door; Miri carries hen and egg carefully home through the gate, and Mrs. Otto promises to help board up the squeeze-hole after lunch'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-hidden-egg",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Secret Egg"
+   }
+  },
+  {
+   "id": "porch-shadow",
+   "body": "<<FILL role=transition words=16 beats='Miri kneels at the cool dark gap under the porch step and two small eyes blink back at her'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-porch-shadow-1",
+     "label": "Reach in slowly",
+     "target": "e-porch-nest"
+    }
+   ]
+  },
+  {
+   "id": "e-porch-nest",
+   "body": "<<FILL role=ending words=52 beats='There sits Pip in a snug hollow of straw under the porch; she steps onto the offered palm of corn with a proud cluck; Miri carries her home and later she and Mrs. Otto block the gap together with a flowerpot'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-porch-nest",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Porch Nest"
+   }
+  },
+  {
+   "id": "dewy-fence-path",
+   "body": "<<FILL role=transition words=16 beats='Miri follows the wire fence past the bean poles, dew soaking her sneakers, toward the rattling sound'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-dewy-fence-path-1",
+     "label": "Check the fence line",
+     "target": "fence-and-shed"
+    }
+   ]
+  },
+  {
+   "id": "fence-and-shed",
+   "body": "<<FILL role=decision words=50 beats='Low in the wire Miri finds a bent gap with gray fluff caught on the sharp ends; the tool shed door stands open a crack with a rustle inside, the flattened grass points away toward the woodpile, and the coop is only a short jog back if this trail goes cold'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-fence-and-shed-1",
+     "label": "Slip into the tool shed",
+     "target": "shed-shadows"
+    },
+    {
+     "id": "c-fence-and-shed-2",
+     "label": "Follow the flattened grass",
+     "target": "feather-line"
+    },
+    {
+     "id": "c-fence-and-shed-3",
+     "label": "Jog back to the coop",
+     "target": "empty-roost"
+    }
+   ]
+  },
+  {
+   "id": "shed-shadows",
+   "body": "<<FILL role=transition words=16 beats='Among the seed sacks a corn sack has tipped over, and tiny three-toed prints mark the dust'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-shed-shadows-1",
+     "label": "Pick up the grain scoop",
+     "target": "rattle-plan"
+    }
+   ]
+  },
+  {
+   "id": "rattle-plan",
+   "body": "<<FILL role=decision words=50 beats='Miri fills the grain scoop and gives it a practice shake; the rattle sounds exactly like breakfast time, the sound that always brings the hens running; the tiny prints lead out the door toward the grass, but the rustle behind the seed sacks comes again'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-rattle-plan-1",
+     "label": "Lay a corn trail outside",
+     "target": "the-parade"
+    },
+    {
+     "id": "c-rattle-plan-2",
+     "label": "Look behind the seed sacks",
+     "target": "behind-the-sacks"
+    }
+   ]
+  },
+  {
+   "id": "the-parade",
+   "body": "<<FILL role=climax words=60 beats='Miri lays a dotted line of corn kernels across the grass and hides behind the wheelbarrow; out from the shadows struts Pip, snapping up kernels one by one along the line; the proud little parade heads straight for Miri, who waits with the last kernel in her palm, one step from reach'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-the-parade-1",
+     "label": "Hold out the last kernel",
+     "target": "e-corn-parade"
+    },
+    {
+     "id": "c-the-parade-2",
+     "label": "Step back toward the coop",
+     "target": "e-three-on-roost"
+    }
+   ]
+  },
+  {
+   "id": "e-corn-parade",
+   "body": "<<FILL role=ending words=66 beats='Pip pecks the last kernel right from the palm of Miri and lets herself be scooped up at last; Miri carries her back to the coop where Clover and Buttercup fuss and flap a welcome; from that morning on, the rattling grain scoop is the official school hen alarm'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-corn-parade",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Corn Parade"
+   }
+  },
+  {
+   "id": "e-three-on-roost",
+   "body": "<<FILL role=ending words=62 beats='Miri walks backward, shaking the scoop softly, and Pip follows the sound all the way across the garden and through the pop-door on her own; that night Miri counts three hens side by side on the roost and latches the coop door with a happy sigh'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-three-on-roost",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Three on the Roost"
+   }
+  },
+  {
+   "id": "behind-the-sacks",
+   "body": "<<FILL role=transition words=16 beats='Miri lifts the sacks one by one and finds a warm hollow of straw where something shifts'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-behind-the-sacks-1",
+     "label": "Lift the last sack",
+     "target": "e-shed-surprise"
+    }
+   ]
+  },
+  {
+   "id": "e-shed-surprise",
+   "body": "<<FILL role=ending words=52 beats='There is Pip, blinking up from a cozy nest on the soft sack pile where she spent the whole night; she shakes the dust off her feathers and rides home in the crook of Miri elbow, and the shed door gets shut tight'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-shed-surprise",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Shed Sleepover"
+   }
+  },
+  {
+   "id": "feather-line",
+   "body": "<<FILL role=transition words=15 beats='A dotted line of tiny gray feathers crosses the grass toward the stacked woodpile'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-feather-line-1",
+     "label": "Tiptoe to the woodpile",
+     "target": "woodpile-hush"
+    }
+   ]
+  },
+  {
+   "id": "woodpile-hush",
+   "body": "<<FILL role=decision words=40 beats='A soft scritch-scratch comes from low in the logs and stops whenever Miri talks; at the woodpile corner the berry bushes tremble, and if both clues fizzle the coop is close enough to run back for a new idea'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-woodpile-hush-1",
+     "label": "Kneel down and wait",
+     "target": "gray-head-pokes"
+    },
+    {
+     "id": "c-woodpile-hush-2",
+     "label": "Crawl to the berry bushes",
+     "target": "trembling-leaves"
+    },
+    {
+     "id": "c-woodpile-hush-3",
+     "label": "Run back for a new idea",
+     "target": "empty-roost"
+    }
+   ]
+  },
+  {
+   "id": "gray-head-pokes",
+   "body": "<<FILL role=climax words=55 beats='Miri waits statue-still and a small gray head pokes out of a gap between the bottom logs; it is Pip, one hop away but ready to bolt back into the dark if anything moves too fast; Miri thinks of her two gentlest tricks'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-gray-head-pokes-1",
+     "label": "Move slow as a statue",
+     "target": "e-gentle-hands"
+    },
+    {
+     "id": "c-gray-head-pokes-2",
+     "label": "Set out corn and wait",
+     "target": "e-dusk-return"
+    }
+   ]
+  },
+  {
+   "id": "e-gentle-hands",
+   "body": "<<FILL role=ending words=62 beats='Slow as honey, Miri slides one hand along the bottom log and lifts Pip out of the gap; the little hen grumbles once, then tucks her head under the chin of Miri for the whole walk back to the coop, where Clover and Buttercup are waiting'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-gentle-hands",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Gentle Hands"
+   }
+  },
+  {
+   "id": "e-dusk-return",
+   "body": "<<FILL role=ending words=64 beats='Pip will not be hurried, so Miri sets a dish of corn by the logs, props the pop-door open, and waits quietly by the coop; when the sky turns pink Pip walks herself home and hops onto the roost beside Clover and Buttercup, and Miri latches the door'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-dusk-return",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Home at Dusk"
+   }
+  },
+  {
+   "id": "trembling-leaves",
+   "body": "<<FILL role=transition words=15 beats='Under the berry bushes the leaves tremble and a proud crooning sound floats out, the sound a hen makes when she thinks she is hidden'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-trembling-leaves-1",
+     "label": "Hold still and hum",
+     "target": "one-hop-away"
+    }
+   ]
+  },
+  {
+   "id": "one-hop-away",
+   "body": "<<FILL role=climax words=45 beats='Pip steps into a patch of light in the middle of a glorious dust bath, flipping dirt over her wings like confetti; she shakes herself and looks right at Miri, one hop away and ready to bolt'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-one-hop-away-1",
+     "label": "Scoop Pip up gently",
+     "target": "e-slow-statue"
+    },
+    {
+     "id": "c-one-hop-away-2",
+     "label": "Grab for Pip quickly",
+     "target": "e-try-tomorrow"
+    }
+   ]
+  },
+  {
+   "id": "e-slow-statue",
+   "body": "<<FILL role=ending words=64 beats='Moving slow as a statue, Miri scoops Pip up mid-shake and gets a face full of dust for her trouble; she laughs, brushes off the little hen, and carries her home to Clover and Buttercup, already planning a proper dust box inside the run for the rest of the holiday'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-slow-statue",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Slow as a Statue"
+   }
+  },
+  {
+   "id": "e-try-tomorrow",
+   "body": "<<FILL role=ending words=62 beats='Miri grabs too fast and Pip skitters deep into the bushes where no arm can reach; the sky is already going pink, so Miri leaves a dish of corn and fresh water by the berry bushes and promises out loud to come back first thing tomorrow'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-try-tomorrow",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Try Again Tomorrow"
+   }
+  }
+ ]
+}
