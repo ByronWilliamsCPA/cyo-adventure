@@ -119,65 +119,43 @@
    "is_ending": false,
    "choices": [
     {
-     "id": "ch-keep-trying",
-     "label": "Keep flying and watch how it responds",
-     "target": "watch-behavior"
-    },
-    {
-     "id": "ch-land-check",
-     "label": "Land it and check the design",
-     "target": "inspect-design"
+     "id": "ch-keep-testing",
+     "label": "Keep testing and learning from the wind",
+     "target": "learning-phase"
     }
    ]
   },
   {
    "id": "crash-test",
-   "body": "<<FILL role=explore words=70 beats='The kite crashes to the ground. Tomas runs to pick it up. One stick is cracked badly. Abuela kneels beside him and points out where the force broke the frame. The damage is more than they can fix quickly.'>>",
+   "body": "<<FILL role=explore words=70 beats='The kite crashes to the ground. Tomas runs to pick it up. One stick is cracked badly. Abuela kneels beside him and points out where the force broke the frame. The damage seems hard to fix.'>>",
    "is_ending": false,
    "choices": [
-    {
-     "id": "ch-give-up",
-     "label": "The kite is too broken to fix in time",
-     "target": "give-up-ending"
-    },
     {
      "id": "ch-repair",
      "label": "Try to repair it with stronger materials",
      "target": "emergency-repair"
+    },
+    {
+     "id": "ch-give-up",
+     "label": "The kite is too broken to fix in time",
+     "target": "give-up-ending"
     }
    ]
   },
   {
-   "id": "watch-behavior",
-   "body": "<<FILL role=explore words=70 beats='Tomas keeps flying as wind gusts come and go. He feels the string tug in new directions. By moving his hands, he learns how the kite responds. Each gust teaches him something about flight.'>>",
+   "id": "learning-phase",
+   "body": "<<FILL role=explore words=70 beats='Tomas keeps flying as wind gusts come and go. He feels the string tug in new directions. By moving his hands, he learns how the kite responds. Abuela watches proudly. Each gust teaches him something about flight.'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch-confident-fly",
-     "label": "Feel confident it will fly at the festival",
-     "target": "confidence-high-ending"
+     "id": "ch-land-improve",
+     "label": "Land it and make improvements",
+     "target": "improve-design"
     },
     {
-     "id": "ch-uncertain-fly",
-     "label": "The wind is still too unpredictable to trust",
-     "target": "uncertain-ending"
-    }
-   ]
-  },
-  {
-   "id": "inspect-design",
-   "body": "<<FILL role=explore words=71 beats='They bring the kite down and sit in the grass. Abuela traces her finger along the frame and cloth. She talks about how wind pushes differently on different parts. The kite shows real promise but needs tiny adjustments.'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "ch-tweak",
-     "label": "Make small improvements to the design",
-     "target": "tweak-kite"
-    },
-    {
-     "id": "ch-good-enough",
-     "label": "It looks good enough as is",
-     "target": "design-validation-ending"
+     "id": "ch-wind-risky",
+     "label": "The wind becomes too unpredictable to trust",
+     "target": "unpredictable-ending"
     }
    ]
   },
@@ -194,14 +172,19 @@
    ]
   },
   {
-   "id": "tweak-kite",
-   "body": "<<FILL role=explore words=70 beats='Abuela brings tape and twine. They wrap extra bands around the corners where the kite shows stress. Tomas helps reinforce where frame meets cloth. The kite now feels much sturdier and more balanced.'>>",
+   "id": "improve-design",
+   "body": "<<FILL role=explore words=71 beats='They bring the kite down and sit in the grass. Abuela traces her finger along the frame and cloth. She talks about how wind pushes differently on different parts. The kite shows real promise with some tiny adjustments.'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "ch-to-festival",
-     "label": "Go to the festival with the improved kite",
-     "target": "festival-day"
+     "id": "ch-tweak",
+     "label": "Make small improvements to the design",
+     "target": "tweak-kite"
+    },
+    {
+     "id": "ch-ready",
+     "label": "It looks good enough as is",
+     "target": "design-validation-ending"
     }
    ]
   },
@@ -213,7 +196,36 @@
     {
      "id": "ch-to-fest-repaired",
      "label": "Head to the festival now",
+     "target": "confidence-high-ending"
+    }
+   ]
+  },
+  {
+   "id": "tweak-kite",
+   "body": "<<FILL role=explore words=70 beats='Abuela brings tape and twine. They wrap extra bands around the corners where the kite shows stress. Tomas helps reinforce where frame meets cloth. The kite now feels much sturdier and more balanced.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-check-time",
+     "label": "Check the time before heading to festival",
+     "target": "time-check"
+    }
+   ]
+  },
+  {
+   "id": "time-check",
+   "body": "<<FILL role=decision words=65 beats='Tomas and Abuela look at the clock. The festival will start soon. They can still make it if they leave now. But they could also try one more test flight to feel more confident.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-one-more-test",
+     "label": "Do one more test flight",
      "target": "festival-day"
+    },
+    {
+     "id": "ch-just-go",
+     "label": "Head straight to the festival",
+     "target": "eager-entry-ending"
     }
    ]
   },
@@ -252,24 +264,12 @@
    }
   },
   {
-   "id": "confidence-high-ending",
-   "body": "<<FILL role=ending words=72 beats='Tomas and Abuela bring the kite down gently. They feel excited about how well it responded to the wind. Tomas feels confident. They decide to save the kite and try it again next spring. Building it together was the real victory.'>>",
+   "id": "unpredictable-ending",
+   "body": "<<FILL role=ending words=72 beats='The unpredictable wind worried them both. Tomas and Abuela decide they're not confident enough to fly it in the contest today. They laugh knowing they built something wonderful anyway. They can try again when Tomas feels ready. That's wise.'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
-    "id": "end-confidence",
-    "valence": "positive",
-    "kind": "completion",
-    "title": "A Build Worth Saving"
-   }
-  },
-  {
-   "id": "uncertain-ending",
-   "body": "<<FILL role=ending words=73 beats='The unpredictable wind worried Tomas. He and Abuela decide they're not confident enough to fly it in the contest today. They laugh knowing they built something wonderful anyway. They can try again when Tomas feels ready. That's wise.'>>",
-   "is_ending": true,
-   "choices": [],
-   "ending": {
-    "id": "end-uncertain",
+    "id": "end-unpredictable",
     "valence": "neutral",
     "kind": "discovery",
     "title": "Confidence Takes Time"
@@ -285,6 +285,30 @@
     "valence": "positive",
     "kind": "completion",
     "title": "Design Proven"
+   }
+  },
+  {
+   "id": "confidence-high-ending",
+   "body": "<<FILL role=ending words=72 beats='Tomas and Abuela bring the kite down gently after the repair test. They feel excited about how well it responded. Tomas feels confident. The successful repair taught them both something valuable. Building it together was the real victory.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-confidence",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Build Worth Saving"
+   }
+  },
+  {
+   "id": "eager-entry-ending",
+   "body": "<<FILL role=ending words=70 beats='Tomas and Abuela rush to the festival with their finished kite. They don't have time for one more test but they feel the kite is ready. They watch other fliers launch first. Seeing others fly gives them courage for their own turn.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-eager-entry",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Ready or Not"
    }
   },
   {
