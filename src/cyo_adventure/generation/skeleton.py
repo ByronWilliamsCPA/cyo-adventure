@@ -299,8 +299,20 @@ _FEASIBILITY_MARGIN = 0.8
 # `is_fill_feasible` return True under any cap at all: a fail-open in the guard
 # whose whole job is refusing a skeleton the backend cannot emit. No committed
 # skeleton uses the spaced form today, so this was latent rather than live, but
-# the two modules parse the same directive and must not disagree about it
-# (`AL-429`).
+# the two modules must recognise the same DIRECTIVE TOKEN (`AL-429`).
+#
+# The shared invariant is the token grammar and nothing more. The two modules
+# deliberately disagree about what they then DO with a match, and always have:
+# `identity.py::_word_estimate` takes `.search()`, so the FIRST directive in a
+# body, and falls back to `len(body.split())` for a body carrying no directive
+# at all; `commissioned_words_by_node` below takes `.findall()` and SUMS, skips
+# a body with no directive, skips a `words=0` node, and keys an id-less node
+# positionally where `identity.py::_fastest_finish_words` drops it. Those are
+# four different questions ("what does this one node budget" against "what did
+# this story commission"), so a convergence project would be chasing a property
+# that never held. Read the invariant as "same token, independent accounting",
+# and do not widen the pinning test into a membership or magnitude comparison:
+# it would fail immediately, or enshrine one caller's accounting as the other's.
 # #VERIFY: test_fill_output_cap.py::
 # test_a_spaced_words_directive_is_counted_like_the_strict_form pins the
 # tolerance, and ::test_the_fill_word_pattern_matches_the_mutation_core pins the

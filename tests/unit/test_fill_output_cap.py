@@ -145,11 +145,19 @@ def test_a_spaced_words_directive_is_counted_like_the_strict_form() -> None:
 
 @pytest.mark.unit
 def test_the_fill_word_pattern_matches_the_mutation_core() -> None:
-    """One directive, one grammar.
+    """One directive, one grammar. Accounting is deliberately NOT shared.
 
-    `generation/skeleton.py` and `mutation/identity.py` both parse the same
-    `words=` directive. Divergence means the two disagree about a skeleton's
-    size, which is how the fail-open above got in.
+    `generation/skeleton.py` and `mutation/identity.py` must recognise the same
+    `words=` token, because a spelling one accepts and the other does not is how
+    the `AL-429` fail-open got in.
+
+    This pins the GRAMMAR only, which is the whole invariant. The two modules
+    already differ on what they do with a match and are meant to:
+    `_word_estimate` reads the first directive and falls back to the body's own
+    length, while `commissioned_words_by_node` sums every directive and ignores
+    bodies that carry none. Widening this assertion to compare per-node
+    membership or totals would either fail on contact or freeze one caller's
+    accounting into the other.
     """
     assert _FILL_WORDS_RE.pattern == _MUTATION_FILL_WORDS_RE.pattern
 
