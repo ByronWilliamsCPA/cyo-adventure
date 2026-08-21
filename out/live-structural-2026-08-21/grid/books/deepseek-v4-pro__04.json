@@ -1,0 +1,1215 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_half_hour_call",
+  "version": 1,
+  "title": "The Half-Hour Call",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "theatre",
+      "teamwork",
+      "nerve",
+      "craft",
+      "responsibility"
+    ],
+    "estimated_minutes": 8,
+    "ending_count": 14,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_arrive",
+  "nodes": [
+    {
+      "id": "n_arrive",
+      "body": "The gate to the tethering field is propped open with a sandbag and the evening air smells of propane and cut grass. Somebody walks past carrying a folded envelope of crimson silk, the balloon still a flat bright puddle on the ground. A chalkboard by the gate reads GLOW 8:00 and under it in smaller letters HALF-HOUR CALL 7:30. The field hums with the low roar of test-fires.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_arrive_0",
+          "label": "Go in and find the crew board.",
+          "target": "n_board"
+        }
+      ]
+    },
+    {
+      "id": "n_board",
+      "body": "The crew board is a whiteboard by the starter's van with three coloured tags pinned in a row, each with a crew on it and a question mark after it. Captain Reyes the field marshal has a radio in her hand and a clipboard against her hip. She says to pick one and mean it, because whoever picks it owns the glow tonight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_board_0",
+          "label": "Take the burner team.",
+          "target": "l_hub"
+        },
+        {
+          "id": "c_n_board_1",
+          "label": "Take the envelope crew.",
+          "target": "c_hub"
+        },
+        {
+          "id": "c_n_board_2",
+          "label": "Take the chase crew.",
+          "target": "s_hub"
+        }
+      ]
+    },
+    {
+      "id": "l_hub",
+      "body": "The burner station is a folding table at the edge of the field. It looks down the long grass to the launch line. Twenty-four pilots are on the list. Only about half their fuel levels are on the board. Ellis has run the whole show alone. They have a binder of timing sheets in no order at all. A pilot light hisses softly. Three things are wrong at once.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_hub_0",
+          "label": "Sort the timing sheets first.",
+          "target": "l_a"
+        },
+        {
+          "id": "c_l_hub_1",
+          "label": "Check the line with the flickering pilot light.",
+          "target": "l_b"
+        },
+        {
+          "id": "c_l_hub_2",
+          "label": "Learn the sequence before touching anything else.",
+          "target": "l_c"
+        }
+      ]
+    },
+    {
+      "id": "l_a",
+      "body": "The timing binder holds forty loose pages. Some are typed and some are in pencil. Two pages have coffee stains that look like brown islands. The launch order taped to the table does not match the binder. This is true after the dusk part. Ellis recalls every fire they have run. They do not recall any of the ones in the final show. And then at ten past seven, three things go wrong in the same minute. There is only enough time left to fix one of them well.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_a_0",
+          "label": "Go and find the master igniter.",
+          "target": "l_p"
+        },
+        {
+          "id": "c_l_a_1",
+          "label": "Give the solo glow a tank of its own.",
+          "target": "l_q"
+        },
+        {
+          "id": "c_l_a_2",
+          "label": "Rebuild the finale sequence on the board.",
+          "target": "l_r"
+        }
+      ]
+    },
+    {
+      "id": "l_b",
+      "body": "The pilot light in the east corner stutters. This happens when anyone walks the fuel line above it. Its fuel gauge is warm to the back of a hand. The hose behind it is coiled tight against a stake. The ladder rule is painted on the starter's van in letters a foot high. No one goes up it unless Captain Reyes knows. And then at ten past seven, three things go wrong in the same minute. There is only enough time left to fix one of them well.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_b_0",
+          "label": "Give the solo glow a tank of its own.",
+          "target": "l_q"
+        },
+        {
+          "id": "c_l_b_1",
+          "label": "Rebuild the finale sequence on the board.",
+          "target": "l_r"
+        },
+        {
+          "id": "c_l_b_2",
+          "label": "Go and find the master igniter.",
+          "target": "l_p"
+        }
+      ]
+    },
+    {
+      "id": "l_c",
+      "body": "Ellis points to the start button and the cut-off switch. They say the board keeps all your orders, even the wrong ones. Last night's test stack is still loaded. It is still wrong in two spots. A map of which tank goes where is someplace under the binder. It might also be under the water jug. Then at ten past seven, three things go wrong in the same minute. There is only enough time left to fix one of them well.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_c_0",
+          "label": "Rebuild the finale sequence on the board.",
+          "target": "l_r"
+        },
+        {
+          "id": "c_l_c_1",
+          "label": "Go and find the master igniter.",
+          "target": "l_p"
+        },
+        {
+          "id": "c_l_c_2",
+          "label": "Give the solo glow a tank of its own.",
+          "target": "l_q"
+        }
+      ]
+    },
+    {
+      "id": "l_p",
+      "body": "At ten past seven the fan on the big balloon pulls too much and the field fuse trips. Every pilot light on the line goes out and everyone stops where they are and says ooh. The main breaker is in a box behind the catering tent and only Captain Reyes has the key on her belt.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_p_0",
+          "label": "Do the small, boring, reliable fix.",
+          "target": "l_x"
+        },
+        {
+          "id": "c_l_p_1",
+          "label": "Go and ask someone to help you.",
+          "target": "l_y"
+        },
+        {
+          "id": "c_l_p_2",
+          "label": "Change the moment so that it works.",
+          "target": "l_z"
+        }
+      ]
+    },
+    {
+      "id": "l_q",
+      "body": "The night's biggest moment, the solo glow on the red balloon, has a cue number and no fuel tank assigned to it. Whoever wrote the sequence left that line blank and then left for the coast. The only spare tank is rigged to a balloon nobody is flying in this year's show.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_q_0",
+          "label": "Go and ask someone to help you.",
+          "target": "l_y"
+        },
+        {
+          "id": "c_l_q_1",
+          "label": "Change the moment so that it works.",
+          "target": "l_z"
+        },
+        {
+          "id": "c_l_q_2",
+          "label": "Do the small, boring, reliable fix.",
+          "target": "l_x"
+        }
+      ]
+    },
+    {
+      "id": "l_r",
+      "body": "The sequence fires perfectly up to the dusk cue. Then it makes a full blackout where the grand glow should be. Ellis goes very quiet. There are ninety minutes left. The grand glow is on the poster outside the gate.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_r_0",
+          "label": "Change the moment so that it works.",
+          "target": "l_z"
+        },
+        {
+          "id": "c_l_r_1",
+          "label": "Do the small, boring, reliable fix.",
+          "target": "l_x"
+        },
+        {
+          "id": "c_l_r_2",
+          "label": "Leave it and hope nobody notices.",
+          "target": "l_early"
+        }
+      ]
+    },
+    {
+      "id": "l_x",
+      "body": "The answer turns out to be small and boring and completely reliable: one tank moved, one number written down, one valve tested twice instead of once. The field looks the way the sequence says it should look. Ellis writes the valve number on the back of their hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_x_0",
+          "label": "Take the half-hour call and keep moving.",
+          "target": "n_call0"
+        },
+        {
+          "id": "c_l_x_1",
+          "label": "Listen to the field gate opening.",
+          "target": "n_call1"
+        },
+        {
+          "id": "c_l_x_2",
+          "label": "Go and find Sky by the main balloon.",
+          "target": "n_call2"
+        }
+      ]
+    },
+    {
+      "id": "l_y",
+      "body": "It will work but not alone. Someone has to hold the ladder, or call the number, or stand in the middle of the field being roughly balloon-sized while the new tank is aimed. The envelope crew and the chase crew are both busy with their own seven-o'clock disaster. Asking turns out to be the whole job. Somebody puts down what they were doing and comes, and it costs them something, and they come anyway.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_y_0",
+          "label": "Clear the field before the fog settles.",
+          "target": "n_call3"
+        },
+        {
+          "id": "c_l_y_1",
+          "label": "Run one last check on your own thing.",
+          "target": "n_call4"
+        },
+        {
+          "id": "c_l_y_2",
+          "label": "Take the half-hour call and keep moving.",
+          "target": "n_call0"
+        }
+      ]
+    },
+    {
+      "id": "l_z",
+      "body": "There is a way to make the moment work that is not the way it was written. A slower pulse, a different colour, the solo glow arriving from the north line instead of the centre. It is honest and it is not what Sky has rehearsed thirty times.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_z_0",
+          "label": "Listen to the field gate opening.",
+          "target": "n_call1"
+        },
+        {
+          "id": "c_l_z_1",
+          "label": "Go and find Sky by the main balloon.",
+          "target": "n_call2"
+        },
+        {
+          "id": "c_l_z_2",
+          "label": "Clear the field before the fog settles.",
+          "target": "n_call3"
+        }
+      ]
+    },
+    {
+      "id": "l_early",
+      "body": "The tank is left where it is. The cue is left blank. At twenty past seven Captain Reyes finds both while checking the sequence herself. Nothing is shouted and nothing is said twice. The burner station goes back to Ellis. What is left is handing out programmes, which is a real job and is not this one.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_early",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Job Handed Back"
+      }
+    },
+    {
+      "id": "c_hub",
+      "body": "The balloon shed is the old barn. A rail runs down its middle. A sewing machine sits on the bench under the window. The red balloon hangs at the end in deep red and gold. It is finished, except for the parts that are not. Maz has been up since six. They have a roll of repair tape on their wrist. They have a list with three things still not crossed out.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_hub_0",
+          "label": "Start with the crown ring.",
+          "target": "c_a"
+        },
+        {
+          "id": "c_c_hub_1",
+          "label": "Start with the torn panel.",
+          "target": "c_b"
+        },
+        {
+          "id": "c_c_hub_2",
+          "label": "Start with the solo switch.",
+          "target": "c_c"
+        }
+      ]
+    },
+    {
+      "id": "c_a",
+      "body": "The crown ring is pretty from the outside and sharp inside. Two metal burrs press right on Sky's hand after ten minutes of holding the rope. Sky has not said a thing about it because she does not want to be trouble. The ring has to stay on for the whole dusk sequence. Then at ten past seven three things go wrong in the same minute. Only enough of the afternoon is left to take on one of them well.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_a_0",
+          "label": "Work on through the field blackout.",
+          "target": "c_p"
+        },
+        {
+          "id": "c_c_a_1",
+          "label": "File the crown ring properly.",
+          "target": "c_q"
+        },
+        {
+          "id": "c_c_a_2",
+          "label": "Refit the whole show for Nadia.",
+          "target": "c_r"
+        }
+      ]
+    },
+    {
+      "id": "c_b",
+      "body": "The long red panel has caught on a stay line in the grass. It has opened a hand's width along the seam. It is the kind of tear that walks itself longer each time the envelope fills. The tape on the bench is close to the right crimson. It is not the right crimson. Then at ten past seven three things go wrong in the same minute. Only enough of the afternoon is left to take on one of them properly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_b_0",
+          "label": "File the crown ring properly.",
+          "target": "c_q"
+        },
+        {
+          "id": "c_c_b_1",
+          "label": "Refit the whole show for Nadia.",
+          "target": "c_r"
+        },
+        {
+          "id": "c_c_b_2",
+          "label": "Work on through the field blackout.",
+          "target": "c_p"
+        }
+      ]
+    },
+    {
+      "id": "c_c",
+      "body": "In the dark behind the big banner, the red balloon shrinks and glows back to full in about forty seconds. It happens between the dusk part and the loud music part. It has never been done in under a minute during practice. So far the plan is just for everyone to be faster on the night. Then at ten past seven, three things go wrong in the very same minute. There is only enough of the afternoon left to properly fix one of them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_c_0",
+          "label": "Refit the whole show for Nadia.",
+          "target": "c_r"
+        },
+        {
+          "id": "c_c_c_1",
+          "label": "Work on through the field blackout.",
+          "target": "c_p"
+        },
+        {
+          "id": "c_c_c_2",
+          "label": "File the crown ring properly.",
+          "target": "c_q"
+        }
+      ]
+    },
+    {
+      "id": "c_p",
+      "body": "At ten past seven the field fuse trips and the overhead lights die. The envelope shed has one window and it faces north. Everything left to do is now being done in the grey light off a phone torch.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_p_0",
+          "label": "Do the small, boring, reliable fix.",
+          "target": "c_x"
+        },
+        {
+          "id": "c_c_p_1",
+          "label": "Go and ask someone to help you.",
+          "target": "c_y"
+        },
+        {
+          "id": "c_c_p_2",
+          "label": "Change the moment so that it works.",
+          "target": "c_z"
+        }
+      ]
+    },
+    {
+      "id": "c_q",
+      "body": "With the burrs filed the ring slips forward whenever Sky looks down, which she does in the sequence where the red balloon finds the dusk line. The padding that stops it is the padding that hurt. There is no third option in the box.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_q_0",
+          "label": "Go and ask someone to help you.",
+          "target": "c_y"
+        },
+        {
+          "id": "c_c_q_1",
+          "label": "Change the moment so that it works.",
+          "target": "c_z"
+        },
+        {
+          "id": "c_c_q_2",
+          "label": "Do the small, boring, reliable fix.",
+          "target": "c_x"
+        }
+      ]
+    },
+    {
+      "id": "c_r",
+      "body": "Sky's voice has gone from a cold no one talked about. Nadia, who has only practiced as the backup on Tuesdays, is standing very straight and saying she can do it. Nadia is a whole head shorter than Sky. Every single line on the envelope was cut to fit Sky's reach.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_r_0",
+          "label": "Change the moment so that it works.",
+          "target": "c_z"
+        },
+        {
+          "id": "c_c_r_1",
+          "label": "Do the small, boring, reliable fix.",
+          "target": "c_x"
+        },
+        {
+          "id": "c_c_r_2",
+          "label": "Say it is close enough and stop.",
+          "target": "c_early"
+        }
+      ]
+    },
+    {
+      "id": "c_x",
+      "body": "The answer is quiet tape-work and a piece of foam cut a different shape. The ring sits, the seam holds, the deflation is rehearsed twice in the grass with a crate standing in for the banner. Maz crosses one thing off the list.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_x_0",
+          "label": "Run one last check on your own thing.",
+          "target": "n_call4"
+        },
+        {
+          "id": "c_c_x_1",
+          "label": "Take the half-hour call and keep moving.",
+          "target": "n_call0"
+        },
+        {
+          "id": "c_c_x_2",
+          "label": "Listen to the field gate opening.",
+          "target": "n_call1"
+        }
+      ]
+    },
+    {
+      "id": "c_y",
+      "body": "It works only if someone else is standing in the dark at exactly the right moment holding exactly the right line. That person is currently up a ladder or behind a burner desk. The grass is not the launch line and everyone knows it. Asking turns out to be the whole job. Somebody puts down what they were doing and comes, and it costs them something, and they come anyway.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_y_0",
+          "label": "Go and find Sky by the main balloon.",
+          "target": "n_call2"
+        },
+        {
+          "id": "c_c_y_1",
+          "label": "Clear the field before the fog settles.",
+          "target": "n_call3"
+        },
+        {
+          "id": "c_c_y_2",
+          "label": "Run one last check on your own thing.",
+          "target": "n_call4"
+        }
+      ]
+    },
+    {
+      "id": "c_z",
+      "body": "The envelope can be made to work by changing what the crowd sees. The crown stays covered while it shrinks. Or the red balloon keeps the ring off for the dusk part and flies with its opening showing. It is a real fix. But it is a different picture from the one on the poster.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_z_0",
+          "label": "Take the half-hour call and keep moving.",
+          "target": "n_call0"
+        },
+        {
+          "id": "c_c_z_1",
+          "label": "Listen to the field gate opening.",
+          "target": "n_call1"
+        },
+        {
+          "id": "c_c_z_2",
+          "label": "Go and find Sky by the main balloon.",
+          "target": "n_call2"
+        }
+      ]
+    },
+    {
+      "id": "c_early",
+      "body": "The ring goes back on the rail with the rough spots just as they were. At the half-hour call, Sky puts it on and says nothing again. Maz sees her not saying it. The ring comes off the rail and off the balloon. The red envelope flies with a soft collar instead. This is a discovery nobody wanted to make this way.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_early",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Collar Instead"
+      }
+    },
+    {
+      "id": "s_hub",
+      "body": "The chase crew is Riz and a roll of glow tape. They have a field that must become three different launch lines in ninety minutes. The stakes are marked on both sides and are heavier to pull than they look. The dusk part is a length of orange silk on two poles. No one has yet agreed who carries which end.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_hub_0",
+          "label": "Walk the line changes first.",
+          "target": "s_a"
+        },
+        {
+          "id": "c_s_hub_1",
+          "label": "Tape the field first.",
+          "target": "s_b"
+        },
+        {
+          "id": "c_s_hub_2",
+          "label": "Fix the anchor plate that rocks.",
+          "target": "s_c"
+        }
+      ]
+    },
+    {
+      "id": "s_a",
+      "body": "Riz wants the whole change list walked once slowly before anyone touches anything fast. There are four changes. The third one has never been done with the real stakes in the real dark. Walking it takes twenty minutes the schedule does not clearly have. Then at ten past seven, three things go wrong in the very same minute. There is only enough of the afternoon left to properly fix one of them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_a_0",
+          "label": "Steady the loose stake in the dark.",
+          "target": "s_p"
+        },
+        {
+          "id": "c_s_a_1",
+          "label": "Make the third change fit the fanfare.",
+          "target": "s_q"
+        },
+        {
+          "id": "c_s_a_2",
+          "label": "Stop the silk snagging the anchor.",
+          "target": "s_r"
+        }
+      ]
+    },
+    {
+      "id": "s_b",
+      "body": "There is no glow tape down anywhere. The launch lines go truly black once the field lights are cut. The roll on the crate is old and its glow is more of a faint rumor. Marks must go down for the stakes, the banner, and the edge of the anchor plate someone will trip over. Then at ten past seven, three things go wrong in the very same minute. There is only enough of the afternoon left to properly fix one of them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_b_0",
+          "label": "Make the third change fit the fanfare.",
+          "target": "s_q"
+        },
+        {
+          "id": "c_s_b_1",
+          "label": "Stop the silk snagging the anchor.",
+          "target": "s_r"
+        },
+        {
+          "id": "c_s_b_2",
+          "label": "Steady the loose stake in the dark.",
+          "target": "s_p"
+        }
+      ]
+    },
+    {
+      "id": "s_c",
+      "body": "The anchor plate the red balloon ties to for the ending rocks about a centimetre when weight moves to its front left corner. A folded program under the leg fixes it until someone drags the silk. Underneath, one bolt turns freely and does not tighten. Then at ten past seven, three things go wrong in the very same minute. There is only enough of the afternoon left to properly fix one of them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_c_0",
+          "label": "Stop the silk snagging the anchor.",
+          "target": "s_r"
+        },
+        {
+          "id": "c_s_c_1",
+          "label": "Steady the loose stake in the dark.",
+          "target": "s_p"
+        },
+        {
+          "id": "c_s_c_2",
+          "label": "Make the third change fit the fanfare.",
+          "target": "s_q"
+        }
+      ]
+    },
+    {
+      "id": "s_p",
+      "body": "At ten past seven, the field goes to emergency lights. The half-pulled stake stands in the middle of the grass with no one holding it. Riz says nobody move, in the voice that means it. The stake is fine. Everyone's heart is not.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_p_0",
+          "label": "Do the small, boring, reliable fix.",
+          "target": "s_x"
+        },
+        {
+          "id": "c_s_p_1",
+          "label": "Go and ask someone to help you.",
+          "target": "s_y"
+        },
+        {
+          "id": "c_s_p_2",
+          "label": "Change the moment so that it works.",
+          "target": "s_z"
+        }
+      ]
+    },
+    {
+      "id": "s_q",
+      "body": "The third field change is timed to eighteen seconds of the fanfare. On the best run so far it takes thirty-one. The music cannot be made longer because it is a recording. The change cannot be made shorter with the number of people now in the grass.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_q_0",
+          "label": "Go and ask someone to help you.",
+          "target": "s_y"
+        },
+        {
+          "id": "c_s_q_1",
+          "label": "Change the moment so that it works.",
+          "target": "s_z"
+        },
+        {
+          "id": "c_s_q_2",
+          "label": "Do the small, boring, reliable fix.",
+          "target": "s_x"
+        }
+      ]
+    },
+    {
+      "id": "s_r",
+      "body": "Every single time the orange silk crosses the corner of the anchor plate, it catches. When it catches, it pulls the anchor a few centimetres out of its tape. By the fourth run, the marks and the anchor differ by a hand's width. Sky has to step on it in the dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_r_0",
+          "label": "Change the moment so that it works.",
+          "target": "s_z"
+        },
+        {
+          "id": "c_s_r_1",
+          "label": "Do the small, boring, reliable fix.",
+          "target": "s_x"
+        },
+        {
+          "id": "c_s_r_2",
+          "label": "Call it good enough and go get a drink.",
+          "target": "s_early"
+        }
+      ]
+    },
+    {
+      "id": "s_x",
+      "body": "The answer is unglamorous and works. A bolt tightened with the proper wrench, tape relaid where the anchor actually ends up, a corner padded so the silk slides past it. The change is run twice and lands inside the fanfare.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_x_0",
+          "label": "Clear the field before the fog settles.",
+          "target": "n_call3"
+        },
+        {
+          "id": "c_s_x_1",
+          "label": "Run one last check on your own thing.",
+          "target": "n_call4"
+        },
+        {
+          "id": "c_s_x_2",
+          "label": "Take the half-hour call and keep moving.",
+          "target": "n_call0"
+        }
+      ]
+    },
+    {
+      "id": "s_y",
+      "body": "The change fits the fanfare only with one more person in the grass. Every person on the field right now is the only one who can do the thing they are doing. Asking for help costs someone else something. Asking, it turns out, is the entire job. Someone puts down what they were doing and comes. It costs them something, and they come anyway.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_y_0",
+          "label": "Listen to the field gate opening.",
+          "target": "n_call1"
+        },
+        {
+          "id": "c_s_y_1",
+          "label": "Go and find Sky by the main balloon.",
+          "target": "n_call2"
+        },
+        {
+          "id": "c_s_y_2",
+          "label": "Clear the field before the fog settles.",
+          "target": "n_call3"
+        }
+      ]
+    },
+    {
+      "id": "s_z",
+      "body": "The change works if the change gets smaller. The banner stays on, or the dusk bit goes the other way. Or the anchor plate just stays put, and the end happens a metre down-field from where it was stopped.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_z_0",
+          "label": "Run one last check on your own thing.",
+          "target": "n_call4"
+        },
+        {
+          "id": "c_s_z_1",
+          "label": "Take the half-hour call and keep moving.",
+          "target": "n_call0"
+        },
+        {
+          "id": "c_s_z_2",
+          "label": "Listen to the field gate opening.",
+          "target": "n_call1"
+        }
+      ]
+    },
+    {
+      "id": "s_early",
+      "body": "The bolt stays loose and the tape stays where it was, and at the half-hour call Riz runs the change once more on their own and finds both. They say nothing about it and fix it themselves in four minutes, and the lesson lands harder than being told off would have.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_s_early",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Fixed By Someone Else"
+      }
+    },
+    {
+      "id": "n_call0",
+      "body": "Captain Reyes calls the half-hour over the radios and the field changes temperature. The pilots go to get their burners lit and the crews get their last twenty minutes of being allowed to make noise. The thing that was wrong at seven o'clock is either fixed or it is not and there is no more pretending either way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_call0_0",
+          "label": "Go to the launch line for the start.",
+          "target": "n_beg0"
+        },
+        {
+          "id": "c_n_call0_1",
+          "label": "Put a hand on your own thing one last time.",
+          "target": "n_beg1"
+        },
+        {
+          "id": "c_n_call0_2",
+          "label": "Answer Captain Reyes honestly.",
+          "target": "n_beg2"
+        }
+      ]
+    },
+    {
+      "id": "n_call1",
+      "body": "The field gate opens far behind the tree line and the first voices drift in. The sound is like weather on its way. From the tether line, the crowd is not people yet, just a growing noise. There is only one more chance to test things.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_call1_0",
+          "label": "Put a hand on your own thing one last time.",
+          "target": "n_beg1"
+        },
+        {
+          "id": "c_n_call1_1",
+          "label": "Answer Captain Reyes honestly.",
+          "target": "n_beg2"
+        },
+        {
+          "id": "c_n_call1_2",
+          "label": "Help Sky get the crown ring on.",
+          "target": "n_beg3"
+        }
+      ]
+    },
+    {
+      "id": "n_call2",
+      "body": "Sky is by the main balloon with the crown ring under one arm. She walks through the dusk-line steps under her breath and gets the same line wrong again. She is not asking for help but clearly needs it. The half-hour now has twenty-two minutes left.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_call2_0",
+          "label": "Answer Captain Reyes honestly.",
+          "target": "n_beg2"
+        },
+        {
+          "id": "c_n_call2_1",
+          "label": "Help Sky get the crown ring on.",
+          "target": "n_beg3"
+        },
+        {
+          "id": "c_n_call2_2",
+          "label": "Stand by for the first fire cue.",
+          "target": "n_beg4"
+        }
+      ]
+    },
+    {
+      "id": "n_call3",
+      "body": "The whole field smells of the fog machine, which is working now and is working slightly too well. Riz props the gate for two minutes to let it clear, with someone standing by it because a propped gate has to be watched. The fog thins to the level it was rehearsed at.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_call3_0",
+          "label": "Help Sky get the crown ring on.",
+          "target": "n_beg3"
+        },
+        {
+          "id": "c_n_call3_1",
+          "label": "Stand by for the first fire cue.",
+          "target": "n_beg4"
+        },
+        {
+          "id": "c_n_call3_2",
+          "label": "Go to the launch line for the start.",
+          "target": "n_beg0"
+        }
+      ]
+    },
+    {
+      "id": "n_call4",
+      "body": "The last checks happen at the same time in three corners of the field and none of the three can see the other two. This is the part where a show either has been prepared or is about to find out. The radios go quiet in the way that means everyone is listening.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_call4_0",
+          "label": "Stand by for the first fire cue.",
+          "target": "n_beg4"
+        },
+        {
+          "id": "c_n_call4_1",
+          "label": "Go to the launch line for the start.",
+          "target": "n_beg0"
+        },
+        {
+          "id": "c_n_call4_2",
+          "label": "Put a hand on your own thing one last time.",
+          "target": "n_beg1"
+        }
+      ]
+    },
+    {
+      "id": "n_beg0",
+      "body": "The start is called. The red balloon and the two chase balloons go to the launch line. The field lights go to half, and the noise out front drops by half with them. Nobody ever quite believes it until they hear it. The blue working lights on the grass make everyone look like they are underwater.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_beg0_0",
+          "label": "Watch the field lights go.",
+          "target": "n_up0"
+        },
+        {
+          "id": "c_n_beg0_1",
+          "label": "Stay in the grass for the dusk sequence.",
+          "target": "n_up1"
+        },
+        {
+          "id": "c_n_beg0_2",
+          "label": "Work all the way through to the fanfare.",
+          "target": "n_up2"
+        }
+      ]
+    },
+    {
+      "id": "n_beg1",
+      "body": "The last thing before the top of the show is always the same. A check that the thing you personally are responsible for is where you left it. A hand on the anchor, a hand on the valve, a hand on the line. The answer is yes or the answer is now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_beg1_0",
+          "label": "Stay in the grass for the dusk sequence.",
+          "target": "n_up1"
+        },
+        {
+          "id": "c_n_beg1_1",
+          "label": "Work all the way through to the fanfare.",
+          "target": "n_up2"
+        },
+        {
+          "id": "c_n_beg1_2",
+          "label": "Hold your nerve and let the sequence run.",
+          "target": "e9a"
+        }
+      ]
+    },
+    {
+      "id": "n_beg2",
+      "body": "Captain Reyes stands at the corner where she can see the launch line and the grass at once and asks each crew, one at a time, whether they are ready. The honest answer and the easy answer are not always the same word. She waits for whichever one is given.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_beg2_0",
+          "label": "Work all the way through to the fanfare.",
+          "target": "n_up2"
+        },
+        {
+          "id": "c_n_beg2_1",
+          "label": "Hold your nerve and let the sequence run.",
+          "target": "e9a"
+        },
+        {
+          "id": "c_n_beg2_2",
+          "label": "Watch the whole sequence from the grass.",
+          "target": "e9b"
+        }
+      ]
+    },
+    {
+      "id": "n_beg3",
+      "body": "Sky puts the crown ring on and becomes a different shape. Through the eye holes she can see less than everyone assumes, which is the reason the glow tape matters and the reason the anchor has to be where the tape says. She gives a thumbs up that is aimed slightly wrong.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_beg3_0",
+          "label": "Hold your nerve and let the sequence run.",
+          "target": "e9a"
+        },
+        {
+          "id": "c_n_beg3_1",
+          "label": "Watch the whole sequence from the grass.",
+          "target": "e9b"
+        },
+        {
+          "id": "c_n_beg3_2",
+          "label": "Watch the field lights go.",
+          "target": "n_up0"
+        }
+      ]
+    },
+    {
+      "id": "n_beg4",
+      "body": "The first fanfare tape is ready. The operator's finger is on the button. The last chat on the field stops mid-sentence. There is a silence of about four seconds. The moment belongs to everyone backstage and to no one in the crowd.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_beg4_0",
+          "label": "Watch the whole sequence from the grass.",
+          "target": "e9b"
+        },
+        {
+          "id": "c_n_beg4_1",
+          "label": "Watch the field lights go.",
+          "target": "n_up0"
+        },
+        {
+          "id": "c_n_beg4_2",
+          "label": "Stay in the grass for the dusk sequence.",
+          "target": "n_up1"
+        }
+      ]
+    },
+    {
+      "id": "n_up0",
+      "body": "The field lights go and the first fire cue lands and the crowd makes the sound a crowd makes when three hundred people decide at once to be quiet. Whatever was fixed at seven o'clock is now load-bearing. The dusk sequence runs and mostly runs well.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_up0_0",
+          "label": "Watch the fanfare start.",
+          "target": "n_act0"
+        },
+        {
+          "id": "c_n_up0_1",
+          "label": "See the big moment land.",
+          "target": "e10a"
+        },
+        {
+          "id": "c_n_up0_2",
+          "label": "Let the hardest part go right.",
+          "target": "e10b"
+        }
+      ]
+    },
+    {
+      "id": "n_up1",
+      "body": "The dusk sequence arrives, which is the one with the silk and the anchor and the tank that had no number. It goes the way it was prepared to go, which is the only way anything ever goes. From the grass it is possible to watch a crowd lean forward.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_up1_0",
+          "label": "Wait for the big cue.",
+          "target": "n_act1"
+        },
+        {
+          "id": "c_n_up1_1",
+          "label": "Watch it happen the changed way.",
+          "target": "e10c"
+        },
+        {
+          "id": "c_n_up1_2",
+          "label": "Let it go and note it down for tomorrow.",
+          "target": "e10d"
+        }
+      ]
+    },
+    {
+      "id": "n_up2",
+      "body": "The fanfare sounds and the food tent opens. For twenty minutes the field is a completely different, much louder place. The second half holds the solo glow. It also has the ring deflation that no one has done in under a minute. The list of things still to get through is short and clear.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_up2_0",
+          "label": "Watch the fanfare start.",
+          "target": "n_act0"
+        },
+        {
+          "id": "c_n_up2_1",
+          "label": "See the big moment land.",
+          "target": "e10a"
+        },
+        {
+          "id": "c_n_up2_2",
+          "label": "Let the hardest part go right.",
+          "target": "e10b"
+        }
+      ]
+    },
+    {
+      "id": "n_act0",
+      "body": "The second half starts and the hardest field change of the night happens in the dark behind the banner, and it works because three crews each got one small thing right this afternoon. From where you are standing you can see your own part of it and have to take the rest on trust. The red balloon becomes a girl on time.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_act0_0",
+          "label": "Take the final bow.",
+          "target": "e11a"
+        },
+        {
+          "id": "c_n_act0_1",
+          "label": "Find your name in the programme.",
+          "target": "e11b"
+        },
+        {
+          "id": "c_n_act0_2",
+          "label": "Say yes to the autumn festival.",
+          "target": "e11c"
+        }
+      ]
+    },
+    {
+      "id": "n_act1",
+      "body": "The biggest moment of the night arrives. This was the thing still a problem at half past seven in whatever corner of the field you were in. What was decided then is what three hundred people see now. They see it once and have no clue it was ever in doubt. The solo glow comes right after it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_act1_0",
+          "label": "Think about what the job actually was.",
+          "target": "e11d"
+        },
+        {
+          "id": "c_n_act1_1",
+          "label": "Stay behind and strike the field.",
+          "target": "e11e"
+        },
+        {
+          "id": "c_n_act1_2",
+          "label": "Take the final bow.",
+          "target": "e11a"
+        }
+      ]
+    },
+    {
+      "id": "e9a",
+      "body": "The act wraps up the first half and holds steady. The thing that was broken at seven stays fixed for the whole run. Backstage no one says well done, because a second half lies ahead. But Captain Reyes catches an eye across the grass and nods once. On this field, that is a great deal.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_curtain_holds",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Show That Holds"
+      }
+    },
+    {
+      "id": "e9b",
+      "body": "From the grass, the glow looks nothing like it does from a blanket. The red balloon is a girl breathing hard in a hot ring. The dusk act is two people walking sideways. The solo is a fuel tank. Learning how it is done doesn't spoil it at all. And it's a thing you can never un-know.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_seen_from_wings",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Grass Sees"
+      }
+    },
+    {
+      "id": "e10a",
+      "body": "The big moment lands exactly as it should. Three hundred people make a small sound at once. It all rests on one simple choice made at half past seven. The person who made it stands in the dark, watching it work. It is the bit people talk about in the car going home.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_snow_lands",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Moment Lands"
+      }
+    },
+    {
+      "id": "e10b",
+      "body": "The hardest forty seconds on the field go right, in the dark, with three people doing three small things at the same moment. The red balloon walks out as a girl on the right beat. Nobody out front will ever know it was hard. This turns out to be the whole point of the job.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_change_made",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Forty Seconds"
+      }
+    },
+    {
+      "id": "e10c",
+      "body": "The moment happens a changed way. Not the way the poster shows, and not the way it was rehearsed thirty times. And it works. It is a smaller, truer picture than the one that was planned. Later, there is a real fight about which was better. It is the kind of fight worth having.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_other_picture",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Different Picture"
+      }
+    },
+    {
+      "id": "e10d",
+      "body": "It does not quite come off. The timing slips, or the colour is wrong. Maybe the anchor is a hand's width from where the tape says. The crowd sees nothing. Everyone backstage sees everything. Captain Reyes writes it in the book for tomorrow. She puts no name next to it.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_note_for_tomorrow",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Note for Tomorrow"
+      }
+    },
+    {
+      "id": "e11a",
+      "body": "After the last bow, the pilots give a final wave. Then Sky carries out the move she clearly had ready. She points at the grass until the person standing there must step forward. The clapping shifts slightly for the crew. The walk back into the darkness is only about six feet long. You will never forget it.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_curtain_call",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Final Bow"
+      }
+    },
+    {
+      "id": "e11b",
+      "body": "The programme has a page at the back with everyone's name on it. It was printed on Tuesday, before any of this happened. There is a name on it that was only put there in hope. Now it is simply true. Somebody's grandmother folds the programme open at that page. She keeps it that way.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_named_in_the_programme",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Named in the Programme"
+      }
+    },
+    {
+      "id": "e11c",
+      "body": "During the get-out, Captain Reyes walks over, her clipboard still gripped in her hand. In the flattest tone, she asks if we would like the same crew for the autumn show. It is not praise at all. It is far better than praise, because it is a plan.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_asked_back",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Asked Back for the Next One"
+      }
+    },
+    {
+      "id": "e11d",
+      "body": "Somewhere between the half-hour call and the final bow, the job stops being a job. It becomes clear. It is not about burners or tape or glow tape. It is about being the person other people can leave a thing with. That is a heavier and much more interesting find than we had guessed.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_what_the_job_is",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Job Actually Is"
+      }
+    },
+    {
+      "id": "e11e",
+      "body": "The crowd goes, and the work is not over. A field that took a week to set comes down in ninety minutes. Everyone on the field is carrying something. The grass is a field again by half past ten. It is swept, and the chalkboard is wiped. It is the best-tempered ninety minutes of the whole week.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_striking_the_set",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Striking the Field"
+      }
+    }
+  ]
+}
