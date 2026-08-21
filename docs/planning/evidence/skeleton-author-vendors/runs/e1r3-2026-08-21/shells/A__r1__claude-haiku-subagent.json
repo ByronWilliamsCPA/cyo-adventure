@@ -7,7 +7,7 @@
   "age_band": "5-8",
   "length": "short",
   "narrative_style": "prose",
-  "topology": "time_cave",
+  "topology": "branch_and_bottleneck",
   "tier": 1,
   "production_eligible": false,
   "reading_level": {
@@ -31,11 +31,23 @@
   }
  },
  "variables": [],
- "start_node": "n_opening",
+ "start_node": "n_monday_morning",
  "nodes": [
   {
+   "id": "n_monday_morning",
+   "body": "<<FILL role=setup words=70 beats='On Monday morning, Miri walks through the school gate. The henhouse sits near the playground, warm in the sunshine. She has promised to care for the three hens all week.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_enter_henhouse",
+     "label": "Open the henhouse door",
+     "target": "n_opening"
+    }
+   ]
+  },
+  {
    "id": "n_opening",
-   "body": "<<FILL role=setup words=70 beats='Miri arrives Monday morning to feed the three school hens. Big brown Bess clucks hello. Orange Pepper pecks grain. But small gray Lucy is gone from the henhouse.'>>",
+   "body": "<<FILL role=decision words=70 beats='Miri arrives to feed the three school hens. Big brown Bess clucks hello. Orange Pepper pecks grain. But small gray Lucy is gone from the henhouse.'>>",
    "is_ending": false,
    "choices": [
     {
