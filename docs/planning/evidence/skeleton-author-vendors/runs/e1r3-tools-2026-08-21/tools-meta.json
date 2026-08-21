@@ -43,5 +43,10 @@
   "checker_runs": 10,
   "reported": "FAIL",
   "note": "stuck on PL-18 admissibility; built reconvergent graphs while declaring time_cave instead of converging to a pure tree"
+ },
+ "A__r2__claude-sonnet-subagent": {
+  "checker_runs": 10,
+  "reported": "FAIL",
+  "note": "same PL-18 loop as r1; its terminal-convergence designs shared ending nodes, which the checker counts as reconvergence, so no design read as a tree; cites brief note UW-C306"
  }
 }
