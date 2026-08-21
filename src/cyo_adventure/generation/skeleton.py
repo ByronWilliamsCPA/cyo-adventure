@@ -239,6 +239,65 @@ MODEL_OUTPUT_CAPS: dict[str, int] = {
 }
 
 
+# Known CONTEXT windows (input plus output) per model id, the companion to
+# ``MODEL_OUTPUT_CAPS``. PARTIAL by construction, exactly like that table:
+# a missing row means "unknown", and :func:`resolve_context_window` returns
+# None rather than guessing, so only VERIFIED rows constrain anything.
+#
+# Why it exists: the chunked fill path bounds each batch's OUTPUT under the
+# resolved cap while the batch prompt carries the whole document, so input
+# grows with skeleton size and nothing checked input plus ask against the
+# endpoint's window. Measured 2026-08-21: a batch call requested 58,983
+# output tokens with a 104,858-token prompt against deepseek-v3.2's
+# 163,840-token window, one token over, HTTP 400 (`AL-503`/`UW-C319`).
+# #ASSUME: external resources: values transcribed from the OpenRouter
+# endpoints API for the pinned endpoints; per-endpoint variation exists for
+# some slugs, so record the MINIMUM across the endpoints a pin can reach.
+# #VERIFY: tests/unit/test_fill_output_cap.py::TestContextWindow.
+MODEL_CONTEXT_WINDOWS: dict[str, int] = {
+    # Uniform 163,840 across every serving endpoint, read 2026-08-21.
+    "deepseek/deepseek-v3.2": 163_840,
+}
+
+
+def resolve_context_window(model: str | None) -> int | None:
+    """Return the model's known context window, or None when unknown.
+
+    Args:
+        model: The backend model id, or None when it is not known.
+
+    Returns:
+        int | None: The verified window, or None (no constraint) for a model
+        without a row; unlike :func:`resolve_output_cap` there is no safe
+        permissive default to fall back to, because the window bounds input
+        PLUS output and a wrong guess fails or truncates real requests.
+    """
+    if model is None:
+        return None
+    return MODEL_CONTEXT_WINDOWS.get(model)
+
+
+# Conservative characters-per-token divisor for estimating a prompt's input
+# tokens. Measured on the 2026-08-21 chunked batch prompt: 369,399 chars
+# tokenized to 104,858 tokens (3.52 chars/token); 3.0 deliberately
+# OVER-estimates the token count so the context bound errs toward asking for
+# less output, never toward another one-token overflow.
+_CHARS_PER_INPUT_TOKEN = 3.0
+
+
+def estimate_input_tokens(*texts: str) -> int:
+    """Conservatively estimate the input tokens of the given prompt parts.
+
+    Args:
+        *texts: The prompt strings that will be sent (system and user blocks).
+
+    Returns:
+        int: The estimated token count, rounded up.
+    """
+    total_chars = sum(len(text) for text in texts)
+    return math.ceil(total_chars / _CHARS_PER_INPUT_TOKEN)
+
+
 def active_fill_model(settings: object) -> str | None:
     """Return the model id the configured provider will fill with, if knowable.
 

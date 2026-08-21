@@ -17,8 +17,9 @@ always receives plain JSON.
 
 from __future__ import annotations
 
+import json
 import time
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING, Final, Literal, cast
 
 import httpx
 
@@ -53,6 +54,70 @@ _LEG_FATAL_STATUS: Final[frozenset[int]] = frozenset({400, 401, 402, 403, 404})
 # so an out-of-range value is a type error at the call site, not a silent
 # forward of an invalid ``reasoning.effort`` to the API.
 _Effort = Literal["off", "low", "medium", "high"]
+
+# Longest provider diagnostic carried into an error message. Long enough for a
+# context-overflow message with its token arithmetic, short enough that a
+# hostile or degenerate error body cannot balloon logs.
+_ERROR_DETAIL_MAX_CHARS = 240
+
+
+def _error_detail(response: httpx.Response) -> str:
+    """Extract the structured provider error message from a failed response.
+
+    Reads only ``error.message`` (and OpenRouter's nested
+    ``error.metadata.raw`` payload's own ``error.message``, where the real
+    upstream diagnostic lives), never the raw body, which can echo request
+    content. Returns "" when no structured message exists.
+
+    Args:
+        response: The non-2xx HTTP response.
+
+    Returns:
+        The truncated diagnostic, or "" when none can be extracted.
+    """
+    try:
+        payload: object = response.json()
+    except ValueError:
+        return ""
+    if not isinstance(payload, dict):
+        return ""
+    error = cast("dict[str, object]", payload).get("error")
+    if not isinstance(error, dict):
+        return ""
+    error_map = cast("dict[str, object]", error)
+    message = _nested_raw_message(error_map) or error_map.get("message")
+    if not isinstance(message, str) or not message.strip():
+        return ""
+    return message.strip()[:_ERROR_DETAIL_MAX_CHARS]
+
+
+def _nested_raw_message(error_map: dict[str, object]) -> str | None:
+    """Return the upstream diagnostic inside ``error.metadata.raw``, if any."""
+    metadata = error_map.get("metadata")
+    raw = (
+        cast("dict[str, object]", metadata).get("raw")
+        if isinstance(metadata, dict)
+        else None
+    )
+    if not isinstance(raw, str):
+        return None
+    try:
+        nested: object = json.loads(raw)
+    except ValueError:
+        return None
+    nested_error = (
+        cast("dict[str, object]", nested).get("error")
+        if isinstance(nested, dict)
+        else None
+    )
+    message = (
+        cast("dict[str, object]", nested_error).get("message")
+        if isinstance(nested_error, dict)
+        else None
+    )
+    if isinstance(message, str) and message.strip():
+        return message
+    return None
 
 
 class OpenRouterProvider:
@@ -302,7 +367,18 @@ class OpenRouterProvider:
         # `else` keeps an unexpected 4xx (e.g. 422) leg-fatal too, since retrying
         # a client error cannot help.
         if status in {400, 404}:
-            reason = "invalid or unavailable model"
+            reason = "invalid request or unavailable model"
+            # A 400 carries the provider's own diagnostic (a context
+            # overflow, a parameter rejection), and flattening it cost a
+            # debugging session: the 2026-08-21 chunked leg overflowed a
+            # 163,840-token window by exactly one token and the only
+            # visible message was "invalid or unavailable model"
+            # (`AL-503`/`UW-C319`). Only the STRUCTURED error message is
+            # surfaced (never the raw body, which can echo request
+            # content), and it is truncated.
+            detail = _error_detail(response)
+            if detail:
+                reason = f"{reason}; provider says: {detail}"
         elif status in _LEG_FATAL_STATUS:
             reason = "authentication or credit failure"
         else:

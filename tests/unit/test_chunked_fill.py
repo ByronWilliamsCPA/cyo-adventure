@@ -1079,3 +1079,105 @@ def test_a_well_formed_bound_value_passes_through_unchanged() -> None:
 
     assert '"HERO": "Rosa"' in prompt.user
     assert '"PLACE": "Bellhaven"' in prompt.user
+
+
+# ---------------------------------------------------------------------------
+# Context-window bound (AL-503/UW-C319)
+# ---------------------------------------------------------------------------
+
+
+class _AskRecordingProvider:
+    """Mock provider that records the max_tokens of every call."""
+
+    def __init__(self, responses: list[str]) -> None:
+        self._responses = responses
+        self.asks: list[int] = []
+
+    async def complete(
+        self,
+        *,
+        system: str,
+        prompt: str,
+        max_tokens: int,
+    ) -> object:
+        self.asks.append(max_tokens)
+        from cyo_adventure.generation.usage import Completion, TokenUsage
+
+        return Completion(
+            text=self._responses[len(self.asks) - 1],
+            usage=TokenUsage(
+                provider="mock",
+                model="tiny/one-node",
+                input_tokens=1,
+                output_tokens=1,
+                duration_ms=1,
+            ),
+        )
+
+
+@pytest.mark.asyncio
+async def test_a_window_too_small_for_a_batch_refuses_without_spending(
+    tiny_cap_settings: _SmallOutputSettings,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A batch that cannot fit the known context window is never sent.
+
+    The 2026-08-21 chunked leg overflowed a 163,840-token window by one token
+    and paid for the rejected prompt (AL-503/UW-C319). With the window known
+    and too small, the fill refuses deterministically with zero provider
+    calls instead of buying an HTTP 400.
+    """
+    from cyo_adventure.generation.skeleton import MODEL_CONTEXT_WINDOWS
+
+    monkeypatch.setitem(MODEL_CONTEXT_WINDOWS, "tiny/one-node", 50)
+    skeleton = _all_fill_skeleton()
+    provider = MockProvider(responses=[])
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        PiiContext(child_names=frozenset()),
+        settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        stage1_gate="skipped",
+    )
+
+    assert outcome.status == "failed"
+    assert provider.calls == []
+
+
+@pytest.mark.asyncio
+async def test_a_known_window_clamps_the_batch_ask_below_the_cap(
+    tiny_cap_settings: _SmallOutputSettings,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The per-batch ask is min(cap, window minus estimated input).
+
+    With the input estimate pinned to 100 tokens and the window to 127, every
+    batch has 27 tokens of room: enough for a one-node batch (2 tokens per
+    commissioned word times 10 words), so the call proceeds, but the ask is
+    27 rather than the 30-token cap.
+    """
+    import cyo_adventure.generation.orchestrator as orch
+    from cyo_adventure.generation.skeleton import MODEL_CONTEXT_WINDOWS
+
+    monkeypatch.setitem(MODEL_CONTEXT_WINDOWS, "tiny/one-node", 127)
+    monkeypatch.setattr(orch, "estimate_input_tokens", lambda *_texts: 100)
+    skeleton = _all_fill_skeleton()
+    batches = plan_fill_batches(skeleton, max_tokens=_CAP_FOR_ONE)
+    provider = _AskRecordingProvider(
+        responses=[_reply_for(batch) for batch in batches]
+    )
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        cast("object", provider),  # pyright: ignore[reportArgumentType]
+        PiiContext(child_names=frozenset()),
+        settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        stage1_gate="skipped",
+    )
+
+    assert outcome.status in {"passed", "needs_review"}
+    assert provider.asks
+    assert all(ask == 27 for ask in provider.asks)

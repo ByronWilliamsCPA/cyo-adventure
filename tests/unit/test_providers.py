@@ -414,6 +414,39 @@ class TestOpenRouterProvider:
         assert exc_info.value.leg_fatal is False
 
     @pytest.mark.asyncio
+    async def test_a_400_surfaces_the_providers_structured_diagnostic(self) -> None:
+        """A 400's structured error.message reaches the raised error, truncated.
+
+        The flattened '(invalid or unavailable model)' hid a context overflow
+        that missed a 163,840-token window by one token (AL-503/UW-C319).
+        Only error.message (and OpenRouter's nested metadata.raw error
+        message) is read; the raw body is never echoed.
+        """
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nested = (
+                '{"error": {"message": "This model maximum context length is '
+                '163840 tokens.", "type": "invalid_request_error"}}'
+            )
+            return httpx.Response(
+                400,
+                json={
+                    "error": {
+                        "message": "Provider returned error",
+                        "code": 400,
+                        "metadata": {"raw": nested},
+                    }
+                },
+            )
+
+        provider = _openrouter(handler, max_retries=3)
+        with pytest.raises(
+            ProviderError, match=r"provider says: .*maximum context length"
+        ) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is True
+
+    @pytest.mark.asyncio
     async def test_connect_error_is_transient_and_retried(self) -> None:
         """A transport error (connect/timeout) is transient and retried."""
         calls = 0

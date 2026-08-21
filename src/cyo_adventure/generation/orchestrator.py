@@ -65,7 +65,10 @@ from cyo_adventure.generation.reading_level_loop import (
 from cyo_adventure.generation.skeleton import (
     MAX_FILL_OUTPUT_TOKENS,
     active_fill_model,
+    estimate_input_tokens,
+    expected_output_tokens,
     is_fill_feasible,
+    resolve_context_window,
     resolve_output_cap,
 )
 from cyo_adventure.utils.logging import get_logger
@@ -1147,6 +1150,9 @@ class _ChunkedFillContext:
     differentiation_directive: str
     stage_log: list[str]
     slot_bindings: Mapping[str, str] | None = None
+    # The resolved backend model id, for the context-window bound
+    # (`AL-503`/`UW-C319`); None when unknown, which constrains nothing.
+    model: str | None = None
 
 
 async def _fill_in_batches(
@@ -1230,8 +1236,50 @@ async def _fill_in_batches(
                 ctx.differentiation_directive,
             )
         )
+        # #CRITICAL: external resources: the batch prompt carries the whole
+        # document, so input grows with skeleton size while the output cap
+        # stays fixed, and a provider bounds input PLUS output by its context
+        # window. Nothing accounted for that: a batch call requested 58,983
+        # output tokens on a 104,858-token prompt against a 163,840-token
+        # window, one token over, HTTP 400 after the harness had already paid
+        # for the prompt (`AL-503`/`UW-C319`). Bound the ask by the KNOWN
+        # window (unknown windows constrain nothing), and refuse outright
+        # when the remaining room cannot hold the batch's expected output:
+        # a deterministic refusal beats a paid 400 or a mid-batch truncation.
+        # #VERIFY: test_chunked_fill.py::TestContextBound.
+        ask = ctx.cap
+        window = resolve_context_window(ctx.model)
+        if window is not None:
+            room = window - estimate_input_tokens(prompt.system, prompt.user)
+            batch_nodes = [
+                node
+                for node in cast("list[object]", document.get("nodes") or [])
+                if isinstance(node, dict)
+                and cast("dict[str, object]", node).get("id") in set(node_ids)
+            ]
+            needed = expected_output_tokens({"nodes": batch_nodes})
+            if room < needed:
+                _logger.warning(
+                    "fill_batch_context_overflow",
+                    batch=index,
+                    batches=len(batches),
+                    window=window,
+                    room=room,
+                    needed=needed,
+                )
+                ctx.stage_log.append(
+                    f"stage_fill:batch_{index}_of_{len(batches)}_context_overflow"
+                )
+                failure = (
+                    f"L1-1 schema: chunked fill batch {index} of {len(batches)} "
+                    f"cannot fit the model's {window}-token context window: the "
+                    f"prompt leaves {room} tokens of room and the batch expects "
+                    f"{needed}; no completion was requested"
+                )
+                return None, _synthetic_blocked_gate(failure, "fill_result")
+            ask = min(ask, room)
         completion = await ctx.provider.complete(
-            system=prompt.system, prompt=prompt.user, max_tokens=ctx.cap
+            system=prompt.system, prompt=prompt.user, max_tokens=ask
         )
         try:
             payload: object = json.loads(completion.text)  # pyright: ignore[reportAny]
@@ -1482,6 +1530,7 @@ async def fill_skeleton(
                     differentiation_directive=differentiation_directive,
                     stage_log=stage_log,
                     slot_bindings=slot_bindings,
+                    model=resolved_model if isinstance(resolved_model, str) else None,
                 ),
             )
         except UnpartitionableSkeletonError as exc:
