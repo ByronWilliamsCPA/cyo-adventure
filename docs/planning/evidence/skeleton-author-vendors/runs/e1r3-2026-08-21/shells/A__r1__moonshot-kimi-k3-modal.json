@@ -21,7 +21,7 @@
    "kindness to animals",
    "community helpers"
   ],
-  "estimated_minutes": 3.1,
+  "estimated_minutes": 3,
   "ending_count": 10,
   "content_flags": {
    "violence": "none",
@@ -81,7 +81,7 @@
     {
      "id": "c-tracks-a",
      "label": "Tiptoe on into the orchard grass",
-     "target": "orchard-grass"
+     "target": "orchard-peeps"
     },
     {
      "id": "c-tracks-b",
@@ -91,20 +91,8 @@
    ]
   },
   {
-   "id": "orchard-grass",
-   "body": "<<FILL role=explore words=30 beats='Under the apple trees the fallen windfalls wear small neat pecks; the long grass swishes against Miri's knees, and from somewhere ahead floats one thin thread of a peep'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c-orgrass-1",
-     "label": "Push through into the orchard shade",
-     "target": "orchard-peeps"
-    }
-   ]
-  },
-  {
    "id": "orchard-peeps",
-   "body": "<<FILL role=decision words=39 beats='The peep comes from the bramble thicket beyond the last tree; beside it a rusty wheelbarrow piled with dry leaves looks recently and thoroughly sat in, with one white tail feather on the handle'>>",
+   "body": "<<FILL role=decision words=49 beats='Under the apple trees the windfalls wear small neat pecks and the long grass swishes at Miri's knees; one thin thread of a peep floats from the bramble thicket beyond the last tree, and beside it a rusty wheelbarrow piled with dry leaves wears one white tail feather on its handle'>>",
    "is_ending": false,
    "choices": [
     {
