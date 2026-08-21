@@ -22,8 +22,8 @@
    "winter play",
    "problem solving"
   ],
-  "estimated_minutes": 3,
-  "ending_count": 9,
+  "estimated_minutes": 2,
+  "ending_count": 10,
   "content_flags": {
    "violence": "none",
    "scariness": "none",
@@ -35,513 +35,407 @@
  "nodes": [
   {
    "id": "n01",
-   "body": "<<FILL role=setup words=68 beats='first snow day on Maple Hill; Priya age eight and her brother Arun age four stand at the top after one last run; Arun lifts a foot wearing only a soaked sock; the red boot with the peeling yellow star sticker on the heel is gone; the crossing whistle blows at four and Grandma Nita waits in the blue car; Priya counts three places to start looking'>>",
+   "body": "<<FILL role=setup words=32 beats='first snow on Maple Hill; Priya age eight and Arun age four stop at the top after one last run; Arun lifts a foot wearing only a soaked sock; the red boot with the peeling yellow star sticker is gone'>>",
    "is_ending": false,
    "choices": [
     {
      "id": "c01",
-     "label": "Walk down the sled lane",
+     "label": "Look around the hill",
      "target": "n02"
-    },
-    {
-     "id": "c02",
-     "label": "Ask at the warming hut",
-     "target": "n11"
-    },
-    {
-     "id": "c03",
-     "label": "Follow the paw prints",
-     "target": "n18"
     }
    ]
   },
   {
    "id": "n02",
-   "body": "<<FILL role=explore words=65 beats='Priya tows the red saucer sled down the packed lane while Arun rides on it; sled tracks cross and braid over each other; she turns up a striped mitten and a juice box lid but no boot; snow packs deepest in three spots along the run; Arun sings a made up song to keep his cold foot busy'>>",
+   "body": "<<FILL role=decision words=36 beats='the crossing whistle blows at four and Grandma Nita waits in the blue car; Priya counts three places worth trying, the sled lane below them, the warming hut breathing cocoa steam, and a line of dog prints crossing the fresh snow'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c04",
-     "label": "Dig in the plow ridge",
+     "id": "c02",
+     "label": "Walk down the sled lane",
      "target": "n03"
     },
     {
-     "id": "c05",
-     "label": "Check behind the hay bales",
-     "target": "n04"
+     "id": "c03",
+     "label": "Ask at the warming hut",
+     "target": "n08"
     },
     {
-     "id": "c06",
-     "label": "Walk the fence line",
-     "target": "n05"
+     "id": "c04",
+     "label": "Follow the dog prints",
+     "target": "n14"
     }
    ]
   },
   {
    "id": "n03",
-   "body": "<<FILL role=explore words=65 beats='the plow ridge stands taller than Priya, gray and crusted hard; she chips at it with the edge of the saucer sled; a boot toe appears and her heart jumps; the boot is black and far too big for Arun; somebody lost this one first and never came back for it'>>",
+   "body": "<<FILL role=explore words=24 beats='Priya tows the red saucer sled down the packed lane while Arun rides; braided sled tracks cross everywhere; she turns up a striped mitten and a juice lid but no boot'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c07",
-     "label": "Dig deeper into the ridge",
-     "target": "n06"
-    },
-    {
-     "id": "c08",
-     "label": "Carry the black boot to the hut",
-     "target": "n07"
+     "id": "c05",
+     "label": "Keep going to the bottom",
+     "target": "n04"
     }
    ]
   },
   {
    "id": "n04",
-   "body": "<<FILL role=explore words=65 beats='at the bottom of the run the hay bales sit frozen hard as benches; sleds thump them and stop; straw and snow pack together underneath them; a dark gap runs behind the row where the wind whistles through; Wren is restacking a long toboggan close by and looks up'>>",
+   "body": "<<FILL role=decision words=44 beats='at the bottom of the run the gray plow ridge stands taller than Priya on one side and the frozen hay bales sit like hard benches on the other; Arun hops to keep his cold foot off the snow; Wren is restacking a long toboggan nearby'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c09",
-     "label": "Squeeze behind the bales",
-     "target": "n08"
+     "id": "c06",
+     "label": "Dig into the plow ridge",
+     "target": "n05"
     },
     {
-     "id": "c10",
-     "label": "Ask Wren to tip a bale",
-     "target": "end-06"
+     "id": "c07",
+     "label": "Look behind the hay bales",
+     "target": "n07"
     }
    ]
   },
   {
    "id": "n05",
-   "body": "<<FILL role=explore words=65 beats='the fence line holds the post everyone calls the mitten tree; lost mittens and one small hat hang stiff with frost; whoever finds a thing on Maple Hill hangs it here for later; Priya scans the whole row twice; past the post the fence bends away toward the plow turn'>>",
+   "body": "<<FILL role=explore words=22 beats='Priya chips at the crusted plow ridge with the edge of the saucer sled; a boot toe appears, but it is black and far too big for Arun'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c11",
-     "label": "Check the mitten tree post",
-     "target": "end-03"
-    },
-    {
-     "id": "c12",
-     "label": "Follow the fence to the plow turn",
-     "target": "n10"
+     "id": "c08",
+     "label": "Dig deeper into the ridge",
+     "target": "n06"
     }
    ]
   },
   {
    "id": "n06",
-   "body": "<<FILL role=decision words=65 beats='Priya digs deeper into the plow ridge until her fingers sting through wet mittens; the crust breaks open into a hollow that smells like cold stone; something red shows far back in the dark; Biscuit the crossing dog trots up with his nose working hard; Arun hops closer to see'>>",
+   "body": "<<FILL role=decision words=46 beats='the crust breaks open into a hollow that smells like cold stone; something red shows far back in the dark; Biscuit the crossing dog trots up with his nose working hard; the fingers of Priya sting through wet mittens'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c13",
-     "label": "Let Biscuit sniff the hollow",
-     "target": "end-04"
+     "id": "c09",
+     "label": "Let Biscuit dig it out",
+     "target": "end-01"
     },
     {
-     "id": "c14",
-     "label": "Stop and warm your hands",
-     "target": "end-05"
+     "id": "c10",
+     "label": "Reach into the hollow yourself",
+     "target": "end-02"
     }
    ]
   },
   {
    "id": "n07",
-   "body": "<<FILL role=transition words=25 beats='Priya lugs the heavy black boot up the packed path toward the warming hut door while Arun hops behind her in one sock'>>",
+   "body": "<<FILL role=transition words=24 beats='behind the frozen hay bales the wind whistles through a dark gap; Wren tips one bale up with the nose of the long toboggan'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c15",
-     "label": "Knock on the hut door",
-     "target": "n09"
+     "id": "c11",
+     "label": "Look under the tipped bale",
+     "target": "end-03"
     }
    ]
   },
   {
    "id": "n08",
-   "body": "<<FILL role=decision words=65 beats='Priya squeezes into the gap behind the bales where the air smells like cold straw; the light goes thin and blue; a corner of red rubber shows under packed snow near a wooden stake; beside her knee the ground opens where the creek runs underneath the hill'>>",
+   "body": "<<FILL role=explore words=24 beats='the warming hut breathes cocoa steam and wet wool; Mrs. Delgado works the plywood counter with a clipboard; a crate of lost things sits under the long bench'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c16",
-     "label": "Pull the red corner free",
-     "target": "end-06"
-    },
-    {
-     "id": "c17",
-     "label": "Back out and mark the spot",
-     "target": "end-07"
+     "id": "c12",
+     "label": "Step up to the counter",
+     "target": "n09"
     }
    ]
   },
   {
    "id": "n09",
-   "body": "<<FILL role=climax words=42 beats='Mrs. Delgado takes the black boot and says a girl carried a red one down to the culvert pipe; she also tips her chin at the lost and found crate under the bench; the hut clock reads ten to four'>>",
+   "body": "<<FILL role=decision words=44 beats='Mrs. Delgado listens with her pencil stopped; the toes of Arun are turning pink beside the stove pipe; she offers to call the whole hut to listen, and she nods at the lost and found crate under the bench; the hut clock reads ten to four'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c18",
-     "label": "Run down to the culvert pipe",
-     "target": "end-08"
+     "id": "c13",
+     "label": "Ask her to call the hut",
+     "target": "n10"
     },
     {
-     "id": "c19",
+     "id": "c14",
      "label": "Dig through the lost and found",
-     "target": "end-01"
-    }
-   ]
-  },
-  {
-   "id": "n10",
-   "body": "<<FILL role=decision words=65 beats='further along the fence the plow has scraped a dip full of loose snow; small paw prints ring the whole dip; a curl of red shows under the crust and a second red shape lies right beside it; Arun says both of them look like his and Priya kneels down'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c20",
-     "label": "Look for the yellow star",
-     "target": "end-02"
-    },
-    {
-     "id": "c21",
-     "label": "Whistle for Biscuit",
-     "target": "end-04"
-    }
-   ]
-  },
-  {
-   "id": "n11",
-   "body": "<<FILL role=explore words=65 beats='the warming hut breathes cocoa steam and wet wool; Mrs. Delgado runs the plywood counter with a clipboard of names; a big crate of lost things sits under the long bench; kids thaw their red hands against the stove pipe and argue about who is fastest'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c22",
-     "label": "Ask Mrs. Delgado to call out",
-     "target": "n12"
-    },
-    {
-     "id": "c23",
-     "label": "Dig in the lost and found crate",
      "target": "n13"
     }
    ]
   },
   {
+   "id": "n10",
+   "body": "<<FILL role=transition words=22 beats='Mrs. Delgado cups her hands and calls for a small red boot with a yellow star on the heel; two answers come back from the benches'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c15",
+     "label": "Listen to both answers",
+     "target": "n11"
+    }
+   ]
+  },
+  {
+   "id": "n11",
+   "body": "<<FILL role=decision words=46 beats='one kid saw a red boot hung by its laces on the mitten tree post; another saw the plow driver lift something red at the gate; outside the light goes flat and blue and Arun is walking slower and slower'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c16",
+     "label": "Run to the mitten tree post",
+     "target": "end-04"
+    },
+    {
+     "id": "c17",
+     "label": "Catch the plow driver at the gate",
+     "target": "n12"
+    }
+   ]
+  },
+  {
    "id": "n12",
-   "body": "<<FILL role=explore words=65 beats='Mrs. Delgado cups her hands and calls the whole hut to listen for a small red boot with a star on the heel; two answers come back, one about the mitten tree post and one about the plow driver shifting a pile; the toes of Arun are turning pink'>>",
+   "body": "<<FILL role=transition words=24 beats='the plow truck idles at the gate with its amber light turning slow; the driver rolls his window down while the whistle starts up behind them'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c24",
-     "label": "Borrow a dry sock first",
-     "target": "n14"
-    },
-    {
-     "id": "c25",
-     "label": "Run straight to the mitten tree",
-     "target": "n15"
-    }
-   ]
-  },
-  {
-   "id": "n13",
-   "body": "<<FILL role=explore words=65 beats='the lost and found crate holds odd gloves, one ski, a purple boot, and a scarf gone crunchy with ice; Priya digs to the bottom with both arms; under the scarf a red boot lies wedged sideways; Arun leans over the crate on his one good foot'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c26",
-     "label": "Check the heel for the star",
-     "target": "end-02"
-    },
-    {
-     "id": "c27",
-     "label": "Tip out the whole crate",
-     "target": "n16"
-    }
-   ]
-  },
-  {
-   "id": "n14",
-   "body": "<<FILL role=transition words=25 beats='Mrs. Delgado slides a bread bag and then a giant dry wool sock over the wet foot of Arun so he can walk further'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c28",
-     "label": "Head out to the gate",
-     "target": "n17"
-    }
-   ]
-  },
-  {
-   "id": "n15",
-   "body": "<<FILL role=decision words=65 beats='out at the fence the wind pushes hard and the light goes flat and blue; the four whistle is only minutes away; Arun walks slower and slower behind her; on the mitten tree post something red hangs by knotted laces just above the snow'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c29",
-     "label": "Untie the boot from the post",
-     "target": "end-03"
-    },
-    {
-     "id": "c30",
-     "label": "Search one more minute",
-     "target": "end-09"
-    }
-   ]
-  },
-  {
-   "id": "n16",
-   "body": "<<FILL role=decision words=65 beats='Priya tips the whole crate onto the hut floor and Mrs. Delgado raises one eyebrow at the pile; the clipboard lists who carried each thing inside; two names stand out, Wren from the hay bales and the plow driver; the stove ticks and Arun shivers'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c31",
-     "label": "Ask Wren about the hay bales",
-     "target": "end-06"
-    },
-    {
-     "id": "c32",
-     "label": "Warm Arun's foot instead",
+     "id": "c18",
+     "label": "Ask the driver to check his cab",
      "target": "end-05"
     }
    ]
   },
   {
-   "id": "n17",
-   "body": "<<FILL role=climax words=42 beats='with a warm dry foot Arun can walk all the way to the gate; the plow truck idles there with its amber light turning slow; the driver rolls his window down and the hut clock behind them reads four'>>",
+   "id": "n13",
+   "body": "<<FILL role=transition words=24 beats='the crate holds odd gloves, one ski, a purple boot, and a scarf gone crunchy with ice; Priya digs to the bottom with both arms'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c33",
-     "label": "Ask the plow driver to look",
-     "target": "end-01"
+     "id": "c19",
+     "label": "Check the heel of the red one",
+     "target": "end-06"
+    }
+   ]
+  },
+  {
+   "id": "n14",
+   "body": "<<FILL role=explore words=24 beats='paw prints stitch a neat line away from the sled run toward the crossing; Mr. Okafor whistles for Biscuit while holding up his orange sign'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c20",
+     "label": "Follow the paw prints",
+     "target": "n15"
+    }
+   ]
+  },
+  {
+   "id": "n15",
+   "body": "<<FILL role=decision words=44 beats='at a split stump the prints divide, one line heading down to the frozen creek and one heading back toward the road where Mr. Okafor stands; Arun tucks his sock foot behind his knee like a heron; the sky is going gray'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c21",
+     "label": "Follow the prints to the creek",
+     "target": "n16"
     },
     {
-     "id": "c34",
-     "label": "Keep looking until the whistle",
-     "target": "end-09"
+     "id": "c22",
+     "label": "Ask Mr. Okafor first",
+     "target": "n19"
+    }
+   ]
+  },
+  {
+   "id": "n16",
+   "body": "<<FILL role=transition words=22 beats='the frozen creek ticks under its skin of ice and the culvert pipe breathes gray air; dry reeds rattle where a tail is swinging'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c23",
+     "label": "Step down the bank",
+     "target": "n17"
+    }
+   ]
+  },
+  {
+   "id": "n17",
+   "body": "<<FILL role=decision words=46 beats='Biscuit bursts out of the reeds with something soggy and red in his teeth and starts a game of keep away along the bank; Priya has one granola bar left in her pocket; Arun laughs out loud for the first time all afternoon'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c24",
+     "label": "Trade him the granola bar",
+     "target": "end-07"
+    },
+    {
+     "id": "c25",
+     "label": "Chase him along the bank",
+     "target": "n18"
     }
    ]
   },
   {
    "id": "n18",
-   "body": "<<FILL role=explore words=65 beats='paw prints from Biscuit stitch a neat line across fresh snow away from the sled run; Mr. Okafor whistles for him from the crossing while holding his orange sign; at a stump the prints split, one line heading toward the creek and one heading back toward the road'>>",
+   "body": "<<FILL role=transition words=24 beats='the chase runs down to the creek bend where Biscuit drops the boot in the reeds and Priya lands flat on her elbows in the snow'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c35",
-     "label": "Follow the prints to the creek",
-     "target": "n19"
-    },
-    {
-     "id": "c36",
-     "label": "Ask Mr. Okafor first",
-     "target": "n20"
+     "id": "c26",
+     "label": "Pour the boot out",
+     "target": "end-08"
     }
    ]
   },
   {
    "id": "n19",
-   "body": "<<FILL role=explore words=65 beats='the frozen creek ticks and creaks under its skin of ice; the culvert pipe mouth breathes warm gray air into the cold; dry reeds rattle and the tail of Biscuit swings above them; something wet and red lies near the pipe where the gravel shows through'>>",
+   "body": "<<FILL role=transition words=24 beats='Mr. Okafor remembers a red boot riding down the hill on the nose of a toboggan; he offers the real snow shovel from his truck, and a pencil stub with folded paper'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c37",
-     "label": "Call Biscuit out of the reeds",
-     "target": "n21"
-    },
-    {
-     "id": "c38",
-     "label": "Kneel and look in the pipe",
-     "target": "n22"
+     "id": "c27",
+     "label": "Choose what to take",
+     "target": "n20"
     }
    ]
   },
   {
    "id": "n20",
-   "body": "<<FILL role=explore words=65 beats='Mr. Okafor holds his orange sign at the crossing and remembers a red boot riding down the hill on the nose of a toboggan; he offers the real snow shovel from his truck and points back at the plow ridge; he also carries paper and a pencil stub in his coat'>>",
+   "body": "<<FILL role=climax words=44 beats='the four whistle is only minutes away and Arun hops from foot to foot; the shovel could open the plow ridge where the toboggan stopped; the folded paper could hold a map of every place they have already looked'>>",
    "is_ending": false,
    "choices": [
     {
-     "id": "c39",
+     "id": "c28",
      "label": "Borrow the big snow shovel",
-     "target": "n23"
-    },
-    {
-     "id": "c40",
-     "label": "Draw a map of the hill",
-     "target": "end-07"
-    }
-   ]
-  },
-  {
-   "id": "n21",
-   "body": "<<FILL role=decision words=65 beats='Biscuit bounds out of the reeds carrying something soggy and red; he drops it, snatches it up again, and starts a game of keep away along the bank; Priya has one granola bar left in her pocket; Arun laughs out loud for the first time all afternoon'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c41",
-     "label": "Trade Biscuit a granola bar",
-     "target": "end-04"
-    },
-    {
-     "id": "c42",
-     "label": "Chase him along the bank",
-     "target": "end-08"
-    }
-   ]
-  },
-  {
-   "id": "n22",
-   "body": "<<FILL role=transition words=25 beats='Priya kneels at the culvert mouth where warm air and gravel meet the ice and spots a dark shape wedged deep inside the pipe'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c43",
-     "label": "Reach toward the shape",
-     "target": "n24"
-    }
-   ]
-  },
-  {
-   "id": "n23",
-   "body": "<<FILL role=decision words=65 beats='the real shovel bites where the saucer sled could not; heavy wet chunks break away from the plow ridge and thud on the path; four is very close now and Arun hops from foot to foot; a scrap of red shows deep in the fresh cut'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c44",
-     "label": "Pull the red scrap free",
-     "target": "end-06"
-    },
-    {
-     "id": "c45",
-     "label": "Keep digging past four",
      "target": "end-09"
-    }
-   ]
-  },
-  {
-   "id": "n24",
-   "body": "<<FILL role=climax words=42 beats='the shape is the red boot with the yellow star, jammed farther in than her arm can reach; a bare willow stick lies frozen on the bank; Biscuit whines at the pipe mouth and the four whistle is close'>>",
-   "is_ending": false,
-   "choices": [
-    {
-     "id": "c46",
-     "label": "Hook it out with the stick",
-     "target": "end-08"
     },
     {
-     "id": "c47",
-     "label": "Reach in one more time",
-     "target": "end-09"
+     "id": "c29",
+     "label": "Draw a map for tomorrow",
+     "target": "end-10"
     }
    ]
   },
   {
    "id": "end-01",
-   "body": "<<FILL role=ending words=60 beats='the red boot comes back with ice melting off the yellow star; Arun stamps the foot down twice to be sure it is really his; they reach the blue car of Grandma Nita just as the whistle fades; the heater vents roar and Arun names the boot Star'>>",
+   "body": "<<FILL role=ending words=64 beats='Biscuit noses deep into the hollow and backs out with the red boot swinging from his teeth; Priya trades him the last granola bar; ice melts off the yellow star all the way to the blue car; Arun stamps the foot down twice to be sure it is really his'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "ending-01",
     "valence": "positive",
     "kind": "success",
-    "title": "Two Boots at the Blue Car"
+    "title": "Biscuit Digs It Out"
    }
   },
   {
    "id": "end-02",
-   "body": "<<FILL role=ending words=60 beats='two small red boots sit side by side and look exactly alike; Priya turns each heel over and only one of them carries the peeling yellow star; Arun shouts that the star is his proof; the other boot goes back in the crate for whoever comes looking'>>",
+   "body": "<<FILL role=ending words=64 beats='Priya pushes her arm into the hollow up to the elbow and her fingers close on cold rubber; the boot comes out packed with snow and the yellow star looks like a little window of ice; she knocks it twice against the fence post to empty it; Arun pulls it on and grins'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "ending-02",
     "valence": "positive",
     "kind": "discovery",
-    "title": "The Yellow Star Says So"
+    "title": "Red in the Cold Hollow"
    }
   },
   {
    "id": "end-03",
-   "body": "<<FILL role=ending words=60 beats='the red boot hangs by knotted laces on the mitten tree post with the star turned out toward the hill; a stranger hung it there for whoever came back; Arun pulls it on over his wet sock and they walk home along the fence counting frozen mittens'>>",
+   "body": "<<FILL role=ending words=44 beats='under the tipped bale lie only straw, a juice lid, and one cracked sled runner; the four whistle rolls across Maple Hill; Wren promises to watch for red tomorrow; Arun walks to the blue car with a bread bag over his wet sock'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "ending-03",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Only Straw Under the Bale"
+   }
+  },
+  {
+   "id": "end-04",
+   "body": "<<FILL role=ending words=64 beats='the red boot hangs by knotted laces on the mitten tree post with the star turned out toward the hill; a stranger hung it there for whoever came back; Arun pulls it on over the wet sock; they walk the fence line home counting frozen mittens'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-04",
     "valence": "positive",
     "kind": "completion",
     "title": "The Mitten Tree Keeps It"
    }
   },
   {
-   "id": "end-04",
-   "body": "<<FILL role=ending words=60 beats='Biscuit digs, sneezes, and drops the soggy red boot at the feet of Arun; Priya trades him the granola bar and thanks Mr. Okafor twice; the star sticker has curled up at one corner; Arun hugs the wet boot the whole way to the blue car'>>",
-   "is_ending": true,
-   "choices": [],
-   "ending": {
-    "id": "ending-04",
-    "valence": "positive",
-    "kind": "success",
-    "title": "Biscuit Brings It Back"
-   }
-  },
-  {
    "id": "end-05",
-   "body": "<<FILL role=ending words=60 beats='no boot turns up before four; Mrs. Delgado wraps the foot of Arun in a bread bag inside a huge wool sock; two cocoas warm their hands at the counter; she writes their phone number on the clipboard and promises to call the minute a red boot comes in'>>",
+   "body": "<<FILL role=ending words=44 beats='the driver lifts the red boot off the warm heater vent where he set it that morning; it is dry and toasty inside; Arun shoves his foot in and shouts; Grandma Nita honks the blue car horn twice'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "ending-05",
-    "valence": "neutral",
-    "kind": "setback",
-    "title": "One Boot and a Bread Bag"
+    "valence": "positive",
+    "kind": "success",
+    "title": "Warm on the Heater Vent"
    }
   },
   {
    "id": "end-06",
-   "body": "<<FILL role=ending words=60 beats='a red rubber toe pokes out of the packed pile and Priya works it free with the edge of her saucer sled; ice fills the star sticker like a little window; she knocks the boot twice against the fence to empty it out; Arun stomps his foot down and grins'>>",
+   "body": "<<FILL role=ending words=44 beats='wedged sideways under the crunchy scarf lies a small red boot; Priya turns the heel over and there is the peeling yellow star; Arun says the star is his proof; Mrs. Delgado crosses a line off her clipboard'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "ending-06",
     "valence": "positive",
     "kind": "discovery",
-    "title": "The Red Toe Sticking Out"
+    "title": "The Yellow Star Says So"
    }
   },
   {
    "id": "end-07",
-   "body": "<<FILL role=ending words=60 beats='no boot today, so Priya draws Maple Hill on paper with the plow ridge, the hay bales, the mitten tree, and the culvert pipe; Mr. Okafor marks an X where he last saw red; they agree to come back at nine and Arun carries the map home flat against his chest'>>",
+   "body": "<<FILL role=ending words=64 beats='Biscuit drops the boot for the granola bar and licks the mitten of Priya; the star sticker has curled at one corner but it is stuck fast; Arun hugs the wet boot the whole way up the hill; they reach the blue car just as the whistle fades'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "ending-07",
-    "valence": "neutral",
-    "kind": "completion",
-    "title": "A Map for Tomorrow"
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Trade at the Creek"
    }
   },
   {
    "id": "end-08",
-   "body": "<<FILL role=ending words=60 beats='at the creek bend Priya hooks the red boot loose and lands flat on her elbows in the snow; she pours out gravel and cold water and one surprised beetle; the yellow star is still stuck fast to the heel; Arun claps with both mittens and calls her the best sister'>>",
+   "body": "<<FILL role=ending words=44 beats='out of the boot come gravel, cold creek water, and one very surprised beetle; the yellow star is stuck fast to the heel; they run for the gate while the four whistle rolls across Maple Hill'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "ending-08",
     "valence": "positive",
-    "kind": "success",
-    "title": "Caught at the Creek Bend"
+    "kind": "completion",
+    "title": "Gravel, Water, One Beetle"
    }
   },
   {
    "id": "end-09",
-   "body": "<<FILL role=ending words=60 beats='the four whistle rolls across Maple Hill while Priya is still digging; the toes of Arun have gone hard and cold inside the wet sock; Grandma Nita waves them in with one boot missing; the chest of Priya feels tight until Arun says they can hunt again tomorrow'>>",
+   "body": "<<FILL role=ending words=64 beats='the real shovel bites where the saucer sled could not and heavy wet chunks thud onto the path; a red toe shows in the fresh cut; Priya works the boot free just as the whistle blows; Mr. Okafor claps his big glove against the orange sign'>>",
    "is_ending": true,
    "choices": [],
    "ending": {
     "id": "ending-09",
-    "valence": "negative",
-    "kind": "setback",
-    "title": "The Whistle at Four"
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Shovel Finds Red"
+   }
+  },
+  {
+   "id": "end-10",
+   "body": "<<FILL role=ending words=64 beats='no boot today, so Priya draws Maple Hill on the folded paper with the plow ridge, the hay bales, the mitten tree, and the culvert pipe; Mr. Okafor marks an X where he last saw red; they will be back at nine tomorrow and Arun carries the map flat against his chest'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-10",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "A Map for Tomorrow"
    }
   }
  ]
