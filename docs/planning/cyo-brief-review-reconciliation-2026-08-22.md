@@ -224,6 +224,74 @@ of the parallel review.
 13. Evaluate procedural graph sampling as the skeleton factory (fresh-eyes 10).
 14. Safety corpus for 13-16 and 16+, and the prompt-injection class at 0.0 (`R-6`).
 
+---
+
+## 8. PR sweep 715-737: what has landed since, and what the owner has already ruled
+
+Five agents summarized every PR from 715 to 737 and tagged each against the analysis findings.
+Raw summaries in
+[evidence/brief-gap-analysis-2026-08-22/pr-sweep-715-737/](./evidence/brief-gap-analysis-2026-08-22/pr-sweep-715-737/).
+Two of the highest-impact PRs (**729** and **737**) are still **open**, so what they change is
+pending, not landed.
+
+### 8.1 Findings superseded by merged work
+
+| Finding | Superseded by | What changed |
+| --- | --- | --- |
+| Fill feasibility: 36 of 59 skeletons infeasible, 13-16 and 16+ infeasible entirely | **#727** (merged) | `is_fill_feasible` is now wired as a selection filter (`skeleton_match.py:193`) and `MAX_FILL_OUTPUT_TOKENS = 131_072`. `UW-C07` status is `done`: all 59 production skeletons feasible. **Verified.** |
+| Catalog is 76% non-compliant with its own strict bar | **#730** (merged) | Coverage went 0 to **20 strict-passing shells across all 18 offered cells**. Those 20 are the deliberately-built cover, which is why enforcing `--strict` collapses selection to exactly them. |
+| Chunked-fill context overflow (274k input, 154k last batch) | **#727** (merged) | Still true as mechanics, but **the chunked path is now reached by zero production requests**, since every skeleton is feasible one-shot at the new cap. A dormant path, not a live cost. |
+
+### 8.2 Findings explicitly confirmed as still live at HEAD
+
+- **`--strict` is still enforced by no caller.** #730 added the shells; `check_promotion_bundle.py`
+  still passes only `--allow-mvp`. The enforcement half of the finding is untouched.
+- **Content-filter retried forever.** #731's own `AL-492` records a live incident: `content_filter`
+  flattened to a generic transient failure and retried **7 of 7**, open and unfixed at HEAD.
+- **Provider cascade unpinned.** #729 (open) swaps Ollama for Modal but `build_provider()` still has
+  no `provider_order` parameter and `FallbackProvider` still has no `.model`. Retiring a leg changes
+  which model a silent degradation lands on, not that it happens.
+- **Hard-block publish path.** Untouched by all 23 PRs. #718 changed only the *copy*, from "you
+  approve" to "a reviewer approves", matching admin-only RBAC.
+- **Reading level.** #719 rebuilt the syllable counter against CMUdict ground truth (a real fix that
+  removed the `AL-389` Goodharting root cause), but `reading_level_loop.py:35` still reads "It never
+  blocks. RL-13 stays advisory", and the in-band / fill-rate confound is now documented rather than
+  fixed.
+
+### 8.3 The nine owner rulings in PR #737, and what each settles
+
+Several of this review's open recommendations are **already ruled on**. Marked against the
+[remediation plan](./cyo-brief-gap-remediation-plan-2026-08-22.md).
+
+| # | Ruling | Effect on this review |
+| --- | --- | --- |
+| 1 | **Reuse (`UW-C315`)**: the diversity bar is any-reader, not social distance. Interim rule: same-skeleton books must not be served to the same reader. | Confirms F5 **and extends it**: the structural-mutation machinery is *also* ruled out as a lever. Both candidate levers this review named are now excluded, which materially narrows `D2`. |
+| 2 | **Freeze split (`UW-C317`)**: machine-critical fields are normalized post-fill rather than trusted to model obedience. | Changes how the fill-integrity contract is enforced; bears on `W3` and the delivery findings. |
+| 3 | **`ending.title` (`UW-C311`)**: titles are writable leaf content, not frozen. | Resolves the mutation-census ambiguity flagged in the live round's 7.1 and 7.4. |
+| 4 | **ADR-011 window (`UW-C323`)**: ruling deferred pending a commissioned consistency audit. | Deliberate deferral, not an omission. |
+| 5 | **ADR-011 amendment** (ratified 2026-08-22): per-cell derived decision windows, **gamebook exemption**, recalibrated endings ceilings. | **Partly answers `W6`.** The gamebook exemption is exactly the form-split this review recommended for the walk floor. |
+| 6 | **Bulk vendor direction**: reject sonnet-for-everything on cost; invest in cheap models reaching quality by engineering; widen the bake-off to grok and gemini. | Directly addresses `W10` and the parallel review's `R-1`. Non-closed direction rather than a decision. |
+| 7 | **Fill-rate gate (`UW-C307`)**: the floor becomes a non-blocking `needs_review` forcer, never a hard block, until per-vendor and per-band calibration exists. | **Answers `W5`'s fill-rate leg exactly as recommended.** Close that item. |
+| 8 | **Narrative person (`UW-C324`)**: add a `metadata.narrative_person` field rather than an inferred convention. | Resolves the unpinned-person defect the live round measured (second-person node rates 0.648 versus 0.254 on one skeleton). |
+| 9 | **Pair-unfillable policy (`UW-C325`)**: cap identical zero-content `content_filter` retries at two; production direction is re-pairing, not blind retry. | **Answers `W4`.** Interim cap is ruled; the terminal-classification work remains. |
+
+### 8.4 Consequences for the remediation plan
+
+- **Close `W5`'s fill-rate leg** (ruling 7) and **`W4`'s retry cap** (ruling 9); both are ruled.
+- **`W6` is half-answered** (ruling 5 supplies the gamebook exemption); the prose-band enforcement
+  and the 5 shells at P=0.0000 remain.
+- **`D2` is harder than written**: rulings 1 and 6 exclude both the differentiation directive and
+  per-request mutation, so "cross-family reuse needs a structural lever" now has no surviving
+  candidate lever. That elevates it from a decision to an open design problem.
+- **`W9` gains urgency.** The renumbering hazard has now fired twice in two weeks: #719's merge
+  renumbered **322 published lesson and register IDs across 35 files** (the PR states no existing
+  check would catch a bad resolution), and commit `6fc2b34` renumbered colliding register rows when
+  main merged into the sourcing branch.
+- **A new register-integrity defect class**: `UW-C07`'s row *body* still narrates "enforcement
+  deliberately NOT enabled" while its *status column* reads `done`. A reviewer reading the prose
+  reaches the opposite conclusion from one reading the status. This misled this review's own
+  component agent. Add "row body contradicts row status" to `W9`'s checker set.
+
 ## Related
 
 - [Gap analysis](./cyo-brief-gap-analysis-2026-08-22.md) and its
