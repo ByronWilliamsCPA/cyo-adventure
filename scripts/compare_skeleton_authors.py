@@ -905,7 +905,7 @@ async def run(args: argparse.Namespace) -> int:
     # never re-bought.
     # #VERIFY: a resumed shell is identified by its (cell, replicate, leg)
     # record having an empty error field; conditions are re-recorded in
-    # run.json with a resumed_at stamp.
+    # run.json (the `resumed` flag marks a resumed invocation).
     kept: list[ShellRecord] = []
     done_keys: set[tuple[str, int, str]] = set()
     if args.resume:

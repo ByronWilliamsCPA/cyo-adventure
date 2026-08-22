@@ -166,7 +166,7 @@
   },
   {
    "id": "seed-lure",
-   "body": "<<FILL role=decision words=69 beats='Miri scatters a handful of chicken feed near the porch. A curious hen appears from behind the trash can — but it is Clover, not Pip.'>>",
+   "body": "<<FILL role=decision words=69 beats='Miri scatters a handful of chicken feed near the porch. A curious hen appears from behind the trash can, but it is Clover, not Pip.'>>",
    "is_ending": false,
    "choices": [
     {
@@ -543,7 +543,7 @@
   },
   {
    "id": "shed-noise",
-   "body": "<<FILL role=explore words=66 beats='Miri kneels and listens. A soft cluck comes from inside an old paint can. She tips it gently — empty. Pip must be elsewher.'>>",
+   "body": "<<FILL role=explore words=66 beats='Miri kneels and listens. A soft cluck comes from inside an old paint can. She tips it gently, empty. Pip must be elsewher.'>>",
    "is_ending": false,
    "choices": [
     {
