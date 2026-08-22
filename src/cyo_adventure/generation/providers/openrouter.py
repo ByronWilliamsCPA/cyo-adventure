@@ -36,9 +36,12 @@ from cyo_adventure.generation.providers._base import (
     strip_code_fences,
 )
 from cyo_adventure.generation.usage import Completion, TokenUsage
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+
+_logger = get_logger(__name__)
 
 # HTTP statuses worth retrying against the same model: rate limiting and
 # transient server faults. Anything 5xx is treated as transient even if not
@@ -55,8 +58,8 @@ _LEG_FATAL_STATUS: Final[frozenset[int]] = frozenset({400, 401, 402, 403, 404})
 # forward of an invalid ``reasoning.effort`` to the API.
 _Effort = Literal["off", "low", "medium", "high"]
 
-# Longest provider diagnostic carried into an error message. Long enough for a
-# context-overflow message with its token arithmetic, short enough that a
+# Longest provider diagnostic carried into the operator log line. Long enough
+# for a context-overflow message with its token arithmetic, short enough that a
 # hostile or degenerate error body cannot balloon logs.
 _ERROR_DETAIL_MAX_CHARS = 240
 
@@ -67,28 +70,32 @@ _ERROR_DETAIL_MAX_CHARS = 240
 # the repr form is deterministic.
 _CONTENT_FILTER_MARKER = "finish_reason='content_filter'"
 
-# Total zero-content `content_filter` stops allowed per prompt: the leg ends
-# ON the second stop, so exactly one identical retry is spent (`UW-C325`
-# interim, ruled 2026-08-21: cap identical retries at two attempts total,
-# because the measured third identical attempt bought nothing). An earlier
-# comment here read as "two stops tolerated BEFORE ending", one more than the
-# code performs (PR #737 review, informational).
-# #ASSUME: external-resources: the filter fires on the (skeleton, brief)
-# pair, not the transport, so retrying the identical prompt is spend without
-# information; the production re-anchoring flow lives above this adapter
-# (`UW-C325`).
-# #VERIFY: test_providers.py pins the leg ending on the second stop and a
-# one-stop-then-success rescue.
+# The zero-content `content_filter` stop that ENDS the leg, counted per prompt:
+# the second one aborts, so exactly one such stop is tolerated (`UW-C325`
+# interim, ruled 2026-08-21). The measured third identical attempt bought
+# nothing, and the one intermittent rescue landed on a fresh call rather than
+# on attempt three.
+# #ASSUME: external-resources: this is a retry policy against a paid
+# third-party endpoint. Raising it re-buys an outcome measured to be
+# deterministic per (skeleton, brief) pair; lowering it to 1 gives up the
+# intermittent rescue a single retry does win.
+# #VERIFY: test_providers.py::TestOpenRouterProvider::
+# test_a_second_content_filter_stop_ends_the_leg pins the abort at the second
+# stop, and test_one_filter_stop_then_success_still_succeeds pins the first
+# stop as still retryable.
 _MAX_CONTENT_FILTER_STOPS = 2
 
 
 def _error_detail(response: httpx.Response) -> str:
     """Extract the structured provider error message from a failed response.
 
-    Reads only ``error.message`` (and OpenRouter's nested
-    ``error.metadata.raw`` payload's own ``error.message``, where the real
-    upstream diagnostic lives), never the raw body, which can echo request
-    content. Returns "" when no structured message exists.
+    Reads ``error.message`` and OpenRouter's nested ``error.metadata.raw``
+    payload's own ``error.message``, where the real upstream diagnostic
+    lives. Returns "" when no structured message exists.
+
+    The result is FREE TEXT AUTHORED BY A THIRD PARTY and is therefore for
+    operators only: the caller logs it and must not fold it into any
+    exception message.
 
     # #ASSUME: security: even the structured ``error.message`` is upstream
     # free text and can QUOTE the flagged span of the prompt it rejected, so
@@ -105,6 +112,21 @@ def _error_detail(response: httpx.Response) -> str:
     Returns:
         The truncated diagnostic, or "" when none can be extracted.
     """
+    # #CRITICAL: security: the disclosure boundary runs between this return
+    # value and ``ProviderError``'s message. A leg's last error message is
+    # carried into the exhaustion error by ``_base.run_with_retries``, stored
+    # by ``generation/worker.py`` as ``job.error``, and returned verbatim to
+    # any authenticated guardian on the job by ``api/generation.py``. That
+    # field is a normal 200 response body, so ``app.py``'s CWE-209 pruning
+    # (``_client_safe_error``) never sees it. Nothing in this repo controls
+    # what an upstream writes here: context-overflow and content-filter
+    # messages routinely quote the flagged span of the request, which for
+    # this app is prompt content. Log it; never raise it.
+    # #VERIFY: test_providers.py::TestOpenRouterErrorDetail::
+    # test_the_upstream_detail_never_reaches_the_raised_error asserts the
+    # detail is absent from ``str(exc)`` for both 400 and 404, and
+    # test_the_upstream_detail_is_logged_for_operators asserts it still
+    # reaches the structured log.
     try:
         payload: object = response.json()
     except ValueError:
@@ -432,17 +454,24 @@ class OpenRouterProvider:
         # a client error cannot help.
         if status in {400, 404}:
             reason = "invalid request or unavailable model"
-            # A 400 or 404 carries the provider's own diagnostic (a context
-            # overflow, a parameter rejection), and flattening it cost a
+            # A 400 or a 404 can carry the provider's own diagnostic (a
+            # context overflow, a parameter rejection), and losing it cost a
             # debugging session: the 2026-08-21 chunked leg overflowed a
-            # 163,840-token window by exactly one token and the only
-            # visible message was "invalid or unavailable model"
-            # (`AL-514`/`UW-C320`). Only the STRUCTURED error message is
-            # surfaced (never the raw body, which can echo request
-            # content), and it is truncated.
+            # 163,840-token window by exactly one token and the only visible
+            # message was "invalid or unavailable model"
+            # (`AL-514`/`UW-C320`). The diagnostic goes to the operator log
+            # and stops there. It is third-party free text on a path that
+            # ends at a guardian-visible `job.error` field, so it cannot ride
+            # in the exception message; see ``_error_detail``'s #CRITICAL
+            # note for the full boundary.
             detail = _error_detail(response)
             if detail:
-                reason = f"{reason}; provider says: {detail}"
+                _logger.warning(
+                    "openrouter.leg_fatal_detail",
+                    status=status,
+                    model=self._model,
+                    detail=detail,
+                )
         elif status in _LEG_FATAL_STATUS:
             reason = "authentication or credit failure"
         else:

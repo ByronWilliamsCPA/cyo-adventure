@@ -22,6 +22,8 @@ from typing import TYPE_CHECKING, Literal
 import anthropic as anthropic_sdk
 import httpx
 import pytest
+import structlog
+from structlog.testing import LogCapture
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import (
@@ -37,6 +39,7 @@ from cyo_adventure.generation.providers import (
     OllamaProvider,
     OpenRouterProvider,
 )
+from cyo_adventure.generation.providers import openrouter as openrouter_module
 from cyo_adventure.generation.providers._base import strip_code_fences
 from cyo_adventure.generation.usage import Completion, TokenUsage
 
@@ -478,13 +481,16 @@ class TestOpenRouterProvider:
         assert calls == 2
 
     @pytest.mark.asyncio
-    async def test_a_400_surfaces_the_providers_structured_diagnostic(self) -> None:
-        """A 400's structured error.message reaches the raised error, truncated.
+    async def test_a_400_keeps_the_upstream_diagnostic_out_of_the_message(
+        self,
+    ) -> None:
+        """A 400 raises the flat, vendor-authored reason and nothing more.
 
-        The flattened '(invalid or unavailable model)' hid a context overflow
-        that missed a 163,840-token window by one token (AL-514/UW-C320).
-        Only error.message (and OpenRouter's nested metadata.raw error
-        message) is read; the raw body is never echoed.
+        The diagnostic itself (a context overflow that missed a 163,840-token
+        window by one token, AL-514/UW-C320) still has to reach an operator,
+        but it is third-party free text on a path that ends at a
+        guardian-visible ``job.error``, so it goes to the log instead. See
+        TestOpenRouterErrorDetail for both halves of that contract.
         """
 
         def handler(_request: httpx.Request) -> httpx.Response:
@@ -505,10 +511,13 @@ class TestOpenRouterProvider:
 
         provider = _openrouter(handler, max_retries=3)
         with pytest.raises(
-            ProviderError, match=r"provider says: .*maximum context length"
+            ProviderError,
+            match=r"openrouter returned leg-fatal HTTP 400 "
+            r"\(invalid request or unavailable model\)$",
         ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is True
+        assert "maximum context length" not in str(exc_info.value)
 
     @pytest.mark.asyncio
     async def test_connect_error_is_transient_and_retried(self) -> None:
@@ -1309,6 +1318,349 @@ class TestOpenRouterProviderBranches:
         assert result.text == "ok"
 
 
+class TestOpenRouterErrorDetail:
+    """The upstream diagnostic is an operator log line, never an error message.
+
+    The adapter reads ``error.message`` (and OpenRouter's nested
+    ``error.metadata.raw`` payload's own ``error.message``) on a 400 or 404
+    so a context overflow is debuggable. That text is authored by a third
+    party and routinely quotes the flagged span of the request: an overflow
+    message carries the token arithmetic, a content-filter rejection carries
+    the offending prose. Folding it into ``ProviderError``'s message pushes
+    it into ``_base.run_with_retries``'s exhaustion error, from there into
+    ``generation/worker.py``'s ``job.error``, and from there into the 200
+    body ``api/generation.py`` returns to any authenticated guardian on the
+    job, a path ``app.py``'s CWE-209 pruning never inspects. So the detail is
+    logged and the raised message stays flat.
+
+    Capture strategy mirrors tests/unit/test_cover_storage.py: the module
+    logger is monkeypatched with an explicitly wrapped ``LogCapture`` chain,
+    because ``openrouter._logger`` is bound at import under
+    ``cache_logger_on_first_use=True`` and ignores a later reconfiguration.
+    """
+
+    # An upstream message shaped like the ones that leak: it quotes back a
+    # span of the request. Deliberately distinctive so an absence assertion
+    # cannot pass by coincidence.
+    _LEAKY_DETAIL = "flagged span: the dragon ate PROMPT-CANARY-8412 whole"
+
+    @pytest.fixture
+    def openrouter_logs(self, monkeypatch: pytest.MonkeyPatch) -> LogCapture:
+        """Capture ``providers.openrouter``'s structured logs deterministically."""
+        cap = LogCapture()
+        monkeypatch.setattr(
+            openrouter_module,
+            "_logger",
+            structlog.wrap_logger(structlog.testing.ReturnLogger(), processors=[cap]),
+        )
+        return cap
+
+    def _leaky_response(self, status: int) -> httpx.Response:
+        """Return a failure body carrying the canary in both readable slots."""
+        nested = json.dumps({"error": {"message": self._LEAKY_DETAIL}})
+        return httpx.Response(
+            status,
+            json={
+                "error": {
+                    "message": self._LEAKY_DETAIL,
+                    "code": status,
+                    "metadata": {"raw": nested},
+                }
+            },
+        )
+
+    @pytest.mark.asyncio
+    @pytest.mark.security
+    @pytest.mark.parametrize("status", [400, 404])
+    async def test_the_upstream_detail_never_reaches_the_raised_error(
+        self, status: int, openrouter_logs: LogCapture
+    ) -> None:
+        """Neither readable slot of the upstream body lands in ``str(exc)``."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return self._leaky_response(status)
+
+        provider = _openrouter(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+
+        raised = str(exc_info.value)
+        assert self._LEAKY_DETAIL not in raised
+        assert "PROMPT-CANARY-8412" not in raised
+        assert raised == (
+            f"openrouter returned leg-fatal HTTP {status} "
+            "(invalid request or unavailable model)"
+        )
+        assert exc_info.value.leg_fatal is True
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("status", [400, 404])
+    async def test_the_upstream_detail_is_logged_for_operators(
+        self, status: int, openrouter_logs: LogCapture
+    ) -> None:
+        """Suppressing the message must not lose the diagnostic entirely."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return self._leaky_response(status)
+
+        provider = _openrouter(handler)
+        with pytest.raises(ProviderError):
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+
+        assert [entry["event"] for entry in openrouter_logs.entries] == [
+            "openrouter.leg_fatal_detail"
+        ]
+        entry = openrouter_logs.entries[0]
+        assert entry["log_level"] == "warning"
+        assert entry["status"] == status
+        assert entry["model"] == "anthropic/claude-sonnet-4.6"
+        assert entry["detail"] == self._LEAKY_DETAIL
+
+    @pytest.mark.asyncio
+    async def test_the_logged_detail_is_truncated_at_the_cap(
+        self, openrouter_logs: LogCapture
+    ) -> None:
+        """A degenerate error body cannot balloon the log line.
+
+        ``_ERROR_DETAIL_MAX_CHARS`` is the only bound on text an upstream
+        controls entirely, so it is asserted rather than assumed.
+        """
+        cap = openrouter_module._ERROR_DETAIL_MAX_CHARS
+        overlong = "x" * (cap * 4)
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(400, json={"error": {"message": overlong}})
+
+        provider = _openrouter(handler)
+        with pytest.raises(ProviderError):
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+
+        detail = openrouter_logs.entries[0]["detail"]
+        assert detail == "x" * cap
+        assert len(detail) == cap
+
+    def test_a_plain_error_message_is_read(self) -> None:
+        """The common shape: ``error.message`` with no nested raw payload."""
+        response = httpx.Response(400, json={"error": {"message": "  bad request  "}})
+
+        assert openrouter_module._error_detail(response) == "bad request"
+
+    def test_the_nested_raw_message_wins_over_the_outer_one(self) -> None:
+        """OpenRouter's own wrapper text is less useful than the upstream's."""
+        nested = json.dumps({"error": {"message": "context length exceeded"}})
+        response = httpx.Response(
+            400,
+            json={
+                "error": {
+                    "message": "Provider returned error",
+                    "metadata": {"raw": nested},
+                }
+            },
+        )
+
+        assert openrouter_module._error_detail(response) == "context length exceeded"
+
+    def test_a_non_json_body_yields_no_detail(self) -> None:
+        """A body that is not JSON at all (an HTML error page, a proxy blurb)."""
+        response = httpx.Response(400, text="<html>gateway said no</html>")
+
+        assert openrouter_module._error_detail(response) == ""
+
+    def test_a_non_dict_payload_yields_no_detail(self) -> None:
+        """Valid JSON that is not an object has no ``error`` key to read."""
+        response = httpx.Response(400, json=["nope"])
+
+        assert openrouter_module._error_detail(response) == ""
+
+    def test_a_non_dict_error_yields_no_detail(self) -> None:
+        """``error`` as a bare string is the shape several backends emit."""
+        response = httpx.Response(404, json={"error": "no such model"})
+
+        assert openrouter_module._error_detail(response) == ""
+
+    def test_a_blank_message_yields_no_detail(self) -> None:
+        """Whitespace is not a diagnostic; it must not produce an empty log."""
+        response = httpx.Response(400, json={"error": {"message": "   "}})
+
+        assert openrouter_module._error_detail(response) == ""
+
+    def test_a_raw_that_is_not_json_falls_back_to_the_outer_message(self) -> None:
+        """``metadata.raw`` is a string field; upstreams do put prose in it."""
+        response = httpx.Response(
+            400,
+            json={
+                "error": {
+                    "message": "Provider returned error",
+                    "metadata": {"raw": "upstream exploded, not JSON"},
+                }
+            },
+        )
+
+        assert openrouter_module._error_detail(response) == "Provider returned error"
+
+    @pytest.mark.parametrize(
+        "raw",
+        [
+            json.dumps(["not", "an", "object"]),
+            json.dumps({"error": "a string, not an object"}),
+            json.dumps({"error": {"message": "   "}}),
+            json.dumps({"error": {"message": 42}}),
+        ],
+    )
+    def test_an_unusable_nested_payload_falls_back_to_the_outer_message(
+        self, raw: str
+    ) -> None:
+        """Every non-string / non-dict / blank nested shape degrades gracefully."""
+        response = httpx.Response(
+            400,
+            json={"error": {"message": "outer", "metadata": {"raw": raw}}},
+        )
+
+        assert openrouter_module._error_detail(response) == "outer"
+
+    def test_a_non_string_raw_yields_the_outer_message(self) -> None:
+        """``metadata.raw`` typed as an object (not a JSON string) is skipped."""
+        response = httpx.Response(
+            400,
+            json={
+                "error": {
+                    "message": "outer",
+                    "metadata": {"raw": {"error": {"message": "nested"}}},
+                }
+            },
+        )
+
+        assert openrouter_module._error_detail(response) == "outer"
+
+
+class TestContentFilterStopCap:
+    """The UW-C325 cap: its coupling to a message, and its boundaries.
+
+    The cap keys on a substring of ``_empty_content_message``'s output,
+    authored two functions away. Restructuring ``ProviderError`` to carry a
+    structured ``finish_reason`` is out of scope here, so the coupling is
+    pinned by test instead: a copy-editing pass over that message that drops
+    the marker disables the cap silently, and must fail here first.
+    """
+
+    @staticmethod
+    def _filter_stop_response() -> httpx.Response:
+        """A 200 with no content and a ``content_filter`` finish reason."""
+        return httpx.Response(
+            200,
+            json={
+                "choices": [
+                    {"message": {"content": ""}, "finish_reason": "content_filter"}
+                ]
+            },
+        )
+
+    def test_the_cap_marker_is_what_the_empty_content_message_renders(self) -> None:
+        """Copy-editing ``_empty_content_message`` must not disarm the cap."""
+        rendered = OpenRouterProvider._empty_content_message("content_filter", None)
+
+        assert openrouter_module._CONTENT_FILTER_MARKER in rendered
+
+    def test_the_cap_marker_does_not_match_the_budget_message(self) -> None:
+        """The other zero-content shape must not be counted as a filter stop."""
+        rendered = OpenRouterProvider._empty_content_message("length", 4096)
+
+        assert openrouter_module._CONTENT_FILTER_MARKER not in rendered
+
+    @pytest.mark.asyncio
+    async def test_a_single_retry_budget_exhausts_before_the_cap_engages(self) -> None:
+        """With ``max_retries=1`` the retry driver ends the leg, not the cap.
+
+        The boundary matters: the cap needs two stops, so on a one-attempt
+        budget the failure must still be the ordinary transient exhaustion
+        (``leg_fatal=False``, so the cascade keeps its options), not the
+        cap's leg-fatal abort.
+        """
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            return self._filter_stop_response()
+
+        provider = _openrouter(handler, max_retries=1)
+        with pytest.raises(
+            ProviderError,
+            match=r"transient failure persisted after 1 attempts",
+        ) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+
+        assert exc_info.value.leg_fatal is False
+        assert "re-anchor" not in str(exc_info.value)
+        assert calls == 1
+
+    @pytest.mark.asyncio
+    async def test_an_already_leg_fatal_filter_error_is_not_re_wrapped(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The ``not exc.leg_fatal`` guard: a fatal error propagates untouched.
+
+        A leg-fatal error carrying the marker is already a decision to end
+        the leg. Counting it would let the cap re-wrap and relabel a failure
+        that some other rule already classified.
+        """
+        calls = 0
+
+        async def _fake_attempt(
+            _self: OpenRouterProvider,
+            _url: str,
+            _body: object,
+            _headers: object,
+        ) -> Completion:
+            nonlocal calls
+            calls += 1
+            msg = "already fatal: finish_reason='content_filter' seen upstream"
+            raise ProviderError(
+                msg,
+                provider="openrouter",
+                model="anthropic/claude-sonnet-4.6",
+                leg_fatal=True,
+            )
+
+        monkeypatch.setattr(OpenRouterProvider, "_attempt", _fake_attempt)
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json=_openrouter_ok_body("unused"))
+
+        provider = _openrouter(handler, max_retries=3)
+        with pytest.raises(ProviderError, match=r"^already fatal") as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+
+        assert exc_info.value.leg_fatal is True
+        assert "re-anchor" not in str(exc_info.value)
+        assert calls == 1
+
+    @pytest.mark.asyncio
+    async def test_a_transient_then_filter_sequence_keeps_retrying(self) -> None:
+        """A non-filter transient must not advance the filter counter.
+
+        Sequence: 500, then one filter stop, then success. If the counter
+        counted every transient the second call would end the leg and the
+        third would never run.
+        """
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                return httpx.Response(500, json={"error": "boom"})
+            if calls == 2:
+                return self._filter_stop_response()
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        provider = _openrouter(handler, max_retries=3)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+
+        assert result.text == "ok"
+        assert calls == 3
+
+
 # ---------------------------------------------------------------------------
 # ModalProvider
 # ---------------------------------------------------------------------------
@@ -1872,7 +2224,7 @@ class TestBuildAnthropicLeg:
 
     def test_missing_key_raises_configuration_error_by_name(self) -> None:
         """A missing ANTHROPIC_API_KEY raises ConfigurationError naming the key."""
-        settings = Settings(generation_provider="anthropic", anthropic_api_key=None)  # type: ignore[call-arg]
+        settings = Settings(generation_provider="anthropic", anthropic_api_key=None)
         with pytest.raises(
             ConfigurationError, match=r"ANTHROPIC_API_KEY is not set"
         ) as exc_info:
@@ -1881,7 +2233,7 @@ class TestBuildAnthropicLeg:
 
     def test_missing_key_error_never_contains_a_key_value(self) -> None:
         """The fail-fast error names the key only, never a credential value."""
-        settings = Settings(generation_provider="anthropic", anthropic_api_key=None)  # type: ignore[call-arg]
+        settings = Settings(generation_provider="anthropic", anthropic_api_key=None)
         with pytest.raises(
             ConfigurationError, match=r"ANTHROPIC_API_KEY is not set"
         ) as exc_info:
@@ -1890,7 +2242,7 @@ class TestBuildAnthropicLeg:
 
     def test_with_key_builds_anthropic_provider(self) -> None:
         """A configured key builds a live AnthropicProvider for the given model."""
-        settings = Settings(  # type: ignore[call-arg]
+        settings = Settings(
             generation_provider="anthropic", anthropic_api_key="test-key"
         )
         provider = build_anthropic_leg(settings, "claude-sonnet-4-6")
@@ -1912,7 +2264,7 @@ class TestBuildAnthropicLeg:
         failing request, and the resulting 401 ProviderError must not echo it.
         """
         sentinel_key = "sk-ant-sentinel-do-not-leak-9f3c2b7a"
-        settings = Settings(  # type: ignore[call-arg]
+        settings = Settings(
             generation_provider="anthropic", anthropic_api_key=sentinel_key
         )
         provider = build_anthropic_leg(settings, settings.anthropic_model)

@@ -81,6 +81,6 @@ def test_the_model_survives_the_metered_wrapper_into_cap_resolution() -> None:
     quietly lowered.
     """
     for adapter in _adapters():
-        wrapped = MeteredProvider(adapter, ledger=UsageLedger())  # type: ignore[arg-type]
+        wrapped = MeteredProvider(adapter, ledger=UsageLedger())  # pyright: ignore[reportArgumentType]
         assert wrapped.model == _MODEL
         assert resolve_output_cap(wrapped.model) == MODEL_OUTPUT_CAPS[_MODEL]
