@@ -1247,11 +1247,20 @@ async def _fill_in_batches(
         # window, one token over, HTTP 400 after the harness had already paid
         # for the prompt (`AL-514`/`UW-C320`). Bound the ask by the KNOWN
         # window (unknown windows constrain nothing), and refuse outright
-        # when the remaining room cannot hold the batch's expected output:
-        # a deterministic refusal beats a paid 400 or a mid-batch truncation.
+        # when the remaining room cannot hold the batch under the SAME
+        # feasibility margin `plan_fill_batches` planned it under: the batch
+        # only exists because `is_fill_feasible` said its expected output fits
+        # `ctx.cap` with 20 percent to spare, and reasoning tokens bill against
+        # the window too (`AL-328`/`AL-329`). Testing the raw `needed` against
+        # `room` here would hand the model a batch with under one percent of
+        # headroom (window 163,840 minus a 111,000-token prompt leaves 52,840
+        # against a `needed` of 52,428) and buy the truncation-on-`length` the
+        # margin exists to prevent. Asking the canonical predicate keeps the
+        # window check and the planner on one rule.
         # #VERIFY: tests/unit/test_chunked_fill.py::
-        # test_a_window_too_small_for_a_batch_refuses_without_spending and
-        # ::test_a_known_window_clamps_the_batch_ask_below_the_cap.
+        # test_a_window_too_small_for_a_batch_refuses_without_spending,
+        # ::test_room_exactly_at_the_feasibility_requirement_proceeds, and
+        # ::test_room_one_token_under_the_feasibility_requirement_refuses.
         ask = ctx.cap
         window = resolve_context_window(ctx.model)
         if window is not None:
@@ -1264,14 +1273,13 @@ async def _fill_in_batches(
                 and cast("dict[str, object]", node).get("id") in batch_id_set
             ]
             needed = expected_output_tokens({"nodes": batch_nodes})
-            # The planner packs batches so expected <= cap * _FEASIBILITY_MARGIN
-            # because reasoning tokens bill against the same budget and produce
-            # no prose. Granting an ask below needed / margin would strip that
-            # headroom and reproduce the mid-batch truncation this bound exists
-            # to prevent, so the refusal threshold carries the margin too
-            # (PR #737 review, I3).
+            # `is_fill_feasible` is the single authority on "does this batch
+            # fit", shared with the one-shot path, so the 0.8 reasoning-headroom
+            # margin cannot drift between the two (PR #737 review, I3).
+            # `needed_with_headroom` re-expresses that same threshold as a token
+            # count for the operator-facing message below. It decides nothing.
             needed_with_headroom = math.ceil(needed / _FEASIBILITY_MARGIN)
-            if room < needed_with_headroom:
+            if not is_fill_feasible({"nodes": batch_nodes}, max_tokens=room):
                 _logger.warning(
                     "fill_batch_context_overflow",
                     batch=index,
@@ -1339,6 +1347,16 @@ def _with_fill_rate(
     show it; floors are a per-vendor, per-band calibration question and the
     default stands until that calibration exists (`AL-511`/`AL-523`).
 
+    A downgrade ALSO stamps ``"fill_rate_downgrade": True``, and that key, not
+    the rate, is what
+    :func:`~cyo_adventure.generation.worker._should_persist_storybook` reads.
+    The rate is on every outcome carrying a book, so it identifies nothing; a
+    key present only on the downgrade says "the base outcome was clean before
+    this function touched it", which is exactly the condition under which the
+    thin book must still be persisted for a human to read. Never stamp this
+    key on a non-downgrade path, and never widen it to a second cause: the
+    persist gate treats each such key as a proof of prior cleanliness.
+
     Args:
         outcome: The outcome so far.
         skeleton: The pristine skeleton carrying the ``words=`` commissions.
@@ -1356,6 +1374,11 @@ def _with_fill_rate(
     if fill_rate is None:
         return outcome
     downgrade = outcome.status == "passed" and fill_rate < min_fill_rate
+    report: dict[str, object] = {
+        **outcome.report,
+        "fill_rate": round(fill_rate, 4),
+        "fill_rate_floor": min_fill_rate,
+    }
     if downgrade:
         stage_log.append(f"fill_rate:{fill_rate:.3f}_below_{min_fill_rate}")
         _logger.warning(
@@ -1363,28 +1386,24 @@ def _with_fill_rate(
             fill_rate=round(fill_rate, 3),
             floor=min_fill_rate,
         )
-    # #CRITICAL: data-integrity: "fill_rate_downgrade" is an EXACT signal,
-    # exactly like "stage1_fidelity_violations": it is stamped only when THIS
-    # function downgrades an otherwise-passed fill for the floor, never for
-    # any other cause. worker._should_persist_storybook reads it to keep the
-    # book persistable, because ruling 9.3 forces review and never a hard
-    # block; without the key a fill-rate-only downgrade fell into the
-    # any-other-needs_review branch and the reviewer had NO book to review
-    # (PR #737 review, finding C1).
-    # #VERIFY: tests/unit/test_orchestrator.py::
-    # test_fill_skeleton_forces_review_on_an_under_delivered_book (asserts the
-    # key) and tests/unit/test_worker.py::
-    # test_fill_rate_only_needs_review_persists_the_storybook.
-    extra: dict[str, object] = {"fill_rate_downgrade": True} if downgrade else {}
+        # #CRITICAL: data-integrity: `fill_rate` alone cannot tell a persister
+        # that THIS function caused the downgrade, because the rate is stamped
+        # on every outcome carrying a book, breach or not. Without a key set
+        # only on the downgrade, `worker.py::_should_persist_storybook` sees a
+        # `needs_review` it cannot distinguish from a safety-flagged one and
+        # persists NOTHING: no Storybook, no StorybookVersion, no moderation,
+        # and a job row pointing at a book nobody can reach. Ruling 9.3 says
+        # this gate is never a hard block, so silence here would be stricter
+        # than the hard block the ruling refused.
+        # #VERIFY: tests/unit/test_orchestrator.py::
+        # test_a_fill_rate_downgrade_is_marked_and_still_persists stamps the
+        # key, and tests/unit/test_worker.py::
+        # test_fill_rate_only_needs_review_persists_the_storybook reads it.
+        report["fill_rate_downgrade"] = True
     return GenerationOutcome(
         status="needs_review" if downgrade else outcome.status,
         storybook=outcome.storybook,
-        report={
-            **outcome.report,
-            "fill_rate": round(fill_rate, 4),
-            "fill_rate_floor": min_fill_rate,
-            **extra,
-        },
+        report=report,
         attempts=outcome.attempts,
         stage_log=outcome.stage_log,
     )
@@ -1455,16 +1474,21 @@ async def fill_skeleton(
       no degraded path, so it truncated, parsed as nothing, and burned the
       repair budget on every retry. Seven committed skeletons were in that
       state. Every batch carries the bound values, not just the first.
-    * Ending ``title`` text is re-themed on BOTH paths since the 2026-08-21
-      ruling (section 8.3): one-shot fill returns the whole document with
-      titles writable, and the batch merge accepts an optional
-      ``ending_title`` per ending node (``_merged_ending``), with the
-      ending's ``id``/``kind``/``valence`` still carried from the skeleton by
-      construction. An earlier draft of this bullet predated the ruling and
-      said the merge read only ``body`` and choice ``label`` (PR #737
-      review, I5). The whitelist shape is unchanged: an untrusted reply
-      still cannot reach any frozen ending field, and `UW-C269` compares the
-      two paths before this one writes anything a child reads.
+    * Ending ``title`` text IS re-themed on both paths, but by different
+      mechanisms. One-shot fill returns the whole document and ``fill.md`` does
+      not list ``title`` among the fields it may not change. The batch merge is
+      a whitelist and reads exactly three fields: ``body``, choice ``label``,
+      and (since the 2026-08-21 ruling, section 8.3) an optional
+      ``ending_title`` applied by
+      :func:`~cyo_adventure.generation.chunking._merged_ending`, which replaces
+      only ``ending.title`` and carries ``id``, ``kind``, and ``valence``
+      through from the skeleton. So a chunked reply can reach ending TITLE text
+      and nothing else on the ending block; the PL-15 fail-state policy fields
+      stay unreachable by construction. An earlier draft of this bullet
+      predated the ruling and said the merge read only ``body`` and choice
+      ``label`` (PR #737 review, I5). This is reader-visible either way, and it
+      is one of the things `UW-C269` compares before this path writes anything
+      a child reads.
 
     Args:
         skeleton: The matched skeleton dict, FILL directives intact.
