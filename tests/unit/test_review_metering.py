@@ -326,7 +326,7 @@ async def test_the_stage1_gate_without_a_ledger_makes_the_same_call(
 class _NamedProvider(_StubProvider):
     """A provider that declares a backend label, as every real adapter does."""
 
-    name = "ollama"
+    name = "modal"
 
 
 def _generator_seen_by_review_builder(
@@ -377,13 +377,11 @@ def test_independence_is_judged_against_the_resolved_generator_backend(
     model would review its own output while the persisted report attested that
     it had not.
 
-    The stub declares ``ollama`` while the configured argument says
+    The stub declares ``modal`` while the configured argument says
     ``anthropic``, so this fails if the configured value is the one that
     reaches ``build_review_provider``.
     """
-    assert _generator_seen_by_review_builder(monkeypatch, _NamedProvider()) == [
-        "ollama"
-    ]
+    assert _generator_seen_by_review_builder(monkeypatch, _NamedProvider()) == ["modal"]
 
 
 @pytest.mark.unit

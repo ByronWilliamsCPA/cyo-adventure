@@ -407,12 +407,23 @@ async def test_pipeline_exception_records_failure_and_reraises(
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_interrupted_job_records_failed_in_finally(
+async def test_interrupted_job_records_the_real_cause(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """An interruption between the running-flush and the inner pipeline try
     must not strand the job at 'running'; the top-level finally force-fails
-    it with error 'interrupted' (Finding 4: no wedged queued/running rows).
+    it (Finding 4: no wedged queued/running rows).
+
+    The error text asserted here changed on 2026-08-22. The guard used to
+    record a fixed ``"interrupted"`` regardless of what was unwinding, so a
+    failure raised BEFORE the inner pipeline try (``build_provider`` is the
+    live example: a job carrying a persisted provider override that no longer
+    exists) was filed under a cause that had not happened. That is worst at a
+    provider retirement, when a batch of such jobs appears at once and the
+    error text is the only link back to the retirement. The guard now records
+    the in-flight exception and falls back to ``"interrupted"`` only when
+    nothing is unwinding, so this test pins the real cause. The load-bearing
+    assertion was always ``status == "failed"``, which is unchanged.
     """
     job, concept = _job_and_concept()
     session = _FakeSession(job=job, concept=concept)
@@ -432,7 +443,7 @@ async def test_interrupted_job_records_failed_in_finally(
         )
 
     assert job.status == "failed"
-    assert job.error == "interrupted"
+    assert job.error == "boom mid-pipeline"
     assert job.provider == "mock"
     # Exactly one commit: the finally guard's own _record_failure call.
     assert session.commit_count == 1
@@ -445,7 +456,9 @@ async def test_late_interrupt_during_persist_records_failed_not_passed(
 ) -> None:
     """An interruption inside persist_storybook, AFTER job_row.status is set
     to "passed" in memory but BEFORE the terminal commit, must still land
-    "failed"/"interrupted" -- not "passed" (Finding 2, D2 review).
+    "failed" and not "passed" (Finding 2, D2 review). The recorded error is
+    the in-flight exception rather than a fixed "interrupted" label; see
+    test_interrupted_job_records_the_real_cause for why that changed.
 
     Before the fix, the finally guard re-read job_row via session.get(), which
     returned the SAME identity-mapped object still carrying the uncommitted
@@ -476,7 +489,7 @@ async def test_late_interrupt_during_persist_records_failed_not_passed(
         )
 
     assert job.status == "failed"
-    assert job.error == "interrupted"
+    assert job.error == "boom mid-persist"
     assert job.provider == "mock"
     # Exactly one commit: the finally guard's own _record_failure call (the
     # in-memory "passed" write before persist_storybook never committed).

@@ -72,7 +72,7 @@ rectangle "Cloudflare R2\n[Object storage, S3 API, ADR-017]\nAI cover art WebP; 
 ' --- External LLMs ---
 rectangle "OpenRouter\n[Primary LLM, default cascade]" as openrouter #F3E5F5
 rectangle "Anthropic / Modal\n[Admin-selectable per-job\nprovider legs, WS-C PR1]" as extra_providers #F3E5F5
-rectangle "Ollama\n[Local fallback]" as ollama #FFEBEE
+rectangle "Modal\n[Cascade backstop]" as modal #FFEBEE
 rectangle "Supabase Auth\n[OIDC, ADR-009]" as supabase_auth #E0F7FA
 rectangle "Sentry\n[Error tracking]\ninit_sentry() called before\napp construction, app.py;\nsend_default_pii hardcoded False\n(never child/guardian PII)" as sentry #FFEBEE
 
@@ -99,7 +99,7 @@ worker --> orchestrator : "generate_story()\nor fill_skeleton()"
 worker --> moderation_comp : "post-gate review"
 worker --> openrouter : "provider.complete()\n(default provider)"
 worker ..> extra_providers : "provider.complete()\n(admin-selected job override)"
-worker ..> ollama : "fallback"
+worker ..> modal : "fallback"
 worker --> postgres : "update GenerationJob\nsession pooler :5432"
 worker ..> minio : "[planned Phase 5]\nblob_ref store"
 backend ..> r2 : "cover art WebP\n(covers/worker.py RQ job, ADR-017)"
@@ -117,6 +117,16 @@ note right of minio
   on storybook_version.blob (JSONB).
   blob_ref column reserved for
   MinIO object key (Phase 5).
+end note
+
+note right of modal
+  Same physical Modal endpoint as
+  extra_providers above, in two roles:
+  extra_providers is the admin-selected
+  per-job override (WS-C PR1); modal here
+  is the unconditional cascade leg 3
+  (ADR-003's 2026-08-18 amendment,
+  ADR-010's 2026-08-22 amendment).
 end note
 
 @enduml

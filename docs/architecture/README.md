@@ -87,7 +87,7 @@ FastAPI backend (Python 3.14)
                  catalog + cell-aware matching (WS-C PR2), series
                  continuation chaining (WS-G),
                  providers (default 3-leg cascade: OpenRouter haiku
-                 primary, OpenRouter sonnet fallback, then Ollama local;
+                 primary, OpenRouter sonnet fallback, then Modal;
                  Anthropic and Modal are additional per-job-selectable
                  legs behind the admin ProviderModelAllowlist, WS-C PR1),
                  FallbackProvider cascade, queue, worker
@@ -107,7 +107,7 @@ FastAPI backend (Python 3.14)
   +-- [worker container] RQ worker
         -> OpenRouter haiku (leg 1, primary)
         -> OpenRouter sonnet (leg 2, fallback)
-        -> Ollama (leg 3, local fallback)
+        -> Modal (leg 3, non-OpenRouter backstop; omitted when unconfigured)
         -> Anthropic / Modal (admin-selectable, per job)
         -> [Phase 5] MinIO (blob_ref object storage)
 ```

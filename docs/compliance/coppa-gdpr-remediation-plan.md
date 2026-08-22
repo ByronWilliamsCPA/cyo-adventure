@@ -53,6 +53,11 @@ against zero-width/compatibility-form tricks) and would catch it even if a guard
 child's real registered name into the story's protagonist-name field, since the guard scans
 the whole assembled prompt text, not just isolated fields.
 
+**[Superseded 2026-08-18: the Ollama leg named above was retired, and Modal took its place as
+the cascade's third leg. This passage is left naming Ollama because that is what the cited
+commit `66fe320` actually verified; see ADR-003's 2026-08-18 amendment for the current provider
+roster and `PiiGuardedProvider` coverage of the Modal leg.]**
+
 **The gap**: the guard only knows about names already on file as a `child_profile` row (there is
 no birthdate to match against: `ChildProfile` has no birthdate column, by design; see 1e below).
 It has no way to catch a sibling's name, a friend's name, a home address, a school name,

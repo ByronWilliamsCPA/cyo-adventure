@@ -19,13 +19,29 @@ def test_allowlist_providers_match_provider_name_literal() -> None:
     assert get_args(ProviderName) == ALLOWLIST_PROVIDERS
 
 
-def test_default_allowlist_has_five_seed_rows() -> None:
-    """The code constant matches the migration's seed row count exactly."""
-    assert len(DEFAULT_ALLOWLIST) == 5
+def test_default_allowlist_has_four_seed_rows() -> None:
+    """The code constant matches the migration's seed row count exactly.
+
+    Was five until the Ollama retirement deleted the qwen2.5:14b row
+    (supabase/migrations/20260818120000_retire_ollama_provider.sql).
+    """
+    assert len(DEFAULT_ALLOWLIST) == 4
+
+
+def test_ollama_is_not_allowlistable() -> None:
+    """The retired backend must not be selectable for a generation job.
+
+    ALLOWLIST_PROVIDERS is the code-side mirror of the CHECK constraint, and
+    is_enabled_allowlist_pair is what keeps free-string model ids out of
+    billing. An 'ollama' member surviving here would let an admin pick a
+    backend build_provider can no longer construct.
+    """
+    assert "ollama" not in ALLOWLIST_PROVIDERS
+    assert all(seed.provider != "ollama" for seed in DEFAULT_ALLOWLIST)
 
 
 def test_default_allowlist_providers_are_all_in_the_fixed_set() -> None:
-    """Every seed row's provider is one of the four allowlistable providers."""
+    """Every seed row's provider is one of the three allowlistable providers."""
     for seed in DEFAULT_ALLOWLIST:
         assert seed.provider in ALLOWLIST_PROVIDERS
 

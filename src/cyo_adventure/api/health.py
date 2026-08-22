@@ -661,6 +661,59 @@ async def check_kws_verification() -> ReadinessCheck:
         )
 
 
+async def check_generation_cascade() -> ReadinessCheck:
+    """Report whether the generation cascade still spans two vendors.
+
+    This is a CONFIGURATION POSTURE check, not an external-service check. It
+    contacts nothing and claims to contact nothing, which is the distinction
+    the "no generic external check" comment in :func:`readiness` draws: it
+    reports what this process is configured to do, the way
+    ``database_privilege`` reports what the connected role is permitted to do.
+
+    Why it exists: since the 2026-08-18 Ollama retirement the default cascade
+    is OpenRouter primary, OpenRouter fallback, then Modal, so both of the
+    first two legs sit behind ONE vendor's account and Modal is the only thing
+    making the chain span two. When ``MODAL_BASE_URL``/``MODAL_MODEL`` are
+    unset the cascade degrades to single-vendor, which is the exact
+    availability property the retirement was argued against losing. Before
+    this check the only signal was a ``generation.cascade_single_vendor``
+    warning re-emitted per job, so noticing it required someone to grep worker
+    logs for one string; there was no metric, no probe surface, and no
+    startup-time signal. Reporting it here makes the degraded state pollable.
+
+    Returns:
+        ReadinessCheck: ``state="ok"`` when the cascade spans two vendors,
+        ``"degraded"`` when it is configured but single-vendor, and
+        ``"unconfigured"`` when this process does not run the cascade at all
+        (``generation_provider`` is not ``openrouter``). Only ``"degraded"``
+        reports ``status=False``, and this check is NOT in
+        ``_CRITICAL_READINESS_CHECKS``, so a single-vendor cascade is visible
+        without pulling the pod out of rotation. Degraded generation capacity
+        is not a reason to stop serving reads to children.
+    """
+    if settings.generation_provider != "openrouter":
+        return ReadinessCheck(
+            name="generation_cascade",
+            status=True,
+            state="unconfigured",
+        )
+    if settings.modal_leg_configured:
+        return ReadinessCheck(
+            name="generation_cascade",
+            status=True,
+            state="ok",
+        )
+    return ReadinessCheck(
+        name="generation_cascade",
+        status=False,
+        state="degraded",
+        error=(
+            "cascade is single-vendor: both OpenRouter legs share one account, "
+            "and the Modal backstop is unconfigured (MODAL_BASE_URL/MODAL_MODEL)"
+        ),
+    )
+
+
 @router.get(
     "/ready",
     responses={
@@ -683,6 +736,8 @@ async def readiness() -> ReadinessStatus:
       check_generation_queue's docstring, ADR-021 Phase 1).
     - KWS parent-verification delivery health (reported, does not gate
       readiness; see check_kws_verification's docstring, ADR-018 D1).
+    - Generation-cascade vendor span (reported, does not gate readiness; a
+      configuration-posture check, see check_generation_cascade's docstring).
     - External service health: intentionally absent; see the comment in the
       body for why there is no generic external check.
 
@@ -739,6 +794,7 @@ async def readiness() -> ReadinessStatus:
     checks["cache"] = await check_cache()
     checks["generation_queue"] = await check_generation_queue()
     checks["kws_verification"] = await check_kws_verification()
+    checks["generation_cascade"] = await check_generation_cascade()
 
     # There is deliberately NO generic external-service check here, and no
     # placeholder waiting to be uncommented. LLM/story-generation providers are

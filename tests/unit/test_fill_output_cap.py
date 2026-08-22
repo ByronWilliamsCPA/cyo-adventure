@@ -103,13 +103,18 @@ def test_every_configured_default_model_has_a_cap() -> None:
     if someone also edited the tuple. Five of the eight `*_model` fields were
     outside it, including `review_openrouter_model`.
 
-    Exemptions, each because no vendor fill ceiling exists to look up rather
-    than for convenience: the two `ollama` fields are locally served, so the
-    ceiling is the deployment's runtime configuration; `cover_model` is an image
-    model, and this table governs fill output tokens. A `None` default is
-    skipped, which covers `modal_model`.
+    Only `cover_model` is exempt, and because no vendor fill ceiling exists to
+    look up rather than for convenience: it is an image model, and this table
+    governs fill output tokens. The two `ollama` fields that were exempt
+    alongside it are gone with the 2026-08-18 Ollama retirement. They were
+    locally served, so the ceiling was the deployment's runtime configuration,
+    and no configured default has that property any more.
+
+    `modal_model` needs no exemption. It defaults to None rather than to a
+    model id, so the isinstance guard below skips it; a deployment that pins a
+    real Modal model supplies its own cap through the same table.
     """
-    exempt = {"ollama_model", "review_ollama_model", "cover_model"}
+    exempt = {"cover_model"}
     fields = tuple(name for name in Settings.model_fields if name.endswith("_model"))
     assert set(exempt) <= set(fields), (
         f"exempt names no longer in Settings: {set(exempt) - set(fields)}"
@@ -272,7 +277,7 @@ def test_an_unknown_model_gets_the_default() -> None:
     ("provider", "field", "model"),
     [
         ("openrouter", "openrouter_model", "deepseek/deepseek-v4-pro"),
-        ("ollama", "ollama_model", "qwen2.5:14b"),
+        ("modal", "modal_model", "google/gemma-4-26b-a4b-it"),
         ("anthropic", "anthropic_model", "claude-sonnet-4-6"),
     ],
 )

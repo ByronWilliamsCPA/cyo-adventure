@@ -64,8 +64,8 @@ describe('ProviderAllowlistPage', () => {
     mockPost.mockResolvedValue({
       data: {
         id: 'a2',
-        provider: 'ollama',
-        model_id: 'qwen2.5:14b',
+        provider: 'modal',
+        model_id: 'google/gemma-4-26b-a4b-it',
         enabled: true,
         display_name: null,
       },
@@ -74,14 +74,14 @@ describe('ProviderAllowlistPage', () => {
     renderPage()
     await screen.findByText('claude-sonnet-4-6')
 
-    await user.selectOptions(screen.getByLabelText('Provider'), 'ollama')
-    await user.type(screen.getByLabelText('Model id'), 'qwen2.5:14b')
+    await user.selectOptions(screen.getByLabelText('Provider'), 'modal')
+    await user.type(screen.getByLabelText('Model id'), 'google/gemma-4-26b-a4b-it')
     await user.click(screen.getByRole('button', { name: 'Add to allowlist' }))
 
     await waitFor(() =>
       expect(mockPost).toHaveBeenCalledWith('/v1/admin/provider-allowlist', {
-        provider: 'ollama',
-        model_id: 'qwen2.5:14b',
+        provider: 'modal',
+        model_id: 'google/gemma-4-26b-a4b-it',
         display_name: null,
       })
     )
@@ -172,7 +172,7 @@ describe('ProviderAllowlistPage', () => {
     renderPage()
     await screen.findByText('claude-sonnet-4-6')
 
-    await user.type(screen.getByLabelText('Model id'), 'qwen2.5:14b')
+    await user.type(screen.getByLabelText('Model id'), 'google/gemma-4-26b-a4b-it')
     await user.click(screen.getByRole('button', { name: 'Add to allowlist' }))
 
     expect(
@@ -215,8 +215,8 @@ describe('ProviderAllowlistPage', () => {
     mockPost.mockResolvedValue({
       data: {
         id: 'a2',
-        provider: 'ollama',
-        model_id: 'qwen2.5:14b',
+        provider: 'modal',
+        model_id: 'google/gemma-4-26b-a4b-it',
         enabled: true,
         display_name: null,
       },
@@ -231,7 +231,7 @@ describe('ProviderAllowlistPage', () => {
     renderPage()
     await screen.findByText('claude-sonnet-4-6')
 
-    await user.type(screen.getByLabelText('Model id'), 'qwen2.5:14b')
+    await user.type(screen.getByLabelText('Model id'), 'google/gemma-4-26b-a4b-it')
     await user.click(screen.getByRole('button', { name: 'Add to allowlist' }))
 
     expect(

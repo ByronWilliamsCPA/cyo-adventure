@@ -502,10 +502,16 @@ The offline `PS` proxy is a stand-in for a perceptual judgment. The validation l
    a fixed rubric prompt: "Would a child who read story A feel story B is the same adventure?
    Answer a 0-10 similarity and one sentence why." Responses are cached to
    `out/diversity/judge-cache.json` keyed by `(sha256(a), sha256(b), rubric_version)` so reruns
-   are incremental. No embedding dependency is required for v1 of the optional layer; if
-   embedding distance is later wanted, the concrete path is the Ollama `/api/embeddings`
-   endpoint (already a reachable provider host in the homelab deployment) behind the same
-   `--with-embeddings` flag, cached the same way. Judge-first is deliberate: the plan's headline
+   are incremental. **[Ollama was retired 2026-08-18 ahead of the homelab-to-Vultr move; see
+   ADR-003's 2026-08-18 amendment. "Anthropic in production, Ollama for homelab-free runs" no
+   longer names a live pair of settings; a homelab-free run now falls through to the same
+   OpenRouter/Modal cascade production uses.]** No embedding dependency is required for v1 of
+   the optional layer; if embedding distance is later wanted, the concrete path is the Ollama
+   `/api/embeddings` endpoint (already a reachable provider host in the homelab deployment)
+   behind the same `--with-embeddings` flag, cached the same way. **[That endpoint no longer
+   exists post-retirement: Ollama's config surface and adapter are gone. The embedding backend
+   choice for this optional layer is reopened, not decided by this document.]** Judge-first is
+   deliberate: the plan's headline
    is defined as a judge question, and one networked mechanism is cheaper to maintain than two.
 2. **Calibration table:** the harness emits `(PS_proxy, judge_score)` pairs; a Spearman rank
    correlation and a fitted monotone mapping (isotonic in spirit, implemented as a simple
@@ -927,7 +933,9 @@ running the eval step; `similarity_context` importable and documented for WS-4;
 - **Optional layer mechanism: judge model via the existing chat providers, cached batch runs.**
   Alternative: embeddings-first (a new client surface; the judge form matches the plan's own
   definition of the headline metric; Ollama `/api/embeddings` is named as the concrete later
-  path if embedding distance is wanted).
+  path if embedding distance is wanted). **Ollama was retired 2026-08-18 (ADR-003's 2026-08-18
+  amendment); that concrete path no longer exists, and the embedding backend choice, if this
+  layer is ever built, is reopened rather than decided here.**
 - **Saturation definition: fraction of cell slugs already used for a similar-theme story.**
   Alternative: a continuous soft-saturation score (harder to threshold into the plan's
   TREE/LEAF/CATALOG ladder; can be added later as a secondary scalar without breaking the

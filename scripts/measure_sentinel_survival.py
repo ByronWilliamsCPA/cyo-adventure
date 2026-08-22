@@ -50,7 +50,7 @@ clean-pass rate (``1 - rate``), not a real retry run.
 end without a paid call; the report labels itself a plumbing dry-run, not a
 survival number, since the deterministic mock provider echoes a fixed canned
 story unrelated to any specimen's structure. Running this script against a
-live, paid provider (``ollama``/``anthropic``/``openrouter``/``modal``) is a
+live, paid provider (``anthropic``/``openrouter``/``modal``) is a
 human decision with real cost and real credentials; nothing in this repo
 triggers that automatically.
 """
@@ -123,7 +123,7 @@ def _build_parser() -> argparse.ArgumentParser:
         default=["mock"],
         help=(
             "Provider names to run (default: mock only, a plumbing dry-run). "
-            "Recognizes mock, ollama, anthropic, openrouter, modal (see "
+            "Recognizes mock, anthropic, openrouter, modal (see "
             "generation.provider.build_provider); running a live provider "
             "spends real money and is a human decision, never made here."
         ),

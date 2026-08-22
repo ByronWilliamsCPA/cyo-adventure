@@ -322,7 +322,7 @@ def test_aggregate_reinsertion_rates_and_histograms() -> None:
         ),
         ReinsertionTrial(
             specimen_slug="s2",
-            provider="ollama",
+            provider="openrouter",
             result=_result(
                 [_outcome("reinsertable", 5)], clean=True, round_trip_ok=True
             ),
@@ -340,8 +340,8 @@ def test_aggregate_reinsertion_rates_and_histograms() -> None:
     assert by_provider["mock"].total == 2
     assert by_provider["mock"].clean == 1
     assert by_provider["mock"].clean_rate == pytest.approx(0.5)
-    assert by_provider["ollama"].total == 1
-    assert by_provider["ollama"].clean == 1
+    assert by_provider["openrouter"].total == 1
+    assert by_provider["openrouter"].clean == 1
 
     assert data.outcome_histogram == {"reinsertable": 3, "not_found": 1}
     assert data.multiplicity_histogram == {"1": 1, "2-3": 1, "4+": 1}

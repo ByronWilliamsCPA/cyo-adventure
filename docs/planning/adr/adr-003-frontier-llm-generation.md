@@ -13,7 +13,8 @@ tags:
 # ADR-003: Frontier LLM for generation, local model as fallback
 
 > **Status**: Accepted (2026-07-03; amended 2026-06-22, see Amendment: OpenRouter primary;
-> amended 2026-07-28, see Amendment: the production model-family limit is re-scoped)
+> amended 2026-07-28, see Amendment: the production model-family limit is re-scoped;
+> amended 2026-08-18, see Amendment: the Ollama leg is retired and Modal takes leg 3)
 > **Date**: 2026-06-20
 
 ## TL;DR
@@ -579,3 +580,81 @@ model-pinning comment in `core/config.py`).
 - [ADR-022](./adr-022-tiered-rls-scoping.md): `provider_model_allowlist` scoping.
 - [ADR-018](./adr-018-childrens-privacy-compliance.md): the counterparty list and the
   narrowed blocker.
+
+## Amendment (2026-08-18): the Ollama leg is retired and Modal takes leg 3
+
+### What changed
+
+The local Ollama leg is removed. The `OllamaProvider` adapter, the `OLLAMA_*` configuration
+surface, the `ollama` member of `settings.generation_provider` and `settings.review_provider`,
+and the `ollama` provider allowlist row and CHECK-constraint value are all deleted. The
+**Modal** leg takes its place as the cascade's third leg.
+
+Revised cascade: OpenRouter primary (`settings.openrouter_model`) -> OpenRouter fallback
+(`settings.openrouter_fallback_model`) -> **Modal** (`settings.modal_base_url` /
+`settings.modal_model`).
+
+### Why
+
+The homelab-to-Vultr migration removes the hardware the leg depended on. Ollama was free
+because a GPU we already owned served it; in the cloud tier that same leg is a rented GPU
+priced far above what a fallback-of-a-fallback justifies. Retiring it ahead of the move keeps
+the migration itself a compute lift with no local-service dependency left in the worker
+(see [ADR-004](./adr-004-homelab-first-deployment.md), whose homelab premise the move amends).
+
+### The availability property being preserved
+
+Ollama's value in this cascade was never quality; it was that **it did not share a failure
+domain with OpenRouter**. Legs 1 and 2 are the same vendor on the same account, so an
+OpenRouter outage, billing lapse, or account suspension takes both at once. Dropping to a
+two-leg single-vendor cascade would have quietly removed the only thing Layer 2 protects
+against at the vendor level.
+
+Modal preserves that property: it is a separately-deployed, separately-credentialed endpoint.
+It is a weaker backstop than a frontier model on quality, which is the same trade Ollama
+always made.
+
+### Degradation, and why it is deliberate
+
+`build_modal_leg` raises `ConfigurationError` when the endpoint is unset, which is the state
+of every local dev run, every CI run, and any deploy that has not stood up an Auto Endpoint.
+Including the leg unconditionally would convert all of those into hard generation failures, so
+`build_provider` includes it only when `settings.modal_leg_configured` is true and otherwise
+builds the two-leg cascade.
+
+That degraded shape is a real availability regression, not a neutral default, so it is
+**logged, not silent**: `build_provider` emits `generation.cascade_single_vendor` at WARNING
+naming the reason. Configuring Modal is what restores two-vendor failover, and any deployment
+whose uptime matters should set `MODAL_BASE_URL` and `MODAL_MODEL`.
+
+### Consequences
+
+- **Staging is now billed.** Staging ran `generation_provider=ollama` specifically so its test
+  runs placed no metered LLM calls. It now runs `openrouter` against a cheap pinned model
+  (`.env.staging.example`), so staging generation costs real money and needs its own
+  spend-limited `OPENROUTER_API_KEY`.
+- **Moderation review loses a backend.** `review_provider` no longer accepts `ollama`; with
+  `modal` still deferred to slice 2b, `openrouter` is the only live review backend.
+- **Modal is no longer offline-only.** Earlier text in this ADR and in
+  [ADR-010](./adr-010-modal-review-and-gated-generation.md) describes the Modal generation leg
+  as an offline experiment never wrapped in the production cascade. That is superseded here.
+- **Historical cost data is retained.** The `("ollama", "qwen2.5:14b")` row stays in
+  `core/pricing.py`: pre-retirement `GenerationJob` rows still carry `provider="ollama"`, and
+  deleting the price would make them unpriceable rather than making them free.
+- **One less private-CA trust path.** The leg carried its own `OLLAMA_CA_BUNDLE` trust store
+  and a reversible HTTP Basic credential; both are gone, so every remaining egress leg verifies
+  against the public CA store and authenticates with a header credential over TLS
+  (`docs/security/crypto-inventory.md`).
+
+### Not decided here
+
+The **primary model** is unchanged by this amendment. `settings.openrouter_model` remains
+`anthropic/claude-haiku-4.5`, pinned by the 2026-06-22 yield run. Replacing it is a separate
+decision with its own yield evidence and its own amendment.
+
+### Related
+
+- [ADR-004](./adr-004-homelab-first-deployment.md): the homelab premise this retirement
+  precedes the amendment of.
+- [ADR-010](./adr-010-modal-review-and-gated-generation.md): the Modal leg, no longer
+  offline-only for generation.

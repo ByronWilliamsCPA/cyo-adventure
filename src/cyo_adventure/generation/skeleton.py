@@ -241,8 +241,12 @@ _DATED_VARIANT_SUFFIX_RE = re.compile(r"-\d{4,8}$")
 # An OpenRouter routing or tier variant, as in `anthropic/claude-haiku-4.5:free`
 # or `...:nitro`. The same exact-lookup miss as a date stamp, in the suffix form
 # this repo actually configures: `scripts/yield_harness.py` documents
-# `--model google/gemma-4-31b-it:free`, ADR-003 names `:free` endpoints, and
-# `core/config.py` ships `ollama_model = "qwen2.5:14b"`.
+# `--model google/gemma-4-31b-it:free` and ADR-003 names `:free` endpoints. No
+# `core/config.py` default currently has this shape (`openrouter_model`,
+# `openrouter_fallback_model`, and `review_openrouter_model` are all undated,
+# unsuffixed ids); this pattern exists for an admin-supplied allowlist model id
+# (`api/provider_allowlist.py`) and for `:free`-suffixed endpoint ids, not a
+# shipped default.
 _VARIANT_SUFFIX_RE = re.compile(r":[^:]+$")
 
 MODEL_OUTPUT_CAPS: dict[str, int] = {
@@ -284,8 +288,8 @@ def active_fill_model(settings: object) -> str | None:
     backend = getattr(settings, "generation_provider", None)
     field = {
         "openrouter": "openrouter_model",
-        "ollama": "ollama_model",
         "anthropic": "anthropic_model",
+        "modal": "modal_model",
     }.get(str(backend))
     if field is None:
         return None

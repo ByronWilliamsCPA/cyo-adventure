@@ -51,7 +51,7 @@ a generated, type-safe OpenAPI contract.
 ## Features
 
 - **Human-gated story generation**: staged LLM pipeline (`generation/`) with pluggable
-  providers (Anthropic, OpenRouter, Ollama, Modal) behind a deterministic two-layer
+  providers (Anthropic, OpenRouter, Modal) behind a deterministic two-layer
   validation gate (`validator/`) and moderation review (`moderation/`); nothing reaches a
   child reader without automated validation and guardian approval and publish
   (`publishing/`)

@@ -57,18 +57,20 @@ test('an admin adds, disables, and removes a provider allowlist entry', async ({
   await expect(page.getByRole('heading', { name: 'Provider allowlist' })).toBeVisible()
   await expect(page.getByText('No allowlist entries yet.')).toBeVisible()
 
-  await page.getByLabel('Provider').selectOption('ollama')
-  await page.getByLabel('Model id').fill('qwen2.5:14b')
+  await page.getByLabel('Provider').selectOption('modal')
+  await page.getByLabel('Model id').fill('google/gemma-4-26b-a4b-it')
   await page.getByRole('button', { name: 'Add to allowlist' }).click()
 
   // exact: true, else this also matches the row's "Disable/Remove
-  // qwen2.5:14b" button cell (substring match on role name).
-  await expect(page.getByRole('cell', { name: 'qwen2.5:14b', exact: true })).toBeVisible()
+  // google/gemma-4-26b-a4b-it" button cell (substring match on role name).
+  await expect(
+    page.getByRole('cell', { name: 'google/gemma-4-26b-a4b-it', exact: true }),
+  ).toBeVisible()
   await expect(page.getByRole('cell', { name: 'Enabled', exact: true })).toBeVisible()
 
-  await page.getByRole('button', { name: 'Disable qwen2.5:14b' }).click()
+  await page.getByRole('button', { name: 'Disable google/gemma-4-26b-a4b-it' }).click()
   await expect(page.getByRole('cell', { name: 'Disabled', exact: true })).toBeVisible()
 
-  await page.getByRole('button', { name: 'Remove qwen2.5:14b' }).click()
+  await page.getByRole('button', { name: 'Remove google/gemma-4-26b-a4b-it' }).click()
   await expect(page.getByText('No allowlist entries yet.')).toBeVisible()
 })

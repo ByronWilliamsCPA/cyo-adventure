@@ -694,7 +694,10 @@ provider = build_provider(settings)  # generation.provider; refuse if resolved
 ```
 
 Anthropic in production, Ollama for homelab-free runs, exactly the pipeline's own settings
-(WS-0 spec section 4). The judge loop is sequential over the panel's PS pairs (8 pairs in
+(WS-0 spec section 4). **[Ollama was retired 2026-08-18 ahead of the homelab-to-Vultr move;
+see ADR-003's 2026-08-18 amendment. A homelab-free run now falls through to the same
+OpenRouter/Modal cascade production uses, not a separate free local leg.]** The judge loop
+is sequential over the panel's PS pairs (8 pairs in
 v1; no concurrency machinery warranted). The scoring function takes the provider as a
 parameter (`_judge_pair(provider, a_text, b_text, band) -> JudgeScore`), so unit tests
 drive it with the existing `MockProvider` and zero network.

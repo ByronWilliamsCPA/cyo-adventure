@@ -14,9 +14,10 @@ from dataclasses import dataclass
 from decimal import Decimal
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, cast
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
+from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy.exc import MultipleResultsFound
 
 from cyo_adventure.core.config import Settings
@@ -34,14 +35,12 @@ from cyo_adventure.generation.provider import (
     _CANNED_STORY,
     _CANNED_STORY_JSON,
     MockProvider,
-    _split_basic_auth,
     build_provider,
 )
 from cyo_adventure.generation.providers import (
     AnthropicProvider,
     FallbackProvider,
     ModalProvider,
-    OllamaProvider,
     OpenRouterProvider,
 )
 from cyo_adventure.generation.usage import TokenUsage
@@ -148,27 +147,32 @@ class TestBuildProviderLive:
         # The message references the variable by name only.
         assert "Bearer" not in str(exc_info.value)
 
-    def test_openrouter_with_key_builds_three_leg_cascade(self) -> None:
-        """openrouter + key + fallback enabled assembles the ordered cascade."""
+    def test_openrouter_with_modal_configured_builds_three_leg_cascade(self) -> None:
+        """openrouter + key + a configured Modal endpoint assembles the full cascade."""
         settings = Settings(  # type: ignore[call-arg]
             generation_provider="openrouter",
             openrouter_api_key="test-key",
+            modal_base_url="https://example--cyo.modal.run/v1",
+            modal_model="google/gemma-4-26b-a4b-it",
         )
         provider = build_provider(settings)
         assert isinstance(provider, FallbackProvider)
         assert len(provider.legs) == 3
         assert isinstance(provider.legs[0], OpenRouterProvider)
         assert isinstance(provider.legs[1], OpenRouterProvider)
-        assert isinstance(provider.legs[2], OllamaProvider)
+        # The third leg is the non-OpenRouter backstop that replaced the
+        # retired Ollama leg; without it the cascade is single-vendor.
+        assert isinstance(provider.legs[2], ModalProvider)
 
     def test_openrouter_cascade_leg_order_matches_settings(self) -> None:
-        """The cascade legs target the primary, fallback, and ollama models in order."""
+        """The cascade legs target the primary, fallback, and modal models in order."""
         settings = Settings(  # type: ignore[call-arg]
             generation_provider="openrouter",
             openrouter_api_key="test-key",
             openrouter_model="anthropic/claude-sonnet-4.6",
             openrouter_fallback_model="google/gemma-4-31b-it:free",
-            ollama_model="qwen3",
+            modal_base_url="https://example--cyo.modal.run/v1",
+            modal_model="google/gemma-4-26b-a4b-it",
         )
         provider = build_provider(settings)
         assert isinstance(provider, FallbackProvider)
@@ -176,8 +180,70 @@ class TestBuildProviderLive:
         assert names == [
             "openrouter:anthropic/claude-sonnet-4.6",
             "openrouter:google/gemma-4-31b-it:free",
-            "ollama:qwen3",
+            "modal:google/gemma-4-26b-a4b-it",
         ]
+
+    def test_openrouter_without_modal_degrades_to_two_leg_cascade(self) -> None:
+        """An unconfigured Modal endpoint drops the leg rather than failing the build.
+
+        build_modal_leg raises when MODAL_BASE_URL/MODAL_MODEL are unset, which
+        is every local dev run, CI run, and Modal-less deploy. Including the leg
+        unconditionally would turn all of those into hard generation failures.
+        """
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="openrouter",
+            openrouter_api_key="test-key",
+        )
+        provider = build_provider(settings)
+        assert isinstance(provider, FallbackProvider)
+        assert len(provider.legs) == 2
+        assert all(isinstance(leg, OpenRouterProvider) for leg in provider.legs)
+
+    def test_half_configured_modal_endpoint_also_degrades(self) -> None:
+        """A base url with no model is not "configured"; the leg is omitted, not built.
+
+        modal_leg_configured requires BOTH fields, matching exactly what
+        build_modal_leg demands, so a half-set endpoint can never reach the
+        raise inside the cascade path.
+        """
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="openrouter",
+            openrouter_api_key="test-key",
+            modal_base_url="https://example--cyo.modal.run/v1",
+        )
+        provider = build_provider(settings)
+        assert isinstance(provider, FallbackProvider)
+        assert len(provider.legs) == 2
+
+    def test_single_vendor_cascade_is_warned_about(self) -> None:
+        """Degrading to two OpenRouter legs must be loud, not silent.
+
+        Both remaining legs are the same vendor on the same account, so the
+        cascade no longer spans two failure domains. That is a real availability
+        posture change and an operator has to be able to see it in the logs.
+        """
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="openrouter",
+            openrouter_api_key="test-key",
+        )
+        with patch("cyo_adventure.generation.provider.logger") as mock_logger:
+            build_provider(settings)
+        mock_logger.warning.assert_called_once()
+        assert mock_logger.warning.call_args.args[0] == (
+            "generation.cascade_single_vendor"
+        )
+
+    def test_configured_modal_cascade_emits_no_warning(self) -> None:
+        """The healthy three-leg path must not cry wolf."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="openrouter",
+            openrouter_api_key="test-key",
+            modal_base_url="https://example--cyo.modal.run/v1",
+            modal_model="google/gemma-4-26b-a4b-it",
+        )
+        with patch("cyo_adventure.generation.provider.logger") as mock_logger:
+            build_provider(settings)
+        mock_logger.warning.assert_not_called()
 
     def test_openrouter_fallback_disabled_returns_bare_primary(self) -> None:
         """With fallback disabled the bare primary leg is returned (isolation runs)."""
@@ -190,73 +256,15 @@ class TestBuildProviderLive:
         assert isinstance(provider, OpenRouterProvider)
         assert provider.name == "openrouter:anthropic/claude-haiku-4.5"
 
-    def test_ollama_returns_bare_ollama_leg(self) -> None:
-        """generation_provider='ollama' returns the local Ollama leg alone."""
-        settings = Settings(  # type: ignore[call-arg]
-            generation_provider="ollama", ollama_model="qwen3:30b"
-        )
-        provider = build_provider(settings)
-        assert isinstance(provider, OllamaProvider)
-        assert provider.name == "ollama:qwen3:30b"
+    def test_retired_ollama_provider_is_rejected(self) -> None:
+        """ "ollama" is no longer a constructible backend, at the Settings boundary.
 
-    def test_ollama_ca_bundle_valid_path_builds_leg(self) -> None:
-        """A valid CA bundle path builds the leg with an SSLContext verifier."""
-        import ssl
-
-        import certifi
-
-        settings = Settings(  # type: ignore[call-arg]
-            generation_provider="ollama", ollama_ca_bundle=certifi.where()
-        )
-        provider = build_provider(settings)
-        assert isinstance(provider, OllamaProvider)
-        # The CA bundle must be threaded through as an SSLContext (verify=),
-        # not silently dropped; this is the leg's whole TLS-to-homelab purpose.
-        assert isinstance(provider._verify, ssl.SSLContext)
-
-    def test_ollama_no_ca_bundle_uses_default_verification(self) -> None:
-        """Without a CA bundle the leg verifies against the public store (verify=True)."""
-        settings = Settings(generation_provider="ollama")  # type: ignore[call-arg]
-        provider = build_provider(settings)
-        assert isinstance(provider, OllamaProvider)
-        assert provider._verify is True
-
-    def test_ollama_ca_bundle_bad_path_raises_configuration_error(self) -> None:
-        """A nonexistent CA bundle path maps to ConfigurationError, not a raw OSError."""
-        settings = Settings(  # type: ignore[call-arg]
-            generation_provider="ollama",
-            ollama_ca_bundle="/nonexistent/homelab-ca.pem",
-        )
-        with pytest.raises(ConfigurationError, match="OLLAMA_CA_BUNDLE"):
-            build_provider(settings)
-
-    def test_ollama_auth_over_http_remote_raises(self) -> None:
-        """Basic auth over plaintext http to a remote host is rejected (cleartext leak)."""
-        settings = Settings(  # type: ignore[call-arg]
-            generation_provider="ollama",
-            ollama_base_url="http://ollama.example.com",
-            ollama_auth="testservice:testcred",
-        )
-        with pytest.raises(ConfigurationError, match="cleartext"):
-            build_provider(settings)
-
-    def test_ollama_auth_over_https_is_allowed(self) -> None:
-        """Basic auth over https builds the leg (credential is encrypted in transit)."""
-        settings = Settings(  # type: ignore[call-arg]
-            generation_provider="ollama",
-            ollama_base_url="https://ollama.example.com",
-            ollama_auth="testservice:testcred",
-        )
-        assert isinstance(build_provider(settings), OllamaProvider)
-
-    def test_ollama_auth_over_http_loopback_is_allowed(self) -> None:
-        """Basic auth over http to loopback is allowed (never crosses the network)."""
-        settings = Settings(  # type: ignore[call-arg]
-            generation_provider="ollama",
-            ollama_base_url="http://localhost:11434",
-            ollama_auth="testservice:testcred",
-        )
-        assert isinstance(build_provider(settings), OllamaProvider)
+        Pydantic rejects it against the generation_provider Literal, so a stale
+        CYO_ADVENTURE_GENERATION_PROVIDER=ollama in a deploy env fails fast at
+        startup rather than reaching build_provider's unknown-provider raise.
+        """
+        with pytest.raises(PydanticValidationError):
+            Settings(generation_provider="ollama")  # type: ignore[call-arg,arg-type]
 
     def test_modal_without_base_url_raises(self) -> None:
         """modal without MODAL_BASE_URL raises ConfigurationError by name."""
@@ -286,13 +294,39 @@ class TestBuildProviderLive:
         assert isinstance(provider, ModalProvider)
         assert provider.name == "modal:google/gemma-4-26b-a4b-it"
 
-    def test_modal_partial_proxy_credentials_raises(self) -> None:
-        """Setting only one of MODAL_PROXY_KEY/MODAL_PROXY_SECRET raises by name."""
-        settings = Settings(  # type: ignore[call-arg]
+    def test_modal_partial_proxy_credentials_raises_at_settings_construction(
+        self,
+    ) -> None:
+        """A half-set MODAL_PROXY pair now fails at startup, not at job time.
+
+        This used to raise from build_provider. Since Modal became the default
+        cascade's third leg, waiting until then would mean failing every
+        generation job on a serving deploy, so the check moved to a Settings
+        model_validator (`_require_modal_proxy_credentials_together`).
+        """
+        with pytest.raises(ConfigurationError, match="MODAL_PROXY_KEY"):
+            Settings(  # type: ignore[call-arg]
+                generation_provider="modal",
+                modal_base_url="https://example--cyo-standard.modal.run/v1",
+                modal_model="google/gemma-4-26b-a4b-it",
+                modal_proxy_key="only-the-key",
+            )
+
+    def test_build_modal_leg_still_guards_partial_credentials(self) -> None:
+        """build_modal_leg keeps its own half-set guard as defence in depth.
+
+        The Settings validator above makes this branch unreachable through
+        normal construction, but model_construct (and any future caller that
+        hand-builds a Settings) bypasses validators entirely, so the adapter
+        must not assume the pair was already checked.
+        """
+        settings = Settings.model_construct(
             generation_provider="modal",
             modal_base_url="https://example--cyo-standard.modal.run/v1",
             modal_model="google/gemma-4-26b-a4b-it",
             modal_proxy_key="only-the-key",
+            modal_proxy_secret=None,
+            modal_timeout_seconds=180,
         )
         with pytest.raises(ConfigurationError, match="MODAL_PROXY_KEY"):
             build_provider(settings)
@@ -337,13 +371,6 @@ class TestBuildProviderOverrides:
         assert names[0] == "openrouter:anthropic/claude-opus-4.8"
         assert names[1] == "openrouter:anthropic/claude-sonnet-4.6"
 
-    def test_model_override_threads_through_ollama(self) -> None:
-        """model_override replaces the ollama leg's model (build_ollama_leg already supports it)."""
-        settings = Settings(generation_provider="ollama")  # type: ignore[call-arg]
-        provider = build_provider(settings, model_override="qwen3:30b")
-        assert isinstance(provider, OllamaProvider)
-        assert provider.name == "ollama:qwen3:30b"
-
     def test_model_override_replaces_anthropic_model(self) -> None:
         """model_override replaces the single anthropic leg's model."""
         settings = Settings(  # type: ignore[call-arg]
@@ -359,37 +386,6 @@ class TestBuildProviderOverrides:
         with pytest.raises(ConfigurationError) as exc_info:
             build_provider(settings, provider_override="not-a-real-provider")
         assert "not-a-real-provider" in str(exc_info.value)
-
-
-class TestSplitBasicAuth:
-    """_split_basic_auth turns an OLLAMA_AUTH string into (username, password)."""
-
-    @pytest.mark.parametrize(
-        ("value", "expected"),
-        [
-            # A basic user:pass pair splits cleanly.
-            ("testservice:testcred", ("testservice", "testcred")),
-            # A username containing hyphens still splits on the first colon.
-            ("test-svc-laptop:abc123", ("test-svc-laptop", "abc123")),
-            # First-colon split keeps a password that itself contains colons.
-            ("user:p:a:ss", ("user", "p:a:ss")),
-            # Missing/blank/half values yield no credential.
-            (None, (None, None)),
-            ("", (None, None)),
-            ("   ", (None, None)),
-            ("no-colon", (None, None)),
-            (":only-password", (None, None)),
-            ("only-user:", (None, None)),
-            # Surrounding whitespace on either half is trimmed (stray-space typo).
-            (" testservice : testcred ", ("testservice", "testcred")),
-            (" : ", (None, None)),
-        ],
-    )
-    def test_split(
-        self, value: str | None, expected: tuple[str | None, str | None]
-    ) -> None:
-        """A well-formed user:password splits on the first colon; else (None, None)."""
-        assert _split_basic_auth(value) == expected
 
 
 class TestCannedStorySchemaValid:
@@ -945,7 +941,16 @@ class TestEffectiveProviderPerJobOverride:
         # This proves the guard ran to completion rather than dying on an
         # UnboundLocalError before recording anything.
         assert job.status == "failed"
-        assert job.error == "interrupted"
+        # Changed 2026-08-22: the guard used to record the literal string
+        # "interrupted" for every in-flight exception, which erased the one
+        # piece of information an operator needs. It now recovers the live
+        # exception via sys.exc_info() and records its message, so a job that
+        # died on an unresolvable provider says so on its own row instead of
+        # sending the reader to the worker logs. Still discriminating: this
+        # function has no `except`, so the guard is the only writer that can
+        # reach `job.error`, and reading the ConfigurationError's own message
+        # here proves the guard both ran and saw the real cause.
+        assert job.error == "no such provider"
 
     @pytest.mark.asyncio
     async def test_fresh_generation_with_provider_override_routes_to_generate_story(

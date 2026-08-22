@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -97,7 +97,7 @@ async def test_add_then_list_with_audit(
 
 async def test_add_duplicate_pair_is_409(client: AsyncClient, seed: Seed) -> None:
     """A second POST for the same (provider, model_id) is a conflict, not a second row."""
-    body = {"provider": "ollama", "model_id": "qwen2.5:14b"}
+    body = {"provider": "modal", "model_id": "google/gemma-4-26b-a4b-it"}
     first = await client.post(_URL, json=body, headers=auth(seed.admin_token))
     assert first.status_code == 201
     second = await client.post(_URL, json=body, headers=auth(seed.admin_token))
@@ -148,7 +148,7 @@ async def test_delete_removes_row_with_audit(
     """DELETE removes the row and audits it before deleting."""
     created = await client.post(
         _URL,
-        json={"provider": "ollama", "model_id": "qwen3:30b"},
+        json={"provider": "modal", "model_id": "google/gemma-4-26b-a4b-it"},
         headers=auth(seed.admin_token),
     )
     entry_id = created.json()["id"]
@@ -181,6 +181,82 @@ async def test_update_missing_row_is_404(client: AsyncClient, seed: Seed) -> Non
         headers=auth(seed.admin_token),
     )
     assert res.status_code == 404
+
+
+async def test_list_tolerates_a_retired_provider_row(
+    client: AsyncClient, seed: Seed, engine: AsyncEngine
+) -> None:
+    """A row naming a retired provider must not 500 the whole list endpoint.
+
+    ``AllowlistView.provider`` used to be narrowed to ``ProviderName`` (the
+    fixed 3-member ``Literal``). ``_view()`` builds that model per row, so a
+    single surviving row naming a retired backend (``ollama``, dropped by
+    ``ALLOWLIST_PROVIDERS``/``20260818120000_retire_ollama_provider.sql``)
+    raised an unhandled ``pydantic.ValidationError`` and turned
+    ``GET /api/v1/admin/provider-allowlist`` into a 500, including the read an
+    admin would use to find and delete the offending row. This pins the fix:
+    ``AllowlistView.provider`` is now a plain ``str``, so the row round-trips.
+
+    The same migration that retired ``ollama`` also narrowed
+    ``ck_provider_model_allowlist_provider`` (the ORM CHECK constraint mirrors
+    it via ``_ALLOWLIST_PROVIDER_VALUES``) to exactly the three live
+    providers, so there is no longer any string that names a retired provider
+    yet still satisfies the CHECK: a plain ``session.add(...)`` +
+    ``commit()`` with ``provider="ollama"`` raises ``IntegrityError`` before
+    the row ever reaches ``_view``. To genuinely exercise ``_view()`` against
+    an out-of-``Literal`` value (rather than testing the CHECK, which
+    ``test_db_check_constraints_reject_invalid_values`` already covers), the
+    constraint is dropped for the duration of this test only, mirroring
+    ``test_malformed_min_verdict_row_is_skipped_with_warning`` in
+    ``test_threshold_policy_loader.py``: the ``engine`` fixture truncates
+    data but not DDL between tests in this worker, so both the row and the
+    constraint are restored in ``finally`` to avoid leaking the drop into
+    ``test_db_check_constraints_reject_invalid_values`` or any other test
+    that runs later in this worker.
+
+    This must fail if ``AllowlistView.provider`` is narrowed back to
+    ``ProviderName``: the GET below would then raise ``pydantic.ValidationError``
+    instead of returning 200 (the test client's ``ASGITransport`` defaults to
+    ``raise_app_exceptions=True``, so the old behavior surfaces as an error
+    here rather than a 500 response).
+    """
+    async with engine.begin() as conn:
+        await conn.execute(
+            text(
+                "ALTER TABLE provider_model_allowlist "
+                "DROP CONSTRAINT ck_provider_model_allowlist_provider"
+            )
+        )
+    try:
+        async with AsyncSession(engine) as session:
+            session.add(
+                ProviderModelAllowlist(
+                    provider="ollama",
+                    model_id="retired-model",
+                    enabled=True,
+                )
+            )
+            await session.commit()
+
+        res = await client.get(_URL, headers=auth(seed.admin_token))
+        assert res.status_code == 200
+        rows = res.json()["rows"]
+        assert any(
+            row["provider"] == "ollama" and row["model_id"] == "retired-model"
+            for row in rows
+        )
+    finally:
+        async with engine.begin() as conn:
+            await conn.execute(
+                text("DELETE FROM provider_model_allowlist WHERE provider = 'ollama'")
+            )
+            await conn.execute(
+                text(
+                    "ALTER TABLE provider_model_allowlist "
+                    "ADD CONSTRAINT ck_provider_model_allowlist_provider "
+                    "CHECK (provider IN ('anthropic', 'openrouter', 'modal'))"
+                )
+            )
 
 
 async def test_db_check_constraints_reject_invalid_values(
