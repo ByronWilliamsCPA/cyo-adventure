@@ -495,6 +495,20 @@ def _merged_ending(
     spread, never read from the reply. A reply that omits ``ending_title``
     keeps the skeleton's title.
 
+    # #CRITICAL: data-integrity: presence is tested with ``in``, never with
+    # ``is None``, and the eligibility rejection runs BEFORE the
+    # nothing-proposed short-circuit. ``reply.get("ending_title")`` collapses
+    # "the key is absent" and "the model returned an explicit JSON ``null``"
+    # into the same value, so an earlier ``if proposed is None: return ending``
+    # let a reply that sent ``"ending_title": null`` for a node with no ending
+    # block fall straight through the guard below and hand the caller ``None``.
+    # The caller writes whatever it gets back to ``merged["ending"]`` whenever
+    # ``"ending_title" in node_reply``, so that path INSERTED ``"ending": None``
+    # onto a plain narrative node the guard exists to protect, turning a merge
+    # that must touch nothing but prose into a structural edit.
+    # #VERIFY: test_chunking_merged_ending.py::
+    # test_an_explicit_null_ending_title_on_a_non_ending_node_is_rejected.
+
     Args:
         node: The skeleton node.
         reply: The reply entry for this node.
@@ -502,18 +516,17 @@ def _merged_ending(
 
     Returns:
         object: The rebuilt ending dict, or the skeleton's own ``ending``
-        value unchanged when no rewrite applies.
+        value unchanged when the reply carries no ``ending_title`` key at all.
 
     Raises:
-        ValidationError: If ``ending_title`` is supplied for a node with no
-            ending block, is not a non-blank string, or still carries a
-            ``<<FILL ...>>`` directive. A title for a non-ending node means
-            the reply is not about this node, and guessing would retitle the
-            wrong ending.
+        ValidationError: If ``ending_title`` is present for a node with no
+            ending block (including when its value is an explicit ``null``),
+            is not a non-blank string, or still carries a ``<<FILL ...>>``
+            directive. A title for a non-ending node means the reply is not
+            about this node, and guessing would retitle the wrong ending.
     """
     ending = node.get("ending")
-    proposed = reply.get("ending_title")
-    if proposed is None:
+    if "ending_title" not in reply:
         return ending
     if not isinstance(ending, dict):
         msg = (
@@ -521,7 +534,7 @@ def _merged_ending(
             f"node has no ending block"
         )
         raise ValidationError(msg, field="ending_title", value=node_id)
-    title = _require_str(proposed, what="ending title", node_id=node_id)
+    title = _require_str(reply["ending_title"], what="ending title", node_id=node_id)
     if FILL_MARKER in title:
         msg = (
             f"batch reply for node {node_id!r} returned the fill directive "
