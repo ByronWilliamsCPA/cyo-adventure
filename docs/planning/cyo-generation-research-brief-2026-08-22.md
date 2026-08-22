@@ -209,7 +209,11 @@ author, not by CI.
 - **Moderation pipeline** (`moderation/`): safety classifiers and fidelity review over the filled
   book; DeepSeek V4 Flash currently performs well as the deterministic-style first-pass reviewer
   ahead of costlier review (owner practice, 2026-08; the review-model distillation plan tracks
-  formalizing this).
+  formalizing this). Note that `moderation/classifiers.py` calls itself a "deterministic classifier
+  pre-filter", meaning it routes without LLM spend, not that it is deterministic in this document's
+  sense: it calls hosted OpenAI Moderation and Perspective endpoints, so it is neither re-runnable
+  by anyone nor stable against a vendor changing the model behind the endpoint. It is model-judged,
+  which is why F2 counts it there.
 - **Evaluation-side judging** (not in the publish path): blind cross-lab panels via
   `scripts/blind_books.py` and `scripts/judge_books.py`, provenance-stripped (`AL-207`,
   `AL-226`), self-family flagged, used for experiments like the vendor comparison.
