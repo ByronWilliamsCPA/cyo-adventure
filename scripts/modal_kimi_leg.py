@@ -135,15 +135,19 @@ def _pin_payload(payload: dict) -> dict:
     return payload
 
 
-def _complete(client: httpx.Client, system: str, prompt: str) -> tuple[str, dict]:
-    """One chat completion via SSE streaming; returns (content, metadata).
+def _stream_chat(
+    client: httpx.Client, messages: list[dict], *, label: str
+) -> tuple[str, str | None, dict]:
+    """One streamed chat completion; returns (content, finish_reason, usage).
 
-    Streaming is load-bearing, not cosmetic: the first non-streamed
-    multi-minute authoring call was dropped with "server disconnected
-    without sending a response" (2026-08-21), because something on the
-    path does not hold an idle connection for the full generation. The
-    handoff's shape findings were all from tiny completions and did not
-    surface this. Transient disconnects are retried with backoff.
+    The single SSE transport for both the blind and tools call paths, so the
+    retry policy and stream parsing cannot drift between them. Streaming is
+    load-bearing, not cosmetic: the first non-streamed multi-minute authoring
+    call was dropped with "server disconnected without sending a response"
+    (2026-08-21), because something on the path does not hold an idle
+    connection for the full generation. The handoff's shape findings were all
+    from tiny completions and did not surface this. Transient disconnects are
+    retried with backoff.
     """
     payload = _pin_payload(
         {
@@ -151,10 +155,7 @@ def _complete(client: httpx.Client, system: str, prompt: str) -> tuple[str, dict
             "max_tokens": MAX_TOKENS,
             "stream": True,
             "stream_options": {"include_usage": True},
-            "messages": [
-                {"role": "system", "content": system},
-                {"role": "user", "content": prompt},
-            ],
+            "messages": messages,
         }
     )
     last_exc: Exception | None = None
@@ -185,16 +186,9 @@ def _complete(client: httpx.Client, system: str, prompt: str) -> tuple[str, dict
                             parts.append(piece)
                         if choice.get("finish_reason"):
                             finish_reason = choice["finish_reason"]
-            content = "".join(parts)
-            meta = {
-                "finish_reason": finish_reason,
-                "prompt_tokens": usage.get("prompt_tokens"),
-                "completion_tokens": usage.get("completion_tokens"),
-                "reasoning_tokens": usage.get("reasoning_tokens"),
-            }
-            # Empty content under length is the Modal budget signature; the
-            # caller treats it as a failed round, never as output.
-            return content, meta
+            # Empty content under finish_reason "length" is the Modal budget
+            # signature; callers treat it as a failed round, never as output.
+            return "".join(parts), finish_reason, usage
         except (
             httpx.TransportError,
             httpx.HTTPStatusError,
@@ -203,7 +197,26 @@ def _complete(client: httpx.Client, system: str, prompt: str) -> tuple[str, dict
             if not _retryable(exc):
                 raise
             last_exc = exc
-    raise RuntimeError(f"kimi call failed after retries: {last_exc}") from last_exc
+    raise RuntimeError(f"{label} call failed after retries: {last_exc}") from last_exc
+
+
+def _complete(client: httpx.Client, system: str, prompt: str) -> tuple[str, dict]:
+    """One blind-mode completion; returns (content, metadata)."""
+    content, finish_reason, usage = _stream_chat(
+        client,
+        [
+            {"role": "system", "content": system},
+            {"role": "user", "content": prompt},
+        ],
+        label="kimi",
+    )
+    meta = {
+        "finish_reason": finish_reason,
+        "prompt_tokens": usage.get("prompt_tokens"),
+        "completion_tokens": usage.get("completion_tokens"),
+        "reasoning_tokens": usage.get("reasoning_tokens"),
+    }
+    return content, meta
 
 
 def _score(
@@ -319,53 +332,16 @@ def _full_check(shell_path: Path, cell_meta: dict) -> tuple[bool, str]:
     return proc.returncode == 0, (proc.stdout or "") + (proc.stderr or "")
 
 
-def _complete_messages(client: httpx.Client, messages: list[dict]) -> tuple[str, dict]:
-    """Streamed completion over an explicit message history (tools mode)."""
-    payload = _pin_payload(
-        {
-            "model": MODEL,
-            "max_tokens": MAX_TOKENS,
-            "stream": True,
-            "stream_options": {"include_usage": True},
-            "messages": messages,
-        }
-    )
-    last_exc: Exception | None = None
-    for retry in range(3):
-        if retry:
-            time.sleep(5 * 2**retry)
-        try:
-            parts: list[str] = []
-            usage: dict = {}
-            with client.stream(
-                "POST", f"{BASE_URL}/v1/chat/completions", json=payload
-            ) as response:
-                response.raise_for_status()
-                for line in response.iter_lines():
-                    if not line.startswith("data:"):
-                        continue
-                    data = line[5:].strip()
-                    if not data or data == "[DONE]":
-                        continue
-                    chunk = json.loads(data)
-                    if chunk.get("usage"):
-                        usage = chunk["usage"]
-                    for choice in chunk.get("choices") or []:
-                        piece = (choice.get("delta") or {}).get("content")
-                        if piece:
-                            parts.append(piece)
-            return "".join(parts), usage
-        except (
-            httpx.TransportError,
-            httpx.HTTPStatusError,
-            json.JSONDecodeError,  # truncated SSE chunk: a transport failure
-        ) as exc:
-            if not _retryable(exc):
-                raise
-            last_exc = exc
-    raise RuntimeError(
-        f"kimi tools call failed after retries: {last_exc}"
-    ) from last_exc
+def _complete_messages(
+    client: httpx.Client, messages: list[dict]
+) -> tuple[str, str | None, dict]:
+    """Tools-mode completion over an explicit message history.
+
+    Returns (content, finish_reason, usage); finish_reason lets the tools
+    loop name the empty-content budget signature instead of reporting a bare
+    parse failure.
+    """
+    return _stream_chat(client, messages, label="kimi tools")
 
 
 def run_grid_point_tools(
@@ -399,10 +375,15 @@ def run_grid_point_tools(
     content = ""
     llm_calls = 0
     while checker_runs < _TOOLS_CHECKER_CAP and llm_calls < _TOOLS_CHECKER_CAP + 2:
-        content, usage = _complete_messages(client, messages)
+        content, finish_reason, usage = _complete_messages(client, messages)
         llm_calls += 1
         doc, reason = _extract_json(content)
         if doc is None:
+            if not content and finish_reason == "length":
+                reason = (
+                    "empty content under finish_reason=length: the completion "
+                    "budget was consumed by reasoning (Modal budget signature)"
+                )
             feedback = f"(no skeleton to check) {reason}"
         else:
             draft_path.write_text(
