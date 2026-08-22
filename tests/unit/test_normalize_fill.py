@@ -153,6 +153,22 @@ def test_a_fill_with_a_different_node_count_is_not_normalized() -> None:
     assert result.document == filled
 
 
+def test_a_fill_with_non_object_node_entries_is_not_normalized() -> None:
+    """Malformed entries are judged as written, never filtered into alignment.
+
+    The right number of node OBJECTS plus stray strings must not pass the
+    count check with the garbage silently discarded: that would launder
+    malformed output into a valid-looking book (PR #737 review finding).
+    """
+    filled = _obedient_fill()
+    filled["nodes"] = [*filled["nodes"], "stray", "entries"]  # type: ignore[misc]
+
+    result = normalize_filled_story(_skeleton(), filled)
+    assert result.skipped_reason is not None
+    assert "not JSON objects" in result.skipped_reason
+    assert result.document == filled
+
+
 def test_a_dropped_body_keeps_the_skeleton_directive_for_the_gate() -> None:
     """A missing body is left as the directive so PL-27 still blocks it."""
     filled = _obedient_fill()

@@ -152,6 +152,50 @@ def test_rewritten_target_fails_the_structure_check(tmp_path: Path) -> None:
     assert exit_code == 1
 
 
+def test_variable_description_rewrite_passes_but_machine_fields_stay_frozen(
+    tmp_path: Path,
+) -> None:
+    """A themed variable description is a reskin; its machine fields are not.
+
+    The 2026-08-21 freeze split (section 8.2) makes ``variables[].description``
+    writable, matching ``normalize_filled_story``'s overlay; the comparison
+    previously retained descriptions and reported a valid retheme as a
+    structural failure (PR #737 review finding). Name/type/bounds/initial stay
+    in the comparison.
+    """
+    skeleton = copy.deepcopy(_SKELETON)
+    skeleton["variables"] = [
+        {
+            "name": "plates",
+            "type": "int",
+            "min": 0,
+            "max": 3,
+            "initial": 3,
+            "description": "Unexposed photographic plates remaining.",
+        }
+    ]
+    rethemed = copy.deepcopy(skeleton)
+    rethemed["nodes"][0]["body"] = "You stand at a fork in the path."
+    rethemed["nodes"][0]["choices"][0]["label"] = "Go toward the light."
+    rethemed["nodes"][1]["body"] = "You made it home safe."
+    rethemed["variables"][0]["description"] = "Glass slides left in the carrier."
+    skeleton_path = _write(tmp_path, "skeleton.json", skeleton)
+    assert (
+        check_fill_integrity.main(
+            [skeleton_path, _write(tmp_path, "rethemed.json", rethemed)]
+        )
+        == 0
+    )
+    moved = copy.deepcopy(rethemed)
+    moved["variables"][0]["max"] = 5
+    assert (
+        check_fill_integrity.main(
+            [skeleton_path, _write(tmp_path, "moved.json", moved)]
+        )
+        == 1
+    )
+
+
 def test_check_fill_integrity_rejects_same_file(tmp_path: Path) -> None:
     """Comparing a file against itself is a degenerate, always-passing input.
 

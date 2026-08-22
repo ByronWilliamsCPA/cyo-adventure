@@ -29,8 +29,9 @@ lands the skeleton's themes are what ship.
 
 Nodes and choices are matched by position after an id-alignment check, because
 position is what the fill contract preserves; a fill whose node or choice
-COUNT differs is not normalized (returned unchanged) since overlaying leaves
-onto a different graph would fabricate a book, and the gate owns that verdict.
+COUNT differs, or whose raw node list carries non-object entries, is not
+normalized (returned unchanged) since overlaying leaves onto a different or
+malformed graph would fabricate a book, and the gate owns that verdict.
 """
 
 from __future__ import annotations
@@ -221,6 +222,28 @@ def normalize_filled_story(
         and a skip reason when the graphs cannot be aligned.
     """
     skeleton_nodes = _nodes(skeleton)
+    filled_raw = filled.get("nodes")
+    # Judge the RAW node list, not a dict-filtered view of it: filtering first
+    # would let a response carrying, say, the right number of node objects plus
+    # stray strings pass the count check with the garbage silently discarded,
+    # laundering malformed output into a valid-looking book. A malformed list
+    # is the gate's verdict to deliver, on the document as the model wrote it.
+    malformed = 0
+    if isinstance(filled_raw, list):
+        malformed = sum(
+            1
+            for entry in cast("list[object]", filled_raw)
+            if not isinstance(entry, dict)
+        )
+    if malformed:
+        return NormalizedFill(
+            document=filled,
+            skipped_reason=(
+                f"{malformed} node entr{'y is' if malformed == 1 else 'ies are'} "
+                "not JSON objects; malformed output is judged as written, not "
+                "repaired by discarding entries"
+            ),
+        )
     filled_nodes = _nodes(filled)
     if len(skeleton_nodes) != len(filled_nodes):
         return NormalizedFill(

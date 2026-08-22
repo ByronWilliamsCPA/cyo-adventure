@@ -120,8 +120,8 @@ from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.prompts import build_differentiation_directive
 from cyo_adventure.generation.provider import build_openrouter_leg, build_provider
 from cyo_adventure.generation.skeleton import (
-    commissioned_words_by_node,
     resolve_output_cap,
+    story_fill_rate,
 )
 from cyo_adventure.generation.usage import UsageLedger
 from cyo_adventure.generation.variation import axis_for_key
@@ -224,9 +224,15 @@ class BookRecord:
             measured a thin book conforming BECAUSE it was thin and a full
             book out of band, so either number alone misleads
             (`AL-491`/`AL-500`/`UW-C308`).
-        fill_rate: Delivered scorable words over the skeleton's commissioned
-            ``words=`` total, or ``None`` when the skeleton commissions
-            nothing.
+        fill_rate: The production ``story_fill_rate`` (per-node delivery capped
+            at each node's commissioned ``words=`` target, so one node's
+            surplus cannot mask another's shortfall), or ``None`` when the
+            book failed entirely. This is the same definition the pipeline
+            stamps on ``outcome.report["fill_rate"]``, so the harness column
+            and the gate can never disagree; an earlier draft recorded raw
+            delivered-over-commissioned words here, which could report an
+            underfilled book as 100 percent. Over-delivery is still visible
+            through ``leaf_words`` against the skeleton's commission.
         leaf_words: Total scorable leaf words.
         doc: The filled Storybook dict, or ``None`` on a total failure.
         error: Truncated exception text when ``status == "error"``.
@@ -992,9 +998,6 @@ async def run_comparison(
                 grade, in_band, words = (
                     _measure(doc) if doc is not None else (None, None, 0)
                 )
-                commissioned = sum(
-                    commissioned_words_by_node(dict(skeletons[index])).values()
-                )
                 records.append(
                     BookRecord(
                         vendor=vendor.label,
@@ -1005,7 +1008,11 @@ async def run_comparison(
                         latency_s=round(time.monotonic() - started, 2),
                         grade=grade,
                         in_band=in_band,
-                        fill_rate=(words / commissioned) if commissioned else None,
+                        fill_rate=(
+                            story_fill_rate(dict(skeletons[index]), doc)
+                            if doc is not None
+                            else None
+                        ),
                         leaf_words=words,
                         doc=doc,
                         error=None,

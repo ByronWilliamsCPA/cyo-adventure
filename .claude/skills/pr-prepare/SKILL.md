@@ -22,6 +22,16 @@ When activated, follow these steps:
 
 ### 1. Gather Context
 
+**Full-suite pre-flight (`AL-516`)**: if the branch touches a shared contract
+(`storybook/models.py`, `schema/`, a dataclass other modules construct, or any
+validator rule id), run the FULL test suite (`uv run pytest tests/ --no-cov`)
+before preparing the PR. Targeted per-suite sweeps miss cross-cutting breakage:
+an additive `StoryMetadata` field rotates every stored structure fingerprint
+(the rotation procedure lives in `test_diversity_structure.py`'s pinned-digest
+docstring), a new required record field breaks every out-of-suite constructor,
+and a new rule id fails the `validator-rules.md` catalog test; PR #737 shipped
+17 such failures past green targeted sweeps.
+
 Run these commands to understand the changes:
 
 ```bash

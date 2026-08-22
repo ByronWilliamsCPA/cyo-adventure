@@ -76,7 +76,7 @@ changing. The output must be the full Storybook JSON, not a diff or patch.
 - `condition` on any choice.
 - `effects` on any choice or `on_enter` on any node.
 - `is_ending` on any node.
-- `variables` declarations.
+- `variables` machine fields: each variable's `name`, `type`, `min`/`max`, and `initial` (the `description` is writable; see below).
 - `start_node`.
 - `metadata` fields (including `age_band`, `tier`, `reading_level`, `ending_count`).
 
@@ -97,6 +97,12 @@ bodies and choice labels (ruled 2026-08-21; the site of record is
 `docs/planning/live-structural-round-2026-08-21.md` section 8.3): retitle them
 into the theme's vocabulary. An ending's `id`, `kind`, and `valence` stay
 exactly as given; only its `title` text is yours to write.
+
+Each variable's `description` is likewise theme documentation (ruled
+2026-08-21, section 8.2 of the same document): rewrite it in this theme's
+vocabulary so it describes what the variable tracks in this story's world.
+The variable's `name`, `type`, `min`/`max`, and `initial` stay exactly as
+given.
 
 ## Output
 

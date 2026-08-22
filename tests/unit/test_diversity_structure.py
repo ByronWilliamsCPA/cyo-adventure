@@ -132,7 +132,7 @@ def test_structure_features_reports_topology_and_ending_histograms() -> None:
 
 # The digest of ``_PINNED_STORY`` below, recorded 2026-08-06. Any change to
 # this literal is a change to every fingerprint ever stored in this repo.
-_PINNED_DIGEST = "9cdba1e6b27219b35b5fb7c063e2154669724dc8f7ce8d173a7f0a135a46c2d4"
+_PINNED_DIGEST = "a93def8cc7cc0f661d97ea271f40743c0062edb3d14e59b1a0142c55b245a375"
 
 # A fixed story, written inline rather than loaded from a file so that no
 # fixture edit can move the digest silently. Deliberately minimal: two nodes,

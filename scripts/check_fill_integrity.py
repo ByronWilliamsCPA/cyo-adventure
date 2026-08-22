@@ -119,14 +119,25 @@ def _strip_leaf_fields(
             when the caller opts in.
 
     Returns:
-        A copy suitable for structure-only comparison: every node ``body``
-        and every choice ``label`` removed (and, when opted in, every
-        ending ``title``), leaving ids, targets, conditions, effects,
-        ending kind/valence, variables, and metadata.
+        A copy suitable for structure-only comparison: every node ``body``,
+        every choice ``label``, and every variable ``description`` removed
+        (and, when opted in, every ending ``title``), leaving ids, targets,
+        conditions, effects, ending kind/valence, variable
+        name/type/bounds/initial, and metadata.
     """
     copy: dict[str, Any] = json.loads(json.dumps(story))
     if allow_title_rewrite:
         copy.pop("title", None)
+    # Variable descriptions are theme documentation, writable under the
+    # 2026-08-21 freeze split (section 8.2 of the live-structural round doc;
+    # `normalize_filled_story` overlays them the same way). Only the machine
+    # fields (name, type, min/max, initial) stay in the comparison, so a
+    # themed description is a reskin, not a structural failure.
+    variables = copy.get("variables")
+    if isinstance(variables, list):
+        for variable in variables:
+            if isinstance(variable, dict):
+                variable.pop("description", None)
     nodes = copy.get("nodes")
     if isinstance(nodes, list):
         for node in nodes:
