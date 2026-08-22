@@ -1,0 +1,428 @@
+{
+ "schema_version": "2.0",
+ "id": "the-two-mintings",
+ "version": 1,
+ "title": "The Two Mintings",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 6.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "observation",
+   "fairness",
+   "economic awareness",
+   "courage to speak up"
+  ],
+  "estimated_minutes": 6,
+  "ending_count": 18,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "N01",
+ "nodes": [
+  {
+   "id": "N01",
+   "body": "<<FILL role=setup words=120 beats='Idris arrives at the autumn harvest swap-market in Ashbridge square. Stalls overflow with pumpkins, late apples, and woven scarves. Traders call out prices. Idris carries a pouch of stamped clay tokens inherited from their grandmother. The tokens buy a hot pastry and a jar of honey. Idris notices that the pastry seller and the honey seller both squint at the tokens, turning them over. One mutters something about old mint. Idris looks down and sees two tokens in the pouch are not quite identical to the others. The square bustles with Saturday crowds, and nobody else seems to notice anything strange. Idris steps aside, heart beating faster, and opens the pouch fully.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "C01_A",
+     "label": "Examine both tokens side by side right now",
+     "target": "N02"
+    },
+    {
+     "id": "C01_B",
+     "label": "Ask the pastry seller what she meant by old mint",
+     "target": "N02"
+    },
+    {
+     "id": "C01_C",
+     "label": "Keep quiet and watch how other traders handle tokens",
+     "target": "N02"
+    }
+   ]
+  },
+  {
+   "id": "N02",
+   "body": "<<FILL role=setup words=130 beats='Idris holds the two tokens flat on a palm. One shows a wheat sheaf in crisp relief with a tiny star beneath, the other a wheat sheaf with a crescent moon beneath. The rims differ too: one is smooth, the other beaded. Idris closes the pouch and walks slowly through the market, watching. A woman haggling over squash hands over three tokens; the vendor pockets them without a glance. A cheese seller accepts three moon tokens without comment. By the cider press, two farmers argue quietly about moon tokens being pushed out. The word debasement floats across the square. Idris remembers Gran calling the old moon-mark tokens moon-struck and supposedly lucky. No one mentioned two mints before. Something is shifting under the surface of this market. Idris needs to decide how to approach it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "C02_A",
+     "label": "Visit the market keeper's booth and ask about the two marks",
+     "target": "N03A"
+    },
+    {
+     "id": "C02_B",
+     "label": "Find Gran's friend Auntie Sorrel at her weaving stall and ask her",
+     "target": "N03B"
+    },
+    {
+     "id": "C02_C",
+     "label": "Spend both token types separately and see if prices really differ",
+     "target": "N03C"
+    }
+   ]
+  },
+  {
+   "id": "N03A",
+   "body": "<<FILL role=decision words=130 beats='The market keeper, a patient man named Oswin, pulls out a ledger. He records the two mint-marks and nods grimly. He says the Council contracted two workshops last spring because one could not meet demand. Workshop One stamps a star, Workshop Two stamps a moon. Both were supposed to use the same clay mix, but Workshop Two's clay has more sand, so the tokens are lighter and wear faster. Traders noticed and began quietly preferring star marks. Oswin says reporting it could cause panic. He asks Idris what they think should happen.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "C03A_A",
+     "label": "Insist he tell everyone at the market right away",
+     "target": "E01"
+    },
+    {
+     "id": "C03A_B",
+     "label": "Suggest recalling all moon-marked tokens and re-minting them fairly",
+     "target": "E02"
+    },
+    {
+     "id": "C03A_C",
+     "label": "Ask if you can keep digging before anyone announces anything",
+     "target": "N04A"
+    }
+   ]
+  },
+  {
+   "id": "N03B",
+   "body": "<<FILL role=decision words=125 beats='Auntie Sorrel sets down her shuttle. She says the two mints have been an open secret among the older traders for six weeks. Star-marked tokens buy slightly more at certain stalls, moon-marked ones are refused outright at two others. No one has said it aloud because the harvest market brings half the year's trade. She shows Idris her own purse: she separates them. She asks if Idris wants to help her talk to the traders, or find out who at the Council knew and stayed silent.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "C03B_A",
+     "label": "Help Auntie Sorrel gather traders and speak openly",
+     "target": "E03"
+    },
+    {
+     "id": "C03B_B",
+     "label": "Find the Council mint-master and demand an explanation",
+     "target": "N04B"
+    },
+    {
+     "id": "C03B_C",
+     "label": "Test every stall yourself and draw a map of who discounts what",
+     "target": "E04"
+    }
+   ]
+  },
+  {
+   "id": "N03C",
+   "body": "<<FILL role=decision words=120 beats='Idris buys a small loaf with a moon-marked token; the baker frowns but accepts it. A stall selling dried herbs rejects the moon-mark outright and points to a small sign: STAR-MARK ONLY. At the last stall, the leatherworker, Idris offers a star-mark. The woman smiles and wraps the bracelet without hesitation. The difference is real. Idris has one moon and three stars left. A knot of shoppers nearby is debating loudly about the same thing. One woman says she will not trade here at all anymore.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "C03C_A",
+     "label": "Join the knot of shoppers and share what you have seen",
+     "target": "E05"
+    },
+    {
+     "id": "C03C_B",
+     "label": "Find the leatherworker and ask why she took the star without question",
+     "target": "N04C"
+    },
+    {
+     "id": "C03C_C",
+     "label": "Go back to Oswin the market keeper with your proof",
+     "target": "E06"
+    }
+   ]
+  },
+  {
+   "id": "N04A",
+   "body": "<<FILL role=transition words=110 beats='Oswin nods and says he will hold off any announcement. Idris returns to the market floor with a purpose. More facts are needed: who gains and who loses, whether Workshop Two knew, and how many traders are already separating tokens silently. The sun is still high; the market has hours left. Idris pockets a moon and a star token as matched evidence and decides to start at the token-weighing stalls to see if there is a pattern behind who has scales and what they do with the information. The scale-owners will be the first to question.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "C04A_A",
+     "label": "Visit every scale-owning stall and record their answers",
+     "target": "E07"
+    },
+    {
+     "id": "C04A_B",
+     "label": "Find an elderly garlic seller and hear her story of loss",
+     "target": "E08"
+    },
+    {
+     "id": "C04A_C",
+     "label": "Look for a speculator buying moon tokens at a discount",
+     "target": "E09"
+    }
+   ]
+  },
+  {
+   "id": "N04B",
+   "body": "<<FILL role=transition words=110 beats='Idris walks to the mint-master's office by the kilns. Master Jorah is a stout man with clay under his nails. He listens, face reddening, and says he opposed the sand-clay amendment but was overruled by Draven. He pulls out his own notes and shows the original specification. Workshop Two's lighter tokens, he says, will not survive a year of handling. He feels vindicated that someone noticed and promises to testify if a formal inquiry is opened. He gives Idris a copy of his original spec. The document feels like a weapon.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "C04B_A",
+     "label": "Take the spec to Auntie Sorrel and plan a public presentation",
+     "target": "E10"
+    },
+    {
+     "id": "C04B_B",
+     "label": "Go to the Council hall and demand to see the amendment file",
+     "target": "E11"
+    },
+    {
+     "id": "C04B_C",
+     "label": "Confront Draven with the spec and demand answers",
+     "target": "E12"
+    }
+   ]
+  },
+  {
+   "id": "N04C",
+   "body": "<<FILL role=transition words=105 beats='The leatherworker, named Farah, says she accepts star marks without question because she trusts Workshop One. Her cousin works there and vouches for the clay. She refuses moon tokens entirely after a bad batch crumbled in her hand. She shows the fragments she keeps in a jar as proof. Farah says she has been warning other crafters quietly, but she does not want to cause a scene. She asks Idris if they intend to make trouble or make things right. The distinction matters, and Idris must answer carefully.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "C04C_A",
+     "label": "Ask Farah to testify publicly and promise her a fair hearing",
+     "target": "E13"
+    },
+    {
+     "id": "C04C_B",
+     "label": "Take the fragments to the Council as physical proof",
+     "target": "E14"
+    },
+    {
+     "id": "C04C_C",
+     "label": "Ask Farah to lend you the jar while you gather more evidence",
+     "target": "E15"
+    }
+   ]
+  },
+  {
+   "id": "E01",
+   "body": "<<FILL role=climax words=130 beats='Oswin reluctantly agrees. He rings the market bell and calls for quiet. Idris stands beside him as he explains the two workshops, the clay difference, and the quiet drift in prices. The square goes silent, then erupts. Traders holding moon tokens demand immediate exchange. Others defend Workshop Two, saying it was only trying to keep up with demand. Someone shouts Councillor Draven's name. Idris sees Auntie Sorrel nod firmly. The market will not be the same after today, but at least no one is in the dark anymore. By dusk, a fair-exchange table operates under the clock, and Idris handles the scale.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E01",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Fair Exchange"
+   },
+   "choices": []
+  },
+  {
+   "id": "E02",
+   "body": "<<FILL role=ending words=110 beats='Oswin likes the idea of a recall and re-minting. He drafts a proposal for the Council, with Idris adding details: the moon tokens should be called in, replaced with properly weighted star-mark tokens from Workshop One, and Workshop Two's contract reviewed. He promises to present it before sunset. Idris leaves his booth feeling they have started something important. Auntie Sorrel reads the proposal later and adds her own name. By evening, the drafted scroll sits in Oswin's strongbox, ready for the Council. Change will not come today, but a seed has been planted.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E02",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Recall Proposal"
+   },
+   "choices": []
+  },
+  {
+   "id": "E03",
+   "body": "<<FILL role=climax words=125 beats='Auntie Sorrel and Idris walk the rows, quietly inviting traders to gather at the weaver's stall. Twenty stallholders come, muttering and uneasy. Sorrel lays out the facts: two mints, unequal weight, quiet discrimination. She asks what they want to do. A cheese seller demands immediate equal-exchange rules. A potter suggests a boycott. Idris speaks up and suggests a public audit before any boycott. The group votes, narrowly, for the audit. Idris writes the demand on a broad sheet and the traders sign. Auntie Sorrel leads a delegation to the Council hall.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E03",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Gathering Speaks"
+   },
+   "choices": []
+  },
+  {
+   "id": "E04",
+   "body": "<<FILL role=ending words=105 beats='Idris spends an hour visiting every open stall, offering a moon token first, noting acceptance or refusal, then a star. Seventeen stalls take both at face value, nine offer less for moon, and three refuse moon outright. The pattern is clear: food sellers are softer, crafters stricter. Idris draws a rough map of the square with marks in charcoal and pins it to the market board. Within minutes a crowd gathers. The map makes the invisible divide visible. Oswin asks permission to copy it for the Council.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E04",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Map on the Board"
+   },
+   "choices": []
+  },
+  {
+   "id": "E05",
+   "body": "<<FILL role=climax words=120 beats='Idris joins the knot of shoppers and describes the two mints, the weight test, and the refusal patterns. A woman gasps and checks her own purse, finding three moon tokens she did not know she had. A man asks why nobody official warned them. Idris says the Council knew, or at least one councillor did. The group grows louder. A boy runs off to call his parents. Within minutes the knot has become a crowd, and the crowd is moving toward the Council hall. Idris is at its front. The crowd fills the entrance. Councillor Mena comes out and promises a statement within the hour.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E05",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Crowd at the Hall"
+   },
+   "choices": []
+  },
+  {
+   "id": "E06",
+   "body": "<<FILL role=ending words=110 beats='Idris returns to Oswin with the loaf story, the herb-stall refusal sign, and the leatherworker's easy acceptance. Oswin writes it all down, his face set. He says this meets the bar for a formal market complaint and asks Idris to sign as the reporting party. He will summon the Council Market Committee immediately. Idris signs. The wheels of process are turning, slow but certain. Oswin promises to send a runner when the committee meets. By nightfall, the complaint is lodged, the file is growing, and Idris has become the market's youngest official witness.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E06",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Complaint Lodged"
+   },
+   "choices": []
+  },
+  {
+   "id": "E07",
+   "body": "<<FILL role=ending words=110 beats='Idris visits every scale-owning stall in the market: baker, spice merchant, candle-maker, two grocers. All confirm the weight difference. Two say they have been adjusting prices for weeks. One admits he has been sorting tokens and using light ones to pay suppliers outside town, pushing the problem elsewhere. Idris records every answer. The pattern is damning: those with scales knew, adapted, and stayed quiet. Idris writes a crisp summary and gives it to Oswin. He says it is the most useful document he has received all season. The market's quiet system is now a public record.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E07",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Scale-Owners' Ledger"
+   },
+   "choices": []
+  },
+  {
+   "id": "E08",
+   "body": "<<FILL role=ending words=100 beats='Idris finds an elderly woman selling braided garlic. She has a basket of moon tokens and nearly no stars. She sells in bulk and takes whatever she is given, but when she tries to buy feed for her mule, the feed seller rejects moons. She is trapped: paid in light tokens, unable to spend them. Tears brim in her eyes. Idris swaps their own star tokens for her moons, taking the loss. Two other shoppers see and offer their stars too. The knot of generosity undoes a small corner of the problem. Idris walks away lighter in the purse but heavier with hope.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E08",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Generosity Knot"
+   },
+   "choices": []
+  },
+  {
+   "id": "E09",
+   "body": "<<FILL role=ending words=100 beats='Idris asks around and finds a quiet man named Veras near the fountain with a locked chest. He admits he is buying moon tokens at a discount, betting the Council will redeem them at full value. He calls it a calculated risk. Idris asks if he cares about the people losing value now. He shrugs. Markets correct inefficiencies, he says, and someone always profits. Idris feels cold. The divide has already created winners who want it to continue. Idris walks away, the speculator's logic sitting like a stone in their stomach.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E09",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Speculator's Logic"
+   },
+   "choices": []
+  },
+  {
+   "id": "E10",
+   "body": "<<FILL role=ending words=110 beats='Idris carries Jorah's specification back to the market. Auntie Sorrel takes it and spreads it on her weaving bench. Four other crafters gather to read it. One is married to a Council clerk and says she will make sure it reaches the records office. Another offers to copy it onto cloth so it cannot be lost. Idris watches the specification become a shared object, passed from hand to hand, discussed, annotated. By evening it is no longer a single document in a mint-master's drawer but a piece of public knowledge, woven into the market's memory.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E10",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Specification Spreads"
+   },
+   "choices": []
+  },
+  {
+   "id": "E11",
+   "body": "<<FILL role=ending words=105 beats='Idris finds Sefra at the Council hall and asks to see the full contract file. The amendment bears Draven's signature and a stamp. Below it, a supplier's note warns the sand-clay mix will cure lighter, initialled by Draven and ignored. Sefra whispers that Draven's nephew runs Workshop Two. Idris asks for a certified copy. Sefra stamps one CERTIFIED. Idris posts it on the market board. Within minutes a crowd gathers to read it. The warning is there in ink. Draven's name spreads through the square like a spark on dry straw.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E11",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Certified Warning"
+   },
+   "choices": []
+  },
+  {
+   "id": "E12",
+   "body": "<<FILL role=ending words=110 beats='Idris walks to Draven's office and places the two tokens on his desk along with the contract copy. Draven pales. Idris asks if he knew the sand-clay mix would produce lighter tokens. He blusters about supply pressures. Idris asks about his nephew. The room goes very quiet. Draven's secretary slips out. Word spreads through the corridors. By evening, three councillors vote to suspend Draven from the Market Committee pending investigation. The first crack in the wall of silence has appeared, and Idris's knock made it.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E12",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The First Crack"
+   },
+   "choices": []
+  },
+  {
+   "id": "E13",
+   "body": "<<FILL role=ending words=105 beats='Farah agrees to testify. She brings her jar of fragments and stands before Oswin's Committee the next week, her voice steady. Her testimony is devastating because she is known as a straight dealer. The Committee orders Workshop Two's contract suspended pending full review. Farah's quiet act of speaking up becomes the pivot on which the whole inquiry turns. Idris watches her and understands that courage does not always shout. Sometimes it just holds up a jar and tells the truth.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E13",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Farah's Testimony"
+   },
+   "choices": []
+  },
+  {
+   "id": "E14",
+   "body": "<<FILL role=ending words=95 beats='Farah gives Idris three crumbled moon-token fragments. Idris carries them to the Council hall in a small cloth bag. Sefra tags them as physical exhibits for the inquiry. The fragments sit on the evidence table, small and grey, but they speak louder than any speech. Councillors who had dismissed the complaints as fussy traders now hold proof in their hands. Idris leaves the hall feeling the weight of those fragments shift from their pocket to the Council's conscience.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E14",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Fragments as Proof"
+   },
+   "choices": []
+  },
+  {
+   "id": "E15",
+   "body": "<<FILL role=ending words=100 beats='Farah agrees to wait. Idris spends the rest of the afternoon building the strongest possible file: scale-owner testimony, the map, the fragments, a cucumber farmer's payment record. At dusk they bring the whole file to Farah and ask her to add her statement on top. The file is now complete and undeniable. Farah signs her page. Idris carries the file to Oswin's booth as the market bell rings closing. The file, Oswin says, is a weapon. Tomorrow it goes to the Council. Tonight it sleeps in his strongbox.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E15",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Complete File"
+   },
+   "choices": []
+  },
+  {
+   "id": "E16",
+   "body": "<<FILL role=ending words=105 beats='Idris drifts through the market, buying nothing else. A cheese seller accepts three moon tokens without comment; a woodcarver squints at a star token and asks if the buyer has another because that lot came out scuffed. Over by the cider press, two farmers argue quietly about whether moon tokens are being deliberately pushed out. Idris hears the word debasement for the first time. One farmer walks off muttering about the Council mint. Idris watches the market sort itself into two camps without a word spoken aloud. The divide is wider by dusk, but Idris has seen it clearly.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E16",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Quiet Observer"
+   },
+   "choices": []
+  },
+  {
+   "id": "E17",
+   "body": "<<FILL role=ending words=110 beats='Idris asks the pastry seller, Marta, what she meant by old mint. She shows the scale: a star-mark token dips lower than a moon-mark. The spice merchant down the row discounts moon tokens, she says. Idris walks to the spice merchant. Halim weighs tokens openly, adjusting prices by weight. A moon token buys twelve percent less. He teaches Idris the simple weighing test. Within minutes, Idris can spot a light token blind. The scale's tilt is a truth anyone can see. Idris carries the knowledge back into the market like a new language.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E17",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Scale's Truth"
+   },
+   "choices": []
+  },
+  {
+   "id": "E18",
+   "body": "<<FILL role=ending words=115 beats='Idris hovers near a stall selling pickles. A farmer sells a bushel of cucumbers and is paid six tokens, all moon-marked. He tucks them away without looking. Another seller, a woman with late plums, receives four stars and one moon; she separates the moon token and sets it aside, visibly unhappy. Idris tallies several transactions: traders who receive moon marks often get less for them when they spend. The divide is widening quietly. Nobody wants to be the first to shout. Idris writes the tally on a scrap of paper and pockets it, the numbers burning.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "E18",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Quiet Tally"
+   },
+   "choices": []
+  }
+ ]
+}

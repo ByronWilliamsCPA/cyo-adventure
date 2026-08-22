@@ -1,0 +1,1367 @@
+{
+ "schema_version": "2.0",
+ "id": "the-extra-piece",
+ "version": 1,
+ "title": "The Extra Piece",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "mystery",
+   "history",
+   "craftsmanship",
+   "curiosity",
+   "community"
+  ],
+  "estimated_minutes": 5.2,
+  "ending_count": 14,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "hub_01",
+ "nodes": [
+  {
+   "id": "hub_01",
+   "body": "<<FILL role=setup words=70 beats='Wren finds a thirty-third chess piece in a junk-shop set; the extra rook has a tiny fox on its base; Mrs Harlow says the set came from Penrose House.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_01_continue",
+     "label": "Follow the trail",
+     "target": "hub_02"
+    },
+    {
+     "id": "choice_hub_01_side_a",
+     "label": "Study the extra rook",
+     "target": "side_01_a"
+    },
+    {
+     "id": "choice_hub_01_side_b",
+     "label": "Ask Mrs Harlow",
+     "target": "side_01_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_02",
+   "body": "<<FILL role=explore words=70 beats='At Penrose House Wren meets caretaker Mr Nye; the dusty hall smells of old paper; the fox mark matches the sign above the Bowe workshop.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_02_continue",
+     "label": "Ask about the set",
+     "target": "hub_03"
+    },
+    {
+     "id": "choice_hub_02_side_a",
+     "label": "Search the hall",
+     "target": "side_02_a"
+    },
+    {
+     "id": "choice_hub_02_side_b",
+     "label": "Question Mr Nye",
+     "target": "side_02_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_03",
+   "body": "<<FILL role=explore words=70 beats='Mr Nye leads Wren to a locked cabinet; inside is a receipt from the Bowe workshop dated 1927; the extra rook was meant for a ship.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_03_continue",
+     "label": "Go to the workshop",
+     "target": "hub_04"
+    },
+    {
+     "id": "choice_hub_03_side_a",
+     "label": "Inspect the receipt",
+     "target": "side_03_a"
+    },
+    {
+     "id": "choice_hub_03_side_b",
+     "label": "Ask about the ship",
+     "target": "side_03_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_04",
+   "body": "<<FILL role=transition words=70 beats='The old Bowe workshop is now a tea shop; the owner keeps the fox sign in the window; Wren sees a wooden queen with the same mark.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_04_continue",
+     "label": "Visit the library",
+     "target": "hub_05"
+    },
+    {
+     "id": "choice_hub_04_side_a",
+     "label": "Look for old papers",
+     "target": "side_04_a"
+    },
+    {
+     "id": "choice_hub_04_side_b",
+     "label": "Talk to the owner",
+     "target": "side_04_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_05",
+   "body": "<<FILL role=explore words=70 beats='In the town library the archivist finds a 1927 newspaper; it tells of Tomas Bowe carving chess sets for the steamer Meridian.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_05_continue",
+     "label": "Find the Bowe family",
+     "target": "hub_06"
+    },
+    {
+     "id": "choice_hub_05_side_a",
+     "label": "Copy the article",
+     "target": "side_05_a"
+    },
+    {
+     "id": "choice_hub_05_side_b",
+     "label": "Ask for the family address",
+     "target": "side_05_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_06",
+   "body": "<<FILL role=explore words=70 beats='Mrs Bowe shows Wren a family chest; inside is a carved queen with a fox and a name scratched underneath: Tomas.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_06_continue",
+     "label": "Go to the harbor",
+     "target": "hub_07"
+    },
+    {
+     "id": "choice_hub_06_side_a",
+     "label": "Search the chest",
+     "target": "side_06_a"
+    },
+    {
+     "id": "choice_hub_06_side_b",
+     "label": "Ask about Tomas",
+     "target": "side_06_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_07",
+   "body": "<<FILL role=explore words=70 beats='At the harbor office a ledger lists the Meridian cargo; one line says one crate of chess sets for Bellhaven.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_07_continue",
+     "label": "Find the dockmaster",
+     "target": "hub_08"
+    },
+    {
+     "id": "choice_hub_07_side_a",
+     "label": "Read the cargo page",
+     "target": "side_07_a"
+    },
+    {
+     "id": "choice_hub_07_side_b",
+     "label": "Check the date",
+     "target": "side_07_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_08",
+   "body": "<<FILL role=explore words=70 beats='The dockmaster says the Meridian hit a storm and sank; divers brought up a broken chess table stained with salt.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_08_continue",
+     "label": "Visit the salvage yard",
+     "target": "hub_09"
+    },
+    {
+     "id": "choice_hub_08_side_a",
+     "label": "Examine the table",
+     "target": "side_08_a"
+    },
+    {
+     "id": "choice_hub_08_side_b",
+     "label": "Ask about the crate",
+     "target": "side_08_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_09",
+   "body": "<<FILL role=decision words=70 beats='The salvage yard holds the broken table; its fox stamp matches the extra rook; Wren must decide whether to dig deeper or follow the paper trail.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_09_continue",
+     "label": "Follow the paper trail",
+     "target": "hub_10"
+    },
+    {
+     "id": "choice_hub_09_side_a",
+     "label": "Trace the table maker",
+     "target": "side_09_a"
+    },
+    {
+     "id": "choice_hub_09_side_b",
+     "label": "Find the bill of sale",
+     "target": "side_09_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_10",
+   "body": "<<FILL role=explore words=70 beats='The salvage owner finds a bill of sale for the table; it names a collector in Bellhaven who bought the Meridian chess sets.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_10_continue",
+     "label": "Go to the lighthouse",
+     "target": "hub_11"
+    },
+    {
+     "id": "choice_hub_10_side_a",
+     "label": "Question the collector",
+     "target": "side_10_a"
+    },
+    {
+     "id": "choice_hub_10_side_b",
+     "label": "Read the address",
+     "target": "side_10_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_11",
+   "body": "<<FILL role=climax words=70 beats='At the lighthouse a keeper diary describes saving a crate from the wreck; inside were two chess sets, one with an extra piece.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_11_continue",
+     "label": "Visit the chess club",
+     "target": "hub_12"
+    },
+    {
+     "id": "choice_hub_11_side_a",
+     "label": "Check the diary map",
+     "target": "side_11_a"
+    },
+    {
+     "id": "choice_hub_11_side_b",
+     "label": "Search the crate",
+     "target": "side_11_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_12",
+   "body": "<<FILL role=explore words=70 beats='Seaside Hall hosts a chess club; a framed tournament photo shows a row of players and a wooden rook with a fox on the table.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_12_continue",
+     "label": "Find the player",
+     "target": "hub_13"
+    },
+    {
+     "id": "choice_hub_12_side_a",
+     "label": "Look at the photo",
+     "target": "side_12_a"
+    },
+    {
+     "id": "choice_hub_12_side_b",
+     "label": "Ask the archivist",
+     "target": "side_12_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_13",
+   "body": "<<FILL role=transition words=70 beats='The photo caption names the player as Mr Elm of Bellhaven; Wren writes the address in a notebook.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_13_continue",
+     "label": "Go to Bellhaven",
+     "target": "hub_14"
+    },
+    {
+     "id": "choice_hub_13_side_a",
+     "label": "Call the museum",
+     "target": "side_13_a"
+    },
+    {
+     "id": "choice_hub_13_side_b",
+     "label": "Check the map",
+     "target": "side_13_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_14",
+   "body": "<<FILL role=explore words=70 beats='The Bellhaven Museum has a trunk from the Elm family; the curator opens it and finds a matching rook, but not the extra piece.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_14_continue",
+     "label": "Search the storage room",
+     "target": "hub_15"
+    },
+    {
+     "id": "choice_hub_14_side_a",
+     "label": "Ask about the trunk",
+     "target": "side_14_a"
+    },
+    {
+     "id": "choice_hub_14_side_b",
+     "label": "Look for a label",
+     "target": "side_14_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_15",
+   "body": "<<FILL role=climax words=70 beats='In museum storage Wren compares the extra rook to the Elm rook; the carving is older and the fox faces the other way.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_15_continue",
+     "label": "Find the workshop",
+     "target": "hub_16"
+    },
+    {
+     "id": "choice_hub_15_side_a",
+     "label": "Test the wood",
+     "target": "side_15_a"
+    },
+    {
+     "id": "choice_hub_15_side_b",
+     "label": "Open the donation ledger",
+     "target": "side_15_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_16",
+   "body": "<<FILL role=explore words=70 beats='A reconstructed carver workshop holds Tomas Bowe tools; every handle has a fox mark and a hidden drawer under the bench.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_16_continue",
+     "label": "Open the drawer",
+     "target": "hub_17"
+    },
+    {
+     "id": "choice_hub_16_side_a",
+     "label": "Study the tools",
+     "target": "side_16_a"
+    },
+    {
+     "id": "choice_hub_16_side_b",
+     "label": "Tap the bench",
+     "target": "side_16_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_17",
+   "body": "<<FILL role=climax words=70 beats='Behind the drawer Wren finds a letter from Tomas to his sister; it tells of carving an extra piece for the Elm Street house.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_17_continue",
+     "label": "Read the letter",
+     "target": "hub_18"
+    },
+    {
+     "id": "choice_hub_17_side_a",
+     "label": "Check the signature",
+     "target": "side_17_a"
+    },
+    {
+     "id": "choice_hub_17_side_b",
+     "label": "Look for a date",
+     "target": "side_17_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_18",
+   "body": "<<FILL role=transition words=70 beats='The letter gives an Elm Street address; Wren leaves the museum and rides a bus across town to the old house.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_18_continue",
+     "label": "Knock on the door",
+     "target": "hub_19"
+    },
+    {
+     "id": "choice_hub_18_side_a",
+     "label": "Visit the caretaker",
+     "target": "side_18_a"
+    },
+    {
+     "id": "choice_hub_18_side_b",
+     "label": "Ask the neighbors",
+     "target": "side_18_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_19",
+   "body": "<<FILL role=explore words=70 beats='Elm Street house is now a boarding house; Miss Ada shows Wren a chess cabinet with carved corners and the missing set inside.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_19_continue",
+     "label": "Ask about the cabinet",
+     "target": "hub_20"
+    },
+    {
+     "id": "choice_hub_19_side_a",
+     "label": "Open the cabinet",
+     "target": "side_19_a"
+    },
+    {
+     "id": "choice_hub_19_side_b",
+     "label": "Talk to Miss Ada",
+     "target": "side_19_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_20",
+   "body": "<<FILL role=explore words=70 beats='Miss Ada says the cabinet came from the Yarrow family auction; the Yarrows owned a clock shop on Market Street.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_20_continue",
+     "label": "Find the Yarrow shop",
+     "target": "hub_21"
+    },
+    {
+     "id": "choice_hub_20_side_a",
+     "label": "Search the city records",
+     "target": "side_20_a"
+    },
+    {
+     "id": "choice_hub_20_side_b",
+     "label": "Walk to Market Street",
+     "target": "side_20_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_21",
+   "body": "<<FILL role=transition words=70 beats='Mr Yarrow keeps a tidy antique shop; when Wren shows the extra rook, he goes pale and says the piece is a copy.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_21_continue",
+     "label": "Compare the sets",
+     "target": "hub_22"
+    },
+    {
+     "id": "choice_hub_21_side_a",
+     "label": "Look at his ledger",
+     "target": "side_21_a"
+    },
+    {
+     "id": "choice_hub_21_side_b",
+     "label": "Talk to his assistant",
+     "target": "side_21_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_22",
+   "body": "<<FILL role=climax words=70 beats='A photo on the wall shows a Yarrow chess set with a fox rook; the extra piece matches exactly, even the tiny chip on the ear.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_22_continue",
+     "label": "Confront Mr Yarrow",
+     "target": "hub_23"
+    },
+    {
+     "id": "choice_hub_22_side_a",
+     "label": "Check the photo date",
+     "target": "side_22_a"
+    },
+    {
+     "id": "choice_hub_22_side_b",
+     "label": "Find the family portrait",
+     "target": "side_22_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_23",
+   "body": "<<FILL role=climax words=70 beats='Mr Yarrow admits his great-aunt lost the set in a bet; he hid the extra piece in a junk-shop lot to keep it safe.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_23_continue",
+     "label": "Return to Harlow shop",
+     "target": "hub_24"
+    },
+    {
+     "id": "choice_hub_23_side_a",
+     "label": "Ask for the story",
+     "target": "side_23_a"
+    },
+    {
+     "id": "choice_hub_23_side_b",
+     "label": "Accept the apology",
+     "target": "side_23_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_24",
+   "body": "<<FILL role=transition words=70 beats='Back at the Harlow shop Mrs Harlow listens to the whole trail; she laughs and says the mystery piece now belongs to Wren.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_24_continue",
+     "label": "Decide what to do",
+     "target": "hub_25"
+    },
+    {
+     "id": "choice_hub_24_side_a",
+     "label": "Keep the receipt",
+     "target": "side_24_a"
+    },
+    {
+     "id": "choice_hub_24_side_b",
+     "label": "Ask the price",
+     "target": "side_24_b"
+    }
+   ]
+  },
+  {
+   "id": "hub_25",
+   "body": "<<FILL role=climax words=70 beats='Wren holds the fox rook in the shop window light; the collector, the family, and the museum all wait for an answer.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_hub_25_a",
+     "label": "Return it to Mr Yarrow",
+     "target": "side_25_a"
+    },
+    {
+     "id": "choice_hub_25_b",
+     "label": "Hide it from the collector",
+     "target": "side_25_b"
+    },
+    {
+     "id": "choice_hub_25_c",
+     "label": "Donate it to the museum",
+     "target": "side_25_c"
+    }
+   ]
+  },
+  {
+   "id": "side_01_a",
+   "body": "<<FILL role=explore words=75 beats='Wren holds a magnifying glass over the extra rook; the fox tail curves into the initials TB; the wood feels older than the rest.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_01_a",
+     "label": "Follow the fox mark",
+     "target": "hub_02"
+    }
+   ]
+  },
+  {
+   "id": "side_01_b",
+   "body": "<<FILL role=explore words=75 beats='Mrs Harlow tells how a tall man sold the chess set from a blue case; he mentioned Penrose House.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_01_b",
+     "label": "Go to Penrose House",
+     "target": "hub_03"
+    }
+   ]
+  },
+  {
+   "id": "side_02_a",
+   "body": "<<FILL role=explore words=75 beats='In the Penrose hall Wren finds a pencil note under the radiators; it says Bowe workshop delivered one extra rook.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_02_a",
+     "label": "Follow the note",
+     "target": "hub_03"
+    }
+   ]
+  },
+  {
+   "id": "side_02_b",
+   "body": "<<FILL role=explore words=75 beats='Mr Nye recalls the old carver who delivered the set; the man had a fox shaped birthmark on his hand.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_02_b",
+     "label": "Ask about the carver",
+     "target": "hub_04"
+    }
+   ]
+  },
+  {
+   "id": "side_03_a",
+   "body": "<<FILL role=explore words=75 beats='The receipt in the cabinet is faded; it lists one set plus one extra piece for the Meridian captain.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_03_a",
+     "label": "Keep the receipt",
+     "target": "hub_04"
+    }
+   ]
+  },
+  {
+   "id": "side_03_b",
+   "body": "<<FILL role=explore words=75 beats='Wren asks Mr Nye about the ship; he points to a harbor map framed beside the stairs.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_03_b",
+     "label": "Follow the harbor map",
+     "target": "hub_05"
+    }
+   ]
+  },
+  {
+   "id": "side_04_a",
+   "body": "<<FILL role=explore words=75 beats='Behind the tea counter is a drawer of old receipts; one shows a fox stamp and the name T Bowe.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_04_a",
+     "label": "Take the paper trail",
+     "target": "hub_05"
+    }
+   ]
+  },
+  {
+   "id": "side_04_b",
+   "body": "<<FILL role=explore words=75 beats='The tea shop owner tells Wren that the Bowe family still lives on Cedar Lane; she draws a small map.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_04_b",
+     "label": "Visit Cedar Lane",
+     "target": "hub_06"
+    }
+   ]
+  },
+  {
+   "id": "side_05_a",
+   "body": "<<FILL role=explore words=75 beats='The librarian lets Wren copy the 1927 article; it names the Meridian and lists the crew.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_05_a",
+     "label": "Read the crew list",
+     "target": "hub_06"
+    }
+   ]
+  },
+  {
+   "id": "side_05_b",
+   "body": "<<FILL role=explore words=75 beats='The archive card gives the Bowe cottage address; Wren tucks it into the notebook.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_05_b",
+     "label": "Go to the cottage",
+     "target": "hub_07"
+    }
+   ]
+  },
+  {
+   "id": "side_06_a",
+   "body": "<<FILL role=explore words=75 beats='Inside the chest Wren finds a ship ticket for Tomas Bowe; the paper is soft and smells of salt.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_06_a",
+     "label": "Follow the ticket",
+     "target": "hub_07"
+    }
+   ]
+  },
+  {
+   "id": "side_06_b",
+   "body": "<<FILL role=explore words=75 beats='Mrs Bowe grandson tells Wren that Tomas sailed to Bellhaven and never came back; he gives her a button from his coat.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_06_b",
+     "label": "Keep the button",
+     "target": "hub_08"
+    }
+   ]
+  },
+  {
+   "id": "side_07_a",
+   "body": "<<FILL role=explore words=75 beats='The cargo page shows the Meridian left on October 3; the chess crate was marked for Bellhaven Museum.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_07_a",
+     "label": "Head to Bellhaven",
+     "target": "hub_08"
+    }
+   ]
+  },
+  {
+   "id": "side_07_b",
+   "body": "<<FILL role=explore words=75 beats='The dockmaster points to a faded storm warning from 1927; the date matches the Meridian sailing.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_07_b",
+     "label": "Ask about the storm",
+     "target": "hub_09"
+    }
+   ]
+  },
+  {
+   "id": "side_08_a",
+   "body": "<<FILL role=explore words=75 beats='Wren lifts a canvas in the salvage yard; underneath is the fox stamped chess table, split in half.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_08_a",
+     "label": "Examine the table",
+     "target": "hub_09"
+    }
+   ]
+  },
+  {
+   "id": "side_08_b",
+   "body": "<<FILL role=explore words=75 beats='The salvage owner says the crate was sold to a Bellhaven collector with silver glasses; he checks his notebook.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_08_b",
+     "label": "Find the collector",
+     "target": "hub_10"
+    }
+   ]
+  },
+  {
+   "id": "side_09_a",
+   "body": "<<FILL role=explore words=75 beats='Wren traces the fox carving on the table with a pencil; the rubbing matches the extra rook exactly.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_09_a",
+     "label": "Show the rubbing",
+     "target": "end_01"
+    }
+   ]
+  },
+  {
+   "id": "side_09_b",
+   "body": "<<FILL role=explore words=75 beats='The salvage owner finds the bill of sale; it names the collector as Mr Pike of Bellhaven.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_09_b",
+     "label": "Visit Mr Pike",
+     "target": "end_02"
+    }
+   ]
+  },
+  {
+   "id": "side_10_a",
+   "body": "<<FILL role=explore words=75 beats='Wren phones the Bellhaven collector; he says he sold the Meridian chess sets to a lighthouse museum.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_10_a",
+     "label": "Call the museum",
+     "target": "hub_11"
+    }
+   ]
+  },
+  {
+   "id": "side_10_b",
+   "body": "<<FILL role=explore words=75 beats='The address on the bill is the old lighthouse keeper house; Wren bikes along the shore road.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_10_b",
+     "label": "Ride to the lighthouse",
+     "target": "hub_12"
+    }
+   ]
+  },
+  {
+   "id": "side_11_a",
+   "body": "<<FILL role=explore words=75 beats='The keeper diary has a tide chart with a circle around the wreck; Wren marks it in her notebook.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_11_a",
+     "label": "Follow the circle",
+     "target": "end_03"
+    }
+   ]
+  },
+  {
+   "id": "side_11_b",
+   "body": "<<FILL role=explore words=75 beats='In the crate Wren finds a torn chess board square with a fox mark; it fits the extra rook base.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_11_b",
+     "label": "Fit the square",
+     "target": "end_04"
+    }
+   ]
+  },
+  {
+   "id": "side_12_a",
+   "body": "<<FILL role=explore words=75 beats='Under the tournament photo Wren reads the date and the name Mr Elm; the rook on the table is clearly the extra piece.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_12_a",
+     "label": "Write the name",
+     "target": "hub_13"
+    }
+   ]
+  },
+  {
+   "id": "side_12_b",
+   "body": "<<FILL role=explore words=75 beats='The chess club archivist says Mr Elm lived on Bellhaven Hill; he gives Wren an old key to the museum.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_12_b",
+     "label": "Take the key",
+     "target": "hub_14"
+    }
+   ]
+  },
+  {
+   "id": "side_13_a",
+   "body": "<<FILL role=explore words=75 beats='The museum curator answers the phone; she says a trunk from the Elm family arrived in 1989.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_13_a",
+     "label": "Plan the visit",
+     "target": "end_05"
+    }
+   ]
+  },
+  {
+   "id": "side_13_b",
+   "body": "<<FILL role=explore words=75 beats='Wren studies the map; Bellhaven Hill is two train stops from the harbor.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_13_b",
+     "label": "Catch the train",
+     "target": "end_06"
+    }
+   ]
+  },
+  {
+   "id": "side_14_a",
+   "body": "<<FILL role=explore words=75 beats='The curator opens the trunk and lifts out a worn chess board; the corners match the Harlow set.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_14_a",
+     "label": "Look closer",
+     "target": "hub_15"
+    }
+   ]
+  },
+  {
+   "id": "side_14_b",
+   "body": "<<FILL role=explore words=75 beats='Wren searches the trunk lining and finds a paper label from the Bowe workshop.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_14_b",
+     "label": "Pull the label",
+     "target": "hub_16"
+    }
+   ]
+  },
+  {
+   "id": "side_15_a",
+   "body": "<<FILL role=explore words=75 beats='The light shows the extra rook has a chip on one ear; the same chip appears in the museum photo.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_15_a",
+     "label": "Match the chip",
+     "target": "end_07"
+    }
+   ]
+  },
+  {
+   "id": "side_15_b",
+   "body": "<<FILL role=explore words=75 beats='The donation ledger records the Elm set from a Yarrow estate; the penmanship is elegant and old.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_15_b",
+     "label": "Copy the entry",
+     "target": "end_08"
+    }
+   ]
+  },
+  {
+   "id": "side_16_a",
+   "body": "<<FILL role=explore words=75 beats='Every tool handle in the workshop has a fox stamp; the chisel edges match the undercut on the rook base.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_16_a",
+     "label": "Measure the chisel",
+     "target": "hub_17"
+    }
+   ]
+  },
+  {
+   "id": "side_16_b",
+   "body": "<<FILL role=explore words=75 beats='Wren knocks on the workbench; one panel sounds hollow, and a drawer slides open.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_16_b",
+     "label": "Open the drawer",
+     "target": "hub_18"
+    }
+   ]
+  },
+  {
+   "id": "side_17_a",
+   "body": "<<FILL role=explore words=75 beats='The letter signature is Tomas Bowe; the final line says the extra piece was carved for his sister Ada.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_17_a",
+     "label": "Read the name",
+     "target": "end_09"
+    }
+   ]
+  },
+  {
+   "id": "side_17_b",
+   "body": "<<FILL role=explore words=75 beats='The letter date is October 1, 1927, two days before the Meridian sailed; Wren feels the trail come together.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_17_b",
+     "label": "Follow the date",
+     "target": "end_10"
+    }
+   ]
+  },
+  {
+   "id": "side_18_a",
+   "body": "<<FILL role=explore words=75 beats='The museum caretaker knows Elm Street; he writes the bus number on a scrap of paper.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_18_a",
+     "label": "Take the bus",
+     "target": "hub_19"
+    }
+   ]
+  },
+  {
+   "id": "side_18_b",
+   "body": "<<FILL role=explore words=75 beats='A neighbor on Elm Street says Miss Ada kept the old chess cabinet after the Yarrow auction.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_18_b",
+     "label": "Meet Miss Ada",
+     "target": "hub_20"
+    }
+   ]
+  },
+  {
+   "id": "side_19_a",
+   "body": "<<FILL role=explore words=75 beats='The chess cabinet is unlocked; inside sits a set with the fox rook missing from its row.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_19_a",
+     "label": "Set the piece down",
+     "target": "end_11"
+    }
+   ]
+  },
+  {
+   "id": "side_19_b",
+   "body": "<<FILL role=explore words=75 beats='Miss Ada tells Wren that the cabinet was bought from the Yarrow family clock shop; she has the old receipt.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_19_b",
+     "label": "Read the receipt",
+     "target": "hub_21"
+    }
+   ]
+  },
+  {
+   "id": "side_20_a",
+   "body": "<<FILL role=explore words=75 beats='The city directory lists Yarrow Antiques at 14 Market Street; Wren circles the address.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_20_a",
+     "label": "Go to Market Street",
+     "target": "hub_21"
+    }
+   ]
+  },
+  {
+   "id": "side_20_b",
+   "body": "<<FILL role=explore words=75 beats='At the Yarrow shop a brass bell rings; Mr Yarrow looks up from a clock and frowns.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_20_b",
+     "label": "Enter the shop",
+     "target": "hub_22"
+    }
+   ]
+  },
+  {
+   "id": "side_21_a",
+   "body": "<<FILL role=explore words=75 beats='The Yarrow ledger has an entry for a chess set sold to a junk dealer; the date is last Tuesday.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_21_a",
+     "label": "Turn the page",
+     "target": "hub_22"
+    }
+   ]
+  },
+  {
+   "id": "side_21_b",
+   "body": "<<FILL role=explore words=75 beats='The assistant whispers that Mr Yarrow kept a family photo hidden in the back room.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_21_b",
+     "label": "Look at the photo",
+     "target": "hub_23"
+    }
+   ]
+  },
+  {
+   "id": "side_22_a",
+   "body": "<<FILL role=explore words=75 beats='The photo shows the Yarrow chess set complete with a fox rook; Wren lays the extra piece beside it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_22_a",
+     "label": "Compare the bases",
+     "target": "hub_23"
+    }
+   ]
+  },
+  {
+   "id": "side_22_b",
+   "body": "<<FILL role=explore words=75 beats='A portrait of Great Aunt Ada shows her holding a chess piece with a fox; the family resemblance is clear.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_22_b",
+     "label": "Show the portrait",
+     "target": "hub_24"
+    }
+   ]
+  },
+  {
+   "id": "side_23_a",
+   "body": "<<FILL role=explore words=75 beats='Mr Yarrow finds his great aunt will; it says the chess set was left to her but lost in a bet.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_23_a",
+     "label": "Read the will",
+     "target": "hub_24"
+    }
+   ]
+  },
+  {
+   "id": "side_23_b",
+   "body": "<<FILL role=explore words=75 beats='Mr Yarrow shakes Wren hand and tells the whole story; he gives her the original box for the piece.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_23_b",
+     "label": "Take the box",
+     "target": "hub_25"
+    }
+   ]
+  },
+  {
+   "id": "side_24_a",
+   "body": "<<FILL role=explore words=75 beats='Mrs Harlow writes Wren a note confirming the find; she pins it to the chess set box.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_24_a",
+     "label": "Keep the note",
+     "target": "hub_25"
+    }
+   ]
+  },
+  {
+   "id": "side_24_b",
+   "body": "<<FILL role=explore words=75 beats='Mrs Harlow says the original price was four pounds; she laughs and gives Wren the change.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_24_b",
+     "label": "Hold the coin",
+     "target": "hub_25"
+    }
+   ]
+  },
+  {
+   "id": "side_25_a",
+   "body": "<<FILL role=transition words=75 beats='Wren wraps the extra rook in soft cloth and places it in Mr Yarrow hands; the family story is complete.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_25_a",
+     "label": "Give the piece back",
+     "target": "end_12"
+    }
+   ]
+  },
+  {
+   "id": "side_25_b",
+   "body": "<<FILL role=transition words=75 beats='Wren slides the rook into a coat pocket to hide it from the collector; the shop bell rings behind her.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_25_b",
+     "label": "Hide in the back room",
+     "target": "end_13"
+    }
+   ]
+  },
+  {
+   "id": "side_25_c",
+   "body": "<<FILL role=transition words=75 beats='Wren writes a museum label for the fox rook and sets it in a glass case with Tomas Bowe name.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_side_25_c",
+     "label": "Donate the rook",
+     "target": "end_14"
+    }
+   ]
+  },
+  {
+   "id": "end_01",
+   "body": "<<FILL role=ending words=70 beats='The rubbing and the table prove the extra piece is real; Wren places the rook back in the set and the set feels complete.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_01",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Fox Rook Finds a Player"
+   }
+  },
+  {
+   "id": "end_02",
+   "body": "<<FILL role=ending words=70 beats='The bill of sale names Mr Pike; Wren visits him and learns the extra piece was made for a ship captain, but the trail twists beyond this clue.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_02",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Collector Name"
+   }
+  },
+  {
+   "id": "end_03",
+   "body": "<<FILL role=ending words=70 beats='The tide chart leads to a sunken cabin; Wren finds a crate but it holds only broken chessmen, no fox rook; the mystery waits for another day.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_03",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Empty Crate"
+   }
+  },
+  {
+   "id": "end_04",
+   "body": "<<FILL role=ending words=70 beats='The torn board square fits the rook base; Mrs Harlow says it is the missing square from the Harlow board, a perfect match.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_04",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Board Comes Together"
+   }
+  },
+  {
+   "id": "end_05",
+   "body": "<<FILL role=ending words=70 beats='The museum call ends with a promise to check the trunk; Wren leaves her phone number and hopes.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_05",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Promise from the Museum"
+   }
+  },
+  {
+   "id": "end_06",
+   "body": "<<FILL role=ending words=70 beats='The train to Bellhaven breaks down in a storm; Wren reaches the museum after closing and presses her face to the cold glass.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_06",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Locked Out"
+   }
+  },
+  {
+   "id": "end_07",
+   "body": "<<FILL role=ending words=70 beats='The chip on the ear matches the museum photo; Wren takes the rook to the tournament and wins the junior trophy.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_07",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Winning Move"
+   }
+  },
+  {
+   "id": "end_08",
+   "body": "<<FILL role=ending words=70 beats='The donation ledger shows the Elm set came from a Yarrow estate; Wren copies every word into her notebook.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_08",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Name in the Ledger"
+   }
+  },
+  {
+   "id": "end_09",
+   "body": "<<FILL role=ending words=70 beats='The letter names Ada Bowe; Wren finds her grave in the old churchyard and leaves the fox rook beside the stone.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_09",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Last Letter"
+   }
+  },
+  {
+   "id": "end_10",
+   "body": "<<FILL role=ending words=70 beats='The letter date solves the riddle; Mrs Harlow invites the whole family to the shop and they toast the extra piece.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_10",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "October First"
+   }
+  },
+  {
+   "id": "end_11",
+   "body": "<<FILL role=ending words=70 beats='The cabinet has a gap where the fox rook belongs; Wren fits the piece into the row and the set is whole again.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_11",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Missing Piece Returns"
+   }
+  },
+  {
+   "id": "end_12",
+   "body": "<<FILL role=ending words=70 beats='Mr Yarrow holds the rook and thanks Wren; he returns it to the family set and the story closes like a well made box.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_12",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Yarrow Gift"
+   }
+  },
+  {
+   "id": "end_13",
+   "body": "<<FILL role=ending words=70 beats='The collector blocks the back door and claims the piece; Wren calls for help but the shop lights go out.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_13",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "The Collector Net"
+   }
+  },
+  {
+   "id": "end_14",
+   "body": "<<FILL role=ending words=70 beats='The museum puts the fox rook on display with a card that says carved by Tomas Bowe; Wren visits it every Saturday.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_14",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Museum Home"
+   }
+  }
+ ]
+}
