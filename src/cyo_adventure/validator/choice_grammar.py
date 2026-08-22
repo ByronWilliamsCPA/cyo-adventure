@@ -15,6 +15,11 @@ section 10):
   word count of a composed stop (mirrors ``player/stops.py::compose_stop``'s
   node sequence: the single-choice run plus the branch/ending node it flows
   into) must not exceed the band's words-per-stop ceiling.
+* **CG-6 outbound staging**: a decision node's own body should share at least
+  one content word with each of its OWN choice labels, so the prose stages
+  what the choices promise (`AL-495`/`AL-524`/`UW-C312`; the outbound
+  companion to CG-4, with the same heuristic caveat and its calibration in
+  :func:`check_outbound_staging`'s docstring).
 * **CG-4 fill-gate acknowledgment**: a decision-child node's opening sentence
   should share at least one content word with the choice label that leads to
   it (ADR-011 section 10's cross-cutting "every choice is acknowledged in the
@@ -1037,6 +1042,73 @@ def check_fill_gate_acknowledgment(story: Storybook) -> ValidationReport:
     return report
 
 
+def check_outbound_staging(story: Storybook) -> ValidationReport:
+    """CG-6: flag a choice label whose content no word of its OWN body stages.
+
+    The outbound companion to CG-4 (`AL-495`/`AL-524`/`UW-C312`). CG-4 is
+    strictly inbound (does the ARRIVING node acknowledge the choice just
+    taken); nothing asked whether a node's prose introduces what its own
+    outbound choices promise, so a body about boarding a boat could offer
+    "Take the canal cap to somebody who knew it" with no cap anywhere in it.
+    Same heuristic caveat as CG-4: token overlap is a weak proxy in both
+    directions, and a human makes the real call.
+
+    Calibration (2026-08-21, this rule's prototype over 39 committed
+    known-good fills and the live one-shot books): known-good books dangle a
+    median 3.7 percent of their labels (max 33 percent, terse gamebook
+    labels), the under-delivered live books 65 to 85 percent, and one book
+    that over-delivered its commission still dangled 73 percent, so the
+    defect is model behavior rather than only a fill-rate symptom.
+
+    Skips a node whose body still carries a ``<<FILL`` directive, and any
+    comparison where either side tokenizes to zero content words.
+
+    Args:
+        story: The parsed Storybook to check.
+
+    Returns:
+        ValidationReport: WARNING findings, one per unstaged outbound label.
+    """
+    report = ValidationReport()
+    for node in story.nodes:
+        if not _is_decision(node):
+            continue
+        body = strip_sentinels(node.body).strip()
+        if not body or _FILL_MARKER in node.body:
+            continue
+        body_tokens = {
+            tok.lower() for tok in tokenize(body) if tok.lower() not in STOPWORDS
+        }
+        if not body_tokens:
+            continue
+        for choice in node.choices:
+            label_tokens = {
+                tok.lower()
+                for tok in tokenize(choice.label)
+                if tok.lower() not in STOPWORDS
+            }
+            if not label_tokens or body_tokens & label_tokens:
+                continue
+            report.add(
+                ValidationFinding(
+                    rule_id="CG-6",
+                    severity=Severity.WARNING,
+                    story_id=story.id,
+                    node_id=node.id,
+                    choice_id=choice.id,
+                    message=(
+                        f"CG-6 grammar: node '{node.id}' offers choice "
+                        f"'{choice.id}' labeled {choice.label!r} but its own "
+                        f"body shares no content word with the label in story "
+                        f"'{story.id}': the prose never stages what the choice "
+                        "promises (advisory heuristic; may be a false "
+                        "positive, see module docstring)"
+                    ),
+                )
+            )
+    return report
+
+
 def check_choice_grammar(
     story: Storybook,
     *,
@@ -1074,7 +1146,7 @@ def check_choice_grammar(
         enforce_grammar: Run the structural advisories CG-1, CG-2, CG-3 and
             CG-5.
             ``False`` (the default) keeps the grandfathered catalog silent.
-        is_fill_result: Run CG-4. Set by the gate when ``context`` is
+        is_fill_result: Run CG-4 and CG-6. Set by the gate when ``context`` is
             ``"fill_result"``, the only posture where node bodies hold prose.
 
     Returns:
@@ -1093,5 +1165,7 @@ def check_choice_grammar(
             report.add(finding)
     if is_fill_result:
         for finding in check_fill_gate_acknowledgment(story).findings:
+            report.add(finding)
+        for finding in check_outbound_staging(story).findings:
             report.add(finding)
     return report

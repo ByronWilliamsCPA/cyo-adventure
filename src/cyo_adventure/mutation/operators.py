@@ -2952,10 +2952,19 @@ _M4_MODE_INSERT_DECISION = "insert-decision"
 _M4_VARIANT_RECONVERGENCE = "reconvergence"
 _M4_VARIANT_MICRO_STUB = "micro-stub"
 
-# ADR-011 section 6 decisions-per-path window (4-8 decisions per playthrough).
+# Historical ADR-011 section 6 decisions-per-path window (4-8 per playthrough).
 # The gate does not enforce decisions-per-path (design 4.8), so M4 self-enforces
 # it: an operation may not push a path above the ceiling or drop a path below the
 # floor (the two-sided monotonic check in ``_decision_window_reason``).
+# #ASSUME: data-integrity: ADR-011 section 6 was amended 2026-08-22 (`UW-C327`):
+# the flat 4-8 window was replaced by derived per-cell windows (e.g. 6-15 at
+# 8-11 Short up to 17-43 at 16+ Long prose), so these constants now under-state
+# the amended ceilings and over-state the young-band floors. Kept as-is for now:
+# the guard is pre-gate hygiene, not the safety authority (the gate is), and the
+# mismatch only over-rejects at the amended ceilings while under-protecting the
+# higher flowed-band floors. Re-deriving the guard per cell is `UW-C330`.
+# #VERIFY: when `UW-C330` lands, key the window off the parent's
+# (band, length, style) cell rather than these two module constants.
 _MIN_DECISIONS_PER_PATH = 4
 _MAX_DECISIONS_PER_PATH = 8
 
@@ -3045,17 +3054,19 @@ def _decision_node_ids(story: Mapping[str, object]) -> set[str]:
 
 
 def path_decision_counts(story: Mapping[str, object]) -> tuple[tuple[int, ...], bool]:
-    """Return the decision count of every root-to-ending path, and a truncated flag.
+    """Return sampled per-path decision counts, and a truncated flag.
 
     Enumerates simple paths from ``start_node`` to any ending node via a
     deterministic (sorted) depth-first search, counting the decision nodes on
-    each. For an acyclic parent the simple-path set is finite: every
-    root-to-ending path is enumerated, the result is EXACT, and ``truncated`` is
-    always ``False`` (the design guarantees the acyclic count is exact, so the
-    :data:`_WALK_PATH_SAMPLE_CAP` limit is never applied). For a cyclic parent
-    the search samples up to :data:`_WALK_PATH_SAMPLE_CAP` paths and sets
-    ``truncated=True`` when it hits that cap (design 4.5: exact over the acyclic
-    path set, bounded sample for cyclic graphs).
+    each, and stops with ``truncated=True`` after
+    :data:`_WALK_PATH_SAMPLE_CAP` paths on EVERY graph shape. A previous
+    revision enumerated acyclic parents exhaustively on the theory that a
+    finite path set is an enumerable one; a reconvergent DAG's path set is
+    finite but exponential, and the exhaustive walk hung for over a minute on
+    a 193-node catalog skeleton (`AL-525`/`UW-C326`). Callers needing the
+    exact min/max over an acyclic parent use :func:`_dag_decision_minmax`,
+    which is linear time; a small fixture (under the cap) still gets the
+    complete path set here with ``truncated=False``.
 
     Args:
         story: The raw story document.
@@ -3070,11 +3081,17 @@ def path_decision_counts(story: Mapping[str, object]) -> tuple[tuple[int, ...], 
         return (), False
     endings = _ending_node_ids(story)
     decisions = _decision_node_ids(story)
-    # Detect acyclicity once, reusing the same networkx helper the other graph
-    # checks in this module use. The cap bounds the search only for cyclic
-    # parents; an acyclic parent has a finite simple-path set and is enumerated
-    # in full, so it always returns truncated=False.
-    acyclic = nx.is_directed_acyclic_graph(_parent_graph(story))
+    # #CRITICAL: timing: the cap now bounds the search for EVERY parent, not
+    # only cyclic ones. The previous acyclic-is-exact guarantee confused
+    # finite with tractable: a reconvergent DAG's simple-path set is finite
+    # but exponential, and enumerating it hung for over 60 seconds on the
+    # 193-node `the-tin-whistle-map` while `M2`/`M3` applied in seconds
+    # (`AL-525`/`UW-C326`). Callers that only need the min/max decision
+    # count over an acyclic parent get the EXACT answer from
+    # :func:`_dag_decision_minmax` in linear time instead; this enumerator
+    # is a bounded sampler everywhere.
+    # #VERIFY: test_skeleton_mutation_m4.py::
+    # test_the_window_check_is_exact_and_fast_on_an_exponential_dag.
     counts: list[int] = []
     truncated = False
     seed_count = 1 if start in decisions else 0
@@ -3085,12 +3102,64 @@ def path_decision_counts(story: Mapping[str, object]) -> tuple[tuple[int, ...], 
         node, visited, dcount = stack.pop()
         if node in endings:
             counts.append(dcount)
-            if not acyclic and len(counts) >= _WALK_PATH_SAMPLE_CAP:
+            if len(counts) >= _WALK_PATH_SAMPLE_CAP:
                 truncated = True
                 break
             continue
         _push_path_successors(stack, (node, visited, dcount), graph, decisions)
     return tuple(counts), truncated
+
+
+def _dag_decision_minmax(story: Mapping[str, object]) -> tuple[int, int] | None:
+    """Return the exact (min, max) decisions per root-to-ending path of a DAG.
+
+    Linear-time dynamic programming over reverse topological order, so the
+    answer is EXACT on any acyclic parent however many simple paths it has,
+    where full enumeration is exponential on reconvergent graphs
+    (`AL-525`/`UW-C326`). Counts the same quantity as
+    :func:`path_decision_counts`: the number of decision nodes on the path,
+    the start node included, ending nodes never (an ending is not a decision
+    by definition).
+
+    Args:
+        story: The raw story document.
+
+    Returns:
+        tuple[int, int] | None: The (min, max) decision counts over all
+            root-to-ending paths, or None when the graph is cyclic, has no
+            start, or no ending is reachable from the start.
+    """
+    parent_graph = _parent_graph(story)
+    if not nx.is_directed_acyclic_graph(parent_graph):
+        return None
+    graph = adjacency(story)
+    start = _str_field(story, "start_node")
+    if start is None or start not in graph:
+        return None
+    endings = _ending_node_ids(story)
+    decisions = _decision_node_ids(story)
+    # (min, max) decisions from this node to any reachable ending, including
+    # this node's own contribution; None when no ending is reachable.
+    best: dict[str, tuple[int, int] | None] = {}
+    order = [n for n in nx.topological_sort(parent_graph) if isinstance(n, str)]
+    for node in reversed(order):
+        own = 1 if node in decisions else 0
+        if node in endings:
+            best[node] = (own, own)
+            continue
+        reachable = [
+            child
+            for target in graph.get(node, ())
+            if (child := best.get(target)) is not None
+        ]
+        if not reachable:
+            best[node] = None
+            continue
+        best[node] = (
+            own + min(lo for lo, _ in reachable),
+            own + max(hi for _, hi in reachable),
+        )
+    return best.get(start)
 
 
 def _push_path_successors(
@@ -3146,12 +3215,24 @@ def _decision_window_reason(
     # #VERIFY: tests/unit/test_skeleton_mutation_m4.py pins the exact counter on acyclic
     # fixtures and that an op pushing a path to 9, or dropping one below 4, is
     # discarded at preconditions.
-    parent_counts, _parent_truncated = path_decision_counts(parent)
-    cand_counts, _cand_truncated = path_decision_counts(candidate)
-    if not parent_counts or not cand_counts:
-        return None
-    parent_min, parent_max = min(parent_counts), max(parent_counts)
-    cand_min, cand_max = min(cand_counts), max(cand_counts)
+    # Exact linear-time DP on acyclic graphs; the bounded path sampler is the
+    # fallback for cyclic ones. The DP is what makes this check tractable on
+    # catalog-scale reconvergent parents (`AL-525`/`UW-C326`): full simple-path
+    # enumeration hung past 60 seconds on a 193-node branch_and_bottleneck.
+    parent_minmax = _dag_decision_minmax(parent)
+    cand_minmax = _dag_decision_minmax(candidate)
+    if parent_minmax is None:
+        parent_counts, _parent_truncated = path_decision_counts(parent)
+        if not parent_counts:
+            return None
+        parent_minmax = (min(parent_counts), max(parent_counts))
+    if cand_minmax is None:
+        cand_counts, _cand_truncated = path_decision_counts(candidate)
+        if not cand_counts:
+            return None
+        cand_minmax = (min(cand_counts), max(cand_counts))
+    parent_min, parent_max = parent_minmax
+    cand_min, cand_max = cand_minmax
     if cand_max > _MAX_DECISIONS_PER_PATH and cand_max > parent_max:
         return (
             f"insert would create a path with {cand_max} decisions, above the "

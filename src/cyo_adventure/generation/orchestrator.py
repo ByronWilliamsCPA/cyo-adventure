@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, cast
 
@@ -45,6 +46,7 @@ from cyo_adventure.generation.chunking import (
 from cyo_adventure.generation.fidelity_gate import run_stage1_gate
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.metered import ledger_of
+from cyo_adventure.generation.normalize_fill import normalize_filled_story
 from cyo_adventure.generation.prompts import (
     FillBatchPayload,
     build_bound_fill_prompt,
@@ -62,10 +64,15 @@ from cyo_adventure.generation.reading_level_loop import (
     run_reading_level_loop,
 )
 from cyo_adventure.generation.skeleton import (
+    _FEASIBILITY_MARGIN,  # pyright: ignore[reportPrivateUsage]
     MAX_FILL_OUTPUT_TOKENS,
     active_fill_model,
+    estimate_input_tokens,
+    expected_output_tokens,
     is_fill_feasible,
+    resolve_context_window,
     resolve_output_cap,
+    story_fill_rate,
 )
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import GateContext, GateResult, run_gate
@@ -76,7 +83,7 @@ from cyo_adventure.validator.report import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Callable, Mapping
 
     from cyo_adventure.core.config import Settings
     from cyo_adventure.generation.concept import ConceptBrief
@@ -275,6 +282,7 @@ class _RepairContext:
     context: GateContext = "skeleton"
     stage1: _Stage1Config | None = None
     max_tokens: int = _MAX_TOKENS_REPAIR
+    normalize: Callable[[dict[str, object]], dict[str, object]] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -408,6 +416,7 @@ async def _run_one_stage(
     max_tokens: int,
     scale: Scale = "standard",
     context: GateContext = "skeleton",
+    normalize: Callable[[dict[str, object]], dict[str, object]] | None = None,
 ) -> tuple[dict[str, object] | None, GateResult]:
     """Run a single generation stage: call provider, parse JSON, run gate.
 
@@ -430,6 +439,11 @@ async def _run_one_stage(
             ``<<FILL ...>>`` directive. Stage A keeps the ``"skeleton"``
             default because its bodies are one-line beat descriptions by
             design, not prose (see ``prompts/structure.md``).
+        normalize: Optional transform applied to the parsed document BEFORE
+            the gate. The skeleton-fill path passes the freeze-split
+            normalizer (2026-08-21 ruling, section 8.2) so frozen-field
+            drift is restored from the skeleton rather than graded; every
+            other stage leaves it None.
 
     Returns:
         A tuple of ``(doc_or_none, gate_result)``. ``doc_or_none`` is the
@@ -475,6 +489,13 @@ async def _run_one_stage(
         return None, _empty_blocked_gate(context)
 
     doc = cast("dict[str, object]", parsed)
+    # Normalization runs BEFORE the gate (2026-08-21 freeze-split ruling,
+    # live-structural-round-2026-08-21.md section 8.2): frozen-field drift is
+    # restored from the skeleton rather than graded, so a retheme of a frozen
+    # documentation field is a non-event instead of a blocked book or a burned
+    # repair cycle. Only the skeleton-fill path passes a normalizer.
+    if normalize is not None:
+        doc = normalize(doc)
     return doc, run_gate(doc, scale, context=context)
 
 
@@ -868,6 +889,7 @@ async def _run_repair_loop(
             max_tokens=ctx.max_tokens,
             scale=ctx.scale,
             context=ctx.context,
+            normalize=ctx.normalize,
         )
         attempts += 1
         ctx.stage_log.append(f"repair:{attempts}")
@@ -1131,6 +1153,9 @@ class _ChunkedFillContext:
     differentiation_directive: str
     stage_log: list[str]
     slot_bindings: Mapping[str, str] | None = None
+    # The resolved backend model id, for the context-window bound
+    # (`AL-519`/`UW-C324`); None when unknown, which constrains nothing.
+    model: str | None = None
 
 
 async def _fill_in_batches(
@@ -1214,8 +1239,69 @@ async def _fill_in_batches(
                 ctx.differentiation_directive,
             )
         )
+        # #CRITICAL: external resources: the batch prompt carries the whole
+        # document, so input grows with skeleton size while the output cap
+        # stays fixed, and a provider bounds input PLUS output by its context
+        # window. Nothing accounted for that: a batch call requested 58,983
+        # output tokens on a 104,858-token prompt against a 163,840-token
+        # window, one token over, HTTP 400 after the harness had already paid
+        # for the prompt (`AL-519`/`UW-C324`). Bound the ask by the KNOWN
+        # window (unknown windows constrain nothing), and refuse outright
+        # when the remaining room cannot hold the batch under the SAME
+        # feasibility margin `plan_fill_batches` planned it under: the batch
+        # only exists because `is_fill_feasible` said its expected output fits
+        # `ctx.cap` with 20 percent to spare, and reasoning tokens bill against
+        # the window too (`AL-328`/`AL-329`). Testing the raw `needed` against
+        # `room` here would hand the model a batch with under one percent of
+        # headroom (window 163,840 minus a 111,000-token prompt leaves 52,840
+        # against a `needed` of 52,428) and buy the truncation-on-`length` the
+        # margin exists to prevent. Asking the canonical predicate keeps the
+        # window check and the planner on one rule.
+        # #VERIFY: tests/unit/test_chunked_fill.py::
+        # test_a_window_too_small_for_a_batch_refuses_without_spending,
+        # ::test_room_exactly_at_the_feasibility_requirement_proceeds, and
+        # ::test_room_one_token_under_the_feasibility_requirement_refuses.
+        ask = ctx.cap
+        window = resolve_context_window(ctx.model)
+        if window is not None:
+            room = window - estimate_input_tokens(prompt.system, prompt.user)
+            batch_id_set = set(node_ids)
+            batch_nodes = [
+                node
+                for node in cast("list[object]", document.get("nodes") or [])
+                if isinstance(node, dict)
+                and cast("dict[str, object]", node).get("id") in batch_id_set
+            ]
+            needed = expected_output_tokens({"nodes": batch_nodes})
+            # `is_fill_feasible` is the single authority on "does this batch
+            # fit", shared with the one-shot path, so the 0.8 reasoning-headroom
+            # margin cannot drift between the two (PR #737 review, I3).
+            # `needed_with_headroom` re-expresses that same threshold as a token
+            # count for the operator-facing message below. It decides nothing.
+            needed_with_headroom = math.ceil(needed / _FEASIBILITY_MARGIN)
+            if not is_fill_feasible({"nodes": batch_nodes}, max_tokens=room):
+                _logger.warning(
+                    "fill_batch_context_overflow",
+                    batch=index,
+                    batches=len(batches),
+                    window=window,
+                    room=room,
+                    needed=needed,
+                )
+                ctx.stage_log.append(
+                    f"stage_fill:batch_{index}_of_{len(batches)}_context_overflow"
+                )
+                failure = (
+                    f"L1-1 schema: chunked fill batch {index} of {len(batches)} "
+                    f"cannot fit the model's {window}-token context window: the "
+                    f"prompt leaves {room} tokens of room and the batch expects "
+                    f"{needed} plus reasoning headroom ({needed_with_headroom} "
+                    "total); no completion was requested"
+                )
+                return None, _synthetic_blocked_gate(failure, "fill_result")
+            ask = min(ask, room)
         completion = await ctx.provider.complete(
-            system=prompt.system, prompt=prompt.user, max_tokens=ctx.cap
+            system=prompt.system, prompt=prompt.user, max_tokens=ask
         )
         try:
             payload: object = json.loads(completion.text)  # pyright: ignore[reportAny]
@@ -1244,6 +1330,85 @@ async def _fill_in_batches(
     return document, run_gate(document, "standard", context="fill_result")
 
 
+def _with_fill_rate(
+    outcome: GenerationOutcome,
+    skeleton: dict[str, object],
+    min_fill_rate: float,
+    stage_log: list[str],
+) -> GenerationOutcome:
+    """Stamp the story-level fill rate and force review under the floor.
+
+    Ruled 2026-08-21 (section 9.3 of ``live-structural-round-2026-08-21.md``,
+    `UW-C307`): a book delivering under the floor FORCES ``needs_review``,
+    never a hard block, so a thin book cannot ship without a human while a
+    0.63-class good fill is never machine-rejected (the tightest known-good
+    pair sits 0.035 above the default floor). The rate is recorded on every
+    outcome that carries a book, floor breach or not, so review surfaces can
+    show it; floors are a per-vendor, per-band calibration question and the
+    default stands until that calibration exists (`AL-516`/`AL-528`).
+
+    A downgrade ALSO stamps ``"fill_rate_downgrade": True``, and that key, not
+    the rate, is what
+    :func:`~cyo_adventure.generation.worker._should_persist_storybook` reads.
+    The rate is on every outcome carrying a book, so it identifies nothing; a
+    key present only on the downgrade says "the base outcome was clean before
+    this function touched it", which is exactly the condition under which the
+    thin book must still be persisted for a human to read. Never stamp this
+    key on a non-downgrade path, and never widen it to a second cause: the
+    persist gate treats each such key as a proof of prior cleanliness.
+
+    Args:
+        outcome: The outcome so far.
+        skeleton: The pristine skeleton carrying the ``words=`` commissions.
+        min_fill_rate: The floor; a passing book below it is downgraded.
+        stage_log: The run's stage log, appended to on a downgrade.
+
+    Returns:
+        GenerationOutcome: The outcome with ``fill_rate`` stamped, downgraded
+        to ``needs_review`` when a passing book falls under the floor;
+        unchanged when no book or no commission exists.
+    """
+    if outcome.storybook is None:
+        return outcome
+    fill_rate = story_fill_rate(skeleton, outcome.storybook)
+    if fill_rate is None:
+        return outcome
+    downgrade = outcome.status == "passed" and fill_rate < min_fill_rate
+    report: dict[str, object] = {
+        **outcome.report,
+        "fill_rate": round(fill_rate, 4),
+        "fill_rate_floor": min_fill_rate,
+    }
+    if downgrade:
+        stage_log.append(f"fill_rate:{fill_rate:.3f}_below_{min_fill_rate}")
+        _logger.warning(
+            "fill_rate_below_floor",
+            fill_rate=round(fill_rate, 3),
+            floor=min_fill_rate,
+        )
+        # #CRITICAL: data-integrity: `fill_rate` alone cannot tell a persister
+        # that THIS function caused the downgrade, because the rate is stamped
+        # on every outcome carrying a book, breach or not. Without a key set
+        # only on the downgrade, `worker.py::_should_persist_storybook` sees a
+        # `needs_review` it cannot distinguish from a safety-flagged one and
+        # persists NOTHING: no Storybook, no StorybookVersion, no moderation,
+        # and a job row pointing at a book nobody can reach. Ruling 9.3 says
+        # this gate is never a hard block, so silence here would be stricter
+        # than the hard block the ruling refused.
+        # #VERIFY: tests/unit/test_orchestrator.py::
+        # test_a_fill_rate_downgrade_is_marked_and_still_persists stamps the
+        # key, and tests/unit/test_worker.py::
+        # test_fill_rate_only_needs_review_persists_the_storybook reads it.
+        report["fill_rate_downgrade"] = True
+    return GenerationOutcome(
+        status="needs_review" if downgrade else outcome.status,
+        storybook=outcome.storybook,
+        report=report,
+        attempts=outcome.attempts,
+        stage_log=outcome.stage_log,
+    )
+
+
 async def fill_skeleton(
     skeleton: dict[str, object],
     theme_brief: dict[str, object],
@@ -1258,6 +1423,7 @@ async def fill_skeleton(
     slot_bindings: Mapping[str, str] | None = None,
     differentiation_directive: str = "",
     reading_level_passes: int = _DEFAULT_READING_LEVEL_PASSES,
+    min_fill_rate: float = 0.6,
 ) -> GenerationOutcome:
     """Run the automated skeleton-fill pipeline (Fill -> Repair -> Reading level).
 
@@ -1308,14 +1474,21 @@ async def fill_skeleton(
       no degraded path, so it truncated, parsed as nothing, and burned the
       repair budget on every retry. Seven committed skeletons were in that
       state. Every batch carries the bound values, not just the first.
-    * Ending ``title`` text is not re-themed. One-shot fill returns the whole
-      document and ``fill.md`` does not list ``title`` among the fields it may
-      not change, so a one-shot book gets themed ending titles; the batch merge
-      reads only ``body`` and choice ``label``, so a chunked book keeps the
-      skeleton's authored titles under every theme. That is the safe direction
-      (an untrusted reply cannot reach the ending block at all) but it is
-      reader-visible, and it is one of the things `UW-C269` compares before this
-      path writes anything a child reads.
+    * Ending ``title`` text IS re-themed on both paths, but by different
+      mechanisms. One-shot fill returns the whole document and ``fill.md`` does
+      not list ``title`` among the fields it may not change. The batch merge is
+      a whitelist and reads exactly three fields: ``body``, choice ``label``,
+      and (since the 2026-08-21 ruling, section 8.3) an optional
+      ``ending_title`` applied by
+      :func:`~cyo_adventure.generation.chunking._merged_ending`, which replaces
+      only ``ending.title`` and carries ``id``, ``kind``, and ``valence``
+      through from the skeleton. So a chunked reply can reach ending TITLE text
+      and nothing else on the ending block; the PL-15 fail-state policy fields
+      stay unreachable by construction. An earlier draft of this bullet
+      predated the ruling and said the merge read only ``body`` and choice
+      ``label`` (PR #737 review, I5). This is reader-visible either way, and it
+      is one of the things `UW-C269` compares before this path writes anything
+      a child reads.
 
     Args:
         skeleton: The matched skeleton dict, FILL directives intact.
@@ -1364,6 +1537,15 @@ async def fill_skeleton(
         reading_level_passes: Maximum Stage D (reading-level) passes over the
             filled book once it is structurally clean. ``0`` disables the
             stage. Defaults to two; see ``_DEFAULT_READING_LEVEL_PASSES``.
+        min_fill_rate: Floor for the story-level fill rate (delivered words
+            over commissioned ``words=`` words, per-node surplus discounted).
+            A passing book below it is downgraded to ``needs_review``, never
+            hard-blocked (ruled 2026-08-21, section 9.3 of
+            ``live-structural-round-2026-08-21.md``, `UW-C307`); the measured
+            rate is stamped on the report either way. The 0.6 default is the
+            `AL-490` calibration and stands until per-vendor, per-band floors
+            exist (`AL-516`/`AL-528`); pass ``0`` to measure without ever
+            downgrading.
 
     Returns:
         A :class:`GenerationOutcome` describing the final status, the last
@@ -1374,6 +1556,13 @@ async def fill_skeleton(
         ValidationError: If any assembled prompt contains forbidden PII. The
             provider is never called when this occurs.
     """
+    # #ASSUME: data-integrity: `nan < x` is False for every x, so a NaN floor
+    # silently disabled the fill-rate gate while reporting it configured
+    # (PR #737 review, suggested findings). Refuse it up front, before any
+    # provider spend.
+    if math.isnan(min_fill_rate):
+        msg = "min_fill_rate must be a number (got NaN); use 0 to measure only"
+        raise ConfigurationError(msg)
     stage_log: list[str] = []
     guarded_provider = PiiGuardedProvider(provider, forbidden=pii)
 
@@ -1433,6 +1622,28 @@ async def fill_skeleton(
     # rather than theoretical. Since `UW-C302` it carries bound fills too, which
     # is what makes 7 of those 19 reachable at all.
     chunked = not is_fill_feasible(skeleton, max_tokens=cap)
+
+    def fill_normalizer(doc: dict[str, object]) -> dict[str, object]:
+        """Restore frozen fields from the skeleton (2026-08-21 ruling, 8.2).
+
+        The chunked path never needs this (its merge is a whitelist by
+        construction); the one-shot fill and every repair pass do, so the
+        gate grades a document whose machine-critical fields are the
+        skeleton's own and frozen-field drift stops costing repair cycles.
+        Restorations are logged, not graded: measured across 16 one-shot
+        fills, every frozen mutation was a theme retheme, not sabotage.
+        """
+        result = normalize_filled_story(skeleton, doc)
+        if result.skipped_reason is not None:
+            _logger.warning("fill_normalization_skipped", reason=result.skipped_reason)
+        elif result.restored:
+            _logger.warning(
+                "fill_frozen_fields_restored",
+                count=len(result.restored),
+                restored=list(result.restored[:8]),
+            )
+        return result.document
+
     if chunked:
         try:
             current_doc, gate_result = await _fill_in_batches(
@@ -1444,6 +1655,7 @@ async def fill_skeleton(
                     differentiation_directive=differentiation_directive,
                     stage_log=stage_log,
                     slot_bindings=slot_bindings,
+                    model=resolved_model if isinstance(resolved_model, str) else None,
                 ),
             )
         except UnpartitionableSkeletonError as exc:
@@ -1486,6 +1698,7 @@ async def fill_skeleton(
             provider=guarded_provider,
             max_tokens=cap,
             context="fill_result",
+            normalize=fill_normalizer,
         )
     _append_stage_log(stage_log, "stage_fill", current_doc, gate_result)
     if chunked and current_doc is None:
@@ -1523,6 +1736,7 @@ async def fill_skeleton(
             # backend whose clamped ceiling is BELOW the 32,000 floor does not
             # also shrink the repair budget for a document that fits it.
             max_tokens=max(_MAX_TOKENS_REPAIR, cap),
+            normalize=fill_normalizer,
         )
         repair_seed = current_doc if current_doc is not None else last_valid_doc
         current_doc, gate_result, attempts, stage1_violations = await _run_repair_loop(
@@ -1573,4 +1787,6 @@ async def fill_skeleton(
             attempts=outcome.attempts,
             stage_log=outcome.stage_log,
         )
+
+    outcome = _with_fill_rate(outcome, skeleton, min_fill_rate, stage_log)
     return _with_reading_level(outcome, reading_level)

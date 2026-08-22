@@ -1,0 +1,3893 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_tin_whistle_map",
+  "version": 1,
+  "title": "The Tin Whistle Map",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "local history",
+      "persistence",
+      "music",
+      "neighbours",
+      "curiosity"
+    ],
+    "estimated_minutes": 11,
+    "ending_count": 35,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "long",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "t_open",
+  "nodes": [
+    {
+      "id": "t_open",
+      "body": "The boatyard has a sale at the end of the season. Three damp tables hold other people's things, and a thin drizzle beads on everything. In a shoebox of old brass parts and chipped wheels, your hand finds a compass. The enamel is sea-grey and chipped, cold to touch. You tilt it and catch your breath: a line of six tiny marks is scratched into the case, under a thin looping groove. You see it only when the light falls sideways.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t_open_0",
+          "label": "Open the compass lid and look at the card inside.",
+          "target": "t_case"
+        }
+      ]
+    },
+    {
+      "id": "t_case",
+      "body": "Folded into eighths inside the lid, as soft as a leaf, is a piece of gridded paper in faded brown ink: THE RUN, and under it six place names you only half-recognise. Four of them are crossed out. Last on the list is simply LOCK. Beside each, a number. A woman in oilskins minding the trestle table tells you the box came from a narrowboat that used to moor at the far end of the yard. The man who owned it, she says, was a canal engineer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t_case_0",
+          "label": "Ask the woman about the narrowboat.",
+          "target": "hb_ask"
+        },
+        {
+          "id": "c_t_case_1",
+          "label": "Start at the nearest mark on the casing.",
+          "target": "hb_walk"
+        },
+        {
+          "id": "c_t_case_2",
+          "label": "Take the paper to the Waterways Museum.",
+          "target": "hb_lib"
+        }
+      ]
+    },
+    {
+      "id": "hb_ask",
+      "body": "Her name is Lillian, and she's cleared a dozen boats this spring. She remembers every single one, down to the tea-towels. The paperwork for this boat is still in a folder in her van. It belonged to a man called Arthur Keel who died last winter, alone on the mooring he'd held for forty years. She pauses, then says quietly that there's one box of his that hasn't been opened yet. Something about the way she says it makes you want to know what's inside.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hb_ask_0",
+          "label": "Ask to see the unopened box.",
+          "target": "ok_box"
+        },
+        {
+          "id": "c_hb_ask_1",
+          "label": "Look at the photographs properly.",
+          "target": "ok_photo"
+        },
+        {
+          "id": "c_hb_ask_2",
+          "label": "Ask if you can look round the boat itself.",
+          "target": "ok_house"
+        }
+      ]
+    },
+    {
+      "id": "hb_walk",
+      "body": "Held up to the pale light, the looping groove is the canal. Every lock and bend is traced exactly. The six tiny marks sit along it in an order that does not match the list. The nearest one is just a pinprick on the case, a ten-minute walk away at the old dry dock. It is a car park now, but you can still see the outline of the gates under the tarmac if you know where to stand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hb_walk_0",
+          "label": "Go to the old dry dock car park.",
+          "target": "wm_weigh"
+        },
+        {
+          "id": "c_hb_walk_1",
+          "label": "Follow the canal towpath.",
+          "target": "wm_river"
+        },
+        {
+          "id": "c_hb_walk_2",
+          "label": "Look at the old wharf bridge.",
+          "target": "wm_bridge"
+        }
+      ]
+    },
+    {
+      "id": "hb_lib",
+      "body": "The Waterways Museum keeps the town's canal past on two creaky shelves and a microfilm reader that eats fifty-pence coins. A worker named Priya sits behind the counter. She seems to have waited nearly a year for someone to come in and ask her a question about a lock number. You can feel her ears perk up the moment you unfold the paper.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hb_lib_0",
+          "label": "Work the canalside history shelf.",
+          "target": "lb_shelf"
+        },
+        {
+          "id": "c_hb_lib_1",
+          "label": "Get the microfilm reader to work.",
+          "target": "lb_film"
+        },
+        {
+          "id": "c_hb_lib_2",
+          "label": "Ask Priya what she already knows.",
+          "target": "lb_aisha"
+        }
+      ]
+    },
+    {
+      "id": "ok_box",
+      "body": "The unopened box lives under the passenger seat of her van. Inside, there is an engineer's cap with a faded blue peak, two black-and-white photos, and a thin leather wallet of receipts. Soft pencil names are written on the backs. The receipts are for engine grease, a new brass porthole, and one fixed diesel pump from 1993. They feel like they are holding their breath.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_box_0",
+          "label": "Work out who the names on the photos are.",
+          "target": "ok_names"
+        },
+        {
+          "id": "c_ok_box_1",
+          "label": "Read the receipts for what they tell you.",
+          "target": "ok_receipts"
+        },
+        {
+          "id": "c_ok_box_2",
+          "label": "Take the cap to find someone who knew the boatman.",
+          "target": "ok_cap"
+        }
+      ]
+    },
+    {
+      "id": "ok_photo",
+      "body": "Two photographs, slightly curled, of a crew of boat people standing on a set of wide canal steps. Eleven people in caps and aprons. On the back, eleven names and the words FIRST SATURDAY. The steps aren't the town hall steps, or the museum steps. They're somewhere along the flight, but you can't picture where, and the not-knowing starts to itch.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_photo_0",
+          "label": "Work out who the names on the photos are.",
+          "target": "ok_names"
+        },
+        {
+          "id": "c_ok_photo_1",
+          "label": "Read the receipts for what they tell you.",
+          "target": "ok_receipts"
+        },
+        {
+          "id": "c_ok_photo_2",
+          "label": "Take the cap to find someone who knew the boatman.",
+          "target": "ok_cap"
+        }
+      ]
+    },
+    {
+      "id": "ok_house",
+      "body": "The narrowboat 'Kingfisher' sits empty at the end of the yard. Its key is on a hook in the van. There are rules about who can go aboard, and when. Lillian will say yes if you ask her properly, with a good reason and your hands out of your pockets. She will say a flat, quiet no if you even look like you are thinking about climbing on without asking.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_house_0",
+          "label": "Work out who the names on the photos are.",
+          "target": "ok_names"
+        },
+        {
+          "id": "c_ok_house_1",
+          "label": "Read the receipts for what they tell you.",
+          "target": "ok_receipts"
+        },
+        {
+          "id": "c_ok_house_2",
+          "label": "Take the cap to find someone who knew the boatman.",
+          "target": "ok_cap"
+        }
+      ]
+    },
+    {
+      "id": "wm_weigh",
+      "body": "Where the dry dock used to be, there is just a puddle-strewn car park with a ticket machine. All that is left is a long iron strip set into the ground. On the boundary wall, there is a perfect rectangle. The brick is a shade lighter, as if something the size of your hand was taken off years ago and never put back. A single dark speck of old screw rusts in the top corner.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_weigh_0",
+          "label": "Work out what the missing plaque must have been.",
+          "target": "wm_rect"
+        },
+        {
+          "id": "c_wm_weigh_1",
+          "label": "Look under the flaking paint.",
+          "target": "wm_paint"
+        },
+        {
+          "id": "c_wm_weigh_2",
+          "label": "Ask at the waterside cafe.",
+          "target": "wm_chips"
+        }
+      ]
+    },
+    {
+      "id": "wm_river",
+      "body": "The looping groove on the compass runs from the wharf bridge down to the lock-keeper's cottage. The six marks sit along it at gaps that don't match any modern map. You trace them with your finger and frown. Then you recall the canal's old arm that was filled in during the sixties. You draw it back onto the map in your head. At once, every mark falls perfectly into place.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_river_0",
+          "label": "Work out what the missing plaque must have been.",
+          "target": "wm_rect"
+        },
+        {
+          "id": "c_wm_river_1",
+          "label": "Look under the flaking paint.",
+          "target": "wm_paint"
+        },
+        {
+          "id": "c_wm_river_2",
+          "label": "Ask at the waterside cafe.",
+          "target": "wm_chips"
+        }
+      ]
+    },
+    {
+      "id": "wm_bridge",
+      "body": "The old wharf bridge is painted green over green over green. A cast-iron plate on the upstream side reads 'TOWN WHARF 1898'. Next to it, a smaller square shows four bare rivets where a second, smaller plate is very clearly not. You can see the shadow of it in the rust, like a ghost.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_bridge_0",
+          "label": "Work out what the missing plaque must have been.",
+          "target": "wm_rect"
+        },
+        {
+          "id": "c_wm_bridge_1",
+          "label": "Look under the flaking paint.",
+          "target": "wm_paint"
+        },
+        {
+          "id": "c_wm_bridge_2",
+          "label": "Ask at the waterside cafe.",
+          "target": "wm_chips"
+        }
+      ]
+    },
+    {
+      "id": "lb_shelf",
+      "body": "Two shelves, one of them a run of old waterway magazines that feel as soft as felt. In the September 1962 issue, you find a whole paragraph about the Run. It lists all six stops in an order that does not match the paper in the compass lid. You wonder which version was written down first, and which one a person really walked.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_shelf_0",
+          "label": "Look at the brass plaque in the drawer.",
+          "target": "lb_plate"
+        },
+        {
+          "id": "c_lb_shelf_1",
+          "label": "Find the canal committee minutes.",
+          "target": "lb_minutes"
+        },
+        {
+          "id": "c_lb_shelf_2",
+          "label": "Find out when the boat is being stripped out.",
+          "target": "lb_date"
+        }
+      ]
+    },
+    {
+      "id": "lb_film",
+      "body": "The microfilm reader eats your fifty pence coins and holds every issue of the local paper back to 1878. Every September, the paper has a photo of the boat crews on the steps. Their polished brass gleams like a row of signals. You scroll through the grey light until you find them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_film_0",
+          "label": "Look at the brass plaque in the drawer.",
+          "target": "lb_plate"
+        },
+        {
+          "id": "c_lb_film_1",
+          "label": "Find the canal committee minutes.",
+          "target": "lb_minutes"
+        },
+        {
+          "id": "c_lb_film_2",
+          "label": "Find out when the boat is being stripped out.",
+          "target": "lb_date"
+        }
+      ]
+    },
+    {
+      "id": "lb_aisha",
+      "body": "Priya has been at that desk for five years. She keeps a drawer of things people brought in and never came back for. Wrapped in a clean cotton cloth inside is a small brass plaque the size of a playing card. It has four screw holes and one word: RUNNER. She has no notion of what it is. She has been hoping someone would come and ask.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_aisha_0",
+          "label": "Look at the brass plaque in the drawer.",
+          "target": "lb_plate"
+        },
+        {
+          "id": "c_lb_aisha_1",
+          "label": "Find the canal committee minutes.",
+          "target": "lb_minutes"
+        },
+        {
+          "id": "c_lb_aisha_2",
+          "label": "Find out when the boat is being stripped out.",
+          "target": "lb_date"
+        }
+      ]
+    },
+    {
+      "id": "ok_names",
+      "body": "Eleven names on the back of a photograph, and three of them are still painted on the transoms of boats moored along the canal. One of them is painted across the front of the waterside cafe. A name on a photo isn't a person until you go and find them. You realise you're going to have to knock on a boat hatch.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_names_0",
+          "label": "Find out who Arthur Keel really was.",
+          "target": "ok_vine"
+        },
+        {
+          "id": "c_ok_names_1",
+          "label": "Go and find old Mr. Slater.",
+          "target": "ok_hurst"
+        },
+        {
+          "id": "c_ok_names_2",
+          "label": "Search the boat before it's cleared.",
+          "target": "ok_search"
+        }
+      ]
+    },
+    {
+      "id": "ok_receipts",
+      "body": "A receipt is a boring thing, but it cannot lie. Engine grease, 1991. A new porthole, 1995. A call-out for a locksmith to the store shed behind the lock-keeper's cottage in November 1998, six weeks before the Run was listed for the final time. You imagine the call: a broken key, or a lost one, and the quiet panic of someone who can't get in.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_receipts_0",
+          "label": "Put the six stops into the right order.",
+          "target": "ok_order"
+        },
+        {
+          "id": "c_ok_receipts_1",
+          "label": "Leave the box and come back to it tomorrow.",
+          "target": "ok_lot"
+        },
+        {
+          "id": "c_ok_receipts_2",
+          "label": "Find out who Arthur Keel really was.",
+          "target": "ok_vine"
+        }
+      ]
+    },
+    {
+      "id": "ok_cap",
+      "body": "The cap has a blue peak and a tiny brass badge of a crossed tiller and spike. It's the sort of thing a person wears for forty years. There are maybe four people left in the whole town who would know it for what it is. One of them lives in the old almshouses by the lock flight, and one of them is a man called Tom Slater.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_cap_0",
+          "label": "Go and find old Mr. Slater.",
+          "target": "ok_hurst"
+        },
+        {
+          "id": "c_ok_cap_1",
+          "label": "Search the boat before it's cleared.",
+          "target": "ok_search"
+        },
+        {
+          "id": "c_ok_cap_2",
+          "label": "Put the six stops into the right order.",
+          "target": "ok_order"
+        }
+      ]
+    },
+    {
+      "id": "wm_rect",
+      "body": "The rectangle of cleaner brick is the size of a playing card and has four holes. Every single plaque on this trail must be exactly that size. You stare at the empty space. Somewhere in this town, there's a shed with five more of these in it, or a skip in 1998 that swallowed the lot. The thought sits heavily in your stomach.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_rect_0",
+          "label": "Measure the marks against a real map.",
+          "target": "wm_measure"
+        },
+        {
+          "id": "c_wm_rect_1",
+          "label": "Go up to the wide lock steps.",
+          "target": "wm_chapel"
+        },
+        {
+          "id": "c_wm_rect_2",
+          "label": "Try the garden at the almshouses.",
+          "target": "wm_alms"
+        }
+      ]
+    },
+    {
+      "id": "wm_paint",
+      "body": "A plaque painted over five times is still a plaque. You learn to spot them: the way the paint sits proud of the brick in a perfect rectangle. There are two walls along the route where you're almost certain. One of them is behind a chalkboard menu outside the cafe. You can feel the shape with your thumb, even through the paint.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_paint_0",
+          "label": "Go and look at the lock-keeper's garden shed.",
+          "target": "wm_stand"
+        },
+        {
+          "id": "c_wm_paint_1",
+          "label": "Walk the whole run and let it end there.",
+          "target": "wm_wet"
+        },
+        {
+          "id": "c_wm_paint_2",
+          "label": "Measure the marks against a real map.",
+          "target": "wm_measure"
+        }
+      ]
+    },
+    {
+      "id": "wm_chips",
+      "body": "The cafe wall carries a chalkboard menu screwed in at exactly plaque height. Rafi, who runs the place, has never once looked behind it. The cafe is rammed with customers at lunchtime and in the afternoon it clears out completely. You know the perfect time to ask.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_chips_0",
+          "label": "Go up to the wide lock steps.",
+          "target": "wm_chapel"
+        },
+        {
+          "id": "c_wm_chips_1",
+          "label": "Try the garden at the almshouses.",
+          "target": "wm_alms"
+        },
+        {
+          "id": "c_wm_chips_2",
+          "label": "Go and look at the lock-keeper's garden shed.",
+          "target": "wm_stand"
+        }
+      ]
+    },
+    {
+      "id": "lb_plate",
+      "body": "The plaque reads 'RUN THE THIRD' and under that, a single number. On the back, someone scratched a name and a date from 1998. It came in when a boat was cleared out seven months ago. It has been in Priya's drawer, waiting, so it feels, for this exact talk on this exact afternoon.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_plate_0",
+          "label": "Work out what the six numbers are for.",
+          "target": "lb_numbers"
+        },
+        {
+          "id": "c_lb_plate_1",
+          "label": "Go and see Mr. Ellis at the Canal & River Trust.",
+          "target": "lb_vance"
+        },
+        {
+          "id": "c_lb_plate_2",
+          "label": "Search the paper for the last Run.",
+          "target": "lb_gazette"
+        }
+      ]
+    },
+    {
+      "id": "lb_minutes",
+      "body": "The Canal Committee minutes live in a dusty box file and are as dry as you'd expect. On page three of the February set, there's a single line about clearing the old store shed behind the lock-keeper's cottage. This was noted ahead of the planned conservation works. Your finger stops on the sentence. It feels like a ticking clock.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_minutes_0",
+          "label": "Ring the number at the top of the minutes.",
+          "target": "lb_call"
+        },
+        {
+          "id": "c_lb_minutes_1",
+          "label": "Build the file of what you've found first.",
+          "target": "lb_file"
+        },
+        {
+          "id": "c_lb_minutes_2",
+          "label": "Work out what the six numbers are for.",
+          "target": "lb_numbers"
+        }
+      ]
+    },
+    {
+      "id": "lb_date",
+      "body": "The clearance is listed for Friday. A contractor is booked. Once a store is cleared, it's cleared. Whatever is currently sitting in that shed goes into a lorry, and then into a skip. And nobody standing here will ever know what it was. The thought settles like cold water.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_date_0",
+          "label": "Go and see Mr. Ellis at the Canal & River Trust.",
+          "target": "lb_vance"
+        },
+        {
+          "id": "c_lb_date_1",
+          "label": "Search the paper for the last Run.",
+          "target": "lb_gazette"
+        },
+        {
+          "id": "c_lb_date_2",
+          "label": "Ring the number at the top of the minutes.",
+          "target": "lb_call"
+        }
+      ]
+    },
+    {
+      "id": "ok_vine",
+      "body": "Arthur Keel was a lock-keeper and a canal engineer for thirty-one years. He kept every receipt he ever got. He left a narrowboat with one shelf of navigation books and no photos on the walls. His neighbours on the mooring knew his name, and not much else. You think that fact itself tells you something about a person.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_vine_0",
+          "label": "Go and look hard at the padlock.",
+          "target": "sx_padlock"
+        },
+        {
+          "id": "c_ok_vine_1",
+          "label": "Count what the six numbers must be.",
+          "target": "sx_six"
+        },
+        {
+          "id": "c_ok_vine_2",
+          "label": "Take everything to old Mr. Slater.",
+          "target": "sx_bill"
+        }
+      ]
+    },
+    {
+      "id": "ok_hurst",
+      "body": "Tom Slater was the last lock-keeper to walk the Run. He lives above the old chandlery, in a room that overlooks the lock flight. Everyone you mention him to says the same two things in the same order: first, that he isn't what he was, and second, that you should ask him anyway. His mind is a lock gate: sometimes it sticks, and sometimes it swings wide open.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_hurst_0",
+          "label": "Get Mr. Ellis to hold the clearance.",
+          "target": "sx_vance"
+        },
+        {
+          "id": "c_ok_hurst_1",
+          "label": "Get behind the cafe menu board.",
+          "target": "sx_deniz"
+        },
+        {
+          "id": "c_ok_hurst_2",
+          "label": "Ask at the almshouses by the lock.",
+          "target": "sx_alms"
+        }
+      ]
+    },
+    {
+      "id": "ok_search",
+      "body": "One last afternoon is left before the boat is cleared for good. Check the top of the closet, the back of the engine space, and the gap behind the cabin dresser's bottom drawer. That is where everyone on the water hides the one thing they did not want tossed. You can feel your heart thump in your ears.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_search_0",
+          "label": "Ask about the cage at the Canal Trust depot.",
+          "target": "sx_cage"
+        },
+        {
+          "id": "c_ok_search_1",
+          "label": "Get into the lock-keeper's office.",
+          "target": "sx_chapel"
+        },
+        {
+          "id": "c_ok_search_2",
+          "label": "Ask at the school about the navigation instruments.",
+          "target": "sx_school"
+        }
+      ]
+    },
+    {
+      "id": "ok_order",
+      "body": "The paper lists six spots. The compass marks them along the canal in a different order. Only one of those orders shows the walk they took on the Run. The other is the order someone wrote them down in later. Maybe they sat at a cabin table, with tea and a fading memory.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ok_order_0",
+          "label": "Write to the local paper.",
+          "target": "sx_paper"
+        },
+        {
+          "id": "c_ok_order_1",
+          "label": "Get Maya and her bike involved.",
+          "target": "sx_tess"
+        },
+        {
+          "id": "c_ok_order_2",
+          "label": "Work backwards from Friday morning.",
+          "target": "sx_time"
+        }
+      ]
+    },
+    {
+      "id": "wm_measure",
+      "body": "Laid over a proper map with a ruler, five of the six marks land within thirty paces of somewhere real. The sixth mark lands in the middle of the supermarket car park. Which either means the compass casing is wrong, or the supermarket is standing on the last stop of the Run. You stare at the map, not blinking.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_measure_0",
+          "label": "Go and look hard at the padlock.",
+          "target": "sx_padlock"
+        },
+        {
+          "id": "c_wm_measure_1",
+          "label": "Count what the six numbers must be.",
+          "target": "sx_six"
+        },
+        {
+          "id": "c_wm_measure_2",
+          "label": "Take everything to old Mr. Slater.",
+          "target": "sx_bill"
+        }
+      ]
+    },
+    {
+      "id": "wm_chapel",
+      "body": "The wide steps by the lock flight are worn smooth and shallow, and they are unmistakably the steps in the photograph. The wall beside them has four filled holes at plaque height, plugged with mortar in exactly the wrong shade of grey. You touch one. It's rough, and feels final.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_chapel_0",
+          "label": "Get Mr. Ellis to hold the clearance.",
+          "target": "sx_vance"
+        },
+        {
+          "id": "c_wm_chapel_1",
+          "label": "Get behind the cafe menu board.",
+          "target": "sx_deniz"
+        },
+        {
+          "id": "c_wm_chapel_2",
+          "label": "Ask at the almshouses by the lock.",
+          "target": "sx_alms"
+        }
+      ]
+    },
+    {
+      "id": "wm_alms",
+      "body": "The almshouse garden is through an archway off the waterside square. On its far wall, half covered by a climbing rose that nobody has pruned since the day it was planted, is a small brass rectangle. It's the colour of old pennies. Everyone who lives here stopped seeing it years ago. You can't stop looking.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_alms_0",
+          "label": "Ask about the cage at the Canal Trust depot.",
+          "target": "sx_cage"
+        },
+        {
+          "id": "c_wm_alms_1",
+          "label": "Get into the lock-keeper's office.",
+          "target": "sx_chapel"
+        },
+        {
+          "id": "c_wm_alms_2",
+          "label": "Ask at the school about the navigation instruments.",
+          "target": "sx_school"
+        }
+      ]
+    },
+    {
+      "id": "wm_stand",
+      "body": "The old lock-keeper's garden shed sits under a willow at the top of the flight. The paint is peeling. Set into the brick at the bottom is a small, heavy steel door. On the door, a thick lock with six tiny brass wheels for a code, green with age. Someone tried a screwdriver and gave up, leaving deep cuts in the metal.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wm_stand_0",
+          "label": "Write to the local paper.",
+          "target": "sx_paper"
+        },
+        {
+          "id": "c_wm_stand_1",
+          "label": "Get Maya and her bike involved.",
+          "target": "sx_tess"
+        },
+        {
+          "id": "c_wm_stand_2",
+          "label": "Work backwards from Friday morning.",
+          "target": "sx_time"
+        }
+      ]
+    },
+    {
+      "id": "lb_numbers",
+      "body": "Six stops, six plaques, one number on each, and a six-digit combination lock on a steel door. Four of the numbers on the paper are crossed out in the same faded ink. Someone tried them. Someone got them wrong. And then they stopped, or gave up. You think of the man with the screwdriver, and your spine prickles.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_numbers_0",
+          "label": "Go and look hard at the padlock.",
+          "target": "sx_padlock"
+        },
+        {
+          "id": "c_lb_numbers_1",
+          "label": "Count what the six numbers must be.",
+          "target": "sx_six"
+        },
+        {
+          "id": "c_lb_numbers_2",
+          "label": "Take everything to old Mr. Slater.",
+          "target": "sx_bill"
+        }
+      ]
+    },
+    {
+      "id": "lb_vance",
+      "body": "Mr. Ellis runs the local Canal & River Trust depot behind the leisure centre. He has a clipboard, a van, and a contractor booked for Friday morning. He's been told twice this year by people above him that everything in that shed is just rubbish. Nothing in his tone suggests he agrees, but he sounds tired.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_vance_0",
+          "label": "Get Mr. Ellis to hold the clearance.",
+          "target": "sx_vance"
+        },
+        {
+          "id": "c_lb_vance_1",
+          "label": "Get behind the cafe menu board.",
+          "target": "sx_deniz"
+        },
+        {
+          "id": "c_lb_vance_2",
+          "label": "Ask at the almshouses by the lock.",
+          "target": "sx_alms"
+        }
+      ]
+    },
+    {
+      "id": "lb_gazette",
+      "body": "The last Run took place on the first Saturday of September 1998, in a thin, persistent rain. The paper gave it four column inches. There's a photograph of eleven people standing on the steps, where there had once been twenty-one. They look cold, and proud.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_gazette_0",
+          "label": "Ask about the cage at the Canal Trust depot.",
+          "target": "sx_cage"
+        },
+        {
+          "id": "c_lb_gazette_1",
+          "label": "Get into the lock-keeper's office.",
+          "target": "sx_chapel"
+        },
+        {
+          "id": "c_lb_gazette_2",
+          "label": "Ask at the school about the navigation instruments.",
+          "target": "sx_school"
+        }
+      ]
+    },
+    {
+      "id": "lb_call",
+      "body": "The number at the top of the notes rings a desk that moved three times. The person who picks up is helpful, has no power, and is great at pointing you on. They can say, with great care, whose name you really need and whose you do not.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lb_call_0",
+          "label": "Write to the local paper.",
+          "target": "sx_paper"
+        },
+        {
+          "id": "c_lb_call_1",
+          "label": "Get Maya and her bike involved.",
+          "target": "sx_tess"
+        },
+        {
+          "id": "c_lb_call_2",
+          "label": "Work backwards from Friday morning.",
+          "target": "sx_time"
+        }
+      ]
+    },
+    {
+      "id": "ok_lot",
+      "body": "The unopened box goes into a general lot on Thursday, with a dozen more. By the time anyone knows what was in it, the cap, the photos and the notes are in three different sale halls. The compass stays in your pocket, and the paper stays in the lid. All else that could have proved anything is gone, spread out like canal mist.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_ok_lot",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Box Went to Auction"
+      }
+    },
+    {
+      "id": "wm_wet",
+      "body": "The six marks turn out to be six real places. The walk between them takes two hours in the rain, and it answers nothing at all. Four bare walls, a car park, and a locked shed door. It's a very good map of a waterway that moved on. You fold the paper back into the compass lid, wet and exhausted. It answers nothing, but it was true.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_wm_wet",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Six Marks and a Wet Afternoon"
+      }
+    },
+    {
+      "id": "lb_file",
+      "body": "By five to five, there's a folder holding the six stops, the dates, the committee minutes, and a photocopy of the plaque. It's genuinely good work. The lorry still comes on Friday, all the same. The folder goes onto the museum shelf where someone will find it in twenty years and wonder who put it together.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_lb_file",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Very Complete File"
+      }
+    },
+    {
+      "id": "sx_padlock",
+      "body": "The steel door is set in a brick arch under the willow. The lock is a six-wheel combination, green with age. It turns freely on the first two wheels, and stiffly on the last four. That means the first two numbers have been used repeatedly, and the last four haven't. It's a fact worth more than any guess you've made so far.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_padlock_0",
+          "label": "Walk down to the canal and think.",
+          "target": "sy_towpath"
+        },
+        {
+          "id": "c_sx_padlock_1",
+          "label": "Sit on the lock steps and lay it all out.",
+          "target": "sy_steps"
+        },
+        {
+          "id": "c_sx_padlock_2",
+          "label": "Go back to the boat and look at the compass under a lamp.",
+          "target": "sy_lamp"
+        }
+      ]
+    },
+    {
+      "id": "sx_six",
+      "body": "Six stops, six plaques, and one number on each. The museum plaque gives you one: RUN THE THIRD. The paper has four crossed off in the same ink. That leaves a puzzle with the order, and four that you do not know. The numbers feel near, like a word on the tip of your tongue.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_six_0",
+          "label": "Go after the plaques themselves.",
+          "target": "sy_plates"
+        },
+        {
+          "id": "c_sx_six_1",
+          "label": "Go after the people who were there.",
+          "target": "sy_people"
+        },
+        {
+          "id": "c_sx_six_2",
+          "label": "Go after the paperwork.",
+          "target": "sy_paper"
+        }
+      ]
+    },
+    {
+      "id": "sx_bill",
+      "body": "Tom Slater is eighty-four. He lives above the old shop and cannot hold on to what day it is. But he can still name every lock, every pound, and every mooring pin spot on the Run, with no pause to think. His memory of the route is a living, flowing thing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_bill_0",
+          "label": "Split the town trail with Maya.",
+          "target": "sy_split"
+        },
+        {
+          "id": "c_sx_bill_1",
+          "label": "Work backwards from Friday morning.",
+          "target": "sy_friday"
+        },
+        {
+          "id": "c_sx_bill_2",
+          "label": "Sit down with Mr. Slater and the photographs.",
+          "target": "sy_bill2"
+        }
+      ]
+    },
+    {
+      "id": "sx_vance",
+      "body": "Holding a booked clearance costs Mr. Ellis a phone call, a grumbling contractor, and a note on a form. He tells you the only thing that has ever moved him to do it is someone turning up with a good reason, instead of just a strong feeling. He looks at you as if he's measuring the weight of what you might say next.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_vance_0",
+          "label": "Walk down to the canal and think.",
+          "target": "sy_towpath"
+        },
+        {
+          "id": "c_sx_vance_1",
+          "label": "Sit on the lock steps and lay it all out.",
+          "target": "sy_steps"
+        },
+        {
+          "id": "c_sx_vance_2",
+          "label": "Go back to the boat and look at the compass under a lamp.",
+          "target": "sy_lamp"
+        }
+      ]
+    },
+    {
+      "id": "sx_deniz",
+      "body": "Four screws, a menu board, and a wall no one has checked since the cafe opened. Rafi will do it at three, between the lunch rush and the after-school crowd. He has made it very clear that he will not do it at half past five, when the line is out the door.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_deniz_0",
+          "label": "Go after the plaques themselves.",
+          "target": "sy_plates"
+        },
+        {
+          "id": "c_sx_deniz_1",
+          "label": "Go after the people who were there.",
+          "target": "sy_people"
+        },
+        {
+          "id": "c_sx_deniz_2",
+          "label": "Go after the paperwork.",
+          "target": "sy_paper"
+        }
+      ]
+    },
+    {
+      "id": "sx_alms",
+      "body": "Eleven folks, a Wednesday afternoon, and a tin of cookies that has seen better days. Among them, two people who stood in the rain at the last Run. One has the photo of it framed on her room wall. You can see it through the half-open door.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_alms_0",
+          "label": "Split the town trail with Maya.",
+          "target": "sy_split"
+        },
+        {
+          "id": "c_sx_alms_1",
+          "label": "Work backwards from Friday morning.",
+          "target": "sy_friday"
+        },
+        {
+          "id": "c_sx_alms_2",
+          "label": "Sit down with Mr. Slater and the photographs.",
+          "target": "sy_bill2"
+        }
+      ]
+    },
+    {
+      "id": "sx_cage",
+      "body": "The Canal Trust depot keeps removed fittings in a wire mesh cage behind the grit bin, under a system no one has ever had to explain out loud. The plaque from the wharf bridge came away when the railings were repainted. It's in there, somewhere. You can see the corner of a brass box.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_cage_0",
+          "label": "Walk down to the canal and think.",
+          "target": "sy_towpath"
+        },
+        {
+          "id": "c_sx_cage_1",
+          "label": "Sit on the lock steps and lay it all out.",
+          "target": "sy_steps"
+        },
+        {
+          "id": "c_sx_cage_2",
+          "label": "Go back to the boat and look at the compass under a lamp.",
+          "target": "sy_lamp"
+        }
+      ]
+    },
+    {
+      "id": "sx_chapel",
+      "body": "The old lock-keeper's office is locked on weekdays, and the key lives with a volunteer who is out until four. The steps outside are definitely the steps in the photograph. You've proved it. It's the first solid, unshakeable thing you've proved all day, and it feels like a stone fitting into place.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_chapel_0",
+          "label": "Go after the plaques themselves.",
+          "target": "sy_plates"
+        },
+        {
+          "id": "c_sx_chapel_1",
+          "label": "Go after the people who were there.",
+          "target": "sy_people"
+        },
+        {
+          "id": "c_sx_chapel_2",
+          "label": "Go after the paperwork.",
+          "target": "sy_paper"
+        }
+      ]
+    },
+    {
+      "id": "sx_school",
+      "body": "Half the town thinks the old navigation tools went to the secondary school in 1998. The other half thinks a dealer took them. The school's geography cupboard holds an old brass theodolite. The town canal company's name is etched down its side. It's cold, and heavy, and real.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_school_0",
+          "label": "Split the town trail with Maya.",
+          "target": "sy_split"
+        },
+        {
+          "id": "c_sx_school_1",
+          "label": "Work backwards from Friday morning.",
+          "target": "sy_friday"
+        },
+        {
+          "id": "c_sx_school_2",
+          "label": "Sit down with Mr. Slater and the photographs.",
+          "target": "sy_bill2"
+        }
+      ]
+    },
+    {
+      "id": "sx_paper",
+      "body": "The local paper prints on Thursday, and comes out Friday morning. It takes a letter up to Wednesday lunchtime. One paragraph from you would land in three hundred kitchens at breakfast time, exactly one day too late to matter. You try not to think about the timing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_paper_0",
+          "label": "Walk down to the canal and think.",
+          "target": "sy_towpath"
+        },
+        {
+          "id": "c_sx_paper_1",
+          "label": "Sit on the lock steps and lay it all out.",
+          "target": "sy_steps"
+        },
+        {
+          "id": "c_sx_paper_2",
+          "label": "Go back to the boat and look at the compass under a lamp.",
+          "target": "sy_lamp"
+        }
+      ]
+    },
+    {
+      "id": "sx_tess",
+      "body": "Maya can cover the whole canal network on a bike in forty minutes. She has no time at all for standing on doorsteps being polite to adults. She's either the perfect tool for this afternoon, or the absolute worst one. You picture her skidding to a halt, full of sharp questions.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_tess_0",
+          "label": "Go after the plaques themselves.",
+          "target": "sy_plates"
+        },
+        {
+          "id": "c_sx_tess_1",
+          "label": "Go after the people who were there.",
+          "target": "sy_people"
+        },
+        {
+          "id": "c_sx_tess_2",
+          "label": "Go after the paperwork.",
+          "target": "sy_paper"
+        }
+      ]
+    },
+    {
+      "id": "sx_time",
+      "body": "The truck is booked for eight on Friday morning. That leaves two afternoons, one evening, and a Thursday. It's a list of hours, not a pile of worries. The whole thing stops being a lost cause. The time just gets very, very tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sx_time_0",
+          "label": "Split the town trail with Maya.",
+          "target": "sy_split"
+        },
+        {
+          "id": "c_sx_time_1",
+          "label": "Work backwards from Friday morning.",
+          "target": "sy_friday"
+        },
+        {
+          "id": "c_sx_time_2",
+          "label": "Sit down with Mr. Slater and the photographs.",
+          "target": "sy_bill2"
+        }
+      ]
+    },
+    {
+      "id": "sy_towpath",
+      "body": "The towpath at four is empty. The water is the colour of cold tea, and a heron stands motionless in the shallows. Walking the length of it once, with the compass warm in your hand, turns six separate problems into one problem with an order to it. You feel the shape of the thing for the first time.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_towpath_0",
+          "label": "Get the menu board off the cafe wall.",
+          "target": "pl_chip"
+        }
+      ]
+    },
+    {
+      "id": "sy_steps",
+      "body": "The lock steps stay dry under the coping stone. They're wide enough to lay out the compass, the plaque, the photos, and the receipts side by side. Laid out like that, they stop being a collection of oddments and become a list. A clear, demanding list that needs to be finished.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_steps_0",
+          "label": "Sit down with Mr. Slater.",
+          "target": "pe_bill"
+        }
+      ]
+    },
+    {
+      "id": "sy_lamp",
+      "body": "Under the cabin lamp, the compass casing gives up one more mark that daylight never would. A seventh scratch, so fine it's almost a ghost. It isn't a place at all, but a small, careful arrow pointing back at the first mark on the canal. Someone made this to be read again.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_lamp_0",
+          "label": "Read the Canal Committee minutes properly.",
+          "target": "pr_minutes"
+        }
+      ]
+    },
+    {
+      "id": "sy_plates",
+      "body": "Five walls, one wire cage, and a rose bush. That's all that stands between you and six brass rectangles. A plaque in your hand is a number no one can argue with. It's worth more this week than any amount of being told things, or second-hand memories.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_plates_0",
+          "label": "Get the menu board off the cafe wall.",
+          "target": "pl_chip"
+        },
+        {
+          "id": "c_sy_plates_1",
+          "label": "Find the plaque in the almshouse garden.",
+          "target": "pl_alms"
+        },
+        {
+          "id": "c_sy_plates_2",
+          "label": "Look in the cage at the Canal Trust depot.",
+          "target": "pl_cage"
+        }
+      ]
+    },
+    {
+      "id": "sy_people",
+      "body": "Twenty-one people stood on those steps in 1962. Eleven of them stood there in the rain in 1998. The ones still living along the canal are within a mile of this bench, mostly indoors, and mostly, you hope, glad to be asked. You stand up, trying to decide which boat to knock on first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_people_0",
+          "label": "Check the lock steps for screw holes.",
+          "target": "pl_chapelp"
+        },
+        {
+          "id": "c_sy_people_1",
+          "label": "Sit down with Mr. Slater.",
+          "target": "pe_bill"
+        },
+        {
+          "id": "c_sy_people_2",
+          "label": "Talk to the almshouse residents.",
+          "target": "pe_alms2"
+        }
+      ]
+    },
+    {
+      "id": "sy_paper",
+      "body": "The shed behind the lock-keeper's cottage belongs to someone on a form, somewhere. The clearance is a line in a set of minutes. Both of those things can be changed by the right sentence, spoken into the right ear, before Friday morning. You just have to find the words, and the ear.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_paper_0",
+          "label": "Talk to Rafi at the cafe.",
+          "target": "pe_deniz"
+        },
+        {
+          "id": "c_sy_paper_1",
+          "label": "Ask at the school about the instruments.",
+          "target": "pe_school"
+        },
+        {
+          "id": "c_sy_paper_2",
+          "label": "Read the Canal Committee minutes properly.",
+          "target": "pr_minutes"
+        }
+      ]
+    },
+    {
+      "id": "sy_split",
+      "body": "Two people on different parts of the canal cover twice as much ground. Each one learns only half the story. The whole plan works only if you pick a time and place to put the halves back together. You picture you and Maya at opposite ends of the path, racing the sun.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_split_0",
+          "label": "Search the paper for September 1998.",
+          "target": "pr_gazette"
+        },
+        {
+          "id": "c_sy_split_1",
+          "label": "Find out who owns the shed.",
+          "target": "pr_owner"
+        },
+        {
+          "id": "c_sy_split_2",
+          "label": "Write to the person who can stop Friday.",
+          "target": "pr_letter"
+        }
+      ]
+    },
+    {
+      "id": "sy_friday",
+      "body": "Eight on Friday. A lorry, two men, and a skip. Everything anyone does between now and then either moves that, or doesn't. Written out as a countdown, it sorts the useful jobs from the merely interesting ones. The lorry feels like the end of a pier, and you're running out of planks.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_friday_0",
+          "label": "Get the menu board off the cafe wall.",
+          "target": "pl_chip"
+        },
+        {
+          "id": "c_sy_friday_1",
+          "label": "Find the plaque in the almshouse garden.",
+          "target": "pl_alms"
+        },
+        {
+          "id": "c_sy_friday_2",
+          "label": "Look in the cage at the Canal Trust depot.",
+          "target": "pl_cage"
+        }
+      ]
+    },
+    {
+      "id": "sy_bill2",
+      "body": "Photographs work on Tom Slater in a way that questions don't. Put one in his hands, and the names arrive in order, with the exact sequence of locks attached. The trick is having something to write on before he starts. You scramble for a pencil.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sy_bill2_0",
+          "label": "Check the lock steps for screw holes.",
+          "target": "pl_chapelp"
+        },
+        {
+          "id": "c_sy_bill2_1",
+          "label": "Sit down with Mr. Slater.",
+          "target": "pe_bill"
+        },
+        {
+          "id": "c_sy_bill2_2",
+          "label": "Talk to the almshouse residents.",
+          "target": "pe_alms2"
+        }
+      ]
+    },
+    {
+      "id": "pl_chip",
+      "body": "Four screws, a menu board, and a wall no one has looked at since the cafe was a chandlery. Behind it, the brick is a different colour. The plaque is still there, painted the same cream as the wall. You can only read the number with your thumb, tracing the grooves. RUN THE FIFTH.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_chip_0",
+          "label": "Clean the paint off carefully.",
+          "target": "pl_clean"
+        },
+        {
+          "id": "c_pl_chip_1",
+          "label": "Read what the plaque actually says.",
+          "target": "pl_read"
+        },
+        {
+          "id": "c_pl_chip_2",
+          "label": "Ask permission before taking anything off a wall.",
+          "target": "pl_permission"
+        }
+      ]
+    },
+    {
+      "id": "pl_alms",
+      "body": "The almshouse plaque is half-hidden behind a rose that no one has the heart to prune. The residents' committee holds very strong views about that rose. Views, you discover, that go back further than the Run itself. You stand there, hoping the rose won't be the thing that stops you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_alms_0",
+          "label": "Take a rubbing instead of moving the plaque.",
+          "target": "pl_rub"
+        },
+        {
+          "id": "c_pl_alms_1",
+          "label": "Get Mr. Ellis to open the cage.",
+          "target": "pl_depot"
+        },
+        {
+          "id": "c_pl_alms_2",
+          "label": "Carefully take the lock-step plaque off to read it inside.",
+          "target": "pl_crack"
+        }
+      ]
+    },
+    {
+      "id": "pl_cage",
+      "body": "The wire cage behind the grit bin holds forty street signs, a broken lock gate paddle, and a cardboard box full of small brass things. It hasn't been catalogued since the system was invented. The air smells of damp and old metal. Somewhere in there, a plaque with a number on it is waiting.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_cage_0",
+          "label": "Clean the paint off carefully.",
+          "target": "pl_clean"
+        },
+        {
+          "id": "c_pl_cage_1",
+          "label": "Read what the plaque actually says.",
+          "target": "pl_read"
+        },
+        {
+          "id": "c_pl_cage_2",
+          "label": "Ask permission before taking anything off a wall.",
+          "target": "pl_permission"
+        }
+      ]
+    },
+    {
+      "id": "pl_chapelp",
+      "body": "Four filled holes at plaque height beside the lock steps, plugged with mortar a shade too pale. The volunteer warden who did it is the man who is out until four. He told Priya he remembers filling them. He's the only living person who knows which number was on it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_chapelp_0",
+          "label": "Take a rubbing of the next one instead.",
+          "target": "pl_rub"
+        },
+        {
+          "id": "c_pl_chapelp_1",
+          "label": "Get Mr. Ellis to open the cage.",
+          "target": "pl_depot"
+        },
+        {
+          "id": "c_pl_chapelp_2",
+          "label": "Carefully take the lock-step plaque off to read it inside.",
+          "target": "pl_crack"
+        }
+      ]
+    },
+    {
+      "id": "pe_bill",
+      "body": "Put a photograph into Tom Slater's hands, and twenty-one names arrive in perfect order, like the lock gates opening one by one. Ask him what day it is, and the room goes quiet. Both of those things are true at once. One doesn't cancel the other out. You sit carefully, not wanting to break the spell.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_bill_0",
+          "label": "Chase the eleven names on the photograph.",
+          "target": "pe_names"
+        },
+        {
+          "id": "c_pe_bill_1",
+          "label": "Go back to Mr. Slater with the rubbings.",
+          "target": "pe_rub2"
+        },
+        {
+          "id": "c_pe_bill_2",
+          "label": "Ask Mr. Slater to read the compass.",
+          "target": "pe_tune"
+        }
+      ]
+    },
+    {
+      "id": "pe_alms2",
+      "body": "Eleven residents, a Wednesday afternoon, and a fresh packet of digestives. Among them, two people who stood in the rain at the last Run, and one who has the photograph of it framed on the landing outside her door. She points to it proudly. She was at the front.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_alms2_0",
+          "label": "Find Arthur Keel's family.",
+          "target": "pe_family"
+        },
+        {
+          "id": "c_pe_alms2_1",
+          "label": "Let the room talk itself out.",
+          "target": "pe_listen"
+        },
+        {
+          "id": "c_pe_alms2_2",
+          "label": "Take the first confident answer and run with it.",
+          "target": "pe_versions"
+        }
+      ]
+    },
+    {
+      "id": "pe_deniz",
+      "body": "Rafi took the cafe from his uncle, who took it from the old Canal Company. Everything that came with it is in a biscuit tin in the cellar. Old invoices, a logbook, and a brass key that doesn't fit any lock he's ever tried. He shrugs, but his eyes light up.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_deniz_0",
+          "label": "Chase the eleven names on the photograph.",
+          "target": "pe_names"
+        },
+        {
+          "id": "c_pe_deniz_1",
+          "label": "Go back to Mr. Slater with the rubbings.",
+          "target": "pe_rub2"
+        },
+        {
+          "id": "c_pe_deniz_2",
+          "label": "Ask Mr. Slater to read the compass.",
+          "target": "pe_tune"
+        }
+      ]
+    },
+    {
+      "id": "pe_school",
+      "body": "The geography cupboard holds a brass theodolite. The town canal company's name is etched on it. No one now working in the school knows how it got there or who it really belongs to. It's just been there for decades, gathering a faint film of chalk dust.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_school_0",
+          "label": "Find Arthur Keel's family.",
+          "target": "pe_family"
+        },
+        {
+          "id": "c_pe_school_1",
+          "label": "Let the room talk itself out.",
+          "target": "pe_listen"
+        },
+        {
+          "id": "c_pe_school_2",
+          "label": "Take the first confident answer and run with it.",
+          "target": "pe_versions"
+        }
+      ]
+    },
+    {
+      "id": "pr_minutes",
+      "body": "Page four, item nine. A single line about clearing the shed below the lock house before the work starts. At the bottom of the page, a name, a team, and the words: 'The group agreed it was time.' Time, you think, is a funny thing to agree on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_minutes_0",
+          "label": "Read the clause about what storage was promised.",
+          "target": "pr_clause"
+        },
+        {
+          "id": "c_pr_minutes_1",
+          "label": "Get photocopies of everything.",
+          "target": "pr_copy"
+        },
+        {
+          "id": "c_pr_minutes_2",
+          "label": "Find the one person who can say yes.",
+          "target": "pr_council"
+        }
+      ]
+    },
+    {
+      "id": "pr_gazette",
+      "body": "Four column inches, a grainy photo of eleven people in the rain. The last bit says the tools and notes would be kept until the canal club could start up again. It's a line someone wrote. And, you see, a line someone meant. It's a vow, printed in ink.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_gazette_0",
+          "label": "Fill in the form the proper way.",
+          "target": "pr_form"
+        },
+        {
+          "id": "c_pr_gazette_1",
+          "label": "Get Priya to write what the museum wants.",
+          "target": "pr_aisha2"
+        },
+        {
+          "id": "c_pr_gazette_2",
+          "label": "Send it in and wait for an answer.",
+          "target": "pr_filed"
+        }
+      ]
+    },
+    {
+      "id": "pr_owner",
+      "body": "The shed is owned by the Canal & River Trust, and the land beneath it is owned by the Trust. What's inside it might not be. That's a legal distinction that has never once been written down on paper in this town. It's a grey area the size of a skip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_owner_0",
+          "label": "Read the clause about what storage was promised.",
+          "target": "pr_clause"
+        },
+        {
+          "id": "c_pr_owner_1",
+          "label": "Get photocopies of everything.",
+          "target": "pr_copy"
+        },
+        {
+          "id": "c_pr_owner_2",
+          "label": "Find the one person who can say yes.",
+          "target": "pr_council"
+        }
+      ]
+    },
+    {
+      "id": "pr_letter",
+      "body": "A letter that arrives on Thursday is a letter that arrives too late. So this is an email, a phone call, and a person standing in a doorway. Only the third of those, you think, has ever actually moved a booked contractor. You straighten your back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_letter_0",
+          "label": "Fill in the form the proper way.",
+          "target": "pr_form"
+        },
+        {
+          "id": "c_pr_letter_1",
+          "label": "Get Priya to write what the museum wants.",
+          "target": "pr_aisha2"
+        },
+        {
+          "id": "c_pr_letter_2",
+          "label": "Send it in and wait for an answer.",
+          "target": "pr_filed"
+        }
+      ]
+    },
+    {
+      "id": "pl_clean",
+      "body": "Paint comes off brass with patience, a little warm water, and a wooden toothpick. The wrong ten seconds with the wrong scraping tool turns a plaque that survived sixty years into a disaster with a gouge through the number. You hold your breath and work slowly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_clean_0",
+          "label": "Line up the five you have.",
+          "target": "pl_five"
+        },
+        {
+          "id": "c_pl_clean_1",
+          "label": "Work out where the sixth one went.",
+          "target": "pl_sixth"
+        },
+        {
+          "id": "c_pl_clean_2",
+          "label": "Ask about the boat sheds no one ever clears.",
+          "target": "pl_shed"
+        }
+      ]
+    },
+    {
+      "id": "pl_read",
+      "body": "RUN THE FIFTH. Underneath, a number that is either a three or an eight, depending entirely on how the light falls. It's exactly the sort of problem a six-wheel lock won't forgive. You tilt the plaque back and forth, willing the number to be clearer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_read_0",
+          "label": "Show the numbers to Mr. Slater.",
+          "target": "pl_show"
+        },
+        {
+          "id": "c_pl_read_1",
+          "label": "Put back everything that came off a wall.",
+          "target": "pl_replace"
+        },
+        {
+          "id": "c_pl_read_2",
+          "label": "Line up the five you have.",
+          "target": "pl_five"
+        }
+      ]
+    },
+    {
+      "id": "pl_permission",
+      "body": "A plaque on a wall belongs to the wall, and the wall belongs to someone. The distance between asking permission and just taking it is the distance between being helped all week, and getting a stern phone call by Thursday. You know which side you want to be on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_permission_0",
+          "label": "Work out where the sixth one went.",
+          "target": "pl_sixth"
+        },
+        {
+          "id": "c_pl_permission_1",
+          "label": "Ask about the boat sheds no one ever clears.",
+          "target": "pl_shed"
+        },
+        {
+          "id": "c_pl_permission_2",
+          "label": "Show the numbers to Mr. Slater.",
+          "target": "pl_show"
+        }
+      ]
+    },
+    {
+      "id": "pl_rub",
+      "body": "A wax crayon and a sheet of paper lift the number off a plaque without lifting the plaque off the wall. A rubbing can be carried to Mr. Slater, photographed, and argued over. No one is responsible for a piece of paper. It's the safest truth you can carry.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_rub_0",
+          "label": "Put back everything that came off a wall.",
+          "target": "pl_replace"
+        },
+        {
+          "id": "c_pl_rub_1",
+          "label": "Line up the five you have.",
+          "target": "pl_five"
+        },
+        {
+          "id": "c_pl_rub_2",
+          "label": "Work out where the sixth one went.",
+          "target": "pl_sixth"
+        }
+      ]
+    },
+    {
+      "id": "pl_depot",
+      "body": "The cage has its own lock. Mr. Ellis has the key on a ring with forty others. What he wants first is a good reason, a clear name, and about four minutes of someone being totally honest with him. Only then will he even think about turning the key.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_depot_0",
+          "label": "Ask about the boat sheds no one ever clears.",
+          "target": "pl_shed"
+        },
+        {
+          "id": "c_pl_depot_1",
+          "label": "Show the numbers to Mr. Slater.",
+          "target": "pl_show"
+        },
+        {
+          "id": "c_pl_depot_2",
+          "label": "Put back everything that came off a wall.",
+          "target": "pl_replace"
+        }
+      ]
+    },
+    {
+      "id": "pe_names",
+      "body": "Of the eleven, four have died. Three left the canal years ago. Two are in the old people's homes. One is behind the counter of the cafe. And one is Tom Slater. You learn all that in one afternoon. It takes eight very polite chats with strangers who slowly become friends.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_names_0",
+          "label": "Check a memory against a document.",
+          "target": "pe_check"
+        },
+        {
+          "id": "c_pe_names_1",
+          "label": "Bring two of them down to the lock-keeper's shed.",
+          "target": "pe_bring"
+        },
+        {
+          "id": "c_pe_names_2",
+          "label": "Ask who had the key in 1998.",
+          "target": "pe_key"
+        }
+      ]
+    },
+    {
+      "id": "pe_rub2",
+      "body": "The rubbings on the table do what questions can't. He reads the numbers aloud, then the Run numbers. And then, very quietly, he tells you which one the crew always got wrong on the night when they were tired and it was dark. You scribble it down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_rub2_0",
+          "label": "Slow down and do it their way.",
+          "target": "pe_slow"
+        },
+        {
+          "id": "c_pe_rub2_1",
+          "label": "Write down what people say while they say it.",
+          "target": "pe_write"
+        },
+        {
+          "id": "c_pe_rub2_2",
+          "label": "Check a memory against a document.",
+          "target": "pe_check"
+        }
+      ]
+    },
+    {
+      "id": "pe_tune",
+      "body": "He takes the compass, looks at the looped scratch on the casing for a long, silent moment. Then he traces it with his thumb, a small, precise gesture. 'It's a bearing,' he says. 'The one the old captains would follow home in fog.' It isn't a tune, you realise, it's a direction home.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_tune_0",
+          "label": "Bring two of them down to the lock-keeper's shed.",
+          "target": "pe_bring"
+        },
+        {
+          "id": "c_pe_tune_1",
+          "label": "Ask who had the key in 1998.",
+          "target": "pe_key"
+        },
+        {
+          "id": "c_pe_tune_2",
+          "label": "Slow down and do it their way.",
+          "target": "pe_slow"
+        }
+      ]
+    },
+    {
+      "id": "pe_family",
+      "body": "A nephew lives in Scotland. He has never come to the town. He is glad to talk about his uncle. No one has asked about the man for over ten years. He adds, almost as an afterthought, that he still has two of Arthur's old map chests. They sit in his attic, untouched.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_family_0",
+          "label": "Write down what people say while they say it.",
+          "target": "pe_write"
+        },
+        {
+          "id": "c_pe_family_1",
+          "label": "Check a memory against a document.",
+          "target": "pe_check"
+        },
+        {
+          "id": "c_pe_family_2",
+          "label": "Bring two of them down to the lock-keeper's shed.",
+          "target": "pe_bring"
+        }
+      ]
+    },
+    {
+      "id": "pe_listen",
+      "body": "Asking a direct question in that common room gets one answer. Letting the room talk for twenty minutes gets nine. Four of them are wrong, and two of them are things no one would ever have thought to ask for. You listen, sorting the truth from the chatter.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_listen_0",
+          "label": "Ask who had the key in 1998.",
+          "target": "pe_key"
+        },
+        {
+          "id": "c_pe_listen_1",
+          "label": "Slow down and do it their way.",
+          "target": "pe_slow"
+        },
+        {
+          "id": "c_pe_listen_2",
+          "label": "Write down what people say while they say it.",
+          "target": "pe_write"
+        }
+      ]
+    },
+    {
+      "id": "pr_clause",
+      "body": "'Stored until the canal heritage group can be restarted.' That's not a sentence a council uses by accident. It appears in the newspaper, in the minutes of 1999, and on a typed card taped inside the shed door in a photograph from 2004. It's a promise, made three times over.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_clause_0",
+          "label": "Work the clearance date itself.",
+          "target": "pr_deadline"
+        },
+        {
+          "id": "c_pr_clause_1",
+          "label": "Find an adult who will carry the argument inside.",
+          "target": "pr_ally"
+        },
+        {
+          "id": "c_pr_clause_2",
+          "label": "Answer the question they will ask about insurance.",
+          "target": "pr_insure"
+        }
+      ]
+    },
+    {
+      "id": "pr_copy",
+      "body": "Fifty pence a sheet, and a librarian who will stamp the date on the back. A photocopy with an official stamp does something in a meeting that pulling a phone out and showing a photo never manages. It turns a story into a document.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_copy_0",
+          "label": "Give the paper something to print.",
+          "target": "pr_press"
+        },
+        {
+          "id": "c_pr_copy_1",
+          "label": "Ask for ten minutes rather than a decision.",
+          "target": "pr_meet"
+        },
+        {
+          "id": "c_pr_copy_2",
+          "label": "Work the clearance date itself.",
+          "target": "pr_deadline"
+        }
+      ]
+    },
+    {
+      "id": "pr_council",
+      "body": "Four people are in charge, and three of them can only say no. You find the fourth person with two phone calls. You just have to be willing to ask, very simply, 'Who is allowed to decide this?' You dial the number, your question clear.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_council_0",
+          "label": "Find an adult who will carry the argument inside.",
+          "target": "pr_ally"
+        },
+        {
+          "id": "c_pr_council_1",
+          "label": "Answer the question they will ask about insurance.",
+          "target": "pr_insure"
+        },
+        {
+          "id": "c_pr_council_2",
+          "label": "Give the paper something to print.",
+          "target": "pr_press"
+        }
+      ]
+    },
+    {
+      "id": "pr_form",
+      "body": "There is a form for asking the Trust to preserve an object of heritage significance. It's two sides long. It asks for a reason in fewer than a hundred words. No one has ever explained that the hundred words are the whole argument. You sit down and draft it carefully.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_form_0",
+          "label": "Ask for ten minutes rather than a decision.",
+          "target": "pr_meet"
+        },
+        {
+          "id": "c_pr_form_1",
+          "label": "Work the clearance date itself.",
+          "target": "pr_deadline"
+        },
+        {
+          "id": "c_pr_form_2",
+          "label": "Find an adult who will carry the argument inside.",
+          "target": "pr_ally"
+        }
+      ]
+    },
+    {
+      "id": "pr_aisha2",
+      "body": "When a museum says in writing that it will take the old canal company's papers, the whole question changes. It is no longer 'what do we do with this junk?' It becomes 'where does this belong?'. Priya will put that into one perfect paragraph on museum paper.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_aisha2_0",
+          "label": "Answer the question they will ask about insurance.",
+          "target": "pr_insure"
+        },
+        {
+          "id": "c_pr_aisha2_1",
+          "label": "Give the paper something to print.",
+          "target": "pr_press"
+        },
+        {
+          "id": "c_pr_aisha2_2",
+          "label": "Ask for ten minutes rather than a decision.",
+          "target": "pr_meet"
+        }
+      ]
+    },
+    {
+      "id": "pl_crack",
+      "body": "The plaque comes free with the second screw. A corner snaps off with a tiny, awful crack. Now there is a broken plaque, a raw hole in the lock wall, and a talk with the warden that goes just as badly as it should. The number can still be read, but no one in the room is happy about how it was got.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_pl_crack",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Two Screws and a Cracked Plaque"
+      }
+    },
+    {
+      "id": "pe_versions",
+      "body": "Five people give five confident and completely different accounts of where the third Run stop stood. The afternoon slips away trying to choose between them. By the time anyone thinks to check a printed map, the museum has shut its doors for the day. And Thursday is all that's left.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_pe_versions",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Too Many Versions"
+      }
+    },
+    {
+      "id": "pr_filed",
+      "body": "The form goes in on Wednesday and gets a polite email back the same day. It is read the next Tuesday. That is four days after a lorry, two men, and a skip have made the whole thing pointless. The reply is nice and comes in a crisp white envelope with a window.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_pr_filed",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Filed and Forgotten"
+      }
+    },
+    {
+      "id": "pl_five",
+      "body": "Five plaques, five numbers. Their order depends on whether the Run went up the flight or down. The two possible orders disagree in three places out of six. You lay the plaques in a row on the grass, as if they're a sentence waiting to be read.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_five_0",
+          "label": "Settle the order once and for all.",
+          "target": "pl_order"
+        },
+        {
+          "id": "c_pl_five_1",
+          "label": "Take the six numbers to the padlock.",
+          "target": "pl_try"
+        },
+        {
+          "id": "c_pl_five_2",
+          "label": "Photograph everything before Friday.",
+          "target": "pl_photo"
+        }
+      ]
+    },
+    {
+      "id": "pl_sixth",
+      "body": "The dry dock plaque came off when the car park was being laid and never made it to the depot. The man who did the work retired to the coast. He answers his phone, people say, about half the time. You listen to it ring, counting the tones.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_sixth_0",
+          "label": "Get the clearance held for a week.",
+          "target": "pl_hold"
+        },
+        {
+          "id": "c_pl_sixth_1",
+          "label": "Tell the almshouses what you've found.",
+          "target": "pl_tell"
+        },
+        {
+          "id": "c_pl_sixth_2",
+          "label": "Go to the padlock with five numbers and a guess.",
+          "target": "pl_five_end"
+        }
+      ]
+    },
+    {
+      "id": "pl_shed",
+      "body": "This old canal has about nine sheds right by the water. They hold everything people thought was too good to throw out. The owners know just what is in them. They will not be rushed. They will especially not be rushed by someone in a hurry.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_shed_0",
+          "label": "Settle the order once and for all.",
+          "target": "pl_order"
+        },
+        {
+          "id": "c_pl_shed_1",
+          "label": "Take the six numbers to the padlock.",
+          "target": "pl_try"
+        },
+        {
+          "id": "c_pl_shed_2",
+          "label": "Photograph everything before Friday.",
+          "target": "pl_photo"
+        }
+      ]
+    },
+    {
+      "id": "pl_show",
+      "body": "Tom Slater can't tell you what he had for breakfast, but he can tell you that the third Run stopped outside the old grain chute, and that its plaque carried the year the canal company was founded. It's not a guess. It's a memory with the smell of water attached to it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_show_0",
+          "label": "Get the clearance held for a week.",
+          "target": "pl_hold"
+        },
+        {
+          "id": "c_pl_show_1",
+          "label": "Tell the almshouses what you've found.",
+          "target": "pl_tell"
+        },
+        {
+          "id": "c_pl_show_2",
+          "label": "Go to the padlock with five numbers and a guess.",
+          "target": "pl_five_end"
+        }
+      ]
+    },
+    {
+      "id": "pl_replace",
+      "body": "Every plaque that came off goes back on, with the right brass screws. Doing it properly costs an hour out of an afternoon that has four hours left in it. It's the right thing to do, and you know it will matter later, even if it costs you the light.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_replace_0",
+          "label": "Settle the order once and for all.",
+          "target": "pl_order"
+        },
+        {
+          "id": "c_pl_replace_1",
+          "label": "Take the six numbers to the padlock.",
+          "target": "pl_try"
+        },
+        {
+          "id": "c_pl_replace_2",
+          "label": "Photograph everything before Friday.",
+          "target": "pl_photo"
+        }
+      ]
+    },
+    {
+      "id": "pe_check",
+      "body": "A memory and a waterway magazine disagree about the second Run stop. He swears it was one place, the printed page swears it was another. The magazine was printed the week it happened. The memory has had sixty years to tidy itself up. But that doesn't always make the magazine right.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_check_0",
+          "label": "Get the order agreed by people who were there.",
+          "target": "pe_agree"
+        },
+        {
+          "id": "c_pe_check_1",
+          "label": "Ask Mr. Slater for the last number.",
+          "target": "pe_last"
+        },
+        {
+          "id": "c_pe_check_2",
+          "label": "Take a witness with you to the padlock.",
+          "target": "pe_witness"
+        }
+      ]
+    },
+    {
+      "id": "pe_bring",
+      "body": "Two people who stood in the rain at the last Run. One walking stick, one wheeled frame, and half an hour of bright, cold afternoon. They stand in front of the steel shed door, and almost immediately start arguing about the year the lock was fitted. You just hold the torch and listen.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_bring_0",
+          "label": "Get the school to say what it has.",
+          "target": "pe_school2"
+        },
+        {
+          "id": "c_pe_bring_1",
+          "label": "Put Mr. Slater in front of Mr. Ellis.",
+          "target": "pe_vance2"
+        },
+        {
+          "id": "c_pe_bring_2",
+          "label": "Let the afternoon be about the people.",
+          "target": "pe_band"
+        }
+      ]
+    },
+    {
+      "id": "pe_key",
+      "body": "Someone locked that door in September 1998, and put the combination somewhere. A locksmith was paid to come out six weeks before. That means the combination was set by a person, on a specific day, for a reason. Someone, somewhere, knows what it is.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_key_0",
+          "label": "Get the order agreed by people who were there.",
+          "target": "pe_agree"
+        },
+        {
+          "id": "c_pe_key_1",
+          "label": "Ask Mr. Slater for the last number.",
+          "target": "pe_last"
+        },
+        {
+          "id": "c_pe_key_2",
+          "label": "Take a witness with you to the padlock.",
+          "target": "pe_witness"
+        }
+      ]
+    },
+    {
+      "id": "pe_slow",
+      "body": "There is a speed at which this conversation works, and it's slower than any afternoon with a Friday deadline in it. Going at his pace costs an hour, but it buys the sort of help that keeps turning up afterwards. Help that picks up the phone when you can't.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_slow_0",
+          "label": "Get the school to say what it has.",
+          "target": "pe_school2"
+        },
+        {
+          "id": "c_pe_slow_1",
+          "label": "Put Mr. Slater in front of Mr. Ellis.",
+          "target": "pe_vance2"
+        },
+        {
+          "id": "c_pe_slow_2",
+          "label": "Let the afternoon be about the people.",
+          "target": "pe_band"
+        }
+      ]
+    },
+    {
+      "id": "pe_write",
+      "body": "A notebook on the table changes the feeling of a room and how people talk. By your third visit to the common room, they fix each other's facts for the notebook, not for you. They want their own story to be right.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_write_0",
+          "label": "Get the order agreed by people who were there.",
+          "target": "pe_agree"
+        },
+        {
+          "id": "c_pe_write_1",
+          "label": "Ask Mr. Slater for the last number.",
+          "target": "pe_last"
+        },
+        {
+          "id": "c_pe_write_2",
+          "label": "Take a witness with you to the padlock.",
+          "target": "pe_witness"
+        }
+      ]
+    },
+    {
+      "id": "pr_deadline",
+      "body": "A booked clearance can be moved, cancelled, or narrowed to the bit of the shed that genuinely is just rubbish. Those are three very different asks, with three very different chances of someone saying yes. You choose one, and hold your breath.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_deadline_0",
+          "label": "Put the whole case on one sheet of paper.",
+          "target": "pr_case"
+        },
+        {
+          "id": "c_pr_deadline_1",
+          "label": "Take the ten-minute meeting with Mr. Ellis.",
+          "target": "pr_ten"
+        },
+        {
+          "id": "c_pr_deadline_2",
+          "label": "Ask permission to try the padlock.",
+          "target": "pr_lock"
+        }
+      ]
+    },
+    {
+      "id": "pr_ally",
+      "body": "Someone already in the building, already trusted, and already a bit cross about the works, is worth six formal letters. Two people like that live in this town. You have heard that one of them sits on the school's board.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_ally_0",
+          "label": "Bring the school in as a home for the items.",
+          "target": "pr_school3"
+        },
+        {
+          "id": "c_pr_ally_1",
+          "label": "Spend Thursday getting everyone in one room.",
+          "target": "pr_thursday"
+        },
+        {
+          "id": "c_pr_ally_2",
+          "label": "Ask for the week and take the answer as final.",
+          "target": "pr_week"
+        }
+      ]
+    },
+    {
+      "id": "pr_insure",
+      "body": "The first thing anyone official asks about an old store is 'who pays if someone gets hurt in there?'. Having a smart, clear answer ready is what keeps the door open for a chat, instead of it being shut in your face with a polite no.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_insure_0",
+          "label": "Put the whole case on one sheet of paper.",
+          "target": "pr_case"
+        },
+        {
+          "id": "c_pr_insure_1",
+          "label": "Take the ten-minute meeting with Mr. Ellis.",
+          "target": "pr_ten"
+        },
+        {
+          "id": "c_pr_insure_2",
+          "label": "Ask permission to try the padlock.",
+          "target": "pr_lock"
+        }
+      ]
+    },
+    {
+      "id": "pr_press",
+      "body": "A photograph of a brass plaque, a name, a date, and a lorry booked for Friday. It's a story a local paper will take on Wednesday lunchtime. It will be read on Friday morning at breakfast by the two people who most need to have read it on Thursday. You wince at the timing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_press_0",
+          "label": "Bring the school in as a home for the items.",
+          "target": "pr_school3"
+        },
+        {
+          "id": "c_pr_press_1",
+          "label": "Spend Thursday getting everyone in one room.",
+          "target": "pr_thursday"
+        },
+        {
+          "id": "c_pr_press_2",
+          "label": "Ask for the week and take the answer as final.",
+          "target": "pr_week"
+        }
+      ]
+    },
+    {
+      "id": "pr_meet",
+      "body": "No one with a clipboard says yes to a complete stranger. Quite a lot of them will give you ten minutes on a Thursday morning, though. Ten minutes with the plaques on the desk is a different meeting from ten minutes with just a hopeful smile.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_meet_0",
+          "label": "Put the whole case on one sheet of paper.",
+          "target": "pr_case"
+        },
+        {
+          "id": "c_pr_meet_1",
+          "label": "Take the ten-minute meeting with Mr. Ellis.",
+          "target": "pr_ten"
+        },
+        {
+          "id": "c_pr_meet_2",
+          "label": "Ask permission to try the padlock.",
+          "target": "pr_lock"
+        }
+      ]
+    },
+    {
+      "id": "pl_order",
+      "body": "The waterway book, the compass case, and the paper in the lid each give a different order. Only one of them was walked in the rain by twenty-one people. You see that the tie-breaker is which way a crew could easily carry a heavy wooden chest. You point to the map, sure.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_order_0",
+          "label": "Go down to the door on Thursday evening.",
+          "target": "fn_door"
+        },
+        {
+          "id": "c_pl_order_1",
+          "label": "Fix the order before touching the lock.",
+          "target": "fn_order2"
+        },
+        {
+          "id": "c_pl_order_2",
+          "label": "Fetch Mr. Slater down to the lock-keeper's shed.",
+          "target": "fn_bill3"
+        }
+      ]
+    },
+    {
+      "id": "pl_try",
+      "body": "Six small wheels, cold fingers, and one code to try. Every wrong try costs you nothing, except the small, slow let-down of seeing the last wheel stop one click away from where you need it. You take a breath and try again.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_try_0",
+          "label": "Get Mr. Ellis to come and watch.",
+          "target": "fn_vance3"
+        },
+        {
+          "id": "c_pl_try_1",
+          "label": "Bring the two residents and the notebook.",
+          "target": "fn_witness2"
+        },
+        {
+          "id": "c_pl_try_2",
+          "label": "Bring a torch and a clipboard.",
+          "target": "fn_light"
+        }
+      ]
+    },
+    {
+      "id": "pl_photo",
+      "body": "A photograph of a plaque on a wall proves where it was. After Friday morning, that might be the only kind of proof anyone will ever have of anything that's inside that shed. You lift the camera, trying to make the shot count.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_photo_0",
+          "label": "Line the school up to take the navigation instruments.",
+          "target": "fn_school4"
+        },
+        {
+          "id": "c_pl_photo_1",
+          "label": "Get the paper to hold the front of page five.",
+          "target": "fn_press2"
+        },
+        {
+          "id": "c_pl_photo_2",
+          "label": "Get the clearance stopped in writing.",
+          "target": "fn_stop"
+        }
+      ]
+    },
+    {
+      "id": "pl_hold",
+      "body": "A week's delay is one phone call from Mr. Ellis to a contractor. It's also an adult deciding to look slightly foolish on the word of someone who has brought him five brass plaques in a bag. The bag sits between you on his desk.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_hold_0",
+          "label": "Write the list of what should be inside.",
+          "target": "fn_inventory"
+        },
+        {
+          "id": "c_pl_hold_1",
+          "label": "Get the plaques back on their walls first.",
+          "target": "fn_plates2"
+        },
+        {
+          "id": "c_pl_hold_2",
+          "label": "Be there at eight when the lorry comes.",
+          "target": "fn_wait2"
+        }
+      ]
+    },
+    {
+      "id": "pl_tell",
+      "body": "The plaque on their garden wall turns out to be RUN THE FOURTH. Eleven residents who have shuffled past it for years would very much like to be told that. Preferably before anyone else is. They gather around, their faces sharp with interest.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pl_tell_0",
+          "label": "Go down to the door on Thursday evening.",
+          "target": "fn_door"
+        },
+        {
+          "id": "c_pl_tell_1",
+          "label": "Fix the order before touching the lock.",
+          "target": "fn_order2"
+        },
+        {
+          "id": "c_pl_tell_2",
+          "label": "Fetch Mr. Slater down to the lock-keeper's shed.",
+          "target": "fn_bill3"
+        }
+      ]
+    },
+    {
+      "id": "pe_agree",
+      "body": "Four people who walked the Run, one table, and one sheet of paper. Twenty minutes later there is an order that three of them will back up hard, and the fourth will moan about. In this town, that is as close to solid proof of the past as you are ever going to find.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_agree_0",
+          "label": "Get Mr. Ellis to come and watch.",
+          "target": "fn_vance3"
+        },
+        {
+          "id": "c_pe_agree_1",
+          "label": "Bring the two residents and the notebook.",
+          "target": "fn_witness2"
+        },
+        {
+          "id": "c_pe_agree_2",
+          "label": "Bring a torch and a clipboard.",
+          "target": "fn_light"
+        }
+      ]
+    },
+    {
+      "id": "pe_last",
+      "body": "The sixth stop was the lock-keeper's cottage itself. Its number was never on a wall. If the final digit is anywhere, it's in the head of the man who set the lock in 1998, or the man who watched him do it. You think of Mr. Slater, and his long, flickering memory.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_last_0",
+          "label": "Line the school up to take the navigation instruments.",
+          "target": "fn_school4"
+        },
+        {
+          "id": "c_pe_last_1",
+          "label": "Get the paper to hold the front of page five.",
+          "target": "fn_press2"
+        },
+        {
+          "id": "c_pe_last_2",
+          "label": "Get the clearance stopped in writing.",
+          "target": "fn_stop"
+        }
+      ]
+    },
+    {
+      "id": "pe_witness",
+      "body": "Opening a door on Trust land alone is one kind of story. Opening it with two locals and a full notebook is a very different one. You think that gap matters most if the door does open.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_witness_0",
+          "label": "Write the list of what should be inside.",
+          "target": "fn_inventory"
+        },
+        {
+          "id": "c_pe_witness_1",
+          "label": "Get the plaques back on their walls first.",
+          "target": "fn_plates2"
+        },
+        {
+          "id": "c_pe_witness_2",
+          "label": "Be there at eight when the lorry comes.",
+          "target": "fn_wait2"
+        }
+      ]
+    },
+    {
+      "id": "pe_school2",
+      "body": "The cupboard holds a theodolite, two brass compasses, and an old leather bag with a name stamped on the flap. The school will own up to having it as soon as someone asks a question that sounds keen, not like a blame game. You pick your words with care.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_school2_0",
+          "label": "Go down to the door on Thursday evening.",
+          "target": "fn_door"
+        },
+        {
+          "id": "c_pe_school2_1",
+          "label": "Fix the order before touching the lock.",
+          "target": "fn_order2"
+        },
+        {
+          "id": "c_pe_school2_2",
+          "label": "Fetch Mr. Slater down to the lock-keeper's shed.",
+          "target": "fn_bill3"
+        }
+      ]
+    },
+    {
+      "id": "pe_vance2",
+      "body": "Mr. Ellis has been told the shed holds nothing but old tins and damp. An eighty-four-year-old man naming what's behind that door, item by item, from memory, is not a thing a clipboard survives. You watch Mr. Ellis's face change slowly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pe_vance2_0",
+          "label": "Get Mr. Ellis to come and watch.",
+          "target": "fn_vance3"
+        },
+        {
+          "id": "c_pe_vance2_1",
+          "label": "Bring the two residents and the notebook.",
+          "target": "fn_witness2"
+        },
+        {
+          "id": "c_pe_vance2_2",
+          "label": "Bring a torch and a clipboard.",
+          "target": "fn_light"
+        }
+      ]
+    },
+    {
+      "id": "pr_case",
+      "body": "Six stops, five plaques, one photograph, one sentence from the minutes, and one date. If the whole case doesn't fit on a single side of A4, it won't survive being read by someone standing up in a corridor between meetings. You trim the words ruthlessly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_case_0",
+          "label": "Line the school up to take the navigation instruments.",
+          "target": "fn_school4"
+        },
+        {
+          "id": "c_pr_case_1",
+          "label": "Get the paper to hold the front of page five.",
+          "target": "fn_press2"
+        },
+        {
+          "id": "c_pr_case_2",
+          "label": "Get the clearance stopped in writing.",
+          "target": "fn_stop"
+        }
+      ]
+    },
+    {
+      "id": "pr_ten",
+      "body": "He listens with the clipboard held down, which no one has seen him do before. He asks exactly two questions. Both of them are about who will be responsible for the items afterwards, and not about whether any of your story is true. It's not a 'no', you realise.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_ten_0",
+          "label": "Write the list of what should be inside.",
+          "target": "fn_inventory"
+        },
+        {
+          "id": "c_pr_ten_1",
+          "label": "Get the plaques back on their walls first.",
+          "target": "fn_plates2"
+        },
+        {
+          "id": "c_pr_ten_2",
+          "label": "Be there at eight when the lorry comes.",
+          "target": "fn_wait2"
+        }
+      ]
+    },
+    {
+      "id": "pr_lock",
+      "body": "Trying a lock with a yes takes one simple sentence. Trying it without a yes takes one sentence, too. Only one of those two can be said again later, in front of people, without it sounding like a weak excuse.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_lock_0",
+          "label": "Go down to the door on Thursday evening.",
+          "target": "fn_door"
+        },
+        {
+          "id": "c_pr_lock_1",
+          "label": "Fix the order before touching the lock.",
+          "target": "fn_order2"
+        },
+        {
+          "id": "c_pr_lock_2",
+          "label": "Fetch Mr. Slater down to the lock-keeper's shed.",
+          "target": "fn_bill3"
+        }
+      ]
+    },
+    {
+      "id": "pr_school3",
+      "body": "An old instrument in a cupboard is a storage problem. An old instrument in a school heritage club is a brilliant use. A head teacher who can see a photograph of it in the paper will find display space by Friday lunchtime. You've seen it happen before.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_school3_0",
+          "label": "Get Mr. Ellis to come and watch.",
+          "target": "fn_vance3"
+        },
+        {
+          "id": "c_pr_school3_1",
+          "label": "Bring the two residents and the notebook.",
+          "target": "fn_witness2"
+        },
+        {
+          "id": "c_pr_school3_2",
+          "label": "Bring a torch and a clipboard.",
+          "target": "fn_light"
+        }
+      ]
+    },
+    {
+      "id": "pr_thursday",
+      "body": "The residents, the school, the museum, Mr. Ellis, and a man of eighty-four. Getting them all in the same room for half an hour on a Thursday is harder to arrange than any of the rest of it. But it would settle more than all the rest of it put together.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr_thursday_0",
+          "label": "Line the school up to take the navigation instruments.",
+          "target": "fn_school4"
+        },
+        {
+          "id": "c_pr_thursday_1",
+          "label": "Get the paper to hold the front of page five.",
+          "target": "fn_press2"
+        },
+        {
+          "id": "c_pr_thursday_2",
+          "label": "Get the clearance stopped in writing.",
+          "target": "fn_stop"
+        }
+      ]
+    },
+    {
+      "id": "pl_five_end",
+      "body": "Five plaques, five numbers, one gap, and a lock that demands all six. The five get photographed, written up neatly, and pinned to the museum noticeboard. On Friday, the lorry comes, the shed is cleared, and the sixth number stops mattering to anyone. Except you. You keep looking at the empty brick.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_pl_five_end",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Five Out of Six"
+      }
+    },
+    {
+      "id": "pe_band",
+      "body": "The common room fills up on Thursday with people who haven't been in a room together since 1998. There's tea, a photograph album, and Tom Slater traces the bearing on the compass. The lorry comes on Friday anyway, but no one in that room can honestly say the week was wasted. It was full.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_pe_band",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Crew That Still Remembered"
+      }
+    },
+    {
+      "id": "pr_week",
+      "body": "The week is turned down on Wednesday. The reasons are mostly good. The refusal is polite, clear, and firm. The shed is cleared into a truck on Friday. But the two boxes of old logs and maps inside go to the museum. At least someone asked that question in time.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_pr_week",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Week That Was Not Given"
+      }
+    },
+    {
+      "id": "fn_door",
+      "body": "The lock-keeper's garden at seven is blue-black and deserted. The steel door is colder than the brick around it. The lock hangs there, six little wheels and sixty years of damp on it, gleaming faintly. The lorry is booked for eight in the morning. You can almost hear it, idling in the future.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_door_0",
+          "label": "Set the six numbers and pull.",
+          "target": "gx_try"
+        },
+        {
+          "id": "c_fn_door_1",
+          "label": "Try the other order.",
+          "target": "gx_second"
+        },
+        {
+          "id": "c_fn_door_2",
+          "label": "Look at the door hinges rather than the lock.",
+          "target": "gx_hinge"
+        }
+      ]
+    },
+    {
+      "id": "fn_order2",
+      "body": "There are two possible orders, and one door. Standing right in front of the padlock is the worst possible place to be deciding between them. Five minutes with the notebook, sitting on the lock steps, is worth twenty panicky attempts later. You force yourself to sit down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_order2_0",
+          "label": "Ask Mr. Ellis to open it himself.",
+          "target": "gx_ask"
+        },
+        {
+          "id": "c_fn_order2_1",
+          "label": "Let Mr. Slater set the wheels.",
+          "target": "gx_bill4"
+        },
+        {
+          "id": "c_fn_order2_2",
+          "label": "Write down every attempt.",
+          "target": "gx_note"
+        }
+      ]
+    },
+    {
+      "id": "fn_bill3",
+      "body": "Getting Tom from his room above the chandlery to the shed takes twenty minutes, a warm coat, and someone steady on each arm. He hasn't been out in the garden at dusk since the last Run. He looks at the willow tree, and his eyes fill with something that isn't sadness.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_bill3_0",
+          "label": "Get a torch through the gap under the door.",
+          "target": "gx_inside"
+        },
+        {
+          "id": "c_fn_bill3_1",
+          "label": "Find out how damp the store is.",
+          "target": "gx_damp"
+        },
+        {
+          "id": "c_fn_bill3_2",
+          "label": "Meet the lorry at eight with the folder.",
+          "target": "gx_lorry"
+        }
+      ]
+    },
+    {
+      "id": "fn_vance3",
+      "body": "Mr. Ellis gets off work at four thirty. He lives just eight minutes away. Coming back out on a Thursday evening to watch a kid try a lock in the dark is either the silliest ask of his week, or the easiest 'yes' he has ever said. He still hasn't picked which.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_vance3_0",
+          "label": "Get the photographer in front of the door.",
+          "target": "gx_press3"
+        },
+        {
+          "id": "c_fn_vance3_1",
+          "label": "Phone the school before anything else.",
+          "target": "gx_school5"
+        },
+        {
+          "id": "c_fn_vance3_2",
+          "label": "Put the trail back the way it was.",
+          "target": "gx_return"
+        }
+      ]
+    },
+    {
+      "id": "fn_witness2",
+      "body": "Two people who stood in this garden in 1998. One walking stick, one wheeled frame, and a notebook. Whatever happens at this door happens in front of people who can say afterwards what it was. You feel the weight of their presence, a solid truth behind you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_witness2_0",
+          "label": "Set the last wheel where Mr. Slater says.",
+          "target": "gy_sixth"
+        },
+        {
+          "id": "c_fn_witness2_1",
+          "label": "Write it all down before you try anything.",
+          "target": "gy_written"
+        },
+        {
+          "id": "c_fn_witness2_2",
+          "label": "Get a torch through the gap and look.",
+          "target": "gy_behind"
+        }
+      ]
+    },
+    {
+      "id": "fn_light",
+      "body": "A torch, a pencil, and a sheet of paper with six numbers on it. Cold fingers and the shaky light of a phone screen have lost more combinations than wrong numbers ever have. You click the torch on, and the beam steadies on the brass.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_light_0",
+          "label": "Leave it until morning and see.",
+          "target": "gy_eight"
+        },
+        {
+          "id": "c_fn_light_1",
+          "label": "Set the six numbers and pull.",
+          "target": "gx_try"
+        },
+        {
+          "id": "c_fn_light_2",
+          "label": "Try the other order.",
+          "target": "gx_second"
+        }
+      ]
+    },
+    {
+      "id": "fn_school4",
+      "body": "The head teacher will say yes to a theodolite and a photograph. She will say a flat no to a damp van-load of unknown boxes. So the ask has to be specific. Being specific means knowing exactly what is behind the door before you ask. You need to see inside.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_school4_0",
+          "label": "Look at the door hinges rather than the lock.",
+          "target": "gx_hinge"
+        },
+        {
+          "id": "c_fn_school4_1",
+          "label": "Ask Mr. Ellis to open it himself.",
+          "target": "gx_ask"
+        },
+        {
+          "id": "c_fn_school4_2",
+          "label": "Let Mr. Slater set the wheels.",
+          "target": "gx_bill4"
+        }
+      ]
+    },
+    {
+      "id": "fn_press2",
+      "body": "The paper goes to press at noon on Thursday. There's a photographer who will come out at eight in the morning for a story with a lorry in it. It's the only deadline in this town that absolutely nobody can move. You picture the clock on the newsroom wall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_press2_0",
+          "label": "Write down every attempt.",
+          "target": "gx_note"
+        },
+        {
+          "id": "c_fn_press2_1",
+          "label": "Get a torch through the gap under the door.",
+          "target": "gx_inside"
+        },
+        {
+          "id": "c_fn_press2_2",
+          "label": "Find out how damp the store is.",
+          "target": "gx_damp"
+        }
+      ]
+    },
+    {
+      "id": "fn_stop",
+      "body": "A phone call moves a contractor. An email stops one. By Thursday evening, the only version of 'stopped' that will survive a Friday morning is a sentence someone has typed, printed, and sent. You need it in writing. Nothing less will do.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_stop_0",
+          "label": "Meet the lorry at eight with the folder.",
+          "target": "gx_lorry"
+        },
+        {
+          "id": "c_fn_stop_1",
+          "label": "Get the photographer in front of the door.",
+          "target": "gx_press3"
+        },
+        {
+          "id": "c_fn_stop_2",
+          "label": "Phone the school before anything else.",
+          "target": "gx_school5"
+        }
+      ]
+    },
+    {
+      "id": "fn_inventory",
+      "body": "Eleven names, a theodolite, two small compasses, a bag, and a box of logbooks. A list made before the door opens is worth much more than one written later in a rush. You smooth the paper, ready to write down the truth as you see it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_inventory_0",
+          "label": "Put the trail back the way it was.",
+          "target": "gx_return"
+        },
+        {
+          "id": "c_fn_inventory_1",
+          "label": "Set the last wheel where Mr. Slater says.",
+          "target": "gy_sixth"
+        },
+        {
+          "id": "c_fn_inventory_2",
+          "label": "Write it all down before you try anything.",
+          "target": "gy_written"
+        }
+      ]
+    },
+    {
+      "id": "fn_plates2",
+      "body": "Five plaques, five walls, a screwdriver, and one hour on a Thursday evening. Doing it before the door opens, not after, is what makes this a trail and not a messy raid. You start with the one in the almshouse yard, screwing it in tight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_plates2_0",
+          "label": "Get a torch through the gap and look.",
+          "target": "gy_behind"
+        },
+        {
+          "id": "c_fn_plates2_1",
+          "label": "Leave it until morning and see.",
+          "target": "gy_eight"
+        },
+        {
+          "id": "c_fn_plates2_2",
+          "label": "Set the six numbers and pull.",
+          "target": "gx_try"
+        }
+      ]
+    },
+    {
+      "id": "fn_wait2",
+      "body": "The lorry, two men, a skip, and a clipboard. Eight o'clock on a Friday morning. One person standing in front of it all, holding a folder. That person is either an obstruction, or the reason the whole morning goes differently. You plant your feet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fn_wait2_0",
+          "label": "Try the other order.",
+          "target": "gx_second"
+        },
+        {
+          "id": "c_fn_wait2_1",
+          "label": "Look at the door hinges rather than the lock.",
+          "target": "gx_hinge"
+        },
+        {
+          "id": "c_fn_wait2_2",
+          "label": "Ask Mr. Ellis to open it himself.",
+          "target": "gx_ask"
+        }
+      ]
+    },
+    {
+      "id": "gx_try",
+      "body": "Six wheels, cold fingers. You set the last one with a stiff thumb. The shackle either lifts, or it doesn't. For a tiny, ringing moment, nothing happens. Then a small, clean *click*, and the sound of a brass thing giving up an argument it's been having with the weather since 1998. You let out your breath.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_try_0",
+          "label": "Go in and look properly.",
+          "target": "hx_open"
+        },
+        {
+          "id": "c_gx_try_1",
+          "label": "List everything before moving anything.",
+          "target": "hx_list"
+        },
+        {
+          "id": "c_gx_try_2",
+          "label": "Get it out of the damp today.",
+          "target": "hx_carry"
+        }
+      ]
+    },
+    {
+      "id": "gx_second",
+      "body": "The second try takes only forty seconds to dial in. The whole weight of the week hangs on it. Everyone standing there can feel the push of it. It is just you, the padlock, and the dying light.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_second_0",
+          "label": "Offer everything to the school.",
+          "target": "hx_school6"
+        },
+        {
+          "id": "c_gx_second_1",
+          "label": "Offer the logbooks and maps to the museum.",
+          "target": "hx_lib2"
+        },
+        {
+          "id": "c_gx_second_2",
+          "label": "Take the photograph back to the almshouses.",
+          "target": "hx_alms3"
+        }
+      ]
+    },
+    {
+      "id": "gx_hinge",
+      "body": "The hasp the lock hangs on is screwed into a wooden frame that's been out in sixty winters. There's a difference between a locked door and a door that is merely shut. The difference is four rusted screws, and whether anyone is allowed to touch them. You look at the screwdriver in your hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_hinge_0",
+          "label": "Let Mr. Slater go in first.",
+          "target": "hx_bill5"
+        },
+        {
+          "id": "c_gx_hinge_1",
+          "label": "Find out what can be saved.",
+          "target": "hx_repair"
+        },
+        {
+          "id": "c_gx_hinge_2",
+          "label": "Settle who it all belongs to.",
+          "target": "hx_owner2"
+        }
+      ]
+    },
+    {
+      "id": "gx_ask",
+      "body": "He has bolt croppers in the van, and the authority to use them. He also has a string of reasons not to. The sentence that moves him, you realise, isn't about the compass at all. It's about what the minutes of 1999 actually promised. You read it aloud.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_ask_0",
+          "label": "Make sure the right people are told first.",
+          "target": "hx_thanks"
+        },
+        {
+          "id": "c_gx_ask_1",
+          "label": "Put the plaques back and say so publicly.",
+          "target": "hx_plates3"
+        },
+        {
+          "id": "c_gx_ask_2",
+          "label": "Get someone to use the compass in a demonstration.",
+          "target": "hx_play"
+        }
+      ]
+    },
+    {
+      "id": "gx_bill4",
+      "body": "His hands are not completely steady, and his memory isn't either. He sets four of the six numbers without looking at the paper. His thumb stops dead on the fifth wheel. He closes his eyes, and the garden is perfectly silent.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_bill4_0",
+          "label": "Keep trying until the wheels give.",
+          "target": "hy_third"
+        },
+        {
+          "id": "c_gx_bill4_1",
+          "label": "Clean the old theodolite and show it to Mr. Slater.",
+          "target": "hy_heard"
+        },
+        {
+          "id": "c_gx_bill4_2",
+          "label": "Sign the instruments over to the school.",
+          "target": "hy_school"
+        }
+      ]
+    },
+    {
+      "id": "gx_note",
+      "body": "A padlock has a million combos, but only about nine that a person would really set. Writing down what you have tried is the only way to stop the ninth guess from being a clumsy repeat of the third. You tick off one more row.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_note_0",
+          "label": "Make the list and let the lorry take the rest.",
+          "target": "hy_list"
+        },
+        {
+          "id": "c_gx_note_1",
+          "label": "Work out what the numbers actually mean.",
+          "target": "hy_date"
+        },
+        {
+          "id": "c_gx_note_2",
+          "label": "Leave it locked and hope someone listens.",
+          "target": "hy_locked"
+        }
+      ]
+    },
+    {
+      "id": "gx_inside",
+      "body": "The gap under the door is two fingers deep. Your torch beam shows a concrete floor, the curved corner of a wooden chest, and something round and dark. It's either been a leather-bound logbook for thirty years, or a patch of damp for ten.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_inside_0",
+          "label": "Go in and look properly.",
+          "target": "hx_open"
+        },
+        {
+          "id": "c_gx_inside_1",
+          "label": "List everything before moving anything.",
+          "target": "hx_list"
+        },
+        {
+          "id": "c_gx_inside_2",
+          "label": "Get it out of the damp today.",
+          "target": "hx_carry"
+        }
+      ]
+    },
+    {
+      "id": "gx_damp",
+      "body": "The wall above the door has been seeping moisture since the conservation works were first proposed. Whatever is in there has had thirty winters of damp, and very little ventilation. You imagine the smell of old canvas, and hope it's still dry.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_damp_0",
+          "label": "Offer everything to the school.",
+          "target": "hx_school6"
+        },
+        {
+          "id": "c_gx_damp_1",
+          "label": "Offer the logbooks and maps to the museum.",
+          "target": "hx_lib2"
+        },
+        {
+          "id": "c_gx_damp_2",
+          "label": "Take the photograph back to the almshouses.",
+          "target": "hx_alms3"
+        }
+      ]
+    },
+    {
+      "id": "gx_lorry",
+      "body": "Two men, a skip lorry, and a clipboard. You've got a folder with photographs, a photocopy of the minutes, and five brass plaques in a bag. You have about ninety seconds to say the one useful sentence. You open your mouth.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_lorry_0",
+          "label": "Let Mr. Slater go in first.",
+          "target": "hx_bill5"
+        },
+        {
+          "id": "c_gx_lorry_1",
+          "label": "Find out what can be saved.",
+          "target": "hx_repair"
+        },
+        {
+          "id": "c_gx_lorry_2",
+          "label": "Settle who it all belongs to.",
+          "target": "hx_owner2"
+        }
+      ]
+    },
+    {
+      "id": "gx_press3",
+      "body": "A photographer, an old theodolite, and an eighty-four-year-old man in a peaked cap. That's a front page in this town. A front page on Friday is a week later than the lorry. But it's an entire year earlier than forgetting.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_press3_0",
+          "label": "Make sure the right people are told first.",
+          "target": "hx_thanks"
+        },
+        {
+          "id": "c_gx_press3_1",
+          "label": "Put the plaques back and say so publicly.",
+          "target": "hx_plates3"
+        },
+        {
+          "id": "c_gx_press3_2",
+          "label": "Get someone to use the compass in a demonstration.",
+          "target": "hx_play"
+        }
+      ]
+    },
+    {
+      "id": "gx_school5",
+      "body": "The head teacher answers at ten to eight. Friday mornings are always like that. She says yes to a specific list, but then asks who is going to carry it all. It's a question that has a good answer only if someone thought about it yesterday. You have an answer ready.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_school5_0",
+          "label": "Keep trying until the wheels give.",
+          "target": "hy_third"
+        },
+        {
+          "id": "c_gx_school5_1",
+          "label": "Clean the old theodolite and show it to Mr. Slater.",
+          "target": "hy_heard"
+        },
+        {
+          "id": "c_gx_school5_2",
+          "label": "Sign the instruments over to the school.",
+          "target": "hy_school"
+        }
+      ]
+    },
+    {
+      "id": "gx_return",
+      "body": "Five plaques are back on five walls. The paper is back in the compass lid. The compass sits in your pocket. Whatever happens at eight on Friday morning, the town ends the week with the Run back on its walls where a person could walk it. You did that much.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gx_return_0",
+          "label": "Make the list and let the lorry take the rest.",
+          "target": "hy_list"
+        },
+        {
+          "id": "c_gx_return_1",
+          "label": "Work out what the numbers actually mean.",
+          "target": "hy_date"
+        },
+        {
+          "id": "c_gx_return_2",
+          "label": "Leave it locked and hope someone listens.",
+          "target": "hy_locked"
+        }
+      ]
+    },
+    {
+      "id": "gy_sixth",
+      "body": "The sixth number was never on a wall. It was the year the canal company was founded, reversed. Tom says it the way he says a bearing. The shackle lifts on the first pull. The door swings open onto thirty years of darkness, the smell of damp canvas, old brass, and history.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_gy_sixth",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Sixth Number"
+      }
+    },
+    {
+      "id": "gy_written",
+      "body": "By nine on Thursday night, a single sheet is ready. It has six stops, six numbers, two routes, and where each fact came from. A copy goes through the museum letterbox. Whatever happens at eight in the morning, the trail is now safe. No one can throw it away.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_gy_written",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Everything Written Down in Time"
+      }
+    },
+    {
+      "id": "gy_behind",
+      "body": "Behind the door: a theodolite with a cracked lens, three old leather logbooks, a stack of canal maps gone to soft grey pulp along one edge, and a typed card taped to the inside of the door. It says the canal heritage group will return. It's less than the town remembers, and more than the clipboard was told.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_gy_behind",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What Was Behind the Door"
+      }
+    },
+    {
+      "id": "gy_eight",
+      "body": "The lorry is early. The men are quick. The shed is empty by twenty past eight. The skip leaves the garden at nine with a leather logbook in it that no one saw. The padlock, still locked, is left hanging on the open hasp, a small, useless bell.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_gy_eight",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Eight in the Morning"
+      }
+    },
+    {
+      "id": "hx_open",
+      "body": "A concrete floor, a smell of old leather polish. Four wooden chests along the wall, and a rolled-up map leaning in the corner. The light from your torch reaches about half of it. The rest is shadow, waiting to be explored. You step over the threshold.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_open_0",
+          "label": "Ask what it would take to restart the canal heritage group.",
+          "target": "ix_band"
+        },
+        {
+          "id": "c_hx_open_1",
+          "label": "Get the twenty-one names onto something permanent.",
+          "target": "ix_names2"
+        },
+        {
+          "id": "c_hx_open_2",
+          "label": "Find out whose leather satchel it is.",
+          "target": "ix_case"
+        }
+      ]
+    },
+    {
+      "id": "hx_list",
+      "body": "A list made in a doorway with a torch beats a list made from memory later. It is the only record that will ever be made of a room shut since September 1998. You hold the torch under your chin and begin to write.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_list_0",
+          "label": "Hand everything over properly, with paperwork.",
+          "target": "ix_hand"
+        },
+        {
+          "id": "c_hx_list_1",
+          "label": "Get the old logbooks to the museum as an archive.",
+          "target": "ix_archive"
+        },
+        {
+          "id": "c_hx_list_2",
+          "label": "Make the Run walkable again.",
+          "target": "ix_map"
+        }
+      ]
+    },
+    {
+      "id": "hx_carry",
+      "body": "Everything in there has had thirty winters. Another fortnight while adults argue would cost more than a careful move would. Moving it needs hands, a dry floor at its destination, and someone saying 'yes' first. You have the hands, but you need the 'yes'.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_carry_0",
+          "label": "Decide what happens to the compass.",
+          "target": "ix_whistle"
+        },
+        {
+          "id": "c_hx_carry_1",
+          "label": "Say thank you to everybody who helped.",
+          "target": "ix_thanks2"
+        },
+        {
+          "id": "c_hx_carry_2",
+          "label": "Set a date for the first Saturday in September.",
+          "target": "ix_next"
+        }
+      ]
+    },
+    {
+      "id": "hx_school6",
+      "body": "A school with an old land-measuring tool and logbooks is a school with a great new history project. A school with a van full of damp boxes is a caretaker with a long complaint. Which it ends up being depends on what you do today.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_school6_0",
+          "label": "Put the poster up and see who comes.",
+          "target": "iy_again"
+        },
+        {
+          "id": "c_hx_school6_1",
+          "label": "Get the names onto the lock-keeper's shed.",
+          "target": "iy_names"
+        },
+        {
+          "id": "c_hx_school6_2",
+          "label": "Track down the name inside the leather satchel.",
+          "target": "iy_case"
+        }
+      ]
+    },
+    {
+      "id": "hx_lib2",
+      "body": "The logbooks, the meeting notes, and the photos belong in a museum, not as guides. Priya has a box, a shelf, and a record number ready for just this. She has been waiting since the day you first came in.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_lib2_0",
+          "label": "Do the handover on paper, in front of everyone.",
+          "target": "iy_hand"
+        },
+        {
+          "id": "c_hx_lib2_1",
+          "label": "Give Priya the archive she asked for.",
+          "target": "iy_archive"
+        },
+        {
+          "id": "c_hx_lib2_2",
+          "label": "Leave the menu board off and let people see.",
+          "target": "iy_menu"
+        }
+      ]
+    },
+    {
+      "id": "hx_alms3",
+      "body": "In one of the chests, there's a group photograph from 1962. Twenty-one names on the back. Two of the people in it live four hundred paces away, in the almshouses, and haven't seen it in sixty years. You think of their faces when you show them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_alms3_0",
+          "label": "Take it to the paper and let the week end.",
+          "target": "iy_week"
+        },
+        {
+          "id": "c_hx_alms3_1",
+          "label": "Ask what it would take to restart the canal heritage group.",
+          "target": "ix_band"
+        },
+        {
+          "id": "c_hx_alms3_2",
+          "label": "Get the twenty-one names onto something permanent.",
+          "target": "ix_names2"
+        }
+      ]
+    },
+    {
+      "id": "hx_bill5",
+      "body": "He stands in the doorway for a long, quiet moment, saying nothing. Then he names what's in the room before your torch beam reaches it. In perfect order. Including a small leather satchel that turns out to be exactly where he says. Under the map.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_bill5_0",
+          "label": "Find out whose leather satchel it is.",
+          "target": "ix_case"
+        },
+        {
+          "id": "c_hx_bill5_1",
+          "label": "Hand everything over properly, with paperwork.",
+          "target": "ix_hand"
+        },
+        {
+          "id": "c_hx_bill5_2",
+          "label": "Get the old logbooks to the museum as an archive.",
+          "target": "ix_archive"
+        }
+      ]
+    },
+    {
+      "id": "hx_repair",
+      "body": "A cracked theodolite lens is just a lens. Tarnished brass is an afternoon with a cloth. Pulped paper is gone forever. Knowing which is which, right now, needs one person who knows about instruments and about an hour of their time. You look at Tom.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_repair_0",
+          "label": "Make the Run walkable again.",
+          "target": "ix_map"
+        },
+        {
+          "id": "c_hx_repair_1",
+          "label": "Decide what happens to the compass.",
+          "target": "ix_whistle"
+        },
+        {
+          "id": "c_hx_repair_2",
+          "label": "Say thank you to everybody who helped.",
+          "target": "ix_thanks2"
+        }
+      ]
+    },
+    {
+      "id": "hx_owner2",
+      "body": "The heritage group was a club. The club had a committee. The committee stopped meeting. What that means for a theodolite in a damp Trust shed is a question no one in this town has ever had to answer out loud. You all look at each other.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_owner2_0",
+          "label": "Set a date for the first Saturday in September.",
+          "target": "ix_next"
+        },
+        {
+          "id": "c_hx_owner2_1",
+          "label": "Put the poster up and see who comes.",
+          "target": "iy_again"
+        },
+        {
+          "id": "c_hx_owner2_2",
+          "label": "Get the names onto the lock-keeper's shed.",
+          "target": "iy_names"
+        }
+      ]
+    },
+    {
+      "id": "hx_thanks",
+      "body": "The people who should hear about this first are a short list, and all are over seventy. Getting the order right costs one evening of your time. It buys about thirty years of good will from the people who remember.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_thanks_0",
+          "label": "Track down the name inside the leather satchel.",
+          "target": "iy_case"
+        },
+        {
+          "id": "c_hx_thanks_1",
+          "label": "Do the handover on paper, in front of everyone.",
+          "target": "iy_hand"
+        },
+        {
+          "id": "c_hx_thanks_2",
+          "label": "Give Priya the archive she asked for.",
+          "target": "iy_archive"
+        }
+      ]
+    },
+    {
+      "id": "hx_plates3",
+      "body": "Six plaques on six walls, with a short news piece saying what they are. That turns a private trail into a walk the whole town can do on a Saturday with a copied map. You picture the towpath full of people.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_plates3_0",
+          "label": "Leave the menu board off and let people see.",
+          "target": "iy_menu"
+        },
+        {
+          "id": "c_hx_plates3_1",
+          "label": "Take it to the paper and let the week end.",
+          "target": "iy_week"
+        },
+        {
+          "id": "c_hx_plates3_2",
+          "label": "Ask what it would take to restart the canal heritage group.",
+          "target": "ix_band"
+        }
+      ]
+    },
+    {
+      "id": "hx_play",
+      "body": "There's a compass in there that will still find magnetic north with a steady hand. And a man who can still read a bearing. And a canal with a flight of locks doing nothing at all, waiting for the water to remember its history.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hx_play_0",
+          "label": "Get the twenty-one names onto something permanent.",
+          "target": "ix_names2"
+        },
+        {
+          "id": "c_hx_play_1",
+          "label": "Find out whose leather satchel it is.",
+          "target": "ix_case"
+        },
+        {
+          "id": "c_hx_play_2",
+          "label": "Hand everything over properly, with paperwork.",
+          "target": "ix_hand"
+        }
+      ]
+    },
+    {
+      "id": "hy_third",
+      "body": "The third order is what the waterway paper ran in 1962. It opens the lock at seven-twenty on Thursday evening. Two local people are there, and a notebook. An eighty-four-year-old man stands on the grass behind you. For a long moment, no one says a word.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_hy_third",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Open on the Third Try"
+      }
+    },
+    {
+      "id": "hy_heard",
+      "body": "An hour with a soft cloth and a tiny drop of oil, and Tom Slater holds the compass steady on the lock steps on a Thursday evening. He reads a bearing in front of six people. Three of the almshouse windows slide open, and stay open until he's done.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_hy_heard",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Tom Slater Read the Bearing"
+      }
+    },
+    {
+      "id": "hy_school",
+      "body": "The head teacher signs for a land-measuring tool, two compasses, a satchel, and a roll of charts on the Friday the lorry is booked. The lorry takes only the real junk. By the next summer, there's a school history club. It's small and not very good yet.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_hy_school",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Signed Over to the School"
+      }
+    },
+    {
+      "id": "hy_list",
+      "body": "The shed is emptied on schedule, but with a list made first. So three chests, a logbook, and a box of photographs come out before the skip does. Everything else goes. It's not the week anyone hoped for, but it's also not the week that would have happened without a list.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_hy_list",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "A Lorry and a List"
+      }
+    },
+    {
+      "id": "hy_date",
+      "body": "The six numbers are a date, written the way a lock-keeper would write it. The first Saturday in September, 1962. Once you see it, you can't unsee it. You also see it at ten past nine on Friday morning. That's one hour and ten minutes after the lorry.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_hy_date",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Combination Was a Date"
+      }
+    },
+    {
+      "id": "hy_locked",
+      "body": "No one in charge is in the garden on Friday morning. The folder of proof is in a bag on a kitchen table across town. The shed is empty by twenty past eight. The padlock was the whole big worry. But it was never really the problem at all.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_hy_locked",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Locked and Cleared"
+      }
+    },
+    {
+      "id": "ix_band",
+      "body": "Eleven old instruments, a room, an evening a week, and one adult willing to be responsible. Every one of those things exists in this town, except maybe the last one. That's the one that has to be asked for. Out loud. In a room full of people.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_band_0",
+          "label": "Hold the Run on the first Saturday.",
+          "target": "jz_december"
+        },
+        {
+          "id": "c_ix_band_1",
+          "label": "Walk the Run with whoever turns up.",
+          "target": "jz_walked"
+        },
+        {
+          "id": "c_ix_band_2",
+          "label": "Get all six plaques back where they belong.",
+          "target": "jz_plates"
+        }
+      ]
+    },
+    {
+      "id": "ix_names2",
+      "body": "A photo has twenty-one names in pencil on the back. One more damp winter will turn it into a picture of twenty-one strangers. A small, printed panel in the shed costs less than the cleanup would have. You know which one you would rather have.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_names2_0",
+          "label": "Put the compass back in its box and keep it.",
+          "target": "jz_whistle"
+        },
+        {
+          "id": "c_ix_names2_1",
+          "label": "Get every last thing to where it belongs.",
+          "target": "jz_belongs"
+        },
+        {
+          "id": "c_ix_names2_2",
+          "label": "Let the shed be emptied once it's listed.",
+          "target": "jz_empty"
+        }
+      ]
+    },
+    {
+      "id": "ix_case",
+      "body": "There's a full name tooled into the flap of the leather satchel. It isn't on the 1962 photograph. Which means either a later member, or an earlier one. Either way, you're certain someone in this town still shares the surname.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_case_0",
+          "label": "Stand and watch the skip go.",
+          "target": "jz_skip"
+        },
+        {
+          "id": "c_ix_case_1",
+          "label": "Wait until someone in charge notices.",
+          "target": "jz_late"
+        },
+        {
+          "id": "c_ix_case_2",
+          "label": "Try the lock one more time and go home.",
+          "target": "jz_steel"
+        }
+      ]
+    },
+    {
+      "id": "ix_hand",
+      "body": "A signature, a list, a date, and two copies. It takes twenty minutes that nobody wants to spend at the end of a week like this. But it settles the question of ownership for the next thirty years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_hand_0",
+          "label": "Hold the Run on the first Saturday.",
+          "target": "jz_december"
+        },
+        {
+          "id": "c_ix_hand_1",
+          "label": "Walk the Run with whoever turns up.",
+          "target": "jz_walked"
+        },
+        {
+          "id": "c_ix_hand_2",
+          "label": "Get all six plaques back where they belong.",
+          "target": "jz_plates"
+        }
+      ]
+    },
+    {
+      "id": "ix_archive",
+      "body": "A logbook from 1934, a run of old programmes, and two boxes of photos. That is an archive, not a pile. An archive gets a shelf, a number in a book, and a person who looks after it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_archive_0",
+          "label": "Put the compass back in its box and keep it.",
+          "target": "jz_whistle"
+        },
+        {
+          "id": "c_ix_archive_1",
+          "label": "Get every last thing to where it belongs.",
+          "target": "jz_belongs"
+        },
+        {
+          "id": "c_ix_archive_2",
+          "label": "Let the shed be emptied once it's listed.",
+          "target": "jz_empty"
+        }
+      ]
+    },
+    {
+      "id": "ix_map",
+      "body": "Six plaques, a copied map, and a short bit in the paper. By the next Saturday, people walk the route with a piece of paper. Some have lived here forty years and never knew it was there. You watch them, and feel a quiet, steady pride.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_map_0",
+          "label": "Stand and watch the skip go.",
+          "target": "jz_skip"
+        },
+        {
+          "id": "c_ix_map_1",
+          "label": "Wait until someone in charge notices.",
+          "target": "jz_late"
+        },
+        {
+          "id": "c_ix_map_2",
+          "label": "Try the lock one more time and go home.",
+          "target": "jz_steel"
+        }
+      ]
+    },
+    {
+      "id": "ix_whistle",
+      "body": "It came out of a shoebox at a boatyard sale for a couple of pounds. And it is the only object in this whole story that is genuinely, completely yours. That makes it the one decision nobody else gets a say in. You close your hand around it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_whistle_0",
+          "label": "Hold the Run on the first Saturday.",
+          "target": "jz_december"
+        },
+        {
+          "id": "c_ix_whistle_1",
+          "label": "Walk the Run with whoever turns up.",
+          "target": "jz_walked"
+        },
+        {
+          "id": "c_ix_whistle_2",
+          "label": "Get all six plaques back where they belong.",
+          "target": "jz_plates"
+        }
+      ]
+    },
+    {
+      "id": "ix_thanks2",
+      "body": "Eleven doorsteps, one museum desk, one cafe, one canal trust shed, and one almshouse lounge. Doing it in person takes a whole afternoon. But it is the part everyone will recall. You start walking.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_thanks2_0",
+          "label": "Put the compass back in its box and keep it.",
+          "target": "jz_whistle"
+        },
+        {
+          "id": "c_ix_thanks2_1",
+          "label": "Get every last thing to where it belongs.",
+          "target": "jz_belongs"
+        },
+        {
+          "id": "c_ix_thanks2_2",
+          "label": "Let the shed be emptied once it's listed.",
+          "target": "jz_empty"
+        }
+      ]
+    },
+    {
+      "id": "ix_next",
+      "body": "A date on a poster is a promise. It's a promise that can be kept by six people with three old instruments and a photocopied map. The first Saturday in September is eleven weeks away. Plenty of time.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ix_next_0",
+          "label": "Stand and watch the skip go.",
+          "target": "jz_skip"
+        },
+        {
+          "id": "c_ix_next_1",
+          "label": "Wait until someone in charge notices.",
+          "target": "jz_late"
+        },
+        {
+          "id": "c_ix_next_2",
+          "label": "Try the lock one more time and go home.",
+          "target": "jz_steel"
+        }
+      ]
+    },
+    {
+      "id": "iy_again",
+      "body": "Nineteen people come to the first heritage group meeting in the school hall. Eleven of them have never held a compass before. The navigation is genuinely terrible. Tom Slater sits at the front with his old peaked cap on his knee and says it's exactly how the last one started. And he smiles.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_iy_again",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Canal Heritage Group, Restarted"
+      }
+    },
+    {
+      "id": "iy_names",
+      "body": "A small panel goes up on the wall of the old shed. Twenty-one names from 1962, and eleven from 1998. The two lists share four names. People walking the towpath stop and read it, which is, you think, the entire point of writing things on boards.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_iy_names",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Twenty-One Names on the Wall"
+      }
+    },
+    {
+      "id": "iy_case",
+      "body": "The name in the satchel flap is a grandma from the next street. She carried the logbooks until she was nineteen. She has not told anyone that in fifty years. She takes the satchel back. Then she brings it to a meeting, but only after a full two weeks.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_iy_case",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Leather Satchel With a Name In It"
+      }
+    },
+    {
+      "id": "iy_hand",
+      "body": "Two copies, one name each, a list of eleven things, and a date. It is done on a Tuesday night in the school hall, with the residents watching. It is the least tense twenty minutes of the whole two weeks. But it is the only reason nothing comes apart later.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_iy_hand",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Handed Over Properly"
+      }
+    },
+    {
+      "id": "iy_archive",
+      "body": "A logbook from 1934, four hundred photos, a run of programmes, and one card headed THE RUN. All listed, numbered, and on a shelf with a date stamp on the back of every sheet. Priya puts the photo of the compass in the case by the door.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_iy_archive",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Archive Priya Wanted"
+      }
+    },
+    {
+      "id": "iy_menu",
+      "body": "Rafi leaves the plaque uncovered, and moves the menu board a foot to the left. For about a month, people come into the cafe to look at a piece of brass, and buy a cup of tea while they're there. Then they just stop noticing. And the plaque stays.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_iy_menu",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Plaque Under the Menu Board"
+      }
+    },
+    {
+      "id": "iy_week",
+      "body": "The story runs on Friday, under a photo of an empty shed and a skip. It is a well-written piece about something that has already happened. Four people write in. They say they would have helped, if anyone had asked them on Tuesday.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_iy_week",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Right Trail, Wrong Week"
+      }
+    },
+    {
+      "id": "jz_december",
+      "body": "Eleven walkers, one old theodolite, a photocopied map, and six brass plaques. The group stops at all six marks in the cold, and takes a bearing badly at each one. More people follow it around than anyone expected. Half of them are under twelve. You walk at the front, the compass warm in your hand.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_jz_december",
+        "valence": "positive",
+        "kind": "success",
+        "title": "First Saturday in September"
+      }
+    },
+    {
+      "id": "jz_walked",
+      "body": "Forty people walk the route on a Saturday in October, behind a man of eighty-four. He stops at each plaque and says what was there in his day. At the dry dock, where there's no plaque at all, everyone stands in a car park and listens anyway. The heron on the water doesn't move.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_jz_walked",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Run, Walked Again"
+      }
+    },
+    {
+      "id": "jz_plates",
+      "body": "Five plaques go back onto five walls with the right brass screws. The sixth is cut new by an engraver on the industrial estate, who refuses to take any money for it. It goes onto the car park wall, in the pale rectangle that has been waiting thirty years. It gleams.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_jz_plates",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Six Plaques Back on Six Walls"
+      }
+    },
+    {
+      "id": "jz_whistle",
+      "body": "The compass goes back in the box with the paper folded into eighths beside it. It lives on a shelf, pulled out badly about once a week. It is the only object in the story that ends up exactly where it began. But it means something very new and deep.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_jz_whistle",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Compass Goes Back in Its Box"
+      }
+    },
+    {
+      "id": "jz_belongs",
+      "body": "Instruments to the school. Logbooks to the museum. Photograph to the almshouses. Plaques to the walls. The paper to the archive with a note saying who found it. It takes three weeks of small, dull errands. In the end, nothing is left in a bag under anyone's bed.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_jz_belongs",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Everything Where It Belongs"
+      }
+    },
+    {
+      "id": "jz_empty",
+      "body": "The shed's contents come out onto the grass. They're listed, photographed, and divided into 'keep' and 'skip' in front of two men being paid by the hour. They are surprisingly interested. The room underneath the willow ends the week swept, dry, and empty.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_jz_empty",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Shed, Empty and Listed"
+      }
+    },
+    {
+      "id": "jz_skip",
+      "body": "The skip leaves the garden at nine on Friday morning. Inside it are a theodolite and three logbooks. There is a photograph of it happening, taken from the gate. The paper won't print it. They say it's just a skip, and there's nothing left to say.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_jz_skip",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Skip on Friday Morning"
+      }
+    },
+    {
+      "id": "jz_late",
+      "body": "Three separate adults would have stopped the clearance. None of them were asked, because asking felt like a bigger, scarier thing on Wednesday than it turned out to be on the following Monday. By then, all three said so, one after the other.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_jz_late",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Nobody Asked in Time"
+      }
+    },
+    {
+      "id": "jz_steel",
+      "body": "The last combination you try is wrong. The little wheels click back to zero. The trail that ran from a shoebox at the boatyard, through six walls and sixty years, ends here. At a cold steel door in a damp garden, with a lorry booked for the morning.",
+      "is_ending": true,
+      "choices": [],
+      "ending": {
+        "id": "e_jz_steel",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Trail Ends at a Steel Door"
+      }
+    }
+  ]
+}

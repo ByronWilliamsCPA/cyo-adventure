@@ -305,6 +305,74 @@ def test_a_choice_target_survives_a_reply_that_tries_to_move_it() -> None:
 
 
 @pytest.mark.unit
+def test_an_ending_title_is_writable_and_the_rest_of_the_ending_is_not() -> None:
+    """``ending.title`` is leaf content (ruled 2026-08-21, section 8.3).
+
+    A reply may retitle an ending into the theme's vocabulary; the ending's
+    ``id``, ``kind``, and ``valence`` carry the PL-15 fail-state policy and
+    come from the skeleton whatever the reply contains.
+    """
+    skeleton = _all_fill_skeleton()
+
+    merged = merge_fill_batch(
+        skeleton,
+        ["n_happy_end"],
+        {
+            "n_happy_end": {
+                "body": "The lighthouse door swings open onto warm lamplight.",
+                "ending_title": "Lamplight Kept",
+                "ending": {"id": "e_evil", "kind": "death", "valence": "negative"},
+            }
+        },
+    )
+
+    ending = cast(
+        "dict[str, object]",
+        next(n for n in _nodes_of(merged) if n["id"] == "n_happy_end")["ending"],
+    )
+    assert ending["title"] == "Lamplight Kept"
+    assert ending["id"] == "e_friends"
+    assert ending["kind"] == "success"
+    assert ending["valence"] == "positive"
+
+
+@pytest.mark.unit
+def test_an_ending_title_for_a_non_ending_node_is_rejected() -> None:
+    """A title aimed at a node with no ending block is a mis-addressed reply."""
+    skeleton = _all_fill_skeleton()
+
+    with pytest.raises(ValidationError, match="no ending block"):
+        merge_fill_batch(
+            skeleton,
+            ["n_start"],
+            {
+                "n_start": {
+                    "body": "A fox waves from the crossroads.",
+                    "ending_title": "The Fox Remembers",
+                }
+            },
+        )
+
+
+@pytest.mark.unit
+def test_a_directive_returned_as_an_ending_title_is_rejected() -> None:
+    """An ending title is reader-visible text; a directive in one is a defect."""
+    skeleton = _all_fill_skeleton()
+
+    with pytest.raises(ValidationError, match="ending title"):
+        merge_fill_batch(
+            skeleton,
+            ["n_happy_end"],
+            {
+                "n_happy_end": {
+                    "body": "The lighthouse door swings open.",
+                    "ending_title": "<<FILL role=ending words=4>>",
+                }
+            },
+        )
+
+
+@pytest.mark.unit
 def test_a_batch_that_omits_a_node_is_rejected() -> None:
     """Partial is the dangerous answer, so it is not an answer.
 
@@ -507,7 +575,13 @@ async def test_a_feasible_skeleton_still_takes_the_untouched_one_shot_path() -> 
     provider = MockProvider(responses=[json.dumps(VALID_STORY)])
 
     outcome = await fill_skeleton(
-        skeleton, {"premise": "a fox"}, provider, PiiContext(child_names=frozenset())
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        PiiContext(child_names=frozenset()),
+        # Routing is under test, not delivery volume: the fixture
+        # commissions 10 words per node against terse canned bodies.
+        min_fill_rate=0,
     )
 
     assert outcome.status == "passed"
@@ -539,6 +613,9 @@ async def test_a_skeleton_over_the_cap_is_filled_batch_by_batch_and_merged(
         provider,
         PiiContext(child_names=frozenset()),
         settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        # Routing is under test, not delivery volume: the fixture
+        # commissions 10 words per node against terse canned bodies.
+        min_fill_rate=0,
         stage1_gate="skipped",
     )
 
@@ -701,6 +778,9 @@ async def test_a_bound_fill_that_fits_still_takes_the_one_shot_bound_prompt() ->
         provider,
         PiiContext(child_names=frozenset()),
         stage1_gate="skipped",
+        # Routing is under test, not delivery volume: the fixture
+        # commissions 10 words per node against terse canned bodies.
+        min_fill_rate=0,
         slot_bindings={"HERO": "Rosa"},
     )
 
@@ -740,6 +820,9 @@ async def test_a_bound_fill_over_the_cap_is_chunked_and_keeps_its_bound_values(
         provider,
         PiiContext(child_names=frozenset()),
         settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        # Routing is under test, not delivery volume: the fixture
+        # commissions 10 words per node against terse canned bodies.
+        min_fill_rate=0,
         stage1_gate="skipped",
         slot_bindings={"HERO": "Rosa"},
     )
@@ -761,14 +844,14 @@ def test_the_bound_subset_prompt_refuses_a_payload_with_no_bindings() -> None:
     plausible book with the wrong names. That is the silent-wrong outcome; a
     raise is the loud one.
     """
+    skeleton_json = json.dumps(_all_fill_skeleton())
+    batch = FillBatchPayload(nodes_to_fill_json="[]", prose_so_far_json="{}")
+    brief_json = json.dumps({"premise": "a fox"})
+
     with pytest.raises(
         BusinessLogicError, match=re.escape("requires batch.slot_bindings_json")
     ):
-        build_fill_subset_bound_prompt(
-            json.dumps(_all_fill_skeleton()),
-            FillBatchPayload(nodes_to_fill_json="[]", prose_so_far_json="{}"),
-            json.dumps({"premise": "a fox"}),
-        )
+        build_fill_subset_bound_prompt(skeleton_json, batch, brief_json)
 
 
 @pytest.mark.unit
@@ -936,14 +1019,16 @@ async def test_a_pii_abort_on_the_chunked_path_propagates_instead_of_being_repor
     skeleton = _all_fill_skeleton()
     # Never reached: the guard aborts before the first provider call.
     provider = MockProvider(responses=["{}"])
+    pii = PiiContext(child_names=frozenset({"Mabel"}))
+    settings_obj = cast("object", tiny_cap_settings)  # pyright: ignore[reportArgumentType]
 
     with pytest.raises(ValidationError) as caught:
         await fill_skeleton(
             skeleton,
             {"premise": "a fox and a child named Mabel"},
             provider,
-            PiiContext(child_names=frozenset({"Mabel"})),
-            settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+            pii,
+            settings=settings_obj,
             stage1_gate="skipped",
         )
 
@@ -1011,3 +1096,300 @@ def test_a_well_formed_bound_value_passes_through_unchanged() -> None:
 
     assert '"HERO": "Rosa"' in prompt.user
     assert '"PLACE": "Bellhaven"' in prompt.user
+
+
+# ---------------------------------------------------------------------------
+# Context-window bound (AL-519/UW-C324)
+# ---------------------------------------------------------------------------
+
+
+class _AskRecordingProvider:
+    """Mock provider that records the max_tokens of every call."""
+
+    def __init__(self, responses: list[str]) -> None:
+        self._responses = responses
+        self.asks: list[int] = []
+        self.prompts: list[tuple[str, str]] = []
+
+    async def complete(
+        self,
+        *,
+        system: str,
+        prompt: str,
+        max_tokens: int,
+    ) -> object:
+        self.asks.append(max_tokens)
+        self.prompts.append((system, prompt))
+        from cyo_adventure.generation.usage import Completion, TokenUsage
+
+        return Completion(
+            text=self._responses[len(self.asks) - 1],
+            usage=TokenUsage(
+                provider="mock",
+                model="tiny/one-node",
+                input_tokens=1,
+                output_tokens=1,
+                duration_ms=1,
+            ),
+        )
+
+
+@pytest.mark.asyncio
+async def test_a_window_too_small_for_a_batch_refuses_without_spending(
+    tiny_cap_settings: _SmallOutputSettings,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A batch that cannot fit the known context window is never sent.
+
+    The 2026-08-21 chunked leg overflowed a 163,840-token window by one token
+    and paid for the rejected prompt (AL-519/UW-C324). With the window known
+    and too small, the fill refuses deterministically with zero provider
+    calls instead of buying an HTTP 400.
+    """
+    from cyo_adventure.generation.skeleton import MODEL_CONTEXT_WINDOWS
+
+    monkeypatch.setitem(MODEL_CONTEXT_WINDOWS, "tiny/one-node", 50)
+    skeleton = _all_fill_skeleton()
+    provider = MockProvider(responses=[])
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        PiiContext(child_names=frozenset()),
+        settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        stage1_gate="skipped",
+    )
+
+    assert outcome.status == "failed"
+    assert provider.calls == []
+    # Status alone is a weak oracle: this fill can fail for a dozen unrelated
+    # reasons (unparseable reply, rejected merge, unfilled-skeleton backstop)
+    # and every one of them also spends nothing when the provider has no
+    # canned responses left. Name the cause.
+    assert "stage_fill:batch_1_of_8_context_overflow" in outcome.stage_log
+    assert "context window" in json.dumps(outcome.report)
+
+
+@pytest.mark.asyncio
+async def test_a_known_window_clamps_the_batch_ask_below_the_cap(
+    tiny_cap_settings: _SmallOutputSettings,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The per-batch ask is min(cap, window minus estimated input).
+
+    With the input estimate pinned to 100 tokens and the window to 127, every
+    batch has 27 tokens of room: enough for a one-node batch (2 tokens per
+    commissioned word times 10 words), so the call proceeds, but the ask is
+    27 rather than the 30-token cap.
+    """
+    import cyo_adventure.generation.orchestrator as orch
+    from cyo_adventure.generation.skeleton import MODEL_CONTEXT_WINDOWS
+
+    monkeypatch.setitem(MODEL_CONTEXT_WINDOWS, "tiny/one-node", 127)
+    monkeypatch.setattr(orch, "estimate_input_tokens", lambda *_texts: 100)
+    skeleton = _all_fill_skeleton()
+    batches = plan_fill_batches(skeleton, max_tokens=_CAP_FOR_ONE)
+    provider = _AskRecordingProvider(responses=[_reply_for(batch) for batch in batches])
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        cast("object", provider),  # pyright: ignore[reportArgumentType]
+        PiiContext(child_names=frozenset()),
+        settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        stage1_gate="skipped",
+    )
+
+    assert outcome.status in {"passed", "needs_review"}
+    assert provider.asks
+    assert all(ask == 27 for ask in provider.asks)
+
+
+# A one-node batch commissions 10 words at 2.0 tokens per word, and
+# `is_fill_feasible` keeps 20 percent of the budget in reserve, so the batch
+# needs 20 / 0.8 = 25 tokens of context room. That boundary is the whole
+# subject of the next two tests.
+_ROOM_FOR_ONE_NODE = 25
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_room_exactly_at_the_feasibility_requirement_proceeds(
+    tiny_cap_settings: _SmallOutputSettings,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The window check must apply the planner's margin, not a raw comparison.
+
+    With the input estimate pinned at 100 and the window at 125, the batch has
+    exactly the 25 tokens `is_fill_feasible` requires for its 20 expected
+    output tokens. This is the permissive half of the boundary: the margin
+    must not be so eagerly applied that a batch the planner cleared is
+    refused.
+    """
+    import cyo_adventure.generation.orchestrator as orch
+    from cyo_adventure.generation.skeleton import MODEL_CONTEXT_WINDOWS
+
+    monkeypatch.setitem(
+        MODEL_CONTEXT_WINDOWS, "tiny/one-node", 100 + _ROOM_FOR_ONE_NODE
+    )
+    monkeypatch.setattr(orch, "estimate_input_tokens", lambda *_texts: 100)
+    skeleton = _all_fill_skeleton()
+    batches = plan_fill_batches(skeleton, max_tokens=_CAP_FOR_ONE)
+    provider = _AskRecordingProvider(responses=[_reply_for(batch) for batch in batches])
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        cast("object", provider),  # pyright: ignore[reportArgumentType]
+        PiiContext(child_names=frozenset()),
+        settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        min_fill_rate=0,
+        stage1_gate="skipped",
+    )
+
+    assert provider.asks == [_ROOM_FOR_ONE_NODE] * len(batches)
+    assert outcome.status == "passed"
+    assert not any("context_overflow" in entry for entry in outcome.stage_log)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_room_one_token_under_the_feasibility_requirement_refuses(
+    tiny_cap_settings: _SmallOutputSettings,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """One token under the margin is a refusal, not a 0.8-percent-headroom call.
+
+    The defect this pins: the check compared `room` against the RAW expected
+    output, so 24 tokens of room for a 20-token batch passed. That is under
+    one percent of headroom on a budget reasoning tokens also draw from
+    (AL-328/AL-329), which is the truncation-on-`finish_reason=length` failure
+    the 20-percent margin exists to prevent, arrived at through a guard whose
+    own comment promises a deterministic refusal instead.
+    """
+    import cyo_adventure.generation.orchestrator as orch
+    from cyo_adventure.generation.skeleton import MODEL_CONTEXT_WINDOWS
+
+    monkeypatch.setitem(
+        MODEL_CONTEXT_WINDOWS, "tiny/one-node", 100 + _ROOM_FOR_ONE_NODE - 1
+    )
+    monkeypatch.setattr(orch, "estimate_input_tokens", lambda *_texts: 100)
+    skeleton = _all_fill_skeleton()
+    provider = _AskRecordingProvider(responses=[])
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        cast("object", provider),  # pyright: ignore[reportArgumentType]
+        PiiContext(child_names=frozenset()),
+        settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        stage1_gate="skipped",
+    )
+
+    assert outcome.status == "failed"
+    assert provider.asks == []
+    assert "stage_fill:batch_1_of_8_context_overflow" in outcome.stage_log
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_the_real_input_estimator_drives_the_refusal_boundary(
+    tiny_cap_settings: _SmallOutputSettings,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The shipped estimator, not a stub, decides where the boundary falls.
+
+    Every other window test replaces `estimate_input_tokens` with a constant,
+    so the real chars-per-token arithmetic never executed under test and could
+    have been off by any factor without a red test. This measures the actual
+    first-batch prompt with the shipped function, then places the window one
+    token either side of the resulting boundary and asserts the run flips.
+    """
+    import cyo_adventure.generation.orchestrator as orch
+    from cyo_adventure.generation.skeleton import (
+        MODEL_CONTEXT_WINDOWS,
+        estimate_input_tokens,
+    )
+
+    assert orch.estimate_input_tokens is estimate_input_tokens
+
+    skeleton = _all_fill_skeleton()
+    batches = plan_fill_batches(skeleton, max_tokens=_CAP_FOR_ONE)
+
+    async def _run(window: int) -> _AskRecordingProvider:
+        """Run a chunked fill under `window` and return the provider it used."""
+        monkeypatch.setitem(MODEL_CONTEXT_WINDOWS, "tiny/one-node", window)
+        provider = _AskRecordingProvider(
+            responses=[_reply_for(batch) for batch in batches]
+        )
+        await fill_skeleton(
+            skeleton,
+            {"premise": "a fox"},
+            cast("object", provider),  # pyright: ignore[reportArgumentType]
+            PiiContext(child_names=frozenset()),
+            settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+            min_fill_rate=0,
+            stage1_gate="skipped",
+        )
+        return provider
+
+    # A window nothing can constrain, purely to capture the real first-batch
+    # prompt; the document is pristine at batch 1, so this prompt is
+    # byte-identical in the two measured runs below.
+    observed = await _run(10**6)
+    first_system, first_user = observed.prompts[0]
+    estimate = estimate_input_tokens(first_system, first_user)
+    assert estimate > 0
+
+    generous = await _run(estimate + _ROOM_FOR_ONE_NODE)
+    frugal = await _run(estimate + _ROOM_FOR_ONE_NODE - 1)
+
+    assert generous.asks[:1] == [_ROOM_FOR_ONE_NODE]
+    assert frugal.asks == []
+
+
+@pytest.mark.unit
+def test_the_input_estimator_over_counts_rather_than_under_counts() -> None:
+    """The estimator's own arithmetic: three characters per token, rounded up.
+
+    Deliberately conservative. The measured 2026-08-21 batch prompt ran at
+    3.52 chars per token, so dividing by 3.0 over-states the input and the
+    window bound errs toward asking for LESS output. An estimator that
+    under-counted would re-open the one-token overflow it was written to
+    close.
+    """
+    from cyo_adventure.generation.skeleton import estimate_input_tokens
+
+    assert estimate_input_tokens("") == 0
+    assert estimate_input_tokens("a") == 1
+    assert estimate_input_tokens("abc") == 1
+    assert estimate_input_tokens("abcd") == 2
+    assert estimate_input_tokens("abc", "def") == 2
+    assert estimate_input_tokens("x" * 300) == 100
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_a_nan_fill_rate_floor_is_refused_before_any_spend() -> None:
+    """NaN compares False against everything, silently disabling the floor.
+
+    PR #737 review (suggested findings): the guard refuses the configuration up
+    front instead of running with a gate that reports itself configured while
+    never firing.
+    """
+    from cyo_adventure.core.exceptions import ConfigurationError
+
+    provider = MockProvider(responses=[])
+    skeleton = _all_fill_skeleton()
+    pii = PiiContext(child_names=frozenset())
+
+    with pytest.raises(ConfigurationError, match="NaN"):
+        await fill_skeleton(
+            skeleton,
+            {"premise": "a fox"},
+            provider,
+            pii,
+            min_fill_rate=float("nan"),
+        )
+    assert provider.calls == []

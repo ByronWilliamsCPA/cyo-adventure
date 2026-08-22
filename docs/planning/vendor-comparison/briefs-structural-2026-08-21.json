@@ -1,0 +1,52 @@
+[
+  {
+    "setting": "a burrow bakery under the big oak on acorn-festival morning, trays of seed-buns cooling by the door",
+    "wants": "a small mouse helping Papa carry the festival baking to the long table under the tree, choosing what to bring first and who to share it with",
+    "notes": "operator-authored comparison fixture; no real child identity. Paired with the-market-morning: distant from the native Saturday-market world in vocabulary, same physics of a small outing with a grown-up and choices about generosity."
+  },
+  {
+    "setting": "the first proper snow of the winter, a garden gone white and quiet before breakfast",
+    "wants": "a small child and a big sister building a snow-friend, deciding what it becomes next: a hat, a scarf, button eyes, or something nobody has thought of yet",
+    "notes": "operator-authored comparison fixture; no real child identity. Paired with the-big-cardboard-box: distant from the native cardboard-box world, same physics of open-ended making and imagining with a companion."
+  },
+  {
+    "setting": "the pier aquarium's rock-pool room over half-term, where the hermit crabs keep swapping shells overnight",
+    "wants": "a kid volunteer working out where the spotty shell went, watching tank by tank, asking the keepers, and following the clues in the sand",
+    "notes": "operator-authored comparison fixture; no real child identity. Paired with the-seedling-thief: distant from the native garden world, same physics of a gentle disappearance mystery investigated by observation."
+  },
+  {
+    "setting": "a mangrove boardwalk after a night storm, planks loosened and the water still high underneath",
+    "wants": "a kid crossing the storm-shaken boardwalk to bring the oyster-farm dog home, testing every plank before trusting it and knowing when to ask for help",
+    "notes": "operator-authored comparison fixture; no real child identity. Paired with the-bridge-of-stones: distant from the native beck-and-stepping-stones world in vocabulary, same physics of a water crossing, testing before trusting, and an animal to look after."
+  },
+  {
+    "setting": "the tethering field of a hot-air-balloon festival, half an hour before the night-glow when every burner lights on cue",
+    "wants": "the crew runner who has thirty minutes to find the missing igniter key, steady a nervous first-time pilot, and get the field lit on time",
+    "notes": "operator-authored comparison fixture; no real child identity. Paired with the-half-hour-call: distant from the native theatre-backstage world, same physics of a countdown, a missing essential item, and a team to hold together."
+  },
+  {
+    "setting": "the pigeon-post lofts along the wall-top of an old walled city, the evening before the gates shut for festival night",
+    "wants": "the postmaster's kid cycling the wall-top circuit to collect every message capsule before the gates close, trading small favours loft by loft",
+    "notes": "operator-authored comparison fixture; no real child identity. Paired with the-lantern-keepers-list: distant from the native paper-lantern village, same physics of a list worked through against an evening deadline with neighbours to win over."
+  },
+  {
+    "setting": "a sea cave whose tidefall glows once a century, reachable only on the lowest tide anyone alive will see",
+    "wants": "a kid photographer with three glass slides in a wooden carrier, a winch-run camera sled that wants greasing, and one night to catch the glow before the water turns",
+    "notes": "operator-authored comparison fixture; no real child identity. Paired with the-glass-comet: distant from the native observatory world, same physics for the tier-2 state (three consumable exposures, a mechanism that needs oiling, a timing window that advances)."
+  },
+  {
+    "setting": "a river flood-warden's hut on the levee, the first authorized solo night of the wet season",
+    "wants": "an apprentice warden whose gauge bell rings once at one in the morning, deciding what to check, whom to wake, and what goes in the log",
+    "notes": "operator-authored comparison fixture; no real child identity. Paired with the-observatory-shift: distant from the native observatory world, same physics of a first solo watch, a single ambiguous alert, and procedure versus judgement."
+  },
+  {
+    "setting": "the mast-trial of the northern grain fleet, run once a year in harbour, the tall ship's rigging iced overnight",
+    "wants": "you, a deckhand candidate climbing the great mast stage by stage while the mates score your conduct from the deck, one earned brass grommet deciding a shortcut near the top",
+    "notes": "operator-authored comparison fixture; no real child identity. Paired with the-iron-spire-trial: distant from the native fortified-tower world, same physics for the tier-2 state (a depletable grip, conduct carried up the climb, a token that gates a route)."
+  },
+  {
+    "setting": "a terraced wine valley under vine-blight standstill orders, the week the harvest should have started",
+    "wants": "the district blight inspector walking terraces where a fresh mark has been found, weighing containment orders against families' only crop, and deciding what goes in the ledger",
+    "notes": "operator-authored comparison fixture; no real child identity. Paired with the-quarantine-ledger: distant from the native livestock world in vocabulary, same physics of contagion control, livelihoods under standstill, and the limits of enforcement. Plant blight chosen over animal disease to keep the reskin clear of culling imagery."
+  }
+]

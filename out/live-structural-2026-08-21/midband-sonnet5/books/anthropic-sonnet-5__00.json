@@ -1,0 +1,1215 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_half_hour_call",
+  "version": 1,
+  "title": "The Thirty-Minute Call",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "theatre",
+      "teamwork",
+      "nerve",
+      "craft",
+      "responsibility"
+    ],
+    "estimated_minutes": 8,
+    "ending_count": 14,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_arrive",
+  "nodes": [
+    {
+      "id": "n_arrive",
+      "body": "The gate onto the tethering field is propped wide with a sandbag, and the evening smells of cut grass and warm propane. A crew member jogs past with a coiled burner hose over one shoulder, not slowing for anyone. Wicker baskets sit in rows, waiting. Chalked on a board by the gate: NIGHT-GLOW 7:00. Underneath, smaller: THIRTY-MINUTE CALL 6:30.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_arrive_0",
+          "label": "Head onto the field and find the crew board.",
+          "target": "n_board"
+        }
+      ]
+    },
+    {
+      "id": "n_board",
+      "body": "The crew board leans against a fuel drum, with three cards pinned in a row: BURNER BAY?, GEAR TENT?, TETHER CREW? Each question mark is inked so hard it almost tears the paper. Coach Reyes stands with a headset looped around her neck and a clipboard braced against one hip, and without looking up, she says, 'Pick one. And mean it. Whoever picks it owns it until the last burner goes out.'",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_board_0",
+          "label": "Take the Burner Bay.",
+          "target": "l_hub"
+        },
+        {
+          "id": "c_n_board_1",
+          "label": "Take the Gear Tent.",
+          "target": "c_hub"
+        },
+        {
+          "id": "c_n_board_2",
+          "label": "Take the Tether Crew.",
+          "target": "s_hub"
+        }
+      ]
+    },
+    {
+      "id": "l_hub",
+      "body": "The Burner Bay is a small wooden booth at the corner of the field. A canvas flap works as a window. It looks out over rows of half-filled balloons. Inside, a control panel has twenty-four switches for the pilot igniters. Only about half of them have a label written in marker. Milo has been running the whole lighting order by himself all evening. His folder of burn sheets is a messy stack of loose paper. Somewhere above, a string of field lights buzzes softly. Then, in about one minute, three things go wrong all at once.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_hub_0",
+          "label": "Sort the burn sheets first.",
+          "target": "l_a"
+        },
+        {
+          "id": "c_l_hub_1",
+          "label": "Check the igniter that keeps sputtering.",
+          "target": "l_b"
+        },
+        {
+          "id": "c_l_hub_2",
+          "label": "Learn the panel before touching anything else.",
+          "target": "l_c"
+        }
+      ]
+    },
+    {
+      "id": "l_a",
+      "body": "The burn-sheet folder holds forty loose pages. Some are typed. Some are written in soft pencil. Two pages are grey and damp from the evening mist. The running order taped to the booth wall matches the folder only until the Warm-Up Glow ends. Milo can name every burner cue he has already fired tonight. But he can't name a single one still ahead for the Grand Ignition. Then, at ten past five, three things go wrong at the same moment. There is only enough time left to fix one of them the right way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_a_0",
+          "label": "Go and find the generator breaker.",
+          "target": "l_p"
+        },
+        {
+          "id": "c_l_a_1",
+          "label": "Give the Skyfox its own igniter.",
+          "target": "l_q"
+        },
+        {
+          "id": "c_l_a_2",
+          "label": "Rebuild the Grand Ignition on the panel.",
+          "target": "l_r"
+        }
+      ]
+    },
+    {
+      "id": "l_b",
+      "body": "The igniter at the far corner of the Bay sputters every time someone walks across the fuel-line catwalk above it. Its nozzle feels warm on the back of a hand. The hose behind it is coiled tight where it loops around a ground stake. Painted on the tank trailer in letters a foot tall: NOBODY NEAR THE MANIFOLD WITHOUT COACH REYES. Then, at ten past five, three things go wrong at the same moment. There is only enough evening left to fix one of them the right way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_b_0",
+          "label": "Give the Skyfox its own igniter.",
+          "target": "l_q"
+        },
+        {
+          "id": "c_l_b_1",
+          "label": "Rebuild the Grand Ignition on the panel.",
+          "target": "l_r"
+        },
+        {
+          "id": "c_l_b_2",
+          "label": "Go and find the generator breaker.",
+          "target": "l_p"
+        }
+      ]
+    },
+    {
+      "id": "l_c",
+      "body": "Milo taps the two buttons that matter most: RECORD and FIRE. 'It remembers whatever you tell it,' he says. 'Mistakes and all.' Last night's rehearsal sequence is still loaded. It is wrong in two places nobody has caught yet. Somewhere under the folder \u2014 or maybe under the tea flask \u2014 is a hand-drawn map. It shows which switch feeds which burner. Then, at ten past five, three things go wrong at the same moment. There is only enough evening left to fix one of them the right way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_c_0",
+          "label": "Rebuild the Grand Ignition on the panel.",
+          "target": "l_r"
+        },
+        {
+          "id": "c_l_c_1",
+          "label": "Go and find the generator breaker.",
+          "target": "l_p"
+        },
+        {
+          "id": "c_l_c_2",
+          "label": "Give the Skyfox its own igniter.",
+          "target": "l_q"
+        }
+      ]
+    },
+    {
+      "id": "l_p",
+      "body": "At ten past five, the cold-air fan pulls too much power. The generator breaker trips with a hard clunk. The whole field goes dark except for a string of battery lanterns. Every crew member freezes and says the same low 'ohh.' The breaker panel is inside the locked equipment trailer. The only key hangs from Coach Reyes's belt.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_p_0",
+          "label": "Do the small, dull, dependable fix.",
+          "target": "l_x"
+        },
+        {
+          "id": "c_l_p_1",
+          "label": "Go and ask someone for a hand.",
+          "target": "l_y"
+        },
+        {
+          "id": "c_l_p_2",
+          "label": "Change the plan so it still works.",
+          "target": "l_z"
+        }
+      ]
+    },
+    {
+      "id": "l_q",
+      "body": "The night's biggest moment is the Skyfox glowing alone against the dark sky for the crowd's cameras. It has a cue number, but no igniter key. Whoever made the burn plan left that line blank. Then that person left for college in September. The only spare igniter key on the board is already wired to a tie-off spot nobody uses this year.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_q_0",
+          "label": "Go and ask someone for a hand.",
+          "target": "l_y"
+        },
+        {
+          "id": "c_l_q_1",
+          "label": "Change the plan so it still works.",
+          "target": "l_z"
+        },
+        {
+          "id": "c_l_q_2",
+          "label": "Do the small, dull, dependable fix.",
+          "target": "l_x"
+        }
+      ]
+    },
+    {
+      "id": "l_r",
+      "body": "The panel's saved sequence plays perfectly through the Warm-Up Glow. Then it goes dark exactly where every burner should blaze at once for the Grand Ignition. Milo goes very quiet and stares at the switches. There are ninety minutes left. That all-burners blaze is the picture on the poster taped to the festival gate.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_r_0",
+          "label": "Change the plan so it still works.",
+          "target": "l_z"
+        },
+        {
+          "id": "c_l_r_1",
+          "label": "Do the small, dull, dependable fix.",
+          "target": "l_x"
+        },
+        {
+          "id": "c_l_r_2",
+          "label": "Leave it and hope nobody notices.",
+          "target": "l_early"
+        }
+      ]
+    },
+    {
+      "id": "l_x",
+      "body": "The fix turns out to be small and simple. One igniter gets moved two stakes over. One switch number gets written down instead of just remembered. One sequence gets tested twice instead of once. The field lights up just the way the plan says it should. Milo writes the number on the back of his hand in thick marker, just in case.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_x_0",
+          "label": "Answer the thirty-minute call and keep moving.",
+          "target": "n_call0"
+        },
+        {
+          "id": "c_l_x_1",
+          "label": "Listen for the gates opening to the crowd.",
+          "target": "n_call1"
+        },
+        {
+          "id": "c_l_x_2",
+          "label": "Go and find Wren by the baskets.",
+          "target": "n_call2"
+        }
+      ]
+    },
+    {
+      "id": "l_y",
+      "body": "This will only work with two pairs of hands. Someone must hold the igniter steady, call out the count, or stand about Skyfox-sized while the burner gets aimed right. But the Gear Tent and the Tether Crew both have their own five o'clock disasters. Asking for help turns out to be the whole job. Someone puts down what they are doing and comes anyway, even though it costs them something.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_y_0",
+          "label": "Clear the haze before it settles.",
+          "target": "n_call3"
+        },
+        {
+          "id": "c_l_y_1",
+          "label": "Run one last check on your own station.",
+          "target": "n_call4"
+        },
+        {
+          "id": "c_l_y_2",
+          "label": "Answer the thirty-minute call and keep moving.",
+          "target": "n_call0"
+        }
+      ]
+    },
+    {
+      "id": "l_z",
+      "body": "There is a way to make the moment work that isn't the plan as drawn. Instead of one sudden blaze, there's a slower ramp up. The flame color is warmer. The Skyfox is lit from the far end of the field instead of dead center. It's an honest fix. But it is not the moment Wren has practiced in her head thirty times.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_z_0",
+          "label": "Listen for the gates opening to the crowd.",
+          "target": "n_call1"
+        },
+        {
+          "id": "c_l_z_1",
+          "label": "Go and find Wren by the baskets.",
+          "target": "n_call2"
+        },
+        {
+          "id": "c_l_z_2",
+          "label": "Clear the haze before it settles.",
+          "target": "n_call3"
+        }
+      ]
+    },
+    {
+      "id": "l_early",
+      "body": "The igniter stays unassigned and the cue stays blank, and at twenty past six Coach Reyes finds both herself, walking the burn plan line by line. She doesn't shout. She doesn't say it twice. The Burner Bay goes back to Milo, and what's left for you is handing out glow bracelets at the gate \u2014 a real job, just not the one you picked.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_early",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Bracelets at the Gate"
+      }
+    },
+    {
+      "id": "c_hub",
+      "body": "The Gear Tent has canvas walls and a rack of flight suits down the middle. A sewing machine sits on the trestle table under the flap. Wren's harness and flight suit hang at the far end. They are grey and gold, and finished \u2014 except for the parts that aren't. Sana has been up since six that morning. She has a pincushion strapped to her wrist and a checklist with three things still not crossed off.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_hub_0",
+          "label": "Start with the flight helmet.",
+          "target": "c_a"
+        },
+        {
+          "id": "c_c_hub_1",
+          "label": "Start with the split harness strap.",
+          "target": "c_b"
+        },
+        {
+          "id": "c_c_hub_2",
+          "label": "Start with the fast changeover.",
+          "target": "c_c"
+        }
+      ]
+    },
+    {
+      "id": "c_a",
+      "body": "The flight helmet looks great on the outside, with neat stitching and a strong chin strap. But inside, two foam pads press hard on Wren's ears, and after about ten minutes, it starts to hurt. She says nothing about it, because she doesn't want to seem like a nervous beginner who complains. The helmet must stay buckled through the whole Warm-Up Glow. Then, at ten past five, three things go wrong at once, and there is only enough time tonight to fix one of them the right way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_a_0",
+          "label": "Keep sewing through the blackout.",
+          "target": "c_p"
+        },
+        {
+          "id": "c_c_a_1",
+          "label": "Make the helmet actually fit.",
+          "target": "c_q"
+        },
+        {
+          "id": "c_c_a_2",
+          "label": "Refit the whole kit for Cass.",
+          "target": "c_r"
+        }
+      ]
+    },
+    {
+      "id": "c_b",
+      "body": "Wren's shoulder strap has torn loose from its stitching. It ripped a hand's width along the seam. It caught on a tie-down hook while she was practicing climbing into the basket. Every time she reaches overhead, the tear gets worse. There is a spool of webbing on the shelf. Its grey-and-gold color is close to right, but not quite. Then, at ten past five, three things go wrong at once. There is only enough time tonight to fix one of them the right way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_b_0",
+          "label": "Make the helmet actually fit.",
+          "target": "c_q"
+        },
+        {
+          "id": "c_c_b_1",
+          "label": "Refit the whole kit for Cass.",
+          "target": "c_r"
+        },
+        {
+          "id": "c_c_b_2",
+          "label": "Keep sewing through the blackout.",
+          "target": "c_p"
+        }
+      ]
+    },
+    {
+      "id": "c_c",
+      "body": "Between the Warm-Up Glow and the Grand Ignition, Wren must change suits fast. She has to swap her heavy flight suit for the lighter show suit. She must do this in the dark, behind the equipment trailer, in about forty seconds. At rehearsal, it has never been done in under a minute. The plan so far is that everyone will just move faster on the real night. Then, at ten past five, three things go wrong at once. There is only enough time tonight to fix one of them the right way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_c_0",
+          "label": "Refit the whole kit for Cass.",
+          "target": "c_r"
+        },
+        {
+          "id": "c_c_c_1",
+          "label": "Keep sewing through the blackout.",
+          "target": "c_p"
+        },
+        {
+          "id": "c_c_c_2",
+          "label": "Make the helmet actually fit.",
+          "target": "c_q"
+        }
+      ]
+    },
+    {
+      "id": "c_p",
+      "body": "At ten past five, the generator dies. The tent lights go dark with it. The sewing machine stops mid-seam, its needle still down. The Gear Tent has only one lamp, and it just went dark too. Now, whatever is left to finish must be done by phone torch light, held between someone's teeth.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_p_0",
+          "label": "Do the small, dull, dependable fix.",
+          "target": "c_x"
+        },
+        {
+          "id": "c_c_p_1",
+          "label": "Go and ask someone for a hand.",
+          "target": "c_y"
+        },
+        {
+          "id": "c_c_p_2",
+          "label": "Change the plan so it still works.",
+          "target": "c_z"
+        }
+      ]
+    },
+    {
+      "id": "c_q",
+      "body": "With the pads shifted, the helmet slips down over Wren's eyes every time she looks down. That is exactly when she checks her fuel gauge before liftoff. The padding that stops the slipping is the same padding that pressed on her ears before. There is no third kind of foam in the kit box.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_q_0",
+          "label": "Go and ask someone for a hand.",
+          "target": "c_y"
+        },
+        {
+          "id": "c_c_q_1",
+          "label": "Change the plan so it still works.",
+          "target": "c_z"
+        },
+        {
+          "id": "c_c_q_2",
+          "label": "Do the small, dull, dependable fix.",
+          "target": "c_x"
+        }
+      ]
+    },
+    {
+      "id": "c_r",
+      "body": "Wren's nerves have turned into real dizziness. Nobody is sure if she can fly tonight. Cass has only trained as backup pilot on Tuesday evenings. She stands up straight and says she can do it. But Cass is a head shorter than Wren. Every buckle on every flight suit in the tent was set to fit Wren.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_r_0",
+          "label": "Change the plan so it still works.",
+          "target": "c_z"
+        },
+        {
+          "id": "c_c_r_1",
+          "label": "Do the small, dull, dependable fix.",
+          "target": "c_x"
+        },
+        {
+          "id": "c_c_r_2",
+          "label": "Call it close enough and stop.",
+          "target": "c_early"
+        }
+      ]
+    },
+    {
+      "id": "c_x",
+      "body": "The fix is quiet needlework and a new foam pad cut to fit. The helmet finally sits right. The strap holds under a firm tug. They rehearse the changeover twice behind a parked trailer standing in for the real one. Sana crosses one line off her list. She almost smiles.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_x_0",
+          "label": "Run one last check on your own station.",
+          "target": "n_call4"
+        },
+        {
+          "id": "c_c_x_1",
+          "label": "Answer the thirty-minute call and keep moving.",
+          "target": "n_call0"
+        },
+        {
+          "id": "c_c_x_2",
+          "label": "Listen for the gates opening to the crowd.",
+          "target": "n_call1"
+        }
+      ]
+    },
+    {
+      "id": "c_y",
+      "body": "This will only work if someone stands by in the dark at just the right second. They must hold the strap steady while it's tied tight. That someone is busy up at the Burner Bay or knee-deep with the Tether Crew. Everyone between here and the field is already busy. Asking turns out to be the hardest part of the job. Someone puts down what they are doing and comes to help. It costs them something, but they come anyway.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_y_0",
+          "label": "Go and find Wren by the baskets.",
+          "target": "n_call2"
+        },
+        {
+          "id": "c_c_y_1",
+          "label": "Clear the haze before it settles.",
+          "target": "n_call3"
+        },
+        {
+          "id": "c_c_y_2",
+          "label": "Run one last check on your own station.",
+          "target": "n_call4"
+        }
+      ]
+    },
+    {
+      "id": "c_z",
+      "body": "The fix is to change what the crowd sees. Wren could keep the heavy suit on all through the changeover, instead of swapping. Or she could fly the Grand Ignition with her visor up, showing her own face instead of the helmet's painted one. It is a real solution. But it is also a different picture than the one on the festival poster.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_z_0",
+          "label": "Answer the thirty-minute call and keep moving.",
+          "target": "n_call0"
+        },
+        {
+          "id": "c_c_z_1",
+          "label": "Listen for the gates opening to the crowd.",
+          "target": "n_call1"
+        },
+        {
+          "id": "c_c_z_2",
+          "label": "Go and find Wren by the baskets.",
+          "target": "n_call2"
+        }
+      ]
+    },
+    {
+      "id": "c_early",
+      "body": "The helmet goes back on the rack, just as it was. At the thirty-minute call, Wren buckles it on. She says nothing about it, again. Sana watches her stay quiet, and that feels worse than if she had spoken. In the end, the helmet comes off the rack and out of the night for good. Wren flies the Grand Ignition in a plain knit cap instead. It is a discovery nobody wanted to make this way.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_early",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Knit Cap Instead"
+      }
+    },
+    {
+      "id": "s_hub",
+      "body": "The Tether Crew is Jax, a roll of glow tape, and a field. The field must be re-staked into three different shapes in ninety minutes. The ground anchors and tie-plates are heavier than they look. Everyone's arms already know it. For the glow show's river-of-light walk, a long blue LED ribbon must be strung between two poles. Nobody has agreed yet who carries which end.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_hub_0",
+          "label": "Walk the formation changes first.",
+          "target": "s_a"
+        },
+        {
+          "id": "c_s_hub_1",
+          "label": "Lay the glow tape first.",
+          "target": "s_b"
+        },
+        {
+          "id": "c_s_hub_2",
+          "label": "Fix the platform that rocks.",
+          "target": "s_c"
+        }
+      ]
+    },
+    {
+      "id": "s_a",
+      "body": "Jax wants to walk through the whole formation order slowly, just once, before anyone moves fast. There are four changes tonight. The third one has never been rehearsed with the real stakes, in real darkness. Walking it properly takes twenty minutes the schedule may not have to spare. Then, at ten past five, three things go wrong at once. There is only enough time tonight to fix one of them the right way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_a_0",
+          "label": "Steady the loose anchor stake in the dark.",
+          "target": "s_p"
+        },
+        {
+          "id": "c_s_a_1",
+          "label": "Make the third formation fit the music.",
+          "target": "s_q"
+        },
+        {
+          "id": "c_s_a_2",
+          "label": "Stop the ribbon snagging the platform.",
+          "target": "s_r"
+        }
+      ]
+    },
+    {
+      "id": "s_b",
+      "body": "No glow tape is down yet. The far side of the field turns pitch black the second the work lights turn off. The roll on the shelf is old. Its glow is weak, more of a rumor than real light. Marks still need to be laid for the stake lines, the fuel cart, and the platform edge. Without a mark there, someone could walk right off the edge. Then, at ten past five, three things go wrong at once. There is only enough evening left to fix one of them properly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_b_0",
+          "label": "Make the third formation fit the music.",
+          "target": "s_q"
+        },
+        {
+          "id": "c_s_b_1",
+          "label": "Stop the ribbon snagging the platform.",
+          "target": "s_r"
+        },
+        {
+          "id": "c_s_b_2",
+          "label": "Steady the loose anchor stake in the dark.",
+          "target": "s_p"
+        }
+      ]
+    },
+    {
+      "id": "s_c",
+      "body": "The platform holding Wren's basket for the Grand Ignition rocks a little. It rocks about a centimeter when weight shifts to its front left corner. A folded festival program under the leg fixes this. But if someone drags the platform even an inch, the fix breaks. Underneath, one bolt just spins. It will not tighten. Then, at ten past five, three things go wrong at once. There is only enough evening left to fix one of them properly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_c_0",
+          "label": "Stop the ribbon snagging the platform.",
+          "target": "s_r"
+        },
+        {
+          "id": "c_s_c_1",
+          "label": "Steady the loose anchor stake in the dark.",
+          "target": "s_p"
+        },
+        {
+          "id": "c_s_c_2",
+          "label": "Make the third formation fit the music.",
+          "target": "s_q"
+        }
+      ]
+    },
+    {
+      "id": "s_p",
+      "body": "At ten past five the generator drops and the field lights die, and a half-driven anchor stake is left standing loose right in the middle of the walk path with nobody's hand on it. Jax says nobody move, in the voice that actually means it. The stake turns out to be perfectly fine. Nobody's heart rate is.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_p_0",
+          "label": "Do the small, dull, dependable fix.",
+          "target": "s_x"
+        },
+        {
+          "id": "c_s_p_1",
+          "label": "Go and ask someone for a hand.",
+          "target": "s_y"
+        },
+        {
+          "id": "c_s_p_2",
+          "label": "Change the plan so it still works.",
+          "target": "s_z"
+        }
+      ]
+    },
+    {
+      "id": "s_q",
+      "body": "The third formation change should take eighteen seconds, matching the recorded glow music. But the best run so far has taken thirty-one seconds. The music can't stretch. It's a fixed recording, so it can't slow down. And the change can't go faster with the number of people free to help right now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_q_0",
+          "label": "Go and ask someone for a hand.",
+          "target": "s_y"
+        },
+        {
+          "id": "c_s_q_1",
+          "label": "Change the plan so it still works.",
+          "target": "s_z"
+        },
+        {
+          "id": "c_s_q_2",
+          "label": "Do the small, dull, dependable fix.",
+          "target": "s_x"
+        }
+      ]
+    },
+    {
+      "id": "s_r",
+      "body": "The blue ribbon catches on the platform's corner every time it crosses. Each catch drags the platform a few centimeters off its tape marks. By the fourth run-through, the platform sits a hand's width away from its marks. Wren has to step onto that platform in the dark. She has to trust it is exactly where it should be.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_r_0",
+          "label": "Change the plan so it still works.",
+          "target": "s_z"
+        },
+        {
+          "id": "c_s_r_1",
+          "label": "Do the small, dull, dependable fix.",
+          "target": "s_x"
+        },
+        {
+          "id": "c_s_r_2",
+          "label": "Call it good enough and go get some water.",
+          "target": "s_early"
+        }
+      ]
+    },
+    {
+      "id": "s_x",
+      "body": "The fix is not fancy. Someone tightens the bolt with the right-sized wrench. Someone relays the glow tape exactly where the platform now sits. Someone pads the sharp corner so the ribbon slides past instead of catching. The formation change is run two more times. Both times, it fits cleanly inside the music.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_x_0",
+          "label": "Clear the haze before it settles.",
+          "target": "n_call3"
+        },
+        {
+          "id": "c_s_x_1",
+          "label": "Run one last check on your own station.",
+          "target": "n_call4"
+        },
+        {
+          "id": "c_s_x_2",
+          "label": "Answer the thirty-minute call and keep moving.",
+          "target": "n_call0"
+        }
+      ]
+    },
+    {
+      "id": "s_y",
+      "body": "The change only fits the music if one more pair of hands helps at the field edge. Right now, every person at this festival is busy with their own job. Asking anyone means pulling them away from something they were already doing. But asking is what needs to happen. Someone puts down their own task and comes to help. It costs them something. Still, they come.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_y_0",
+          "label": "Listen for the gates opening to the crowd.",
+          "target": "n_call1"
+        },
+        {
+          "id": "c_s_y_1",
+          "label": "Go and find Wren by the baskets.",
+          "target": "n_call2"
+        },
+        {
+          "id": "c_s_y_2",
+          "label": "Clear the haze before it settles.",
+          "target": "n_call3"
+        }
+      ]
+    },
+    {
+      "id": "s_z",
+      "body": "The change can fit if it gets smaller. The fuel cart could stay where it is. The ribbon could cross from the other direction instead. Or the platform could stay still, and the Grand Ignition could happen a few meters from its original spot.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_z_0",
+          "label": "Run one last check on your own station.",
+          "target": "n_call4"
+        },
+        {
+          "id": "c_s_z_1",
+          "label": "Answer the thirty-minute call and keep moving.",
+          "target": "n_call0"
+        },
+        {
+          "id": "c_s_z_2",
+          "label": "Listen for the gates opening to the crowd.",
+          "target": "n_call1"
+        }
+      ]
+    },
+    {
+      "id": "s_early",
+      "body": "The bolt stays loose, and the tape stays where it was. At the thirty-minute call, Jax runs the formation once more, alone, and finds both problems. She doesn't say a word about it to you \u2014 she just fixes them herself in about four minutes flat. Somehow, that feels worse than being told off would have.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_s_early",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Fixed Without a Word"
+      }
+    },
+    {
+      "id": "n_call0",
+      "body": "Coach Reyes calls out the thirty-minute mark on every headset on the field. The whole place suddenly feels different. Pilots go to run their pre-flight checks. Crew get one last twenty minutes to make noise before everything must go quiet. Whatever went wrong at five o'clock is either fixed by now or it isn't. There's no more time to pretend otherwise.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_call0_0",
+          "label": "Go to the launch line for standby.",
+          "target": "n_beg0"
+        },
+        {
+          "id": "c_n_call0_1",
+          "label": "Put a hand on your own station one last time.",
+          "target": "n_beg1"
+        },
+        {
+          "id": "c_n_call0_2",
+          "label": "Answer Coach Reyes honestly.",
+          "target": "n_beg2"
+        }
+      ]
+    },
+    {
+      "id": "n_call1",
+      "body": "Somewhere behind the field, the festival gates swing open. The first wave of voices rolls in, like weather moving over the grass. From out here among the baskets, the crowd isn't people yet. It's just a rising hum, getting closer. There is exactly one more chance to test anything that still needs testing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_call1_0",
+          "label": "Put a hand on your own station one last time.",
+          "target": "n_beg1"
+        },
+        {
+          "id": "c_n_call1_1",
+          "label": "Answer Coach Reyes honestly.",
+          "target": "n_beg2"
+        },
+        {
+          "id": "c_n_call1_2",
+          "label": "Help Wren buckle on her helmet.",
+          "target": "n_beg3"
+        }
+      ]
+    },
+    {
+      "id": "n_call2",
+      "body": "Wren stands near the row of baskets with her helmet tucked under one arm. She runs her pre-flight checklist under her breath. She fumbles the exact same step, the exact same way, every time. She isn't asking for help. But she is clearly about thirty seconds from needing it. The thirty-minute call is now down to twenty-two.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_call2_0",
+          "label": "Answer Coach Reyes honestly.",
+          "target": "n_beg2"
+        },
+        {
+          "id": "c_n_call2_1",
+          "label": "Help Wren buckle on her helmet.",
+          "target": "n_beg3"
+        },
+        {
+          "id": "c_n_call2_2",
+          "label": "Stand by for the first burner cue.",
+          "target": "n_beg4"
+        }
+      ]
+    },
+    {
+      "id": "n_call3",
+      "body": "The whole corner of the field smells like the inflation fan's exhaust. Tonight it's working a little too well. A low haze sits over the grass. Jax props open the equipment trailer's back doors for two minutes to let it clear. Someone stands watch, because an open trailer door always needs watching. The haze thins back down to the level it was rehearsed at.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_call3_0",
+          "label": "Help Wren buckle on her helmet.",
+          "target": "n_beg3"
+        },
+        {
+          "id": "c_n_call3_1",
+          "label": "Stand by for the first burner cue.",
+          "target": "n_beg4"
+        },
+        {
+          "id": "c_n_call3_2",
+          "label": "Go to the launch line for standby.",
+          "target": "n_beg0"
+        }
+      ]
+    },
+    {
+      "id": "n_call4",
+      "body": "The last checks happen at the same time in three corners of the field. None of the three groups can see the other two. This is the moment that shows if the whole festival got ready right, or if it's about to find out the hard way. The headsets go quiet. That quiet means everyone is listening at once.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_call4_0",
+          "label": "Stand by for the first burner cue.",
+          "target": "n_beg4"
+        },
+        {
+          "id": "c_n_call4_1",
+          "label": "Go to the launch line for standby.",
+          "target": "n_beg0"
+        },
+        {
+          "id": "c_n_call4_2",
+          "label": "Put a hand on your own station one last time.",
+          "target": "n_beg1"
+        }
+      ]
+    },
+    {
+      "id": "n_beg0",
+      "body": "Standby is called. Wren and the two flag-wavers move to the launch line. The floodlights dim to half. The crowd noise out front drops by half too. Nobody quite believes this until they hear it happen. Blue safety lights are strung along the line. They make everyone standing there look like they are underwater.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_beg0_0",
+          "label": "Watch the floodlights go.",
+          "target": "n_up0"
+        },
+        {
+          "id": "c_n_beg0_1",
+          "label": "Stay on the line for the ribbon walk.",
+          "target": "n_up1"
+        },
+        {
+          "id": "c_n_beg0_2",
+          "label": "Work all the way through to the halfway break.",
+          "target": "n_up2"
+        }
+      ]
+    },
+    {
+      "id": "n_beg1",
+      "body": "The last thing before the burners light is always the same: a check that whatever you're responsible for is exactly where you left it. A hand on the platform. A hand on the switch. A hand on the strap. The answer to whether it's ready is either yes, or it's now \u2014 there's no third option left on the clock.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_beg1_0",
+          "label": "Stay on the line for the ribbon walk.",
+          "target": "n_up1"
+        },
+        {
+          "id": "c_n_beg1_1",
+          "label": "Work all the way through to the halfway break.",
+          "target": "n_up2"
+        },
+        {
+          "id": "c_n_beg1_2",
+          "label": "Hold your nerve and let the glow run.",
+          "target": "e9a"
+        }
+      ]
+    },
+    {
+      "id": "n_beg2",
+      "body": "Coach Reyes stands where she can see the whole launch line and every crew tent at once. She asks each station, one at a time, if it's ready. The honest answer and the easy answer are not always the same word. She waits with her headset in hand for whichever one you give her.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_beg2_0",
+          "label": "Work all the way through to the halfway break.",
+          "target": "n_up2"
+        },
+        {
+          "id": "c_n_beg2_1",
+          "label": "Hold your nerve and let the glow run.",
+          "target": "e9a"
+        },
+        {
+          "id": "c_n_beg2_2",
+          "label": "Watch the whole glow from the line.",
+          "target": "e9b"
+        }
+      ]
+    },
+    {
+      "id": "n_beg3",
+      "body": "Wren buckles on the helmet. Something in the way she stands changes \u2014 she looks steadier and more nervous at the same time. Through the narrow eye slit, she can see much less than people outside guess. That is why the glow tape matters so much. It is also why the platform must sit exactly where the tape says. She gives you a thumbs up, aimed just slightly off to one side.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_beg3_0",
+          "label": "Hold your nerve and let the glow run.",
+          "target": "e9a"
+        },
+        {
+          "id": "c_n_beg3_1",
+          "label": "Watch the whole glow from the line.",
+          "target": "e9b"
+        },
+        {
+          "id": "c_n_beg3_2",
+          "label": "Watch the floodlights go.",
+          "target": "n_up0"
+        }
+      ]
+    },
+    {
+      "id": "n_beg4",
+      "body": "The recording for the first burner cue is ready to play. Milo's finger already rests on the button. The last conversation on the field stops in the middle of a sentence. For about four seconds, there is total silence. That silence belongs only to the people behind the ropes. Nobody in the crowd feels it at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_beg4_0",
+          "label": "Watch the whole glow from the line.",
+          "target": "e9b"
+        },
+        {
+          "id": "c_n_beg4_1",
+          "label": "Watch the floodlights go.",
+          "target": "n_up0"
+        },
+        {
+          "id": "c_n_beg4_2",
+          "label": "Stay on the line for the ribbon walk.",
+          "target": "n_up1"
+        }
+      ]
+    },
+    {
+      "id": "n_up0",
+      "body": "The floodlights drop. The first burner cue lands right on the beat. The crowd makes the sound three hundred people make when they all go quiet at the same second. Whatever got fixed back at five o'clock is now holding strong. The Warm-Up Glow runs, and mostly, it runs beautifully.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_up0_0",
+          "label": "Watch the second half begin.",
+          "target": "n_act0"
+        },
+        {
+          "id": "c_n_up0_1",
+          "label": "See the grand ignition land.",
+          "target": "e10a"
+        },
+        {
+          "id": "c_n_up0_2",
+          "label": "Let the trickiest part go right.",
+          "target": "e10b"
+        }
+      ]
+    },
+    {
+      "id": "n_up1",
+      "body": "The ribbon walk arrives. This is the one with the blue ribbon, the tricky platform, and the igniter that had no key this afternoon. It goes the way it was prepared to go. That turns out to be the only way anything ever really goes. From the launch line, you watch three hundred strangers lean forward at exactly the same moment.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_up1_0",
+          "label": "Wait for the grand cue.",
+          "target": "n_act1"
+        },
+        {
+          "id": "c_n_up1_1",
+          "label": "Watch it happen the changed way.",
+          "target": "e10c"
+        },
+        {
+          "id": "c_n_up1_2",
+          "label": "Let it go and note it down for next year.",
+          "target": "e10d"
+        }
+      ]
+    },
+    {
+      "id": "n_up2",
+      "body": "The halfway break comes. The food-truck lines get loud. The back of the field turns into a different, much noisier place for twenty whole minutes. The second half still has the Skyfox's solo light-up, the all-burners blaze, and the changeover nobody has ever finished in under a minute. The list of things left to survive tonight is short. It is also very specific.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_up2_0",
+          "label": "Watch the second half begin.",
+          "target": "n_act0"
+        },
+        {
+          "id": "c_n_up2_1",
+          "label": "See the grand ignition land.",
+          "target": "e10a"
+        },
+        {
+          "id": "c_n_up2_2",
+          "label": "Let the trickiest part go right.",
+          "target": "e10b"
+        }
+      ]
+    },
+    {
+      "id": "n_act0",
+      "body": "The second half starts, and the hardest change of the whole night happens in the dark behind the trailer. It works, because three separate crews each got one small thing right this afternoon. From where you stand, you can only see your own piece of it, so you have to trust that the rest happened too. Wren comes out of that change exactly on time.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_act0_0",
+          "label": "Take the closing salute.",
+          "target": "e11a"
+        },
+        {
+          "id": "c_n_act0_1",
+          "label": "Find your name on the crew list.",
+          "target": "e11b"
+        },
+        {
+          "id": "c_n_act0_2",
+          "label": "Say yes to next year's festival.",
+          "target": "e11c"
+        }
+      ]
+    },
+    {
+      "id": "n_act1",
+      "body": "The biggest moment of the whole night arrives. It was still a real problem at half past five, no matter where you were standing when it went wrong. Whatever got decided in that moment is exactly what three hundred people see right now. They see it exactly once. They have no idea it was ever in doubt. The all-burners blaze follows right after, lighting the whole field gold.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_act1_0",
+          "label": "Think about what the job really was.",
+          "target": "e11d"
+        },
+        {
+          "id": "c_n_act1_1",
+          "label": "Stay behind and help break down the field.",
+          "target": "e11e"
+        },
+        {
+          "id": "c_n_act1_2",
+          "label": "Take the closing salute.",
+          "target": "e11a"
+        }
+      ]
+    },
+    {
+      "id": "e9a",
+      "body": "The Warm-Up Glow ends, and the thing that broke at five o'clock stays fixed the whole time. Nobody on the field says well done, since there's still the Grand Ignition to get through. But Coach Reyes catches your eye across the launch line and gives you one single nod. On this crew, that means a very great deal.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_curtain_holds",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Glow That Holds"
+      }
+    },
+    {
+      "id": "e9b",
+      "body": "From the launch line, the night-glow looks nothing like it looks from a picnic blanket on the grass. The Skyfox is just Wren, breathing hard inside a hot helmet. The ribbon walk is two tired volunteers stepping sideways in the dark. The grand blaze is twenty-four switches flipped in careful order. Knowing exactly how it's built doesn't spoil any of it. But it's a thing you can never quite forget again.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_seen_from_wings",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Line Sees"
+      }
+    },
+    {
+      "id": "e10a",
+      "body": "The Skyfox lights up alone in the dark, just as planned. Three hundred people gasp at the same time. It all comes down to one small decision made at half past five. The person who made that choice is standing in the dark right now, watching it work. This is the moment people will talk about on the drive home tonight.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_snow_lands",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Moment Lights"
+      }
+    },
+    {
+      "id": "e10b",
+      "body": "The hardest forty seconds of the night go exactly right. It happens in the dark behind the trailer. Three people each do one small job at the same moment. Wren steps back out right on cue, right on the beat. Nobody in the crowd will ever know how hard that was. That turns out to be the whole point of the job.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_change_made",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Forty Seconds in the Dark"
+      }
+    },
+    {
+      "id": "e10c",
+      "body": "The moment happens the changed way \u2014 not the picture on the poster, not the one rehearsed thirty times, but a slower, warmer, smaller version of it. It works. Afterward there's a real argument, half-serious, about which version was actually better. It's exactly the kind of argument worth having.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_other_picture",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Different Blaze"
+      }
+    },
+    {
+      "id": "e10d",
+      "body": "It doesn't quite come off \u2014 the timing slips half a beat, or the flame runs the wrong color, or the platform sits a hand's width from where the tape says it should. The crowd out front notices nothing at all. Everyone behind the ropes notices everything. Coach Reyes writes it in the logbook for next year, with no name attached to it.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_note_for_tomorrow",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "A Note for Next Year"
+      }
+    },
+    {
+      "id": "e11a",
+      "body": "The pilots line up along the ropes for the closing salute. Wren does just what she planned all along. She points at the launch line until whoever is standing there has to step out and be seen. The clapping changes just a little, now for the crew. The walk back into the dark is only about six feet long. But you will remember every inch of it.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_curtain_call",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Closing Salute"
+      }
+    },
+    {
+      "id": "e11b",
+      "body": "The festival program has a crew list on the back page. It was printed on Tuesday, long before tonight happened. One name on that list was put there only in hope. Now it is simply true. Somebody's grandmother folds the program open to that exact page. She keeps it folded that way all the way home.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_named_in_the_programme",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Printed on the Crew List"
+      }
+    },
+    {
+      "id": "e11c",
+      "body": "As the field starts coming down around you, Coach Reyes walks over, clipboard still tucked under her arm, and asks \u2014 in the flattest voice she owns \u2014 whether the same crew is wanted back for next year's night-glow. It isn't praise. It's much better than praise. It's a plan.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_asked_back",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Asked Back for Next Year"
+      }
+    },
+    {
+      "id": "e11d",
+      "body": "Somewhere between the thirty-minute call and the closing salute, the job changes. It stops feeling like a job. You see what it really was all along. It was never about igniters, straps, or glow tape. It was about being the one person others can trust. They hand you something, and they know it will still be there later. That is a bigger, more interesting discovery than you expected to make tonight.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_what_the_job_is",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Job Really Was"
+      }
+    },
+    {
+      "id": "e11e",
+      "body": "The crowd packs up and drifts home. But the work is not done yet. A field that took a week to set up comes down in just ninety minutes. Every single person carries something across the grass. By half past ten, the tethering field is just a field again. The stakes are pulled. The chalkboard is wiped clean. Somehow, it is the best ninety minutes of the whole week.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_striking_the_set",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Breaking Down the Field"
+      }
+    }
+  ]
+}

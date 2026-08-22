@@ -5,8 +5,9 @@ status: accepted
 owner: core-maintainer
 purpose: "Implement the owner's every-stop-ends-in-a-choice ruling (design review D1) at the
   presentation layer: the reader flows consecutive single-choice nodes into one rendered stop for
-  bands 8-11 and up, and keeps discrete pages with a choice cadence at 3-5 and 5-8, leaving the
-  story graph and ADR-011's researched constants unchanged."
+  bands 8-11 and up, and keeps discrete pages with a choice cadence at 3-5 and 5-8, touching
+  neither the story graph nor ADR-011's constants. ADR-011 has since re-derived its
+  decisions-per-path window per cell on its own amendment; see the note under Status."
 tags:
   - planning
   - architecture
@@ -20,9 +21,20 @@ tags:
 > [design-review-kid-appeal-2026-08-01.md](../design-review-kid-appeal-2026-08-01.md) section 8
 > (question Q1), on the evidence in that document's research appendix.
 > **Cross-sign**: both player engines, the conformance corpus, reader UI. The storybook schema, the
-> validator's structural rules, and ADR-011's scale constants are explicitly unchanged.
-> **Relates to**: ADR-011 (constants preserved), ADR-024 (go-back semantics extended to stops),
+> validator's structural rules, and ADR-011's scale constants are explicitly unchanged **by this
+> ADR**.
+> **Relates to**: ADR-011 (constants untouched here), ADR-024 (go-back semantics extended to stops),
 > ADR-025 (any schema-visible additions ride minor versions).
+>
+> **Note (2026-08-22)**: "unchanged" above is a statement about this decision's blast radius, and it
+> still holds: nothing here edited ADR-011. ADR-011's constants themselves are no longer what this
+> document describes. Its section 6 was rewritten on 2026-08-22 (`UW-C327`, ADR-011 section 11):
+> decisions per path is now a **derived per-cell window** rather than a research-locked flat
+> "~4-8", which survives only as the JHM 2019 anchor for the `8-11`/`10-13` Short prose region. The
+> two references below (Context, Alternative 1) quote the pre-amendment wording because they record
+> what was true at the 2026-08-01 decision; read them as history, not as the current constant. The
+> amendment does not disturb this ADR's decision: it derives the flowed-band floors **from** the
+> section 10 grammar this ADR ratified, so the two are consistent by construction.
 
 ## TL;DR
 
@@ -38,8 +50,9 @@ beats, preserving the researched genre shape, the words-per-node ceilings, and e
 
 The owner ruled that every page a child stops on must offer a choice (design review D1). Measured:
 69% of non-ending nodes are single-choice; 0 of 61 skeletons would satisfy the ruling structurally.
-But ADR-011 research-locks decisions-per-path at ~4-8 and mandates linear passages as the substance
-carrier, anchored on measurement of the printed genre. The conflict is presentational: print flows
+But ADR-011, as it read at this decision, research-locked decisions-per-path at ~4-8 and mandates
+linear passages as the substance carrier, anchored on measurement of the printed genre (that flat
+constant was superseded on 2026-08-22; see the note under Status). The conflict is presentational: print flows
 linear passages as continuous prose; our node-equals-screen rendering turns each one into a
 "Continue" tap. External research (design review, research appendix) supports resolving at the
 render layer: the strongest adaptation precedent (inkle's ink "gather" architecture) keeps linear
@@ -89,9 +102,12 @@ Satisfy D1 structurally rather than presentationally: rewrite skeletons and gene
 no non-ending node has exactly one choice.
 
 Rejected. 69% of non-ending nodes are single-choice and 0 of 61 skeletons would pass, so this is a
-rewrite of the entire catalog, not a change to it. It also fights ADR-011's research lock directly:
-decisions-per-path is anchored at ~4-8 on measurement of the printed genre, and linear passages are
-the substance carrier. No source in the research appendix supports force-branching every node, and
+rewrite of the entire catalog, not a change to it. It also fought ADR-011's research lock directly:
+at the time of this decision, decisions-per-path was anchored at a flat ~4-8 on measurement of the
+printed genre, and linear passages are the substance carrier. The rejection does not depend on that
+flat constant, which ADR-011 has since replaced with a derived per-cell window: the per-cell floors
+are higher still, so force-branching every node fights them at least as hard. No source in the
+research appendix supports force-branching every node, and
 inkle's ink "gather" architecture, the strongest adaptation precedent, does the opposite: linear
 graph structure under a choice-dense surface.
 

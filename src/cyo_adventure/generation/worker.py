@@ -268,7 +268,7 @@ def _stamp_provider_accounting(
 async def _record_failure(
     session: AsyncSession,
     job: GenerationJob,
-    exc: Exception,
+    exc: BaseException,
     *,
     provider: GenerationProvider | None,
     from_state: str = "running",
@@ -294,7 +294,14 @@ async def _record_failure(
         session: Active async session; committed at the end of this call.
         job: The GenerationJob row to mark failed (mutated in place).
         exc: The exception whose message becomes ``job.error`` (truncated to
-            512 chars to match the column width).
+            512 chars to match the column width). Typed ``BaseException``,
+            not ``Exception``: the interrupt finally-guard passes whatever
+            ``sys.exc_info`` reports, and a process kill unwinds as
+            ``KeyboardInterrupt``/``SystemExit``, neither of which is an
+            ``Exception``. Recording the real cause is the whole point of
+            that guard, and the only thing done with the value here is
+            ``str(exc)``, so the wider type is what this function actually
+            requires.
         from_state: The last durably-committed job status the transition
             leaves from. Defaults to ``"running"`` for paths where the running
             status was committed before the failure. Callers that rolled back
@@ -1406,22 +1413,42 @@ def _should_persist_storybook(outcome: GenerationOutcome) -> bool:
     """Decide whether ``run_generation_job`` should persist ``outcome.storybook``.
 
     Always true for a clean ``"passed"`` outcome. Also true for a
-    ``"needs_review"`` outcome, but ONLY when the downgrade came from
-    :func:`~cyo_adventure.generation.orchestrator.fill_skeleton`'s own Stage 1
-    fidelity gate on an otherwise-clean fill: that function adds the
-    ``"stage1_fidelity_violations"`` key to ``outcome.report`` only when it
-    performs this specific downgrade (never for any other cause), so the
-    key's presence is an exact signal that the base outcome was clean before
-    Stage 1 touched it. This lets an admin reach the real story behind a
-    Stage-1-flagged fill instead of a job row pointing at nothing.
+    ``"needs_review"`` outcome, but ONLY when the downgrade was applied by
+    :func:`~cyo_adventure.generation.orchestrator.fill_skeleton` to a fill that
+    was ``"passed"`` immediately before, on a quality axis a human is meant to
+    judge. Those are the CLEAN-DOWNGRADE signals, and each is a report key that
+    only its own downgrade path ever writes:
+
+    * ``"stage1_fidelity_violations"``: the Stage 1 fidelity gate ran out of
+      the shared repair budget on a structurally-clean fill. Written only by
+      that downgrade, so its presence proves the base outcome was clean before
+      Stage 1 touched it.
+    * ``"fill_rate_downgrade"``: the story-level fill rate fell under the floor
+      on a fill that was otherwise ``"passed"`` (ruling 9.3 of
+      ``live-structural-round-2026-08-21.md``, `UW-C307`). Written only by
+      :func:`~cyo_adventure.generation.orchestrator._with_fill_rate` and only
+      on the downgrade branch; the companion ``"fill_rate"`` and
+      ``"fill_rate_floor"`` keys are stamped on EVERY outcome carrying a book
+      and therefore identify nothing, which is why this key exists at all.
+
+    Both are quality verdicts about a book that already passed the safety and
+    structural gates, and ruling 9.3 is explicit that the fill-rate floor is
+    "never a hard block". Refusing to persist would make it stricter than a
+    hard block: no Storybook, no StorybookVersion, no moderation run, and a
+    job row pointing at nothing an admin can open. Persisting lets a human
+    reach the real book and make the call.
 
     Any OTHER ``"needs_review"`` (safety-flagged, or gate-blocked-with-doc
-    after exhausting repairs -- both produced by
+    after exhausting repairs, both produced by
     :func:`~cyo_adventure.generation.orchestrator._build_outcome`, for either
-    ``generate_story`` or ``fill_skeleton``'s own pre-Stage-1 outcome) and
-    every ``"failed"`` outcome must keep NOT persisting a storybook: this is
-    pre-existing, non-Plan-2 semantics that this widened gate must not
-    change.
+    ``generate_story`` or ``fill_skeleton``'s own pre-gate outcome) and every
+    ``"failed"`` outcome must keep NOT persisting a storybook: those are
+    verdicts about content that has NOT been cleared, and that is pre-existing
+    semantics this gate must not change.
+
+    Adding a third clean-downgrade cause means adding its own report key here
+    AND at the site that downgrades. A downgrade that stamps no distinguishing
+    key is indistinguishable from a safety block and silently drops the book.
 
     Args:
         outcome: The pipeline outcome (from ``generate_story`` or
@@ -1433,9 +1460,22 @@ def _should_persist_storybook(outcome: GenerationOutcome) -> bool:
     """
     if outcome.storybook is None:
         return False
-    stage1_downgraded = "stage1_fidelity_violations" in outcome.report
+    # #CRITICAL: data integrity: this predicate decides whether a generated
+    # book is reachable at all. A clean-downgrade cause whose key is missing
+    # here reads as a safety block, so the book is never written and the job
+    # row points at nothing; conversely a key stamped on a non-clean path
+    # would publish unreviewed content into the review queue's "has a book"
+    # state. Keep this set exactly equal to the keys written only on a
+    # clean-downgrade branch.
+    # #VERIFY: tests/unit/test_orchestrator.py::
+    # test_a_fill_rate_downgrade_is_marked_and_still_persists and
+    # ::test_a_needs_review_from_another_cause_still_does_not_persist.
+    clean_downgrade = any(
+        key in outcome.report
+        for key in ("stage1_fidelity_violations", "fill_rate_downgrade")
+    )
     return outcome.status == "passed" or (
-        outcome.status == "needs_review" and stage1_downgraded
+        outcome.status == "needs_review" and clean_downgrade
     )
 
 

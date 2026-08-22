@@ -11,17 +11,28 @@ never introduce a structural defect; the fill step only writes prose.
 from __future__ import annotations
 
 import json
+import logging
 import math
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.core.exceptions import ValidationError
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Mapping
     from pathlib import Path
 
     from cyo_adventure.validator.gate import GateResult
+
+# Stdlib rather than `utils.logging.get_logger`, deliberately. That helper
+# reaches `middleware.correlation` and pulls the sqlalchemy chain at import
+# time, and this module is contractually free of it:
+# `test_fill_output_cap.py::test_the_module_imports_without_a_database_driver`
+# asserts that in a subprocess, for the light importers (`check_fill_integrity`,
+# `compare_vendors`, the ADR-020 offline mutation core, which reads no
+# database by design). Records emitted here still reach the configured
+# structlog handlers, which wrap stdlib logging.
+_logger = logging.getLogger(__name__)
 
 FILL_MARKER = "<<FILL"
 
@@ -249,6 +260,41 @@ _DATED_VARIANT_SUFFIX_RE = re.compile(r"-\d{4,8}$")
 # shipped default.
 _VARIANT_SUFFIX_RE = re.compile(r":[^:]+$")
 
+
+def _lookup_slug(table: Mapping[str, int], model: str) -> int | None:
+    """Look ``model`` up in ``table``, falling back to its base slug.
+
+    The ONE normalizer both per-model tables share. It existed inlined inside
+    :func:`resolve_output_cap` until 2026-08-22, and the cost of that was
+    `UW-C324` reopening: :func:`resolve_context_window` was a bare ``dict.get``,
+    so a pinned or dated slug resolved an output cap and no window at all, and a
+    None window constrains nothing. Two normalizers drift; one cannot.
+
+    Exact match wins. Otherwise suffixes are stripped most-specific first, so a
+    dated variant of a tiered slug (``vendor/model:free-0813``) still reaches
+    its base row.
+
+    Args:
+        table: The per-model table to look up (caps or context windows). Both
+            are PARTIAL by construction, so a miss means "unknown", never zero.
+        model: The backend model id as configured, variants included.
+
+    Returns:
+        int | None: The table's value for the slug or its base form, or None
+        when neither is recorded.
+    """
+    value = table.get(model)
+    if value is not None:
+        return value
+    candidate = model
+    for pattern in (_VARIANT_SUFFIX_RE, _DATED_VARIANT_SUFFIX_RE):
+        candidate = pattern.sub("", candidate)
+        value = table.get(candidate)
+        if value is not None:
+            return value
+    return None
+
+
 MODEL_OUTPUT_CAPS: dict[str, int] = {
     "deepseek/deepseek-v4-pro": 393_216,
     "deepseek/deepseek-v4-flash": 384_000,
@@ -269,6 +315,162 @@ MODEL_OUTPUT_CAPS: dict[str, int] = {
     "claude-sonnet-4-6": 128_000,
     "claude-haiku-4-5": 64_000,
 }
+
+
+def story_fill_rate(
+    skeleton: dict[str, object], filled: dict[str, object]
+) -> float | None:
+    """Return delivered over commissioned words, per-node surplus discounted.
+
+    The story-level fill-rate quantity ruled into the fill pipeline on
+    2026-08-21 (`UW-C307`, ruling 9.3 in
+    ``docs/planning/live-structural-round-2026-08-21.md``): each node is
+    credited at most what it was commissioned, so surplus on one node cannot
+    pay for an empty body on another, matching
+    ``scripts/check_fill_integrity.py``'s blocking check. Word counts use
+    whitespace splitting on both sides, as that script does.
+
+    Args:
+        skeleton: The pristine skeleton carrying ``words=`` directives.
+        filled: The filled story whose delivery is being measured.
+
+    Returns:
+        float | None: The capped ratio in [0, 1], or None when the skeleton
+        commissions nothing (no ``words=`` directives).
+    """
+    commissioned = commissioned_words_by_node(skeleton)
+    total = sum(commissioned.values())
+    if total <= 0:
+        # #ASSUME: data-integrity: None here is "the ratio is undefined", not
+        # "the ratio is zero", and the difference matters because the caller
+        # (`orchestrator._with_fill_rate`) returns the outcome UNCHANGED on
+        # None: no `fill_rate` stamped and no downgrade, so ruling 9.3's floor
+        # does not apply to this book at all. That is the correct answer for a
+        # zero denominator, since 0.0 would report a total delivery failure and
+        # 1.0 a full delivery, and both are inventions. It is NOT correct to
+        # leave silent: every production skeleton commissions words, so a zero
+        # total means the caller passed a filled document, a non-skeleton, or a
+        # skeleton whose `words=` directives were stripped, and each of those
+        # disables a gate. Hence the warning: the floor may vanish, but never
+        # without a trace.
+        # #VERIFY: tests/unit/test_skeleton.py::
+        # test_a_skeleton_commissioning_nothing_has_an_undefined_fill_rate and
+        # ::test_an_undefined_fill_rate_is_logged_rather_than_silent.
+        _logger.warning(
+            "story_fill_rate_no_commission: 0 words across %d nodes, no floor",
+            len(commissioned),
+        )
+        return None
+    delivered: dict[str, int] = {}
+    nodes = filled.get("nodes")
+    for index, entry in enumerate(nodes if isinstance(nodes, list) else []):
+        if not isinstance(entry, dict):
+            continue
+        node = cast("dict[str, object]", entry)
+        body = node.get("body")
+        if not isinstance(body, str) or FILL_MARKER in body:
+            continue
+        node_id = node.get("id")
+        key = str(node_id) if node_id is not None else f"#{index}"
+        # #ASSUME: data-integrity: only the FIRST occurrence of a node id is
+        # credited. Accumulating duplicates let two nodes sharing one id pool
+        # their words against a single commissioned target, so a fill leaving
+        # one of them empty still cleared the floor (PR #737 review, I15; the
+        # duplicate-id laundering first flagged on #731). A duplicated id is
+        # structural garbage the gate rejects; this measure must not launder
+        # it into a passing rate first.
+        # #VERIFY: test_fill_output_cap.py::
+        # test_duplicate_node_ids_do_not_pool_their_delivery.
+        if key in delivered:
+            continue
+        delivered[key] = len(body.split())
+    effective = sum(
+        min(delivered.get(key, 0), target) for key, target in commissioned.items()
+    )
+    return effective / total
+
+
+# Known CONTEXT windows (input plus output) per model id, the companion to
+# ``MODEL_OUTPUT_CAPS``. PARTIAL by construction, exactly like that table:
+# a missing row means "unknown", and :func:`resolve_context_window` returns
+# None rather than guessing, so only VERIFIED rows constrain anything. Missing
+# is judged AFTER `_lookup_slug` normalization, the same as MODEL_OUTPUT_CAPS:
+# a row here covers its own pinned and dated variants, so a `:free` or dated
+# form of a listed slug is bounded by the base row rather than left unbounded.
+#
+# Why it exists: the chunked fill path bounds each batch's OUTPUT under the
+# resolved cap while the batch prompt carries the whole document, so input
+# grows with skeleton size and nothing checked input plus ask against the
+# endpoint's window. Measured 2026-08-21: a batch call requested 58,983
+# output tokens with a 104,858-token prompt against deepseek-v3.2's
+# 163,840-token window, one token over, HTTP 400 (`AL-519`/`UW-C324`).
+# #ASSUME: external resources: values transcribed from the OpenRouter
+# endpoints API for the pinned endpoints; per-endpoint variation exists for
+# some slugs, so record the MINIMUM across the endpoints a pin can reach.
+# #VERIFY: tests/unit/test_chunked_fill.py::
+# test_a_known_window_clamps_the_batch_ask_below_the_cap (reads this table
+# through resolve_context_window on the chunked path).
+MODEL_CONTEXT_WINDOWS: dict[str, int] = {
+    # Uniform 163,840 across every serving endpoint, read 2026-08-21.
+    "deepseek/deepseek-v3.2": 163_840,
+}
+
+
+def resolve_context_window(model: str | None) -> int | None:
+    """Return the model's known context window, or None when unknown.
+
+    Args:
+        model: The backend model id, or None when it is not known.
+
+    Returns:
+        int | None: The verified window, or None (no constraint) for a model
+        without a row; unlike :func:`resolve_output_cap` there is no safe
+        permissive default to fall back to, because the window bounds input
+        PLUS output and a wrong guess fails or truncates real requests.
+    """
+    if model is None:
+        return None
+    # #CRITICAL: external-resources: this governs whether a paid third-party
+    # call is bounded AT ALL, so a lookup miss is not a degraded bound, it is
+    # no bound. Until 2026-08-22 this was a bare `MODEL_CONTEXT_WINDOWS.get`
+    # while its declared companion `resolve_output_cap` already normalized
+    # `:variant` and dated suffixes (`49d17a64`, `AL-500`). A pinned slug
+    # (`vendor/model:free`) or a dated one (`vendor/model-20260101`) therefore
+    # resolved a cap and returned None here; None constrains nothing, the
+    # chunked path's context bound went inert, and the exact unbounded ask
+    # `UW-C324` was filed for came back with no warning and no refusal.
+    # Sharing `_lookup_slug` with the cap is the whole fix: a second normalizer
+    # is how this recurs. Inheriting the base row is the safe direction here
+    # too. A variant whose real window is LARGER only makes the batch ask
+    # smaller than it had to be, while a variant whose window is SMALLER is no
+    # worse off than the unbounded status quo, and both beat no bound at all.
+    # #VERIFY: tests/unit/test_skeleton.py::
+    # test_a_variant_slug_resolves_the_same_context_window_as_its_base_form
+    # (pinned and dated forms) and ::
+    # test_context_window_and_output_cap_normalize_variants_identically
+    # (parity across both tables, which catches the NEXT divergence).
+    return _lookup_slug(MODEL_CONTEXT_WINDOWS, model)
+
+
+# Conservative characters-per-token divisor for estimating a prompt's input
+# tokens. Measured on the 2026-08-21 chunked batch prompt: 369,399 chars
+# tokenized to 104,858 tokens (3.52 chars/token); 3.0 deliberately
+# OVER-estimates the token count so the context bound errs toward asking for
+# less output, never toward another one-token overflow.
+_CHARS_PER_INPUT_TOKEN = 3.0
+
+
+def estimate_input_tokens(*texts: str) -> int:
+    """Conservatively estimate the input tokens of the given prompt parts.
+
+    Args:
+        *texts: The prompt strings that will be sent (system and user blocks).
+
+    Returns:
+        int: The estimated token count, rounded up.
+    """
+    total_chars = sum(len(text) for text in texts)
+    return math.ceil(total_chars / _CHARS_PER_INPUT_TOKEN)
 
 
 def active_fill_model(settings: object) -> str | None:
@@ -311,33 +513,29 @@ def resolve_output_cap(
     """
     if model is None:
         return default
-    cap = MODEL_OUTPUT_CAPS.get(model)
-    if cap is None:
-        # #CRITICAL: data-integrity: a dated or pinned variant does not match
-        # its own undated row, and the comment above MODEL_OUTPUT_CAPS names
-        # that as the live way into the permissive fallback:
-        # `deepseek/deepseek-chat-v3.1-0813` took 131,072 against a real 32,768,
-        # four times what the backend can emit, and the over-ask truncates
-        # NON-EMPTY, which `AL-479` establishes is not leg-fatal and therefore
-        # spends the whole repair budget. Falling back to the undated row is
-        # strictly safer than the default: it can only lower the cap, so the
-        # error direction is engaging the chunked path too early rather than
-        # asking for prose the endpoint will not emit. A variant whose real
-        # ceiling is HIGHER than its base still needs its own row, because this
-        # table is looked up and never inferred.
-        # A trailing `:variant` is the SAME miss in the other suffix form, and
-        # it is the one this repo configures: closing only the dated form left
-        # `anthropic/claude-haiku-4.5:free` resolving to 131,072 against its
-        # row's 64,000. Both are stripped, most-specific candidate first, so a
-        # dated variant of a tiered slug still finds its base row.
-        # #VERIFY: test_a_dated_variant_inherits_its_undated_row and
-        # test_a_routing_variant_inherits_its_base_row.
-        candidate = model
-        for pattern in (_VARIANT_SUFFIX_RE, _DATED_VARIANT_SUFFIX_RE):
-            candidate = pattern.sub("", candidate)
-            if candidate in MODEL_OUTPUT_CAPS:
-                cap = MODEL_OUTPUT_CAPS[candidate]
-                break
+    # #CRITICAL: data-integrity: a dated or pinned variant does not match
+    # its own undated row, and the comment above MODEL_OUTPUT_CAPS names
+    # that as the live way into the permissive fallback:
+    # `deepseek/deepseek-chat-v3.1-0813` took 131,072 against a real 32,768,
+    # four times what the backend can emit, and the over-ask truncates
+    # NON-EMPTY, which `AL-479` establishes is not leg-fatal and therefore
+    # spends the whole repair budget. Falling back to the undated row is
+    # strictly safer than the default: it can only lower the cap, so the
+    # error direction is engaging the chunked path too early rather than
+    # asking for prose the endpoint will not emit. A variant whose real
+    # ceiling is HIGHER than its base still needs its own row, because this
+    # table is looked up and never inferred.
+    # A trailing `:variant` is the SAME miss in the other suffix form, and
+    # it is the one this repo configures: closing only the dated form left
+    # `anthropic/claude-haiku-4.5:free` resolving to 131,072 against its
+    # row's 64,000. Both are stripped by `_lookup_slug`, most-specific
+    # candidate first, so a dated variant of a tiered slug still finds its
+    # base row. That normalization is SHARED with
+    # :func:`resolve_context_window` rather than repeated here; see
+    # `_lookup_slug` for why a second copy is the defect and not the fix.
+    # #VERIFY: test_a_dated_variant_inherits_its_undated_row and
+    # test_a_routing_variant_inherits_its_base_row.
+    cap = _lookup_slug(MODEL_OUTPUT_CAPS, model)
     return min(default, cap if cap is not None else default)
 
 

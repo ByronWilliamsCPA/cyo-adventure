@@ -43,6 +43,7 @@ from cyo_adventure.generation.skeleton import (
     MODEL_OUTPUT_CAPS,
 )
 from cyo_adventure.generation.usage import Completion, TokenUsage
+from cyo_adventure.generation.worker import _should_persist_storybook
 from cyo_adventure.storybook.models import AgeBand
 
 # ---------------------------------------------------------------------------
@@ -55,7 +56,7 @@ FIXTURE_DIR = Path(__file__).parent.parent / "fixtures" / "storybook"
 def _load_fixture(name: str) -> dict[str, object]:
     """Load a fixture JSON file as a dict."""
     with (FIXTURE_DIR / name).open(encoding="utf-8") as fh:
-        return json.load(fh)  # type: ignore[no-any-return]
+        return json.load(fh)  # pyright: ignore[reportAny]
 
 
 # A minimal valid Storybook dict (Tier-1, single ending).
@@ -90,7 +91,7 @@ def _make_brief(
     return ConceptBrief(
         title="Test Adventure",
         premise=premise,
-        protagonist={"name": "Captain Rosa", "age": 10, "role": "explorer"},  # type: ignore[arg-type]
+        protagonist={"name": "Captain Rosa", "age": 10, "role": "explorer"},  # pyright: ignore[reportArgumentType]
         point_of_view="second",
         age_band=AgeBand.BAND_8_11,
         reading_level_target=4.5,
@@ -197,7 +198,7 @@ async def test_repair_exhaustion_needs_review() -> None:
     # Each has a slightly different title so the hash differs.
     def _make_distinct_blocked(idx: int) -> str:
         story = copy.deepcopy(BLOCKED_STORY)
-        story["title"] = f"Blocked Story Variant {idx}"  # type: ignore[index]
+        story["title"] = f"Blocked Story Variant {idx}"
         return json.dumps(story)
 
     provider = MockProvider(
@@ -476,7 +477,7 @@ def test_generation_outcome_fields() -> None:
 
     # Frozen: must not be mutable
     with pytest.raises((AttributeError, TypeError)):
-        outcome.status = "failed"  # type: ignore[misc]
+        outcome.status = "failed"  # pyright: ignore[reportAttributeAccessIssue]
 
 
 # ---------------------------------------------------------------------------
@@ -680,6 +681,44 @@ async def test_fill_skeleton_returns_passed_on_clean_fill() -> None:
 
 
 @pytest.mark.asyncio
+async def test_fill_skeleton_restores_frozen_fields_the_model_drifted() -> None:
+    """Frozen-field drift is normalized away before the gate (ruling 8.2).
+
+    The reply rewrites the story id and swaps an ending kind, the two
+    structure-critical mutation classes the 2026-08-21 live round measured
+    (`AL-515`); a retitled ending is a legal theme rewrite and survives. The
+    outcome's document carries the skeleton's frozen values, so the drift
+    costs no repair cycle and ships nothing.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    filled = copy.deepcopy(VALID_STORY)
+    filled["id"] = "sk_hijacked"
+    nodes = cast("list[dict[str, object]]", filled["nodes"])
+    ending_node = next(n for n in nodes if n.get("is_ending"))
+    ending = cast("dict[str, object]", ending_node["ending"])
+    original_kind = ending["kind"]
+    ending["kind"] = "death" if original_kind != "death" else "success"
+    ending["title"] = "The Lantern Kept"
+    provider = MockProvider(responses=[json.dumps(filled)])
+    pii = PiiContext(child_names=frozenset())
+
+    outcome = await fill_skeleton(skeleton, {"premise": "a fox"}, provider, pii)
+
+    assert outcome.status == "passed"
+    assert outcome.attempts == 0
+    assert outcome.storybook is not None
+    doc = cast("dict[str, object]", outcome.storybook)
+    assert doc["id"] == skeleton["id"]
+    out_nodes = cast("list[dict[str, object]]", doc["nodes"])
+    normalized_ending = cast(
+        "dict[str, object]",
+        next(n["ending"] for n in out_nodes if n.get("is_ending")),
+    )
+    assert normalized_ending["kind"] == original_kind
+    assert normalized_ending["title"] == "The Lantern Kept"
+
+
+@pytest.mark.asyncio
 async def test_fill_skeleton_repair_exhaustion_is_failed_not_a_returned_skeleton() -> (
     None
 ):
@@ -822,7 +861,7 @@ async def test_fill_skeleton_stage1_fail_once_then_pass_returns_passed(
         {"premise": "a fox"},
         provider,
         pii,
-        settings=Settings(generation_provider="mock"),  # type: ignore[call-arg]
+        settings=Settings(generation_provider="mock"),
     )
 
     assert outcome.status == "passed"
@@ -865,7 +904,7 @@ async def test_fill_skeleton_stage1_exhaustion_downgrades_with_key(
         provider,
         pii,
         max_repairs=2,
-        settings=Settings(generation_provider="mock"),  # type: ignore[call-arg]
+        settings=Settings(generation_provider="mock"),
     )
 
     assert outcome.status == "needs_review"
@@ -901,7 +940,7 @@ async def test_fill_skeleton_stage1_repair_is_fidelity_aware(
         {"premise": "a fox"},
         provider,
         pii,
-        settings=Settings(generation_provider="mock"),  # type: ignore[call-arg]
+        settings=Settings(generation_provider="mock"),
     )
 
     # provider.calls[0] is the fill; provider.calls[1] is the fidelity repair.
@@ -1184,3 +1223,204 @@ async def test_generate_story_stage_b_asks_no_more_than_the_model_can_emit() -> 
     )
     # And the clamp is load-bearing here, not incidentally satisfied.
     assert ceiling < MAX_FILL_OUTPUT_TOKENS
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_stamps_the_fill_rate_and_keeps_a_full_fill_passed() -> (
+    None
+):
+    """A full-delivery fill stays passed and carries its rate on the report.
+
+    Ruling 9.3 (2026-08-21, UW-C307): the rate is recorded on every outcome
+    that carries a book, floor breach or not, so review surfaces can show it.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+
+    outcome = await fill_skeleton(
+        skeleton, {"premise": "a fox"}, provider, PiiContext(child_names=frozenset())
+    )
+
+    assert outcome.status == "passed"
+    assert isinstance(outcome.report.get("fill_rate"), float)
+    assert outcome.report["fill_rate"] >= 0.6
+    assert outcome.report["fill_rate_floor"] == 0.6
+    # The exact-signal key must be ABSENT on a passing book: its presence is
+    # the worker's proof that a downgrade happened (PR #737 review, C1).
+    assert "fill_rate_downgrade" not in outcome.report
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_forces_review_on_an_under_delivered_book() -> None:
+    """A gate-clean book under the fill-rate floor cannot ship unreviewed.
+
+    The AL-490 shape: 40-percent delivery with zero hard findings previously
+    returned "passed". Commissioning 400 words against the fixture's short
+    body forces the rate far under the floor; the outcome is needs_review,
+    never a hard block, and the report names the rate.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    nodes = cast("list[dict[str, object]]", skeleton["nodes"])
+    nodes[0]["body"] = "<<FILL role=setup words=400 beats='greet the fox'>>"
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+
+    outcome = await fill_skeleton(
+        skeleton, {"premise": "a fox"}, provider, PiiContext(child_names=frozenset())
+    )
+
+    assert outcome.status == "needs_review"
+    assert outcome.storybook is not None
+    assert outcome.report["fill_rate"] < 0.6
+    assert any("fill_rate" in entry for entry in outcome.stage_log)
+    # The persistence signal (PR #737 review, C1): present exactly when this
+    # downgrade happened, so the worker still persists the book for review.
+    assert outcome.report["fill_rate_downgrade"] is True
+
+
+@pytest.mark.asyncio
+async def test_a_zero_floor_measures_without_downgrading() -> None:
+    """min_fill_rate=0 is the documented measure-only setting."""
+    skeleton = _skeleton_with_fill_placeholder()
+    nodes = cast("list[dict[str, object]]", skeleton["nodes"])
+    nodes[0]["body"] = "<<FILL role=setup words=400 beats='greet the fox'>>"
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        PiiContext(child_names=frozenset()),
+        min_fill_rate=0,
+    )
+
+    assert outcome.status == "passed"
+    assert outcome.report["fill_rate"] < 0.6
+
+
+@pytest.mark.asyncio
+async def test_a_fill_rate_downgrade_is_marked_and_still_persists() -> None:
+    """A thin-but-clean book is marked as such AND survives the persist gate.
+
+    The defect this guards: `_with_fill_rate` downgraded to needs_review while
+    stamping only `fill_rate` and `fill_rate_floor`, neither of which is
+    unique to the downgrade (both ride on every outcome carrying a book).
+    `worker.py::_should_persist_storybook` therefore read the outcome as a
+    safety block and persisted NOTHING: no Storybook, no StorybookVersion, no
+    moderation, and a job row pointing at a book nobody could open. Ruling 9.3
+    (2026-08-21, UW-C307) says this floor is never a hard block, so dropping
+    the book was stricter than the hard block the ruling refused.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    nodes = cast("list[dict[str, object]]", skeleton["nodes"])
+    nodes[0]["body"] = "<<FILL role=setup words=400 beats='greet the fox'>>"
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+
+    outcome = await fill_skeleton(
+        skeleton, {"premise": "a fox"}, provider, PiiContext(child_names=frozenset())
+    )
+
+    assert outcome.status == "needs_review"
+    assert outcome.storybook is not None
+    assert outcome.report["fill_rate_downgrade"] is True
+    assert _should_persist_storybook(outcome) is True
+
+
+@pytest.mark.asyncio
+async def test_a_fill_above_the_floor_carries_no_downgrade_marker() -> None:
+    """No downgrade means no marker: the key must never ride on a clean pass.
+
+    The marker is a claim that this function downgraded an otherwise-passing
+    book. Stamping it unconditionally would make it as useless as `fill_rate`
+    itself, and would tell the persist gate that a safety-flagged outcome had
+    been clean beforehand.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+
+    outcome = await fill_skeleton(
+        skeleton, {"premise": "a fox"}, provider, PiiContext(child_names=frozenset())
+    )
+
+    assert outcome.status == "passed"
+    assert outcome.report["fill_rate"] >= 0.6
+    assert "fill_rate_downgrade" not in outcome.report
+
+
+@pytest.mark.asyncio
+async def test_a_zero_floor_leaves_no_downgrade_marker() -> None:
+    """The measure-only setting measures only; it marks nothing.
+
+    `min_fill_rate=0` is documented as recording the rate without acting on
+    it, so a book far under the default floor still reports `passed` and must
+    carry no downgrade claim for the persist gate to act on.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    nodes = cast("list[dict[str, object]]", skeleton["nodes"])
+    nodes[0]["body"] = "<<FILL role=setup words=400 beats='greet the fox'>>"
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        PiiContext(child_names=frozenset()),
+        min_fill_rate=0,
+    )
+
+    assert outcome.status == "passed"
+    assert outcome.report["fill_rate"] < 0.6
+    assert "fill_rate_downgrade" not in outcome.report
+
+
+@pytest.mark.unit
+def test_a_needs_review_from_another_cause_still_does_not_persist() -> None:
+    """The invariant the widened persist gate must not break.
+
+    A needs_review carrying no clean-downgrade key is a verdict about content
+    that was never cleared (safety-flagged, or gate-blocked after the repair
+    budget ran out). Those must keep NOT persisting a storybook. Widening the
+    gate to accept a second clean-downgrade signal is only safe while this
+    stays false.
+    """
+    safety_flagged = GenerationOutcome(
+        status="needs_review",
+        storybook={"id": "s1"},
+        report={"safety_flagged": True, "fill_rate": 0.91, "fill_rate_floor": 0.6},
+        attempts=0,
+        stage_log=[],
+    )
+    gate_blocked = GenerationOutcome(
+        status="needs_review",
+        storybook={"id": "s1"},
+        report={"blocked": True},
+        attempts=3,
+        stage_log=[],
+    )
+
+    assert _should_persist_storybook(safety_flagged) is False
+    assert _should_persist_storybook(gate_blocked) is False
+
+
+@pytest.mark.unit
+def test_the_stage1_fidelity_downgrade_still_persists() -> None:
+    """The original clean-downgrade signal keeps working after the widening.
+
+    `stage1_fidelity_violations` was the sole persist signal before the
+    fill-rate floor existed. An `any(...)` over a key tuple is easy to get
+    wrong in a way that only breaks one member, so both are asserted.
+    """
+    outcome = GenerationOutcome(
+        status="needs_review",
+        storybook={"id": "s1"},
+        report={"stage1_fidelity_violations": ["node n1 missed its beat"]},
+        attempts=0,
+        stage_log=[],
+    )
+
+    assert _should_persist_storybook(outcome) is True

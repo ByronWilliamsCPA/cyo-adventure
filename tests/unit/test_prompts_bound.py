@@ -105,9 +105,21 @@ def test_bound_fill_prompt_untrusted_fence_is_byte_identical_to_fill_md() -> Non
     assert expected_fence in prompt.combined
 
 
-def test_bound_fill_prompt_ending_title_freeze_line_present() -> None:
+def test_bound_fill_prompt_states_the_writable_leaf_ruling() -> None:
+    """The bound one-shot prompt tells the model an ending title is writable.
+
+    This test previously asserted the opposite, pinning the line "Ending
+    ``title`` values are final; do not change them." That line predates ruling
+    8.3 of 2026-08-21, which made an ending's ``title`` text theme content the
+    model SHOULD retitle, and it survived the ruling because the freeze list
+    is hardcoded at several sites and only ``fill.md`` was updated. Asserting
+    the stale line made this test defend the defect: the code accepted a
+    rewritten title while the prompt forbade one, so no book ever exercised
+    the path. Assert the ruling, not the wording it replaced.
+    """
     prompt = build_bound_fill_prompt("{}", "{}", "{}")
-    assert "Ending `title` values are final; do not change them." in prompt.system
+    assert "only its `title` text is yours to write." in prompt.system
+    assert "Ending `title` values are final" not in prompt.system
 
 
 def test_bound_fill_prompt_bound_values_labeled_as_data() -> None:

@@ -1,5 +1,7 @@
 """Unit tests for the per-band policy profile."""
 
+import itertools
+
 import pytest
 
 from cyo_adventure.storybook.models import AgeBand, ContentFlagLevel, EndingKind
@@ -308,7 +310,8 @@ def test_cell_ending_bounds_match_the_adr_table() -> None:
     being assigned an invented bound.
     """
     assert cell_ending_bounds("10-13", "long", "prose") == (32, 48)
-    assert cell_ending_bounds("3-5", "short", "prose") == (2, 4)
+    # 2-8 is the 2026-08-22 amended young-band ceiling (ADR-011 section 11 item 4).
+    assert cell_ending_bounds("3-5", "short", "prose") == (2, 8)
     assert cell_ending_bounds("16+", "long", "gamebook") is None
     assert cell_ending_bounds("8-11", None, "prose") is None
 
@@ -389,3 +392,128 @@ def test_density_ceiling_without_a_band_keeps_the_flat_prose_value() -> None:
     """An unconfigured or omitted band falls back rather than failing."""
     assert nodes_per_decision_ceiling("prose") == pytest.approx(6.0)
     assert nodes_per_decision_ceiling("prose", "not-a-band") == pytest.approx(6.0)
+
+
+# ADR-011 section 5's endings column, transcribed row by row as amended
+# 2026-08-22 (section 11 item 4, the `UW-C327` audit). The gamebook rows state
+# "many fails" and give no numbers, so they are absent here exactly as they are
+# absent from `_CELL_ENDING_BOUNDS`. The doc is the authority; this map exists
+# so a constant that drifts from it fails a test instead of shipping.
+_ADR_011_SECTION_5_ENDINGS: dict[tuple[str, str], tuple[int, int]] = {
+    ("3-5", "short"): (2, 8),
+    ("3-5", "medium"): (4, 18),
+    ("5-8", "short"): (6, 16),
+    ("5-8", "medium"): (10, 20),
+    ("8-11", "short"): (12, 18),
+    ("8-11", "medium"): (18, 28),
+    ("8-11", "long"): (28, 40),
+    ("10-13", "short"): (14, 22),
+    ("10-13", "medium"): (22, 32),
+    ("10-13", "long"): (32, 48),
+    ("13-16", "medium"): (20, 32),
+    ("13-16", "long"): (30, 48),
+    ("16+", "medium"): (24, 40),
+    ("16+", "long"): (36, 60),
+}
+
+_BANDS_YOUNGEST_FIRST = ("3-5", "5-8", "8-11", "10-13", "13-16", "16+")
+_LENGTH_TIERS = ("short", "medium", "long")
+
+
+def test_every_prose_cell_matches_the_adr_011_section_5_endings_column() -> None:
+    """All 14 prose cells are pinned, not the two that were spot-checked.
+
+    Only ``10-13``/``long`` and ``3-5``/``short`` carried an assertion before,
+    which left 12 cells free to drift from the ADR unnoticed. Pinning the whole
+    column makes any edit to ``_CELL_ENDING_BOUNDS`` that the ADR does not
+    sanction fail here, and any sanctioned ADR amendment land in both places.
+    """
+    for (band, length), expected in _ADR_011_SECTION_5_ENDINGS.items():
+        assert cell_ending_bounds(band, length, "prose") == expected, (
+            f"{band}/{length} disagrees with ADR-011 section 5; amend the ADR "
+            f"first, then mirror it here and in _CELL_ENDING_BOUNDS"
+        )
+    covered = {
+        (band, length) for band, length, style in _PRODUCTION_CELLS if style == "prose"
+    }
+    assert covered == set(_ADR_011_SECTION_5_ENDINGS), (
+        "a prose cell exists with no pinned endings row (or vice versa); every "
+        "offered prose cell must be covered by this table"
+    )
+
+
+def test_ending_ceilings_never_invert_as_the_age_band_rises() -> None:
+    """Within one length tier, an older band never caps endings LOWER.
+
+    The invariant a hand-pinned cell cannot express. It is checked per length
+    tier, which is the only axis on which the comparison is meaningful: a
+    ``3-5``/Medium book (23-45 nodes) legitimately carries more endings than a
+    ``5-8``/Short book (29-50 nodes) because length, not band, sets the node
+    envelope, so comparing across tiers proves nothing.
+    """
+    for length in _LENGTH_TIERS:
+        ladder = [
+            (band, bounds)
+            for band in _BANDS_YOUNGEST_FIRST
+            if (bounds := cell_ending_bounds(band, length, "prose")) is not None
+        ]
+        for (younger, lower), (older, upper) in itertools.pairwise(ladder):
+            assert lower[1] <= upper[1], (
+                f"{length}: {younger} caps endings at {lower[1]} but the older "
+                f"{older} caps at {upper[1]}; an older band must not carry a "
+                f"lower ceiling than a younger one"
+            )
+
+
+def test_an_ending_floor_only_dips_where_the_node_envelope_dips() -> None:
+    """A falling ending floor must be explained by a falling node budget.
+
+    Two steps do fall: ``10-13``->``13-16`` at Medium (22 to 20) and at Long
+    (32 to 30). Both are ADR-derived rather than accidental, because
+    words-per-node rises with the band, so the same length tier buys fewer
+    nodes at the older band (Medium: 140-220 nodes at ``10-13`` against
+    115-170 at ``13-16``). Tying the dip to the node envelope keeps those two
+    legal while still failing an unexplained one.
+    """
+    for length in _LENGTH_TIERS:
+        ladder = [
+            (band, bounds, production_cell_budget(band, length, "prose"))
+            for band in _BANDS_YOUNGEST_FIRST
+            if (bounds := cell_ending_bounds(band, length, "prose")) is not None
+        ]
+        for (younger, lower, lower_budget), (
+            older,
+            upper,
+            upper_budget,
+        ) in itertools.pairwise(ladder):
+            assert lower_budget is not None
+            assert upper_budget is not None
+            if upper[0] >= lower[0]:
+                continue
+            assert upper_budget[0] < lower_budget[0], (
+                f"{length}: the ending floor falls from {lower[0]} at "
+                f"{younger} to {upper[0]} at {older}, but {older}'s node floor "
+                f"({upper_budget[0]}) is not below {younger}'s "
+                f"({lower_budget[0]}); an unexplained inversion"
+            )
+
+
+def test_every_cell_ending_bound_fits_inside_its_own_node_envelope() -> None:
+    """A cell cannot commission more endings than it has nodes to hold them.
+
+    Cheap arithmetic sanity that would catch a transcription slip (a digit
+    dropped or doubled) which the monotonicity checks alone could miss.
+    """
+    for (band, length), (floor, ceiling) in _ADR_011_SECTION_5_ENDINGS.items():
+        budget = production_cell_budget(band, length, "prose")
+        assert budget is not None, f"{band}/{length} has no node envelope"
+        min_nodes, max_nodes, _ = budget
+        assert 0 < floor < ceiling, f"{band}/{length} has a degenerate range"
+        assert floor <= min_nodes, (
+            f"{band}/{length} floors at {floor} endings but the cell's "
+            f"smallest legal story has only {min_nodes} nodes"
+        )
+        assert ceiling <= max_nodes, (
+            f"{band}/{length} caps at {ceiling} endings but the cell's largest "
+            f"legal story has only {max_nodes} nodes"
+        )

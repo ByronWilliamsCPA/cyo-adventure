@@ -1,0 +1,97 @@
+{
+  "skeletons": [
+    "the-hollow-crown-gambit.json",
+    "the-obsidian-relay.json"
+  ],
+  "structure_varies": true,
+  "brief_count": 2,
+  "differentiation_directives": null,
+  "mock": false,
+  "vendors": [
+    {
+      "label": "deepseek-v3.2-chunked",
+      "model": "deepseek/deepseek-v3.2",
+      "provider_order": [
+        "digitalocean"
+      ],
+      "family": "deepseek"
+    }
+  ],
+  "books": [
+    {
+      "vendor": "deepseek-v3.2-chunked",
+      "family": "deepseek",
+      "brief_index": 0,
+      "status": "error",
+      "attempts": 0,
+      "latency_s": 0.67,
+      "grade": null,
+      "in_band": null,
+      "leaf_words": 0,
+      "fill_completeness": 0.0,
+      "complete": false,
+      "max_tokens": 131072,
+      "output_tokens": null,
+      "reasoning_tokens": null,
+      "near_cap": false,
+      "reading_level_degraded": false,
+      "reading_level_nodes_dropped": 0,
+      "cost": null,
+      "cost_complete": false,
+      "cost_unavailable_reason": "no provider call was metered for this book",
+      "file": null,
+      "error": "openrouter returned leg-fatal HTTP 400 (invalid or unavailable model)"
+    },
+    {
+      "vendor": "deepseek-v3.2-chunked",
+      "family": "deepseek",
+      "brief_index": 1,
+      "status": "error",
+      "attempts": 0,
+      "latency_s": 0.6,
+      "grade": null,
+      "in_band": null,
+      "leaf_words": 0,
+      "fill_completeness": 0.0,
+      "complete": false,
+      "max_tokens": 131072,
+      "output_tokens": null,
+      "reasoning_tokens": null,
+      "near_cap": false,
+      "reading_level_degraded": false,
+      "reading_level_nodes_dropped": 0,
+      "cost": null,
+      "cost_complete": false,
+      "cost_unavailable_reason": "no provider call was metered for this book",
+      "file": null,
+      "error": "openrouter returned leg-fatal HTTP 400 (invalid or unavailable model)"
+    }
+  ],
+  "within_vendor": {},
+  "cross_vendor": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "same_brief_cross_vendor": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "same_family_cross_model": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "same_family_same_brief": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "excluded_incomplete": [],
+  "verdict": "not measured: fewer than two books were fully written"
+}

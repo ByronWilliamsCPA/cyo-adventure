@@ -41,7 +41,7 @@ from sqlalchemy.orm import defer
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-from cyo_adventure.api.deps import Context, authorize_family
+from cyo_adventure.api.deps import Context, Principal, authorize_family
 from cyo_adventure.api.gate_limits import gate_limiter
 from cyo_adventure.api.schemas import (
     AdminJobActionResponse,
@@ -350,6 +350,30 @@ def _str_or_none(value: object) -> str | None:
     return value if isinstance(value, str) and value else None
 
 
+# The generic failure line a non-admin caller sees in place of job.error.
+_GUARDIAN_SAFE_ERROR = "generation failed; the diagnostic is available to an admin"
+
+
+def _error_for(principal: Principal, error: str | None) -> str | None:
+    """Return the job error text this caller is allowed to see.
+
+    # #CRITICAL: security: ``job.error`` can carry a provider's own
+    # ``error.message``, and an upstream moderation refusal routinely QUOTES
+    # the flagged span of the prompt it rejected, which can include request
+    # content. The worker stores that diagnostic verbatim for operators, and
+    # returning it in a 200 body bypassed ``app.py``'s ``_client_safe_error``
+    # pruning entirely (PR #737 review, I14). Gate the raw text on
+    # ``is_admin``, exactly as the ``report`` column already is; a plain
+    # guardian gets a fixed generic line that still says the job failed.
+    # #VERIFY: test_generation_api_unit.py::
+    # test_job_error_text_hidden_from_plain_guardian and
+    # ::test_job_error_text_visible_to_admin.
+    """
+    if error is None or principal.is_admin:
+        return error
+    return _GUARDIAN_SAFE_ERROR
+
+
 @router.get("/generation-jobs")
 async def list_generation_jobs(ctx: Context) -> GenerationJobListView:
     """List the calling guardian's family generation jobs, newest first.
@@ -417,7 +441,7 @@ async def list_generation_jobs(ctx: Context) -> GenerationJobListView:
                 storybook_id=job.storybook_id,
                 storybook_status=storybook_status,
                 version=job.version,
-                error=job.error,
+                error=_error_for(ctx.principal, job.error),
                 title=_str_or_none(brief_map.get("title")),
                 premise_snippet=premise[:_PREMISE_SNIPPET_LEN],
                 age_band=_str_or_none(brief_map.get("age_band")),
@@ -505,7 +529,7 @@ async def get_generation_job(
         report=report,
         storybook_id=job.storybook_id,
         version=job.version,
-        error=job.error,
+        error=_error_for(ctx.principal, job.error),
         skeleton_slug=skeleton_slug if isinstance(skeleton_slug, str) else None,
         theme_brief=theme_brief if isinstance(theme_brief, dict) else None,
     )

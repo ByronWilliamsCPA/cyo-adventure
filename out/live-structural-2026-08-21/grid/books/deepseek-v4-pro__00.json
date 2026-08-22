@@ -1,0 +1,307 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_market_morning",
+  "version": 1,
+  "title": "The Festival Morning",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "family",
+      "choosing",
+      "generosity",
+      "wonder"
+    ],
+    "estimated_minutes": 3,
+    "ending_count": 6,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_wake",
+  "nodes": [
+    {
+      "id": "n_wake",
+      "body": "The fair light comes through the roots into your room. It is yellow and small. Papa is up. He has the big basket on his arm. He says the seed buns cool by the door. You may take the first tray to the long table under the tree. You hop on one foot, two feet, one foot. You find your scarf for the fair.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_go",
+          "label": "Wriggle out the round door to the big oak.",
+          "target": "n_walk"
+        }
+      ]
+    },
+    {
+      "id": "n_walk",
+      "body": "The walk is three roots long. A bug by a toadstool says good day. You say good day back. You can smell the fair before you see it. It is warm grain and honey. It is a sweet smell that makes your nose twitch. Then the green space opens up. Bunting hangs from grass blades. Small tables sit all over. And it is full.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look",
+          "label": "Look at all the tablecloths.",
+          "target": "n_stalls"
+        }
+      ]
+    },
+    {
+      "id": "n_stalls",
+      "body": "Two treat tables face each other across the soft lane. Berry tarts are in stacks on one side. Honey drops sit in neat rows in green cups. On the other side the seed buns sit on their trays. Some have poppy seeds. Some have sun seeds. Some are still warm. Papa waits. He lets you pick where to go first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fruit",
+          "label": "Go to the berry-tart table.",
+          "target": "n_fruit"
+        },
+        {
+          "id": "c_flowers",
+          "label": "Go to the seed-bun trays.",
+          "target": "n_flowers"
+        }
+      ]
+    },
+    {
+      "id": "n_fruit",
+      "body": "The tart cook has flour on her strings. A small stick pen sits by her ear. She tips a leaf cup so you can see. The honey drops are gold and catch the light. The berries are dark and small. They fit in your paw. Both smell like the end of the warm days.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_peach",
+          "label": "Pick up a honey-drop.",
+          "target": "n_peach"
+        },
+        {
+          "id": "c_berries",
+          "label": "Pick up the berries.",
+          "target": "n_berries"
+        }
+      ]
+    },
+    {
+      "id": "n_peach",
+      "body": "The honey drop fits just right in your paw. It is more sticky than it looks. The tart cook says a good one smells sweet before you lick it. You hold it up to your nose. You could keep it for you. Or you could think of some-one else.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_taste",
+          "label": "Smell the honey-drop first.",
+          "target": "n_taste"
+        },
+        {
+          "id": "c_share",
+          "label": "Choose a second honey-drop for Papa.",
+          "target": "n_share"
+        }
+      ]
+    },
+    {
+      "id": "n_taste",
+      "body": "You shut your eyes and sniff. The smell is sweet and a bit green. It is like the field after rain. The tart cook laughs. She says you are a real picker now. Papa picks out the caps. The honey drop goes in the basket.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_home_taste",
+          "label": "Carry the basket to the long table.",
+          "target": "e_taste"
+        }
+      ]
+    },
+    {
+      "id": "e_taste",
+      "body": "At the long table the honey drop sits by the edge. It sits there till the band plays. Papa cuts it. The runny bit spills out. You both laugh and lick your paws. You say you picked it by smell. Papa says that is just the way you pick one.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_taste",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "How to Choose a Honey-Drop"
+      }
+    },
+    {
+      "id": "n_share",
+      "body": "You look for one more honey drop. You pick the one that shines the most. You tell the cook it is for Papa. She puts both in a leaf. She does not need to be asked. Papa acts like he did not hear. He looks hard at the flags.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_home_share",
+          "label": "Carry the basket to the long table.",
+          "target": "e_share"
+        }
+      ]
+    },
+    {
+      "id": "e_share",
+      "body": "At the long table you put the gold drop on Papa's plate. Papa says oh. Then he says no-thing for a bit. You eat them side by side. The leaf is still on the table. It is a small thing. Yet it makes the day feel big.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_share",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Golden One"
+      }
+    },
+    {
+      "id": "n_berries",
+      "body": "The little leaf-cup is colder than you thought. The berries roll when you tip it. You tip it back fast. The tart-maker says they are best today, not tomorrow. Papa says then today is the day. He finds his purse.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_carry",
+          "label": "Carry the leaf-cup yourself.",
+          "target": "n_berries_two"
+        }
+      ]
+    },
+    {
+      "id": "n_berries_two",
+      "body": "You carry the leaf-cup with both paws. You go slowly, the way you carry something that is dear. You do not swing your arms once. At the twisty root you check. Not one berry has jumped out. Papa says you are a very good carrier.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_home_berries",
+          "label": "Walk them all the way to the long table.",
+          "target": "e_berries"
+        }
+      ]
+    },
+    {
+      "id": "e_berries",
+      "body": "The leaf-cup gets to the long table with every berry still inside. You set it down and let out a big breath. You tip them into the wooden bowl. You eat them straight from the bowl, cold and sweet. You carried them the whole way. And not one was lost.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_berries",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Every Berry Home"
+      }
+    },
+    {
+      "id": "n_flowers",
+      "body": "The seed-bun trays have flour on the sides. The buns rest on each other in rows. The big poppy-seed ones are as wide as your paw. They are round like the moon. The small ones are made of sun-flower and barley. They are tied with a straw. They fit in one hand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_yellow",
+          "label": "Choose the big poppy-seed buns.",
+          "target": "n_yellow"
+        },
+        {
+          "id": "c_small",
+          "label": "Choose the little straw-tied buns.",
+          "target": "n_small"
+        }
+      ]
+    },
+    {
+      "id": "n_yellow",
+      "body": "The poppy-seed buns are so big that you have to hold them like a shield. Folk smile at you all the way down the lane because you are mostly hidden behind them. At the corner Old Vole is sitting outside with his burrow door open and no festival baking on his step at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gift",
+          "label": "Leave one bun on Old Vole's step.",
+          "target": "n_yellow_gift"
+        },
+        {
+          "id": "c_keep",
+          "label": "Keep the whole armful.",
+          "target": "n_yellow_keep"
+        }
+      ]
+    },
+    {
+      "id": "n_yellow_gift",
+      "body": "You pick one poppy-seed bun from the mid-dle. You set it on his step with both paws. Old Vole takes a long time to stand up. He says no one has brought him a fest-i-val bun in a while. He sets it on his lit-tle stool by the door. He can see it there.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_home_gift",
+          "label": "Walk the rest of the way to the long table.",
+          "target": "e_gift"
+        }
+      ]
+    },
+    {
+      "id": "e_gift",
+      "body": "The buns on the tray at the long table are not so full as be-fore. You do not mind. You go past the bur-row the next day. You look at Old Vole's door. The poppy bun still sits on its stool. It is the one you took.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_gift",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "One for the Doorway"
+      }
+    },
+    {
+      "id": "n_yellow_keep",
+      "body": "You hold all the buns all the way down the lane. You do not let Papa take even one. Your arms ache by the twisty root. You keep going. When you get to the long cloth you turn to the side to put the buns on it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_home_yellow",
+          "label": "March them over like a shield.",
+          "target": "e_yellow"
+        }
+      ]
+    },
+    {
+      "id": "e_yellow",
+      "body": "The poppy-seed buns go on the biggest plate and they take up the whole middle of it. The table looks like somebody is having a party. Every time you skip past you look at them. You chose them and everyone can tell.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_yellow",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Round as a Shield"
+      }
+    },
+    {
+      "id": "n_small",
+      "body": "The small bunch is sun and grain and tied with rough straw. It fits in your paw with room to spare. The baker says the grain buns open more each day. It will not look the same to you to mor row. You ask if that is true and she says wait and see.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ask",
+          "label": "Carry them to the table and wait.",
+          "target": "n_small_two"
+        }
+      ]
+    },
+    {
+      "id": "n_small_two",
+      "body": "At the ta-ble the bunch goes on a small plate. It is too small for the big tray. You look at it. The mu-sic stops. The tops are still shut tight. They look like lit-tle fists. You are not sure you be-lieve the bak-er.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_morning",
+          "label": "Look again in the morning.",
+          "target": "e_small"
+        }
+      ]
+    },
+    {
+      "id": "e_small",
+      "body": "Two tops are o-pen in the morn-ing. They o-pened while you were a-sleep. You run to tell Pa-pa. You do not have your scarf. They were shut. Now they are o-pen. No one did a thing. You want to check them a-gain to-mor-row.",
+      "is_ending": true,
+      "ending": {
+        "id": "end_small",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Barley Buns Open"
+      }
+    }
+  ]
+}

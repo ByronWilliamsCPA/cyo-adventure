@@ -4,6 +4,7 @@
   "version": 1,
   "title": "The River of Small Boats",
   "metadata": {
+    "narrative_person": "third",
     "age_band": "8-11",
     "reading_level": {
       "scheme": "flesch_kincaid",

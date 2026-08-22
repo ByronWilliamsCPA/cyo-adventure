@@ -329,6 +329,22 @@ class NarrativeStyle(StrEnum):
     GAMEBOOK = "gamebook"
 
 
+class NarrativePerson(StrEnum):
+    """The grammatical person the prose addresses the reader in.
+
+    Ruled 2026-08-21 (`UW-C328`, section 9.4 of
+    ``docs/planning/live-structural-round-2026-08-21.md``): narrative person
+    was an unpinned degree of freedom, and three fills of one prose skeleton
+    scattered from 0.07 to 0.72 second-person node rates because nothing
+    declared which person the book is told in. Gamebooks are second-person by
+    genre convention; prose books must say which they are, so same-skeleton
+    siblings cannot ship in different persons.
+    """
+
+    SECOND = "second"
+    THIRD = "third"
+
+
 class SafetyScope(StrEnum):
     """A per-node hint marking a sensitive scene for the safety reviewer."""
 
@@ -407,6 +423,41 @@ class StoryMetadata(BaseModel):
     # only changes the envelope for 13-16/16+; lower bands are implicitly prose.
     length: Length | None = None
     narrative_style: NarrativeStyle = NarrativeStyle.PROSE
+    # The declared grammatical person (`UW-C328`, ruled 2026-08-21). ``None``
+    # means undeclared (legacy); the catalog is backfilled mechanically and a
+    # fill must honor the declaration where present. Gamebooks default to
+    # second person by convention; the checker in
+    # ``scripts/check_prose_craft.py`` keys on this field.
+    narrative_person: NarrativePerson | None = None
+
+    @model_validator(mode="after")
+    def _check_person_style_consistency(self) -> Self:
+        """Reject a third-person gamebook, which is a contract contradiction.
+
+        The gamebook genre addresses the reader ("you"), and the person
+        checker holds declared-third books to a second-person ceiling; a
+        representable ``gamebook`` + ``third`` combination therefore
+        inverted the gate against a correctly-written second-person gamebook
+        (PR #737 review, I10). Making the state unrepresentable is cheaper
+        than teaching every consumer the precedence.
+
+        Returns:
+            Self: The validated model.
+
+        Raises:
+            ValueError: If a gamebook declares third person.
+        """
+        if (
+            self.narrative_style is NarrativeStyle.GAMEBOOK
+            and self.narrative_person is NarrativePerson.THIRD
+        ):
+            msg = (
+                "narrative_style 'gamebook' cannot declare narrative_person "
+                "'third': gamebooks address the reader in second person"
+            )
+            raise ValueError(msg)
+        return self
+
     # A non-production MVP/Test skeleton exists for prototyping, pipeline and
     # integration testing, and generator development. When ``False`` the L1-7
     # node-count budget is the band-independent MVP envelope (not the band's
@@ -437,6 +488,41 @@ class StoryMetadata(BaseModel):
     # checks the ADR-011 section-8 continuity invariant across the chain. A story
     # with no ``series`` is a standalone book (backward compatible).
     series: Series | None = None
+
+    @model_validator(mode="after")
+    def _check_person_matches_style(self) -> Self:
+        """Reject a gamebook declared in third person.
+
+        A gamebook is defined by addressing the reader as "you", so
+        ``narrative_style: gamebook`` with ``narrative_person: third`` is a
+        self-contradictory declaration. It is rejected here rather than left
+        representable because ``scripts/check_prose_craft.py`` keys its
+        person gate on both fields: the combination would demand a
+        second-person book by genre and a third-person one by declaration,
+        and whichever bound the checker applied would fail a correctly
+        written book. No committed skeleton carries the combination
+        (verified 2026-08-22), so nothing in the catalog is invalidated.
+
+        Returns:
+            Self: The validated metadata.
+
+        Raises:
+            ValueError: If ``narrative_style`` is ``gamebook`` while
+                ``narrative_person`` is ``third``.
+        """
+        if (
+            self.narrative_style is NarrativeStyle.GAMEBOOK
+            and self.narrative_person is NarrativePerson.THIRD
+        ):
+            msg = (
+                "narrative_style 'gamebook' cannot be combined with "
+                "narrative_person 'third': a gamebook addresses the reader "
+                "as 'you'. Set narrative_person to 'second' (or omit it), "
+                "or set narrative_style to 'prose' if this book follows a "
+                "named protagonist."
+            )
+            raise ValueError(msg)
+        return self
 
 
 def _check_story_int_bound(value: bool | int, *, subject: str, label: str) -> None:

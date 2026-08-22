@@ -1,0 +1,4011 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_iron_spire_trial",
+  "version": 1,
+  "title": "The Mast-Trial of the Winter Wheat",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "the formal ascent trial",
+      "disciplined nerve",
+      "lethal missteps",
+      "conduct carried up the wall"
+    ],
+    "estimated_minutes": 30,
+    "ending_count": 79,
+    "content_flags": {
+      "violence": "moderate",
+      "scariness": "intense",
+      "peril": "intense"
+    },
+    "topology": "gauntlet",
+    "length": "medium",
+    "narrative_style": "gamebook",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "standing",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "The trial-master's judgment of the climber's conduct. Monotone +1 at each of the two conduct checkpoints (the Muster Yard and the Oath Landing) when the honourable choice is taken; the expedient survivable choice grants nothing. Reachable set at the summit is {0,1,2}. Gates the summit's naming: standing==2 opens the honour check, ==1 the true ascent, <=0 the unnamed summit."
+    },
+    {
+      "name": "grip",
+      "type": "int",
+      "initial": 3,
+      "min": 0,
+      "max": 3,
+      "description": "Physical reserve in the arms for the hard pitches. Monotone decreasing: -1 each time the climber takes a gamble-slip on a climbing checkpoint (the Curtain Wall, the Chimney, the Spiral Stair), where the clean line costs nothing. Reachable set at the Sheer Pitch is {0,1,2,3}. Gates the honest clean-line resolution of the sheer overhang: on the clean line grip>=2 tops out and grip<=1 falls, but the standard gamble-slip bypasses the grip check (as at every checkpoint), so an under-gripped climber can still summit by nerve. grip therefore gates the clean climb, not survival absolutely; it does not differentiate the wins."
+    },
+    {
+      "name": "token",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the climber holds the warden's crown-seal. Set true only by the correct report at the Warden's Post; every survivable alternative (slip past, gamble) leaves it false. Both values reachable at the High Gate, where it partitions the passage (seal opens it clean, no-seal forces the service hatch). Required true, with standing==2, for the highest summit name."
+    }
+  ],
+  "start_node": "setup0",
+  "nodes": [
+    {
+      "id": "setup0",
+      "body": "Dawn finds you on the foredeck of the Winter Wheat, breath smoking, the great mast rising through iced rigging into a lid of grey cloud. Every stage of it is watched \u2014 mates stationed on platforms you cannot yet see, marking who climbs true and who does not. This is the mast-trial, run once a year in harbour, and there is one route up: yard by yard, checkpoint by checkpoint, alone. Many hands muster below the mast each winter. Few are named for it at the top.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_setup0",
+          "label": "Take the first stair.",
+          "target": "setup1"
+        }
+      ]
+    },
+    {
+      "id": "setup1",
+      "body": "Rigging-Master Fenn climbs onto the fife-rail to speak the trial's one law before the muster breaks. The mast, she says, is climbed by conduct and by nerve, and it keeps whoever fails at either. No hand returns down a stage once it is passed \u2014 only up, ward past ward, platform past platform, all the way to the truck, or not at all. She does not raise her voice, because she does not need to.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_setup1",
+          "label": "Line up for the muster.",
+          "target": "muster_ap0"
+        }
+      ]
+    },
+    {
+      "id": "muster_ap0",
+      "body": "The foredeck muster sits boxed in by coiled cable and stacked spars. Its front edge is open to the ship's own hatch \u2014 a square black hole that drops straight down to the chain locker. Old iron ring-bolts wait there in the dark, like teeth. Rigging-Master Fenn reads the roll of candidates out loud. She marks how each one stands and acts in a leather book, before any hand touches the shrouds.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_ap0",
+          "label": "Go on.",
+          "target": "muster_gate"
+        }
+      ]
+    },
+    {
+      "id": "muster_pass",
+      "body": "You answer your name clean and square, hands at your sides, eyes on the rigging-master rather than the hatch. She marks you well in the leather book. You go to the shrouds with your name intact and your bearing already counted in your favour, which on the Winter Wheat is worth more than any coil of rope.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_pass",
+          "label": "Go on.",
+          "target": "curtain_ap0"
+        }
+      ]
+    },
+    {
+      "id": "muster_degrade",
+      "body": "You shove past two waiting candidates to reach the roll call first. The mates let you through \u2014 nobody stops a shove that isn't a blow \u2014 but Rigging-Master Fenn's pen pauses over the page, and she says nothing at all, which is worse than a reprimand. You climb the first shrouds unmarked, your bearing already spent before your boots leave the deck.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_degrade",
+          "label": "Go on.",
+          "target": "curtain_ap0"
+        }
+      ]
+    },
+    {
+      "id": "muster_f0_c0",
+      "body": "The coiled cable rail was never decoration. It stood exactly where it stands to keep a restless candidate back from the open hatch, and you have just put both boots over it, into the black square where the chain locker waits below the foredeck planks.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f0_c0",
+          "label": "Go on.",
+          "target": "muster_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "muster_f0_c1",
+      "body": "For one breath the whole mast-trial narrows to this: no shrouds, no rigging-master, no truck above the clouds. Just the dark square of the hatch opening under you, and the long drop it has always kept quiet about, and no rail left between you and it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f0_c1",
+          "label": "Go on.",
+          "target": "muster_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "muster_f0_end",
+      "body": "The vault carries you clean over the hatch lip. You drop down into the black well of the chain locker. The old iron ring-bolts wait there, bolted to the timbers just as they always have, patient as the tide. The Winter Wheat's mast-trial stops you here. Your boots never find a shroud. The first line of rope never even reaches your hand. Somewhere above, unseen, Rigging-Master Fenn closes her book without a word.",
+      "is_ending": true,
+      "ending": {
+        "id": "muster_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Down the Open Hatch"
+      },
+      "choices": []
+    },
+    {
+      "id": "muster_f1_c0",
+      "body": "On the Winter Wheat, no one raises a hand against a mate and gets away with it. The bosun's belaying pin comes up as fast as your fist \u2014 faster, in fact. He has done this every mast-trial for eleven years. You have done it exactly once.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f1_c0",
+          "label": "Go on.",
+          "target": "muster_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "muster_f1_c1",
+      "body": "There is a moment when it could still be taken back \u2014 a half-second where your fist could open, your feet could step away. It passes. The belaying pin is already swinging, quiet and certain, and the deck under you does not care which of you started it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f1_c1",
+          "label": "Go on.",
+          "target": "muster_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "muster_f1_end",
+      "body": "The bosun's pin catches you above the ear and the foredeck tilts sideways under your boots. The mast-trial's shortest climb is always the same one: insolence at the muster, answered before the first stair. You go down onto the planks, and the rigging-master does not look up from her book.",
+      "is_ending": true,
+      "ending": {
+        "id": "muster_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Struck at the Foredeck Muster"
+      },
+      "choices": []
+    },
+    {
+      "id": "muster_f2_c0",
+      "body": "Delay can kill on a crowded foredeck, just as a bad handhold can kill on the mast. The roll call does not pause for a hesitant candidate. The open hatch behind you does not fill in just because you would rather not stand near it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f2_c0",
+          "label": "Go on.",
+          "target": "muster_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "muster_f2_c1",
+      "body": "The moment to step forward and be counted comes and goes while you hang back, boots inches from the hatch's black lip, telling yourself there will be another moment. There will not be. The press of waiting candidates behind you does not know you are still deciding.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_f2_c1",
+          "label": "Go on.",
+          "target": "muster_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "muster_f2_end",
+      "body": "The count closes and the crowd surges forward all at once, shoulder to shoulder, carrying you with it. There is no rail at the hatch's edge, only the ring-bolts far below, and the foredeck muster takes the one candidate who would not stand its form, exactly the way it always has. Rigging-Master Fenn's pen does not so much as pause.",
+      "is_ending": true,
+      "ending": {
+        "id": "muster_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Carried Over the Hatch"
+      },
+      "choices": []
+    },
+    {
+      "id": "muster_fd_c0",
+      "body": "Rigging-Master Fenn's word is the only law the foredeck muster keeps, older than any captain's standing orders. Arguing the count to her face is not cleverness. It is a second trial, one she has already judged a thousand times, and she has never once lost it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_fd_c0",
+          "label": "Go on.",
+          "target": "muster_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "muster_fd_c1",
+      "body": "The answer comes back fast, flat, and final \u2014 no long lecture, no second chance offered. This is not cruelty. It is simply how quickly the Winter Wheat settles a candidate who has decided the roll call is beneath them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_fd_c1",
+          "label": "Go on.",
+          "target": "muster_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "muster_fd_end",
+      "body": "Arguing the count is refusing the trial itself, and the mates take that refusal exactly as seriously as a fall. Hands close on your arms, the deck tips, and you go over the muster's edge into the chain locker's dark before you finish your sentence. The hatch does not care that you had a point.",
+      "is_ending": true,
+      "ending": {
+        "id": "muster_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Argued Off the Mast"
+      },
+      "choices": []
+    },
+    {
+      "id": "muster_slip",
+      "body": "You duck low and slide into the end of the mustering line, just one candidate among many. The count washes past, and your name is never called \u2014 no mark for it, no black note in the leather book. Only the first shrouds wait for you now, and the whole climb still lies ahead, uncounted and unclaimed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_slip",
+          "label": "Go on.",
+          "target": "curtain_ap0"
+        }
+      ]
+    },
+    {
+      "id": "muster_cap",
+      "body": "You let the mates close around you and lower your hands to your sides. The mast-trial ends here, on the foredeck, before a single shroud is climbed \u2014 not the ending you came for. But you walk off under your own power, and the Winter Wheat's rigging is still there next winter, waiting.",
+      "is_ending": true,
+      "ending": {
+        "id": "muster_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Held at the Foredeck Muster"
+      },
+      "choices": []
+    },
+    {
+      "id": "muster_seen",
+      "body": "A mate's eyes find you moving wrong through the muster \u2014 out of line, off the count \u2014 and for one breath the whole foredeck seems to turn toward you at once. There is still a way through this that keeps the mast-trial alive for you, but it is the quiet, unglamorous one, for nerve alone will not save you here. Only stillness might. You have the length of one held breath to choose which kind of hand you are going to be.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_seen_slip",
+          "label": "Slip quietly to the back of the line, uncounted.",
+          "target": "muster_slip"
+        },
+        {
+          "id": "c_muster_seen_fight",
+          "label": "Argue your place aloud with Rigging-Master Fenn.",
+          "target": "muster_fd_c0"
+        },
+        {
+          "id": "c_muster_seen_cap",
+          "label": "Stand down and let the mates take you in.",
+          "target": "muster_cap"
+        }
+      ]
+    },
+    {
+      "id": "muster_gate",
+      "body": "You are standing in the foredeck muster, and the law here has nothing to do with strength. It is bearing. Stand the line, answer plain when your name is read, and keep well back from the open hatch. A candidate who shoves for place, mouths off to a mate, or crowds the black lip for a better look is struck from the roll on the spot \u2014 or struck from the mast-trial's whole ladder, permanently, one way or another. Hold the form and be counted. Every other road from here ends in a fall or a belaying pin.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_muster_ok",
+          "label": "Stand square in line and answer your name plainly.",
+          "target": "muster_pass",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "standing",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_muster_exp",
+          "label": "Shove to the front of the line to climb first.",
+          "target": "muster_degrade"
+        },
+        {
+          "id": "c_muster_f0",
+          "label": "Vault the cable rail to dodge the roll call.",
+          "target": "muster_f0_c0"
+        },
+        {
+          "id": "c_muster_f1",
+          "label": "Swing back at the mate who shoves you.",
+          "target": "muster_f1_c0"
+        },
+        {
+          "id": "c_muster_f2",
+          "label": "Linger at the hatch's edge till the count ends.",
+          "target": "muster_f2_c0"
+        },
+        {
+          "id": "c_muster_gamble",
+          "label": "Try to slip through the roll call unseen.",
+          "target": "muster_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "curtain_ap0",
+      "body": "The first true pitch waits at the lower shrouds, a sheer wall of tarred rope rising into the murk, glazed with a night's ice. One line of ratlines is knotted into it, foot-rung over foot-rung, worn smooth by every hand that came before you. Everywhere else the rope is bare and slick, and it overhangs in places, and it drops clean back down to the foredeck for anyone who trusts it wrong.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_ap0",
+          "label": "Go on.",
+          "target": "curtain_gate"
+        }
+      ]
+    },
+    {
+      "id": "curtain_pass",
+      "body": "The ratlines carry you rung by rung straight up the shrouds, your arms doing exactly as much work as the climb demands and no more. You come over the rail at the top of the lower mast with your strength still yours to spend. The shrouds are behind you now, and the truck, somewhere far above the cloud, is one stage closer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_pass",
+          "label": "Go on.",
+          "target": "warden_ap0"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f0_c0",
+      "body": "The bare shroud-rope beside the ratlines looks faster, ice and all \u2014 until your palm closes on it and finds nothing to close around. Glazed rope gives a hand no more purchase than glass does, and you are already three rungs above the ratlines you left behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f0_c0",
+          "label": "Go on.",
+          "target": "curtain_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f0_c1",
+      "body": "For one held breath, the whole mast-trial comes down to this: there is no grip here, none at all, just ice-slicked rope sliding under fingers that have nothing to dig into. The foredeck is far below, and it is not getting any closer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f0_c1",
+          "label": "Go on.",
+          "target": "curtain_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f0_end",
+      "body": "The iced rope gives you nothing, and you peel backward off the shrouds the way a hand peels off a frozen rail. The lower shrouds keep whoever scorns the ratlines for a shortcut. Below, the foredeck rises to meet you, and the mast-trial ends exactly where it always warns a careless hand it will.",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Iced Rope"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_f1_c0",
+      "body": "Above the lower shrouds, the futtock shrouds slant outward around the mast's collar. This forces every climber to swing out over open air, with nothing below but deck and a long drop. It is the wall's cruelest stretch. You have just swung out onto it without the line the old hands cut for this exact moment.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f1_c0",
+          "label": "Go on.",
+          "target": "curtain_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f1_c1",
+      "body": "Your arms know the truth before your hands do, hanging backward under the futtocks as your weight tips wrong. For one moment, the whole climb rests on tendons that have already decided they cannot hold.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f1_c1",
+          "label": "Go on.",
+          "target": "curtain_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f1_end",
+      "body": "Under the futtock shrouds, your weight comes off the rigging completely. You swing out into the grey morning air with nothing left to swing back to. There is only the long fall to the foredeck below, past the muster you stood at, past the whole climb you meant to make.",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Futtock Shrouds"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_f2_c0",
+      "body": "A lunge past a solid rung for something higher up is a wager laid against the mast itself \u2014 and the mast has never yet had to pay out on a bet like that. You have already left the good rung behind, reaching for a seam in the frost-split timber above.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f2_c0",
+          "label": "Go on.",
+          "target": "curtain_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f2_c1",
+      "body": "What looked like a seam from below turns out to be nothing at all, only a shadow made by the ice, a trick of grey light on grey wood. Your hand closes on frost and empty air instead of solid timber.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f2_c1",
+          "label": "Go on.",
+          "target": "curtain_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f2_end",
+      "body": "The frost-split seam is too shallow to hold a hand's full weight, let alone yours flung out at a stretch. It gives the instant you trust it, and you come off the shrouds into the long fall below, the ratlines you abandoned already out of reach above you.",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "A Reach Too Far"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_f3_c0",
+      "body": "Delay is its own kind of fall up here. The cold does not wait for you to gather your nerve \u2014 it finds still fingers first, working into knuckles you have stopped moving, turning grip into something borrowed rather than owned.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f3_c0",
+          "label": "Go on.",
+          "target": "curtain_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f3_c1",
+      "body": "You spread flat against the shrouds, trying to steady your breathing, but the strength still drains from your arms just as fast as it would if you kept climbing. Now you have nothing to show for it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f3_c1",
+          "label": "Go on.",
+          "target": "curtain_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f3_end",
+      "body": "Hanging still on the lower shrouds still uses up the strength the climb was always going to need, and it wastes that strength for nothing. Your grip opens on its own, your fingers too cold and too tired to hold on any longer. The rigging lets you go without warning.",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Spent on the Shrouds"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_f4_c0",
+      "body": "The scarfed seam, where two lengths of spar are joined together, looks for one hopeful moment like a groove deep enough to brace a leg across\u2014but it is not. A scarf joint is built to be smooth, not to hold a climber's weight bridged against it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f4_c0",
+          "label": "Go on.",
+          "target": "curtain_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f4_c1",
+      "body": "Your legs slide off the smooth angle of the joint almost right away. There is nothing else nearby to trust. No rung. No line. Only the smooth, joined timber sliding out from under your boots.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_f4_c1",
+          "label": "Go on.",
+          "target": "curtain_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_f4_end",
+      "body": "The scarf joint is far too shallow to bridge the way a true chimney would let you, and your braced legs skate straight off the smooth timber. The lower shrouds take the climber who mistook a repair seam for a foothold, the way they always have.",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Scarf Joint"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_fd_c0",
+      "body": "The futtock shrouds are the cruelest stretch of the shrouds, even with the right line under your hands. Without it, you are betting on raw speed instead of the ratlines cut for this very overhang. You have chosen the one spot on the lower mast that forgives nobody.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_fd_c0",
+          "label": "Go on.",
+          "target": "curtain_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "curtain_fd_c1",
+      "body": "Your hands know it before your mind finishes deciding it was a good idea. There is no purchase, no line, no futtock rung waiting for your reach. Only the swing of your own weight is there, already carrying you backward off the shrouds.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_fd_c1",
+          "label": "Go on.",
+          "target": "curtain_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "curtain_fd_end",
+      "body": "Free of the ratlines over the futtock shrouds, there is no recovering the swing once it starts. The lower shrouds do nothing for the climber who dared the overhang on speed alone. They do nothing for anyone who trusts open air over a cut line.",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Free of the Ratlines"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_slip",
+      "body": "You throw yourself onto the spare halyard hanging loose beside the shrouds, swollen thick with ice and fraying where it rubs the yard above. It is not meant to be climbed, and it complains the whole way, but it holds long enough. You haul over the lower mast's rail with your arms half-spent and your palms raw, and call it made anyway.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_slip",
+          "label": "Go on.",
+          "target": "warden_ap0"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "dec",
+          "var": "grip",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "curtain_cap",
+      "body": "You cling to the ratlines and call out, and a mate comes down the shrouds on a bosun's chair to rope you off the face. The mast-trial is over for you here, on the lower mast, a long way short of the truck. But you come down the shrouds tied to a mate's line instead of falling free of one, and that is no small thing.",
+      "is_ending": true,
+      "ending": {
+        "id": "curtain_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Roped Off the Shrouds"
+      },
+      "choices": []
+    },
+    {
+      "id": "curtain_seen",
+      "body": "A mate's head turns your way from the lower mast rail, tracking you off the true line of the ratlines, and for one breath the whole shroud face seems to hold its breath with you. There is a hard, unglamorous way through this yet \u2014 the fraying spare halyard, if your arms have anything left to give it. The fast way, the futtock shrouds free-climbed on nerve, is the same wager every reckless hand before you has lost. You have one breath to choose.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_seen_slip",
+          "label": "Scrabble up the fraying halyard and haul over hard.",
+          "target": "curtain_slip"
+        },
+        {
+          "id": "c_curtain_seen_fight",
+          "label": "Free-climb the futtock shrouds on speed alone.",
+          "target": "curtain_fd_c0"
+        },
+        {
+          "id": "c_curtain_seen_cap",
+          "label": "Freeze on the ratlines and call to be roped down.",
+          "target": "curtain_cap"
+        }
+      ]
+    },
+    {
+      "id": "curtain_gate",
+      "body": "You are on the lower shrouds. The ratlines are cut into the rigging exactly where they need to be, rung to rung, hand to hand, and they will carry you the whole way up if you trust nothing else. Anywhere off that line, the rope is bare and glazed, or it bellies out into the futtock shrouds' overhang, giving back nothing but a long fall to the foredeck. Find the ratlines and keep to them. Never trust the ice for a shortcut, however solid it looks from below.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curtain_ok",
+          "label": "Climb the ratlines, rung to rung, hand to hand.",
+          "target": "curtain_pass"
+        },
+        {
+          "id": "c_curtain_f0",
+          "label": "Climb the bare iced rope straight up to save time.",
+          "target": "curtain_f0_c0"
+        },
+        {
+          "id": "c_curtain_f1",
+          "label": "Swing out under the futtock shrouds to pass quick.",
+          "target": "curtain_f1_c0"
+        },
+        {
+          "id": "c_curtain_f2",
+          "label": "Lunge for a frost-split seam above the ratlines.",
+          "target": "curtain_f2_c0"
+        },
+        {
+          "id": "c_curtain_f3",
+          "label": "Spread flat on the shrouds to steady your nerve.",
+          "target": "curtain_f3_c0"
+        },
+        {
+          "id": "c_curtain_f4",
+          "label": "Brace your legs across the scarfed seam like a chimney.",
+          "target": "curtain_f4_c0"
+        },
+        {
+          "id": "c_curtain_gamble",
+          "label": "Chance the fraying spare halyard hanging alongside.",
+          "target": "curtain_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "warden_ap0",
+      "body": "Above the lower shrouds, a narrow platform is blocked by a hinged grating. This is the second mate's stand. He holds the one thing that opens the crow's nest hatch far above: a small brass grommet, worn smooth by a hundred years of thumbs. He will only give it to a hand that reports in the proper way. If you arrive at his grating without announcing yourself, you get nothing but a long, unimpressed look.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_ap0",
+          "label": "Go on.",
+          "target": "warden_gate"
+        }
+      ]
+    },
+    {
+      "id": "warden_pass",
+      "body": "You hail your name and your count of pitches passed, clean and proper, the way every hand before you has had to learn it. The second mate presses the brass grommet into your palm without ceremony and swings the grating wide. You climb on with the crow's nest hatch already half won, cold brass warming slowly against your skin.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_pass",
+          "label": "Go on.",
+          "target": "portcullis_ap0"
+        }
+      ]
+    },
+    {
+      "id": "warden_degrade",
+      "body": "The second mate's back is turned toward the shrouds below, watching some other candidate's trouble. You slip past his stand while he is not looking. You get no grommet, since his hand never opens for a hail he never heard. But the grating is behind you now, and the ratlines above keep climbing, whether he noticed or not.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_degrade",
+          "label": "Go on.",
+          "target": "portcullis_ap0"
+        }
+      ]
+    },
+    {
+      "id": "warden_f0_c0",
+      "body": "The second mate has stood this platform every mast-trial for eleven winters, and he knows every name written into Rigging-Master Fenn's roll the way he knows the knots on his own belaying pin. Giving him a false one to shortcut the hail is not clever. It is simply loud.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f0_c0",
+          "label": "Go on.",
+          "target": "warden_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "warden_f0_c1",
+      "body": "The lie is caught in the space of a breath, quiet and certain, the second mate's face not even changing as he does the sum and comes up short of the name you gave him. He has heard every lie a nervous candidate can invent, and this is not a new one.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f0_c1",
+          "label": "Go on.",
+          "target": "warden_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "warden_f0_end",
+      "body": "A false report at the second mate's grating marks you as a hand who cannot be trusted with the rest of this mast. The platform's guard settles the matter quietly, right there, before you climb another rung above the shrouds. The Winter Wheat has no room aloft for a hand who lies at the first checkpoint.",
+      "is_ending": true,
+      "ending": {
+        "id": "warden_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Caught in the False Hail"
+      },
+      "choices": []
+    },
+    {
+      "id": "warden_f1_c0",
+      "body": "The brass grommet is the second mate's to give, hand to hand, when a hail earns it \u2014 never a thing to be taken. You reach for it anyway, fingers closing on the space where his palm was a half-second before, and his hand is already moving to answer that.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f1_c0",
+          "label": "Go on.",
+          "target": "warden_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "warden_f1_c1",
+      "body": "The reach is answered before your fingers ever close on anything. The second mate has kept this stand a long time, and grabbing hands are the oldest trouble it has ever seen.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f1_c1",
+          "label": "Go on.",
+          "target": "warden_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "warden_f1_end",
+      "body": "Grabbing for the grommet draws the second mate's marlinspike faster than you draw breath to explain yourself. The stand keeps whoever tries to steal what the mast-trial only ever gives. It is not meant to be cruel. It is simply how the platform answers theft.",
+      "is_ending": true,
+      "ending": {
+        "id": "warden_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Grasped at the Grommet"
+      },
+      "choices": []
+    },
+    {
+      "id": "warden_f2_c0",
+      "body": "The grating across the second mate's stand is made of iron. It is old, but set firm. The platform behind it is never empty. Men stand guard there for one reason: to stop anyone who tries to force their way through without giving the proper hail.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f2_c0",
+          "label": "Go on.",
+          "target": "warden_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "warden_f2_c1",
+      "body": "The clang of iron against iron carries the length of the mast and back. Whatever quiet you were counting on is gone in an instant, and every mate within reach of the platform comes at once.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_f2_c1",
+          "label": "Go on.",
+          "target": "warden_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "warden_f2_end",
+      "body": "Forcing the second mate's grating open brings the platform's whole guard down on you at once, boots on iron, hands hard and fast, and you do not pass this landing. The mast-trial has room for a climber who fails a pitch, but it has none for one who tries to break its gate.",
+      "is_ending": true,
+      "ending": {
+        "id": "warden_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Forced at the Second Mate's Stand"
+      },
+      "choices": []
+    },
+    {
+      "id": "warden_fd_c0",
+      "body": "Nothing on this mast is claimed as a right. Not the ratlines, not the platform, and certainly not the grommet a mate carries for exactly one purpose. Demanding it loudly, as though the second mate owes you something for simply having climbed this far, is a mistake he has heard before.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_fd_c0",
+          "label": "Go on.",
+          "target": "warden_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "warden_fd_c1",
+      "body": "The second mate's stand has no patience for a raised voice, not at this height, not with wind already working at both of you. His answer comes quick, and it is not a discussion.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_fd_c1",
+          "label": "Go on.",
+          "target": "warden_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "warden_fd_end",
+      "body": "Demanding what can only be earned marks you as a hand unfit for the rest of this mast. The second mate's guard puts you off the shrouds for it. This is how the mast-trial has always dealt with a candidate who thinks loudness can replace a proper hail.",
+      "is_ending": true,
+      "ending": {
+        "id": "warden_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Denied at the Second Mate's Stand"
+      },
+      "choices": []
+    },
+    {
+      "id": "warden_slip",
+      "body": "You edge out along a narrow ice-slick channel plank jutting past the platform's rail, no grommet in your pocket and no leave from the second mate, boots finding purchase a hand's width wide at best. It holds. You come back onto the ratlines above his stand having earned nothing and lost nothing either \u2014 only the climb still ahead, unsealed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_slip",
+          "label": "Go on.",
+          "target": "portcullis_ap0"
+        }
+      ]
+    },
+    {
+      "id": "warden_cap",
+      "body": "You kneel at the grating and let the second mate see your open hands. He bars the way for good, the grommet staying in his pocket, and the mast-trial ends for you on this narrow stand. You climb down instead of up, but you climb down breathing, which the shrouds below do not always allow.",
+      "is_ending": true,
+      "ending": {
+        "id": "warden_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Barred at the Second Mate's Stand"
+      },
+      "choices": []
+    },
+    {
+      "id": "warden_seen",
+      "body": "The second mate's eye catches you moving wrong around his stand, off the proper approach, and for one breath the platform seems to lean in to watch what you'll do next, while the quiet way through remains open \u2014 a narrow plank skirting his grating, if your nerve holds along its width. The loud way, demanding what he alone can give, has never once worked on this mast. One breath. Choose.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_seen_slip",
+          "label": "Traverse the narrow channel plank past his stand.",
+          "target": "warden_slip"
+        },
+        {
+          "id": "c_warden_seen_fight",
+          "label": "Demand the grommet loudly, as though it's owed you.",
+          "target": "warden_fd_c0"
+        },
+        {
+          "id": "c_warden_seen_cap",
+          "label": "Kneel at the grating and yield to the second mate.",
+          "target": "warden_cap"
+        }
+      ]
+    },
+    {
+      "id": "warden_gate",
+      "body": "You are at the second mate's stand. Give the mast-trial's proper hail: say your name and how many pitches you have passed. Then he will press the brass grommet into your hand and swing the grating wide. But if you say it wrong, or reach past him for the grommet, or try the iron yourself, this platform will answer just as harshly as the rest of the Winter Wheat answers every wrong move. Give the true hail and take the seal. Or climb on without it, and meet the crow's nest hatch bare-handed later.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_ok",
+          "label": "Hail your name and count, and take the grommet.",
+          "target": "warden_pass",
+          "effects": [
+            {
+              "op": "set",
+              "var": "token",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_warden_exp",
+          "label": "Slip past the grating while the mate's back is turned.",
+          "target": "warden_degrade"
+        },
+        {
+          "id": "c_warden_f0",
+          "label": "Give a false name to skip the proper hail.",
+          "target": "warden_f0_c0"
+        },
+        {
+          "id": "c_warden_f1",
+          "label": "Snatch the grommet from the second mate's palm.",
+          "target": "warden_f1_c0"
+        },
+        {
+          "id": "c_warden_f2",
+          "label": "Batter the iron grating open and force your way through.",
+          "target": "warden_f2_c0"
+        },
+        {
+          "id": "c_warden_gamble",
+          "label": "Chance the channel plank skirting the barred grating.",
+          "target": "warden_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "portcullis_ap0",
+      "body": "The route above the second mate's stand runs straight under the lower topsail yard. This yard never hangs still. A brace-tackle team on deck swings it across the gap between shroud and mast. It moves in a slow, steady rhythm: clear, then closing, then clear again. Its iron-shod boom is heavy enough to break more than just a hand, if you stand under it at the wrong time. You can hear the tackle creak two pitches below, before you even reach the gap.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_ap0",
+          "label": "Go on.",
+          "target": "portcullis_gate"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_pass",
+      "body": "You cross the gap the instant it stands open and are two rungs clear before the yard swings back through. The boom-iron bites empty air where you stood a breath ago, and the rhythm resets behind you, patient and indifferent. The ratlines above keep climbing, and so, now, do you, unhurried and unmarked.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_pass",
+          "label": "Go on.",
+          "target": "chimney_ap0"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f0_c0",
+      "body": "The brace-tackle's rhythm is not a suggestion. You judged the swing wrong. You dashed for the gap half a beat after the safe window had already closed. Now the topsail yard is swinging back across the shroud gap, coming right toward where you stand.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f0_c0",
+          "label": "Go on.",
+          "target": "portcullis_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f0_c1",
+      "body": "For one breath, the whole mast-trial narrows to a wall of moving timber and iron. It swings steady and unhurried. It does not care whether you meant to be standing here or not.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f0_c1",
+          "label": "Go on.",
+          "target": "portcullis_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f0_end",
+      "body": "The lower topsail yard swings home just as you pass beneath it. Its iron-shod boom strikes the shroud gap, and it catches the climber inside at the same moment. The mast-trial's rhythm has never once missed a beat for anybody. It does not start with you.",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Boom-Iron"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_f1_c0",
+      "body": "The shroud gap beneath the swinging yard is the one stretch of this whole mast you are never meant to occupy for longer than it takes to cross it. You have stopped there anyway, mid-gap, trying to read a rhythm that does not reward second-guessing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f1_c0",
+          "label": "Go on.",
+          "target": "portcullis_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f1_c1",
+      "body": "The yard is already swinging back before your math is done. You tried to time a moving spar from underneath it, instead of trusting the count you were given. That costs you exactly the half-second you don't have.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f1_c1",
+          "label": "Go on.",
+          "target": "portcullis_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f1_end",
+      "body": "Halted in the gap, you are standing in the one place the topsail yard always returns to. The boom-iron comes to rest exactly where it always does. And you are exactly where you should not have paused \u2014 weighing a rhythm instead of trusting it.",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Halted in the Shroud Gap"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_f2_c0",
+      "body": "The brace-tackle's block has hauled this yard back and forth for every mast-trial, longer than anyone aboard can remember. No wedge jammed into its workings has ever cheated it. It doesn't matter how clever the candidate holding the wedge believes they are.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f2_c0",
+          "label": "Go on.",
+          "target": "portcullis_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f2_c1",
+      "body": "The wedge holds for exactly as long as it takes you to trust it completely, and then it doesn't. The tackle's own weight finds the flaw in your improvised fix the moment you stop watching it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f2_c1",
+          "label": "Go on.",
+          "target": "portcullis_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f2_end",
+      "body": "The brace-tackle shears your wedge clean through. The topsail yard drops its full swinging weight without warning. Jamming a mechanism this old only ever jams the fool standing near it. The Winter Wheat's rigging has outlasted cleverer hands than yours, all trying this same trick.",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Against the Brace-Tackle"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_f3_c0",
+      "body": "Delay is death at the shroud gap, just like everywhere else on this mast. The brace-tackle's rhythm does not slow down for a nervous candidate. Behind you, the ratlines are filling with climbers who have nowhere else to go but forward \u2014 into you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f3_c0",
+          "label": "Go on.",
+          "target": "portcullis_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f3_c1",
+      "body": "The candidates climbing up behind you don't know you're waiting for a gentler swing. That swing isn't coming. Their push leaves you no room to step back when the yard finally comes home.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f3_c1",
+          "label": "Go on.",
+          "target": "portcullis_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f3_end",
+      "body": "Waiting out the brace-tackle only pins you at the mouth of the gap when its count finally runs out. The topsail yard does not care that you meant to be careful. It only knows its own rhythm, and it keeps it, regardless of the crowd pressing up behind you.",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Waiting at the Swinging Yard"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_f4_c0",
+      "body": "For one reckless heartbeat, the topsail yard looks like a ladder, not a danger. It is mid-swing. You climb onto it as it rises through the gap. It carries you up toward the collar, where the yard seats itself against the mast.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f4_c0",
+          "label": "Go on.",
+          "target": "portcullis_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f4_c1",
+      "body": "The gap between the swinging yard and the mast collar above closes fast. It closes faster than your hands can let go of the timber you are riding.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_f4_c1",
+          "label": "Go on.",
+          "target": "portcullis_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_f4_end",
+      "body": "Riding the topsail yard up crushes you against the mast collar it swings home to seat against, the same collar built to take exactly that weight and nothing softer. The mechanism keeps whoever rides it, the same way it always has.",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Into the Mast Collar"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_fd_c0",
+      "body": "Nobody beats the topsail yard on its own downswing, not by sprinting, not by anything. It is built of old oak and iron and swung by four hands on deck who have no idea a candidate is trying to outrun their tackle.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_fd_c0",
+          "label": "Go on.",
+          "target": "portcullis_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_fd_c1",
+      "body": "The swinging boom is faster than your legs, no matter how hard you drive them. The gap does not open any wider for your effort, however much you want it to.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_fd_c1",
+          "label": "Go on.",
+          "target": "portcullis_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_fd_end",
+      "body": "Racing the swinging yard is a race you lose the moment you start it. The boom-iron comes down across the gap on the climber sprinting through it. It comes down the same way it always has, on every hand before you who thought speed alone was a plan.",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Beaten by the Swinging Yard"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_slip",
+      "body": "You throw yourself through the last sliver of the closing gap. The boom-iron's edge rakes across your heel as it sweeps past. It leaves a hot line of pain and a smear of blood on the ratline below, but nothing worse. You are through, onto the stair beyond. The topsail yard swings shut behind you with a sound like a slammed door.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_slip",
+          "label": "Go on.",
+          "target": "chimney_ap0"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_cap",
+      "body": "You step wrong off the brace-tackle's rhythm, and a mate posted near the yard sees it before you do, hauling you back down the shrouds rather than let you try the gap on bad footing. The mast-trial ends at the swinging yard for you. You keep every finger you climbed up here with.",
+      "is_ending": true,
+      "ending": {
+        "id": "portcullis_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Barred at the Shroud Gap"
+      },
+      "choices": []
+    },
+    {
+      "id": "portcullis_seen",
+      "body": "A mate near the topsail yard's tackle notices you hesitating in the gap's mouth, off the rhythm you were meant to be reading, and for one breath the whole swing seems to hang between beats, waiting on you. There is still a difficult way through: diving through the last of the closing gap and trusting your speed to carry you all the way. There is no way through that outright beats the swing. One breath. Choose.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_seen_slip",
+          "label": "Dive through the last of the closing gap.",
+          "target": "portcullis_slip"
+        },
+        {
+          "id": "c_portcullis_seen_fight",
+          "label": "Sprint the gap and try to beat the swing.",
+          "target": "portcullis_fd_c0"
+        },
+        {
+          "id": "c_portcullis_seen_cap",
+          "label": "Step back and let the mate bar you out.",
+          "target": "portcullis_cap"
+        }
+      ]
+    },
+    {
+      "id": "portcullis_gate",
+      "body": "You stand at the shroud gap beneath the lower topsail yard. It swings clear, then swings home again, on a fixed and countable rhythm set from the deck below. The only safe crossing is to go through cleanly while the gap stands open, all the way across, without pausing in the middle. If you are caught halfway, or standing beneath it as it swings home, the boom-iron comes down exactly where you are standing. Read the rhythm, cross clean, and never let it catch you inside the gap.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portcullis_ok",
+          "label": "Cross the gap clean while the yard swings wide.",
+          "target": "portcullis_pass"
+        },
+        {
+          "id": "c_portcullis_f0",
+          "label": "Dash through as the yard begins its swing home.",
+          "target": "portcullis_f0_c0"
+        },
+        {
+          "id": "c_portcullis_f1",
+          "label": "Stop mid-gap to judge the brace-tackle's timing.",
+          "target": "portcullis_f1_c0"
+        },
+        {
+          "id": "c_portcullis_f2",
+          "label": "Wedge the brace-tackle to hold the yard clear.",
+          "target": "portcullis_f2_c0"
+        },
+        {
+          "id": "c_portcullis_f3",
+          "label": "Wait for a gentler swing before you cross.",
+          "target": "portcullis_f3_c0"
+        },
+        {
+          "id": "c_portcullis_f4",
+          "label": "Climb onto the yard itself as it swings up.",
+          "target": "portcullis_f4_c0"
+        },
+        {
+          "id": "c_portcullis_gamble",
+          "label": "Chance the last sliver of the open gap right now.",
+          "target": "portcullis_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "chimney_ap0",
+      "body": "Beyond the swinging yard, the route narrows into the mast doubling. Here the topmast is lashed and fished alongside the lower mast, leaving a slot barely wide enough for your body. You climb it by bracing your back against one timber and your boots against the other. You shuffle up blind into the shadow between the two spars. The higher you go, the longer the drop grows through the crosstrees beneath you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_ap0",
+          "label": "Go on.",
+          "target": "chimney_gate"
+        }
+      ]
+    },
+    {
+      "id": "chimney_pass",
+      "body": "You bridge out of the top of the doubling onto the crosstrees ledge, thighs burning, lungs working hard in the cold air. The narrow slot between the two spars is below you now, dark and finished with. Somewhere above, the topmast rigging waits, and it is, at least, wide enough to see.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_pass",
+          "label": "Go on.",
+          "target": "arrowslits_ap0"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f0_c0",
+      "body": "The mast doubling holds nothing for a climber trying to work one timber alone, like an open wall. There are no rungs fished into this narrow slot, no ratlines, nothing but smooth lashed spar on either side. And you have just let go of the brace that was doing all the real work.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f0_c0",
+          "label": "Go on.",
+          "target": "chimney_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f0_c1",
+      "body": "Your balance goes the instant your back leaves the far timber, and there is nothing left holding you in the slot but the boots you have already started to lose. Below is only the dark of the doubling and the long drop past it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f0_c1",
+          "label": "Go on.",
+          "target": "chimney_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f0_end",
+      "body": "You let go of the bridge for a one-sided grip. Now nothing presses back against your weight. The doubling drops you straight down its own dark throat. You fall past the swinging yard, past the second mate's stand, all the way to the deck where the mast-trial began.",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Down the Mast Doubling"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_f1_c0",
+      "body": "A stout wooden fid is wedged into the doubling at shoulder height, and it looks, for one grateful moment, like a proper handhold. It is not seized to anything. It was only ever resting there, jammed loose by some long-ago rigger, and you have just put your whole pull on it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f1_c0",
+          "label": "Go on.",
+          "target": "chimney_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f1_c1",
+      "body": "The fid shifts in your grip the instant you put your weight on it. The handhold you were counting on becomes, in a single breath, just another falling thing between the two spars.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f1_c1",
+          "label": "Go on.",
+          "target": "chimney_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f1_end",
+      "body": "The loose fid tears free of the doubling under your pull, and the mast doubling keeps whoever trusts wood that was never meant to bear weight in the first place. It falls with you, small and useless, into the dark of the slot.",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "On a Loose Fid"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_f2_c0",
+      "body": "Higher up, the doubling grows too wide for one stance to bridge. The timbers spread apart as the topmast gets thinner. You try to stretch across the whole gap anyway. Your legs reach their limit, and your back barely touches the timber it needs to press against.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f2_c0",
+          "label": "Go on.",
+          "target": "chimney_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f2_c1",
+      "body": "Your legs reach their limit and go past it at the same moment. The stretch is too far to hold. There is nothing slow about it \u2014 the bridge you were keeping is suddenly gone.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f2_c1",
+          "label": "Go on.",
+          "target": "chimney_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f2_end",
+      "body": "Stemming the doubling's full width splits your bridge to nothing in a single unforgiving beat. You slip the widened gap clean, and the shadow between the two masts takes you the whole way down, past the ratlines, past the swinging yard, into the dark below.",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Split in the Doubling"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_f3_c0",
+      "body": "Waiting costs you here, just like everywhere else aloft, only slower and colder. Wedging yourself still in the doubling to catch your breath is not resting. It is a slow way of losing the very bridge that holds you above the drop below.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f3_c0",
+          "label": "Go on.",
+          "target": "chimney_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f3_c1",
+      "body": "The cold creeps into your braced legs while you hang still. The strain pulls your hold apart bit by bit. Up here, staying still always costs more than moving does.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f3_c1",
+          "label": "Go on.",
+          "target": "chimney_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f3_end",
+      "body": "Wedged still in the mast doubling, your braced strength drains from your legs and back alike, until the bridge simply gives way, quietly, the way tired things do. The doubling never hurries a climber who stops moving \u2014 it has never needed to.",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Wedged and Spent"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_f4_c0",
+      "body": "Speed inside the mast doubling always means a half-set bridge. Your back is not quite settled against one timber before your boots are already reaching for the next hold on the other. You are rushing through the dark slot, the way a nervous hand always wants to. The doubling does not reward that.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f4_c0",
+          "label": "Go on.",
+          "target": "chimney_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f4_c1",
+      "body": "A rushed press against the damp timber finds no real grip at all. The balance you needed a half-second to set is simply gone. Haste always empties a bridge before it's finished.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_f4_c1",
+          "label": "Go on.",
+          "target": "chimney_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_f4_end",
+      "body": "Hurrying through the dark of the doubling, one boot skates across a damp patch of fished timber, and the whole bridge collapses out from under you at once. The mast doubling takes the climber who would not slow down for it.",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Rushed in the Doubling's Dark"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_fd_c0",
+      "body": "A bridge-jump inside the mast doubling means leaving both timbers entirely for one committed instant, trusting your own leap to close a gap the ratlines were never built to close. It is the fastest way through the slot. It is also the only way that offers nothing to catch you if it's wrong.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_fd_c0",
+          "label": "Go on.",
+          "target": "chimney_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "chimney_fd_c1",
+      "body": "For one full beat you touch neither timber at all, suspended in the doubling's dark middle with nothing but your own jump deciding what happens next.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_fd_c1",
+          "label": "Go on.",
+          "target": "chimney_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "chimney_fd_end",
+      "body": "A leap that misses its mark inside the mast doubling touches nothing on the way down. The doubling always keeps whoever leaves both timbers at once. It happens when you trust the air instead of the bridge that was, until that moment, actually working.",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Between Both Timbers"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_slip",
+      "body": "The doubling flares wider just short of the top, and you fight it with everything you have left, thighs shaking, back scraping raw against the timber. You claw over the lip onto the crosstrees ledge with your reserve all but spent, arms trembling like rigging in a gale, but up, at least, and still climbing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_slip",
+          "label": "Go on.",
+          "target": "arrowslits_ap0"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "dec",
+          "var": "grip",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "chimney_cap",
+      "body": "You jam yourself fast between the two spars and call up into the dark above. A rope comes snaking down from the crosstrees, and a mate hauls you the rest of the way out of the doubling by main strength. The mast-trial is over for you here, wedged and rescued, but you come out of the dark breathing.",
+      "is_ending": true,
+      "ending": {
+        "id": "chimney_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Roped from the Doubling"
+      },
+      "choices": []
+    },
+    {
+      "id": "chimney_seen",
+      "body": "A shape moves at the crosstrees rail above you, watching your bridge go ragged in the doubling's dark, and for one breath the whole narrow slot seems to hold you exactly where you are. The hard way through is still there \u2014 fighting the flared gap with whatever strength your arms have left to give it. One breath, and the doubling does not care which way you choose, only that you choose.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_seen_slip",
+          "label": "Thrash the flared gap and haul onto the ledge.",
+          "target": "chimney_slip"
+        },
+        {
+          "id": "c_chimney_seen_fight",
+          "label": "Leap the last of the doubling for the top.",
+          "target": "chimney_fd_c0"
+        },
+        {
+          "id": "c_chimney_seen_cap",
+          "label": "Wedge fast and shout up for a rope.",
+          "target": "chimney_cap"
+        }
+      ]
+    },
+    {
+      "id": "chimney_gate",
+      "body": "You are inside the mast doubling. Bridge it steady, with your back set firm against one timber and your boots against the other, then shuffle upward in careful balance, testing every new press before trusting it with your full weight. If you lose the bridge, trust a loose fid, or hurry through the dark, the slot will drop you, just as it has dropped every climber before you who forgot which spar was doing the holding. Keep the bridge. Test each press. Never rush the dark between the timbers.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chimney_ok",
+          "label": "Bridge the doubling steady, testing every press.",
+          "target": "chimney_pass"
+        },
+        {
+          "id": "c_chimney_f0",
+          "label": "Let go the brace and face-climb one timber.",
+          "target": "chimney_f0_c0"
+        },
+        {
+          "id": "c_chimney_f1",
+          "label": "Trust a loose fid wedged high in the slot.",
+          "target": "chimney_f1_c0"
+        },
+        {
+          "id": "c_chimney_f2",
+          "label": "Stem the doubling's full width in one stretch.",
+          "target": "chimney_f2_c0"
+        },
+        {
+          "id": "c_chimney_f3",
+          "label": "Wedge still in the slot to catch your breath.",
+          "target": "chimney_f3_c0"
+        },
+        {
+          "id": "c_chimney_f4",
+          "label": "Rush the bridge to get out of the dark sooner.",
+          "target": "chimney_f4_c0"
+        },
+        {
+          "id": "c_chimney_gamble",
+          "label": "Chance the flared gap near the top, direct.",
+          "target": "chimney_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "arrowslits_ap0",
+      "body": "From the crosstrees ledge, the path runs out along the footrope under the topsail. It is a thin line for your boots, with open sky all around. Topmen above watch for anything that shows against that pale sky. They throw iron toggles at whatever they see. Only one place is safe: the shadow under the sail's curved canvas. This dark stripe runs along the underside of the yard, out of their reach.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_ap0",
+          "label": "Go on.",
+          "target": "arrowslits_gate"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_pass",
+      "body": "You keep to the sail's shadow the whole way out along the footrope, pressed close under the yard's belly, and reach the far platform without a single toggle finding you. Behind you, the topmen stay quiet, watching a stretch of pale sky that never once gave them a target.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_pass",
+          "label": "Go on.",
+          "target": "murderholes_ap0"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f0_c0",
+      "body": "The open stretch of footrope beyond the sail's shadow is exactly the arc the topmen above have been watching since you set foot on the line. Crossing it quickly does not make you invisible. It only makes you a faster target.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f0_c0",
+          "label": "Go on.",
+          "target": "arrowslits_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f0_c1",
+      "body": "For one breath, the whole mast-trial comes down to this: the topmen's arms rise above the yard, and iron toggles leave their hands. They arc down through the open sky, right toward the one thing moving in it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f0_c1",
+          "label": "Go on.",
+          "target": "arrowslits_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f0_end",
+      "body": "Out in the open stretch of footrope, you are exactly the clear shot the topsail watch is posted to catch. The toggles find you before the far platform does, and the footrope keeps the climber who traded the sail's shadow for speed.",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "In the Open Sky"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_f1_c0",
+      "body": "Speed does nothing for you once you are already out in the open, past the sail's shadow, head down and running the footrope flat out. You are still in the light. You are simply in it faster, and the topmen above have thrown at faster targets than you before.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f1_c0",
+          "label": "Go on.",
+          "target": "arrowslits_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f1_c1",
+      "body": "The toggles find you well before the far platform does, thrown by hands that have had a whole mast-trial's practice at judging exactly this kind of desperate, headlong dash.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f1_c1",
+          "label": "Go on.",
+          "target": "arrowslits_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f1_end",
+      "body": "A head-down rush across the open footrope outruns nothing at all. It does not outrun the topmen's aim, the open sky, or the sail's shadow you left behind for no good reason. The gallery takes the climber who traded cover for simple haste.",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Down the Open Footrope"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_f2_c0",
+      "body": "You can't bait men who are already watching, already loaded, and already waiting for this kind of trick. Shouting up at the crosstrees to draw a wasted throw only tells the topmen exactly where you are. It also shows them just how rattled you have become.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f2_c0",
+          "label": "Go on.",
+          "target": "arrowslits_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f2_c1",
+      "body": "The answer that comes back is not one wasted toggle thrown in irritation. It is a proper volley, aimed and timed together. This is how men who have done this every mast-trial for years answer a taunt.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f2_c1",
+          "label": "Go on.",
+          "target": "arrowslits_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f2_end",
+      "body": "Drawing the topmen's attention on purpose draws their aim along with it, and the footrope answers a taunt the only way a crew of watching mates ever can \u2014 together, and all at once, and without much patience left over for cleverness.",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Marked on the Footrope"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_f3_c0",
+      "body": "Waiting is its own kind of exposure up here. The crosstrees watch is never unmanned during a mast-trial, no matter how long you crouch in whatever poor cover the yard's underside offers, and the topmen above have nowhere else to be but watching you not move.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f3_c0",
+          "label": "Go on.",
+          "target": "arrowslits_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f3_c1",
+      "body": "The candidates climbing up behind you don't know you're hiding, and they crowd into the same narrow cover. This pushes you out into the open sky, whether you meant to move or not.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f3_c1",
+          "label": "Go on.",
+          "target": "arrowslits_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f3_end",
+      "body": "The topsail watch simply outlasts any wait you can offer. Huddling under the yard only pins you in place. Soon the press of climbers behind pushes you into the open anyway. The crosstrees see you at the worst possible moment.",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Found Beneath the Yard"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_f4_c0",
+      "body": "Above the footrope, at the very top of the topsail rigging, is the yardarm the topmen themselves are standing on. Hauling up past the shadow line to go over the whole gallery does not take you above their reach. It delivers you straight into it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f4_c0",
+          "label": "Go on.",
+          "target": "arrowslits_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f4_c1",
+      "body": "The top of this climb turns out to be the worst place a candidate could arrive, because it is not above the danger at all \u2014 it is right inside it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_f4_c1",
+          "label": "Go on.",
+          "target": "arrowslits_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_f4_end",
+      "body": "You pull yourself up over the shadow line. It brings you straight onto the yardarm, where the topmen stand. The gallery's own keepers are waiting right where you come up, arms already reaching for you before your boots find the spar.",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Onto the Yardarm"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_fd_c0",
+      "body": "The open stretch of footrope belongs to the topmen's aim, just as the shroud gap belongs to the swinging yard. Breaking into it and running flat out does not change whose ground it is \u2014 it only changes how fast you cross it while it still isn't yours.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_fd_c0",
+          "label": "Go on.",
+          "target": "arrowslits_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_fd_c1",
+      "body": "A runner in the open, arms pumping, back exposed the whole length of the footrope, is the easiest mark a topsail watch could ever ask for.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_fd_c1",
+          "label": "Go on.",
+          "target": "arrowslits_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_fd_end",
+      "body": "Running flat out in the open gives the topmen a straight, steady line the whole length of your dash, and the footrope keeps whoever runs the length of their arc believing speed alone would be enough.",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Run Down on the Footrope"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_slip",
+      "body": "You watch the topmen's rhythm from the shadow's edge and go the instant a volley lands, low and fast along the footrope, an iron toggle splintering the rail an arm's length from your shoulder as you dive for the far platform. It is close. It is also enough. You are through.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_slip",
+          "label": "Go on.",
+          "target": "murderholes_ap0"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_cap",
+      "body": "You stop dead in the sail's shadow and raise both hands where the topmen can see them plainly. They hold their throw, and a mate comes out along the footrope to bring you in instead. The mast-trial ends here, on the topsail rigging, but you are still breathing when it does.",
+      "is_ending": true,
+      "ending": {
+        "id": "arrowslits_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Halted Beneath the Topsail"
+      },
+      "choices": []
+    },
+    {
+      "id": "arrowslits_seen",
+      "body": "A topman's arm draws back above the yard, tracking you as you drift out of the sail's shadow, and for one breath the whole footrope seems to narrow to that single raised fist. The hard way through is still open \u2014 a low, fast dash timed to the gap between one volley and the next. There is no way through that outruns them in the open. One breath, and the choice is entirely yours.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_seen_slip",
+          "label": "Dash low between one throw and the next.",
+          "target": "arrowslits_slip"
+        },
+        {
+          "id": "c_arrowslits_seen_fight",
+          "label": "Break into the open sky and run flat out.",
+          "target": "arrowslits_fd_c0"
+        },
+        {
+          "id": "c_arrowslits_seen_cap",
+          "label": "Show your hands and stand still to be taken.",
+          "target": "arrowslits_cap"
+        }
+      ]
+    },
+    {
+      "id": "arrowslits_gate",
+      "body": "You are on the topsail footrope. The topmen above loose their toggles at anything that shows in the open span of sky, but the shadow the sail's belly throws along the yard's underside sits entirely clear of where they can reach. Keep low in that shadow and move steady. Step into the open, or draw their eye on purpose, and the topsail watch answers at once, the way it is posted there to do. This footrope is not a place for a candidate who forgets which stripe of it is safe.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrowslits_ok",
+          "label": "Keep to the sail's shadow, low and steady.",
+          "target": "arrowslits_pass"
+        },
+        {
+          "id": "c_arrowslits_f0",
+          "label": "Cross the open sky quickly, out of the shadow.",
+          "target": "arrowslits_f0_c0"
+        },
+        {
+          "id": "c_arrowslits_f1",
+          "label": "Rush the whole footrope at once, head down.",
+          "target": "arrowslits_f1_c0"
+        },
+        {
+          "id": "c_arrowslits_f2",
+          "label": "Taunt the topmen to waste their throw.",
+          "target": "arrowslits_f2_c0"
+        },
+        {
+          "id": "c_arrowslits_f3",
+          "label": "Wait under the yard for the topmen to stand down.",
+          "target": "arrowslits_f3_c0"
+        },
+        {
+          "id": "c_arrowslits_f4",
+          "label": "Climb above the footrope onto the yardarm itself.",
+          "target": "arrowslits_f4_c0"
+        },
+        {
+          "id": "c_arrowslits_gamble",
+          "label": "Chance a fast, low dash between two throws.",
+          "target": "arrowslits_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "murderholes_ap0",
+      "body": "Past the topsail rigging, the route passes right beneath the fighting top. Its underside has a row of small holes, called scuttles. Through these holes, the crew stationed above can pour icy bilge-water or drop loose lengths of chain onto anyone passing carelessly below. A line of tarred rope-loops, worn pale by years of hands, marks the one safe path past the scuttles' reach.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_ap0",
+          "label": "Go on.",
+          "target": "murderholes_gate"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_pass",
+      "body": "You follow the rope-loops the whole length of the passage beneath the fighting top, one loop to the next, never quite under a scuttle for longer than a single step. Behind you, the crew above empties a bucket onto stone you left a breath ago. Ahead, the passage opens clear.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_pass",
+          "label": "Go on.",
+          "target": "oath_ap0"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f0_c0",
+      "body": "The straight middle of the passage beneath the fighting top is not a shortcut. It runs directly hole to hole, scuttle to scuttle, exactly the line the crew above built their whole overhead defence to cover, and you are running it at speed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f0_c0",
+          "label": "Go on.",
+          "target": "murderholes_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f0_c1",
+      "body": "For one breath, the whole mast-trial narrows to the row of dark scuttles overhead. You hear a sound now, unmistakable: something heavy is being dragged into position above one of them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f0_c1",
+          "label": "Go on.",
+          "target": "murderholes_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f0_end",
+      "body": "The straight middle is exactly the line the fighting top's scuttles are built to command. The passage catches any climber who ignores the rope-loops to find a faster way through. Chain and icy water find you together, at the worst possible scuttle.",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Beneath the Scuttles"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_f1_c0",
+      "body": "You stop to catch your breath right beneath a scuttle, the worst place along the whole passage. It sits right under the one opening in the fighting top's floor, and the crew above is standing over it right now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f1_c0",
+          "label": "Go on.",
+          "target": "murderholes_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f1_c1",
+      "body": "The pale light through the scuttle above you dims for an instant as something moves into position, blocking it. A heartbeat later, whatever it is comes down.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f1_c1",
+          "label": "Go on.",
+          "target": "murderholes_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f1_end",
+      "body": "Hiding under a scuttle puts you right below whatever the crew in the fighting top decides to drop. The passage always answers from above, and chain, water, or worse can fall on you with no warning at all.",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Under the Scuttle"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_f2_c0",
+      "body": "You feel your way along the wall instead of trusting the rope-loops, and this carries you, unseen, right under three scuttles in a row. That stretch is exactly what the safe line was made to help you avoid \u2014 so by playing it safe, you have just left that safe line behind.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f2_c0",
+          "label": "Go on.",
+          "target": "murderholes_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f2_c1",
+      "body": "The rope-loops were the only sight you had in this dim passage, and you have traded them away for a slower, blinder path. The dark keeps its scuttles exactly where they've always been.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f2_c1",
+          "label": "Go on.",
+          "target": "murderholes_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f2_end",
+      "body": "Groping along the wall in the dark carries you under scuttles you never see coming, one after another. The load falls between one careful step and the next, and the crew above never even needs to aim.",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Blind Beneath the Top"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_f3_c0",
+      "body": "A rope-loop is only safe while you are still moving through it, one to the next, never lingering. Pausing on one to wait out a drop treats it like solid ground rather than the single stepping-stone it is meant to be.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f3_c0",
+          "label": "Go on.",
+          "target": "murderholes_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f3_c1",
+      "body": "The crew stationed above the fighting top has all the buckets and all the chain and all the time in the world. They can wait out your pause far longer than your arms can hold your position.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f3_c1",
+          "label": "Go on.",
+          "target": "murderholes_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f3_end",
+      "body": "The scuttles are worked in relays that never actually stop for long. Halting even on a true rope-loop only gives the next relay time to range you properly, and the fighting top's crew above does not waste a second chance.",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Stalled on the Rope-Loop"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_f4_c0",
+      "body": "A scuttle needs no aim at all. It just needs a body below it when the bucket tips. If you charge straight through the passage, hoping to beat the crew's reaction, you will only scatter off the rope-loops. You will end up right under whichever scuttle is waiting.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f4_c0",
+          "label": "Go on.",
+          "target": "murderholes_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f4_c1",
+      "body": "The water is already falling. Your legs have already committed to the charge. There is no outrunning something dropped straight down from above.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_f4_c1",
+          "label": "Go on.",
+          "target": "murderholes_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_f4_end",
+      "body": "The charge scatters you clean off the rope-loops and into the reach of a scuttle you never even saw open above you. The passage beneath the fighting top keeps the climber who traded its one safe line for raw speed.",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Rope-Loops"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_fd_c0",
+      "body": "Nothing outruns a drop that falls straight down from directly overhead, not at a sprint, not at any speed a pair of legs can manage. Running the whole passage's exposed middle at once is simply choosing to test that fact yourself.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_fd_c0",
+          "label": "Go on.",
+          "target": "murderholes_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_fd_c1",
+      "body": "The bucket falls faster than your legs can carry you clear of it, the same as it always would, no matter how fast the legs happen to be.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_fd_c1",
+          "label": "Go on.",
+          "target": "murderholes_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_fd_end",
+      "body": "Sprinting the middle of the passage means facing every scuttle at once, instead of one loop at a time. The crew in the fighting top catches any climber who dares to run its full length in one reckless dash.",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Down the Open Middle"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_slip",
+      "body": "You read the shift of pale light at each scuttle's mouth and weave the rope-loops at a dead run, one loop to the next without a wasted step, icy bilge-water hissing down onto the planks a stride behind your heels the whole way through. It is close. It works. You come out the far side soaked to the ankle and entirely clear.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_slip",
+          "label": "Go on.",
+          "target": "oath_ap0"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_cap",
+      "body": "You plant your boots on a true rope-loop and call your surrender up through the nearest scuttle. The crew above holds their bucket and hauls you up and out instead, the mast-trial over for you but your clothes, at least, dry. You go up through the fighting top's own floor rather than down through the passage's floor.",
+      "is_ending": true,
+      "ending": {
+        "id": "murderholes_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Yielded Beneath the Top"
+      },
+      "choices": []
+    },
+    {
+      "id": "murderholes_seen",
+      "body": "Something shifts in the pale light at a scuttle overhead, the crew above adjusting their aim to your drift off the rope-loops, and for one breath the whole passage seems to hold its water and its chain both, waiting. The hard way through is still there \u2014 weaving the loops fast, trusting your read of the light instead of a straight run. One breath, and the fighting top's crew is not going to wait longer than that.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_seen_slip",
+          "label": "Weave the loops fast, reading the shifting light.",
+          "target": "murderholes_slip"
+        },
+        {
+          "id": "c_murderholes_seen_fight",
+          "label": "Sprint the open middle and outrun the drops.",
+          "target": "murderholes_fd_c0"
+        },
+        {
+          "id": "c_murderholes_seen_cap",
+          "label": "Halt on a loop and call up your surrender.",
+          "target": "murderholes_cap"
+        }
+      ]
+    },
+    {
+      "id": "murderholes_gate",
+      "body": "You are beneath the fighting top. The tarred rope-loops set into the passage trace the one line its scuttles cannot properly reach, and stepping loop to loop keeps every bucket and every length of chain falling wide of you. Stray off the line, or dawdle beneath a scuttle, or push forward blind without the loops to guide you, and the crew above empties their aim exactly where you happen to be standing. Follow the loops. Never linger beneath an open scuttle. This passage forgives a slow hand. It does not forgive a careless one.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_murderholes_ok",
+          "label": "Step loop to loop, clear of every scuttle.",
+          "target": "murderholes_pass"
+        },
+        {
+          "id": "c_murderholes_f0",
+          "label": "Run the passage's open middle, straight through.",
+          "target": "murderholes_f0_c0"
+        },
+        {
+          "id": "c_murderholes_f1",
+          "label": "Shelter directly beneath a scuttle to think.",
+          "target": "murderholes_f1_c0"
+        },
+        {
+          "id": "c_murderholes_f2",
+          "label": "Feel your way forward blind along the wall.",
+          "target": "murderholes_f2_c0"
+        },
+        {
+          "id": "c_murderholes_f3",
+          "label": "Pause on a rope-loop to wait out a drop.",
+          "target": "murderholes_f3_c0"
+        },
+        {
+          "id": "c_murderholes_f4",
+          "label": "Charge through fast, before the crew can aim.",
+          "target": "murderholes_f4_c0"
+        },
+        {
+          "id": "c_murderholes_gamble",
+          "label": "Chance a fast weave between two scuttles.",
+          "target": "murderholes_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "oath_ap0",
+      "body": "Beyond the fighting top, the passage opens onto the crosstrees, a wide platform where the route to the topmast narrows to a single way through. Here, the mast-trial tests something no rung or rope can measure: not a sworn oath, but the deckhand's Code. Today, that Code is tested by a fellow candidate who lies hurt, right across your only path.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_ap0",
+          "label": "Go on.",
+          "target": "oath_gate"
+        }
+      ]
+    },
+    {
+      "id": "oath_pass",
+      "body": "You get the hurt candidate lashed secure to the mast collar, out of the wind, before you so much as look at the stair beyond them. Only then do you climb on. A mate watching from the topmast rigging marks it plainly in a leather book somewhere far below, and you carry the Code kept all the way up the mast with you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_pass",
+          "label": "Go on.",
+          "target": "spiral_ap0"
+        }
+      ]
+    },
+    {
+      "id": "oath_degrade",
+      "body": "You step around the hurt candidate and keep climbing. No mate stops you outright \u2014 there is no rule against it, only the Code, and the Code is not the same thing as a rule. You carry the oath unkept up the rest of the mast, unmarked and unpunished, and somehow that is worse than either.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_degrade",
+          "label": "Go on.",
+          "target": "spiral_ap0"
+        }
+      ]
+    },
+    {
+      "id": "oath_f0_c0",
+      "body": "Of every stage on this mast, the crosstrees are the one the mates watch most closely. That is because the Code is the one thing strength alone cannot climb around. You have just put your weight on a hurt candidate's shoulder to reach the stair above them.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f0_c0",
+          "label": "Go on.",
+          "target": "oath_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "oath_f0_c1",
+      "body": "The act is judged in a single breath. It happens quietly, without argument. That is how the crosstrees judges everything that happens on it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f0_c1",
+          "label": "Go on.",
+          "target": "oath_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "oath_f0_end",
+      "body": "Standing on a fallen candidate to reach the stair above is the one thing this mast-trial will not allow, whatever else it forgives. The mates watching from the crosstrees end it there, on the platform, before you take another step up.",
+      "is_ending": true,
+      "ending": {
+        "id": "oath_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "On a Fallen Candidate"
+      },
+      "choices": []
+    },
+    {
+      "id": "oath_f1_c0",
+      "body": "The crosstrees' open edge drops the whole height of the mast below, past the fighting top, past the swinging yard, all the way to the deck. You have just shoved a waiting rival candidate toward it for the sake of a clearer path.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f1_c0",
+          "label": "Go on.",
+          "target": "oath_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "oath_f1_c1",
+      "body": "There is a single moment where the shove could still be unchosen, hands pulled back, weight redirected. It passes. It is done, and the platform does not give either of you the moment back.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f1_c1",
+          "label": "Go on.",
+          "target": "oath_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "oath_f1_end",
+      "body": "A shove for advantage answers for two lives at once, not one, and the crosstrees' mates put you off the platform right after the candidate you sent over its edge. The mast-trial has no name for what you just did \u2014 it has only an ending.",
+      "is_ending": true,
+      "ending": {
+        "id": "oath_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Crosstrees"
+      },
+      "choices": []
+    },
+    {
+      "id": "oath_f2_c0",
+      "body": "Standing around at the crosstrees while someone else deals with the hurt candidate is its own kind of failure. No one needs to fall for that to be true. The mates in the rigging above are counting the seconds. The count does not stop for a candidate who hopes someone else will act first.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f2_c0",
+          "label": "Go on.",
+          "target": "oath_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "oath_f2_c1",
+      "body": "The moment to help passes while you stand back, hoping it will sort itself out, and the platform simply lets it slip away. It lets every unclaimed chance go by, without a word.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_f2_c1",
+          "label": "Go on.",
+          "target": "oath_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "oath_f2_end",
+      "body": "The crosstrees is a test that a wait fails just as surely as a wrong move, only more slowly. The mates above strike the idle candidate from the mast-trial the instant their count runs out, without further ceremony.",
+      "is_ending": true,
+      "ending": {
+        "id": "oath_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Struck for Waiting"
+      },
+      "choices": []
+    },
+    {
+      "id": "oath_fd_c0",
+      "body": "The Code is not a rule you can argue your way out of on a technicality, not on this mast, not to the mates watching from the topmast rigging above. Insisting it doesn't bind you here is its own kind of answer, and not the one you meant to give.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_fd_c0",
+          "label": "Go on.",
+          "target": "oath_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "oath_fd_c1",
+      "body": "The mates have no patience left over for that particular argument, not at this height, not with a hurt candidate still lying across the path. Their answer comes quick, and it is final.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_fd_c1",
+          "label": "Go on.",
+          "target": "oath_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "oath_fd_end",
+      "body": "Disputing the Code at the very platform built to test it marks you as a hand unfit for the rest of this mast. The crosstrees' mates take you off the rigging for it, the same as they would for any other failed pitch.",
+      "is_ending": true,
+      "ending": {
+        "id": "oath_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Argued Off the Crosstrees"
+      },
+      "choices": []
+    },
+    {
+      "id": "oath_slip",
+      "body": "You edge around the crosstrees along a frayed loop of old rope hanging past the platform's rail. This lets you avoid both the hurt candidate and the whole test. You rejoin the stair beyond. The Code is neither kept nor broken. You have only sidestepped it, the way a hand sidesteps a question it would rather not answer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_slip",
+          "label": "Go on.",
+          "target": "spiral_ap0"
+        }
+      ]
+    },
+    {
+      "id": "oath_cap",
+      "body": "You sit down beside the hurt candidate instead of climbing past them, and simply let the mast-trial go. Mates come up through the rigging and bring you both down together, since the climb has been given up. Your name, at least, stays entirely your own.",
+      "is_ending": true,
+      "ending": {
+        "id": "oath_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Stood Down at the Crosstrees"
+      },
+      "choices": []
+    },
+    {
+      "id": "oath_seen",
+      "body": "A mate's shape moves in the rigging above the crosstrees, watching how long you linger over the hurt candidate blocking your way, and for one breath the whole platform seems to wait on your answer. There is a quiet way around this that keeps the mast-trial alive without quite facing the Code, but there is no way through it that argues past the mates watching. One breath. Choose.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_seen_slip",
+          "label": "Skirt the stay-loop around the crosstrees unseen.",
+          "target": "oath_slip"
+        },
+        {
+          "id": "c_oath_seen_fight",
+          "label": "Argue the Code does not bind you here.",
+          "target": "oath_fd_c0"
+        },
+        {
+          "id": "c_oath_seen_cap",
+          "label": "Sit down beside the hurt candidate and give up the climb.",
+          "target": "oath_cap"
+        }
+      ]
+    },
+    {
+      "id": "oath_gate",
+      "body": "You are at the crosstrees. The test here is not a spoken oath but the deckhand's Code, kept rather than recited: a fellow candidate lies hurt directly across your only way through, and the honourable hold is to see them safe before you climb another rung. Step over them, use them for a foothold, or shove a rival aside for a clearer path, and you climb on regardless \u2014 but dishonoured, and the mates above mark it. Keep the Code and bear them clear, or take the quicker road and carry its cost with you the rest of the way up.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_oath_ok",
+          "label": "Get the hurt candidate lashed safe before you climb on.",
+          "target": "oath_pass",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "standing",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_oath_exp",
+          "label": "Step over the hurt candidate and press on alone.",
+          "target": "oath_degrade"
+        },
+        {
+          "id": "c_oath_f0",
+          "label": "Use the hurt candidate's shoulder as a foothold.",
+          "target": "oath_f0_c0"
+        },
+        {
+          "id": "c_oath_f1",
+          "label": "Shove a waiting rival toward the crosstrees' open edge.",
+          "target": "oath_f1_c0"
+        },
+        {
+          "id": "c_oath_f2",
+          "label": "Wait for another candidate to clear the way first.",
+          "target": "oath_f2_c0"
+        },
+        {
+          "id": "c_oath_gamble",
+          "label": "Chance the frayed stay-loop skirting the whole test.",
+          "target": "oath_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "spiral_ap0",
+      "body": "Above the crosstrees, the way up the topmast is a spiral of rope ladders wound tight around the mast. On the inside, there is nothing but open air \u2014 a long drop straight down through the crosstrees to the deck. The foot-rungs are worn smooth and icy from the night. There is no rail anywhere on the whole climb. You have only the mast at your shoulder, and the fall on the other side of it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_ap0",
+          "label": "Go on.",
+          "target": "spiral_gate"
+        }
+      ]
+    },
+    {
+      "id": "spiral_pass",
+      "body": "You wind up the outer rungs of the spiral, spar hard against your shoulder the whole climb, the long drop behind you and never once beneath you. You come out at the head of the topmast ratlines with the hollow fall below you finished, and the truck, somewhere above the last of the cloud, close now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_pass",
+          "label": "Go on.",
+          "target": "sheer_ap0"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f0_c0",
+      "body": "The inner rungs of the spiral hug the spar tighter, making a shorter route, but every climber who tried this shortcut before you has worn them down to almost nothing. Below them, the drop runs all the way to the crosstrees, and past that, down to the deck.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f0_c0",
+          "label": "Go on.",
+          "target": "spiral_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f0_c1",
+      "body": "For one breath, the whole trial comes down to this: the long open fall on the inside of the ratlines, and the worn rung under your boot. It gives way now, just as it gave way for every candidate who trusted it before you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f0_c1",
+          "label": "Go on.",
+          "target": "spiral_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f0_end",
+      "body": "The worn inner rung gives way underfoot, right above the open drop. The spiral ratlines shed the climber who cut their short side for speed \u2014 just as they have shed every hand that ever tried it. The fall runs clean through the crosstrees, and does not stop there.",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Into the Hollow Drop"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_f1_c0",
+      "body": "Running the spiral's iced rungs, however urgent the climb feels, keeps no real footing at all. Ice makes every round rung the same treacherous shape, and speed only means you find that out with less warning than you would have walking.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f1_c0",
+          "label": "Go on.",
+          "target": "spiral_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f1_c1",
+      "body": "Your boot slips out from under you on the glassy ice, and there is nothing beyond the spar's edge to catch you. Only the open hollow on the inside of the spiral waits \u2014 right where it always waits.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f1_c1",
+          "label": "Go on.",
+          "target": "spiral_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f1_end",
+      "body": "The iced rungs take your feet out from under you, just as they take every hurried candidate's. The spiral ratlines drop the climber who tries to rush the turns instead of trusting them one at a time. The spar stays at your shoulder the whole time.",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Iced Rungs"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_f2_c0",
+      "body": "Leaning out over the spiral's open inboard side to look up at how much topmast still remains gives the long drop exactly what it is waiting for: your weight, however briefly, tipped past the spar that was holding it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f2_c0",
+          "label": "Go on.",
+          "target": "spiral_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f2_c1",
+      "body": "Your balance tips past the point where the spar can pull it back. It happens in one hard beat. Your shoulder should be pressed against the timber. Instead, it reaches for nothing at all.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f2_c1",
+          "label": "Go on.",
+          "target": "spiral_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f2_end",
+      "body": "Leaning out to check your progress sends your weight the one way it must never go on the spiral ratlines, and the long open drop through the crosstrees takes you. It is the same fall that has always been waiting on the inside.",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Over the Open Hollow"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_f3_c0",
+      "body": "There is no seat on the spiral's iced rungs above a drop with no rail on either side of it. Sitting to rest your burning legs does not rest anything. It only holds you still long enough for the ice and the cold to finish the work your climbing hadn't.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f3_c0",
+          "label": "Go on.",
+          "target": "spiral_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f3_c1",
+      "body": "The strength you meant to save by pausing leaks straight out of your stalled legs on the cold spiral turn, exactly the strength you were trying to protect by stopping in the first place.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f3_c1",
+          "label": "Go on.",
+          "target": "spiral_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f3_end",
+      "body": "Resting on the unrailed spiral only stiffens you above the open hollow, and a stiff climber on iced rungs is a fall already halfway decided. The spiral ratlines do not need to do anything further. The ice and the stillness finish it.",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Stalled on the Spiral"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_f4_c0",
+      "body": "You jump two rungs at a time up the spiral, landing blind each time, your boots reaching for footing you never looked at. Tonight, the ice has already beaten climbers slower and more careful than you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f4_c0",
+          "label": "Go on.",
+          "target": "spiral_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f4_c1",
+      "body": "Your leading foot finds the worn inner lip of the spiral, the exact rung you meant to avoid, and past it there is nothing at all but the long open drop.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_f4_c1",
+          "label": "Go on.",
+          "target": "spiral_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_f4_end",
+      "body": "The vault lands you right on the spiral's worn inner edge, the very rung you were trying to skip past. The ratlines throw you off, straight into the open hollow beside it\u2014which is what happens to anyone who stops watching their own feet.",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Vaulted into the Hollow"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_fd_c0",
+      "body": "Even the outer rungs of the spiral, wider and better set than the inner ones, will not hold a flat-out run. They are still iced, still unrailed, and running them trades whatever caution kept you alive this far for pure speed and nothing to catch a slip.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_fd_c0",
+          "label": "Go on.",
+          "target": "spiral_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "spiral_fd_c1",
+      "body": "The outer rungs are wide, but they are just as glazed with ice as every other rung on this spiral. There is still no rail anywhere along the whole climb to catch a running foot that finally slips.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_fd_c1",
+          "label": "Go on.",
+          "target": "spiral_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "spiral_fd_end",
+      "body": "Even along the good outer rungs, a flat run finds one iced tread too many somewhere near the top. The spiral ratlines catch the climber who ran their whole height instead of trusting them one careful rung at a time.",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Run Off the Spiral"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_slip",
+      "body": "You scramble up the worn inner turns on legs that have almost nothing left in them, catching the spar twice with a desperate hand over the open hollow. Your boots slip, but they find the next rung anyway. At last the head of the spiral takes you in, shaking, spent, and entirely intact.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_slip",
+          "label": "Go on.",
+          "target": "sheer_ap0"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "dec",
+          "var": "grip",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "spiral_cap",
+      "body": "You freeze against the spar, both arms locked around it, and a mate comes down the spiral on a line to bring you off. The mast-trial ends here, partway up the topmast, but you come down its whole iced height still holding on to something, even if it's only the mate's rope.",
+      "is_ending": true,
+      "ending": {
+        "id": "spiral_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Brought Down the Spiral"
+      },
+      "choices": []
+    },
+    {
+      "id": "spiral_seen",
+      "body": "A mate's lantern swings your way from somewhere above the spiral, catching you off the outer rungs and drifting toward the worn inner edge. For one breath, the whole topmast seems to hold its ice and wait. The hard way through is still climbable: a desperate scramble up the inner turns, on legs that have already given most of what they had. You get one breath, and the spiral will not slow down to give you any longer than that.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_seen_slip",
+          "label": "Scramble the inner rungs on failing legs.",
+          "target": "spiral_slip"
+        },
+        {
+          "id": "c_spiral_seen_fight",
+          "label": "Run the outer rungs flat out for the top.",
+          "target": "spiral_fd_c0"
+        },
+        {
+          "id": "c_spiral_seen_cap",
+          "label": "Freeze against the spar and wait to be brought down.",
+          "target": "spiral_cap"
+        }
+      ]
+    },
+    {
+      "id": "spiral_gate",
+      "body": "You are on the spiral ratlines. Take the outer rungs, wider and better set, spar held close at your shoulder, one steady hand always on the wood. Drift to the worn inner edge, or hurry the iced turns, or lean out over the open hollow to see how far you've come, and the spiral sheds you into the drop the same as it has shed every hand that trusted the wrong side of it. Hold the outer edge. Keep a hand to the spar. Never trust the inner lip, however tempting the shortcut looks.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_spiral_ok",
+          "label": "Climb the outer rungs, a hand always on the spar.",
+          "target": "spiral_pass"
+        },
+        {
+          "id": "c_spiral_f0",
+          "label": "Cut the inner rungs for a shorter, faster route.",
+          "target": "spiral_f0_c0"
+        },
+        {
+          "id": "c_spiral_f1",
+          "label": "Take the iced turns at a run.",
+          "target": "spiral_f1_c0"
+        },
+        {
+          "id": "c_spiral_f2",
+          "label": "Lean out over the open hollow to check your progress.",
+          "target": "spiral_f2_c0"
+        },
+        {
+          "id": "c_spiral_f3",
+          "label": "Sit on a rung to rest your burning legs.",
+          "target": "spiral_f3_c0"
+        },
+        {
+          "id": "c_spiral_f4",
+          "label": "Vault two rungs at a time to gain height fast.",
+          "target": "spiral_f4_c0"
+        },
+        {
+          "id": "c_spiral_gamble",
+          "label": "Chance a fast scramble up the inner rungs.",
+          "target": "spiral_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "sheer_ap0",
+      "body": "Above the head of the spiral, the royal mast rises bare into the grey \u2014 no ratlines here, no rungs, just a length of iced, naked spar climbed hand over hand on nothing but a hard sequence of old tar-lumps and rope-seizings, spaced too far apart for comfort. It asks for everything your arms have kept back for it. Most hands have nothing left to give by now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_ap0",
+          "label": "Go on.",
+          "target": "sheer_gate"
+        }
+      ]
+    },
+    {
+      "id": "sheer_pass",
+      "body": "You reach the last tar-lump with the very end of your reserve and haul yourself over onto the high ledge below the crow's nest, arms shaking, lungs raw in the cold. The royal mast's bare stretch is beneath you now. The truck, somewhere above the last of the cloud, is almost within reach.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_pass",
+          "label": "Go on.",
+          "target": "highgate_ap0"
+        }
+      ]
+    },
+    {
+      "id": "sheer_gf_c0",
+      "body": "This stretch of bare mast needs real strength. But it's the same strength you already spent scrabbling through the swinging yard, the mast doubling, and the iced spiral below. You reach the royal mast's hardest point with less left in your arms than the climb has ever forgiven.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_gf_c0",
+          "label": "Go on.",
+          "target": "sheer_gf_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_gf_c1",
+      "body": "Your arms give out at the exact reach that mattered most, with nothing held in reserve to save the moment. You spent your strength several pitches ago, without quite noticing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_gf_c1",
+          "label": "Go on.",
+          "target": "sheer_gf_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_gf_end",
+      "body": "Spent from every pitch below, your arms fail on the royal mast's hardest reach, fingers opening on ice-glazed wood that offers nothing back. The bare spar keeps the climber who arrived at it with nothing left to give, the same as it keeps everyone who spends their strength too early.",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_gf_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Spent on the Royal Mast"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_resolve",
+      "body": "You go at the royal mast arm over arm, tar-lump to seizing, spending everything you kept back through every pitch below into this one bare, iced length of spar. There is no bluffing this stretch and no shortcut through it \u2014 only what your arms actually have left after the shrouds, the doubling, the spiral, all of it. The last reach is close now. Whether it comes off is not really a choice anymore. It is an answer your body already gave, pitches ago.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_hold",
+          "label": "Your arms hold; you haul over the top.",
+          "target": "sheer_pass",
+          "condition": {
+            ">=": [
+              {
+                "var": "grip"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_sheer_spent",
+          "label": "Your arms are spent; the last reach fails.",
+          "target": "sheer_gf_c0",
+          "condition": {
+            "<=": [
+              {
+                "var": "grip"
+              },
+              1
+            ]
+          }
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "sheer_f0_c0",
+      "body": "Off the sequence of tar-lumps and seizings, the royal mast offers nothing at all \u2014 no crack, no roughness, nothing but smooth iced wood. You fling for a hold higher up anyway, betting your remaining strength on wood that has never once helped anybody.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f0_c0",
+          "label": "Go on.",
+          "target": "sheer_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f0_c1",
+      "body": "Your hand closes on cold air where you hoped to find a hold. By the time you understand this, the spar is already sliding away from your other palm too.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f0_c1",
+          "label": "Go on.",
+          "target": "sheer_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f0_end",
+      "body": "The fling finds only blank, iced spar, nothing to arrest it, and the royal mast keeps the climber who left the one sequence of holds that could have carried them across it. There was never a hold where you reached for one.",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the True Sequence"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_f1_c0",
+      "body": "There is no resting on bare, overhanging spar. Hanging on locked arms to gather your nerve mid-pitch spends the very strength climbing would spend anyway, only faster, and with nothing gained for the spending of it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f1_c0",
+          "label": "Go on.",
+          "target": "sheer_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f1_c1",
+      "body": "The last of your strength drains from your loaded arms in about the time it takes to breathe twice, and you hang there on wood that was never meant to be hung from.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f1_c1",
+          "label": "Go on.",
+          "target": "sheer_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f1_end",
+      "body": "There is no resting on the royal mast's bare reach. Holding still to gather yourself only drains arms that were already nearly spent. The overhanging spar quietly takes whatever strength is left, without any drama.",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Hung Out on the Bare Spar"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_f2_c0",
+      "body": "An iron mast-hoop bands the royal mast partway up, and it looks, for one hopeful moment, like something solid to swing from. It was never fully driven home. Someone left it loose on this spar long before this mast-trial began, and you are about to trust it with your whole weight.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f2_c0",
+          "label": "Go on.",
+          "target": "sheer_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f2_c1",
+      "body": "The hoop pulls away from the spar in the very hand that trusts it. It slides free the instant your weight actually settles onto it, just like loose iron always does.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f2_c1",
+          "label": "Go on.",
+          "target": "sheer_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f2_end",
+      "body": "The loose hoop pulls free of the royal mast the instant you put your full weight on it, and the bare spar always beats the climber who swings on iron that was never set right. It beats anyone who trusts something that only looks solid.",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "On a Loose Mast-Hoop"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_f3_c0",
+      "body": "You cannot pass the royal mast's bare reach by brute force, no matter how much strength you think you have left. Charging straight up it, forcing past holds that were never really there, burns through what little strength remains in your arms. It burns far faster than a careful, steady climb would.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f3_c0",
+          "label": "Go on.",
+          "target": "sheer_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f3_c1",
+      "body": "Your strength runs out right where the spar leans furthest away from you, at the hardest reach, and there is nothing left in your arms to answer with.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_f3_c1",
+          "label": "Go on.",
+          "target": "sheer_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_f3_end",
+      "body": "Forcing your way straight up the royal mast burns through your arms in one furious rush. It leaves you hanging on nothing at all: no reserve, no hold, no answer. The bare spar always beats the climber who tries to muscle a reach that only ever rewarded patience.",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Forced at the Bare Spar"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_fd_c0",
+      "body": "A throw for the crow's nest ledge above means leaving the royal mast's spar entirely for one committed instant, trusting your own reach to close a gap the tar-lumps were never spaced to close in a single move.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_fd_c0",
+          "label": "Go on.",
+          "target": "sheer_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "sheer_fd_c1",
+      "body": "For one full beat there is no hold at all beneath your reaching hand, and no real hope of finding one, only the throw itself, already committed, already failing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_fd_c1",
+          "label": "Go on.",
+          "target": "sheer_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "sheer_fd_end",
+      "body": "The throw catches nothing but cold air off the royal mast's bare reach. The climber staked everything on one desperate lunge, though until that moment a careful sequence had actually been working. Now the pitch keeps the climber who threw it all away.",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Thrown Off the Royal Mast"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_slip",
+      "body": "You swing off to an old lashing groove beside the royal mast, where a frayed signal halyard is bolted fast to the spar. You fight your way up it on nerve alone, since your arms are long past useful, and you jam a forearm into the groove with a gasp. Then you haul yourself over the lip onto the high ledge below the crow's nest, with nothing left to give it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_slip",
+          "label": "Go on.",
+          "target": "highgate_ap0"
+        }
+      ]
+    },
+    {
+      "id": "sheer_cap",
+      "body": "You down-climb to the spiral's head and call the royal mast beyond you, plainly, without shame. A mate comes out along a line to bring you the rest of the way down. The truck goes unreached this year, but you climb down the whole iced height of this mast with your life entirely your own.",
+      "is_ending": true,
+      "ending": {
+        "id": "sheer_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Turned Back at the Royal Mast"
+      },
+      "choices": []
+    },
+    {
+      "id": "sheer_seen",
+      "body": "A mate's shape appears at the crow's nest rail above, watching your arms shake on the royal mast's bare reach, and for one breath the whole spar seems to hang between what strength you have left and what the climb still wants from you. There is still a hard way across \u2014 the old lashing groove beside the spar, fought on nerve where your arms have nothing left to offer. One breath, and the mast does not care which you choose, only that you choose now.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_seen_slip",
+          "label": "Fight up the lashing groove on nerve alone.",
+          "target": "sheer_slip"
+        },
+        {
+          "id": "c_sheer_seen_fight",
+          "label": "Throw for the ledge above and commit everything.",
+          "target": "sheer_fd_c0"
+        },
+        {
+          "id": "c_sheer_seen_cap",
+          "label": "Down-climb and call the royal mast beyond you.",
+          "target": "sheer_cap"
+        }
+      ]
+    },
+    {
+      "id": "sheer_gate",
+      "body": "You are at the royal mast. There is one sequence of tar-lumps and old seizings spanning its bare length, and crossing it takes real reserve in the arms \u2014 reserve that a candidate who scrabbled and gambled through the pitches below has very likely already spent. Climb the sequence if you still have the strength for it. Force it any other way, fling for holds that aren't there, hang to rest, batter straight up, and the bare spar keeps you the way it keeps everyone who arrives here already empty.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sheer_ok",
+          "label": "Climb the sequence of tar-lumps, arm over arm.",
+          "target": "sheer_resolve"
+        },
+        {
+          "id": "c_sheer_f0",
+          "label": "Fling for a far hold off the true sequence.",
+          "target": "sheer_f0_c0"
+        },
+        {
+          "id": "c_sheer_f1",
+          "label": "Hang and rest on locked arms, mid-pitch.",
+          "target": "sheer_f1_c0"
+        },
+        {
+          "id": "c_sheer_f2",
+          "label": "Swing on a loose mast-hoop to shortcut the crux.",
+          "target": "sheer_f2_c0"
+        },
+        {
+          "id": "c_sheer_f3",
+          "label": "Batter your way straight up the bare spar.",
+          "target": "sheer_f3_c0"
+        },
+        {
+          "id": "c_sheer_gamble",
+          "label": "Chance the old lashing groove instead.",
+          "target": "sheer_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "highgate_ap0",
+      "body": "The high ledge below the crow's nest ends at its hatch \u2014 an iron-ringed trapdoor set flush into the platform's floor, barring the last approach to the royal yard above. It opens to the brass grommet from the second mate's stand, pressed home into its lock, and to nothing else short of climbing the bare, holdless spar around the whole platform.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_ap0",
+          "label": "Go on.",
+          "target": "highgate_gate"
+        }
+      ]
+    },
+    {
+      "id": "highgate_pass_sealed",
+      "body": "The grommet fits the hatch's lock exactly, and the trapdoor swings open on old, well-oiled hinges. You pass through clean, the second mate's report carried with you the whole way up, and the last climb to the royal yard opens above you, one final stretch of mast between you and the truck.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_pass_sealed",
+          "label": "Go on.",
+          "target": "beacon_ap0"
+        }
+      ]
+    },
+    {
+      "id": "highgate_pass_forced",
+      "body": "With no grommet to show, you find the lubber's hole instead \u2014 a narrow gap cut low beside the trapdoor for exactly this circumstance, meant for green hands and shameful of it. You force your shoulders through and drag yourself into the last approach, scraped and unsealed, marked by the forcing of it, but through all the same.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_pass_forced",
+          "label": "Go on.",
+          "target": "beacon_ap0"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f0_c0",
+      "body": "The bare stretch of mast around the crow's nest hatch offers nothing to climb at all, no rungs, no seizings, nothing but smooth iced spar rising past the platform's rim. You are trying it anyway, rather than the hatch or the lubber's hole either one.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f0_c0",
+          "label": "Go on.",
+          "target": "highgate_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f0_c1",
+      "body": "For one breath, the whole mast-trial narrows down to open air on every side of you, with no spar close enough to grip and no rung within reach. Only the long fall waits below the platform.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f0_c1",
+          "label": "Go on.",
+          "target": "highgate_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f0_end",
+      "body": "The bare mast around the hatch offers nothing to a bare hand, and it drops the climber who scorned both the grommet and the lubber's hole in favour of a shortcut that never existed. The fall runs the whole height of the mast below.",
+      "is_ending": true,
+      "ending": {
+        "id": "highgate_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Around the Crow's Nest Hatch"
+      },
+      "choices": []
+    },
+    {
+      "id": "highgate_f1_c0",
+      "body": "The crow's nest hatch is old iron, set fast into the platform's own timbers. It was built to survive exactly this kind of angry attack. Battering it with whatever strength you have left wastes effort the climb still needs. This door has never once been broken this way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f1_c0",
+          "label": "Go on.",
+          "target": "highgate_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f1_c1",
+      "body": "The effort spends the very last of your strength. The door simply will not move, no matter how hard or how many times you throw your weight against it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f1_c1",
+          "label": "Go on.",
+          "target": "highgate_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f1_end",
+      "body": "Battering the sealed hatch wins you nothing. It only gets the attention of whoever is stationed at the royal yard above, and the crow's nest crew hears the racket. They answer it the way any watch would answer a break-in attempt this close to the top.",
+      "is_ending": true,
+      "ending": {
+        "id": "highgate_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Broken on the Hatch"
+      },
+      "choices": []
+    },
+    {
+      "id": "highgate_f2_c0",
+      "body": "No one is coming up behind you to open the hatch for a candidate who simply waits. This close to the truck, the mast-trial thins out \u2014 most who reach this ledge have already failed elsewhere \u2014 and the exposed platform does not forgive standing still.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f2_c0",
+          "label": "Go on.",
+          "target": "highgate_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f2_c1",
+      "body": "The wind blows hard off the royal yard above you, and as you wait, the cold creeps into every gap in your grip. You are still just standing there, hoping the hatch will open on its own.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_f2_c1",
+          "label": "Go on.",
+          "target": "highgate_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "highgate_f2_end",
+      "body": "The crow's nest hatch opens for no one who merely waits beside it. The exposed ledge takes the climber who stood in the wind expecting a rescue the mast-trial was never built to send, cold and stillness finishing what the height had already started.",
+      "is_ending": true,
+      "ending": {
+        "id": "highgate_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Left at the Hatch"
+      },
+      "choices": []
+    },
+    {
+      "id": "highgate_fd_c0",
+      "body": "The hatch's lock is not the kind that gives to a pried spike, however carefully applied. It was fitted by a rigger who has spent a career making sure exactly this shortcut does not work, on exactly this door.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_fd_c0",
+          "label": "Go on.",
+          "target": "highgate_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "highgate_fd_c1",
+      "body": "The spike shears clean off in your hand before the bolt gives an inch, and the sudden crack of metal carries further in the cold air than you would like.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_fd_c1",
+          "label": "Go on.",
+          "target": "highgate_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "highgate_fd_end",
+      "body": "Forcing the lock only breaks your makeshift tool and rouses the crew stationed at the royal yard above. They come down onto the platform fast, and the crow's nest hatch stays exactly as sealed as it was before you started.",
+      "is_ending": true,
+      "ending": {
+        "id": "highgate_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Sprung at the Hatch Lock"
+      },
+      "choices": []
+    },
+    {
+      "id": "highgate_slip",
+      "body": "You find an old cargo net, half-frozen and slung loose above the hatch's lintel, and haul yourself up and over it instead of through the hatch at all. You drop down the far side into the last approach, filthy, scraped along one forearm, but past the whole locked door without ever needing the grommet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_slip",
+          "label": "Go on.",
+          "target": "beacon_ap0"
+        }
+      ]
+    },
+    {
+      "id": "highgate_cap",
+      "body": "You set your back against the cold iron of the sealed hatch and simply wait. The crew above comes down eventually and takes you off the ledge without incident. The truck goes unreached, this year, but you leave the mast-trial the same way you climbed into it \u2014 on your own two feet.",
+      "is_ending": true,
+      "ending": {
+        "id": "highgate_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Taken at the Crow's Nest Hatch"
+      },
+      "choices": []
+    },
+    {
+      "id": "highgate_seen",
+      "body": "A shape leans out over the royal yard's rail above, tracking you at the hatch, off the grommet's proper use, and for one breath the whole platform seems to hold still around the locked door between you. There is still a hard way past it \u2014 the old cargo net slung above the lintel, if your arms will still make the climb. One breath, and the hatch is not going to open itself while you decide.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_seen_slip",
+          "label": "Climb the cargo net above the lintel and drop through.",
+          "target": "highgate_slip"
+        },
+        {
+          "id": "c_highgate_seen_fight",
+          "label": "Pry the lock with a spike to force the bolt.",
+          "target": "highgate_fd_c0"
+        },
+        {
+          "id": "c_highgate_seen_cap",
+          "label": "Set your back to the hatch and wait to be taken.",
+          "target": "highgate_cap"
+        }
+      ]
+    },
+    {
+      "id": "highgate_gate",
+      "body": "You are at the crow's nest hatch. If you carry the brass grommet from the second mate's stand, press it to the lock and the hatch swings open clean to the last climb above. If you don't, the only way on is the old lubber's hole beside it, low and blind and forced through by hand, the passage that has always taken exactly what it costs from a candidate who arrives unsealed. Open the hatch the way your climb allows you to. Do not try the bare mast around it \u2014 that way has never once worked.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_highgate_sealed",
+          "label": "Press the brass grommet to the lock and pass clean.",
+          "target": "highgate_pass_sealed",
+          "condition": {
+            "==": [
+              {
+                "var": "token"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_highgate_forced",
+          "label": "Squeeze through the old lubber's hole by hand.",
+          "target": "highgate_pass_forced",
+          "condition": {
+            "==": [
+              {
+                "var": "token"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_highgate_f0",
+          "label": "Climb the bare mast around the sealed hatch.",
+          "target": "highgate_f0_c0"
+        },
+        {
+          "id": "c_highgate_f1",
+          "label": "Batter the iron hatch off its seatings.",
+          "target": "highgate_f1_c0"
+        },
+        {
+          "id": "c_highgate_f2",
+          "label": "Wait at the hatch for someone to open it.",
+          "target": "highgate_f2_c0"
+        },
+        {
+          "id": "c_highgate_gamble",
+          "label": "Chance the old cargo net slung above the lintel.",
+          "target": "highgate_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "beacon_ap0",
+      "body": "Past the crow's nest hatch, the last approach opens onto the royal yard itself, just beneath the truck. The ship's own masthead lantern burns here in its iron cage, the mast-trial's own beacon, swaying with the wind. A single footrope runs the yard's whole length to the final short climb above, open air dropping away on either hand the entire way across.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_ap0",
+          "label": "Go on.",
+          "target": "beacon_gate"
+        }
+      ]
+    },
+    {
+      "id": "beacon_pass",
+      "body": "You cross the footrope low against the wind, one hand skimming the yard above you, and reach the short final climb with the masthead lantern streaming its fire behind you in the gale. The truck is one last flight up now, close enough that you can almost believe the climb is finished.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_pass",
+          "label": "Go on.",
+          "target": "summit_ap0"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f0_c0",
+      "body": "Stepping wide of the footrope to give the masthead lantern's flame a wider berth puts you exactly where the royal yard offers nothing at all \u2014 open air on either side, no rope underfoot, nothing but the long drop the yard was built to keep you clear of.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f0_c0",
+          "label": "Go on.",
+          "target": "beacon_f0_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f0_c1",
+      "body": "For one breath, the whole mast-trial narrows down to open air on both sides of you. The footrope is now a rope's width away from your boot, instead of right beneath it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f0_c1",
+          "label": "Go on.",
+          "target": "beacon_f0_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f0_end",
+      "body": "A step wide of the footrope puts your boot right over the yard's edge in the dark, and the royal yard gives the strayed climber to the wind, just as it always has. You get close enough to see the truck, but no closer.",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_f0_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Wide of the Footrope"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_f1_c0",
+      "body": "A candidate standing straight up on the open royal yard catches the full force of the gale, since nothing is braced low against the wind. Everything is exposed to it: your arms, your chest, your whole standing shape. The wind has taken bigger things than a person off this mast before.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f1_c0",
+          "label": "Go on.",
+          "target": "beacon_f1_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f1_c1",
+      "body": "The gust takes your upright body just like it takes a loose flag off a halyard. It happens all at once, with no warning except the sound of it coming.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f1_c1",
+          "label": "Go on.",
+          "target": "beacon_f1_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f1_end",
+      "body": "Standing tall into the wind on the open royal yard gives it your whole weight at once. You are braced for nothing. The gust plucks you clean off the footrope. It has done this to every candidate before you who forgot to stay low.",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_f1_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Taken by the Gust"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_f2_c0",
+      "body": "The iron cage of the masthead lantern burns so hot you can feel it from an arm's length away. Pressing close to it for shelter from the wind just trades one danger for another. The yard is barely wide enough for your feet, let alone room to flinch away from open flame.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f2_c0",
+          "label": "Go on.",
+          "target": "beacon_f2_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f2_c1",
+      "body": "The heat from the lantern cage feels like a solid wall, just as solid as any spar. It pushes you sideways off the narrow yard as surely as a hard shove would.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f2_c1",
+          "label": "Go on.",
+          "target": "beacon_f2_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f2_end",
+      "body": "Pressing close to the masthead lantern for shelter drives you against burning iron and back off the narrow royal yard entirely. The beacon landing keeps whoever mistakes its own warning light for a place to hide.",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_f2_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Against the Lantern-Cage"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_f3_c0",
+      "body": "The wind off the truck does not drop, not for a candidate waiting it out, not for anyone. Waiting on the exposed royal yard only tells on you eventually, cold finding its way through every gap a crouched, waiting body leaves open to it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f3_c0",
+          "label": "Go on.",
+          "target": "beacon_f3_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f3_c1",
+      "body": "The cold and the steady gale wear you down exactly where you crouch, waiting for a lull that isn't coming, the strength you're trying to save leaking out of you regardless.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f3_c1",
+          "label": "Go on.",
+          "target": "beacon_f3_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f3_end",
+      "body": "The wind off the truck never lets up long enough to reward waiting, and a candidate who stiffens on the exposed footrope only grows stiffer. Sooner or later, a gust finds them anyway \u2014 it always does.",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_f3_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Worn Off the Royal Yard"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_f4_c0",
+      "body": "You crawl to the very edge of the royal yard to duck under the worst of the gale, but this edge is where the wind has worked at the timber longest. It is crumbling, weathered, and worn thin by every gust that has ever crossed this height.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f4_c0",
+          "label": "Go on.",
+          "target": "beacon_f4_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f4_c1",
+      "body": "The crumbling lip of the yard gives way under your hand. You set it too far out over the edge, right where the wood has taken the worst of a whole winter's weather.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_f4_c1",
+          "label": "Go on.",
+          "target": "beacon_f4_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_f4_end",
+      "body": "Hugging the yard's extreme edge to duck under the worst of the gale puts your weight on timber the wind has already half-ruined. The rim gives way, and the royal yard takes the climber who trusted its most weathered inch.",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_f4_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Off the Yard's Rim"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_fd_c0",
+      "body": "Running the footrope upright is still running it upright in the exact wind that has taken hold of standing candidates before. Speed does not lower your profile. It only gets you across the exposed stretch faster, still offered up to the gale the whole way.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_fd_c0",
+          "label": "Go on.",
+          "target": "beacon_fd_c1"
+        }
+      ]
+    },
+    {
+      "id": "beacon_fd_c1",
+      "body": "The gale only needs a standing body to grab onto. Running flat-footed across the open yard gives it just that \u2014 and at speed, too.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_fd_c1",
+          "label": "Go on.",
+          "target": "beacon_fd_end"
+        }
+      ]
+    },
+    {
+      "id": "beacon_fd_end",
+      "body": "Running the footrope upright gives the wind off the truck the whole of you to work with, arms and back and everything else exposed at once. The royal yard keeps the climber who ran its length standing instead of staying low.",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_fd_end",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Run Off the Footrope"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_slip",
+      "body": "You read a lull between gusts and dash the footrope low and fast, one hand skimming the yard's underside the whole way. A gust catches you at the very last stride and slams you into the foot of the final climb, bruised along one shoulder, breath knocked half out of you \u2014 but across, and still holding on.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_slip",
+          "label": "Go on.",
+          "target": "summit_ap0"
+        }
+      ]
+    },
+    {
+      "id": "beacon_cap",
+      "body": "You drop flat to the footrope and signal with one raised arm, and mates come out along the royal yard to bring you in hand over hand. The truck goes unclimbed, this year, this trial. But you come off the yard the same way you went out on it \u2014 under your own power, breathing steady, alive.",
+      "is_ending": true,
+      "ending": {
+        "id": "beacon_cap",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Fetched Off the Royal Yard"
+      },
+      "choices": []
+    },
+    {
+      "id": "beacon_seen",
+      "body": "A mate's shape leans out from the truck above, tracking you against the open royal yard, footing gone uncertain on the exposed footrope, and for one breath the whole yard seems to hold its wind and wait. There is still a hard way across \u2014 low and fast, timed to a falling gust rather than a rising one. There is no way across that beats the gale standing up. One breath. The wind is not going to wait longer than that for you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_seen_slip",
+          "label": "Dash the footrope low on a falling gust.",
+          "target": "beacon_slip"
+        },
+        {
+          "id": "c_beacon_seen_fight",
+          "label": "Run the footrope upright to beat the next gust.",
+          "target": "beacon_fd_c0"
+        },
+        {
+          "id": "c_beacon_seen_cap",
+          "label": "Drop flat and signal the mates to fetch you.",
+          "target": "beacon_cap"
+        }
+      ]
+    },
+    {
+      "id": "beacon_gate",
+      "body": "You are on the royal yard. The footrope to the final climb is the one sure footing across it \u2014 run it straight and low against the wind, with the masthead lantern burning at your back the whole way. Step wide toward either drop, stand tall into the gale, or crowd close to the burning lantern cage, and the yard will give you to the wind, just as it gives up every candidate who forgets which way is safe. Hold the footrope, stay low, and never fight a gust standing upright.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_beacon_ok",
+          "label": "Cross the footrope low, straight, and steady.",
+          "target": "beacon_pass"
+        },
+        {
+          "id": "c_beacon_f0",
+          "label": "Step wide to skirt the streaming lantern-flame.",
+          "target": "beacon_f0_c0"
+        },
+        {
+          "id": "c_beacon_f1",
+          "label": "Stand tall to brace yourself against the gust.",
+          "target": "beacon_f1_c0"
+        },
+        {
+          "id": "c_beacon_f2",
+          "label": "Shelter against the hot lantern-cage from the wind.",
+          "target": "beacon_f2_c0"
+        },
+        {
+          "id": "c_beacon_f3",
+          "label": "Wait for the wind to drop before you cross.",
+          "target": "beacon_f3_c0"
+        },
+        {
+          "id": "c_beacon_f4",
+          "label": "Crawl the yard's very edge to duck the wind.",
+          "target": "beacon_f4_c0"
+        },
+        {
+          "id": "c_beacon_gamble",
+          "label": "Chance a low dash between two gusts.",
+          "target": "beacon_seen"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "summit_ap0",
+      "body": "The last short climb brings you out onto the truck of the great mast, wind and cloud and the whole mast-trial fallen away beneath your boots. Rigging-Master Fenn is waiting there, one hand on the cap rail, to name the climb you made. A climb, she has always said, is named for how it was made \u2014 not simply for the fact that a candidate survived making it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_summit_ap0",
+          "label": "Stand before the crown-stone.",
+          "target": "summit_gate"
+        }
+      ]
+    },
+    {
+      "id": "summit_gate",
+      "body": "Rigging-Master Fenn reads your whole climb back to you before she says a single word. She recalls the muster, the futtock shrouds, the crosstrees \u2014 everything you carried up the mast, whether you meant it to count or not. She does not judge the fall, the swinging yard, or the wind on the royal yard. She judges your conduct. The word she is about to speak \u2014 whether you kept every part of the climb, or some of it, or just the mast itself but none of its true spirit \u2014 was decided long before you reached the truck.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_summit_honor",
+          "label": "You kept every form: stand for the crown.",
+          "target": "summit_honor_check",
+          "condition": {
+            "==": [
+              {
+                "var": "standing"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_summit_credit",
+          "label": "You kept some faith, not all: stand and be named.",
+          "target": "win_creditable",
+          "condition": {
+            "==": [
+              {
+                "var": "standing"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_summit_shamed",
+          "label": "You kept the wall but not its faith: stand unnamed.",
+          "target": "win_shamed",
+          "condition": {
+            "<=": [
+              {
+                "var": "standing"
+              },
+              0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "summit_honor_check",
+      "body": "One thing remains before Rigging-Master Fenn speaks the highest word this mast-trial has to give. Did you carry the second mate's brass grommet all the way to the truck, or did you climb the last stretches unsealed, through the lubber's hole instead of the hatch it was meant for? That alone decides which door opens now \u2014 the fully honoured climb, or a strong one, true in every other way, one mark short of it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honor_sealed",
+          "label": "You carried the grommet to the truck: take the highest name.",
+          "target": "win_honor",
+          "condition": {
+            "==": [
+              {
+                "var": "token"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_honor_unsealed",
+          "label": "You reached the truck unsealed: take the strong name, one mark short.",
+          "target": "win_creditable",
+          "condition": {
+            "==": [
+              {
+                "var": "token"
+              },
+              false
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "win_honor",
+      "body": "Standing tall, the brass grommet warm in your closed fist, you are named at the truck of the great mast. Every part of the mast-trial has been kept. Rigging-Master Fenn speaks the highest name the Winter Wheat's rigging gives to any hand. There is no asterisk in it, no quiet doubt held back for later. You climbed it clean, in conduct and in nerve both, and the mast, for once, says so plainly. Below you, the whole iced height of the ship falls away toward a harbour just beginning to catch the light.",
+      "is_ending": true,
+      "ending": {
+        "id": "win_honor",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Named at the Truck"
+      },
+      "choices": []
+    },
+    {
+      "id": "win_creditable",
+      "body": "You stand at the truck, having climbed the whole deadly length of this mast while keeping real faith the whole way. Still, one mark got away from you \u2014 maybe the grommet you never earned, or some small part of the climb you missed below. Rigging-Master Fenn names you a true hand of the Winter Wheat's rigging. It is an honest, strong climb, one step short of the highest praise the mast-trial gives, and it is not one bit less worth having climbed.",
+      "is_ending": true,
+      "ending": {
+        "id": "win_creditable",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A True Hand Aloft"
+      },
+      "choices": []
+    },
+    {
+      "id": "win_shamed",
+      "body": "You reach the truck of the great mast, and the rigging has let you live to stand on it, but you climbed it cutting every corner it offered you along the way. Rigging-Master Fenn reads that plainly in the way she reads everything, and says nothing at all. You have the height. You do not have the name for it. There is no cruelty in her silence, only the cold, level weight of a summit reached and never once spoken aloud.",
+      "is_ending": true,
+      "ending": {
+        "id": "win_shamed",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Unnamed Truck"
+      },
+      "choices": []
+    }
+  ]
+}

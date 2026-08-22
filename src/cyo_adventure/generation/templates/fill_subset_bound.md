@@ -64,6 +64,13 @@ setting words, rewrite it.
 What must stay identical is the beat (the events and outcome in `beats=`), each
 choice's action-semantic, the role, and the word target.
 
+## Narrative person
+
+`metadata.narrative_person` declares the grammatical person this book is told
+in (`"second"` addresses the reader as "you"; `"third"` follows a named
+protagonist). Write every passage in the declared person; do not drift
+between them. When the field is absent, follow the person the `beats=`
+directives use.
 ### Verbatim tokens
 
 **Verbatim tokens.** Some `beats='...'` guidance contains tokens of the form `{~NAME:Word~}`.
@@ -101,7 +108,7 @@ not include markdown fences.
 The output must be a single JSON object keyed by `node_id`, and nothing else:
 
 ```json
-{"node_id_1": {"body": "final prose for this passage", "choices": {"choice_id_1": "final choice text"}}, "node_id_2": {"body": "...", "choices": {}}}
+{"node_id_1": {"body": "final prose for this passage", "choices": {"choice_id_1": "final choice text"}}, "node_id_2": {"body": "...", "choices": {}, "ending_title": "final title for this ending"}}
 ```
 
 Rules the reader of your response enforces mechanically:
@@ -109,8 +116,8 @@ Rules the reader of your response enforces mechanically:
 1. **Return every passage you were given, and no others.** A reply that omits a requested `node_id`, or that includes one that was not requested, is discarded in full and the batch fails. A passage you find difficult still has to be written.
 2. **`body` is final prose.** Never echo the `<<FILL ...>>` directive back. A returned directive fails the batch.
 3. **`choices` maps that passage's own choice `id`s to their final text.** A choice id belonging to another passage, or invented, fails the batch. A passage with no choices takes `{}`.
-4. **Only prose is read from your reply.** Node ids, choice targets, conditions, effects, ending blocks, variables, `start_node`, and metadata are taken from the skeleton and cannot be changed by anything you write. Do not attempt to restate them.
-5. **Ending `title` values are final.** They were bound before you saw them; do not change them.
+4. **`ending_title` is optional and only legal on a passage that ends the story.** An ending's title is theme content: retitle it into the theme's vocabulary the way you rewrite a choice label. Supplying `ending_title` for a passage with no ending block fails the batch; omitting it keeps the skeleton's title.
+5. **Only prose is read from your reply.** Node ids, choice targets, conditions, effects, an ending's `id`/`kind`/`valence`, variables, `start_node`, and metadata are taken from the skeleton and cannot be changed by anything you write. Do not attempt to restate them.
 
 <!-- @user -->
 

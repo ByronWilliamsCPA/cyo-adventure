@@ -120,7 +120,10 @@ from cyo_adventure.generation.orchestrator import _MAX_TOKENS_PROSE, fill_skelet
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.prompts import build_differentiation_directive
 from cyo_adventure.generation.provider import build_openrouter_leg, build_provider
-from cyo_adventure.generation.skeleton import resolve_output_cap
+from cyo_adventure.generation.skeleton import (
+    resolve_output_cap,
+    story_fill_rate,
+)
 from cyo_adventure.generation.usage import UsageLedger
 from cyo_adventure.generation.variation import axis_for_key
 from cyo_adventure.validator.reading_level import measure_book
@@ -217,7 +220,20 @@ class BookRecord:
             proxy available until #701 lands.
         grade: Whole-book Flesch-Kincaid grade, or ``None`` when the book had
             too little scorable prose or declared no reading-level band.
-        in_band: Fraction of scorable nodes inside the declared band.
+        in_band: Fraction of scorable nodes inside the declared band. Never
+            read this without ``fill_rate`` beside it: the 2026-08-21 grid
+            measured a thin book conforming BECAUSE it was thin and a full
+            book out of band, so either number alone misleads
+            (`AL-491`/`AL-516`/`UW-C308`).
+        fill_rate: The production ``story_fill_rate`` (per-node delivery capped
+            at each node's commissioned ``words=`` target, so one node's
+            surplus cannot mask another's shortfall), or ``None`` when the
+            book failed entirely. This is the same definition the pipeline
+            stamps on ``outcome.report["fill_rate"]``, so the harness column
+            and the gate can never disagree; an earlier draft recorded raw
+            delivered-over-commissioned words here, which could report an
+            underfilled book as 100 percent. Over-delivery is still visible
+            through ``leaf_words`` against the skeleton's commission.
         leaf_words: Total scorable leaf words.
         doc: The filled Storybook dict, or ``None`` on a total failure.
         error: Truncated exception text when ``status == "error"``.
@@ -249,6 +265,7 @@ class BookRecord:
     latency_s: float
     grade: float | None
     in_band: float | None
+    fill_rate: float | None
     leaf_words: int
     doc: dict[str, Any] | None
     error: str | None
@@ -826,6 +843,56 @@ class _CapOverrideProvider:
         )
 
 
+@dataclass(frozen=True)
+class _ModelStampedProvider:
+    """Carry the leg's model id where the orchestrator can see it.
+
+    ``fill_skeleton`` resolves its output cap (and with it the chunking
+    decision) from ``getattr(provider, "model", None)``, but the OpenRouter
+    adapter exposes only ``complete`` and ``name``, so every wrapper above it
+    forwards ``None`` and the cap silently resolves to the 131,072 default.
+    On this harness that meant `MODEL_OUTPUT_CAPS` was never consulted for any
+    leg: a low-cap model (`deepseek/deepseek-v3.2`, 65,536) was asked for
+    131,072 tokens one-shot, which its endpoint rejected outright (HTTP 400,
+    measured 2026-08-21 at 0.6s per leg), and the chunked path could never
+    engage for any vendor. Stamping the model at the harness boundary makes
+    the leg behave as the orchestrator's own resolution logic intends. The
+    matching production gap (the adapter itself, reached via
+    ``build_provider``) is deliberately NOT fixed here; it is reported in the
+    2026-08-21 round's lessons instead.
+
+    Attributes:
+        inner: The real provider that performs the call.
+        model: The vendor spec's model id, exposed for cap resolution.
+    """
+
+    inner: GenerationProvider
+    model: str
+
+    @property
+    def name(self) -> str | None:
+        """The inner provider's label, forwarded for job stamping."""
+        inner_name: object = getattr(self.inner, "name", None)
+        return inner_name if isinstance(inner_name, str) else None
+
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
+        """Delegate unchanged; this wrapper only carries the model id.
+
+        Args:
+            system: System-role instructions, passed through unchanged.
+            prompt: User-role prompt, passed through unchanged.
+            max_tokens: The caller's cap, passed through unchanged.
+
+        Returns:
+            The inner provider's completion, forwarded unchanged.
+        """
+        return await self.inner.complete(
+            system=system, prompt=prompt, max_tokens=max_tokens
+        )
+
+
 def _build_provider(
     vendor: Vendor,
     settings: Settings,
@@ -858,9 +925,15 @@ def _build_provider(
         base = build_openrouter_leg(
             settings, vendor.model, provider_order=vendor.provider_order
         )
-    if max_tokens is None:
-        return base
-    return _CapOverrideProvider(inner=base, max_tokens=max_tokens)
+    if max_tokens is not None:
+        base = _CapOverrideProvider(inner=base, max_tokens=max_tokens)
+    # Outermost, so `getattr(provider, "model", None)` sees it through every
+    # inner wrapper; see _ModelStampedProvider for why the leg needs it at all.
+    # The MOCK path is stamped too (PR #737 review, suggested findings): the
+    # dry run's whole value is rehearsing the paid run's shape, and cap and
+    # context-window resolution key off the model, so an unstamped mock could
+    # no longer predict which skeletons take the chunked path.
+    return _ModelStampedProvider(inner=base, model=vendor.model)
 
 
 async def run_comparison(
@@ -981,6 +1054,7 @@ async def run_comparison(
                         latency_s=round(time.monotonic() - started, 2),
                         grade=None,
                         in_band=None,
+                        fill_rate=None,
                         leaf_words=0,
                         doc=None,
                         error=str(exc)[:512],
@@ -1003,6 +1077,11 @@ async def run_comparison(
                         latency_s=round(time.monotonic() - started, 2),
                         grade=grade,
                         in_band=in_band,
+                        fill_rate=(
+                            story_fill_rate(dict(skeletons[index]), doc)
+                            if doc is not None
+                            else None
+                        ),
                         leaf_words=words,
                         doc=doc,
                         error=None,
@@ -1026,6 +1105,7 @@ async def run_comparison(
             print(
                 f"[{vendor.label} #{index}] status={last.status} "
                 f"fk={last.grade} in_band={last.in_band} "
+                f"fill_rate={last.fill_rate} "
                 f"latency={last.latency_s}s{detail}",
                 file=sys.stderr,
                 flush=True,
@@ -1382,14 +1462,16 @@ def _print_report(
     width = max((len(r.vendor) for r in report.books), default=0)
     width = max(width, len("vendor"))
     print(
-        f"{'vendor':<{width}}{'book':>6}{'status':>14}{'FK':>7}{'in-band':>9}{'sec':>8}"
+        f"{'vendor':<{width}}{'book':>6}{'status':>14}{'FK':>7}{'in-band':>9}"
+        f"{'fill':>7}{'sec':>8}"
     )
     for record in report.books:
         grade = "-" if record.grade is None else f"{record.grade:.2f}"
         in_band = "-" if record.in_band is None else f"{record.in_band:.0%}"
+        fill_rate = "-" if record.fill_rate is None else f"{record.fill_rate:.0%}"
         print(
             f"{record.vendor:<{width}}{record.brief_index:>6}{record.status:>14}"
-            f"{grade:>7}{in_band:>9}{record.latency_s:>8.1f}"
+            f"{grade:>7}{in_band:>9}{fill_rate:>7}{record.latency_s:>8.1f}"
         )
     print()
     print("Shared four-grams per 1000 leaf words (different-brief pairs):")
@@ -1533,6 +1615,7 @@ def _book_row(record: BookRecord) -> dict[str, object]:
         "latency_s": record.latency_s,
         "grade": record.grade,
         "in_band": record.in_band,
+        "fill_rate": record.fill_rate,
         "leaf_words": record.leaf_words,
         "fill_completeness": round(record.fill_completeness, 3),
         "complete": record.complete,
@@ -1800,7 +1883,10 @@ def _mirror_as_mock(vendors: list[Vendor]) -> list[Vendor]:
         replace(
             v,
             label=f"mock:{v.label}",
-            model="mock",
+            # The declared model is KEPT: the provider swap alone makes the leg
+            # free, and keeping the model lets the rehearsal resolve the same
+            # output caps and context windows the paid run will, so chunked-path
+            # routing is rehearsed too (PR #737 review, suggested findings).
             provider_order=(),
             family=v.lineage(),
         )

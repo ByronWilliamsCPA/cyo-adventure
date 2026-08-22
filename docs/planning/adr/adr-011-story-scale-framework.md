@@ -35,8 +35,9 @@ defined by a total-word budget; node count is derived** (`nodes = total_words /
 words_per_node`). Three "clocks" govern the experience: a **fastest-finish arc floor**
 (shortest path to a satisfying completion must tell a full story), a **total-node
 envelope** (world size, with per-cell variance across skeletons), and a **whole-world
-replay** measure. Decisions-per-path is held constant (~4-8); length adds breadth, not
-depth. Six topologies compose from six flow primitives, gated by per-band safety
+replay** measure. Decisions-per-path scales with the fastest-finish floor, never with
+total nodes (per-cell windows derived in section 6, amended 2026-08-22); length adds
+breadth, not depth. Six topologies compose from six flow primitives, gated by per-band safety
 allowances. A **series** chains books, with every successful-completion ending of a
 non-final book converging on the next book's single entry node.
 
@@ -89,7 +90,10 @@ MVP-scale story ever reaches a child-facing catalog.
   not reading fit). Words/node still **inherits the band mean** from section 3, so an
   `16+` MVP node is denser than a `3-5` one.
 - **`min-to-complete`**: relaxed to ~4 nodes; the arc-floor substance requirement of the
-  three clocks (section 4) is **waived** here, because MVP shells exist to be short.
+  three clocks (section 4) is **waived** here, because MVP shells exist to be short. The
+  section 6 per-path decision windows are **waived** with it (amended 2026-08-22): a
+  4-node path cannot hold a 2-3-node setup run plus multiple decisions plus a terminal,
+  and the three MVP seeds never complied with the old floor.
 - **Endings**: ~2-6. **Style**: prose only (gamebook needs scale to be meaningful).
 - The three current hand-authored skeletons live here as development seeds: Lost Mitten
   (`3-5`, 11 nodes), Clocktower (`10-13`, 25), Sunken Signal (`16+`, 32). This is the
@@ -133,16 +137,33 @@ Enforced as a story-level **mean** within the advisory band, plus a per-node har
 These are the **production** cells; the below-Short MVP/Test tier (section 1a) is
 deliberately smaller than every row here and is excluded from this table.
 `min->complete` = arc-floor shortest success path (nodes). `total nodes` = derived
-envelope. Gamebook endings are "few wins + many fails" (~25-35% of nodes are terminals).
+envelope. Gamebook endings are "few wins + many fails"; the terminal share is governed by
+the ruled **>= 12% floor** (owner ruling 2026-08-18, `UW-C291` /
+`gamebook-thresholds-options.md`, encoded in `band_profile.py::_ENDINGS_FRACTION`). An
+earlier draft here asserted "~25-35% of nodes are terminals"; that figure sat above the
+prose fraction, had the genre relationship backwards, and now describes only the 14
+pre-ruling gamebooks (measured 27.6-33.3%), while the five post-ruling gamebooks ship at
+13.0-15.8% (amended 2026-08-22, section 11).
 `dagger` = exceeds the ~460-node hand-authoring ceiling; procedural-generator / series
 scale, not a hand-authored seed.
 
+Two deliberate table properties, stated after the 2026-08-22 audit rather than left
+silent: there are **no Short rows for `13-16`/`16+`**; at those bands' words-per-node a
+Short word budget yields node counts and reading times below what the style promises its
+audience (a teen wanting a shorter read is served by the `10-13` cells), and adding a teen
+Short tier remains an open product choice, not an omission error. And the **`3-5`/`5-8`
+endings ceilings were recalibrated upward on 2026-08-22**: the original columns implied
+~17-20% ending shares while the committed strict-bar young-band shelf measures 17-41%
+(`the-big-cardboard-box` alone holds 18 endings against the old cap of 6), so the
+ceilings now track the measured shares; section 9 already classes these bands as
+product-defined and tunable.
+
 | Band | Length | Style | min->complete | fastest finish | total nodes | endings | whole-world |
 | --- | --- | --- | ---: | ---: | --- | --- | --- |
-| 3-5 | Short | prose | 6 | ~2-3 min | 10-23 | 2-4 | ~5-9 min |
-| 3-5 | Medium | prose | 7 | ~3 min | 23-45 | 4-6 | ~9-18 min |
-| 5-8 | Short | prose | 7 | ~5 min | 29-50 | 6-10 | ~20-40 min |
-| 5-8 | Medium | prose | 9 | ~7 min | 50-86 | 10-16 | ~40-65 min |
+| 3-5 | Short | prose | 6 | ~2-3 min | 10-23 | 2-8 | ~5-9 min |
+| 3-5 | Medium | prose | 7 | ~3 min | 23-45 | 4-18 | ~9-18 min |
+| 5-8 | Short | prose | 7 | ~5 min | 29-50 | 6-16 | ~20-40 min |
+| 5-8 | Medium | prose | 9 | ~7 min | 50-86 | 10-20 | ~40-65 min |
 | 8-11 | Short | prose | 9 | ~8 min | 60-100 | 12-18 | ~50-85 min |
 | 8-11 | Medium | prose | 12 | ~10 min | 100-160 | 18-28 | ~85-135 min |
 | 8-11 | Long | prose | 14 | ~12 min | 160-240 | 28-40 | ~2.2-3.3 hr |
@@ -161,16 +182,81 @@ scale, not a hand-authored seed.
 Reading-pace anchors (approx, standard fluency norms, not project-measured): 3-5 ~100
 wpm (read aloud), 5-8 ~90, 8-11 ~120, 10-13 ~150, 13-16 ~190, 16+ ~220.
 
-### 6. Constants (research-locked, all cells)
+### 6. Constants and per-cell decision windows
 
-Decisions per path **~4-8** (length adds breadth, not depth; do not inflate); choices
-per decision **2-3**; setup before first choice **~2-3 nodes**; endings as
-**predominantly single-parent terminals** scaling with node count (prose ~15-22%). The
-authoring target is single-parent, and the shipped corpus is close to it (54 of 61
+> Rewritten 2026-08-22 (see section 11). This section originally read "Constants
+> (research-locked, all cells)" and pinned decisions per path at a flat "~4-8". The
+> `UW-C327` audit showed that constant arithmetically unsatisfiable in 10 of 18
+> production cells against this ADR's own sections 3, 5 and 10, flatly unsatisfiable
+> for every gamebook cell, and unsatisfiable as a floor at `3-5`; the catalog violates
+> it in both directions and the validator's PL-17 breadth floor forces gauntlets to
+> break it. The window is now derived per cell, the way every other quantity in this
+> ADR is derived.
+
+**Decisions per path** is a derived per-cell window, not a universal constant. The
+invariant that survives from the original wording is the real one: **decisions grow
+with `min->complete`, never with total nodes** (length adds breadth, not depth; do not
+inflate depth to fill a word budget).
+
+- **Flowed prose bands (`8-11` and up)**: every stop ends in a choice (section 10), so
+  the fastest finish cannot carry fewer decisions than its word budget forces. Lower
+  edge = `ceil(min->complete x words-per-node mean / words-per-stop max) - 1`; upper
+  edge follows the arc-ceiling multiple (`band_profile.py::ARC_CEILING_MULTIPLE`,
+  ~2.5x): no root-to-ending path should carry more than ~2.5x the lower edge.
+
+  | Cell (prose, flowed) | Fastest-finish floor | Any-path ceiling |
+  | --- | ---: | ---: |
+  | 8-11 Short | 6 | 15 |
+  | 8-11 Medium | 8 | 20 |
+  | 8-11 Long | 10 | 25 |
+  | 10-13 Short | 7 | 18 |
+  | 10-13 Medium | 9 | 23 |
+  | 10-13 Long | 11 | 28 |
+  | 13-16 Medium | 10 | 25 |
+  | 13-16 Long | 13 | 33 |
+  | 16+ Medium | 13 | 33 |
+  | 16+ Long | 17 | 43 |
+
+- **Page bands (`3-5`, `5-8`)**: the section 10 choice cadence governs (a choice every
+  2nd-4th page at `3-5`, every 1st-2nd page at `5-8`). The floor is the band minimum
+  PL-17 actually enforces (`band_profile.py` `min_decisions`: **1** at `3-5`, **2** at
+  `5-8`); the cadence caps a `min->complete`-length path at roughly 2-4 choices at
+  `3-5` and 4-9 at `5-8`. The original flat floor of 4 was unsatisfiable at `3-5`
+  Short three independent ways (path structure, endings arithmetic, cadence).
+- **Gamebook cells are exempt from any single-digit window.** Decisions per path there
+  is spine-scale: catalog-measured 12-43 on the fastest satisfying path and 19-67 max.
+  The operative quantity is the PL-17 breadth floor (`_DECISIONS_FRACTION` = 0.08 x
+  total nodes); for `gauntlet` topology every decision lies on the one spine, so total
+  decisions equals decisions-per-path by construction, and the old 4-8 window would
+  have capped a gauntlet at <= 17 terminals against section 5 cells whose envelopes
+  imply far more.
+- The historical **"~4-8"** survives only as what it was: the JHM 2019 measurement (~5
+  decisions average, 7-8 longest) of ~90-120-node middle-grade books, i.e. the
+  `8-11`/`10-13` Short prose region. Under the section 10 grammar (every stop a
+  choice) the same word budgets pack decisions more densely than the classic books'
+  looser cadence did, which is why the derived floors above sit higher than that
+  anchor's average.
+
+**Choices per decision**: **2-4**, per the section 10 band column (2 at `3-5`, 2-3 at
+`5-8`, 3 at `8-11`/`10-13`, 3-4 at `13-16`/`16+`; the pre-amendment "2-3" predated the
+section 10 grammar). **Setup before first choice**: ~2-3 nodes, unchanged. **Endings**
+are predominantly single-parent terminals; the **section 5 per-cell endings columns
+govern counts** (encoded as `band_profile.py::_CELL_ENDING_BOUNDS`, `UW-C283`), and the
+old "prose ~15-22% of nodes" is demoted to a corpus-level descriptive figure: applied
+per cell it inverted against section 5 at the corners (floor above ceiling in three
+cells) and the committed young-band shelf measures 17-41%. The authoring target is
+single-parent, and the shipped corpus is close to it (54 of 61
 skeletons hold every ending at indegree 1; see the 2026-07-27 clarification), but it is a
 guideline rather than a gate. Reconvergence is an internal bottleneck/hub property
 governed per topology (section 7), not an ending property; see the 2026-07-27
 clarification.
+
+Scope and enforcement: the decision windows are **authoring guidelines for new
+skeletons**, scoped like the section 10 grammar they derive from (the existing catalog
+is grandfathered). No validator rule gates decisions-per-path; PL-17 gates total
+decision-node floors. The M4 mutation operator self-enforces a decisions-per-path
+no-worsen guard and still carries the historical 4-8 constants pending per-cell
+re-derivation (`UW-C330`).
 
 ### 7. Topologies (6) and flow primitives
 
@@ -271,7 +357,8 @@ indegree 1.5)" anchor above, and the resulting enforcement stance.
   calibration dial: it is `None` for every band today and is read only by the mutation
   operator, never by the validator gate. **Decision: keep it unset** unless a future
   calibration shows kid-band skeletons drifting toward un-genre-like hub indegrees.
-- **Choices per decision (2-3) stays an authoring guideline, not a hard gate.** The PL-17
+- **Choices per decision (2-4 per the section 10 band column; 2-3 as originally written
+  here) stays an authoring guideline, not a hard gate.** The PL-17
   endings and decision floors already gate the two properties JHM tied to reader
   satisfaction and sales; an outdegree ceiling is not added as a validator error. If
   kid-band stories begin emitting overwhelming choice fans, revisit as an advisory finding
@@ -331,8 +418,8 @@ records which numbers are empirical and which are tunable product choices.
 
 | Band | Presentation | Choice cadence | Max choiceless stops in a row | Flavor vs consequential | Options per choice | Words per stop |
 | --- | --- | --- | ---: | --- | --- | --- |
-| 3-5 | discrete pages | choice every 2nd-4th page; scaffold interaction (predict, point, answer) on other pages | 2-3 | ~90/10; consequences immediate, visible on the next page; reconvergence free | 2 | 10-40 |
-| 5-8 | discrete pages | choice every 1st-2nd page | 2 | ~70/30; same-scene payoff | 2-3 | 30-70 |
+| 3-5 | discrete pages | choice every 2nd-4th page; scaffold interaction (predict, point, answer) on other pages | 2-3 | ~90/10; consequences immediate, visible on the next page; reconvergence free | 2 | 10-55 |
+| 5-8 | discrete pages | choice every 1st-2nd page | 2 | ~70/30; same-scene payoff | 2-3 | 30-95 |
 | 8-11 | flowed prose | every stop ends in a choice | 1, prefer 0 | ~50/50; state-gated consequences begin, with a visible "noticed" cue | 3 | 60-135 |
 | 10-13 | flowed prose | every stop ends in a choice | 0-1 | ~40/60; delayed, cross-scene consequences; distinct targets | 3 | 80-150 |
 | 13-16 | flowed prose | every stop ends in a choice | 0-1 | ~30/70; consequence foreshadowed | 3-4 | 100-200 |
@@ -350,12 +437,82 @@ Cross-cutting rules, all bands:
   approved mechanism for choiceless pages; they require a schema minor (ADR-025) and their own
   small design before authoring uses them.
 
-Relationship to the locked constants of section 6: unchanged. Decisions per path stay ~4-8; the
-grammar governs surface pacing, flavor mix, and per-stop reading load, not path decision counts.
-The words-per-stop column becomes the operative *felt page size* where stops flow (`8-11`+); the
-per-node ceilings of section 3 remain as authoring guardrails inside a stop. Enforcement lands as
+Relationship to section 6 (corrected 2026-08-22): this grammar is an **input** to section 6's
+derived decision windows, not independent of them. The paragraph originally here claimed the
+section 6 constants were "unchanged" and that decisions per path stayed ~4-8; that claim did not
+survive arithmetic. "Every stop ends in a choice" plus the words-per-stop caps force more than 8
+decisions onto the fastest finish in every Long cell and every `13-16`/`16+` cell, and this
+table's options-per-choice column (3-4) always exceeded section 6's old "2-3". Section 6 as
+amended now derives its windows from this table. The grammar itself governs surface pacing,
+flavor mix, and per-stop reading load; the words-per-stop column is the operative *felt page
+size* where stops flow (`8-11`+).
+
+**Precedence between section 3 and this table (added 2026-08-22)**: the section 3 per-node hard
+max is the hard gate; words-per-stop is the advisory felt-page target a stop should usually
+meet, and a single large node may exceed it up to the section 3 max. At the page bands, where
+one stop is one node (ADR-026), the words-per-stop upper bounds are set to the section 3
+advisory maxima (`3-5`: 55, `5-8`: 95; originally 40 and 70, which pinned the mandated story
+mean to the cap and made the advisory band's upper half unusable).
+
+Enforcement lands as
 validator rules for new content (choiceless-run caps at the graph level for the discrete-page
 bands, acknowledgment checks at the fill gate); specifics belong to the implementation plan.
+
+### 11. Amendment (2026-08-22): derived decision windows and column recalibration (`UW-C327`)
+
+Adopted on the owner ruling of 2026-08-21 ("the 4-8 constant seems out of line with the
+rest of ADR-011, especially sections 4 and 5"; recorded in
+[live-structural-round-2026-08-21.md](../live-structural-round-2026-08-21.md) section
+9.1) and the commissioned internal-consistency audit,
+[adr-011-consistency-audit-2026-08-21.md](../adr-011-consistency-audit-2026-08-21.md),
+whose findings this amendment implements in full. The audit showed section 6's flat
+"~4-8 decisions per path, research-locked, all cells":
+
+- arithmetically unsatisfiable in 10 of 18 production cells against this ADR's own
+  sections 3, 5 and 10 (the fastest finish alone is word-forced above 8 decisions);
+- flatly unsatisfiable for every gamebook cell (under 4-8 a gauntlet caps at <= 17
+  terminals against envelopes implying 92-205);
+- unsatisfiable as a floor at `3-5` Short, three independent ways;
+- violated by the committed catalog in both directions (43 of 60 acyclic production
+  skeletons above 8 max decisions per path, 16 of 81 below 4 on the fastest satisfying
+  path), with the validator's own PL-17 breadth floor (0.08 x N) mathematically forcing
+  large gauntlets to break it.
+
+The root cause (audit item 9) was provenance overreach: a JHM measurement of
+~90-120-node middle-grade books was declared "research-locked" across cells whose
+`min->complete` runs 6 to 37 nodes, conflating path length with decision count in
+exactly the way the research reconciliation warns against. The amendment re-anchors the
+quantity the way every other quantity in this ADR is anchored: by derivation from the
+word budgets.
+
+What changed, mapped to the audit's amendment set (items 1-10):
+
+1. **Section 6 rewritten**: decisions per path is a derived per-cell window (flowed
+   bands: word-forced lower edge, arc-ceiling upper edge; page bands: cadence-derived
+   with PL-17's `min_decisions` as floor); "~4-8" survives only as the JHM anchor.
+2. **Gamebook cells exempted**: spine-scale decisions stated from catalog measurement;
+   PL-17's breadth floor is the operative quantity.
+3. **`3-5`/`5-8` floors** lowered to the enforced `band_profile` minima (1 and 2).
+4. **Section 5 young-band endings ceilings** recalibrated upward against the committed
+   strict-bar shelf (Short `3-5` 4 -> 8, Medium `3-5` 6 -> 18, Short `5-8` 10 -> 16,
+   Medium `5-8` 16 -> 20).
+5. **Section 5 gamebook preamble** now states the ruled >= 12% terminal floor and the
+   two shipped regimes, replacing the stale 25-35% assertion.
+6. **The "prose ~15-22%" endings fraction** demoted to a corpus-level descriptive
+   figure; the section 5 per-cell columns govern (`_CELL_ENDING_BOUNDS`, `UW-C283`).
+7. **Choices per decision** widened to 2-4 per the section 10 band column; section 10's
+   false "unchanged" claim corrected in place.
+8. **Sections 3 vs 10 precedence rule** added (per-node max is the hard gate); page-band
+   words-per-stop caps raised to the section 3 advisory maxima (40 -> 55, 70 -> 95).
+9. **Section 1a** MVP waiver extended to the decision windows.
+10. **Section 5's missing `13-16`/`16+` Short rows** stated as deliberate.
+
+Companion code change in the same commit: `band_profile.py::_CELL_ENDING_BOUNDS`
+young-band rows recalibrated to item 4 (the ceiling is advisory; no committed skeleton
+changes gate verdict, and the seven skeletons the old columns flagged are absorbed).
+Deliberately **not** changed here: the M4 mutation operator still self-enforces the
+historical 4-8 window as a no-worsen guard; re-deriving M4's guard per cell is tracked
+as `UW-C330` in the unscheduled work register.
 
 ## Consequences
 

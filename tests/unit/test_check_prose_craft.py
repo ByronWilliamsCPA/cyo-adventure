@@ -331,7 +331,14 @@ def test_main_exits_zero_for_a_clean_book_under_check(tmp_path: Path) -> None:
     path = _write(
         tmp_path,
         "clean.json",
-        _story([_node("n1", _PAST_BODY), _node("n2", _PAST_BODY)]),
+        _story(
+            [
+                _node("n1", _PAST_BODY),
+                # A distinct second body: identical bodies are now a real
+                # sameness finding (AL-496/UW-C313), not a fixture shortcut.
+                _node("n2", _PAST_BODY + " The lantern burned low."),
+            ]
+        ),
     )
     assert main([path, "--check"]) == 0
 
@@ -390,3 +397,206 @@ def test_moral_tags_with_a_zero_tail_scans_nothing() -> None:
     }
     assert moral_tags(story, tail_sentences=0) == []
     assert moral_tags(story, tail_sentences=4)
+
+
+@pytest.mark.unit
+def test_sameness_report_counts_duplicates_and_label_collapse() -> None:
+    """AL-496's shape: repeated bodies and three labels covering everything."""
+    from scripts.check_prose_craft import sameness_report
+
+    story = _story(
+        [
+            _node("n1", _PAST_BODY),
+            _node("n2", _PAST_BODY),
+            _node("n3", _PAST_BODY + " The lantern burned low."),
+        ]
+    )
+    for node in story["nodes"]:
+        node["choices"] = [
+            {"id": f"c_{node['id']}", "label": "Press on.", "target": "n1"}
+        ]
+    report = sameness_report(story)
+    assert report.repeated_texts == 1
+    assert report.redundant_nodes == 1
+    assert report.distinct_labels == 1
+    assert report.top3_share == 1.0
+
+
+@pytest.mark.unit
+def test_person_report_measures_second_person_rate() -> None:
+    from scripts.check_prose_craft import person_report
+
+    story = _story(
+        [
+            _node("n1", "You lift the latch and step through."),
+            _node("n2", "The corridor smelled of rain."),
+        ]
+    )
+    report = person_report(story)
+    assert report.nodes == 2
+    assert report.second_person_nodes == 1
+    assert report.rate == 0.5
+
+
+# --------------------------------------------------------------------------
+# Narrative person (UW-C328)
+# --------------------------------------------------------------------------
+
+
+# Four distinct past-tense third-person bodies. Distinct because a repeated
+# body is its own finding (sameness), and past-tense because a tense finding
+# would breach independently and mask what these tests are measuring.
+_THIRD_BODIES = (
+    "Tom opened the hatch. Nia climbed the ladder first. Sef followed her up.",
+    "The lamp swung on its hook. They found the dial cold and still.",
+    "Tom turned the first ring. The gears settled into place with a click.",
+    "Nia smiled at the sound. Sef counted the marks along the brass rim.",
+)
+# The same four passages rewritten to address the reader.
+_SECOND_BODIES = (
+    "You opened the hatch. You climbed the ladder first. Sef followed you up.",
+    "The lamp swung by your shoulder. You found the dial cold and still.",
+    "You turned the first ring. The gears settled into place under your hand.",
+    "You smiled at the sound. You counted the marks along the brass rim.",
+)
+
+
+def _person_story(
+    bodies: tuple[str, ...],
+    *,
+    person: str | None = None,
+    style: str | None = None,
+) -> dict[str, Any]:
+    """Return a clean four-node book carrying the given person declaration."""
+    story = _story([_node(f"n{i}", body) for i, body in enumerate(bodies)])
+    metadata: dict[str, Any] = {}
+    if person is not None:
+        metadata["narrative_person"] = person
+    if style is not None:
+        metadata["narrative_style"] = style
+    story["metadata"] = metadata
+    return story
+
+
+def _mixed(second_count: int) -> tuple[str, ...]:
+    """Return four bodies of which ``second_count`` are second-person."""
+    return _SECOND_BODIES[:second_count] + _THIRD_BODIES[second_count:]
+
+
+@pytest.mark.unit
+def test_declared_second_person_below_the_floor_breaches(tmp_path: Path) -> None:
+    """1 of 4 nodes is 0.25, under the 0.5 floor a declared second-person book owes."""
+    path = _write(tmp_path, "s.json", _person_story(_mixed(1), person="second"))
+    assert main([path, "--check"]) == 1
+
+
+@pytest.mark.unit
+def test_declared_second_person_at_the_floor_does_not_breach(tmp_path: Path) -> None:
+    """2 of 4 nodes is exactly 0.5; the floor is inclusive."""
+    path = _write(tmp_path, "s.json", _person_story(_mixed(2), person="second"))
+    assert main([path, "--check"]) == 0
+
+
+@pytest.mark.unit
+def test_declared_third_person_above_the_ceiling_breaches(tmp_path: Path) -> None:
+    """2 of 4 nodes is 0.5, over the 0.35 ceiling a declared third-person book owes."""
+    path = _write(tmp_path, "s.json", _person_story(_mixed(2), person="third"))
+    assert main([path, "--check"]) == 1
+
+
+@pytest.mark.unit
+def test_declared_third_person_below_the_ceiling_does_not_breach(
+    tmp_path: Path,
+) -> None:
+    """1 of 4 nodes is 0.25, inside the 0.35 ceiling."""
+    path = _write(tmp_path, "s.json", _person_story(_mixed(1), person="third"))
+    assert main([path, "--check"]) == 0
+
+
+@pytest.mark.unit
+def test_undeclared_gamebook_still_gets_the_second_person_floor(
+    tmp_path: Path,
+) -> None:
+    """The pre-declaration behavior survives: genre implies the floor."""
+    path = _write(tmp_path, "s.json", _person_story(_mixed(1), style="gamebook"))
+    assert main([path, "--check"]) == 1
+
+
+@pytest.mark.unit
+def test_undeclared_prose_is_not_person_gated_in_either_direction(
+    tmp_path: Path,
+) -> None:
+    """Nothing pins an undeclared prose book's person, so neither bound applies.
+
+    Both rates here would breach if a bound were applied: 0.25 is under the
+    0.5 floor, and 1.0 is over the 0.35 ceiling.
+    """
+    low = _write(tmp_path, "low.json", _person_story(_mixed(1), style="prose"))
+    high = _write(tmp_path, "high.json", _person_story(_SECOND_BODIES, style="prose"))
+    assert main([low, "--check"]) == 0
+    assert main([high, "--check"]) == 0
+
+
+# Third-person narration whose only "you" is a character speaking to another
+# character. Every node would count as second-person without the exemption,
+# putting the book at 1.0 against a 0.35 ceiling.
+_DIALOGUE_BODIES = (
+    'Tom opened the hatch. "You go first," Nia said. Sef followed her up.',
+    'The lamp swung on its hook. "Your hands are steadier," Tom said.',
+    'Nia turned the first ring. "You heard that too," she said. The gears settled.',
+    'Sef counted the marks. "Yours is the last one," he said to the empty room.',
+)
+
+
+@pytest.mark.unit
+def test_second_person_inside_dialogue_is_exempt_from_the_person_gate(
+    tmp_path: Path,
+) -> None:
+    """A third-person book may have characters say "you" to each other.
+
+    The regression this pins: without ``strip_dialogue`` every one of these
+    four nodes counts as second-person, putting the book at 1.0 against the
+    0.35 third-person ceiling and failing it for dialogue it is entitled to
+    have. The control below shows the ceiling still fires when the same
+    address is narration rather than speech.
+    """
+    quoted = _write(
+        tmp_path, "quoted.json", _person_story(_DIALOGUE_BODIES, person="third")
+    )
+    narrated = _write(
+        tmp_path, "narrated.json", _person_story(_SECOND_BODIES, person="third")
+    )
+    assert main([quoted, "--check"]) == 0
+    assert main([narrated, "--check"]) == 1
+
+
+@pytest.mark.unit
+def test_person_report_ignores_second_person_confined_to_dialogue() -> None:
+    """The unit-level half of the exemption: narration is what is measured."""
+    from scripts.check_prose_craft import person_report
+
+    report = person_report(_person_story(_DIALOGUE_BODIES, person="third"))
+    assert report.nodes == 4
+    assert report.second_person_nodes == 0
+    assert report.rate == 0.0
+
+
+@pytest.mark.unit
+def test_a_declared_third_gamebook_is_flagged_as_contradictory(
+    tmp_path: Path,
+) -> None:
+    """A gamebook declaring third person is a contract error, not a measurement.
+
+    The bodies here are entirely second-person, so the book clears the
+    gamebook floor with room to spare; the exit code must still be 1. That is
+    what separates the contradiction branch from the measurement branches, and
+    what pins the branch ORDER: reading the declaration first sent a correct
+    second-person gamebook to the third-person ceiling and failed it for being
+    right (PR #737 review, I10).
+    """
+    path = _write(
+        tmp_path,
+        "contradictory.json",
+        _person_story(_SECOND_BODIES, person="third", style="gamebook"),
+    )
+    assert main([path, "--check"]) == 1

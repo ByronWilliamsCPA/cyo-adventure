@@ -232,6 +232,15 @@
       "title": "Length",
       "type": "string"
     },
+    "NarrativePerson": {
+      "description": "The grammatical person the prose addresses the reader in.\n\nRuled 2026-08-21 (`UW-C328`, section 9.4 of\n``docs/planning/live-structural-round-2026-08-21.md``): narrative person\nwas an unpinned degree of freedom, and three fills of one prose skeleton\nscattered from 0.07 to 0.72 second-person node rates because nothing\ndeclared which person the book is told in. Gamebooks are second-person by\ngenre convention; prose books must say which they are, so same-skeleton\nsiblings cannot ship in different persons.",
+      "enum": [
+        "second",
+        "third"
+      ],
+      "title": "NarrativePerson",
+      "type": "string"
+    },
     "NarrativeStyle": {
       "description": "Prose vs gamebook chunking of one word budget (ADR-011).\n\nMeaningful only for ``13-16`` and ``16+``; lower bands are implicitly\n``PROSE``. Gamebook packs the same total words into more, shorter nodes.",
       "enum": [
@@ -417,6 +426,17 @@
           "anyOf": [
             {
               "$ref": "#/$defs/Length"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "narrative_person": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NarrativePerson"
             },
             {
               "type": "null"

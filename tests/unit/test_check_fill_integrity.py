@@ -80,9 +80,9 @@ _SKELETON: dict[str, Any] = {
 def _filled() -> dict[str, Any]:
     """Return a filled version of ``_SKELETON`` with bodies/labels replaced.
 
-    Title and ending title are left untouched: ``check_fill_integrity.py``
-    has never treated those as leaf fields (only ``body`` and, after this
-    change, choice ``label``), so a realistic fill leaves them as-authored.
+    Title and ending title are left untouched here so individual tests can
+    opt into rewriting them; since the 2026-08-21 ruling they are leaf
+    fields by default and ``--frozen-titles`` restores the old comparison.
     """
     filled = copy.deepcopy(_SKELETON)
     filled["nodes"][0]["body"] = "You stand at a fork in the path."
@@ -105,24 +105,41 @@ def test_label_rewritten_fill_passes_the_structure_check(tmp_path: Path) -> None
     assert exit_code == 0
 
 
-def test_title_rewrite_flag_permits_book_and_ending_titles(tmp_path: Path) -> None:
-    """With --allow-title-rewrite, storybook and ending titles are leaves.
+def test_title_rewrite_is_legal_by_default_and_frozen_titles_restores_it(
+    tmp_path: Path,
+) -> None:
+    """Storybook and ending titles are leaves by default (ruled 2026-08-21).
 
-    Amendment 4 of the contract-hygiene pass (AL-161): an unslotted title
-    is byte-frozen across bindings and a top recognition channel, so a
-    title-contract fill rewrites both the book title and ending titles.
-    Without the flag the same fill must still fail.
+    The 2026-08-21 ruling (live-structural-round-2026-08-21.md section 8.3)
+    makes both titles leaf content: 15 of 16 measured one-shot fills retitled
+    endings, and AL-161 already showed byte-frozen titles are a sibling
+    recognition channel. A title diff therefore passes without any flag; the
+    deprecated --allow-title-rewrite stays accepted as a no-op; and
+    --frozen-titles restores the pre-ruling comparison for callers that want
+    the old strictness.
     """
     filled = _filled()
     filled["title"] = "The Comet Glyphs"
     filled["nodes"][1]["ending"]["title"] = "Starlight Kept"
     skeleton_path = _write(tmp_path, "skeleton.json", _SKELETON)
     filled_path = _write(tmp_path, "filled.json", filled)
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 0
     assert (
         check_fill_integrity.main([skeleton_path, filled_path, "--allow-title-rewrite"])
         == 0
     )
-    assert check_fill_integrity.main([skeleton_path, filled_path]) == 1
+    assert (
+        check_fill_integrity.main([skeleton_path, filled_path, "--frozen-titles"]) == 1
+    )
+
+
+def test_frozen_titles_still_passes_an_untouched_fill(tmp_path: Path) -> None:
+    """--frozen-titles restores the old comparison, not a new failure mode."""
+    skeleton_path = _write(tmp_path, "skeleton.json", _SKELETON)
+    filled_path = _write(tmp_path, "filled.json", _filled())
+    assert (
+        check_fill_integrity.main([skeleton_path, filled_path, "--frozen-titles"]) == 0
+    )
 
 
 def test_rewritten_target_fails_the_structure_check(tmp_path: Path) -> None:
@@ -133,6 +150,50 @@ def test_rewritten_target_fails_the_structure_check(tmp_path: Path) -> None:
     filled_path = _write(tmp_path, "filled.json", filled)
     exit_code = check_fill_integrity.main([skeleton_path, filled_path])
     assert exit_code == 1
+
+
+def test_variable_description_rewrite_passes_but_machine_fields_stay_frozen(
+    tmp_path: Path,
+) -> None:
+    """A themed variable description is a reskin; its machine fields are not.
+
+    The 2026-08-21 freeze split (section 8.2) makes ``variables[].description``
+    writable, matching ``normalize_filled_story``'s overlay; the comparison
+    previously retained descriptions and reported a valid retheme as a
+    structural failure (PR #737 review finding). Name/type/bounds/initial stay
+    in the comparison.
+    """
+    skeleton = copy.deepcopy(_SKELETON)
+    skeleton["variables"] = [
+        {
+            "name": "plates",
+            "type": "int",
+            "min": 0,
+            "max": 3,
+            "initial": 3,
+            "description": "Unexposed photographic plates remaining.",
+        }
+    ]
+    rethemed = copy.deepcopy(skeleton)
+    rethemed["nodes"][0]["body"] = "You stand at a fork in the path."
+    rethemed["nodes"][0]["choices"][0]["label"] = "Go toward the light."
+    rethemed["nodes"][1]["body"] = "You made it home safe."
+    rethemed["variables"][0]["description"] = "Glass slides left in the carrier."
+    skeleton_path = _write(tmp_path, "skeleton.json", skeleton)
+    assert (
+        check_fill_integrity.main(
+            [skeleton_path, _write(tmp_path, "rethemed.json", rethemed)]
+        )
+        == 0
+    )
+    moved = copy.deepcopy(rethemed)
+    moved["variables"][0]["max"] = 5
+    assert (
+        check_fill_integrity.main(
+            [skeleton_path, _write(tmp_path, "moved.json", moved)]
+        )
+        == 1
+    )
 
 
 def test_check_fill_integrity_rejects_same_file(tmp_path: Path) -> None:
@@ -385,3 +446,155 @@ def test_check_fill_integrity_rejects_a_skeleton_with_no_markers(
     filled_path = _write(tmp_path, "filled.json", _filled())
     exit_code = check_fill_integrity.main([skeleton_path, filled_path])
     assert exit_code == 1
+
+
+def _twinned_id_skeleton() -> dict[str, Any]:
+    """Return a commissioned skeleton whose two ending nodes share one id.
+
+    Both twins are commissioned at 100 words, so the id-keyed join collapses
+    them into a single ``"n2"`` key worth 200 commissioned words.
+    """
+    skeleton = copy.deepcopy(_commissioned_skeleton())
+    skeleton["nodes"].append(copy.deepcopy(skeleton["nodes"][1]))
+    return skeleton
+
+
+def _twinned_id_fill() -> dict[str, Any]:
+    """Return a fill that pays one twin double and leaves the other empty."""
+    filled = copy.deepcopy(_twinned_id_skeleton())
+    filled["nodes"][0]["body"] = " ".join(f"word{i}" for i in range(100))
+    filled["nodes"][0]["choices"][0]["label"] = "Go toward the light."
+    filled["nodes"][1]["body"] = " ".join(f"word{i}" for i in range(200))
+    filled["nodes"][2]["body"] = ""
+    return filled
+
+
+def test_duplicate_node_ids_in_the_skeleton_refuse_to_score(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A skeleton that reuses a node id is refused, not scored.
+
+    Every measure here joins the two files by node id, and
+    ``commissioned_words_by_node`` accumulates duplicate keys by contract, so
+    two nodes sharing an id become one key carrying the sum of both sides.
+    That collapses the per-node cap the fill rate depends on. The production
+    path never sees this shape (``Storybook._check_unique_ids`` rejects it and
+    ``run_gate`` model-validates first), but this checker reads raw JSON with
+    no model validation, so the duplicate reaches it unfiltered.
+    """
+    skeleton_path = _write(tmp_path, "skeleton.json", _twinned_id_skeleton())
+    filled_path = _write(tmp_path, "filled.json", _twinned_id_fill())
+
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 1
+
+    captured = capsys.readouterr()
+    assert "reuses node id(s) ['n2']" in captured.err
+    assert "fill-rate: delivered" not in captured.out, (
+        "the run must be refused BEFORE measuring; a fill-rate line means an "
+        "ambiguous document was scored anyway"
+    )
+
+
+def test_duplicate_node_ids_in_the_filled_story_refuse_to_score(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A filled story that reuses a node id is refused by name.
+
+    The structural comparison would also reject this pairing, since ids are
+    compared, but it would report a generic structural diff. Refusing up front
+    names the actual defect and keeps the join unambiguous either way.
+    """
+    skeleton_path = _write(tmp_path, "skeleton.json", _commissioned_skeleton())
+    filled = _filled_at(95)
+    filled["nodes"][0]["id"] = "n2"
+    filled_path = _write(tmp_path, "filled.json", filled)
+
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 1
+    assert "the filled reuses node id(s) ['n2']" in capsys.readouterr().err
+
+
+def test_the_duplicate_id_refusal_is_what_stops_the_fill_rate_laundering(
+    tmp_path: Path,
+) -> None:
+    """Pin the mechanism, not just the message: the score WOULD have been clean.
+
+    CodeRabbit's PR #731 finding. Run the id-keyed join by hand over the same
+    twinned document the refusal blocks: the empty twin's shortfall is paid for
+    by its double-length sibling under a shared key, the per-node cap never
+    bites, and the capped ratio reaches a perfect 1.0 on a book with a blank
+    node. Without the refusal a fill that left a node empty clears the floor.
+    """
+    skeleton = _twinned_id_skeleton()
+    filled = _twinned_id_fill()
+
+    commissioned = check_fill_integrity.commissioned_words_by_node(skeleton)
+    delivered = check_fill_integrity._delivered_words_by_node(filled)  # pyright: ignore[reportPrivateUsage]
+    capped = sum(
+        min(delivered.get(nid, 0), words) for nid, words in commissioned.items()
+    )
+    total = sum(commissioned.values())
+
+    assert commissioned == {"n1": 100, "n2": 200}, (
+        "the twins must collapse into one key for this to be the laundering "
+        f"CodeRabbit found; got {commissioned}"
+    )
+    assert filled["nodes"][2]["body"] == "", "one twin must be empty"
+    assert capped / total == 1.0, (
+        "the un-refused metric scores a book with a blank node at 100 percent, "
+        "which is why an ambiguous document must not be scored at all"
+    )
+
+    skeleton_path = _write(tmp_path, "skeleton.json", skeleton)
+    filled_path = _write(tmp_path, "filled.json", filled)
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 1
+
+
+def test_id_less_nodes_are_never_read_as_duplicates(tmp_path: Path) -> None:
+    """Two nodes with no ``id`` at all are distinct, not a repeated id.
+
+    The commissioned side keys them ``#index``, which cannot collide. Treating
+    a shared absence as a duplicate would refuse the legitimate id-less
+    skeleton ``test_fill_rate_joins_id_less_nodes_positionally`` covers.
+    """
+    skeleton = _commissioned_skeleton()
+    filled = _filled_at(95)
+    for document in (skeleton, filled):
+        del document["nodes"][0]["id"]
+        del document["nodes"][1]["id"]
+    skeleton_path = _write(tmp_path, "skeleton.json", skeleton)
+    filled_path = _write(tmp_path, "filled.json", filled)
+
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 0
+
+
+def test_the_offline_delivery_join_dedupes_ids_the_way_production_does() -> None:
+    """The offline helper and ``story_fill_rate`` must agree on a duplicate id.
+
+    The CLI refuses a twinned document before this helper runs, so the dedupe
+    inside it is not what stops the laundering; the refusal above is. What it
+    buys is parity. This script and
+    ``cyo_adventure.generation.skeleton.story_fill_rate`` implement one metric
+    twice, and a duplicated id is the single input on which "sum the twins"
+    and "credit the first" disagree, so it is the input that would let the
+    offline number and the production number drift apart on the same document.
+    Production cannot refuse (it must return a ratio, and model validation
+    upstream means it never actually meets a duplicate); this checker can, and
+    does. Pinning the agreement keeps the unreachable branch honest rather
+    than merely unfalsifiable (PR #737 review, I15 as corrected).
+    """
+    from cyo_adventure.generation.skeleton import story_fill_rate
+
+    skeleton = _twinned_id_skeleton()
+    filled = _twinned_id_fill()
+
+    delivered = check_fill_integrity._delivered_words_by_node(filled)  # pyright: ignore[reportPrivateUsage]
+    assert delivered == {"n1": 100, "n2": 200}, (
+        "the empty second twin must neither add to nor overwrite the first "
+        f"twin's key; got {delivered}"
+    )
+
+    commissioned = check_fill_integrity.commissioned_words_by_node(skeleton)
+    offline = sum(
+        min(delivered.get(nid, 0), words) for nid, words in commissioned.items()
+    ) / sum(commissioned.values())
+    assert story_fill_rate(skeleton, filled) == offline

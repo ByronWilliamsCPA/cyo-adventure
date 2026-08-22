@@ -6,17 +6,18 @@ Usage:
 Four checks for the story-inventory authoring run (see
 ``docs/planning/story-inventory-initial-run.md`` section 5.1):
 
-1. Structural immutability: with every node ``body`` and every choice
-   ``label`` removed, the filled story must be byte-identical (canonical
-   JSON) to the skeleton. An author agent only writes leaf prose (bodies and
-   labels); any other difference is a hard fail. Choice labels are leaf
-   content, aligned with ``diversity/structure.py``'s
-   ``structure_fingerprint`` (the WS-0 labels-are-leaves decision): the
-   automated fill contract (``generation/templates/fill.md``) rewrites
-   labels per theme, so this check no longer treats that rewrite as a
-   structural violation. A label's *action-semantic* (what the choice
-   means, as opposed to its surface wording) is not checked here at all;
-   that is a Stage 1 fidelity concern, not a byte-equality one.
+1. Structural immutability: with every node ``body``, every choice
+   ``label``, the storybook ``title``, and every ending ``title`` removed,
+   the filled story must be byte-identical (canonical JSON) to the skeleton.
+   An author agent only writes leaf prose; any other difference is a hard
+   fail. Choice labels are leaf content, aligned with
+   ``diversity/structure.py``'s ``structure_fingerprint`` (the WS-0
+   labels-are-leaves decision), and titles are leaf content by the
+   2026-08-21 ruling (``live-structural-round-2026-08-21.md`` section 8.3;
+   ``--frozen-titles`` restores the pre-ruling comparison). A label's
+   *action-semantic* (what the choice means, as opposed to its surface
+   wording) is not checked here at all; that is a Stage 1 fidelity concern,
+   not a byte-equality one.
 2. No ``<<FILL`` markers may remain anywhere in the filled file.
 3. Word stats: per-node counts vs the band's per-node hard max (fail) and the
    story mean vs the band's advisory range (warning only; PL-19 mirrors this).
@@ -28,7 +29,9 @@ Four checks for the story-inventory authoring run (see
    where the skeleton is in hand.
 
 Exits 1 on a structural diff, a leftover marker, a node over the hard max, or
-a story-level fill rate under ``--min-fill-rate``.
+a story-level fill rate under ``--min-fill-rate``. It also refuses to score at
+all when either document reuses a node id: every measure here joins the two
+files by id, so a duplicate would credit one node's prose to another.
 """
 
 from __future__ import annotations
@@ -118,14 +121,25 @@ def _strip_leaf_fields(
             when the caller opts in.
 
     Returns:
-        A copy suitable for structure-only comparison: every node ``body``
-        and every choice ``label`` removed (and, when opted in, every
-        ending ``title``), leaving ids, targets, conditions, effects,
-        ending kind/valence, variables, and metadata.
+        A copy suitable for structure-only comparison: every node ``body``,
+        every choice ``label``, and every variable ``description`` removed
+        (and, when opted in, every ending ``title``), leaving ids, targets,
+        conditions, effects, ending kind/valence, variable
+        name/type/bounds/initial, and metadata.
     """
     copy: dict[str, Any] = json.loads(json.dumps(story))
     if allow_title_rewrite:
         copy.pop("title", None)
+    # Variable descriptions are theme documentation, writable under the
+    # 2026-08-21 freeze split (section 8.2 of the live-structural round doc;
+    # `normalize_filled_story` overlays them the same way). Only the machine
+    # fields (name, type, min/max, initial) stay in the comparison, so a
+    # themed description is a reskin, not a structural failure.
+    variables = copy.get("variables")
+    if isinstance(variables, list):
+        for variable in variables:
+            if isinstance(variable, dict):
+                variable.pop("description", None)
     nodes = copy.get("nodes")
     if isinstance(nodes, list):
         for node in nodes:
@@ -170,9 +184,9 @@ def _delivered_words_by_node(filled: dict[str, Any]) -> dict[str, int]:
 
     The fill-rate join looks these up by the keys
     ``commissioned_words_by_node`` produces: the node id, or ``#index`` for an
-    id-less node, with duplicate keys accumulating. Reusing ``_word_stats``'s
-    pairs here would key id-less nodes as ``"?"`` and let a ``dict()`` collapse
-    duplicate ids, silently undercounting delivery and failing a fill that
+    id-less node. A duplicated id credits its FIRST occurrence only, for
+    parity with production rather than as a defense (see the inline note). Reusing ``_word_stats``'s pairs here would key id-less
+    nodes as ``"?"``, silently undercounting delivery and failing a fill that
     delivered in full. The structural check pins the filled story to the
     skeleton's node order, which is what makes a positional key comparable at
     all.
@@ -195,8 +209,48 @@ def _delivered_words_by_node(filled: dict[str, Any]) -> dict[str, int]:
             continue
         raw_id = node.get("id")
         key = str(raw_id) if raw_id is not None else f"#{index}"
-        delivered[key] = delivered.get(key, 0) + len(body.split())
+        # Only the FIRST occurrence of an id is credited, matching
+        # ``skeleton.py::story_fill_rate`` exactly. This is PARITY, not the
+        # remedy: ``main`` refuses a document with duplicate ids before this
+        # helper ever runs, so the branch below is unreachable from the CLI.
+        # It stays because the two files implement one metric twice, and a
+        # duplicated id is the only input on which "sum the twins" and
+        # "credit the first" disagree, so dropping it here would let the
+        # offline and production numbers drift on the same document.
+        # Production cannot refuse (it must return a ratio, and the model
+        # validation ahead of the gate means it never meets a duplicate).
+        # #VERIFY: test_check_fill_integrity.py::
+        # test_the_offline_delivery_join_dedupes_ids_the_way_production_does
+        # asserts the two implementations agree on a twinned document.
+        if key in delivered:
+            continue
+        delivered[key] = len(body.split())
     return delivered
+
+
+def _duplicate_node_ids(document: dict[str, Any]) -> list[str]:
+    """Return every node id the document uses more than once.
+
+    Args:
+        document: The decoded skeleton or filled story.
+
+    Returns:
+        The repeated ids, sorted. Empty when every id is unique, when no node
+        carries an id, or when the document exposes no scannable node list.
+    """
+    seen: dict[str, int] = {}
+    nodes = document.get("nodes")
+    if not isinstance(nodes, list):
+        return []
+    for node in cast("list[object]", nodes):
+        if not isinstance(node, dict):
+            continue
+        raw_id = cast("dict[str, object]", node).get("id")
+        if raw_id is None:
+            continue
+        key = str(raw_id)
+        seen[key] = seen.get(key, 0) + 1
+    return sorted(key for key, count in seen.items() if count > 1)
 
 
 def _defers_titles(skeleton: dict[str, Any]) -> bool:
@@ -246,9 +300,21 @@ def main(argv: list[str] | None = None) -> int:
         "--allow-title-rewrite",
         action="store_true",
         help=(
-            "Permit the storybook title and ending titles to differ "
-            "(title-contract fills; titles are "
-            "leaf content per WS-0, AL-161)."
+            "Deprecated no-op: title rewrites are legal by default since the "
+            "2026-08-21 ruling (live-structural-round-2026-08-21.md section "
+            "8.3). Kept so existing invocations keep working."
+        ),
+    )
+    parser.add_argument(
+        "--frozen-titles",
+        action="store_true",
+        help=(
+            "Compare the storybook title and ending titles as frozen "
+            "structure, restoring the pre-ruling behavior. The 2026-08-21 "
+            "ruling makes both leaf content (WS-0 labels-are-leaves, AL-161, "
+            "live-structural-round-2026-08-21.md section 8.3), so by default "
+            "they are stripped from the structural comparison like bodies "
+            "and choice labels."
         ),
     )
     parser.add_argument(
@@ -316,6 +382,37 @@ def main(argv: list[str] | None = None) -> int:
             f"cannot detect a failed fill\n"
         )
         return 1
+
+    # #CRITICAL: data-integrity: refuse to score a document whose node ids are
+    # not unique. Every metric below joins the skeleton to the filled story by
+    # node id, and ``commissioned_words_by_node`` accumulates duplicate keys by
+    # contract, so two nodes sharing an id collapse into ONE key carrying the
+    # SUM of their commissioned words and the SUM of their delivered words.
+    # That defeats the per-node cap that makes the fill rate monotone in
+    # per-node delivery: a fill that writes one twin at double length and
+    # leaves the other empty scores the pair at a full 100 percent, which is
+    # precisely the laundering the cap exists to stop. The production path
+    # never sees this shape (``Storybook._check_unique_ids`` rejects duplicate
+    # ids and ``run_gate`` model-validates before any fill-rate metric runs),
+    # but this checker reads RAW JSON with no model validation, so a
+    # hand-authored or model-emitted duplicate reaches it unfiltered. Scoring
+    # an ambiguous document wrongly is worse than refusing to score it, the
+    # same ruling the same-file and no-marker refusals above already encode.
+    # #VERIFY: test_check_fill_integrity.py::
+    # test_duplicate_node_ids_in_the_skeleton_refuse_to_score and
+    # ::test_duplicate_node_ids_in_the_filled_story_refuse_to_score.
+    for label, document in (("skeleton", skeleton), ("filled", filled)):
+        repeated = _duplicate_node_ids(document)
+        if repeated:
+            sys.stderr.write(
+                f"FAIL inputs: the {label} reuses node id(s) {repeated}, so "
+                f"every id-keyed measure below (commissioned words, delivered "
+                f"words, the per-node fill-rate cap) would credit one node's "
+                f"prose to another and could clear the floor on a fill that "
+                f"left a node empty; refusing to score an ambiguous document\n"
+            )
+            return 1
+
     failed = False
 
     # Derived rather than remembered: a skeleton that writes its title as a FILL
@@ -323,8 +420,14 @@ def main(argv: list[str] | None = None) -> int:
     # structural failure that is not one. This previously depended on the flag
     # being passed by hand (AL-224 on this branch, renumbered in the merge).
     defers_titles = _defers_titles(skeleton)
-    allow_title_rewrite = args.allow_title_rewrite or defers_titles
-    if defers_titles and not args.allow_title_rewrite:
+    # Titles are leaf content by default (ruled 2026-08-21,
+    # docs/planning/live-structural-round-2026-08-21.md section 8.3): 15 of 16
+    # measured one-shot fills retitled endings, and the chunked path now
+    # carries the same affordance, so a title diff is a theme rewrite, not a
+    # structural violation. --frozen-titles restores the old comparison; a
+    # skeleton that defers its title as a FILL directive is exempt even then.
+    allow_title_rewrite = not args.frozen_titles or defers_titles
+    if defers_titles and args.frozen_titles:
         sys.stdout.write(
             "note  titles: the skeleton defers its title as a FILL directive, so "
             "title differences are expected and are not compared\n"

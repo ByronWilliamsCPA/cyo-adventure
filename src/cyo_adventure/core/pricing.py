@@ -262,6 +262,55 @@ _PRICES: dict[tuple[str, str], ModelPrice] = {
             "endpoint, which is the pin this project uses for this model"
         ),
     ),
+    # Pinned-endpoint price, like the v4-pro row above: this run enablement row
+    # prices the `novita/fp8` endpoint, the pin the 2026-08-21 chunked-path leg
+    # uses (`docs/planning/vendor-comparison/vendors-deepseek-v32.json`, whose
+    # `provider_order` is `["novita/fp8"]` and whose `_price_per_mtok` records
+    # this row's exact `0.269 / 0.40`).
+    #
+    # This comment named `digitalocean` until 2026-08-22 while the `note=`
+    # below and the fixture both said `novita/fp8`, so the row contradicted
+    # itself about the endpoint it priced under a payment marker. The fixture
+    # is the evidence and it settles it: digitalocean was the take-3 pin and
+    # the pin MOVED. Probed 2026-08-21: digitalocean, novita/fp8 and
+    # siliconflow/fp8 return 200; `atlas-cloud/fp8` returns 404 "no endpoints
+    # available matching your guardrail restrictions and data policy".
+    # DigitalOcean then passed a 512-token pre-flight and returned short
+    # malformed output to every large chunked batch ask, so take 4 pinned
+    # novita/fp8, which served the identical prompt correctly.
+    #
+    # Novita declares exactly 65,536 max_completion_tokens, which is the slug's
+    # `MODEL_OUTPUT_CAPS` row to the token and therefore carries NO headroom
+    # above the resolved cap. That is acceptable, and the reason is the
+    # `_FEASIBILITY_MARGIN`, not the endpoint: chunked batch asks are held to
+    # 0.8 of the cap, so the largest ask this pin can receive is 52,428 against
+    # a real 65,536 ceiling. The earlier justification here, digitalocean's
+    # 128,000 ceiling sitting above the cap, no longer applies to the pinned
+    # endpoint and must not be reused for it.
+    # #ASSUME: payment: deliberately absent from
+    # `scripts/refresh_pricing.py::_WANTED` for the same reason as the v4-pro
+    # row: a refresh reads the slug's default route and would overwrite this
+    # pinned price. Re-price by hand from
+    # /models/deepseek/deepseek-v3.2/endpoints together with the fixture's pin.
+    # #VERIFY: test_deepseek_v3_2_fixture_carries_the_priced_pin asserts the
+    # committed fixture still pins `novita/fp8`, that this row's note still
+    # names that endpoint, and that the fixture's recorded `_price_per_mtok`
+    # still matches this row's two halves. A prose "re-run the probe" marker is
+    # what let the endpoint name drift here in the first place; the v4-pro row
+    # above binds its pin to a test and this row now does the same.
+    ("openrouter", "deepseek/deepseek-v3.2"): ModelPrice(
+        input_usd_per_mtok=Decimal("0.269"),
+        output_usd_per_mtok=Decimal("0.40"),
+        as_of=date(2026, 8, 21),
+        source=_OPENROUTER_API,
+        note=(
+            "read live from https://openrouter.ai/api/v1/models/"
+            "deepseek/deepseek-v3.2/endpoints; price of the novita/fp8 "
+            "endpoint, the pin the 2026-08-21 chunked-path leg uses after "
+            "digitalocean passed its 512-token probe and then failed every "
+            "large chunked batch ask with short malformed output (take 3)"
+        ),
+    ),
     ("openrouter", "qwen/qwen3.6-27b"): ModelPrice(
         input_usd_per_mtok=Decimal("0.6"),
         output_usd_per_mtok=Decimal("3.6"),

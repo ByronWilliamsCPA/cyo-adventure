@@ -26,9 +26,12 @@ Three responsibilities, all pure:
   payloads the subset prompt carries: what to write now, and what earlier
   batches already wrote (so names, world, and voice survive across batches).
 * :func:`merge_fill_batch` folds one batch reply back into the document. It is
-  a whitelist merge: only node bodies and choice label text are ever read from
-  the reply, so no reply can change a node id, a choice target, ``start_node``,
-  ``is_ending``, ``ending``, ``variables``, or ``metadata``.
+  a whitelist merge: only node bodies, choice label text, and ending titles
+  (leaf content per the 2026-08-21 ruling,
+  ``docs/planning/live-structural-round-2026-08-21.md`` section 8.3) are ever
+  read from the reply, so no reply can change a node id, a choice target,
+  ``start_node``, ``is_ending``, an ending's ``id``/``kind``/``valence``,
+  ``variables``, or ``metadata``.
 
 The expected-size arithmetic is not re-derived here. ``skeleton``'s
 :func:`~cyo_adventure.generation.skeleton.expected_output_tokens` and
@@ -453,6 +456,94 @@ def _merged_labels(
     return rebuilt
 
 
+def _apply_merged_ending(
+    merged: dict[str, object],
+    node: dict[str, object],
+    reply: dict[str, object],
+    node_id: str,
+) -> None:
+    """Set ``merged["ending"]`` from the reply when the node warrants one.
+
+    An explicit JSON null ``ending_title`` on a non-ending node must not mint
+    an ``"ending": None`` key the skeleton never carried (PR #737 review,
+    suggested findings); a node with no ending and no proposed title is left
+    untouched.
+
+    Args:
+        merged: The node being rebuilt, mutated in place.
+        node: The skeleton node.
+        reply: The reply entry for this node.
+        node_id: The node id, for error messages.
+    """
+    if "ending_title" not in reply and "ending" not in node:
+        return
+    merged_ending = _merged_ending(node, reply, node_id)
+    if merged_ending is not None or "ending" in node:
+        merged["ending"] = merged_ending
+
+
+def _merged_ending(
+    node: dict[str, object], reply: dict[str, object], node_id: str
+) -> object:
+    """Return this node's ending block with only its title replaced.
+
+    ``ending.title`` is leaf content (ruled 2026-08-21,
+    ``docs/planning/live-structural-round-2026-08-21.md`` section 8.3): a
+    themed fill may retitle an ending the way it rewrites a choice label.
+    Every other key on the ending (``id``, ``kind``, ``valence``, which carry
+    the PL-15 fail-state policy) is carried through from the skeleton by dict
+    spread, never read from the reply. A reply that omits ``ending_title``
+    keeps the skeleton's title.
+
+    # #CRITICAL: data-integrity: presence is tested with ``in``, never with
+    # ``is None``, and the eligibility rejection runs BEFORE the
+    # nothing-proposed short-circuit. ``reply.get("ending_title")`` collapses
+    # "the key is absent" and "the model returned an explicit JSON ``null``"
+    # into the same value, so an earlier ``if proposed is None: return ending``
+    # let a reply that sent ``"ending_title": null`` for a node with no ending
+    # block fall straight through the guard below and hand the caller ``None``.
+    # The caller writes whatever it gets back to ``merged["ending"]`` whenever
+    # ``"ending_title" in node_reply``, so that path INSERTED ``"ending": None``
+    # onto a plain narrative node the guard exists to protect, turning a merge
+    # that must touch nothing but prose into a structural edit.
+    # #VERIFY: test_chunking_merged_ending.py::
+    # test_an_explicit_null_ending_title_on_a_non_ending_node_is_rejected.
+
+    Args:
+        node: The skeleton node.
+        reply: The reply entry for this node.
+        node_id: The node id, for error messages.
+
+    Returns:
+        object: The rebuilt ending dict, or the skeleton's own ``ending``
+        value unchanged when the reply carries no ``ending_title`` key at all.
+
+    Raises:
+        ValidationError: If ``ending_title`` is present for a node with no
+            ending block (including when its value is an explicit ``null``),
+            is not a non-blank string, or still carries a ``<<FILL ...>>``
+            directive. A title for a non-ending node means the reply is not
+            about this node, and guessing would retitle the wrong ending.
+    """
+    ending = node.get("ending")
+    if "ending_title" not in reply:
+        return ending
+    if not isinstance(ending, dict):
+        msg = (
+            f"batch reply for node {node_id!r} supplies 'ending_title' but the "
+            f"node has no ending block"
+        )
+        raise ValidationError(msg, field="ending_title", value=node_id)
+    title = _require_str(reply["ending_title"], what="ending title", node_id=node_id)
+    if FILL_MARKER in title:
+        msg = (
+            f"batch reply for node {node_id!r} returned the fill directive "
+            f"instead of an ending title"
+        )
+        raise ValidationError(msg, field="ending_title", value=node_id)
+    return {**cast("dict[str, object]", ending), "title": title}
+
+
 def merge_fill_batch(
     document: dict[str, object], node_ids: Iterable[str], payload: object
 ) -> dict[str, object]:
@@ -460,11 +551,13 @@ def merge_fill_batch(
 
     # #CRITICAL: data-integrity: ``payload`` is untrusted model output being
     # merged into a document that has already passed the structural gate. The
-    # merge is a whitelist, not a patch: only ``body`` and choice ``label``
-    # text are ever read from the reply, and every other key on the story, on
+    # merge is a whitelist, not a patch: only ``body``, choice ``label``
+    # text, and the ending ``title`` (leaf content per the 2026-08-21 ruling)
+    # are ever read from the reply, and every other key on the story, on
     # a node, and on a choice is carried over from *document* by dict spread.
     # A reply therefore cannot alter ``start_node``, ``variables``,
-    # ``metadata``, a node id, ``is_ending``, ``ending``, or a choice's
+    # ``metadata``, a node id, ``is_ending``, an ending's
+    # ``id``/``kind``/``valence``, or a choice's
     # ``target``/``condition``/``effects``, whatever it contains. Structural
     # validation is re-run by the caller regardless, because body text feeds
     # blocking rules; this only guarantees the graph itself is untouched.
@@ -485,7 +578,8 @@ def merge_fill_batch(
             the result of the previous merge afterwards).
         node_ids: Exactly the ids this batch asked for.
         payload: The parsed model reply, expected to be a mapping of node id to
-            ``{"body": str, "choices": {choice_id: str}}``.
+            ``{"body": str, "choices": {choice_id: str}}``, plus an optional
+            ``"ending_title": str`` on ending nodes.
 
     Returns:
         dict[str, object]: A new document with those nodes' prose replaced.
@@ -535,13 +629,9 @@ def merge_fill_batch(
                 f"instead of prose"
             )
             raise ValidationError(msg, field="body", value=node_id)
-        rebuilt.append(
-            {
-                **node,
-                "body": body,
-                "choices": _merged_labels(node, node_reply, node_id),
-            }
-            if "choices" in node
-            else {**node, "body": body}
-        )
+        merged: dict[str, object] = {**node, "body": body}
+        if "choices" in node:
+            merged["choices"] = _merged_labels(node, node_reply, node_id)
+        _apply_merged_ending(merged, node, node_reply, node_id)
+        rebuilt.append(merged)
     return {**document, "nodes": rebuilt}
