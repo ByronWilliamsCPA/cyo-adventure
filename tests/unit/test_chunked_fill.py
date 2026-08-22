@@ -575,7 +575,13 @@ async def test_a_feasible_skeleton_still_takes_the_untouched_one_shot_path() -> 
     provider = MockProvider(responses=[json.dumps(VALID_STORY)])
 
     outcome = await fill_skeleton(
-        skeleton, {"premise": "a fox"}, provider, PiiContext(child_names=frozenset())
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        PiiContext(child_names=frozenset()),
+        # Routing is under test, not delivery volume: the fixture
+        # commissions 10 words per node against terse canned bodies.
+        min_fill_rate=0,
     )
 
     assert outcome.status == "passed"
@@ -607,6 +613,9 @@ async def test_a_skeleton_over_the_cap_is_filled_batch_by_batch_and_merged(
         provider,
         PiiContext(child_names=frozenset()),
         settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        # Routing is under test, not delivery volume: the fixture
+        # commissions 10 words per node against terse canned bodies.
+        min_fill_rate=0,
         stage1_gate="skipped",
     )
 
@@ -769,6 +778,9 @@ async def test_a_bound_fill_that_fits_still_takes_the_one_shot_bound_prompt() ->
         provider,
         PiiContext(child_names=frozenset()),
         stage1_gate="skipped",
+        # Routing is under test, not delivery volume: the fixture
+        # commissions 10 words per node against terse canned bodies.
+        min_fill_rate=0,
         slot_bindings={"HERO": "Rosa"},
     )
 
@@ -808,6 +820,9 @@ async def test_a_bound_fill_over_the_cap_is_chunked_and_keeps_its_bound_values(
         provider,
         PiiContext(child_names=frozenset()),
         settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        # Routing is under test, not delivery volume: the fixture
+        # commissions 10 words per node against terse canned bodies.
+        min_fill_rate=0,
         stage1_gate="skipped",
         slot_bindings={"HERO": "Rosa"},
     )
@@ -1165,9 +1180,7 @@ async def test_a_known_window_clamps_the_batch_ask_below_the_cap(
     monkeypatch.setattr(orch, "estimate_input_tokens", lambda *_texts: 100)
     skeleton = _all_fill_skeleton()
     batches = plan_fill_batches(skeleton, max_tokens=_CAP_FOR_ONE)
-    provider = _AskRecordingProvider(
-        responses=[_reply_for(batch) for batch in batches]
-    )
+    provider = _AskRecordingProvider(responses=[_reply_for(batch) for batch in batches])
 
     outcome = await fill_skeleton(
         skeleton,
