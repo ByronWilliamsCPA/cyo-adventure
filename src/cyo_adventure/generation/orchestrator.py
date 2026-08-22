@@ -1247,7 +1247,9 @@ async def _fill_in_batches(
         # window (unknown windows constrain nothing), and refuse outright
         # when the remaining room cannot hold the batch's expected output:
         # a deterministic refusal beats a paid 400 or a mid-batch truncation.
-        # #VERIFY: test_chunked_fill.py::TestContextBound.
+        # #VERIFY: tests/unit/test_chunked_fill.py::
+        # test_a_window_too_small_for_a_batch_refuses_without_spending and
+        # ::test_a_known_window_clamps_the_batch_ask_below_the_cap.
         ask = ctx.cap
         window = resolve_context_window(ctx.model)
         if window is not None:

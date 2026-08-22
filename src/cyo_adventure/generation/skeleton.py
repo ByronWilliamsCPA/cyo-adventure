@@ -324,7 +324,9 @@ def story_fill_rate(
 # #ASSUME: external resources: values transcribed from the OpenRouter
 # endpoints API for the pinned endpoints; per-endpoint variation exists for
 # some slugs, so record the MINIMUM across the endpoints a pin can reach.
-# #VERIFY: tests/unit/test_fill_output_cap.py::TestContextWindow.
+# #VERIFY: tests/unit/test_chunked_fill.py::
+# test_a_known_window_clamps_the_batch_ask_below_the_cap (reads this table
+# through resolve_context_window on the chunked path).
 MODEL_CONTEXT_WINDOWS: dict[str, int] = {
     # Uniform 163,840 across every serving endpoint, read 2026-08-21.
     "deepseek/deepseek-v3.2": 163_840,
