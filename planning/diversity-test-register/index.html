@@ -3633,6 +3633,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#f-skeleton-sourcing-programme-s-rows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F. Skeleton sourcing programme (S rows)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#duplicate-map" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5818,6 +5829,93 @@ until D-6 reports.</strong></p>
 </tbody>
 </table>
 <hr />
+<h2 id="f-skeleton-sourcing-programme-s-rows">F. Skeleton sourcing programme (S rows)<a class="headerlink" href="#f-skeleton-sourcing-programme-s-rows" title="Permanent link">&para;</a></h2>
+<p>Registered 2026-08-21 per the
+<a href="../skeleton-sourcing-test-plan-2026-08-21/">skeleton sourcing test plan</a>, whose preamble gates any
+spend on these rows landing first, margins included. Sources: the plan itself (revision 2, written
+after an adversarial review; its section 9 records the review). The margins, floors, and ceilings
+below are the proposer's (the plan's author) and are fixed as of this commit; amending one after its
+experiment has produced artifacts voids that experiment's pre-registration and must be recorded here
+as such.</p>
+<p><strong>Declared deviation at registration time (S-0).</strong> <code>recognition-protocol-pilot/protocol.py</code>
+pre-registered its known-answer validation against the three D-7c same-armature pairs and a
+D-7c-vs-W16 control, but those six books were never committed: PR #715 merged the rigs and READMEs,
+the fills stayed on the deleted working branch. S-0 therefore re-bases the validation on artifacts
+that exist on main: same-armature pairs <code>d7-stratified-plan/filled_C vs filled_D</code> and
+<code>d7b-bare-names/filled_C vs filled_D</code> (same 26-node armature, independently authored decisional
+strata), and a cross-graph control <code>d7-stratified-plan/filled_C vs
+mutation-per-request-pilot/book-s-the-midnight-museum</code> (different graph, different world, same band;
+the original control also varied band, this one cannot). With two same-armature pairs instead of
+three, the pass rule tightens from 2-of-3 to 2-of-2; 1-of-2 is a failed validation, not a partial.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Test</th>
+<th>Question it settles</th>
+<th>Method</th>
+<th>Cost</th>
+<th>Falsifier / margins (fixed at registration)</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S-0</td>
+<td>Instrument validation and shared materials (plan E0)</td>
+<td>Is the frozen recognition protocol a usable instrument, and are the shared materials (premise list, allocation rule, E3 briefs) fixed before any arm runs?</td>
+<td>Run <code>recognition-protocol-pilot/protocol.py</code> on the re-based pairs above, two counterbalanced raters per pair (rater A reads C then D, rater B reads D then C), verdicts checked with <code>protocol.py validate</code> before recording. Build <code>evidence/sourcing-materials/</code> (premise list, counterbalanced allocation rule, 6 E3 briefs of which 2 catalog-unservable).</td>
+<td>6 rater runs, 0 fills</td>
+<td>Both same-armature pairs must be called same-adventure by both raters with first-yes at or before scene 5; the control must not be called same-adventure by either rater. Any miss = instrument fails; E2/E4 perceptual confirmations are blocked and every perceptual claim inherited from the mutation pilot is marked unconfirmed.</td>
+<td><strong>done, FAILED validation.</strong> Materials half delivered (<code>evidence/sourcing-materials/</code>). Recognition half: both same-armature pairs fired at scene 2, all four raters, but <strong>the control fired too</strong> (yes at positions 12 and 41, both raters), so the instrument is not validated and the blocked-branch consequences apply. The failure is confounded and informative: the raters cite genuinely shared decision structure (the catalog-convergence mode inside a same-band control pair), and the two pre-registered criteria were asymmetric (position-bounded for known answers, unbounded for the control); a symmetric position-bounded rule would have separated all six verdicts, but cannot be adopted on seen data. Repair path in <code>evidence/recognition-protocol-pilot/results.md</code>; <code>AL-511</code>/<code>UW-C318</code>.</td>
+</tr>
+<tr>
+<td>S-1</td>
+<td>Skeleton-authoring model screen (plan E1)</td>
+<td>Does model selection separate on skeleton structure at gross resolution?</td>
+<td>5 legs (deepseek-v4-pro, deepseek-v4-flash, anthropic-sonnet-5, openai-gpt-5.6-sol, google-gemini-3.1-pro) x 4 cells (3 cheap-band, 1 hard-band) x 4 replicates = 80 shells via <code>compare_skeleton_authors.py</code> with the shared repair-loop contract; briefs from <code>generate_drafting_brief.py</code>; premises per S-0's allocation rule.</td>
+<td>proposer: ~80 shells; cheap cells ~5-20k tokens/shell, hard cell ~100-350k tokens/shell with repair (Q-3d curve)</td>
+<td><strong>Primary endpoint only</strong>: repair rounds to strict pass, pooled across cells, permutation test over leg assignment, 10,000 permutations, alpha 0.05. Falsifier: no leg pair separates at that level; then the model axis is dropped and downstream arms use the cheapest strict-passing leg. All other endpoints exploratory, decision-inert.</td>
+<td><strong>running, HALTED on provider credits</strong> (2026-08-21): harness built and validated (two smokes in <code>evidence/skeleton-author-vendors/</code>, both excluded from analysis; they caught an unreachable pass bar and a reasoning-cap kill, both fixed; round cap raised to 6 pre-spend for endpoint range). The registered 80-shell run then hit OpenRouter HTTP 402 after 4 shells: prepaid credits exhausted. No primary-endpoint result may be read from the partial run. Resumable without re-buying completed shells (<code>--resume</code>); see the evidence README for the exact command. <strong>Revised pre-result 2026-08-21 (plan section 10, owner budget cap)</strong>: slate becomes deepseek-v4-pro and deepseek-v4-flash (paid, ~$1-2 for the reduced grid) plus four zero-cost Anthropic subagent legs at tier labels claude-haiku/sonnet/opus/fable-subagent, run under the identical repair contract via the harness's emit-prompts/score-shell modes (tier-labeled, not backend-pinned: tier-level conclusions only; the sonnet leg doubles as the current-practice baseline, and Anthropic tiers beyond Sonnet were never tested at any stage before this); gemini-3.1-pro optional; grid becomes cells A and D x 3 replicates (36 shells); everything else (endpoints, permutation analysis, round cap 6, cap 65536) unchanged. Declared with full data contact stated: 4 completed shells' exploratory records were seen, no primary result existed. <strong>Cell A interim (2026-08-21)</strong>: 15 points closed, 14 censored at cap, sole pass claude-sonnet-subagent r1 at 3 rounds; primary endpoint degenerate under censoring (p=1.0 reflects the cap, not equivalence). Cell D held pending an owner call: predictably censors at this rate. <strong>Declared pre-run additions (2026-08-21, owner-directed)</strong>: (1) a <code>moonshot-kimi-k3-modal</code> leg joins the blind slate, served by the owner's dedicated Modal endpoint (experimental transport per ADR-010, never the production cascade; endpoint-pinned by construction; no response cost field, spend accounted from Modal billing; empty-string content under finish_reason length is a budget failure, costing the round). (2) The <strong>tool-assisted condition</strong> runs as its own labeled run dir (<code>e1r3-tools-2026-08-21</code>), Anthropic tiers on cell A first: the author may run <code>check_skeleton.py --strict --allow-mvp</code> against its own draft up to 10 times and iterates in one session; endpoints are strict pass/fail plus checker invocations to pass. Blind cell D proceeds for the zero and low-cost legs; DeepSeek cell D stays blocked on OpenRouter credits. <strong>Cell A complete under BOTH conditions (2026-08-21)</strong>: blind 1/18 pass (sonnet r1 at 3 rounds; kimi-modal 0/3, 20-45k completion tokens per censored attempt); tool-assisted 11/15 pass (fable 3/3 at 4-6 checker runs, opus 3/3 at 5-7, haiku &#8532;, kimi-modal &#8532; at 7-8, sonnet &#8531; with both failures in the UW-C306/PL-18 topology trap, AL-514). Reading: the authoring regime dominates the model axis at this cell; residual model differences are convergence speed and trap susceptibility. <strong>S-1 cell A CLOSED, both conditions, all three families (2026-08-21)</strong>: blind 2/21 (sonnet at 3 rounds, v4-flash at 6); tool-assisted 12/21: fable 3/3 (4-6 checker runs), opus 3/3 (5-7), haiku &#8532;, kimi-modal &#8532; (7-8), sonnet &#8531; (UW-C306 trap x2, AL-514), v4-flash &#8531; (two attempts burned the call budget on unparseable JSON), v4-pro 0/3 (structural churn plus both halves of the topology trap). Cell-A reading for the sourcing decision: the tool-assisted regime is necessary for every family; within it the Anthropic frontier tiers (fable, opus) are the only legs that pass reliably, DeepSeek does not convert checker access into convergence at this cell, and the strongest single lever found is fixing the PL-18/PL-29 trap (three legs lost points to it). Cell D tool-assisted CLOSED (2026-08-22): 15/21 pass; fable 3/3 (2-3 checker runs), opus 3/3 (3-3-3), sonnet 3/3 (3-5, its cell-A trap fully inverting), kimi-modal 3/3 (3-5), flash &#8532;, haiku &#8531;, pro 0/3. <strong>Final denominators, stated once</strong>: blind condition = cell A only, 7 legs x 3 replicates = 21 shells (the revision's 36-shell blind grid was overtaken by the owner-directed kimi leg addition, 7 legs, and by cell D moving to the tool-assisted condition instead of blind); tool-assisted condition = 7 legs x 2 cells x 3 replicates = 42 points, scored on the pre-declared tools endpoints (strict pass/fail plus checker invocations to pass), which are post-registration additions, not the original blind primary endpoint. <strong>Row DONE.</strong> Final reading: the blind primary endpoint is superseded by censoring (2/21 blind passes overall); the decision-bearing results are the tool-assisted pass counts, which separate the model axis cleanly: frontier Anthropic tiers and Kimi reliably author strict-passing shells in the checker-in-loop regime at both bands, v4-pro never does (0/6, two failure modes), and the hard band is easier than the small-budget band once the regime is right. Feeds rules R3-R7 as the model-axis input; the deepseek-modal leg stays open only as an endpoint task (503 all of 2026-08-21).</td>
+</tr>
+<tr>
+<td>S-2</td>
+<td>Stratified reuse viability (plan E2)</td>
+<td>Can a shared structural stratum plus per-request decisional strata produce books that are not the same book?</td>
+<td>Precondition: D-7c's deferred no-notes arm (2 fills) to fix the stratum configuration. Then 1 structural stratum, 4-6 decisional strata (S-1's winner), 4-6 fills, deterministic screens first, recognition confirmation (post S-0) on the most-similar pair.</td>
+<td>2 + 4-6 fills, 2 raters confirmation</td>
+<td>(a) condition-mean shared grams &gt; 4.0 per 1000 across all pairs (worst pair reported; a lone same-archetype worst-pair breach triggers premise-allocation review, not arm death); (b) both raters land same-adventure at or before position 4 on the most-similar pair. Either fires = S2 out.</td>
+<td>blocked on S-0, S-1</td>
+</tr>
+<tr>
+<td>S-3</td>
+<td>Bespoke vs catalog end-to-end (plan E3)</td>
+<td>Does per-request bespoke generation beat the existing catalog where it should (premise fit), at what cost?</td>
+<td>6 fixed briefs (S-0), 2 catalog-unservable; S0 arm via production <code>skeleton_match</code>, S3 arm via S-1's winner with the E1 repair contract; identical fill configuration including <code>differentiation_directive</code>; blind panel plus forced-choice premise-fit identification (6-brief lineup, chance &#8537;).</td>
+<td>~6 bespoke shells (hard-band Q-3d pricing), 12-18 fills, 3 judges</td>
+<td><strong>E3fit margin</strong>: S3 beats S0 by &gt;= 0.25 chance-corrected premise-fit accuracy, or by &gt;= +0.5 z on the blind panel's judged quality; either suffices. <strong>E3cov</strong>: on the 2 unservable briefs, S0 not identifiable above chance while S3 is. Bespoke falsifier: neither margin met while marginal cost/book exceeds S0's. <strong>Revised pre-run 2026-08-21 (plan section 10, owner budget cap)</strong>: 4 briefs x 2 arms = 8 fills; the blind quality panel and its +0.5 z margin are SUSPENDED unfunded; premise-fit forced-choice (two v4-flash judges) is the sole judged primary and its 0.25 margin stands.</td>
+<td>blocked on S-0, S-1</td>
+</tr>
+<tr>
+<td>S-4</td>
+<td>Repeat-reader distinctness (plan E4)</td>
+<td>Does any per-request arm buy variety a repeat reader can perceive, and how fast does full reuse fail?</td>
+<td>3 arms x 4-request in-cell sequences under production recency weighting, plus one cross-profile connected-family pair; deterministic sequence measures decide, adjacent-pair recognition (post S-0) confirms.</td>
+<td>3 x 4 books, mostly reused from S-2/S-3 artifacts; 2 raters confirmation</td>
+<td><strong>E4null (fires against S2/S3)</strong>: generated-arm sequences fail to beat S0's non-repeat pairs on at least 2 of 3 deterministic measures by the margins: pairwise solution transfer strictly lower; shared grams lower by &gt;= 25%; structural_distance higher by &gt;= 0.05. <strong>S0 falsifier</strong>: any same-skeleton adjacent pair confirmed recognized at or before position 4 (both raters).</td>
+<td>blocked on S-0</td>
+</tr>
+<tr>
+<td>S-5</td>
+<td>Safety floor and sourcing economics (plan E5)</td>
+<td>May unreviewed shells reach children at all, and what does each arm actually cost?</td>
+<td>Adversarial shell corpus (~15-20 shells: six <code>check_graph_structure</code> failure classes plus AL-227/AL-228-shaped defects, seeded into bespoke-style and S2-composed shells); gate catch-rate; marginal plus amortized accounting over S-1..S-4 artifacts.</td>
+<td>corpus authoring + gate runs, 0 raters</td>
+<td><strong>Safety floor (blocking, decision rule R1)</strong>: catch-rate 100% on the six structural failure classes and &gt;= 90% on the seeded AL-227/AL-228 defect class, else no decision rule shipping unreviewed shells may be selected. <strong>Cost ceilings</strong>: request-path amortized cost &lt;= 2x S0's amortized cost per delivered book (S0 amortization basis: 50 delivered books per catalog skeleton, promotion review priced at 2 review-hours per skeleton); added request-path latency p90 &lt;= 15 minutes on the existing async queue.</td>
+<td>blocked on S-1..S-4 for accounting; corpus buildable now</td>
+</tr>
+</tbody>
+</table>
 <h2 id="duplicate-map">Duplicate map<a class="headerlink" href="#duplicate-map" title="Permanent link">&para;</a></h2>
 <p>The research brief's section 8.4 families, and where each is actually tracked:</p>
 <table>
@@ -5884,7 +5982,7 @@ until D-6 reports.</strong></p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 20:28:02 UTC">August 12, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 18:30:16 UTC">August 22, 2026</span>
   </span>
 
     

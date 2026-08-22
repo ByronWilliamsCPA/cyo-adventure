@@ -1,0 +1,4311 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/skeleton-sourcing-test-plan-2026-08-21/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Skeleton sourcing test plan: catalog reuse against request-time generation - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#skeleton-sourcing-test-plan-catalog-reuse-against-request-time-generation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Skeleton sourcing test plan: catalog reuse against request-time generation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../security/assurance-spine/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/kws-test-runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KWS Test-Environment Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/security-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Event Catalog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/assurance-spine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Spine
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/assurance-register/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assurance Register
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/control-inheritance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Inheritance Map
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/crypto-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cryptographic Inventory
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/red-team-design-review-2026-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Team Design Review
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../research/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Story Structure Diversity
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_7" id="__nav_9_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Story Structure Diversity
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-diversity-critical-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Critical Analysis
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-improvement-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Improvement Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../story-structure-implementation-briefs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Briefs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-better-results-has-to-mean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What "better results" has to mean
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-priors-what-is-already-answered-so-we-do-not-pay-for-it-twice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Priors: what is already answered, so we do not pay for it twice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-option-space-three-arms-one-cross-cutting-axis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The option space: three arms, one cross-cutting axis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-instruments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Instruments
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-experiments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The experiments
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. The experiments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e0-instrument-validation-and-shared-materials-gate-for-everything-below" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E0: instrument validation and shared materials (gate for everything below)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e1-does-model-selection-matter-for-skeleton-authoring-axis-m-in-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E1: does model selection matter for skeleton authoring? (axis M in isolation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2-stratified-reuse-s2-the-middle-option-the-evidence-favors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E2: stratified reuse (S2), the middle option the evidence favors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e3-bespoke-against-catalog-end-to-end-on-real-request-shapes-s3-vs-s0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E3: bespoke against catalog, end-to-end on real request shapes (S3 vs S0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e4-repeat-reader-distinctness-the-decisive-test-of-the-original-reuse-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E4: repeat-reader distinctness, the decisive test of the original reuse plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e5-safety-operations-and-review-economics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E5: safety, operations, and review economics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-decision-framework-pre-registered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Decision framework, pre-registered
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-threats-to-validity-and-the-controls-this-plan-commits-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Threats to validity, and the controls this plan commits to
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-build-list-gaps-this-plan-needs-closed-in-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Build list (gaps this plan needs closed, in order)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-review-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Review record
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-budget-revision-2026-08-21-revision-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Budget revision (2026-08-21, revision 3)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="skeleton-sourcing-test-plan-catalog-reuse-against-request-time-generation">Skeleton sourcing test plan: catalog reuse against request-time generation<a class="headerlink" href="#skeleton-sourcing-test-plan-catalog-reuse-against-request-time-generation" title="Permanent link">&para;</a></h1>
+<p>Date: 2026-08-21. Status: registered and partially executed. S-0 ran (instrument validation
+FAILED on its control) and S-1 ran to completion under the revision-3 descope plus a
+mid-run-approved tool-assisted condition; results and the authoritative final design live in
+register rows S-0/S-1 and <code>evidence/skeleton-author-vendors/README.md</code>. E2-E5 have not started.
+Revision 2, same date: rebuilt after an adversarial review found three blocking defects (a decision
+table that did not cover the outcome space, an E1 design that could not answer its own question at
+n=2, and rater-decided falsifiers hanging on an instrument that has never been validated blind).
+Section 9 records every finding and its disposition.</p>
+<p>Owner question: the original plan built a catalog of reusable skeletons, authored offline and promoted
+through a human-gated PR, with story generation as a separate downstream workflow. Model-selection work
+on the fill stage (DeepSeek v4 Pro best for prose, v4 Flash effective as a deterministic-style first-pass
+reviewer) raises two coupled questions:</p>
+<ol>
+<li>Does model selection matter for <strong>skeleton development</strong> the way it did for story development?</li>
+<li>Should skeleton development stay a separate, reusable-catalog workflow, or be tied directly to each
+   story request (a bespoke skeleton per request), or something between?</li>
+</ol>
+<p>This plan defines the option space, the instruments, and an ordered set of experiments with
+pre-registered falsifiers, following the conventions of the
+<a href="../diversity-test-register/">diversity test register</a>: every experiment gets a register row before it
+runs, an evidence directory under <code>docs/planning/evidence/</code>, an analysis pre-registered before artifacts
+exist, and a stated falsifier. Cost estimates are mine and are recorded rather than trusted.</p>
+<p><strong>Hard gate on the whole plan:</strong> the register rows <code>S-0</code>..<code>S-5</code>, including the numeric margins the
+decision rules in section 6 consume, must land before the first token is spent. A margin chosen after
+a result exists voids that experiment's pre-registration.</p>
+<hr />
+<h2 id="1-what-better-results-has-to-mean">1. What "better results" has to mean<a class="headerlink" href="#1-what-better-results-has-to-mean" title="Permanent link">&para;</a></h2>
+<p>A sourcing architecture is not judged on one axis. The arms below are scored on all five, because the
+plausible outcome is that different arms win different axes and the decision is a trade:</p>
+<table>
+<thead>
+<tr>
+<th>Axis</th>
+<th>What it measures</th>
+<th>Instrument tier</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Per-book quality</td>
+<td>Is this one story good: structure, pacing, reading level, fill success</td>
+<td>Deterministic gate + blind judging</td>
+</tr>
+<tr>
+<td>Cross-book distinctness</td>
+<td>Do two books delivered to the <strong>same reader</strong> read as different books</td>
+<td>Deterministic guards + recognition protocol</td>
+</tr>
+<tr>
+<td>Premise fit</td>
+<td>Does the book reflect what the requesting family actually asked for</td>
+<td>Judged (new instrument, section 4)</td>
+</tr>
+<tr>
+<td>Economics</td>
+<td>Tokens, wall-clock latency in the request path, repair rounds, amortized capital</td>
+<td>Counted from run artifacts, accounting basis in section 5 E5</td>
+</tr>
+<tr>
+<td>Safety and review load</td>
+<td>What a human must review per book, validator catch-rate on unreviewed shells</td>
+<td>Adversarial shell corpus + accounting</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Scope of the verdict.</strong> The decision this plan produces governs prose cells in the 5-8 through 16+
+bands. It does not license anything about: gamebook cells (245-750 nodes per
+<code>band_profile._PRODUCTION_CELLS</code>, where the Q-3d cost curve is untested and likely prohibitive), the
+3-5 band (bespoke reading-level control is weakest exactly where the band is least forgiving), or
+series books (structural continuity across books is a designed constraint that bespoke-per-request
+breaks by construction; <code>validator/series</code> exists to enforce it). Those three surfaces stay on the
+catalog path regardless of outcome until separately tested.</p>
+<hr />
+<h2 id="2-priors-what-is-already-answered-so-we-do-not-pay-for-it-twice">2. Priors: what is already answered, so we do not pay for it twice<a class="headerlink" href="#2-priors-what-is-already-answered-so-we-do-not-pay-for-it-twice" title="Permanent link">&para;</a></h2>
+<p>The register and evidence directories already constrain this question heavily. The plan below is shaped
+around not re-running settled results.</p>
+<p><strong>P1: Reusing a full skeleton fails perceptual distinctness for a repeat reader, and single-parent
+mutation does not rescue it.</strong> The
+<a href="../evidence/mutation-per-request-pilot/">per-request mutation pilot</a> filled two mutants of the
+same parent with different theme bindings; a pattern-sharp 10-13 reader's same-book verdict lands at
+reading position 3, score 2.0/5. Shape-preserving mutants sit at <code>structural_distance</code> 0.0000 from the
+parent; no bounded single-parent mutant cleared <code>TAU_CELL</code> (0.05). Decisive mechanism: every mutant
+retained 100% of the parent's <code>&lt;&lt;FILL&gt;&gt;</code> beat directives, and recognition anchored on beat-level detail.
+<strong>The beats are the fingerprint.</strong> Any arm that re-serves the same beat set to the same reader is
+presumed recognized; re-binding the theme does not change that. Two caveats the pilot itself records:
+the rating was author-scored, not blind (so the position-3 number is provisional until the protocol
+validation in E0 below), and the one mutant that did clear the floor (X, 0.0726) did so by grafting 32
+nodes from a <strong>different</strong> catalog skeleton, which is Q-2 cross-skeleton recombination, not
+multiplication of one parent.</p>
+<p><strong>P2: Skeleton-free graph generation is structurally viable when the constraints are stated, and its
+weak axes are known.</strong> Q-3b: 6/6 structurally clean once the band budgets were in the brief; every
+earlier failure violated a constraint never stated to the author. Q-3d: structure survives at 100+
+nodes, but one-pass yield collapses, the repair loop belongs in the harness (210k and 337k tokens for
+the two large graphs), and reading level splits on whether the author ran a repair loop. So
+request-time generation is not blocked on feasibility; it is priced in repair rounds and gated on
+reading level. A comparison run against an incomplete brief measures the brief, not the model
+(<code>UW-C199</code>); briefs must come from <code>scripts/generate_drafting_brief.py</code>.</p>
+<p><strong>P3: Premise convergence is invariant across tiers within one model family; cross-vendor is open.</strong>
+Q-3c: generations across three tiers of a single family converged on the same motif when the premise
+was free, and its README states it is silent on whether the mode holds across vendors. Both readings
+point the same way for design: premises must be allocated from a curated enumerated list, never
+invented by a leg, or the premise axis contaminates every between-leg measurement. Because the
+cross-vendor half is open, E1 additionally cannot read between-leg <code>structural_distance</code> as pure
+structural competence; section 5 E1 handles this.</p>
+<p><strong>P4: Sharing prose-bearing plan layers leaks wording; a bare-names structural stratum does not.</strong>
+D-6 confirmed contract sharing as a convergence cause; D-7 showed fact-gloss prose drove it; D-7b's
+bare-names stratum came in at 2.3 shared 4-grams per 1000, under the 4.0 budget and below the 3.3
+generator idiom floor. The
+<a href="../architecture-respecification-2026-08-10/">architecture re-specification</a> splits a plan into a
+<strong>structural stratum</strong> (topology and fact graph, shareable freely) and a <strong>decisional stratum</strong>
+(choice semantics, beat hints, devices, operations, stakes, generated per book). This names a middle
+option between full reuse and full bespoke, and it is the one the existing evidence most favors.
+Caveats E2 must inherit: D-7b is n=1 pair on a 26-node graph; its passing stratum is <strong>not wordless</strong>
+(473 words of binding-process free text remain, and the arm deleting them was deferred, not run).</p>
+<p><strong>P5: Catalog depth against the demand curve is a purchasing question with an answer.</strong> Q-1: at 3-4
+skeletons per cell a child exhausts a cell by roughly their fourth request, and demand concentrates on
+medium length. Full reuse only works if depth outruns per-profile demand; the counting has been done.</p>
+<p><strong>P6: A passing gate is not a quality measure, and the current best fill model fails its own fill-rate
+floor.</strong> The v4 Pro live fill run delivered 38.9-52.9% of commissioned words with every book passing
+the gate (<code>UW-C307</code>); <code>check_fill_integrity.py</code> now blocks below fill-rate 0.6, calibrated so exactly
+those books fail. Every experiment below reports fill-rate and word-budget delivery alongside
+pass/fail, and section 7 states the fill-model policy this forces.</p>
+<p><strong>P7: A cross-vendor comparison harness pattern exists and works.</strong> <code>scripts/compare_vendors.py</code> plus
+<a href="../vendor-comparison/">vendor-comparison/README.md</a>: vendor legs as
+<code>{label, model, provider_order, family}</code>, backend pinning with <code>allow_fallbacks: false</code>, preflight
+probing, blind judging via <code>scripts/blind_books.py</code> and <code>scripts/judge_books.py</code> with self-family
+flagging. It varies the model only on the fill stage; the skeleton-stage sibling does not exist yet.</p>
+<p><strong>P8: Same-skeleton similarity is also a fill-layer problem, and one directive mediates it.</strong> AL-498:
+two v4 Pro fills of one skeleton from deliberately distant briefs shared 96.3 4-grams per 1000 (24x
+budget) when the harness passed no <code>differentiation_directive</code>; production's orchestrator passes one.
+Independent of beat recognition, this sharpens the case against S0 at the fill layer, and it makes the
+directive a configuration every arm must hold constant (section 7).</p>
+<hr />
+<h2 id="3-the-option-space-three-arms-one-cross-cutting-axis">3. The option space: three arms, one cross-cutting axis<a class="headerlink" href="#3-the-option-space-three-arms-one-cross-cutting-axis" title="Permanent link">&para;</a></h2>
+<p>Each arm is defined by what is <strong>reused across requests</strong> versus <strong>generated per request</strong>. Fill model
+and fill configuration are held constant across arms (section 7) so the arms measure sourcing, not
+filling.</p>
+<table>
+<thead>
+<tr>
+<th>Arm</th>
+<th>Reused across requests</th>
+<th>Generated per request</th>
+<th>Maps to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>S0</strong> Full reuse (status quo)</td>
+<td>Entire skeleton: topology, beats, choice labels</td>
+<td>Theme binding, prose fill</td>
+<td>Production today (<code>skeleton_match.py</code> recency-weighted pick)</td>
+</tr>
+<tr>
+<td><strong>S2</strong> Stratified reuse</td>
+<td>Structural stratum only (topology, bare-names fact graph)</td>
+<td>Decisional stratum (beats, choice semantics, devices, stakes), binding, fill</td>
+<td>Re-specified R2-1b / R1-1; D-7b's passing configuration</td>
+</tr>
+<tr>
+<td><strong>S3</strong> Full bespoke</td>
+<td>Nothing (brief and format reference only)</td>
+<td>Entire skeleton, then fill</td>
+<td>Q-3b protocol at production constraint level; R1-3 generates a fresh contract per book by construction</td>
+</tr>
+</tbody>
+</table>
+<p>Two options are deliberately <strong>not</strong> arms:</p>
+<ul>
+<li><strong>Per-request single-parent mutation</strong> is settled negative by P1 (the pilot's own verdict:
+  shape-preserving operators perceptually null, shape-changing ones marginal, multiplier far smaller
+  than k). It is cited as a prior, not re-run.</li>
+<li><strong>Cross-skeleton recombination (Q-2)</strong> is the only mechanism P1's evidence shows clearing the
+  anti-clone floor, but the register has it blocked on narrative-contract coverage (2 of 61 skeletons,
+  <code>AL-213</code>). It is out of scope here for that stated reason, and it <strong>re-enters</strong> the moment contract
+  coverage moves: under decision rule R6 or R7 below (reuse-favoring outcomes), funding contract
+  coverage to unblock Q-2 is the named next investment, since E2's structural-stratum artifacts are
+  exactly the class that feeds it.</li>
+</ul>
+<p><strong>Axis M (model selection)</strong> applies to every generative stage an arm has: the decisional-stratum
+author in S2, the skeleton author in S3, and the offline catalog author that keeps S0 supplied. The
+first funded experiment measures this axis in isolation so later arms can fix it and stop paying for
+it.</p>
+<p>S0 keeps one advantage no other arm has: every shell a child can receive was individually
+human-reviewed at promotion time. S2 and S3 ship shells no human approved (the filled story still gets
+guardian/admin approval per the mandatory-human-approval ADR, but the reviewer is no longer looking at
+a known-good structure). E5 tests that risk directly; it is not merely priced.</p>
+<hr />
+<h2 id="4-instruments">4. Instruments<a class="headerlink" href="#4-instruments" title="Permanent link">&para;</a></h2>
+<p>Three tiers, cheapest first. Nothing advances to a costlier tier without surviving the cheaper one,
+and no rater <strong>decides</strong> an outcome: deterministic guards lead, raters confirm. Any falsifier below
+that names a rater reading is a confirmation step on a deterministically screened result.</p>
+<p><strong>Tier 1, deterministic structure (free, no model):</strong>
+<code>scripts/check_skeleton.py --strict</code> (walk floors, in-degree caps, depth-qualified endings, escalated
+policy advisories, choice grammar), <code>scripts/check_graph_structure.py</code> (six failure classes plus
+repairability), per-cell budgets from <code>validator/band_profile.py</code>. Report <strong>one-pass yield and repair
+rounds separately from final pass rate</strong>; Q-3d shows they diverge sharply and repair cost dominates
+spend.</p>
+<p><strong>Tier 2, deterministic distinctness (free, no model):</strong>
+pairwise <code>diversity.structure.structural_distance</code> against <code>docs/planning/ws5_floor_baseline.json</code>
+(baseline version 2: <code>TAU_CELL</code> 0.05 fixed per the ADR-020 recalibration amendment; hand-authored
+same-cell p25 0.298, median 0.380; <code>TAU_STRUCT</code> is documentation-only and gates nothing). Because 20%
+of <code>structural_distance</code> rides on the self-declared <code>metadata.topology</code> field and freshly generated
+shells control their own declaration, every between-leg use reports the topology-flag component
+separately from the numeric-feature component. Also: the shared-gram guard (<code>check_sibling_fills</code>,
+budget 4.0 per 1000, idiom floor 3.3) and solution transfer (<code>scripts/check_solution_transfer.py</code>,
+D-4 tier 1), the only instrument that has reproduced reader orderings, needing no taxonomy.</p>
+<p><strong>Tier 3, judged (model or rater cost):</strong></p>
+<ul>
+<li><em>Recognition protocol</em>: the <strong>frozen</strong> instrument in <code>evidence/recognition-protocol-pilot/</code>
+  (pairwise: book one in full, book two scene by scene, landing position plus 1-5 score), not the
+  pilot's author-scored ad-hoc run. It has never been executed by a rater, so E0 below runs its own
+  pre-specified known-answer validation before any experiment consumes it. Production form: two
+  counterbalanced raters per pair. Anchors are re-derived on the skeleton family under test; the
+  pilot's anchors came from a different skeleton and are not carried over.</li>
+<li><em>Blind story judging</em> via the existing <code>blind_books.py</code> / <code>judge_books.py</code> stack (provenance
+  stripped per AL-226/AL-207, cross-lab panel, self-family flagged).</li>
+<li><em>Shell rubric</em> (<strong>to build</strong>, section 8): blind judging of unfilled shells on beat coherence along a
+  path, whether decision points are meaningfully different choices, ending differentiation, and
+  whether word budgets and beats set the fill up to succeed.</li>
+<li><em>Premise-fit instrument</em> (<strong>to build</strong>, section 8): <strong>forced-choice identification</strong>, not a 1-5
+  score. Given a finished book with provenance stripped, a blind judge picks which of N cell-matched
+  request briefs it serves; chance-corrected accuracy is the premise-fit measure. Forced choice
+  resists the lexical-echo gaming a free rating invites, since a bespoke book that merely parrots
+  brief vocabulary must still out-compete distractor briefs from the same cell.</li>
+</ul>
+<hr />
+<h2 id="5-the-experiments">5. The experiments<a class="headerlink" href="#5-the-experiments" title="Permanent link">&para;</a></h2>
+<p>Ordered so each buys information the next one needs. Register each as a row (<code>S-0</code>..<code>S-5</code>) with its
+margins before running; evidence directory named per experiment below.</p>
+<h3 id="e0-instrument-validation-and-shared-materials-gate-for-everything-below">E0: instrument validation and shared materials (gate for everything below)<a class="headerlink" href="#e0-instrument-validation-and-shared-materials-gate-for-everything-below" title="Permanent link">&para;</a></h3>
+<p>Evidence dir: <code>evidence/recognition-protocol-pilot/</code> (existing) plus <code>evidence/sourcing-materials/</code>.
+Cost (mine): 2 raters over the protocol's pre-specified validation pairs; no generation.</p>
+<ul>
+<li>Run the recognition protocol's own known-answer validation exactly as its README pre-registers it:
+  the same-armature pairs must fire, the cross-skeleton control must not, keep the instrument iff
+  both hold. Two counterbalanced raters. <strong>If validation fails, E2 and E4 are blocked until an
+  instrument that passes exists</strong>; the deterministic guards still run but no perceptual claim is made.</li>
+<li>Build the <strong>curated premise list</strong> (P3): enumerated premises per cell, with a counterbalanced
+  allocation rule (which premise goes to which cell x leg x replicate) fixed in the register row.</li>
+<li>Fix the <strong>brief author</strong>: all cell briefs come from <code>generate_drafting_brief.py</code>; the 6 request
+  briefs for E3 are written once, by hand, before any arm runs, and are shared verbatim across arms.</li>
+<li><strong>Falsifier:</strong> the protocol validation itself (either known-answer check fails). Firing does not
+  kill the programme; it reroutes E2/E4 to deterministic-only endpoints and flags every perceptual
+  claim in this plan, including P1's position-3 number, as unconfirmed.</li>
+</ul>
+<h3 id="e1-does-model-selection-matter-for-skeleton-authoring-axis-m-in-isolation">E1: does model selection matter for skeleton authoring? (axis M in isolation)<a class="headerlink" href="#e1-does-model-selection-matter-for-skeleton-authoring-axis-m-in-isolation" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>Superseded in part: the 80-shell, 5-leg design below is the original registration, kept for the
+record. The design that actually ran is section 10's revision (2 cells, 3 replicates, 7 legs,
+blind plus a tool-assisted condition); the register row S-1 carries the final grid and result.</p>
+</blockquote>
+<p>Evidence dir: <code>evidence/skeleton-author-vendors/</code>. Cost (mine, priced from Q-3d's measured curves, not
+generation counts): 3 cheap-band cells at ~5-20k tokens per shell plus 1 hard-band cell at ~100-350k
+tokens per shell with repair loops; ~80 shells total; 0 raters for the primary.</p>
+<ul>
+<li><strong>Cells:</strong> 3 from the cheaper bands plus 1 hard band (10-13+), from <code>band_profile.offered_cells()</code>;
+  briefs per E0; premises per E0's allocation rule.</li>
+<li><strong>Legs (named):</strong> <code>deepseek-v4-pro</code>, <code>deepseek-v4-flash</code>, plus three drawn from the six configured
+  in <code>vendor-comparison/vendors.json</code> (anthropic-sonnet-5, openai-gpt-5.6-sol, google-gemini-3.1-pro),
+  final slate fixed in the <code>S-1</code> row. 5 legs x 4 cells x 4 replicates = 80 shells.</li>
+<li><strong>Harness:</strong> <code>compare_skeleton_authors.py</code> (section 8). This is not a single-call sibling of
+  <code>compare_vendors.py</code>: Q-3d establishes the repair loop belongs in the harness, so the build item
+  includes a <strong>shared repair-loop contract</strong> (same validator feedback format, same maximum rounds,
+  same patch protocol) applied identically to every leg, because a per-leg repair harness would be the
+  treatment. Fill path per cell (one-shot vs chunked, given the 32k single-call cap and AL-494's
+  chunked-path caveat) is fixed per cell and identical across legs.</li>
+<li><strong>One pre-registered primary endpoint: repair rounds to strict pass</strong> (a count; diverges per Q-3d;
+  dominates cost), pooled across cells, tested with a permutation test over leg assignment. Everything
+  else (one-pass yield, walk probability, failure classes, between-leg <code>structural_distance</code> with the
+  topology component split out, shell rubric on the top shell per leg, one fill per leg scored with
+  <code>evaluate_books.py</code>) is <strong>exploratory</strong>: reported, never triggering a decision, because 10 pairwise
+  leg comparisons x 5 endpoints x 4 cells guarantees spurious separation somewhere.</li>
+<li><strong>Falsifier:</strong> the primary endpoint shows no leg separation exceeding the permutation null at the
+  pre-registered level. If it fires, model choice does not matter for skeleton structure at the
+  resolution this screen can see; the axis is dropped and downstream arms use the cheapest leg that
+  passes strict. E1 is a <strong>gross-difference screen</strong> and its register row says so: a null here bounds
+  the effect size, it does not prove equivalence.</li>
+<li>Decision use: fixes the authoring model for E2/E3 so arm comparisons stop paying for the model axis.
+  Because P3's cross-vendor half is open, a leg whose exploratory distinctness numbers look aberrant
+  gets a premise-mode check (same leg, three premises) before any structural conclusion is drawn.</li>
+</ul>
+<h3 id="e2-stratified-reuse-s2-the-middle-option-the-evidence-favors">E2: stratified reuse (S2), the middle option the evidence favors<a class="headerlink" href="#e2-stratified-reuse-s2-the-middle-option-the-evidence-favors" title="Permanent link">&para;</a></h3>
+<p>Evidence dir: <code>evidence/stratified-per-request/</code>. Cost (mine): 2 fills for the D-7b deferred arm, then
+1 structural stratum, 4-6 decisional strata, 4-6 fills, 2 raters for confirmation only.</p>
+<ul>
+<li><strong>Precondition:</strong> run D-7b's deferred arm first (delete the 473 words of binding-process free text,
+  keep the fact glosses out; two fills). E2's stratum must either byte-match D-7b's passing
+  configuration or use the stricter wordless one this arm validates; silently testing a third,
+  unmeasured stratum is the failure mode.</li>
+<li>One structural stratum (topology plus bare-names fact graph). <strong>Scale is declared up front:</strong> if the
+  stratum is 26-node-scale, the register row states the verdict licenses nothing at production scale
+  and a production-scale replication is a named follow-up; preferred is a production-eligible stratum
+  accepting the higher fill cost. Generate 4-6 independent decisional strata against it (E1's winning
+  model), each bound to a different curated premise, each filled per section 7.</li>
+<li>Screen strata deterministically before any fill: no two sharing a <code>choice_semantics</code> string, D-4
+  tier 1 transfer near zero pairwise. This <strong>partially satisfies</strong> the re-specified R2-1b screening
+  step (which calls for 20 candidates); the remaining 14-16 candidates are what R2-1b still owes.</li>
+<li>Endpoints and pre-registered statistics:</li>
+<li>Shared-gram guard across all fills: <strong>fires on the condition mean against the 4.0 budget</strong>; the
+    worst pair is reported, and a lone same-archetype worst-pair breach (Q-3b showed 4 of 15
+    unshared-plan pairs breach through archetype content alone) triggers premise-allocation review,
+    not arm death.</li>
+<li>Recognition protocol (post-E0, two counterbalanced raters) on the two most similar books by
+    deterministic screen, as <strong>confirmation</strong> of the deterministic result.</li>
+<li>Strict-bar yield and repair rounds of the composed shells.</li>
+<li><strong>Falsifiers, either fires and S2 is out:</strong> (a) the condition-mean shared-gram rate breaches budget
+  (the re-specified R2-1b falsifier: the structural stratum leaks wording too); (b) the deterministic
+  distinctness screen passes but <strong>both</strong> raters land same-book verdicts at or before position 4 on
+  the most-similar pair, meaning topology plus facts alone fingerprint the book and only S3 can help.</li>
+</ul>
+<h3 id="e3-bespoke-against-catalog-end-to-end-on-real-request-shapes-s3-vs-s0">E3: bespoke against catalog, end-to-end on real request shapes (S3 vs S0)<a class="headerlink" href="#e3-bespoke-against-catalog-end-to-end-on-real-request-shapes-s3-vs-s0" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>Superseded in part: section 10 descopes E3 to 4 briefs x 2 arms = 8 fills with the three-judge
+blind panel deferred; the forced-choice premise-fit endpoint below remains the primary.</p>
+</blockquote>
+<p>Evidence dir: <code>evidence/bespoke-vs-catalog/</code>. Cost (mine): ~6 bespoke shells with repair loops (hard
+bands priced per Q-3d), 12-18 fills, 3-judge blind panel plus forced-choice premise-fit judging.</p>
+<ul>
+<li><strong>What this compares, stated plainly:</strong> production-catalog-as-it-exists (mature, human-reviewed,
+  iterated shells) against fresh bespoke generation. That is a <strong>systems comparison</strong>, the one the
+  deployment decision actually needs, not a pure architecture comparison; decision rules read it as
+  such. An optional third sub-arm (fresh catalog-style shells authored offline by E1's winner, then
+  promoted-style reviewed) separates provenance from reuse if the S0-vs-S3 gap needs attribution; it
+  is funded only if rules R3-R5 turn on that attribution.</li>
+<li>6 request briefs (fixed in E0), spanning 3 cells, <strong>2 of the 6 containing elements the catalog
+  demonstrably cannot serve</strong> (thin-cell or unserved-element requests), so the coverage falsifier
+  below is decidable. For each request: S0 picks via <code>skeleton_match</code> and fills; S3 generates a shell
+  from the cell brief plus the request premise (E1's winner, stated constraints, the E1 repair-loop
+  contract), then fills. Fill per section 7, Stage-1 gate on, both arms.</li>
+<li>Endpoints: blind judged story quality (existing panel); <strong>premise fit by forced-choice
+  identification</strong> (section 4), the axis S3 should win; fill-rate and word delivery as covariates on
+  every judged endpoint (P6); reading-level findings <strong>reported jointly with fill-rate</strong>, because
+  AL-491 shows thin books read as in-band for the wrong reason; tokens and wall-clock per book
+  including repair rounds.</li>
+<li><strong>Falsifier for bespoke:</strong> S3 does not beat S0 on chance-corrected premise-fit or judged quality by
+  the pre-registered margin while costing more per book.</li>
+<li><strong>Falsifier for the catalog:</strong> on the 2 unservable-element briefs, S0's books are not identifiable
+  as serving their brief above chance while S3's are; then reuse is capped by catalog coverage, not
+  quality, which is a purchasing decision per Q-1's reframing.</li>
+</ul>
+<h3 id="e4-repeat-reader-distinctness-the-decisive-test-of-the-original-reuse-plan">E4: repeat-reader distinctness, the decisive test of the original reuse plan<a class="headerlink" href="#e4-repeat-reader-distinctness-the-decisive-test-of-the-original-reuse-plan" title="Permanent link">&para;</a></h3>
+<p>Evidence dir: <code>evidence/repeat-reader-sequence/</code>. Cost (mine): 3 arms x 4-book sequences, adjacent-pair
+recognition confirmation; reuses E2/E3 artifacts where cells match.</p>
+<ul>
+<li>Simulate one profile's four sequential requests inside a single cell (P5: the fourth request is
+  where the catalog runs out) under S0, S2, and S3. Recency weighting configured exactly as production
+  (<code>select_skeleton_for_cell</code>); when S0 must repeat a skeleton, that is the point, not a bug in the
+  sim. Include one cross-profile pair (two connected-family readers, per the recommendation-sharing
+  three-ring boundary), since shared books make skeleton reuse visible across households.</li>
+<li><strong>The deterministic measures decide; raters confirm.</strong> The recognition protocol is pairwise and has
+  not been validated for a reader carrying three prior books, so the sequence-level endpoints are
+  deterministic: solution transfer across the whole sequence, shared-gram rate per adjacent pair,
+  <code>structural_distance</code> per adjacent pair. Recognition readings (post-E0, two raters) run on adjacent
+  pairs only, as confirmation.</li>
+<li><strong>Falsifier for S0:</strong> any same-skeleton adjacent pair confirmed recognized at or before position 4
+  (expected from P1; running it inside the production recency policy establishes how often a real
+  profile hits it and at which request index).</li>
+<li><strong>Falsifier for S2/S3:</strong> bespoke or stratified sequences score no better than S0's non-repeat pairs
+  on the deterministic sequence measures, i.e. the D-6 generator-idiom and premise-engine floor
+  dominates and per-request generation does not buy perceptible variety either. That would be the most
+  decision-relevant negative available, and it is decided deterministically, not by a rater.</li>
+</ul>
+<h3 id="e5-safety-operations-and-review-economics">E5: safety, operations, and review economics<a class="headerlink" href="#e5-safety-operations-and-review-economics" title="Permanent link">&para;</a></h3>
+<p>Evidence dir: <code>evidence/sourcing-ops-accounting/</code>. Cost (mine): adversarial shell corpus authoring
+(~15-20 shells, scripted mutations plus hand-seeded defects), one gate run per shell, plus accounting
+over E1-E4 artifacts.</p>
+<ul>
+<li><strong>Safety is tested, not priced, and it has a falsifier.</strong> Build an <strong>adversarial shell corpus</strong>:
+  bespoke-style and S2-composed shells seeded with the six <code>check_graph_structure</code> failure classes
+  plus the two defect classes only readers have ever caught (AL-227: a choice label contradicting its
+  own destination; AL-228: prose assuming facts <code>entry_state</code> does not guarantee). Measure the
+  validator gate's catch-rate on it. Note the existing <code>adversarial_harness.py</code> does not do this (it
+  feeds a passage corpus to moderation) and <code>run_guard_battery.py</code> tests books you hand it; the shell
+  corpus is a new build item (section 8).</li>
+<li><strong>Safety floor, pre-registered and blocking:</strong> if the gate's catch-rate on the corpus is below the
+  <code>S-5</code> row's floor, no decision rule that ships unreviewed shells to children (R3, R4, R5) may be
+  selected; generation is confined to offline catalog growth with promotion review (R6) until the
+  gate is extended. This is decision rule R1 and it dominates everything.</li>
+<li>From run artifacts: tokens and latency per delivered book per arm, repair-round distributions,
+  projected queue impact (request-time skeleton generation adds a serial stage before fill in
+  <code>generation/worker.py</code>'s pipeline).</li>
+<li>Review-load accounting: what the human approver sees per arm; enumerate which promotion-time checks
+  (<code>check_promotion_bundle</code>, strict bar, human read) have no request-time equivalent.</li>
+<li><strong>Accounting basis, pre-registered:</strong> arm costs are reported both marginal (tokens and latency per
+  delivered book) and amortized (S0's offline authoring and promotion-review hours, S2's stratum
+  authoring, spread over an assumed catalog lifetime fixed in the <code>S-5</code> row). Decision rules consume
+  the amortized figure; the marginal figure is reported so the assumption is auditable.</li>
+</ul>
+<hr />
+<h2 id="6-decision-framework-pre-registered">6. Decision framework, pre-registered<a class="headerlink" href="#6-decision-framework-pre-registered" title="Permanent link">&para;</a></h2>
+<p>Outcome variables, each defined by exactly one experiment above:</p>
+<ul>
+<li><strong>SAFE</strong>: E5's gate catch-rate on the adversarial shell corpus meets the <code>S-5</code> floor.</li>
+<li><strong>E2ok</strong>: neither E2 falsifier fired (condition-mean grams within budget, recognition confirmation
+  did not land at or before position 4).</li>
+<li><strong>E3fit</strong>: S3 beat S0 on chance-corrected premise fit or judged quality by the <code>S-3</code> margin.</li>
+<li><strong>E3cov</strong>: E3's catalog-coverage falsifier fired on the unservable-element briefs.</li>
+<li><strong>E4null</strong>: E4's S2/S3 falsifier fired (per-request generation no better than S0 non-repeat pairs
+  on the deterministic sequence measures).</li>
+<li><strong>COST</strong>: E5's amortized request-path cost and latency for the relevant generated-shell arm are
+  within the <code>S-5</code> ceilings.</li>
+</ul>
+<p>Rules, evaluated in order; the first whose condition holds decides. R1 and R2 are dominance rules and
+are checked first by construction; R3-R7 partition the remaining space over (E2ok, E3fit, COST), so
+every outcome maps to exactly one rule.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Condition</th>
+<th>Architecture decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1</td>
+<td>not SAFE</td>
+<td>No unreviewed shell reaches a child. All generation is offline catalog growth with promotion review, targeted at thin cells if E3cov. Re-run E5 after the gate is extended; only then may R3-R5 be revisited.</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>SAFE and E4null</td>
+<td>Per-request generation buys no perceptible variety: <strong>full reuse plus depth purchase</strong> per Q-1, plus per-profile no-repeat guarantees in <code>skeleton_match</code>. If E3cov, the depth purchase is targeted at coverage gaps, and offline bespoke generation (promotion-reviewed) is the supply mechanism. This rule deliberately overrides a passing E2: adopting per-request generation that E4 shows readers cannot perceive is spend without benefit.</td>
+</tr>
+<tr>
+<td>R3</td>
+<td>SAFE, not E4null, E2ok, E3fit, COST</td>
+<td><strong>Stratified reuse as the default serving path, bespoke per-request for thin-cell and unserved-element requests.</strong> The catalog keeps structural capital and human review of topology; the decisional stratum is generated per request with E1's model.</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>SAFE, not E4null, E2ok, E3fit, not COST</td>
+<td><strong>Stratified reuse serving path; bespoke confined to offline, promotion-reviewed catalog growth</strong> targeted at the coverage gaps E3cov names (the premise-fit edge is real but not affordable in the request path).</td>
+</tr>
+<tr>
+<td>R5</td>
+<td>SAFE, not E4null, not E2ok, E3fit, COST</td>
+<td><strong>Bespoke per request</strong>, catalog retained for cold start and for the out-of-scope surfaces in section 1.</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>SAFE, not E4null, not E2ok, E3fit, not COST</td>
+<td><strong>Hybrid</strong>: catalog serves synchronously; bespoke runs offline as flywheel-fed, promotion-reviewed catalog growth targeted at thin cells. Q-2 recombination re-enters here as the cheaper alternative supply mechanism once contract coverage moves.</td>
+</tr>
+<tr>
+<td>R7</td>
+<td>SAFE, not E4null, not E3fit</td>
+<td><strong>Reuse wins</strong>: stratified if E2ok (structural capital plus per-request decisional variety at no premise-fit sacrifice), otherwise full reuse plus depth purchase per R2's mechanism. Q-2 re-enters as in R6.</td>
+</tr>
+</tbody>
+</table>
+<p>Axis M feeds every rule: if E1's falsifier fired, "E1's model" everywhere above means the cheapest leg
+that passes strict. Margins and ceilings (<code>S-3</code> premise-fit and quality margins, <code>S-5</code> safety floor,
+cost and latency ceilings, catalog-lifetime assumption) are fixed in the register rows before any
+spend, per the hard gate in the preamble.</p>
+<hr />
+<h2 id="7-threats-to-validity-and-the-controls-this-plan-commits-to">7. Threats to validity, and the controls this plan commits to<a class="headerlink" href="#7-threats-to-validity-and-the-controls-this-plan-commits-to" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Brief completeness</strong> (P2): all generation against <code>generate_drafting_brief.py</code> output; a failure
+  against an unstated constraint indicts the brief and is fed back to the brief generator, not scored
+  against the arm.</li>
+<li><strong>Premise allocation</strong> (P3): curated premise list with a counterbalanced allocation rule, built in
+  E0, never invented by a leg.</li>
+<li><strong>Fill-model policy</strong> (P6, P8): one fill model everywhere downstream, chosen as follows: if a model
+  at or above the 0.6 fill-rate floor in the W4/W5 measurements is judged adequate on prose, use it;
+  if v4 Pro is retained for prose quality despite its measured 38.9-52.9% delivery, the repair-loop
+  policy per fill is pre-registered and fill-rate is carried as a covariate on every judged endpoint.
+  The production <code>differentiation_directive</code> is passed in <strong>all</strong> arms (S0 included), matching the
+  production orchestrator, and stated in every register row.</li>
+<li><strong>Multiplicity discipline</strong>: one pre-registered primary endpoint per experiment; everything else is
+  exploratory and cannot trigger a decision rule.</li>
+<li><strong>Blinding</strong>: provenance stripped per <code>blind_books.py</code>; judging panels cross-lab with self-family
+  flagging; recognition raters see books, never arm labels. Self-family flagging covers judges, not
+  the author-fill pairing, so E3 reports whether S3's shells share a model family with the fill model,
+  and the optional provenance sub-arm exists to control it if the gap needs attribution.</li>
+<li><strong>Instrument limits</strong>: the six-question instrument is not used at all (its compression record,
+  register section A); the recognition protocol is used only after E0 validates it, only pairwise,
+  only with two counterbalanced raters, and only to confirm deterministic screens.</li>
+<li><strong>Gate is not quality</strong> (P6): fill-rate and word-delivery reported on every fill; reading-level
+  findings always reported jointly with fill-rate (AL-491).</li>
+<li><strong>Recency confound in E4</strong>: production <code>select_skeleton_for_cell</code> weighting used verbatim; the sim
+  measures the policy the child actually experiences.</li>
+<li><strong>Metric self-declaration</strong> (Tier 2): between-leg <code>structural_distance</code> always splits out the
+  self-declared topology component.</li>
+</ul>
+<hr />
+<h2 id="8-build-list-gaps-this-plan-needs-closed-in-order">8. Build list (gaps this plan needs closed, in order)<a class="headerlink" href="#8-build-list-gaps-this-plan-needs-closed-in-order" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Curated premise list plus allocation rule</strong> (E0). Needed by every experiment.</li>
+<li><strong>Recognition-protocol validation run</strong> (E0): no new build, the frozen protocol and its
+   known-answer pairs exist in <code>evidence/recognition-protocol-pilot/</code>; what is owed is two raters
+   executing it. Gate for E2/E4's perceptual confirmations.</li>
+<li><code>scripts/compare_skeleton_authors.py</code>: cross-vendor shell-generation harness with the <strong>shared
+   repair-loop contract</strong> (identical validator-feedback format, round cap, and patch protocol across
+   legs), Tier &frac12; scoring, standard <code>runs/</code> layout. Reuses <code>_load_vendors</code>, pricing guard, preflight
+   from <code>compare_vendors.py</code>, but is an agentic loop, not a single-call sibling. Needed by E1.</li>
+<li>Shell-judging rubric (section 4, Tier 3). Needed by E1 exploratory, E2.</li>
+<li>Premise-fit forced-choice instrument: brief-lineup construction, chance correction, judging script.
+   Needed by E3.</li>
+<li>Decisional-stratum generation harness over a fixed structural stratum (the re-specified R2-1b
+   screening step largely specifies it). Needed by E2.</li>
+<li><strong>Adversarial shell corpus</strong> plus a gate catch-rate runner (E5): scripted seeding of the six
+   <code>check_graph_structure</code> failure classes plus AL-227/AL-228-shaped defects into bespoke-style and
+   S2-composed shells. Needed by E5 and by decision rule R1.</li>
+<li>Register rows <code>S-0</code>..<code>S-5</code> with margins, floors, and ceilings fixed, added to the
+   <a href="../diversity-test-register/">diversity test register</a> <strong>before any spend</strong> (preamble gate).</li>
+</ol>
+<p>Nothing here touches the production request path; every harness is offline, like <code>compare_vendors.py</code>
+and the mutation CLI. Wiring a per-stage model choice or a bespoke path into
+<code>story_requests/authoring_plan.py</code> is deliberately out of scope until the decision framework has an
+answer.</p>
+<hr />
+<h2 id="9-review-record">9. Review record<a class="headerlink" href="#9-review-record" title="Permanent link">&para;</a></h2>
+<p>An adversarial review (2026-08-21, independent reviewer session) returned 17 findings against
+revision 1: 3 blocking, 7 major, 7 minor, verdict "not runnable as-is". All 17 were accepted; the
+dispositions below produced revision 2. The reviewer also verified P1, P2, P4-P7's citations as
+accurate against their primary sources.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Severity</th>
+<th>Finding (compressed)</th>
+<th>Disposition in revision 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>blocking</td>
+<td>Decision table did not cover the outcome space; rows &frac14; could both match; row 5 circular</td>
+<td>Section 6 rebuilt as ordered rules over defined outcome variables with an exhaustiveness argument; E4-null and safety made dominance rules; the old row-1/row-4 conflict resolved explicitly in R2</td>
+</tr>
+<tr>
+<td>2</td>
+<td>blocking</td>
+<td>E1 undecidable at n=2 with an any-endpoint falsifier; w7 variance method misapplied</td>
+<td>E1 redesigned: one primary endpoint (repair rounds), 4 replicates per cell x leg, permutation test, secondaries exploratory, reframed as a gross-difference screen</td>
+</tr>
+<tr>
+<td>3</td>
+<td>blocking</td>
+<td>Recognition protocol never validated blind; anchors from a different skeleton; raters were deciding falsifiers</td>
+<td>E0 added as a hard gate running the frozen protocol's known-answer validation; two counterbalanced raters; raters confirm, deterministic screens decide (E2b, E4)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>major</td>
+<td>Constant fill model fails its own 0.6 fill-rate floor; differentiation directive unstated</td>
+<td>Section 7 fill-model policy: floor-passing model or pre-registered repair policy plus fill-rate covariate; directive passed in all arms</td>
+</tr>
+<tr>
+<td>5</td>
+<td>major</td>
+<td>E5 safety used instruments that measure something else; safety had no falsifier</td>
+<td>Adversarial shell corpus added (build item 6); pre-registered catch-rate floor; safety is dominance rule R1</td>
+</tr>
+<tr>
+<td>6</td>
+<td>major</td>
+<td>E1 harness scoped as single-call sibling; hard-band cost understated; "E3 most expensive" inverted</td>
+<td>E1 re-scoped (3 cheap + 1 hard cell), priced from Q-3d curves, shared repair-loop contract specified, fill path fixed per cell</td>
+</tr>
+<tr>
+<td>7</td>
+<td>major</td>
+<td>P3 overstated (cross-vendor open); curated premise list absent from build list</td>
+<td>P3 restated; premise list is build item 0 with an allocation rule; E1 gains a premise-mode check</td>
+</tr>
+<tr>
+<td>8</td>
+<td>major</td>
+<td>E3 confounded (provenance vs architecture, premise fit gameable, coverage falsifier unsampled, brief author unspecified)</td>
+<td>E3 reframed as a systems comparison with optional provenance sub-arm; forced-choice premise fit; 2 of 6 unservable briefs required; brief author fixed in E0</td>
+</tr>
+<tr>
+<td>9</td>
+<td>major</td>
+<td>E2 inherited D-7b's caveats silently (473-word residue, n=1, 26-node scale); gram statistic undefined</td>
+<td>D-7b's deferred arm is an E2 precondition; stratum byte-match required; condition-mean statistic pre-registered; scale licensing stated</td>
+</tr>
+<tr>
+<td>10</td>
+<td>major</td>
+<td>S1 was an arm in name only; Q-2 recombination missing from the option space</td>
+<td>S1 removed (P1 cites it as settled); section 3 records Q-2's exclusion reason and re-entry conditions (R6/R7)</td>
+</tr>
+<tr>
+<td>11</td>
+<td>minor</td>
+<td>Stale floor-baseline numbers (p25 0.332 vs current 0.298)</td>
+<td>Corrected; Tier 2 now cites the file and notes TAU_STRUCT is documentation-only</td>
+</tr>
+<tr>
+<td>12</td>
+<td>minor</td>
+<td><code>structural_distance</code> topology component is self-declared by generated shells</td>
+<td>Component split out in every between-leg use (Tier 2, section 7)</td>
+</tr>
+<tr>
+<td>13</td>
+<td>minor</td>
+<td>"Doubles as R2-1b" overclaimed at 4-6 of 20 candidates</td>
+<td>Restated as "partially satisfies", remainder named</td>
+</tr>
+<tr>
+<td>14</td>
+<td>minor</td>
+<td>Deferred margins made the table undecidable; E1 leg arithmetic wrong</td>
+<td>Preamble hard gate: S-rows with margins before any spend; E1 slate named (5 legs from the 8 available)</td>
+</tr>
+<tr>
+<td>15</td>
+<td>minor</td>
+<td>E5 economics had no amortization rule</td>
+<td>Marginal and amortized both reported; rules consume amortized; lifetime assumption in <code>S-5</code></td>
+</tr>
+<tr>
+<td>16</td>
+<td>minor</td>
+<td>Scope silence on gamebook, 3-5 band, series</td>
+<td>Scope paragraph added to section 1</td>
+</tr>
+<tr>
+<td>17</td>
+<td>minor</td>
+<td>AL-498 missing from priors</td>
+<td>Added as P8; drives the differentiation-directive control</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-budget-revision-2026-08-21-revision-3">10. Budget revision (2026-08-21, revision 3)<a class="headerlink" href="#10-budget-revision-2026-08-21-revision-3" title="Permanent link">&para;</a></h2>
+<p>Declared after the registered S-1 run halted on provider credits at 4 of 80 shells and before any
+primary-endpoint result existed (the 4 completed shells' exploratory records had been seen; that is
+the full extent of data contact). The owner capped programme spend well below the original
+estimate, so the experiments are re-scoped to what the sourcing decision actually turns on. Target:
+<strong>the whole programme at or under ~$40 of provider credit</strong>, likely ~$25-30.</p>
+<p><strong>What the decision turns on, restated.</strong> The production question is not "which of five labs
+authors the best skeleton"; it is (a) does skeleton authoring need the pro tier or is the flash
+tier sufficient, (b) does either beat the current practice (a Claude session authoring via the
+cyo-author skill mechanism), and &copy; which sourcing architecture wins. That needs three legs, two
+of them cheap and one free.</p>
+<p>Changes, item by item; everything not listed is unchanged:</p>
+<ul>
+<li><strong>E1 slate</strong>: <code>deepseek-v4-pro</code> and <code>deepseek-v4-flash</code> as the paid legs (both DeepSeek legs
+  together cost about $1.30 across 36 shells in this session's runs; the halted premium slate's
+  cost was 90% Sonnet 5, Gemini 3.1 Pro, and GPT-5.6-sol), plus <strong>four Anthropic subagent legs</strong>
+  at zero provider cost: <code>claude-haiku-subagent</code>, <code>claude-sonnet-subagent</code>,
+  <code>claude-opus-subagent</code>, <code>claude-fable-subagent</code>, each authored by isolated subagents at that
+  model tier under the identical shared repair-loop contract (same system prompt, same brief,
+  same feedback shape, same round cap, driven through the harness's <code>--emit-prompts</code> and
+  <code>--score-shell</code> modes so the loop is reproducible). This closes a real coverage gap: the fill
+  slate only ever represented Anthropic by Sonnet checkpoints, and the sonnet leg doubles as the
+  current-practice authoring baseline. Declared limitation: subagent legs are tier-labeled, not
+  backend-pinned; the serving snapshot is whatever the harness serves that tier, recorded per
+  run, so subagent legs support tier-level conclusions, not checkpoint-level ones.
+  <code>google-gemini-3.1-pro</code> (the only leg with a proven strict pass) stays optional at roughly
+  +$12; run it only if the six-leg result is close enough that a premium reference would change
+  the decision.</li>
+<li><strong>E1 grid</strong>: 2 cells (A: 5-8 short; D: 10-13 short) x 3 replicates x 3 legs = 18 shells, round
+  cap 6, cap 65536. The 4 already-paid shells from the halted run are reused via <code>--resume</code> where
+  they fit the reduced grid. Estimated provider cost: <strong>$6-12</strong> (both DeepSeek legs are $2-4 per
+  million output tokens; smoke shells ran 40-130k output tokens).</li>
+<li><strong>E1 inference, honestly downgraded</strong>: at 6-9 observations per leg the permutation screen detects
+  only gross differences; the register row already frames E1 as a gross-difference screen and that
+  framing now carries more weight. A null is a cost bound, not equivalence.</li>
+<li><strong>E2</strong>: unchanged in shape (it was never expensive); fills with v4 Pro. Estimated <strong>$5-8</strong>.</li>
+<li><strong>E3</strong>: descoped. 4 briefs (2 servable, 2 unservable) x 2 arms = 8 fills. The three-judge blind
+  quality panel is <strong>deferred</strong>; the primary judged endpoint becomes the forced-choice premise-fit
+  identification, scored by two v4-flash judges (the tier already trusted for first-pass review),
+  plus the deterministic endpoints (fill-rate, gate findings, cost). The quality-panel margin in
+  row <code>S-3</code> is suspended until someone funds the panel; the premise-fit margin stands. Estimated
+  <strong>$8-12</strong>.</li>
+<li><strong>E4</strong>: built entirely from E2/E3 artifacts plus catalog fills that already exist; recognition
+  raters are session subagents (free); deterministic measures decide, as already required by the
+  E0 outcome. Estimated <strong>$0-4</strong>.</li>
+<li><strong>E5</strong>: adversarial shell corpus is authored by session subagents and scored by the local gate:
+  <strong>$0</strong> provider cost.</li>
+<li><strong>Spend guard</strong>: every live invocation of <code>compare_skeleton_authors.py</code> is preceded by a credits
+  check (<code>/api/v1/credits</code>) and the run report records the before/after balance, so a halt like
+  the 2026-08-21 one is a announced stop, not 76 silent 402s.</li>
+</ul>
+<p>The decision framework in section 6 is unchanged: nothing in this revision touches a margin that
+gates an architecture choice except the suspended S-3 quality-panel margin, whose role is covered
+by the premise-fit margin that remains.</p>
+<p><strong>Execution record (2026-08-22).</strong> What actually ran, extending this revision with one
+mid-run-approved change: the blind condition ran cell A only, 3 replicates x 7 legs (the two
+DeepSeek legs, <code>moonshot-kimi-k3-modal</code> on the owner's Modal endpoint, and the four Anthropic
+subagent legs) = 21 shells, 2 strict passes; the owner then approved a tool-assisted condition
+(author sees the checker's full output, cap 10 invocations per point) which ran cells A and D, 3
+replicates x 7 legs = 42 points, 27 passes. Conditions, per-leg results, and reading caveats:
+<code>evidence/skeleton-author-vendors/README.md</code> (runs <code>e1r3-2026-08-21</code> and
+<code>e1r3-tools-2026-08-21</code>); close-out in register row S-1.</p>
+<hr />
+<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../diversity-test-register/">Diversity test register</a>, conventions and the architecture rows this
+  plan composes with (Q-3 family, R1-3, R2-1b, R2-4, Q-1, Q-2)</li>
+<li><a href="../architecture-respecification-2026-08-10/">Architecture re-specification</a>, the stratified-plan
+  split behind arm S2</li>
+<li><a href="../evidence/mutation-per-request-pilot/">Per-request mutation pilot</a>, prior P1 and the
+  origin of the recognition protocol</li>
+<li><a href="../evidence/recognition-protocol-pilot/">Recognition protocol pilot</a>, the frozen instrument
+  E0 validates</li>
+<li><a href="../vendor-comparison/">Cross-vendor fill comparison</a>, the harness pattern and judging stack</li>
+<li><a href="../deepseek-v4-pro-live-fill-plan-2026-08-20/">DeepSeek v4 Pro live fill plan</a>, priors P6 and P8
+  (<code>AL-490</code>..<code>AL-498</code>, <code>UW-C307</code>..<code>UW-C315</code>)</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 18:30:16 UTC">August 22, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 18:30:16 UTC">August 22, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
