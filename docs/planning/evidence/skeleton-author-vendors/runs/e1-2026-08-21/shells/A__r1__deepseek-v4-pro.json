@@ -1,0 +1,735 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "problem-solving",
+   "kindness to animals",
+   "community help"
+  ],
+  "estimated_minutes": 7,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n1_morning_discovery",
+ "nodes": [
+  {
+   "id": "n1_morning_discovery",
+   "body": "<<FILL role=setup words=75 beats='Miri arrives at the school garden on Monday morning with a bucket of feed. The three hens, Penny, Clover, and little Pip, usually rush to greet her. Today only two hens appear, clucking nervously by the empty coop. Miri counts them twice. Pip, the smallest golden hen, is missing. Miri’s heart thumps as she scans the fenced garden. The gate is slightly open, just a crack wide enough for a small bird to squeeze through.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1_search_garden",
+     "label": "Search every corner of the garden first",
+     "target": "n2_search_garden"
+    },
+    {
+     "id": "c1_check_gate",
+     "label": "Examine the open gate for clues",
+     "target": "n3_examine_gate"
+    },
+    {
+     "id": "c1_call_pip",
+     "label": "Call Pip’s name and listen carefully",
+     "target": "n4_call_and_listen"
+    }
+   ]
+  },
+  {
+   "id": "n2_search_garden",
+   "body": "<<FILL role=explore words=70 beats='Miri searches behind the compost bin, under the rosemary bush, and inside the small tool shed. She finds a few scattered golden feathers near the back fence, catching the morning light. No sign of Pip herself. The other two hens follow Miri, scratching the ground and clucking softly as if trying to help. Miri notices a gap behind the wooden bench where something small could hide. Her knees press into the damp grass as she peers into the dark space.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c2_reach_under_bench",
+     "label": "Reach under the bench to feel around",
+     "target": "n5_reach_under_bench"
+    },
+    {
+     "id": "c2_follow_feathers",
+     "label": "Follow the trail of golden feathers",
+     "target": "n6_follow_feathers"
+    }
+   ]
+  },
+  {
+   "id": "n3_examine_gate",
+   "body": "<<FILL role=explore words=72 beats='Miri kneels by the gate and runs her finger along the latch. It is bent slightly, as if something pushed against it from inside. A single golden feather clings to the metal hinge. Beyond the gate, the school field stretches toward the hedge that borders old Mrs. Fig’s garden. Miri remembers Mrs. Fig keeps a vegetable patch and sometimes throws crumbs to the birds. The grass just outside the gate looks pressed down in a narrow path leading toward the hedge.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c3_go_to_mrs_fig",
+     "label": "Go straight to Mrs. Fig’s garden",
+     "target": "n7_go_to_mrs_fig"
+    },
+    {
+     "id": "c3_follow_grass_path",
+     "label": "Follow the pressed-grass trail slowly",
+     "target": "n8_follow_grass_path"
+    }
+   ]
+  },
+  {
+   "id": "n4_call_and_listen",
+   "body": "<<FILL role=explore words=68 beats='Miri cups her hands around her mouth and calls Pip’s name three times. The other hens tilt their heads and go quiet. From somewhere beyond the garden fence, a faint, familiar clucking answers. It sounds far away, near the big oak tree at the edge of the school field. Miri feels a rush of hope. The sound is definitely Pip, but it stops after a moment. The oak tree has a hollow at its base where squirrels sometimes stash acorns.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c4_run_to_oak_tree",
+     "label": "Run straight to the oak tree",
+     "target": "n9_run_to_oak_tree"
+    },
+    {
+     "id": "c4_bring_feed_bucket",
+     "label": "Bring the feed bucket to lure her out",
+     "target": "n10_bring_feed_bucket"
+    }
+   ]
+  },
+  {
+   "id": "n5_reach_under_bench",
+   "body": "<<FILL role=decision words=65 beats='Miri stretches her arm under the bench into the cool, dusty darkness. Her fingers brush against something soft and round. She pulls it out carefully. It is an abandoned nest made of dried grass and a red shoelace. The nest is empty and cold, but the shoelace is bright red, exactly like the one Miri’s friend Jamal lost last term. Pip is not there, but this nest shows a hen has been visiting this spot for days.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c5_show_nest_to_jamal",
+     "label": "Find Jamal and show him the nest",
+     "target": "n11_find_jamal"
+    },
+    {
+     "id": "c5_expand_search_outside",
+     "label": "Leave the garden and search the field",
+     "target": "n12_expand_search_outside"
+    }
+   ]
+  },
+  {
+   "id": "n6_follow_feathers",
+   "body": "<<FILL role=explore words=70 beats='Miri follows the scattered golden feathers across the garden to a loose board in the back fence. The board swings outward when she pushes it, revealing a narrow gap leading into a patch of wild blackberries behind the school. The brambles are thick with thorns, but more golden feathers glint among the leaves. Miri hears a soft scratching sound deeper inside the blackberry patch. Something small is moving in there, rustling the dry leaves on the ground.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c6_push_into_brambles",
+     "label": "Push carefully into the blackberry patch",
+     "target": "n13_push_into_brambles"
+    },
+    {
+     "id": "c6_get_garden_gloves",
+     "label": "Get garden gloves from the shed first",
+     "target": "n14_get_garden_gloves"
+    }
+   ]
+  },
+  {
+   "id": "n7_go_to_mrs_fig",
+   "body": "<<FILL role=transition words=72 beats='Miri hurries across the field to Mrs. Fig’s garden gate. The elderly neighbor is kneeling by her carrot bed, pulling weeds. When she sees Miri’s worried face, she stands up and dusts off her knees. Yes, she did see a small golden hen this morning, pecking at spilled birdseed under her feeder. The hen seemed frightened and ran toward the compost heap when Mrs. Fig came outside. Mrs. Fig points to the large wooden compost bin at the far end of her garden.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c7_check_compost",
+     "label": "Look in and around the compost bin",
+     "target": "n15_check_fig_compost"
+    },
+    {
+     "id": "c7_ask_mrs_fig_help",
+     "label": "Ask Mrs. Fig to help you search",
+     "target": "n16_ask_mrs_fig_help"
+    }
+   ]
+  },
+  {
+   "id": "n8_follow_grass_path",
+   "body": "<<FILL role=explore words=68 beats='Miri walks slowly along the pressed-grass trail, scanning left and right. The path winds past the playground swings and stops at the base of the oak tree. There, tucked into a hollow between two roots, is a small pile of golden feathers. But Pip is gone. Miri notices muddy scratch marks on the bark, as if something tried to climb. Looking up, she sees a branch overhead with a small, frightened hen perched on it, pressed flat against the wood and very still.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c8_climb_tree",
+     "label": "Climb the tree carefully to reach her",
+     "target": "n17_climb_tree"
+    },
+    {
+     "id": "c8_coax_down_with_voice",
+     "label": "Stay below and coax her down gently",
+     "target": "n18_coax_down"
+    }
+   ]
+  },
+  {
+   "id": "n9_run_to_oak_tree",
+   "body": "<<FILL role=decision words=65 beats='Miri sprints across the field to the old oak tree. The hollow at its base is deep and shadowy. She kneels and peers inside. Two bright eyes blink back at her from the darkness. It is Pip, huddled against the back of the hollow, trembling. The space is tight, and Pip is too scared to come out. Miri can see she is not hurt, just wedged in. The feed bucket would have helped, but it is back in the garden now.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c9_use_jacket_as_blanket",
+     "label": "Use your jacket to gently lift her out",
+     "target": "n19_use_jacket_to_lift"
+    },
+    {
+     "id": "c9_run_back_for_bucket",
+     "label": "Run back and fetch the feed bucket",
+     "target": "n20_run_back_for_bucket"
+    }
+   ]
+  },
+  {
+   "id": "n10_bring_feed_bucket",
+   "body": "<<FILL role=transition words=70 beats='Miri grabs the bucket of feed and shakes it gently, making the grain rattle. The familiar sound carries across the field. She walks toward the oak tree, calling Pip’s name and shaking the bucket every few steps. When she reaches the tree, she hears soft clucking from the hollow. She tips a little feed onto the grass just outside the opening. The smell of cracked corn and oats drifts into the hollow. After a long moment, a golden head pokes out, beak twitching.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c10_scoop_up_pip",
+     "label": "Scoop Pip up as soon as she emerges",
+     "target": "n21_scoop_up_pip"
+    },
+    {
+     "id": "c10_let_her_eat_first",
+     "label": "Let her eat and calm down first",
+     "target": "n22_let_her_eat_first"
+    }
+   ]
+  },
+  {
+   "id": "n11_find_jamal",
+   "body": "<<FILL role=transition words=68 beats='Miri finds Jamal at the playground, shooting baskets. She shows him the nest and the red shoelace. Jamal’s eyes go wide. He lost that lace during sports day two months ago and never found it. He remembers seeing Pip pecking at his shoe that day, untying the lace with her beak. Jamal wants to help search. He suggests they check the storage shed behind the gym, because he once saw a hen wander in there during recess, attracted by a spilled bag of birdseed.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c11_search_storage_shed",
+     "label": "Search the storage shed together",
+     "target": "n23_search_storage_shed"
+    },
+    {
+     "id": "c11_jamal_checks_field",
+     "label": "Split up: Jamal checks the field",
+     "target": "n24_split_search_with_jamal"
+    }
+   ]
+  },
+  {
+   "id": "n12_expand_search_outside",
+   "body": "<<FILL role=transition words=65 beats='Miri decides the garden is searched out. She slips through the gate and walks onto the school field, eyes scanning every bush and bench. The morning sun is getting warmer, and a few early joggers are on the track. Miri spots something unusual near the drinking fountain: a small puddle of water with golden feathers floating in it. Pip must have stopped here to drink. Beyond the fountain, the path splits toward the playground on one side and the sports shed on the other.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c12_toward_playground",
+     "label": "Head toward the playground",
+     "target": "n25_toward_playground"
+    },
+    {
+     "id": "c12_toward_sports_shed",
+     "label": "Head toward the sports shed",
+     "target": "n26_toward_sports_shed"
+    }
+   ]
+  },
+  {
+   "id": "n13_push_into_brambles",
+   "body": "<<FILL role=decision words=70 beats='Miri pushes through the blackberry brambles, feeling thorns catch on her sleeves. In a small clearing at the center, she finds Pip. The little hen is tangled in a loose strand of garden twine wrapped around one leg. She is not hurt, but she cannot walk properly. She flutters her wings and clucks pitifully when she sees Miri. The twine is knotted tightly. Miri will need to work it loose with careful fingers, but Pip is frightened and might peck if handled too fast.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c13_calm_pip_then_untie",
+     "label": "Calm Pip with quiet words, then untie her",
+     "target": "n27_calm_and_untie"
+    },
+    {
+     "id": "c13_get_help_from_teacher",
+     "label": "Go get a teacher to help free her",
+     "target": "n28_get_teacher_help"
+    }
+   ]
+  },
+  {
+   "id": "n14_get_garden_gloves",
+   "body": "<<FILL role=transition words=70 beats='Miri runs back to the garden shed and grabs the thick canvas gloves hanging on a nail. She pulls them on, the stiff fabric protecting her hands all the way past her wrists. When she returns to the blackberry patch and pushes through the brambles, the thorns scratch harmlessly against the gloves. In the clearing, she finds Pip just as before, tangled in green twine. But now Pip seems calmer, as if she has been waiting. The extra time let her settle down. Miri kneels beside her, gloved hands ready.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c14_untie_with_gloves",
+     "label": "Use gloved hands to untie the twine",
+     "target": "n29_untie_with_gloves"
+    }
+   ]
+  },
+  {
+   "id": "n15_check_fig_compost",
+   "body": "<<FILL role=decision words=68 beats='Miri approaches the compost bin, a large wooden box with a lift-off lid. She lifts one corner of the lid and peeks inside. Warm steam rises from the decomposing leaves and vegetable scraps. And there, nestled in a hollow atop the warm pile, is Pip. She has made herself a cozy bed out of dried corn husks. She looks perfectly content, blinking sleepily at Miri. The compost warmth must have drawn her in through a gap in the bin’s slatted side. She is not stuck, just unwilling to leave her warm spot.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c15_lift_pip_gently",
+     "label": "Lift Pip out gently with both hands",
+     "target": "n30_lift_pip_from_compost"
+    },
+    {
+     "id": "c15_lure_pip_with_scrap",
+     "label": "Lure her out with a juicy tomato scrap",
+     "target": "n31_lure_pip_with_scrap"
+    }
+   ]
+  },
+  {
+   "id": "n16_ask_mrs_fig_help",
+   "body": "<<FILL role=transition words=72 beats='Mrs. Fig nods and puts down her trowel. Together they walk to the compost bin. Mrs. Fig knows every hiding spot in her garden. She explains that the local fox sometimes sunbathes on the far side of her shed in the mornings, which might have scared the little hen. She suggests they check behind the shed first, where the ground is soft and might show tracks. Miri feels braver with Mrs. Fig beside her. The older woman carries a walking stick that taps reassuringly on the path.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c16_check_behind_shed",
+     "label": "Check behind the shed for tracks",
+     "target": "n32_check_behind_shed"
+    }
+   ]
+  },
+  {
+   "id": "n17_climb_tree",
+   "body": "<<FILL role=climax words=70 beats='Miri finds footholds in the rough oak bark and climbs slowly. Her school shoes slip once, but she catches herself on a sturdy branch. When she reaches the branch where Pip is perched, the hen flattens herself even more, making a low worried sound. Miri talks to her softly, inching along the branch on her stomach. She stretches one arm forward until her fingers brush Pip’s warm feathers. With a gentle scoop, she gathers the trembling hen against her chest. Pip’s heartbeat flutters fast but steadies against Miri’s warmth.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c17_climb_down_carefully",
+     "label": "Climb down carefully with Pip tucked in your jacket",
+     "target": "n34_climb_down_with_pip"
+    }
+   ]
+  },
+  {
+   "id": "n18_coax_down",
+   "body": "<<FILL role=climax words=65 beats='Miri sits cross-legged at the base of the tree and talks to Pip in a steady, calm voice. She describes the warm coop, the other hens, the bucket of feed waiting. Pip listens, her head cocked. Slowly, branch by branch, the little hen hops downward. She flutters to a lower branch, then another, until she lands softly on Miri’s knee. Her feathers are dusty but she is unharmed. She presses her warm body against Miri’s leg and closes her eyes, exhausted from her adventure.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c18_carry_pip_home",
+     "label": "Carry Pip gently back to the coop",
+     "target": "n35_carry_pip_home_ending"
+    }
+   ]
+  },
+  {
+   "id": "n19_use_jacket_to_lift",
+   "body": "<<FILL role=climax words=68 beats='Miri slips off her jacket and rolls it into a soft bundle. She reaches into the hollow and slides the bundled fabric beside Pip. The hen, feeling the familiar warmth of Miri’s scent, shuffles onto the jacket. Miri lifts the bundle slowly, cradling it like a hammock. Pip rides upward without panic, tucked in the soft folds. When she emerges into the sunlight, she blinks and gives a small, surprised cluck. She is free of the hollow and safe in Miri’s arms, her feathers ruffled but her eyes bright.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c19_return_to_coop",
+     "label": "Carry her straight back to the coop",
+     "target": "n36_return_to_coop_ending"
+    }
+   ]
+  },
+  {
+   "id": "n20_run_back_for_bucket",
+   "body": "<<FILL role=decision words=72 beats='Miri races back to the garden, grabs the feed bucket, and runs again to the oak tree, her legs burning. When she returns, she shakes the bucket near the hollow. But there is no sound. No movement. Miri’s heart sinks. She peers inside the hollow. It is empty. Pip must have slipped out while Miri was gone, perhaps scared by a noise. Miri looks around desperately. A fresh scattering of golden feathers leads away from the tree, toward the school building. The trail is still warm and new.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c20_follow_feathers_to_school",
+     "label": "Follow the feather trail to the school building",
+     "target": "n37_follow_feathers_to_building"
+    }
+   ]
+  },
+  {
+   "id": "n21_scoop_up_pip",
+   "body": "<<FILL role=climax words=65 beats='The moment Pip’s head emerges from the hollow, Miri scoops her up in one smooth motion. The hen squawks once in surprise, then settles into the crook of Miri’s arm. Her feathers are dusty and one tiny claw scratches Miri’s wrist, but neither of them minds. Pip nuzzles her beak against Miri’s collar. The other two hens back in the garden will be so pleased to see her. Miri cradles Pip against her chest and turns back toward the garden, walking slowly so as not to jostle her precious cargo.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c21_return_to_coop_scooped",
+     "label": "Walk back and reunite Pip with her friends",
+     "target": "n38_return_coop_scooped_ending"
+    }
+   ]
+  },
+  {
+   "id": "n22_let_her_eat_first",
+   "body": "<<FILL role=climax words=68 beats='Miri stays perfectly still and lets Pip eat from the scattered feed. The little hen pecks hungrily, the grain calming her with every bite. After a full minute, Pip looks up at Miri and clucks, as if to say she is ready. Miri slowly extends her hand, and Pip steps onto it without fear. She has remembered Miri is her friend. Miri lifts her carefully and cradles her against her chest. The feed bucket swings from her other hand as she starts the slow, happy walk back to the garden coop.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c22_return_to_coop_eaten",
+     "label": "Carry Pip home with the feed bucket",
+     "target": "n39_return_coop_eaten_ending"
+    }
+   ]
+  },
+  {
+   "id": "n23_search_storage_shed",
+   "body": "<<FILL role=explore words=70 beats='Jamal and Miri hurry to the storage shed behind the gym. The door is heavy and squeaks when Jamal pulls it open. Inside, it smells of floor polish and old gym mats. They hear a soft peeping sound from behind a stack of orange traffic cones. Miri and Jamal move the cones carefully. There, in a dusty corner, is Pip. She has made a nest out of a discarded towel and a shiny candy wrapper. She looks up at them and clucks as if asking what took them so long. Jamal grins and gives Miri a high five.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c23_rescue_pip_shed",
+     "label": "Pick up Pip and thank Jamal",
+     "target": "n40_rescue_pip_shed_ending"
+    }
+   ]
+  },
+  {
+   "id": "n24_split_search_with_jamal",
+   "body": "<<FILL role=decision words=68 beats='Jamal runs off toward the main field while Miri checks behind the gym. Miri searches the bushes near the basketball court, calling Pip’s name. Minutes pass. She hears Jamal shout from the field. She runs toward his voice. Jamal is standing near the long jump pit, pointing at a small golden hen sitting in the sand, taking a dust bath. Pip is fluffing her feathers and kicking sand everywhere, completely absorbed and perfectly happy, as if her great escape was just a trip to the spa. She has no idea anyone was worried.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c24_collect_pip_sand",
+     "label": "Scoop Pip up and brush off the sand",
+     "target": "n41_collect_pip_sand_ending"
+    }
+   ]
+  },
+  {
+   "id": "n25_toward_playground",
+   "body": "<<FILL role=explore words=65 beats='Miri walks toward the playground, scanning under slides and benches. Near the seesaw, she spots Pip sitting on the rubber matting, pecking at a dropped cracker. Pip looks perfectly at ease, as if she has been there all morning. A group of younger children are playing nearby but have not noticed the hen. Miri approaches slowly, not wanting to startle her. Pip looks up, recognizes Miri, and clucks a greeting before returning to the cracker. She seems in no hurry to go anywhere. The problem is not finding her but convincing her to leave.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c25_offer_better_treat",
+     "label": "Offer her grain from your pocket as a swap",
+     "target": "n42_offer_grain_swap"
+    }
+   ]
+  },
+  {
+   "id": "n26_toward_sports_shed",
+   "body": "<<FILL role=transition words=72 beats='Miri follows the path to the sports shed, a low building behind the running track. The door is slightly ajar. Miri pushes it open and hears the rustle of wings in the dim interior. Pip is perched on a stack of folded hurdles, looking down at Miri with a tilted head. She must have slipped in when someone left the door open. The shed is cool and quiet, a perfect hiding spot. Miri notices the door has a spring hinge that would swing shut if she lets go. She needs to prop it open before climbing the hurdles to reach Pip.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c26_prop_door_then_climb",
+     "label": "Prop the door open with a hurdle, then climb",
+     "target": "n43_prop_door_then_rescue"
+    }
+   ]
+  },
+  {
+   "id": "n27_calm_and_untie",
+   "body": "<<FILL role=climax words=70 beats='Miri speaks in her softest voice, telling Pip about the warm mash she will make for breakfast and the fresh straw she put in the coop yesterday. Pip’s trembling eases. Her breathing slows. Miri reaches down slowly and works at the knot in the twine with patient fingers. The stubborn knot loosens loop by loop. Finally, the twine falls away. Pip shakes her leg, tests it on the ground, and takes a wobbly step. Then another, steadier. She is free. She looks up at Miri and gives a grateful, quiet cluck and ruffles her wings.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c27_carry_pip_home_brambles",
+     "label": "Lift Pip and carry her safely home",
+     "target": "n44_carry_home_brambles_ending"
+    }
+   ]
+  },
+  {
+   "id": "n28_get_teacher_help",
+   "body": "<<FILL role=transition words=72 beats='Miri tells Pip she will be right back and carefully backs out of the brambles. She runs to the school building and finds Miss Harper, the science teacher, in her classroom setting up for the day. Miss Harper listens to Miri’s breathless story, grabs a pair of scissors from her desk, and follows Miri back to the blackberry patch. Together they push through the brambles, Miss Harper snipping away the thorniest branches with the scissors. Pip is still there, exactly where Miri left her, waiting patiently with the twine around her leg.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c28_miss_harper_cuts_twine",
+     "label": "Let Miss Harper cut the twine carefully",
+     "target": "n45_miss_harper_frees_pip"
+    }
+   ]
+  },
+  {
+   "id": "n29_untie_with_gloves",
+   "body": "<<FILL role=climax words=65 beats='With the thick gloves protecting her hands, Miri works at the knot in the twine. The gloves give her confidence to be firm and steady. Pip, calmer now after waiting, holds still. The knot loosens, then unravels completely. Miri pulls the twine free and tucks it into her pocket so no other animal gets tangled. Pip tests her leg with a few experimental steps. It works perfectly. She shakes her whole body, feathers puffing out, and then walks right up to Miri’s gloved hand and pecks it once, gently, as if to say thank you. Miri lifts her and starts the walk home.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c29_carry_home_gloves",
+     "label": "Carry Pip home and show the other hens she is safe",
+     "target": "n46_carry_home_gloves_ending"
+    }
+   ]
+  },
+  {
+   "id": "n30_lift_pip_from_compost",
+   "body": "<<FILL role=climax words=65 beats='Miri reaches down into the warm compost and slides both hands under Pip. The hen’s feathers are toasty and smell faintly of apples. Pip clucks sleepily but does not resist as Miri lifts her out of the bin. She blinks in the bright sunshine and looks around as if waking from a dream. Mrs. Fig claps her hands softly, delighted. Pip discovers she is being held and wriggles briefly, then settles. Miri thanks Mrs. Fig and cradles Pip close, carrying her across the field toward the school garden and the two waiting hens.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c30_return_pip_from_compost",
+     "label": "Walk back and reunite Pip with Penny and Clover",
+     "target": "n47_return_pip_compost_ending"
+    }
+   ]
+  },
+  {
+   "id": "n31_lure_pip_with_scrap",
+   "body": "<<FILL role=climax words=65 beats='Mrs. Fig hands Miri a ripe cherry tomato from her basket. Miri holds it just above the compost. The bright red color and sweet smell catch Pip’s attention. The hen stands up, stretches her neck, and hops onto the rim of the bin to reach the tomato. She pecks it happily from Miri’s palm. With Pip now out in the open, Miri gently scoops her up with her other arm. Mrs. Fig chuckles and says that hen has good taste. Pip swallows the last of the tomato and blinks contentedly in Miri’s arms, ready to go home.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c31_return_pip_lured",
+     "label": "Thank Mrs. Fig and carry Pip back to the coop",
+     "target": "n48_return_pip_lured_ending"
+    }
+   ]
+  },
+  {
+   "id": "n32_check_behind_shed",
+   "body": "<<FILL role=explore words=72 beats='Mrs. Fig leads Miri behind her garden shed. The ground is soft and muddy from yesterday’s watering. Miri sees small three-toed prints heading toward a stack of old flower pots. The tracks are definitely Pip’s. They follow the prints to the flower pots, where the biggest pot has tipped on its side. Inside, curled up on a bed of dry potting soil, is Pip. She has laid a single small egg, perfectly white and smooth. Pip looks tired but proud. Mrs. Fig gasps softly. That explains the long walk Pip took: she was looking for a quiet place to lay an egg.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c32_collect_pip_and_egg",
+     "label": "Carefully collect Pip and her egg together",
+     "target": "n49_collect_pip_and_egg_ending"
+    }
+   ]
+  },
+  {
+   "id": "n34_climb_down_with_pip",
+   "body": "<<FILL role=ending words=75 beats='Miri tucks Pip inside her jacket and climbs down the oak tree one careful branch at a time. On the ground, she unzips the jacket just enough to see Pip’s golden head poking out, eyes blinking in the sun. Miri laughs. She carries Pip across the field, talking to her the whole way. At the garden, she opens the coop door. Penny and Clover rush forward, clucking and fussing over their returned friend. Pip struts inside as if nothing happened and immediately pecks at the feed. Miri fixes the bent gate latch. All three hens are safe. Her holiday job is back on track.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_heroic_tree_rescue",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Brave Climb"
+   }
+  },
+  {
+   "id": "n35_carry_pip_home_ending",
+   "body": "<<FILL role=ending words=70 beats='Miri stands up slowly with Pip cradled in her arms. The little hen has closed her eyes, completely relaxed now. Miri walks back across the school field, the morning sun warm on her shoulders. She passes the playground, the drinking fountain, the sports shed, all the places Pip might have wandered. At last, the garden gate comes into view. She pushes it open with her elbow. Penny and Clover come running, wings half-spread in excitement. Miri kneels and sets Pip gently on the grass. The three hens touch beaks like a tiny feathered reunion. Miri sits beside them, catching her breath and smiling. She will lock the gate every single morning from now on.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_patient_coax",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Patient Rescue"
+   }
+  },
+  {
+   "id": "n36_return_to_coop_ending",
+   "body": "<<FILL role=ending words=68 beats='Miri carries Pip wrapped in her jacket all the way back to the garden. The sun is fully up now, and the garden sparkles with dew. She opens the coop door and gently places Pip on the soft straw inside. Penny and Clover crowd around immediately, inspecting Pip’s ruffled feathers and making soft, concerned sounds. Pip shakes herself off, takes a long drink of water, and then settles onto the roosting bar as if she had just been for a morning stroll. Miri refills the feed tray and sits on the garden bench, watching all three hens eat. She feels proud. She faced a problem and solved it by being careful and brave. She will double-check the gate every day she is on holiday duty.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_jacket_lift_rescue",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Jacket Hammock"
+   }
+  },
+  {
+   "id": "n37_follow_feathers_to_building",
+   "body": "<<FILL role=climax words=70 beats='Miri follows the feather trail across the field to the school building’s side door. It is propped open with a brick for the cleaners. She slips inside. The hallway is quiet and cool. At the end of the corridor, near the library doors, she sees a small golden shape pecking at the carpet. It is Pip, investigating a dropped raisin from someone’s morning snack. She looks up when Miri approaches and gives a cheerful cluck, as if inviting her to share. Miri kneels down, scoops up the hen, and tucks her safely under one arm. The great adventure is over. Pip has explored the whole school by now. Miri carries her out the door and back toward the garden, shaking her head in wonder.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c37_return_coop_school",
+     "label": "Carry Pip back to the garden coop",
+     "target": "n51_return_coop_school_ending"
+    }
+   ]
+  },
+  {
+   "id": "n38_return_coop_scooped_ending",
+   "body": "<<FILL role=ending words=70 beats='Miri walks back to the garden with Pip tucked securely in her arms. She can feel the hen’s heartbeat, steady now. At the coop, she opens the door and sets Pip inside. Penny runs over and preens Pip’s dusty neck feathers, while Clover circles them both making happy little sounds. The morning has been long and full of worry, but it ends with three hens safe together. Miri sits on the wooden bench, writes a note on her checklist to fix the latch, and watches the hens scratch in the dirt. She did her job well. Pip is home.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_quick_scoop_rescue",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Quick Scoop"
+   }
+  },
+  {
+   "id": "n39_return_coop_eaten_ending",
+   "body": "<<FILL role=ending words=68 beats='With Pip full of grain and feeling safe, Miri carries her home across the field. Pip dozes in the crook of her arm. Back at the garden, Penny and Clover rush to the gate when they hear Miri’s footsteps. Miri sets Pip down gently, and the three hens cluster together in a patch of sunshine. Miri fills the water dish and checks the whole fence for any other loose boards. She finds none, but she makes a mental note to ask the caretaker for a new gate latch. Her holiday week of hen-sitting has had an exciting start, but everything is back in order. Pip scratches at the dirt happily, ready for a quiet afternoon.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_patient_lure_rescue",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Patient Lure"
+   }
+  },
+  {
+   "id": "n40_rescue_pip_shed_ending",
+   "body": "<<FILL role=ending words=72 beats='Miri lifts Pip from her dusty nest in the storage shed. Jamal pats the hen gently on the head and jokes that she should get a library card for all her adventures. Together they walk back to the garden, Jamal carrying the red shoelace nest he now wants to keep as a memory. Miri places Pip in the coop with her two friends. The hens immediately form a small huddle, clucking rapidly as if Pip is telling them the whole story. Miri thanks Jamal for his help. Two sets of eyes were better than one. She adds finding-a-new-latch to her responsibility list and feels proud of the teamwork that brought Pip home.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_jamal_rescue_shed",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Shed Discovery"
+   }
+  },
+  {
+   "id": "n41_collect_pip_sand_ending",
+   "body": "<<FILL role=ending words=68 beats='Miri scoops Pip out of the sand pit, shaking off as much sand as she can. Jamal laughs and brushes the remaining grains from Pip’s feathers. The hen protests with a small squawk but settles quickly. Walking back to the garden, Miri and Jamal talk about the morning’s search. They agree Pip is the most adventurous hen either of them has ever met. At the coop, Penny and Clover seem relieved to see their smallest friend. Pip hops into the coop, scratches at the straw, and immediately falls asleep in the sunniest corner. Miri smiles, wipes the sand from her hands, and locks the gate carefully this time. Her holiday duty has been a true challenge, but she met it with a friend by her side.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_jamal_sand_rescue",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Sand Bath Surprise"
+   }
+  },
+  {
+   "id": "n42_offer_grain_swap",
+   "body": "<<FILL role=climax words=65 beats='Miri remembers she has a small handful of dried corn in her pocket, saved from the feed bucket. She kneels and holds out her palm. Pip eyes the corn, then the cracker. The corn is clearly better. She waddles over and pecks eagerly from Miri’s hand. While she is eating, Miri gently lifts her. Pip continues pecking at the corn in Miri’s palm, entirely unbothered by being carried. Miri walks slowly back to the garden, letting Pip finish her snack. The morning adventure ends with a hen who has explored the playground and found a better breakfast than she could have hoped. Miri knows she will have a funny story to tell when school starts again.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c42_return_coop_playground",
+     "label": "Carry Pip home to the coop with her treat",
+     "target": "n52_return_coop_playground_ending"
+    }
+   ]
+  },
+  {
+   "id": "n43_prop_door_then_rescue",
+   "body": "<<FILL role=climax words=68 beats='Miri wedges a plastic hurdle against the shed door to keep it open. Then she climbs the stack of folded hurdles carefully, testing each step. Pip watches her progress with curious, unblinking eyes. When Miri reaches her, Pip steps onto her shoulder instead of her hands, perching like a parrot. Miri giggles at the absurd sight. She climbs down slowly, trying not to dislodge her feathery passenger. Pip rides comfortably, her little claws gripping the fabric of Miri’s shirt. Once outside, Miri lifts her from her shoulder and cradles her in both arms. The sports shed door swings shut behind them with a firm click.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c43_return_coop_sports_shed",
+     "label": "Carry your shoulder-hen back to the garden",
+     "target": "n53_return_coop_sports_shed_ending"
+    }
+   ]
+  },
+  {
+   "id": "n44_carry_home_brambles_ending",
+   "body": "<<FILL role=ending words=75 beats='Miri lifts Pip and backs out of the blackberry brambles, shielding the hen from the thorns with her own body. Her sleeves are snagged and her hands have a few scratches, but Pip is unharmed. Back in the garden, Miri checks Pip’s leg one more time. There is a tiny mark where the twine was, but the hen walks without any limp at all. Penny and Clover gather around, and Pip pecks at the ground as if her morning trapped in the brambles was nothing. Miri fills the water dish to the brim and sits on the bench, exhausted and happy. She knows every corner of the garden now. She knows Pip can get into surprising trouble. And she knows she can handle it. The first day of hen-sitting was much more than she expected, but she did it.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_brambles_patient_untie",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Patient Rescue in the Brambles"
+   }
+  },
+  {
+   "id": "n45_miss_harper_frees_pip",
+   "body": "<<FILL role=climax words=68 beats='Miss Harper kneels in the clearing and snips the twine with two careful cuts. The green strand falls away. Pip does not flinch. She seems to understand that these two people are helping. Miri gathers Pip up immediately, holding her close. Miss Harper smiles and says Miri did exactly the right thing by asking for help when she needed it. Together they walk out of the blackberry patch. Miss Harper holds back the thorny branches while Miri carries Pip through. Back on the open field, Miss Harper pats Miri on the shoulder and tells her she will check in later to see how the hens are doing. Miri feels grateful. Some problems need a team.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c45_return_coop_teacher",
+     "label": "Carry Pip home with Miss Harper’s encouragement",
+     "target": "n54_return_coop_teacher_ending"
+    }
+   ]
+  },
+  {
+   "id": "n46_carry_home_gloves_ending",
+   "body": "<<FILL role=ending words=70 beats='Miri returns to the garden with Pip in her arms. She hangs the canvas gloves back on their nail in the shed, grateful for them. Pip wanders over to Penny and Clover, who fuss over her like worried aunties. Miri checks the whole fence line and the gate latch. She finds the loose board and wedges a stone against it for now. The garden is safe again. She washes her hands at the outdoor tap, the cool water soothing the scratches she got before the gloves. Her first morning of hen-sitting taught her to always be prepared. She writes a note on the chalkboard in the shed: check the gate, wear the gloves, and never underestimate a small hen. Pip settles into a sunbeam, looking like a golden puffball. All is well.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_gloves_preparation_rescue",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Glove-Prepared Rescue"
+   }
+  },
+  {
+   "id": "n47_return_pip_compost_ending",
+   "body": "<<FILL role=ending words=68 beats='Miri carries Pip across the field, the hen’s feathers still warm from the compost. She smells faintly of apples and soil. Back at the garden, Penny and Clover are waiting by the coop door. When they see Pip, they erupt in a flurry of happy clucks. Pip hops down and immediately rolls in a dusty patch of dirt, probably to get her feathers back to their proper smell. Miri laughs. She secures the gate properly and checks that the compost bin in her own garden corner is closed. The morning has been a success. Pip was missing, Miri searched, and with a neighbor’s kindness, everything turned out fine. Miri writes a thank-you note to Mrs. Fig in her mind, promising to deliver some fresh eggs later in the week.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_compost_warm_bed",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Warm Compost Bed"
+   }
+  },
+  {
+   "id": "n48_return_pip_lured_ending",
+   "body": "<<FILL role=ending words=72 beats='Miri thanks Mrs. Fig and promises to bring her a fresh egg tomorrow. She carries Pip across the field, the hen’s beak still faintly red from the tomato. Back at the garden, the other two hens rush over. They all peck at the remaining feed together as if nothing unusual happened. Miri sits on the bench, feeling the morning sun on her face. She has learned that patience and a small treat can solve a big problem. She also learned that Pip will go to great lengths for good food. She makes a mental note to keep the feed bucket sealed tight and the gate latched. Her week of hen-sitting is off to a memorable start, but the hardest part is over. Pip is home, and Miri can finally relax.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_tomato_lure_rescue",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Tomato Treat"
+   }
+  },
+  {
+   "id": "n49_collect_pip_and_egg_ending",
+   "body": "<<FILL role=ending words=68 beats='Miri carefully wraps the small white egg in a handful of dry leaves from Mrs. Fig’s basket. She cradles Pip with the other arm. The hen clucks softly, as if to say thank you. Mrs. Fig tells Miri she is a very responsible hen-sitter. Miri walks back across the field feeling important and proud. At the garden, she places the egg gently in the nesting box and sets Pip beside it. Penny and Clover inspect the egg with grave curiosity. Pip settles onto it, fluffing her feathers. Miri realizes Pip was not just lost, she was doing something important. Now everyone is safe and there is an extra gift to show for the morning’s worry. Miri fills the water and feed, checks the latch, and watches over her three happy hens.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_pip_egg_discovery",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Surprise Egg"
+   }
+  },
+  {
+   "id": "n51_return_coop_school_ending",
+   "body": "<<FILL role=ending words=70 beats='Miri carries Pip out of the quiet school building and back into the sunshine. A school that is empty in the holidays feels huge and strange, and she is glad to leave its echoing hallways behind. She crosses the field, telling Pip about the raisin she found and how lucky she was that no doors closed behind her. Back at the garden, Miri places Pip in the coop. Penny and Clover cluster around her, as if demanding an explanation for her absence. Pip pecks at the grain in her usual spot, already indifferent to the morning’s drama. Miri stands back, hands on her hips, surveying her little flock. All present. She pulls the gate firmly shut and hooks the latch into place. The first day of the holiday has been an adventure she will never forget, but everything ends right where it should: with three hens safe in their home.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_school_building_rescue",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Schoolhouse Explorer"
+   }
+  },
+  {
+   "id": "n52_return_coop_playground_ending",
+   "body": "<<FILL role=ending words=65 beats='Miri carries Pip back to the garden with the remnants of the corn treat still in her pocket. The hen has dozed off, full and content. In the garden, Miri settles Pip into the coop beside her waking friends. She checks the gate latch and the loose board in the fence one more time. Everything is secure now. She sits on the bench, takes out her notebook, and writes down everything that happened, starting with the moment she noticed Pip was gone. It will make a brilliant story to tell her parents at dinner. For now, the garden is peaceful. The hens cluck softly in their coop, and Miri sips from her water bottle, feeling the deep satisfaction of a job well done. A difficult problem met with patience and clever thinking. Pip is safe. Miri is ready for whatever tomorrow brings.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_playground_corn_swap",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Playground Swap"
+   }
+  },
+  {
+   "id": "n53_return_coop_sports_shed_ending",
+   "body": "<<FILL role=ending words=68 beats='Miri walks back to the garden, still smiling at the memory of Pip riding on her shoulder. A passerby might have thought she had a very strange pet parrot. Pip is now cradled in her arms, blinking lazily. At the coop, Miri sets her down. The hen immediately walks over to the water dish and takes a long drink. Penny and Clover, who have been pacing near the gate, calm down the moment they see her. Miri refills the feed and checks the water level. She makes a note to tell the caretaker about the sports shed’s spring hinge; it should not be so easy for a small hen to get in. Her holiday duty is back under control. She watches the three hens pecking and scratching and feels her heart finally slow down to a normal pace. A good morning, after all.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_sports_shed_shoulder_ride",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Shoulder Ride"
+   }
+  },
+  {
+   "id": "n54_return_coop_teacher_ending",
+   "body": "<<FILL role=ending words=72 beats='Miri walks back to the garden feeling taller than before. Miss Harper told her she was brave and smart, and those words echo in her mind. At the coop, she sets Pip down gently. The other two hens rush to her side, and the three of them disappear into the coop together, probably to have their own conversation about the morning. Miri secures the garden gate, wedges the fence board tight, and hangs up the shed key where it belongs. She looks around the quiet garden. Everything is in order. The morning tested her, but she made the right choice: when something is too hard alone, find a trusted grown-up. She writes a quick note to leave on Miss Harper’s desk, thanking her again. Then she settles onto the bench to keep watch over her three happy, safe hens. The holiday week feels full of promise now.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_teacher_helped_free_pip",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Help from a Teacher"
+   }
+  }
+ ]
+}

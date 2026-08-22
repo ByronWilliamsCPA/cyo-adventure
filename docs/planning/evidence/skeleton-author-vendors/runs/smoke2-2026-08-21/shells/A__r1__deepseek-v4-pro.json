@@ -1,0 +1,760 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "open_map",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "problem-solving",
+   "kindness to animals",
+   "community"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 7,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "morning_feeding",
+ "nodes": [
+  {
+   "id": "morning_feeding",
+   "body": "<<FILL role=setup words=75 beats='Miri arrives at school coop with grain pail, greets three hens by name: Goldie, Speckles, Pip. Morning is sunny and quiet. Miri fills the feeder, counts heads, realizes Pip the smallest hen is gone. Coop door is latched, no feathers scattered, no obvious struggle. Miri feels a flutter of worry in her stomach.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "search_coop",
+     "label": "Search the coop and run carefully",
+     "target": "check_coop_corners"
+    },
+    {
+     "id": "call_pip",
+     "label": "Call for Pip outside the coop",
+     "target": "call_outside"
+    },
+    {
+     "id": "check_fence",
+     "label": "Check the fence for gaps",
+     "target": "fence_inspection"
+    }
+   ]
+  },
+  {
+   "id": "check_coop_corners",
+   "body": "<<FILL role=explore words=70 beats='Miri kneels in the straw, peers into every dark corner of the coop. Goldie and Speckles cluck softly nearby, watching. Miri finds a tiny gap behind the nesting box where the wire mesh has pulled loose, just big enough for a small hen. A few soft grey feathers cling to the edge of the opening.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "follow_gap",
+     "label": "Squeeze through the gap to follow Pip",
+     "target": "through_the_gap"
+    },
+    {
+     "id": "patch_and_search",
+     "label": "Patch the gap first, then search",
+     "target": "patch_the_gap"
+    }
+   ]
+  },
+  {
+   "id": "through_the_gap",
+   "body": "<<FILL role=transition words=65 beats='Miri wriggles through the narrow opening, landing in a forgotten strip of tall grass between the coop and the school fence. A faint trail of small chicken footprints leads along the fence line toward the old garden shed. The grass is damp with morning dew.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "follow_trail_shed",
+     "label": "Follow the footprints to the garden shed",
+     "target": "garden_shed_search"
+    },
+    {
+     "id": "call_again_trail",
+     "label": "Stop and call again before going further",
+     "target": "call_along_trail"
+    }
+   ]
+  },
+  {
+   "id": "patch_the_gap",
+   "body": "<<FILL role=transition words=68 beats='Miri fetches a piece of spare wire and a twist-tie from the supply box. She carefully presses the loose mesh back into place and secures it, patting the wire smooth on both sides. Goldie pecks at her shoelace as if to hurry her along. The coop is safe again, but Pip is still missing.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "search_school_garden",
+     "label": "Search the school garden next",
+     "target": "garden_search"
+    },
+    {
+     "id": "ask_caretaker",
+     "label": "Ask the school caretaker for help",
+     "target": "find_caretaker"
+    }
+   ]
+  },
+  {
+   "id": "garden_shed_search",
+   "body": "<<FILL role=explore words=72 beats='Miri approaches the old garden shed with its peeling green paint and creaky wooden door. It is slightly ajar. Inside among terracotta pots and a bag of compost, something rustles. A small grey feather drifts out the crack. Miri hears a soft, familiar clucking sound from the darkest corner.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "enter_shed_quietly",
+     "label": "Enter the shed slowly and quietly",
+     "target": "find_pip_in_shed"
+    },
+    {
+     "id": "call_from_door",
+     "label": "Call gently from the doorway",
+     "target": "coax_pip_out"
+    }
+   ]
+  },
+  {
+   "id": "call_along_trail",
+   "body": "<<FILL role=decision words=65 beats='Miri cups her hands around her mouth and calls Pip name in a soft, sing-song voice. The trail leads past a compost heap where beetles scurry. From behind the heap comes a tiny answering chirp, tentative and a little scared. Something small and grey shuffles in the dry leaves.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "approach_compost",
+     "label": "Crouch down and approach slowly",
+     "target": "compost_discovery"
+    },
+    {
+     "id": "offer_grain",
+     "label": "Shake the grain pail to lure Pip out",
+     "target": "lure_with_grain"
+    }
+   ]
+  },
+  {
+   "id": "find_pip_in_shed",
+   "body": "<<FILL role=climax words=80 beats='Miri steps carefully over a trowel and a coil of hose. In the corner, nestled in an old burlap sack, is Pip. She has made a cozy nest and is sitting on a single small, warm brown egg. Pip looks up at Miri and clucks proudly, fluffing her feathers. She is not hurt or trapped at all, she just found a secret spot to lay her egg.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "carry_pip_back_egg",
+     "label": "Scoop up Pip and the egg, go home",
+     "target": "happy_return_with_egg"
+    },
+    {
+     "id": "leave_be_then_return",
+     "label": "Let Pip finish, come back with treats",
+     "target": "patient_return"
+    }
+   ]
+  },
+  {
+   "id": "coax_pip_out",
+   "body": "<<FILL role=transition words=74 beats='Miri kneels at the doorway and speaks in a gentle, encouraging tone. Pip emerges slowly from behind a stack of seed trays, her little head bobbing. She is perfectly fine, just dusty and a bit sheepish. She pecks at a stray seed on the floor and then waddles toward Miri outstretched hand, ready to be picked up.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "return_pip_coop",
+     "label": "Carry Pip straight back to the coop",
+     "target": "safe_return"
+    },
+    {
+     "id": "check_shed_more",
+     "label": "Check if there is an egg in the shed too",
+     "target": "find_egg_in_shed"
+    }
+   ]
+  },
+  {
+   "id": "compost_discovery",
+   "body": "<<FILL role=climax words=78 beats='Miri crouches low and moves slowly around the compost heap. There is Pip, perfectly fine, dust-bathing in a patch of warm, dry soil. A small hollow beneath an overturned wheelbarrow has become her private spa. Pip chirps happily, rolls onto her side, and kicks up a puff of dirt. She seems entirely pleased with her morning adventure.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "scoop_dusty_pip",
+     "label": "Scoop up Pip and dust her off",
+     "target": "return_dusty_pip"
+    },
+    {
+     "id": "let_pip_finish",
+     "label": "Sit and wait for Pip to finish her bath",
+     "target": "patient_wait_bath"
+    }
+   ]
+  },
+  {
+   "id": "lure_with_grain",
+   "body": "<<FILL role=transition words=66 beats='Miri rattles the grain pail gently. The familiar sound brings Pip trotting out from behind the compost heap, her little legs moving fast. She pecks eagerly at a few grains Miri scatters on the ground. Pip is dusty but unharmed, and clearly very happy to see breakfast arrive.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "lead_back_coop_grain",
+     "label": "Lead Pip back to the coop with a grain trail",
+     "target": "clever_return"
+    },
+    {
+     "id": "carry_direct_compost",
+     "label": "Pick Pip up now that she is close",
+     "target": "safe_return"
+    }
+   ]
+  },
+  {
+   "id": "happy_return_with_egg",
+   "body": "<<FILL role=ending words=80 beats='Miri cradles Pip gently in one arm and carries the warm egg in her palm. Back at the coop, Goldie and Speckles cluck a welcome. Miri places the egg in the nesting box and gives all three hens a celebratory sprinkle of corn. Pip settles onto the perch, looking very content. Miri writes a note: Pip laid her first egg today! and tapes it to the coop door with a smile.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_egg_discovery",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Very Special Morning"
+   }
+  },
+  {
+   "id": "patient_return",
+   "body": "<<FILL role=ending words=72 beats='Miri decides not to disturb Pip. She fetches a handful of dried mealworms from her pocket and places them near the shed door with a little dish of water. I will come back at lunchtime, she whispers. At lunch, Pip is waiting by the dish, egg abandoned, ready for a lift home. Miri carries her back to the coop where her friends greet her warmly.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_patient_friend",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Patient Friend"
+   }
+  },
+  {
+   "id": "safe_return",
+   "body": "<<FILL role=ending words=74 beats='Miri scoops Pip up securely, holding the small warm hen against her chest. Pip tucks her head under Miri chin and makes a soft trilling sound all the way back to the coop. Goldie and Speckles rush to the wire to greet them. Miri checks the coop for any other loose spots, then gives all three hens fresh water and an extra helping of greens. Pip pecks at her food, safe and home.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_safe_reunion",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Safe and Sound"
+   }
+  },
+  {
+   "id": "return_dusty_pip",
+   "body": "<<FILL role=ending words=70 beats='Miri lifts Pip from her dirt bath, brushing clumps of soil from her feathers. Pip protests with a tiny squawk but settles quickly. Back at the coop, Miri gives Pip a quick dusting with a soft brush. Pip shakes herself, sending a cloud of dust over Goldie and Speckles, who cluck in surprise. Miri laughs and decides Pip had a very good adventure indeed.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_dusty_adventure",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Dusty Adventure"
+   }
+  },
+  {
+   "id": "patient_wait_bath",
+   "body": "<<FILL role=ending words=75 beats='Miri sits on an upturned bucket and watches Pip enjoy her dirt bath. The sun climbs higher and warms the garden. After several minutes, Pip stands up, shakes herself thoroughly, and waddles over to Miri as if to say, I am ready now. Miri carries her back to the coop, where Goldie and Speckles inspect their dusty friend with curious pecks. Miri leaves the coop tidy and the hens content.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_sunny_patience",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Sunny Patience"
+   }
+  },
+  {
+   "id": "clever_return",
+   "body": "<<FILL role=ending words=68 beats='Miri scatters a thin trail of grain from the compost heap all the way back to the coop. Pip follows eagerly, pecking every step, with Miri walking slowly behind to keep her safe. The trail leads Pip right through the coop door. Goldie and Speckles join the feast, and Miri latches the door with a satisfied click. Clever thinking made the rescue a happy parade.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_clever_parade",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Grain Parade"
+   }
+  },
+  {
+   "id": "find_egg_in_shed",
+   "body": "<<FILL role=climax words=70 beats='Miri sets Pip gently in a small box for a moment and takes a second look around the shed. Behind the burlap sack, tucked in a nest of straw, she finds the most perfect little brown egg she has ever seen. It is still slightly warm. Miri marvels at Pip clever hiding spot and decides the shed adventure was a special egg-laying secret.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "return_with_both",
+     "label": "Take Pip and the egg back together",
+     "target": "happy_return_with_egg"
+    },
+    {
+     "id": "leave_egg_note",
+     "label": "Leave the egg and tell the caretaker",
+     "target": "tell_caretaker_egg"
+    }
+   ]
+  },
+  {
+   "id": "tell_caretaker_egg",
+   "body": "<<FILL role=ending words=72 beats='Miri carries Pip back to the coop and then finds the caretaker, Mr. Barnes, who is watering the flower beds. She tells him about the shed, the egg, and the loose mesh. Mr. Barnes smiles, fetches the egg himself, and promises to fix the gap properly with stronger wire. He thanks Miri for being such a careful hen-sitter. Pip clucks approvingly from her perch.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_teamwork",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Teamwork Saves the Day"
+   }
+  },
+  {
+   "id": "call_outside",
+   "body": "<<FILL role=explore words=68 beats='Miri steps outside the coop and calls Pip name across the school field. The only answer is the rustle of wind in the oak tree. Miri scans the field, the playground, and the edge of the woods. No grey hen. But near the compost bins behind the kitchen, she spots a scrap of something pale fluttering, could be a feather.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "check_compost_bins",
+     "label": "Run to the compost bins",
+     "target": "compost_bins_search"
+    },
+    {
+     "id": "check_playground",
+     "label": "Search under the playground equipment",
+     "target": "playground_search"
+    }
+   ]
+  },
+  {
+   "id": "compost_bins_search",
+   "body": "<<FILL role=explore words=70 beats='Miri jogs to the compost bins, three large wooden crates full of apple cores, grass clippings, and vegetable peelings. The pale scrap is indeed a small grey feather, and another catches the light near the bin edge. The lid of the middle bin is slightly askew. Miri hears a soft scratching sound from inside.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "open_bin_lid",
+     "label": "Lift the lid and look inside",
+     "target": "inside_compost_bin"
+    },
+    {
+     "id": "call_into_bin",
+     "label": "Call into the bin",
+     "target": "bin_listen"
+    }
+   ]
+  },
+  {
+   "id": "inside_compost_bin",
+   "body": "<<FILL role=climax words=68 beats='Miri lifts the lid carefully. Pip is inside, perched on a heap of shredded lettuce and carrot tops, pecking happily at a feast of kitchen scraps. She is not stuck, the bin sides are too high for her to fly out, but she does not seem to want to leave. She looks up at Miri with a lettuce leaf dangling from her beak.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "reach_in_and_lift",
+     "label": "Reach in and lift Pip out",
+     "target": "rescue_from_bin"
+    },
+    {
+     "id": "offer_treat_bin",
+     "label": "Offer a favorite treat to coax her",
+     "target": "lure_from_bin"
+    }
+   ]
+  },
+  {
+   "id": "bin_listen",
+   "body": "<<FILL role=transition words=64 beats='Miri leans close to the bin and calls softly. Pip answers with a muffled cluck. Miri peeks through a crack and sees Pip bright eye looking back. The hen is calm, just marooned on Mount Compost. Miri smiles with relief and starts figuring out the safest way to get her down.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "reach_in_and_lift",
+     "label": "Reach in and lift Pip out",
+     "target": "rescue_from_bin"
+    },
+    {
+     "id": "tilt_bin_ramp",
+     "label": "Tilt the bin to make a ramp",
+     "target": "ramp_rescue"
+    }
+   ]
+  },
+  {
+   "id": "rescue_from_bin",
+   "body": "<<FILL role=ending words=74 beats='Miri leans over the edge and scoops Pip up with both hands. Pip protests with a squawk, dropping her lettuce. Back on solid ground, she shakes compost crumbs from her feathers and pecks at Miri shoelace, as if nothing unusual happened. Miri carries her back to the coop, where Goldie and Speckles sniff Pip curiously. She smells like salad.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_compost_hen",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Salad Surprise"
+   }
+  },
+  {
+   "id": "lure_from_bin",
+   "body": "<<FILL role=transition words=62 beats='Miri pulls a dried mealworm from her pocket, Pip absolute favorite. She holds it just above the bin edge. Pip head snaps up. She flutters and hops, and with one determined flap, she scrabbles onto the rim. Miri catches her before she tumbles.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "carry_home_bin",
+     "label": "Carry Pip straight back to the coop",
+     "target": "safe_return"
+    },
+    {
+     "id": "check_scrapes_bin",
+     "label": "Check Pip for any scrapes first",
+     "target": "check_pip_health"
+    }
+   ]
+  },
+  {
+   "id": "ramp_rescue",
+   "body": "<<FILL role=climax words=68 beats='Miri braces her feet and tilts the bin very carefully, just enough that the compost slopes into a gentle ramp. Pip eyes the new angle, takes a dainty step, then another, and walks right down the vegetable slide with a dignified waddle. She steps onto the grass and gives a triumphant cluck. No lifting required.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "carry_home_ramp",
+     "label": "Carry Pip straight back to the coop",
+     "target": "safe_return"
+    },
+    {
+     "id": "check_scrapes_ramp",
+     "label": "Check Pip for any scrapes first",
+     "target": "check_pip_health"
+    }
+   ]
+  },
+  {
+   "id": "check_pip_health",
+   "body": "<<FILL role=transition words=58 beats='Miri runs her fingers gently over Pip wings and legs, checking for scratches. Pip is perfectly fine, just a little dusty and very full of kitchen scraps. She blinks contentedly at Miri careful inspection and pecks affectionately at a button on Miri coat.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "carry_home_check",
+     "label": "Carry Pip straight back to the coop",
+     "target": "safe_return"
+    }
+   ]
+  },
+  {
+   "id": "playground_search",
+   "body": "<<FILL role=explore words=66 beats='Miri hurries to the playground and checks under the slide, inside the tunnel, and behind the climbing wall. A few woodchips are scattered, but no Pip. Then Miri notices a trail of tiny footprints in a patch of sand near the swings, leading toward the teachers garden plots on the far side of the field.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "follow_to_gardens",
+     "label": "Follow the trail to the garden plots",
+     "target": "teachers_gardens"
+    },
+    {
+     "id": "check_under_bench",
+     "label": "Double-check under the nearby bench",
+     "target": "bench_discovery"
+    }
+   ]
+  },
+  {
+   "id": "teachers_gardens",
+   "body": "<<FILL role=explore words=70 beats='Miri follows the sandy footprints to the teachers garden plots, small raised beds full of tomatoes, beans, and marigolds. The trail stops at a bed of soft soil where something has clearly been scratching. A neat hollow in the dirt, lined with a few pulled-up marigold petals, looks like a cozy resting spot.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "search_bean_tunnel",
+     "label": "Look inside the bean-pole tunnel",
+     "target": "bean_tunnel_find"
+    },
+    {
+     "id": "call_quietly_garden",
+     "label": "Call softly among the plants",
+     "target": "garden_call_find"
+    }
+   ]
+  },
+  {
+   "id": "bean_tunnel_find",
+   "body": "<<FILL role=climax words=68 beats='Miri peers into the shady tunnel made by bean vines climbing their poles. Curled up in a nest of dried leaves at the tunnel far end is Pip, dozing in the dappled shade. A ladybug crawls across a bean leaf just above her head. She opens one eye, sees Miri, and gives a sleepy little chirp.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "carry_pip_bean",
+     "label": "Wake Pip gently and carry her home",
+     "target": "safe_return"
+    },
+    {
+     "id": "sit_with_pip",
+     "label": "Sit with Pip until she wakes on her own",
+     "target": "nap_together"
+    }
+   ]
+  },
+  {
+   "id": "garden_call_find",
+   "body": "<<FILL role=transition words=64 beats='Miri calls Pip name in a whisper, not wanting to startle her. A rustle comes from beneath a sprawling tomato plant heavy with green fruit. Pip pokes her head out, a tiny smudge of dirt on her beak. She has been pecking at fallen cherry tomatoes and looks very pleased with her gardener breakfast.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "carry_pip_tomato",
+     "label": "Wake Pip gently and carry her home",
+     "target": "safe_return"
+    },
+    {
+     "id": "check_garden_egg",
+     "label": "Check the hollow for an egg",
+     "target": "garden_egg_find"
+    }
+   ]
+  },
+  {
+   "id": "garden_egg_find",
+   "body": "<<FILL role=climax words=56 beats='Miri checks the flower-petal hollow and finds a tiny egg, pale and smooth. Pip clucks softly, as if to say, I made that. Miri wraps it carefully in a large leaf and tucks it in her pocket.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "return_with_egg_garden",
+     "label": "Carry Pip and the egg back to the coop",
+     "target": "happy_return_with_egg"
+    }
+   ]
+  },
+  {
+   "id": "nap_together",
+   "body": "<<FILL role=ending words=74 beats='Miri settles onto the grass beside the bean tunnel and waits. The garden is peaceful, with bees humming and leaves rustling. After a few minutes, Pip stirs, stretches one wing, and waddles out to sit in Miri lap. Miri carries her warm, sleepy hen back to the coop, where Goldie and Speckles are napping too. Everyone is exactly where they should be.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_garden_nap",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Garden Nap"
+   }
+  },
+  {
+   "id": "bench_discovery",
+   "body": "<<FILL role=climax words=62 beats='Miri crouches to look under the wooden bench near the sandpit. Tucked in the shadow is Pip, sitting on top of a forgotten mitten someone dropped at recess. She has made it her throne. Pip clucks regally at Miri, not scared at all, just claiming her unexpected treasure.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "carry_pip_mitten",
+     "label": "Wake Pip gently and carry her home",
+     "target": "safe_return"
+    },
+    {
+     "id": "bring_mitten_back",
+     "label": "Bring the mitten back, it might belong to someone",
+     "target": "return_mitten_ending"
+    }
+   ]
+  },
+  {
+   "id": "return_mitten_ending",
+   "body": "<<FILL role=ending words=74 beats='Miri scoops up Pip, then takes the mitten too. Back at the coop, she pins the mitten to the school noticeboard with a note: Found near the sandpit. Later, a kindergarten girl runs up to thank Miri, it is her favorite mitten. Miri feels warm inside, twice a helper today. Pip clucks proudly from the coop, as if she found the mitten on purpose.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_mitten_helper",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Mitten Mystery"
+   }
+  },
+  {
+   "id": "fence_inspection",
+   "body": "<<FILL role=explore words=68 beats='Miri walks the perimeter of the coop fence, checking every post and section of wire. Near the back corner, behind a tangle of blackberry brambles, she finds a spot where the wire has been pushed outward. Chicken footprints in the soft mud point away from the coop. The trail leads under a gap in the school boundary hedge.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "follow_beyond_hedge",
+     "label": "Squeeze through the hedge gap after Pip",
+     "target": "beyond_the_hedge"
+    },
+    {
+     "id": "get_help_adult",
+     "label": "Go find an adult before leaving school grounds",
+     "target": "find_caretaker"
+    }
+   ]
+  },
+  {
+   "id": "beyond_the_hedge",
+   "body": "<<FILL role=transition words=72 beats='Miri pushes through the hedge and finds herself on the quiet lane behind the school. A ditch runs along the roadside, full of wildflowers and tall grass. More chicken footprints lead along the grassy verge. Miri hears a distant clucking, it sounds like Pip, and it is coming from the direction of the old oak tree by the postbox.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "follow_to_oak_tree",
+     "label": "Follow the clucking to the oak tree",
+     "target": "oak_tree_rescue"
+    },
+    {
+     "id": "call_loudly_lane",
+     "label": "Call loudly and shake the grain pail",
+     "target": "lane_call"
+    }
+   ]
+  },
+  {
+   "id": "oak_tree_rescue",
+   "body": "<<FILL role=climax words=78 beats='Under the spreading branches of the old oak tree, Miri finds Pip perched on a low, mossy branch. She must have fluttered up and now cannot figure out how to get down. She paces back and forth on the branch, clucking with mild distress. The branch is not high, Miri can reach it if she stands on tiptoe.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "lift_pip_down",
+     "label": "Stand on tiptoe and lift Pip down",
+     "target": "oak_safe_return"
+    },
+    {
+     "id": "coax_with_grain_oak",
+     "label": "Coax Pip to flutter down with grain",
+     "target": "oak_grain_coax"
+    }
+   ]
+  },
+  {
+   "id": "lane_call",
+   "body": "<<FILL role=transition words=62 beats='Miri calls Pip name and shakes the grain pail. From somewhere near the oak tree, Pip answers with a series of urgent clucks. A moment later, a grey blur emerges from the long grass, running toward Miri at full chicken speed. Pip has never looked so happy to see her.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "scoop_and_return",
+     "label": "Scoop Pip up and hurry back to the coop",
+     "target": "safe_return"
+    },
+    {
+     "id": "check_for_hurt_lane",
+     "label": "Check Pip for any injuries first",
+     "target": "check_pip_health"
+    }
+   ]
+  },
+  {
+   "id": "oak_safe_return",
+   "body": "<<FILL role=ending words=70 beats='Miri stretches up and wraps both hands gently around Pip. Pip flutters once, then settles. Silly hen, Miri whispers, trees are not for chickens. She carries Pip back through the hedge gap and into the coop. Goldie and Speckles cluster around as if Pip has returned from a great expedition. Miri blocks the hedge hole with a big stone for now.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_oak_tree_save",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Chickens Don't Climb Trees"
+   }
+  },
+  {
+   "id": "oak_grain_coax",
+   "body": "<<FILL role=ending words=72 beats='Miri scatters a handful of grain on the grass beneath the branch. Pip eyes the grain, measures the distance, and launches herself in an awkward, flapping descent. She lands in a puff of dust, perfectly unharmed, and immediately starts pecking. Miri laughs with relief and scoops her up for the walk back. The fence gets an extra inspection that afternoon.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_daring_flight",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Pip's Daring Flight"
+   }
+  },
+  {
+   "id": "garden_search",
+   "body": "<<FILL role=transition words=58 beats='Miri heads to the school garden, scanning the vegetable beds and flower borders. Near the strawberry patch, she spots a cluster of tiny grey feathers caught on a thorny rose stem. The garden is quiet except for the buzz of bees.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "check_strawberry_patch",
+     "label": "Look carefully in the strawberry patch",
+     "target": "strawberry_hideout"
+    },
+    {
+     "id": "check_garden_shed",
+     "label": "Investigate the garden shed",
+     "target": "garden_shed_search"
+    }
+   ]
+  },
+  {
+   "id": "strawberry_hideout",
+   "body": "<<FILL role=climax words=65 beats='Miri parts the broad leaves of the strawberry plants and finds a secret hollow where the straw mulch is thick and warm. Pip is nestled there, perfectly camouflaged among the grey-brown straw. She has found the very best sunbathing spot in the whole garden and looks almost annoyed to be discovered.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "carry_pip_strawberry",
+     "label": "Wake Pip gently and carry her home",
+     "target": "safe_return"
+    },
+    {
+     "id": "check_strawberry_egg",
+     "label": "Check if there is an egg hidden too",
+     "target": "strawberry_egg"
+    }
+   ]
+  },
+  {
+   "id": "strawberry_egg",
+   "body": "<<FILL role=climax words=56 beats='Miri pushes the straw aside carefully and finds a small pinkish-brown egg, still warm from Pip sitting. The strawberry patch has been a hiding spot and a nest.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "return_with_both_strawberry",
+     "label": "Carry Pip and her egg back to the coop",
+     "target": "happy_return_with_egg"
+    }
+   ]
+  },
+  {
+   "id": "find_caretaker",
+   "body": "<<FILL role=transition words=68 beats='Miri runs to the caretaker shed near the main building and finds Mr. Barnes oiling a set of shears. She explains breathlessly that Pip is missing. Mr. Barnes nods calmly, puts down his tools, and says he knows every hiding spot on the school grounds. Together, they start checking the places Miri had not thought of.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "check_boiler_room",
+     "label": "Check the warm boiler room together",
+     "target": "boiler_room_search"
+    },
+    {
+     "id": "check_recycling_shed",
+     "label": "Search the recycling shed together",
+     "target": "recycling_shed_search"
+    }
+   ]
+  },
+  {
+   "id": "boiler_room_search",
+   "body": "<<FILL role=climax words=64 beats='The boiler room is dim and warm, with a gentle humming sound. Mr. Barnes shines a torch behind the big metal boiler. There, curled on a pile of old towels, is Pip. The warmth must have drawn her in through a small vent. She is toasty and content, blinking sleepily in the torchlight.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "mr_barnes_gets_pip",
+     "label": "Let Mr. Barnes reach in and get Pip",
+     "target": "team_rescue"
+    },
+    {
+     "id": "miri_gets_pip_boiler",
+     "label": "Reach in yourself and gently lift Pip out",
+     "target": "safe_return"
+    }
+   ]
+  },
+  {
+   "id": "recycling_shed_search",
+   "body": "<<FILL role=climax words=66 beats='The recycling shed is full of cardboard boxes and paper bags. Mr. Barnes and Miri hear a scratching sound from a large box labelled Paper only. Miri peeks inside and finds Pip nesting in a bed of shredded paper, looking like a queen on a throne of confetti. She has pecked a hole in the box side for a doorway.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "mr_barnes_laughs",
+     "label": "Laugh with Mr. Barnes at Pip cleverness",
+     "target": "team_rescue"
+    },
+    {
+     "id": "rescue_pip_box",
+     "label": "Carefully tip the box and let Pip walk out",
+     "target": "ramp_rescue"
+    }
+   ]
+  },
+  {
+   "id": "team_rescue",
+   "body": "<<FILL role=ending words=76 beats='Mr. Barnes gently retrieves Pip and hands her to Miri. She is a clever little explorer, he says with a chuckle. Together they carry Pip back to the coop, and Mr. Barnes helps Miri check every inch of wire and wood for gaps. He promises to seal the boiler room vent and move the recycling boxes. Miri thanks him, and Pip clucks as if to say thank you too.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_caretaker_teamwork",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Mr. Barnes to the Rescue"
+   }
+  }
+ ]
+}

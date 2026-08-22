@@ -1,0 +1,784 @@
+{
+ "schema_version": "2.0",
+ "id": "cass-play-crisis",
+ "version": 1,
+ "title": "The Show Must Go On",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "leadership",
+   "problem-solving",
+   "theater",
+   "resilience",
+   "teamwork"
+  ],
+  "estimated_minutes": 8,
+  "ending_count": 14,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "n0",
+ "nodes": [
+  {
+   "id": "e1",
+   "body": "<<FILL role=ending words=80 beats='The show concludes with alicia succeeds'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Alicia Succeeds"
+   }
+  },
+  {
+   "id": "e2",
+   "body": "<<FILL role=ending words=80 beats='The show concludes with strong performance'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Strong Performance"
+   }
+  },
+  {
+   "id": "e3",
+   "body": "<<FILL role=ending words=80 beats='The show concludes with breakthrough'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e3",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Breakthrough"
+   }
+  },
+  {
+   "id": "e4",
+   "body": "<<FILL role=ending words=80 beats='The show concludes with creative win'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e4",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Creative Win"
+   }
+  },
+  {
+   "id": "e5",
+   "body": "<<FILL role=ending words=80 beats='The show concludes with marcus returns'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e5",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Marcus Returns"
+   }
+  },
+  {
+   "id": "e6",
+   "body": "<<FILL role=ending words=80 beats='The show concludes with ensemble power'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e6",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Ensemble Power"
+   }
+  },
+  {
+   "id": "e7",
+   "body": "<<FILL role=ending words=80 beats='The show concludes with perfect balance'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e7",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Perfect Balance"
+   }
+  },
+  {
+   "id": "e9",
+   "body": "<<FILL role=ending words=80 beats='The show concludes with shared leadership'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e9",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Shared Leadership"
+   }
+  },
+  {
+   "id": "e11",
+   "body": "<<FILL role=ending words=80 beats='The show concludes with secret success'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e11",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Secret Success"
+   }
+  },
+  {
+   "id": "e12",
+   "body": "<<FILL role=ending words=80 beats='The show concludes with nervous delivery'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e12",
+    "valence": "neutral",
+    "kind": "success",
+    "title": "Nervous Delivery"
+   }
+  },
+  {
+   "id": "e14",
+   "body": "<<FILL role=ending words=80 beats='The show concludes with time runs out'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e14",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Time Runs Out"
+   }
+  },
+  {
+   "id": "e16",
+   "body": "<<FILL role=ending words=80 beats='The show concludes with safety net works'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e16",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Safety Net Works"
+   }
+  },
+  {
+   "id": "e17",
+   "body": "<<FILL role=ending words=80 beats='The show concludes with group decides'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e17",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Group Decides"
+   }
+  },
+  {
+   "id": "e18",
+   "body": "<<FILL role=ending words=80 beats='The show concludes with mentor helps'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e18",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Mentor Helps"
+   }
+  },
+  {
+   "id": "n0",
+   "body": "<<FILL role=setup words=95 beats='Cass at rehearsal, Marcus quits, Cass must act'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c0a",
+     "label": "Tell director",
+     "target": "n1"
+    },
+    {
+     "id": "c0b",
+     "label": "Meet cast first",
+     "target": "n2"
+    },
+    {
+     "id": "c0c",
+     "label": "Find replacement",
+     "target": "n3"
+    }
+   ]
+  },
+  {
+   "id": "n1",
+   "body": "<<FILL role=transition words=98 beats='Explaining crisis to director'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1a",
+     "label": "Director angry",
+     "target": "n4"
+    },
+    {
+     "id": "c1b",
+     "label": "Director calm",
+     "target": "n5"
+    },
+    {
+     "id": "c1c",
+     "label": "Director panics",
+     "target": "n6"
+    }
+   ]
+  },
+  {
+   "id": "n2",
+   "body": "<<FILL role=transition words=99 beats='Emergency cast meeting about Marcus'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c2a",
+     "label": "Cast upset",
+     "target": "n7"
+    },
+    {
+     "id": "c2b",
+     "label": "Cast rallies",
+     "target": "n8"
+    },
+    {
+     "id": "c2c",
+     "label": "Chaos erupts",
+     "target": "n9"
+    }
+   ]
+  },
+  {
+   "id": "n3",
+   "body": "<<FILL role=explore words=96 beats='Secretly contacting Alicia understudy'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c3a",
+     "label": "Alicia yes",
+     "target": "n10"
+    },
+    {
+     "id": "c3b",
+     "label": "Alicia maybe",
+     "target": "n11"
+    },
+    {
+     "id": "c3c",
+     "label": "Alicia no",
+     "target": "n1"
+    }
+   ]
+  },
+  {
+   "id": "n4",
+   "body": "<<FILL role=explore words=100 beats='Director angry, threatening cancellation'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c4a",
+     "label": "Argue for solutions",
+     "target": "n12"
+    },
+    {
+     "id": "c4b",
+     "label": "Suggest postpone",
+     "target": "n13"
+    },
+    {
+     "id": "c4c",
+     "label": "Accept cancellation",
+     "target": "e14"
+    }
+   ]
+  },
+  {
+   "id": "n5",
+   "body": "<<FILL role=decision words=97 beats='Director asks for options: Alicia, rewrite, or Marcus'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c5a",
+     "label": "Choose Alicia",
+     "target": "n14"
+    },
+    {
+     "id": "c5b",
+     "label": "Choose rewrite",
+     "target": "n15"
+    },
+    {
+     "id": "c5c",
+     "label": "Try Marcus",
+     "target": "n16"
+    }
+   ]
+  },
+  {
+   "id": "n6",
+   "body": "<<FILL role=explore words=99 beats='Director frozen, not responding'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c6a",
+     "label": "Take charge",
+     "target": "n17"
+    },
+    {
+     "id": "c6b",
+     "label": "Find assistant",
+     "target": "n18"
+    },
+    {
+     "id": "c6c",
+     "label": "Call cast meeting",
+     "target": "n2"
+    }
+   ]
+  },
+  {
+   "id": "n7",
+   "body": "<<FILL role=explore words=98 beats='Cast members upset, threatening to quit'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c7a",
+     "label": "Promise to fix",
+     "target": "n12"
+    },
+    {
+     "id": "c7b",
+     "label": "Be honest",
+     "target": "n19"
+    },
+    {
+     "id": "c7c",
+     "label": "Remind them of investment",
+     "target": "n20"
+    }
+   ]
+  },
+  {
+   "id": "n8",
+   "body": "<<FILL role=explore words=100 beats='Cast rallies with solutions'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c8a",
+     "label": "Alicia volunteers",
+     "target": "n14"
+    },
+    {
+     "id": "c8b",
+     "label": "Rewrite idea",
+     "target": "n15"
+    },
+    {
+     "id": "c8c",
+     "label": "Message Marcus",
+     "target": "n21"
+    }
+   ]
+  },
+  {
+   "id": "n9",
+   "body": "<<FILL role=explore words=99 beats='Chaos and conflicting ideas'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c9a",
+     "label": "Demand order",
+     "target": "n17"
+    },
+    {
+     "id": "c9b",
+     "label": "Meet core only",
+     "target": "n22"
+    },
+    {
+     "id": "c9c",
+     "label": "Write down ideas",
+     "target": "n23"
+    }
+   ]
+  },
+  {
+   "id": "n10",
+   "body": "<<FILL role=explore words=97 beats='Alicia agrees, rehearsals begin'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c10a",
+     "label": "Intensive rehearsals",
+     "target": "n24"
+    },
+    {
+     "id": "c10b",
+     "label": "Get coach",
+     "target": "n25"
+    },
+    {
+     "id": "c10c",
+     "label": "Group support",
+     "target": "e6"
+    }
+   ]
+  },
+  {
+   "id": "n11",
+   "body": "<<FILL role=explore words=98 beats='Alicia wavering, needs time'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c11a",
+     "label": "Give night",
+     "target": "n26"
+    },
+    {
+     "id": "c11b",
+     "label": "Offer materials",
+     "target": "n10"
+    },
+    {
+     "id": "c11c",
+     "label": "Friend convinces",
+     "target": "n10"
+    }
+   ]
+  },
+  {
+   "id": "n12",
+   "body": "<<FILL role=explore words=99 beats='Cass listing solutions: Alicia, rewrite, Marcus'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c12a",
+     "label": "Go Alicia",
+     "target": "n14"
+    },
+    {
+     "id": "c12b",
+     "label": "Go rewrite",
+     "target": "n15"
+    },
+    {
+     "id": "c12c",
+     "label": "Go Marcus",
+     "target": "n16"
+    }
+   ]
+  },
+  {
+   "id": "n13",
+   "body": "<<FILL role=explore words=100 beats='Director calls principal, gets extra week'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c13a",
+     "label": "Train Alicia extra",
+     "target": "n14"
+    },
+    {
+     "id": "c13b",
+     "label": "Creative rewrite",
+     "target": "n15"
+    },
+    {
+     "id": "c13c",
+     "label": "Reimagine show",
+     "target": "e4"
+    }
+   ]
+  },
+  {
+   "id": "n14",
+   "body": "<<FILL role=transition words=99 beats='Alicia chosen, rehearsals with cast support'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c14a",
+     "label": "Alicia ready by opening",
+     "target": "e1"
+    },
+    {
+     "id": "c14b",
+     "label": "Alicia nervous opening",
+     "target": "e12"
+    }
+   ]
+  },
+  {
+   "id": "n15",
+   "body": "<<FILL role=transition words=100 beats='Rewrite chosen, playwright involved'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c15a",
+     "label": "Creative rewrite",
+     "target": "e4"
+    },
+    {
+     "id": "c15b",
+     "label": "Safe rewrite",
+     "target": "e2"
+    }
+   ]
+  },
+  {
+   "id": "n16",
+   "body": "<<FILL role=explore words=99 beats='Trying to convince Marcus to return'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c16a",
+     "label": "Marcus returns",
+     "target": "e5"
+    },
+    {
+     "id": "c16b",
+     "label": "Marcus refuses",
+     "target": "e14"
+    }
+   ]
+  },
+  {
+   "id": "n17",
+   "body": "<<FILL role=transition words=98 beats='Cass takes charge, leads cast'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c17a",
+     "label": "Announce Alicia",
+     "target": "n14"
+    },
+    {
+     "id": "c17b",
+     "label": "Announce rewrite",
+     "target": "n15"
+    },
+    {
+     "id": "c17c",
+     "label": "Ask cast to solve",
+     "target": "e17"
+    }
+   ]
+  },
+  {
+   "id": "n18",
+   "body": "<<FILL role=explore words=99 beats='Assistant director helps share leadership'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c18a",
+     "label": "Together choose Alicia",
+     "target": "n14"
+    },
+    {
+     "id": "c18b",
+     "label": "Together choose rewrite",
+     "target": "n15"
+    },
+    {
+     "id": "c18c",
+     "label": "Shared leadership",
+     "target": "e9"
+    }
+   ]
+  },
+  {
+   "id": "n19",
+   "body": "<<FILL role=explore words=100 beats='Cass honest about uncertainty'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c19a",
+     "label": "Cast commits anyway",
+     "target": "n12"
+    },
+    {
+     "id": "c19b",
+     "label": "Cast votes",
+     "target": "e17"
+    },
+    {
+     "id": "c19c",
+     "label": "Cast seeks unity",
+     "target": "n8"
+    }
+   ]
+  },
+  {
+   "id": "n20",
+   "body": "<<FILL role=explore words=99 beats='Reminding cast of investment and dream'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c20a",
+     "label": "Alicia volunteers",
+     "target": "n14"
+    },
+    {
+     "id": "c20b",
+     "label": "Rewrite proposed",
+     "target": "n15"
+    },
+    {
+     "id": "c20c",
+     "label": "Message Marcus",
+     "target": "n21"
+    }
+   ]
+  },
+  {
+   "id": "n21",
+   "body": "<<FILL role=explore words=100 beats='Group sending heartfelt messages to Marcus'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c21a",
+     "label": "Marcus moved, agrees",
+     "target": "e5"
+    },
+    {
+     "id": "c21b",
+     "label": "Marcus appreciates, refuses",
+     "target": "n15"
+    },
+    {
+     "id": "c21c",
+     "label": "Marcus thinks",
+     "target": "e5"
+    }
+   ]
+  },
+  {
+   "id": "n22",
+   "body": "<<FILL role=explore words=99 beats='Core team planning calmly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c22a",
+     "label": "Choose Alicia",
+     "target": "n14"
+    },
+    {
+     "id": "c22b",
+     "label": "Choose rewrite",
+     "target": "n15"
+    },
+    {
+     "id": "c22c",
+     "label": "Hybrid approach",
+     "target": "e7"
+    }
+   ]
+  },
+  {
+   "id": "n23",
+   "body": "<<FILL role=transition words=98 beats='Organizing all ideas, finding best path'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c23a",
+     "label": "Alicia",
+     "target": "n14"
+    },
+    {
+     "id": "c23b",
+     "label": "Rewrite",
+     "target": "n15"
+    },
+    {
+     "id": "c23c",
+     "label": "Both",
+     "target": "e7"
+    }
+   ]
+  },
+  {
+   "id": "n24",
+   "body": "<<FILL role=explore words=100 beats='Intensive Alicia rehearsals, cast supporting'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c24a",
+     "label": "Strong opening night",
+     "target": "e2"
+    },
+    {
+     "id": "c24b",
+     "label": "Rest then final push",
+     "target": "e2"
+    },
+    {
+     "id": "c24c",
+     "label": "Breakthrough moment",
+     "target": "e3"
+    }
+   ]
+  },
+  {
+   "id": "n25",
+   "body": "<<FILL role=explore words=99 beats='Professional coach working with Alicia'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c25a",
+     "label": "Coaching helps performance",
+     "target": "e18"
+    },
+    {
+     "id": "c25b",
+     "label": "Coaching manages nerves",
+     "target": "e12"
+    },
+    {
+     "id": "c25c",
+     "label": "Coach wants more rehearsal",
+     "target": "e2"
+    }
+   ]
+  },
+  {
+   "id": "n26",
+   "body": "<<FILL role=explore words=98 beats='Alicia rests, other prep continues'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c26a",
+     "label": "Resume rehearsals",
+     "target": "e1"
+    },
+    {
+     "id": "c26b",
+     "label": "Final intensity",
+     "target": "e2"
+    },
+    {
+     "id": "c26c",
+     "label": "Light until opening",
+     "target": "e12"
+    }
+   ]
+  }
+ ]
+}

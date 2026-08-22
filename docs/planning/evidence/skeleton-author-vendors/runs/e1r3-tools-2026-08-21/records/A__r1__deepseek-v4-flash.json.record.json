@@ -1,0 +1,30 @@
+{
+ "leg": "deepseek-v4-flash",
+ "family": "deepseek",
+ "cell_id": "A",
+ "band": "5-8",
+ "length": "short",
+ "style": "prose",
+ "replicate": 1,
+ "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+ "attempts": 1,
+ "repair_rounds": 0,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  16
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 0.0,
+ "input_tokens": null,
+ "output_tokens": null,
+ "reasoning_tokens": null,
+ "finish_reasons": [],
+ "min_catalog_distance": null,
+ "mean_catalog_distance": null,
+ "catalog_distance_note": "shell not coercible against any of 5 peers",
+ "last_feedback": "ERROR   L1-2   node=friend L1-2 ref: target 'playground' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'friend')\nERROR   L1-2   node=shed L1-2 ref: target 'bushes' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'shed')\nERROR   L1-2   node=shed L1-2 ref: target 'field' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'shed')\nERROR   L1-2   node=tree L1-2 ref: target 'nest_inspect' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'tree')\nERROR   L1-2   node=tree L1-2 ref: target 'tree_top' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'tree')\nERROR   L1-2   node=woods L1-2 ref: target 'investigate' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'woods')\nERROR   L1-2   node=woods L1-2 ref: target 'follow_cluck' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'woods')\nERROR   L1-4   node=start L1-4 term: node 'start' no path to any ending in story 'miri-and-the-missing-hen'\nERROR   L1-4   node=garden L1-4 term: node 'garden' no path to any ending in story 'miri-and-the-missing-hen'\nERROR   L1-4   node=friend L1-4 term: node 'friend' no path to any ending in story 'miri-and-the-missing-hen'\nERROR   L1-4   node=shed L1-4 term: node 'shed' no path to any ending in story 'miri-and-the-missing-hen'\nERROR   L1-4   node=tree L1-4 term: node 'tree' no path to any ending in story 'miri-and-the-missing-hen'\nERROR   L1-4   node=woods L1-4 term: node 'woods' no path to any ending in story 'miri-and-the-missing-hen'\nERROR   L1-7   L1-7 budget: ending_count out of range in story 'miri-and-the-missing-hen': 0 (allowed 8..8)\nWARNING L1-7   L1-7 budget: node_count out of range in story 'miri-and-the-missing-hen': 6 (allowed 8..45)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-tools-2026-08-21/shells/A__r1__deepseek-v4-flash.json failed structural validation: L1-2 ref: target 'playground' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'friend'); L1-2 ref: target 'bushes' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'shed'); L1-2 ref: target 'field' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'shed'); L1-2 ref: target 'nest_inspect' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'tree'); L1-2 ref: target 'tree_top' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'tree'); L1-2 ref: target 'investigate' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'woods'); L1-2 ref: target 'follow_cluck' not found or not unique in story 'miri-and-the-missing-hen' (referenced from node 'woods'); L1-4 term: node 'start' no path to any ending in story 'miri-and-the-missing-hen'; L1-4 term: node 'garden' no path to any ending in story 'miri-and-the-missing-hen'; L1-4 term: node 'friend' no path to any ending in story 'miri-and-the-missing-hen'; L1-4 term: node 'shed' no path to any ending in story 'miri-and-the-missing-hen'; L1-4 term: node 'tree' no path to any ending in story 'miri-and-the-missing-hen'; L1-4 term: node 'woods' no path to any ending in story 'miri-and-the-missing-hen'; L1-7 budget: ending_count out of range in story 'miri-and-the-missing-hen': 0 (allowed 8..8)",
+ "shell_file": "shells/A__r1__deepseek-v4-flash.json",
+ "error": ""
+}

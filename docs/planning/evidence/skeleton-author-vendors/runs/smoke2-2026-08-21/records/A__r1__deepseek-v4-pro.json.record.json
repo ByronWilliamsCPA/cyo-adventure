@@ -1,0 +1,40 @@
+{
+ "leg": "deepseek-v4-pro",
+ "family": "deepseek",
+ "cell_id": "A",
+ "band": "5-8",
+ "length": "short",
+ "style": "prose",
+ "replicate": 1,
+ "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+ "attempts": 5,
+ "repair_rounds": 4,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  7,
+  6,
+  4,
+  4,
+  4
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 687.17,
+ "input_tokens": 44544,
+ "output_tokens": 42760,
+ "reasoning_tokens": 0,
+ "finish_reasons": [
+  "stop",
+  "stop",
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "min_catalog_distance": null,
+ "mean_catalog_distance": null,
+ "catalog_distance_note": "shell not coercible against any of 5 peers",
+ "last_feedback": "ERROR   L1-2   L1-2 ref: choice 'reach_in_and_lift' not found or not unique in story 'miri-and-the-missing-hen' (referenced from choice id)\nERROR   L1-7   L1-7 budget: ending_count out of range in story 'miri-and-the-missing-hen': 13 (allowed 7..7)\nERROR   L1-7   L1-7 budget: node_count out of range in story 'miri-and-the-missing-hen': 47 (allowed 8..45)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/smoke2-2026-08-21/shells/A__r1__deepseek-v4-pro.json failed structural validation: L1-2 ref: choice 'reach_in_and_lift' not found or not unique in story 'miri-and-the-missing-hen' (referenced from choice id); L1-7 budget: ending_count out of range in story 'miri-and-the-missing-hen': 13 (allowed 7..7); L1-7 budget: node_count out of range in story 'miri-and-the-missing-hen': 47 (allowed 8..45)",
+ "shell_file": "shells/A__r1__deepseek-v4-pro.json",
+ "error": ""
+}

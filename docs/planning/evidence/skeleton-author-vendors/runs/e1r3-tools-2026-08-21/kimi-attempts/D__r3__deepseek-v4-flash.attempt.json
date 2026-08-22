@@ -1,0 +1,449 @@
+{
+ "schema_version": "2.0",
+ "id": "harvest-swap-token-drift",
+ "version": 1,
+ "title": "The Two Mintings of Harvest Market",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 3.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "fairness",
+   "observation",
+   "community",
+   "evidence",
+   "consequences"
+  ],
+  "estimated_minutes": 2,
+  "ending_count": 14,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n001",
+ "nodes": [
+  {
+   "id": "n001",
+   "body": "<<FILL role=setup words=40 beats='Idris walks into the harvest swap market. Copper tokens clink. A beekeeper whispers that two kinds of coin are drifting apart.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n001_n002",
+     "label": "Step closer to the token table",
+     "target": "n002"
+    }
+   ]
+  },
+  {
+   "id": "n002",
+   "body": "<<FILL role=setup words=40 beats='Idris reaches the token table. The beekeeper holds up a smooth-rim coin and a notched-rim coin. Both look legal. Prices are moving oddly.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n002_n003",
+     "label": "Pick a trail to follow",
+     "target": "n003"
+    }
+   ]
+  },
+  {
+   "id": "n003",
+   "body": "<<FILL role=decision words=70 beats='Three trails appear. Grain-marked coins are vanishing. Honey-marked coins are arriving by cart. The market master guards a leather bag. Which one leads to the truth?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n003_n004",
+     "label": "Follow the grain sheaf coins",
+     "target": "n004"
+    },
+    {
+     "id": "c_n003_n005",
+     "label": "Follow the honey dipper coins",
+     "target": "n005"
+    },
+    {
+     "id": "c_n003_n006",
+     "label": "Watch the market master",
+     "target": "n006"
+    }
+   ]
+  },
+  {
+   "id": "n004",
+   "body": "<<FILL role=decision words=100 beats='Idris follows the grain sheaf path to the flour stall. The old coin has a tiny repair line on the stamp. The miller charges three smooth tokens but five notched ones for flour.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n004_n007",
+     "label": "Study the old coin edge",
+     "target": "n007"
+    },
+    {
+     "id": "c_n004_e001",
+     "label": "Show the coin to the flour seller",
+     "target": "e001"
+    },
+    {
+     "id": "c_n004_e002",
+     "label": "Proclaim one token equals one token",
+     "target": "e002"
+    }
+   ]
+  },
+  {
+   "id": "n005",
+   "body": "<<FILL role=decision words=100 beats='Idris follows the honey dipper path to the honey stand. A jar costs two notched tokens or three smooth ones. The beekeeper shrugs and points to a chalk price board.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n005_n008",
+     "label": "Read the chalk price board",
+     "target": "n008"
+    },
+    {
+     "id": "c_n005_e003",
+     "label": "Ask the beekeeper for one price",
+     "target": "e003"
+    },
+    {
+     "id": "c_n005_e004",
+     "label": "Inspect the new die",
+     "target": "e004"
+    }
+   ]
+  },
+  {
+   "id": "n006",
+   "body": "<<FILL role=decision words=100 beats='Idris watches the market master load a crate. The crate has a honey dipper mark. The master wears a red cord bag and a brass key. The seal looks freshly tied.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n006_n009",
+     "label": "Open the crate",
+     "target": "n009"
+    },
+    {
+     "id": "c_n006_e005",
+     "label": "Match the seals",
+     "target": "e005"
+    },
+    {
+     "id": "c_n006_e006",
+     "label": "Reach for the red cord bag",
+     "target": "e006"
+    }
+   ]
+  },
+  {
+   "id": "n007",
+   "body": "<<FILL role=decision words=100 beats='Idris studies the old coin with the flour seller. The repair line is a tiny second stroke beside the grain sheaf. The coin feels heavier and older than the new ones.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n007_n010",
+     "label": "Carry the coin to the well",
+     "target": "n010"
+    },
+    {
+     "id": "c_n007_e007",
+     "label": "Weigh the coin with apple seeds",
+     "target": "e007"
+    },
+    {
+     "id": "c_n007_e008",
+     "label": "Copy the chalk pattern",
+     "target": "e008"
+    }
+   ]
+  },
+  {
+   "id": "n008",
+   "body": "<<FILL role=decision words=100 beats='Idris compares the chalk board with the ledger. The numbers do not match. Someone has been rewriting prices one column at a time. The beekeeper looks away.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n008_n011",
+     "label": "Show the chalk pattern to the crowd",
+     "target": "n011"
+    },
+    {
+     "id": "c_n008_e009",
+     "label": "Confront the clerk",
+     "target": "e009"
+    },
+    {
+     "id": "c_n008_e010",
+     "label": "Unroll the old charter",
+     "target": "e010"
+    }
+   ]
+  },
+  {
+   "id": "n009",
+   "body": "<<FILL role=decision words=100 beats='Idris lifts the crate lid and finds notched tokens stacked in rows. A packing slip names the river mint. The red cord on the slip matches the cord on the master bag.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n009_n012",
+     "label": "Compare the two seals",
+     "target": "n012"
+    },
+    {
+     "id": "c_n009_e011",
+     "label": "Read the packing slip aloud",
+     "target": "e011"
+    },
+    {
+     "id": "c_n009_e012",
+     "label": "Follow the cart to the river mint",
+     "target": "e012"
+    }
+   ]
+  },
+  {
+   "id": "n010",
+   "body": "<<FILL role=decision words=100 beats='Idris carries the old coin to the center well. The crowd watches. The repair line is clear in the sun. The market master has not yet spoken.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n010_e001",
+     "label": "Declare one token equals one token",
+     "target": "e001"
+    },
+    {
+     "id": "c_n010_e007",
+     "label": "Pass the coin around",
+     "target": "e007"
+    },
+    {
+     "id": "c_n010_e013",
+     "label": "Demand the master explain",
+     "target": "e013"
+    }
+   ]
+  },
+  {
+   "id": "n011",
+   "body": "<<FILL role=decision words=100 beats='Idris shows the chalk pattern to the whole market. The clerk tries to erase it, but the crowd sees. The price board tells a different story than the ledger.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n011_e002",
+     "label": "Ask for a fair new board",
+     "target": "e002"
+    },
+    {
+     "id": "c_n011_e008",
+     "label": "Keep the chalk pattern as proof",
+     "target": "e008"
+    },
+    {
+     "id": "c_n011_e014",
+     "label": "Nail up a single price board",
+     "target": "e014"
+    }
+   ]
+  },
+  {
+   "id": "n012",
+   "body": "<<FILL role=decision words=100 beats='Idris compares the two seals beside the well. The knots are identical. The same hand tied the crate and the master bag. The crowd gasps.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n012_e003",
+     "label": "Ask for one market price",
+     "target": "e003"
+    },
+    {
+     "id": "c_n012_e009",
+     "label": "Read the charter aloud",
+     "target": "e009"
+    },
+    {
+     "id": "c_n012_e011",
+     "label": "Show the seals to the market master",
+     "target": "e011"
+    }
+   ]
+  },
+  {
+   "id": "e001",
+   "body": "<<FILL role=ending words=100 beats='Idris declares that one token equals one token. The market master unties the red cord and pours all coins into one bowl. The price board shows one price for every item. The market cheers.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e001_ending",
+    "valence": "positive",
+    "kind": "success",
+    "title": "One Token, One Price"
+   }
+  },
+  {
+   "id": "e002",
+   "body": "<<FILL role=ending words=100 beats='The repair line proves the old coin was made with care. The traders agree to accept both marks equally. The flour stall and honey stand post shared prices. The market closes with full baskets.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e002_ending",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Repair Line"
+   }
+  },
+  {
+   "id": "e003",
+   "body": "<<FILL role=ending words=100 beats='The beekeeper sets one price for every jar. Other stalls follow. The honey dipper and grain sheaf become equal in value. The harvest market feels fair again.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e003_ending",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Fair Honey Board"
+   }
+  },
+  {
+   "id": "e004",
+   "body": "<<FILL role=ending words=100 beats='The mint master agrees to make a new die with both marks side by side. Every new token carries the grain sheaf and honey dipper together. No coin is worth more than another.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e004_ending",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Two Marks, One Coin"
+   }
+  },
+  {
+   "id": "e005",
+   "body": "<<FILL role=ending words=100 beats='The matching seal on the crate is shown to all. The market master opens the bag and empties the hidden smooth tokens. The crowd demands one price for both kinds of coin.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e005_ending",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Sealed Crate"
+   }
+  },
+  {
+   "id": "e006",
+   "body": "<<FILL role=ending words=100 beats='Idris reaches the red cord bag and opens it. The bag is full of smooth tokens that were taken out of trade. The market master must explain. Fair prices return by sunset.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e006_ending",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Open Bag"
+   }
+  },
+  {
+   "id": "e007",
+   "body": "<<FILL role=ending words=100 beats='The crowd argues about the old coin weight. Some traders agree with Idris, others do not. The split prices shrink a little, but the problem is not fully solved.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e007_ending",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Seed Debate"
+   }
+  },
+  {
+   "id": "e008",
+   "body": "<<FILL role=ending words=100 beats='Idris copies the chalk pattern onto cloth. The clerk admits to writing two price lists. The market master replaces the board with a single price for each item. The evidence is kept safe.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e008_ending",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Chalk Pattern"
+   }
+  },
+  {
+   "id": "e009",
+   "body": "<<FILL role=ending words=100 beats='The clerk sees Idris watching and erases the chalk marks. But the crowd has already seen the dirty trick. The clerk is sent away, though no new rule is made today.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e009_ending",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Clerk Eraser"
+   }
+  },
+  {
+   "id": "e010",
+   "body": "<<FILL role=ending words=100 beats='Idris reads the old charter aloud, but the market master says it is outdated. The crowd splits into two groups, one for each token. The market closes with the argument still going.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e010_ending",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Torn Charter"
+   }
+  },
+  {
+   "id": "e011",
+   "body": "<<FILL role=ending words=100 beats='Idris posts the charter beside the price board. The market master tears it down. The notched tokens keep growing in number. The split prices remain for another week.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e011_ending",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Split Price"
+   }
+  },
+  {
+   "id": "e012",
+   "body": "<<FILL role=ending words=100 beats='The river mint guard laughs and tells Idris that weight does not matter. The mint keeps making notched tokens. But Idris now knows where the difference starts and plans to return.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e012_ending",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Mint Guard Words"
+   }
+  },
+  {
+   "id": "e013",
+   "body": "<<FILL role=ending words=100 beats='The market master denies knowing about the repair line or the seals. The crate is locked away. The smooth tokens stay hidden, and the drift continues. Idris leaves with the memory of what was seen.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e013_ending",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Master Denial"
+   }
+  },
+  {
+   "id": "e014",
+   "body": "<<FILL role=ending words=100 beats='The new price board is nailed up with both marks side by side. The crowd reads the single column of prices. The harvest market ends with one value for every coin and a promise to keep it that way.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e014_ending",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The New Price Board"
+   }
+  }
+ ]
+}

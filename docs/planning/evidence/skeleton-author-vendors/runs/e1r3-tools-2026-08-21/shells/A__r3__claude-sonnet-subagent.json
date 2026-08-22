@@ -1,0 +1,447 @@
+{
+ "schema_version": "2.0",
+ "id": "priyas-lost-boot",
+ "version": 1,
+ "title": "Priya's Lost Boot",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 1.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "sibling responsibility",
+   "problem-solving",
+   "kindness",
+   "winter play",
+   "perseverance"
+  ],
+  "estimated_minutes": 2,
+  "ending_count": 11,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "n0",
+ "nodes": [
+  {
+   "id": "n0",
+   "body": "<<FILL role=setup words=15 beats='Priya and her little brother Milo trudge up from the bottom of the Pinecone Hill sled run after their last ride of the first snowy day, gray clouds rolling in overhead'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n0-a",
+     "label": "See what's wrong with Milo",
+     "target": "n1"
+    }
+   ]
+  },
+  {
+   "id": "n1",
+   "body": "<<FILL role=decision words=55 beats='Milo hops on one foot, his sock soaked where his red snow boot should be; he lost it somewhere on the run down, and Mom expects them home for dinner soon, so they only have a little daylight left to search'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n1-a",
+     "label": "Search near the pine grove",
+     "target": "n2"
+    },
+    {
+     "id": "n1-b",
+     "label": "Search near the frozen creek",
+     "target": "n3"
+    }
+   ]
+  },
+  {
+   "id": "n2",
+   "body": "<<FILL role=decision words=45 beats='Priya heads toward the pine grove, pinecones crunching underfoot, scanning the snow for a flash of red; she also remembers Milo's old outgrown boots are still sitting in the car trunk from last winter'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n2-a",
+     "label": "Look around the pine grove",
+     "target": "n4"
+    },
+    {
+     "id": "n2-b",
+     "label": "Grab the old boots from the car instead",
+     "target": "e11"
+    }
+   ]
+  },
+  {
+   "id": "n3",
+   "body": "<<FILL role=explore words=15 beats='Priya heads toward the frozen creek instead, where cattails rattle in the wind along the icy bank'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n3-a",
+     "label": "Look around the creek",
+     "target": "n5"
+    }
+   ]
+  },
+  {
+   "id": "n4",
+   "body": "<<FILL role=decision words=55 beats='The pine grove is hushed and cold, no boot in sight; a gap in the wooden fence leads into Mrs. Alvarez's backyard, and off to the side the neighborhood kids have packed a lumpy snow fort with a low doorway'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n4-a",
+     "label": "Peek through the fence gap",
+     "target": "n6"
+    },
+    {
+     "id": "n4-b",
+     "label": "Search inside the snow fort",
+     "target": "n7"
+    }
+   ]
+  },
+  {
+   "id": "n5",
+   "body": "<<FILL role=decision words=55 beats='The creek edge is quiet, a half-icy wooden plank bridging the water; something dark is also tangled in the reeds along the near bank, too far off to tell what it is'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n5-a",
+     "label": "Cross the plank bridge",
+     "target": "n8"
+    },
+    {
+     "id": "n5-b",
+     "label": "Search along the near bank",
+     "target": "n9"
+    }
+   ]
+  },
+  {
+   "id": "n6",
+   "body": "<<FILL role=explore words=10 beats='Through the fence gap, Mrs. Alvarez's backyard lies quiet under fresh snow'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n6-a",
+     "label": "Step into the yard",
+     "target": "n6b"
+    }
+   ]
+  },
+  {
+   "id": "n6b",
+   "body": "<<FILL role=explore words=10 beats='A half-built snowman wearing a striped scarf stands near the garden gate, its stick arms pointing two different directions'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n6b-a",
+     "label": "Follow where the arms point",
+     "target": "n10"
+    }
+   ]
+  },
+  {
+   "id": "n7",
+   "body": "<<FILL role=explore words=15 beats='Inside the snow fort, mittens and a broken sled flag litter the floor, but there is a carved arrow on the back wall'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n7-a",
+     "label": "Look closer at the fort",
+     "target": "n11"
+    }
+   ]
+  },
+  {
+   "id": "n8",
+   "body": "<<FILL role=explore words=15 beats='The plank bridge creaks underfoot but holds; on the far side the trail keeps going past a stand of bare birches'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n8-a",
+     "label": "Follow the trail onward",
+     "target": "n12"
+    }
+   ]
+  },
+  {
+   "id": "n9",
+   "body": "<<FILL role=explore words=15 beats='Along the near bank, Priya spots a soggy mitten but not the boot, footprints leading further along the water'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n9-a",
+     "label": "Follow the footprints",
+     "target": "n13"
+    }
+   ]
+  },
+  {
+   "id": "n10",
+   "body": "<<FILL role=decision words=50 beats='Fresh boot-sized dents press into the snow near Mrs. Alvarez's garden gate; the trail forward splits toward her garden shed on one side and her back porch on the other'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n10-a",
+     "label": "Head toward the garden shed",
+     "target": "e1"
+    },
+    {
+     "id": "n10-b",
+     "label": "Head toward the back porch",
+     "target": "e2"
+    }
+   ]
+  },
+  {
+   "id": "n11",
+   "body": "<<FILL role=decision words=55 beats='The carved arrow behind the fort points toward a low snow tunnel the kids dug last week, while a second trail curves the other way toward a wooden lost-and-found box by the parking lot fence'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n11-a",
+     "label": "Duck into the snow tunnel",
+     "target": "e3"
+    },
+    {
+     "id": "n11-b",
+     "label": "Head for the lost-and-found box",
+     "target": "n14"
+    }
+   ]
+  },
+  {
+   "id": "n12",
+   "body": "<<FILL role=decision words=55 beats='Past the birches, the trail splits again: one branch curves toward a patch of rabbit tracks circling a fallen branch, the other toward the bus stop bench near the parking lot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n12-a",
+     "label": "Follow the rabbit tracks",
+     "target": "e5"
+    },
+    {
+     "id": "n12-b",
+     "label": "Head to the bus stop bench",
+     "target": "n15"
+    }
+   ]
+  },
+  {
+   "id": "n13",
+   "body": "<<FILL role=decision words=55 beats='The footprints along the bank split near an old toolshed, one set circling toward the shed door, the other cutting straight across toward the parking lot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n13-a",
+     "label": "Circle toward the toolshed door",
+     "target": "n16"
+    },
+    {
+     "id": "n13-b",
+     "label": "Cut across toward the parking lot",
+     "target": "n17"
+    }
+   ]
+  },
+  {
+   "id": "n14",
+   "body": "<<FILL role=climax words=15 beats='At the parking lot, the wooden lost-and-found box is bolted to the fence post, its lid dusted with fresh snow'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n14-a",
+     "label": "Open the lost-and-found box",
+     "target": "e4"
+    }
+   ]
+  },
+  {
+   "id": "n15",
+   "body": "<<FILL role=climax words=15 beats='At the bus stop bench, a small cardboard box rattles on top, its lid loose in the wind'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n15-a",
+     "label": "Open the cardboard box",
+     "target": "e6"
+    }
+   ]
+  },
+  {
+   "id": "n16",
+   "body": "<<FILL role=climax words=55 beats='At the toolshed door, Buttons the neighbor's dog pokes his head out, tail wagging, something red clamped gently in his teeth; a dog treat sits forgotten in Priya's coat pocket'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n16-a",
+     "label": "Call Buttons over gently",
+     "target": "e7"
+    },
+    {
+     "id": "n16-b",
+     "label": "Trade him a treat first",
+     "target": "e8"
+    }
+   ]
+  },
+  {
+   "id": "n17",
+   "body": "<<FILL role=climax words=55 beats='At the parking lot's edge, the streetlights flicker on as dusk settles in; a folded dish towel sits on a nearby bench, and beyond it the last few cars are pulling away for the night'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "n17-a",
+     "label": "Check the folded dish towel",
+     "target": "e9"
+    },
+    {
+     "id": "n17-b",
+     "label": "Give up and head home before dark",
+     "target": "e10"
+    }
+   ]
+  },
+  {
+   "id": "e1",
+   "body": "<<FILL role=ending words=55 beats='Wedged between two stacked flowerpots by the garden shed door, the red boot sits tucked out of the snow, dry as can be; Milo pulls it on, wiggling his toes happily, and they head home with minutes to spare before dinner'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Boot by the Flowerpots"
+   }
+  },
+  {
+   "id": "e2",
+   "body": "<<FILL role=ending words=55 beats='Mrs. Alvarez steps onto her porch in her own snow boots and laughs warmly, saying she noticed a red boot caught near her garden gate that morning while sweeping; she hands it over along with a cup of cocoa for the walk home'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Mrs. Alvarez's Cocoa"
+   }
+  },
+  {
+   "id": "e3",
+   "body": "<<FILL role=ending words=55 beats='Inside the snow tunnel, tucked safely in an old scarf, the red boot appears, kept there by the neighborhood kids who found it and did not want it to get lost again; Milo claps and pulls it on right away'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e3",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Wrapped in an Old Scarf"
+   }
+  },
+  {
+   "id": "e4",
+   "body": "<<FILL role=ending words=55 beats='Inside the lost-and-found box, right on top, sits one bright red snow boot; Jorge's mom had spotted it near the parking lot earlier and tucked it in safe, and Milo pulls it on with a relieved grin'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e4",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Lost and Found Box"
+   }
+  },
+  {
+   "id": "e5",
+   "body": "<<FILL role=ending words=55 beats='Near the fallen branch, under a heap of dead leaves, the red boot is caught but unharmed, a little cold but still wearable; Priya fishes it out with a stick, and Milo has a great adventure story to tell at dinner'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e5",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Under the Leaves"
+   }
+  },
+  {
+   "id": "e6",
+   "body": "<<FILL role=ending words=55 beats='Inside the rattling cardboard box, the boot is not there, but a kind note from the bus driver says she will keep an eye out tomorrow; Priya and Milo head home with a plan and a little less worry'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e6",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Note from the Bus Driver"
+   }
+  },
+  {
+   "id": "e7",
+   "body": "<<FILL role=ending words=55 beats='Buttons the dog trots over and drops the red boot gently at Priya's feet, tail wagging proudly; Milo laughs and pulls the boot on, still faintly smelling of dog breath, and they head home with a funny story to tell'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e7",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Buttons Saves the Day"
+   }
+  },
+  {
+   "id": "e8",
+   "body": "<<FILL role=ending words=55 beats='Buttons trades the boot for the treat happily, dropping it into Priya's mittened hands before bounding off toward the toolshed for a nap; Milo pulls the boot on, still warm from the dog's grip'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e8",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Fair Trade with Buttons"
+   }
+  },
+  {
+   "id": "e9",
+   "body": "<<FILL role=ending words=55 beats='Wrapped inside the folded dish towel on the bench, someone has tucked the missing red boot for safekeeping, a small note reading FOUND ME tucked beside it; Milo grins and pulls it on right there in the parking lot'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e9",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Wrapped in a Dish Towel"
+   }
+  },
+  {
+   "id": "e10",
+   "body": "<<FILL role=ending words=50 beats='The boot never turns up, and the streetlights are flickering on, so Priya gives Milo a piggyback ride the rest of the way home with one cold sock between them; Mom has hot cocoa waiting and promises they will look again tomorrow'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e10",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "One Cold Sock Walk Home"
+   }
+  },
+  {
+   "id": "e11",
+   "body": "<<FILL role=ending words=55 beats='Priya pops the car trunk and pulls out Milo's old outgrown boots from last winter; a little snug and scuffed, they are warm and dry, and Milo wiggles his toes happily while the red boot waits to be found another day'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e11",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Old Boots in the Trunk"
+   }
+  }
+ ]
+}

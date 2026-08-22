@@ -1,0 +1,341 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-kite-festival",
+ "version": 1,
+ "title": "Tomas's Kite for the Spring Festival",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "loop_and_grow",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 4.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "creativity",
+   "teamwork",
+   "perseverance",
+   "family bonds",
+   "festival celebration"
+  ],
+  "estimated_minutes": 8,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "morning-at-home",
+ "nodes": [
+  {
+   "id": "morning-at-home",
+   "body": "<<FILL role=setup words=70 beats='Tomas wakes up excited about the spring festival happening this afternoon. His grandmother Abuela is in the kitchen making breakfast. Tomas tells her about the big kite-flying contest. Abuela smiles and says they can build a kite together right now.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-quick-kite",
+     "label": "Start building right away",
+     "target": "plan-kite"
+    },
+    {
+     "id": "ch-worried",
+     "label": "Tell Abuela they won't have enough time",
+     "target": "plan-kite"
+    }
+   ]
+  },
+  {
+   "id": "plan-kite",
+   "body": "<<FILL role=decision words=75 beats='At the kitchen table, Tomas and Abuela sketch kite designs. Tomas suggests a big diamond kite. Abuela mentions a traditional box kite from her childhood. They could also try a simple triangular design.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-diamond",
+     "label": "Build the diamond kite",
+     "target": "gather-materials"
+    },
+    {
+     "id": "ch-box",
+     "label": "Build the box kite",
+     "target": "gather-materials"
+    },
+    {
+     "id": "ch-triangle",
+     "label": "Build the triangle kite",
+     "target": "gather-materials"
+    }
+   ]
+  },
+  {
+   "id": "gather-materials",
+   "body": "<<FILL role=explore words=72 beats='Tomas and Abuela gather sticks and string from the garage. They cut old plastic bags and tie them to the sticks. Abuela shows Tomas how to knot the flying string carefully. The kite comes together piece by piece.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-test-now",
+     "label": "Go test the kite outside",
+     "target": "field-walk"
+    }
+   ]
+  },
+  {
+   "id": "field-walk",
+   "body": "<<FILL role=transition words=68 beats='They walk to the field behind Abuela's house. Tomas holds the kite while Abuela carries the string spool. The morning sun is warm. The field stretches wide and open. A few clouds drift across the sky.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-to-test",
+     "label": "Ready to launch the kite",
+     "target": "first-test"
+    }
+   ]
+  },
+  {
+   "id": "first-test",
+   "body": "<<FILL role=explore words=73 beats='Tomas holds the kite while Abuela unwinds string. Tomas releases it. The kite wobbles at first then catches the wind and climbs steadily. The wind today is soft and gentle.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-flies-good",
+     "label": "The kite soars high and steady",
+     "target": "success-flies"
+    },
+    {
+     "id": "ch-flies-bad",
+     "label": "The kite spins and crashes",
+     "target": "crash-first"
+    }
+   ]
+  },
+  {
+   "id": "success-flies",
+   "body": "<<FILL role=explore words=72 beats='The kite dances in the wind and climbs higher. Tomas laughs as he holds the string steady. But then the wind suddenly shifts direction. Clouds roll across the sky. The wind becomes unpredictable and gusts hard.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-keep-testing",
+     "label": "Keep testing and learning from the wind",
+     "target": "wind-challenge"
+    }
+   ]
+  },
+  {
+   "id": "crash-first",
+   "body": "<<FILL role=explore words=70 beats='The kite crashes to the ground. Tomas runs to pick it up. One stick is cracked. Abuela kneels beside him and points out where the force broke the frame. The damage seems serious.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-repair",
+     "label": "Try to repair it with stronger materials",
+     "target": "emergency-repair"
+    },
+    {
+     "id": "ch-redesign",
+     "label": "Build a new stronger design instead",
+     "target": "redesign-kite"
+    }
+   ]
+  },
+  {
+   "id": "wind-challenge",
+   "body": "<<FILL role=explore words=70 beats='Tomas keeps flying as wind gusts come and go. He feels the string tug in new directions. By moving his hands, he learns how the kite responds. Abuela watches proudly. Each gust teaches him something.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-land-improve",
+     "label": "Land it and make improvements",
+     "target": "improvement-session"
+    }
+   ]
+  },
+  {
+   "id": "emergency-repair",
+   "body": "<<FILL role=explore words=68 beats='Abuela finds a spare stick in her craft box. She shows Tomas how to lash it to the cracked stick with strong twine. Tomas holds both sticks steady. The frame feels solid again.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-test-repair",
+     "label": "Test the repaired kite",
+     "target": "improvement-session"
+    }
+   ]
+  },
+  {
+   "id": "redesign-kite",
+   "body": "<<FILL role=explore words=71 beats='Abuela and Tomas work on a new design. They use thicker sticks and reinforce all the corners. They add extra cloth bands for strength. The new kite takes shape more sturdily than before.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-test-new",
+     "label": "Test the new stronger kite",
+     "target": "improvement-session"
+    }
+   ]
+  },
+  {
+   "id": "improvement-session",
+   "body": "<<FILL role=explore words=70 beats='They fly the kite or test the repair. This time the kite handles the wind better. Abuela watches Tomas learn how to steer it through gusts. He feels more confident with each successful pass.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-ready-for-festival",
+     "label": "Head to the festival with their kite",
+     "target": "travel-to-festival"
+    },
+    {
+     "id": "ch-one-more-adjustment",
+     "label": "Make one more quick adjustment",
+     "target": "final-adjustment"
+    }
+   ]
+  },
+  {
+   "id": "final-adjustment",
+   "body": "<<FILL role=transition words=65 beats='Tomas and Abuela tighten a loose knot and check the frame one more time. The kite looks perfect. They smile at their work. The afternoon sun reminds them the festival is starting soon.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-go-festival",
+     "label": "Head to the festival now",
+     "target": "travel-to-festival"
+    }
+   ]
+  },
+  {
+   "id": "travel-to-festival",
+   "body": "<<FILL role=transition words=65 beats='Tomas and Abuela gather their things and walk to the festival grounds. The field fills with families. Colorful kites fly everywhere. Children run and laugh. The contest judges set up their booths.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-to-contest",
+     "label": "Get ready for the contest",
+     "target": "contest-time"
+    }
+   ]
+  },
+  {
+   "id": "contest-time",
+   "body": "<<FILL role=climax words=75 beats='Tomas and Abuela arrive at the contest area. Tomas holds his kite proudly. He feels nervous and excited. Every lesson they learned prepares him. The judges announce the contest is starting now.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-win",
+     "label": "Launch and the kite dances perfectly",
+     "target": "victory-ending"
+    },
+    {
+     "id": "ch-decent",
+     "label": "Launch and the kite flies very well",
+     "target": "respectable-ending"
+    },
+    {
+     "id": "ch-trouble",
+     "label": "Launch but the wind causes trouble",
+     "target": "challenge-ending"
+    }
+   ]
+  },
+  {
+   "id": "victory-ending",
+   "body": "<<FILL role=ending words=80 beats='Tomas's kite rises high and graceful. It stays airborne longer than most others. When the wind shifts, the kite adapts beautifully each time. The judges award Tomas the blue ribbon. Abuela hugs him tight. They celebrate under the festival sun.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-victory",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Festival Champion"
+   }
+  },
+  {
+   "id": "respectable-ending",
+   "body": "<<FILL role=ending words=78 beats='Tomas's kite flies steadily and stays in the air during the contest. It doesn't win first place but the judges notice it. They give special recognition for teamwork and creative effort. Tomas feels proud. Building together mattered most.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-respectable",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Different Kind of Win"
+   }
+  },
+  {
+   "id": "challenge-ending",
+   "body": "<<FILL role=ending words=76 beats='The kite wobbles and struggles in the stronger festival winds. Tomas works hard to control it but it crashes. He feels disappointed. But Abuela reminds him of everything they learned together. They built and tested. That's what matters.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-challenge",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Learning Takes Time"
+   }
+  },
+  {
+   "id": "teamwork-celebration-ending",
+   "body": "<<FILL role=ending words=72 beats='Whether the kite flew perfectly or crashed, Tomas knew something special happened. He built a kite with his grandmother. They solved problems together. They laughed at the wind. Those memories are the real treasure.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-teamwork",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Memories Matter Most"
+   }
+  },
+  {
+   "id": "skills-pride-ending",
+   "body": "<<FILL role=ending words=70 beats='Tomas looked at his hands after the contest. He could tie knots now. He understood how wind worked. He knew how to repair things. Abuela had taught him so much. He felt truly proud of his new skills.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-skills",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Skills for Tomorrow"
+   }
+  },
+  {
+   "id": "next-year-ending",
+   "body": "<<FILL role=ending words=74 beats='After the contest ended, Tomas and Abuela walked home with their kite. The afternoon sun made long shadows. Tomas already thought about next year's festival. They would build an even better kite. This was just the beginning of their kite adventures.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-next-year",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Just the Beginning"
+   }
+  },
+  {
+   "id": "bond-deepened-ending",
+   "body": "<<FILL role=ending words=71 beats='The contest results didn't matter as much as Tomas thought they would. What mattered was working with Abuela. They had built something together. They had laughed together. They had tried together. That was everything to him.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-bond",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Closer Than Before"
+   }
+  },
+  {
+   "id": "wisdom-gained-ending",
+   "body": "<<FILL role=ending words=70 beats='Tomas understood the wind differently now. It wasn't something to fear. It was something to learn from and work with. Every gust had taught him. Abuela had shown him how to listen and adapt like nature itself.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-wisdom",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Understanding Nature"
+   }
+  }
+ ]
+}

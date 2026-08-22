@@ -1,0 +1,30 @@
+{
+ "leg": "claude-opus-subagent",
+ "family": "anthropic",
+ "cell_id": "A",
+ "band": "5-8",
+ "length": "short",
+ "style": "prose",
+ "replicate": 1,
+ "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+ "attempts": 1,
+ "repair_rounds": 0,
+ "strict_pass": true,
+ "first_pass_clean": true,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  6
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 0.0,
+ "input_tokens": null,
+ "output_tokens": null,
+ "reasoning_tokens": null,
+ "finish_reasons": [],
+ "min_catalog_distance": 0.16486418115104623,
+ "mean_catalog_distance": 0.29064684664742907,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "last_feedback": "",
+ "shell_file": "shells/A__r1__claude-opus-subagent.json",
+ "error": ""
+}

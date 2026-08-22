@@ -1,0 +1,359 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-and-the-changing-wind",
+ "version": 1,
+ "title": "Tomas and the Changing Wind",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "perseverance",
+   "creativity",
+   "grandparent bond",
+   "adapting to change"
+  ],
+  "estimated_minutes": 6,
+  "ending_count": 6,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "n1",
+ "nodes": [
+  {
+   "id": "n1",
+   "body": "<<FILL role=setup words=90 beats='Tomas and his grandmother gather bamboo sticks, colored paper, string, and glue in her sunny kitchen. The spring festival is three days away. Grandma spreads a book of kites on the table and says they need one that can dance in any wind. Tomas studies the diamond shapes, the bird shapes, the dragon shapes. He looks out the window at the flapping laundry on the line and imagines his kite soaring above the rooftops. Grandma asks him what shape he wants to build. Tomas taps his chin and thinks hard.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1a",
+     "label": "Point to the diamond kite in the book",
+     "target": "n2"
+    },
+    {
+     "id": "c1b",
+     "label": "Sketch a brand-new bird kite",
+     "target": "n3"
+    }
+   ]
+  },
+  {
+   "id": "n2",
+   "body": "<<FILL role=explore words=50 beats='Grandma smiles and says his grandfather flew a diamond kite just like this. Tomas measures bamboo and cuts four equal sticks. He ties them into a frame and glues yellow paper over it. They add a cloth tail.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c2a",
+     "label": "Take it to the park to fly",
+     "target": "n4"
+    }
+   ]
+  },
+  {
+   "id": "n3",
+   "body": "<<FILL role=explore words=50 beats='Tomas sketches a swallow with a forked tail on brown paper. Grandma claps and says it looks fast. They bend bamboo into curved wings and a V-tail. She ties the joints with waxed string. The bird kite looks ready.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c3a",
+     "label": "Take it to the meadow to fly",
+     "target": "n5"
+    }
+   ]
+  },
+  {
+   "id": "n4",
+   "body": "<<FILL role=decision words=55 beats='At the park the wind blows from two directions: strong on the hilltop and gentle by the pond. Tomas holds the diamond kite up. Grandma asks where he wants to try it first. Each spot has a different kind of wind.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c4a",
+     "label": "Fly it from the hilltop",
+     "target": "n6"
+    },
+    {
+     "id": "c4b",
+     "label": "Fly it in the field by the pond",
+     "target": "n7"
+    }
+   ]
+  },
+  {
+   "id": "n5",
+   "body": "<<FILL role=decision words=55 beats='The meadow wind gusts and swirls. Tomas watches the grass bend and straighten. Grandma says they can launch now into the gusty air, or sit and wait for the wind to settle. Both choices feel like a test.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c5a",
+     "label": "Launch it in the gusty wind now",
+     "target": "n8"
+    },
+    {
+     "id": "c5b",
+     "label": "Wait for calmer air",
+     "target": "n9"
+    }
+   ]
+  },
+  {
+   "id": "n6",
+   "body": "<<FILL role=decision words=58 beats='The hilltop wind is strong and steady. Tomas lets out string and the diamond kite climbs fast. It tugs hard and the tail snaps off. The kite wobbles toward the trees. Grandma pulls a spare tail from her bag.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c6a",
+     "label": "Fix the tail and try again",
+     "target": "n10"
+    },
+    {
+     "id": "c6b",
+     "label": "Go home and make a stronger tail",
+     "target": "n11"
+    }
+   ]
+  },
+  {
+   "id": "n7",
+   "body": "<<FILL role=decision words=55 beats='The field breeze is gentle and the kite floats up smoothly. Near the pond the air turns soft and the kite sinks. Tomas runs to keep it up, nearly splashing in. Grandma points to treetops bending far away.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c7a",
+     "label": "Walk to the windy side of the pond",
+     "target": "n12"
+    },
+    {
+     "id": "c7b",
+     "label": "Add a lighter tail for soft breezes",
+     "target": "n13"
+    }
+   ]
+  },
+  {
+   "id": "n8",
+   "body": "<<FILL role=decision words=58 beats='The bird kite leaps into the gust and banks like a real swallow. A crosswind spins it into a dive. The paper wing tears against a bamboo joint. Tomas reels it in. Grandma says the wing needs a spar across the middle.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c8a",
+     "label": "Patch the wing and add a spar",
+     "target": "n14"
+    },
+    {
+     "id": "c8b",
+     "label": "Start a box kite instead",
+     "target": "n15"
+    }
+   ]
+  },
+  {
+   "id": "n9",
+   "body": "<<FILL role=explore words=50 beats='They sit on the grass and eat sandwiches while the wind calms. Tomas watches the clouds slow down. When the breeze turns soft and even, Grandma nods. They stand up and shake out the string.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c9a",
+     "label": "Fly the bird kite in the calm air",
+     "target": "n16"
+    }
+   ]
+  },
+  {
+   "id": "n10",
+   "body": "<<FILL role=explore words=50 beats='Grandma ties the spare tail with double knots. Tomas launches again. The diamond kite steadies and climbs, tail streaming. It pulls hard but holds. Tomas laughs as it loops. Grandma says it flies like his grandfather's did.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c10a",
+     "label": "Fly it until sunset",
+     "target": "n17"
+    }
+   ]
+  },
+  {
+   "id": "n11",
+   "body": "<<FILL role=explore words=50 beats='At home Tomas braids a denim tail with Grandma. It is heavy and strong. He ties it on with a fishing knot. The kite feels ready for the hilltop wind. They head back outside.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c11a",
+     "label": "Return to the hill and test it",
+     "target": "n10"
+    }
+   ]
+  },
+  {
+   "id": "n12",
+   "body": "<<FILL role=explore words=52 beats='They walk around the pond to the dancing treetops. The wind here is brisk and steady. Tomas relaunches the kite and it soars high, tacking like a sailboat. Grandma claps and says it found its wind. Tomas grins.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c12a",
+     "label": "Fly here every day until the festival",
+     "target": "n18"
+    }
+   ]
+  },
+  {
+   "id": "n13",
+   "body": "<<FILL role=explore words=50 beats='Tomas swaps the cloth tail for a single ribbon. The kite feels light. In the field the soft breeze lifts it easily. It floats without running. Grandma calls it a thinking-person's kite.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c13a",
+     "label": "Decorate it for the festival",
+     "target": "n19"
+    }
+   ]
+  },
+  {
+   "id": "n14",
+   "body": "<<FILL role=explore words=50 beats='Grandma glues a red patch over the tear and lashes a thin spar across the wing. The bird kite is stiffer. They return to the meadow. Tomas launches it and it banks in smooth arcs, no more spinning.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c14a",
+     "label": "Fly the repaired bird kite",
+     "target": "n20"
+    }
+   ]
+  },
+  {
+   "id": "n15",
+   "body": "<<FILL role=explore words=52 beats='Tomas builds two rectangular frames from bamboo and covers them with blue paper. He connects them with four sticks. The box kite looks like a floating room. Grandma says it catches wind from any direction.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c15a",
+     "label": "Fly the box kite in the park",
+     "target": "n21"
+    }
+   ]
+  },
+  {
+   "id": "n16",
+   "body": "<<FILL role=decision words=52 beats='The bird kite glides in the calm air, its forked tail cutting gentle curves. But the wind is so soft Tomas must walk backward to keep it up. Grandma says a lighter frame would help tomorrow.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c16a",
+     "label": "Enjoy this flight and fix it tomorrow",
+     "target": "n22"
+    },
+    {
+     "id": "c16b",
+     "label": "Rebuild it with thinner bamboo now",
+     "target": "n23"
+    }
+   ]
+  },
+  {
+   "id": "n17",
+   "body": "<<FILL role=ending words=50 beats='Tomas flies the diamond kite until sunset paints the sky orange. The wind holds steady. He reels it in and they hang it by the window. The festival is in two days. Tomas knows his kite is ready.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Kite That Dances in Any Wind"
+   }
+  },
+  {
+   "id": "n18",
+   "body": "<<FILL role=ending words=50 beats='Every day they walk to the windy side of the pond. The diamond kite climbs and dances. On festival morning they paint spring flowers on it. Tomas carries it proudly. His kite flies highest of all.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e2",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Highest Kite at the Festival"
+   }
+  },
+  {
+   "id": "n19",
+   "body": "<<FILL role=ending words=52 beats='Tomas paints cherry blossoms and butterflies on the diamond kite. On festival day the soft breeze is perfect. The kite floats like a painted petal. Children ask how he did it. Tomas points to Grandma and smiles.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e3",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Prettiest Kite in the Soft Breeze"
+   }
+  },
+  {
+   "id": "n20",
+   "body": "<<FILL role=ending words=50 beats='The bird kite owns the gusty meadow, banking and swooping without a wobble. Swallows fly up to see it. Grandma says it is ready for any festival wind. Tomas cannot wait for the big day.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e4",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Swallow That Tamed the Gusts"
+   }
+  },
+  {
+   "id": "n21",
+   "body": "<<FILL role=ending words=52 beats='The box kite rises in the swirling park wind and sits steady. No gust knocks it down. People stop and stare at the blue box in the sky. Tomas grins. It is the most reliable kite he has ever flown.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e5",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Steady Box in the Swirling Sky"
+   }
+  },
+  {
+   "id": "n22",
+   "body": "<<FILL role=explore words=50 beats='Tomas flies the bird kite gently until dusk. At home Grandma sketches a lighter frame. They will rebuild in the morning. Tonight they drink hot chocolate and rest.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c22a",
+     "label": "Build the lighter kite in the morning",
+     "target": "n23"
+    }
+   ]
+  },
+  {
+   "id": "n23",
+   "body": "<<FILL role=explore words=50 beats='They split bamboo into thin strips and rebuild the bird frame with tissue paper. The new kite weighs almost nothing. In the calm meadow it rises on the softest breath of wind, floating high and silent.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c23a",
+     "label": "Decorate it for the festival",
+     "target": "n24"
+    }
+   ]
+  },
+  {
+   "id": "n24",
+   "body": "<<FILL role=ending words=50 beats='Tomas paints the bird kite with blue and white feathers. At the festival it floats in the soft air like a real swallow. Children clap. An old man says it looks like the swallows that return each spring. Tomas holds Grandma's hand.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e6",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Swallow Returns to the Festival"
+   }
+  }
+ ]
+}

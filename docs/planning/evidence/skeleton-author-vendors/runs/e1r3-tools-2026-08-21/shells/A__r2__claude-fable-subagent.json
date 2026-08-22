@@ -1,0 +1,505 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-festival-kite",
+ "version": 1,
+ "title": "The Festival Kite",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "loop_and_grow",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "family",
+   "perseverance",
+   "creativity",
+   "wind and weather"
+  ],
+  "estimated_minutes": 6,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "spring-morning",
+ "nodes": [
+  {
+   "id": "spring-morning",
+   "body": "<<FILL role=setup words=32 beats='Tomas sees the spring festival poster on the plaza wall, kite contest in three days; blossoms swirl in a wind that keeps changing direction; he runs home to tell Abuela Rosa'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-morning-home",
+     "label": "Run home to Abuela",
+     "target": "kitchen-table"
+    }
+   ]
+  },
+  {
+   "id": "kitchen-table",
+   "body": "<<FILL role=decision words=36 beats='At the kitchen table Abuela Rosa and Tomas study their half-built kite while the tricky wind rattles the window; every test so far has taught them something; they pick the next change to try'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-table-tail",
+     "label": "Try a ribbon tail",
+     "target": "tail-test"
+    },
+    {
+     "id": "c-table-frame",
+     "label": "Try a lighter frame",
+     "target": "frame-test"
+    },
+    {
+     "id": "c-table-steer",
+     "label": "Try a steering string",
+     "target": "steering-test"
+    }
+   ]
+  },
+  {
+   "id": "tail-test",
+   "body": "<<FILL role=explore words=64 beats='Tomas sews three red ribbons into a tail while Abuela holds the knots; in the backyard the kite finally stops flipping and bobs gently in the small puffs; then the wind swings around the shed and shoves it sideways anyway; Abuela says the tail helps but this wind never plays the same game twice; Tomas wonders if the kite needs more work or a bigger sky'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-tail-again",
+     "label": "Change something else",
+     "target": "kitchen-table"
+    },
+    {
+     "id": "c-tail-hill",
+     "label": "Take it to the practice hill",
+     "target": "hill-camp"
+    }
+   ]
+  },
+  {
+   "id": "frame-test",
+   "body": "<<FILL role=explore words=64 beats='Abuela shaves each bamboo stick thinner with her old vegetable peeler, and curls of bamboo pile up like ribbons; the lighter kite hops higher on the next yard test, quick as a sparrow; then a rough gust bends one thin stick and they wrap it snug with thread; lighter is livelier but also more delicate; Tomas weighs whether to keep tinkering or trust the frame on open wind'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-frame-again",
+     "label": "Change something else",
+     "target": "kitchen-table"
+    },
+    {
+     "id": "c-frame-hill",
+     "label": "Take it to the practice hill",
+     "target": "hill-camp"
+    }
+   ]
+  },
+  {
+   "id": "steering-test",
+   "body": "<<FILL role=explore words=64 beats='Abuela ties a second string so Tomas can steer, and he practices small pulls in the yard, whispering left, right, left; the kite nods like it understands, dodging the clothesline on the third try after tangling on the first; steering gives the kite a way to answer the changing wind instead of just riding it; Tomas thinks about what the kite still needs before festival day'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-steer-again",
+     "label": "Change something else",
+     "target": "kitchen-table"
+    },
+    {
+     "id": "c-steer-hill",
+     "label": "Take it to the practice hill",
+     "target": "hill-camp"
+    }
+   ]
+  },
+  {
+   "id": "hill-camp",
+   "body": "<<FILL role=decision words=64 beats='On Cerro de la Cruz hill the wind rolls in wide slow waves, gust then hush then gust; Abuela spreads a blanket and sets down the spool and a bag of sweet rolls; up here there is room to really practice before the contest; the grass bends one way, then the other, as if the hill cannot make up its mind; Tomas chooses what to practice first'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-camp-launch",
+     "label": "Practice launch timing",
+     "target": "launch-practice"
+    },
+    {
+     "id": "c-camp-turns",
+     "label": "Practice big turns",
+     "target": "turns-practice"
+    },
+    {
+     "id": "c-camp-wind",
+     "label": "Read the wind with Abuela",
+     "target": "wind-reading"
+    }
+   ]
+  },
+  {
+   "id": "launch-practice",
+   "body": "<<FILL role=explore words=64 beats='Tomas learns to count the gusts, run three steps, and let go just as a wave of wind arrives; the first tries flop into the grass, but soon the kite climbs on almost every launch; Abuela cheers from the blanket with a sweet roll in each hand; the wind still changes without warning, but now Tomas changes with it; he can drill more or save his legs for the festival'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-launch-more",
+     "label": "Practice something else",
+     "target": "hill-camp"
+    },
+    {
+     "id": "c-launch-rest",
+     "label": "Rest up for festival day",
+     "target": "festival-eve"
+    }
+   ]
+  },
+  {
+   "id": "turns-practice",
+   "body": "<<FILL role=explore words=64 beats='Tomas practices figure eights, dips, and long slow swoops across the hill; one dive plants the kite nose-first in the grass and they laugh, then slide the bridle knot to a better spot and mark it with Abuelas pencil; by late afternoon the kite carves turns smooth as a swallow; the sky is getting pink; more practice would help, but so would rest'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-turns-more",
+     "label": "Practice something else",
+     "target": "hill-camp"
+    },
+    {
+     "id": "c-turns-rest",
+     "label": "Rest up for festival day",
+     "target": "festival-eve"
+    }
+   ]
+  },
+  {
+   "id": "wind-reading",
+   "body": "<<FILL role=explore words=64 beats='Abuela tells how her own father read the wind from cottonwood leaves, silver side up before a gust; together they watch the leaves, the grass, and the far flags, and draw a wind chart with arrows for morning, noon, and evening; Tomas tapes the chart to the kite spool like a treasure map; knowing the wind is a tool no gust can break; the sun is sinking fast'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-wind-more",
+     "label": "Practice something else",
+     "target": "hill-camp"
+    },
+    {
+     "id": "c-wind-rest",
+     "label": "Rest up for festival day",
+     "target": "festival-eve"
+    }
+   ]
+  },
+  {
+   "id": "festival-eve",
+   "body": "<<FILL role=transition words=64 beats='On festival eve they paint the kite with golden suns and blue swallows, and Abuela writes both their names small along the spine; the paint dries by the fire while the wind knocks on the shutters like an eager visitor; over warm milk they talk through tomorrow; the contest flies in two places, the big hill where the judges walk and the town below where the buildings bend the wind'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-eve-hill",
+     "label": "Plan a hilltop flight",
+     "target": "hilltop-morning"
+    },
+    {
+     "id": "c-eve-town",
+     "label": "Plan a town flight",
+     "target": "town-morning"
+    }
+   ]
+  },
+  {
+   "id": "hilltop-morning",
+   "body": "<<FILL role=decision words=64 beats='Festival morning on the hill is a sky full of kites shaped like fish, stars, and butterflies, with lines stretched everywhere like a giant spiderweb; a girl named Marisol waves from beside the green fish kite she flies; the judges in green sashes start their walk down the line of fliers; Tomas hunts for the right spot while the changing wind tugs at his cap'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-hillmorn-top",
+     "label": "Take the top of the hill",
+     "target": "summit-launch"
+    },
+    {
+     "id": "c-hillmorn-marisol",
+     "label": "Fly next to Marisol",
+     "target": "beside-marisol"
+    }
+   ]
+  },
+  {
+   "id": "town-morning",
+   "body": "<<FILL role=decision words=64 beats='Down in town the festival fills the streets with music and paper streamers; the flag on the fountain pole snaps and swirls, showing the wind coming in waves between the buildings; near the bakery a strange warm breath of air drifts up from the ovens and lifts loose ribbons off the tables; Tomas feels the spool in his hands and picks his flying spot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-townmorn-plaza",
+     "label": "Fly in the plaza",
+     "target": "plaza-flags"
+    },
+    {
+     "id": "c-townmorn-bakery",
+     "label": "Fly by the bakery corner",
+     "target": "bakery-corner"
+    }
+   ]
+  },
+  {
+   "id": "summit-launch",
+   "body": "<<FILL role=decision words=64 beats='From the very top of the hill Tomas stands still and counts the wind waves the way the practice taught him; all around, kites nosedive in the flipping gusts, but he waits, three, two, one, and launches just as a wave arrives; the kite soars up clean while the crowd points; now the wild spring wind asks him one more question'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-summit-high",
+     "label": "Let out all the line",
+     "target": "highest-flight"
+    },
+    {
+     "id": "c-summit-low",
+     "label": "Keep it low and safe",
+     "target": "steady-glide"
+    }
+   ]
+  },
+  {
+   "id": "beside-marisol",
+   "body": "<<FILL role=decision words=64 beats='Flying beside Marisol is twice the fun until a swirl of changing wind crosses their two lines high above the hill; both kites shiver and start to sink together, tugging each other lower; Marisol looks at Tomas, worried, her spool tight in her hands; the knots in the crossed lines will not hold long, and Tomas must choose fast'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-marisol-team",
+     "label": "Untangle it together",
+     "target": "team-untangle"
+    },
+    {
+     "id": "c-marisol-pull",
+     "label": "Pull your line free",
+     "target": "torn-corner"
+    }
+   ]
+  },
+  {
+   "id": "plaza-flags",
+   "body": "<<FILL role=decision words=64 beats='In the plaza Tomas watches the fountain flag the way Abuela taught, lift and settle, lift and settle; the crowd gathers as he waits out a flat spell, then sends the kite up between the rooftops on a rising wave; the painted suns flash against the blue sky; the wind steadies for a moment, offering him a choice of show'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-plaza-wave",
+     "label": "Climb on the next wave",
+     "target": "wave-rider"
+    },
+    {
+     "id": "c-plaza-loops",
+     "label": "Steer big loops for the crowd",
+     "target": "crowd-loops"
+    }
+   ]
+  },
+  {
+   "id": "bakery-corner",
+   "body": "<<FILL role=decision words=64 beats='By the bakery corner the warm oven air rises in a gentle invisible river; while the flags droop everywhere else, the kite floats up on the warm air with no wind at all, and the baker leans out to watch; Abuela raises her eyebrows the way she does when something wonderful is happening; Tomas feels the secret in his string and decides what to do with it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-bakery-ride",
+     "label": "Ride the warm air higher",
+     "target": "bakery-lift"
+    },
+    {
+     "id": "c-bakery-map",
+     "label": "Map the secret updraft",
+     "target": "chart-secret"
+    }
+   ]
+  },
+  {
+   "id": "highest-flight",
+   "body": "<<FILL role=climax words=30 beats='Tomas feeds out the last of the line and the kite climbs above every kite on the hill until it is a bright speck; the line hums in his hands like a guitar string'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-highest-hold",
+     "label": "Hold on until the horn",
+     "target": "end-node-ribbon"
+    }
+   ]
+  },
+  {
+   "id": "steady-glide",
+   "body": "<<FILL role=climax words=30 beats='Tomas keeps the kite low where the wind runs smoother, and it glides all morning without one dive while gusts knock other kites into the grass all around him'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-glide-land",
+     "label": "Bring it down gently",
+     "target": "end-node-landing"
+    }
+   ]
+  },
+  {
+   "id": "team-untangle",
+   "body": "<<FILL role=climax words=30 beats='Tomas and Marisol walk toward each other, passing their spools over and under, over and under, while the crossed lines slowly loosen high above the watching crowd'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-team-free",
+     "label": "Ease the last knot free",
+     "target": "end-node-together"
+    }
+   ]
+  },
+  {
+   "id": "torn-corner",
+   "body": "<<FILL role=climax words=30 beats='Tomas pulls hard and his line comes free, but the jerk rips the paper along one fold; the kite wobbles, tips, and sails down toward the grass like a falling leaf'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-torn-chase",
+     "label": "Run to catch it",
+     "target": "end-node-torn"
+    }
+   ]
+  },
+  {
+   "id": "wave-rider",
+   "body": "<<FILL role=climax words=30 beats='Wave after wave, Tomas lets out line at just the right beat and the kite climbs the sky like a staircase while the plaza crowd claps in time with every rise'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-wave-top",
+     "label": "Ride the tallest wave",
+     "target": "end-node-riding"
+    }
+   ]
+  },
+  {
+   "id": "crowd-loops",
+   "body": "<<FILL role=climax words=30 beats='Tomas pulls the strings and the kite carves loops and figure eights over the fountain; children below trace the shapes with their fingers and cheer for one more'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-loops-encore",
+     "label": "Give them one more loop",
+     "target": "end-node-dance"
+    }
+   ]
+  },
+  {
+   "id": "bakery-lift",
+   "body": "<<FILL role=climax words=30 beats='The kite rises on the warm bakery air higher than the rooftops while every other kite in town sits stubborn on the ground waiting for wind that will not come'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-lift-soar",
+     "label": "Let it soar over the roofs",
+     "target": "end-node-bakery"
+    }
+   ]
+  },
+  {
+   "id": "chart-secret",
+   "body": "<<FILL role=climax words=30 beats='Tomas walks the kite slowly along the street, feeling where the warm river of air begins and ends, while Abuela sketches arrows on the wind chart taped to the spool'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-secret-draw",
+     "label": "Add it to the wind chart",
+     "target": "end-node-secret"
+    }
+   ]
+  },
+  {
+   "id": "end-node-ribbon",
+   "body": "<<FILL role=ending words=38 beats='The kite holds the highest spot in the whole sky until the horn sounds; the judges tie the golden festival ribbon to the spool; Tomas hands the ribbon to Abuela because the kite was built by four hands, not two'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-festival-ribbon",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Festival Ribbon"
+   }
+  },
+  {
+   "id": "end-node-landing",
+   "body": "<<FILL role=ending words=38 beats='At the horn Tomas winds the line in slow and easy, and the kite settles into the grass soft as a leaf, not one tear in the paper; no ribbon this year, but their names still shine on the spine, ready for next spring'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-gentle-landing",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "A Gentle Landing"
+   }
+  },
+  {
+   "id": "end-node-together",
+   "body": "<<FILL role=ending words=38 beats='The lines slip apart and both kites bounce back into the sky side by side; the judges give Tomas and Marisol a shared ribbon for the best teamwork on the hill, and Abuela invites Marisol home for festival bread'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-two-kites-together",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Two Kites Together"
+   }
+  },
+  {
+   "id": "end-node-torn",
+   "body": "<<FILL role=ending words=38 beats='Tomas catches the kite but the tear is too big to fly today, and the contest goes on without him; Abuela wraps him in her shawl and they drink hot chocolate, planning stronger paper and a bigger kite for next spring'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-torn-kite",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Torn Kite"
+   }
+  },
+  {
+   "id": "end-node-riding",
+   "body": "<<FILL role=ending words=38 beats='On the tallest wave the kite dances every dip and climb Tomas practiced on the hill; the plaza judges call it the smartest flying of the day, and Abuela says her father would be proud of the wind chart'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-riding-the-wind",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Riding the Wind"
+   }
+  },
+  {
+   "id": "end-node-dance",
+   "body": "<<FILL role=ending words=38 beats='The last loop is the biggest of all, and though another flier takes the ribbon, the plaza children crowd around Tomas asking him to teach them; Abuela laughs and says a kite that makes the whole town smile has already won'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-plaza-dance",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Plaza Dance"
+   }
+  },
+  {
+   "id": "end-node-bakery",
+   "body": "<<FILL role=ending words=38 beats='The kite sails over the rooftops on the warm bakery air, the only kite flying in the whole town; Tomas has discovered an updraft nobody else knows, and the baker brings out warm rolls so everyone can watch together'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-bakery-breeze",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Bakery Breeze"
+   }
+  },
+  {
+   "id": "end-node-secret",
+   "body": "<<FILL role=ending words=38 beats='By sunset the wind chart holds a new arrow labeled the bakery river, a discovery all their own; Tomas and Abuela agree to keep it in the family chart forever, a secret gift from the changing wind that started it all'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-secret-updraft",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Secret Updraft"
+   }
+  }
+ ]
+}

@@ -1,0 +1,234 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 4,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "problem-solving",
+   "caring for animals",
+   "perseverance"
+  ],
+  "estimated_minutes": 6,
+  "ending_count": 7,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=68 beats='Miri arrives at school to care for three hens for the holiday; Penny is the smallest, Bella is brown, and Ruby is red'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Start the day with the hens",
+     "target": "day_one"
+    }
+   ]
+  },
+  {
+   "id": "day_one",
+   "body": "<<FILL role=explore words=70 beats='Miri feeds all three hens and watches Bella and Ruby stay near the coop while curious Penny wanders to the garden'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c2",
+     "label": "Let Penny explore while she watches",
+     "target": "end_of_day"
+    }
+   ]
+  },
+  {
+   "id": "end_of_day",
+   "body": "<<FILL role=transition words=69 beats='At sunset Miri calls all three hens back and counts them into the coop for bed; everyone is safe and sound'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c3",
+     "label": "Come back the next morning",
+     "target": "morning_worry"
+    }
+   ]
+  },
+  {
+   "id": "morning_worry",
+   "body": "<<FILL role=decision words=70 beats='Next morning Miri opens the coop to find Bella and Ruby pecking but Penny is gone; her worry turns to panic'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c4a",
+     "label": "Search the garden immediately",
+     "target": "search_garden"
+    },
+    {
+     "id": "c4b",
+     "label": "Get help from Mrs. Chen",
+     "target": "get_caretaker"
+    },
+    {
+     "id": "c4c",
+     "label": "Check the playground first",
+     "target": "check_play"
+    }
+   ]
+  },
+  {
+   "id": "search_garden",
+   "body": "<<FILL role=explore words=68 beats='Miri searches the garden and finds feathers under the oak tree; she follows a trail of feathers past the fence'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c5a",
+     "label": "Look through the fence gap",
+     "target": "fence_gap"
+    },
+    {
+     "id": "c5b",
+     "label": "Check the storage shed",
+     "target": "shed_end"
+    }
+   ]
+  },
+  {
+   "id": "get_caretaker",
+   "body": "<<FILL role=explore words=68 beats='Mrs. Chen listens with concern and helps Miri search the school grounds and parking area together'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c5c",
+     "label": "Look in the neighborhood",
+     "target": "neighbor_end"
+    },
+    {
+     "id": "c5d",
+     "label": "Return to search the yard",
+     "target": "yard_search"
+    }
+   ]
+  },
+  {
+   "id": "check_play",
+   "body": "<<FILL role=explore words=70 beats='At the playground Miri walks slowly checking under the slide and by the climbing frame; she hears a faint clucking from a corner'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c5e",
+     "label": "Follow the clucking sound",
+     "target": "play_end"
+    },
+    {
+     "id": "c5f",
+     "label": "Look behind the equipment",
+     "target": "hedge_end"
+    },
+    {
+     "id": "c5g",
+     "label": "Search the sandbox area",
+     "target": "sandbox_end"
+    }
+   ]
+  },
+  {
+   "id": "fence_gap",
+   "body": "<<FILL role=climax words=68 beats='Through the gap Miri sees Penny in the field grazing on grass; she calls out and Penny runs back through'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_field",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Penny Returns from the Field"
+   }
+  },
+  {
+   "id": "shed_end",
+   "body": "<<FILL role=climax words=68 beats='In the shed Miri finds Penny sitting frightened on straw; a bucket fell blocking the door from outside'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_shed",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Penny Trapped in the Shed"
+   }
+  },
+  {
+   "id": "neighbor_end",
+   "body": "<<FILL role=climax words=70 beats='The kind neighbor remembers seeing Penny and leads Miri to her vegetable garden where Penny enjoys eating tender leaves'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_neighbor",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Penny at the Neighbor's Garden"
+   }
+  },
+  {
+   "id": "yard_search",
+   "body": "<<FILL role=climax words=68 beats='Miri searches the school yard and finds Penny under a bench behind the gym building resting quietly'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_yard",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Penny Under the Bench"
+   }
+  },
+  {
+   "id": "play_end",
+   "body": "<<FILL role=climax words=68 beats='Following the sound Miri finds Penny scratching contentedly under the slide; she looks healthy and happy'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_play",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Penny Under the Slide"
+   }
+  },
+  {
+   "id": "hedge_end",
+   "body": "<<FILL role=climax words=67 beats='Behind the equipment in a hedge Miri spots Penny eating berries; she seems content and lets Miri pick her up'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_hedge",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Penny Eating Berries"
+   }
+  },
+  {
+   "id": "sandbox_end",
+   "body": "<<FILL role=climax words=66 beats='In the sandbox Miri finds Penny taking a dust bath and looking very content; she has been safe and happy all along'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_sandbox",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Penny in the Sandbox"
+   }
+  }
+ ]
+}

@@ -1,0 +1,17 @@
+{
+ "started_at": "2026-08-21T21:52:22+00:00",
+ "resumed": true,
+ "mock": false,
+ "vendors": [
+  "deepseek-v4-pro",
+  "deepseek-v4-flash"
+ ],
+ "cells": [
+  "A"
+ ],
+ "replicates": 3,
+ "max_repair_rounds": 6,
+ "max_tokens": 65536,
+ "premises_file": "/home/user/cyo-adventure/docs/planning/evidence/sourcing-materials/premises.json",
+ "vendors_file": "/home/user/cyo-adventure/docs/planning/evidence/skeleton-author-vendors/vendors.json"
+}

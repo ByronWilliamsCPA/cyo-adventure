@@ -1,0 +1,417 @@
+{
+ "schema_version": "2.0",
+ "id": "one-piece-too-many",
+ "version": 1,
+ "title": "One Piece Too Many",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "sorting_hat",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "mystery",
+   "craftsmanship",
+   "family history",
+   "curiosity",
+   "honesty"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 15,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=70 beats='Wren digs through a crate of junk at Ferrows Odds and Ends and finds a chess set with 33 pieces instead of 32. The extra piece is a black knight carved like a real snorting horse, not the boxy L-shape of the rest, and it smells of cedar, not walnut.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "start-a",
+     "label": "Take a closer look at the odd knight",
+     "target": "d_pre"
+    }
+   ]
+  },
+  {
+   "id": "d_pre",
+   "body": "<<FILL role=decision words=75 beats='Wren is sure the cedar knight does not belong with the rest of the walnut set. Decide how to start figuring out where it really came from.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "d_pre-a",
+     "label": "Ask Mrs. Ferrow where the set came from",
+     "target": "bn0"
+    },
+    {
+     "id": "d_pre-b",
+     "label": "Dig through the rest of the crate for clues",
+     "target": "bn0"
+    },
+    {
+     "id": "d_pre-c",
+     "label": "Turn the knight over to check for a maker's mark",
+     "target": "bn0"
+    }
+   ]
+  },
+  {
+   "id": "bn0",
+   "body": "<<FILL role=transition words=70 beats='Whichever way Wren starts, the search turns up the same thing: tiny initials, E period O period, scratched into the felt under the knight's base, half worn away but still readable.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "bn0-a",
+     "label": "Try to trace the initials E.O.",
+     "target": "d0"
+    }
+   ]
+  },
+  {
+   "id": "d0",
+   "body": "<<FILL role=decision words=75 beats='Two letters are not much to go on. Wren weighs where to look first for someone whose initials are E.O.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "d0-a",
+     "label": "Search the shop's old sale ledger",
+     "target": "d1a"
+    },
+    {
+     "id": "d0-b",
+     "label": "Ask the old men at the park chess tables",
+     "target": "d1b"
+    },
+    {
+     "id": "d0-c",
+     "label": "Check the town library's newspaper archive",
+     "target": "d1c"
+    }
+   ]
+  },
+  {
+   "id": "d1a",
+   "body": "<<FILL role=decision words=100 beats='The ledger turns up a name: Eli Okafor, a woodcarver who once lived in town and made chess sets to order. Decide how far to push this lead.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "d1a-a",
+     "label": "Accept the ledger's story and write it up",
+     "target": "e1"
+    },
+    {
+     "id": "d1a-b",
+     "label": "Ask Mrs. Ferrow to explain the entry",
+     "target": "e2"
+    },
+    {
+     "id": "d1a-c",
+     "label": "Cross-reference the name against other records",
+     "target": "d2a"
+    }
+   ]
+  },
+  {
+   "id": "d2a",
+   "body": "<<FILL role=decision words=100 beats='Cross-referencing the ledger name turns up three different leads at once. Decide which one to chase.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "d2a-a",
+     "label": "Follow the name to a bakery downtown",
+     "target": "e7"
+    },
+    {
+     "id": "d2a-b",
+     "label": "Follow it to a rival collector's shop",
+     "target": "e8"
+    },
+    {
+     "id": "d2a-c",
+     "label": "Follow it to Eli's old boarded-up workshop",
+     "target": "e9"
+    }
+   ]
+  },
+  {
+   "id": "d1b",
+   "body": "<<FILL role=decision words=100 beats='An old regular named Mr. Pell remembers being Eli Okafor's chess student decades ago. Decide how far to push this lead.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "d1b-a",
+     "label": "Take Mr. Pell's word for it",
+     "target": "e3"
+    },
+    {
+     "id": "d1b-b",
+     "label": "Ask to see his old club roster",
+     "target": "e4"
+    },
+    {
+     "id": "d1b-c",
+     "label": "Ask him to introduce more old members",
+     "target": "d2b"
+    }
+   ]
+  },
+  {
+   "id": "d2b",
+   "body": "<<FILL role=decision words=100 beats='The other old members each have a different piece of the Eli Okafor story to offer. Decide which one to listen to.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "d2b-a",
+     "label": "Hear about the workshop fire",
+     "target": "e10"
+    },
+    {
+     "id": "d2b-b",
+     "label": "Hear about Eli's granddaughter",
+     "target": "e11"
+    },
+    {
+     "id": "d2b-c",
+     "label": "Hear about a rival collector asking questions",
+     "target": "e12"
+    }
+   ]
+  },
+  {
+   "id": "d1c",
+   "body": "<<FILL role=decision words=100 beats='An old newspaper article turns up, mentioning a woodcarver named Eli Okafor and a workshop fire. Decide how far to push this lead.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "d1c-a",
+     "label": "Read the article and call it settled",
+     "target": "e5"
+    },
+    {
+     "id": "d1c-b",
+     "label": "Ask the archivist for old photographs",
+     "target": "e6"
+    },
+    {
+     "id": "d1c-c",
+     "label": "Chase the fire department report the article mentions",
+     "target": "d2c"
+    }
+   ]
+  },
+  {
+   "id": "d2c",
+   "body": "<<FILL role=decision words=100 beats='The old fire department report has three different details worth following up on. Decide which one matters most.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "d2c-a",
+     "label": "Learn the set almost burned entirely",
+     "target": "e13"
+    },
+    {
+     "id": "d2c-b",
+     "label": "Learn what firefighters recovered that night",
+     "target": "e14"
+    },
+    {
+     "id": "d2c-c",
+     "label": "Learn the sale date lines up with the fire",
+     "target": "e15"
+    }
+   ]
+  },
+  {
+   "id": "e1",
+   "body": "<<FILL role=ending words=90 beats='The ledger entry is enough for Wren: Eli Okafor made the set, and the cedar knight is proof of his work, even without meeting anyone who knew him.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Case Closed, Mostly"
+   }
+  },
+  {
+   "id": "e2",
+   "body": "<<FILL role=ending words=90 beats='Mrs. Ferrow squints at the old entry and remembers buying the crate from an estate sale years back, filling in one more piece of the story.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e2",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Mrs. Ferrow Remembers"
+   }
+  },
+  {
+   "id": "e7",
+   "body": "<<FILL role=ending words=90 beats='The trail leads to a bakery run by Eli Okafor's granddaughter, who is thrilled to learn a piece of her grandfather's last set survived.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e7",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Nadia's Bakery"
+   }
+  },
+  {
+   "id": "e8",
+   "body": "<<FILL role=ending words=90 beats='A rival collector named Mr. Grieve got to the same lead first and is cagey about what he knows, leaving Wren a step behind.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e8",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Grieve Gets There First"
+   }
+  },
+  {
+   "id": "e9",
+   "body": "<<FILL role=ending words=90 beats='The trail ends at Eli's old boarded-up workshop behind the hardware store, with no way inside today, and the search has to wait.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e9",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Workshop, Boarded Up"
+   }
+  },
+  {
+   "id": "e3",
+   "body": "<<FILL role=ending words=90 beats='Wren trusts Mr. Pell's memory of his old teacher and writes up the story of the cedar knight, satisfied with a good secondhand account.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e3",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Mr. Pell's Word"
+   }
+  },
+  {
+   "id": "e4",
+   "body": "<<FILL role=ending words=90 beats='The old club roster confirms Eli Okafor really was a member decades ago, closing the loop neatly with a name and a date.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e4",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Old Roster"
+   }
+  },
+  {
+   "id": "e10",
+   "body": "<<FILL role=ending words=90 beats='Wren hears secondhand about the workshop fire that ended Eli's carving, a sad but useful detail that explains a lot.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e10",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Word of the Fire"
+   }
+  },
+  {
+   "id": "e11",
+   "body": "<<FILL role=ending words=90 beats='Wren learns Eli had a granddaughter still living in town, a promising new lead to chase another day.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e11",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Granddaughter, Somewhere"
+   }
+  },
+  {
+   "id": "e12",
+   "body": "<<FILL role=ending words=90 beats='The old members warn Wren that a rival collector has been asking the same questions, which makes the whole search feel more urgent.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e12",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Grieve's Name Comes Up"
+   }
+  },
+  {
+   "id": "e5",
+   "body": "<<FILL role=ending words=90 beats='The newspaper article is enough to satisfy Wren's curiosity for now, even without tracking down a living person who remembers Eli.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e5",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Article Closed"
+   }
+  },
+  {
+   "id": "e6",
+   "body": "<<FILL role=ending words=90 beats='Old photographs bring the workshop to life exactly as it looked before the fire, tools lined up and a chessboard half-carved on the bench.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e6",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Photos of the Workshop"
+   }
+  },
+  {
+   "id": "e13",
+   "body": "<<FILL role=ending words=90 beats='The report makes clear the whole set almost burned along with the workshop, a sobering thought that puts the surviving knight in perspective.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e13",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "A Near Miss"
+   }
+  },
+  {
+   "id": "e14",
+   "body": "<<FILL role=ending words=90 beats='The recovery list names a single chess piece pulled from the ashes that night, and Wren realizes it is the very knight sitting in a pocket right now.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e14",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "What Survived"
+   }
+  },
+  {
+   "id": "e15",
+   "body": "<<FILL role=ending words=90 beats='Chasing the fire report takes so long that Wren gets home late and grounded, the last details of the mystery left for another weekend.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-e15",
+    "valence": "negative",
+    "kind": "capture",
+    "title": "Grounded"
+   }
+  }
+ ]
+}

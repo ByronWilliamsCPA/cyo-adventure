@@ -1,0 +1,515 @@
+{
+ "schema_version": "2.0",
+ "id": "priyas-snowy-search",
+ "version": 1,
+ "title": "Priya's Snowy Search",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "perseverance",
+   "sibling care",
+   "winter adventure",
+   "problem-solving"
+  ],
+  "estimated_minutes": 7,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n1",
+ "nodes": [
+  {
+   "id": "n1",
+   "body": "<<FILL role=setup words=75 beats='Priya and her little brother Arjun finish sledding at Sunrise Hill. Arjun wiggles his toes and notices his left boot is gone. Priya sees only one boot on his foot and realizes it must have fallen off somewhere on the sled run. Their walk home is through the snowy park, and Mum said to hurry before dark. Priya promises Arjun she will find the boot.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1a",
+     "label": "Search near the sled run's big bump",
+     "target": "n2"
+    },
+    {
+     "id": "c1b",
+     "label": "Look around the snowman they built earlier",
+     "target": "n3"
+    },
+    {
+     "id": "c1c",
+     "label": "Check the bench where they put on their gear",
+     "target": "n4"
+    }
+   ]
+  },
+  {
+   "id": "n2",
+   "body": "<<FILL role=explore words=72 beats='Priya trudges to the big bump halfway down the sled run. The snow here is churned up from all the sleds. She kicks at a lump and finds an old mitten, not Arjun's boot. Arjun shivers and points at a dark shape farther down the slope. Priya squints but cannot tell what it is from here.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c2a",
+     "label": "Go down and check the dark shape",
+     "target": "n5"
+    },
+    {
+     "id": "c2b",
+     "label": "Stay and dig more around the bump",
+     "target": "n6"
+    }
+   ]
+  },
+  {
+   "id": "n3",
+   "body": "<<FILL role=explore words=70 beats='The snowman stands lopsided near the oak tree. Its carrot nose has fallen off. Priya circles the snowman and pokes the snow around its base with a stick. She uncovers a pinecone and a lost glove but no boot. Arjun hops on one foot to keep warm and suggests maybe the boot rolled under the sledding hill.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c3a",
+     "label": "Head back to the sled run and search the slope",
+     "target": "n2"
+    },
+    {
+     "id": "c3b",
+     "label": "Look under the nearby picnic table",
+     "target": "n7"
+    }
+   ]
+  },
+  {
+   "id": "n4",
+   "body": "<<FILL role=explore words=68 beats='Priya hurries to the wooden bench where they sat to pull on snow gear. A thin layer of fresh snow covers the seat. She brushes it off and finds nothing. Under the bench, a squirrel chitters and scampers away. Arjun giggles but his teeth chatter. Priya spots a trail of small footprints leading toward the sled run.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c4a",
+     "label": "Follow the footprints into the deeper snow",
+     "target": "n8"
+    },
+    {
+     "id": "c4b",
+     "label": "Search the bushes beside the bench",
+     "target": "n9"
+    },
+    {
+     "id": "c4c",
+     "label": "Check the drinking fountain",
+     "target": "n29"
+    }
+   ]
+  },
+  {
+   "id": "n5",
+   "body": "<<FILL role=explore words=73 beats='Priya slides carefully down to the dark shape. It is a lump of ice frozen around a fallen branch. She pokes it with her heel and the ice cracks, revealing only wet bark. Arjun calls from the top that the sun is getting lower. Priya feels a flutter of worry but takes a deep breath. She scans the run and notices a patch of undisturbed snow near the fence.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c5a",
+     "label": "Investigate the patch near the fence",
+     "target": "n10"
+    },
+    {
+     "id": "c5b",
+     "label": "Climb back up and check the starting line",
+     "target": "n11"
+    }
+   ]
+  },
+  {
+   "id": "n6",
+   "body": "<<FILL role=explore words=65 beats='Priya uses her hands to sift through the churned snow at the bump. Her fingers grow cold but she keeps digging. Arjun joins her and pats the snow beside her. His mitten brushes against something hard and round. Priya digs it out, but it is only a frozen apple core. She sighs and stands up, shaking snow from her sleeves.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c6a",
+     "label": "Go down the hill and search the run",
+     "target": "n5"
+    },
+    {
+     "id": "c6b",
+     "label": "Walk over to the frozen puddle",
+     "target": "n12"
+    }
+   ]
+  },
+  {
+   "id": "n7",
+   "body": "<<FILL role=explore words=67 beats='The picnic table stands under a bare-limbed maple. Snow has drifted against its legs. Priya crouches and sweeps the snow aside with her arm. She finds a granola bar wrapper and a cracked plastic shovel. No boot. Arjun points out that the sun is turning the snow orange, which means sunset is coming soon. Priya feels a new urgency.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c7a",
+     "label": "Return to the sled run's big bump",
+     "target": "n2"
+    },
+    {
+     "id": "c7b",
+     "label": "Check the snowy hollow behind the maple",
+     "target": "n13"
+    }
+   ]
+  },
+  {
+   "id": "n8",
+   "body": "<<FILL role=explore words=71 beats='Priya follows the tiny footprints through the snow. They weave past a cluster of snowy shrubs and stop at a fallen log. Behind the log, a rabbit twitches its nose and hops away. Arjun tugs Priya's sleeve and whispers that maybe the rabbit took his boot. Priya smiles but says rabbits do not wear boots. She pokes behind the log anyway and finds only frozen leaves.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c8a",
+     "label": "Head toward the bottom of the sled run",
+     "target": "n5"
+    },
+    {
+     "id": "c8b",
+     "label": "Go back to the bench and think",
+     "target": "n14"
+    }
+   ]
+  },
+  {
+   "id": "n9",
+   "body": "<<FILL role=explore words=69 beats='Priya pushes into the scratchy bushes beside the bench. Twigs snag her hat but she wiggles free. Under the branches, the snow is shallower and she can see the ground. A flash of color catches her eye. She reaches in and pulls out a red and white striped candy cane, still wrapped. Arjun's eyes go wide but his foot is still cold. The boot is not here.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c9a",
+     "label": "Search the bottom of the sled run",
+     "target": "n5"
+    },
+    {
+     "id": "c9b",
+     "label": "Check the swing set area",
+     "target": "n15"
+    }
+   ]
+  },
+  {
+   "id": "n10",
+   "body": "<<FILL role=climax words=74 beats='Priya trudges to the patch of untouched snow near the fence. It looks smooth and clean. She steps carefully and something sinks under her foot. She reaches down and her fingers close around cold, wet leather. She pulls up Arjun's boot, covered in snow but unharmed. Arjun cheers and hops over. Priya shakes the snow out and helps him put it on. The boot fits perfectly.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c10a",
+     "label": "Hurry home together before dark",
+     "target": "n16"
+    }
+   ]
+  },
+  {
+   "id": "n11",
+   "body": "<<FILL role=explore words=70 beats='Priya climbs back to the top of the sled run where they started. The snow here is packed flat from many boots and sleds. She scans the starting line and sees a small mound she does not remember. She brushes it with her foot and uncovers a flattened juice box. Arjun calls up that his toes are icy. Priya promises she will find the boot soon.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c11a",
+     "label": "Go down the run checking every bump",
+     "target": "n5"
+    },
+    {
+     "id": "c11b",
+     "label": "Look near the fence at the bottom",
+     "target": "n10"
+    }
+   ]
+  },
+  {
+   "id": "n12",
+   "body": "<<FILL role=explore words=68 beats='Priya and Arjun walk to the frozen puddle near the drinking fountain. The ice is milky and cracked at the edges. Priya taps it with her heel and sees something dark under the surface. Her heart leaps, but when she breaks the thin ice with a stick, it is only a submerged leaf. Arjun sniffles and says he wants to go home. Priya squeezes his hand.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c12a",
+     "label": "Try the patch of snow by the fence",
+     "target": "n10"
+    },
+    {
+     "id": "c12b",
+     "label": "Return to the sled run and search the big bump",
+     "target": "n2"
+    }
+   ]
+  },
+  {
+   "id": "n13",
+   "body": "<<FILL role=explore words=66 beats='The hollow behind the maple is a dip where leaves and snow have collected. Priya wades in up to her shins. She feels around with her boots and hits something solid. She digs down and finds a flat rock. Under the rock, a sleeping beetle rests. Arjun peers over her shoulder and sighs. Priya tells him not to give up and brushes snow from her knees.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c13a",
+     "label": "Go back to the sled run hill",
+     "target": "n2"
+    },
+    {
+     "id": "c13b",
+     "label": "Walk toward the fence line",
+     "target": "n10"
+    }
+   ]
+  },
+  {
+   "id": "n14",
+   "body": "<<FILL role=transition words=70 beats='Priya leads Arjun back to the bench. She sits him down and rubs his cold foot through his sock. She thinks about every place they went. The sled run, the snowman, the bench, the big bump. Where could the boot have fallen? Arjun remembers that he kicked his feet a lot on the fast part of the run. Priya decides to search the run one more time from top to bottom.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c14a",
+     "label": "Start at the very top of the sled run",
+     "target": "n27"
+    },
+    {
+     "id": "c14b",
+     "label": "Check the bottom curve of the sled run",
+     "target": "n19"
+    }
+   ]
+  },
+  {
+   "id": "n15",
+   "body": "<<FILL role=explore words=68 beats='The swing set sits still and quiet, its chains frosted white. Priya checks under each swing, pushing aside snow with her boot. She finds a lost scarf hanging from one chain and a broken crayon under another. Arjun wraps the scarf around his neck for warmth. Priya says they must keep looking. The sky is turning a deeper shade of pink and orange.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c15a",
+     "label": "Head to the fence near the sled run",
+     "target": "n10"
+    },
+    {
+     "id": "c15b",
+     "label": "Go search the big bump on the run",
+     "target": "n2"
+    }
+   ]
+  },
+  {
+   "id": "n16",
+   "body": "<<FILL role=ending words=72 beats='Priya holds Arjun's hand as they walk home through the snowy park. His boot is snug and warm again. The streetlights flicker on, casting golden circles on the fresh snow. Arjun skips a little and says Priya is the best finder in the world. Priya grins and feels proud. When they reach home, Mum opens the door and smiles at their rosy cheeks and Arjun's two boots. Hot cocoa is waiting.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Two Boots and Cocoa"
+   }
+  },
+  {
+   "id": "n17",
+   "body": "<<FILL role=climax words=70 beats='Priya remembers that Arjun loves to kick his feet at the steepest part of the run. She walks to the middle slope and scans the snowbanks on either side. Something dark protrudes from a drift. She reaches in and tugs. Arjun's boot comes free with a soft pop. Snow spills from the opening. Arjun laughs and hugs Priya's waist. She helps him put the boot on his chilly foot.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c17a",
+     "label": "Take the path home while the sky glows",
+     "target": "n18"
+    }
+   ]
+  },
+  {
+   "id": "n18",
+   "body": "<<FILL role=ending words=65 beats='The path home sparkles under the last light of day. Arjun stomps in both boots, happy and warm. Priya tells him the story of her search and he laughs at the part about the rabbit. They reach the front door just as the first stars appear. Dad opens the door and sweeps them both into a hug. The house smells like cinnamon and warm bread. Everyone is together and safe.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Home Before Stars"
+   }
+  },
+  {
+   "id": "n19",
+   "body": "<<FILL role=climax words=73 beats='Priya decides to check the snowbank at the bottom curve of the sled run. Sleds always swerve here. She wades into the fluffy bank and her leg sinks deep. Her foot hits something. She digs frantically with both hands and pulls up a soaked, muddy boot. It is covered in slush. She wipes it on her coat but it is Arjun's boot. The mud will wash off. She grins in relief.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c19a",
+     "label": "Walk home before it gets fully dark",
+     "target": "n20"
+    }
+   ]
+  },
+  {
+   "id": "n20",
+   "body": "<<FILL role=ending words=68 beats='Priya and Arjun walk briskly down the lamp-lit path. The boot squelches a little but Arjun does not mind. He says it had an adventure, just like them. At home, Mum helps clean the boot by the radiator. Arjun wiggles his warm toes and tells Mum how Priya never gave up. Priya sips hot apple cider and feels a deep, quiet happiness. The snowy day ends perfectly.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end3",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Muddy Boot Rescue"
+   }
+  },
+  {
+   "id": "n21",
+   "body": "<<FILL role=explore words=71 beats='Priya sees that the sun has nearly set. The shadows are long and deep blue. She has searched many places but not yet found the boot. Arjun's foot is very cold now and he is starting to sniffle. Priya feels a pang of worry. She knows they cannot stay much longer. She looks one more time at the sled run, then decides they must head home before it is too dark and cold.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c21a",
+     "label": "Start the walk home without the boot",
+     "target": "n22"
+    }
+   ]
+  },
+  {
+   "id": "n22",
+   "body": "<<FILL role=ending words=72 beats='Priya wraps her scarf around Arjun's bootless foot and they hurry home. The park feels bigger in the dark. Arjun sniffles and says he is sorry he lost his boot. Priya tells him it is okay, that being safe is more important. At home, Mum sees the missing boot and frowns but hugs them tight. She fills a basin with warm water for Arjun's cold foot and promises they can look again tomorrow. Priya feels sad but knows she did her best.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end4",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Safe but One Boot Short"
+   }
+  },
+  {
+   "id": "n23",
+   "body": "<<FILL role=explore words=69 beats='Priya lingers too long digging in a snowbank. The sky darkens to a deep purple and the park lights flicker on. She realizes Arjun is shivering hard now, his lips pale. She has not found the boot. A park ranger in a green coat walks over and asks if they need help. Priya explains, and the ranger says it is time to go home. The ranger offers to call Mum.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c23a",
+     "label": "Accept the ranger's help and go home",
+     "target": "n24"
+    }
+   ]
+  },
+  {
+   "id": "n24",
+   "body": "<<FILL role=ending words=68 beats='The ranger walks Priya and Arjun to the park entrance. Mum's car is already pulling up, her face tight with worry. She jumps out and wraps Arjun in a big quilt from the back seat. Priya explains about the boot and Mum says it is only a thing, that they are what matters. At home, Arjun soaks in a warm bath. Priya stares out the window at the dark park, hoping the boot will be there in the morning. The day ends quietly.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end5",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Ranger Helps"
+   }
+  },
+  {
+   "id": "n25",
+   "body": "<<FILL role=explore words=68 beats='Priya searches frantically as the light fades. She runs from spot to spot, her breath puffing white. Arjun sits on the bench, hugging himself. Suddenly, Priya slips on a patch of ice and lands hard. She is not hurt, just shaken, but she has lost precious minutes. Arjun cries out and runs to her. Priya realizes with a sinking heart that they are out of time. The park is almost dark.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c25a",
+     "label": "Go home now, leaving the boot behind",
+     "target": "n26"
+    }
+   ]
+  },
+  {
+   "id": "n26",
+   "body": "<<FILL role=ending words=73 beats='Priya helps Arjun hop along the dark path. Her knee smarts from her fall. They move slowly. A neighbor driving by recognizes them and stops. She offers a ride home. In the warm car, Arjun leans against Priya and falls asleep. Mum thanks the neighbor at the door and carries Arjun inside. Priya shows Mum the bruised knee and tells her about the lost boot. Mum kisses her forehead and says they are lucky to be home safe. Tomorrow, they will look together.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end6",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "A Kind Neighbor and a Bruise"
+   }
+  },
+  {
+   "id": "n27",
+   "body": "<<FILL role=explore words=69 beats='Priya wants to check the whole sled run carefully. She starts at the top and walks down slowly, kicking at every lump of snow. Halfway down she sees something dark poking out of a snowdrift. She kneels to dig. Arjun waits at the bottom, hopping to keep warm. The object is a buried pine branch, not the boot. Priya takes a deep breath and decides to check the middle slope next.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c27a",
+     "label": "Check the steep middle of the run",
+     "target": "n17"
+    },
+    {
+     "id": "c27b",
+     "label": "Search the snowbank at the bottom curve",
+     "target": "n19"
+    }
+   ]
+  },
+  {
+   "id": "n28",
+   "body": "<<FILL role=transition words=72 beats='Priya feels a new idea. She asks Arjun to show her exactly how he sledded down. Arjun mimes zooming down on his bottom, kicking his feet. Priya watches closely and notices he kicks hardest near the middle. She thanks him and tells him to wait on the bench. She hurries back to the sled run and heads for the steep middle section. Arjun's kicked-off boot must be there.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c28a",
+     "label": "Look at the steep part of the run",
+     "target": "n17"
+    },
+    {
+     "id": "c28b",
+     "label": "Retrace the whole run from the top",
+     "target": "n27"
+    }
+   ]
+  },
+  {
+   "id": "n29",
+   "body": "<<FILL role=explore words=71 beats='Priya wants to try one last spot. She walks to the drinking fountain, thinking the boot might have rolled there. She circles the fountain and checks behind it. A small pile of snow has gathered. She digs in and her fingers brush something. She pulls and finds a plastic dinosaur toy, buried. Arjun says it is not his but puts it in his pocket. Priya sighs and rubs her chilly hands.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c29a",
+     "label": "Search the big bump on the sled run",
+     "target": "n2"
+    },
+    {
+     "id": "c29b",
+     "label": "Check the patch of snow by the fence",
+     "target": "n10"
+    }
+   ]
+  },
+  {
+   "id": "n30",
+   "body": "<<FILL role=climax words=71 beats='Priya sits Arjun down and retraces every step in her mind. The sled run, the bump, the snowman, the bench. She closes her eyes and pictures Arjun kicking his feet. The boot must have flown off at the steep curve. She runs to the curve and digs at the snowbank with fierce determination. Her fingers close on the boot buried deep. She yanks it free and shouts with joy. Arjun hears her and comes hopping over, his face breaking into a huge grin.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c30a",
+     "label": "Put on the boot and hurry home under the stars",
+     "target": "n31"
+    }
+   ]
+  },
+  {
+   "id": "n31",
+   "body": "<<FILL role=ending words=70 beats='Priya and Arjun walk hand in hand, both boots crunching on the snowy path. The stars are bright and the moon casts long blue shadows. Arjun talks all the way home about the adventure. When they arrive, Mum is waiting on the porch, wrapped in a blanket. She hugs them both tightly and says she was about to come looking. Inside, steaming mugs of hot chocolate with marshmallows wait on the table. Priya feels like the bravest big sister in the world.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end7",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Star Light, Boot Tight"
+   }
+  },
+  {
+   "id": "n32",
+   "body": "<<FILL role=ending words=70 beats='Priya has looked everywhere she can think of, but the boot is still missing. Arjun is too cold to stay any longer. She takes his hand and walks home slowly. The snowy park is quiet and dark. Mum greets them at the door and wraps Arjun's cold foot in a blanket. Priya tells her they could not find the boot. Mum nods and says sometimes things get lost, but they have each other. Priya looks out at the moon on the snow and hopes the boot will turn up tomorrow.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end8",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Lost in the Snow"
+   }
+  }
+ ]
+}

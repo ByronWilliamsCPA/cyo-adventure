@@ -1,0 +1,419 @@
+{
+ "schema_version": "2.0",
+ "id": "the-lantern-keepers-understudy",
+ "version": 1,
+ "title": "The Lantern Keeper's Understudy",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "sorting_hat",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "teamwork",
+   "resilience",
+   "stage fright",
+   "creative problem-solving",
+   "friendship"
+  ],
+  "estimated_minutes": 2,
+  "ending_count": 15,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "intro",
+ "nodes": [
+  {
+   "id": "intro",
+   "body": "<<FILL role=setup words=60 beats='Two nights before opening night of the school play The Lantern Keeper, stage manager Cass is doing a final prop check when Ms. Alvarez pulls her aside backstage with terrible timing: lead actor Priya Chandra's family has to move away immediately, and Priya cannot perform.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "intro_ch1",
+     "label": "Gather the cast and figure out a plan",
+     "target": "start"
+    }
+   ]
+  },
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=70 beats='Cass has one rehearsal and one dress rehearsal left before the curtain rises, and three different ways to save the show, each pulling the cast in a different direction.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "start_ch1",
+     "label": "Ask understudy Marcus to step in",
+     "target": "a_1"
+    },
+    {
+     "id": "start_ch2",
+     "label": "Redistribute Priya's lines among the cast",
+     "target": "b_1"
+    },
+    {
+     "id": "start_ch3",
+     "label": "Rework the show into an ensemble format",
+     "target": "c_1"
+    }
+   ]
+  },
+  {
+   "id": "a_1",
+   "body": "<<FILL role=explore words=100 beats='Cass finds Marcus Webb, the shy understudy, restocking props backstage and convinces him to take over the lead role of the Lantern Keeper with only two nights to prepare. At blocking rehearsal the next day, Marcus freezes the moment he has to cross center stage under the lights, stage fright taking hold in front of the whole cast.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "a_1_ch1",
+     "label": "Let Marcus step back from the role",
+     "target": "a_end1"
+    },
+    {
+     "id": "a_1_ch2",
+     "label": "Push forward with Marcus visibly shaken",
+     "target": "a_end2"
+    },
+    {
+     "id": "a_1_ch3",
+     "label": "Spend the last two nights coaching him through it",
+     "target": "a_t2"
+    }
+   ]
+  },
+  {
+   "id": "a_end1",
+   "body": "<<FILL role=ending words=90 beats='Marcus admits he can't do it, and Cass spends the last two nights scrambling to cut the role down to something the crew can read aloud instead.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "a_end1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Scramble Before Curtain"
+   }
+  },
+  {
+   "id": "a_end2",
+   "body": "<<FILL role=ending words=90 beats='Marcus goes on visibly nervous, voice shaking through every scene, but he never stops, and the show limps across the finish line intact.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "a_end2",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Shaky But Standing"
+   }
+  },
+  {
+   "id": "a_t2",
+   "body": "<<FILL role=transition words=35 beats='Cass spends every spare minute over the next two nights running lines and confidence drills with Marcus in the empty auditorium.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "a_t2_ch1",
+     "label": "Continue",
+     "target": "a_2"
+    }
+   ]
+  },
+  {
+   "id": "a_2",
+   "body": "<<FILL role=climax words=100 beats='Opening night has arrived, and Marcus stands alone in the spotlight for the Lantern Keeper's closing monologue, the moment all the coaching was for.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "a_2_ch1",
+     "label": "Marcus delivers it perfectly",
+     "target": "a_end3"
+    },
+    {
+     "id": "a_2_ch2",
+     "label": "Marcus stumbles but the cast helps him recover",
+     "target": "a_end4"
+    },
+    {
+     "id": "a_2_ch3",
+     "label": "Marcus gets through it imperfectly but real",
+     "target": "a_end5"
+    }
+   ]
+  },
+  {
+   "id": "a_end3",
+   "body": "<<FILL role=ending words=90 beats='Marcus finds his footing and delivers the closing monologue clean and clear, and the auditorium rises into applause as the lantern prop glows steady in his hand.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "a_end3",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Lantern Truly Lit"
+   }
+  },
+  {
+   "id": "a_end4",
+   "body": "<<FILL role=ending words=90 beats='Marcus's voice cracks, Jules mouths the next line from the wings, and he catches it and finishes with real fire as the cast erupts into a standing ovation.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "a_end4",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Understudy's Triumph"
+   }
+  },
+  {
+   "id": "a_end5",
+   "body": "<<FILL role=ending words=90 beats='Marcus finishes shaky but honest, and afterward realizes the stumble taught him more about holding a stage than a perfect run ever could.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "a_end5",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Marcus's Quiet Win"
+   }
+  },
+  {
+   "id": "b_1",
+   "body": "<<FILL role=explore words=100 beats='Cass gathers Jules Okafor and two other cast members backstage to propose splitting Priya's lines among them instead of finding one new lead. At the next rehearsal, the old blocking built for one lead crumbles as three actors collide trying to share the same stage positions.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "b_1_ch1",
+     "label": "Abandon the split and cut the role instead",
+     "target": "b_end1"
+    },
+    {
+     "id": "b_1_ch2",
+     "label": "Push forward with the uneven three-way split",
+     "target": "b_end2"
+    },
+    {
+     "id": "b_1_ch3",
+     "label": "Spend the last two nights fixing the blocking",
+     "target": "b_t2"
+    }
+   ]
+  },
+  {
+   "id": "b_end1",
+   "body": "<<FILL role=ending words=90 beats='The three-way split collapses into chaos at rehearsal, and Cass has to scrap it and cut Priya's role down to almost nothing just to get through opening night.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "b_end1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Back to the Drawing Board"
+   }
+  },
+  {
+   "id": "b_end2",
+   "body": "<<FILL role=ending words=90 beats='The three actors muddle through their shared lines unevenly, some scenes stronger than others, and the show finishes whole if a little rough around the edges.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "b_end2",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "A Patchwork Show"
+   }
+  },
+  {
+   "id": "b_t2",
+   "body": "<<FILL role=transition words=35 beats='Cass spends two late nights redrawing the blocking chart from scratch so all three actors have room to move.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "b_t2_ch1",
+     "label": "Continue",
+     "target": "b_2"
+    }
+   ]
+  },
+  {
+   "id": "b_2",
+   "body": "<<FILL role=climax words=100 beats='Opening night arrives, and the curtain rises on the redistributed show, three actors now carrying what used to be Priya's single role.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "b_2_ch1",
+     "label": "It flows seamlessly, better than rehearsed",
+     "target": "b_end3"
+    },
+    {
+     "id": "b_2_ch2",
+     "label": "It's shaky backstage but reads fine out front",
+     "target": "b_end4"
+    },
+    {
+     "id": "b_2_ch3",
+     "label": "Jules quietly takes over the trickiest part",
+     "target": "b_end5"
+    }
+   ]
+  },
+  {
+   "id": "b_end3",
+   "body": "<<FILL role=ending words=90 beats='The three actors trade Priya's old lines like they had always shared the role, and the show lands cleaner than any rehearsal.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "b_end3",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Three Voices, One Story"
+   }
+  },
+  {
+   "id": "b_end4",
+   "body": "<<FILL role=ending words=90 beats='The cast pushes through every near-miss cue without the audience catching a single one, and the show closes to warm, unaware applause.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "b_end4",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Nobody Noticed"
+   }
+  },
+  {
+   "id": "b_end5",
+   "body": "<<FILL role=ending words=90 beats='Jules quietly absorbs the trickiest exchange herself when the others falter, and afterward admits she has never felt so sure of a role.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "b_end5",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Jules Steps Up"
+   }
+  },
+  {
+   "id": "c_1",
+   "body": "<<FILL role=explore words=100 beats='Cass pitches Ms. Alvarez a bigger idea: turn the Lantern Keeper's missing scenes into ensemble narration instead of replacing the lead at all. The cast rehearses the new format under brutal time pressure, and by the second run-through it is clear the risk might not be worth it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_1_ch1",
+     "label": "Scale it back to something safer",
+     "target": "c_end1"
+    },
+    {
+     "id": "c_1_ch2",
+     "label": "Push forward with the rough new version",
+     "target": "c_end2"
+    },
+    {
+     "id": "c_1_ch3",
+     "label": "Spend the last two nights polishing it properly",
+     "target": "c_t2"
+    }
+   ]
+  },
+  {
+   "id": "c_end1",
+   "body": "<<FILL role=ending words=90 beats='Cass pulls back from the reinvention at the last minute, and the cast scrambles to patch together a simpler, safer version for opening night.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "c_end1",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Playing It Safe"
+   }
+  },
+  {
+   "id": "c_end2",
+   "body": "<<FILL role=ending words=90 beats='The reimagined show goes up rough around the edges, some ensemble moments landing and others not quite, and the night ends solid if unspectacular.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "c_end2",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Different, Not Worse"
+   }
+  },
+  {
+   "id": "c_t2",
+   "body": "<<FILL role=transition words=35 beats='Cass and Deja spend two nights tightening every new ensemble scene, cue by cue, until the format finally clicks.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_t2_ch1",
+     "label": "Continue",
+     "target": "c_2"
+    }
+   ]
+  },
+  {
+   "id": "c_2",
+   "body": "<<FILL role=climax words=100 beats='The curtain rises on opening night, and the reimagined Lantern Keeper's climax, now carried by the whole ensemble instead of one missing lead, is about to be tested live.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_2_ch1",
+     "label": "The new format wows the audience",
+     "target": "c_end3"
+    },
+    {
+     "id": "c_2_ch2",
+     "label": "Cass owns the risk in the curtain speech",
+     "target": "c_end4"
+    },
+    {
+     "id": "c_2_ch3",
+     "label": "The cast reflects on the gamble together after",
+     "target": "c_end5"
+    }
+   ]
+  },
+  {
+   "id": "c_end3",
+   "body": "<<FILL role=ending words=90 beats='The ensemble climax lands with real power, and the audience leaps to its feet for a show that turned crisis into something new.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "c_end3",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Show Reborn"
+   }
+  },
+  {
+   "id": "c_end4",
+   "body": "<<FILL role=ending words=90 beats='Cass steps out for the curtain speech and tells the audience exactly why the show changed, and the risk becomes the story people remember.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "c_end4",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Braver Version"
+   }
+  },
+  {
+   "id": "c_end5",
+   "body": "<<FILL role=ending words=90 beats='After curtain, the cast sits in a backstage circle talking through what worked and what didn't, and Cass realizes that conversation is its own kind of success.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "c_end5",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Cass Owns the Risk"
+   }
+  }
+ ]
+}

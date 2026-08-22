@@ -1,0 +1,7 @@
+{
+  "per_scene": ["no", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes", "yes"],
+  "first_yes_position": 2,
+  "same_adventure": "yes",
+  "distinctness_1_to_5": 1,
+  "strongest_signal": "Scene 2 repeats Book One's exact three-way opening choice (wait patiently for a clue / work the structure with your own hands / ask the old keeper who knew the builder), and every scene after maps one-to-one onto the same beats, hub, dial, and endings."
+}

@@ -1,0 +1,678 @@
+{
+ "schema_version": "2.0",
+ "id": "curtain-call-cass",
+ "version": 1,
+ "title": "Curtain Call Cass",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 6.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "leadership",
+   "adaptability",
+   "teamwork"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 14,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n001",
+ "nodes": [
+  {
+   "id": "n001",
+   "body": "<<FILL role=setup words=110 beats='Cass the stage manager learns lead actor Priya quit The Lunar Garden two nights before opening. Director Ms. Halpern is panicking. Cass stands in the empty auditorium staring at the stage. The cast list is pinned to the wall. The script is about a moon colony.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c001a",
+     "label": "Read the script to see if the lead part can be cut",
+     "target": "n002"
+    },
+    {
+     "id": "c001b",
+     "label": "Go find the understudy Marcus",
+     "target": "n003"
+    },
+    {
+     "id": "c001c",
+     "label": "Talk to Ms. Halpern about her backup plan",
+     "target": "n004"
+    }
+   ]
+  },
+  {
+   "id": "n002",
+   "body": "<<FILL role=explore words=115 beats='Cass reads the script in the front row. The Moon Gardener has long speeches in most scenes. Cutting the character leaves gaps everywhere. Cass makes notes about which minor characters could absorb lines. Simplifying the whole play may be the only way forward.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c002a",
+     "label": "Rewrite the Moon Gardener as a voice-over narrator",
+     "target": "n005"
+    },
+    {
+     "id": "c002b",
+     "label": "Split the role among three ensemble members",
+     "target": "n006"
+    },
+    {
+     "id": "c002c",
+     "label": "Cut the character and rewrite the transitions",
+     "target": "n007"
+    }
+   ]
+  },
+  {
+   "id": "n003",
+   "body": "<<FILL role=explore words=100 beats='Cass finds Marcus in the costume room staring at the lead costume. He admits he only learned Act One lines and is terrified of messing up. The costume is a complicated silver suit. Cass must decide how to help him.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c003a",
+     "label": "Run lines with Marcus right now",
+     "target": "n008"
+    },
+    {
+     "id": "c003b",
+     "label": "Suggest Marcus swap roles with someone more confident",
+     "target": "n009"
+    },
+    {
+     "id": "c003c",
+     "label": "Simplify the lead role to only key scenes",
+     "target": "n010"
+    }
+   ]
+  },
+  {
+   "id": "n004",
+   "body": "<<FILL role=explore words=105 beats='Ms. Halpern has no backup plan. She gives Cass the master spreadsheet. She says she trusts Elara most because Elara stays calm. Cass must decide how to use this information.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c004a",
+     "label": "Reorganize the whole cast from the spreadsheet",
+     "target": "n011"
+    },
+    {
+     "id": "c004b",
+     "label": "Promote Elara to the lead role immediately",
+     "target": "n013"
+    },
+    {
+     "id": "c004c",
+     "label": "Ask Ms. Halpern to direct while you fix staging",
+     "target": "n012"
+    }
+   ]
+  },
+  {
+   "id": "n005",
+   "body": "<<FILL role=decision words=105 beats='Cass pitches the narrator idea: the Moon Gardener becomes a recorded voice while actors mime. The sound booth is excited but actors are confused. Cass must decide how to allocate the remaining rehearsal time between mime and spoken scenes.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c005a",
+     "label": "Rehearse only the mime scenes",
+     "target": "n014"
+    },
+    {
+     "id": "c005b",
+     "label": "Record the narration first and test it",
+     "target": "n016"
+    }
+   ]
+  },
+  {
+   "id": "n006",
+   "body": "<<FILL role=decision words=110 beats='Cass gathers Leo, Jade, and Sam. They will each play one aspect of the Moon Gardener. Each gets a script section. Jade worries the audience will be confused by three people playing one character. Cass must decide how to present them.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c006a",
+     "label": "Give them matching costumes to read as one identity",
+     "target": "n017"
+    },
+    {
+     "id": "c006b",
+     "label": "Have Leo lead with the others as echo voices",
+     "target": "n019"
+    }
+   ]
+  },
+  {
+   "id": "n007",
+   "body": "<<FILL role=decision words=100 beats='Cass crosses out the Moon Gardener from every page. The play focuses on colony engineers. The set designer points out the garden set pieces are already built and would be wasted. Cass must decide what to do with the garden.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c007a",
+     "label": "Keep the garden set as a silent memorial backdrop",
+     "target": "n020"
+    },
+    {
+     "id": "c007b",
+     "label": "Write a new subplot using the garden set",
+     "target": "n022"
+    }
+   ]
+  },
+  {
+   "id": "n008",
+   "body": "<<FILL role=transition words=105 beats='Cass and Marcus run lines until late evening. He knows every line now. Ms. Halpern hears him deliver the final monologue and her jaw drops. Marcus is exhausted but confident. The show might work with him.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c008a",
+     "label": "Give Marcus full dress rehearsal tomorrow",
+     "target": "e001"
+    },
+    {
+     "id": "c008b",
+     "label": "Let Marcus rest and skip dress rehearsal",
+     "target": "e002"
+    }
+   ]
+  },
+  {
+   "id": "n009",
+   "body": "<<FILL role=decision words=100 beats='Diego offers to take the lead if he can sing a song he wrote. Marcus looks relieved. The choreographer groans. Cass must decide whether to let Diego insert his song into the show.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c009a",
+     "label": "Let Diego insert his song and re-block the scene",
+     "target": "e003"
+    },
+    {
+     "id": "c009b",
+     "label": "Find a third actor willing to take the role",
+     "target": "n028"
+    }
+   ]
+  },
+  {
+   "id": "n010",
+   "body": "<<FILL role=decision words=105 beats='Cass marks only the essential emotional scenes for Marcus. The rest will be conveyed by lighting and sound. The sound crew needs time. Cass must allocate the final day between sound creation and rehearsal.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c010a",
+     "label": "Give the sound crew the whole afternoon alone",
+     "target": "e004"
+    },
+    {
+     "id": "c010b",
+     "label": "Ask actors to help make sound effects",
+     "target": "e005"
+    }
+   ]
+  },
+  {
+   "id": "n011",
+   "body": "<<FILL role=explore words=110 beats='Cass sits with the spreadsheet. Priya was the best singer and no one else matches. Cass must fill the singing parts with three actors blending together. She draws lines to reassign parts on a blank paper.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c011a",
+     "label": "Assign songs to a trio and rehearse harmonies",
+     "target": "e006"
+    },
+    {
+     "id": "c011b",
+     "label": "Cut songs entirely and replace with spoken poetry",
+     "target": "e007"
+    }
+   ]
+  },
+  {
+   "id": "n012",
+   "body": "<<FILL role=transition words=100 beats='Cass persuades Ms. Halpern to run acting drills while Cass redraws blocking. Cass designs a simple grid with minimal movement. The actors learn it in one hour. The show looks clean and organized.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c012a",
+     "label": "Rest in the afternoon before opening night",
+     "target": "e008"
+    },
+    {
+     "id": "c012b",
+     "label": "Polish the opening sequence one more time",
+     "target": "e009"
+    }
+   ]
+  },
+  {
+   "id": "n013",
+   "body": "<<FILL role=transition words=105 beats='Elara steps into the lead with quiet determination. She learns fast, asking questions about motivation. By evening she knows the first act and half the second. She is not flashy but believable and steady.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c013a",
+     "label": "Let Elara perform with her natural quiet style",
+     "target": "e010"
+    },
+    {
+     "id": "c013b",
+     "label": "Coach Elara to be bigger and project more",
+     "target": "e011"
+    }
+   ]
+  },
+  {
+   "id": "n014",
+   "body": "<<FILL role=transition words=105 beats='All rehearsal goes to mime. Actors spend hours learning slow motion. Spoken scenes get no rehearsal. The tech run is rough and actors forget positions twice. Cass must decide whether to add an overnight line run.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c014a",
+     "label": "Add a quick line run for spoken scenes overnight",
+     "target": "e012"
+    },
+    {
+     "id": "c014b",
+     "label": "Trust the mime and hope spoken scenes hold",
+     "target": "e013"
+    }
+   ]
+  },
+  {
+   "id": "n016",
+   "body": "<<FILL role=explore words=105 beats='Cass and sound crew record the narration. They try three voices and settle on a calm echoey one. It sounds magical over the speakers. Actors hear it and get excited. The mime sequences now feel centered.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c016a",
+     "label": "Run the full show with the recording now",
+     "target": "e014"
+    }
+   ]
+  },
+  {
+   "id": "n017",
+   "body": "<<FILL role=climax words=100 beats='Cass finds three identical silver jackets. The trio puts them on and looks like one character split into three bodies. The costume designer sews matching moon patches. They practice moving in synch and it looks choreographed.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c017a",
+     "label": "Use the orbiting motif throughout the whole play",
+     "target": "e015"
+    },
+    {
+     "id": "c017b",
+     "label": "Use the motif only in key scenes for impact",
+     "target": "e016"
+    }
+   ]
+  },
+  {
+   "id": "n019",
+   "body": "<<FILL role=climax words=100 beats='Leo carries the main lines while Jade and Sam echo key words from behind him. The echo sounds eerie and beautiful. Other cast members stop to listen. The technique makes the Moon Gardener feel magical.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c019a",
+     "label": "Add microphones to amplify the echo effect",
+     "target": "e017"
+    },
+    {
+     "id": "c019b",
+     "label": "Keep the echoes natural without tech support",
+     "target": "e018"
+    }
+   ]
+  },
+  {
+   "id": "n020",
+   "body": "<<FILL role=climax words=100 beats='The garden set becomes a silent memorial. Characters walk past it and pause. The lighting crew designs soft blue light. Actors whisper their lines near it. The effect is unexpectedly moving in rehearsal.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c020a",
+     "label": "Focus the final act on the garden to use it fully",
+     "target": "e019"
+    },
+    {
+     "id": "c020b",
+     "label": "Keep the garden as background without changes",
+     "target": "e020"
+    }
+   ]
+  },
+  {
+   "id": "n022",
+   "body": "<<FILL role=climax words=105 beats='Cass writes a new subplot where two engineers secretly tend the Moon Garden. Two actors who lost scenes now have a storyline about rebellion and hope. The subplot fits neatly into existing scenes. The actors are thrilled.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c022a",
+     "label": "Expand the subplot to be the emotional heart",
+     "target": "e021"
+    },
+    {
+     "id": "c022b",
+     "label": "Keep the subplot small so it does not overwhelm",
+     "target": "e022"
+    }
+   ]
+  },
+  {
+   "id": "n028",
+   "body": "<<FILL role=climax words=100 beats='Cass finds Kaito knows lead lines from helping Priya. Kaito is quiet and never wanted a big role but agrees to try. His quiet delivery makes the Moon Gardener feel wise and mysterious.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c028a",
+     "label": "Rewrite the role to match Kaito's quiet style",
+     "target": "e023"
+    },
+    {
+     "id": "c028b",
+     "label": "Ask Kaito to try a louder dramatic performance",
+     "target": "e024"
+    }
+   ]
+  },
+  {
+   "id": "e001",
+   "body": "<<FILL role=ending words=105 beats='Marcus arrives for dress rehearsal in the full silver costume. He delivers every line perfectly. The cast watches from the wings in awe. Ms. Halpern hugs Cass and whispers this is better than the original. Cass sends everyone home. On opening night Marcus takes his bow to a standing ovation.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end001",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Marcus Rises"
+   }
+  },
+  {
+   "id": "e002",
+   "body": "<<FILL role=ending words=105 beats='Marcus skips dress rehearsal. The dress run happens with an understudy while Marcus mouths lines from the front row. On opening night he walks on stage untested. He misses a cue but recovers. By Act Three he is magnificent. The gamble pays off.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end002",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Trust Rewarded"
+   }
+  },
+  {
+   "id": "e003",
+   "body": "<<FILL role=ending words=105 beats='Diego brings his guitar and plays his song about a lonely moon. The melody is beautiful and the cast stops to listen. On opening night the song becomes the closing number. The whole cast gathers around him holding small lights like stars. The audience bursts into applause.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end003",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Last Chord"
+   }
+  },
+  {
+   "id": "e004",
+   "body": "<<FILL role=ending words=105 beats='The sound crew gets a whole afternoon alone. They build a full soundscape of wind, chimes, and mechanical hums. The auditorium sounds like a real moon colony. On opening night the soundscape debuts and transports the audience.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end004",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Living Soundscape"
+   }
+  },
+  {
+   "id": "e005",
+   "body": "<<FILL role=ending words=100 beats='Actors help the sound crew shake metal sheets for thunder and whisper into microphones. The shared work builds morale. On opening night the audience sees actors doing double duty. The backstage becomes part of the visible magic.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end005",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Visible Magic"
+   }
+  },
+  {
+   "id": "e006",
+   "body": "<<FILL role=ending words=105 beats='Cass picks three actors to form a harmony trio. They practice in the music room with the choir teacher. Their voices blend well and songs sound richer than Priya alone. On opening night the trio rises on platforms. The audience is transported.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end006",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Rising Voices"
+   }
+  },
+  {
+   "id": "e007",
+   "body": "<<FILL role=ending words=100 beats='Cass replaces each song with a short spoken poem. Poems are about the moon, loneliness, and hope. Actors nervous about singing are relieved. On opening night the poems are performed in silence. Every word is clear. The starkness is powerful and brave.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end007",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Stark and Brave"
+   }
+  },
+  {
+   "id": "e008",
+   "body": "<<FILL role=ending words=105 beats='The cast rests all afternoon. Cass paces the empty auditorium checking every light cue one last time. The doors open. The audience fills the seats. Cass says nothing more. The lights go down. At the curtain call the cast looks to the booth and Cass raises a hand. They bow to her.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end008",
+    "valence": "positive",
+    "kind": "success",
+    "title": "They Bow to Cass"
+   }
+  },
+  {
+   "id": "e009",
+   "body": "<<FILL role=ending words=100 beats='The opening sequence gets one more polish. Actors refine their entrances and first lines land cleanly. The show starts with confidence. Cass rests knowing the opening is strong. On opening night the confident start carries the whole show.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end009",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Confident Start"
+   }
+  },
+  {
+   "id": "e010",
+   "body": "<<FILL role=ending words=105 beats='Elara performs the lead with her natural quiet strength. She does not shout but her stillness commands attention. The Moon Gardener becomes a serene center the colony orbits. On opening night the audience is spellbound. She speaks a quiet final speech and the room is silent before erupting.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end010",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Quiet Finale"
+   }
+  },
+  {
+   "id": "e011",
+   "body": "<<FILL role=ending words=100 beats='Cass coaches Elara to be bigger. She works hard and improves. Her performance becomes more theatrical while retaining sincerity. On opening night she fills the auditorium with her voice. The audience feels her courage. She takes her bow to especially loud applause.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end011",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Elara's Courage"
+   }
+  },
+  {
+   "id": "e012",
+   "body": "<<FILL role=ending words=105 beats='Cass gathers the whole cast and runs spoken scenes until midnight. Lines are shaky but actors support each other. The show is whole and everyone knows their place. On opening night Cass watches from the booth. The show runs smoothly. Every cue she calls is on time.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end012",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "From the Booth"
+   }
+  },
+  {
+   "id": "e013",
+   "body": "<<FILL role=ending words=100 beats='Cass trusts the mime. The cast goes home early to rest. Cass stays alone in the booth running light cues and whispering lines to an empty stage. On opening night the cast arrives fresh. The relaxed energy carries the show. Warmth fills the auditorium.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end013",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Relaxed and Real"
+   }
+  },
+  {
+   "id": "e014",
+   "body": "<<FILL role=ending words=105 beats='Cass and sound crew edit until two in the morning. The recording matches every scene perfectly. The crew goes home exhausted but satisfied. On opening night the recording plays flawlessly. The mime and voice become one. The audience is transported.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end014",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Perfect Sync"
+   }
+  },
+  {
+   "id": "e015",
+   "body": "<<FILL role=ending words=100 beats='The orbiting motif repeats in every scene. The trio circles each other and other actors. By the end the audience understands the circling as the colony's rhythm. The whole cast joins the final orbit. The lights fade as the circle turns.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end015",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Colony Orbits"
+   }
+  },
+  {
+   "id": "e016",
+   "body": "<<FILL role=ending words=100 beats='The orbiting motif appears only three times: the beginning, the emotional low, and the end. The restraint makes each appearance special. The audience notices the pattern and feels its significance. The subtlety rewards attention.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end016",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Three Orbits"
+   }
+  },
+  {
+   "id": "e017",
+   "body": "<<FILL role=ending words=100 beats='Wireless microphones amplify the echoes. Jade and Sam's voices come from speakers around the auditorium. The sound swirls around the audience. The effect is immersive and unlike anything the school has done before.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end017",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Surround Sound"
+   }
+  },
+  {
+   "id": "e018",
+   "body": "<<FILL role=ending words=100 beats='Jade and Sam project from the stage with natural voices. The quiet echoes make the Moon Gardener feel intimate and fragile. The audience listens carefully. The subtlety is beautiful. People debate after whether they heard one voice or three.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end018",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "One Voice or Three"
+   }
+  },
+  {
+   "id": "e019",
+   "body": "<<FILL role=ending words=105 beats='Cass rewrites the final act so engineers decide whether to restore the garden. One by one they place prop flowers in the garden bed. The last flower is placed by the youngest actor. The lights warm and the garden glows. The audience rises before the lights fade.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end019",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Garden Blooms"
+   }
+  },
+  {
+   "id": "e020",
+   "body": "<<FILL role=ending words=100 beats='The garden stays as a silent backdrop. The engineers' story plays out in front of it. The garden watches over the whole play like a ghost of the missing character. The final image is the garden lit in steady silver light.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end020",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Silent Watcher"
+   }
+  },
+  {
+   "id": "e021",
+   "body": "<<FILL role=ending words=105 beats='Cass expands the subplot until it becomes the main storyline. The two engineers carry the emotional weight. Their secret garden becomes a symbol of hope the colony rallies around. On opening night the garden is revealed to all. The colonists touch the plants with wonder.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end021",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Secret Shared"
+   }
+  },
+  {
+   "id": "e022",
+   "body": "<<FILL role=ending words=100 beats='The garden subplot stays small, woven between main scenes. The two actors get their moments but the original story still drives the play. The balance feels right. No storyline overwhelms the others. The garden's warmth lingers to the end.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end022",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Perfect Balance"
+   }
+  },
+  {
+   "id": "e023",
+   "body": "<<FILL role=ending words=105 beats='Cass rewrites the Moon Gardener to speak in short quiet lines like poetry. Kaito delivers them with stillness. On opening night his quiet delivery draws the audience in. They lean forward to catch every word. Kaito takes his bow to thunderous applause.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end023",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Kaito's Voice"
+   }
+  },
+  {
+   "id": "e024",
+   "body": "<<FILL role=ending words=100 beats='Cass coaches Kaito to be louder. By dress rehearsal his voice reaches the back row while staying gentle. On opening night his growth is visible and moving. The audience is drawn in by his journey.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end024",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Growing Stronger"
+   }
+  }
+ ]
+}
