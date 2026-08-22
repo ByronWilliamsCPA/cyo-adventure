@@ -11,7 +11,9 @@ selection matters.
 
 > Evidence classes, used throughout: **deterministic** (a script anyone can re-run), **model-judged**
 > (blind LLM raters, the weak class), and **human-gated** (a person approved it). Every load-bearing
-> claim below names its class and its artifact.
+> claim below names its class and its artifact. Where a passage is labelled **owner practice**, it
+> is none of the three: it records what the owner currently does, carries no measurement behind it,
+> and must not be read as evidence that the practice is right.
 
 ---
 
@@ -28,8 +30,15 @@ different capabilities:
   fidelity to what each node was commissioned to do. This is generation under constraint, where
   quality is judged, not computed.
 
-The scale makes one-pass generation untenable: the catalog spans 61 graphs and 11,458 nodes, from
-~800-word books at ages 3-5 to a 677-node, ~118,000-word graph at 16+. The product constraints make
+The scale makes one-pass generation untenable: the catalog spans 84 graphs and 15,470 nodes, from
+~800-word books at ages 3-5 to a 677-node graph at 16+ commissioning 42,233 words
+(`skeletons/16+/the-tenfold-siege.json`); the largest single fill is a different book,
+`skeletons/16+/the-last-cartage.json`, at 632 nodes and 49,953 commissioned words. Deterministic,
+recounted against `origin/main` on 2026-08-22 excluding the `.contract.json`, `.lineage.json`, and
+`.narrative.json` sidecars. Earlier drafts said "61 graphs and 11,458 nodes", which was true on
+2026-08-12 and was carried forward without re-running, and "~118,000 words", which was never a
+commissioned total: it is 677 nodes times the 16+ band's nominal 175 words per node, against actual
+`<<FILL words=>>` budgets averaging 62.4. The product constraints make
 shortcuts untenable: this is a children's app, so every published book passes deterministic safety
 and structure gates plus mandatory human approval (ADR-005), and unit economics cap what any one
 book may cost to produce.
@@ -56,9 +65,14 @@ authored, validated, and reviewed separately from the prose that fills it. Every
 (validation, model selection, cost control, reuse policy) depends on this split.
 
 **F2. Deterministic gates come first, and they are floors, not scores.** Structure, budgets,
-reading level, safety classification, and graph soundness are checked by code before any model or
-human judges anything. Because of finding 2 above, every gate is paired with a delivery measurement
-(fill rate, word delivery) so a hollow pass is visible.
+reading level, and graph soundness are checked by code before any model or human judges anything.
+Because of finding 2 above, every gate is paired with a delivery measurement (fill rate, word
+delivery) so a hollow pass is visible. Safety is the exception and does not belong in that list:
+the gate's safety seam runs on every story (`validator/gate.py:72,213`) but its body is a Phase-2
+no-op returning an empty report (`validator/safety.py:41-57`), so `GateResult.safety_flagged` is
+structurally always `False`. Deterministic safety classification is unbuilt. What protects a child
+today is the moderation classifiers, the LLM reviewer, and mandatory human approval, which are the
+model-judged and human-gated classes, not this one.
 
 **F3. Put the checker in the author's loop.** The single largest quality lever we have measured is
 not model choice but authoring regime: blind generate-and-repair produced 2 strict passes in 21
@@ -66,10 +80,13 @@ attempts across seven models; the same models with permission to run the validat
 passed 12 of 21 at ages 5-8 and 15 of 21 at ages 10-13 (section 4.2). Structure authoring is
 tool-use, not text generation.
 
-**F4. Select models per stage, not per pipeline.** The best prose model measured (DeepSeek V4 Pro)
-is the worst structure author measured (0 of 6 tool-assisted passes across two cells, with two
-distinct failure modes). The cheap tier of the same family is a competent first-pass reviewer. One
-model choice per book is a category error; the authoring plan needs a model per stage.
+**F4. Select models per stage, not per pipeline.** The cheapest prose model measured per delivered
+book (DeepSeek V4 Pro, $0.0398) is the worst structure author measured (0 of 6 tool-assisted passes
+across two cells, with two distinct failure modes). It is not the best-judged prose model: on the
+blind panel it placed fifth of eight at -0.13 z, behind `anthropic-sonnet-5` (+0.69, n=3),
+`xai-grok-4.6` (+0.61), `openai-gpt-5.6-sol` (+0.38), and `anthropic-sonnet-4.6` (+0.14). The cheap
+tier of the same family is a competent first-pass reviewer. One model choice per book is a category
+error; the authoring plan needs a model per stage.
 
 **F5. Reuse structure freely; never reuse decisions; generate the decisional layer per book.** The
 stratified-plan result: topology and a bare-names fact graph can be shared across books without
@@ -123,7 +140,12 @@ gates and review sit between the fill and the human who approves publication.
 
 ### 3.2 Skeleton checks
 
-`scripts/check_skeleton.py --strict` is the authoring bar; `uv run` it on any shell:
+`scripts/check_skeleton.py --strict` is the authoring bar; `uv run` it on any shell. `--strict` is
+an authoring-time convention, not a gate: the CI promotion path
+(`.github/workflows/skeleton-promotion.yml` via `scripts/check_promotion_bundle.py`) invokes
+`check_skeleton.py` without it, so what `--strict` adds (advisory rule ids made blocking, grammar
+enforcement, the random-walk floor, the reconvergence cap, the length declaration, and the endings
+floor) is enforced by the author, not by CI.
 
 - **Layer 1 structure**: schema conformance, reference integrity, reachability, termination, and
   per-cell budgets (node count, branch depth, ending count, words-per-node envelope).
@@ -134,8 +156,11 @@ gates and review sit between the fill and the human who approves publication.
   choice-grammar rows (CG-1 single-choice cadence, CG-3 words-per-stop).
 - **Reader-experience floors**: a random-walk satisfying-ending probability floor per band, a max
   in-degree reconvergence cap, and a depth-qualified endings floor.
-- **Anti-clone**: `structural_distance` against every in-cell tree must clear `TAU_CELL` (0.05,
-  calibrated in `docs/planning/ws5_floor_baseline.json`).
+- **Anti-clone**, which is a separate check rather than part of `check_skeleton.py`:
+  `structural_distance` against every in-cell tree must clear `TAU_CELL` (0.05, calibrated in
+  `docs/planning/ws5_floor_baseline.json`). It lives in `src/cyo_adventure/mutation/floors.py` and
+  runs from `scripts/check_promotion_bundle.py` (the CI promotion path) and from the mutation
+  acceptance ladder.
 - **Graph soundness** independent of the gate: `scripts/check_graph_structure.py` classifies six
   failure modes and repairability.
 
@@ -159,10 +184,16 @@ gates and review sit between the fill and the human who approves publication.
 - **The story gate** (`scripts/run_story_gate.py`, `validator/`): Layer 1 and Layer 2 rules,
   reading level against the band target, safety findings, and band-profile conformance. Blocking
   findings stop the book; advisories are recorded.
-- **Delivery measurements**, because of F2's floor problem: `check_fill_integrity.py` enforces a
-  minimum fill rate (0.6, calibrated so the `UW-C307` under-delivering books fail), and
-  `check_sibling_fills.py` measures shared 4-grams against same-skeleton siblings (budget 4.0 per
-  1000; production wiring of this check is open work, `UW-C315`).
+- **Delivery measurements**, because of F2's floor problem, and both are offline scripts rather
+  than pipeline stages: `scripts/check_fill_integrity.py` applies a minimum fill rate (0.6,
+  calibrated so the `UW-C307` under-delivering books fail) and `scripts/check_sibling_fills.py`
+  measures shared 4-grams against same-skeleton siblings (budget 4.0 per 1000). Neither is called
+  from `src/`; their only programmatic invoker is `scripts/run_guard_battery.py`, a hand-run dev
+  harness that no CI workflow or pre-commit hook references. The only delivery check the request
+  path performs today is the Stage-1 fidelity gate's per-node `_WORD_COUNT_TOLERANCE = 0.4`
+  (`generation/fidelity.py:28-30`), described by its own comment as "a generous starting tolerance,
+  not calibrated against real fill runs yet", and it cannot see a story-level shortfall. Production
+  wiring of both checks is open work (`UW-C307`, `UW-C315`).
 - **Craft checks**: `check_prose_craft.py` (tense, told-emotion, moral tags) and the per-path
   measures used in evaluation.
 
@@ -182,9 +213,23 @@ gates and review sit between the fill and the human who approves publication.
 
 ### 4.1 Fill-stage model selection (2026-08 vendor comparison and live runs)
 
-Six legs across five labs, backend-pinned with fallbacks disabled, blind cross-lab judging
-(`docs/planning/vendor-comparison/`): model choice measurably moves prose quality, and DeepSeek V4
-Pro emerged as the best judged prose at roughly a fifth the cost of the premium Western legs. The
+Eight legs across six labs measured, blind cross-lab judging
+(`docs/planning/vendor-comparison/`): model choice measurably moves prose quality. Two corrections
+to how this section previously read. First, "six legs across five labs, backend-pinned with
+fallbacks disabled" describes the slate approved on 2026-08-12 (`vendors.json`), not the one
+measured. Moonshot `kimi-k3` never delivered (one priced call, n=1, no usable book), so Moonshot is
+not among the six labs, and `deepseek-v4-pro`, `z-ai-glm-5.2`, and `google-gemini-3-flash` were
+added. The pinning claim holds for six of the eight legs: no `vendors-*.json` on `main` carries
+backend pins for `z-ai-glm-5.2` or `google-gemini-3-flash`.
+
+Second, DeepSeek V4 Pro did not emerge as the best judged prose. It is the cheapest leg per
+delivered book ($0.0398) and it placed fifth of eight on the blind panel (-0.13 z). The measured
+trade, in the 2026-08-10 brief's own words (section 31), is against `xai-grok-4.6`, which holds the
+best within-vendor diversity (0.81), the best in-band compliance (0.99), and the second-best judged
+quality (+0.61) at $0.1963 a book: DeepSeek is 4.9x cheaper and "gives up 0.14 of in-band rate and
+0.74 of judged quality to get there". Both figures are differences between legs, not levels. Cost
+and diversity are near-uncorrelated across the slate (Spearman rho -0.11), so a cheap leg is not
+thereby a narrow one. The
 same programme produced two cautionary results: the fp4-quantization headline did not survive
 scrutiny (one bad book, not a quantization effect; README run-6), and the live fill run surfaced
 the fill-rate hole (38.9-52.9% delivery through a passing gate, `AL-490`..`AL-498`), which is why
@@ -219,9 +264,13 @@ does not: blind authoring at any tier; DeepSeek V4 Pro as a structure author (0/
 failing by structural churn and by losing JSON discipline in multi-turn repair); and the checker's
 PL-18 message, which cost three legs grid points by naming the admissible set without saying why
 the graph is not tree-shaped (`AL-514`, fix proposed; the brief-side menu defect is `UW-C306`).
-Consequence for the product: fill with V4 Pro, author structure with a tool-assisted Anthropic
-tier, review first-pass with V4 Flash; per-stage model selection in the authoring plan is the
-enabling change.
+Proposed consequence for the product, not a recorded decision: author structure with a
+tool-assisted Anthropic tier, and review first-pass with V4 Flash. The fill-stage assignment is
+deliberately left open. The reasoning that previously read "fill with V4 Pro" rested on the
+best-judged-prose claim corrected in section 4.1; V4 Pro is the cheap end of a cost-versus-quality
+trade rather than the quality end of it, so which leg fills is a live question for the owner rather
+than a finding of this brief. Per-stage model selection in the authoring plan is the enabling
+change either way.
 
 ### 4.3 Diversity: ten designs, three levers that failed, one that stands
 
@@ -241,9 +290,14 @@ The S0-S9 history (2026-08-10 brief, section 4) plus this programme's follow-ups
   dominant leak (D-7b: deleting 422 gloss words moved sharing from 13.6 to 2.3 per 1000); and the
   stratified plan follows: share the wordless structural stratum, generate `choice_semantics`,
   beats, devices, and stakes per book (the architecture re-specification).
-- **Capital facts**: a child exhausts a cell by roughly the fourth request at 3-4 skeletons per
-  cell (Q-1), so full-skeleton reuse is bounded by depth against demand; and premise convergence
-  is invariant across tiers within a family (Q-3c), so premise curation is a control, not a nicety.
+- **Capital facts**: full-skeleton reuse is bounded by depth against demand, and premise
+  convergence is invariant across tiers within a family (Q-3c), so premise curation is a control,
+  not a nicety. Q-1's exhaustion arithmetic needs re-deriving before it is quoted again. At the
+  2026-08-22 catalog the production-eligible count is 74 shells over 18 of 24 cells, 3 to 5 per
+  covered cell with a median of 4, six cells empty; the exclusions are 3 shells not marked
+  production-eligible, 6 deprecated, and 1 series continuation. The direction is unchanged, a child
+  still exhausts a covered cell within a handful of requests, but the "3-4 skeletons per cell"
+  figure the conclusion was computed on no longer describes the catalog (`UW-G24`).
 
 ### 4.4 Instruments: what we can trust
 
