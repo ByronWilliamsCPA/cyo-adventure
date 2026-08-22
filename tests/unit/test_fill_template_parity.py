@@ -238,3 +238,26 @@ def test_no_fill_template_refreezes_a_writable_leaf(
         f"{name} still says {match.group(0)!r}, which contradicts the clause "
         f"granting the rewrite: {why}."
     )
+
+
+@pytest.mark.parametrize("name", FILL_TEMPLATES)
+def test_no_template_states_a_shared_clause_twice(name: str) -> None:
+    """A heading must appear once per template, so parity compares the real body.
+
+    ``_clause_body`` uses ``re.search``, which returns the FIRST match, so a
+    template carrying a heading twice is compared on its first copy and its
+    second is invisible to every other check in this module. That is not
+    hypothetical: two independent series both added ``## Narrative person`` to
+    ``fill_subset.md`` at different insertion points, git merged both without a
+    conflict, and the identical-body test above kept passing on the first copy
+    while the model received the clause twice in one prompt, in two different
+    wordings (PR #737 review-fix pass). Duplicate headings are checked for
+    every heading, not just the shared ones, since the failure is structural.
+    """
+    headings = re.findall(r"^#{2,4} (.+)$", _read(name), re.MULTILINE)
+    repeated = sorted({h for h in headings if headings.count(h) > 1})
+    assert not repeated, (
+        f"{name} states these headings more than once: {repeated}. The clause "
+        f"reaches the model twice and every parity check here silently "
+        f"compares only the first copy."
+    )

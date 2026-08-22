@@ -807,11 +807,13 @@ async def test_compare_vendors_defaults_to_an_undirected_fill() -> None:
 @pytest.mark.asyncio
 async def test_compare_vendors_rejects_a_directive_count_mismatch() -> None:
     """One directive for two briefs is a programming error, not a per-book fault."""
+    vendors = [Vendor(label="alpha", model="mock", provider_order=())]
+
     with pytest.raises(ValueError, match="pair index-wise"):
         await run_comparison(
             [{"id": "sk-a"}, {"id": "sk-b"}],
             [{"setting": "a"}, {"setting": "b"}],
-            [Vendor(label="alpha", model="mock", provider_order=())],
+            vendors,
             directives=["only-one"],
         )
 
