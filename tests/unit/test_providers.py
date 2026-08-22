@@ -388,11 +388,40 @@ class TestOpenRouterProvider:
         the raw cause of every zero-content stop: 4 of 15 live (skeleton,
         brief) pairs were lost to `content_filter` or finish_reason=None
         replies journalled only as "transient failure persisted"
-        (AL-492/AL-501/UW-C309). An empty 200 whose finish_reason is
-        `content_filter` must surface that reason in the raised message.
+        (AL-492/AL-501/UW-C309). An empty 200 with finish_reason None (the
+        predecessor's book-0 signature) must surface that shape in the raised
+        message. The `content_filter` shape has its own earlier stop now
+        (UW-C324) and is tested separately.
         """
 
         def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(
+                200,
+                json={"choices": [{"message": {"content": ""}}]},
+            )
+
+        provider = _openrouter(handler, max_retries=2)
+        with pytest.raises(
+            ProviderError,
+            match=r"persisted after 2 attempts \(last: .*finish_reason=None",
+        ) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_a_second_content_filter_stop_ends_the_leg(self) -> None:
+        """UW-C324 interim (ruled 2026-08-21): two filter stops, never three.
+
+        The filter fires on the (skeleton, brief) pair and the measured third
+        identical attempt bought nothing, so the second zero-content
+        `content_filter` stop raises leg-fatal, spending exactly two calls of
+        a three-retry budget.
+        """
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
             return httpx.Response(
                 200,
                 json={
@@ -405,13 +434,48 @@ class TestOpenRouterProvider:
                 },
             )
 
-        provider = _openrouter(handler, max_retries=2)
+        provider = _openrouter(handler, max_retries=3)
         with pytest.raises(
-            ProviderError,
-            match=r"persisted after 2 attempts \(last: .*content_filter",
+            ProviderError, match=r"content_filter.*2.*times.*re-anchor"
         ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert exc_info.value.leg_fatal is False
+        assert exc_info.value.leg_fatal is True
+        assert calls == 2
+
+    @pytest.mark.asyncio
+    async def test_one_filter_stop_then_success_still_succeeds(self) -> None:
+        """A single filter stop stays retryable: intermittent rescues are real."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                return httpx.Response(
+                    200,
+                    json={
+                        "choices": [
+                            {
+                                "message": {"content": ""},
+                                "finish_reason": "content_filter",
+                            }
+                        ]
+                    },
+                )
+            return httpx.Response(
+                200,
+                json={
+                    "choices": [
+                        {"message": {"content": "ok"}, "finish_reason": "stop"}
+                    ],
+                    "usage": {"prompt_tokens": 1, "completion_tokens": 1},
+                },
+            )
+
+        provider = _openrouter(handler, max_retries=3)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result.text == "ok"
+        assert calls == 2
 
     @pytest.mark.asyncio
     async def test_a_400_surfaces_the_providers_structured_diagnostic(self) -> None:

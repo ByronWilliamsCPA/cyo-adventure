@@ -60,6 +60,18 @@ _Effort = Literal["off", "low", "medium", "high"]
 # hostile or degenerate error body cannot balloon logs.
 _ERROR_DETAIL_MAX_CHARS = 240
 
+# The exact substring ``_empty_content_message`` renders for a zero-content
+# `content_filter` stop (``finish_reason={value!r}``), matched by the
+# `UW-C324` interim retry cap in ``complete``. A structured field would be
+# cleaner, but the message is authored two functions away in this module and
+# the repr form is deterministic.
+_CONTENT_FILTER_MARKER = "finish_reason='content_filter'"
+
+# Zero-content `content_filter` stops tolerated per prompt before the leg is
+# ended (`UW-C324` interim, ruled 2026-08-21): the measured third identical
+# attempt bought nothing.
+_MAX_CONTENT_FILTER_STOPS = 2
+
 
 def _error_detail(response: httpx.Response) -> str:
     """Extract the structured provider error message from a failed response.
@@ -292,8 +304,42 @@ class OpenRouterProvider:
         }
         url = f"{self._base_url}/chat/completions"
 
+        # Interim `UW-C324` policy (ruled 2026-08-21, section 9.5 of
+        # live-structural-round-2026-08-21.md): identical retries cap at TWO
+        # for zero-content `content_filter` stops. The filter fires on the
+        # (skeleton, brief) PAIR and the measured third identical attempt
+        # bought nothing (one pair failed 7 of 7 across runs; the one
+        # intermittent rescue landed on a fresh call, not attempt three), so
+        # the second stop ends the leg. The production design is re-anchoring
+        # the request to a different pairing, which lives above this adapter.
+        filter_stops = 0
+
+        async def attempt() -> Completion:
+            nonlocal filter_stops
+            try:
+                return await self._attempt(url, body, headers)
+            except ProviderError as exc:
+                if not exc.leg_fatal and _CONTENT_FILTER_MARKER in str(exc):
+                    filter_stops += 1
+                    if filter_stops >= _MAX_CONTENT_FILTER_STOPS:
+                        msg = (
+                            "openrouter returned zero content with "
+                            f"finish_reason='content_filter' {filter_stops} "
+                            "times for this prompt; the filter fires on the "
+                            "(skeleton, brief) pair, so further identical "
+                            "retries are withheld (UW-C324); re-anchor the "
+                            "request instead"
+                        )
+                        raise ProviderError(
+                            msg,
+                            provider="openrouter",
+                            model=self._model,
+                            leg_fatal=True,
+                        ) from exc
+                raise
+
         return await run_with_retries(
-            lambda: self._attempt(url, body, headers),
+            attempt,
             provider="openrouter",
             model=self._model,
             max_retries=self._max_retries,
