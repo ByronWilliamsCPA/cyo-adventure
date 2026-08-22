@@ -201,7 +201,7 @@ entity "storybook_version" as storybook_version #F3E5F5 {
   published_at : TIMESTAMPTZ NULL
   model : VARCHAR(120) NULL [LLM model id]
   prompt_version : VARCHAR(120) NULL
-  provider : VARCHAR(120) NULL [mock|anthropic|openrouter|modal|import] (ollama pre-retirement)
+  provider : VARCHAR(120) NULL [mock|anthropic|openrouter|modal|import] (ollama on pre-retirement rows)
   skeleton_slug : VARCHAR(120) NULL [WS-C PR2 provenance]
   created_at : TIMESTAMPTZ
   cover_image_url : VARCHAR(512) NULL

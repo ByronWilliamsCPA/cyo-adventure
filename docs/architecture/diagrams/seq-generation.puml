@@ -76,7 +76,7 @@ else leg-fatal failure (401/400)
     or_provider_fb --> fallback : "HTTP 401/400"
     fallback -> fallback : "mark leg 2 dead\nfail over to leg 3"
     fallback -> modal_leg : "attempt leg 3 (Modal)"
-    ol_provider --> fallback : "raw text"
+    modal_leg --> fallback : "raw text"
   else leg 2 succeeds
     or_provider_fb --> fallback : "raw text"
   end

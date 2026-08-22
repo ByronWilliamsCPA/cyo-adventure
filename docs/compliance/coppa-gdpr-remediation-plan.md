@@ -45,13 +45,18 @@ specific, fixable gaps. Verified directly at commit `66fe320`:
 ### "OpenRouter, Anthropic, and OpenAI never receive user data, they are stories only."
 
 **Mostly true for the primary generation path, with one real gap.** Every call to OpenRouter,
-Anthropic, and Modal for story text generation is wrapped by `PiiGuardedProvider`
+Anthropic, and Ollama for story text generation is wrapped by `PiiGuardedProvider`
 (`generation/guarded.py`), which calls `assert_prompt_pii_safe` (`generation/pii.py`) on the
 fully assembled prompt before it goes out. That guard checks the prompt against the family's
 *registered* real child display names (exact match, word-boundary anchored, evasion-resistant
 against zero-width/compatibility-form tricks) and would catch it even if a guardian typed the
 child's real registered name into the story's protagonist-name field, since the guard scans
 the whole assembled prompt text, not just isolated fields.
+
+**[Superseded 2026-08-18: the Ollama leg named above was retired, and Modal took its place as
+the cascade's third leg. This passage is left naming Ollama because that is what the cited
+commit `66fe320` actually verified; see ADR-003's 2026-08-18 amendment for the current provider
+roster and `PiiGuardedProvider` coverage of the Modal leg.]**
 
 **The gap**: the guard only knows about names already on file as a `child_profile` row (there is
 no birthdate to match against: `ChildProfile` has no birthdate column, by design; see 1e below).

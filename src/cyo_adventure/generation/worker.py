@@ -26,6 +26,7 @@ from __future__ import annotations
 import asyncio
 import dataclasses
 import hashlib
+import sys
 import uuid
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Literal, cast
@@ -2471,10 +2472,24 @@ async def run_generation_job(
                 await session.rollback()
                 stranded = await session.get(GenerationJob, job_id)
                 if stranded is not None and stranded.status in ("queued", "running"):
+                    # #ASSUME: data-integrity: record the exception that is
+                    # actually unwinding, not a fixed label. This guard also
+                    # catches failures raised BEFORE the inner try that
+                    # normally reports pipeline errors (build_provider is the
+                    # live example: a job enqueued with a persisted provider
+                    # override that no longer exists raises ConfigurationError
+                    # here). Those used to land as error="interrupted", which
+                    # named a cause that had not happened and hid the real one
+                    # at exactly the moment a provider retirement makes a batch
+                    # of them appear. `sys.exc_info` is empty for a true
+                    # interrupt that unwinds without an exception object, so
+                    # the old label is kept for that case.
+                    # #VERIFY: test_interrupted_job_records_the_real_cause.
+                    cause = sys.exc_info()[1] or RuntimeError("interrupted")
                     await _record_failure(
                         session,
                         stranded,
-                        RuntimeError("interrupted"),
+                        cause,
                         provider=effective_provider,
                         from_state=stranded.status,
                     )

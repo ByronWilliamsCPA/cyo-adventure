@@ -941,7 +941,16 @@ class TestEffectiveProviderPerJobOverride:
         # This proves the guard ran to completion rather than dying on an
         # UnboundLocalError before recording anything.
         assert job.status == "failed"
-        assert job.error == "interrupted"
+        # Changed 2026-08-22: the guard used to record the literal string
+        # "interrupted" for every in-flight exception, which erased the one
+        # piece of information an operator needs. It now recovers the live
+        # exception via sys.exc_info() and records its message, so a job that
+        # died on an unresolvable provider says so on its own row instead of
+        # sending the reader to the worker logs. Still discriminating: this
+        # function has no `except`, so the guard is the only writer that can
+        # reach `job.error`, and reading the ConfigurationError's own message
+        # here proves the guard both ran and saw the real cause.
+        assert job.error == "no such provider"
 
     @pytest.mark.asyncio
     async def test_fresh_generation_with_provider_override_routes_to_generate_story(

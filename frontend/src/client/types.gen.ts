@@ -218,6 +218,21 @@ export type AllowlistUpdateBody = {
  * AllowlistView
  *
  * One provider/model allowlist row.
+ *
+ * ``provider`` is a plain ``str`` here while every *request* body in this
+ * module narrows it to ``ProviderName``. That asymmetry is deliberate: a
+ * request names a backend the pipeline must be able to call, so an unknown
+ * value is a client error (422). A response reports what the row actually
+ * holds, and a row can legitimately name a retired backend during the window
+ * between a new image serving and its migration running. Narrowing this field
+ * made that window an outage: ``_view`` builds this model per row, so a single
+ * surviving ``('ollama', ...)`` row turned every allowlist read into an
+ * unhandled ``pydantic.ValidationError`` (500), including the read an admin
+ * would use to find and delete it.
+ *
+ * #CRITICAL: data-integrity: keep this wider than the request schemas. The
+ * DB CHECK constraint, not this annotation, is what bounds the column.
+ * #VERIFY: test_list_tolerates_a_retired_provider_row.
  */
 export type AllowlistView = {
     /**
@@ -227,7 +242,7 @@ export type AllowlistView = {
     /**
      * Provider
      */
-    provider: 'anthropic' | 'openrouter' | 'modal';
+    provider: string;
     /**
      * Model Id
      */

@@ -34,7 +34,10 @@ from cyo_adventure.generation.providers import (
     ModalProvider,
     OpenRouterProvider,
 )
-from cyo_adventure.generation.providers._base import strip_code_fences
+from cyo_adventure.generation.providers._base import (
+    dig_flat_reasoning_tokens,
+    strip_code_fences,
+)
 from cyo_adventure.generation.usage import Completion, TokenUsage
 
 if TYPE_CHECKING:
@@ -956,6 +959,24 @@ class TestModalProviderBranches:
         )
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
         assert result.text == "ok"
+
+
+class TestDigFlatReasoningTokens:
+    """Direct unit tests for ``dig_flat_reasoning_tokens`` (``_base.py``).
+
+    Mirrors the None-vs-zero discipline the existing (indirect)
+    ``dig_reasoning_tokens`` coverage in ``test_openrouter_provider_pin.py``
+    expresses: an absent block must read as unknown (``None``), never as a
+    reported zero.
+    """
+
+    def test_absent_block_returns_none_not_zero(self) -> None:
+        """No ``reasoning_tokens`` key on ``usage`` reads as unknown, not free."""
+        assert dig_flat_reasoning_tokens({"usage": {"prompt_tokens": 10}}) is None
+
+    def test_present_flat_value_is_returned(self) -> None:
+        """A flat ``usage.reasoning_tokens`` value is read straight through."""
+        assert dig_flat_reasoning_tokens({"usage": {"reasoning_tokens": 7}}) == 7
 
 
 # ---------------------------------------------------------------------------

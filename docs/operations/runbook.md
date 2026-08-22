@@ -706,6 +706,12 @@ it, not a replacement for it.
   connection. Needed by the backend and the worker.
 - `ANTHROPIC_API_KEY`: direct Anthropic generation leg. Backend and worker (see the note below).
 - `OPENROUTER_API_KEY`: OpenRouter generation legs (primary + fallback). Backend and worker.
+  Since the Ollama retirement, staging generation also runs on this path against a cheap pinned
+  model (`.env.staging.example`) rather than the free local leg it used before, so staging now
+  needs its own key: use a staging-scoped key with its own spend limit, never the production key.
+  #CRITICAL: payment/financial: a staging key without a spend limit turns a runaway staging
+  generation loop into a real, unbounded bill; the per-family monthly story quota (ADR-015 G7)
+  is the backstop, so keep it low on staging.
 - `MODAL_BASE_URL` / `MODAL_MODEL` / `MODAL_PROXY_KEY` / `MODAL_PROXY_SECRET`: the Modal
   generation leg. Since the Ollama retirement this is also the cascade's third leg, so setting
   `MODAL_BASE_URL` and `MODAL_MODEL` is what keeps failover spanning two vendors rather than two

@@ -119,4 +119,14 @@ note right of minio
   MinIO object key (Phase 5).
 end note
 
+note right of modal
+  Same physical Modal endpoint as
+  extra_providers above, in two roles:
+  extra_providers is the admin-selected
+  per-job override (WS-C PR1); modal here
+  is the unconditional cascade leg 3
+  (ADR-003's 2026-08-18 amendment,
+  ADR-010's 2026-08-22 amendment).
+end note
+
 @enduml

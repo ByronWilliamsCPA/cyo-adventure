@@ -157,3 +157,52 @@ always-on uptime and managed backups if the need arises.
 - [ADR-009](./adr-009-supabase-platform.md): the Supabase managed platform adopted for
   the public tier's auth, database, and storage.
 - [Tech Spec: Infrastructure](../tech-spec.md#infrastructure)
+
+## Amendment (2026-08-22): the deployment target is moving off the homelab, to Vultr
+
+### What this amendment records, and what it does not decide
+
+The deployment target is moving off the homelab this ADR's Decision describes, to Vultr
+cloud hosting. This amendment **records a decision already being acted on elsewhere in
+this change set; it does not make that decision here.** The visible, already-shipped
+consequence is the retirement of the local Ollama generation leg: a self-hosted model has
+no home once the homelab that served it goes away, so retiring that leg ahead of the move
+is a direct, immediate consequence of the move rather than an independent choice. See
+ADR-003's [2026-08-18 amendment][adr003-amend] and ADR-010's
+[2026-08-22 amendment][adr010-amend] for what replaced it.
+
+[adr003-amend]: ./adr-003-frontier-llm-generation.md#amendment-2026-08-18-the-ollama-leg-is-retired-and-modal-takes-leg-3
+[adr010-amend]: ./adr-010-modal-review-and-gated-generation.md#amendment-2026-08-22-modal-is-cascade-leg-3-not-primary
+
+### What is NOT recorded here
+
+No instance sizing, region, timeline, or cost figures for the Vultr move are recorded
+anywhere in this repository as of this amendment. Every reference this amendment could
+find (`docs/architecture/deployment.md`, `docs/planning/roadmap.md`,
+`core/pricing.py`, and the retirement migration
+`supabase/migrations/20260818120000_retire_ollama_provider.sql`) states only that the
+Ollama leg's retirement is "ahead of the homelab-to-Vultr move", with no further detail
+given anywhere. That detail is not yet recorded, and this amendment does not invent it.
+
+### Outstanding work
+
+**The full migration decision record, the Vultr counterpart to this ADR's homelab
+decision, is still outstanding.** Until it exists:
+
+- The Pangolin/Authentik ingress, the R1 nginx topology
+  (`services/cyo-adventure/` in the separate `ByronWilliamsCPA/homelab-infra` repo), and
+  the docker-host backup regime this ADR's Decision and Consequences describe remain the
+  last fully-recorded deployment topology.
+- This ADR's `Status` line ("Accepted...deployed and live behind Pangolin...") is
+  deliberately left unchanged by this amendment, because the move has not completed as of
+  this writing; a future amendment, or a dedicated ADR once the migration record exists,
+  should update it when Vultr hosting is actually live.
+- No `UW-*` register entry currently tracks writing that migration record; this amendment
+  flags the gap rather than assigning it an ID it cannot verify.
+
+### Related
+
+- [ADR-003](./adr-003-frontier-llm-generation.md#amendment-2026-08-18-the-ollama-leg-is-retired-and-modal-takes-leg-3):
+  the Ollama-retirement consequence of this move.
+- [ADR-010](./adr-010-modal-review-and-gated-generation.md#amendment-2026-08-22-modal-is-cascade-leg-3-not-primary):
+  the leg that replaced it.
