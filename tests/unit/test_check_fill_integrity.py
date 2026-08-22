@@ -448,29 +448,153 @@ def test_check_fill_integrity_rejects_a_skeleton_with_no_markers(
     assert exit_code == 1
 
 
-def test_duplicate_node_ids_do_not_pool_delivery_in_the_offline_join(
+def _twinned_id_skeleton() -> dict[str, Any]:
+    """Return a commissioned skeleton whose two ending nodes share one id.
+
+    Both twins are commissioned at 100 words, so the id-keyed join collapses
+    them into a single ``"n2"`` key worth 200 commissioned words.
+    """
+    skeleton = copy.deepcopy(_commissioned_skeleton())
+    skeleton["nodes"].append(copy.deepcopy(skeleton["nodes"][1]))
+    return skeleton
+
+
+def _twinned_id_fill() -> dict[str, Any]:
+    """Return a fill that pays one twin double and leaves the other empty."""
+    filled = copy.deepcopy(_twinned_id_skeleton())
+    filled["nodes"][0]["body"] = " ".join(f"word{i}" for i in range(100))
+    filled["nodes"][0]["choices"][0]["label"] = "Go toward the light."
+    filled["nodes"][1]["body"] = " ".join(f"word{i}" for i in range(200))
+    filled["nodes"][2]["body"] = ""
+    return filled
+
+
+def test_duplicate_node_ids_in_the_skeleton_refuse_to_score(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A skeleton that reuses a node id is refused, not scored.
+
+    Every measure here joins the two files by node id, and
+    ``commissioned_words_by_node`` accumulates duplicate keys by contract, so
+    two nodes sharing an id become one key carrying the sum of both sides.
+    That collapses the per-node cap the fill rate depends on. The production
+    path never sees this shape (``Storybook._check_unique_ids`` rejects it and
+    ``run_gate`` model-validates first), but this checker reads raw JSON with
+    no model validation, so the duplicate reaches it unfiltered.
+    """
+    skeleton_path = _write(tmp_path, "skeleton.json", _twinned_id_skeleton())
+    filled_path = _write(tmp_path, "filled.json", _twinned_id_fill())
+
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 1
+
+    captured = capsys.readouterr()
+    assert "reuses node id(s) ['n2']" in captured.err
+    assert "fill-rate: delivered" not in captured.out, (
+        "the run must be refused BEFORE measuring; a fill-rate line means an "
+        "ambiguous document was scored anyway"
+    )
+
+
+def test_duplicate_node_ids_in_the_filled_story_refuse_to_score(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A filled story that reuses a node id is refused by name.
+
+    The structural comparison would also reject this pairing, since ids are
+    compared, but it would report a generic structural diff. Refusing up front
+    names the actual defect and keeps the join unambiguous either way.
+    """
+    skeleton_path = _write(tmp_path, "skeleton.json", _commissioned_skeleton())
+    filled = _filled_at(95)
+    filled["nodes"][0]["id"] = "n2"
+    filled_path = _write(tmp_path, "filled.json", filled)
+
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 1
+    assert "the filled reuses node id(s) ['n2']" in capsys.readouterr().err
+
+
+def test_the_duplicate_id_refusal_is_what_stops_the_fill_rate_laundering(
     tmp_path: Path,
 ) -> None:
-    """The offline fill-rate join credits a duplicated id once (I15, scoped).
+    """Pin the mechanism, not just the message: the score WOULD have been clean.
 
-    Production never sees a duplicate node id (model validation rejects it
-    before the gate), but this script runs on raw JSON with no model
-    validation, so two nodes sharing one id previously pooled their words
-    and a fill leaving one of them empty still cleared the floor.
+    CodeRabbit's PR #731 finding. Run the id-keyed join by hand over the same
+    twinned document the refusal blocks: the empty twin's shortfall is paid for
+    by its double-length sibling under a shared key, the per-node cap never
+    bites, and the capped ratio reaches a perfect 1.0 on a book with a blank
+    node. Without the refusal a fill that left a node empty clears the floor.
     """
-    skeleton = copy.deepcopy(_SKELETON)
-    skeleton["nodes"][0]["body"] = "<<FILL role=setup words=10 beats='open'>>"
-    filled = copy.deepcopy(skeleton)
-    filled["nodes"][0]["body"] = "one two three four five"
-    filled["nodes"][1]["body"] = "You made it home safe."
-    filled["nodes"][0]["choices"][0]["label"] = "Go toward the light."
-    # A second node reusing n1's id carries the other half of the words; the
-    # join must not let it pay for n1's shortfall. The structural check will
-    # fail on this document anyway; the fill-rate line is what is pinned.
-    filled["nodes"].append({"id": "n1", "body": "six seven eight nine ten"})
+    skeleton = _twinned_id_skeleton()
+    filled = _twinned_id_fill()
+
+    commissioned = check_fill_integrity.commissioned_words_by_node(skeleton)
+    delivered = check_fill_integrity._delivered_words_by_node(filled)  # pyright: ignore[reportPrivateUsage]
+    capped = sum(
+        min(delivered.get(nid, 0), words) for nid, words in commissioned.items()
+    )
+    total = sum(commissioned.values())
+
+    assert commissioned == {"n1": 100, "n2": 200}, (
+        "the twins must collapse into one key for this to be the laundering "
+        f"CodeRabbit found; got {commissioned}"
+    )
+    assert filled["nodes"][2]["body"] == "", "one twin must be empty"
+    assert capped / total == 1.0, (
+        "the un-refused metric scores a book with a blank node at 100 percent, "
+        "which is why an ambiguous document must not be scored at all"
+    )
+
     skeleton_path = _write(tmp_path, "skeleton.json", skeleton)
     filled_path = _write(tmp_path, "filled.json", filled)
-    exit_code = check_fill_integrity.main(
-        [skeleton_path, filled_path, "--min-fill-rate", "0.6"]
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 1
+
+
+def test_id_less_nodes_are_never_read_as_duplicates(tmp_path: Path) -> None:
+    """Two nodes with no ``id`` at all are distinct, not a repeated id.
+
+    The commissioned side keys them ``#index``, which cannot collide. Treating
+    a shared absence as a duplicate would refuse the legitimate id-less
+    skeleton ``test_fill_rate_joins_id_less_nodes_positionally`` covers.
+    """
+    skeleton = _commissioned_skeleton()
+    filled = _filled_at(95)
+    for document in (skeleton, filled):
+        del document["nodes"][0]["id"]
+        del document["nodes"][1]["id"]
+    skeleton_path = _write(tmp_path, "skeleton.json", skeleton)
+    filled_path = _write(tmp_path, "filled.json", filled)
+
+    assert check_fill_integrity.main([skeleton_path, filled_path]) == 0
+
+
+def test_the_offline_delivery_join_dedupes_ids_the_way_production_does() -> None:
+    """The offline helper and ``story_fill_rate`` must agree on a duplicate id.
+
+    The CLI refuses a twinned document before this helper runs, so the dedupe
+    inside it is not what stops the laundering; the refusal above is. What it
+    buys is parity. This script and
+    ``cyo_adventure.generation.skeleton.story_fill_rate`` implement one metric
+    twice, and a duplicated id is the single input on which "sum the twins"
+    and "credit the first" disagree, so it is the input that would let the
+    offline number and the production number drift apart on the same document.
+    Production cannot refuse (it must return a ratio, and model validation
+    upstream means it never actually meets a duplicate); this checker can, and
+    does. Pinning the agreement keeps the unreachable branch honest rather
+    than merely unfalsifiable (PR #737 review, I15 as corrected).
+    """
+    from cyo_adventure.generation.skeleton import story_fill_rate
+
+    skeleton = _twinned_id_skeleton()
+    filled = _twinned_id_fill()
+
+    delivered = check_fill_integrity._delivered_words_by_node(filled)  # pyright: ignore[reportPrivateUsage]
+    assert delivered == {"n1": 100, "n2": 200}, (
+        "the empty second twin must neither add to nor overwrite the first "
+        f"twin's key; got {delivered}"
     )
-    assert exit_code == 1
+
+    commissioned = check_fill_integrity.commissioned_words_by_node(skeleton)
+    offline = sum(
+        min(delivered.get(nid, 0), words) for nid, words in commissioned.items()
+    ) / sum(commissioned.values())
+    assert story_fill_rate(skeleton, filled) == offline

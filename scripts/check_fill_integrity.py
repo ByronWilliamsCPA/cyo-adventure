@@ -29,7 +29,9 @@ Four checks for the story-inventory authoring run (see
    where the skeleton is in hand.
 
 Exits 1 on a structural diff, a leftover marker, a node over the hard max, or
-a story-level fill rate under ``--min-fill-rate``.
+a story-level fill rate under ``--min-fill-rate``. It also refuses to score at
+all when either document reuses a node id: every measure here joins the two
+files by id, so a duplicate would credit one node's prose to another.
 """
 
 from __future__ import annotations
@@ -182,8 +184,8 @@ def _delivered_words_by_node(filled: dict[str, Any]) -> dict[str, int]:
 
     The fill-rate join looks these up by the keys
     ``commissioned_words_by_node`` produces: the node id, or ``#index`` for an
-    id-less node. A duplicated id credits its FIRST occurrence only (see the
-    inline note). Reusing ``_word_stats``'s pairs here would key id-less
+    id-less node. A duplicated id credits its FIRST occurrence only, for
+    parity with production rather than as a defense (see the inline note). Reusing ``_word_stats``'s pairs here would key id-less
     nodes as ``"?"``, silently undercounting delivery and failing a fill that
     delivered in full. The structural check pins the filled story to the
     skeleton's node order, which is what makes a positional key comparable at
@@ -207,19 +209,48 @@ def _delivered_words_by_node(filled: dict[str, Any]) -> dict[str, int]:
             continue
         raw_id = node.get("id")
         key = str(raw_id) if raw_id is not None else f"#{index}"
-        # Only the FIRST occurrence of an id is credited: two nodes sharing
-        # one id previously pooled their words against a single commissioned
-        # target, so a fill leaving one of them empty still cleared the
-        # floor. This is the offline half of the duplicate-id laundering
-        # CodeRabbit flagged on #731; the production metric never sees a
-        # duplicate id because the model validation ahead of the gate
-        # rejects it (PR #737 review thread, I15 correction), but this
-        # script runs on raw JSON with no model validation, so it dedupes
-        # itself. Matches skeleton.py::story_fill_rate.
+        # Only the FIRST occurrence of an id is credited, matching
+        # ``skeleton.py::story_fill_rate`` exactly. This is PARITY, not the
+        # remedy: ``main`` refuses a document with duplicate ids before this
+        # helper ever runs, so the branch below is unreachable from the CLI.
+        # It stays because the two files implement one metric twice, and a
+        # duplicated id is the only input on which "sum the twins" and
+        # "credit the first" disagree, so dropping it here would let the
+        # offline and production numbers drift on the same document.
+        # Production cannot refuse (it must return a ratio, and the model
+        # validation ahead of the gate means it never meets a duplicate).
+        # #VERIFY: test_check_fill_integrity.py::
+        # test_the_offline_delivery_join_dedupes_ids_the_way_production_does
+        # asserts the two implementations agree on a twinned document.
         if key in delivered:
             continue
         delivered[key] = len(body.split())
     return delivered
+
+
+def _duplicate_node_ids(document: dict[str, Any]) -> list[str]:
+    """Return every node id the document uses more than once.
+
+    Args:
+        document: The decoded skeleton or filled story.
+
+    Returns:
+        The repeated ids, sorted. Empty when every id is unique, when no node
+        carries an id, or when the document exposes no scannable node list.
+    """
+    seen: dict[str, int] = {}
+    nodes = document.get("nodes")
+    if not isinstance(nodes, list):
+        return []
+    for node in cast("list[object]", nodes):
+        if not isinstance(node, dict):
+            continue
+        raw_id = cast("dict[str, object]", node).get("id")
+        if raw_id is None:
+            continue
+        key = str(raw_id)
+        seen[key] = seen.get(key, 0) + 1
+    return sorted(key for key, count in seen.items() if count > 1)
 
 
 def _defers_titles(skeleton: dict[str, Any]) -> bool:
@@ -351,6 +382,37 @@ def main(argv: list[str] | None = None) -> int:
             f"cannot detect a failed fill\n"
         )
         return 1
+
+    # #CRITICAL: data-integrity: refuse to score a document whose node ids are
+    # not unique. Every metric below joins the skeleton to the filled story by
+    # node id, and ``commissioned_words_by_node`` accumulates duplicate keys by
+    # contract, so two nodes sharing an id collapse into ONE key carrying the
+    # SUM of their commissioned words and the SUM of their delivered words.
+    # That defeats the per-node cap that makes the fill rate monotone in
+    # per-node delivery: a fill that writes one twin at double length and
+    # leaves the other empty scores the pair at a full 100 percent, which is
+    # precisely the laundering the cap exists to stop. The production path
+    # never sees this shape (``Storybook._check_unique_ids`` rejects duplicate
+    # ids and ``run_gate`` model-validates before any fill-rate metric runs),
+    # but this checker reads RAW JSON with no model validation, so a
+    # hand-authored or model-emitted duplicate reaches it unfiltered. Scoring
+    # an ambiguous document wrongly is worse than refusing to score it, the
+    # same ruling the same-file and no-marker refusals above already encode.
+    # #VERIFY: test_check_fill_integrity.py::
+    # test_duplicate_node_ids_in_the_skeleton_refuse_to_score and
+    # ::test_duplicate_node_ids_in_the_filled_story_refuse_to_score.
+    for label, document in (("skeleton", skeleton), ("filled", filled)):
+        repeated = _duplicate_node_ids(document)
+        if repeated:
+            sys.stderr.write(
+                f"FAIL inputs: the {label} reuses node id(s) {repeated}, so "
+                f"every id-keyed measure below (commissioned words, delivered "
+                f"words, the per-node fill-rate cap) would credit one node's "
+                f"prose to another and could clear the floor on a fill that "
+                f"left a node empty; refusing to score an ambiguous document\n"
+            )
+            return 1
+
     failed = False
 
     # Derived rather than remembered: a skeleton that writes its title as a FILL
