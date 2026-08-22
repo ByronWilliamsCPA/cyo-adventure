@@ -357,9 +357,11 @@ def _catalog_distances(
 
     Exploratory (Tier 2): the register requires the topology-flag component
     of ``structural_distance`` be reported separately wherever legs declare
-    their own topology; that split is carried in the note field here because
-    the metric exposes only the combined value, and the declared topology is
-    persisted with every shell so the component is recoverable.
+    their own topology. The note field here does NOT carry that split: the
+    metric exposes only the combined value, so the note records the peer
+    count (plus any unscorable pairs). The declared topology is persisted
+    with every shell, so an analyst can recompute the component; nothing in
+    this harness does it for them.
 
     Returns:
         ``(min, mean, note)``; ``(None, None, reason)`` when unscorable.
@@ -650,6 +652,20 @@ def _summarize(records: list[ShellRecord], out_dir: Path) -> None:
         if not rec.error:
             rounds_by_leg.setdefault(rec.leg, []).append(rec.repair_rounds)
     observed, p_value = permutation_test(rounds_by_leg)
+    pooled = [r for rounds in rounds_by_leg.values() for r in rounds]
+    # A constant vector (every value identical, e.g. all zeros from a
+    # final-draft-only scoring path, or every leg censored at the same cap)
+    # makes the permutation test structurally uninformative: the statistic
+    # is 0 by construction and p = 1.0 reflects the degeneracy, not
+    # equivalence. Say so where the number is printed, not two files away.
+    degenerate = len(set(pooled)) <= 1
+    degenerate_note = (
+        "PRIMARY ENDPOINT VOID for this run: the pooled repair-round vector "
+        "is constant, so the permutation test discriminates nothing. For a "
+        "tool-assisted run scored on final drafts only, the strict-pass "
+        "column is the decision-bearing output and per-point iteration "
+        "counts live outside these records."
+    )
 
     by_leg: dict[str, dict[str, Any]] = {}
     for rec in records:
@@ -685,9 +701,14 @@ def _summarize(records: list[ShellRecord], out_dir: Path) -> None:
             "permutations": _PERMUTATIONS,
             "seed": _PERMUTATION_SEED,
             "note": (
-                "every other field in this summary is exploratory and "
-                "decision-inert per register row S-1"
+                degenerate_note
+                if degenerate
+                else (
+                    "every other field in this summary is exploratory and "
+                    "decision-inert per register row S-1"
+                )
             ),
+            "degenerate": degenerate,
         },
         "legs": by_leg,
         "records": [asdict(r) for r in records],
@@ -704,6 +725,7 @@ def _summarize(records: list[ShellRecord], out_dir: Path) -> None:
             f"p = {p_value:.4f} ({_PERMUTATIONS} permutations, seed "
             f"{_PERMUTATION_SEED}). Everything below is exploratory."
         ),
+        *(["", f"> **{degenerate_note}**"] if degenerate else []),
         "",
         (
             "| leg | shells | errors | strict pass | first-pass clean "
@@ -862,6 +884,14 @@ async def run(args: argparse.Namespace) -> int:
         if not cells:
             print(f"Error: no cells match {sorted(wanted)}", file=sys.stderr)
             return 1
+    short = [c["id"] for c in cells if len(list(c["premises"])) < args.replicates]
+    if short:
+        print(
+            f"Error: --replicates {args.replicates} exceeds the frozen "
+            f"premise count for cells {short}",
+            file=sys.stderr,
+        )
+        return 1
 
     _load_env_file(_REPO_ROOT / ".env")
     settings = Settings()
@@ -1077,6 +1107,23 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     """CLI entry point."""
     args = _parse_args(argv)
+    # #CRITICAL: data integrity: each of these misconfigurations is silent
+    # and costs a paid grid (fresh dir under --resume re-authors everything;
+    # a negative round cap writes clean attempts=0 records that --resume
+    # then skips forever; concurrency 0 hangs on an unacquirable semaphore).
+    # #VERIFY: refuse them before any spend.
+    if args.resume and not args.out_dir:
+        print("Error: --resume requires --out-dir", file=sys.stderr)
+        return 2
+    if args.max_repair_rounds < 0:
+        print("Error: --max-repair-rounds must be >= 0", file=sys.stderr)
+        return 2
+    if args.concurrency < 1:
+        print("Error: --concurrency must be >= 1", file=sys.stderr)
+        return 2
+    if args.replicates < 1:
+        print("Error: --replicates must be >= 1", file=sys.stderr)
+        return 2
     if args.emit_prompts or args.score_shell:
         cells = _load_premises(Path(args.premises))
         if args.cells:

@@ -66,3 +66,12 @@ differ, not because of the premise.
 passed), `records/` (one record per shell: attempts, repair rounds, strict pass, tokens, finish
 reasons, catalog distances, final-round validator feedback), `summary.json` / `summary.md`
 (aggregates plus the pre-registered permutation test on the primary endpoint).
+
+`run.json` caveat: only `compare_skeleton_authors.py run()` writes it, and it records only that
+invocation's vendors/cells/replicates with `started_at` stamped at invocation (a `--resume`
+re-invocation restamps it). Subagent legs driven through `--emit-prompts`/`--score-shell` and
+`modal_kimi_leg.py` contribute records but not `run.json`, so a mixed run's `run.json`
+under-describes the directory: `e1r3-2026-08-21/run.json` lists the 2 DeepSeek vendors for a
+directory holding 7 legs, and `e1r3-tools-2026-08-21/run.json` is a hand-reconstructed conditions
+file (it says so in its `authored` field). The record files, not `run.json`, are the per-point
+ground truth.

@@ -75,7 +75,10 @@ model choice per book is a category error; the authoring plan needs a model per 
 stratified-plan result: topology and a bare-names fact graph can be shared across books without
 measurable prose convergence (2.3 shared 4-grams per 1000, under the 4.0 budget and below the 3.3
 generator idiom floor), while every prose-bearing plan layer leaks (D-6, D-7, D-7b). Per-request
-single-parent mutation is refuted as a variety multiplier (S8; the per-request mutation pilot).
+single-parent mutation failed as a variety multiplier in S8 and the per-request mutation pilot;
+that refutation rests partly on recognition, so per section 4.4 its perceptual half is unconfirmed
+until a validated instrument exists (the deterministic half, no floor-clearing shape-preserving
+mutant, stands).
 
 **F6. Trust no instrument until it survives a known-answer test, and pre-register everything.**
 Our first decision-similarity vocabulary ranked book pairs opposite to readers (D-3); the

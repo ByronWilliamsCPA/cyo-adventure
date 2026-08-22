@@ -88,7 +88,7 @@ FAMILY = ""
 AUTH = "modal"
 PROVIDER_ORDER: tuple[str, ...] = ()
 MAX_TOKENS = 65_536  # the registered e1r3 run condition
-MAX_REPAIR_ROUNDS = 6  # ditto
+MAX_REPAIR_ROUNDS = 6  # ditto; overridable per run via --max-repair-rounds
 CALL_TIMEOUT_S = 900.0
 
 
@@ -117,7 +117,7 @@ def _retryable(exc: Exception) -> bool:
     402, 404, ...) is deterministic and re-raising it immediately keeps the
     provider's response in the traceback instead of burning two more calls.
     """
-    if isinstance(exc, httpx.TransportError):
+    if isinstance(exc, httpx.TransportError | json.JSONDecodeError):
         return True
     if isinstance(exc, httpx.HTTPStatusError):
         status = exc.response.status_code
@@ -195,7 +195,11 @@ def _complete(client: httpx.Client, system: str, prompt: str) -> tuple[str, dict
             # Empty content under length is the Modal budget signature; the
             # caller treats it as a failed round, never as output.
             return content, meta
-        except (httpx.TransportError, httpx.HTTPStatusError) as exc:
+        except (
+            httpx.TransportError,
+            httpx.HTTPStatusError,
+            json.JSONDecodeError,  # truncated SSE chunk: a transport failure
+        ) as exc:
             if not _retryable(exc):
                 raise
             last_exc = exc
@@ -351,7 +355,11 @@ def _complete_messages(client: httpx.Client, messages: list[dict]) -> tuple[str,
                         if piece:
                             parts.append(piece)
             return "".join(parts), usage
-        except (httpx.TransportError, httpx.HTTPStatusError) as exc:
+        except (
+            httpx.TransportError,
+            httpx.HTTPStatusError,
+            json.JSONDecodeError,  # truncated SSE chunk: a transport failure
+        ) as exc:
             if not _retryable(exc):
                 raise
             last_exc = exc
@@ -461,7 +469,30 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--prompts", required=True)
     parser.add_argument("--out-dir", required=True)
     parser.add_argument("--attempt-dir", default="")
+    parser.add_argument(
+        "--max-repair-rounds",
+        type=int,
+        default=6,
+        help=(
+            "Blind-mode round cap. MUST match the value the harness run was "
+            "registered with (run.json max_repair_rounds); the shared "
+            "repair-loop contract is only as good as the caller keeping "
+            "these aligned. Default is the registered e1r3 condition (6)."
+        ),
+    )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help=(
+            "Skip any replicate whose grid record in --out-dir already "
+            "shows a strict pass, so a re-run after a mid-grid failure "
+            "does not re-buy completed points."
+        ),
+    )
     args = parser.parse_args(argv)
+    if args.max_repair_rounds < 0:
+        print("Error: --max-repair-rounds must be >= 0", file=sys.stderr)
+        return 2
 
     prompts_dir = Path(args.prompts)
     out_dir = Path(args.out_dir)
@@ -471,6 +502,8 @@ def main(argv: list[str] | None = None) -> int:
     attempt_dir.mkdir(parents=True, exist_ok=True)
 
     global BASE_URL, MODEL, LEG, FAMILY, AUTH, PROVIDER_ORDER  # noqa: PLW0603
+    global MAX_REPAIR_ROUNDS  # noqa: PLW0603
+    MAX_REPAIR_ROUNDS = args.max_repair_rounds
     preset = _PRESETS[args.endpoint]
     BASE_URL = preset["base_url"]
     LEG = preset["leg"]
@@ -490,16 +523,54 @@ def main(argv: list[str] | None = None) -> int:
             "A": {"id": "A", "band": "5-8", "length": "short", "style": "prose"},
             "D": {"id": "D", "band": "10-13", "length": "short", "style": "prose"},
         }[args.cell]
+        failures = 0
         for replicate in range(1, args.replicates + 1):
-            if args.mode == "tools":
-                run_grid_point_tools(
-                    client, cell_meta, replicate, prompts_dir, out_dir, attempt_dir
+            record_path = (
+                out_dir
+                / "records"
+                / f"{args.cell}__r{replicate}__{LEG}.json.record.json"
+            )
+            if args.resume and record_path.exists():
+                record = json.loads(record_path.read_text(encoding="utf-8"))
+                if record.get("strict_pass"):
+                    print(
+                        f"resume: {args.cell} r{replicate} already passed, skipping",
+                        flush=True,
+                    )
+                    continue
+            # #CRITICAL: external resources: one non-retryable provider
+            # failure (400/404, a decode error) must not abandon the paid
+            # replicates behind it; the 402 mid-grid death is why the
+            # sibling harness grew --resume.
+            # #VERIFY: each replicate is isolated; failures are counted and
+            # reflected in the exit code, never silently swallowed.
+            try:
+                if args.mode == "tools":
+                    run_grid_point_tools(
+                        client,
+                        cell_meta,
+                        replicate,
+                        prompts_dir,
+                        out_dir,
+                        attempt_dir,
+                    )
+                else:
+                    run_grid_point(
+                        client,
+                        args.cell,
+                        replicate,
+                        prompts_dir,
+                        out_dir,
+                        attempt_dir,
+                    )
+            except Exception as exc:  # replicate-fatal, run-survivable
+                failures += 1
+                print(
+                    f"ERROR {args.cell} r{replicate}: {type(exc).__name__}: {exc}",
+                    file=sys.stderr,
+                    flush=True,
                 )
-            else:
-                run_grid_point(
-                    client, args.cell, replicate, prompts_dir, out_dir, attempt_dir
-                )
-    return 0
+    return 1 if failures else 0
 
 
 if __name__ == "__main__":

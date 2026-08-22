@@ -1,0 +1,21 @@
+{
+ "authored": "hand-reconstructed 2026-08-22; this run was driven by subagent legs via --emit-prompts/--score-shell and by modal_kimi_leg.py --mode tools, neither of which writes run.json (only compare_skeleton_authors.py run() does)",
+ "condition": "tool-assisted (author runs check_skeleton.py --strict --allow-mvp, cap 10 checker invocations per grid point)",
+ "cells": [
+  "A",
+  "D"
+ ],
+ "replicates": 3,
+ "legs": [
+  "claude-fable-subagent",
+  "claude-opus-subagent",
+  "claude-sonnet-subagent",
+  "claude-haiku-subagent",
+  "moonshot-kimi-k3-modal",
+  "deepseek-v4-pro",
+  "deepseek-v4-flash"
+ ],
+ "max_tokens": 65536,
+ "tools_checker_cap": 10,
+ "checker_counts": "tools-meta.json"
+}
