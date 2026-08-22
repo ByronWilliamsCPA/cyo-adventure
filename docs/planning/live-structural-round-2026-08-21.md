@@ -545,3 +545,47 @@ Implementation: `merge_fill_batch` widens its whitelist to carry ending titles (
 title) so the chunked path stops producing contractually different books;
 `check_fill_integrity` treats title rewrites as legal by default; `fill.md` and `SKILL.md`
 cite this section.
+
+## 9. Owner rulings, second batch (2026-08-21)
+
+Five further rulings, made after the implementation phase's measurements. Site of record for
+each, as with section 8.
+
+### 9.1 `UW-C322` (decisions-per-path window): audit ADR-011 before ruling
+
+The owner judges the 4-8 constant out of line with the rest of ADR-011, especially the
+section 4-5 scale envelopes: a long book confined to 4-8 decisions per path plausibly cannot
+spend its node budget. Rather than picking a repair blind, an internal-consistency audit of
+ADR-011 is commissioned (in progress); the ruling follows the audit. M4 insert-decision stays
+ineligible on window-breaching parents until then.
+
+### 9.2 Bulk vendor direction: cost-effective models, engineered to quality
+
+The owner expects the answer to be option B or D, not sonnet-for-everything: sonnet-5's
+measured quality premium does not justify ~7x unit cost at catalog scale. Standing direction:
+invest in getting cost-effective models to deliver the needed quality (repair passes,
+prompt work, per-band routing among cheap vendors), and widen the bake-off (grok, gemini) on
+the measured mid-band pairs before committing. Not a closed ruling; recorded as direction.
+
+### 9.3 `UW-C307` (gate carriage of the fill-rate floor): warning plus review-force
+
+Ruled as recommended: the fill pipeline carries the story-level fill-rate check as a
+non-blocking signal that FORCES `needs_review`, never a hard block, so a thin book cannot
+ship without a human but a 0.63-class good fill is never machine-rejected. Floors are to be
+calibrated per vendor and band before any hardening; the current 0.6 default stands until
+that calibration exists.
+
+### 9.4 `UW-C323` (narrative person): a dedicated metadata field
+
+Ruled option A: a dedicated `metadata.narrative_person` declaration per skeleton, backfilled
+mechanically (from the beats' own pronouns where declared, from the committed fill
+otherwise), with the person-consistency check keyed to the declaration.
+
+### 9.5 `UW-C324` (pair-unfillable policy): retry with variation
+
+Ruled as recommended: the production design is re-anchoring, not blind retries. A story
+request whose (skeleton, brief) pairing trips a provider filter twice should be re-paired
+(a different skeleton for the same request, or a paraphrased brief) rather than abandoned,
+since the filter is a property of the pair. Interim step, implementable now: cap identical
+retries at two for zero-content `content_filter` stops specifically, because the measured
+third attempt bought nothing.
