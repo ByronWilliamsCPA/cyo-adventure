@@ -70,6 +70,7 @@ from cyo_adventure.generation.skeleton import (
     is_fill_feasible,
     resolve_context_window,
     resolve_output_cap,
+    story_fill_rate,
 )
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import GateContext, GateResult, run_gate
@@ -1308,6 +1309,60 @@ async def _fill_in_batches(
     return document, run_gate(document, "standard", context="fill_result")
 
 
+def _with_fill_rate(
+    outcome: GenerationOutcome,
+    skeleton: dict[str, object],
+    min_fill_rate: float,
+    stage_log: list[str],
+) -> GenerationOutcome:
+    """Stamp the story-level fill rate and force review under the floor.
+
+    Ruled 2026-08-21 (section 9.3 of ``live-structural-round-2026-08-21.md``,
+    `UW-C307`): a book delivering under the floor FORCES ``needs_review``,
+    never a hard block, so a thin book cannot ship without a human while a
+    0.63-class good fill is never machine-rejected (the tightest known-good
+    pair sits 0.035 above the default floor). The rate is recorded on every
+    outcome that carries a book, floor breach or not, so review surfaces can
+    show it; floors are a per-vendor, per-band calibration question and the
+    default stands until that calibration exists (`AL-500`/`AL-512`).
+
+    Args:
+        outcome: The outcome so far.
+        skeleton: The pristine skeleton carrying the ``words=`` commissions.
+        min_fill_rate: The floor; a passing book below it is downgraded.
+        stage_log: The run's stage log, appended to on a downgrade.
+
+    Returns:
+        GenerationOutcome: The outcome with ``fill_rate`` stamped, downgraded
+        to ``needs_review`` when a passing book falls under the floor;
+        unchanged when no book or no commission exists.
+    """
+    if outcome.storybook is None:
+        return outcome
+    fill_rate = story_fill_rate(skeleton, outcome.storybook)
+    if fill_rate is None:
+        return outcome
+    downgrade = outcome.status == "passed" and fill_rate < min_fill_rate
+    if downgrade:
+        stage_log.append(f"fill_rate:{fill_rate:.3f}_below_{min_fill_rate}")
+        _logger.warning(
+            "fill_rate_below_floor",
+            fill_rate=round(fill_rate, 3),
+            floor=min_fill_rate,
+        )
+    return GenerationOutcome(
+        status="needs_review" if downgrade else outcome.status,
+        storybook=outcome.storybook,
+        report={
+            **outcome.report,
+            "fill_rate": round(fill_rate, 4),
+            "fill_rate_floor": min_fill_rate,
+        },
+        attempts=outcome.attempts,
+        stage_log=outcome.stage_log,
+    )
+
+
 async def fill_skeleton(
     skeleton: dict[str, object],
     theme_brief: dict[str, object],
@@ -1322,6 +1377,7 @@ async def fill_skeleton(
     slot_bindings: Mapping[str, str] | None = None,
     differentiation_directive: str = "",
     reading_level_passes: int = _DEFAULT_READING_LEVEL_PASSES,
+    min_fill_rate: float = 0.6,
 ) -> GenerationOutcome:
     """Run the automated skeleton-fill pipeline (Fill -> Repair -> Reading level).
 
@@ -1428,6 +1484,15 @@ async def fill_skeleton(
         reading_level_passes: Maximum Stage D (reading-level) passes over the
             filled book once it is structurally clean. ``0`` disables the
             stage. Defaults to two; see ``_DEFAULT_READING_LEVEL_PASSES``.
+        min_fill_rate: Floor for the story-level fill rate (delivered words
+            over commissioned ``words=`` words, per-node surplus discounted).
+            A passing book below it is downgraded to ``needs_review``, never
+            hard-blocked (ruled 2026-08-21, section 9.3 of
+            ``live-structural-round-2026-08-21.md``, `UW-C307`); the measured
+            rate is stamped on the report either way. The 0.6 default is the
+            `AL-490` calibration and stands until per-vendor, per-band floors
+            exist (`AL-500`/`AL-512`); pass ``0`` to measure without ever
+            downgrading.
 
     Returns:
         A :class:`GenerationOutcome` describing the final status, the last
@@ -1662,4 +1727,6 @@ async def fill_skeleton(
             attempts=outcome.attempts,
             stage_log=outcome.stage_log,
         )
+
+    outcome = _with_fill_rate(outcome, skeleton, min_fill_rate, stage_log)
     return _with_reading_level(outcome, reading_level)

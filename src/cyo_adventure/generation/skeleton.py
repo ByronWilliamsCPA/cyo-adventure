@@ -13,7 +13,7 @@ from __future__ import annotations
 import json
 import math
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.validator.gate import run_gate
@@ -237,6 +237,49 @@ MODEL_OUTPUT_CAPS: dict[str, int] = {
     "claude-sonnet-4-6": 128_000,
     "claude-haiku-4-5": 64_000,
 }
+
+
+def story_fill_rate(
+    skeleton: dict[str, object], filled: dict[str, object]
+) -> float | None:
+    """Return delivered over commissioned words, per-node surplus discounted.
+
+    The story-level fill-rate quantity ruled into the fill pipeline on
+    2026-08-21 (`UW-C307`, ruling 9.3 in
+    ``docs/planning/live-structural-round-2026-08-21.md``): each node is
+    credited at most what it was commissioned, so surplus on one node cannot
+    pay for an empty body on another, matching
+    ``scripts/check_fill_integrity.py``'s blocking check. Word counts use
+    whitespace splitting on both sides, as that script does.
+
+    Args:
+        skeleton: The pristine skeleton carrying ``words=`` directives.
+        filled: The filled story whose delivery is being measured.
+
+    Returns:
+        float | None: The capped ratio in [0, 1], or None when the skeleton
+        commissions nothing (no ``words=`` directives).
+    """
+    commissioned = commissioned_words_by_node(skeleton)
+    total = sum(commissioned.values())
+    if total <= 0:
+        return None
+    delivered: dict[str, int] = {}
+    nodes = filled.get("nodes")
+    for index, entry in enumerate(nodes if isinstance(nodes, list) else []):
+        if not isinstance(entry, dict):
+            continue
+        node = cast("dict[str, object]", entry)
+        body = node.get("body")
+        if not isinstance(body, str) or FILL_MARKER in body:
+            continue
+        node_id = node.get("id")
+        key = str(node_id) if node_id is not None else f"#{index}"
+        delivered[key] = delivered.get(key, 0) + len(body.split())
+    effective = sum(
+        min(delivered.get(key, 0), target) for key, target in commissioned.items()
+    )
+    return effective / total
 
 
 # Known CONTEXT windows (input plus output) per model id, the companion to

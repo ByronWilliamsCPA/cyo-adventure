@@ -1222,3 +1222,72 @@ async def test_generate_story_stage_b_asks_no_more_than_the_model_can_emit() -> 
     )
     # And the clamp is load-bearing here, not incidentally satisfied.
     assert ceiling < MAX_FILL_OUTPUT_TOKENS
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_stamps_the_fill_rate_and_keeps_a_full_fill_passed() -> (
+    None
+):
+    """A full-delivery fill stays passed and carries its rate on the report.
+
+    Ruling 9.3 (2026-08-21, UW-C307): the rate is recorded on every outcome
+    that carries a book, floor breach or not, so review surfaces can show it.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+
+    outcome = await fill_skeleton(
+        skeleton, {"premise": "a fox"}, provider, PiiContext(child_names=frozenset())
+    )
+
+    assert outcome.status == "passed"
+    assert isinstance(outcome.report.get("fill_rate"), float)
+    assert outcome.report["fill_rate"] >= 0.6
+    assert outcome.report["fill_rate_floor"] == 0.6
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_forces_review_on_an_under_delivered_book() -> None:
+    """A gate-clean book under the fill-rate floor cannot ship unreviewed.
+
+    The AL-490 shape: 40-percent delivery with zero hard findings previously
+    returned "passed". Commissioning 400 words against the fixture's short
+    body forces the rate far under the floor; the outcome is needs_review,
+    never a hard block, and the report names the rate.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    nodes = cast("list[dict[str, object]]", skeleton["nodes"])
+    nodes[0]["body"] = "<<FILL role=setup words=400 beats='greet the fox'>>"
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+
+    outcome = await fill_skeleton(
+        skeleton, {"premise": "a fox"}, provider, PiiContext(child_names=frozenset())
+    )
+
+    assert outcome.status == "needs_review"
+    assert outcome.storybook is not None
+    assert outcome.report["fill_rate"] < 0.6
+    assert any("fill_rate" in entry for entry in outcome.stage_log)
+
+
+@pytest.mark.asyncio
+async def test_a_zero_floor_measures_without_downgrading() -> None:
+    """min_fill_rate=0 is the documented measure-only setting."""
+    skeleton = _skeleton_with_fill_placeholder()
+    nodes = cast("list[dict[str, object]]", skeleton["nodes"])
+    nodes[0]["body"] = "<<FILL role=setup words=400 beats='greet the fox'>>"
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        PiiContext(child_names=frozenset()),
+        min_fill_rate=0,
+    )
+
+    assert outcome.status == "passed"
+    assert outcome.report["fill_rate"] < 0.6
