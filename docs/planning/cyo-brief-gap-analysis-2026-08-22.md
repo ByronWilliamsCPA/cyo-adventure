@@ -3,6 +3,11 @@
 Analysis of 2026-08-22, revised the same day after adversarial validation. Subject:
 [cyo-generation-research-brief-2026-08-22.md](./cyo-generation-research-brief-2026-08-22.md).
 
+**Per-item remediation plans are in
+[cyo-brief-gap-remediation-plan-2026-08-22.md](./cyo-brief-gap-remediation-plan-2026-08-22.md); all
+24 raw reports are preserved in
+[evidence/brief-gap-analysis-2026-08-22/](./evidence/brief-gap-analysis-2026-08-22/README.md).**
+
 Twelve reviewers analysed the brief, its evidence, and the code it describes. Twelve adversarial
 validators then tried to break every load-bearing finding and stress-test every recommendation.
 **The validation pass overturned more of the first-round output than it confirmed**, so this
@@ -293,6 +298,8 @@ assembly-invariant, or global before committing either way.
 
 ## Related
 
+- [Remediation plan](./cyo-brief-gap-remediation-plan-2026-08-22.md), one plan per surviving item
+- [Evidence](./evidence/brief-gap-analysis-2026-08-22/README.md), all 24 reviewer and validator reports
 - [2026-08-22 research brief](./cyo-generation-research-brief-2026-08-22.md), the subject
 - [2026-08-10 research brief](./cyo-generation-research-brief-2026-08-10.md)
 - [Diversity test register](./diversity-test-register.md)
