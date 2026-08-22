@@ -57,6 +57,14 @@ setting words, rewrite it.
 What must stay identical is the beat (the events and outcome in `beats=`), each
 choice's action-semantic, the role, and the word target.
 
+## Narrative person
+
+`metadata.narrative_person` declares the grammatical person this book is told
+in (`"second"` addresses the reader as "you"; `"third"` follows a named
+protagonist). Write every passage in the declared person; do not drift
+between them. When the field is absent, follow the person the `beats=`
+directives use.
+
 ## Consistency with the rest of the book
 
 Passages written in earlier batches are given to you under "Already Written".
