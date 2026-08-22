@@ -6888,6 +6888,12 @@ needs to become these named actions.</p>
 <td>4b</td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-F44</td>
+<td><strong><code>modal.py</code> cannot recognise a token-budget exhaustion, so it retries one deterministically.</strong> <code>ModalProvider._extract_completion</code> guards empty content correctly (<code>if not content:</code> catches both <code>None</code> and <code>""</code>) but raises it as <code>leg_fatal=False</code>, and it never digs <code>finish_reason</code>. <code>run_with_retries</code> therefore reissues the identical request at the identical <code>max_tokens</code> with exponential backoff before failing as exhausted, burning the whole retry budget on calls that cannot succeed. <code>openrouter.py</code> already implements the correct treatment (<code>leg_fatal=finish_reason == "length"</code>, with the cause worded into the error); port it. Second item in the same change: <code>dig_reasoning_tokens</code> reads only OpenRouter's nested <code>usage.completion_tokens_details.reasoning_tokens</code> and <code>modal.py</code> never calls it, so the Modal leg collects no reasoning telemetry at all and budget sizing cannot be driven from measurements. Measured and evidenced in <a href="../handoff-modal-deepseek-v4-smoke-test-2026-08-20/">handoff-modal-deepseek-v4-smoke-test-2026-08-20.md</a>. Experimental-only per ADR-010, so this gates real Modal use rather than production today.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-g-content-diversity-and-catalog-workstream">Cluster G: content diversity and catalog workstream<a class="headerlink" href="#cluster-g-content-diversity-and-catalog-workstream" title="Permanent link">&para;</a></h2>
@@ -7741,6 +7747,30 @@ complete; each is filed as a GitHub issue.</p>
 <td>homelab-infra</td>
 <td>done</td>
 </tr>
+<tr>
+<td>UW-M09</td>
+<td><strong>Revoke the exposed OpenRouter API key.</strong> The key value was echoed into the 2026-08-20 session transcript by a shell-expansion mistake during an env check, so the credential stays usable until revoked. Revoke at openrouter.ai, create a replacement, update the environment variable, and record completion in <a href="../handoff-modal-deepseek-v4-smoke-test-2026-08-20/">handoff-modal-deepseek-v4-smoke-test-2026-08-20.md</a>. Only the account holder can revoke it. Note this repository is PUBLIC, so the handoff recording the exposure is itself published; that raises the urgency rather than changing the remedy.</td>
+<td>project owner</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-M10</td>
+<td><strong>Stop the stuck DeepSeek V4 Pro Modal endpoint.</strong> Endpoint <code>ep-k7GKhWPbAoEy4PZ19TvKXf</code> never left "Starting up" (8 GPUs could not be provisioned) and keeps retrying provisioning, which bills without ever serving. Stop it in the Modal dashboard. Recorded in <a href="../handoff-modal-deepseek-v4-smoke-test-2026-08-20/">handoff-modal-deepseek-v4-smoke-test-2026-08-20.md</a>.</td>
+<td>project owner</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-M11</td>
+<td><strong>Rename the Modal proxy-token env vars in the remote environment configuration.</strong> The pair is present as <code>MODAL_KEY</code> and <code>MIDAL_SECRET</code> (note the <code>MIDAL</code> typo); <code>core/config.py::Settings</code> reads <code>MODAL_PROXY_KEY</code> / <code>MODAL_PROXY_SECRET</code>, so no code-level Modal test can authenticate until they are renamed. Values load only at container start, so the rename needs a fresh session to take effect. Lives in the Claude environment configuration, outside this repository. Recorded in <a href="../handoff-modal-deepseek-v4-smoke-test-2026-08-20/">handoff-modal-deepseek-v4-smoke-test-2026-08-20.md</a>.</td>
+<td>project owner</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-M12</td>
+<td><strong>DeepSeek V4 Pro as a Modal container, not a managed endpoint.</strong> The managed-endpoint route is ruled out: it needs 8 GPUs this workspace cannot allocate (verified 2026-08-21 over 15+ minutes of authenticated 503s). The remaining option is a custom app deployment like the earlier <code>cyo-standard</code> one. Blocked on GPU capacity or quota for the required instance class, which is a Modal-side constraint. Transport, auth, and response shape are already proven against the shared Kimi-K3 endpoint, so capacity is the remaining deployment blocker; adapter work in UW-F44 is still required before real use. Evidenced in <a href="../handoff-modal-deepseek-v4-smoke-test-2026-08-20/">handoff-modal-deepseek-v4-smoke-test-2026-08-20.md</a>.</td>
+<td>project owner</td>
+<td>blocked</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-n-external-scope-comparison-findings">Cluster N: external scope-comparison findings<a class="headerlink" href="#cluster-n-external-scope-comparison-findings" title="Permanent link">&para;</a></h2>
@@ -7914,7 +7944,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 21, 2026 03:33:02 UTC">August 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 03:49:32 UTC">August 22, 2026</span>
   </span>
 
     

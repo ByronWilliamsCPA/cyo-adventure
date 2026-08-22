@@ -8501,6 +8501,16 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>applied</td>
 <td>the falsification of all eleven new tests in PR #732 was re-run against scratch-path backups; every one failed with its fix reverted</td>
 </tr>
+<tr>
+<td>AL-509</td>
+<td>2026-08-21</td>
+<td>PR #732 review, CodeRabbit re-review of the vendor-label guard</td>
+<td>tooling</td>
+<td><strong>A validation guard whose stated job is "reject before the spend" only holds if it rejects everything the LATER step will refuse.</strong> <code>_load_vendors</code> documents that load time is "the only point cheap enough to catch it before any provider call is billed", and <code>persist_book</code> records <code>AL-326</code>, where three books and 1,869 seconds of billed provider time were lost to a failed write. The guard checked bare-name, emptiness, case and NFC equivalence, and still accepted a label carrying a NUL (<code>ValueError: embedded null byte</code> on every platform) or any of Win32's reserved <code>&lt; &gt; : " \| ? * \\ /</code> and sub-0x20 characters, so a spec authored on Linux could be unrunnable on Windows. Every one of those failures lands AFTER the provider calls, which is exactly the loss the guard exists to prevent, reached by a cause the guard did not model. Measured rather than assumed: on POSIX only the NUL actually breaks the write, and <code>*</code>, <code>?</code>, <code>"</code>, <code>\|</code>, <code>&lt;</code>, <code>&gt;</code>, <code>:</code> write fine, which is why a Linux-only check reads as sufficient and is not.</td>
+<td>Derive a validation character set from what the DOWNSTREAM step will refuse on every supported platform, not from what fails on the authoring one. Pair the rejection cases with an acceptance case built from the committed specs' real labels, so an over-broad guard fails immediately instead of refusing every real run.</td>
+<td>applied</td>
+<td><code>compare_vendors.py::_load_vendors</code> and <code>test_compare_vendors.py::test_load_vendors_rejects_a_label_with_an_unsafe_character</code> plus <code>::test_load_vendors_accepts_the_labels_the_committed_specs_use</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -8540,7 +8550,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 21, 2026 03:33:02 UTC">August 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 03:49:20 UTC">August 22, 2026</span>
   </span>
 
     
