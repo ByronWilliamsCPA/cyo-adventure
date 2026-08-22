@@ -1,0 +1,36 @@
+{
+ "leg": "deepseek-v4-pro",
+ "family": "deepseek",
+ "cell_id": "A",
+ "band": "5-8",
+ "length": "short",
+ "style": "prose",
+ "replicate": 3,
+ "premise": "On the first snowy day, Priya must find her little brother's boot, lost somewhere along the sled run, before their walk home.",
+ "attempts": 3,
+ "repair_rounds": 2,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 1,
+ "findings_lines_per_round": [
+  1,
+  2,
+  2
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 176.09,
+ "input_tokens": 15670,
+ "output_tokens": 14005,
+ "reasoning_tokens": 0,
+ "finish_reasons": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "min_catalog_distance": 0.24196284108048816,
+ "mean_catalog_distance": 0.4222618069529246,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "last_feedback": "ERROR   L1-3   node=N27 L1-3 reach: node 'N27' is unreachable from start_node 'N01' in story 'priyas-snowy-boot-search'\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1-2026-08-21/shells/A__r3__deepseek-v4-pro.json failed structural validation: L1-3 reach: node 'N27' is unreachable from start_node 'N01' in story 'priyas-snowy-boot-search'",
+ "shell_file": "shells/A__r3__deepseek-v4-pro.json",
+ "error": "ProviderError: openrouter returned leg-fatal HTTP 402 (authentication or credit failure)"
+}

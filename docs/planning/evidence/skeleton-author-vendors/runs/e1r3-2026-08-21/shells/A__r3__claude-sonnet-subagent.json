@@ -1,0 +1,454 @@
+{
+ "schema_version": "2.0",
+ "id": "priya-arjun-lost-boot",
+ "version": 1,
+ "title": "The Missing Snow Boot",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "sibling teamwork",
+   "winter adventure",
+   "problem solving",
+   "asking for help",
+   "persistence"
+  ],
+  "estimated_minutes": 2,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=25 beats='On the first snowy day, Priya and her little brother Arjun climb off their sled at the bottom of Maple Hill and Arjun has only one snow boot on. Mom is waiting at home for their walk back before dinner.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "start_ch1",
+     "label": "Look around for the missing boot",
+     "target": "opening_decision"
+    }
+   ]
+  },
+  {
+   "id": "opening_decision",
+   "body": "<<FILL role=decision words=40 beats='Priya looks up the snowy hill where their sled ride began, then down toward the flatter ground with the pond and toboggan lane, then thinks about the workers who might help. She decides where to start looking for Arjuns boot.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "opening_decision_ch1",
+     "label": "Search near the top of the hill",
+     "target": "top_hill"
+    },
+    {
+     "id": "opening_decision_ch2",
+     "label": "Search near the bottom of the hill",
+     "target": "bottom_hill"
+    },
+    {
+     "id": "opening_decision_ch3",
+     "label": "Find a grownup to help",
+     "target": "ask_grownup"
+    }
+   ]
+  },
+  {
+   "id": "top_hill",
+   "body": "<<FILL role=decision words=45 beats='At the top of Maple Hill, snow keeps falling. Priya spots the row of tall pine trees on one side and the snow fort the neighborhood kids built on the other. Both look like places Arjuns boot could have flown off during the ride.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "top_hill_ch1",
+     "label": "Check the pine trees",
+     "target": "pine_grove"
+    },
+    {
+     "id": "top_hill_ch2",
+     "label": "Check the snow fort",
+     "target": "snow_fort"
+    }
+   ]
+  },
+  {
+   "id": "pine_grove",
+   "body": "<<FILL role=transition words=25 beats='Priya and Arjun walk under the snowy pine branches, boots crunching through fresh powder, scanning the ground on both sides of the narrow path for any flash of red.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "pine_grove_ch1",
+     "label": "Look closer among the trees",
+     "target": "pine_grove_clue"
+    }
+   ]
+  },
+  {
+   "id": "pine_grove_clue",
+   "body": "<<FILL role=transition words=15 beats='Near the last pine tree, Priya notices a low drift beneath the lowest branch, snow piled just enough to hide something small.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "pine_grove_clue_ch1",
+     "label": "Dig into the drift",
+     "target": "pine_grove_search"
+    }
+   ]
+  },
+  {
+   "id": "pine_grove_search",
+   "body": "<<FILL role=climax words=35 beats='Priya kneels and digs carefully into the cold snow while Arjun watches, hopping on one sock foot to stay warm. Something red might be buried here, or the search might turn up nothing at all.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "pine_grove_search_ch1",
+     "label": "Pull out what you found",
+     "target": "end_found_happy"
+    },
+    {
+     "id": "pine_grove_search_ch2",
+     "label": "Decide it's time to head home instead",
+     "target": "end_home_without_boot"
+    }
+   ]
+  },
+  {
+   "id": "end_found_happy",
+   "body": "<<FILL role=ending words=58 beats='Right where they dig, half buried but bright red against the white snow, is Arjuns missing boot. Arjun cheers and hops on one foot while Priya brushes it off. They pull it on together and head home just as the streetlights blink on, right on time for dinner.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_found_happy",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Found It!"
+   }
+  },
+  {
+   "id": "end_home_without_boot",
+   "body": "<<FILL role=ending words=55 beats='The drift turns up nothing but old pine needles and a pinecone. Priya crouches down so Arjun can climb onto her back, and she carries him piggyback all the way home, both of them planning to search again tomorrow.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_home_without_boot",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "A Piggyback Ride Home"
+   }
+  },
+  {
+   "id": "snow_fort",
+   "body": "<<FILL role=transition words=15 beats='Priya and Arjun duck into the snow fort, checking the walls Arjun helped build last weekend.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "snow_fort_ch1",
+     "label": "Check behind the fort wall",
+     "target": "snow_fort_search"
+    }
+   ]
+  },
+  {
+   "id": "snow_fort_search",
+   "body": "<<FILL role=climax words=15 beats='Behind the forts back wall, a lump under fresh snow catches Priyas eye. She brushes the snow away while Arjun leans in close.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "snow_fort_search_ch1",
+     "label": "See what is underneath",
+     "target": "end_found_muddy"
+    }
+   ]
+  },
+  {
+   "id": "end_found_muddy",
+   "body": "<<FILL role=ending words=35 beats='Buried behind the wall is a small, slightly muddy snow boot, a little squished but definitely Arjuns. Arjun laughs at how silly it looks and pulls it on anyway, and they head home together, boots and all.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_found_muddy",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Muddy Surprise"
+   }
+  },
+  {
+   "id": "bottom_hill",
+   "body": "<<FILL role=decision words=45 beats='At the bottom of the hill, Priya sees the frozen pond glittering under the snow clouds and the toboggan track curving off to the side. Sled tracks crisscross everywhere, making it hard to know which way to look first.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "bottom_hill_ch1",
+     "label": "Walk along the frozen pond",
+     "target": "frozen_pond"
+    },
+    {
+     "id": "bottom_hill_ch2",
+     "label": "Check the toboggan track",
+     "target": "toboggan_track"
+    }
+   ]
+  },
+  {
+   "id": "frozen_pond",
+   "body": "<<FILL role=transition words=25 beats='Priya keeps Arjun a safe distance from the ice and they walk the snowy bank together, scanning the ground near the reeds for footprints or a bright flash of red.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "frozen_pond_ch1",
+     "label": "Follow the footprints by the reeds",
+     "target": "frozen_pond_footprints"
+    }
+   ]
+  },
+  {
+   "id": "frozen_pond_footprints",
+   "body": "<<FILL role=transition words=15 beats='Near a clump of reeds by the water, small footprints lead to a spot where the snow looks freshly disturbed.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "frozen_pond_footprints_ch1",
+     "label": "Look where the footprints stop",
+     "target": "frozen_pond_search"
+    }
+   ]
+  },
+  {
+   "id": "frozen_pond_search",
+   "body": "<<FILL role=climax words=35 beats='Priya crouches by the disturbed snow, unsure what she will find. The light is starting to soften as afternoon rolls toward evening, and Arjun tugs at her sleeve, waiting.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "frozen_pond_search_ch1",
+     "label": "Dig in right away",
+     "target": "end_found_by_friend"
+    },
+    {
+     "id": "frozen_pond_search_ch2",
+     "label": "Decide it is getting too late to keep looking",
+     "target": "end_dusk_return_tomorrow"
+    }
+   ]
+  },
+  {
+   "id": "end_found_by_friend",
+   "body": "<<FILL role=ending words=58 beats='Right at the edge of the reeds, Priya and Arjun find their neighbor Mira crouched down, holding Arjuns boot. She found it near the pond an hour ago and was waiting to run into them. The three of them walk home together, laughing about the snowy search.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_found_by_friend",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Friend Nearby"
+   }
+  },
+  {
+   "id": "end_dusk_return_tomorrow",
+   "body": "<<FILL role=ending words=55 beats='The light is fading fast and the first streetlamp flickers on above the trees. Priya takes Arjuns hand and they start the walk home, already planning to come back first thing tomorrow with Dad to search in the bright new light.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_dusk_return_tomorrow",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Tomorrow in Daylight"
+   }
+  },
+  {
+   "id": "toboggan_track",
+   "body": "<<FILL role=transition words=15 beats='Priya and Arjun walk along the edge of the smooth toboggan lane, checking the snowbanks on either side for a patch of red.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "toboggan_track_ch1",
+     "label": "Dig into the uneven patch",
+     "target": "toboggan_track_search"
+    }
+   ]
+  },
+  {
+   "id": "toboggan_track_search",
+   "body": "<<FILL role=climax words=35 beats='A patch of snow near the end of the lane looks kicked up and uneven. Priya digs through it while Arjun shivers a little in the cold, and the light is starting to fade, making her wonder if it is time to stop.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "toboggan_track_search_ch1",
+     "label": "Reach all the way to the bottom",
+     "target": "end_found_with_mitten"
+    },
+    {
+     "id": "toboggan_track_search_ch2",
+     "label": "Decide it is too cold to keep digging",
+     "target": "end_toboggan_too_cold"
+    }
+   ]
+  },
+  {
+   "id": "end_found_with_mitten",
+   "body": "<<FILL role=ending words=35 beats='Along with the missing boot, Priya finds Arjuns striped mitten from last winter tucked into the same snowy spot. Arjun cannot believe his luck. They gather both treasures and walk home with a funny story to tell at dinner.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_found_with_mitten",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Two Treasures at Once"
+   }
+  },
+  {
+   "id": "end_toboggan_too_cold",
+   "body": "<<FILL role=ending words=50 beats='The cold bites at Arjuns fingers and the sky is turning grey. Priya zips his coat up tight and they leave the toboggan lane behind, agreeing to come back with warmer mittens and more daylight to finish the search.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_toboggan_too_cold",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Too Cold to Keep Digging"
+   }
+  },
+  {
+   "id": "ask_grownup",
+   "body": "<<FILL role=decision words=50 beats='Priya decides it might be faster to ask someone who works on the hill. She sees the small ranger station by the parking lot, the ski patrol hut near the flagpole, and the lift operator booth by the rope tow.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ask_grownup_ch1",
+     "label": "Go to the ranger station",
+     "target": "ranger_station"
+    },
+    {
+     "id": "ask_grownup_ch2",
+     "label": "Go to the ski patrol hut",
+     "target": "ski_patrol_hut"
+    },
+    {
+     "id": "ask_grownup_ch3",
+     "label": "Go to the lift operator booth",
+     "target": "lift_operator_booth"
+    }
+   ]
+  },
+  {
+   "id": "ranger_station",
+   "body": "<<FILL role=transition words=25 beats='Inside the warm ranger station, a ranger named Mr Oso looks up from his clipboard and waves Priya over, glad to help with a missing boot.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ranger_station_ch1",
+     "label": "Ask Mr Oso for help",
+     "target": "ranger_search"
+    }
+   ]
+  },
+  {
+   "id": "ranger_search",
+   "body": "<<FILL role=climax words=15 beats='Mr Oso pulls out a bin of mittens, hats, and boots collected from around the hill that afternoon, and Priya starts looking through it while Arjun peers over the edge.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ranger_search_ch1",
+     "label": "Search all the way through the bin",
+     "target": "end_boot_turned_in"
+    }
+   ]
+  },
+  {
+   "id": "end_boot_turned_in",
+   "body": "<<FILL role=ending words=35 beats='Near the bottom of the bin, under a striped scarf, Priya finds a small snow boot that matches Arjuns other one perfectly. Someone had turned it in earlier that afternoon. Mr Oso smiles and writes it down, and Priya and Arjun head home with both boots back where they belong.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_boot_turned_in",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Someone Turned It In"
+   }
+  },
+  {
+   "id": "ski_patrol_hut",
+   "body": "<<FILL role=transition words=25 beats='The ski patrol hut smells like pine and warm coffee, and a patroller named Dana listens closely as Priya explains what happened to Arjuns boot.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ski_patrol_hut_ch1",
+     "label": "Tell Dana what happened",
+     "target": "patrol_search"
+    }
+   ]
+  },
+  {
+   "id": "patrol_search",
+   "body": "<<FILL role=climax words=15 beats='Dana digs through a supply closet of leftover winter gear while Arjun waits by the door, hopeful, watching the fading afternoon light through the window.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "patrol_search_ch1",
+     "label": "See what Dana finds",
+     "target": "end_spare_boots"
+    }
+   ]
+  },
+  {
+   "id": "end_spare_boots",
+   "body": "<<FILL role=ending words=35 beats='The closet does not have the missing boot, but a nearly new pair, left behind last week, turns out to be just Arjuns size. Arjun tries them on and grins, wiggling his toes. They will look for the old boot another day, but tonight he walks home warm and dry.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_spare_boots",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Brand New Pair"
+   }
+  },
+  {
+   "id": "lift_operator_booth",
+   "body": "<<FILL role=transition words=15 beats='At the lift operator booth, a worker named Sam is bundled in a thick coat, watching riders line up for the rope tow.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "lift_operator_booth_ch1",
+     "label": "Ask Sam if he saw anything",
+     "target": "lift_search"
+    }
+   ]
+  },
+  {
+   "id": "lift_search",
+   "body": "<<FILL role=climax words=15 beats='Sam remembers seeing something small and red near the bottom of the rope tow earlier that day, and Priya and Arjun hurry over to check the trampled snow.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "lift_search_ch1",
+     "label": "Look right where Sam pointed",
+     "target": "end_boot_on_top"
+    }
+   ]
+  },
+  {
+   "id": "end_boot_on_top",
+   "body": "<<FILL role=ending words=35 beats='Right where Sam pointed, tucked against a post by the rope tow, is Arjuns small snow boot, easy to spot once they know where to look. Arjun squeals and pulls it on immediately. Priya thanks Sam, and the two of them head home with plenty of time to spare before dinner.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_boot_on_top",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Right by the Rope Tow"
+   }
+  }
+ ]
+}

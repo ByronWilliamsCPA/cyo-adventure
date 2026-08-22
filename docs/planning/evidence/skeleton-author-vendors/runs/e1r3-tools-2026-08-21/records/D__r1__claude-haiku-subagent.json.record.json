@@ -1,0 +1,30 @@
+{
+ "leg": "claude-haiku-subagent",
+ "family": "anthropic",
+ "cell_id": "D",
+ "band": "10-13",
+ "length": "short",
+ "style": "prose",
+ "replicate": 1,
+ "premise": "A junk-shop chess set turns out to have one piece too many, carved differently from the rest, and Wren traces where the extra piece began.",
+ "attempts": 1,
+ "repair_rounds": 0,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  11
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 0.0,
+ "input_tokens": null,
+ "output_tokens": null,
+ "reasoning_tokens": null,
+ "finish_reasons": [],
+ "min_catalog_distance": 0.29420136476340303,
+ "mean_catalog_distance": 0.5063250538767673,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "last_feedback": "WARNING CG-3   node=node-004 CG-3 grammar: composed stop starting at node 'node-004' totals ~158 words, above band '10-13' words-per-stop ceiling 150 in story 'the-extra-chess-piece' (advisory only; stop nodes: ['node-004', 'node-005'])\nWARNING CG-3   node=node-008 CG-3 grammar: composed stop starting at node 'node-008' totals ~158 words, above band '10-13' words-per-stop ceiling 150 in story 'the-extra-chess-piece' (advisory only; stop nodes: ['node-008', 'node-009'])\nWARNING CG-3   node=node-012 CG-3 grammar: composed stop starting at node 'node-012' totals ~158 words, above band '10-13' words-per-stop ceiling 150 in story 'the-extra-chess-piece' (advisory only; stop nodes: ['node-012', 'node-013'])\nstats: nodes=17 endings=9 fill_nodes=17 cell=(10-13, short, prose) topology=sorting_hat tier=1\nwalk: P(satisfying ending, uniform reader) 100.0% (floor 15% for 10-13 prose)\nclock: declared estimated_minutes 3 vs derived 3 (PL-23 tolerance 25%)\nreconvergence: max in-degree 1 (hard cap 6 for 10-13 sorting_hat)\nendings depth-qualified: 9 of 9 at depth >= 4 against floor 3\nFAIL strict: CG-3 advisory is blocking for a newly drafted skeleton: CG-3 grammar: composed stop starting at node 'node-004' totals ~158 words, above band '10-13' words-per-stop ceiling 150 in story 'the-extra-chess-piece' (advisory only; stop nodes: ['node-004', 'node-005'])\nFAIL strict: CG-3 advisory is blocking for a newly drafted skeleton: CG-3 grammar: composed stop starting at node 'node-008' totals ~158 words, above band '10-13' words-per-stop ceiling 150 in story 'the-extra-chess-piece' (advisory only; stop nodes: ['node-008', 'node-009'])\nFAIL strict: CG-3 advisory is blocking for a newly drafted skeleton: CG-3 grammar: composed stop starting at node 'node-012' totals ~158 words, above band '10-13' words-per-stop ceiling 150 in story 'the-extra-chess-piece' (advisory only; stop nodes: ['node-012', 'node-013'])",
+ "shell_file": "shells/D__r1__claude-haiku-subagent.json",
+ "error": ""
+}

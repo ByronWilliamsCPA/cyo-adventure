@@ -1,0 +1,589 @@
+{
+ "schema_version": "2.0",
+ "id": "priya-and-the-missing-boot",
+ "version": 1,
+ "title": "Priya and the Missing Boot",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "open_map",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "winter play",
+   "sibling care",
+   "not giving up",
+   "asking for help",
+   "solving a puzzle"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 9,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n01_first_snow",
+ "nodes": [
+  {
+   "id": "n01_first_snow",
+   "body": "<<FILL role=setup words=32 beats='first snowy day at Cedar Hill park; Priya and little brother Arjun sledded all afternoon; now Arjun stands on one foot because the red boot with the yellow stripe is gone'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c01a",
+     "label": "Start looking before the lights come on",
+     "target": "n02_park_map"
+    }
+   ]
+  },
+  {
+   "id": "n02_park_map",
+   "body": "<<FILL role=decision words=36 beats='Mom says be home before the streetlights blink on; Priya pictures the whole park like a map in her head; Arjun sock is already soggy; three ways to start'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c02a",
+     "label": "Go up the big sled hill",
+     "target": "a1_sled_hill"
+    },
+    {
+     "id": "c02b",
+     "label": "Go to the bend by the pines",
+     "target": "a2_pine_bend"
+    },
+    {
+     "id": "c02c",
+     "label": "Go into the warming hut",
+     "target": "a3_warming_hut"
+    }
+   ]
+  },
+  {
+   "id": "a1_sled_hill",
+   "body": "<<FILL role=explore words=69 beats='the sled run is packed shiny and crowded and sleds whoosh past Priya boots; she shades her eyes and hunts for one spot of red in all that white; Arjun hops behind her with his wet sock stuffed inside a mitten; from the top she can see the fort, the tracks, and the jump'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ca1a",
+     "label": "Walk the sled tracks down",
+     "target": "b1_sled_tracks"
+    },
+    {
+     "id": "ca1b",
+     "label": "Look inside the snow fort",
+     "target": "b2_snow_fort"
+    },
+    {
+     "id": "ca1c",
+     "label": "Check the jump at the bottom",
+     "target": "b3_little_jump"
+    }
+   ]
+  },
+  {
+   "id": "a2_pine_bend",
+   "body": "<<FILL role=explore words=69 beats='the sled run curves hard past three big pines and the plow left a snow wall taller than Arjun; loaded branches drop soft clumps on Priya hat; sled ruts run on down the hill toward the jump and paw prints go the other way'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ca2a",
+     "label": "Follow the run down from the bend",
+     "target": "b1_sled_tracks"
+    },
+    {
+     "id": "ca2b",
+     "label": "Check the jump at the bottom",
+     "target": "b3_little_jump"
+    },
+    {
+     "id": "ca2c",
+     "label": "Dig at the tall plow wall",
+     "target": "b4_plow_drift"
+    }
+   ]
+  },
+  {
+   "id": "a3_warming_hut",
+   "body": "<<FILL role=explore words=69 beats='the warming hut smells like cocoa and wet wool and mittens steam on the radiator rail; a cardboard lost and found box sits under the window; Mr. Okafor sweeps slush by the door and asks Priya what she is missing; through the glass she can see the plow pile and the snow fort'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ca3a",
+     "label": "Look in the lost and found box",
+     "target": "b5_lost_box"
+    },
+    {
+     "id": "ca3b",
+     "label": "Dig at the plow pile outside",
+     "target": "b4_plow_drift"
+    },
+    {
+     "id": "ca3c",
+     "label": "Check the snow fort out back",
+     "target": "b2_snow_fort"
+    }
+   ]
+  },
+  {
+   "id": "b1_sled_tracks",
+   "body": "<<FILL role=explore words=69 beats='Priya walks the shiny groove down the hill like it is a road; near the bottom the groove splits and there is a scuffed patch where somebody landed hard; Mia and Max wave from their blue toboggan; the wooden ramp and the snow angel field are both a short walk away'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cb1a",
+     "label": "Cross to the snow angel field",
+     "target": "c2_snow_angel_field"
+    },
+    {
+     "id": "cb1b",
+     "label": "Ask the twins with the toboggan",
+     "target": "c3_the_twins"
+    },
+    {
+     "id": "cb1c",
+     "label": "Look under the wooden ramp",
+     "target": "c6_ramp_shadow"
+    }
+   ]
+  },
+  {
+   "id": "b2_snow_fort",
+   "body": "<<FILL role=explore words=69 beats='the fort is a lopsided ring of snow bricks with a low crawling door; inside Priya finds two paper cups, a striped scarf, and a squashed hat; no boot, but one small red mitten that belongs to Arjun; the fort kids say lost things get tied to the fence post'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cb2a",
+     "label": "Ask the twins about the boot",
+     "target": "c3_the_twins"
+    },
+    {
+     "id": "cb2b",
+     "label": "Take the mitten to the fence post",
+     "target": "c4_fence_post"
+    },
+    {
+     "id": "cb2c",
+     "label": "Peek under the wooden ramp",
+     "target": "c6_ramp_shadow"
+    }
+   ]
+  },
+  {
+   "id": "b3_little_jump",
+   "body": "<<FILL role=explore words=69 beats='the jump is a ramp of packed snow over an old board and riders lose hats and mittens off it every single run; the landing is chewed up and messy; a dog is barking somewhere below it, and drag marks lead off toward the field of snow angels'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cb3a",
+     "label": "Look under the wooden ramp",
+     "target": "c6_ramp_shadow"
+    },
+    {
+     "id": "cb3b",
+     "label": "Follow the paw prints",
+     "target": "c1_paw_prints"
+    },
+    {
+     "id": "cb3c",
+     "label": "Cross to the snow angel field",
+     "target": "c2_snow_angel_field"
+    }
+   ]
+  },
+  {
+   "id": "b4_plow_drift",
+   "body": "<<FILL role=explore words=69 beats='the plow left a small gray mountain and Priya digs into it with both hands; out comes a stiff frozen glove, then a knotted sled rope, then nothing at all; round paw prints ring the base of the pile and a line of frozen puddles leads away past it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cb4a",
+     "label": "Follow the paw prints",
+     "target": "c1_paw_prints"
+    },
+    {
+     "id": "cb4b",
+     "label": "Follow the drag marks to the field",
+     "target": "c2_snow_angel_field"
+    },
+    {
+     "id": "cb4c",
+     "label": "Check the frozen puddles",
+     "target": "c5_frozen_puddles"
+    }
+   ]
+  },
+  {
+   "id": "b5_lost_box",
+   "body": "<<FILL role=explore words=69 beats='the box holds one green boot, a coach whistle, and a hat with a droopy pom pom, but no red boot with a yellow stripe; taped inside the lid is a note saying a small mitten was tied to the fence post; Mr. Okafor says to try the puddle path and to ask the twins'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cb5a",
+     "label": "Go see the fence post",
+     "target": "c4_fence_post"
+    },
+    {
+     "id": "cb5b",
+     "label": "Check the frozen puddles",
+     "target": "c5_frozen_puddles"
+    },
+    {
+     "id": "cb5c",
+     "label": "Ask the twins outside",
+     "target": "c3_the_twins"
+    }
+   ]
+  },
+  {
+   "id": "c1_paw_prints",
+   "body": "<<FILL role=explore words=69 beats='round paw prints march along with a dragging line beside them, like something heavy is being carried; Priya knows those prints belong to Biscuit, the shaggy dog from the corner house; the trail ducks under the low pine branches; Biscuit is bouncing three steps away, and the warm hut is just up the path if Arjun toes need it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cc1a",
+     "label": "Crawl to the den under the branches",
+     "target": "d1_biscuit_den"
+    },
+    {
+     "id": "cc1b",
+     "label": "Whistle for Biscuit to come",
+     "target": "d5_biscuit_keepaway"
+    },
+    {
+     "id": "cc1c",
+     "label": "Go back to the warming hut",
+     "target": "a3_warming_hut"
+    }
+   ]
+  },
+  {
+   "id": "c2_snow_angel_field",
+   "body": "<<FILL role=explore words=69 beats='the flat field is covered in snow angels, wing over wing, and one angel has a deep boot shaped dent beside it the size of Arjun foot; the wind picks up and stings Priya cheeks; the wooden ramp sits across the field, Biscuit prances past, and the sky over the gate is going pink'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cc2a",
+     "label": "Search under the wooden ramp",
+     "target": "d2_under_the_ramp"
+    },
+    {
+     "id": "cc2b",
+     "label": "Call the dog with the red thing",
+     "target": "d5_biscuit_keepaway"
+    },
+    {
+     "id": "cc2c",
+     "label": "Watch the sky over the gate",
+     "target": "d6_streetlight_minute"
+    }
+   ]
+  },
+  {
+   "id": "c3_the_twins",
+   "body": "<<FILL role=explore words=69 beats='Mia and Max share one blue toboggan and talk at the exact same time; they saw something red fly off a sled near the wooden ramp, or maybe it was up at the very top of the hill; Mr. Okafor keeps a spare boot on the hut bench for kids who get soaked; the twins offer to help look'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cc3a",
+     "label": "Dig under the wooden ramp",
+     "target": "d2_under_the_ramp"
+    },
+    {
+     "id": "cc3b",
+     "label": "Sit on the hut bench",
+     "target": "d4_spare_boot_bench"
+    },
+    {
+     "id": "cc3c",
+     "label": "Go back up the sled hill",
+     "target": "a1_sled_hill"
+    }
+   ]
+  },
+  {
+   "id": "c4_fence_post",
+   "body": "<<FILL role=explore words=69 beats='a small red mitten is knotted around the fence post and waves like a little flag, but it is Arjun mitten and not his boot; somebody drew a chalk arrow on the post pointing along the fence toward the puddle path; the hut windows glow yellow, and fresh paw prints cross the snow'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cc4a",
+     "label": "Rest on the hut bench",
+     "target": "d4_spare_boot_bench"
+    },
+    {
+     "id": "cc4b",
+     "label": "Follow the arrow to the puddles",
+     "target": "d3_ice_puddle"
+    },
+    {
+     "id": "cc4c",
+     "label": "Follow the fresh paw prints",
+     "target": "d1_biscuit_den"
+    }
+   ]
+  },
+  {
+   "id": "c5_frozen_puddles",
+   "body": "<<FILL role=explore words=69 beats='the frozen puddles look like little windows with leaves and grass caught inside them; at the edge of the widest one a curve of red is frozen into the ice; the sky turns pink over the rooftops; the warm hut bench is close, and so is the park gate where Mom will wait'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cc5a",
+     "label": "Kneel by the red curve in the ice",
+     "target": "d3_ice_puddle"
+    },
+    {
+     "id": "cc5b",
+     "label": "Look up at the gate light",
+     "target": "d6_streetlight_minute"
+    },
+    {
+     "id": "cc5c",
+     "label": "Warm up on the hut bench first",
+     "target": "d4_spare_boot_bench"
+    }
+   ]
+  },
+  {
+   "id": "c6_ramp_shadow",
+   "body": "<<FILL role=explore words=69 beats='under the ramp is a cold blue cave of packed ice and lost things: a bottle cap, a broken sled runner, and far back in the shadow one flash of red; Priya arm is much too short to reach it; paw prints lead away from the ramp, and the sled ruts point back uphill to the bend by the pines'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cc6a",
+     "label": "Dig into the packed snow",
+     "target": "d2_under_the_ramp"
+    },
+    {
+     "id": "cc6b",
+     "label": "Follow the paw prints away",
+     "target": "d1_biscuit_den"
+    },
+    {
+     "id": "cc6c",
+     "label": "Go back to the bend by the pines",
+     "target": "a2_pine_bend"
+    }
+   ]
+  },
+  {
+   "id": "d1_biscuit_den",
+   "body": "<<FILL role=climax words=69 beats='under the low pine branches is Biscuit private den, lined with pine needles and treasure: a glove, a chewed tennis ball, and the red boot with the yellow stripe; Biscuit watches Priya with his ears straight up and his tail thumping; she finds one cracker left in her coat pocket'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cd1a",
+     "label": "Trade Biscuit the cracker",
+     "target": "e01_fair_trade"
+    },
+    {
+     "id": "cd1b",
+     "label": "Grab the boot and run home",
+     "target": "e02_home_before_lights"
+    }
+   ]
+  },
+  {
+   "id": "d2_under_the_ramp",
+   "body": "<<FILL role=climax words=69 beats='Priya scrapes one layer away and there it is, the yellow stripe, but the boot is packed into hard crusty snow that will not let go; Arjun kneels and pushes with both mittens; her fingers are so cold they barely bend; the hut door with its warm tap is thirty steps away'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cd2a",
+     "label": "Pull the boot free together",
+     "target": "e03_two_warm_feet"
+    },
+    {
+     "id": "cd2b",
+     "label": "Run to the hut for warm water",
+     "target": "e04_warm_water_trick"
+    }
+   ]
+  },
+  {
+   "id": "d3_ice_puddle",
+   "body": "<<FILL role=climax words=69 beats='the curve of red is the heel of the boot, frozen right into the puddle like a fossil; a good chipping stick lies at the edge of the path; the first streetlight starts to hum and warm up; Mom is waving from under it at the park gate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cd3a",
+     "label": "Chip the ice until it lets go",
+     "target": "e05_long_slow_dig"
+    },
+    {
+     "id": "cd3b",
+     "label": "Leave it and go to Mom",
+     "target": "e08_one_boot_left_behind"
+    }
+   ]
+  },
+  {
+   "id": "d4_spare_boot_bench",
+   "body": "<<FILL role=climax words=69 beats='the bench beside the hut door is out of the wind and Arjun toes have gone from cold to numb; Mr. Okafor holds out the green spare boot and a dry wool sock; the boot is one size too big but it fits, and the bend by the pines is on the way to the gate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cd4a",
+     "label": "Take one last look at the bend",
+     "target": "e06_found_at_the_bend"
+    },
+    {
+     "id": "cd4b",
+     "label": "Walk home in the borrowed boot",
+     "target": "e07_borrowed_green_boot"
+    }
+   ]
+  },
+  {
+   "id": "d5_biscuit_keepaway",
+   "body": "<<FILL role=climax words=69 beats='Biscuit prances backward with the red boot swinging from his mouth and his tail going like a windshield wiper; every step Priya takes toward him he takes two steps away; Arjun laughs so hard he sits down in the snow; chasing is clearly the game Biscuit wants'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cd5a",
+     "label": "Kneel down and wait quietly",
+     "target": "e09_biscuit_brings_it_back"
+    },
+    {
+     "id": "cd5b",
+     "label": "Follow Biscuit to the gate",
+     "target": "e02_home_before_lights"
+    }
+   ]
+  },
+  {
+   "id": "d6_streetlight_minute",
+   "body": "<<FILL role=climax words=69 beats='the first streetlight flickers, hums, and glows orange over the park gate where Mom is waving both arms; the red curve of the boot is still locked in the ice by Priya knee; she has about one minute to decide, and either way the two of them are walking home together'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "cd6a",
+     "label": "Free the boot in one minute",
+     "target": "e03_two_warm_feet"
+    },
+    {
+     "id": "cd6b",
+     "label": "Leave it and go to Mom",
+     "target": "e08_one_boot_left_behind"
+    }
+   ]
+  },
+  {
+   "id": "e01_fair_trade",
+   "body": "<<FILL role=ending words=66 beats='Priya holds the cracker out flat on her mitten and Biscuit trades her the boot without any fuss at all; she knocks the pine needles out of it and Arjun jams his cold foot down inside; Biscuit walks the whole way to the gate with them like a shaggy snowy escort'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_fair_trade",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Fair Trade with Biscuit"
+   }
+  },
+  {
+   "id": "e02_home_before_lights",
+   "body": "<<FILL role=ending words=66 beats='the red boot is back in Priya hands just as the first streetlight blinks awake over the park gate; the two of them reach Mom together with snow down their collars and their cheeks bright pink; Mom counts two boots and one very cold sock, and there is cocoa waiting at home'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_home_before_lights",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Home Before the Lights"
+   }
+  },
+  {
+   "id": "e03_two_warm_feet",
+   "body": "<<FILL role=ending words=66 beats='the boot comes loose all at once and Priya lands flat on her back laughing in the snow; Arjun shakes the ice out of it and pushes his foot down where it belongs; two warm feet crunch home side by side, and he tells Mom the whole rescue story twice'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_two_warm_feet",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Two Warm Feet"
+   }
+  },
+  {
+   "id": "e04_warm_water_trick",
+   "body": "<<FILL role=ending words=66 beats='Mr. Okafor fills a paper cup at the hut tap and shows Priya how to pour it slow all around the edges; the ice lets go with one small crack and the boot slides right out into her hands; Priya decides that is the best trick she has learned all winter long'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_warm_water_trick",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Warm Water Trick"
+   }
+  },
+  {
+   "id": "e05_long_slow_dig",
+   "body": "<<FILL role=ending words=66 beats='Priya wraps her hands inside her scarf and chips at the ice on and on until the boot finally tips free, stiff and crusted with slush; Arjun wears the dry wool sock inside it and squelches happily; they walk home slow, a little bit late and a whole lot proud'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_long_slow_dig",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Long Slow Dig"
+   }
+  },
+  {
+   "id": "e06_found_at_the_bend",
+   "body": "<<FILL role=ending words=66 beats='at the bend Priya looks up instead of down, and there it is, the red boot hooked on a pine branch where a fast sled flung it; she shakes the branch until it drops in the snow; Arjun walks home wearing one red boot and one borrowed green one'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_found_at_the_bend",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Found at the Bend"
+   }
+  },
+  {
+   "id": "e07_borrowed_green_boot",
+   "body": "<<FILL role=ending words=66 beats='the red boot stays hidden somewhere under all that snow tonight; Arjun clomps home happy and warm in a green boot two sizes too big for him; Mr. Okafor promises to watch the lost and found box, and Priya promises Arjun she will come back and look again tomorrow'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_borrowed_green_boot",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Borrowed Green Boot"
+   }
+  },
+  {
+   "id": "e08_one_boot_left_behind",
+   "body": "<<FILL role=ending words=66 beats='Priya leaves the red curve frozen in the puddle and carries Arjun the last stretch to the gate on her back; the boot is still out there in the dark quiet park and she feels the pinch of that; Mom says the thaw is coming Thursday and the three of them will look then'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_one_boot_left_behind",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "One Boot Left Behind"
+   }
+  },
+  {
+   "id": "e09_biscuit_brings_it_back",
+   "body": "<<FILL role=ending words=66 beats='Priya kneels down in the snow and goes completely still, and after a long moment Biscuit trots over and drops the soggy boot right in her lap; she scratches his ears and thanks him like she really means it; Arjun tells everyone the dog gave it back on purpose'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_biscuit_brings_it_back",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Biscuit Brings It Back"
+   }
+  }
+ ]
+}

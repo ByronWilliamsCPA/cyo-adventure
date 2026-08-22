@@ -1,0 +1,30 @@
+{
+ "leg": "claude-haiku-subagent",
+ "family": "anthropic",
+ "cell_id": "D",
+ "band": "10-13",
+ "length": "short",
+ "style": "prose",
+ "replicate": 2,
+ "premise": "Two nights before opening, the school play's lead quits, and stage manager Cass must re-plan the show around who is left.",
+ "attempts": 1,
+ "repair_rounds": 0,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  4
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 0.0,
+ "input_tokens": null,
+ "output_tokens": null,
+ "reasoning_tokens": null,
+ "finish_reasons": [],
+ "min_catalog_distance": 0.22393309060301786,
+ "mean_catalog_distance": 0.36774084086307696,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "last_feedback": "ERROR   L1-3   node=e11 L1-3 reach: node 'e11' is unreachable from start_node 'n0' in story 'cass-play-crisis'\nERROR   L1-3   node=e16 L1-3 reach: node 'e16' is unreachable from start_node 'n0' in story 'cass-play-crisis'\nERROR   L1-7   L1-7 budget: branch_depth out of range in story 'cass-play-crisis': 10 (allowed 0..9)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-tools-2026-08-21/shells/D__r2__claude-haiku-subagent.json failed structural validation: L1-3 reach: node 'e11' is unreachable from start_node 'n0' in story 'cass-play-crisis'; L1-3 reach: node 'e16' is unreachable from start_node 'n0' in story 'cass-play-crisis'; L1-7 budget: branch_depth out of range in story 'cass-play-crisis': 10 (allowed 0..9)",
+ "shell_file": "shells/D__r2__claude-haiku-subagent.json",
+ "error": ""
+}

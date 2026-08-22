@@ -1,0 +1,665 @@
+{
+ "schema_version": "2.0",
+ "id": "missing-school-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "open_map",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "animals",
+   "school",
+   "mystery"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "intro",
+ "nodes": [
+  {
+   "id": "intro",
+   "is_ending": false,
+   "body": "<<FILL role=setup words=30 beats='Miri realizes Pippa the smallest hen is missing from the school coop'>>",
+   "choices": [
+    {
+     "id": "c-start",
+     "label": "Start looking",
+     "target": "hub"
+    }
+   ]
+  },
+  {
+   "id": "hub",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=30 beats='Miri stands in the main school yard looking around at the different areas'>>",
+   "choices": [
+    {
+     "id": "c-hub-garden",
+     "label": "Go to the garden",
+     "target": "garden"
+    },
+    {
+     "id": "c-hub-playground",
+     "label": "Go to the playground",
+     "target": "playground"
+    },
+    {
+     "id": "c-hub-shed",
+     "label": "Go to the shed",
+     "target": "shed"
+    }
+   ]
+  },
+  {
+   "id": "garden",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri enters the garden seeing a disturbed trail of dirt by the tomatoes'>>",
+   "choices": [
+    {
+     "id": "c-g-comp",
+     "label": "Follow dirt to compost",
+     "target": "compost"
+    },
+    {
+     "id": "c-g-gh",
+     "label": "Check the greenhouse",
+     "target": "greenhouse"
+    }
+   ]
+  },
+  {
+   "id": "compost",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri hears scratching inside the big green compost bin'>>",
+   "choices": [
+    {
+     "id": "c-c-quick",
+     "label": "Lift lid quickly",
+     "target": "quick-lid"
+    },
+    {
+     "id": "c-c-gentle",
+     "label": "Tap on the side",
+     "target": "gentle-tap"
+    }
+   ]
+  },
+  {
+   "id": "quick-lid",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='A frightened gray squirrel jumps out of the bin'>>",
+   "choices": [
+    {
+     "id": "c-ql-chase",
+     "label": "Chase the squirrel",
+     "target": "chase-squirrel"
+    },
+    {
+     "id": "c-ql-hub",
+     "label": "Return to the yard",
+     "target": "hub"
+    }
+   ]
+  },
+  {
+   "id": "chase-squirrel",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri runs after the squirrel toward the big oak tree'>>",
+   "choices": [
+    {
+     "id": "c-cs-climb",
+     "label": "Climb the tree",
+     "target": "climb-tree"
+    },
+    {
+     "id": "c-cs-ignore",
+     "label": "Leave it alone",
+     "target": "ignore-squirrel"
+    }
+   ]
+  },
+  {
+   "id": "climb-tree",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Miri climbs too high and gets stuck needing the teacher to help her down'>>",
+   "choices": [],
+   "ending": {
+    "id": "e-climb-tree",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Stuck in the Branches"
+   }
+  },
+  {
+   "id": "ignore-squirrel",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri lets the squirrel go and walks back to the compost area'>>",
+   "choices": [
+    {
+     "id": "c-is-gentle",
+     "label": "Tap the compost bin",
+     "target": "gentle-tap"
+    },
+    {
+     "id": "c-is-hub",
+     "label": "Return to the yard",
+     "target": "hub"
+    }
+   ]
+  },
+  {
+   "id": "gentle-tap",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri taps the bin and a tiny mouse scurries out from underneath'>>",
+   "choices": [
+    {
+     "id": "c-gt-under",
+     "label": "Look under the bin",
+     "target": "under-bin"
+    },
+    {
+     "id": "c-gt-hub",
+     "label": "Return to the yard",
+     "target": "hub"
+    }
+   ]
+  },
+  {
+   "id": "under-bin",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri finds a shiny wrapper but no signs of Pippa'>>",
+   "choices": [
+    {
+     "id": "c-ub-gh",
+     "label": "Check the greenhouse",
+     "target": "greenhouse"
+    },
+    {
+     "id": "c-ub-hub",
+     "label": "Return to the yard",
+     "target": "hub"
+    }
+   ]
+  },
+  {
+   "id": "greenhouse",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri walks over to the glass greenhouse'>>",
+   "choices": [
+    {
+     "id": "c-gh-win",
+     "label": "Look through the window",
+     "target": "gh-window"
+    },
+    {
+     "id": "c-gh-door",
+     "label": "Try the front door",
+     "target": "gh-door"
+    }
+   ]
+  },
+  {
+   "id": "gh-window",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri spots some white feathers inside the locked greenhouse'>>",
+   "choices": [
+    {
+     "id": "c-ghw-pry",
+     "label": "Try to pry the window",
+     "target": "pry-window"
+    },
+    {
+     "id": "c-ghw-door",
+     "label": "Go to the door",
+     "target": "gh-door"
+    }
+   ]
+  },
+  {
+   "id": "pry-window",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='The window is stuck but Miri finds a small silver key on the sill'>>",
+   "choices": [
+    {
+     "id": "c-pw-enter",
+     "label": "Use the key to enter",
+     "target": "enter-window"
+    },
+    {
+     "id": "c-pw-hub",
+     "label": "Return to the yard",
+     "target": "hub"
+    }
+   ]
+  },
+  {
+   "id": "enter-window",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Miri unlocks the door and finds Pippa happily pecking at some spilled seeds'>>",
+   "choices": [],
+   "ending": {
+    "id": "e-enter-window",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Through the Window"
+   }
+  },
+  {
+   "id": "gh-door",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri finds the greenhouse door is unlocked and steps into the warm air'>>",
+   "choices": [
+    {
+     "id": "c-ghd-pots",
+     "label": "Check the empty pots",
+     "target": "gh-pots"
+    },
+    {
+     "id": "c-ghd-bags",
+     "label": "Look by the soil bags",
+     "target": "gh-bags"
+    }
+   ]
+  },
+  {
+   "id": "gh-pots",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri finds only an old trowel inside the terracotta pots'>>",
+   "choices": [
+    {
+     "id": "c-ghp-bags",
+     "label": "Check the soil bags",
+     "target": "gh-bags"
+    },
+    {
+     "id": "c-ghp-hub",
+     "label": "Return to the yard",
+     "target": "hub"
+    }
+   ]
+  },
+  {
+   "id": "gh-bags",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Miri carefully moves a bag of soil and discovers Pippa resting in a cozy dirt nest'>>",
+   "choices": [],
+   "ending": {
+    "id": "e-gh-bags",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Cozy in the Dirt"
+   }
+  },
+  {
+   "id": "playground",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri enters the colorful playground hoping Pippa wandered this way'>>",
+   "choices": [
+    {
+     "id": "c-p-slide",
+     "label": "Check the slide",
+     "target": "slide"
+    },
+    {
+     "id": "c-p-sand",
+     "label": "Check the sandbox",
+     "target": "sandbox"
+    }
+   ]
+  },
+  {
+   "id": "slide",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri approaches the red plastic slide and sees muddy footprints on the ladder'>>",
+   "choices": [
+    {
+     "id": "c-s-top",
+     "label": "Climb to the top",
+     "target": "slide-top"
+    },
+    {
+     "id": "c-s-under",
+     "label": "Look underneath",
+     "target": "slide-under"
+    }
+   ]
+  },
+  {
+   "id": "slide-top",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri gets a good view of the yard but sees no sign of a hen'>>",
+   "choices": [
+    {
+     "id": "c-st-look",
+     "label": "Look inside the tube",
+     "target": "slide-look"
+    },
+    {
+     "id": "c-st-hub",
+     "label": "Return to the yard",
+     "target": "hub"
+    }
+   ]
+  },
+  {
+   "id": "slide-look",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Miri crawls into the tube slide but gets her foot stuck and needs a teacher to pull her out'>>",
+   "choices": [],
+   "ending": {
+    "id": "e-slide-look",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Too High Up"
+   }
+  },
+  {
+   "id": "slide-under",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri ducks under the slide and finds a fluffy orange cat napping'>>",
+   "choices": [
+    {
+     "id": "c-su-shoo",
+     "label": "Shoo the cat away",
+     "target": "shoo-cat"
+    },
+    {
+     "id": "c-su-sand",
+     "label": "Go to the sandbox",
+     "target": "sandbox"
+    }
+   ]
+  },
+  {
+   "id": "shoo-cat",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri claps her hands and the cat runs off leaving some white feathers behind'>>",
+   "choices": [
+    {
+     "id": "c-sc-follow",
+     "label": "Follow the cat",
+     "target": "follow-cat"
+    },
+    {
+     "id": "c-sc-hub",
+     "label": "Return to the yard",
+     "target": "hub"
+    }
+   ]
+  },
+  {
+   "id": "follow-cat",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Miri follows the feather trail to the fence where Pippa is safely pecking the grass'>>",
+   "choices": [],
+   "ending": {
+    "id": "e-follow-cat",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Following the Feathers"
+   }
+  },
+  {
+   "id": "sandbox",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri sees a strange white lump half-buried in the center of the sandbox'>>",
+   "choices": [
+    {
+     "id": "c-sb-dig",
+     "label": "Dig the lump out",
+     "target": "dig-sand"
+    },
+    {
+     "id": "c-sb-kick",
+     "label": "Kick the sand",
+     "target": "kick-sand"
+    }
+   ]
+  },
+  {
+   "id": "dig-sand",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri digs and uncovers a faded plastic dinosaur toy'>>",
+   "choices": [
+    {
+     "id": "c-ds-bench",
+     "label": "Sit on the bench",
+     "target": "bench-sit"
+    },
+    {
+     "id": "c-ds-kick",
+     "label": "Kick the sand",
+     "target": "kick-sand"
+    }
+   ]
+  },
+  {
+   "id": "bench-sit",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri sits on the wooden bench feeling tired from the search'>>",
+   "choices": [
+    {
+     "id": "c-bs-slide",
+     "label": "Check the slide",
+     "target": "slide"
+    },
+    {
+     "id": "c-bs-hub",
+     "label": "Return to the yard",
+     "target": "hub"
+    }
+   ]
+  },
+  {
+   "id": "kick-sand",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri kicks the dune and hits something solid hidden underneath'>>",
+   "choices": [
+    {
+     "id": "c-ks-treasure",
+     "label": "Dig up the object",
+     "target": "buried-treasure"
+    },
+    {
+     "id": "c-ks-slide",
+     "label": "Check the slide",
+     "target": "slide"
+    }
+   ]
+  },
+  {
+   "id": "buried-treasure",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Miri unearths an old toy truck playing with it for a moment but forgetting about Pippa'>>",
+   "choices": [],
+   "ending": {
+    "id": "e-buried-treasure",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Just an Old Toy"
+   }
+  },
+  {
+   "id": "shed",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri walks up to the wooden shed which has its door open a crack'>>",
+   "choices": [
+    {
+     "id": "c-sh-inside",
+     "label": "Squeeze inside",
+     "target": "shed-inside"
+    },
+    {
+     "id": "c-sh-behind",
+     "label": "Look behind the shed",
+     "target": "shed-behind"
+    }
+   ]
+  },
+  {
+   "id": "shed-inside",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri pushes into the dusty shed smelling old grass clippings'>>",
+   "choices": [
+    {
+     "id": "c-shi-light",
+     "label": "Turn on the light",
+     "target": "shed-light"
+    },
+    {
+     "id": "c-shi-dark",
+     "label": "Feel around in the dark",
+     "target": "shed-dark"
+    }
+   ]
+  },
+  {
+   "id": "shed-light",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri flips the switch and startles a pigeon resting on the lawnmower'>>",
+   "choices": [
+    {
+     "id": "c-shl-wait",
+     "label": "Wait for it to leave",
+     "target": "wait-pigeon"
+    },
+    {
+     "id": "c-shl-shelves",
+     "label": "Check the shelves",
+     "target": "shed-shelves"
+    }
+   ]
+  },
+  {
+   "id": "wait-pigeon",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='The pigeon flies out the open door leaving the shed quiet'>>",
+   "choices": [
+    {
+     "id": "c-wp-dark",
+     "label": "Search in the dark corners",
+     "target": "shed-dark"
+    },
+    {
+     "id": "c-wp-hub",
+     "label": "Return to the yard",
+     "target": "hub"
+    }
+   ]
+  },
+  {
+   "id": "shed-dark",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri reaches out in the shadows and brushes against something soft'>>",
+   "choices": [
+    {
+     "id": "c-shd-grab",
+     "label": "Grab the soft object",
+     "target": "grab-soft"
+    },
+    {
+     "id": "c-shd-shelves",
+     "label": "Check the tall shelves",
+     "target": "shed-shelves"
+    }
+   ]
+  },
+  {
+   "id": "grab-soft",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Miri pulls the soft thing and gets a face full of dust from an old yellow feather duster'>>",
+   "choices": [],
+   "ending": {
+    "id": "e-grab-soft",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Just a Duster"
+   }
+  },
+  {
+   "id": "shed-shelves",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri looks up at the top shelf and spots a nest made of old paper'>>",
+   "choices": [
+    {
+     "id": "c-shs-climb",
+     "label": "Climb the boxes",
+     "target": "climb-boxes"
+    },
+    {
+     "id": "c-shs-call",
+     "label": "Call Pippa loudly",
+     "target": "call-pippa"
+    }
+   ]
+  },
+  {
+   "id": "climb-boxes",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Miri steps on a weak cardboard box which breaks and sends her tumbling onto some soft bags of mulch'>>",
+   "choices": [],
+   "ending": {
+    "id": "e-climb-boxes",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Dusty Mess"
+   }
+  },
+  {
+   "id": "call-pippa",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Miri clucks softly and Pippa peeks over the shelf before hopping down safely into her arms'>>",
+   "choices": [],
+   "ending": {
+    "id": "e-call-pippa",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Found on the Shelf"
+   }
+  },
+  {
+   "id": "shed-behind",
+   "is_ending": false,
+   "body": "<<FILL role=explore words=70 beats='Miri walks to the back of the shed where tall weeds grow against the wood'>>",
+   "choices": [
+    {
+     "id": "c-shb-bushes",
+     "label": "Search the bushes",
+     "target": "shed-bushes"
+    },
+    {
+     "id": "c-shb-hub",
+     "label": "Return to the yard",
+     "target": "hub"
+    }
+   ]
+  },
+  {
+   "id": "shed-bushes",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=70 beats='Miri gently parts the leaves and finds Pippa happily hunting for juicy bugs'>>",
+   "choices": [],
+   "ending": {
+    "id": "e-shed-bushes",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Hiding in the Leaves"
+   }
+  }
+ ]
+}

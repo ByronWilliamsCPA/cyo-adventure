@@ -1,0 +1,432 @@
+{
+ "schema_version": "2.0",
+ "id": "priyas-snowy-search",
+ "version": 1,
+ "title": "Priya's Snowy Search",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "persistence",
+   "winter fun",
+   "family"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n1",
+ "nodes": [
+  {
+   "id": "n1",
+   "body": "<<FILL role=setup words=55 beats='Priya and her little brother Arjun finish sledding on the first snowy day. Their cheeks are rosy and mittens soaked. Priya notices Arjun is wearing only one boot. His left boot is gone. They must find it before walking home.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1a",
+     "label": "Look near the bottom of the sled run",
+     "target": "n2"
+    },
+    {
+     "id": "c1b",
+     "label": "Look near the top of the sled run",
+     "target": "n3"
+    }
+   ]
+  },
+  {
+   "id": "n2",
+   "body": "<<FILL role=setup words=55 beats='The bottom of the sled run is bumpy with moguls and sled tracks. Priya sees a dark shape in a snowbank. It is only a lost mitten. Arjun hops on one foot, shivering a little as the sky darkens.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c2a",
+     "label": "Dig deeper into the snowbank",
+     "target": "n4"
+    },
+    {
+     "id": "c2b",
+     "label": "Walk along the frozen pond edge",
+     "target": "n5"
+    }
+   ]
+  },
+  {
+   "id": "n3",
+   "body": "<<FILL role=setup words=55 beats='Priya and Arjun trudge up the hill. Halfway up, she spots a lump under the big pine tree where they rested. She also remembers the hollow log near the very top that Arjun loved to peek into.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c3a",
+     "label": "Check under the big pine tree",
+     "target": "n6"
+    },
+    {
+     "id": "c3b",
+     "label": "Keep climbing to the hollow log",
+     "target": "n7"
+    }
+   ]
+  },
+  {
+   "id": "n4",
+   "body": "<<FILL role=explore words=50 beats='Priya digs with both hands into the icy snowbank. Her fingers find something round and hard. She pulls out an old hockey puck. Not the boot. Arjun shivers. The streetlights flicker on.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c4a",
+     "label": "Ask Arjun where he last had both boots",
+     "target": "n8"
+    },
+    {
+     "id": "c4b",
+     "label": "Search near the rickety wooden fence",
+     "target": "n9"
+    }
+   ]
+  },
+  {
+   "id": "n5",
+   "body": "<<FILL role=explore words=50 beats='The frozen pond edge is quiet and still. Reeds poke through the ice. Priya walks carefully, checking every snowy clump. She finds a lost scarf but no boot. Time is running out.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c5a",
+     "label": "Check the bushes near the pond",
+     "target": "n10"
+    },
+    {
+     "id": "c5b",
+     "label": "Search near the fence instead",
+     "target": "n9"
+    }
+   ]
+  },
+  {
+   "id": "n6",
+   "body": "<<FILL role=explore words=55 beats='Under the big pine tree, the ground is bare in a cave of needles. Priya finds the missing boot half-buried next to a pinecone! Arjun squeals with joy. The boot is a little wet but whole.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c6a",
+     "label": "Put the boot on Arjun and walk home",
+     "target": "n11"
+    }
+   ]
+  },
+  {
+   "id": "n7",
+   "body": "<<FILL role=explore words=55 beats='Priya peers into the dark hollow log at the top of the run. It smells of old leaves. She reaches inside and feels something soft. She pulls out the missing boot! Arjun claps his hands with delight.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c7a",
+     "label": "Put the boot on Arjun and walk home",
+     "target": "n12"
+    }
+   ]
+  },
+  {
+   "id": "n8",
+   "body": "<<FILL role=explore words=55 beats='Arjun thinks hard. He remembers kicking his boots off when they built a snow fort. He points toward some bushes near a park bench. Priya takes his cold hand and they hurry there together.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c8a",
+     "label": "Dig around the snow fort",
+     "target": "n13"
+    },
+    {
+     "id": "c8b",
+     "label": "Look under the park bench",
+     "target": "n14"
+    }
+   ]
+  },
+  {
+   "id": "n9",
+   "body": "<<FILL role=explore words=55 beats='The rickety wooden fence has deep snow drifts. Priya kicks at them gently. She finds a lost lunchbox. Nearby, an old doghouse leans crookedly against the fence. She could also head to the middle of the sled run.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c9a",
+     "label": "Check inside the old doghouse",
+     "target": "n15"
+    },
+    {
+     "id": "c9b",
+     "label": "Go to the middle of the sled run",
+     "target": "n23"
+    }
+   ]
+  },
+  {
+   "id": "n10",
+   "body": "<<FILL role=decision words=55 beats='Priya pushes through the bushes near the pond. Twigs scratch her coat. She finds a dirty glove but no boot. The streetlights are on now. They must find the boot soon or go home without it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c10a",
+     "label": "Look again under the big pine tree",
+     "target": "n6"
+    },
+    {
+     "id": "c10b",
+     "label": "Ask a neighbor with a dog for help",
+     "target": "n16"
+    },
+    {
+     "id": "c10c",
+     "label": "Make one last search in the deepest drift",
+     "target": "n17"
+    }
+   ]
+  },
+  {
+   "id": "n11",
+   "body": "<<FILL role=ending words=60 beats='Priya shakes the boot clean and slides it onto Arjun's cold foot. He wiggles his toes and smiles. They hold hands and walk home as the streetlights glow warm yellow, their boots crunching together on the snowy path.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Two Warm Boots"
+   }
+  },
+  {
+   "id": "n12",
+   "body": "<<FILL role=ending words=60 beats='Priya brushes dirt from the boot and fits it onto Arjun's foot. It slides on perfectly. The moon rises, a silver coin in the dark blue sky. They walk down the hill together toward their warm, waiting home.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Found in the Log"
+   }
+  },
+  {
+   "id": "n13",
+   "body": "<<FILL role=explore words=55 beats='The snow fort is a lumpy circle of half-melted walls. Priya digs around the entrance. Her hands hit something solid. It is the boot, buried under a collapsed wall! Arjun giggles with relief.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c13a",
+     "label": "Put the boot on Arjun and walk home",
+     "target": "n18"
+    }
+   ]
+  },
+  {
+   "id": "n14",
+   "body": "<<FILL role=explore words=50 beats='Under the bench, the snow is shallow and crusty. Priya finds candy wrappers and a muddy sock. No boot. Arjun sniffles. She decides to try the snow fort instead.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c14a",
+     "label": "Go dig around the snow fort",
+     "target": "n13"
+    }
+   ]
+  },
+  {
+   "id": "n15",
+   "body": "<<FILL role=explore words=55 beats='The old doghouse leans to one side. Priya peeks into the dark doorway. A squirrel made a nest of leaves and an old wool sock. No boot. She backs out and decides to try the snow fort instead.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c15a",
+     "label": "Go to the snow fort",
+     "target": "n13"
+    }
+   ]
+  },
+  {
+   "id": "n16",
+   "body": "<<FILL role=explore words=60 beats='A woman walking her dog stops to help. The dog sniffs the air and pulls toward the sled run. They follow to a snow pile near the big jump. The dog barks and starts digging with its paws.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c16a",
+     "label": "Help the dog dig in the snow pile",
+     "target": "n19"
+    },
+    {
+     "id": "c16b",
+     "label": "Decide it is too late and carry Arjun home",
+     "target": "n20"
+    }
+   ]
+  },
+  {
+   "id": "n17",
+   "body": "<<FILL role=explore words=55 beats='Priya plunges her arms into the deepest snowdrift. The snow is up to her elbows. She feels around desperately. Her fingers close on something. It is Arjun's boot, frozen solid but found at last.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c17a",
+     "label": "Put the boot on Arjun and hurry home",
+     "target": "n21"
+    }
+   ]
+  },
+  {
+   "id": "n18",
+   "body": "<<FILL role=ending words=60 beats='Priya dusts snow off the boot and helps Arjun put it on. His foot is cold but warms quickly. They leave the snow fort and head toward the park gate. Their house windows glow with light. Mama will be so happy.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e3",
+    "valence": "positive",
+    "kind": "success",
+    "title": "King of the Castle"
+   }
+  },
+  {
+   "id": "n19",
+   "body": "<<FILL role=explore words=55 beats='Priya digs alongside the dog, throwing snow aside. Suddenly a little brown boot tumbles out! The dog wags its tail proudly. The woman smiles and hands Priya the boot. Arjun hugs the dog.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c19a",
+     "label": "Thank them and put the boot on Arjun",
+     "target": "n22"
+    }
+   ]
+  },
+  {
+   "id": "n20",
+   "body": "<<FILL role=ending words=65 beats='Priya decides Arjun is too cold to keep searching. She lifts him onto her back, his one bare foot dangling. The walk home is slow and quiet. Arjun sniffles against her neck. Priya promises to come back with a flashlight after dinner.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e4",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "A Promise to Return"
+   }
+  },
+  {
+   "id": "n21",
+   "body": "<<FILL role=ending words=65 beats='Priya pushes the frozen boot onto Arjun's foot. It is stiff and cold but it stays on. They run home as fast as they can, breath puffing in clouds. They burst through the door to warmth. Mama wraps them in a big blanket.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e5",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Frozen Rescue"
+   }
+  },
+  {
+   "id": "n22",
+   "body": "<<FILL role=ending words=60 beats='Priya thanks the woman and her clever dog. She helps Arjun put on the boot. It is a little chewed-looking but it fits. They wave goodbye and walk home under the dark sky. Arjun talks all the way about the nice dog.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e6",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Clever Friend"
+   }
+  },
+  {
+   "id": "n23",
+   "body": "<<FILL role=explore words=55 beats='Priya scrambles to the middle of the sled run. Other kids are still sledding. She watches a sled splash through a slushy patch and wonders if the boot could be buried there in the churned-up snow.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c23a",
+     "label": "Search the slushy patch",
+     "target": "n24"
+    },
+    {
+     "id": "c23b",
+     "label": "Ask the other kids if they saw a boot",
+     "target": "n25"
+    }
+   ]
+  },
+  {
+   "id": "n24",
+   "body": "<<FILL role=explore words=55 beats='Priya kneels in the icy slush, her knees soaked. She pushes her hands through the muck. Her fingers close around something heavy. It is Arjun's boot, waterlogged but found! Arjun cheers.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c24a",
+     "label": "Put the boot on Arjun and walk home",
+     "target": "n26"
+    }
+   ]
+  },
+  {
+   "id": "n25",
+   "body": "<<FILL role=explore words=50 beats='A girl on a purple sled says she saw a boot near the big jump. A boy points toward the pine tree. The kids point different ways. Priya thanks them and tries to decide.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c25a",
+     "label": "Go to the big jump",
+     "target": "n27"
+    },
+    {
+     "id": "c25b",
+     "label": "Go to the big pine tree",
+     "target": "n6"
+    }
+   ]
+  },
+  {
+   "id": "n26",
+   "body": "<<FILL role=ending words=65 beats='Priya pours water from the boot and wrings out Arjun's sock. It is not perfect, but better than one bare foot. They walk home a little squelchily. The porch light is on. Mama will have warm socks and hot chocolate ready.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e7",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Home with a Squelch"
+   }
+  },
+  {
+   "id": "n27",
+   "body": "<<FILL role=explore words=55 beats='The big jump is a ramp of packed snow. Priya searches the landing zone where snow is deep and churned. She digs down. Her hand finds the boot, crushed into the snow by many sled landings.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c27a",
+     "label": "Put the boot on Arjun and walk home",
+     "target": "n28"
+    }
+   ]
+  },
+  {
+   "id": "n28",
+   "body": "<<FILL role=ending words=60 beats='Priya straightens the flattened boot and laces it onto Arjun's foot. It is a bit crooked but it stays on. They wave goodbye to the sledders. The first stars twinkle above. Priya knows they made it just in time.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e8",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Just in Time"
+   }
+  }
+ ]
+}

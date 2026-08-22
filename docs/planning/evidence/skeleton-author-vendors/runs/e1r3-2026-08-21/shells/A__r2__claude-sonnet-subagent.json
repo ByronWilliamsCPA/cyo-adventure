@@ -1,0 +1,461 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-kite-festival",
+ "version": 1,
+ "title": "Tomas and the Festival Kite",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "family",
+   "perseverance",
+   "problem-solving",
+   "creativity"
+  ],
+  "estimated_minutes": 2,
+  "ending_count": 9,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=28 beats='Tomas and his grandmother Abuela Rosa spread colored paper, thin dowels, and spools of string across the kitchen table the day before the Spring Kite Festival. The windsock outside keeps twisting from north to south, and Abuela reminds Tomas that a good kite maker always tests a design before trusting it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-start-1",
+     "label": "Step outside to check the windsock",
+     "target": "outside_check"
+    },
+    {
+     "id": "c-start-2",
+     "label": "Ask Abuela which sketch to try first",
+     "target": "outside_check"
+    }
+   ]
+  },
+  {
+   "id": "outside_check",
+   "body": "<<FILL role=explore words=30 beats='Tomas and Abuela step into the yard where the windsock swings from north to south twice before settling on a new direction entirely; Abuela says the shifting wind means whatever kite they build has to prove itself outside, so today is for testing, not guessing.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-outside-1",
+     "label": "Go back in to see the sketches",
+     "target": "choose_kite"
+    },
+    {
+     "id": "c-outside-2",
+     "label": "Ask which design to build first",
+     "target": "choose_kite"
+    }
+   ]
+  },
+  {
+   "id": "choose_kite",
+   "body": "<<FILL role=decision words=38 beats='Abuela unrolls three sketches on the table: a swooping bird, a sturdy box, and a long dragon with a rippling tail. She asks Tomas which design to build and test first, since the changing wind means it will need real testing before tomorrow.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-choose-bird",
+     "label": "Build the bird kite",
+     "target": "bird_intro"
+    },
+    {
+     "id": "c-choose-box",
+     "label": "Build the box kite",
+     "target": "box_intro"
+    },
+    {
+     "id": "c-choose-dragon",
+     "label": "Build the dragon kite",
+     "target": "dragon_intro"
+    }
+   ]
+  },
+  {
+   "id": "bird_intro",
+   "body": "<<FILL role=explore words=24 beats='Tomas cuts curved wings from sky blue paper while Abuela lashes two dowels into a cross frame; testing it in the gusty backyard, the bird kite dips, spins, and nearly crashes into the fence.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-bird-intro-1",
+     "label": "See what Abuela suggests",
+     "target": "bird_decision"
+    },
+    {
+     "id": "c-bird-intro-2",
+     "label": "Ask Abuela why the kite dipped",
+     "target": "bird_decision"
+    }
+   ]
+  },
+  {
+   "id": "bird_decision",
+   "body": "<<FILL role=decision words=44 beats='Abuela offers two fixes for the bird kite: tie on a longer paper tail right now to steady it, or carry it over to the quiet garden wall where the wind blows gentler and see if it flies better there.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-bird-decision-tail",
+     "label": "Add a longer tail",
+     "target": "bird_fix"
+    },
+    {
+     "id": "c-bird-decision-wall",
+     "label": "Try the quiet garden wall",
+     "target": "bird_alt_decision"
+    }
+   ]
+  },
+  {
+   "id": "bird_fix",
+   "body": "<<FILL role=transition words=20 beats='Tomas braids three paper streamers into a tail and knots it to the spine; the bird kite steadies at once and glides smoothly across the yard.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-bird-fix-1",
+     "label": "See how festival morning goes",
+     "target": "bird_fix_ending"
+    }
+   ]
+  },
+  {
+   "id": "bird_fix_ending",
+   "body": "<<FILL role=ending words=48 beats='Festival morning the tailed bird kite rides the shifting wind smoothly the whole time, dipping and recovering instead of crashing, and a judge notes how well it handles the gusty weather.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-bird-fix",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Steady in Every Gust"
+   }
+  },
+  {
+   "id": "bird_alt_decision",
+   "body": "<<FILL role=decision words=46 beats='By the garden wall the wind is gentle and steady, but it could die down again before the festival. Abuela asks whether to trust the calm spot and leave the kite there overnight, or carry it back to the workshop and reinforce the frame first.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-bird-alt-trust",
+     "label": "Trust the calm garden wall",
+     "target": "bird_alt_pos_transition"
+    },
+    {
+     "id": "c-bird-alt-strengthen",
+     "label": "Reinforce the frame first",
+     "target": "bird_alt_setback_transition"
+    }
+   ]
+  },
+  {
+   "id": "bird_alt_pos_transition",
+   "body": "<<FILL role=transition words=20 beats='Tomas leaves the bird kite resting by the garden wall overnight, trusting the calm; Abuela checks the string knots twice before supper.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-bird-alt-pos-1",
+     "label": "See how festival morning goes",
+     "target": "bird_alt_pos_ending"
+    }
+   ]
+  },
+  {
+   "id": "bird_alt_pos_ending",
+   "body": "<<FILL role=ending words=48 beats='Morning finds the bird kite exactly where they left it, and the gentle air by the garden wall carries it in slow, easy circles all through the festival.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-bird-alt-pos",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Calm by the Garden Wall"
+   }
+  },
+  {
+   "id": "bird_alt_setback_transition",
+   "body": "<<FILL role=transition words=20 beats='Tomas carries the bird kite back to the workshop and glues a second dowel across the frame for extra strength.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-bird-alt-setback-1",
+     "label": "See if it is ready in time",
+     "target": "bird_alt_setback_ending"
+    }
+   ]
+  },
+  {
+   "id": "bird_alt_setback_ending",
+   "body": "<<FILL role=ending words=48 beats='The extra brace takes longer to dry than expected, and by the time it is ready the festival gates have already closed for the day; Tomas and Abuela agree the sturdier kite will fly first next spring instead.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-bird-alt-setback",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Ready One Day Late"
+   }
+  },
+  {
+   "id": "box_intro",
+   "body": "<<FILL role=explore words=24 beats='Tomas glues four straight dowels into a square frame while Abuela stretches yellow paper tight across it; testing it by the shed, a sudden gust peels one paper corner loose.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-box-intro-1",
+     "label": "See what Abuela suggests",
+     "target": "box_decision"
+    },
+    {
+     "id": "c-box-intro-2",
+     "label": "Ask Abuela why the corner tore",
+     "target": "box_decision"
+    }
+   ]
+  },
+  {
+   "id": "box_decision",
+   "body": "<<FILL role=decision words=44 beats='Abuela offers two fixes for the box kite: reglue the peeling corner right now, or carry it up to the open hill where the wind runs steadier and see how it handles a stronger gust.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-box-decision-glue",
+     "label": "Reglue the peeling corner",
+     "target": "box_fix"
+    },
+    {
+     "id": "c-box-decision-hill",
+     "label": "Carry it to the open hill",
+     "target": "box_alt_decision"
+    }
+   ]
+  },
+  {
+   "id": "box_fix",
+   "body": "<<FILL role=transition words=20 beats='Tomas presses fresh glue along the loose paper corner and holds it flat until it sets; the patched box kite lifts clean and square on the next gust.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-box-fix-1",
+     "label": "See how festival morning goes",
+     "target": "box_fix_ending"
+    }
+   ]
+  },
+  {
+   "id": "box_fix_ending",
+   "body": "<<FILL role=ending words=48 beats='At the festival the patched corner holds fast through every gust, and the box kite flies square and steady from the very first launch, never once sagging or tearing.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-box-fix",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Patch That Held"
+   }
+  },
+  {
+   "id": "box_alt_decision",
+   "body": "<<FILL role=decision words=46 beats='On the open hill the box kite catches a long steady current and climbs fast, but a line of trees at the edge of the hill could catch it if the wind veers. Abuela asks whether to keep flying high, or reel the line in now while it is still safely overhead.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-box-alt-keep",
+     "label": "Keep flying high on the hill",
+     "target": "box_alt_pos_transition"
+    },
+    {
+     "id": "c-box-alt-reel",
+     "label": "Reel it in before the trees",
+     "target": "box_alt_setback_transition"
+    }
+   ]
+  },
+  {
+   "id": "box_alt_pos_transition",
+   "body": "<<FILL role=transition words=20 beats='Tomas lets more line out and the box kite climbs past the treeline, humming steady in the strong hill current.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-box-alt-pos-1",
+     "label": "See how festival morning goes",
+     "target": "box_alt_pos_ending"
+    }
+   ]
+  },
+  {
+   "id": "box_alt_pos_ending",
+   "body": "<<FILL role=ending words=48 beats='The hill wind holds all through the festival, and the box kite climbs higher than anything else in the field, so high that a younger flyer asks Tomas how he did it.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-box-alt-pos",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Higher Than the Trees"
+   }
+  },
+  {
+   "id": "box_alt_setback_transition",
+   "body": "<<FILL role=transition words=20 beats='Tomas reels the line in fast just as the wind veers toward the trees, landing the box kite safely in the grass.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-box-alt-setback-1",
+     "label": "See what happens next",
+     "target": "box_alt_setback_ending"
+    }
+   ]
+  },
+  {
+   "id": "box_alt_setback_ending",
+   "body": "<<FILL role=ending words=48 beats='The box kite never flies again that afternoon, but Abuela says a kite brought home safe can always fly another day, and they patch the corner properly that evening for next time.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-box-alt-setback",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Brought Home Safe"
+   }
+  },
+  {
+   "id": "dragon_intro",
+   "body": "<<FILL role=explore words=24 beats='Tomas paints a fierce red face on the round paper head of the dragon kite while Abuela knots six ribbon segments into its long tail; testing it along the driveway, the tail drags and tangles before a gust lifts it crooked.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-dragon-intro-1",
+     "label": "See what Abuela suggests",
+     "target": "dragon_decision"
+    },
+    {
+     "id": "c-dragon-intro-2",
+     "label": "Ask Abuela why the tail dragged",
+     "target": "dragon_decision"
+    }
+   ]
+  },
+  {
+   "id": "dragon_decision",
+   "body": "<<FILL role=decision words=44 beats='Abuela offers two fixes for the dragon kite: shorten the tangled tail right now so it lifts faster, or wait at the end of the driveway for a longer, steadier gust to try again.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-dragon-decision-shorten",
+     "label": "Shorten the tangled tail",
+     "target": "dragon_fix"
+    },
+    {
+     "id": "c-dragon-decision-wait",
+     "label": "Wait for a steadier gust",
+     "target": "dragon_alt_decision"
+    }
+   ]
+  },
+  {
+   "id": "dragon_fix",
+   "body": "<<FILL role=transition words=20 beats='Tomas snips two ribbon segments from the tangled tail, and the dragon kite lifts lighter and straighter right away.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-dragon-fix-1",
+     "label": "See how festival morning goes",
+     "target": "dragon_fix_ending"
+    }
+   ]
+  },
+  {
+   "id": "dragon_fix_ending",
+   "body": "<<FILL role=ending words=48 beats='Festival morning the shortened tail rises the moment the wind catches it, rippling smooth and straight above the whole crowd from the very first launch.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-dragon-fix",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Lighter on the Wind"
+   }
+  },
+  {
+   "id": "dragon_alt_decision",
+   "body": "<<FILL role=decision words=46 beats='A long steady gust rolls in at the end of the driveway and the dragon kite rises smoothly, but the gust could die out again any second the way the others did. Abuela asks whether to launch higher right now, or land it safely and wait for a stronger gust.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-dragon-alt-launch",
+     "label": "Launch higher right now",
+     "target": "dragon_alt_pos_transition"
+    },
+    {
+     "id": "c-dragon-alt-land",
+     "label": "Land it and wait",
+     "target": "dragon_alt_setback_transition"
+    }
+   ]
+  },
+  {
+   "id": "dragon_alt_pos_transition",
+   "body": "<<FILL role=transition words=20 beats='Tomas lets the dragon kite ride the steady gust higher, its tail rippling like the spine of a real dragon against the sky.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-dragon-alt-pos-1",
+     "label": "See how festival morning goes",
+     "target": "dragon_alt_pos_ending"
+    }
+   ]
+  },
+  {
+   "id": "dragon_alt_pos_ending",
+   "body": "<<FILL role=ending words=48 beats='The driveway gust carries straight into festival morning, and the dragon kite climbs higher and steadier than Tomas ever managed before, tail rippling the whole way up.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-dragon-alt-pos",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Rippling Like a Real Dragon"
+   }
+  },
+  {
+   "id": "dragon_alt_setback_transition",
+   "body": "<<FILL role=transition words=20 beats='Tomas lands the dragon kite safely and wraps the tail carefully, waiting for a stronger gust that never returns before dinner.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-dragon-alt-setback-1",
+     "label": "See if the wind returns",
+     "target": "dragon_alt_setback_ending"
+    }
+   ]
+  },
+  {
+   "id": "dragon_alt_setback_ending",
+   "body": "<<FILL role=ending words=48 beats='The steadier gust never comes back that evening, but Abuela promises the festival field always has more wind to offer than one driveway ever could.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-dragon-alt-setback",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "More Wind at the Festival"
+   }
+  }
+ ]
+}

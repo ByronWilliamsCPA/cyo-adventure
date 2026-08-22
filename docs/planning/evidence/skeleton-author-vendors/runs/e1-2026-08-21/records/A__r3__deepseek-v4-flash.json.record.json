@@ -1,0 +1,32 @@
+{
+ "leg": "deepseek-v4-flash",
+ "family": "deepseek",
+ "cell_id": "A",
+ "band": "5-8",
+ "length": "short",
+ "style": "prose",
+ "replicate": 3,
+ "premise": "On the first snowy day, Priya must find her little brother's boot, lost somewhere along the sled run, before their walk home.",
+ "attempts": 1,
+ "repair_rounds": 0,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 1,
+ "findings_lines_per_round": [
+  1
+ ],
+ "graph_check_exit": null,
+ "latency_s": 94.99,
+ "input_tokens": 2190,
+ "output_tokens": 11177,
+ "reasoning_tokens": 7453,
+ "finish_reasons": [
+  "stop"
+ ],
+ "min_catalog_distance": null,
+ "mean_catalog_distance": null,
+ "catalog_distance_note": "",
+ "last_feedback": "(no skeleton to check) output was not valid JSON: Expecting ',' delimiter: line 122 column 32 (char 4780)",
+ "shell_file": "shells/A__r3__deepseek-v4-flash.json",
+ "error": "ProviderError: openrouter returned leg-fatal HTTP 402 (authentication or credit failure)"
+}

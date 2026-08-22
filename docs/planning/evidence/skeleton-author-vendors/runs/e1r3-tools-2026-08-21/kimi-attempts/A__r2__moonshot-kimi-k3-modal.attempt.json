@@ -1,0 +1,333 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-and-the-festival-wind",
+ "version": 1,
+ "title": "Tomas and the Festival Wind",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "perseverance",
+   "family and grandparents",
+   "making and testing",
+   "wind and weather"
+  ],
+  "estimated_minutes": 2,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "start-porch",
+ "nodes": [
+  {
+   "id": "start-porch",
+   "body": "<<FILL role=setup words=16 beats='Saturday morning the spring festival banner goes up over the plaza, and Grandma Rosa carries her kite box to the porch table'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-start-open",
+     "label": "Open the kite box together",
+     "target": "kite-box"
+    }
+   ]
+  },
+  {
+   "id": "kite-box",
+   "body": "<<FILL role=setup words=22 beats='Out come red paper, bamboo sticks, glue pot, ribbon spools, and the string winder; the wind keeps changing its mind, so Grandma Rosa says every new kite must argue with the wind before it learns to dance'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-box-spread",
+     "label": "Spread the red paper flat",
+     "target": "choose-shape"
+    }
+   ]
+  },
+  {
+   "id": "choose-shape",
+   "body": "<<FILL role=decision words=30 beats='Grandma Rosa sharpens her pencil for the plans; the bamboo waits on the table; two drawings take shape: a quick red diamond and a light square box; Tomas must pick which design to build and test first'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-shape-diamond",
+     "label": "Build the red diamond kite",
+     "target": "test-diamond"
+    },
+    {
+     "id": "ch-shape-box",
+     "label": "Build the light box kite",
+     "target": "test-box"
+    }
+   ]
+  },
+  {
+   "id": "test-diamond",
+   "body": "<<FILL role=explore words=55 beats='Tomas folds red paper over a bamboo cross and Grandma Rosa glues the seams and ties the two-legged bridle; from the porch steps a gust flips the diamond upside down and it noses into the geranium pots; petals fly, nobody is hurt, the kite looks cross'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-diamond-hill",
+     "label": "Toss it from the hill today",
+     "target": "hill-toss"
+    },
+    {
+     "id": "ch-diamond-tailfix",
+     "label": "Knot on the long ribbon tail",
+     "target": "porch-knots"
+    }
+   ]
+  },
+  {
+   "id": "hill-toss",
+   "body": "<<FILL role=climax words=40 beats='From the hill behind the post office the diamond leaps through two gusts and one long steady friend of a wind; below, the plaza bunting is already up for the festival; Grandma Rosa fluffs the tail and the whole sky waits to see who climbs'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-hill-climb",
+     "label": "Let it climb, climb, climb",
+     "target": "end-climb"
+    },
+    {
+     "id": "ch-hill-judges",
+     "label": "Fly it smooth for the judges",
+     "target": "end-ribbon"
+    }
+   ]
+  },
+  {
+   "id": "porch-knots",
+   "body": "<<FILL role=explore words=45 beats='Grandma Rosa knots blue ribbon bows down the tail and the diamond stops diving; at dusk the copper wind chime rings high, low, then high, and she teaches Tomas the bowline, the knot that unties when you ask it, while two swallows stitch the orange sky'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-knots-practice",
+     "label": "Practice gentle wrists till dark",
+     "target": "gust-knots"
+    },
+    {
+     "id": "ch-knots-photo",
+     "label": "Study the old attic photo",
+     "target": "photo-knots"
+    }
+   ]
+  },
+  {
+   "id": "gust-knots",
+   "body": "<<FILL role=explore words=24 beats='All evening Tomas gives line, takes line, gives line, until his wrists learn the dance; tomorrow the festival wind will test every practiced inch'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-knots-dance",
+     "label": "Dance with tomorrow gusts",
+     "target": "end-dance"
+    },
+    {
+     "id": "ch-knots-circles",
+     "label": "Draw calm circles for the judges",
+     "target": "end-judges"
+    }
+   ]
+  },
+  {
+   "id": "photo-knots",
+   "body": "<<FILL role=explore words=24 beats='In the attic trunk they find the cracked photo: Grandma Rosa as a girl with her champion kite, La Paloma, and a pencil note about watching treetops'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-photo-secret",
+     "label": "Learn the treetop secret",
+     "target": "end-secret"
+    },
+    {
+     "id": "ch-photo-sunrise",
+     "label": "Plan a sunrise flight",
+     "target": "end-sunrise"
+    }
+   ]
+  },
+  {
+   "id": "test-box",
+   "body": "<<FILL role=explore words=55 beats='They build a box kite from brown paper over drinking-straw spars and knot the crossed strings tight; in the lane by the rosemary hedge the wind drops flat as a plate; the box rises two brave hops, then sinks softly onto the hedge, asking for lightness or legwork'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-box-tissue",
+     "label": "Re-cover it with melon tissue",
+     "target": "floaty-box"
+    },
+    {
+     "id": "ch-box-run",
+     "label": "Run fast to pull it up",
+     "target": "runner-box"
+    }
+   ]
+  },
+  {
+   "id": "floaty-box",
+   "body": "<<FILL role=explore words=45 beats='The melon-colored tissue skin holds; the light box floats like toast on milk, then learns the fountain roundabouts: slack at the spin, gentle pull at the exit, while a pigeon supervises from the rim and the bunting rattles like tiny drums'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-floaty-picnic",
+     "label": "Anchor it over a picnic",
+     "target": "end-picnic"
+    },
+    {
+     "id": "ch-floaty-lanterns",
+     "label": "Walk it under the lanterns",
+     "target": "end-parade"
+    }
+   ]
+  },
+  {
+   "id": "runner-box",
+   "body": "<<FILL role=explore words=45 beats='Tomas runs the lane; the kite climbs while his legs pump and his cheeks learn every puff of wind; by dusk the wind lies down soft between the rooftops, the guitars play something slow, and Grandma Rosa raises her eyebrows at the darkening sky'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-runner-naps",
+     "label": "Fold it into its blanket",
+     "target": "end-naps"
+    },
+    {
+     "id": "ch-runner-stars",
+     "label": "Send it up beside the stars",
+     "target": "end-stars"
+    }
+   ]
+  },
+  {
+   "id": "end-climb",
+   "body": "<<FILL role=ending words=50 beats='Tomas lets the line out in long slow breaths and the diamond climbs past the fish kite, past the star kite, past the church bell, until it sits on the long steady wind like a boat on a lake; the whole plaza points up and Grandma Rosa whistles the victory whistle she used as a girl'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-climb",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Highest Over the Plaza"
+   }
+  },
+  {
+   "id": "end-ribbon",
+   "body": "<<FILL role=ending words=50 beats='The judges in their straw hats watch the diamond hold its line through gust, lull, and swirlie, the tail writing tidy letters on the sky; at the flagpole the mayor pins a ribbon on the winder for Steadiest Kite; Tomas says it belongs to all their crashed practice flights'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-ribbon",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Steadiest Kite"
+   }
+  },
+  {
+   "id": "end-dance",
+   "body": "<<FILL role=ending words=50 beats='Tomas gives the wild gust slack, then a little pull, then slack, and the diamond stops fighting and starts to dance, looping the loop right over the fountain; Grandma Rosa shouts the discovery: a changing wind is not an enemy but a dance partner inventing new steps'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-dance",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Dancing With the Gust"
+   }
+  },
+  {
+   "id": "end-judges",
+   "body": "<<FILL role=ending words=50 beats='While hats and kites scatter, Tomas steers slow calm circles over the fountain and holds them through the roaring gust; the judges clap in rhythm, and the festival ribbon ends up pinned beside the photograph of La Paloma, where Grandma Rosa says it was always heading'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-judges",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Calm Circles, Blue Ribbon"
+   }
+  },
+  {
+   "id": "end-secret",
+   "body": "<<FILL role=ending words=50 beats='Tomas watches the treetops instead of the kite: the willow lifts, the string pulls; the willow rests, the string sighs; he calls every gust one breath before it lands; Grandma Rosa confirms the big secret: the wind was never against them, it only wanted to be read like a story'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-secret",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Wind Secret"
+   }
+  },
+  {
+   "id": "end-sunrise",
+   "body": "<<FILL role=ending words=50 beats='They come back at sunrise, when the plaza is empty and milk-colored; the early wind is shy and honest, and the diamond rises into pink light watched by two sleepy swallows; Tomas discovers that the wind has mornings too, and Grandma Rosa pours cocoa from a thermos into the good cups'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-sunrise",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Sunrise Belongs to Kites"
+   }
+  },
+  {
+   "id": "end-picnic",
+   "body": "<<FILL role=ending words=50 beats='They eat empanadas under the kite's warm shadow while lanterns bob and the guitars play; prize whistles blow somewhere behind them and nobody minds; the kite tugs its string gently, like holding hands; Grandma Rosa says a kite that shares your picnic is a kite that loves you'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-picnic",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Picnic Under the Kite"
+   }
+  },
+  {
+   "id": "end-naps",
+   "body": "<<FILL role=ending words=50 beats='The wind lies down to sleep between the rooftops, so they carry the folded kite home under the first star; cocoa steams on the stove; on the calendar Grandma Rosa circles next Saturday with a blue pencil; some festivals end with flying and some end with planning, and both smell like cinnamon'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-naps",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Kite Takes a Nap"
+   }
+  },
+  {
+   "id": "end-parade",
+   "body": "<<FILL role=ending words=50 beats='The box kite glides above the little lantern parade, over drummer boys and paper suns, and every child in the plaza points up; no prize is pinned on, but Grandma Rosa says a kite that makes a whole street look up has won the only ribbon that matters'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-parade",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Over the Lantern Parade"
+   }
+  },
+  {
+   "id": "end-stars",
+   "body": "<<FILL role=ending words=50 beats='Tomas steers the box kite up past the lanterns into the clean night wind, high and higher, until it hangs beside the first stars; the mayor laughs and pins the festival ribbon right on its melon-colored wing, and they carry it home like a torch'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-stars",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Kite Beside the Stars"
+   }
+  }
+ ]
+}

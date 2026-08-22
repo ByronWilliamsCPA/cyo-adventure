@@ -1,0 +1,525 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "open_map",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "problem solving",
+   "school animals",
+   "exploration"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 9,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "n1",
+ "nodes": [
+  {
+   "id": "n1",
+   "body": "<<FILL role=setup words=34 beats='Miri stands in the courtyard. Tiny Pip is missing from the coop! The morning breeze is chilly, and the schoolyard feels huge.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n1_n2",
+     "label": "Start the search",
+     "target": "n2"
+    }
+   ]
+  },
+  {
+   "id": "n2",
+   "body": "<<FILL role=setup words=34 beats='Miri looks around the empty school. She could check the play area, head over to the vegetable garden, or walk toward the brick classrooms.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n2_n_playground",
+     "label": "Check the playground",
+     "target": "n_playground"
+    },
+    {
+     "id": "c_n2_n_garden",
+     "label": "Go to the garden",
+     "target": "n_garden"
+    },
+    {
+     "id": "c_n2_n_classrooms",
+     "label": "Go to classrooms",
+     "target": "n_classrooms"
+    }
+   ]
+  },
+  {
+   "id": "n_playground",
+   "body": "<<FILL role=explore words=70 beats='Miri runs to the playground. The red swings sway in the wind, and the wooden sandbox is filled with yellow shovels. Pip might be hiding here.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_play_swings",
+     "label": "Check the swings",
+     "target": "n_swings"
+    },
+    {
+     "id": "c_play_sandbox",
+     "label": "Look at sandbox",
+     "target": "n_sandbox"
+    },
+    {
+     "id": "c_play_n2",
+     "label": "Return to the yard",
+     "target": "n2"
+    }
+   ]
+  },
+  {
+   "id": "n_swings",
+   "body": "<<FILL role=explore words=70 beats='Miri approaches the tall metal swings. The heavy seats hang low to the ground. She wonders if the little brown hen is underneath.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_swings_empty",
+     "label": "Look under seats",
+     "target": "e_empty_swings"
+    },
+    {
+     "id": "c_swings_play",
+     "label": "Return to playground",
+     "target": "n_playground"
+    }
+   ]
+  },
+  {
+   "id": "e_empty_swings",
+   "body": "<<FILL role=ending words=70 beats='Miri checks under the swings but only finds a brown leaf. Pip is not here. The warning bell rings, and Miri must go inside.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_empty_swings",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "An Empty Playground"
+   }
+  },
+  {
+   "id": "n_sandbox",
+   "body": "<<FILL role=explore words=70 beats='Miri steps into the wooden sandbox. She sees a large green plastic bucket flipped upside down near the edge. A tiny bird could fit under there.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_sandbox_bucket",
+     "label": "Lift the bucket",
+     "target": "n_sandbox_bucket"
+    },
+    {
+     "id": "c_sandbox_play",
+     "label": "Return to playground",
+     "target": "n_playground"
+    }
+   ]
+  },
+  {
+   "id": "n_sandbox_bucket",
+   "body": "<<FILL role=explore words=70 beats='Miri flips the bucket. No hen! But she spots tiny scratches in the dirt that look like chicken tracks leading toward the garden.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bucket_garden",
+     "label": "Follow tracks to garden",
+     "target": "n_garden"
+    },
+    {
+     "id": "c_bucket_toy",
+     "label": "Keep looking in bucket",
+     "target": "e_sandbox_toy"
+    }
+   ]
+  },
+  {
+   "id": "e_sandbox_toy",
+   "body": "<<FILL role=ending words=70 beats='Miri digs in the sand where the bucket was and finds a lost toy truck. But no Pip. The bell rings, ending her search.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_sandbox_toy",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Lost Toy"
+   }
+  },
+  {
+   "id": "n_garden",
+   "body": "<<FILL role=explore words=70 beats='Miri enters the damp school garden. Tall cornstalks rustle loudly. She can search the red tool shed or look near the empty clay pots.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_garden_shed",
+     "label": "Check the wooden shed",
+     "target": "n_shed"
+    },
+    {
+     "id": "c_garden_pots",
+     "label": "Look at clay pots",
+     "target": "n_pots"
+    },
+    {
+     "id": "c_garden_n2",
+     "label": "Return to the yard",
+     "target": "n2"
+    }
+   ]
+  },
+  {
+   "id": "n_shed",
+   "body": "<<FILL role=explore words=70 beats='The wooden tool shed is locked tight, but there is a wide gap underneath. Miri kneels down to see if any small feathers are poking out.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_shed_locked",
+     "label": "Peek under the door",
+     "target": "e_shed_locked"
+    },
+    {
+     "id": "c_shed_garden",
+     "label": "Return to the garden",
+     "target": "n_garden"
+    }
+   ]
+  },
+  {
+   "id": "e_shed_locked",
+   "body": "<<FILL role=ending words=70 beats='Miri peers under the shed door and spots a lost green tennis ball, but no chicken. A teacher calls out, meaning the search must pause.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_shed_locked",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Just a Tennis Ball"
+   }
+  },
+  {
+   "id": "n_pots",
+   "body": "<<FILL role=explore words=70 beats='A stack of empty clay pots sits near the wire fence. The largest pot has a jagged hole in its side. A frightened bird might squeeze inside.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_pots_hole",
+     "label": "Look inside the hole",
+     "target": "n_pots_hole"
+    },
+    {
+     "id": "c_pots_garden",
+     "label": "Return to the garden",
+     "target": "n_garden"
+    }
+   ]
+  },
+  {
+   "id": "n_pots_hole",
+   "body": "<<FILL role=explore words=70 beats='Miri peeks into the dark pot. It is empty! But she discovers a single brown feather resting on the rim, blowing toward the brick classrooms.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_hole_classrooms",
+     "label": "Follow feather to classrooms",
+     "target": "n_classrooms"
+    },
+    {
+     "id": "c_hole_garden",
+     "label": "Return to the garden",
+     "target": "n_garden"
+    }
+   ]
+  },
+  {
+   "id": "n_classrooms",
+   "body": "<<FILL role=explore words=70 beats='Miri walks along the red brick wall of the classrooms. She sees the outdoor student cubbies and a neat stack of welcome mats near the door.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_class_cubbies",
+     "label": "Check the cubbies",
+     "target": "n_cubbies"
+    },
+    {
+     "id": "c_class_mats",
+     "label": "Look at the door mats",
+     "target": "n_mats"
+    },
+    {
+     "id": "c_class_coop",
+     "label": "Go to the coop area",
+     "target": "n_coop_front"
+    }
+   ]
+  },
+  {
+   "id": "n_cubbies",
+   "body": "<<FILL role=explore words=70 beats='The wooden outdoor cubbies are filled with muddy rain boots. Miri thinks she hears a faint rustling sound coming from the deep shadow at the back.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_cubbies_scare",
+     "label": "Reach into the dark",
+     "target": "e_boot_scare"
+    },
+    {
+     "id": "c_cubbies_bench",
+     "label": "Check reading bench nearby",
+     "target": "n_bench"
+    }
+   ]
+  },
+  {
+   "id": "e_boot_scare",
+   "body": "<<FILL role=ending words=70 beats='Miri reaches into the cubby and knocks over a heavy rubber boot. The loud thump makes her jump. She realizes Pip is nowhere near the boots.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_boot_scare",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Loud Thump"
+   }
+  },
+  {
+   "id": "n_bench",
+   "body": "<<FILL role=explore words=70 beats='A soft blue reading bench sits under the window. Miri notices a small, dark space underneath the wooden seat where an animal could easily hide.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bench_paper",
+     "label": "Look under the seat",
+     "target": "e_bench_paper"
+    },
+    {
+     "id": "c_bench_class",
+     "label": "Return to classrooms",
+     "target": "n_classrooms"
+    }
+   ]
+  },
+  {
+   "id": "e_bench_paper",
+   "body": "<<FILL role=ending words=70 beats='Miri crouches down to look under the blue bench, but she only finds an old crumpled spelling test. Miri frowns, wishing she knew where Pip went.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_bench_paper",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Old Test"
+   }
+  },
+  {
+   "id": "n_mats",
+   "body": "<<FILL role=explore words=70 beats='There is a neat stack of bristly welcome mats. Sometimes the chickens like to scratch at the rough fibers. Miri looks closely for tiny muddy footprints.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_mats_seeds",
+     "label": "Lift the top mat",
+     "target": "n_mats_seeds"
+    },
+    {
+     "id": "c_mats_class",
+     "label": "Return to classrooms",
+     "target": "n_classrooms"
+    }
+   ]
+  },
+  {
+   "id": "n_mats_seeds",
+   "body": "<<FILL role=explore words=70 beats='Miri lifts the heavy rubber mat. She finds a few scattered yellow seeds, exactly like chicken feed! Pip must have gone toward the coop.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_seeds_coop",
+     "label": "Follow seeds to coop",
+     "target": "n_coop_front"
+    },
+    {
+     "id": "c_seeds_class",
+     "label": "Return to classrooms",
+     "target": "n_classrooms"
+    }
+   ]
+  },
+  {
+   "id": "n_coop_front",
+   "body": "<<FILL role=explore words=70 beats='Miri is finally back near the wire fence of the coop. Big Dot and noisy Mac are safely inside. Pip could be hiding nearby.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_coop_feed",
+     "label": "Check the feed bin",
+     "target": "n_feed_bin"
+    },
+    {
+     "id": "c_coop_boxes",
+     "label": "Check the nesting boxes",
+     "target": "n_nesting_boxes"
+    },
+    {
+     "id": "c_coop_back",
+     "label": "Look behind the coop",
+     "target": "n_coop_back"
+    }
+   ]
+  },
+  {
+   "id": "n_feed_bin",
+   "body": "<<FILL role=explore words=70 beats='The metal feed bin is tall and shiny. The heavy lid is slightly crooked this morning. Maybe the tiny hen fluttered up for a giant breakfast.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_feed_bell",
+     "label": "Open the heavy lid",
+     "target": "e_feed_bin_bell"
+    },
+    {
+     "id": "c_feed_coop",
+     "label": "Return to coop front",
+     "target": "n_coop_front"
+    }
+   ]
+  },
+  {
+   "id": "e_feed_bin_bell",
+   "body": "<<FILL role=ending words=70 beats='Miri pushes the metal lid open. The bin is full of grain, but there is no hen inside. The morning bell begins to chime loudly.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_feed_bell",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Bell Rings"
+   }
+  },
+  {
+   "id": "n_nesting_boxes",
+   "body": "<<FILL role=explore words=70 beats='The wooden nesting boxes jut out from the side of the main coop. Miri gently lifts the flap to check the cozy, straw-filled squares.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_boxes_empty",
+     "label": "Feel around the straw",
+     "target": "e_empty_straw"
+    },
+    {
+     "id": "c_boxes_coop",
+     "label": "Return to coop front",
+     "target": "n_coop_front"
+    }
+   ]
+  },
+  {
+   "id": "e_empty_straw",
+   "body": "<<FILL role=ending words=70 beats='Miri carefully feels the dry straw but finds absolutely nothing. Pip is still lost, and Miri feels defeated without her little feathered friend.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_empty_straw",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Empty Straw"
+   }
+  },
+  {
+   "id": "n_coop_back",
+   "body": "<<FILL role=explore words=70 beats='Miri walks around to the back of the wire enclosure. The grass is much taller here. She sees a thick row of green bushes and a wooden ramp.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_back_bushes",
+     "label": "Check the green bushes",
+     "target": "n_bushes"
+    },
+    {
+     "id": "c_back_ramp",
+     "label": "Look under the ramp",
+     "target": "n_ramp"
+    },
+    {
+     "id": "c_back_coop",
+     "label": "Return to coop front",
+     "target": "n_coop_front"
+    }
+   ]
+  },
+  {
+   "id": "n_bushes",
+   "body": "<<FILL role=explore words=70 beats='The leafy bushes are very dense. Miri crouches low to the ground and listens carefully. She hears a soft clucking noise coming from the shadows.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_bushes_success",
+     "label": "Part the branches",
+     "target": "e_bush_success"
+    },
+    {
+     "id": "c_bushes_back",
+     "label": "Go back to coop back",
+     "target": "n_coop_back"
+    }
+   ]
+  },
+  {
+   "id": "e_bush_success",
+   "body": "<<FILL role=ending words=70 beats='Miri gently parts the green leaves. There is Pip, safely nestled in a hollow scoop of dirt! Miri happily carries her home to her sisters.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_bush_success",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Safe in the Bushes"
+   }
+  },
+  {
+   "id": "n_ramp",
+   "body": "<<FILL role=explore words=70 beats='The wooden ramp creates a tiny, dark triangle against the chainlink fence. It blocks the chilly wind perfectly. Miri kneels to peer into the shadows.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ramp_success",
+     "label": "Crawl underneath",
+     "target": "e_ramp_success"
+    },
+    {
+     "id": "c_ramp_back",
+     "label": "Go back to coop back",
+     "target": "n_coop_back"
+    }
+   ]
+  },
+  {
+   "id": "e_ramp_success",
+   "body": "<<FILL role=ending words=70 beats='Miri crawls under the wooden ramp and finds Pip fast asleep on a pile of dry oak leaves. She carefully picks up the tiny hen, smiling brightly.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_ramp_success",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Sleeping Hen"
+   }
+  }
+ ]
+}

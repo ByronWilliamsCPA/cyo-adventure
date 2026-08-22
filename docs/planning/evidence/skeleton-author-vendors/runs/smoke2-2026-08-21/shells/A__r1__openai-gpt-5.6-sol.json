@@ -1,0 +1,434 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "kindness to animals",
+   "careful observation",
+   "asking for help"
+  ],
+  "estimated_minutes": 4,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "holiday-arrival",
+ "nodes": [
+  {
+   "id": "holiday-arrival",
+   "body": "<<FILL role=setup words=45 beats='Miri arrives at quiet Willowbrook School with a corn bowl and fresh water for Poppy, Pepper, and Pip; only two hens hurry from the coop when she opens the yard gate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "count-the-hens",
+     "label": "Count the hens",
+     "target": "first-search-choice"
+    }
+   ]
+  },
+  {
+   "id": "first-search-choice",
+   "body": "<<FILL role=decision words=25 beats='Miri checks both nest boxes, finds the smallest hen missing, shuts Poppy and Pepper safely inside, and notices a loose latch, a pale feather, and tiny tracks'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "search-beside-the-coop",
+     "label": "Search beside the coop",
+     "target": "coop-clues"
+    },
+    {
+     "id": "search-across-the-yard",
+     "label": "Search across the yard",
+     "target": "yard-clues"
+    },
+    {
+     "id": "search-in-the-garden",
+     "label": "Search in the garden",
+     "target": "garden-clues"
+    }
+   ]
+  },
+  {
+   "id": "coop-clues",
+   "body": "<<FILL role=transition words=20 beats='Miri ties a blue ribbon to the loose latch and follows corn crumbs past the nesting ramp toward the feed room and hedge'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "follow-the-coop-clues",
+     "label": "Follow the coop clues",
+     "target": "coop-route-choice"
+    }
+   ]
+  },
+  {
+   "id": "yard-clues",
+   "body": "<<FILL role=transition words=20 beats='Miri follows three-toed prints past a red watering can; one trail reaches the caretaker shed, and muddy marks point toward the greenhouse'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "follow-the-yard-clues",
+     "label": "Follow the yard clues",
+     "target": "yard-route-choice"
+    }
+   ]
+  },
+  {
+   "id": "garden-clues",
+   "body": "<<FILL role=transition words=20 beats='Miri slips through the vegetable gate and finds a bent lettuce leaf, tiny prints, and dry leaves scattered toward the library courtyard'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "follow-the-garden-clues",
+     "label": "Follow the garden clues",
+     "target": "garden-route-choice"
+    }
+   ]
+  },
+  {
+   "id": "coop-route-choice",
+   "body": "<<FILL role=decision words=50 beats='Near the coop, nibbled corn husks lead through the feed room door; beneath the ramp, fresh scratches continue beside the hedge and the covered feed cart; Miri listens for a cluck before choosing which trail to inspect'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "check-the-feed-room",
+     "label": "Check the feed room",
+     "target": "feed-room-search"
+    },
+    {
+     "id": "check-the-ramp-trail",
+     "label": "Check the ramp trail",
+     "target": "ramp-search"
+    }
+   ]
+  },
+  {
+   "id": "yard-route-choice",
+   "body": "<<FILL role=decision words=50 beats='The caretaker shed door stands open beside a tipped flowerpot and two empty crates; farther on, muddy hen prints cross the path to the warm greenhouse, where a stack of pots hides a low seed shelf'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "look-inside-the-shed",
+     "label": "Look inside the shed",
+     "target": "shed-search"
+    },
+    {
+     "id": "look-inside-the-greenhouse",
+     "label": "Look inside the greenhouse",
+     "target": "greenhouse-search"
+    }
+   ]
+  },
+  {
+   "id": "garden-route-choice",
+   "body": "<<FILL role=decision words=50 beats='The garden trail divides near the library courtyard; one set of prints ends beneath a bench packed with leaves, while another crosses the grass toward the sports pavilion, where the wind shakes a box of cloth bibs'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "inspect-the-library-bench",
+     "label": "Inspect the library bench",
+     "target": "bench-search"
+    },
+    {
+     "id": "inspect-the-sports-pavilion",
+     "label": "Inspect the sports pavilion",
+     "target": "pavilion-search"
+    }
+   ]
+  },
+  {
+   "id": "feed-room-search",
+   "body": "<<FILL role=explore words=20 beats='Inside the feed room, Miri finds a fallen scoop, empty seed sacks, and a narrow line of husks leading out toward the compost bays'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "listen-in-the-feed-room",
+     "label": "Listen for Pip",
+     "target": "grain-trail-climax"
+    }
+   ]
+  },
+  {
+   "id": "ramp-search",
+   "body": "<<FILL role=explore words=20 beats='Miri kneels by the ramp; a feather lies inside the hedge tunnel, while the feed cart cloth moves above a round hollow in straw'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "compare-the-nearby-hiding-places",
+     "label": "Compare the hiding places",
+     "target": "hedge-cart-climax"
+    }
+   ]
+  },
+  {
+   "id": "shed-search",
+   "body": "<<FILL role=explore words=20 beats='Sunlight reveals a feather beside the shed crates and fresh prints circling the fallen flowerpot before crossing toward the greenhouse walkway'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "trace-the-shed-prints",
+     "label": "Trace the shed prints",
+     "target": "shed-greenhouse-climax"
+    }
+   ]
+  },
+  {
+   "id": "greenhouse-search",
+   "body": "<<FILL role=explore words=20 beats='In the greenhouse, Miri hears a pot scrape; muddy prints run beneath a heavy seed shelf and back toward the caretaker shed'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "trace-the-greenhouse-prints",
+     "label": "Trace the greenhouse prints",
+     "target": "shed-greenhouse-climax"
+    }
+   ]
+  },
+  {
+   "id": "bench-search",
+   "body": "<<FILL role=explore words=20 beats='Miri finds a warm hollow beneath the library bench and a second trail of pale feathers winding into the nearby bean patch'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "study-the-courtyard-trails",
+     "label": "Study the courtyard trails",
+     "target": "courtyard-climax"
+    }
+   ]
+  },
+  {
+   "id": "pavilion-search",
+   "body": "<<FILL role=explore words=20 beats='Beneath the pavilion steps, Miri spots muddy prints beside the sports box, but gusts are already covering the lightest marks with leaves'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "study-the-pavilion-clues",
+     "label": "Study the pavilion clues",
+     "target": "pavilion-climax"
+    }
+   ]
+  },
+  {
+   "id": "grain-trail-climax",
+   "body": "<<FILL role=climax words=50 beats='Miri taps the corn bowl twice and hears one faint cluck; it could come from the dark space behind the empty sacks or from the warm compost leaves beyond the back door, where fresh husks lie in a crooked line'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "search-behind-the-sacks",
+     "label": "Search behind the sacks",
+     "target": "ending-sack-nest"
+    },
+    {
+     "id": "search-the-compost-leaves",
+     "label": "Search the compost leaves",
+     "target": "ending-compost-egg"
+    }
+   ]
+  },
+  {
+   "id": "hedge-cart-climax",
+   "body": "<<FILL role=climax words=50 beats='Miri places corn between the two nearby hiding places; a branch trembles inside the hedge tunnel, then the loose cloth on the feed cart lifts and falls; she waits quietly and chooses where to look first'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "wait-by-the-hedge",
+     "label": "Wait by the hedge",
+     "target": "ending-hedge-home"
+    },
+    {
+     "id": "lift-the-cart-cloth",
+     "label": "Lift the cart cloth",
+     "target": "ending-cart-hideaway"
+    }
+   ]
+  },
+  {
+   "id": "shed-greenhouse-climax",
+   "body": "<<FILL role=climax words=50 beats='At the covered walkway, Miri sees one trail curl around the fallen flowerpot and another disappear beneath the heavy greenhouse shelf; she can check the light objects herself or call caretaker Mr. Sol to move the heavy tray safely'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "check-the-fallen-flowerpot",
+     "label": "Check the fallen flowerpot",
+     "target": "ending-flowerpot-queen"
+    },
+    {
+     "id": "call-mr-sol-for-help",
+     "label": "Call Mr. Sol for help",
+     "target": "ending-greenhouse-help"
+    }
+   ]
+  },
+  {
+   "id": "courtyard-climax",
+   "body": "<<FILL role=climax words=50 beats='A soft rustle comes from beneath the leaf-filled library bench, but the bean patch also holds a tiny nest-shaped hollow and one fresh brown feather; Miri shakes the corn bowl and decides which quiet place to approach'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "look-under-the-bench",
+     "label": "Look under the bench",
+     "target": "ending-bench-rest"
+    },
+    {
+     "id": "look-among-the-beans",
+     "label": "Look among the beans",
+     "target": "ending-bean-patch-nest"
+    }
+   ]
+  },
+  {
+   "id": "pavilion-climax",
+   "body": "<<FILL role=climax words=50 beats='Miri hears a muffled cluck near the sports bib box as the wind sweeps away the last clear tracks; she can inspect the box now or fetch Mr. Sol to organize a wider search around the pavilion'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "open-the-sports-box",
+     "label": "Open the sports box",
+     "target": "ending-pavilion-champion"
+    },
+    {
+     "id": "fetch-mr-sol",
+     "label": "Fetch Mr. Sol",
+     "target": "ending-search-continues"
+    }
+   ]
+  },
+  {
+   "id": "ending-sack-nest",
+   "body": "<<FILL role=ending words=138 beats='Miri crouches beside the empty seed sacks and taps her corn bowl; Pip pokes out her small brown head, shakes dust from her feathers, and walks into the light; Miri checks Pip gently, carries her back to Poppy and Pepper, fastens the loose coop latch, and records every clue in the holiday care book; she also draws a bright circle around the latch so Mr. Sol will know what needs fixing; Pip settles beside the other hens, safe and calm, while Miri replaces the fallen scoop and closes the feed room door; careful listening has solved the mystery before breakfast'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "sack-nest",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Pip Behind the Sacks"
+   }
+  },
+  {
+   "id": "ending-compost-egg",
+   "body": "<<FILL role=ending words=138 beats='Miri follows the husks outside and parts the top layer of dry compost leaves; Pip sits in a warm hollow beside one small egg, looking proud of her secret nest; Miri offers corn, waits for Pip to stand, and settles her in a safe basket; back at the coop, Poppy and Pepper greet the missing hen with busy clucks; Mr. Sol repairs the loose latch while Miri places the egg in a padded box and writes where she found it; they cover the compost bay so the hens cannot wander inside again; the holiday morning ends with three hens home and one surprising treasure for the school nature table'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "compost-egg",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Warm Hidden Nest"
+   }
+  },
+  {
+   "id": "ending-hedge-home",
+   "body": "<<FILL role=ending words=138 beats='Miri sits beside the hedge without reaching into the prickly branches; she lays a short line of corn from the tunnel to the open yard and waits; Pip pecks one grain, then another, until her whole brown body appears; Miri guides her toward the coop with the bowl and lets her join Poppy and Pepper; she secures the loose latch with string until Mr. Sol can repair it; the blue ribbon on the gate reminds everyone to check the catch twice; Miri leaves a shallow dish of water near the hedge for garden birds, then records how patience brought Pip safely home; the three hens settle together in a sunny patch'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "hedge-home",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Hedge Tunnel Trail"
+   }
+  },
+  {
+   "id": "ending-cart-hideaway",
+   "body": "<<FILL role=ending words=138 beats='Miri lifts the feed cart cloth slowly and discovers Pip resting in a round straw hollow on the lower shelf; the little hen blinks, gives one cheerful cluck, and steps toward the corn bowl; Miri carries Pip back across the yard and reunites her with Poppy and Pepper; after fastening the loose latch, Miri removes the straw from the cart, folds the cloth, and checks beneath every shelf for dropped feed; Mr. Sol promises to mend the latch before sunset; Miri adds a drawing of the cozy cart nest to the care book, pleased that a moving scrap of cloth led her to the smallest hen and her unexpected hideaway'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "cart-hideaway",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Feed Cart Hideaway"
+   }
+  },
+  {
+   "id": "ending-flowerpot-queen",
+   "body": "<<FILL role=ending words=138 beats='Miri moves one light empty crate and peers into the fallen flowerpot; Pip is sitting inside it like a tiny brown queen, with her tail feathers pointing through the wide opening; Miri scatters corn on the floor, and Pip steps out without a scratch; together they cross the yard to the coop, where Poppy and Pepper hurry to meet her; Miri closes the loose latch with a temporary clip and asks Mr. Sol to repair it; they stand the flowerpot upright, close the shed door, and cover the low vent; in the care book, Miri draws Pip wearing a paper crown and explains how the feather by the crates revealed the royal hiding place'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "flowerpot-queen",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Flowerpot Queen"
+   }
+  },
+  {
+   "id": "ending-greenhouse-help",
+   "body": "<<FILL role=ending words=138 beats='Mr. Sol comes with gloves and lifts the heavy greenhouse seed tray while Miri waits beside an open carrier; Pip waddles from beneath the shelf, dusty but unharmed, and follows a few grains of corn into the carrier; Miri takes her back to Poppy and Pepper, then checks the coop latch as Mr. Sol fixes it with a new hook; together they sweep loose straw from the greenhouse floor and store it in a closed box; Miri writes that asking for help kept both Pip and the seed trays safe; when the work is done, all three hens drink fresh water while sunlight warms the repaired coop door'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "greenhouse-help",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Careful Greenhouse Rescue"
+   }
+  },
+  {
+   "id": "ending-bench-rest",
+   "body": "<<FILL role=ending words=138 beats='Miri kneels beside the library bench and gently parts the dry leaves; Pip is curled in the warm hollow, sleeping with her head tucked beneath one wing; the corn bowl wakes her, and she steps calmly into Miri's waiting basket; Miri carries Pip to the coop, reunites the three hens, and fastens the loose latch with a bright clip; she leaves the remaining leaves beneath the bench for beetles and garden birds; in the holiday care book, Miri records the trail from the bent lettuce leaf to the courtyard nest; before leaving, she checks every hen once more and hears three contented clucks from the sunny coop'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "bench-rest",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Pip Under the Bench"
+   }
+  },
+  {
+   "id": "ending-bean-patch-nest",
+   "body": "<<FILL role=ending words=138 beats='Miri follows the fresh feather between two rows of bean plants and finds Pip tucked inside a nest of soft weeds; beside her lies a smooth speckled stone that looks almost like a tiny egg; Miri coaxes Pip into the basket with corn and carries her home to Poppy and Pepper; after securing the loose latch, she places the stone on the school nature table with a note explaining where it came from; Mr. Sol adds low netting around the bean patch so no hen can flatten the young plants; Miri finishes her care-book entry with a map of the garden trail and a careful drawing of Pip beside the egg-shaped stone'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "bean-patch-nest",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Bean Patch Treasure"
+   }
+  },
+  {
+   "id": "ending-pavilion-champion",
+   "body": "<<FILL role=ending words=138 beats='Miri opens the sports box and finds Pip perched on a pile of yellow and blue bibs; Pip gives a loud cluck as if she has won a match; Miri offers corn, lifts the little hen into her basket, and carries her across the playing field; Poppy and Pepper greet Pip at the coop while Miri closes the loose latch with a clip; Mr. Sol repairs it, and Miri returns to brush straw from every bib and shut the sports box firmly; she writes the whole trail in the holiday care book and draws Pip standing on a winner podium; by lunchtime, the pavilion is tidy and all three hens are safely home'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "pavilion-champion",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Pavilion Champion"
+   }
+  },
+  {
+   "id": "ending-search-continues",
+   "body": "<<FILL role=ending words=138 beats='Miri fetches Mr. Sol, but the wind covers the faint tracks before they return to the pavilion; they search beneath the steps, around the sports box, and along the fence without finding Pip; Miri feels disappointed, yet she remembers that Poppy and Pepper still need care; she gives them fresh water, secures the loose latch, and leaves corn beside a safe open carrier near the last feather; Mr. Sol calls two helpers and makes a careful search plan for the afternoon; Miri records every place already checked so nobody wastes time; Pip is still missing, but the school grounds are quiet, the other hens are safe, and the patient search will continue'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "search-continues",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Search Goes On"
+   }
+  }
+ ]
+}

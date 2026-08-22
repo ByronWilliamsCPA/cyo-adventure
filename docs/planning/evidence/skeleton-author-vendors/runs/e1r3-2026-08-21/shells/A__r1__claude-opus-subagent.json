@@ -1,0 +1,435 @@
+{
+ "schema_version": "2.0",
+ "id": "the-morning-pip-went-missing",
+ "version": 1,
+ "title": "The Morning Pip Went Missing",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.2,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "problem-solving",
+   "kindness to animals",
+   "staying calm",
+   "asking for help"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "holiday-week-morning",
+ "nodes": [
+  {
+   "id": "holiday-week-morning",
+   "body": "<<FILL role=setup words=33 beats='Miri unlocks the school garden gate on the first morning of holiday week with the feed scoop under one arm and the hen notebook in her coat pocket; frost sits white along the bean canes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "holiday-week-morning-c1",
+     "label": "Open the coop for breakfast",
+     "target": "only-two-hens"
+    }
+   ]
+  },
+  {
+   "id": "only-two-hens",
+   "body": "<<FILL role=setup words=35 beats='Two hens hurry out for breakfast, rusty Marigold and speckled Dumpling, and no third hen follows them; the straw on one side of the coop is flat and cold; Miri breathes slowly and decides where to look first'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "only-two-hens-c1",
+     "label": "Look hard at the coop door",
+     "target": "the-open-latch"
+    },
+    {
+     "id": "only-two-hens-c2",
+     "label": "Search the wet grass outside",
+     "target": "feathers-on-the-wire"
+    }
+   ]
+  },
+  {
+   "id": "the-open-latch",
+   "body": "<<FILL role=explore words=67 beats='The wooden latch is swung up and resting sideways instead of pushed down, and a scrape of mud crosses the sill and points out into the garden; Miri remembers shutting the coop door at dusk but not whether she pressed the latch hard; Marigold and Dumpling grumble around her boots for corn'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "the-open-latch-c1",
+     "label": "Follow the muddy scrape outside",
+     "target": "the-bent-wire-corner"
+    },
+    {
+     "id": "the-open-latch-c2",
+     "label": "Count the eggs in the nest box",
+     "target": "the-nest-box-count"
+    }
+   ]
+  },
+  {
+   "id": "feathers-on-the-wire",
+   "body": "<<FILL role=explore words=67 beats='Miri walks the wet grass in a slow circle the way Mr Osei the caretaker taught her, eyes down and no running at all; one soft grey feather hangs on the fence wire and a second lies near the steaming compost heap; Biscuit the neighbour cat watches from the wall with a very round belly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "feathers-on-the-wire-c1",
+     "label": "Search around the compost heap",
+     "target": "the-compost-scratch"
+    },
+    {
+     "id": "feathers-on-the-wire-c2",
+     "label": "Climb up and study Biscuit",
+     "target": "biscuit-on-the-wall"
+    }
+   ]
+  },
+  {
+   "id": "the-bent-wire-corner",
+   "body": "<<FILL role=explore words=68 beats='At the bottom corner of the fence the wire is pushed up into a small bent arch, exactly wide enough for one small hen, with grey down caught on the cut end; beyond the arch lie the allotment rows and a long brown puddle; the pliers that could flatten the arch hang on their hook in the tool shed'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "the-bent-wire-corner-c1",
+     "label": "Squeeze through to the allotment",
+     "target": "the-allotment-edge"
+    },
+    {
+     "id": "the-bent-wire-corner-c2",
+     "label": "Fetch the pliers and mend it",
+     "target": "fetch-the-pliers"
+    }
+   ]
+  },
+  {
+   "id": "the-nest-box-count",
+   "body": "<<FILL role=explore words=66 beats='Miri lifts the nest box lid and counts four cool brown eggs and one small pale egg still warm under the straw; only Pip lays the pale ones, so Pip was sitting right here not very long ago and cannot have gone far at all'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "the-nest-box-count-c1",
+     "label": "Hold the warm egg and think",
+     "target": "the-warm-pale-egg"
+    },
+    {
+     "id": "the-nest-box-count-c2",
+     "label": "Check the tool shed door",
+     "target": "the-shed-door-ajar"
+    }
+   ]
+  },
+  {
+   "id": "the-compost-scratch",
+   "body": "<<FILL role=explore words=66 beats='One side of the compost heap has been scratched into a shallow steaming dip, with broken shell and cabbage stalks kicked about; a flattened gap shows in the bottom of the hedge beyond it, and the cold wind moves the leaves around that gap'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "the-compost-scratch-c1",
+     "label": "Crawl into the hedge tunnel",
+     "target": "the-hedge-tunnel"
+    },
+    {
+     "id": "the-compost-scratch-c2",
+     "label": "Study the small footprints",
+     "target": "the-three-toed-prints"
+    }
+   ]
+  },
+  {
+   "id": "biscuit-on-the-wall",
+   "body": "<<FILL role=explore words=34 beats='Biscuit is fat and slow and washing one paw with enormous care, with no feather anywhere on his whiskers; he hops down and walks to a crooked flap under the shed roof, plainly expecting Miri to follow'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "biscuit-on-the-wall-c1",
+     "label": "Follow Biscuit to the flap",
+     "target": "ending-the-warm-shelf"
+    }
+   ]
+  },
+  {
+   "id": "the-allotment-edge",
+   "body": "<<FILL role=decision words=68 beats='Miri stands where the school garden ends and the allotment begins; long runner bean rows stripe away in green, a watering can lies tipped on its side by the water butt, and a black tangle of brambles hunches against the far fence; from here every single row looks exactly the same'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "the-allotment-edge-c1",
+     "label": "Look into the bramble tangle",
+     "target": "the-bramble-thicket"
+    },
+    {
+     "id": "the-allotment-edge-c2",
+     "label": "Check the tipped watering can",
+     "target": "the-tipped-watering-can"
+    }
+   ]
+  },
+  {
+   "id": "the-hedge-tunnel",
+   "body": "<<FILL role=decision words=68 beats='The hedge hides a low tunnel worn smooth by foxes and lost footballs, and inside it all the light turns green; halfway along the tunnel splits, one way toward a soft steady sound Miri cannot name yet and one way back out toward the school office door; twigs snag her jumper and hold on'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "the-hedge-tunnel-c1",
+     "label": "Follow the soft steady sound",
+     "target": "follow-the-soft-cluck"
+    },
+    {
+     "id": "the-hedge-tunnel-c2",
+     "label": "Back out and telephone Mr Osei",
+     "target": "back-to-the-telephone"
+    }
+   ]
+  },
+  {
+   "id": "the-warm-pale-egg",
+   "body": "<<FILL role=transition words=34 beats='Miri holds the warm pale egg in both hands and tries to think like a hen instead of like a girl; Pip loves places that are dark and low and dry and exactly one bird wide'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "the-warm-pale-egg-c1",
+     "label": "Look behind the upturned bucket",
+     "target": "ending-right-under-her-nose"
+    }
+   ]
+  },
+  {
+   "id": "the-shed-door-ajar",
+   "body": "<<FILL role=transition words=34 beats='The tool shed door hangs open a hand width and smells of oil and dry soil; near the floor something rustles once and stops, and the folded grey blanket on the old mower has a dent pressed into the middle of it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "the-shed-door-ajar-c1",
+     "label": "Lift the folded blanket slowly",
+     "target": "ending-the-secret-nest"
+    }
+   ]
+  },
+  {
+   "id": "the-three-toed-prints",
+   "body": "<<FILL role=explore words=34 beats='A line of small three toed prints leads away from the compost dip, crosses the dry path, circles the bike rack twice and then simply stops where the ground turns hard and grey'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "the-three-toed-prints-c1",
+     "label": "Search the whole garden again",
+     "target": "ending-the-longest-morning"
+    }
+   ]
+  },
+  {
+   "id": "fetch-the-pliers",
+   "body": "<<FILL role=transition words=34 beats='Miri takes the pliers off the shed hook, squeezes the bent arch of wire flat and wedges a paving slab along the bottom so nothing can push under it again; then she sits on the upturned bucket with the feed scoop'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "fetch-the-pliers-c1",
+     "label": "Rattle the scoop and wait",
+     "target": "ending-home-at-feeding-time"
+    }
+   ]
+  },
+  {
+   "id": "the-bramble-thicket",
+   "body": "<<FILL role=climax words=66 beats='The brambles are a black tangle of thorns with one low arch worn into the bottom of them; deep inside a grey shape shifts and grumbles to itself; Miri cannot reach in without tearing her arms, so it is either corn or elbows'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "the-bramble-thicket-c1",
+     "label": "Lay a corn trail and step back",
+     "target": "ending-the-corn-trail"
+    },
+    {
+     "id": "the-bramble-thicket-c2",
+     "label": "Crawl in under the thorns",
+     "target": "crawl-under-the-thorns"
+    }
+   ]
+  },
+  {
+   "id": "the-tipped-watering-can",
+   "body": "<<FILL role=climax words=34 beats='The green watering can lies on its side with straw dragged into its wide mouth; Miri crouches down and looks along the spout, and two bright round eyes look straight back out at her'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "the-tipped-watering-can-c1",
+     "label": "Hold out corn and stay still",
+     "target": "ending-quiet-hands"
+    }
+   ]
+  },
+  {
+   "id": "follow-the-soft-cluck",
+   "body": "<<FILL role=climax words=34 beats='Miri shuts her eyes so that her ears can do the work; the sound comes again from behind the water butt, a low burbling cluck Pip only makes when she is settling herself down'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "follow-the-soft-cluck-c1",
+     "label": "Look behind the water butt",
+     "target": "ending-behind-the-water-butt"
+    }
+   ]
+  },
+  {
+   "id": "back-to-the-telephone",
+   "body": "<<FILL role=transition words=34 beats='Miri backs out of the hedge tunnel, shuts Marigold and Dumpling safely in, and telephones Mr Osei from the school office; he says ten minutes, and that he will bring the clipboard and the spare wire'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "back-to-the-telephone-c1",
+     "label": "Walk the fence with Mr Osei",
+     "target": "ending-the-keeper-notebook"
+    }
+   ]
+  },
+  {
+   "id": "crawl-under-the-thorns",
+   "body": "<<FILL role=decision words=34 beats='Miri pulls her jumper sleeves down over both hands and elbows under the thorn arch until she can see Pip, dusty and cross, one wing width past her fingertips; she can stretch that last bit or wriggle back out for the corn tin'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "crawl-under-the-thorns-c1",
+     "label": "Reach out and gather Pip up",
+     "target": "ending-carried-home"
+    },
+    {
+     "id": "crawl-under-the-thorns-c2",
+     "label": "Back out and lay corn",
+     "target": "ending-the-corn-trail"
+    }
+   ]
+  },
+  {
+   "id": "ending-the-warm-shelf",
+   "body": "<<FILL role=ending words=34 beats='Behind the crooked flap the shed shelf is warm and dark and exactly hen sized, and Pip sits there in a neat ring of straw, blinking; Biscuit had been keeping watch beside her all night'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-the-warm-shelf",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Warm Shelf"
+   }
+  },
+  {
+   "id": "ending-home-at-feeding-time",
+   "body": "<<FILL role=ending words=34 beats='Miri rattles the scoop the ordinary way she does every single evening; nothing happens for one long minute, and then the bean leaves shake and Pip comes bustling out across the grass'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-home-at-feeding-time",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Home at Feeding Time"
+   }
+  },
+  {
+   "id": "ending-right-under-her-nose",
+   "body": "<<FILL role=ending words=34 beats='Behind the upturned bucket, in the driest darkest corner beside the coop, Pip is dozing with her feathers puffed right out; she has been three steps away the whole morning'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-right-under-her-nose",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Right Under Her Nose"
+   }
+  },
+  {
+   "id": "ending-the-secret-nest",
+   "body": "<<FILL role=ending words=34 beats='Under the folded blanket Pip sits low and puffed over five small pale eggs; she never ran away at all, she was keeping a secret, and Miri writes SECRET NEST in the hen notebook'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-the-secret-nest",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Secret Nest"
+   }
+  },
+  {
+   "id": "ending-the-longest-morning",
+   "body": "<<FILL role=ending words=34 beats='Miri searches until the sun is high and finds only her own footprints going round in circles; at teatime Mr Osei telephones, because Pip was shut in the allotment shed the whole time'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-the-longest-morning",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Longest Morning"
+   }
+  },
+  {
+   "id": "ending-quiet-hands",
+   "body": "<<FILL role=ending words=34 beats='Miri sits down in the wet grass with corn flat on her palm and says nothing at all; Pip tips her head twice, walks out of the watering can and steps straight up onto the hand'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-quiet-hands",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Quiet Hands"
+   }
+  },
+  {
+   "id": "ending-behind-the-water-butt",
+   "body": "<<FILL role=ending words=34 beats='In a hen sized hollow of fallen leaves behind the water butt Pip is muttering to herself; Miri lifts her gently, carries her back and pushes the wooden latch all the way down'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-behind-the-water-butt",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Behind the Water Butt"
+   }
+  },
+  {
+   "id": "ending-the-keeper-notebook",
+   "body": "<<FILL role=ending words=34 beats='Mr Osei chalks three weak places on the fence and mends them while Pip strolls out of the allotment shed at lunchtime; Miri rules three columns in the notebook, latch, count and gaps'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-the-keeper-notebook",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Hen Keeper Notebook"
+   }
+  },
+  {
+   "id": "ending-carried-home",
+   "body": "<<FILL role=ending words=34 beats='Miri scoops Pip up in a careful two handed hold with the wings tucked in; Pip complains the whole way across the garden and stops the instant she smells the feed scoop'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-carried-home",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Carried Home in a Jumper"
+   }
+  },
+  {
+   "id": "ending-the-corn-trail",
+   "body": "<<FILL role=ending words=66 beats='Miri lays a line of corn from the thorn arch out into the open grass, then sits back on her heels a long way off and waits without moving at all; one grey head appears, then one dusty hen, hopping along the line grain by grain until she is out in the sunshine and close enough to lift'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-the-corn-trail",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Corn Trail"
+   }
+  }
+ ]
+}

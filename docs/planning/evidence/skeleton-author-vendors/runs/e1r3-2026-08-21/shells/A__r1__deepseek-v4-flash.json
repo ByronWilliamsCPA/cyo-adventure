@@ -1,0 +1,562 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 3,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "animal care",
+   "problem solving",
+   "patience",
+   "community"
+  ],
+  "estimated_minutes": 7,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "start-pip-missing",
+ "nodes": [
+  {
+   "id": "start-pip-missing",
+   "body": "<<FILL role=setup words=68 beats='Monday morning, Miri opens the henhouse gate. Pip, the smallest hen, is missing. A single blue feather lies on the straw. Clover and Big Bess cluck uneasily.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-search-coop",
+     "label": "Search the henhouse",
+     "target": "coop-search"
+    },
+    {
+     "id": "choice-call-yard",
+     "label": "Call across the school yard",
+     "target": "yard-call"
+    },
+    {
+     "id": "choice-check-gate",
+     "label": "Check the garden gate",
+     "target": "garden-gate"
+    }
+   ]
+  },
+  {
+   "id": "coop-search",
+   "body": "<<FILL role=explore words=70 beats='Inside the warm henhouse. Empty nest boxes, scattered straw. Pip’s water dish is tipped over. Clover pecks at Miri’s boot as if asking for help.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-nest-boxes",
+     "label": "Peek into the nest boxes",
+     "target": "nest-boxes"
+    },
+    {
+     "id": "choice-behind-sacks",
+     "label": "Look behind the feed sacks",
+     "target": "feed-sacks"
+    },
+    {
+     "id": "choice-tap-wall",
+     "label": "Tap the back wall and listen",
+     "target": "tap-wall"
+    }
+   ]
+  },
+  {
+   "id": "nest-boxes",
+   "body": "<<FILL role=explore words=69 beats='Miri lifts the straw in each nest box. One holds a warm brown egg, but no Pip. A faint cluck seems to come from below the coop floor.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-under-coop",
+     "label": "Look under the coop",
+     "target": "under-coop"
+    },
+    {
+     "id": "choice-check-backyard",
+     "label": "Run to the backyard",
+     "target": "backyard"
+    }
+   ]
+  },
+  {
+   "id": "under-coop",
+   "body": "<<FILL role=explore words=68 beats='Miri lies flat and shines her torch under the coop. Two tiny eyes blink back. Pip has wedged herself under a pipe and cannot move.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-free-pip",
+     "label": "Gently pull Pip out",
+     "target": "pip-freed"
+    },
+    {
+     "id": "choice-call-adult",
+     "label": "Call for grown-up help",
+     "target": "adult-rescue"
+    }
+   ]
+  },
+  {
+   "id": "pip-freed",
+   "body": "<<FILL role=climax words=71 beats='Miri carefully slides her hand under Pip and lifts. Pip is unhurt, just stuck. She shakes her feathers and pecks Miri's finger gratefully.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-pip-freed",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Pip Freed"
+   }
+  },
+  {
+   "id": "adult-rescue",
+   "body": "<<FILL role=transition words=68 beats='Miri runs inside and brings back Mr. Kim, the caretaker. With a long stick, he pries the pipe so Pip can wiggle free.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-adult-rescue",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Mr. Kim Helps"
+   }
+  },
+  {
+   "id": "backyard",
+   "body": "<<FILL role=explore words=67 beats='The back yard is quiet save for a distant lawnmower. Under the porch steps, a small feathered shape huddles.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-porch-hide",
+     "label": "Creep close and see",
+     "target": "porch-ending"
+    },
+    {
+     "id": "choice-throw-seeds",
+     "label": "Sprinkle chicken feed to lure her",
+     "target": "seed-lure"
+    }
+   ]
+  },
+  {
+   "id": "porch-ending",
+   "body": "<<FILL role=ending words=66 beats='The feathered shape is Pip, fast asleep in a coil of old hose. Miri picks her up gently and carries her back to the coop.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-porch-sleep",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Porch Nap"
+   }
+  },
+  {
+   "id": "seed-lure",
+   "body": "<<FILL role=decision words=69 beats='Miri scatters a handful of chicken feed near the porch. A curious hen appears from behind the trash can, but it is Clover, not Pip.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-try-garden",
+     "label": "Search the garden",
+     "target": "garden-gate"
+    },
+    {
+     "id": "choice-check-coop-again",
+     "label": "Return to the coop to check again",
+     "target": "coop-final"
+    }
+   ]
+  },
+  {
+   "id": "coop-final",
+   "body": "<<FILL role=transition words=66 beats='Back at the coop, Miri opens the gate wearily. A small red shape pecks at the feeder. Pip is already back, as if she never left.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-back-safely",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Home Again"
+   }
+  },
+  {
+   "id": "feed-sacks",
+   "body": "<<FILL role=explore words=70 beats='Behind the grain sacks, Miri finds only a dusty spiderweb. But a trail of bright blue feathers leads toward the back door.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-follow-feathers",
+     "label": "Follow the feather trail",
+     "target": "feather-trail"
+    },
+    {
+     "id": "choice-shed-second",
+     "label": "Check the shed instead",
+     "target": "shed-first"
+    }
+   ]
+  },
+  {
+   "id": "feather-trail",
+   "body": "<<FILL role=explore words=69 beats='The blue feather trail leads around the coop, across the sandbox, and stops at a broken plank in the school fence. Beyond: the owl tree.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-climb-through",
+     "label": "Squeeze through the plank",
+     "target": "owl-tree-end"
+    },
+    {
+     "id": "choice-retreat-call",
+     "label": "Call from here one more time",
+     "target": "call-final"
+    }
+   ]
+  },
+  {
+   "id": "owl-tree-end",
+   "body": "<<FILL role=climax words=70 beats='Beyond the fence, Pip is perched on a low branch of the owl tree, preening. She seems perfectly content. Miri lures her down with a handful of grain.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-owl-tree",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Tree Climber"
+   }
+  },
+  {
+   "id": "call-final",
+   "body": "<<FILL role=transition words=63 beats='Miri calls Pip's name into the trees. A distant cluck answers, but it fades away. Pip is somewhere out there, but Miri cannot reach her.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-lost-forever",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Lost in the Woods"
+   }
+  },
+  {
+   "id": "tap-wall",
+   "body": "<<FILL role=explore words=68 beats='Miri presses her ear to the coop wall. A soft cluck! She taps back. The cluck comes from a loose board near the waterer bucket.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-lift-board",
+     "label": "Lift the loose board",
+     "target": "loose-board"
+    },
+    {
+     "id": "choice-get-torch",
+     "label": "Get the torch from the shed",
+     "target": "shed-first"
+    }
+   ]
+  },
+  {
+   "id": "loose-board",
+   "body": "<<FILL role=explore words=71 beats='Miri pries the loose board open. Behind it, a hollow space holds a nest of soft feathers and Pip herself, snoozing soundly on three eggs.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-gentle-wake",
+     "label": "Let Pip sleep",
+     "target": "pip-sleeping"
+    },
+    {
+     "id": "choice-excite-run",
+     "label": "Run to tell Ms. Chen",
+     "target": "tell-mschen-pip"
+    }
+   ]
+  },
+  {
+   "id": "pip-sleeping",
+   "body": "<<FILL role=ending words=66 beats='Miri covers the nest gently and leaves Pip to her eggs. She will tell Ms. Chen in the morning. Pip is safe and happy.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-pip-secret-nest",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Secret Nest"
+   }
+  },
+  {
+   "id": "tell-mschen-pip",
+   "body": "<<FILL role=transition words=68 beats='Miri runs to fetch Ms. Chen. Together they check the secret nest. Ms. Chen helps Miri put a soft barrier so Pip is safe from drafts.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-mschen-nest",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A Safe Nest"
+   }
+  },
+  {
+   "id": "yard-call",
+   "body": "<<FILL role=explore words=67 beats='Miri cups her hands and calls Pip's name across the windy yard. Leaves skitter. No red comb appears. Big Bess follows Miri like a guard.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-wait-call",
+     "label": "Wait and call again",
+     "target": "wait-call"
+    },
+    {
+     "id": "choice-follow-clover",
+     "label": "Follow Clover's waddling path",
+     "target": "clover-path"
+    }
+   ]
+  },
+  {
+   "id": "wait-call",
+   "body": "<<FILL role=transition words=65 beats='Miri calls Pip's name three times, each time louder. For a moment, she hears a faint rustle in the bushes by the compost bin.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-compost-bush",
+     "label": "Creep toward the bushes",
+     "target": "compost-bush"
+    },
+    {
+     "id": "choice-call-again",
+     "label": "Call one more time",
+     "target": "call-third"
+    }
+   ]
+  },
+  {
+   "id": "call-third",
+   "body": "<<FILL role=transition words=60 beats='Miri calls Pip's name one last tim. Then she hears a cheerful buck from inside the coop!'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-pip-back",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Pip Comes Home"
+   }
+  },
+  {
+   "id": "compost-bush",
+   "body": "<<FILL role=decision words=70 beats='Miri tiptoes towards the compost bin. Behind it, a hole under the fence leads to the wild meadow. A single feather hangs on the wire.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-crawl-under",
+     "label": "Crawl under the fence",
+     "target": "meadow-end"
+    },
+    {
+     "id": "choice-run-shed",
+     "label": "Get help from the shed",
+     "target": "shed-helper-meadow"
+    }
+   ]
+  },
+  {
+   "id": "meadow-end",
+   "body": "<<FILL role=climax words=70 beats='Miri crawls into the meadow. The grass is tall. She spots Pip drinking from a puddle. Pip runs to her, and Miri carries her back.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-meadow-rescue",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Meadow Rescue"
+   }
+  },
+  {
+   "id": "shed-helper-meadow",
+   "body": "<<FILL role=transition words=69 beats='Miri runs to the shed, finds a net, and hurries back. She gently scoops Pip from the meadow before Pip can dart into the deep woods.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-shed-net",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Quick Thinking"
+   }
+  },
+  {
+   "id": "clover-path",
+   "body": "<<FILL role=explore words=67 beats='Clover waddles toward the old apple tree. Under its branches, the earth is scratched. A single yellow feather sticks out of the dirt.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-dig-here",
+     "label": "Dig in the dirt",
+     "target": "dig-feather"
+    },
+    {
+     "id": "choice-call-school",
+     "label": "Run to get Ms. Chen",
+     "target": "ms-chen-help"
+    }
+   ]
+  },
+  {
+   "id": "dig-feather",
+   "body": "<<FILL role=decision words=70 beats='Miri scrapes the dirt with her hands. Two inches down, she finds an old bone, not a hen. Clover clucks impatiently and struts toward the garden.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-follow-clover-again",
+     "label": "Follow Clover again",
+     "target": "clover-garden"
+    },
+    {
+     "id": "choice-give-up",
+     "label": "Head back to the coop",
+     "target": "coop-final"
+    }
+   ]
+  },
+  {
+   "id": "clover-garden",
+   "body": "<<FILL role=explore words=68 beats='Clover waddles to the lettuce patch and pecs at the ground. Under a rhubarb leaf, a smal fluff of red feathers stirs. It's Pip!'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-clover-leads",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Clover the Tracker"
+   }
+  },
+  {
+   "id": "ms-chen-help",
+   "body": "<<FILL role=transition words=68 beats='Miri finds Ms. Chen watering the classroom plants. Ms. Chen puts down her watering can and follows Miri to the apple tree.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-mschen-find",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Ms. Chen Saves the Day"
+   }
+  },
+  {
+   "id": "garden-gate",
+   "body": "<<FILL role=explore words=66 beats='The wooden garden gate swings with a creak. A hen-sized gap shows through the fence. Muddy three-toed prints lead into the vegetable patch.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-gap-trail",
+     "label": "Squeeze through the gap",
+     "target": "gap-trail"
+    },
+    {
+     "id": "choice-shed-firs",
+     "label": "Check the old shed first",
+     "target": "shed-first"
+    }
+   ]
+  },
+  {
+   "id": "gap-trail",
+   "body": "<<FILL role=explore words=69 beats='Through the gap, Miri steps into the neighbor's garden. A hen-sized hole under the fence leads to a burlap sack. The sack twitches.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-open-sack",
+     "label": "Carefully open the sack",
+     "target": "sack-ending"
+    },
+    {
+     "id": "choice-ask-neighbor",
+     "label": "Knock on the neighbor's door",
+     "target": "neighbor-ask"
+    }
+   ]
+  },
+  {
+   "id": "sack-ending",
+   "body": "<<FILL role=ending words=65 beats='Inside the burlap sack, Pip has found a pile of corn and cannot resist. Miri scoops her up and carries her home.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-sack-corn",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Corn Surprise"
+   }
+  },
+  {
+   "id": "neighbor-ask",
+   "body": "<<FILL role=transition words=69 beats='The neighbor, Mr. Yusuf, opens the door. He says he saw a smal red hen scraching near the shed and shooed her back toward the school.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-neighbor-shows",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Mr. Yusuf's Hint"
+   }
+  },
+  {
+   "id": "shed-first",
+   "body": "<<FILL role=explore words=71 beats='The old toolshed has cobwebs and a broken rake. Behind an upended wheelbarrow, something white and reddish catches Miri's eye.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-pull-barrow",
+     "label": "Pull the wheelbarrow aside",
+     "target": "barrow-ending"
+    },
+    {
+     "id": "choice-hide-check",
+     "label": "Squeeak inside for noises",
+     "target": "shed-noise"
+    }
+   ]
+  },
+  {
+   "id": "barrow-ending",
+   "body": "<<FILL role=ending words=67 beats='Behind the wheelbarrow, Pip huddles in a nest of rags. She has laid a tiny egg. Miri wraps her in a towel and carries her home.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-barrow-nest",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Shed Nest"
+   }
+  },
+  {
+   "id": "shed-noise",
+   "body": "<<FILL role=explore words=66 beats='Miri kneels and listens. A soft cluck comes from inside an old paint can. She tips it gently, empty. Pip must be elsewher.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-garden-again",
+     "label": "Check the garden again",
+     "target": "garden-gate"
+    },
+    {
+     "id": "choice-call-yard2",
+     "label": "Run to the yard to call",
+     "target": "yerd-call"
+    }
+   ]
+  }
+ ]
+}

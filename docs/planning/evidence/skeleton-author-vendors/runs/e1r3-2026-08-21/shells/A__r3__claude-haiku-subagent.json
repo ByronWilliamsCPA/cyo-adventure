@@ -1,0 +1,399 @@
+{
+ "schema_version": "2.0",
+ "id": "priyas-snowy-boot-quest",
+ "version": 1,
+ "title": "Priya's Snowy Boot Quest",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 3.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "siblings",
+   "winter adventure",
+   "problem-solving",
+   "persistence",
+   "responsibility"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 6,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "node_001",
+ "nodes": [
+  {
+   "id": "node_001",
+   "body": "<<FILL role=setup words=60 beats='Priya and her little brother Maya finish sledding down the snowy hill. They feel tired and happy but very cold. The snow sparkles in white light.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_001a",
+     "label": "Look around to gather their things",
+     "target": "node_002"
+    }
+   ]
+  },
+  {
+   "id": "node_002",
+   "body": "<<FILL role=explore words=58 beats='Priya looks around to gather their things for the walk home. Then she realizes something is wrong. She counts the boots on the ground. One is missing. Where is Maya\\'s left boot?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_002a",
+     "label": "Decide what to do",
+     "target": "node_003"
+    }
+   ]
+  },
+  {
+   "id": "node_003",
+   "body": "<<FILL role=decision words=70 beats='Priya needs to decide. She could search the snowy sled run herself right away, looking carefully at every spot. Or she could ask Mom for help and they could search together. What should she do?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_003a",
+     "label": "Look for the boot right now",
+     "target": "node_004"
+    },
+    {
+     "id": "choice_003b",
+     "label": "Ask Mom for help",
+     "target": "node_005"
+    }
+   ]
+  },
+  {
+   "id": "node_004",
+   "body": "<<FILL role=explore words=60 beats='Priya walks back along the snowy sled run, looking carefully. Her eyes follow the tracks from their sleds. The snow sparkles in white light. She needs to find the boot before dark comes.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_004a",
+     "label": "Search the top of the hill",
+     "target": "node_006"
+    },
+    {
+     "id": "choice_004b",
+     "label": "Search the bottom first",
+     "target": "node_007"
+    }
+   ]
+  },
+  {
+   "id": "node_005",
+   "body": "<<FILL role=transition words=58 beats='Priya runs back to where Mom is waiting with the car. She tells Mom about the lost boot. Mom listens and nods. They walk back to the sled run together, searching the white snow.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_005a",
+     "label": "Search the top of the hill",
+     "target": "node_006"
+    },
+    {
+     "id": "choice_005b",
+     "label": "Search the bottom first",
+     "target": "node_007"
+    }
+   ]
+  },
+  {
+   "id": "node_006",
+   "body": "<<FILL role=decision words=70 beats='At the top of the hill, the snow is smooth and white. Priya looks everywhere for the boot. She sees tracks from their sleds going down. The air is cold. She shivers and keeps looking carefully.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_006a",
+     "label": "Walk down the hill slowly",
+     "target": "node_008"
+    },
+    {
+     "id": "choice_006b",
+     "label": "Ask a park ranger for help",
+     "target": "node_009"
+    }
+   ]
+  },
+  {
+   "id": "node_007",
+   "body": "<<FILL role=decision words=65 beats='At the bottom of the hill by the trees, the snow has drifted deep. It is colder here. Priya looks around the tree trunks carefully. Her brother\\'s boot might have slid all the way down here. She looks hard.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_007a",
+     "label": "Search between the trees",
+     "target": "node_008"
+    },
+    {
+     "id": "choice_007b",
+     "label": "Check the storage shack",
+     "target": "node_010"
+    }
+   ]
+  },
+  {
+   "id": "node_008",
+   "body": "<<FILL role=explore words=68 beats='Priya walks along the snowy slope between areas. She sees her friend Tommy coming down the hill with his sled. Tommy waves and sees Priya looking for something. He can help her search or she might find it faster alone.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_008a",
+     "label": "Tell Tommy to help search",
+     "target": "node_011"
+    },
+    {
+     "id": "choice_008b",
+     "label": "Search by yourself",
+     "target": "node_012"
+    }
+   ]
+  },
+  {
+   "id": "node_009",
+   "body": "<<FILL role=explore words=66 beats='A park ranger is checking the path. Priya tells the ranger about the lost boot. The ranger smiles and says the lost-and-found has things from the hill. Maybe the boot is there! They go check together.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_009a",
+     "label": "Walk to the warming hut",
+     "target": "node_013"
+    }
+   ]
+  },
+  {
+   "id": "node_010",
+   "body": "<<FILL role=explore words=68 beats='On the way back, Priya walks past a small shack where people store snow gear. The door is open a little bit. Inside, she can barely see shapes in the dark. Could the boot be in there?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_010a",
+     "label": "Look inside the shack",
+     "target": "node_014"
+    },
+    {
+     "id": "choice_010b",
+     "label": "Keep walking",
+     "target": "node_015"
+    }
+   ]
+  },
+  {
+   "id": "node_011",
+   "body": "<<FILL role=explore words=68 beats='Tommy stops his sled and listens. He thinks searching together is fun. They split up and search different areas. Tommy looks by the snow wall while Priya checks the middle path. Two pairs of eyes are better.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_011a",
+     "label": "Meet back up and compare notes",
+     "target": "node_016"
+    }
+   ]
+  },
+  {
+   "id": "node_012",
+   "body": "<<FILL role=explore words=64 beats='Priya tells Tommy she will look by herself. She watches Tommy sled down again. Now Priya walks alone through the snow. She must be very careful and look at everything. Time is passing quickly.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_012a",
+     "label": "Search more carefully",
+     "target": "node_016"
+    }
+   ]
+  },
+  {
+   "id": "node_013",
+   "body": "<<FILL role=explore words=64 beats='In the warming hut, there is a big box of lost things. Hats, scarves, and gloves pile up inside. The ranger helps Priya look. She moves things aside, searching and hoping. Near the bottom, she sees red.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_013a",
+     "label": "Pull out the red fabric",
+     "target": "node_017"
+    },
+    {
+     "id": "choice_013b",
+     "label": "Ask the ranger if more boots came in",
+     "target": "ending_006"
+    }
+   ]
+  },
+  {
+   "id": "node_014",
+   "body": "<<FILL role=explore words=68 beats='Inside the shack, snow has drifted everywhere. Priya sees old sleds, broken skis, and boxes. She looks carefully at everything. On the floor next to the door, she sees a small dark boot. She picks it up carefully.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_014a",
+     "label": "Check if it is the right boot",
+     "target": "node_018"
+    }
+   ]
+  },
+  {
+   "id": "node_015",
+   "body": "<<FILL role=transition words=60 beats='Priya walks toward home with Mom. The sun is getting lower. Snow crunches under their feet. Priya has not found the boot and feels sad and tired. Maybe tomorrow they can look again.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_015a",
+     "label": "Go straight home",
+     "target": "ending_001"
+    }
+   ]
+  },
+  {
+   "id": "node_016",
+   "body": "<<FILL role=decision words=70 beats='Priya has searched many places but found nothing. She wonders where the boot could be. Mom says time is getting late. Priya feels worried about time running out. What should she do?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_016a",
+     "label": "Search the deep snowbank",
+     "target": "node_020"
+    },
+    {
+     "id": "choice_016b",
+     "label": "Check the parking lot area",
+     "target": "node_021"
+    },
+    {
+     "id": "choice_016c",
+     "label": "Head back and think",
+     "target": "node_015"
+    }
+   ]
+  },
+  {
+   "id": "node_017",
+   "body": "<<FILL role=explore words=66 beats='It is a red boot but not Maya\\'s. Priya checks and it is a different size. Priya\\'s heart sinks. The ranger says to check back tomorrow. Maybe someone will bring it in tonight. They leave the hut with no success.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_017a",
+     "label": "Go home without the boot",
+     "target": "ending_002"
+    }
+   ]
+  },
+  {
+   "id": "node_018",
+   "body": "<<FILL role=climax words=70 beats='Yes, it is Maya\\'s boot! It has the pink laces Priya\\'s mom sewed in. Priya holds it tight. She found it at last! The boot must have been kicked inside when they sledded. Priya feels relief and joy.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_018a",
+     "label": "Go home with the boot",
+     "target": "ending_003"
+    }
+   ]
+  },
+  {
+   "id": "node_020",
+   "body": "<<FILL role=climax words=70 beats='Priya remembers the parking lot area and thinks hard. She pushes into the deep snow along the snowy slope. It is cold and hard to walk. She sees something dark peeking out. Wait, she sees the boot edge under the snow.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_020a",
+     "label": "Try to pull the boot out",
+     "target": "ending_005"
+    }
+   ]
+  },
+  {
+   "id": "node_021",
+   "body": "<<FILL role=climax words=68 beats='Priya walks to the parking lot area, thinking hard about where the boot could have gone. She reaches for a dark shape in the snow. It is the boot! It landed by the parking lot and got covered with drifted snow.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_021a",
+     "label": "Head home with Mom",
+     "target": "ending_004"
+    }
+   ]
+  },
+  {
+   "id": "ending_001",
+   "body": "<<FILL role=ending words=66 beats='Priya and Mom drive home. At home, Priya feels sad that she did not find the boot. But Mom says Priya tried her very best. Sometimes things take time. Tomorrow, they can look again or the boot might turn up. Priya hopes so.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_001",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Searching Must Wait Until Tomorrow"
+   }
+  },
+  {
+   "id": "ending_002",
+   "body": "<<FILL role=ending words=70 beats='Priya and Mom leave the warming hut with sad hearts. At home, Priya tells Maya they could not find the boot. That night, their neighbor stops by. He found a boot in his yard! The wind had blown it there. Help came from friends.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_002",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Help Comes from a Neighbor"
+   }
+  },
+  {
+   "id": "ending_003",
+   "body": "<<FILL role=ending words=70 beats='Priya rushes home with the boot from the shack. She bursts through the door and shows Mom. Then she finds Maya and tells the adventure of finding it. Maya is amazed. Priya feels proud of her search.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_003",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Boot Found in the Old Shack"
+   }
+  },
+  {
+   "id": "ending_004",
+   "body": "<<FILL role=ending words=68 beats='At home, Priya sets the boot by the door to dry. Her brother Maya comes home from his friend\\'s house. When he sees his boot, he is so happy! Priya tells him how she searched everywhere. He gives her a hug and thanks her.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_004",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Boot Found by the Parking Lot"
+   }
+  },
+  {
+   "id": "ending_005",
+   "body": "<<FILL role=ending words=70 beats='Priya pulls and pulls. Her mittens are wet and slippery. The boot comes free with a soft pop. Snow falls around it. She holds the boot up. At home, Mom makes hot cocoa while the boot dries. Priya feels proud.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_005",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Boot Found in the Deep Snow"
+   }
+  },
+  {
+   "id": "ending_006",
+   "body": "<<FILL role=ending words=68 beats='The ranger smiles kindly. She says three other boots came in this week, but none match Maya\\'s. She tells Priya to check back tomorrow afternoon. That evening, Priya feels hopeful. She goes home and tells Maya everything. Together they plan to return.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_006",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Promise to Return Tomorrow"
+   }
+  }
+ ]
+}

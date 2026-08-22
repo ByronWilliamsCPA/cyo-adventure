@@ -1,0 +1,506 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 1.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "courage",
+   "problem-solving",
+   "perseverance",
+   "kindness"
+  ],
+  "estimated_minutes": 2,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=20 beats='First morning of the school holidays. Miri unlocks the hen house to feed Clover, Bramble, and tiny Nutmeg, but only two hens blink at her. Nutmeg is gone.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-start-1",
+     "label": "Step outside to look for Nutmeg",
+     "target": "yard"
+    }
+   ]
+  },
+  {
+   "id": "yard",
+   "body": "<<FILL role=transition words=15 beats='Miri stands in the yard listening for clucking, but hears nothing. She decides to search the school grounds properly, starting with the closest places first.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-yard-1",
+     "label": "Start searching the school grounds",
+     "target": "search_choice"
+    }
+   ]
+  },
+  {
+   "id": "search_choice",
+   "body": "<<FILL role=decision words=30 beats='Miri pictures three places Nutmeg could be hiding: the coop, the vegetable garden, or the tangled hedge by the field. She must pick where to look first.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-search-1",
+     "label": "Search the coop",
+     "target": "coop_path"
+    },
+    {
+     "id": "c-search-2",
+     "label": "Search the vegetable garden",
+     "target": "garden_path"
+    },
+    {
+     "id": "c-search-3",
+     "label": "Search along the hedge",
+     "target": "hedge_path"
+    }
+   ]
+  },
+  {
+   "id": "coop_path",
+   "body": "<<FILL role=decision words=60 beats='Inside the coop, straw lies scattered and one nesting box looks disturbed. Miri wonders whether to check the nesting boxes herself or find Mr. Dodd, the caretaker, who does his rounds at dawn.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-coop-1",
+     "label": "Check the nesting boxes",
+     "target": "coop_boxes"
+    },
+    {
+     "id": "c-coop-2",
+     "label": "Find Mr. Dodd the caretaker",
+     "target": "coop_janitor"
+    }
+   ]
+  },
+  {
+   "id": "coop_boxes",
+   "body": "<<FILL role=decision words=55 beats='Miri lifts the straw in the nesting boxes and finds a few small white feathers. She could examine the loose straw closely, or check near the little swinging door instead.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-boxes-1",
+     "label": "Look closer at the loose straw",
+     "target": "coop_boxes_straw"
+    },
+    {
+     "id": "c-boxes-2",
+     "label": "Check near the little door",
+     "target": "coop_boxes_door"
+    }
+   ]
+  },
+  {
+   "id": "coop_boxes_straw",
+   "body": "<<FILL role=decision words=55 beats='Tucked in the straw, a thin trail of fluff leads two directions: one toward the toolshed, one toward the garden gate. Miri must choose which trail to follow.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-boxstraw-1",
+     "label": "Follow the trail to the toolshed",
+     "target": "ending_shed_found"
+    },
+    {
+     "id": "c-boxstraw-2",
+     "label": "Follow the trail to the garden gate",
+     "target": "ending_garden_gate"
+    }
+   ]
+  },
+  {
+   "id": "coop_boxes_door",
+   "body": "<<FILL role=decision words=55 beats='By the little swinging door, downy fluff clings to the frame, drifting two ways in the breeze: toward the toolshed, and toward the garden gate. Miri must pick a direction.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-boxdoor-1",
+     "label": "Head toward the toolshed",
+     "target": "ending_shed_found"
+    },
+    {
+     "id": "c-boxdoor-2",
+     "label": "Head toward the garden gate",
+     "target": "ending_garden_gate"
+    }
+   ]
+  },
+  {
+   "id": "coop_janitor",
+   "body": "<<FILL role=decision words=55 beats='Mr. Dodd is sweeping the porch. Miri could ask him if he saw Nutmeg at dawn, or ask if he heard any strange clucking noises this morning.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-janitor-1",
+     "label": "Ask if he saw Nutmeg at dawn",
+     "target": "coop_janitor_A"
+    },
+    {
+     "id": "c-janitor-2",
+     "label": "Ask if he heard strange noises",
+     "target": "coop_janitor_B"
+    }
+   ]
+  },
+  {
+   "id": "coop_janitor_A",
+   "body": "<<FILL role=decision words=55 beats='Mr. Dodd says a small hen darted behind the coop at sunrise, but he also remembers the school nurse mentioning a chilly little hen by her door. Miri must choose which lead to follow.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-janA-1",
+     "label": "Check the nurse's office",
+     "target": "ending_nurse_found"
+    },
+    {
+     "id": "c-janA-2",
+     "label": "Check behind the coop",
+     "target": "ending_behind_coop"
+    }
+   ]
+  },
+  {
+   "id": "coop_janitor_B",
+   "body": "<<FILL role=decision words=55 beats='Mr. Dodd recalls a rustling sound behind the coop earlier, and separately, the nurse asking about a cold hen near her radiator. Miri weighs which clue sounds more promising.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-janB-1",
+     "label": "Ask the nurse about the hen",
+     "target": "ending_nurse_found"
+    },
+    {
+     "id": "c-janB-2",
+     "label": "Look behind the coop",
+     "target": "ending_behind_coop"
+    }
+   ]
+  },
+  {
+   "id": "garden_path",
+   "body": "<<FILL role=decision words=60 beats='The vegetable patch lies past the gate, its lettuce leaves nibbled at the edges. The toolshed door stands slightly open too, unusual for a quiet holiday morning. Miri must decide where to look first.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-gpath-1",
+     "label": "Check the vegetable rows",
+     "target": "garden_veggie"
+    },
+    {
+     "id": "c-gpath-2",
+     "label": "Peek inside the toolshed",
+     "target": "garden_shed"
+    }
+   ]
+  },
+  {
+   "id": "garden_veggie",
+   "body": "<<FILL role=decision words=55 beats='Among the lettuce, tiny footprints press into the soft dirt. Miri could follow them toward the fence, or check a scrap of down caught on the pea trellis nearby.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-veg-1",
+     "label": "Follow the footprints toward the fence",
+     "target": "garden_veggie_A"
+    },
+    {
+     "id": "c-veg-2",
+     "label": "Check the fluff on the pea trellis",
+     "target": "garden_veggie_B"
+    }
+   ]
+  },
+  {
+   "id": "garden_veggie_A",
+   "body": "<<FILL role=decision words=55 beats='The footprints lead close to a gap under the fence and also curl back near the trellis fluff. Miri must decide whether to squeeze through the fence gap or double back to the trellis.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-vegA-1",
+     "label": "Squeeze through the fence gap",
+     "target": "ending_fence_gap"
+    },
+    {
+     "id": "c-vegA-2",
+     "label": "Double back to the trellis",
+     "target": "ending_trellis_fluff"
+    }
+   ]
+  },
+  {
+   "id": "garden_veggie_B",
+   "body": "<<FILL role=decision words=55 beats='The trellis fluff matches Nutmeg's feathers exactly, and beyond it Miri notices the same small footprints heading toward the fence. She must choose which clue to trust.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-vegB-1",
+     "label": "Follow the footprints to the fence",
+     "target": "ending_fence_gap"
+    },
+    {
+     "id": "c-vegB-2",
+     "label": "Stay and check the trellis",
+     "target": "ending_trellis_fluff"
+    }
+   ]
+  },
+  {
+   "id": "garden_shed",
+   "body": "<<FILL role=transition words=15 beats='The toolshed smells of straw and old paint. A watering can lies tipped over near a shelf stacked with seed packets, and something rustles softly inside.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-shed-1",
+     "label": "Peek inside the toolshed",
+     "target": "garden_shed_peek"
+    }
+   ]
+  },
+  {
+   "id": "garden_shed_peek",
+   "body": "<<FILL role=explore words=15 beats='Miri tiptoes past the tipped watering can toward the rustling sound coming from the shelf of seed packets above.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-shedpeek-1",
+     "label": "Look on the shelf",
+     "target": "ending_seed_packets"
+    }
+   ]
+  },
+  {
+   "id": "hedge_path",
+   "body": "<<FILL role=decision words=60 beats='Beyond the garden runs a long tangled hedge, and past that an open field stretches toward an old oak tree. Miri hears a rustle in the hedge and a faint cluck from the field. She must choose a direction.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-hpath-1",
+     "label": "Search the hedge tunnel",
+     "target": "hedge_tunnel"
+    },
+    {
+     "id": "c-hpath-2",
+     "label": "Search the open field",
+     "target": "hedge_field"
+    }
+   ]
+  },
+  {
+   "id": "hedge_tunnel",
+   "body": "<<FILL role=decision words=55 beats='A narrow gap winds through the hedge, just wide enough for a small hen. Miri hears rustling coming from two different directions inside and must decide which way to crawl.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-tunnel-1",
+     "label": "Follow the rustle to the left",
+     "target": "hedge_tunnel_A"
+    },
+    {
+     "id": "c-tunnel-2",
+     "label": "Follow the rustle to the right",
+     "target": "hedge_tunnel_B"
+    }
+   ]
+  },
+  {
+   "id": "hedge_tunnel_A",
+   "body": "<<FILL role=decision words=55 beats='To the left, branches shake and something small moves in the shadows. To the right, soft down clings to a twig. Miri must decide which sign to trust.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-tunA-1",
+     "label": "Push toward the shaking branches",
+     "target": "ending_cat_scare"
+    },
+    {
+     "id": "c-tunA-2",
+     "label": "Check the twig with the down",
+     "target": "ending_hedge_down"
+    }
+   ]
+  },
+  {
+   "id": "hedge_tunnel_B",
+   "body": "<<FILL role=decision words=55 beats='The twig with down leads one way, while a low growl seems to come from the other direction entirely. Miri must pick carefully which path to crawl along.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-tunB-1",
+     "label": "Follow the twig with the down",
+     "target": "ending_hedge_down"
+    },
+    {
+     "id": "c-tunB-2",
+     "label": "Follow the low growling sound",
+     "target": "ending_cat_scare"
+    }
+   ]
+  },
+  {
+   "id": "hedge_field",
+   "body": "<<FILL role=transition words=15 beats='The field is bright and wide, dotted with dandelions. Far off near the old oak tree, something small and pale moves through the grass.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-field-1",
+     "label": "Walk toward the old oak tree",
+     "target": "hedge_field_search"
+    }
+   ]
+  },
+  {
+   "id": "hedge_field_search",
+   "body": "<<FILL role=explore words=15 beats='As Miri gets closer, the pale shape by the oak tree looks more and more like a small, round hen pecking at the grass.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-fieldsearch-1",
+     "label": "Call out to the little hen",
+     "target": "ending_oak_tree"
+    }
+   ]
+  },
+  {
+   "id": "ending_shed_found",
+   "body": "<<FILL role=ending words=65 beats='Inside the toolshed, Miri finds Nutmeg tucked inside an old watering can, fluffed up and clucking crossly at being found. She must have wandered in for a nap and gotten stuck. Miri lifts her out gently and carries her home to Clover and Bramble before breakfast.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "found_in_shed",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Nutmeg in the Watering Can"
+   }
+  },
+  {
+   "id": "ending_garden_gate",
+   "body": "<<FILL role=ending words=60 beats='The trail of fluff ends at the garden gate, scattered by the wind. No hen in sight. Miri sighs and decides she will search the garden itself first thing tomorrow, hoping Nutmeg is safe and warm somewhere close by tonight.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "garden_gate_cold_trail",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Trail Goes Cold"
+   }
+  },
+  {
+   "id": "ending_nurse_found",
+   "body": "<<FILL role=ending words=65 beats='The nurse smiles and says she found a cold little hen by her door at sunrise and tucked her by the radiator with a towel. Miri hurries in and finds Nutmeg warm, fluffy, and clucking happily, ready to be carried home before breakfast.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "warm_by_radiator",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Warm by the Radiator"
+   }
+  },
+  {
+   "id": "ending_behind_coop",
+   "body": "<<FILL role=ending words=60 beats='Behind the coop, Miri finds only a startled ginger cat, who darts off through the grass. No hen here after all. She decides to ask the nurse first thing tomorrow, hoping Nutmeg is somewhere safe and warm tonight.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "just_a_cat",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Just a Ginger Cat"
+   }
+  },
+  {
+   "id": "ending_fence_gap",
+   "body": "<<FILL role=ending words=65 beats='The footprints lead to a gap under the fence, just wide enough for a small hen. Miri squeezes through and finds Nutmeg tangled gently in bramble roots, one foot stuck but unhurt. She frees her carefully and carries her home, clucking softly the whole way.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "caught_in_brambles",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Little Feet in the Brambles"
+   }
+  },
+  {
+   "id": "ending_trellis_fluff",
+   "body": "<<FILL role=ending words=60 beats='The fluff on the trellis matches Nutmeg's feathers, but there is no hen nearby, only wind rustling the pea vines. Miri decides to search closer to the fence tomorrow, hoping Nutmeg finds her own way home safely tonight.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "just_fluff_on_trellis",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Only a Wisp of Fluff"
+   }
+  },
+  {
+   "id": "ending_seed_packets",
+   "body": "<<FILL role=ending words=35 beats='On the shelf, Nutmeg is happily pecking at a torn seed packet, feathers dusted with sunflower seeds. Miri laughs with relief, scoops her up, and carries her back to the coop.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "found_on_the_shelf",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Seeds on the Shelf"
+   }
+  },
+  {
+   "id": "ending_cat_scare",
+   "body": "<<FILL role=ending words=60 beats='The shaking branches turn out to be a grumpy ginger cat, who hisses and bolts away through the hedge. No hen here, just a startled cat. Miri backs out and decides to try the open field tomorrow instead.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "hedge_cat_startle",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Grumpy Ginger Cat"
+   }
+  },
+  {
+   "id": "ending_hedge_down",
+   "body": "<<FILL role=ending words=65 beats='Following the twig, Miri finds Nutmeg caught gently by one wing in the branches, too scared to move. She carefully untangles the little hen, checks she is unhurt, and carries her shivering but safe all the way home.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "rescued_from_hedge",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Rescued from the Hedge"
+   }
+  },
+  {
+   "id": "ending_oak_tree",
+   "body": "<<FILL role=ending words=35 beats='Miri calls Nutmeg's name, and in a flurry of feathers the little hen comes racing across the grass straight into her arms, clucking the whole way. Miri laughs with relief and carries her happily home.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "hen_comes_running",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Nutmeg Comes Running"
+   }
+  }
+ ]
+}
