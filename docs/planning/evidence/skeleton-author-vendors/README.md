@@ -37,6 +37,24 @@ primary endpoint and falsifier; the harness docstring carries the shared repair-
   --max-repair-rounds 6 --concurrency 5 --resume --out-dir
   docs/planning/evidence/skeleton-author-vendors/runs/e1-2026-08-21`. The `--resume` flag keeps
   cleanly completed shells and re-authors only errored or missing grid points.
+- `runs/e1r3-2026-08-21/`: **the descoped S-1 blind-condition run (plan section 10), counted in
+  S-1.** Cell A only, 3 replicates x 7 legs = 21 shells, blind stateless repair, cap 65536, 6
+  repair rounds. Legs: deepseek-v4-pro and deepseek-v4-flash over OpenRouter (pinned backends),
+  moonshot-kimi-k3-modal via `scripts/modal_kimi_leg.py`, and four Claude-subagent legs (fable,
+  opus, sonnet, haiku) driven through `--emit-prompts` / `--score-shell`. Result: 2 of 21 passed
+  the strict bar (one sonnet-subagent shell, one v4-flash shell); the pre-registered permutation
+  test on repair rounds is uninformative because nearly every leg is censored at the cap
+  (register row S-1, lesson `AL-513`).
+- `runs/e1r3-tools-2026-08-21/`: **the S-1 tool-assisted condition, counted in S-1.** Cells A and
+  D, 3 replicates x 7 legs = 42 grid points, same legs as `e1r3-2026-08-21`, cap 65536, and a cap
+  of 10 checker invocations per point instead of the blind round cap: the author sees the
+  checker's full output each iteration (subagent legs run the checker themselves; API legs get it
+  relayed verbatim by the tools driver). Result: 27 of 42 passed (cell A 12/21, cell D 15/21).
+  Reading caveat: `summary.md`'s `mean repair rounds 0.00` and `first-pass clean` columns are an
+  artifact of the drivers scoring only each point's FINAL draft through `--score-shell` (one
+  record per point), not measured iteration counts; the real per-point checker counts for this
+  run are in `tools-meta.json`, not in the record files (later tools runs also get per-point
+  `.tools-counts.json` sidecars from the driver).
 
 Smoke shells share cell A's replicate-1 premise with the registered run by design (the S-0
 allocation rule is frozen); the smokes are excluded from analysis because their run conditions

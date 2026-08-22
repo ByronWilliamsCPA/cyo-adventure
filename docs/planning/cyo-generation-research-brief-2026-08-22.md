@@ -193,7 +193,11 @@ delivery floors now exist. Same-skeleton sibling fills without the differentiati
 Two conditions over the same premises, briefs, and strict bar. **Blind** (stateless
 generate-and-repair, six-round cap): 2 passes in 21 attempts across seven legs; every family
 censored at the cap almost everywhere, and the pre-registered repair-rounds endpoint was degenerate
-under that censoring. **Tool-assisted** (the author may run the checker, ten-invocation cap):
+under that censoring. **Tool-assisted** (the author may run the checker, ten-invocation cap): its
+endpoints (strict pass/fail, checker invocations to pass) were declared before the condition ran
+but are post-registration additions, so the table below is decision-bearing evidence for the
+sourcing choice, not a pre-registered primary result (register row `S-1` carries the full
+declaration order):
 
 | Leg | Ages 5-8 (cell A) | Ages 10-13 (cell D) |
 | --- | --- | --- |
@@ -225,7 +229,11 @@ The S0-S9 history (2026-08-10 brief, section 4) plus this programme's follow-ups
   per-request single-parent mutation (shape-preserving operators are perceptual no-ops; the only
   floor-clearing mutant grafted a second skeleton, S8 and the mutation pilot); multiple obligation
   contracts over one graph (recognition landed earlier, S9); instructing independence between
-  authors (does nothing; withholding shared material works completely, M-4 series).
+  authors (does nothing; withholding shared material works completely, M-4 series). Caveat: where
+  a refutation rests on "recognition unmoved" it inherits section 4.4's instrument problem; the
+  deterministic halves of those refutations (metrics solved, floors cleared, transfer measured)
+  stand on their own, but the recognition components are unconfirmed perceptual claims until a
+  validated instrument exists, in either direction.
 - **Confirmed mechanisms**: contract sharing is a convergence cause (D-6); fact-gloss prose is the
   dominant leak (D-7b: deleting 422 gloss words moved sharing from 13.6 to 2.3 per 1000); and the
   stratified plan follows: share the wordless structural stratum, generate `choice_semantics`,

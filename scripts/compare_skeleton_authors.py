@@ -515,10 +515,13 @@ async def author_shell(
     shell_name = f"{record.cell_id}__r{record.replicate}__{record.leg}.json"
     shell_path = out_dir / "shells" / shell_name
     shell_path.parent.mkdir(parents=True, exist_ok=True)
-    record.shell_file = str(shell_path.relative_to(out_dir))
 
     prompt = base_prompt
     doc: dict[str, Any] | None = None
+    # shell_file is set only after a successful write, so a record never names
+    # a file that does not exist; last_written survives a final unparseable
+    # round so the post-loop scoring reflects the shell actually on disk.
+    last_written: dict[str, Any] | None = None
     started = time.monotonic()
     # #CRITICAL: external resources: every iteration is a paid provider call;
     # the cap below is the only bound on spend for a leg that never converges.
@@ -552,6 +555,8 @@ async def author_shell(
             shell_path.write_text(
                 json.dumps(doc, indent=1, ensure_ascii=False), encoding="utf-8"
             )
+            last_written = doc
+            record.shell_file = str(shell_path.relative_to(out_dir))
             passed, feedback = _strict_check(
                 shell_path, record.band, record.length, record.style
             )
@@ -573,14 +578,14 @@ async def author_shell(
     if not record.strict_pass:
         record.repair_rounds = max(record.attempts - 1, 0)
 
-    if doc is not None:
+    if last_written is not None:
         code, _ = _run_checker("check_graph_structure.py", [str(shell_path)])
         record.graph_check_exit = code
         (
             record.min_catalog_distance,
             record.mean_catalog_distance,
             record.catalog_distance_note,
-        ) = _catalog_distances(doc, record.band, record.length, record.style)
+        ) = _catalog_distances(last_written, record.band, record.length, record.style)
 
     record_path = out_dir / "records" / (shell_name + ".record.json")
     record_path.parent.mkdir(parents=True, exist_ok=True)
@@ -772,6 +777,9 @@ def _score_shell_mode(args: argparse.Namespace, cells: list[dict[str, Any]]) -> 
     if not args.out_dir:
         print("Error: --score-shell requires --out-dir", file=sys.stderr)
         return 2
+    if not args.score_leg:
+        print("Error: --score-shell requires --score-leg", file=sys.stderr)
+        return 2
     out_dir = Path(args.out_dir)
     shell_name = f"{cell['id']}__r{args.score_replicate}__{args.score_leg}.json"
     record_path = out_dir / "records" / (shell_name + ".record.json")
@@ -935,14 +943,36 @@ async def run(args: argparse.Namespace) -> int:
         # unique per task by construction of the loops below).
         # #VERIFY: shell filenames embed cell, replicate, and leg.
         async with semaphore:
-            return await author_shell(
-                provider,
-                record,
-                brief_md,
-                out_dir,
-                max_repair_rounds=args.max_repair_rounds,
-                max_tokens=args.max_tokens,
-            )
+            # #CRITICAL: data integrity: a checker/JSON/filesystem error in one
+            # grid point must not abort the gather and discard the paid run's
+            # aggregate output; author_shell only catches provider errors.
+            # #VERIFY: the exception lands in record.error and the record is
+            # still persisted and summarized.
+            try:
+                return await author_shell(
+                    provider,
+                    record,
+                    brief_md,
+                    out_dir,
+                    max_repair_rounds=args.max_repair_rounds,
+                    max_tokens=args.max_tokens,
+                )
+            except Exception as exc:
+                record.error = f"{type(exc).__name__}: {exc}"[:500]
+                record_path = (
+                    out_dir
+                    / "records"
+                    / (
+                        f"{record.cell_id}__r{record.replicate}__"
+                        f"{record.leg}.json.record.json"
+                    )
+                )
+                record_path.parent.mkdir(parents=True, exist_ok=True)
+                record_path.write_text(
+                    json.dumps(asdict(record), indent=1, ensure_ascii=False),
+                    encoding="utf-8",
+                )
+                return record
 
     for cell in cells:
         premises = list(cell["premises"])[: args.replicates]
@@ -1051,6 +1081,11 @@ def main(argv: list[str] | None = None) -> int:
         cells = _load_premises(Path(args.premises))
         if args.cells:
             wanted = set(args.cells.split(","))
+            known = {c["id"] for c in cells}
+            missing = wanted - known
+            if missing:
+                print(f"Error: unknown cells {sorted(missing)}", file=sys.stderr)
+                return 2
             cells = [c for c in cells if c["id"] in wanted]
         if args.emit_prompts:
             return _emit_prompts_mode(args, cells)

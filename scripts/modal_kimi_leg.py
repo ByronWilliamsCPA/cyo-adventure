@@ -10,8 +10,9 @@ provider cascade.
 Endpoint facts (verified 2026-08-21, see
 `handoff-modal-deepseek-v4-smoke-test-2026-08-20.md`, Modal leg results):
 OpenAI chat-completions shape at ``<base>/v1/chat/completions``, auth via
-``Modal-Key``/``Modal-Secret`` headers (env ``MODAL_KEY`` / ``MIDAL_SECRET``,
-the second name's typo is the environment's, checked before ``MODAL_PROXY_*``),
+``Modal-Key``/``Modal-Secret`` headers (env ``MODAL_PROXY_KEY`` /
+``MODAL_PROXY_SECRET``, falling back to ``MODAL_KEY`` / ``MIDAL_SECRET``; the
+fallback secret name's typo is the environment's),
 ``usage.reasoning_tokens`` at the top level, NO cost field, and a reasoning
 model that returns ``content: ""`` with ``finish_reason: "length"`` when the
 budget is too small; that empty content is treated as a failed round exactly
@@ -109,6 +110,21 @@ def _auth_headers() -> dict[str, str]:
     return {"Modal-Key": key, "Modal-Secret": secret}
 
 
+def _retryable(exc: Exception) -> bool:
+    """True for transient failures worth a backoff retry.
+
+    Transport errors and HTTP 408/429/5xx retry; any other HTTP status (401,
+    402, 404, ...) is deterministic and re-raising it immediately keeps the
+    provider's response in the traceback instead of burning two more calls.
+    """
+    if isinstance(exc, httpx.TransportError):
+        return True
+    if isinstance(exc, httpx.HTTPStatusError):
+        status = exc.response.status_code
+        return status in (408, 429) or status >= 500
+    return False
+
+
 def _pin_payload(payload: dict) -> dict:
     """Attach the OpenRouter backend pin; no cascade, same as every leg."""
     if AUTH == "openrouter" and PROVIDER_ORDER:
@@ -180,8 +196,10 @@ def _complete(client: httpx.Client, system: str, prompt: str) -> tuple[str, dict
             # caller treats it as a failed round, never as output.
             return content, meta
         except (httpx.TransportError, httpx.HTTPStatusError) as exc:
+            if not _retryable(exc):
+                raise
             last_exc = exc
-    raise RuntimeError(f"kimi call failed after retries: {last_exc}")
+    raise RuntimeError(f"kimi call failed after retries: {last_exc}") from last_exc
 
 
 def _score(
@@ -334,8 +352,12 @@ def _complete_messages(client: httpx.Client, messages: list[dict]) -> tuple[str,
                             parts.append(piece)
             return "".join(parts), usage
         except (httpx.TransportError, httpx.HTTPStatusError) as exc:
+            if not _retryable(exc):
+                raise
             last_exc = exc
-    raise RuntimeError(f"kimi tools call failed after retries: {last_exc}")
+    raise RuntimeError(
+        f"kimi tools call failed after retries: {last_exc}"
+    ) from last_exc
 
 
 def run_grid_point_tools(
@@ -404,6 +426,24 @@ def run_grid_point_tools(
         out_dir,
         attempt_dir,
     )
+    # The score-shell record above sees only the final draft, so its attempts
+    # and repair_rounds fields are NOT the tools-condition iteration counts.
+    # Persist the real counts in a sidecar next to the draft, so they survive
+    # without depending on stdout capture (the loop bound is llm_calls <=
+    # _TOOLS_CHECKER_CAP + 2: unparseable drafts burn a completion without
+    # advancing checker_runs, and the +2 caps that leak).
+    sidecar = attempt_dir / f"{cell}__r{replicate}__{LEG}.tools-counts.json"
+    sidecar.write_text(
+        json.dumps(
+            {
+                "checker_runs": checker_runs,
+                "llm_calls": llm_calls,
+                "final_pass": passed,
+            },
+            indent=1,
+        ),
+        encoding="utf-8",
+    )
     print(
         f"RESULT {cell} r{replicate} checker_runs={checker_runs} "
         f"final={'PASS' if passed else 'FAIL'}",
@@ -416,7 +456,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--endpoint", default="kimi", choices=sorted(_PRESETS))
     parser.add_argument("--mode", default="blind", choices=["blind", "tools"])
-    parser.add_argument("--cell", required=True)
+    parser.add_argument("--cell", required=True, choices=["A", "D"])
     parser.add_argument("--replicates", type=int, default=3)
     parser.add_argument("--prompts", required=True)
     parser.add_argument("--out-dir", required=True)

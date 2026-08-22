@@ -17,6 +17,10 @@ scope), all in `offered_cells()`:
 | C | 8-11 | medium | prose |
 | D | 10-13 | short | prose |
 
+Usage note (2026-08-22): the executed S-1 runs used cells A and D at 3 replicates each (plan
+section 10 descope). Cells B and C, and every cell's replicate-4 premise, stay frozen here unused;
+a later experiment that wants them registers that use in its S-row first.
+
 Briefs come from `scripts/generate_drafting_brief.py <band> <length> prose` at run time, never
 hand-copied (AL-149).
 

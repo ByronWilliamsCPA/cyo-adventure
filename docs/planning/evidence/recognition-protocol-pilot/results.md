@@ -14,7 +14,9 @@ directory's README; not edited thereafter.
 The pre-registered pairs (three D-7c same-armature pairs, one D-7c-vs-W16 control) were never
 committed: PR #715 merged this directory's rig and the D-7c/W16 rigs, and the fills stayed on the
 deleted working branch. Register row `S-0` re-based the validation before any rater ran:
-same-armature pairs `d7-stratified-plan` C vs D and `d7b-bare-names` C vs D; control
+same-armature pairs `d7-stratified-plan` C vs D (verdict files `verdict_d7-glossed-CD_*`,
+the alias names the glossed fill variant; the table below uses it) and `d7b-bare-names` C
+vs D (verdict files `verdict_d7b-bare-CD_*`); control
 `d7-stratified-plan/filled_C` vs `mutation-per-request-pilot/book-s-the-midnight-museum`
 (different graph, 26 vs 95 nodes; different world, clocktower vs museum; **same band**, where the
 original control also crossed band). Pass rule tightened from 2-of-3 same-armature to 2-of-2. Two

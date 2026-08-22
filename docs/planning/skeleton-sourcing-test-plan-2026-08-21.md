@@ -1,6 +1,9 @@
 # Skeleton sourcing test plan: catalog reuse against request-time generation
 
-Date: 2026-08-21. Status: proposed, no experiment started.
+Date: 2026-08-21. Status: registered and partially executed. S-0 ran (instrument validation
+FAILED on its control) and S-1 ran to completion under the revision-3 descope plus a
+mid-run-approved tool-assisted condition; results and the authoritative final design live in
+register rows S-0/S-1 and `evidence/skeleton-author-vendors/README.md`. E2-E5 have not started.
 Revision 2, same date: rebuilt after an adversarial review found three blocking defects (a decision
 table that did not cover the outcome space, an E1 design that could not answer its own question at
 n=2, and rater-decided falsifiers hanging on an instrument that has never been validated blind).
@@ -225,6 +228,10 @@ Cost (mine): 2 raters over the protocol's pre-specified validation pairs; no gen
 
 ### E1: does model selection matter for skeleton authoring? (axis M in isolation)
 
+> Superseded in part: the 80-shell, 5-leg design below is the original registration, kept for the
+> record. The design that actually ran is section 10's revision (2 cells, 3 replicates, 7 legs,
+> blind plus a tool-assisted condition); the register row S-1 carries the final grid and result.
+
 Evidence dir: `evidence/skeleton-author-vendors/`. Cost (mine, priced from Q-3d's measured curves, not
 generation counts): 3 cheap-band cells at ~5-20k tokens per shell plus 1 hard-band cell at ~100-350k
 tokens per shell with repair loops; ~80 shells total; 0 raters for the primary.
@@ -286,6 +293,9 @@ Evidence dir: `evidence/stratified-per-request/`. Cost (mine): 2 fills for the D
   the most-similar pair, meaning topology plus facts alone fingerprint the book and only S3 can help.
 
 ### E3: bespoke against catalog, end-to-end on real request shapes (S3 vs S0)
+
+> Superseded in part: section 10 descopes E3 to 4 briefs x 2 arms = 8 fills with the three-judge
+> blind panel deferred; the forced-choice premise-fit endpoint below remains the primary.
 
 Evidence dir: `evidence/bespoke-vs-catalog/`. Cost (mine): ~6 bespoke shells with repair loops (hard
 bands priced per Q-3d), 12-18 fills, 3-judge blind panel plus forced-choice premise-fit judging.
@@ -544,6 +554,15 @@ Changes, item by item; everything not listed is unchanged:
 The decision framework in section 6 is unchanged: nothing in this revision touches a margin that
 gates an architecture choice except the suspended S-3 quality-panel margin, whose role is covered
 by the premise-fit margin that remains.
+
+**Execution record (2026-08-22).** What actually ran, extending this revision with one
+mid-run-approved change: the blind condition ran cell A only, 3 replicates x 7 legs (the two
+DeepSeek legs, `moonshot-kimi-k3-modal` on the owner's Modal endpoint, and the four Anthropic
+subagent legs) = 21 shells, 2 strict passes; the owner then approved a tool-assisted condition
+(author sees the checker's full output, cap 10 invocations per point) which ran cells A and D, 3
+replicates x 7 legs = 42 points, 27 passes. Conditions, per-leg results, and reading caveats:
+`evidence/skeleton-author-vendors/README.md` (runs `e1r3-2026-08-21` and
+`e1r3-tools-2026-08-21`); close-out in register row S-1.
 
 ---
 
