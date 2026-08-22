@@ -1,0 +1,30 @@
+{
+ "leg": "deepseek-v4-flash",
+ "family": "deepseek",
+ "cell_id": "D",
+ "band": "10-13",
+ "length": "short",
+ "style": "prose",
+ "replicate": 1,
+ "premise": "A junk-shop chess set turns out to have one piece too many, carved differently from the rest, and Wren traces where the extra piece began.",
+ "attempts": 1,
+ "repair_rounds": 0,
+ "strict_pass": true,
+ "first_pass_clean": true,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  6
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 0.0,
+ "input_tokens": null,
+ "output_tokens": null,
+ "reasoning_tokens": null,
+ "finish_reasons": [],
+ "min_catalog_distance": 0.1513798342172391,
+ "mean_catalog_distance": 0.2978925710885717,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "last_feedback": "",
+ "shell_file": "shells/D__r1__deepseek-v4-flash.json",
+ "error": ""
+}

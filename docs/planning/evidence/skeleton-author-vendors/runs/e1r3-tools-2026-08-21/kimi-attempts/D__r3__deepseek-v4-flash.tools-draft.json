@@ -1,0 +1,1867 @@
+{
+ "schema_version": "2.0",
+ "id": "harvest-swap-token-drift",
+ "version": 1,
+ "title": "The Two Mintings of Harvest Market",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 3.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "fairness",
+   "observation",
+   "community",
+   "evidence",
+   "consequences"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 14,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n001",
+ "nodes": [
+  {
+   "id": "n001",
+   "body": "<<FILL role=setup words=70 beats='Idris carries a woven basket into the harvest swap-market. Stalls overflow with squash, honey, and cider. At the token table, traders pay with small copper rounds. Idris notices two versions of the token: one has a smooth rim, the other has a notched rim. A beekeeper mutters about prices going strange.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n001_n002",
+     "label": "Enter the swap-market gate",
+     "target": "n002"
+    }
+   ]
+  },
+  {
+   "id": "n002",
+   "body": "<<FILL role=decision words=70 beats='Idris steps closer to the token table. The beekeeper shows two coins side by side. The smooth-rim token buys a jar of honey. The notched-rim token buys the same jar with an extra apple. Idris must decide how to test the drift.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n002_n003",
+     "label": "Ask the beekeeper about the notches",
+     "target": "n003"
+    },
+    {
+     "id": "c_n002_n004",
+     "label": "Examine the mint marks",
+     "target": "n004"
+    },
+    {
+     "id": "c_n002_n005",
+     "label": "Buy honey with a smooth token",
+     "target": "n005"
+    }
+   ]
+  },
+  {
+   "id": "n003",
+   "body": "<<FILL role=explore words=100 beats='Idris listens to the beekeeper. The beekeeper says the notched tokens came from a later minting. The smooth ones are older but nobody knows why they are valued more. Stall keepers accept both yet ask for extra smooth tokens. Idris writes the difference on a cloth scrap.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n003_n006",
+     "label": "Study the grain-marked coins",
+     "target": "n006"
+    },
+    {
+     "id": "c_n003_n007",
+     "label": "Study the honey-marked coins",
+     "target": "n007"
+    },
+    {
+     "id": "c_n003_n008",
+     "label": "Watch a public trade",
+     "target": "n008"
+    }
+   ]
+  },
+  {
+   "id": "n004",
+   "body": "<<FILL role=explore words=100 beats='Idris turns the coins over and finds a tiny mint mark under the rim. The smooth tokens show a grain sheaf. The notched tokens show a honey dipper. Both are legal, but the grain-marked coins are vanishing from the market. The pattern bothers Idris.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n004_n006",
+     "label": "Track the grain-marked coins",
+     "target": "n006"
+    },
+    {
+     "id": "c_n004_n007",
+     "label": "Track the honey-marked coins",
+     "target": "n007"
+    },
+    {
+     "id": "c_n004_n008",
+     "label": "Watch the next market trade",
+     "target": "n008"
+    }
+   ]
+  },
+  {
+   "id": "n005",
+   "body": "<<FILL role=explore words=100 beats='Idris buys honey with a smooth token. The seller hesitates, then adds a small loaf. A neighboring buyer pays a notched token and receives no extra loaf. The price difference is real and growing. Idris feels the weight of both coins.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n005_n006",
+     "label": "Check the honey jar prices",
+     "target": "n006"
+    },
+    {
+     "id": "c_n005_n007",
+     "label": "Check the bread prices",
+     "target": "n007"
+    },
+    {
+     "id": "c_n005_n008",
+     "label": "Watch a melon trade",
+     "target": "n008"
+    }
+   ]
+  },
+  {
+   "id": "n006",
+   "body": "<<FILL role=decision words=100 beats='Idris counts the smooth-rim tokens in a pottery bowl. There are fewer smooth ones than yesterday. The stall keeper shrugs and says people hoard them. A trader near the cider press watches Idris. The air smells of apples and hot copper.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n006_n009",
+     "label": "Follow the grain sheaf trail",
+     "target": "n009"
+    },
+    {
+     "id": "c_n006_n010",
+     "label": "Follow the honey dipper trail",
+     "target": "n010"
+    },
+    {
+     "id": "c_n006_e001",
+     "label": "Stop and compare every rim",
+     "target": "e001"
+    }
+   ]
+  },
+  {
+   "id": "n007",
+   "body": "<<FILL role=decision words=100 beats='Idris counts notched tokens in a leather purse. The notched ones are plentiful and clink loudly. A seller accepts them without checking. The smooth ones are handled with care. The difference in how people treat them makes the price drift.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n007_n009",
+     "label": "Ask about the grain sheaf mark",
+     "target": "n009"
+    },
+    {
+     "id": "c_n007_n010",
+     "label": "Ask about the honey dipper mark",
+     "target": "n010"
+    },
+    {
+     "id": "c_n007_n011",
+     "label": "Walk between both price boards",
+     "target": "n011"
+    }
+   ]
+  },
+  {
+   "id": "n008",
+   "body": "<<FILL role=decision words=100 beats='Idris watches a melon trade. The buyer offers three smooth tokens. The seller shakes her head and asks for four. A second buyer offers five notched tokens and gets the melon. Idris records the strange exchange on a cloth scrap.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n008_n009",
+     "label": "Compare the flour stall prices",
+     "target": "n009"
+    },
+    {
+     "id": "c_n008_n010",
+     "label": "Compare the honey stand prices",
+     "target": "n010"
+    },
+    {
+     "id": "c_n008_n011",
+     "label": "Search for the shared bread basket",
+     "target": "n011"
+    }
+   ]
+  },
+  {
+   "id": "n009",
+   "body": "<<FILL role=explore words=100 beats='Idris follows the grain sheaf mark to a flour stall. The miller accepts only smooth tokens. His prices are higher than the prices at the next stall. The notched tokens are spent quickly before anyone changes their mind.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n009_n012",
+     "label": "Check the price board by the well",
+     "target": "n012"
+    },
+    {
+     "id": "c_n009_n013",
+     "label": "Look for chalk marks on the board",
+     "target": "n013"
+    },
+    {
+     "id": "c_n009_n014",
+     "label": "Weigh one coin of each kind",
+     "target": "n014"
+    }
+   ]
+  },
+  {
+   "id": "n010",
+   "body": "<<FILL role=explore words=100 beats='Idris follows the honey dipper mark to a honey stand. The beekeeper accepts notched tokens with a wink. A jar costs two notched tokens or three smooth ones. The honey tastes the same either way. Idris is sure the price board is lying.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n010_n012",
+     "label": "Check the official price board",
+     "target": "n012"
+    },
+    {
+     "id": "c_n010_n013",
+     "label": "Find the person who writes prices",
+     "target": "n013"
+    },
+    {
+     "id": "c_n010_e002",
+     "label": "Test the weight of both coins",
+     "target": "e002"
+    }
+   ]
+  },
+  {
+   "id": "n011",
+   "body": "<<FILL role=explore words=100 beats='Idris walks between the flour and honey stalls. The flour stall wants smooth tokens. The honey stand wants notched tokens. Both sell the same basket of bread. The market is splitting into two invisible price worlds.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n011_n012",
+     "label": "Look at the central price board",
+     "target": "n012"
+    },
+    {
+     "id": "c_n011_n013",
+     "label": "Check who scrubs the board",
+     "target": "n013"
+    },
+    {
+     "id": "c_n011_n014",
+     "label": "Compare the coin edges closely",
+     "target": "n014"
+    }
+   ]
+  },
+  {
+   "id": "n012",
+   "body": "<<FILL role=decision words=100 beats='Idris pauses by the price board near the well. The board lists grain in smooth tokens and honey in notched tokens. A child asks why there are two prices for one loaf. Nobody has a clear answer. The wind rattles the wooden pegs.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n012_n015",
+     "label": "Ask the weaver about old minting",
+     "target": "n015"
+    },
+    {
+     "id": "c_n012_n016",
+     "label": "Ask the weaver about new crates",
+     "target": "n016"
+    },
+    {
+     "id": "c_n012_n017",
+     "label": "Look for a pattern in the cloth",
+     "target": "n017"
+    }
+   ]
+  },
+  {
+   "id": "n013",
+   "body": "<<FILL role=decision words=100 beats='Idris finds a chalk mark on the price board. Someone wrote a new ratio: three smooth tokens equal five notched ones. The chalk is fresh. The board keeper scrubs it away when the market master passes.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n013_n015",
+     "label": "Ask the weaver who made the chalk mark",
+     "target": "n015"
+    },
+    {
+     "id": "c_n013_n016",
+     "label": "Ask where the new mint is",
+     "target": "n016"
+    },
+    {
+     "id": "c_n013_n017",
+     "label": "Look for a matching pattern",
+     "target": "n017"
+    }
+   ]
+  },
+  {
+   "id": "n014",
+   "body": "<<FILL role=decision words=100 beats='Idris compares a smooth token and a notched token side by side. They are almost the same weight. The notch is small, like a thumbnail nick. Yet the notched coin buys more bread. The difference has no official rule.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n014_n015",
+     "label": "Ask about the old minting days",
+     "target": "n015"
+    },
+    {
+     "id": "c_n014_n016",
+     "label": "Ask about the river mint",
+     "target": "n016"
+    },
+    {
+     "id": "c_n014_n017",
+     "label": "Look for a hidden meaning in the notch",
+     "target": "n017"
+    }
+   ]
+  },
+  {
+   "id": "n015",
+   "body": "<<FILL role=explore words=100 beats='Idris asks the weaver about the old minting. The weaver remembers when all tokens had grain marks. A new mint opened near the river and stamped the dipper mark. The weaver says the new mint belongs to the cousin of the market master.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n015_n018",
+     "label": "Count the coins in a stall till",
+     "target": "n018"
+    },
+    {
+     "id": "c_n015_n019",
+     "label": "Check the cider seller pouch",
+     "target": "n019"
+    },
+    {
+     "id": "c_n015_e003",
+     "label": "Follow the weaver clue home",
+     "target": "e003"
+    }
+   ]
+  },
+  {
+   "id": "n016",
+   "body": "<<FILL role=explore words=100 beats='Idris helps the weaver fold cloth. The weaver refuses to discuss the mint again. Instead the weaver points to a crate of new tokens behind the pottery stall. The crate has a broken seal.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n016_n018",
+     "label": "Watch the pottery stall till",
+     "target": "n018"
+    },
+    {
+     "id": "c_n016_n019",
+     "label": "Watch the cider seller till",
+     "target": "n019"
+    },
+    {
+     "id": "c_n016_n020",
+     "label": "Follow the locked box",
+     "target": "n020"
+    }
+   ]
+  },
+  {
+   "id": "n017",
+   "body": "<<FILL role=explore words=100 beats='Idris notices a pattern in the woven cloth. The weaver wove little notches into one edge of every strip. The notches match the tokens. The weaver smiles and says the design is just a habit.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n017_n018",
+     "label": "See how the potter sorts coins",
+     "target": "n018"
+    },
+    {
+     "id": "c_n017_n019",
+     "label": "See how the cider seller sorts coins",
+     "target": "n019"
+    },
+    {
+     "id": "c_n017_n020",
+     "label": "Watch the market master take a box",
+     "target": "n020"
+    }
+   ]
+  },
+  {
+   "id": "n018",
+   "body": "<<FILL role=decision words=100 beats='Idris counts the coins inside the pottery stall till. Smooth tokens are stacked in a locked box. Notched tokens are left loose in a bowl. The potter says the box goes to the market master at sunset.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n018_n021",
+     "label": "Visit the baker next",
+     "target": "n021"
+    },
+    {
+     "id": "c_n018_n022",
+     "label": "Help the baker at the oven",
+     "target": "n022"
+    },
+    {
+     "id": "c_n018_n023",
+     "label": "Buy a bun with a notched token",
+     "target": "n023"
+    }
+   ]
+  },
+  {
+   "id": "n019",
+   "body": "<<FILL role=decision words=100 beats='Idris examines the till of the cider seller. The cider seller keeps a separate pouch for smooth tokens. When the pouch fills, the seller closes early. Notched tokens pile up in the open chest. The chest is almost empty.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n019_n021",
+     "label": "Ask the baker about flour prices",
+     "target": "n021"
+    },
+    {
+     "id": "c_n019_n022",
+     "label": "Ask the baker about loose tokens",
+     "target": "n022"
+    },
+    {
+     "id": "c_n019_e004",
+     "label": "Trace where the full pouch goes",
+     "target": "e004"
+    }
+   ]
+  },
+  {
+   "id": "n020",
+   "body": "<<FILL role=decision words=100 beats='Idris watches the market master take a locked box from the pottery stall. The master does not count it in public. The notched tokens stay behind. A clerk writes a number in a ledger and walks away.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n020_n021",
+     "label": "Follow the clerk to the baker",
+     "target": "n021"
+    },
+    {
+     "id": "c_n020_n022",
+     "label": "Ask the baker about the ledger",
+     "target": "n022"
+    },
+    {
+     "id": "c_n020_n023",
+     "label": "Test a notched token at the bakery",
+     "target": "n023"
+    }
+   ]
+  },
+  {
+   "id": "n021",
+   "body": "<<FILL role=explore words=100 beats='Idris visits the baker at the oven. The baker uses smooth tokens to buy flour and notched tokens to pay for help. The baker says the flour mill raised its price without a notice. The bread loaves stay the same price.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n021_n024",
+     "label": "Borrow a lens from the spice seller",
+     "target": "n024"
+    },
+    {
+     "id": "c_n021_n025",
+     "label": "Clean a token with a damp cloth",
+     "target": "n025"
+    },
+    {
+     "id": "c_n021_n026",
+     "label": "Weigh twenty tokens",
+     "target": "n026"
+    }
+   ]
+  },
+  {
+   "id": "n022",
+   "body": "<<FILL role=explore words=100 beats='Idris helps the baker brush ash from the oven. The baker admits the smooth tokens are easier to save. The notched tokens feel temporary. The baker does not know why, but the feeling changes every trade.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n022_n024",
+     "label": "Look at the mark under a lens",
+     "target": "n024"
+    },
+    {
+     "id": "c_n022_n025",
+     "label": "Check the shine of each token",
+     "target": "n025"
+    },
+    {
+     "id": "c_n022_n026",
+     "label": "Weigh a handful of coins",
+     "target": "n026"
+    }
+   ]
+  },
+  {
+   "id": "n023",
+   "body": "<<FILL role=explore words=100 beats='Idris buys a bun with a notched token. The baker counts it once and drops it in the bowl. Then Idris offers a smooth token for a second bun. The baker weighs it and apologizes for not having change.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n023_n024",
+     "label": "Look closer at the grain mark",
+     "target": "n024"
+    },
+    {
+     "id": "c_n023_n025",
+     "label": "Look closer at the dipper mark",
+     "target": "n025"
+    },
+    {
+     "id": "c_n023_n026",
+     "label": "Weigh both buns as a test",
+     "target": "n026"
+    }
+   ]
+  },
+  {
+   "id": "n024",
+   "body": "<<FILL role=decision words=100 beats='Idris borrows a lens from the spice seller and looks at the mint mark. The grain sheaf on the smooth token has a tiny second line. The honey dipper on the notched token has a cracked handle. The marks were cut by different hands.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n024_n027",
+     "label": "Follow the cart from the river mint",
+     "target": "n027"
+    },
+    {
+     "id": "c_n024_n028",
+     "label": "Hide and watch the cart driver",
+     "target": "n028"
+    },
+    {
+     "id": "c_n024_e005",
+     "label": "Keep the lens and study the town mint",
+     "target": "e005"
+    }
+   ]
+  },
+  {
+   "id": "n025",
+   "body": "<<FILL role=decision words=100 beats='Idris cleans a smooth token with a damp cloth. The grain mark brightens. The edge shines like new copper. A notched token stays dull. The metal seems older, but the mark suggests a newer die.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n025_n027",
+     "label": "Follow the river mint cart",
+     "target": "n027"
+    },
+    {
+     "id": "c_n025_n028",
+     "label": "Watch the driver unload crates",
+     "target": "n028"
+    },
+    {
+     "id": "c_n025_n029",
+     "label": "Walk toward the river mint",
+     "target": "n029"
+    }
+   ]
+  },
+  {
+   "id": "n026",
+   "body": "<<FILL role=decision words=100 beats='Idris compares the weight of twenty tokens on a spice scale. The smooth tokens are a little heavier. The notched tokens are lighter but shinier. The scale wobbles each time Idris swaps them.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n026_n027",
+     "label": "Follow the token cart",
+     "target": "n027"
+    },
+    {
+     "id": "c_n026_n028",
+     "label": "Watch the token exchange",
+     "target": "n028"
+    },
+    {
+     "id": "c_n026_n029",
+     "label": "Search the road to the mint",
+     "target": "n029"
+    }
+   ]
+  },
+  {
+   "id": "n027",
+   "body": "<<FILL role=explore words=100 beats='Idris follows the cart that carries new tokens from the river mint. The cart stops at the market master stall. The driver unloads a crate marked with a honey dipper. The seal is already broken.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n027_n030",
+     "label": "Ask the cooper about the old mint",
+     "target": "n030"
+    },
+    {
+     "id": "c_n027_n031",
+     "label": "Help the cooper roll a barrel",
+     "target": "n031"
+    },
+    {
+     "id": "c_n027_n032",
+     "label": "Inspect the barrel hoops",
+     "target": "n032"
+    }
+   ]
+  },
+  {
+   "id": "n028",
+   "body": "<<FILL role=explore words=100 beats='Idris hides behind a stack of cider barrels and watches the cart. The driver takes a handful of smooth tokens from the market master. The driver returns a handful of notched tokens plus a small coin. That small coin is new.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n028_n030",
+     "label": "Ask the cooper who owns the mint",
+     "target": "n030"
+    },
+    {
+     "id": "c_n028_n031",
+     "label": "Look inside a loose barrel",
+     "target": "n031"
+    },
+    {
+     "id": "c_n028_e006",
+     "label": "Examine the new small coin",
+     "target": "e006"
+    }
+   ]
+  },
+  {
+   "id": "n029",
+   "body": "<<FILL role=explore words=100 beats='Idris follows the empty cart back toward the river. The road is lined with reeds. The mint building has a fresh coat of paint. Smoke rises from a chimney shaped like a honey dipper.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n029_n030",
+     "label": "Ask the cooper about the old mint",
+     "target": "n030"
+    },
+    {
+     "id": "c_n029_n031",
+     "label": "Look inside a barrel on the road",
+     "target": "n031"
+    },
+    {
+     "id": "c_n029_n032",
+     "label": "Look for notches on the barrels",
+     "target": "n032"
+    }
+   ]
+  },
+  {
+   "id": "n030",
+   "body": "<<FILL role=decision words=100 beats='Idris asks the cooper about the old mint building. The cooper says it closed when the river froze. The new mint opened on the same land. The cooper does not know who owns it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n030_n033",
+     "label": "Open two purses side by side",
+     "target": "n033"
+    },
+    {
+     "id": "c_n030_n034",
+     "label": "Trade purses with a friend",
+     "target": "n034"
+    },
+    {
+     "id": "c_n030_n035",
+     "label": "Lay every token in a row",
+     "target": "n035"
+    }
+   ]
+  },
+  {
+   "id": "n031",
+   "body": "<<FILL role=decision words=100 beats='Idris helps the cooper roll a barrel toward the well. Inside the barrel, a loose token rattles. The cooper pries the lid and finds a smooth token stamped with the grain mark. The cooper keeps it without telling anyone.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n031_n033",
+     "label": "Open both purses to compare",
+     "target": "n033"
+    },
+    {
+     "id": "c_n031_n034",
+     "label": "Test the weight of each purse",
+     "target": "n034"
+    },
+    {
+     "id": "c_n031_n035",
+     "label": "Line up the coins by age",
+     "target": "n035"
+    }
+   ]
+  },
+  {
+   "id": "n032",
+   "body": "<<FILL role=decision words=100 beats='Idris counts barrel hoops and notices each hoop has a tiny notch. The cooper says the notches keep the wood from splitting. Idris wonders if the notches on coins were meant to stop something too.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n032_n033",
+     "label": "Compare purse contents",
+     "target": "n033"
+    },
+    {
+     "id": "c_n032_n034",
+     "label": "Ask a friend to feel both purses",
+     "target": "n034"
+    },
+    {
+     "id": "c_n032_n035",
+     "label": "Count the coins in both rows",
+     "target": "n035"
+    }
+   ]
+  },
+  {
+   "id": "n033",
+   "body": "<<FILL role=explore words=100 beats='Idris opens two leather purses side by side. One purse holds only smooth tokens. The other holds only notched tokens. The smooth purse feels heavier. The notched purse has more coins in it. The total value is impossible to compare.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n033_n036",
+     "label": "Find the old grain ledger",
+     "target": "n036"
+    },
+    {
+     "id": "c_n033_n037",
+     "label": "Check the new ledger page",
+     "target": "n037"
+    },
+    {
+     "id": "c_n033_e007",
+     "label": "Look for a note inside the ledger",
+     "target": "e007"
+    }
+   ]
+  },
+  {
+   "id": "n034",
+   "body": "<<FILL role=explore words=100 beats='Idris trades purses with a friend to test the feel. The friend guesses the heavy purse is worth more. The market crowd nods. A merchant offers to trade both purses for a single jar of oil.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n034_n036",
+     "label": "Look for an old price list",
+     "target": "n036"
+    },
+    {
+     "id": "c_n034_n037",
+     "label": "Look for a new price list",
+     "target": "n037"
+    },
+    {
+     "id": "c_n034_n038",
+     "label": "Search for a signature on the note",
+     "target": "n038"
+    }
+   ]
+  },
+  {
+   "id": "n035",
+   "body": "<<FILL role=explore words=100 beats='Idris lays the tokens in a row on a trestle table. The smooth row is shorter. The notched row is longer. A passing elder says the short row buys the same bread as the long row. The elder laughs and walks on.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n035_n036",
+     "label": "Find the old ledger",
+     "target": "n036"
+    },
+    {
+     "id": "c_n035_n037",
+     "label": "Find the new ledger",
+     "target": "n037"
+    },
+    {
+     "id": "c_n035_n038",
+     "label": "Look inside the ledger cover",
+     "target": "n038"
+    }
+   ]
+  },
+  {
+   "id": "n036",
+   "body": "<<FILL role=decision words=100 beats='Idris finds an old ledger in the grain stall. The ledger lists prices from last year in smooth tokens only. The prices are lower. The page for this month lists prices in notched tokens. The numbers are higher.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n036_n039",
+     "label": "Watch the cider stall charges",
+     "target": "n039"
+    },
+    {
+     "id": "c_n036_n040",
+     "label": "Buy cider with notched tokens",
+     "target": "n040"
+    },
+    {
+     "id": "c_n036_n041",
+     "label": "Watch a child try to buy a pie",
+     "target": "n041"
+    }
+   ]
+  },
+  {
+   "id": "n037",
+   "body": "<<FILL role=decision words=100 beats='Idris compares the ledger pages with a damp finger. The ink on the new page has not dried. Someone wrote the new prices this morning. The old prices are scratched out, but the scratch is light.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n037_n039",
+     "label": "Check the cider seller prices",
+     "target": "n039"
+    },
+    {
+     "id": "c_n037_n040",
+     "label": "Test the cider seller with notched coins",
+     "target": "n040"
+    },
+    {
+     "id": "c_n037_e008",
+     "label": "Trace who wrote the fresh ink",
+     "target": "e008"
+    }
+   ]
+  },
+  {
+   "id": "n038",
+   "body": "<<FILL role=decision words=100 beats='Idris reads a note tucked into the ledger. The note says the grain mark will be retired. The honey dipper will be the only mark. A list of new prices is attached. The note has no signature.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n038_n039",
+     "label": "Watch how cider prices move",
+     "target": "n039"
+    },
+    {
+     "id": "c_n038_n040",
+     "label": "Try to buy cider with both tokens",
+     "target": "n040"
+    },
+    {
+     "id": "c_n038_n041",
+     "label": "See who refuses a notched token",
+     "target": "n041"
+    }
+   ]
+  },
+  {
+   "id": "n039",
+   "body": "<<FILL role=explore words=100 beats='Idris watches the cider stall fill its cups. The seller asks for two smooth tokens for a full cup. A moment later, the seller accepts three notched tokens for the same cup. The customers pretend not to notice.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n039_n042",
+     "label": "Ask the elder about the charter",
+     "target": "n042"
+    },
+    {
+     "id": "c_n039_n043",
+     "label": "Help the elder unroll the charter",
+     "target": "n043"
+    },
+    {
+     "id": "c_n039_n044",
+     "label": "Copy the charter words",
+     "target": "n044"
+    }
+   ]
+  },
+  {
+   "id": "n040",
+   "body": "<<FILL role=explore words=100 beats='Idris buys a cup of cider with notched tokens and sits on a bench. The cider is warm. A nearby trader pays smooth tokens and gets a smaller cup. The trader frowns but does not argue.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n040_n042",
+     "label": "Find the oldest elder",
+     "target": "n042"
+    },
+    {
+     "id": "c_n040_n043",
+     "label": "Ask the elder to show the charter",
+     "target": "n043"
+    },
+    {
+     "id": "c_n040_n044",
+     "label": "Write down the charter line",
+     "target": "n044"
+    }
+   ]
+  },
+  {
+   "id": "n041",
+   "body": "<<FILL role=explore words=100 beats='Idris sees a child holding one smooth token and two notched tokens. The child tries to buy a pie. The seller demands the smooth token only. The child returns the notched tokens to a pocket and walks away.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n041_n042",
+     "label": "Ask about the market charter",
+     "target": "n042"
+    },
+    {
+     "id": "c_n041_n043",
+     "label": "Ask for the charter paper",
+     "target": "n043"
+    },
+    {
+     "id": "c_n041_n044",
+     "label": "Carry the charter message",
+     "target": "n044"
+    }
+   ]
+  },
+  {
+   "id": "n042",
+   "body": "<<FILL role=decision words=100 beats='Idris asks the oldest elder about the original market charter. The elder says the charter says every token shall pass for the same value. The elder pulls a yellow paper from a tin box and reads the line aloud.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n042_n045",
+     "label": "Visit the old token press",
+     "target": "n045"
+    },
+    {
+     "id": "c_n042_n046",
+     "label": "Look inside the old press",
+     "target": "n046"
+    },
+    {
+     "id": "c_n042_e009",
+     "label": "Read the charter one more time",
+     "target": "e009"
+    }
+   ]
+  },
+  {
+   "id": "n043",
+   "body": "<<FILL role=decision words=100 beats='Idris helps the elder unroll the charter. The paper is torn at the bottom. The stamp is faded, but the words are clear. The charter forbids any trade that favors one mintage over another.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n043_n045",
+     "label": "Find the old press",
+     "target": "n045"
+    },
+    {
+     "id": "c_n043_n046",
+     "label": "Search the press table",
+     "target": "n046"
+    },
+    {
+     "id": "c_n043_n047",
+     "label": "Look for the letter punches",
+     "target": "n047"
+    }
+   ]
+  },
+  {
+   "id": "n044",
+   "body": "<<FILL role=decision words=100 beats='Idris copies the charter words onto a cloth. The elder warns that the market master will not like a written challenge. Idris folds the cloth and tucks it into a sleeve.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n044_n045",
+     "label": "Search the old press shed",
+     "target": "n045"
+    },
+    {
+     "id": "c_n044_n046",
+     "label": "Search the press die",
+     "target": "n046"
+    },
+    {
+     "id": "c_n044_n047",
+     "label": "Look for the carving tools",
+     "target": "n047"
+    }
+   ]
+  },
+  {
+   "id": "n045",
+   "body": "<<FILL role=explore words=100 beats='Idris walks to the old press near the cooper shed. The press is rusted and covered with straw. A stack of grain-marked blanks sits underneath. The blanks have never been stamped.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n045_n048",
+     "label": "Sort tokens by rim",
+     "target": "n048"
+    },
+    {
+     "id": "c_n045_n049",
+     "label": "Weigh one coin from each stack",
+     "target": "n049"
+    },
+    {
+     "id": "c_n045_n050",
+     "label": "Mark the backs of the tokens",
+     "target": "n050"
+    }
+   ]
+  },
+  {
+   "id": "n046",
+   "body": "<<FILL role=explore words=100 beats='Idris brushes dust from the old press. The press table carries one smooth token stuck in the die. Idris pries it loose and sees the same grain sheaf as the older coins. The press still works.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n046_n048",
+     "label": "Sort all the found tokens",
+     "target": "n048"
+    },
+    {
+     "id": "c_n046_n049",
+     "label": "Weigh the stuck token",
+     "target": "n049"
+    },
+    {
+     "id": "c_n046_e010",
+     "label": "Keep the stuck token as proof",
+     "target": "e010"
+    }
+   ]
+  },
+  {
+   "id": "n047",
+   "body": "<<FILL role=explore words=100 beats='Idris finds a box of tools under the press. Inside is a set of letter punches. One punch has a honey dipper shape. Another has a grain sheaf. The punches are the same size.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n047_n048",
+     "label": "Test the punches on a token",
+     "target": "n048"
+    },
+    {
+     "id": "c_n047_n049",
+     "label": "Compare the weight of the punches",
+     "target": "n049"
+    },
+    {
+     "id": "c_n047_n050",
+     "label": "Sort the tools with the tokens",
+     "target": "n050"
+    }
+   ]
+  },
+  {
+   "id": "n048",
+   "body": "<<FILL role=decision words=100 beats='Idris sorts a pile of tokens into two stacks by rim. The smooth stack is short. The notched stack is tall. Idris weighs one coin from each stack on a balance made from a stick and two cups.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n048_n051",
+     "label": "Confront the trader who charges two prices",
+     "target": "n051"
+    },
+    {
+     "id": "c_n048_n052",
+     "label": "Show the trader the charter copy",
+     "target": "n052"
+    },
+    {
+     "id": "c_n048_n053",
+     "label": "Call for the market master",
+     "target": "n053"
+    }
+   ]
+  },
+  {
+   "id": "n049",
+   "body": "<<FILL role=decision words=100 beats='Idris adds chopped apples to the balance until it evens. The smooth token needs three apple pieces. The notched token needs two. The difference is small but steady.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n049_n051",
+     "label": "Challenge the two-price trader",
+     "target": "n051"
+    },
+    {
+     "id": "c_n049_n052",
+     "label": "Set the charter on the table",
+     "target": "n052"
+    },
+    {
+     "id": "c_n049_n053",
+     "label": "Ask the clerk to explain",
+     "target": "n053"
+    }
+   ]
+  },
+  {
+   "id": "n050",
+   "body": "<<FILL role=decision words=100 beats='Idris marks the back of every smooth token with a tiny grain of flour. The marks rub off quickly. The notched tokens stay clean. Idris keeps sorting until the market bell rings.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n050_n051",
+     "label": "Speak to the trader directly",
+     "target": "n051"
+    },
+    {
+     "id": "c_n050_n052",
+     "label": "Show the flour-marked coins",
+     "target": "n052"
+    },
+    {
+     "id": "c_n050_n053",
+     "label": "Find the market master",
+     "target": "n053"
+    }
+   ]
+  },
+  {
+   "id": "n051",
+   "body": "<<FILL role=climax words=100 beats='Idris confronts a trader who charges two prices. The trader says the price depends on the buyer, not the coin. The trader waves a notched token and calls it thin money. The crowd gathers.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n051_n054",
+     "label": "Ask three witnesses to speak",
+     "target": "n054"
+    },
+    {
+     "id": "c_n051_n055",
+     "label": "Write down the witness names",
+     "target": "n055"
+    },
+    {
+     "id": "c_n051_e011",
+     "label": "Wait for the trader to answer",
+     "target": "e011"
+    }
+   ]
+  },
+  {
+   "id": "n052",
+   "body": "<<FILL role=climax words=100 beats='Idris sets the charter copy on the trader table. The trader reads it slowly. Voices behind Idris repeat the charter line. The trader closes the table and refuses to give change.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n052_n054",
+     "label": "Gather the witnesses anyway",
+     "target": "n054"
+    },
+    {
+     "id": "c_n052_n055",
+     "label": "List the witnesses on cloth",
+     "target": "n055"
+    },
+    {
+     "id": "c_n052_n056",
+     "label": "Carry the cloth to the well",
+     "target": "n056"
+    }
+   ]
+  },
+  {
+   "id": "n053",
+   "body": "<<FILL role=climax words=100 beats='Idris calls for the market master. The trader turns pale. A clerk hurries over and asks everyone to move along. The clerk takes the charter copy and puts it in a pocket.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n053_n054",
+     "label": "Ask the witnesses again",
+     "target": "n054"
+    },
+    {
+     "id": "c_n053_n055",
+     "label": "Collect signatures on cloth",
+     "target": "n055"
+    },
+    {
+     "id": "c_n053_n056",
+     "label": "Follow the clerk to the well",
+     "target": "n056"
+    }
+   ]
+  },
+  {
+   "id": "n054",
+   "body": "<<FILL role=climax words=100 beats='Idris asks three witnesses to repeat what they saw. The cider seller, the baker, and the weaver all agree. Each adds a detail about the two prices. The story becomes a list.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n054_n057",
+     "label": "Propose a public coin swap",
+     "target": "n057"
+    },
+    {
+     "id": "c_n054_n058",
+     "label": "Show both purses to the crowd",
+     "target": "n058"
+    },
+    {
+     "id": "c_n054_n059",
+     "label": "Place both tokens on the well ledge",
+     "target": "n059"
+    }
+   ]
+  },
+  {
+   "id": "n055",
+   "body": "<<FILL role=climax words=100 beats='Idris writes the witness names on the cloth. The crowd signs with thumbprints or marks. The cloth is longer than one arm. Someone brings a second cloth.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n055_n057",
+     "label": "Call for a fair coin swap",
+     "target": "n057"
+    },
+    {
+     "id": "c_n055_n058",
+     "label": "Show the two purses",
+     "target": "n058"
+    },
+    {
+     "id": "c_n055_n059",
+     "label": "Set the coins side by side",
+     "target": "n059"
+    }
+   ]
+  },
+  {
+   "id": "n056",
+   "body": "<<FILL role=climax words=100 beats='Idris carries the witness cloth to the center well. A few people call out that the market master is coming. The crowd does not scatter. The well stone feels cool and solid.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n056_n057",
+     "label": "Propose the coin swap to everyone",
+     "target": "n057"
+    },
+    {
+     "id": "c_n056_n058",
+     "label": "Raise both purses high",
+     "target": "n058"
+    },
+    {
+     "id": "c_n056_n059",
+     "label": "Put one token of each kind on the ledge",
+     "target": "n059"
+    }
+   ]
+  },
+  {
+   "id": "n057",
+   "body": "<<FILL role=climax words=100 beats='Idris proposes a public coin swap. Every trader should exchange old tokens for new ones at the same rate. The baker cheers. The flour seller hesitates. The market master clerk frowns.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n057_n060",
+     "label": "Walk to the market master stall",
+     "target": "n060"
+    },
+    {
+     "id": "c_n057_n061",
+     "label": "Read the charter to the master",
+     "target": "n061"
+    },
+    {
+     "id": "c_n057_n062",
+     "label": "Point to the river mint",
+     "target": "n062"
+    }
+   ]
+  },
+  {
+   "id": "n058",
+   "body": "<<FILL role=climax words=100 beats='Idris shows the two purses to the crowd. The heavy purse and the many-coin purse look equal in the charter eyes. The crowd murmurs. A child shouts that the swap should happen at noon.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n058_n060",
+     "label": "Take the evidence to the master",
+     "target": "n060"
+    },
+    {
+     "id": "c_n058_n061",
+     "label": "Tell the master what the charter says",
+     "target": "n061"
+    },
+    {
+     "id": "c_n058_n062",
+     "label": "Point out the new mint smoke",
+     "target": "n062"
+    }
+   ]
+  },
+  {
+   "id": "n059",
+   "body": "<<FILL role=climax words=100 beats='Idris places one smooth token and one notched token on the well ledge. The tokens look almost identical. The crowd waits for the market master to answer. The bell rings once.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n059_n060",
+     "label": "Bring the witness cloth forward",
+     "target": "n060"
+    },
+    {
+     "id": "c_n059_n061",
+     "label": "Recite the charter line",
+     "target": "n061"
+    },
+    {
+     "id": "c_n059_n062",
+     "label": "Ask about the mint chimney",
+     "target": "n062"
+    }
+   ]
+  },
+  {
+   "id": "n060",
+   "body": "<<FILL role=climax words=100 beats='Idris walks to the market master stall with the witness cloth. The master is counting notched tokens into a leather bag. The master does not look up. The cloth brush floats in the air.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n060_n063",
+     "label": "Unlatch the back of the cart",
+     "target": "n063"
+    },
+    {
+     "id": "c_n060_n064",
+     "label": "Lift the oilcloth in the crate",
+     "target": "n064"
+    },
+    {
+     "id": "c_n060_e013",
+     "label": "Count the tokens in the crate",
+     "target": "e013"
+    }
+   ]
+  },
+  {
+   "id": "n061",
+   "body": "<<FILL role=climax words=100 beats='Idris reads the charter line aloud. The market master stops counting. The bag is tied with a red cord. The master says the charter is old and the market has changed.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n061_n063",
+     "label": "Open the cart crate",
+     "target": "n063"
+    },
+    {
+     "id": "c_n061_n064",
+     "label": "Look at the packed smooth tokens",
+     "target": "n064"
+    },
+    {
+     "id": "c_n061_n065",
+     "label": "Count the replacement tokens",
+     "target": "n065"
+    }
+   ]
+  },
+  {
+   "id": "n062",
+   "body": "<<FILL role=climax words=100 beats='Idris points to the river mint behind the master. Smoke curls from the chimney. The master says the mint was built fairly. The crowd at the well begins to chant the charter words.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n062_n063",
+     "label": "Open the labeled crate",
+     "target": "n063"
+    },
+    {
+     "id": "c_n062_n064",
+     "label": "Find the packing slip",
+     "target": "n064"
+    },
+    {
+     "id": "c_n062_n065",
+     "label": "Compare the counts",
+     "target": "n065"
+    }
+   ]
+  },
+  {
+   "id": "n063",
+   "body": "<<FILL role=climax words=100 beats='Idris unlatches the back of the cart and finds a crate labeled honey dipper. The crate is full of notched tokens. Under the crate is a second stack of smooth tokens wrapped in oilcloth. The seals are identical.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n063_n066",
+     "label": "Take the packing slip to the well",
+     "target": "n066"
+    },
+    {
+     "id": "c_n063_n067",
+     "label": "Lay the oilcloth coins on the ledge",
+     "target": "n067"
+    },
+    {
+     "id": "c_n063_n068",
+     "label": "Compare the two seals",
+     "target": "n068"
+    }
+   ]
+  },
+  {
+   "id": "n064",
+   "body": "<<FILL role=climax words=100 beats='Idris lifts the oilcloth. The smooth tokens inside are heavier and marked with grain sheaves. A packing slip lists them as old coin for melting. The slip is signed with a red cord seal.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n064_n066",
+     "label": "Show the slip to the crowd",
+     "target": "n066"
+    },
+    {
+     "id": "c_n064_n067",
+     "label": "Show the smooth tokens to the crowd",
+     "target": "n067"
+    },
+    {
+     "id": "c_n064_e014",
+     "label": "Read the slip one more time",
+     "target": "e014"
+    }
+   ]
+  },
+  {
+   "id": "n065",
+   "body": "<<FILL role=climax words=100 beats='Idris counts the notched tokens in the crate. There are exactly enough to replace every smooth token at the market. The plan is to make smooth tokens disappear first, then change all prices.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n065_n066",
+     "label": "Find the name on the slip",
+     "target": "n066"
+    },
+    {
+     "id": "c_n065_n067",
+     "label": "Show the old coins to the crowd",
+     "target": "n067"
+    },
+    {
+     "id": "c_n065_n068",
+     "label": "Inspect the seals side by side",
+     "target": "n068"
+    }
+   ]
+  },
+  {
+   "id": "n066",
+   "body": "<<FILL role=decision words=100 beats='Idris brings the packing slip to the well. The crowd reads the name on the slip. It is the cousin of the market master. The cousin manages the river mint. The seal matches the red cord on the master bag.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n066_n069",
+     "label": "Print a fair notice",
+     "target": "n069"
+    },
+    {
+     "id": "c_n066_n070",
+     "label": "Post the notice on the well",
+     "target": "n070"
+    },
+    {
+     "id": "c_n066_n071",
+     "label": "Add a no-split-price rule",
+     "target": "n071"
+    }
+   ]
+  },
+  {
+   "id": "n067",
+   "body": "<<FILL role=decision words=100 beats='Idris lays the oilcloth smooth tokens on the well ledge. The crowd sees that the old coins were meant for melting. The baker picks up one and refuses to let it go.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n067_n069",
+     "label": "Write the fair rule",
+     "target": "n069"
+    },
+    {
+     "id": "c_n067_n070",
+     "label": "Pin the rule to the well post",
+     "target": "n070"
+    },
+    {
+     "id": "c_n067_n071",
+     "label": "Add a rule against split prices",
+     "target": "n071"
+    }
+   ]
+  },
+  {
+   "id": "n068",
+   "body": "<<FILL role=decision words=100 beats='Idris compares the two seals. The crate seal and the master bag seal have the same tiny flaw. Someone cut the cord and tied it again. The market master has no explanation.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n068_n069",
+     "label": "Print the fair price notice",
+     "target": "n069"
+    },
+    {
+     "id": "c_n068_n070",
+     "label": "Hang the notice at the well",
+     "target": "n070"
+    },
+    {
+     "id": "c_n068_n071",
+     "label": "Write the no-split rule",
+     "target": "n071"
+    }
+   ]
+  },
+  {
+   "id": "n069",
+   "body": "<<FILL role=decision words=100 beats='Idris prints a notice on a board: one smooth token equals one notched token. The baker writes the same on a cloth. The weaver copies it onto a strip. The notice is pinned to the well post.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n069_n072",
+     "label": "Face the market master",
+     "target": "n072"
+    },
+    {
+     "id": "c_n069_n073",
+     "label": "Ask the master to open the bag",
+     "target": "n073"
+    },
+    {
+     "id": "c_n069_n074",
+     "label": "Set both tokens on the ledge",
+     "target": "n074"
+    }
+   ]
+  },
+  {
+   "id": "n070",
+   "body": "<<FILL role=decision words=100 beats='Idris reads the notice aloud. A few traders tear it down. Other traders nail it back. The crowd votes to keep the board until sunset. The market master clerk shrugs.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n070_n072",
+     "label": "Confront the market master",
+     "target": "n072"
+    },
+    {
+     "id": "c_n070_n073",
+     "label": "Demand the master open the bag",
+     "target": "n073"
+    },
+    {
+     "id": "c_n070_n074",
+     "label": "Offer a final coin test",
+     "target": "n074"
+    }
+   ]
+  },
+  {
+   "id": "n071",
+   "body": "<<FILL role=decision words=100 beats='Idris writes a second line on the notice: no price may split by mint mark. The cider seller paints a large circle around the words. The flour seller adds a grain sheaf and a honey dipper side by side.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n071_n072",
+     "label": "Face the master with the notice",
+     "target": "n072"
+    },
+    {
+     "id": "c_n071_n073",
+     "label": "Ask the master to open the red bag",
+     "target": "n073"
+    },
+    {
+     "id": "c_n071_n074",
+     "label": "Let the two coins decide",
+     "target": "n074"
+    }
+   ]
+  },
+  {
+   "id": "n072",
+   "body": "<<FILL role=climax words=100 beats='Idris faces the market master in front of the well. The master holds the red-cord bag. The crowd is silent. Idris holds the charter in one hand and the packing slip in the other.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n072_n075",
+     "label": "Offer the crowd a final choice",
+     "target": "n075"
+    },
+    {
+     "id": "c_n072_n076",
+     "label": "Step toward the bell rope",
+     "target": "n076"
+    },
+    {
+     "id": "c_n072_e001",
+     "label": "Declare both tokens equal now",
+     "target": "e001"
+    }
+   ]
+  },
+  {
+   "id": "n073",
+   "body": "<<FILL role=climax words=100 beats='Idris asks the master to open the bag. The master says the bag is private. The baker steps forward. The weaver steps forward. The master ties the cord tighter.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n073_n075",
+     "label": "Give the crowd one last choice",
+     "target": "n075"
+    },
+    {
+     "id": "c_n073_n076",
+     "label": "Ring the market bell",
+     "target": "n076"
+    },
+    {
+     "id": "c_n073_e002",
+     "label": "Open the bag together",
+     "target": "e002"
+    }
+   ]
+  },
+  {
+   "id": "n074",
+   "body": "<<FILL role=climax words=100 beats='Idris sets the two tokens on the well ledge. One is smooth, one is notched. The master looks from the tokens to the crowd. The bell rings again. The market holds its breath.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n074_n075",
+     "label": "Let the crowd choose the rule",
+     "target": "n075"
+    },
+    {
+     "id": "c_n074_n076",
+     "label": "Let the bell settle it",
+     "target": "n076"
+    },
+    {
+     "id": "c_n074_e003",
+     "label": "Lift both tokens together",
+     "target": "e003"
+    }
+   ]
+  },
+  {
+   "id": "n075",
+   "body": "<<FILL role=climax words=100 beats='Idris offers a final choice to the crowd. The market master waits behind the stall. The crate of new tokens sits in the cart. The old charter is still on the well post. Everyone looks at Idris.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n075_e001",
+     "label": "Cry out that one equals one",
+     "target": "e001"
+    },
+    {
+     "id": "c_n075_e002",
+     "label": "Show the matching seals again",
+     "target": "e002"
+    },
+    {
+     "id": "c_n075_e003",
+     "label": "Announce a fair swap day",
+     "target": "e003"
+    }
+   ]
+  },
+  {
+   "id": "n076",
+   "body": "<<FILL role=climax words=100 beats='Idris steps toward the bell rope. The market master hand stops near the red cord. The witness cloth is raised high. The two coins stay side by side on the ledge. One more word will settle the market.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_n076_e004",
+     "label": "Ring the bell for equality",
+     "target": "e004"
+    },
+    {
+     "id": "c_n076_e005",
+     "label": "Ring the bell for the charter",
+     "target": "e005"
+    },
+    {
+     "id": "c_n076_e006",
+     "label": "Ring the bell for a new mint",
+     "target": "e006"
+    }
+   ]
+  },
+  {
+   "id": "e001",
+   "body": "<<FILL role=ending words=100 beats='The crowd cheers when Idris declares that one token equals one token. The market master unties the red cord and pours the tokens into one shared bowl. The baker smiles. The weaver nods. The price board is changed before sunset.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e001_ending",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Rim Check"
+   }
+  },
+  {
+   "id": "e002",
+   "body": "<<FILL role=ending words=100 beats='Idris shows the matching seals to the whole market. The crowd compares the tiny flaw on the crate and the bag. The market master cannot explain. The clerk writes a new rule that favors no mintage. The market opens fair the next morning.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e002_ending",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Coin Ring"
+   }
+  },
+  {
+   "id": "e003",
+   "body": "<<FILL role=ending words=100 beats='Idris announces a fair swap day. Traders bring smooth and notched tokens to one table. Each token is exchanged without extra fees. The honey stand and flour stall agree to share one price board. The market feels whole again.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e003_ending",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Swap Worth"
+   }
+  },
+  {
+   "id": "e004",
+   "body": "<<FILL role=ending words=100 beats='The bell rings and the market master opens the red bag in front of everyone. The bag holds enough smooth tokens to replace every notched one. Idris writes the new equal rate on the board. The traders nod and return to their stalls.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e004_ending",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Mint Secret"
+   }
+  },
+  {
+   "id": "e005",
+   "body": "<<FILL role=ending words=100 beats='Idris rings the bell for the charter. The market master bows and agrees to remove the split prices. The grain sheaf and honey dipper appear side by side on every new notice. The crowd trades freely until the stars come out.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e005_ending",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Fair Trade"
+   }
+  },
+  {
+   "id": "e006",
+   "body": "<<FILL role=ending words=100 beats='The market master hands the red-cord bag to Idris. The whole crowd watches as the coins are poured into one barrel. A new minting is promised with one mark for everyone. The harvest swap-market closes with laughter and warm cider.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e006_ending",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Printed Notice"
+   }
+  },
+  {
+   "id": "e007",
+   "body": "<<FILL role=ending words=100 beats='Idris finds the unsigned note but the market master will not admit it was written by the river mint. The split prices remain for another week. The smooth tokens grow scarcer. Idris leaves the market with a promise to return with more witnesses.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e007_ending",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Uneven Scales"
+   }
+  },
+  {
+   "id": "e008",
+   "body": "<<FILL role=ending words=100 beats='Idris traces the fresh ink to a clerk at the river mint. The clerk admits the prices were changed by order of the cousin. The clerk does not have the power to undo it. Idris keeps the ink-stained page as evidence for another day.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e008_ending",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Handful of Tokens"
+   }
+  },
+  {
+   "id": "e009",
+   "body": "<<FILL role=ending words=100 beats='Idris reads the old charter to the crowd, but several traders have already packed their stalls. The market master is away. The split prices stay because nobody can vote while the master is gone. Idris watches the sun sink and plans a new approach.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e009_ending",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Drift Continues"
+   }
+  },
+  {
+   "id": "e010",
+   "body": "<<FILL role=ending words=100 beats='The stuck token becomes a small symbol. Idris keeps it in a pocket while the market continues with two prices. The crowd remembers the token, but no rule changes yet. The harvest festival ends with a quiet question still in the air.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e010_ending",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Everyone Watches"
+   }
+  },
+  {
+   "id": "e011",
+   "body": "<<FILL role=ending words=100 beats='The trader closes the table and the crowd slowly scatters. The market master thanks the trader for keeping order. The split prices continue until the next market day. Idris folds the witness cloth and tucks it away, knowing the fight is not over.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e011_ending",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Tilted Market"
+   }
+  },
+  {
+   "id": "e012",
+   "body": "<<FILL role=ending words=100 beats='The clerk pockets the charter copy and warns Idris not to make trouble. The market master raises the smooth token price again the next morning. Shoppers grumble but pay. Idris watches the smooth tokens disappear into locked boxes.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e012_ending",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Smooth-Rim Shortage"
+   }
+  },
+  {
+   "id": "e013",
+   "body": "<<FILL role=ending words=100 beats='Idris counts the crate and realizes the plan is bigger than one market. The river mint will keep making notched tokens until the smooth ones are gone. The market master locks the cart. The fair price will have to wait for a braver day.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e013_ending",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Locked Stall"
+   }
+  },
+  {
+   "id": "e014",
+   "body": "<<FILL role=ending words=100 beats='The packing slip names the cousin of the market master, but the cousin sends word that the signature was forced. Nobody can prove who sealed the crate. The market closes with the two prices still on the board. Idris keeps the slip as a reminder.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e014_ending",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Market Closes"
+   }
+  }
+ ]
+}
