@@ -248,8 +248,8 @@ the session); the key fields are reproduced below and are the durable record.
   `completion_tokens` (13 against a cap of 10 on the first call), so Modal's top-level
   `reasoning_tokens` is a separate counter, not a subset guaranteed to fit inside the completion
   accounting; record both fields as reported rather than deriving one from the other. Budget
-  sizing must cover reasoning plus content, matching the OpenRouter finding. Note the shape difference is not merely cosmetic:
-  `dig_reasoning_tokens` reads only the NESTED OpenRouter path
+  sizing must cover reasoning plus content, matching the OpenRouter finding. Note the shape
+  difference is not merely cosmetic: `dig_reasoning_tokens` reads only the NESTED OpenRouter path
   (`usage.completion_tokens_details.reasoning_tokens`), and `modal.py` does not call it at all, so
   the Modal leg currently collects no reasoning telemetry whatsoever. Budget sizing cannot be driven
   from numbers the adapter never reads, which makes reasoning-token extraction a prerequisite for
