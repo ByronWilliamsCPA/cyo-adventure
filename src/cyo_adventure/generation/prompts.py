@@ -61,6 +61,7 @@ __all__ = [
     "build_reading_level_repair_prompt",
     "build_repair_prompt",
     "build_structure_prompt",
+    "neutralize_prompt_payload",
 ]
 
 # ---------------------------------------------------------------------------
@@ -182,11 +183,42 @@ def _neutralize_fence(text: str) -> str:
     # templates in this module do not, so the terminator is neutralized here at
     # the one call site that feeds prose rather than a JSON brief.
     # #VERIFY: test_reading_level_prompt_neutralizes_a_literal_fence_terminator.
-    # #EDGE: security: ``build_fill_prompt`` and ``build_bound_fill_prompt``
-    # interpolate ``{theme_brief}`` into the same fence without this treatment.
-    # The brief is JSON-serialised, which escapes quotes and newlines but NOT
-    # the terminator, so the hole is real though narrower (the attacker must
-    # get the string through screening intake first). Tracked as UW-C228.
+    # #ASSUME: security: every DYNAMIC payload in this module is now routed
+    # through this function, not just the two that fed prose. The rule is
+    # uniform because the two delimiters it defangs can be forged by any
+    # interpolated string, and the position of the payload relative to the
+    # fence does not decide the risk: ``{slot_bindings}`` sits OUTSIDE the
+    # fence in ``fill_subset_bound.md`` and is neutralized anyway, because the
+    # stage marker rather than the fence is what it can forge. Closing
+    # ``{theme_brief}`` here retires UW-C228, and the same pass closed
+    # ``{skeleton_with_fill_directives}`` (which carries validated slot values
+    # that ``validator/slots.py`` does not screen for the marker),
+    # ``{approved_skeleton}``, ``{filled_story}``, ``{nodes_to_fill}`` and
+    # ``{differentiation_directive}`` (whose ``prior_titles`` descend from a
+    # family's own published story titles, validated only ``min_length=1``).
+    # #CRITICAL: security: FAILURE FEEDBACK is dynamic too, which the first pass
+    # of this rule got wrong: ``{fidelity_violations}``, ``{validator_report}``,
+    # ``{violations_block}`` and ``{failing_node_ids}`` were listed as
+    # code-derived and none of them is.
+    # ``{fidelity_violations}`` carries ``run_semantic_fidelity_check``'s
+    # ``notes``, which is unconstrained review-model text. ``{validator_report}``
+    # carries ``validator/gate.py``'s L1-1 message, which interpolates a Pydantic
+    # ``ValidationError`` whose ``str()`` echoes ``input_value=``, so the
+    # offending document's own text lands in the prompt. ``{violations_block}``
+    # carries ``_completeness_violations``'s "binding contains undeclared slot
+    # '{slot_id}'", and that id is a KEY of the model's parsed bind response:
+    # ``_parse_bind_response`` validates only that values are strings, never that
+    # keys are declared slot ids. ``{failing_node_ids}`` looks exempt and is not:
+    # the only ids this schema pattern-constrains are ``Variable.name`` and
+    # ``Effect.var`` (``models.py`` ``Field(pattern=r"^[a-z][a-z0-9_]*$")``),
+    # while ``Node.id``, ``Choice.id`` and ``Ending.id`` are
+    # ``Field(min_length=1)`` with no pattern and no validator rule on their
+    # format, so a node id spelling either delimiter is schema-VALID.
+    # #VERIFY: TestFailureFeedbackCannotForgeTheMarker covers all four paths.
+    # Code-derived tokens are deliberately NOT routed here: ``{slot_table}``,
+    # ``{budget_constraints}`` and ``{reading_target}`` are built from contract
+    # data and literals, never from free text or model-supplied ids.
+    # #VERIFY: test_prompts_neutralize_every_dynamic_payload.
 
     Args:
         text: The payload about to be placed inside an untrusted fence.
@@ -207,6 +239,25 @@ def _neutralize_fence(text: str) -> str:
     return text.replace(_FENCE_TERMINATOR, _FENCE_TERMINATOR_DEFANGED).replace(
         _USER_MARKER, _USER_MARKER_DEFANGED
     )
+
+
+def neutralize_prompt_payload(text: str) -> str:
+    """Defang the two prompt delimiters in a payload, for other assembling modules.
+
+    Public entry point to :func:`_neutralize_fence`. It exists because
+    ``flywheel/reguide_draft.py`` assembles its own prompt from the same
+    ``generation/templates`` package and splits on the same ``<!-- @user -->``
+    marker, so it needs the identical defang. Sharing this function rather than
+    re-deriving it there is the point of `AL-501`: the forgery class reappeared
+    three times precisely because neutralization was a per-site decision.
+
+    Args:
+        text: The payload about to be interpolated into a prompt template.
+
+    Returns:
+        The payload with both delimiters rendered inert.
+    """
+    return _neutralize_fence(text)
 
 
 def _drafting_guide() -> str:
@@ -383,7 +434,7 @@ def build_structure_prompt(
         _load_template("structure.md")
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
         .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
-        .replace("{concept_brief}", brief.model_dump_json(indent=2))
+        .replace("{concept_brief}", _neutralize_fence(brief.model_dump_json(indent=2)))
         .replace("{budget_constraints}", _budget_block(brief, scale))
     )
     return _split_stage_prompt(text)
@@ -421,7 +472,7 @@ def build_prose_prompt(skeleton_json: str, brief: ConceptBrief) -> StagePrompt:
         _load_template("prose.md")
         .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
-        .replace("{approved_skeleton}", skeleton_json)
+        .replace("{approved_skeleton}", _neutralize_fence(skeleton_json))
     )
     return _split_stage_prompt(text)
 
@@ -570,12 +621,14 @@ def build_fill_prompt(
         _load_template("fill.md")
         .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
-        .replace("{skeleton_with_fill_directives}", skeleton_json)
-        .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
+        .replace("{skeleton_with_fill_directives}", _neutralize_fence(skeleton_json))
+        .replace(_THEME_BRIEF_PLACEHOLDER, _neutralize_fence(theme_brief))
         .replace(
             "{differentiation_directive}",
-            differentiation_directive
-            or build_differentiation_directive(level=None, axis_instruction=None),
+            _neutralize_fence(
+                differentiation_directive
+                or build_differentiation_directive(level=None, axis_instruction=None)
+            ),
         )
     )
     return _split_stage_prompt(text)
@@ -662,14 +715,16 @@ def build_fill_subset_prompt(
         _load_template("fill_subset.md")
         .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
-        .replace("{nodes_to_fill}", batch.nodes_to_fill_json)
+        .replace("{nodes_to_fill}", _neutralize_fence(batch.nodes_to_fill_json))
         .replace("{prose_so_far}", _neutralize_fence(batch.prose_so_far_json))
-        .replace("{skeleton_with_fill_directives}", skeleton_json)
-        .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
+        .replace("{skeleton_with_fill_directives}", _neutralize_fence(skeleton_json))
+        .replace(_THEME_BRIEF_PLACEHOLDER, _neutralize_fence(theme_brief))
         .replace(
             "{differentiation_directive}",
-            differentiation_directive
-            or build_differentiation_directive(level=None, axis_instruction=None),
+            _neutralize_fence(
+                differentiation_directive
+                or build_differentiation_directive(level=None, axis_instruction=None)
+            ),
         )
     )
     return _split_stage_prompt(text)
@@ -752,15 +807,17 @@ def build_fill_subset_bound_prompt(
         _load_template("fill_subset_bound.md")
         .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
-        .replace("{nodes_to_fill}", batch.nodes_to_fill_json)
+        .replace("{nodes_to_fill}", _neutralize_fence(batch.nodes_to_fill_json))
         .replace("{prose_so_far}", _neutralize_fence(batch.prose_so_far_json))
-        .replace("{skeleton_with_fill_directives}", skeleton_json)
+        .replace("{skeleton_with_fill_directives}", _neutralize_fence(skeleton_json))
         .replace("{slot_bindings}", _neutralize_fence(batch.slot_bindings_json))
-        .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
+        .replace(_THEME_BRIEF_PLACEHOLDER, _neutralize_fence(theme_brief))
         .replace(
             "{differentiation_directive}",
-            differentiation_directive
-            or build_differentiation_directive(level=None, axis_instruction=None),
+            _neutralize_fence(
+                differentiation_directive
+                or build_differentiation_directive(level=None, axis_instruction=None)
+            ),
         )
     )
     return _split_stage_prompt(text)
@@ -882,8 +939,14 @@ def build_bind_prompt(
     text = (
         _load_template("bind.md")
         .replace("{slot_table}", _slot_table(contract))
-        .replace(_THEME_BRIEF_PLACEHOLDER, json.dumps(dict(theme_brief), indent=2))
-        .replace("{violations_block}", _violations_block(violations))
+        .replace(
+            _THEME_BRIEF_PLACEHOLDER,
+            _neutralize_fence(json.dumps(dict(theme_brief), indent=2)),
+        )
+        .replace(
+            "{violations_block}",
+            _neutralize_fence(_violations_block(violations)),
+        )
     )
     return _split_stage_prompt(text)
 
@@ -926,8 +989,14 @@ def build_interpret_bind_prompt(
     text = (
         _load_template("interpret_bind.md")
         .replace("{slot_table}", _slot_table(contract))
-        .replace(_THEME_BRIEF_PLACEHOLDER, json.dumps(dict(theme_brief), indent=2))
-        .replace("{violations_block}", _violations_block(violations))
+        .replace(
+            _THEME_BRIEF_PLACEHOLDER,
+            _neutralize_fence(json.dumps(dict(theme_brief), indent=2)),
+        )
+        .replace(
+            "{violations_block}",
+            _neutralize_fence(_violations_block(violations)),
+        )
     )
     return _split_stage_prompt(text)
 
@@ -993,13 +1062,15 @@ def build_bound_fill_prompt(
         _load_template("fill_bound.md")
         .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
-        .replace("{skeleton_with_fill_directives}", skeleton_json)
+        .replace("{skeleton_with_fill_directives}", _neutralize_fence(skeleton_json))
         .replace("{slot_bindings}", _neutralize_fence(slot_bindings_json))
-        .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
+        .replace(_THEME_BRIEF_PLACEHOLDER, _neutralize_fence(theme_brief))
         .replace(
             "{differentiation_directive}",
-            differentiation_directive
-            or build_differentiation_directive(level=None, axis_instruction=None),
+            _neutralize_fence(
+                differentiation_directive
+                or build_differentiation_directive(level=None, axis_instruction=None)
+            ),
         )
     )
     return _split_stage_prompt(text)
@@ -1053,8 +1124,8 @@ def build_fidelity_repair_prompt(
     )
     text = (
         _load_template("fidelity_repair.md")
-        .replace("{filled_story}", filled_json)
-        .replace("{fidelity_violations}", violations_block)
+        .replace("{filled_story}", _neutralize_fence(filled_json))
+        .replace("{fidelity_violations}", _neutralize_fence(violations_block))
     )
     return _split_stage_prompt(text)
 
@@ -1193,8 +1264,8 @@ def build_repair_prompt(
     # `.replace()` call on a different token.
     text = (
         _load_template("repair.md")
-        .replace("{approved_skeleton}", storybook_json)
-        .replace("{validator_report}", validator_report)
-        .replace("{failing_node_ids}", failing_node_ids)
+        .replace("{approved_skeleton}", _neutralize_fence(storybook_json))
+        .replace("{validator_report}", _neutralize_fence(validator_report))
+        .replace("{failing_node_ids}", _neutralize_fence(failing_node_ids))
     )
     return _split_stage_prompt(text)
