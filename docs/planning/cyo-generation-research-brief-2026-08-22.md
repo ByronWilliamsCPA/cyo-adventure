@@ -211,7 +211,7 @@ converged faster at 10-13 than at 5-8, whose tight budgets and topology trap bit
 does not: blind authoring at any tier; DeepSeek V4 Pro as a structure author (0/6 tool-assisted,
 failing by structural churn and by losing JSON discipline in multi-turn repair); and the checker's
 PL-18 message, which cost three legs grid points by naming the admissible set without saying why
-the graph is not tree-shaped (`AL-513`, fix proposed; the brief-side menu defect is `UW-C306`).
+the graph is not tree-shaped (`AL-514`, fix proposed; the brief-side menu defect is `UW-C306`).
 Consequence for the product: fill with V4 Pro, author structure with a tool-assisted Anthropic
 tier, review first-pass with V4 Flash; per-stage model selection in the authoring plan is the
 enabling change.
@@ -244,7 +244,7 @@ vocabularies (v1 and v2 both invert against readers, D-3); the six-question inst
 compressed scales); and the automated recognition protocol, which failed its pre-registered control
 on 2026-08-21 (both raters called a cross-graph pair the same adventure, partly because the control
 itself carried the catalog's convergent decision structure; repair path in
-`evidence/recognition-protocol-pilot/results.md`, `AL-510`). Perceptual claims, including the
+`evidence/recognition-protocol-pilot/results.md`, `AL-511`). Perceptual claims, including the
 mutation pilot's, stay marked unconfirmed until a validated instrument exists.
 
 ### 4.5 Cost: where the money actually went
@@ -266,7 +266,7 @@ end-to-end), `S-3` (bespoke versus catalog on premise fit), `S-4` (repeat-reader
 `S-5` (the safety floor for unreviewed shells) are the open experiments, gated on the plan in
 [skeleton-sourcing-test-plan-2026-08-21.md](./skeleton-sourcing-test-plan-2026-08-21.md). The
 recognition instrument repair and the PL-18 message fix are the two cheapest quality levers on the
-board. Lessons `AL-509`..`AL-513` and work rows `UW-C317`..`UW-C320` record what this cycle taught.
+board. Lessons `AL-510`..`AL-514` and work rows `UW-C317`..`UW-C320` record what this cycle taught.
 
 ## Related
 

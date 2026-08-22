@@ -421,6 +421,30 @@ def _load_vendors(path: Path) -> list[Vendor]:
         # uniqueness check this replaces.
         # #VERIFY: test_load_vendors_rejects_case_equivalent_labels and
         # test_load_vendors_rejects_a_label_that_is_not_a_bare_filename.
+        # #CRITICAL: data-integrity: this guard's whole purpose, per the note
+        # above, is to reject at LOAD time, before any provider call is billed.
+        # A character that is legal on the authoring platform but invalid on the
+        # running one defers the failure past the spend: `persist_book` then
+        # raises while writing a book already paid for, which is the `AL-326`
+        # loss (three books, 1,869 seconds of billed provider time) reached by a
+        # different cause. A NUL byte fails the write on EVERY platform
+        # (`ValueError: embedded null byte`), and Win32 rejects
+        # `< > : " | ? * \ /` plus every character below 0x20 in a path
+        # component, so a label authored on Linux can be unrunnable on Windows.
+        # The committed specs use only `[a-z0-9.-]`, so nothing real is refused.
+        # #VERIFY: test_load_vendors_rejects_a_label_with_an_unsafe_character.
+        unsafe = {c for c in label if ord(c) < 0x20 or ord(c) == 0x7F} | (
+            set(label) & set('<>:"|?*\\/')
+        )
+        if unsafe:
+            shown = ", ".join(sorted(repr(c) for c in unsafe))
+            print(
+                f"Error: vendor #{i} label {label!r} contains character(s) "
+                f"{shown} that cannot appear in a filename on every supported "
+                "platform; the book write would fail after the run is billed.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
         if label != Path(label).name or label in {".", ".."}:
             print(
                 f"Error: vendor #{i} label '{label}' is not a bare name; it "
