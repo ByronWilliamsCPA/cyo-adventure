@@ -294,6 +294,7 @@ Several of this review's open recommendations are **already ruled on**. Marked a
 
 ## Related
 
+- [Handoff](./cyo-brief-remediation-handoff-2026-08-22.md) for a team planning the remediation
 - [Gap analysis](./cyo-brief-gap-analysis-2026-08-22.md) and its
   [remediation plan](./cyo-brief-gap-remediation-plan-2026-08-22.md)
 - [Evidence](./evidence/brief-gap-analysis-2026-08-22/README.md), all 24 reports

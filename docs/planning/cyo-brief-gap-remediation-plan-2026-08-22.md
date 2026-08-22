@@ -508,6 +508,7 @@ discipline the live round used manually, which worked: $3.28 measured against a 
 
 ## Related
 
+- [Handoff](./cyo-brief-remediation-handoff-2026-08-22.md) for a team planning this work
 - [Gap analysis](./cyo-brief-gap-analysis-2026-08-22.md), the findings these plans address
 - [Evidence](./evidence/brief-gap-analysis-2026-08-22/README.md), all 24 raw reports
 - [2026-08-22 research brief](./cyo-generation-research-brief-2026-08-22.md), the subject

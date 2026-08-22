@@ -307,6 +307,7 @@ assembly-invariant, or global before committing either way.
 
 ## Related
 
+- [Handoff](./cyo-brief-remediation-handoff-2026-08-22.md) for a team planning the remediation
 - [Reconciliation](./cyo-brief-review-reconciliation-2026-08-22.md) against the parallel review and the live round
 - [Remediation plan](./cyo-brief-gap-remediation-plan-2026-08-22.md), one plan per surviving item
 - [Evidence](./evidence/brief-gap-analysis-2026-08-22/README.md), all 24 reviewer and validator reports
