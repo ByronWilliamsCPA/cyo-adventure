@@ -91,6 +91,42 @@ def test_story_metadata_requires_topology():
     assert meta.topology is Topology.BRANCH_AND_BOTTLENECK
 
 
+def test_story_metadata_rejects_a_third_person_gamebook():
+    """UW-C324: a gamebook addresses the reader, so 'third' contradicts it.
+
+    Left representable, the combination inverts the person gate in
+    scripts/check_prose_craft.py: a gamebook correctly written in second
+    person is measured against the third-person ceiling and fails for the
+    second person its genre requires. No committed skeleton carries the
+    combination, so rejecting it invalidates nothing in the catalog.
+    """
+    kwargs = _meta_kwargs()
+    kwargs["narrative_style"] = "gamebook"
+    kwargs["narrative_person"] = "third"
+    with pytest.raises(PydanticValidationError, match="narrative_person 'third'"):
+        StoryMetadata.model_validate(kwargs)
+
+
+def test_story_metadata_accepts_every_other_person_and_style_pairing():
+    """Only gamebook + third is refused; the rest of the grid stays legal."""
+    for style, person in (
+        ("gamebook", "second"),
+        ("gamebook", None),
+        ("prose", "second"),
+        ("prose", "third"),
+        ("prose", None),
+    ):
+        kwargs = _meta_kwargs()
+        kwargs["narrative_style"] = style
+        if person is not None:
+            kwargs["narrative_person"] = person
+        meta = StoryMetadata.model_validate(kwargs)
+        assert meta.narrative_style.value == style
+        assert (
+            meta.narrative_person.value if meta.narrative_person else None
+        ) == person
+
+
 def test_node_safety_scope_defaults_empty_and_accepts_values():
     plain = Node(id="n1", body="x", choices=[Choice(id="c1", label="go", target="n2")])
     assert plain.safety_scope == []

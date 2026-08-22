@@ -489,6 +489,41 @@ class StoryMetadata(BaseModel):
     # with no ``series`` is a standalone book (backward compatible).
     series: Series | None = None
 
+    @model_validator(mode="after")
+    def _check_person_matches_style(self) -> Self:
+        """Reject a gamebook declared in third person.
+
+        A gamebook is defined by addressing the reader as "you", so
+        ``narrative_style: gamebook`` with ``narrative_person: third`` is a
+        self-contradictory declaration. It is rejected here rather than left
+        representable because ``scripts/check_prose_craft.py`` keys its
+        person gate on both fields: the combination would demand a
+        second-person book by genre and a third-person one by declaration,
+        and whichever bound the checker applied would fail a correctly
+        written book. No committed skeleton carries the combination
+        (verified 2026-08-22), so nothing in the catalog is invalidated.
+
+        Returns:
+            Self: The validated metadata.
+
+        Raises:
+            ValueError: If ``narrative_style`` is ``gamebook`` while
+                ``narrative_person`` is ``third``.
+        """
+        if (
+            self.narrative_style is NarrativeStyle.GAMEBOOK
+            and self.narrative_person is NarrativePerson.THIRD
+        ):
+            msg = (
+                "narrative_style 'gamebook' cannot be combined with "
+                "narrative_person 'third': a gamebook addresses the reader "
+                "as 'you'. Set narrative_person to 'second' (or omit it), "
+                "or set narrative_style to 'prose' if this book follows a "
+                "named protagonist."
+            )
+            raise ValueError(msg)
+        return self
+
 
 def _check_story_int_bound(value: bool | int, *, subject: str, label: str) -> None:
     """Reject a boolean-typed bound and enforce the story-wide int magnitude cap.
