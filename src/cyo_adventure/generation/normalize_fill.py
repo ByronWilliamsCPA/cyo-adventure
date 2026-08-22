@@ -27,19 +27,41 @@ a shipped defect or a burned repair cycle. ``metadata`` currently includes
 stale, and that deriver is separate scheduled work (`UW-C317`), so until it
 lands the skeleton's themes are what ship.
 
-Nodes are matched **by id**, never by position: a model that re-emits the
-same nodes in a different order is a correct fill whose prose must land on
-the right graph positions, and a positional overlay would transplant bodies
-and choice labels onto the wrong targets while rebuilding a structurally
-perfect document no downstream gate can catch (PR #737 review, finding C2).
-Choices are matched by id within their node, and variables by name. A fill
-whose node id set does not exactly match the skeleton's (missing, extra,
-renamed, or duplicated ids), whose node count differs, or whose raw node
-list carries non-object entries is not normalized (returned unchanged),
-since overlaying leaves onto a different or malformed graph would fabricate
-a book, and the gate owns that verdict. Within a matched node, a choice id
-absent from the fill keeps the skeleton's label (noted), and an extra
-filled choice id is discarded (noted).
+How the fill is matched to the skeleton, exactly
+------------------------------------------------
+
+Nodes and choices are matched by ID, never by position. Position is what the
+fill contract asks for, but a model that returns the right ids in a different
+order writes a document that is still structurally valid, so no deterministic
+gate downstream can catch a positional mis-pairing: a child would read one
+choice's label and land on another choice's target. Matching by id makes a
+reordered fill a non-event instead.
+
+Normalization is SKIPPED, and the fill returned exactly as the model wrote it
+for the gate to judge, when any of these hold:
+
+- the raw ``nodes`` list carries entries that are not JSON objects,
+- the node count differs from the skeleton's,
+- node ids on either side are absent, non-string, or duplicated, so no id
+  lookup can be built,
+- the fill's node id SET differs from the skeleton's (an id the skeleton does
+  not have cannot be matched to anything),
+- any node's choice id set differs from that skeleton node's choice id set,
+  including a differing choice COUNT, an added choice on a node the skeleton
+  gives none, or duplicated/non-string choice ids.
+
+Skipping is the safe direction: overlaying leaves onto a graph that is not the
+skeleton's graph would fabricate a book, and the gate owns that verdict.
+
+Variables have no ``id``; their identity key is ``name``. They are matched by
+name when both sides carry the same unique name set, so a reordered fill keeps
+each description with its own variable. When the names disagree they fall back
+to position, because a RENAMED variable (the measured `AL-510` case, where the
+fill rethemes a variable's name and its description together) can only be
+recognised by where it sits, and refusing to normalize a whole book over a
+themed rename would defeat the purpose of the freeze split. A description
+mis-binding is documentation drift, not a routing defect, so the fallback is
+bounded in blast radius; the fallback is recorded in ``restored``.
 """
 
 from __future__ import annotations
@@ -72,6 +94,46 @@ def _nodes(doc: dict[str, object]) -> list[dict[str, object]]:
     if not isinstance(raw, list):
         return []
     return [cast("dict[str, object]", n) for n in raw if isinstance(n, dict)]
+
+
+def _dict_entries(value: object) -> list[dict[str, object]]:
+    """Return the JSON-object entries of ``value`` when it is a list."""
+    if not isinstance(value, list):
+        return []
+    return [
+        cast("dict[str, object]", entry)
+        for entry in cast("list[object]", value)
+        if isinstance(entry, dict)
+    ]
+
+
+def _keyed_by(
+    entries: list[dict[str, object]], key: str
+) -> dict[str, dict[str, object]] | None:
+    """Return ``entries`` keyed by ``key``, or None when they are not keyable.
+
+    Args:
+        entries: The JSON objects to key.
+        key: The identity field to key on (``id`` for nodes and choices,
+            ``name`` for variables).
+
+    Returns:
+        dict[str, dict[str, object]] | None: The lookup, or None when any
+        entry's key is missing, not a string, or duplicated. A caller that
+        gets None cannot match by identity and must not guess.
+    """
+    keyed: dict[str, dict[str, object]] = {}
+    for entry in entries:
+        entry_key = entry.get(key)
+        if not isinstance(entry_key, str) or entry_key in keyed:
+            return None
+        keyed[entry_key] = entry
+    return keyed
+
+
+def _node_order(nodes: list[dict[str, object]]) -> list[object]:
+    """Return the node ids in list order, for an order-drift note."""
+    return [node.get("id") for node in nodes]
 
 
 def _str_or_none(value: object) -> str | None:
@@ -111,6 +173,100 @@ def _story_level_notes(
     return notes
 
 
+def _node_alignment_error(
+    skeleton_nodes: list[dict[str, object]], filled_nodes: list[dict[str, object]]
+) -> str | None:
+    """Return why the two node lists cannot be matched by id, or None.
+
+    Args:
+        skeleton_nodes: The skeleton's node objects.
+        filled_nodes: The fill's node objects, already known to be the same
+            count as the skeleton's.
+
+    Returns:
+        str | None: A skip reason, or None when every skeleton node has
+        exactly one same-id counterpart in the fill.
+    """
+    skeleton_by_id = _keyed_by(skeleton_nodes, "id")
+    filled_by_id = _keyed_by(filled_nodes, "id")
+    if skeleton_by_id is None or filled_by_id is None:
+        return (
+            "node ids are missing, duplicated, or not strings on one side; "
+            "without an id lookup the fill can only be matched by position, "
+            "and a reordered fill would bind prose to the wrong node"
+        )
+    if set(skeleton_by_id) != set(filled_by_id):
+        missing = sorted(set(skeleton_by_id) - set(filled_by_id))
+        unexpected = sorted(set(filled_by_id) - set(skeleton_by_id))
+        return (
+            f"node ids differ (missing={missing}, unexpected={unexpected}); "
+            "overlaying leaves onto a different graph would fabricate a book"
+        )
+    return None
+
+
+def _choice_alignment_error(
+    skeleton_node: dict[str, object], filled_node: dict[str, object], node_id: str
+) -> str | None:
+    """Return why one node's choices cannot be matched by id, or None.
+
+    Args:
+        skeleton_node: The skeleton's node.
+        filled_node: The fill's node carrying the same id.
+        node_id: That id, for the message.
+
+    Returns:
+        str | None: A skip reason, or None when the two choice id sets are
+        equal and both are keyable. A node the skeleton gives no choices
+        matches a fill that gives it none.
+    """
+    skeleton_by_id = _keyed_by(_dict_entries(skeleton_node.get("choices")), "id")
+    filled_by_id = _keyed_by(_dict_entries(filled_node.get("choices")), "id")
+    if skeleton_by_id is None or filled_by_id is None:
+        return (
+            f"choice ids on node {node_id!r} are missing, duplicated, or not "
+            "strings on one side; a label matched by position can land under "
+            "another choice's target"
+        )
+    if set(skeleton_by_id) != set(filled_by_id):
+        missing = sorted(set(skeleton_by_id) - set(filled_by_id))
+        unexpected = sorted(set(filled_by_id) - set(skeleton_by_id))
+        return (
+            f"choice ids on node {node_id!r} differ (missing={missing}, "
+            f"unexpected={unexpected}); the fill is not describing this "
+            "node's branches"
+        )
+    return None
+
+
+def _alignment_error(
+    skeleton_nodes: list[dict[str, object]], filled_nodes: list[dict[str, object]]
+) -> str | None:
+    """Return the first reason the fill cannot be matched by id, or None.
+
+    Args:
+        skeleton_nodes: The skeleton's node objects.
+        filled_nodes: The fill's node objects, same count as the skeleton's.
+
+    Returns:
+        str | None: A skip reason, or None when every node and every choice
+        can be paired by id.
+    """
+    node_error = _node_alignment_error(skeleton_nodes, filled_nodes)
+    if node_error is not None:
+        return node_error
+    # Not None past the check above; the `or {}` is for the type checker only.
+    filled_by_id = _keyed_by(filled_nodes, "id") or {}
+    for skeleton_node in skeleton_nodes:
+        node_id = cast("str", skeleton_node.get("id"))
+        choice_error = _choice_alignment_error(
+            skeleton_node, filled_by_id[node_id], node_id
+        )
+        if choice_error is not None:
+            return choice_error
+    return None
+
+
 def _overlay_choices(
     skeleton_node: dict[str, object],
     filled_node: dict[str, object],
@@ -119,27 +275,31 @@ def _overlay_choices(
 ) -> object:
     """Return the skeleton node's choices with the fill's label text overlaid.
 
-    # #CRITICAL: data-integrity: choices are matched BY ID, never by
-    # position. A model that returns the same choices reordered is a correct
-    # fill; a positional overlay would attach each theme-specific label to
-    # the OPPOSITE frozen target ("Climb down into the pit" leading to the
-    # safe room), and the gate cannot catch it because the rebuilt graph is
-    # the skeleton's own by construction (PR #737 review, finding C2).
-    # #VERIFY: test_normalize_fill.py::
-    # test_reordered_choices_keep_their_labels_on_the_right_targets.
+    # #CRITICAL: data-integrity: each label is taken from the fill's choice
+    # carrying the SAME id, never from the choice at the same index. A model
+    # that returns the skeleton's own choice ids in a different order writes a
+    # structurally valid document, so nothing downstream can catch a positional
+    # pairing; the child would read one branch's label and be routed to
+    # another branch's target. ``_choice_alignment_error`` has already
+    # guaranteed the two id sets are equal, so every lookup here resolves.
+    # #VERIFY: tests/unit/test_normalize_fill.py::
+    # test_reordered_choices_keep_each_label_with_its_own_target asserts the
+    # label-to-target pairing survives a fill that reverses the choice order.
+
+    Args:
+        skeleton_node: The skeleton's node.
+        filled_node: The fill's node carrying the same id.
+        notes: The running restoration notes, appended to in place.
+        node_id: The node id, for the notes.
+
+    Returns:
+        object: The rebuilt choices list, or the skeleton's own ``choices``
+        value unchanged when it is not a list.
     """
     skeleton_choices = skeleton_node.get("choices")
     if not isinstance(skeleton_choices, list):
         return skeleton_choices
-    filled_raw = filled_node.get("choices")
-    filled_entries = filled_raw if isinstance(filled_raw, list) else []
-    filled_by_id: dict[object, dict[str, object]] = {}
-    for entry in cast("list[object]", filled_entries):
-        if isinstance(entry, dict):
-            filled_by_id[cast("dict[str, object]", entry).get("id")] = cast(
-                "dict[str, object]", entry
-            )
-    matched_ids: set[object] = set()
+    filled_by_id = _keyed_by(_dict_entries(filled_node.get("choices")), "id") or {}
     rebuilt: list[object] = []
     for entry in cast("list[object]", skeleton_choices):
         if not isinstance(entry, dict):
@@ -147,31 +307,26 @@ def _overlay_choices(
             continue
         choice = dict(cast("dict[str, object]", entry))
         choice_id = choice.get("id")
-        filled_choice = filled_by_id.get(choice_id)
+        filled_choice = (
+            filled_by_id.get(choice_id) if isinstance(choice_id, str) else None
+        )
         if filled_choice is not None:
-            matched_ids.add(choice_id)
             label = _str_or_none(filled_choice.get("label"))
             if label is not None:
                 choice["label"] = label
+            # ``id`` is absent from the frozen keys here because the pairing
+            # is BY id: the two are equal by construction, so a note could
+            # never fire. A fill that renames a choice id is caught earlier,
+            # by ``_choice_alignment_error``, and skips normalization.
             notes.extend(
                 _drift_notes(
                     filled_choice,
                     choice,
                     ("target", "condition", "effects"),
-                    f"node {node_id!r} choice {choice_id!r}",
+                    f"node {node_id!r} choice",
                 )
             )
-        else:
-            notes.append(
-                f"node {node_id!r} choice {choice_id!r} absent from the fill; "
-                "skeleton label kept"
-            )
         rebuilt.append(choice)
-    notes.extend(
-        f"node {node_id!r} fill carries unknown choice id {extra_id!r}; discarded"
-        for extra_id in filled_by_id
-        if extra_id not in matched_ids
-    )
     return rebuilt
 
 
@@ -203,42 +358,88 @@ def _overlay_ending(
     return ending
 
 
+def _paired_variables(
+    skeleton_vars: list[dict[str, object]],
+    filled_vars: list[dict[str, object]],
+    notes: list[str],
+) -> list[dict[str, object] | None]:
+    """Return the fill's counterpart for each skeleton variable, in order.
+
+    # #ASSUME: data-integrity: variables carry no ``id``, so ``name`` is their
+    # identity key. When both sides carry the same unique name set the pairing
+    # is by name, which keeps a reordered fill's description with its own
+    # variable. When the names disagree the only remaining signal is position,
+    # and a themed RENAME (the measured `AL-510` case) is exactly that
+    # situation; the positional fallback is what preserves description
+    # retheming instead of discarding the whole normalization over it. A
+    # rename that ALSO reorders would mis-bind a description, which is
+    # documentation drift rather than a routing defect, and the fallback is
+    # recorded in the returned notes.
+    # #VERIFY: tests/unit/test_normalize_fill.py::
+    # test_reordered_variables_keep_each_description_with_its_own_variable
+    # covers the name-matched path, and
+    # test_frozen_drift_is_restored_and_writable_retheming_is_kept covers the
+    # renamed, positional path.
+
+    Args:
+        skeleton_vars: The skeleton's variable objects.
+        filled_vars: The fill's variable objects.
+        notes: The running restoration notes, appended to in place.
+
+    Returns:
+        list[dict[str, object] | None]: One entry per skeleton variable, in
+        skeleton order; None where the fill offers no counterpart.
+    """
+    skeleton_by_name = _keyed_by(skeleton_vars, "name")
+    filled_by_name = _keyed_by(filled_vars, "name")
+    if (
+        skeleton_by_name is not None
+        and filled_by_name is not None
+        and set(skeleton_by_name) == set(filled_by_name)
+    ):
+        return [
+            filled_by_name[cast("str", entry.get("name"))] for entry in skeleton_vars
+        ]
+    notes.append("variables matched by position; the fill's names differ")
+    return [
+        filled_vars[index] if index < len(filled_vars) else None
+        for index in range(len(skeleton_vars))
+    ]
+
+
+def _variable_label(variable: dict[str, object], index: int) -> str:
+    """Return a report label for a variable, preferring its name over position.
+
+    Variables are paired by name, so a note that says ``variables[2]`` makes the
+    reader re-derive which variable that was. The index remains the fallback for
+    a nameless variable, which only the positional fallback can produce.
+    """
+    name = _str_or_none(variable.get("name"))
+    return f"variable {name!r}" if name is not None else f"variables[{index}]"
+
+
 def _overlay_variables(
     skeleton: dict[str, object], filled: dict[str, object], notes: list[str]
 ) -> object:
-    """Return the skeleton's variables with the fill's descriptions overlaid.
-
-    # #ASSUME: data-integrity: variables are matched by NAME, not position,
-    # for the same reason nodes and choices are matched by id: a reordered
-    # variables list must not put one variable's themed description on
-    # another (PR #737 review, finding C2's variable-level sibling). A name
-    # absent from the fill keeps the skeleton description; an unknown name
-    # is discarded with a note.
-    # #VERIFY: test_normalize_fill.py::
-    # test_reordered_variables_keep_their_descriptions.
-    """
-    skeleton_vars = skeleton.get("variables")
-    if not isinstance(skeleton_vars, list):
+    """Return the skeleton's variables with the fill's descriptions overlaid."""
+    raw_vars = skeleton.get("variables")
+    if not isinstance(raw_vars, list):
+        return raw_vars
+    skeleton_vars = cast("list[object]", raw_vars)
+    skeleton_entries = _dict_entries(skeleton_vars)
+    if len(skeleton_entries) != len(skeleton_vars):
+        # A skeleton whose variables list holds non-objects is malformed; leave
+        # it exactly as it is rather than pairing around the gaps.
         return skeleton_vars
-    filled_raw = filled.get("variables")
-    filled_entries = filled_raw if isinstance(filled_raw, list) else []
-    filled_by_name: dict[object, dict[str, object]] = {}
-    for entry in cast("list[object]", filled_entries):
-        if isinstance(entry, dict):
-            filled_by_name[cast("dict[str, object]", entry).get("name")] = cast(
-                "dict[str, object]", entry
-            )
-    matched_names: set[object] = set()
+    paired = _paired_variables(
+        skeleton_entries, _dict_entries(filled.get("variables")), notes
+    )
     rebuilt: list[object] = []
-    for entry in cast("list[object]", skeleton_vars):
-        if not isinstance(entry, dict):
-            rebuilt.append(entry)
-            continue
-        variable = dict(cast("dict[str, object]", entry))
-        name = variable.get("name")
-        filled_var = filled_by_name.get(name)
+    for index, (entry, filled_var) in enumerate(
+        zip(skeleton_entries, paired, strict=True)
+    ):
+        variable = dict(entry)
         if filled_var is not None:
-            matched_names.add(name)
             description = _str_or_none(filled_var.get("description"))
             if description is not None and description != variable.get("description"):
                 variable["description"] = description
@@ -246,23 +447,61 @@ def _overlay_variables(
                 _drift_notes(
                     filled_var,
                     variable,
-                    ("type", "min", "max", "initial"),
-                    f"variable {name!r}",
+                    ("name", "type", "min", "max", "initial"),
+                    _variable_label(variable, index),
                 )
             )
         rebuilt.append(variable)
-    notes.extend(
-        f"fill carries unknown variable {extra_name!r}; discarded"
-        for extra_name in filled_by_name
-        if extra_name not in matched_names
-    )
     return rebuilt
+
+
+def _malformed_nodes_reason(filled: dict[str, object]) -> str | None:
+    """Return why the fill's raw node list is malformed, or None.
+
+    Judge the RAW node list, not a dict-filtered view of it: filtering first
+    would let a response carrying, say, the right number of node objects plus
+    stray strings pass the count check with the garbage silently discarded,
+    laundering malformed output into a valid-looking book. A malformed list is
+    the gate's verdict to deliver, on the document as the model wrote it.
+
+    Args:
+        filled: The parsed model output.
+
+    Returns:
+        str | None: A skip reason, or None when every entry is a JSON object.
+    """
+    raw = filled.get("nodes")
+    if not isinstance(raw, list):
+        return None
+    malformed = sum(
+        1 for entry in cast("list[object]", raw) if not isinstance(entry, dict)
+    )
+    if not malformed:
+        return None
+    return (
+        f"{malformed} node entr{'y is' if malformed == 1 else 'ies are'} "
+        "not JSON objects; malformed output is judged as written, not "
+        "repaired by discarding entries"
+    )
 
 
 def normalize_filled_story(
     skeleton: dict[str, object], filled: dict[str, object]
 ) -> NormalizedFill:
     """Rebuild ``filled`` as the skeleton plus its writable leaf content.
+
+    # #CRITICAL: data-integrity: ``filled`` is untrusted model output, and this
+    # runs BEFORE the deterministic gate and again on every repair pass, so a
+    # mis-pairing here is graded as if the skeleton had said it. Nodes and
+    # choices are therefore paired by id, and any disagreement that an id
+    # lookup cannot reconcile (a differing node count, an unknown id, a
+    # duplicated or non-string id, a differing choice id set) returns the
+    # document exactly as the model wrote it with a ``skipped_reason``, so the
+    # gate judges the fill rather than a document this function invented.
+    # #VERIFY: tests/unit/test_normalize_fill.py::
+    # test_reordered_nodes_keep_each_body_with_its_own_node_id and
+    # test_a_filled_node_id_absent_from_the_skeleton_is_not_normalized and
+    # test_a_fill_with_a_different_choice_count_is_not_normalized.
 
     Args:
         skeleton: The pristine skeleton the fill was commissioned from.
@@ -272,29 +511,10 @@ def normalize_filled_story(
         NormalizedFill: The normalized document, the frozen drifts restored,
         and a skip reason when the graphs cannot be aligned.
     """
+    malformed_reason = _malformed_nodes_reason(filled)
+    if malformed_reason is not None:
+        return NormalizedFill(document=filled, skipped_reason=malformed_reason)
     skeleton_nodes = _nodes(skeleton)
-    filled_raw = filled.get("nodes")
-    # Judge the RAW node list, not a dict-filtered view of it: filtering first
-    # would let a response carrying, say, the right number of node objects plus
-    # stray strings pass the count check with the garbage silently discarded,
-    # laundering malformed output into a valid-looking book. A malformed list
-    # is the gate's verdict to deliver, on the document as the model wrote it.
-    malformed = 0
-    if isinstance(filled_raw, list):
-        malformed = sum(
-            1
-            for entry in cast("list[object]", filled_raw)
-            if not isinstance(entry, dict)
-        )
-    if malformed:
-        return NormalizedFill(
-            document=filled,
-            skipped_reason=(
-                f"{malformed} node entr{'y is' if malformed == 1 else 'ies are'} "
-                "not JSON objects; malformed output is judged as written, not "
-                "repaired by discarding entries"
-            ),
-        )
     filled_nodes = _nodes(filled)
     if len(skeleton_nodes) != len(filled_nodes):
         return NormalizedFill(
@@ -305,31 +525,9 @@ def normalize_filled_story(
                 "different graph would fabricate a book"
             ),
         )
-    # #CRITICAL: data-integrity: nodes are paired BY ID, and a fill whose id
-    # set does not exactly match the skeleton's is not normalized at all. A
-    # positional zip inverted prose against the frozen graph on a
-    # reordered-but-correct fill (each body and label landing on the wrong
-    # node while ids were "restored"), producing a structurally perfect
-    # document the gate cannot reject because the graph it validates is the
-    # skeleton's own by construction (PR #737 review, finding C2, reproduced
-    # by three reviewers). Missing, renamed, or duplicated ids make the
-    # pairing ambiguous, so those fills go to the gate as written.
-    # #VERIFY: test_normalize_fill.py::
-    # test_reordered_nodes_keep_their_prose_on_the_right_graph_positions and
-    # ::test_a_fill_with_renamed_node_ids_is_not_normalized.
-    skeleton_ids = [node.get("id") for node in skeleton_nodes]
-    filled_by_id: dict[object, dict[str, object]] = {
-        node.get("id"): node for node in filled_nodes
-    }
-    if len(filled_by_id) != len(filled_nodes) or set(filled_by_id) != set(skeleton_ids):
-        return NormalizedFill(
-            document=filled,
-            skipped_reason=(
-                "node ids do not align with the skeleton (missing, renamed, "
-                "or duplicated); pairing would be ambiguous, so the fill is "
-                "judged as written"
-            ),
-        )
+    alignment_error = _alignment_error(skeleton_nodes, filled_nodes)
+    if alignment_error is not None:
+        return NormalizedFill(document=filled, skipped_reason=alignment_error)
 
     notes: list[str] = _story_level_notes(skeleton, filled)
     normalized: dict[str, object] = dict(skeleton)
@@ -339,9 +537,12 @@ def normalize_filled_story(
         normalized["title"] = title
     normalized["variables"] = _overlay_variables(skeleton, filled, notes)
 
+    # `_alignment_error` has proven both sides key cleanly on the same id set,
+    # so this lookup is never None and every node id below resolves.
+    filled_by_id = _keyed_by(filled_nodes, "id") or {}
     rebuilt_nodes: list[object] = []
     for skeleton_node in skeleton_nodes:
-        node_id = skeleton_node.get("id")
+        node_id = cast("str", skeleton_node.get("id"))
         filled_node = filled_by_id[node_id]
         node = dict(skeleton_node)
         body = _str_or_none(filled_node.get("body"))
@@ -355,4 +556,6 @@ def normalize_filled_story(
             node["ending"] = _overlay_ending(skeleton_node, filled_node, notes, node_id)
         rebuilt_nodes.append(node)
     normalized["nodes"] = rebuilt_nodes
+    if _node_order(filled_nodes) != _node_order(skeleton_nodes):
+        notes.append("node order restored from the skeleton; matched by id")
     return NormalizedFill(document=normalized, restored=tuple(notes))
