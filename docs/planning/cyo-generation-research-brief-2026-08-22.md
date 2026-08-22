@@ -37,11 +37,11 @@ The scale makes one-pass generation untenable: the catalog spans 84 graphs and 1
 recounted against `origin/main` on 2026-08-22 excluding the `.contract.json`, `.lineage.json`, and
 `.narrative.json` sidecars. Earlier drafts said "61 graphs and 11,458 nodes", which was true on
 2026-08-12 and was carried forward without re-running, and "~118,000 words", which was never a
-commissioned total: it is 677 nodes times the 16+ band's nominal 175 words per node, against actual
-`<<FILL words=>>` budgets averaging 62.4. The product constraints make
-shortcuts untenable: this is a children's app, so every published book passes deterministic safety
-and structure gates plus mandatory human approval (ADR-005), and unit economics cap what any one
-book may cost to produce.
+commissioned total: it is 677 nodes times 175 words per node, the 16+ *prose* nominal, applied to a
+gamebook shell whose nominal is 80 and whose actual `<<FILL words=>>` budgets average 62.4. The
+product constraints make shortcuts untenable: this is a children's app, so every published book
+passes structure gates, model-judged safety review, and mandatory human approval (ADR-005), and unit
+economics cap what any one book may cost to produce.
 
 Two findings sharpen the challenge beyond "generate a big correct artifact cheaply":
 
@@ -64,15 +64,17 @@ section 4; none is aspiration.
 authored, validated, and reviewed separately from the prose that fills it. Everything downstream
 (validation, model selection, cost control, reuse policy) depends on this split.
 
-**F2. Deterministic gates come first, and they are floors, not scores.** Structure, budgets,
-reading level, and graph soundness are checked by code before any model or human judges anything.
-Because of finding 2 above, every gate is paired with a delivery measurement (fill rate, word
-delivery) so a hollow pass is visible. Safety is the exception and does not belong in that list:
-the gate's safety seam runs on every story (`validator/gate.py:72,213`) but its body is a Phase-2
-no-op returning an empty report (`validator/safety.py:41-57`), so `GateResult.safety_flagged` is
-structurally always `False`. Deterministic safety classification is unbuilt. What protects a child
-today is the moderation classifiers, the LLM reviewer, and mandatory human approval, which are the
-model-judged and human-gated classes, not this one.
+**F2. Deterministic gates come first, and they are floors, not scores.** Structure, budgets, reading
+level, and graph soundness are checked by code before any model or human judges anything. Because of
+finding 2 above, every gate needs a paired delivery measurement (fill rate, word delivery) so a
+hollow pass is visible; those measurements are written but are not yet wired into the request path
+(section 3.4). Safety is the exception and does not belong in that list at all: the gate calls its
+safety seam on any story that clears Layer 1 (`validator/gate.py:213`; broken input returns before
+it, `:153-162` and `:169-174`), but the seam's body is a Phase-2 no-op returning an empty report
+(`validator/safety.py:41-57`), so `GateResult.safety_flagged` is structurally always `False`.
+Deterministic safety classification is unbuilt. What protects a child today is the moderation
+classifiers, the LLM reviewer, and mandatory human approval, which are the model-judged and
+human-gated classes, not this one.
 
 **F3. Put the checker in the author's loop.** The single largest quality lever we have measured is
 not model choice but authoring regime: blind generate-and-repair produced 2 strict passes in 21
@@ -85,8 +87,8 @@ book (DeepSeek V4 Pro, $0.0398) is the worst structure author measured (0 of 6 t
 across two cells, with two distinct failure modes). It is not the best-judged prose model: on the
 blind panel it placed fifth of eight at -0.13 z, behind `anthropic-sonnet-5` (+0.69, n=3),
 `xai-grok-4.6` (+0.61), `openai-gpt-5.6-sol` (+0.38), and `anthropic-sonnet-4.6` (+0.14). The cheap
-tier of the same family is a competent first-pass reviewer. One model choice per book is a category
-error; the authoring plan needs a model per stage.
+tier of the same family is a competent first-pass reviewer (owner practice, 2026-08; section 3.5).
+One model choice per book is a category error; the authoring plan needs a model per stage.
 
 **F5. Reuse structure freely; never reuse decisions; generate the decisional layer per book.** The
 stratified-plan result: topology and a bare-names fact graph can be shared across books without
@@ -144,8 +146,8 @@ gates and review sit between the fill and the human who approves publication.
 an authoring-time convention, not a gate: the CI promotion path
 (`.github/workflows/skeleton-promotion.yml` via `scripts/check_promotion_bundle.py`) invokes
 `check_skeleton.py` without it, so what `--strict` adds (advisory rule ids made blocking, grammar
-enforcement, the random-walk floor, the reconvergence cap, the length declaration, and the endings
-floor) is enforced by the author, not by CI.
+enforcement, the random-walk floor, the reconvergence cap, and the endings floor) is enforced by the
+author, not by CI.
 
 - **Layer 1 structure**: schema conformance, reference integrity, reachability, termination, and
   per-cell budgets (node count, branch depth, ending count, words-per-node envelope).
@@ -157,10 +159,13 @@ floor) is enforced by the author, not by CI.
 - **Reader-experience floors**: a random-walk satisfying-ending probability floor per band, a max
   in-degree reconvergence cap, and a depth-qualified endings floor.
 - **Anti-clone**, which is a separate check rather than part of `check_skeleton.py`:
-  `structural_distance` against every in-cell tree must clear `TAU_CELL` (0.05, calibrated in
-  `docs/planning/ws5_floor_baseline.json`). It lives in `src/cyo_adventure/mutation/floors.py` and
-  runs from `scripts/check_promotion_bundle.py` (the CI promotion path) and from the mutation
-  acceptance ladder.
+  `structural_distance` against every in-cell tree must clear `TAU_CELL` (0.05, an owner-chosen
+  fixed floor recorded in `docs/planning/ws5_floor_baseline.json`, whose calibrated entry is the
+  documentation-only `tau_struct`). It lives in `src/cyo_adventure/mutation/floors.py` and runs from
+  `scripts/check_promotion_bundle.py` (the CI promotion path) and from the mutation acceptance
+  ladder. A second implementation, `src/cyo_adventure/diversity/incell.py`, backs the blocking
+  per-PR in-cell clone audit CI runs over the whole catalog (`scripts/check_incell_clones.py
+  --check`, `.github/workflows/ci.yml:580`).
 - **Graph soundness** independent of the gate: `scripts/check_graph_structure.py` classifies six
   failure modes and repairability.
 
@@ -182,18 +187,20 @@ floor) is enforced by the author, not by CI.
 - **Stage-1 fidelity gate** (`generation/fidelity.py`): the filled book is checked against its
   skeleton's directives before anything else runs.
 - **The story gate** (`scripts/run_story_gate.py`, `validator/`): Layer 1 and Layer 2 rules,
-  reading level against the band target, safety findings, and band-profile conformance. Blocking
-  findings stop the book; advisories are recorded.
+  reading level against the band target, and band-profile conformance, plus the safety seam F2
+  describes, which emits nothing today. Blocking findings stop the book; advisories are recorded.
 - **Delivery measurements**, because of F2's floor problem, and both are offline scripts rather
   than pipeline stages: `scripts/check_fill_integrity.py` applies a minimum fill rate (0.6,
   calibrated so the `UW-C307` under-delivering books fail) and `scripts/check_sibling_fills.py`
   measures shared 4-grams against same-skeleton siblings (budget 4.0 per 1000). Neither is called
-  from `src/`; their only programmatic invoker is `scripts/run_guard_battery.py`, a hand-run dev
-  harness that no CI workflow or pre-commit hook references. The only delivery check the request
+  from `src/`; their programmatic invokers are `scripts/run_guard_battery.py`, a hand-run dev harness
+  that no CI workflow or pre-commit hook references, and `scripts/compare_vendors.py:1194`, which
+  imports `pairwise_shared_grams` for the section 4.1 comparison. The only delivery check the request
   path performs today is the Stage-1 fidelity gate's per-node `_WORD_COUNT_TOLERANCE = 0.4`
   (`generation/fidelity.py:28-30`), described by its own comment as "a generous starting tolerance,
-  not calibrated against real fill runs yet", and it cannot see a story-level shortfall. Production
-  wiring of both checks is open work (`UW-C307`, `UW-C315`).
+  not calibrated against real fill runs yet", and it cannot see a story-level shortfall. Track the
+  production wiring of both checks at `UW-C307` and `UW-C315`; the register carries their current
+  status, which this document deliberately does not restate.
 - **Craft checks**: `check_prose_craft.py` (tense, told-emotion, moral tags) and the per-path
   measures used in evaluation.
 
@@ -213,28 +220,33 @@ floor) is enforced by the author, not by CI.
 
 ### 4.1 Fill-stage model selection (2026-08 vendor comparison and live runs)
 
-Eight legs across six labs measured, blind cross-lab judging
-(`docs/planning/vendor-comparison/`): model choice measurably moves prose quality. Two corrections
-to how this section previously read. First, "six legs across five labs, backend-pinned with
-fallbacks disabled" describes the slate approved on 2026-08-12 (`vendors.json`), not the one
-measured. Moonshot `kimi-k3` never delivered (one priced call, n=1, no usable book), so Moonshot is
-not among the six labs, and `deepseek-v4-pro`, `z-ai-glm-5.2`, and `google-gemini-3-flash` were
-added. The pinning claim holds for six of the eight legs: no `vendors-*.json` on `main` carries
-backend pins for `z-ai-glm-5.2` or `google-gemini-3-flash`.
+Eight legs across six labs measured, blind cross-lab judging (run configuration in
+`docs/planning/vendor-comparison/`; the measured result is the 2026-08-10 brief, section 31): model
+choice measurably moves prose quality. Two corrections to how this section previously read. First,
+"six legs across five labs, backend-pinned with fallbacks disabled" describes the slate approved on
+2026-08-12 (`vendors.json`), not the one measured. Moonshot `kimi-k3` never delivered on this
+prose-fill leg (one priced call, n=1, no usable book), so Moonshot is not among the six labs
+measured here, and `deepseek-v4-pro`, `z-ai-glm-5.2`, and `google-gemini-3-flash` were added. The
+same family does appear in section 4.2's structure-authoring grid, over the owner's own Modal
+endpoint rather than OpenRouter; the two results are about different stages and are not in tension.
+The pinning claim holds for six of the eight legs: neither vendor config on `main`
+(`vendor-comparison/vendors.json`, `vendors-deepseek-v4-pro.json`) carries a backend pin for
+`z-ai-glm-5.2` or `google-gemini-3-flash`.
 
-Second, DeepSeek V4 Pro did not emerge as the best judged prose. It is the cheapest leg per
+Second, DeepSeek V4 Pro did not emerge as the best-judged prose. It is the cheapest leg per
 delivered book ($0.0398) and it placed fifth of eight on the blind panel (-0.13 z). The measured
 trade, in the 2026-08-10 brief's own words (section 31), is against `xai-grok-4.6`, which holds the
 best within-vendor diversity (0.81), the best in-band compliance (0.99), and the second-best judged
 quality (+0.61) at $0.1963 a book: DeepSeek is 4.9x cheaper and "gives up 0.14 of in-band rate and
 0.74 of judged quality to get there". Both figures are differences between legs, not levels. Cost
-and diversity are near-uncorrelated across the slate (Spearman rho -0.11), so a cheap leg is not
-thereby a narrow one. The
-same programme produced two cautionary results: the fp4-quantization headline did not survive
-scrutiny (one bad book, not a quantization effect; README run-6), and the live fill run surfaced
-the fill-rate hole (38.9-52.9% delivery through a passing gate, `AL-490`..`AL-498`), which is why
-delivery floors now exist. Same-skeleton sibling fills without the differentiation directive shared
-96.3 4-grams per 1000 (24x budget, `AL-498`); measuring what the directive actually buys is open.
+and diversity are near-uncorrelated across the slate (Spearman rho -0.11 over n=7, which the source
+calls indistinguishable from zero rather than a measured null), so a cheap leg is not thereby a
+narrow one. The same programme produced two cautionary results: the fp4-quantization headline did
+not survive scrutiny (one bad book, not a quantization effect; README run-6), and the live fill run
+surfaced the fill-rate hole (38.9-52.9% delivery through a passing gate, `AL-490`..`AL-498`), which
+is why delivery floors now exist. Same-skeleton sibling fills without the differentiation directive
+shared 96.3 4-grams per 1000 (24x budget, `AL-498`); measuring what the directive actually buys is
+open.
 
 ### 4.2 Skeleton-stage model selection (register `S-1`, 2026-08-21)
 
@@ -293,11 +305,14 @@ The S0-S9 history (2026-08-10 brief, section 4) plus this programme's follow-ups
 - **Capital facts**: full-skeleton reuse is bounded by depth against demand, and premise
   convergence is invariant across tiers within a family (Q-3c), so premise curation is a control,
   not a nicety. Q-1's exhaustion arithmetic needs re-deriving before it is quoted again. At the
-  2026-08-22 catalog the production-eligible count is 74 shells over 18 of 24 cells, 3 to 5 per
-  covered cell with a median of 4, six cells empty; the exclusions are 3 shells not marked
-  production-eligible, 6 deprecated, and 1 series continuation. The direction is unchanged, a child
-  still exhausts a covered cell within a handful of requests, but the "3-4 skeletons per cell"
-  figure the conclusion was computed on no longer describes the catalog (`UW-G24`).
+  2026-08-22 catalog the production-eligible count is 74 shells covering all 18 cells ADR-011
+  offers (`validator/band_profile.py::_PRODUCTION_CELLS`), 3 to 5 per cell with a median of 4 and no
+  cell empty; the exclusions are 3 shells not marked production-eligible, 6 deprecated, and 1 series
+  continuation (deterministic, recounted against `origin/main` on 2026-08-22). The 24-cell
+  cross-product of bands, lengths, and styles is not the offered grid, so cell coverage is complete
+  and the exhaustion pressure is depth within a cell rather than a missing cell: a median of 4 shells
+  is still a handful of requests. The "3-4 skeletons per cell" figure Q-1 was computed on no longer
+  describes the catalog (`UW-G24`).
 
 ### 4.4 Instruments: what we can trust
 
