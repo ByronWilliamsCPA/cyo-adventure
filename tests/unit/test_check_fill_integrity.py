@@ -446,3 +446,31 @@ def test_check_fill_integrity_rejects_a_skeleton_with_no_markers(
     filled_path = _write(tmp_path, "filled.json", _filled())
     exit_code = check_fill_integrity.main([skeleton_path, filled_path])
     assert exit_code == 1
+
+
+def test_duplicate_node_ids_do_not_pool_delivery_in_the_offline_join(
+    tmp_path: Path,
+) -> None:
+    """The offline fill-rate join credits a duplicated id once (I15, scoped).
+
+    Production never sees a duplicate node id (model validation rejects it
+    before the gate), but this script runs on raw JSON with no model
+    validation, so two nodes sharing one id previously pooled their words
+    and a fill leaving one of them empty still cleared the floor.
+    """
+    skeleton = copy.deepcopy(_SKELETON)
+    skeleton["nodes"][0]["body"] = "<<FILL role=setup words=10 beats='open'>>"
+    filled = copy.deepcopy(skeleton)
+    filled["nodes"][0]["body"] = "one two three four five"
+    filled["nodes"][1]["body"] = "You made it home safe."
+    filled["nodes"][0]["choices"][0]["label"] = "Go toward the light."
+    # A second node reusing n1's id carries the other half of the words; the
+    # join must not let it pay for n1's shortfall. The structural check will
+    # fail on this document anyway; the fill-rate line is what is pinned.
+    filled["nodes"].append({"id": "n1", "body": "six seven eight nine ten"})
+    skeleton_path = _write(tmp_path, "skeleton.json", skeleton)
+    filled_path = _write(tmp_path, "filled.json", filled)
+    exit_code = check_fill_integrity.main(
+        [skeleton_path, filled_path, "--min-fill-rate", "0.6"]
+    )
+    assert exit_code == 1

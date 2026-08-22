@@ -182,9 +182,9 @@ def _delivered_words_by_node(filled: dict[str, Any]) -> dict[str, int]:
 
     The fill-rate join looks these up by the keys
     ``commissioned_words_by_node`` produces: the node id, or ``#index`` for an
-    id-less node, with duplicate keys accumulating. Reusing ``_word_stats``'s
-    pairs here would key id-less nodes as ``"?"`` and let a ``dict()`` collapse
-    duplicate ids, silently undercounting delivery and failing a fill that
+    id-less node. A duplicated id credits its FIRST occurrence only (see the
+    inline note). Reusing ``_word_stats``'s pairs here would key id-less
+    nodes as ``"?"``, silently undercounting delivery and failing a fill that
     delivered in full. The structural check pins the filled story to the
     skeleton's node order, which is what makes a positional key comparable at
     all.
@@ -207,7 +207,18 @@ def _delivered_words_by_node(filled: dict[str, Any]) -> dict[str, int]:
             continue
         raw_id = node.get("id")
         key = str(raw_id) if raw_id is not None else f"#{index}"
-        delivered[key] = delivered.get(key, 0) + len(body.split())
+        # Only the FIRST occurrence of an id is credited: two nodes sharing
+        # one id previously pooled their words against a single commissioned
+        # target, so a fill leaving one of them empty still cleared the
+        # floor. This is the offline half of the duplicate-id laundering
+        # CodeRabbit flagged on #731; the production metric never sees a
+        # duplicate id because the model validation ahead of the gate
+        # rejects it (PR #737 review thread, I15 correction), but this
+        # script runs on raw JSON with no model validation, so it dedupes
+        # itself. Matches skeleton.py::story_fill_rate.
+        if key in delivered:
+            continue
+        delivered[key] = len(body.split())
     return delivered
 
 
