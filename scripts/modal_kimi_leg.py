@@ -3,11 +3,15 @@
 Runs the identical shared repair-loop contract the other legs get (same system
 prompt, same emitted author prompts, same validator feedback via the harness's
 `--score-shell` mode, same round cap), against the owner's dedicated Modal
-Kimi-K3 endpoint. Experimental transport per ADR-010: this file lives in the
-evidence directory precisely because it must never join the production
-provider cascade.
+Kimi-K3 endpoint. Experimental transport per ADR-010: it must never join the
+production provider cascade. It is a one-off evidence driver, not a provider
+adapter, which is why nothing under ``src/cyo_adventure/generation/providers/``
+imports it; it sits in ``scripts/`` alongside the harness it drives (moved
+there from the evidence directory by commit 10883067, since evidence
+directories hold artifacts, not executable code).
 
-Endpoint facts (verified 2026-08-21, see
+Endpoint facts for the two **Modal** presets (``kimi``, ``deepseek-v4-pro``;
+verified 2026-08-21, see
 `handoff-modal-deepseek-v4-smoke-test-2026-08-20.md`, Modal leg results):
 OpenAI chat-completions shape at ``<base>/v1/chat/completions``, auth via
 ``Modal-Key``/``Modal-Secret`` headers (env ``MODAL_PROXY_KEY`` /
@@ -17,6 +21,13 @@ fallback secret name's typo is the environment's),
 model that returns ``content: ""`` with ``finish_reason: "length"`` when the
 budget is too small; that empty content is treated as a failed round exactly
 like unparseable output, never as prose.
+
+The other two presets (``openrouter-deepseek-v4-pro``,
+``openrouter-deepseek-v4-flash``) do NOT share those facts: they reach
+OpenRouter over bearer auth (``OPENROUTER_API_KEY``), carry an explicit
+backend pin with fallbacks disabled, and report usage in OpenRouter's own
+shape. Only the chat-completions request/response envelope is common to all
+four.
 
 Usage:
     uv run python scripts/modal_kimi_leg.py \
@@ -33,6 +44,7 @@ import os
 import subprocess
 import sys
 import time
+from dataclasses import dataclass
 from pathlib import Path
 
 import httpx
@@ -47,40 +59,78 @@ from compare_skeleton_authors import (  # noqa: E402
     _AUTHOR_SYSTEM,
     _REPAIR_PROMPT,
     _extract_json,
+    _record_name,
 )
 
-_PRESETS = {
-    "kimi": {
-        "base_url": "https://williaby--ep-kimi-k3-server.us-west.modal.direct",
-        "model": "moonshotai/Kimi-K3",
-        "leg": "moonshot-kimi-k3-modal",
-        "family": "moonshot",
-    },
-    "deepseek-v4-pro": {
-        "base_url": (
-            "https://williaby--ep-deepseek-v4-pro-server.us-west.modal.direct"
-        ),
-        "model": "",  # resolved from /v1/models at preflight
-        "leg": "deepseek-v4-pro-modal",
-        "family": "deepseek",
-    },
-    "openrouter-deepseek-v4-pro": {
-        "base_url": "https://openrouter.ai/api",
-        "model": "deepseek/deepseek-v4-pro",
-        "leg": "deepseek-v4-pro",
-        "family": "deepseek",
-        "auth": "openrouter",
-        "provider_order": ["azure/us"],
-    },
-    "openrouter-deepseek-v4-flash": {
-        "base_url": "https://openrouter.ai/api",
-        "model": "deepseek/deepseek-v4-flash",
-        "leg": "deepseek-v4-flash",
-        "family": "deepseek",
-        "auth": "openrouter",
-        "provider_order": ["novita/fp8"],
-    },
+
+@dataclass(frozen=True, slots=True)
+class _Preset:
+    """One endpoint configuration.
+
+    Typed rather than a nested dict because this is a config schema, not data:
+    a mistyped key in a dict read through ``.get()`` defaults silently (an
+    OpenRouter preset that spells ``auth`` wrong would send Modal headers to
+    OpenRouter and read as an auth outage), while a mistyped field here is a
+    ``TypeError`` at import, before any spend.
+
+    Attributes:
+        base_url: Endpoint root; ``/v1/...`` paths are appended.
+        model: Model slug, or ``""`` to resolve from ``/v1/models`` at
+            preflight.
+        leg: Leg label written into every grid record.
+        family: Lineage label; must be one of the harness's known families.
+        auth: ``"modal"`` (proxy token pair) or ``"openrouter"`` (bearer).
+        provider_order: OpenRouter backend pin; empty for Modal presets.
+    """
+
+    base_url: str
+    model: str
+    leg: str
+    family: str
+    auth: str = "modal"
+    provider_order: tuple[str, ...] = ()
+
+
+_PRESETS: dict[str, _Preset] = {
+    "kimi": _Preset(
+        base_url="https://williaby--ep-kimi-k3-server.us-west.modal.direct",
+        model="moonshotai/Kimi-K3",
+        leg="moonshot-kimi-k3-modal",
+        family="moonshot",
+    ),
+    "deepseek-v4-pro": _Preset(
+        base_url="https://williaby--ep-deepseek-v4-pro-server.us-west.modal.direct",
+        model="",  # resolved from /v1/models at preflight
+        leg="deepseek-v4-pro-modal",
+        family="deepseek",
+    ),
+    "openrouter-deepseek-v4-pro": _Preset(
+        base_url="https://openrouter.ai/api",
+        model="deepseek/deepseek-v4-pro",
+        leg="deepseek-v4-pro",
+        family="deepseek",
+        auth="openrouter",
+        provider_order=("azure/us",),
+    ),
+    "openrouter-deepseek-v4-flash": _Preset(
+        base_url="https://openrouter.ai/api",
+        model="deepseek/deepseek-v4-flash",
+        leg="deepseek-v4-flash",
+        family="deepseek",
+        auth="openrouter",
+        provider_order=("novita/fp8",),
+    ),
 }
+# compare_skeleton_authors.py --score-shell exits 2 on a usage error (an
+# unknown cell, a missing --score-leg, a checker that never answered). That is
+# a misconfiguration of THIS driver, not validator feedback about the shell.
+_SCORE_USAGE_EXIT = 2
+
+
+class ScoreHarnessError(RuntimeError):
+    """The scorer refused the invocation, so its output is not feedback."""
+
+
 BASE_URL = ""
 MODEL = ""
 LEG = ""
@@ -220,10 +270,36 @@ def _complete(client: httpx.Client, system: str, prompt: str) -> tuple[str, dict
 
 
 def _score(
-    shell_text: str, cell: str, replicate: int, out_dir: Path, attempt_dir: Path
+    shell_text: str,
+    cell: str,
+    replicate: int,
+    out_dir: Path,
+    attempt_dir: Path,
+    round_index: int,
 ) -> tuple[bool, str]:
-    """Persist the attempt and accumulate the grid record via --score-shell."""
-    attempt = attempt_dir / f"{cell}__r{replicate}__{LEG}.attempt.json"
+    """Persist the attempt and accumulate the grid record via --score-shell.
+
+    Args:
+        shell_text: Raw completion text for this round.
+        cell: Cell id.
+        replicate: Replicate number within the cell.
+        out_dir: Run directory holding the shared grid records.
+        attempt_dir: Directory for this driver's raw per-round artifacts.
+        round_index: 1-based round number; part of the attempt filename so a
+            round's raw text is not overwritten by the next one.
+
+    Returns:
+        ``(passed, feedback)`` where the feedback is the scorer's validator
+        output with its verdict line stripped.
+
+    Raises:
+        ScoreHarnessError: If the scorer rejected the invocation (exit 2).
+            Fed to the model, a usage error would read as validator findings
+            and burn the whole round cap "fixing" a CLI mistake.
+    """
+    attempt = (
+        attempt_dir / f"{cell}__r{replicate}__{LEG}__round{round_index}.attempt.json"
+    )
     attempt.write_text(shell_text, encoding="utf-8")
     proc = subprocess.run(
         [
@@ -244,10 +320,23 @@ def _score(
         ],
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=False,
         cwd=str(_REPO_ROOT),
     )
     output = (proc.stdout or "") + (proc.stderr or "")
+    # #CRITICAL: data integrity: exit 2 is a usage/environment error, exit 1
+    # is a content failure. Treating them alike splices a CLI misconfiguration
+    # into the repair prompt as validator feedback.
+    # #VERIFY: exit 2 raises; main() counts it as a replicate failure and the
+    # process exits non-zero.
+    if proc.returncode == _SCORE_USAGE_EXIT:
+        msg = (
+            "compare_skeleton_authors.py --score-shell rejected the "
+            f"invocation (exit 2) for {cell} r{replicate} round "
+            f"{round_index}: {output.strip()[:500]}"
+        )
+        raise ScoreHarnessError(msg)
     passed = proc.returncode == 0
     feedback_lines = [
         line for line in output.splitlines() if not line.startswith("score: ")
@@ -272,7 +361,9 @@ def run_grid_point(
         started = time.monotonic()
         content, meta = _complete(client, _AUTHOR_SYSTEM, prompt)
         elapsed = round(time.monotonic() - started, 1)
-        passed, feedback = _score(content, cell, replicate, out_dir, attempt_dir)
+        passed, feedback = _score(
+            content, cell, replicate, out_dir, attempt_dir, attempt + 1
+        )
         print(
             f"{cell} r{replicate} attempt {attempt + 1}: "
             f"{'PASS' if passed else 'fail'} in {elapsed}s "
@@ -326,6 +417,7 @@ def _full_check(shell_path: Path, cell_meta: dict) -> tuple[bool, str]:
         ],
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=False,
         cwd=str(_REPO_ROOT),
     )
@@ -357,9 +449,14 @@ def run_grid_point_tools(
     Mirrors the subagent tools condition as closely as an API permits:
     persistent conversation across iterations, the checker's full output
     fed back verbatim, at most ``_TOOLS_CHECKER_CAP`` checker invocations,
-    and a single score-shell record of the final draft (checker counts go
-    to tools-meta.json, maintained by the caller from this function's
-    printed result line).
+    and a single score-shell record of the final draft.
+
+    The grid record therefore does NOT carry this condition's iteration
+    counts, so they are persisted twice, deliberately: this function writes a
+    ``.tools-counts.json`` sidecar next to the draft (authoritative, and
+    independent of whether anyone captured stdout), and it prints a
+    ``RESULT ...`` line the caller rolls up into ``tools-meta.json``. The
+    sidecar is the one to trust if they ever disagree.
     """
     cell = cell_meta["id"]
     base_prompt = (prompts_dir / f"{cell}__r{replicate}.prompt.md").read_text(
@@ -369,7 +466,9 @@ def run_grid_point_tools(
         {"role": "system", "content": _AUTHOR_SYSTEM},
         {"role": "user", "content": base_prompt},
     ]
-    draft_path = attempt_dir / f"{cell}__r{replicate}__{LEG}.tools-draft.json"
+    # Per-round draft paths: the final round is the scored one, but every
+    # round's raw draft survives for post-hoc inspection.
+    draft_path = attempt_dir / f"{cell}__r{replicate}__{LEG}__round0.tools-draft.json"
     checker_runs = 0
     passed = False
     content = ""
@@ -386,6 +485,10 @@ def run_grid_point_tools(
                 )
             feedback = f"(no skeleton to check) {reason}"
         else:
+            draft_path = (
+                attempt_dir
+                / f"{cell}__r{replicate}__{LEG}__round{llm_calls}.tools-draft.json"
+            )
             draft_path.write_text(
                 json.dumps(doc, indent=1, ensure_ascii=False), encoding="utf-8"
             )
@@ -408,19 +511,14 @@ def run_grid_point_tools(
                 "content": _TOOLS_FEEDBACK_TEMPLATE.format(feedback=feedback),
             }
         )
-    _score(
-        draft_path.read_text(encoding="utf-8") if draft_path.exists() else content,
-        cell,
-        replicate,
-        out_dir,
-        attempt_dir,
-    )
-    # The score-shell record above sees only the final draft, so its attempts
-    # and repair_rounds fields are NOT the tools-condition iteration counts.
-    # Persist the real counts in a sidecar next to the draft, so they survive
-    # without depending on stdout capture (the loop bound is llm_calls <=
-    # _TOOLS_CHECKER_CAP + 2: unparseable drafts burn a completion without
-    # advancing checker_runs, and the +2 caps that leak).
+    # The score-shell record written below sees only the final draft, so its
+    # attempts and repair_rounds fields are NOT the tools-condition iteration
+    # counts. Persist the real counts in a sidecar next to the drafts, so they
+    # survive without depending on stdout capture (the loop bound is llm_calls
+    # <= _TOOLS_CHECKER_CAP + 2: unparseable drafts burn a completion without
+    # advancing checker_runs, and the +2 caps that leak). Written BEFORE the
+    # scoring call, which can raise ScoreHarnessError: the counts are this
+    # condition's paid output and must not be lost to a scorer misconfiguration.
     sidecar = attempt_dir / f"{cell}__r{replicate}__{LEG}.tools-counts.json"
     sidecar.write_text(
         json.dumps(
@@ -433,11 +531,49 @@ def run_grid_point_tools(
         ),
         encoding="utf-8",
     )
+    _score(
+        draft_path.read_text(encoding="utf-8") if draft_path.exists() else content,
+        cell,
+        replicate,
+        out_dir,
+        attempt_dir,
+        llm_calls,
+    )
     print(
         f"RESULT {cell} r{replicate} checker_runs={checker_runs} "
         f"final={'PASS' if passed else 'FAIL'}",
         flush=True,
     )
+
+
+def _resume_skip(record_path: Path) -> bool:
+    """True when an existing grid record already shows a strict pass.
+
+    Args:
+        record_path: The grid record for one (cell, replicate, leg) point.
+
+    Returns:
+        ``True`` only for a readable record whose ``strict_pass`` is set.
+    """
+    # #CRITICAL: data integrity: a truncated record is exactly the artifact a
+    # run that died mid-write leaves behind, which is the case --resume exists
+    # to recover. Letting the read raise would abort the whole grid on the one
+    # input --resume is for.
+    # #VERIFY: read errors mean "not done, re-author", and are announced so an
+    # operator can tell a re-buy from a skip.
+    if not record_path.exists():
+        return False
+    try:
+        record = json.loads(record_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        print(
+            f"resume: record {record_path.name} unreadable "
+            f"({type(exc).__name__}: {exc}); re-authoring this point",
+            file=sys.stderr,
+            flush=True,
+        )
+        return False
+    return bool(isinstance(record, dict) and record.get("strict_pass"))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -489,17 +625,17 @@ def main(argv: list[str] | None = None) -> int:
     global MAX_REPAIR_ROUNDS  # noqa: PLW0603
     MAX_REPAIR_ROUNDS = args.max_repair_rounds
     preset = _PRESETS[args.endpoint]
-    BASE_URL = preset["base_url"]
-    LEG = preset["leg"]
-    FAMILY = preset["family"]
-    AUTH = preset.get("auth", "modal")
-    PROVIDER_ORDER = tuple(preset.get("provider_order", ()))
+    BASE_URL = preset.base_url
+    LEG = preset.leg
+    FAMILY = preset.family
+    AUTH = preset.auth
+    PROVIDER_ORDER = preset.provider_order
     with httpx.Client(headers=_auth_headers(), timeout=CALL_TIMEOUT_S) as client:
         models = client.get(f"{BASE_URL}/v1/models")
         models.raise_for_status()
         served = [m.get("id") for m in models.json().get("data", [])]
-        MODEL = preset["model"] or (served[0] if served else "")
-        if not MODEL or (preset["model"] and preset["model"] not in served):
+        MODEL = preset.model or (served[0] if served else "")
+        if not MODEL or (preset.model and preset.model not in served):
             print(f"Error: endpoint serves {served}", file=sys.stderr)
             return 1
         print(f"preflight ok: {BASE_URL} serves {MODEL}", flush=True)
@@ -509,30 +645,13 @@ def main(argv: list[str] | None = None) -> int:
         }[args.cell]
         failures = 0
         for replicate in range(1, args.replicates + 1):
-            record_path = (
-                out_dir
-                / "records"
-                / f"{args.cell}__r{replicate}__{LEG}.json.record.json"
-            )
-            if args.resume and record_path.exists():
-                # A truncated or non-object record is an incomplete point,
-                # not a reason to abort the whole resume: warn and re-run it.
-                record: object = None
-                try:
-                    record = json.loads(record_path.read_text(encoding="utf-8"))
-                except (OSError, json.JSONDecodeError) as exc:
-                    print(
-                        f"resume: unreadable record for {args.cell} "
-                        f"r{replicate}, re-running: {exc}",
-                        file=sys.stderr,
-                        flush=True,
-                    )
-                if isinstance(record, dict) and record.get("strict_pass"):
-                    print(
-                        f"resume: {args.cell} r{replicate} already passed, skipping",
-                        flush=True,
-                    )
-                    continue
+            record_path = out_dir / "records" / _record_name(args.cell, replicate, LEG)
+            if args.resume and _resume_skip(record_path):
+                print(
+                    f"resume: {args.cell} r{replicate} already passed, skipping",
+                    flush=True,
+                )
+                continue
             # #CRITICAL: external resources: one non-retryable provider
             # failure (400/404, a decode error) must not abandon the paid
             # replicates behind it (the 402 mid-grid death is why the sibling

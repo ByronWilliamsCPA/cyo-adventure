@@ -44,6 +44,22 @@ Usage:
         --replicates 1 --max-repair-rounds 1
     uv run python scripts/compare_skeleton_authors.py \
         --cells A --replicates 1 --out-dir <dir>   # smoke
+
+Two further modes exist for a subagent leg, whose authoring happens outside
+this process (plan section 10). They are the input and output halves of the
+same contract and are normally used as a pair:
+
+    # input half: the shared system prompt plus one author prompt per point
+    uv run python scripts/compare_skeleton_authors.py \
+        --emit-prompts <prompt-dir> --cells A,D --replicates 3
+
+    # output half: score one externally authored shell into the same grid,
+    # once per authored round; prints the validator feedback the external
+    # driver relays verbatim into the stateless repair prompt
+    uv run python scripts/compare_skeleton_authors.py \
+        --score-shell <shell.json> --score-cell A --score-replicate 1 \
+        --score-leg claude-opus-subagent --score-family anthropic \
+        --out-dir <run-dir>
 """
 
 from __future__ import annotations
@@ -91,8 +107,20 @@ _SIDECAR_SUFFIXES = (".contract.json", ".lineage.json", ".narrative.json")
 # feedback would favour long-context legs; shorter would starve the repair.
 _FEEDBACK_MAX_LINES = 120
 _CHECK_TIMEOUT_S = 300
+# Exit code _run_checker synthesizes for a timed-out checker. Distinct from
+# any code the checkers themselves return, so callers can tell "the checker
+# never answered" from "the shell has findings".
+_CHECKER_TIMEOUT_EXIT = 124
+# Consecutive checker timeouts tolerated before the leg is abandoned. A
+# timeout is an environment fault, never model feedback.
+_MAX_CHECKER_TIMEOUTS = 2
 _PERMUTATIONS = 10_000
 _PERMUTATION_SEED = 20_260_821
+# Lineage labels a scored leg may declare. Kept explicit rather than derived,
+# because --score-shell never loads the vendors file: an unrecognized family
+# would otherwise split one vendor's shells across two rows of every
+# family-level rollup with no error anywhere.
+_KNOWN_FAMILIES = frozenset({"anthropic", "deepseek", "google", "moonshot", "openai"})
 
 _AUTHOR_SYSTEM = """\
 You are authoring a SKELETON for a children's branching storybook: the full
@@ -191,6 +219,100 @@ class ShellRecord:
     shell_file: str = ""
     error: str = ""
 
+    def __post_init__(self) -> None:
+        """Check the one invariant the call sites keep by discipline alone.
+
+        Every path that sets ``strict_pass`` writes the shell first and names
+        it in ``shell_file``; nothing enforced that. A pass with no artifact
+        behind it would inflate the strict-pass column, which is the
+        decision-bearing output whenever the primary endpoint is void.
+
+        Raises:
+            ValueError: If ``strict_pass`` is set with an empty
+                ``shell_file``. Reconstruction paths (``--resume`` and
+                ``--score-shell``) catch this and treat the record as
+                unusable rather than trusting it.
+        """
+        # #ASSUME: data integrity: a strict pass always has a shell on disk.
+        # #VERIFY: constructed records are checked here; the field mutation
+        # inside author_shell writes shell_file before strict_pass is set.
+        if self.strict_pass and not self.shell_file:
+            msg = (
+                f"ShellRecord {self.cell_id}/r{self.replicate}/{self.leg}: "
+                "strict_pass is set but shell_file is empty"
+            )
+            raise ValueError(msg)
+
+
+def _shell_name(cell_id: str, replicate: int, leg: str) -> str:
+    """Return the canonical shell filename for one grid point.
+
+    One definition for a scheme three call sites used to retype: the authoring
+    path, its exception-recovery path, and ``--score-shell``. A drift between
+    them would file a record where ``--resume`` cannot find it and re-buy a
+    completed shell.
+    """
+    return f"{cell_id}__r{replicate}__{leg}.json"
+
+
+def _record_name(cell_id: str, replicate: int, leg: str) -> str:
+    """Return the canonical record filename for one grid point."""
+    return _shell_name(cell_id, replicate, leg) + ".record.json"
+
+
+def _write_record(record: ShellRecord, out_dir: Path) -> Path:
+    """Persist one record under ``out_dir/records`` and return its path."""
+    record_path = (
+        out_dir / "records" / _record_name(record.cell_id, record.replicate, record.leg)
+    )
+    record_path.parent.mkdir(parents=True, exist_ok=True)
+    record_path.write_text(
+        json.dumps(asdict(record), indent=1, ensure_ascii=False), encoding="utf-8"
+    )
+    return record_path
+
+
+def _repo_relative(path: str | Path) -> str:
+    """Render a path relative to the repo root when it lies inside it.
+
+    Run conditions are recorded so a later reader can re-run them. An absolute
+    path from the authoring machine resolves nowhere else, so the portable
+    form is recorded whenever the file is in-tree; out-of-tree paths are left
+    verbatim, since there is nothing shorter that is still true.
+    """
+    try:
+        return str(Path(path).resolve().relative_to(_REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
+def _filter_cells(
+    cells: list[dict[str, Any]], spec: str
+) -> tuple[list[dict[str, Any]], str]:
+    """Filter loaded cells by a comma-separated id spec.
+
+    Args:
+        cells: Every cell from the frozen premises file.
+        spec: The raw ``--cells`` value; empty means "all".
+
+    Returns:
+        ``(selected, "")`` on success, ``([], reason)`` when the spec names an
+        id the premises file does not define.
+    """
+    # #CRITICAL: data integrity: dropping an unknown id silently would run a
+    # smaller grid than the operator asked for and report it as complete, so
+    # a typo'd cell becomes a missing arm nobody notices.
+    # #VERIFY: both call sites (run and the emit-prompts/score branch) go
+    # through this set-difference check.
+    if not spec:
+        return cells, ""
+    wanted = {part.strip() for part in spec.split(",") if part.strip()}
+    known = {str(cell["id"]) for cell in cells}
+    missing = wanted - known
+    if missing:
+        return [], f"unknown cells {sorted(missing)} (known: {sorted(known)})"
+    return [cell for cell in cells if str(cell["id"]) in wanted], ""
+
 
 def _load_premises(path: Path) -> list[dict[str, Any]]:
     """Load the frozen S-0 premises file.
@@ -262,15 +384,52 @@ def _extract_json(text: str) -> tuple[dict[str, Any] | None, str]:
     # rather than crashing the run.
     start = text.find("{")
     end = text.rfind("}")
-    if start < 0 or end <= start:
+    if start < 0:
         return None, "no JSON object found in the output"
-    try:
-        parsed = json.loads(text[start : end + 1])
-    except json.JSONDecodeError as exc:
-        return None, f"output was not valid JSON: {exc}"
-    if not isinstance(parsed, dict):
-        return None, "top-level JSON value must be an object"
-    return parsed, ""
+    reason = "no JSON object found in the output"
+    if end > start:
+        try:
+            parsed = json.loads(text[start : end + 1])
+        except json.JSONDecodeError as exc:
+            reason = f"output was not valid JSON: {exc}"
+        else:
+            if not isinstance(parsed, dict):
+                return None, "top-level JSON value must be an object"
+            return parsed, ""
+    # The widest slice spans everything between the first brace and the last,
+    # so a completion that opens with a worked example and then gives the real
+    # skeleton parses as neither. Fall back to decoding each top-level object
+    # in turn and keeping the largest: strictly more permissive, since the
+    # slice above is still tried first and still wins whenever it parses.
+    largest = _largest_top_level_object(text, start)
+    if largest is not None:
+        return largest, ""
+    return None, reason
+
+
+def _largest_top_level_object(text: str, start: int) -> dict[str, Any] | None:
+    """Return the biggest top-level JSON object in ``text`` at or after ``start``.
+
+    Scans forward from each unconsumed ``{``, skipping past whatever a
+    successful decode consumed, so nested objects are never considered and the
+    walk stays linear in the length of the text.
+    """
+    decoder = json.JSONDecoder()
+    best: dict[str, Any] | None = None
+    best_span = 0
+    pos = start
+    while True:
+        pos = text.find("{", pos)
+        if pos < 0:
+            return best
+        try:
+            parsed, consumed = decoder.raw_decode(text, pos)
+        except json.JSONDecodeError:
+            pos += 1
+            continue
+        if isinstance(parsed, dict) and consumed - pos > best_span:
+            best, best_span = parsed, consumed - pos
+        pos = max(consumed, pos + 1)
 
 
 def _run_checker(script: str, args: list[str]) -> tuple[int, str]:
@@ -294,12 +453,13 @@ def _run_checker(script: str, args: list[str]) -> tuple[int, str]:
             cmd,
             capture_output=True,
             text=True,
+            encoding="utf-8",
             timeout=_CHECK_TIMEOUT_S,
             check=False,
             cwd=str(_REPO_ROOT),
         )
     except subprocess.TimeoutExpired:
-        return 124, f"{script} timed out after {_CHECK_TIMEOUT_S}s"
+        return _CHECKER_TIMEOUT_EXIT, f"{script} timed out after {_CHECK_TIMEOUT_S}s"
     output = (proc.stdout or "") + (proc.stderr or "")
     lines = output.splitlines()
     if len(lines) > _FEEDBACK_MAX_LINES:
@@ -321,7 +481,9 @@ def _strict_check(
     down to 1-2 real findings and could never pass.
 
     Returns:
-        ``(passed, feedback)``.
+        ``(passed, feedback, exit_code)``. The exit code is carried out so a
+        caller can tell a timeout (``_CHECKER_TIMEOUT_EXIT``) from findings;
+        the two must not be fed to a model the same way.
     """
     code, output = _run_checker(
         "check_skeleton.py",
@@ -337,7 +499,30 @@ def _strict_check(
             style,
         ],
     )
-    return code == 0, output
+    return code == 0, output, code
+
+
+def _strict_check_or_timeout(
+    shell_path: Path, band: str, length: str, style: str
+) -> tuple[bool, str, bool]:
+    """Strict-check a shell, retrying a timed-out checker before giving up.
+
+    Returns:
+        ``(passed, feedback, timed_out)``. When ``timed_out`` is true the
+        feedback is the timeout notice and is NOT validator findings.
+    """
+    # #CRITICAL: external resources: a checker timeout is an environment
+    # fault. Splicing it into the repair prompt spends paid rounds asking the
+    # model to "fix" a hung subprocess, and every such round lands in the
+    # primary endpoint as a repair round the leg never earned.
+    # #VERIFY: the timeout is retried in-process (free) and, if it recurs,
+    # reported to the caller as fatal instead of as feedback.
+    passed, feedback, code = False, "", _CHECKER_TIMEOUT_EXIT
+    for _ in range(_MAX_CHECKER_TIMEOUTS):
+        passed, feedback, code = _strict_check(shell_path, band, length, style)
+        if code != _CHECKER_TIMEOUT_EXIT:
+            return passed, feedback, False
+    return False, feedback, True
 
 
 def _catalog_cell_paths(band: str, length: str, style: str) -> list[Path]:
@@ -381,18 +566,36 @@ def _catalog_distances(
     if not paths:
         return None, None, f"no committed catalog skeletons for {band}/{length}/{style}"
     distances: list[float] = []
-    failures = 0
+    unreadable = 0
+    metric_errors: list[str] = []
+    # #ASSUME: data integrity: an unreadable peer file is bad DATA and makes a
+    # pair unscorable; an exception out of structural_distance is a different
+    # thing entirely and must not hide inside the same counter.
+    # #VERIFY: the two are counted separately and the metric's exception type
+    # is named in the note, so a bug in the metric is visible in every record
+    # it touched instead of reading as ordinary unscorable data.
     for path in paths:
         try:
             other = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            unreadable += 1
+            continue
+        try:
             distances.append(structural_distance(doc, other))
-        except Exception:  # any coercion failure = unscorable pair
-            failures += 1
+        except Exception as exc:  # metric fault, reported not silently pooled
+            metric_errors.append(f"{type(exc).__name__}: {exc}")
+    parts: list[str] = []
+    if unreadable:
+        parts.append(f"{unreadable} peer files unreadable")
+    if metric_errors:
+        parts.append(
+            f"{len(metric_errors)} structural_distance errors "
+            f"(first: {metric_errors[0][:160]})"
+        )
     if not distances:
-        return None, None, f"shell not coercible against any of {len(paths)} peers"
-    note = f"vs {len(distances)} in-cell peers" + (
-        f"; {failures} pairs unscorable" if failures else ""
-    )
+        parts.insert(0, f"shell not scorable against any of {len(paths)} peers")
+        return None, None, "; ".join(parts)
+    note = "; ".join([f"vs {len(distances)} in-cell peers", *parts])
     return min(distances), statistics.fmean(distances), note
 
 
@@ -525,7 +728,7 @@ async def author_shell(
         The completed record.
     """
     base_prompt = _author_prompt(brief_markdown, record.premise)
-    shell_name = f"{record.cell_id}__r{record.replicate}__{record.leg}.json"
+    shell_name = _shell_name(record.cell_id, record.replicate, record.leg)
     shell_path = out_dir / "shells" / shell_name
     shell_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -570,9 +773,17 @@ async def author_shell(
             )
             last_written = doc
             record.shell_file = str(shell_path.relative_to(out_dir))
-            passed, feedback = _strict_check(
+            passed, feedback, timed_out = _strict_check_or_timeout(
                 shell_path, record.band, record.length, record.style
             )
+            if timed_out:
+                # Leg-fatal: not a finding, so it costs no repair round and is
+                # never shown to the model. See _strict_check_or_timeout.
+                record.error = (
+                    f"strict checker timed out {_MAX_CHECKER_TIMEOUTS}x on "
+                    f"attempt {attempt + 1}: {feedback}"
+                )[:500]
+                break
             record.findings_lines_per_round.append(len(feedback.splitlines()))
             if passed:
                 record.strict_pass = True
@@ -600,11 +811,7 @@ async def author_shell(
             record.catalog_distance_note,
         ) = _catalog_distances(last_written, record.band, record.length, record.style)
 
-    record_path = out_dir / "records" / (shell_name + ".record.json")
-    record_path.parent.mkdir(parents=True, exist_ok=True)
-    record_path.write_text(
-        json.dumps(asdict(record), indent=1, ensure_ascii=False), encoding="utf-8"
-    )
+    _write_record(record, out_dir)
     return record
 
 
@@ -733,15 +940,33 @@ def _summarize(records: list[ShellRecord], out_dir: Path) -> None:
         json.dumps(summary, indent=1, ensure_ascii=False), encoding="utf-8"
     )
 
-    lines = [
-        "# Skeleton-author comparison summary",
-        "",
-        (
+    # The lead sentence IS the verdict for most readers, so a void endpoint
+    # has to lead with VOID rather than state a statistic and qualify it
+    # afterwards. Keeping the note as a footnote under a normal-looking lead
+    # is what the e1r3-tools summary had to be hand-corrected for.
+    if degenerate:
+        lead = (
+            f"Primary endpoint (S-1): VOID for this run. The between-leg "
+            f"statistic {observed:.3f} / p = {p_value:.4f} "
+            f"({_PERMUTATIONS} permutations, seed {_PERMUTATION_SEED}) "
+            "recorded in `summary.json` is computed over a constant "
+            "repair-round vector, so it discriminates nothing. The "
+            "decision-bearing output of this run is the strict-pass column "
+            "below; per-point iteration counts live outside these records "
+            "(for a tool-assisted run, in `tools-meta.json`). The same "
+            "artifact makes `errors`, `first-pass clean`, `mean repair "
+            "rounds`, and `output tokens` non-measurements here."
+        )
+    else:
+        lead = (
             f"Primary endpoint (S-1): between-leg statistic {observed:.3f}, "
             f"p = {p_value:.4f} ({_PERMUTATIONS} permutations, seed "
             f"{_PERMUTATION_SEED}). Everything below is exploratory."
-        ),
-        *(["", f"> **{degenerate_note}**"] if degenerate else []),
+        )
+    lines = [
+        "# Skeleton-author comparison summary",
+        "",
+        lead,
         "",
         (
             "| leg | shells | errors | strict pass | first-pass clean "
@@ -830,15 +1055,29 @@ def _score_shell_mode(args: argparse.Namespace, cells: list[dict[str, Any]]) -> 
             file=sys.stderr,
         )
         return 2
+    if args.score_family not in _KNOWN_FAMILIES:
+        print(
+            f"Error: --score-shell requires --score-family, one of "
+            f"{sorted(_KNOWN_FAMILIES)} (got {args.score_family!r})",
+            file=sys.stderr,
+        )
+        return 2
     out_dir = Path(args.out_dir)
-    shell_name = f"{cell['id']}__r{args.score_replicate}__{args.score_leg}.json"
+    shell_name = _shell_name(str(cell["id"]), args.score_replicate, args.score_leg)
     record_path = out_dir / "records" / (shell_name + ".record.json")
     record_path.parent.mkdir(parents=True, exist_ok=True)
 
     if record_path.exists():
         data = json.loads(record_path.read_text(encoding="utf-8"))
         known = {f.name for f in ShellRecord.__dataclass_fields__.values()}
-        record = ShellRecord(**{k: v for k, v in data.items() if k in known})
+        try:
+            record = ShellRecord(**{k: v for k, v in data.items() if k in known})
+        except (TypeError, ValueError) as exc:
+            print(
+                f"Error: existing record {record_path} is inconsistent: {exc}",
+                file=sys.stderr,
+            )
+            return 2
     else:
         record = ShellRecord(
             leg=args.score_leg,
@@ -878,9 +1117,17 @@ def _score_shell_mode(args: argparse.Namespace, cells: list[dict[str, Any]]) -> 
             json.dumps(doc, indent=1, ensure_ascii=False), encoding="utf-8"
         )
         record.shell_file = str(shell_path.relative_to(out_dir))
-        passed, feedback = _strict_check(
+        passed, feedback, timed_out = _strict_check_or_timeout(
             shell_path, record.band, record.length, record.style
         )
+        if timed_out:
+            # Usage/environment fault, reported as exit 2 so an external
+            # driver fails loudly instead of relaying a timeout to its model
+            # as if it were validator findings.
+            record.error = feedback[:500]
+            _write_record(record, out_dir)
+            print(f"Error: {feedback}", file=sys.stderr)
+            return 2
         record.findings_lines_per_round.append(len(feedback.splitlines()))
         code, _ = _run_checker("check_graph_structure.py", [str(shell_path)])
         record.graph_check_exit = code
@@ -896,9 +1143,7 @@ def _score_shell_mode(args: argparse.Namespace, cells: list[dict[str, Any]]) -> 
         record.last_feedback = ""
     else:
         record.last_feedback = feedback[:4000]
-    record_path.write_text(
-        json.dumps(asdict(record), indent=1, ensure_ascii=False), encoding="utf-8"
-    )
+    _write_record(record, out_dir)
     print(feedback)
     print(f"score: {'PASS' if passed else 'FAIL'} attempts={record.attempts}")
     return 0 if passed else 1
@@ -914,13 +1159,10 @@ async def run(args: argparse.Namespace) -> int:
         if missing:
             print(f"Error: unknown legs {sorted(missing)}", file=sys.stderr)
             return 1
-    cells = _load_premises(Path(args.premises))
-    if args.cells:
-        wanted = set(args.cells.split(","))
-        cells = [c for c in cells if c["id"] in wanted]
-        if not cells:
-            print(f"Error: no cells match {sorted(wanted)}", file=sys.stderr)
-            return 1
+    cells, cell_error = _filter_cells(_load_premises(Path(args.premises)), args.cells)
+    if cell_error:
+        print(f"Error: {cell_error}", file=sys.stderr)
+        return 1
     short = [c["id"] for c in cells if len(list(c["premises"])) < args.replicates]
     if short:
         print(
@@ -960,8 +1202,8 @@ async def run(args: argparse.Namespace) -> int:
                 "replicates": args.replicates,
                 "max_repair_rounds": args.max_repair_rounds,
                 "max_tokens": args.max_tokens,
-                "premises_file": str(args.premises),
-                "vendors_file": str(args.vendors),
+                "premises_file": _repo_relative(args.premises),
+                "vendors_file": _repo_relative(args.vendors),
             },
             indent=1,
         ),
@@ -994,7 +1236,14 @@ async def run(args: argparse.Namespace) -> int:
             if not isinstance(data, dict) or data.get("error"):
                 continue
             fields_only = {k: v for k, v in data.items() if k in known}
-            prior = ShellRecord(**fields_only)
+            try:
+                prior = ShellRecord(**fields_only)
+            except (TypeError, ValueError) as exc:
+                print(
+                    f"resume: ignoring inconsistent record {record_file.name}: {exc}",
+                    file=sys.stderr,
+                )
+                continue
             kept.append(prior)
             done_keys.add((prior.cell_id, prior.replicate, prior.leg))
         print(f"resume: keeping {len(kept)} completed shells")
@@ -1026,19 +1275,23 @@ async def run(args: argparse.Namespace) -> int:
                 )
             except Exception as exc:
                 record.error = f"{type(exc).__name__}: {exc}"[:500]
-                record_path = (
-                    out_dir
-                    / "records"
-                    / (
-                        f"{record.cell_id}__r{record.replicate}__"
-                        f"{record.leg}.json.record.json"
+                # #CRITICAL: data integrity: the recovery write is itself
+                # unprotected I/O. Letting it raise would escape into the
+                # gather (no return_exceptions) and cancel every other
+                # in-flight paid leg, which is exactly what this handler
+                # exists to prevent.
+                # #VERIFY: the write is wrapped; a failed persist degrades to
+                # a stderr note and the in-memory record still reaches the
+                # summary.
+                try:
+                    _write_record(record, out_dir)
+                except OSError as write_exc:
+                    print(
+                        f"warning: could not persist recovery record for "
+                        f"{record.cell_id}/r{record.replicate}/{record.leg}: "
+                        f"{write_exc}",
+                        file=sys.stderr,
                     )
-                )
-                record_path.parent.mkdir(parents=True, exist_ok=True)
-                record_path.write_text(
-                    json.dumps(asdict(record), indent=1, ensure_ascii=False),
-                    encoding="utf-8",
-                )
                 return record
 
     for cell in cells:
@@ -1128,7 +1381,15 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--score-cell", default="")
     parser.add_argument("--score-replicate", type=int, default=0)
     parser.add_argument("--score-leg", default="")
-    parser.add_argument("--score-family", default="anthropic")
+    parser.add_argument(
+        "--score-family",
+        default="",
+        help=(
+            "Lineage of the scored leg; required with --score-shell and "
+            f"checked against {sorted(_KNOWN_FAMILIES)}. No default: a wrong "
+            "family silently mislabels the leg in every family rollup."
+        ),
+    )
     parser.add_argument(
         "--resume",
         action="store_true",
@@ -1162,15 +1423,12 @@ def main(argv: list[str] | None = None) -> int:
         print("Error: --replicates must be >= 1", file=sys.stderr)
         return 2
     if args.emit_prompts or args.score_shell:
-        cells = _load_premises(Path(args.premises))
-        if args.cells:
-            wanted = set(args.cells.split(","))
-            known = {c["id"] for c in cells}
-            missing = wanted - known
-            if missing:
-                print(f"Error: unknown cells {sorted(missing)}", file=sys.stderr)
-                return 2
-            cells = [c for c in cells if c["id"] in wanted]
+        cells, cell_error = _filter_cells(
+            _load_premises(Path(args.premises)), args.cells
+        )
+        if cell_error:
+            print(f"Error: {cell_error}", file=sys.stderr)
+            return 2
         if args.emit_prompts:
             return _emit_prompts_mode(args, cells)
         return _score_shell_mode(args, cells)

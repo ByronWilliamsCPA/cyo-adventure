@@ -71,6 +71,12 @@ def _record(**overrides: Any) -> csa.ShellRecord:
         "premise": "a premise",
     }
     base.update(overrides)
+    # A strict pass always names the shell it passed on (ShellRecord's
+    # invariant); default one so fixtures need not restate it every time.
+    if base.get("strict_pass") and not base.get("shell_file"):
+        base["shell_file"] = (
+            f"shells/{base['cell_id']}__r{base['replicate']}__{base['leg']}.json"
+        )
     return csa.ShellRecord(**base)
 
 
@@ -79,11 +85,13 @@ def stub_checkers(monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
     """Stub the checker boundary; ``verdicts`` scripts _strict_check calls."""
     state: dict[str, Any] = {"verdicts": [], "strict_calls": 0}
 
-    def fake_strict(path: Path, band: str, length: str, style: str) -> tuple[bool, str]:
+    def fake_strict(
+        path: Path, band: str, length: str, style: str
+    ) -> tuple[bool, str, int]:
         del path, band, length, style
         state["strict_calls"] += 1
         passed = state["verdicts"].pop(0)
-        return passed, "" if passed else "L1-2 dangling ref"
+        return passed, "" if passed else "L1-2 dangling ref", 0 if passed else 1
 
     monkeypatch.setattr(csa, "_strict_check", fake_strict)
     monkeypatch.setattr(csa, "_run_checker", lambda *_a, **_k: (0, ""))
@@ -180,7 +188,13 @@ class TestPermutationTest:
 class TestSummarizeDegeneracy:
     def test_constant_rounds_marks_primary_endpoint_void(self, tmp_path: Path) -> None:
         records = [
-            _record(leg=leg, replicate=r, strict_pass=True, repair_rounds=0)
+            _record(
+                leg=leg,
+                replicate=r,
+                strict_pass=True,
+                repair_rounds=0,
+                shell_file=f"shells/A__r{r}__{leg}.json",
+            )
             for leg in ("a", "b")
             for r in (1, 2)
         ]
@@ -295,6 +309,15 @@ class TestScoreShellMode:
         assert code == 2
         assert not (tmp_path / "run").exists()
 
+    def test_unknown_family_rejected(self, tmp_path: Path) -> None:
+        shell = tmp_path / "attempt.json"
+        shell.write_text(VALID_SHELL, encoding="utf-8")
+        code = csa._score_shell_mode(  # pyright: ignore[reportPrivateUsage]
+            _score_args(tmp_path, shell, score_family=""), _CELLS
+        )
+        assert code == 2
+        assert not (tmp_path / "run").exists()
+
     def test_submission_over_round_cap_rejected(
         self, tmp_path: Path, stub_checkers: dict[str, Any]
     ) -> None:
@@ -313,3 +336,182 @@ class TestScoreShellMode:
         assert code == 2
         record_path = tmp_path / "run" / "records" / "A__r1__sub-leg.json.record.json"
         assert json.loads(record_path.read_text())["attempts"] == 2
+
+    def test_checker_timeout_is_not_scored_as_feedback(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        shell = tmp_path / "attempt.json"
+        shell.write_text(VALID_SHELL, encoding="utf-8")
+        monkeypatch.setattr(
+            csa,
+            "_strict_check",
+            lambda *_a, **_k: (False, "check_skeleton.py timed out", 124),
+        )
+        monkeypatch.setattr(csa, "_run_checker", lambda *_a, **_k: (0, ""))
+        monkeypatch.setattr(
+            csa, "_catalog_distances", lambda *_a, **_k: (None, None, "")
+        )
+        code = csa._score_shell_mode(  # pyright: ignore[reportPrivateUsage]
+            _score_args(tmp_path, shell), _CELLS
+        )
+        assert code == 2
+        record_path = tmp_path / "run" / "records" / "A__r1__sub-leg.json.record.json"
+        record = json.loads(record_path.read_text())
+        assert "timed out" in record["error"]
+        # a timeout is not a validator finding, so it never becomes feedback
+        assert record["last_feedback"] == ""
+        assert record["findings_lines_per_round"] == []
+
+
+class TestRecordInvariant:
+    def test_strict_pass_requires_a_shell_file(self) -> None:
+        # Constructed directly, not via _record: the helper defaults a
+        # shell_file for strict passes, which is exactly what this guards.
+        with pytest.raises(ValueError, match="shell_file"):
+            csa.ShellRecord(
+                leg="test-leg",
+                family="test",
+                cell_id="A",
+                band="5-8",
+                length="short",
+                style="prose",
+                replicate=1,
+                premise="a premise",
+                strict_pass=True,
+            )
+
+    def test_strict_pass_with_shell_file_is_accepted(self) -> None:
+        assert _record(strict_pass=True, shell_file="shells/x.json").strict_pass
+
+
+class TestExtractJson:
+    def test_leading_worked_example_still_yields_the_skeleton(self) -> None:
+        skeleton = {"schema_version": "2.0", "id": "real", "nodes": [1, 2, 3]}
+        text = (
+            "Here is the shape I will follow:\n"
+            '{"id": "<slug>", "nodes": []}\n'
+            "And here is the skeleton:\n" + json.dumps(skeleton)
+        )
+        doc, reason = csa._extract_json(text)  # pyright: ignore[reportPrivateUsage]
+        assert reason == ""
+        assert doc == skeleton
+
+    def test_plain_object_parses_exactly_as_before(self) -> None:
+        doc, reason = csa._extract_json(  # pyright: ignore[reportPrivateUsage]
+            "prose before " + VALID_SHELL + " prose after"
+        )
+        assert reason == ""
+        assert doc == json.loads(VALID_SHELL)
+
+    def test_no_object_still_reports_a_reason(self) -> None:
+        doc, reason = csa._extract_json("no braces here")  # pyright: ignore[reportPrivateUsage]
+        assert doc is None
+        assert reason
+
+
+class TestFilterCells:
+    def test_unknown_id_is_rejected_even_when_another_matches(self) -> None:
+        selected, error = csa._filter_cells(  # pyright: ignore[reportPrivateUsage]
+            _CELLS, "A,Z"
+        )
+        assert selected == []
+        assert "Z" in error
+
+    def test_empty_spec_keeps_every_cell(self) -> None:
+        selected, error = csa._filter_cells(  # pyright: ignore[reportPrivateUsage]
+            _CELLS, ""
+        )
+        assert selected == _CELLS
+        assert error == ""
+
+    def test_known_id_selects_it(self) -> None:
+        selected, error = csa._filter_cells(  # pyright: ignore[reportPrivateUsage]
+            _CELLS, "A"
+        )
+        assert [c["id"] for c in selected] == ["A"]
+        assert error == ""
+
+    def test_run_rejects_an_unknown_cell(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """`run()` must reject `--cells A,Z`, not silently drop Z."""
+        monkeypatch.setattr(csa, "_load_vendors", lambda _p: [])
+        monkeypatch.setattr(csa, "_load_premises", lambda _p: _CELLS)
+        args = argparse.Namespace(
+            vendors="v.json",
+            premises="p.json",
+            cells="A,Z",
+            legs="",
+            replicates=1,
+            out_dir=str(tmp_path / "run"),
+        )
+        assert asyncio.run(csa.run(args)) == 1
+        assert not (tmp_path / "run").exists()
+
+
+class TestSummaryLead:
+    def _first_paragraph(self, text: str) -> str:
+        return next(
+            line
+            for line in text.splitlines()
+            if line.strip() and not line.startswith("#")
+        )
+
+    def test_degenerate_lead_starts_with_the_void_verdict(self, tmp_path: Path) -> None:
+        records = [
+            _record(
+                leg=leg,
+                replicate=1,
+                strict_pass=True,
+                repair_rounds=0,
+                shell_file=f"shells/A__r1__{leg}.json",
+            )
+            for leg in ("a", "b")
+        ]
+        csa._summarize(records, tmp_path)  # pyright: ignore[reportPrivateUsage]
+        body = (tmp_path / "summary.md").read_text()
+        assert self._first_paragraph(body).startswith(
+            "Primary endpoint (S-1): VOID for this run."
+        )
+        assert "Everything below is exploratory" not in body
+        assert "strict-pass column" in body
+        assert "tools-meta.json" in body
+
+    def test_non_degenerate_lead_is_unchanged(self, tmp_path: Path) -> None:
+        records = [
+            _record(leg="a", replicate=1, strict_pass=True, repair_rounds=0),
+            _record(leg="a", replicate=2, strict_pass=True, repair_rounds=1),
+            _record(leg="b", replicate=1, strict_pass=True, repair_rounds=3),
+            _record(leg="b", replicate=2, strict_pass=True, repair_rounds=4),
+        ]
+        csa._summarize(records, tmp_path)  # pyright: ignore[reportPrivateUsage]
+        body = (tmp_path / "summary.md").read_text()
+        first = self._first_paragraph(body)
+        assert first.startswith("Primary endpoint (S-1): between-leg statistic ")
+        assert first.endswith("Everything below is exploratory.")
+        assert "VOID" not in body
+
+
+class TestModalResumeGuard:
+    """R3: a corrupt grid record must not abort the Modal driver's grid."""
+
+    def test_unreadable_record_means_re_author(self, tmp_path: Path) -> None:
+        import scripts.modal_kimi_leg as mkl
+
+        record = tmp_path / "A__r1__leg.json.record.json"
+        record.write_text('{"strict_pass": tr', encoding="utf-8")
+        assert mkl._resume_skip(record) is False  # pyright: ignore[reportPrivateUsage]
+
+    def test_missing_record_means_re_author(self, tmp_path: Path) -> None:
+        import scripts.modal_kimi_leg as mkl
+
+        assert (  # pyright: ignore[reportPrivateUsage]
+            mkl._resume_skip(tmp_path / "absent.record.json") is False
+        )
+
+    def test_passed_record_is_skipped(self, tmp_path: Path) -> None:
+        import scripts.modal_kimi_leg as mkl
+
+        record = tmp_path / "A__r1__leg.json.record.json"
+        record.write_text('{"strict_pass": true}', encoding="utf-8")
+        assert mkl._resume_skip(record) is True  # pyright: ignore[reportPrivateUsage]
