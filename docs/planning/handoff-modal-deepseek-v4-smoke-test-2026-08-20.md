@@ -2,10 +2,10 @@
 purpose: Hand off the Modal-vs-OpenRouter provider comparison after the 2026-08-20 and 2026-08-21
   sessions, separating what is measured and citable (the OpenRouter leg, the Modal call path via a
   shared Kimi-K3 endpoint) from what is blocked (DeepSeek V4 Pro as a Modal managed endpoint)
-component: src/cyo_adventure/generation/providers/modal.py,
-  src/cyo_adventure/generation/providers/openrouter.py,
-  src/cyo_adventure/generation/providers/_base.py, src/cyo_adventure/core/config.py,
-  docs/planning/adr/adr-010-modal-review-and-gated-generation.md
+component: `src/cyo_adventure/generation/providers/modal.py`,
+  `src/cyo_adventure/generation/providers/openrouter.py`,
+  `src/cyo_adventure/generation/providers/_base.py`, `src/cyo_adventure/core/config.py`,
+  `docs/planning/adr/adr-010-modal-review-and-gated-generation.md`
 source: Provider-options research sessions, 2026-08-20 and 2026-08-21
 ---
 
@@ -28,7 +28,7 @@ records a standard-scale fill smoke test through a previous Modal deployment (1 
 Both legs are done, and the DeepSeek V4 Pro question is settled for now. The OpenRouter leg is
 measured against `deepseek/deepseek-v4-pro`. The Modal leg ran as a call-path validation against a
 shared Kimi-K3 endpoint, because DeepSeek V4 Pro never provisioned: it needs 8 GPUs this workspace
-could not allocate, so it is NOT viable as a Modal managed endpoint today. Transport, auth, and
+could not allocate, so it is NOT viable as a Modal-managed endpoint today. Transport, auth, and
 response shape are all proven; only the DeepSeek-specific cost/latency comparison is still open,
 and it is blocked on capacity rather than on anything in this repository.
 
@@ -242,9 +242,13 @@ the session); the key fields are reproduced below and are the durable record.
   `prompt_tokens_details.cached_tokens`, and interleaves the reasoning text itself as
   `message.reasoning_content` (the model card advertises `interleaved.field: reasoning_content`).
   The unconstrained reply cost 42 completion tokens (31 of them reasoning) on the max_tokens 100
-  call, while the max_tokens 10 calls spent their entire 10-token budget on reasoning (10-13
-  reasoning tokens reported) and produced empty content; budget sizing must cover reasoning plus
-  content, matching the OpenRouter finding. Note the shape difference is not merely cosmetic:
+  call. The max_tokens 10 calls each report `completion_tokens: 10` (the cap) with
+  `reasoning_tokens` of 13, 10, and 12, and all produced empty content: every capped call ran out
+  of budget while still reasoning. Note the reported reasoning count can EXCEED
+  `completion_tokens` (13 against a cap of 10 on the first call), so Modal's top-level
+  `reasoning_tokens` is a separate counter, not a subset guaranteed to fit inside the completion
+  accounting; record both fields as reported rather than deriving one from the other. Budget
+  sizing must cover reasoning plus content, matching the OpenRouter finding. Note the shape difference is not merely cosmetic:
   `dig_reasoning_tokens` reads only the NESTED OpenRouter path
   (`usage.completion_tokens_details.reasoning_tokens`), and `modal.py` does not call it at all, so
   the Modal leg currently collects no reasoning telemetry whatsoever. Budget sizing cannot be driven
