@@ -4,6 +4,7 @@
   "version": 1,
   "title": "The Paper Plane Hall",
   "metadata": {
+    "narrative_person": "third",
     "age_band": "5-8",
     "reading_level": {
       "scheme": "flesch_kincaid",

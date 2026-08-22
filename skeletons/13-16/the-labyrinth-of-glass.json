@@ -4,6 +4,7 @@
   "version": 1,
   "title": "The Labyrinth of Glass",
   "metadata": {
+    "narrative_person": "second",
     "age_band": "13-16",
     "reading_level": {
       "scheme": "flesch_kincaid",

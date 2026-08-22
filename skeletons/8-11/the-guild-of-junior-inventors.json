@@ -4,6 +4,7 @@
   "version": 1,
   "title": "The Guild of Junior Inventors",
   "metadata": {
+    "narrative_person": "second",
     "age_band": "8-11",
     "reading_level": {
       "scheme": "flesch_kincaid",

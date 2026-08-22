@@ -761,6 +761,17 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--max-third-second-person",
+        type=float,
+        default=0.35,
+        help=(
+            "Fail a book declared third-person whose second-person node rate "
+            "exceeds this ceiling (default 0.35: committed third-person prose "
+            "runs 0.0-0.27, and the live drift case shipped a 3-5 book fully "
+            "second-person against third-person beats; UW-C323)."
+        ),
+    )
+    parser.add_argument(
         "--min-gamebook-second-person",
         type=float,
         default=0.5,
@@ -1025,22 +1036,32 @@ def _report(story: dict[str, Any], name: str, args: argparse.Namespace) -> bool:
     breached = breached or over_same
 
     person = person_report(story)
-    style = cast(
-        "str",
-        cast("dict[str, Any]", story.get("metadata") or {}).get("narrative_style")
-        or "",
-    )
-    low_gamebook = style == "gamebook" and person.rate < cast(
-        "float", args.min_gamebook_second_person
-    )
-    marker = "FAIL" if low_gamebook else "ok  "
+    metadata = cast("dict[str, Any]", story.get("metadata") or {})
+    declared = cast("str", metadata.get("narrative_person") or "")
+    style = cast("str", metadata.get("narrative_style") or "")
+    # Keyed to the declared person (UW-C323, ruled 2026-08-21): a declared
+    # second-person book must clear the floor, a declared third-person book
+    # must stay under the ceiling, and an undeclared book falls back to the
+    # gamebook-style floor only (the pre-declaration behavior).
+    person_breach = False
+    if declared == "second":
+        person_breach = person.rate < cast("float", args.min_gamebook_second_person)
+        framing = f"declared second, floor {args.min_gamebook_second_person:.0%}"
+    elif declared == "third":
+        person_breach = person.rate > cast("float", args.max_third_second_person)
+        framing = f"declared third, ceiling {args.max_third_second_person:.0%}"
+    elif style == "gamebook":
+        person_breach = person.rate < cast("float", args.min_gamebook_second_person)
+        framing = f"undeclared gamebook, floor {args.min_gamebook_second_person:.0%}"
+    else:
+        framing = "undeclared prose, reported only"
+    marker = "FAIL" if person_breach else "ok  "
     sys.stdout.write(
         f"  {marker} person: second-person in "
         f"{person.second_person_nodes}/{person.nodes} nodes "
-        f"({person.rate:.1%}; gamebook floor "
-        f"{args.min_gamebook_second_person:.0%}, prose reported only)\n"
+        f"({person.rate:.1%}; {framing})\n"
     )
-    return breached or low_gamebook
+    return breached or person_breach
 
 
 def main(argv: list[str] | None = None) -> int:

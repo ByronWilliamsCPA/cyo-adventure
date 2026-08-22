@@ -4,6 +4,7 @@
   "version": 1,
   "title": "The Cinderwick Exchange",
   "metadata": {
+    "narrative_person": "third",
     "age_band": "10-13",
     "reading_level": {
       "scheme": "flesch_kincaid",

@@ -4,6 +4,7 @@
   "version": 1,
   "title": "The Market Morning",
   "metadata": {
+    "narrative_person": "third",
     "age_band": "3-5",
     "reading_level": {
       "scheme": "flesch_kincaid",

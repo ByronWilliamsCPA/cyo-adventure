@@ -82,6 +82,14 @@ changing. The output must be the full Storybook JSON, not a diff or patch.
 
 Changing any of these fields will cause validation to fail after you respond.
 
+### Narrative person
+
+`metadata.narrative_person` declares the grammatical person this book is told
+in (`"second"` addresses the reader as "you"; `"third"` follows a named
+protagonist). Write every passage in the declared person; do not drift
+between them. When the field is absent, follow the person the `beats=`
+directives use.
+
 ### What you may rewrite
 
 The storybook `title` and each ending's `title` are theme content, like node
