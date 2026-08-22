@@ -1,7 +1,12 @@
 ---
-title: Handoff, Modal DeepSeek V4 Pro smoke test
-description: State of the Modal-vs-OpenRouter provider comparison after the 2026-08-20 and 2026-08-21
-  sessions, including the shared Kimi-K3 validation and the failed DeepSeek V4 Pro endpoint provisioning.
+purpose: Hand off the Modal-vs-OpenRouter provider comparison after the 2026-08-20 and 2026-08-21
+  sessions, separating what is measured and citable (the OpenRouter leg, the Modal call path via a
+  shared Kimi-K3 endpoint) from what is blocked (DeepSeek V4 Pro as a Modal managed endpoint)
+component: src/cyo_adventure/generation/providers/modal.py,
+  src/cyo_adventure/generation/providers/openrouter.py,
+  src/cyo_adventure/generation/providers/_base.py, src/cyo_adventure/core/config.py,
+  docs/planning/adr/adr-010-modal-review-and-gated-generation.md
+source: Provider-options research sessions, 2026-08-20 and 2026-08-21
 ---
 
 # Handoff: Modal DeepSeek V4 Pro smoke test (2026-08-20)
@@ -14,15 +19,24 @@ experimental-only per
 [ADR-010](adr/adr-010-modal-review-and-gated-generation.md); nothing here is to be wired into the
 production provider cascade.
 
-Note: an earlier, unrelated artifact `yield-results/modal-standard-smoke-test.json` records a
-standard-scale fill smoke test through a previous Modal deployment (1 story, 3 attempts, 25.5 s);
-it predates the dedicated DeepSeek V4 Pro endpoint this handoff concerns.
+Note: an earlier, unrelated artifact `docs/planning/yield-results/modal-standard-smoke-test.json`
+records a standard-scale fill smoke test through a previous Modal deployment (1 story, 3 attempts,
+25.5 s); it predates the dedicated DeepSeek V4 Pro endpoint this handoff concerns.
 
 ## Session outcome summary
 
-The Modal leg is NOT yet run. It is blocked on endpoint creation, which was in progress at session
-end. The OpenRouter comparison leg IS complete, and it surfaced an adapter-shape defect that will
-apply to both providers (see below).
+Both legs are done, and the DeepSeek V4 Pro question is settled for now. The OpenRouter leg is
+measured against `deepseek/deepseek-v4-pro`. The Modal leg ran as a call-path validation against a
+shared Kimi-K3 endpoint, because DeepSeek V4 Pro never provisioned: it needs 8 GPUs this workspace
+could not allocate, so it is NOT viable as a Modal managed endpoint today. Transport, auth, and
+response shape are all proven; only the DeepSeek-specific cost/latency comparison is still open,
+and it is blocked on capacity rather than on anything in this repository.
+
+The sections below are in session order, so an earlier section may describe a blocker a later one
+resolves. Read this summary and the two 2026-08-21 sections for current state; treat "Remaining
+work (the Modal leg)" and "Second session" as the historical trail.
+
+Both legs also surfaced an adapter-shape issue that applies to both providers (see below).
 
 ## Environment and credential findings (cost real iteration; do not rediscover)
 
@@ -198,19 +212,31 @@ Prompt "Reply with the single word: ok", `max_tokens: 10` except the last row. A
 | OpenRouter 1-3 (2026-08-20) | DeepSeek V4 Pro, Novita | 1.55-2.29 s | 90 / 9-10 | `"ok"` then `null` x2 |
 
 Warm latency is in the same band as OpenRouter for a trivial completion. Raw JSON bodies were
-captured in the session scratchpad (kimi-cold/warm1/warm2/mt100.json); key fields are reproduced
-below.
+captured in the authoring session's scratchpad and are NOT retained (that storage does not survive
+the session); the key fields are reproduced below and are the durable record.
 
 **Shape check against `generation/providers/_base.py`:**
 
 - `dig_usage`: PASSES as-is. `usage.prompt_tokens` and `usage.completion_tokens` are present as
   ints on every call. No `cost` field (unlike OpenRouter), so `cost_usd` stays None and spend
   accounting must come from Modal billing, not the response.
-- `dig_content`: structurally fine, but the budget-exhaustion signature DIFFERS from OpenRouter.
-  OpenRouter returned `content: null` (dig_content returns None); Modal returns `content: ""`, an
-  empty STRING, which dig_content passes through as a valid str. Any "treat null content +
-  finish_reason length as a budget problem" fix must also treat EMPTY content the same way, or the
-  Modal path will hand an empty story fragment downstream as if it were prose.
+- `dig_content`: structurally fine, and the empty-content case is ALREADY guarded on the Modal
+  path. The budget-exhaustion signature does differ from OpenRouter: OpenRouter returned
+  `content: null` (`dig_content` returns None); Modal returns `content: ""`, an empty STRING, which
+  `dig_content` passes through as a valid str (`_base.py`, `return content if isinstance(content,
+  str) else None`). But `ModalProvider._extract_completion` tests `if not content:`, which is a
+  falsy test and so catches `""` as well as `None`; it raises `ProviderError(..., leg_fatal=False)`
+  rather than returning the empty string. No empty fragment reaches the pipeline, and no
+  "also treat empty content" fix is needed.
+- The real Modal adapter gap is the opposite one: `modal.py` never inspects `finish_reason` at all.
+  Because empty content is raised as `leg_fatal=False`, `run_with_retries` reissues the IDENTICAL
+  request at the IDENTICAL `max_tokens` (retries never enlarge the budget) with exponential backoff,
+  then fails as exhausted. A deterministic budget exhaustion therefore burns the whole retry budget
+  on requests that cannot succeed. `openrouter.py` already solves exactly this: it digs
+  `finish_reason`, sets `leg_fatal=finish_reason == "length"`, and words the error so the cause is
+  legible in a run's stderr ("retrying at the same cap would buy the same wall, so this leg is not
+  retried"). Porting that treatment to `modal.py` is the adapter change this handoff actually asks
+  for.
 - Reasoning accounting also differs: Modal reports `usage.reasoning_tokens` at the top level of
   `usage` (OpenRouter nests it as `completion_tokens_details.reasoning_tokens`), reports
   `prompt_tokens_details.cached_tokens`, and interleaves the reasoning text itself as
@@ -218,14 +244,22 @@ below.
   The unconstrained reply cost 42 completion tokens (31 of them reasoning) on the max_tokens 100
   call, while the max_tokens 10 calls spent their entire 10-token budget on reasoning (10-13
   reasoning tokens reported) and produced empty content; budget sizing must cover reasoning plus
-  content, matching the OpenRouter finding.
+  content, matching the OpenRouter finding. Note the shape difference is not merely cosmetic:
+  `dig_reasoning_tokens` reads only the NESTED OpenRouter path
+  (`usage.completion_tokens_details.reasoning_tokens`), and `modal.py` does not call it at all, so
+  the Modal leg currently collects no reasoning telemetry whatsoever. Budget sizing cannot be driven
+  from numbers the adapter never reads, which makes reasoning-token extraction a prerequisite for
+  the budget work above, not a nice-to-have.
 
 **Read on usability:** the Modal leg is usable as-is through the existing `MODAL_*` config
 surface: OpenAI-compatible chat completions at `<MODAL_BASE_URL>/v1/chat/completions`,
 `Modal-Key`/`Modal-Secret` headers with the wk-/ws- pair, and `dig_usage` working unchanged. The
-two adapter-level items before any real use: treat empty-string content like null content under
-`finish_reason: "length"`, and do not expect a `cost` field. Still experimental-only per ADR-010;
-nothing is wired into the production cascade. The DeepSeek V4 Pro comparison proper remains open
+three adapter-level items before any real use, none of which is the empty-content guard (that
+already exists): dig `finish_reason` and treat `length` as leg-fatal the way `openrouter.py` does,
+so a budget exhaustion stops instead of retrying at the same cap; read `usage.reasoning_tokens` from
+the top level of `usage` so the Modal leg reports reasoning at all; and do not expect a `cost` field.
+Still experimental-only per ADR-010; nothing is wired into the production cascade. The DeepSeek V4
+Pro comparison proper remains open
 until that endpoint provisions; rerun this exact call plan against it when it does (the shape
 checks above then need re-verifying on that model's responses).
 
