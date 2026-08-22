@@ -191,13 +191,35 @@ class TestSummarizeDegeneracy:
 
     def test_varying_rounds_not_degenerate(self, tmp_path: Path) -> None:
         records = [
-            _record(leg="a", replicate=1, repair_rounds=0),
-            _record(leg="b", replicate=1, repair_rounds=3),
+            _record(leg="a", replicate=1, strict_pass=True, repair_rounds=0),
+            _record(leg="a", replicate=2, strict_pass=True, repair_rounds=1),
+            _record(leg="b", replicate=1, strict_pass=True, repair_rounds=3),
+            _record(leg="b", replicate=2, strict_pass=True, repair_rounds=4),
         ]
         csa._summarize(records, tmp_path)  # pyright: ignore[reportPrivateUsage]
         summary = json.loads((tmp_path / "summary.json").read_text())
         assert summary["primary_endpoint"]["degenerate"] is False
         assert "VOID" not in (tmp_path / "summary.md").read_text()
+
+    def test_censored_shells_do_not_enter_the_endpoint(self, tmp_path: Path) -> None:
+        # Failing-at-cap shells carry no rounds-to-pass observation; varying
+        # censored counts must not rescue the endpoint from degeneracy.
+        records = [
+            _record(leg="a", replicate=1, strict_pass=False, repair_rounds=0),
+            _record(leg="b", replicate=1, strict_pass=False, repair_rounds=6),
+        ]
+        csa._summarize(records, tmp_path)  # pyright: ignore[reportPrivateUsage]
+        summary = json.loads((tmp_path / "summary.json").read_text())
+        assert summary["primary_endpoint"]["degenerate"] is True
+
+    def test_single_leg_sample_is_degenerate(self, tmp_path: Path) -> None:
+        records = [
+            _record(leg="a", replicate=1, strict_pass=True, repair_rounds=0),
+            _record(leg="a", replicate=2, strict_pass=True, repair_rounds=3),
+        ]
+        csa._summarize(records, tmp_path)  # pyright: ignore[reportPrivateUsage]
+        summary = json.loads((tmp_path / "summary.json").read_text())
+        assert summary["primary_endpoint"]["degenerate"] is True
 
 
 def _score_args(tmp_path: Path, shell: Path, **overrides: Any) -> Any:
@@ -208,6 +230,7 @@ def _score_args(tmp_path: Path, shell: Path, **overrides: Any) -> Any:
         "score_leg": "sub-leg",
         "score_family": "anthropic",
         "out_dir": str(tmp_path / "run"),
+        "max_repair_rounds": 6,
     }
     base.update(overrides)
     return argparse.Namespace(**base)
@@ -262,3 +285,31 @@ class TestScoreShellMode:
         )
         assert code == 2
         assert not (tmp_path / "run").exists()
+
+    def test_traversal_leg_rejected_before_paths(self, tmp_path: Path) -> None:
+        shell = tmp_path / "attempt.json"
+        shell.write_text(VALID_SHELL, encoding="utf-8")
+        code = csa._score_shell_mode(  # pyright: ignore[reportPrivateUsage]
+            _score_args(tmp_path, shell, score_leg="x/../../escape"), _CELLS
+        )
+        assert code == 2
+        assert not (tmp_path / "run").exists()
+
+    def test_submission_over_round_cap_rejected(
+        self, tmp_path: Path, stub_checkers: dict[str, Any]
+    ) -> None:
+        shell = tmp_path / "attempt.json"
+        shell.write_text(VALID_SHELL, encoding="utf-8")
+        stub_checkers["verdicts"] = [False, False]
+        for _ in range(2):
+            csa._score_shell_mode(  # pyright: ignore[reportPrivateUsage]
+                _score_args(tmp_path, shell, max_repair_rounds=1), _CELLS
+            )
+        # attempts == 2 == 1 + cap: a third submission must be refused
+        # without consuming a checker run or touching the record.
+        code = csa._score_shell_mode(  # pyright: ignore[reportPrivateUsage]
+            _score_args(tmp_path, shell, max_repair_rounds=1), _CELLS
+        )
+        assert code == 2
+        record_path = tmp_path / "run" / "records" / "A__r1__sub-leg.json.record.json"
+        assert json.loads(record_path.read_text())["attempts"] == 2

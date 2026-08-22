@@ -51,6 +51,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import re
 import statistics
 import subprocess  # offline harness drives the repo's own checkers
 import sys
@@ -219,7 +220,17 @@ def _load_premises(path: Path) -> list[dict[str, Any]]:
         print(f"Error: {path} has no 'cells' array.", file=sys.stderr)
         raise SystemExit(1)
     for entry in cells:  # pyright: ignore[reportUnknownVariableType]
-        if not isinstance(entry, dict) or not entry.get("premises"):
+        fields_ok = isinstance(entry, dict) and all(
+            isinstance(entry.get(key), str) and entry.get(key)
+            for key in ("id", "band", "length", "style")
+        )
+        premises = entry.get("premises") if isinstance(entry, dict) else None
+        premises_ok = (
+            isinstance(premises, list)
+            and bool(premises)
+            and all(isinstance(p, str) and p for p in premises)  # pyright: ignore[reportUnknownVariableType]
+        )
+        if not fields_ok or not premises_ok:
             print(f"Error: malformed cell entry in {path}.", file=sys.stderr)
             raise SystemExit(1)
     return cells  # pyright: ignore[reportUnknownVariableType]
@@ -647,24 +658,29 @@ def permutation_test(
 
 def _summarize(records: list[ShellRecord], out_dir: Path) -> None:
     """Write ``summary.json`` and a readable ``summary.md`` for the run."""
+    # The endpoint is "repair rounds to strict pass" (ShellRecord docstring,
+    # register row S-1), so a shell that never passed contributes no
+    # rounds-to-pass observation: including its censored count would conflate
+    # failing at the cap with passing on that round.
     rounds_by_leg: dict[str, list[int]] = {}
     for rec in records:
-        if not rec.error:
+        if not rec.error and rec.strict_pass:
             rounds_by_leg.setdefault(rec.leg, []).append(rec.repair_rounds)
     observed, p_value = permutation_test(rounds_by_leg)
     pooled = [r for rounds in rounds_by_leg.values() for r in rounds]
-    # A constant vector (every value identical, e.g. all zeros from a
-    # final-draft-only scoring path, or every leg censored at the same cap)
-    # makes the permutation test structurally uninformative: the statistic
-    # is 0 by construction and p = 1.0 reflects the degeneracy, not
-    # equivalence. Say so where the number is printed, not two files away.
-    degenerate = len(set(pooled)) <= 1
+    # The test is structurally uninformative when the eligible sample cannot
+    # discriminate: under two legs with a passing shell, under two pooled
+    # observations, or a constant vector (e.g. all zeros from a
+    # final-draft-only scoring path). The statistic is then 0 by construction
+    # and p = 1.0 reflects the degeneracy, not equivalence. Say so where the
+    # number is printed, not two files away.
+    degenerate = len(rounds_by_leg) < 2 or len(pooled) < 2 or len(set(pooled)) <= 1
     degenerate_note = (
-        "PRIMARY ENDPOINT VOID for this run: the pooled repair-round vector "
-        "is constant, so the permutation test discriminates nothing. For a "
-        "tool-assisted run scored on final drafts only, the strict-pass "
-        "column is the decision-bearing output and per-point iteration "
-        "counts live outside these records."
+        "PRIMARY ENDPOINT VOID for this run: the eligible (strict-passing) "
+        "repair-round sample is constant or too small, so the permutation "
+        "test discriminates nothing. For a tool-assisted run scored on final "
+        "drafts only, the strict-pass column is the decision-bearing output "
+        "and per-point iteration counts live outside these records."
     )
 
     by_leg: dict[str, dict[str, Any]] = {}
@@ -802,6 +818,17 @@ def _score_shell_mode(args: argparse.Namespace, cells: list[dict[str, Any]]) -> 
     if not args.score_leg:
         print("Error: --score-shell requires --score-leg", file=sys.stderr)
         return 2
+    # #CRITICAL: security: the leg label lands in a filename; a separator or
+    # traversal component would resolve the shell/record paths outside
+    # --out-dir and overwrite whatever the process can write.
+    # #VERIFY: only a flat token is accepted (test_score_shell_mode guards).
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", args.score_leg):
+        print(
+            "Error: --score-leg must match [A-Za-z0-9][A-Za-z0-9._-]* "
+            "(no path separators)",
+            file=sys.stderr,
+        )
+        return 2
     out_dir = Path(args.out_dir)
     shell_name = f"{cell['id']}__r{args.score_replicate}__{args.score_leg}.json"
     record_path = out_dir / "records" / (shell_name + ".record.json")
@@ -825,6 +852,15 @@ def _score_shell_mode(args: argparse.Namespace, cells: list[dict[str, Any]]) -> 
     if record.strict_pass:
         print("already passed; not rescoring")
         return 0
+    if record.attempts >= 1 + args.max_repair_rounds:
+        print(
+            f"Error: round cap reached for this grid point "
+            f"({record.attempts} attempts, cap {1 + args.max_repair_rounds}); "
+            "provider legs stop here, so external legs must too. Pass the "
+            "run's registered --max-repair-rounds if it differs.",
+            file=sys.stderr,
+        )
+        return 2
 
     record.attempts += 1
     raw = Path(args.score_shell).read_text(encoding="utf-8")

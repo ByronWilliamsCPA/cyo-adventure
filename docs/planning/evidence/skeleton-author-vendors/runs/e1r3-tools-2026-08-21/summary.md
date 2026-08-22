@@ -1,6 +1,11 @@
 # Skeleton-author comparison summary
 
-Primary endpoint (S-1): VOID for this run. The between-leg statistic 0.000 / p = 1.0000 below-the-fold in `summary.json` is computed over an all-zeros repair-round vector, an artifact of the drivers scoring only each point's final draft; it discriminates nothing. The decision-bearing output of this tool-assisted run is the strict-pass column; per-point checker-invocation counts are in `tools-meta.json`. The same artifact makes `errors`, `first-pass clean`, `mean repair rounds`, and `output tokens` non-measurements here.
+Primary endpoint (S-1): VOID for this run. The between-leg statistic 0.000 / p = 1.0000 below-the-
+fold in `summary.json` is computed over an all-zeros repair-round vector, an artifact of the drivers
+scoring only each point's final draft; it discriminates nothing. The decision-bearing output of this
+tool-assisted run is the strict-pass column; per-point checker-invocation counts are in `tools-
+meta.json`. The same artifact makes `errors`, `first-pass clean`, `mean repair rounds`, and `output
+tokens` non-measurements here.
 
 | leg | shells | errors | strict pass | first-pass clean | mean repair rounds | output tokens | min catalog distance |
 | --- | --- | --- | --- | --- | --- | --- | --- |

@@ -493,6 +493,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.max_repair_rounds < 0:
         print("Error: --max-repair-rounds must be >= 0", file=sys.stderr)
         return 2
+    if args.replicates < 1:
+        print("Error: --replicates must be >= 1", file=sys.stderr)
+        return 2
 
     prompts_dir = Path(args.prompts)
     out_dir = Path(args.out_dir)
@@ -531,8 +534,19 @@ def main(argv: list[str] | None = None) -> int:
                 / f"{args.cell}__r{replicate}__{LEG}.json.record.json"
             )
             if args.resume and record_path.exists():
-                record = json.loads(record_path.read_text(encoding="utf-8"))
-                if record.get("strict_pass"):
+                # A truncated or non-object record is an incomplete point,
+                # not a reason to abort the whole resume: warn and re-run it.
+                record: object = None
+                try:
+                    record = json.loads(record_path.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError) as exc:
+                    print(
+                        f"resume: unreadable record for {args.cell} "
+                        f"r{replicate}, re-running: {exc}",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                if isinstance(record, dict) and record.get("strict_pass"):
                     print(
                         f"resume: {args.cell} r{replicate} already passed, skipping",
                         flush=True,
@@ -540,10 +554,9 @@ def main(argv: list[str] | None = None) -> int:
                     continue
             # #CRITICAL: external resources: one non-retryable provider
             # failure (400/404, a decode error) must not abandon the paid
-            # replicates behind it; the 402 mid-grid death is why the
-            # sibling harness grew --resume.
-            # #VERIFY: each replicate is isolated; failures are counted and
-            # reflected in the exit code, never silently swallowed.
+            # replicates behind it (the 402 mid-grid death is why the sibling
+            # harness grew --resume), so each replicate runs in its own
+            # try/except and failures land in the exit code, never silently.
             try:
                 if args.mode == "tools":
                     run_grid_point_tools(
