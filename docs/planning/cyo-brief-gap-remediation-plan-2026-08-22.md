@@ -440,6 +440,72 @@ renumbering from the merged head. This is `W9` hazard 2 occurring in practice.
 | UW-x8 | K (documentation) | `D2`: restate F5 as F5-a or F5-b; the shared stratum is byte-identical and enumerates the decision menu. | decision |
 | UW-x9 | F (test/quality) | Correct `UW-C264`: `imitable.py` has zero callers, so its present-tense "routes 13 of 167" is false. | unscheduled |
 
+---
+
+## Resolution locality and spend
+
+Every item classified as resolvable **locally** (no paid model calls) or requiring **OpenRouter**
+spend. Estimates are anchored on measured runs, not list-price arithmetic.
+
+**Anchors, all from committed run records.** The 2026-08-21 live structural round cost **$3.28
+metered** in total: Run A (2 directed fills) $0.719, Run B (10 books, 92,870 words, ~206k in /
+~186k out) $2.432, Run C (2 books, chunked v3.2) $0.070 to $0.133, endpoint probes (~12 x 32
+tokens) $0.05, against a $2.85 estimate and a $5.70 stop rule. That gives **~$0.24 per book at
+v4-pro** on a mid-band grid. The sonnet-5 comparison pair cost $3.27 for two books (**~$1.64 per
+book**, $2.43 for the 13-16 gamebook alone). Per-band v4-pro fills measured $0.047 / $0.350 /
+$0.538 / $1.064 at 3-5 / 8-11 / 13-16 / 16+.
+
+**Anthropic tiers run as subagents cost $0 marginal** against the owner subscription. That is what
+made the original vendor comparison non-comparable, so any design using subagent legs is cheap but
+must be shadow-priced before its cost is quoted.
+
+### Local only, no model spend
+
+| Item | Why local | Cost |
+| --- | --- | --- |
+| `W1` job lifecycle | Pure code plus an RQ config change | $0 |
+| `W3` gram scope (`UW-C225`) | Recompute over committed artifacts; the register already carries the expected regression counts | $0 |
+| `W5` guard battery runner | Runs over the committed corpus | $0 |
+| `W6` walk floor | Pure graph computation; the breaching set is already measured | $0 |
+| `W7` wire `imitable` and `blind_spots` | Advisory registration plus a corpus measurement | $0 |
+| `W8` CG recalibration | Run `check_skeleton.py` over the 40 JHM digraphs. Needs one web fetch, no model calls | $0 |
+| `W9` register integrity | Checker code and a content-hash scheme | $0 |
+| `D1` hard-block ruling | Code plus **one production database query** for `summary.hard_block`. Needs Supabase authorisation, which is not OpenRouter and not available in a non-interactive session | $0 |
+| New: `UW-C07` row-body vs status defect | Documentation fix | $0 |
+
+**Nine of twelve items are free.** Everything on the current critical path except validation work is
+local.
+
+### Local to implement, small spend to validate
+
+| Item | What needs spend | Estimate |
+| --- | --- | --- |
+| `W2` reading-level cap | The cap is local. Proving the `in_band` trade-off needs re-fills at two cap settings. 6 books x 2 conditions at mid-band; capped runs are *cheaper* than today's uncapped loop | **$3 to $5** |
+| `W4` content-filter terminal | Classification is local. Confirming it needs probes against a known deterministic trigger, and `AL-492` names one (`the-last-cartage` plus its brief, failed 7 of 7). Probe-sized calls | **under $0.10** |
+
+### Requires OpenRouter
+
+| Item | Design | Estimate |
+| --- | --- | --- |
+| `W10` model-selection settling experiment | 3 legs x 12 replicates x 2 counterbalanced cells = 72 shells. Skeleton authoring is far cheaper than filling: the register budgets cheap cells at 5-20k tokens per shell and the hard cell at 100-350k. A validator costed this at **under $5**; allow headroom if a frontier leg runs at list price rather than as a subagent | **$5 to $15** |
+| `D2` cross-family reuse lever | **Now the expensive one.** Owner rulings 1 and 6 exclude both the differentiation directive and per-request mutation, so there is no surviving candidate lever and any replacement needs measuring from scratch. Budget on the Run A pattern (a book pair per arm at $0.72): roughly 4 candidate levers x 3 pairs x 2 books = 24 books | **$10 to $25** |
+| Cross-vendor convergence follow-up (section 1.6 of the reconciliation) | Shells from 3 or more vendors to confirm the 7-of-342 TAU_CELL breaches replicate. About 30 shells, authoring not filling | **$3 to $6** |
+| Path-level safety, **if adopted** | Measured at 271 covering paths on the 677-node book, 100% edge coverage in 1.22s. About **$0.46 per book batched on Haiku**, $2.77 on Sonnet 4.6. A 20-book validation pass | **$9** (validation), then $0.46 per book ongoing |
+
+### Total
+
+- **Immediate remediation (the whole P0 and P1 list): $0.** Every ruled and code-level item is local.
+- **Validating `W2` and `W4`: under $6.**
+- **All open experiments together: $27 to $55**, dominated by `D2`.
+
+For scale, the entire live structural round that produced the decision-grade directive result cost
+**$3.28**. Spend is not the constraint on this programme; engineering time and owner decisions are.
+
+**One caveat on every estimate.** There is still no runtime per-book spend cap (`C5-2`, the only
+`_MAX_COST_USD` is a $999,999.99 Decimal overflow clamp), so a pathological run cannot be bounded by
+the system. Until `W1` and a spend ceiling ship, every figure above depends on the stop-rule
+discipline the live round used manually, which worked: $3.28 measured against a $5.70 stop.
+
 ## Related
 
 - [Gap analysis](./cyo-brief-gap-analysis-2026-08-22.md), the findings these plans address
