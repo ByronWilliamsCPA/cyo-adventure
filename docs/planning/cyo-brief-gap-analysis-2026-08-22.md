@@ -3,6 +3,15 @@
 Analysis of 2026-08-22, revised the same day after adversarial validation. Subject:
 [cyo-generation-research-brief-2026-08-22.md](./cyo-generation-research-brief-2026-08-22.md).
 
+> **Superseded in part.** A live structural round (PR #737, branch
+> `claude/cyo-live-story-generation-kxm0ya`) has since measured the differentiation directive and
+> re-run the worst fill pairs on the production-family model. It refutes the directive as a variety
+> lever and shows the 0.6 fill-rate floor does bite on current output, correcting section 4.3 and
+> recommendation 7 of this document. See
+> [cyo-brief-review-reconciliation-2026-08-22.md](./cyo-brief-review-reconciliation-2026-08-22.md),
+> which also reconciles this review against the parallel 13-agent review on
+> `claude/stoic-maxwell-60szsf`.
+
 **Per-item remediation plans are in
 [cyo-brief-gap-remediation-plan-2026-08-22.md](./cyo-brief-gap-remediation-plan-2026-08-22.md); all
 24 raw reports are preserved in
@@ -298,6 +307,7 @@ assembly-invariant, or global before committing either way.
 
 ## Related
 
+- [Reconciliation](./cyo-brief-review-reconciliation-2026-08-22.md) against the parallel review and the live round
 - [Remediation plan](./cyo-brief-gap-remediation-plan-2026-08-22.md), one plan per surviving item
 - [Evidence](./evidence/brief-gap-analysis-2026-08-22/README.md), all 24 reviewer and validator reports
 - [2026-08-22 research brief](./cyo-generation-research-brief-2026-08-22.md), the subject

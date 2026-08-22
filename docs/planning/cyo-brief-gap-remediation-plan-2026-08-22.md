@@ -4,6 +4,12 @@ Plan of 2026-08-22. Companion to
 [cyo-brief-gap-analysis-2026-08-22.md](./cyo-brief-gap-analysis-2026-08-22.md); raw reports in
 [evidence/brief-gap-analysis-2026-08-22/](./evidence/brief-gap-analysis-2026-08-22/README.md).
 
+> **Two items are superseded by the live structural round (PR #737).** `W5`'s rationale was wrong:
+> the 0.6 floor blocks zero *committed* pairs but current v4-pro fills span 42.9% to 65.2%, so
+> wiring it is enforcement, not instrumentation. And the differentiation directive is now measured
+> and refuted as a lever (96.3 to 110.7 per 1000, the wrong way). See
+> [the reconciliation](./cyo-brief-review-reconciliation-2026-08-22.md).
+
 One plan per item that survived adversarial validation. Retracted findings are not planned here;
 see the correction log (synthesis section 2) for why each was dropped.
 
