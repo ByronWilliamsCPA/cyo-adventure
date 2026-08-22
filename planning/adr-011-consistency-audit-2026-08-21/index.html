@@ -12,7 +12,7 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-026-rendered-stop-flow/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr-011-consistency-audit-2026-08-21/">
       
       
       
@@ -20,19 +20,19 @@
         
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>ADR-026: Rendered-stop flow of linear passages - CYO Adventure</title>
+        <title>ADR-011 internal-consistency audit (UW-C327) - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adr-026-rendered-stop-flow-of-linear-passages" class="md-skip">
+        <a href="#adr-011-internal-consistency-audit-uw-c327" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ADR-026: Rendered-stop flow of linear passages
+              ADR-011 internal-consistency audit (UW-C327)
             
           </span>
         </div>
@@ -235,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../.." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -256,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../guides/overview/" class="md-tabs__link">
+        <a href="../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -278,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../api-reference/" class="md-tabs__link">
+        <a href="../../api-reference/" class="md-tabs__link">
           
   
   
@@ -300,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../operations/runbook/" class="md-tabs__link">
+        <a href="../../operations/runbook/" class="md-tabs__link">
           
   
   
@@ -322,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../architecture/" class="md-tabs__link">
+        <a href="../../architecture/" class="md-tabs__link">
           
   
   
@@ -344,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../security/assurance-spine/" class="md-tabs__link">
+        <a href="../../security/assurance-spine/" class="md-tabs__link">
           
   
   
@@ -366,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../development/architecture/" class="md-tabs__link">
+        <a href="../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -388,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../project/roadmap/" class="md-tabs__link">
+        <a href="../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -410,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../" class="md-tabs__link">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -432,7 +432,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -454,7 +454,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../ADRs/" class="md-tabs__link">
+        <a href="../../ADRs/" class="md-tabs__link">
           
   
   
@@ -490,7 +490,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -520,7 +520,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -618,7 +618,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/overview/" class="md-nav__link">
+      <a href="../../guides/overview/" class="md-nav__link">
         
   
   
@@ -653,7 +653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/configuration/" class="md-nav__link">
+      <a href="../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -688,7 +688,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/usage/" class="md-nav__link">
+      <a href="../../guides/usage/" class="md-nav__link">
         
   
   
@@ -723,7 +723,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/supabase-environments/" class="md-nav__link">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
         
   
   
@@ -823,7 +823,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api-reference/" class="md-nav__link">
+      <a href="../../api-reference/" class="md-nav__link">
         
   
   
@@ -929,7 +929,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/runbook/" class="md-nav__link">
+      <a href="../../operations/runbook/" class="md-nav__link">
         
   
   
@@ -964,7 +964,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/kws-test-runbook/" class="md-nav__link">
+      <a href="../../operations/kws-test-runbook/" class="md-nav__link">
         
   
   
@@ -999,7 +999,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/authoring-guide/" class="md-nav__link">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
         
   
   
@@ -1034,7 +1034,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/security-events/" class="md-nav__link">
+      <a href="../../operations/security-events/" class="md-nav__link">
         
   
   
@@ -1113,7 +1113,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../architecture/" class="md-nav__link ">
+            <a href="../../architecture/" class="md-nav__link ">
               
   
   
@@ -1164,7 +1164,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/user-journeys/" class="md-nav__link">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -1199,7 +1199,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -1234,7 +1234,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -1269,7 +1269,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1304,7 +1304,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/data-model/" class="md-nav__link">
+      <a href="../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1339,7 +1339,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/deployment/" class="md-nav__link">
+      <a href="../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1447,7 +1447,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/assurance-spine/" class="md-nav__link">
+      <a href="../../security/assurance-spine/" class="md-nav__link">
         
   
   
@@ -1482,7 +1482,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/assurance-register/" class="md-nav__link">
+      <a href="../../security/assurance-register/" class="md-nav__link">
         
   
   
@@ -1517,7 +1517,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/control-inheritance/" class="md-nav__link">
+      <a href="../../security/control-inheritance/" class="md-nav__link">
         
   
   
@@ -1552,7 +1552,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/crypto-inventory/" class="md-nav__link">
+      <a href="../../security/crypto-inventory/" class="md-nav__link">
         
   
   
@@ -1587,7 +1587,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/red-team-design-review-2026-07/" class="md-nav__link">
+      <a href="../../security/red-team-design-review-2026-07/" class="md-nav__link">
         
   
   
@@ -1662,7 +1662,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../api/" class="md-nav__link ">
+            <a href="../../api/" class="md-nav__link ">
               
   
   
@@ -1711,7 +1711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/architecture/" class="md-nav__link">
+      <a href="../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1746,7 +1746,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/testing/" class="md-nav__link">
+      <a href="../../development/testing/" class="md-nav__link">
         
   
   
@@ -1783,7 +1783,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/code-quality/" class="md-nav__link">
+      <a href="../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1818,7 +1818,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/contributing/" class="md-nav__link">
+      <a href="../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1922,7 +1922,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/roadmap/" class="md-nav__link">
+      <a href="../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1957,7 +1957,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/changelog/" class="md-nav__link">
+      <a href="../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1992,7 +1992,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/license/" class="md-nav__link">
+      <a href="../../project/license/" class="md-nav__link">
         
   
   
@@ -2071,7 +2071,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -2122,7 +2122,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project-vision/" class="md-nav__link">
+      <a href="../project-vision/" class="md-nav__link">
         
   
   
@@ -2157,7 +2157,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tech-spec/" class="md-nav__link">
+      <a href="../tech-spec/" class="md-nav__link">
         
   
   
@@ -2192,7 +2192,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -2227,7 +2227,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../roadmap/" class="md-nav__link">
+      <a href="../roadmap/" class="md-nav__link">
         
   
   
@@ -2309,7 +2309,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../adr/" class="md-nav__link ">
               
   
   
@@ -2360,7 +2360,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -2395,7 +2395,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-002-client-pwa/" class="md-nav__link">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -2430,7 +2430,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -2465,7 +2465,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2500,7 +2500,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2535,7 +2535,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2570,7 +2570,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-007-raw-output-retention/" class="md-nav__link">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
         
   
   
@@ -2605,7 +2605,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-008-public-app-store-launch/" class="md-nav__link">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
         
   
   
@@ -2640,7 +2640,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-009-supabase-platform/" class="md-nav__link">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2675,7 +2675,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
         
   
   
@@ -2710,7 +2710,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2784,7 +2784,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../research/" class="md-nav__link ">
+            <a href="../research/" class="md-nav__link ">
               
   
   
@@ -2833,7 +2833,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../story-structure-diversity-critical-analysis/" class="md-nav__link">
+      <a href="../story-structure-diversity-critical-analysis/" class="md-nav__link">
         
   
   
@@ -2868,7 +2868,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../story-structure-improvement-plan/" class="md-nav__link">
+      <a href="../story-structure-improvement-plan/" class="md-nav__link">
         
   
   
@@ -2903,7 +2903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../story-structure-implementation-briefs/" class="md-nav__link">
+      <a href="../story-structure-implementation-briefs/" class="md-nav__link">
         
   
   
@@ -3017,7 +3017,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -3052,7 +3052,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -3087,7 +3087,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -3156,7 +3156,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../ADRs/" class="md-nav__link ">
+            <a href="../../ADRs/" class="md-nav__link ">
               
   
   
@@ -3207,7 +3207,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -3269,55 +3269,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#a-inconsistencies" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR
+        (a) Inconsistencies
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#context" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Context
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#decision" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Decision
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#alternatives-considered" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Alternatives Considered
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Alternatives Considered">
+    <nav class="md-nav" aria-label="(a) Inconsistencies">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#alternative-1-force-branch-the-content-make-every-node-a-real-choice" class="md-nav__link">
+  <a href="#1-section-6s-4-8-decisions-per-path-is-arithmetically-unsatisfiable-in-10-of-18-production-cells-vs-sections-3-5-10" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Alternative 1: force-branch the content (make every node a real choice)
+        1. Section 6's "4-8 decisions per path" is arithmetically unsatisfiable in 10 of 18 production cells (vs sections 3, 5, 10)
       
     </span>
   </a>
@@ -3325,10 +3292,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#alternative-2-keep-the-continue-button-and-accept-the-tap" class="md-nav__link">
+  <a href="#2-section-6-vs-section-5s-gamebook-cells-and-section-7s-gauntlet-definition-flatly-unsatisfiable" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Alternative 2: keep the "Continue" button and accept the tap
+        2. Section 6 vs section 5's gamebook cells and section 7's gauntlet definition (flatly unsatisfiable)
       
     </span>
   </a>
@@ -3336,10 +3303,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#alternative-3-flow-at-every-band-including-3-5-and-5-8" class="md-nav__link">
+  <a href="#3-the-4-decision-floor-is-unsatisfiable-at-3-5-short-vs-sections-5-6s-own-setup-constant-7-and-10" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Alternative 3: flow at every band, including 3-5 and 5-8
+        3. The 4-decision FLOOR is unsatisfiable at 3-5 Short (vs sections 5, 6's own setup constant, 7, and 10)
       
     </span>
   </a>
@@ -3347,10 +3314,65 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#alternative-4-compose-stops-server-side-and-send-the-reader-a-flat-page-list" class="md-nav__link">
+  <a href="#4-section-5-endings-columns-vs-section-6s-prose-15-22-both-corners-break" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Alternative 4: compose stops server-side and send the reader a flat page list
+        4. Section 5 endings columns vs section 6's "prose ~15-22%" (both corners break)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-section-5s-25-35-of-nodes-are-terminals-gamebook-contradicts-the-2026-08-18-owner-ruling-and-the-post-ruling-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Section 5's "~25-35% of nodes are terminals" (gamebook) contradicts the 2026-08-18 owner ruling and the post-ruling catalog
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-section-10s-options-per-choice-3-4-contradicts-section-6s-locked-2-3-while-claiming-section-6-is-unchanged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Section 10's options-per-choice (3-4) contradicts section 6's locked 2-3 while claiming section 6 is "unchanged"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-section-3-per-node-hard-maxima-exceed-section-10s-words-per-stop-caps-in-every-band" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Section 3 per-node hard maxima exceed section 10's words-per-stop caps in every band
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-section-1a-mvp-tier-vs-section-6s-all-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Section 1a (MVP tier) vs section 6's "all cells"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-root-cause-provenance-overreach-section-9-vs-sections-5-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Root cause: provenance overreach (section 9 vs sections 5-6)
       
     </span>
   </a>
@@ -3363,10 +3385,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#implementation-notes-2026-08-01-first-implementation" class="md-nav__link">
+  <a href="#b-catalog-reality-check-81-production-skeletons" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Implementation notes (2026-08-01, first implementation)
+        (b) Catalog-reality check (81 production skeletons)
       
     </span>
   </a>
@@ -3374,10 +3396,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#consequences" class="md-nav__link">
+  <a href="#recommended-amendments" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Consequences
+        &copy; Recommended amendments
       
     </span>
   </a>
@@ -3404,144 +3426,307 @@
   
 
 
-<h1 id="adr-026-rendered-stop-flow-of-linear-passages">ADR-026: Rendered-stop flow of linear passages<a class="headerlink" href="#adr-026-rendered-stop-flow-of-linear-passages" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p><strong>Status</strong>: Accepted (2026-08-01), owner ratification recorded in
-<a href="../../design-review-kid-appeal-2026-08-01/">design-review-kid-appeal-2026-08-01.md</a> section 8
-(question Q1), on the evidence in that document's research appendix.
-<strong>Cross-sign</strong>: both player engines, the conformance corpus, reader UI. The storybook schema, the
-validator's structural rules, and ADR-011's scale constants are explicitly unchanged <strong>by this
-ADR</strong>.
-<strong>Relates to</strong>: ADR-011 (constants untouched here), ADR-024 (go-back semantics extended to stops),
-ADR-025 (any schema-visible additions ride minor versions).</p>
-<p><strong>Note (2026-08-22)</strong>: "unchanged" above is a statement about this decision's blast radius, and it
-still holds: nothing here edited ADR-011. ADR-011's constants themselves are no longer what this
-document describes. Its section 6 was rewritten on 2026-08-22 (<code>UW-C327</code>, ADR-011 section 11):
-decisions per path is now a <strong>derived per-cell window</strong> rather than a research-locked flat
-"~4-8", which survives only as the JHM 2019 anchor for the <code>8-11</code>/<code>10-13</code> Short prose region. The
-two references below (Context, Alternative 1) quote the pre-amendment wording because they record
-what was true at the 2026-08-01 decision; read them as history, not as the current constant. The
-amendment does not disturb this ADR's decision: it derives the flowed-band floors <strong>from</strong> the
-section 10 grammar this ADR ratified, so the two are consistent by construction.</p>
-</blockquote>
-<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
-<p>A <strong>node is not a screen</strong>. The reader composes <strong>rendered stops</strong>: for bands 8-11, 10-13, 13-16,
-and 16+, consecutive single-choice non-ending nodes flow into one scrollable passage that ends at
-the next real choice or ending, so every stop a child makes ends in a choice. For 3-5 and 5-8 the
-reader keeps discrete pages (picture-book pacing) and the choice cadence is governed by the
-per-band choice grammar (<a href="../adr-011-story-scale-framework/">ADR-011</a> section 10, ratified as D15
-alongside this ADR). The graph keeps its linear
-beats, preserving the researched genre shape, the words-per-node ceilings, and every published blob.</p>
-<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
-<p>The owner ruled that every page a child stops on must offer a choice (design review D1). Measured:
-69% of non-ending nodes are single-choice; 0 of 61 skeletons would satisfy the ruling structurally.
-But ADR-011, as it read at this decision, research-locked decisions-per-path at ~4-8 and mandates
-linear passages as the substance carrier, anchored on measurement of the printed genre (that flat
-constant was superseded on 2026-08-22; see the note under Status). The conflict is presentational: print flows
-linear passages as continuous prose; our node-equals-screen rendering turns each one into a
-"Continue" tap. External research (design review, research appendix) supports resolving at the
-render layer: the strongest adaptation precedent (inkle's ink "gather" architecture) keeps linear
-graph structure under a surface where nearly every stop ends in a choice, and no source supports
-force-branching every node. For pre-readers the same research warns against interaction density
-(comprehension competes with interaction), so young bands keep discrete pages with a cadence
-instead.</p>
-<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
-<ol>
-<li><strong>Rendered stop, defined.</strong> At 8-11 and up: starting from the current node, the reader renders
-   the node body and, while the current node is non-ending and has exactly one choice, follows it
-   and appends the next body to the same scrollable passage. The stop ends where the next node
-   offers 2+ choices or is an ending. The choice list rendered is that terminal node's. The
-   "Continue" button ceases to exist at these bands.</li>
-<li><strong>Traversal semantics are unchanged.</strong> Flowing through a single-choice node applies its
-   <code>on_enter</code> effects in order, appends it to <code>path</code>, and adds it to <code>visit_set</code>, exactly as if
-   tapped. Server-side replay validation (<code>player/replay.py</code>) is unaffected; the recorded path
-   remains node-level.</li>
-<li><strong>Go-back operates on stops.</strong> The ADR-024 back affordance rewinds to the previous rendered
-   stop (the previous real choice), not the previous node; rewinding into the middle of a flowed
-   run is never observable. This matches the button's purpose (undo a mis-tapped choice).</li>
-<li><strong>Young bands keep pages.</strong> At 3-5 and 5-8 the reader renders one node per page. Choice cadence,
-   flavor mix, and any scaffold-interaction affordance are governed by the per-band choice grammar
-   table (design review Q2), ratified as D15 and landed in the same change as this ADR as
-   <a href="../adr-011-story-scale-framework/">ADR-011</a> section 10; this ADR only fixes the presentation
-   split by band. Note the split of authority: ADR-011 section 10 says how many choices a band's
-   content should carry, this ADR says how a band renders them, and <code>validator/choice_grammar.py</code>
-   enforces neither by default (its <code>enforce_grammar</code> flag is off; see the CG family in
-   <a href="../../validator-rules/">validator-rules.md</a>).</li>
-<li><strong>Conformance-gated.</strong> Stop composition is pure traversal logic and must be implemented
-   identically in <code>player/engine.py</code> and <code>frontend/src/player/engine.ts</code> (or a shared
-   stop-composition layer over them), with <code>schema/conformance/</code> cases covering: flow across
-   effects, flow into endings, loop-back edges inside a run, condition-gated single choices (a
-   single choice whose condition is false ends the stop as a dead-end guard; the validator already
-   forbids unreachable continuations), and back-by-stop. No band ships flowed rendering before the
-   corpus covers it.</li>
-<li><strong>Band source of truth.</strong> The band comes from the reading profile (<code>data-age-band</code> already
-   stamps the kid shell); a guardian changing a profile's band changes presentation on next load,
-   with no content change.</li>
-</ol>
-<h2 id="alternatives-considered">Alternatives Considered<a class="headerlink" href="#alternatives-considered" title="Permanent link">&para;</a></h2>
-<h3 id="alternative-1-force-branch-the-content-make-every-node-a-real-choice">Alternative 1: force-branch the content (make every node a real choice)<a class="headerlink" href="#alternative-1-force-branch-the-content-make-every-node-a-real-choice" title="Permanent link">&para;</a></h3>
-<p>Satisfy D1 structurally rather than presentationally: rewrite skeletons and generation prompts so
-no non-ending node has exactly one choice.</p>
-<p>Rejected. 69% of non-ending nodes are single-choice and 0 of 61 skeletons would pass, so this is a
-rewrite of the entire catalog, not a change to it. It also fought ADR-011's research lock directly:
-at the time of this decision, decisions-per-path was anchored at a flat ~4-8 on measurement of the
-printed genre, and linear passages are the substance carrier. The rejection does not depend on that
-flat constant, which ADR-011 has since replaced with a derived per-cell window: the per-cell floors
-are higher still, so force-branching every node fights them at least as hard. No source in the
-research appendix supports force-branching every node, and
-inkle's ink "gather" architecture, the strongest adaptation precedent, does the opposite: linear
-graph structure under a choice-dense surface.</p>
-<h3 id="alternative-2-keep-the-continue-button-and-accept-the-tap">Alternative 2: keep the "Continue" button and accept the tap<a class="headerlink" href="#alternative-2-keep-the-continue-button-and-accept-the-tap" title="Permanent link">&para;</a></h3>
-<p>Change nothing; treat "Continue" as an acceptable page turn.</p>
-<p>Rejected by D1 itself, which is a ruling about what a child experiences, and the measurement is why
-it was ruled: at 69% single-choice nodes, a reader spends most of a book tapping a button that
-offers no decision. That is the "interactive book that is mostly not interactive" the design review
-set out to fix.</p>
-<h3 id="alternative-3-flow-at-every-band-including-3-5-and-5-8">Alternative 3: flow at every band, including 3-5 and 5-8<a class="headerlink" href="#alternative-3-flow-at-every-band-including-3-5-and-5-8" title="Permanent link">&para;</a></h3>
-<p>Apply one rendering rule everywhere rather than splitting by band.</p>
-<p>Rejected on the research the same review cites for the opposite conclusion at young bands:
-comprehension competes with interaction for pre-readers, so raising interaction density at 3-5
-costs understanding. A picture-book page is also a deliberate unit at that age. The split is the
-cost of this decision, not an oversight: two rendering modes must both stay corpus-proven, which
-decision 5 makes explicit.</p>
-<h3 id="alternative-4-compose-stops-server-side-and-send-the-reader-a-flat-page-list">Alternative 4: compose stops server-side and send the reader a flat page list<a class="headerlink" href="#alternative-4-compose-stops-server-side-and-send-the-reader-a-flat-page-list" title="Permanent link">&para;</a></h3>
-<p>Have the backend do the flowing and hand the client pre-composed stops, avoiding a second
-implementation.</p>
-<p>Rejected because it breaks offline reading, which is a load-bearing product property (ADR-002): a
-cached blob must be playable with no server, so the client needs the composition logic regardless.
-Having built it client-side, the server copy exists for replay validation and is held identical by
-<code>schema/conformance/stop_traces.json</code> rather than by hoping. That dual-engine tax is acknowledged
-in decision 5 rather than avoided.</p>
-<h2 id="implementation-notes-2026-08-01-first-implementation">Implementation notes (2026-08-01, first implementation)<a class="headerlink" href="#implementation-notes-2026-08-01-first-implementation" title="Permanent link">&para;</a></h2>
-<p>The engine layer (<code>player/stops.py</code>, <code>frontend/src/player/stops.ts</code>,
-<code>schema/conformance/stop_traces.json</code>) pinned four semantics worth recording:</p>
-<ol>
-<li>The branch/dead-end decision counts the node's <strong>raw</strong> <code>choices</code>, not the visible subset: a
-   2-choice node with one condition-hidden choice ends the stop (and may therefore render a single
-   visible choice). This matches the decision text literally; revisit only if reader data shows it
-   reads as a broken page.</li>
-<li>The loop guard is <strong>per-stop</strong>: only a would-be revisit within the same composed run halts
-   flow; cross-stop revisits (loop_and_grow topologies) are unaffected.</li>
-<li>Loop detection halts at the current node <strong>without</strong> applying the looping transition, so the
-   reader can still choose to take the loop; it just never auto-flows.</li>
-<li>Go-back-by-stop lives frontend-only (<code>backOneStop</code> replays the existing <code>back()</code> per node in
-   the stop), consistent with the engines' existing convention that back-navigation is not
-   mirrored server-side; stop composition itself is corpus-proven identical on both sides.</li>
-</ol>
-<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<h1 id="adr-011-internal-consistency-audit-uw-c327">ADR-011 internal-consistency audit (UW-C327)<a class="headerlink" href="#adr-011-internal-consistency-audit-uw-c327" title="Permanent link">&para;</a></h1>
+<p><strong>Date</strong>: 2026-08-21
+<strong>Commissioned by</strong>: owner ruling 9.1 (<code>live-structural-round-2026-08-21.md</code> section 9.1)
+<strong>Status</strong>: complete; awaiting the owner's ruling on the amendment set in part &copy;
+<strong>Method</strong>: read-only pass over ADR-011
+(<code>docs/planning/adr/adr-011-story-scale-framework.md</code>), its reconciliation sources
+(<code>docs/planning/research/cyoa-research-reconciliation.md</code>, ADR-026), the validator constants
+(<code>validator/band_profile.py</code>, <code>validator/policy.py</code>), and the committed catalog (84 main
+skeleton files, 81 production-eligible). "Decisions per path" counts decision nodes
+(outdegree &gt;= 2) on a start-to-ending path; min is the fewest on any path to a
+positive-valence ending, max the most on any path to any terminal (acyclic graphs only).
+Structural counts ignore choice conditions, so min-path figures are lower bounds on the
+condition-aware walk.</p>
+<p>The finding in one line: section 6's "4-8 decisions per path" is arithmetically
+unsatisfiable in 10 of 18 production cells given the ADR's own sections 3, 5 and 10; the
+catalog violates it in both directions; and the validator's PL-17 breadth floor
+mathematically FORCES gauntlet skeletons to break it.</p>
+<h2 id="a-inconsistencies">(a) Inconsistencies<a class="headerlink" href="#a-inconsistencies" title="Permanent link">&para;</a></h2>
+<h3 id="1-section-6s-4-8-decisions-per-path-is-arithmetically-unsatisfiable-in-10-of-18-production-cells-vs-sections-3-5-10">1. Section 6's "4-8 decisions per path" is arithmetically unsatisfiable in 10 of 18 production cells (vs sections 3, 5, 10)<a class="headerlink" href="#1-section-6s-4-8-decisions-per-path-is-arithmetically-unsatisfiable-in-10-of-18-production-cells-vs-sections-3-5-10" title="Permanent link">&para;</a></h3>
+<p>Quotes: section 6 "Decisions per path ~4-8 (length adds breadth, not depth; do not
+inflate)"; section 5 <code>min-&gt;complete</code> column; section 3 words/node means; section 10
+words-per-stop column plus "every stop ends in a choice" with "max choiceless stops in a
+row 0-1" at 8-11 and up; section 10 closing "Decisions per path stay ~4-8".</p>
+<p>Arithmetic: the shortest satisfying path must carry <code>min-&gt;complete x mean-words/node</code> words
+(confirmed by section 5's own fastest-finish column, e.g. 16+ Long prose 23 x 175 = 4,025
+words / 220 wpm = 18.3 min = "~18 min"). At 8-11 and up every stop ends in a choice and is
+capped by the words-per-stop column, so the path needs at least
+<code>ceil(path_words / stop_max)</code> stops, hence <code>stops - 1</code> decisions. Implied minimum decisions
+on the SHORTEST path:</p>
+<table>
+<thead>
+<tr>
+<th>Cell</th>
+<th style="text-align: right;">min-&gt;complete</th>
+<th style="text-align: right;">path words</th>
+<th style="text-align: right;">stop max</th>
+<th style="text-align: right;">implied min decisions</th>
+<th>vs 4-8</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8-11 Long prose</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">1,400</td>
+<td style="text-align: right;">135</td>
+<td style="text-align: right;">&gt;= 10</td>
+<td>breaks ceiling</td>
+</tr>
+<tr>
+<td>10-13 Medium prose</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">1,400</td>
+<td style="text-align: right;">150</td>
+<td style="text-align: right;">&gt;= 9</td>
+<td>breaks</td>
+</tr>
+<tr>
+<td>10-13 Long prose</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">1,700</td>
+<td style="text-align: right;">150</td>
+<td style="text-align: right;">&gt;= 11</td>
+<td>breaks</td>
+</tr>
+<tr>
+<td>13-16 Medium prose</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">2,100</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">&gt;= 10</td>
+<td>breaks</td>
+</tr>
+<tr>
+<td>13-16 Long prose</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">2,800</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">&gt;= 13</td>
+<td>breaks</td>
+</tr>
+<tr>
+<td>13-16 Long gamebook</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">2,080</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">&gt;= 10</td>
+<td>breaks</td>
+</tr>
+<tr>
+<td>16+ Medium prose</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">3,150</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: right;">&gt;= 13</td>
+<td>breaks</td>
+</tr>
+<tr>
+<td>16+ Medium gamebook</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">2,320</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: right;">&gt;= 10</td>
+<td>breaks</td>
+</tr>
+<tr>
+<td>16+ Long prose</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">4,025</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: right;">&gt;= 17</td>
+<td>breaks</td>
+</tr>
+<tr>
+<td>16+ Long gamebook</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">2,960</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: right;">&gt;= 12</td>
+<td>breaks</td>
+</tr>
+</tbody>
+</table>
+<p>These are floors on the FASTEST finish; typical paths (arc ceiling 2.5x,
+<code>band_profile.py::ARC_CEILING_MULTIPLE</code>) sit far higher. Conversely, honoring 4-8 decisions
+forces the min path into &lt;= 9 stops averaging 450-800 words each at 16+, roughly 2-3.5x the
+section 10 cap. Section 10's claim "Relationship to the locked constants of section 6:
+unchanged" is therefore false for these cells: the grammar and the constant cannot both
+hold.</p>
+<p>Judgment: the envelopes are the design intent (section 2 makes words primary; every derived
+column in section 5 checks out arithmetically against section 3 and the pace anchors, so
+that machinery is the load-bearing part). The flat 4-8 constant is the drafting error: a
+JHM anchor for ~90-120-node middle-grade books declared "research-locked, all cells" up to
+750 nodes. The reconciliation (<code>cyoa-research-reconciliation.md</code> section 4.1) even warns
+"Path length in nodes and decisions per path are different metrics"; ADR-011 scaled path
+length in nodes (min-&gt;complete 6 to 37) while pinning decisions, which is exactly that
+conflation in reverse.</p>
+<h3 id="2-section-6-vs-section-5s-gamebook-cells-and-section-7s-gauntlet-definition-flatly-unsatisfiable">2. Section 6 vs section 5's gamebook cells and section 7's gauntlet definition (flatly unsatisfiable)<a class="headerlink" href="#2-section-6-vs-section-5s-gamebook-cells-and-section-7s-gauntlet-definition-flatly-unsatisfiable" title="Permanent link">&para;</a></h3>
+<p>Quotes: section 7 gauntlet = "linear spine, branch-to-fail, terminal (many),
+restart-on-fail"; section 5 preamble "Gamebook endings are 'few wins + many fails' (~25-35%
+of nodes are terminals)"; section 6 "~4-8", choices per decision "2-3".</p>
+<p>Arithmetic: in a gauntlet, all decisions lie on the one spine, so decisions-per-path equals
+total decisions. With &lt;= 8 decisions and &lt;= 3 options, off-spine fail branches number
+&lt;= 8 x 2 = 16, so terminals &lt;= 17. Section 5's 13-16 Long gamebook cell claims 370-585
+nodes at ~25-35% terminals, i.e. 92-205 terminals. 17 is nowhere near 92. Further, spending
+370+ nodes across &lt;= 16 fail branches means ~21+ nodes per fail tail, contradicting
+"Fail-fast is allowed" (section 4) and gauntlet's "master the one path" reread driver. The
+four gamebook cells cannot satisfy section 6 under any topology the band table permits
+them.</p>
+<p>Judgment: the gamebook cells are intent (the ADR's Consequences explicitly claims it
+reproduces "the measured Fighting Fantasy node counts"; FF playthroughs carry dozens of
+choices). The error is applying the prose-genre decision constant to the gamebook style at
+all.</p>
+<h3 id="3-the-4-decision-floor-is-unsatisfiable-at-3-5-short-vs-sections-5-6s-own-setup-constant-7-and-10">3. The 4-decision FLOOR is unsatisfiable at 3-5 Short (vs sections 5, 6's own setup constant, 7, and 10)<a class="headerlink" href="#3-the-4-decision-floor-is-unsatisfiable-at-3-5-short-vs-sections-5-6s-own-setup-constant-7-and-10" title="Permanent link">&para;</a></h3>
+<p>Arithmetic, three independent ways for 3-5 Short (min-&gt;complete = 6):</p>
 <ul>
-<li>D1 is satisfied for 8+ readers with zero content rewrites and no change to generation budgets,
-  validator topology rules, or published blobs.</li>
-<li>The reader's progress display naturally becomes per-stop, which is the same direction <code>AL-029</code>
-  (route-relative progress) needs; implement together.</li>
-<li><code>AL-030</code> (synchronous whole-read replay on every page turn) gets worse if naively combined with
-  multi-node stops; the stop-composition layer should memoize the flowed run rather than re-walk.</li>
-<li>Word count per rendered stop rises (a flowed run concatenates 1-3 node bodies on current chain
-  statistics, 82% of runs being length 1-2); the per-band grammar's words-per-stop column becomes
-  the operative reading-load guardrail, replacing per-node ceilings as the felt page size.</li>
-<li>The grandfathered catalog (decision D3/D11) reads acceptably under flow immediately, which is
-  what makes grandfathering viable while compliant skeletons are authored cell by cell.</li>
+<li>Structure: 6 path nodes minus setup "~2-3 nodes" (section 6) minus 1 terminal leaves at
+  most 3 decision slots. 3 &lt; 4.</li>
+<li>Endings: 4 decisions x 2 options ("Options per choice: 2", section 10) with "minimal"
+  reconvergence (section 7 band table) implies &gt;= 5 terminals, above the cell's endings cap
+  of 4.</li>
+<li>Cadence: section 10's "choice every 2<sup>nd</sup>-4<sup>th</sup> page" caps a 6-page path at ~2-3 choices.</li>
 </ul>
+<p>3-5 Medium (min-&gt;complete 7, cap 6 endings) passes only degenerately (exactly 4 decisions,
+zero linear nodes after setup, and the cadence still forbids it).</p>
+<p>Judgment: the cell and grammar are intent; the floor of 4 is the drafting error at 3-5 (the
+validator agrees: <code>band_profile.py</code> PL-17 sets <code>min_decisions=1</code> for 3-5).</p>
+<h3 id="4-section-5-endings-columns-vs-section-6s-prose-15-22-both-corners-break">4. Section 5 endings columns vs section 6's "prose ~15-22%" (both corners break)<a class="headerlink" href="#4-section-5-endings-columns-vs-section-6s-prose-15-22-both-corners-break" title="Permanent link">&para;</a></h3>
+<p>Arithmetic at cell corners: floor side, 0.15 x 340 = 51 &gt; 48 (10-13 Long ceiling);
+0.15 x 220 = 33 &gt; 32 (10-13 Medium); 0.15 x 45 = 7 &gt; 6 (3-5 Medium); 0.15 x 23 = 4 = 4
+(3-5 Short, degenerate). Ceiling side, 28/240 = 11.7% (8-11 Long) and 32/340 = 9.4%
+(10-13 Long) fall below 15%. So a story at the top of its own node envelope cannot satisfy
+both section 5 and section 6. This inversion is already documented and patched in code
+(<code>band_profile.py::_CELL_ENDING_BOUNDS</code>, "This exists because section 5 and section 6
+disagree and PL-17 implemented only section 6", <code>UW-C283</code>) but the ADR text was never
+amended.</p>
+<p>Judgment: section 5's columns are intent (the validator now caps by them); section 6's
+15-22% should be demoted to a descriptive central tendency, not a per-cell constraint.</p>
+<h3 id="5-section-5s-25-35-of-nodes-are-terminals-gamebook-contradicts-the-2026-08-18-owner-ruling-and-the-post-ruling-catalog">5. Section 5's "~25-35% of nodes are terminals" (gamebook) contradicts the 2026-08-18 owner ruling and the post-ruling catalog<a class="headerlink" href="#5-section-5s-25-35-of-nodes-are-terminals-gamebook-contradicts-the-2026-08-18-owner-ruling-and-the-post-ruling-catalog" title="Permanent link">&para;</a></h3>
+<p><code>band_profile.py::_ENDINGS_FRACTION</code> records: "The gamebook fraction was 0.25 until
+2026-08-18, implementing ADR-011 section 5's ASSERTION ... RULED 2026-08-18 (owner): 0.12
+... 0.25 sitting ABOVE the prose fraction had the genre relationship backwards." Five
+post-ruling gamebooks ship at 13.0-15.8% terminals (part b). The ADR text still asserts
+25-35%.</p>
+<p>Judgment: the ruling is intent; the ADR sentence is stale prose.</p>
+<h3 id="6-section-10s-options-per-choice-3-4-contradicts-section-6s-locked-2-3-while-claiming-section-6-is-unchanged">6. Section 10's options-per-choice (3-4) contradicts section 6's locked 2-3 while claiming section 6 is "unchanged"<a class="headerlink" href="#6-section-10s-options-per-choice-3-4-contradicts-section-6s-locked-2-3-while-claiming-section-6-is-unchanged" title="Permanent link">&para;</a></h3>
+<p>Section 6: "choices per decision 2-3" (reaffirmed in the section 7 clarification). Section
+10 table: "Options per choice" = 3 at 8-11/10-13 and 3-4 at 13-16/16+, followed by
+"Relationship to the locked constants of section 6: unchanged." 4 &gt; 3; the no-change claim
+is false, and 8-11/10-13's fixed "3" also excludes the 2-option decisions section 6
+permits.</p>
+<p>Judgment: section 10 is the later, owner-ratified decision (D15, 2026-08-01); fix section 6
+to "2-4 per the section 10 band column" and delete or re-scope the "unchanged" claim.</p>
+<h3 id="7-section-3-per-node-hard-maxima-exceed-section-10s-words-per-stop-caps-in-every-band">7. Section 3 per-node hard maxima exceed section 10's words-per-stop caps in every band<a class="headerlink" href="#7-section-3-per-node-hard-maxima-exceed-section-10s-words-per-stop-caps-in-every-band" title="Permanent link">&para;</a></h3>
+<p>Section 10 says "the per-node ceilings of section 3 remain as authoring guardrails inside a
+stop", but a stop can never contain a node at those ceilings: (per-node max vs stop max)
+3-5: 90 vs 40; 5-8: 155 vs 70; 8-11: 220 vs 135; 10-13: 220 vs 150; 13-16 prose: 310 vs
+200; 16+ prose: 385 vs 230. Worse at the page bands (where, per ADR-026, one stop = one
+node): the page cap equals the section 3 MEAN exactly (40/40, 70/70), so the mandated story
+mean is achievable only if every page sits at the cap, and the advisory band's upper half
+(41-55, 71-95) is unusable. At flowed bands the means allow only ~1.3 mean-sized nodes per
+stop, making the "flowed multi-node passage" of ADR-026 the exception rather than the
+design case.</p>
+<p>Judgment: neither table is obviously wrong alone; the missing piece is a precedence rule.
+Intent (per ADR-026's framing of stops as FELT page size) is that stop sizes are soft
+targets and the section 3 per-node max is the hard gate; the ADR must say so, and the
+3-5/5-8 page caps should be raised to the section 3 advisory maxima (55, 95) or the
+advisory bands narrowed, one or the other.</p>
+<h3 id="8-section-1a-mvp-tier-vs-section-6s-all-cells">8. Section 1a (MVP tier) vs section 6's "all cells"<a class="headerlink" href="#8-section-1a-mvp-tier-vs-section-6s-all-cells" title="Permanent link">&para;</a></h3>
+<p>Section 6 is headed "Constants (research-locked, all cells)"; section 1a sets MVP
+min-to-complete ~4 nodes and waives only the section 4 arc floor. A 4-node path cannot hold
+4 decisions plus 2-3 setup nodes plus a terminal. The three MVP seeds (11/25/32 nodes)
+cannot and do not comply. Minor: needs one scoping sentence.</p>
+<h3 id="9-root-cause-provenance-overreach-section-9-vs-sections-5-6">9. Root cause: provenance overreach (section 9 vs sections 5-6)<a class="headerlink" href="#9-root-cause-provenance-overreach-section-9-vs-sections-5-6" title="Permanent link">&para;</a></h3>
+<p>Section 9 itself grades only 8-11 as high-confidence and calls 3-5/16+ "product-defined";
+the reconciliation pins the measured figure at "~4-5 average, ~7 longest" for ~90-120-node
+books. Declaring 4-8 "research-locked" across cells whose min-to-complete runs 6 to 37
+nodes extended a local measurement far outside its support. Not a numeric contradiction on
+its own, but it explains why items 1-3 exist.</p>
+<p>Also noted in passing: section 5 silently omits Short rows for 13-16 and 16+ (section 1
+states a cap only for young bands); worth one explanatory sentence.</p>
+<h2 id="b-catalog-reality-check-81-production-skeletons">(b) Catalog-reality check (81 production skeletons)<a class="headerlink" href="#b-catalog-reality-check-81-production-skeletons" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>The 4-8 window is violated in both directions, massively.</strong> Of 60 acyclic production
+  skeletons, 43 exceed 8 max decisions per path (range 2-67; gamebooks 19-67). 16 of 81
+  have a fastest satisfying path with fewer than 4 decisions (as low as 2). Even in the
+  measured 8-11 band, <code>the-tin-whistle-map.json</code> (8-11 Long) runs 11-15 decisions per path.
+  Every <code>sorting_hat</code> skeleton sits at 2-8 (<code>the-cinderwick-exchange</code> has NO path above 3
+  decisions, breaking the floor on every path), which is structural: section 7 prices
+  sorting_hat as "sort + N x (track arc)", node-heavy and decision-light. Every large
+  <code>branch_and_bottleneck</code>/<code>gauntlet</code> breaks the ceiling; e.g. <code>the-observatory-shift</code>
+  (10-13 Medium) 21, <code>the-ashfall-expedition</code> (16+ Long gamebook) 43.</li>
+<li><strong>Nothing enforces the window.</strong> PL-17 (<code>validator/policy.py</code>) gates TOTAL decision-node
+  floors (band minima 1-4 plus <code>_DECISIONS_FRACTION = 0.08 x N</code>), never per-path counts;
+  the only depth budgets (<code>max_depth</code>, 15-93) are hop counts. Sharper: for gauntlet
+  topology, total decisions = per-path decisions, so the validator's own 0.08 floor (e.g.<blockquote>
+<p>= 51 at a 632-node gauntlet like <code>the-last-cartage</code>) REQUIRES breaking section 6. An
+  enforced rule derived from ADR-011 forces violation of ADR-011's constant.</p>
+</blockquote>
+</li>
+<li><strong>Endings envelopes:</strong> 7 skeletons exceed their cell's endings ceiling (5 of them at 3-5,
+  e.g. <code>the-big-cardboard-box</code> 18 vs cap 6, including <code>the-last-blue-cup</code>, which
+  <code>band_profile.py</code> notes was authored to the strict bar, evidence the young-band columns
+  are miscalibrated, not the books); <code>the-mapmakers-island</code> (10-13 Long) has 72 endings vs
+  cap 48 (32% of nodes, also above section 6's 22%); <code>the-clockwork-menagerie</code> sits one
+  below the 8-11 Long floor (27 vs 28).</li>
+<li><strong>Prose ending share vs section 6's 15-22%:</strong> 0 of 62 prose skeletons fall below 15%; 15
+  sit above 22% (the whole 3-5 shelf runs 29-41%).</li>
+<li><strong>Gamebook terminal share:</strong> 14 older gamebooks at 27.6-33.3% (matching the deprecated
+  25-35% text), 5 newer at 13.0-15.8% (matching the ruled 0.12 floor). The catalog now
+  straddles two regimes; the ADR text describes only the abandoned one.</li>
+<li><strong>min-to-complete floors:</strong> 10 skeletons have a structural shortest satisfying path below
+  their cell floor (e.g. <code>the-longwinter-station</code> 9 vs 23; <code>the-hollow-sea</code> 9 vs 20;
+  <code>the-winter-of-the-wolf-queen</code> 11 vs 17), all loop-bearing <code>open_map</code>/hub shapes. Caveat:
+  computed ignoring choice conditions; a condition-aware walk may lengthen these, so treat
+  as candidates, not verdicts.</li>
+</ul>
+<h2 id="recommended-amendments">&copy; Recommended amendments<a class="headerlink" href="#recommended-amendments" title="Permanent link">&para;</a></h2>
+<p>Fix the constant:</p>
+<ol>
+<li><strong>Section 6, decisions per path:</strong> replace the flat "~4-8, all cells" with a derived
+   per-cell window, anchored the way everything else in the ADR is anchored:
+   decisions-per-path on the fastest finish ~ <code>ceil(min-&gt;complete_words / words-per-stop) - 1</code>
+   (lower edge), with an upper edge tied to the arc-ceiling multiple (~2.5x) rather than a
+   universal 8. Keep the true invariant explicit: decisions grow with min-to-complete, not
+   with total nodes ("length adds breadth, not depth", formalized). Retain "~4-8" only as
+   the historical JHM anchor for the 8-11/10-13 Short prose region it was measured in.</li>
+<li><strong>Gamebook cells:</strong> exempt from any single-digit window; state decisions-per-path there
+   as spine-scale (catalog-measured 12-43 min, 19-67 max) and let the PL-17 breadth floor
+   (0.08 x N) be the cited quantity, noting that for gauntlet total = per-path by
+   construction.</li>
+<li><strong>3-5 floor:</strong> lower the per-path decision floor to match <code>band_profile</code>'s
+   <code>min_decisions</code> (1 at 3-5, 2 at 5-8), which is what is actually enforced and what the
+   cells' arithmetic permits.</li>
+<li><strong>Young-band endings columns (section 5):</strong> recalibrate the 3-5/5-8 ceilings upward
+   against the committed strict-bar skeletons (currently 29-41% shares vs caps implying
+   ~17-20%); section 9 already licenses this ("product-defined ... tunable").</li>
+<li><strong>Section 5 gamebook preamble:</strong> replace "~25-35% of nodes are terminals" with the ruled<blockquote>
+<p>= 12% floor (2026-08-18 ruling, <code>UW-C291</code> / <code>gamebook-thresholds-options.md</code>), noting
+   the two shipped regimes.</p>
+</blockquote>
+</li>
+</ol>
+<p>Fix the prose:</p>
+<ol>
+<li><strong>Section 6 endings fraction:</strong> demote "prose ~15-22%" to a corpus-level descriptive
+   figure and state that the section 5 per-cell columns govern (matching the shipped
+   <code>_CELL_ENDING_BOUNDS</code> cap, <code>UW-C283</code>); acknowledge the corner inversions it caused.</li>
+<li><strong>Section 10 closing paragraph:</strong> delete or re-scope "Relationship to the locked
+   constants of section 6: unchanged"; amend section 6's choices-per-decision to "2-4, per
+   the section 10 band column".</li>
+<li><strong>Sections 3 vs 10 precedence:</strong> add one rule: the section 3 per-node max is the hard
+   gate; words-per-stop is the advisory felt-page target a stop should usually meet and a
+   single large node may exceed. At the page bands, raise the words-per-stop upper bounds
+   to the section 3 advisory maxima (3-5: 40 -&gt; 55; 5-8: 70 -&gt; 95) so the required story
+   mean is not pinned to the cap.</li>
+<li><strong>Section 1a:</strong> extend the waiver sentence so MVP shells are exempt from the section 6
+   decision floor as well as the section 4 arc floor.</li>
+<li><strong>Section 5:</strong> one sentence stating why 13-16/16+ have no Short tier (or add the rows
+    deliberately).</li>
+</ol>
 
 
 
@@ -3574,7 +3759,7 @@ in decision 5 rather than avoided.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 21:47:22 UTC">August 22, 2026</span>
   </span>
 
     
@@ -3651,10 +3836,10 @@ in decision 5 rather than avoided.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
