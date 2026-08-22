@@ -120,5 +120,9 @@
  "D__r2__claude-haiku-subagent": {
   "checker_runs": 10,
   "reported": "FAIL"
+ },
+ "D__r1__claude-fable-subagent": {
+  "checker_runs": 3,
+  "reported": "PASS"
  }
 }

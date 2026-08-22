@@ -1,0 +1,877 @@
+{
+ "schema_version": "2.0",
+ "id": "thirty-third-knight",
+ "version": 1,
+ "title": "The Thirty-Third Piece",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 6.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "curiosity",
+   "friendship",
+   "history",
+   "craftsmanship",
+   "perseverance"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 14,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "shop-morning",
+ "nodes": [
+  {
+   "id": "shop-morning",
+   "body": "<<FILL role=setup words=40 beats='Rainy Saturday; Wren ducks into Fennwick Curios out of the downpour; among barometers and tea tins a battered walnut chess box waits on the low shelf'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-shop-1",
+     "label": "Open the chess box",
+     "target": "chess-box"
+    }
+   ]
+  },
+  {
+   "id": "chess-box",
+   "body": "<<FILL role=setup words=105 beats='Wren tips the pieces onto the shelf and counts; thirty three pieces, one white knight too many; the odd knight is pale hornbeam with a blue glass eye and the initials R V scratched under its base'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-start-1",
+     "label": "Dig through the shelf",
+     "target": "shelf-hunt"
+    },
+    {
+     "id": "c-start-2",
+     "label": "Question Mr Fenn",
+     "target": "counter-talk"
+    },
+    {
+     "id": "c-start-3",
+     "label": "Explore the back room",
+     "target": "back-room"
+    }
+   ]
+  },
+  {
+   "id": "shelf-hunt",
+   "body": "<<FILL role=explore words=100 beats='Wren clears tea tins and cracked frames around the chess box; the torn lid liner hides a faded label reading Brill; a Tanner Row workshop wrapper lines the bottom of the box'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-shelf-1",
+     "label": "Find the Tanner Row workshop",
+     "target": "workshop-door"
+    },
+    {
+     "id": "c-shelf-2",
+     "label": "Try the city museum",
+     "target": "museum-steps"
+    },
+    {
+     "id": "c-shelf-3",
+     "label": "Visit the Saturday chess club",
+     "target": "club-hall"
+    }
+   ]
+  },
+  {
+   "id": "counter-talk",
+   "body": "<<FILL role=explore words=100 beats='Mr Fenn checks his receipt book; the set came in a house clearance from the Brill house on Sycamore Lane; he sells Wren the set for four pounds and mentions the chess club that has met at Millbrook hall for fifty years'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-counter-1",
+     "label": "Ask the Tanner Row carvers",
+     "target": "workshop-door"
+    },
+    {
+     "id": "c-counter-2",
+     "label": "Ask at the museum",
+     "target": "museum-steps"
+    },
+    {
+     "id": "c-counter-3",
+     "label": "Head to Millbrook hall",
+     "target": "club-hall"
+    }
+   ]
+  },
+  {
+   "id": "back-room",
+   "body": "<<FILL role=explore words=105 beats='Clearance crates from Sycamore Lane hold a shoebox of postcards addressed to E Brill, every one a chess move in neat ink, postmarked from a canal town called Berrow; one card shows a sketch of a knight with a blue eye'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-back-1",
+     "label": "Show the card on Tanner Row",
+     "target": "workshop-door"
+    },
+    {
+     "id": "c-back-2",
+     "label": "Bring it to the museum",
+     "target": "museum-steps"
+    },
+    {
+     "id": "c-back-3",
+     "label": "Take it to the chess club",
+     "target": "club-hall"
+    }
+   ]
+  },
+  {
+   "id": "workshop-door",
+   "body": "<<FILL role=decision words=105 beats='Tanner Row is a lane of workshops; number nine bears a faded sign for Varga and Son Woodcarvers, the R matching the scratched initial; fresh shavings by the drain say somebody still works here some days'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-wsdoor-1",
+     "label": "Examine the workbench",
+     "target": "ws-bench"
+    },
+    {
+     "id": "c-wsdoor-2",
+     "label": "Call the chalked number",
+     "target": "ws-milo"
+    },
+    {
+     "id": "c-wsdoor-3",
+     "label": "Search for order books",
+     "target": "ws-ledger"
+    }
+   ]
+  },
+  {
+   "id": "ws-bench",
+   "body": "<<FILL role=explore words=100 beats='The bench bears a carved test strip of manes and mouths, practice knights in a row; the long stroke style matches the odd knight exactly, and one narrow gouge on the wall has a hornbeam handle capped with blue glass'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-wsbench-1",
+     "label": "Stop and note it down",
+     "target": "ws-end-cold"
+    },
+    {
+     "id": "c-wsbench-2",
+     "label": "Ask about the canal boat",
+     "target": "ws-canal"
+    },
+    {
+     "id": "c-wsbench-3",
+     "label": "Hunt for old letters",
+     "target": "ws-letters"
+    }
+   ]
+  },
+  {
+   "id": "ws-milo",
+   "body": "<<FILL role=explore words=100 beats='Milo Varga arrives with keys and coffee; he recognises the knight at once and says his grandmother Ruta carved a replacement piece on the boat to England in 1959; he offers the workshop records'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-wsmilo-1",
+     "label": "Thank him and go",
+     "target": "ws-end-cold"
+    },
+    {
+     "id": "c-wsmilo-2",
+     "label": "Ask about the crossing",
+     "target": "ws-canal"
+    },
+    {
+     "id": "c-wsmilo-3",
+     "label": "Ask who it was for",
+     "target": "ws-letters"
+    }
+   ]
+  },
+  {
+   "id": "ws-ledger",
+   "body": "<<FILL role=explore words=95 beats='The order ledger lists sets sold since 1961 but the first page is water damaged; a margin note from 1959 reads one knight, no charge, for E B'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-wsledg-1",
+     "label": "Leave it a nice story",
+     "target": "ws-end-cold"
+    },
+    {
+     "id": "c-wsledg-2",
+     "label": "Ask about 1959",
+     "target": "ws-canal"
+    },
+    {
+     "id": "c-wsledg-3",
+     "label": "Chase the E B note",
+     "target": "ws-letters"
+    }
+   ]
+  },
+  {
+   "id": "ws-end-cold",
+   "body": "<<FILL role=ending words=100 beats='Wren shelves the mystery for now; the knight sits on the windowsill at home, blue eye catching the light, its story half told; maybe next summer the trail warms again'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-ws-cold",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Trail Sleeps"
+   }
+  },
+  {
+   "id": "ws-canal",
+   "body": "<<FILL role=decision words=105 beats='Milo explains Ruta came from Hungary in 1959, working lock to lock along the canal; she carved through every delay on a narrowboat called the Kingfisher; Berrow Lock still keeps the boat records'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-wscanal-1",
+     "label": "Hear the whole crossing story",
+     "target": "ws-end-drift"
+    },
+    {
+     "id": "c-wscanal-2",
+     "label": "Match the maker marks",
+     "target": "gate-initials"
+    },
+    {
+     "id": "c-wscanal-3",
+     "label": "Lift the loose felt",
+     "target": "gate-felt"
+    }
+   ]
+  },
+  {
+   "id": "ws-letters",
+   "body": "<<FILL role=decision words=100 beats='Milo digs out a bundle of letters Ruta kept, all signed Edith Brill, full of chess moves and thanks for the knight with the blue eye; the top letter mentions a note hidden under the felt'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-wslet-1",
+     "label": "Hear the whole story from Milo",
+     "target": "ws-end-drift"
+    },
+    {
+     "id": "c-wslet-2",
+     "label": "Check under the felt",
+     "target": "gate-felt"
+    },
+    {
+     "id": "c-wslet-3",
+     "label": "Follow the name Edith",
+     "target": "gate-edith"
+    }
+   ]
+  },
+  {
+   "id": "ws-end-drift",
+   "body": "<<FILL role=ending words=105 beats='Milo talks until the streetlights come on; Ruta carved the knight mid crossing to replace one Edith lost in the flood, and the blue glass came from her broken necklace; Wren writes it all down and the knight finally has its beginning'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-ws-drift",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Carver on the Water"
+   }
+  },
+  {
+   "id": "museum-steps",
+   "body": "<<FILL role=decision words=105 beats='The city museum games hall shows a boxwood chess set labelled on loan from the Brill family, missing one white knight; the gap in the velvet is exactly knight shaped; Wren carries the odd knight wrapped in a clean sock'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-musteps-1",
+     "label": "Read the case label",
+     "target": "mu-exhibit"
+    },
+    {
+     "id": "c-musteps-2",
+     "label": "Find the curator",
+     "target": "mu-okafor"
+    },
+    {
+     "id": "c-musteps-3",
+     "label": "Search old newspapers",
+     "target": "mu-microfilm"
+    }
+   ]
+  },
+  {
+   "id": "mu-exhibit",
+   "body": "<<FILL role=explore words=100 beats='The label credits the set to Edith Brill, Millbrook champion 1958 to 1971, and notes one knight lost in transit in 1959 and replaced by hand; the replacement is not on display'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-muex-1",
+     "label": "Photocopy the label file",
+     "target": "mu-end-copy"
+    },
+    {
+     "id": "c-muex-2",
+     "label": "Ask to see the storeroom",
+     "target": "mu-storeroom"
+    },
+    {
+     "id": "c-muex-3",
+     "label": "Open the donor file",
+     "target": "mu-donorfile"
+    }
+   ]
+  },
+  {
+   "id": "mu-okafor",
+   "body": "<<FILL role=explore words=105 beats='Ms Okafor unwraps the knight with cotton gloves and goes very still; she says the museum tried for years to borrow this exact piece and Mrs Brill always answered that it was still travelling'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-muoka-1",
+     "label": "Take the photocopies home",
+     "target": "mu-end-copy"
+    },
+    {
+     "id": "c-muoka-2",
+     "label": "Follow her to the storeroom",
+     "target": "mu-storeroom"
+    },
+    {
+     "id": "c-muoka-3",
+     "label": "Ask about the Brill loan",
+     "target": "mu-donorfile"
+    }
+   ]
+  },
+  {
+   "id": "mu-microfilm",
+   "body": "<<FILL role=explore words=95 beats='A 1959 Gazette page reports a canal flood at Berrow delaying the spring freight; a smaller piece notes the chess club postponed a match for a member whose set was lost in the flood'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-mufilm-1",
+     "label": "Print the clipping and stop",
+     "target": "mu-end-copy"
+    },
+    {
+     "id": "c-mufilm-2",
+     "label": "Follow the crate trail",
+     "target": "mu-storeroom"
+    },
+    {
+     "id": "c-mufilm-3",
+     "label": "Search the donor records",
+     "target": "mu-donorfile"
+    }
+   ]
+  },
+  {
+   "id": "mu-end-copy",
+   "body": "<<FILL role=ending words=100 beats='Wren leaves with photocopies and a museum pencil; the knight has a name attached now, Ruta, but the papers cannot say why the piece was carved or for whom it was meant'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-mu-copy",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Photocopy Trail"
+   }
+  },
+  {
+   "id": "mu-storeroom",
+   "body": "<<FILL role=decision words=105 beats='In the storeroom Ms Okafor opens the Brill crate; inside lies the original velvet tray with its knight shaped gap and an envelope taped under the lid marked for the traveller'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-mustore-1",
+     "label": "Fit the knight in the gap",
+     "target": "mu-end-glass"
+    },
+    {
+     "id": "c-mustore-2",
+     "label": "Follow the name Edith",
+     "target": "gate-edith"
+    },
+    {
+     "id": "c-mustore-3",
+     "label": "Match the base rubbing",
+     "target": "gate-initials"
+    }
+   ]
+  },
+  {
+   "id": "mu-donorfile",
+   "body": "<<FILL role=decision words=100 beats='The donor file holds a phone number for a granddaughter called Nell, a canal map marked at Berrow Lock, and a pencilled instruction from Mrs Brill; ask whoever finds the knight to look under its feet'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-mudfile-1",
+     "label": "Phone Nell right away",
+     "target": "mu-end-file"
+    },
+    {
+     "id": "c-mudfile-2",
+     "label": "Match the workshop stamp",
+     "target": "gate-initials"
+    },
+    {
+     "id": "c-mudfile-3",
+     "label": "Look under its feet",
+     "target": "gate-felt"
+    }
+   ]
+  },
+  {
+   "id": "mu-end-glass",
+   "body": "<<FILL role=ending words=105 beats='The hornbeam knight settles into the velvet gap as if it never left; Ms Okafor photographs the reunited set while Wren reads the taped envelope aloud, a thank you from Edith to Ruta dated 1959'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-mu-glass",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Perfect Fit"
+   }
+  },
+  {
+   "id": "mu-end-file",
+   "body": "<<FILL role=ending words=100 beats='Nell answers on the third ring and promises to visit the shop on Saturday; Wren hands over the folder and the search passes to the Brill family, complete but finished by someone else'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-mu-file",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Handed On"
+   }
+  },
+  {
+   "id": "club-hall",
+   "body": "<<FILL role=decision words=105 beats='Saturday morning at Millbrook community hall; folding tables, ticking clocks, and a banner saying Millbrook Chess Club, founded 1948; between games the players pass the odd knight around'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-club-1",
+     "label": "Approach the oldest player",
+     "target": "cl-veteran"
+    },
+    {
+     "id": "c-club-2",
+     "label": "Inspect the trophy cabinet",
+     "target": "cl-trophy"
+    },
+    {
+     "id": "c-club-3",
+     "label": "Ask about postal chess",
+     "target": "cl-mailgames"
+    }
+   ]
+  },
+  {
+   "id": "cl-veteran",
+   "body": "<<FILL role=explore words=100 beats='Old Mr Adeyemi, club member since 1961, squints at the knight and chuckles; he says that piece beat him forty times, its owner Edith Brill called it the ferryman, and she moved to Riverview care home when her house was cleared'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-clvet-1",
+     "label": "Leave the story there",
+     "target": "cl-end-brushoff"
+    },
+    {
+     "id": "c-clvet-2",
+     "label": "Visit Riverview home",
+     "target": "cl-brillhouse"
+    },
+    {
+     "id": "c-clvet-3",
+     "label": "Ask to see the last card",
+     "target": "cl-postcards"
+    }
+   ]
+  },
+  {
+   "id": "cl-trophy",
+   "body": "<<FILL role=explore words=105 beats='The cabinet holds the Brill Shield, awarded yearly; the engraved plate says given by Edith Brill in memory of a knight lost and a friend found on the Berrow crossing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-cltro-1",
+     "label": "Put the shield back",
+     "target": "cl-end-brushoff"
+    },
+    {
+     "id": "c-cltro-2",
+     "label": "Ask where Edith is now",
+     "target": "cl-brillhouse"
+    },
+    {
+     "id": "c-cltro-3",
+     "label": "Find her old letters",
+     "target": "cl-postcards"
+    }
+   ]
+  },
+  {
+   "id": "cl-mailgames",
+   "body": "<<FILL role=explore words=100 beats='A biscuit tin of postal game records includes an unfinished Brill Varga game, forty years of moves in two inks; the club secretary says both players kept promising one last move'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-clmail-1",
+     "label": "Put the tin back",
+     "target": "cl-end-brushoff"
+    },
+    {
+     "id": "c-clmail-2",
+     "label": "Track down Edith Brill",
+     "target": "cl-brillhouse"
+    },
+    {
+     "id": "c-clmail-3",
+     "label": "Copy the game so far",
+     "target": "cl-postcards"
+    }
+   ]
+  },
+  {
+   "id": "cl-end-brushoff",
+   "body": "<<FILL role=ending words=100 beats='The club packs away its boards at noon; Wren pockets the knight, promises to come back some Saturday, and leaves the ferryman story floating in the hall with the smell of instant coffee'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-cl-brushoff",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Packed Away Boards"
+   }
+  },
+  {
+   "id": "cl-brillhouse",
+   "body": "<<FILL role=decision words=105 beats='Riverview care home keeps a chess table in the sunroom; Edith Brill, ninety and sharp eyed, spots the knight at once and says the ferryman has finally ridden home'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-clbrill-1",
+     "label": "Play her the waiting move",
+     "target": "cl-end-match"
+    },
+    {
+     "id": "c-clbrill-2",
+     "label": "Ask what the knight carries",
+     "target": "gate-felt"
+    },
+    {
+     "id": "c-clbrill-3",
+     "label": "Hear the whole Berrow story",
+     "target": "gate-edith"
+    }
+   ]
+  },
+  {
+   "id": "cl-postcards",
+   "body": "<<FILL role=decision words=100 beats='The last card from Ruta, dated years back, offers knight takes rook and a line saying your move, old friend; the address is the Tanner Row workshop; nobody ever replied'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-clpost-1",
+     "label": "Study the stamps and dates",
+     "target": "cl-end-stamp"
+    },
+    {
+     "id": "c-clpost-2",
+     "label": "Bring everything to Edith",
+     "target": "gate-edith"
+    },
+    {
+     "id": "c-clpost-3",
+     "label": "Match the R V initials",
+     "target": "gate-initials"
+    }
+   ]
+  },
+  {
+   "id": "cl-end-match",
+   "body": "<<FILL role=ending words=105 beats='Edith studies the board, plays the move she has saved for years, and laughs like a girl; Wren promises to carry the move to Tanner Row, and Edith names Wren an honorary Millbrook member on the spot'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-cl-match",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Waiting Move"
+   }
+  },
+  {
+   "id": "cl-end-stamp",
+   "body": "<<FILL role=ending words=100 beats='The postmarks trace the whole friendship, Berrow to Millbrook and back, thinning as the years pass; Wren maps them in a notebook and sees the shape of sixty years, though the game itself stays unfinished'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-cl-stamp",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Sixty Years of Stamps"
+   }
+  },
+  {
+   "id": "gate-initials",
+   "body": "<<FILL role=transition words=105 beats='Everything points one way; the R V under the base matches the Varga workshop stamp, the long mane strokes match the bench test strip, and the knight is certainly the work of Ruta Varga in 1959'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-ginit-1",
+     "label": "Unfold what the knight hides",
+     "target": "tr-message"
+    },
+    {
+     "id": "c-ginit-2",
+     "label": "Trace the carver herself",
+     "target": "tr-ruta-story"
+    },
+    {
+     "id": "c-ginit-3",
+     "label": "Report back to Edith",
+     "target": "tr-edith-visit"
+    }
+   ]
+  },
+  {
+   "id": "gate-felt",
+   "body": "<<FILL role=transition words=100 beats='With tweezers and lamplight Wren eases the newer felt from the base; beneath lies a square of paper folded eight times, brown at the creases, covered in tiny chess notation'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-gfelt-1",
+     "label": "Unfold the paper",
+     "target": "tr-message"
+    },
+    {
+     "id": "c-gfelt-2",
+     "label": "Ask Milo what it means",
+     "target": "tr-ruta-story"
+    },
+    {
+     "id": "c-gfelt-3",
+     "label": "Take it to Edith unopened",
+     "target": "tr-edith-visit"
+    }
+   ]
+  },
+  {
+   "id": "gate-edith",
+   "body": "<<FILL role=transition words=105 beats='Edith and Nell lay the story out; the knight was carved for Edith after the flood took her crate at Berrow, but Edith says the piece carried something more than luck and never told her what'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-gedith-1",
+     "label": "Search the knight for a note",
+     "target": "tr-message"
+    },
+    {
+     "id": "c-gedith-2",
+     "label": "Find out about Ruta now",
+     "target": "tr-ruta-story"
+    },
+    {
+     "id": "c-gedith-3",
+     "label": "Sit with Edith and plan",
+     "target": "tr-edith-visit"
+    }
+   ]
+  },
+  {
+   "id": "tr-message",
+   "body": "<<FILL role=decision words=105 beats='The unfolded paper holds the score of the first game Edith and Ruta ever played, on the boat deck in 1959, plus one extra move written in fresher ink decades later; the game is not over'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-trmsg-1",
+     "label": "Copy the score and stop",
+     "target": "tr-end-note"
+    },
+    {
+     "id": "c-trmsg-2",
+     "label": "Plan a reunion game",
+     "target": "tr-reunion-plan"
+    },
+    {
+     "id": "c-trmsg-3",
+     "label": "Verify the writing with Milo",
+     "target": "tr-carve-proof"
+    }
+   ]
+  },
+  {
+   "id": "tr-ruta-story",
+   "body": "<<FILL role=decision words=100 beats='Milo, Nell, and Mr Adeyemi pool what they know; Ruta Varga, ninety three, still visits the Tanner Row workshop on Thursdays, and nobody ever told her where the Brill chess set went'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-trruta-1",
+     "label": "Let the families take over",
+     "target": "tr-end-fade"
+    },
+    {
+     "id": "c-trruta-2",
+     "label": "Confirm the knight with Ruta",
+     "target": "tr-carve-proof"
+    },
+    {
+     "id": "c-trruta-3",
+     "label": "Arrange a meeting",
+     "target": "tr-reunion-plan"
+    }
+   ]
+  },
+  {
+   "id": "tr-edith-visit",
+   "body": "<<FILL role=decision words=100 beats='In the Riverview sunroom Edith holds the knight and the news together; she says one game has waited long enough and asks Wren to help her answer it properly, in person if her old friend is willing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-tredith-1",
+     "label": "Post the answering move",
+     "target": "tr-end-friend"
+    },
+    {
+     "id": "c-tredith-2",
+     "label": "Set up the meeting",
+     "target": "tr-reunion-plan"
+    },
+    {
+     "id": "c-tredith-3",
+     "label": "Double check with the workshop",
+     "target": "tr-carve-proof"
+    }
+   ]
+  },
+  {
+   "id": "tr-end-note",
+   "body": "<<FILL role=ending words=100 beats='Wren copies the sixty year game into a fresh notebook, tucks the original back under the felt, and returns the knight to the box; the story is safe on paper even if the players never meet'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-tr-note",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Copied Game"
+   }
+  },
+  {
+   "id": "tr-end-fade",
+   "body": "<<FILL role=ending words=100 beats='The grown ups take charge and the plans slow to polite letters; Thursday visits are missed, the knight waits in a drawer at Riverview, and Wren watches the best chance drift while everyone stays busy'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-tr-fade",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Left in the Drawer"
+   }
+  },
+  {
+   "id": "tr-end-friend",
+   "body": "<<FILL role=ending words=105 beats='Edith dictates her answering move and a letter that begins dear Ruta, sixty seven years is not too late; a week later a reply arrives with one more move and a pressed canal side flower; the game and the friendship are alive again'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-tr-friend",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Your Move, Old Friend"
+   }
+  },
+  {
+   "id": "tr-reunion-plan",
+   "body": "<<FILL role=climax words=110 beats='Plans knit together fast; Milo will bring Ruta on Thursday, Nell will bring Edith, and Mr Fenn clears the shop window for a table; Wren sets up the reunited Brill set as the two old friends arrive'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-trplan-1",
+     "label": "Watch the game end",
+     "target": "end-two-knights"
+    },
+    {
+     "id": "c-trplan-2",
+     "label": "Ask about the hidden note",
+     "target": "end-letter-read"
+    },
+    {
+     "id": "c-trplan-3",
+     "label": "Let them finish the postal game",
+     "target": "end-game-finished"
+    }
+   ]
+  },
+  {
+   "id": "tr-carve-proof",
+   "body": "<<FILL role=climax words=110 beats='On Thursday Ruta herself turns the knight in knotted fingers, names the gouge that cut every stroke, and taps the blue glass eye from her old necklace; then she asks, very quietly, whether Edith still plays, and Wren brings the two of them together'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-trproof-1",
+     "label": "Stay for the whole game",
+     "target": "end-two-knights"
+    },
+    {
+     "id": "c-trproof-2",
+     "label": "Hear the note read aloud",
+     "target": "end-letter-read"
+    },
+    {
+     "id": "c-trproof-3",
+     "label": "See the last move played",
+     "target": "end-game-finished"
+    }
+   ]
+  },
+  {
+   "id": "end-two-knights",
+   "body": "<<FILL role=ending words=110 beats='The game ends in a draw both women claim to have planned; the two white knights stand side by side on the board, boxwood and hornbeam, and the club votes to hold a Ferryman match every year with Wren moving first'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-two-knights",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Two Knights Together"
+   }
+  },
+  {
+   "id": "end-letter-read",
+   "body": "<<FILL role=ending words=105 beats='Ruta unfolds the paper from under the felt and reads the 1959 score aloud; she admits she hid their first game so it could never be lost like the crate, and Edith laughs until she cries; Wren finally knows why the knight was carved'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-letter-read",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Note Under the Felt"
+   }
+  },
+  {
+   "id": "end-game-finished",
+   "body": "<<FILL role=ending words=110 beats='Knight takes rook is answered at last; the postal game of forty years finishes in eleven more moves and ends with both players shaking hands over the board; the scoresheet goes to the museum with Wren signed as witness'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-game-finished",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Last Move"
+   }
+  }
+ ]
+}
