@@ -2952,10 +2952,19 @@ _M4_MODE_INSERT_DECISION = "insert-decision"
 _M4_VARIANT_RECONVERGENCE = "reconvergence"
 _M4_VARIANT_MICRO_STUB = "micro-stub"
 
-# ADR-011 section 6 decisions-per-path window (4-8 decisions per playthrough).
+# Historical ADR-011 section 6 decisions-per-path window (4-8 per playthrough).
 # The gate does not enforce decisions-per-path (design 4.8), so M4 self-enforces
 # it: an operation may not push a path above the ceiling or drop a path below the
 # floor (the two-sided monotonic check in ``_decision_window_reason``).
+# #ASSUME: data-integrity: ADR-011 section 6 was amended 2026-08-22 (`UW-C322`):
+# the flat 4-8 window was replaced by derived per-cell windows (e.g. 6-15 at
+# 8-11 Short up to 17-43 at 16+ Long prose), so these constants now under-state
+# the amended ceilings and over-state the young-band floors. Kept as-is for now:
+# the guard is pre-gate hygiene, not the safety authority (the gate is), and the
+# mismatch only over-rejects at the amended ceilings while under-protecting the
+# higher flowed-band floors. Re-deriving the guard per cell is `UW-C325`.
+# #VERIFY: when `UW-C325` lands, key the window off the parent's
+# (band, length, style) cell rather than these two module constants.
 _MIN_DECISIONS_PER_PATH = 4
 _MAX_DECISIONS_PER_PATH = 8
 

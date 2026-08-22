@@ -559,6 +559,15 @@ spend its node budget. Rather than picking a repair blind, an internal-consisten
 ADR-011 is commissioned (in progress); the ruling follows the audit. M4 insert-decision stays
 ineligible on window-breaching parents until then.
 
+**Resolved 2026-08-22.** The audit (`adr-011-consistency-audit-2026-08-21.md`) confirmed the
+owner's judgment: the constant is arithmetically unsatisfiable in 10 of 18 production cells
+against the ADR's own sections 3, 5 and 10. The owner ratified the cleanup ("clean up ADR 11"),
+and the audit's full 10-point amendment set is applied as ADR-011 section 11: derived per-cell
+decision windows replace the flat 4-8, gamebooks are exempted in favor of the PL-17 breadth
+floor, the young-band endings ceilings are recalibrated (mirrored into `_CELL_ENDING_BOUNDS`),
+and the stale prose assertions are corrected in place. `UW-C322` is done; re-deriving M4's
+guard per cell, which is what re-enables insert-decision on catalog parents, is `UW-C325`.
+
 ### 9.2 Bulk vendor direction: cost-effective models, engineered to quality
 
 The owner expects the answer to be option B or D, not sonnet-for-everything: sonnet-5's

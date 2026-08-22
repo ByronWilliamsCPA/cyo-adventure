@@ -308,7 +308,8 @@ def test_cell_ending_bounds_match_the_adr_table() -> None:
     being assigned an invented bound.
     """
     assert cell_ending_bounds("10-13", "long", "prose") == (32, 48)
-    assert cell_ending_bounds("3-5", "short", "prose") == (2, 4)
+    # 2-8 is the 2026-08-22 amended young-band ceiling (ADR-011 section 11 item 4).
+    assert cell_ending_bounds("3-5", "short", "prose") == (2, 8)
     assert cell_ending_bounds("16+", "long", "gamebook") is None
     assert cell_ending_bounds("8-11", None, "prose") is None
 
