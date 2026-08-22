@@ -17,8 +17,9 @@ always receives plain JSON.
 
 from __future__ import annotations
 
+import json
 import time
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING, Final, Literal, cast
 
 import httpx
 
@@ -53,6 +54,82 @@ _LEG_FATAL_STATUS: Final[frozenset[int]] = frozenset({400, 401, 402, 403, 404})
 # so an out-of-range value is a type error at the call site, not a silent
 # forward of an invalid ``reasoning.effort`` to the API.
 _Effort = Literal["off", "low", "medium", "high"]
+
+# Longest provider diagnostic carried into an error message. Long enough for a
+# context-overflow message with its token arithmetic, short enough that a
+# hostile or degenerate error body cannot balloon logs.
+_ERROR_DETAIL_MAX_CHARS = 240
+
+# The exact substring ``_empty_content_message`` renders for a zero-content
+# `content_filter` stop (``finish_reason={value!r}``), matched by the
+# `UW-C325` interim retry cap in ``complete``. A structured field would be
+# cleaner, but the message is authored two functions away in this module and
+# the repr form is deterministic.
+_CONTENT_FILTER_MARKER = "finish_reason='content_filter'"
+
+# Zero-content `content_filter` stops tolerated per prompt before the leg is
+# ended (`UW-C325` interim, ruled 2026-08-21): the measured third identical
+# attempt bought nothing.
+_MAX_CONTENT_FILTER_STOPS = 2
+
+
+def _error_detail(response: httpx.Response) -> str:
+    """Extract the structured provider error message from a failed response.
+
+    Reads only ``error.message`` (and OpenRouter's nested
+    ``error.metadata.raw`` payload's own ``error.message``, where the real
+    upstream diagnostic lives), never the raw body, which can echo request
+    content. Returns "" when no structured message exists.
+
+    Args:
+        response: The non-2xx HTTP response.
+
+    Returns:
+        The truncated diagnostic, or "" when none can be extracted.
+    """
+    try:
+        payload: object = response.json()
+    except ValueError:
+        return ""
+    if not isinstance(payload, dict):
+        return ""
+    error = cast("dict[str, object]", payload).get("error")
+    if not isinstance(error, dict):
+        return ""
+    error_map = cast("dict[str, object]", error)
+    message = _nested_raw_message(error_map) or error_map.get("message")
+    if not isinstance(message, str) or not message.strip():
+        return ""
+    return message.strip()[:_ERROR_DETAIL_MAX_CHARS]
+
+
+def _nested_raw_message(error_map: dict[str, object]) -> str | None:
+    """Return the upstream diagnostic inside ``error.metadata.raw``, if any."""
+    metadata = error_map.get("metadata")
+    raw = (
+        cast("dict[str, object]", metadata).get("raw")
+        if isinstance(metadata, dict)
+        else None
+    )
+    if not isinstance(raw, str):
+        return None
+    try:
+        nested: object = json.loads(raw)
+    except ValueError:
+        return None
+    nested_error = (
+        cast("dict[str, object]", nested).get("error")
+        if isinstance(nested, dict)
+        else None
+    )
+    message = (
+        cast("dict[str, object]", nested_error).get("message")
+        if isinstance(nested_error, dict)
+        else None
+    )
+    if isinstance(message, str) and message.strip():
+        return message
+    return None
 
 
 class OpenRouterProvider:
@@ -114,6 +191,33 @@ class OpenRouterProvider:
     def name(self) -> str:
         """Return the leg label used in logs and the worker provider record."""
         return f"openrouter:{self._model}"
+
+    @property
+    def model(self) -> str:
+        """The model id this leg targets, exposed for cap resolution.
+
+        # #CRITICAL: external resources: cap resolution reads
+        # ``getattr(provider, "model", None)``, and every wrapper
+        # (``MeteredProvider``, ``PiiGuardedProvider``) forwards this
+        # attribute by getattr. Until 2026-08-21 this adapter did not expose
+        # it, so the resolved model was None wherever no ``Settings``
+        # fallback applies: ``generate_story``'s Stage B (which resolves
+        # from the provider alone, and whose own AL-436 comment wrongly
+        # assumed the adapter declared its model) over-asked every low-cap
+        # OpenRouter model, and settings-less callers such as
+        # ``scripts/compare_vendors.py`` resolved the permissive 131,072
+        # default, which made ``MODEL_OUTPUT_CAPS`` unreachable and kept the
+        # ``UW-C302`` chunked path from ever engaging there (measured: HTTP
+        # 400 in 0.6s on ``deepseek/deepseek-v3.2``; `AL-513`/`UW-C319`).
+        # ``fill_skeleton``'s worker call passes ``settings`` and so fell
+        # back to the CONFIGURED model, which is correct until a leg's model
+        # differs from the configuration (the provider-override paths).
+        # #VERIFY: test_provider_contract.py::
+        # test_every_provider_adapter_exposes_its_model asserts every adapter
+        # exposes this property, so the next adapter cannot reintroduce the
+        # blind spot.
+        """
+        return self._model
 
     def _build_messages(self, system: str, user: str) -> list[dict[str, object]]:
         """Build the chat messages, marking the system block cacheable for Anthropic.
@@ -200,8 +304,42 @@ class OpenRouterProvider:
         }
         url = f"{self._base_url}/chat/completions"
 
+        # Interim `UW-C325` policy (ruled 2026-08-21, section 9.5 of
+        # live-structural-round-2026-08-21.md): identical retries cap at TWO
+        # for zero-content `content_filter` stops. The filter fires on the
+        # (skeleton, brief) PAIR and the measured third identical attempt
+        # bought nothing (one pair failed 7 of 7 across runs; the one
+        # intermittent rescue landed on a fresh call, not attempt three), so
+        # the second stop ends the leg. The production design is re-anchoring
+        # the request to a different pairing, which lives above this adapter.
+        filter_stops = 0
+
+        async def attempt() -> Completion:
+            nonlocal filter_stops
+            try:
+                return await self._attempt(url, body, headers)
+            except ProviderError as exc:
+                if not exc.leg_fatal and _CONTENT_FILTER_MARKER in str(exc):
+                    filter_stops += 1
+                    if filter_stops >= _MAX_CONTENT_FILTER_STOPS:
+                        msg = (
+                            "openrouter returned zero content with "
+                            f"finish_reason='content_filter' {filter_stops} "
+                            "times for this prompt; the filter fires on the "
+                            "(skeleton, brief) pair, so further identical "
+                            "retries are withheld (UW-C325); re-anchor the "
+                            "request instead"
+                        )
+                        raise ProviderError(
+                            msg,
+                            provider="openrouter",
+                            model=self._model,
+                            leg_fatal=True,
+                        ) from exc
+                raise
+
         return await run_with_retries(
-            lambda: self._attempt(url, body, headers),
+            attempt,
             provider="openrouter",
             model=self._model,
             max_retries=self._max_retries,
@@ -275,7 +413,18 @@ class OpenRouterProvider:
         # `else` keeps an unexpected 4xx (e.g. 422) leg-fatal too, since retrying
         # a client error cannot help.
         if status in {400, 404}:
-            reason = "invalid or unavailable model"
+            reason = "invalid request or unavailable model"
+            # A 400 carries the provider's own diagnostic (a context
+            # overflow, a parameter rejection), and flattening it cost a
+            # debugging session: the 2026-08-21 chunked leg overflowed a
+            # 163,840-token window by exactly one token and the only
+            # visible message was "invalid or unavailable model"
+            # (`AL-514`/`UW-C320`). Only the STRUCTURED error message is
+            # surfaced (never the raw body, which can echo request
+            # content), and it is truncated.
+            detail = _error_detail(response)
+            if detail:
+                reason = f"{reason}; provider says: {detail}"
         elif status in _LEG_FATAL_STATUS:
             reason = "authentication or credit failure"
         else:

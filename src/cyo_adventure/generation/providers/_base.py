@@ -285,7 +285,18 @@ async def run_with_retries(
         attempts=max_retries,
         error=str(last_exc),
     )
-    msg = f"{provider} transient failure persisted after {max_retries} attempts"
+    # Carry the LAST attempt's own message into the exhaustion error. The
+    # flattened form hid the cause from every recorded leg error: the
+    # 2026-08-20/21 live rounds lost 4 of 15 (skeleton, brief) pairs to
+    # zero-content stops whose raw `finish_reason` was `content_filter` or
+    # None, and each was journalled only as "transient failure persisted"
+    # (`AL-492`/`AL-512`/`UW-C309`). `raise ... from` preserves the chain for
+    # logs, but harness journals record `str(exc)`, so the cause has to live
+    # in the message itself.
+    msg = (
+        f"{provider} transient failure persisted after {max_retries} attempts "
+        f"(last: {last_exc})"
+    )
     raise ProviderError(
         msg, provider=provider, model=model, leg_fatal=False
     ) from last_exc

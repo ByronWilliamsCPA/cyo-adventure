@@ -1,0 +1,2017 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_glass_comet",
+  "version": 1,
+  "title": "The Tidefall Cave",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.5,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "oceanography",
+      "patience",
+      "craft",
+      "resource-management"
+    ],
+    "estimated_minutes": 7,
+    "ending_count": 20,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [
+    {
+      "name": "plates",
+      "type": "int",
+      "initial": 3,
+      "min": 0,
+      "max": 3,
+      "description": "Unexposed glass slides remaining in the wooden carrier."
+    },
+    {
+      "name": "dome_oiled",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the winch sled's rails and pulley have been greased; gates smooth tracking and the perfect shot."
+    },
+    {
+      "name": "clock",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 4,
+      "description": "Night phase: 0 dusk, 1 first hours, 2 the clear window (prime tide), 3 late, 4 dawn edge."
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "You haul the wooden slide-carrier higher on your shoulder and pick your way down the last scramble of rock to Gull Gate. The tide is out, out, out\u2014farther than anyone alive has seen it, the barnacle line high and dry above your head like a tide mark from another century. Below, the sea cave's mouth hangs open, still dripping. Keeper Maren is waiting at the iron door with a storm lantern. 'The winch-sled is yours if you can earn it,' she says, and her voice echoes into the dark. 'Three slides in your box. One night. The glow will not wait.'",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_in",
+          "label": "Step over the threshold before your nerve changes its mind.",
+          "target": "n_plate_box"
+        }
+      ]
+    },
+    {
+      "id": "n_plate_box",
+      "body": "Inside, the cave opens upward like a stone cathedral. The winch-sled waits on its rails, a heavy brass boxcam on a greased sled that runs down to the water's edge. Maren opens your wooden carrier in the lantern light: three glass slides, felt-cushioned, each one hand-coated. 'Last of the batch until autumn,' she says. 'No more emulsion to pour.' You think of the glow down there in the dark water, the one perfect photograph it would take to catch a century's secret. Glass cracks. Emulsion fogs. The sea forgives nothing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_box_nod",
+          "label": "Nod, and ask where to begin.",
+          "target": "n_prep_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_prep_hub",
+      "body": "An hour of dusk left, and the tide is still pulling away below you. Three jobs want doing before the water turns: the winch rails, stiff with old salt and rust, up on the cave ledge; the darkroom tent where slides must be loaded blind; and the tide tables to work out exactly when the glow will rise. You can only give the hour to one of them. The surf sounds patient, waiting.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hub_dome",
+          "label": "Climb to the ledge and check the winch mechanism.",
+          "target": "a1_dome_floor"
+        },
+        {
+          "id": "c_hub_darkroom",
+          "label": "Learn the darkroom tent and the slide holders.",
+          "target": "b1_darkroom"
+        },
+        {
+          "id": "c_hub_charts",
+          "label": "Sit down with the tide tables and the almanac.",
+          "target": "c1_charts"
+        }
+      ]
+    },
+    {
+      "id": "a1_dome_floor",
+      "body": "The winch ledge smells of cold salt and rusted iron. The sled sits on a pair of greased rails that run down the cave wall at a steep angle, the pulley wheel above it crusted with old grease gone hard and grey. Three things catch the lantern: the rails themselves, the hand-crank on the winch drum, and a maintenance log lashed to a cleat with tarred twine.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a1_runners",
+          "label": "Run a thumb along the sled rails.",
+          "target": "a2_runners"
+        },
+        {
+          "id": "c_a1_crank",
+          "label": "Try the crank, one careful turn.",
+          "target": "a3_crank"
+        },
+        {
+          "id": "c_a1_log",
+          "label": "Read the maintenance log first.",
+          "target": "a4_log"
+        }
+      ]
+    },
+    {
+      "id": "a2_runners",
+      "body": "The rails are caked with old grease that has set hard as ship's caulk, rough and gritty with salt. A tin of fresh grease sits on the rock shelf, and working it in properly\u2014scraping the old, laying the new\u2014would take the rest of the dusk hour. The sled needs to track smooth for a long exposure. The light is fading.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a2_oil",
+          "label": "Spend the hour greasing the rails properly.",
+          "target": "a5_oiled",
+          "effects": [
+            {
+              "op": "set",
+              "var": "dome_oiled",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_a2_leave",
+          "label": "Note it and leave the iron as it is.",
+          "target": "a6_left"
+        }
+      ]
+    },
+    {
+      "id": "a3_crank",
+      "body": "The crank turns with a groan like a wooden ship settling in a swell. Something in the pulley drags, not seized but dry as bone. The grease tin catches the last light from the cave mouth, and the sound of water echoes up from below.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a3_oil",
+          "label": "Fetch the tin and grease the pulley before dark.",
+          "target": "a5_oiled",
+          "effects": [
+            {
+              "op": "set",
+              "var": "dome_oiled",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_a3_enough",
+          "label": "One turn worked; that is enough for now.",
+          "target": "a6_left"
+        }
+      ]
+    },
+    {
+      "id": "a4_log",
+      "body": "The log's last page, in a fine copperplate hand, reads: GREASE BEFORE HAULING, underlined twice, signed J.S. 1958. Below it, decades of initials, and then a gap of three years since anyone wrote anything at all. The salt air has yellowed the paper. The tide noise rises.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a4_heed",
+          "label": "Heed the log; grease the mechanism now.",
+          "target": "a5_oiled",
+          "effects": [
+            {
+              "op": "set",
+              "var": "dome_oiled",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_a4_later",
+          "label": "Pocket the advice for later; dusk is short.",
+          "target": "a6_left"
+        }
+      ]
+    },
+    {
+      "id": "a5_oiled",
+      "body": "The fresh grease goes on dark and silky, and the old pulley drinks it like a thirst. By the end, your hands are black with it up to the wrist, but the rails gleam and the crank turns with a quiet, steady murmur. Down on the cave floor, Maren is whistling something old, and the sound carries up through the rock.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a5_down",
+          "label": "Wipe your hands and head down the ladder.",
+          "target": "a7_down"
+        }
+      ]
+    },
+    {
+      "id": "a6_left",
+      "body": "You leave the mechanism dry and start down the ladder. Halfway, a small doubt tugs at you, the kind that sounds exactly like an underlined sentence in an old logbook left open on a rock shelf. The cave mouth glows faintly with the last violet of dusk.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a6_down",
+          "label": "Shrug the doubt off and climb down.",
+          "target": "a7_down"
+        },
+        {
+          "id": "c_a6_return",
+          "label": "Turn back and grease the rails after all.",
+          "target": "a5_oiled",
+          "effects": [
+            {
+              "op": "set",
+              "var": "dome_oiled",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a7_down",
+      "body": "Back on the cave floor, Maren looks up from the tide gauge and asks if the winch is ready for the night. You answer honestly, whatever was or wasn't done up there. Through the cave mouth, the first star comes out above the sea, and the water below you is black glass.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a7_night",
+          "label": "Tell her it is time to haul the sled down.",
+          "target": "n_nightfall"
+        }
+      ]
+    },
+    {
+      "id": "b1_darkroom",
+      "body": "The darkroom tent glows red as the inside of a shell held up to the sun. Maren demonstrates loading a slide holder entirely by feel: dark-slide out, glass in, never touching the emulsion with a fingertip. Then she offers you the camp stool. A real slide, spent to learn. The cracked dud from 1962, to drill on. Or just your eyes, watching her hands.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b1_real",
+          "label": "Sacrifice a real slide to learn it properly.",
+          "target": "b2_spent",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_b1_dud",
+          "label": "Drill with the cracked dud slide.",
+          "target": "b3_dud"
+        },
+        {
+          "id": "c_b1_watch",
+          "label": "Keep your hands still and just watch.",
+          "target": "b4_watch"
+        }
+      ]
+    },
+    {
+      "id": "b2_spent",
+      "body": "The sacrificed slide fogs the instant the tent flap lifts, exactly as planned. But your fingers now know the weight of glass in the dark, the smooth click of a seated dark-slide. Expensive knowledge, honestly bought. When you open the wooden carrier again, you count what's left by feel, and it is already fewer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b2_count",
+          "label": "Open the carrier and count what is left.",
+          "target": "b7_two_left"
+        }
+      ]
+    },
+    {
+      "id": "b7_two_left",
+      "body": "The wooden carrier, counted twice under the red safelight. Two slides remain, nestled in felt like panes of frozen pond. Every one of them has to matter now. The sea whispers up from the cave pool, patient and indifferent.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b7_out",
+          "label": "Close the carrier gently and head out.",
+          "target": "b5_out"
+        }
+      ]
+    },
+    {
+      "id": "b3_dud",
+      "body": "The cracked 1962 dud teaches almost as well as the real thing, its chipped edge biting your fingertips as a reminder. You drill until the moves begin to smooth: dark-slide, glass, click. Dark-slide, glass, click. The rhythm becomes a small machine of its own.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b3_again",
+          "label": "Run the drill until it feels like a card trick.",
+          "target": "b5_out"
+        },
+        {
+          "id": "c_b3_story",
+          "label": "Ask about the framed 1910 tidefall slide on the tent pole.",
+          "target": "b6_story"
+        }
+      ]
+    },
+    {
+      "id": "b4_watch",
+      "body": "Watching is not knowing. Maren's hands move like a magician's and explain nothing. Your own hands stay clean, untested, and envious in a way you didn't expect. Outside the tent, the real dark is gathering, and the tidefall still hasn't shown itself.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b4_dryrun",
+          "label": "Admit you need one dry run with the dud.",
+          "target": "b3_dud"
+        },
+        {
+          "id": "c_b4_trust",
+          "label": "Trust your eyes and call it learned.",
+          "target": "b5_out"
+        }
+      ]
+    },
+    {
+      "id": "b6_story",
+      "body": "Maren tells the story of the 1910 slide in the frame: the keeper who waited four low tides and got one clear hour, and how patience is the only chemical that never goes stale. 'The sea keeps its own clock,' she says. The red light makes her face younger than her years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b6_out",
+          "label": "Carry the story out into the dark.",
+          "target": "b5_out"
+        }
+      ]
+    },
+    {
+      "id": "b5_out",
+      "body": "Out of the red light, the world is blue-black and enormous. Night has nearly come down over Gull Gate, and the cave mouth is a darker hole in the dark cliff. Somewhere in your wooden carrier, two glass slides wait like two held breaths. The sea breathes in and out below.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b5_night",
+          "label": "Join Maren; it is time to run the sled down.",
+          "target": "n_nightfall"
+        }
+      ]
+    },
+    {
+      "id": "c1_charts",
+      "body": "The chart table is a plank over two barrels, lit by a small goose-neck lantern. The tide almanac shows numbers in cold print columns. The Keepers\u2019 notebook gives its numbers in soft pencil. Maren fills a kettle on the camp stove. She offers to check anyone\u2019s work.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c1_math",
+          "label": "Work the crossing out yourself from the almanac.",
+          "target": "c2_own_math"
+        },
+        {
+          "id": "c_c1_notes",
+          "label": "Use the Keepers' notebook's penciled timings.",
+          "target": "c3_notes"
+        },
+        {
+          "id": "c_c1_ask",
+          "label": "Ask Maren to work it through with you.",
+          "target": "c4_check"
+        }
+      ]
+    },
+    {
+      "id": "c2_own_math",
+      "body": "Your own arithmetic puts the tidefall's glow peaking in mid-evening, just before the water turns. The answer looks right, sits right, and still whispers the oldest question in oceanography: are you sure? The almanac numbers stare back at you, inscrutable.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c2_again",
+          "label": "Check it a third time, every column.",
+          "target": "c5_linger",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_c2_lock",
+          "label": "Trust it; set the sled's position and tension the cable.",
+          "target": "c6_set"
+        }
+      ]
+    },
+    {
+      "id": "c3_notes",
+      "body": "The Keepers' notebook's timings are off by a thumb's width, and someone has corrected them in red ink without signing. Trusting a stranger's red ink is quick. Redoing the sums from the almanac is slow, but certain. The tide clock on the wall ticks.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c3_red",
+          "label": "Trust the red ink and set the sled position.",
+          "target": "c6_set"
+        },
+        {
+          "id": "c_c3_redo",
+          "label": "Redo the whole calculation from scratch.",
+          "target": "c5_linger",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c4_check",
+      "body": "Maren checks your working over tea and teaches the drift trick: let the target drift through the frame and time it against the tide clock, and the sea will confess its own rhythm. The numbers agree. The kettle sighs on the stove.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c4_set",
+          "label": "Set the sled position while the tea is still warm.",
+          "target": "c6_set"
+        }
+      ]
+    },
+    {
+      "id": "c5_linger",
+      "body": "The third pass through the numbers changes nothing but the cave outside, which has gone from violet to nearly black while you checked. Certainty was bought with dusk. The tide clock has moved on a band, and the water is still falling.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c5_set",
+          "label": "Enough; set the sled position by lantern light.",
+          "target": "c6_set"
+        }
+      ]
+    },
+    {
+      "id": "c6_set",
+      "body": "Sled position locked, cable tensioned, the boxcam aimed at a patch of dark water that means nothing yet and everything later. The winch hums when you test it, and the brass camera gleams faintly in the lantern glow. The first real chill of night comes up from the pool.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c6_finder",
+          "label": "Peer down through the viewfinder at the water.",
+          "target": "c7_first_sight"
+        }
+      ]
+    },
+    {
+      "id": "c7_first_sight",
+      "body": "Through the viewfinder, low and pale under the water: the first faint thread of the tidefall, a green-white vein of cold light waking in the deep pool. Real in a way no almanac column ever is. Your heart knocks against your ribs. Full dark, and full low water, are minutes away.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c7_night",
+          "label": "Call Maren; the sled has to be down by the water now.",
+          "target": "n_nightfall"
+        }
+      ]
+    },
+    {
+      "id": "n_nightfall",
+      "body": "Full dark over Gull Gate, and the tide is at its lowest, the cave pool fallen to a black basin. The tidefall's glow is building, and the sled must be run down to the water's edge. The winch crank waits. How it answers depends on whether anyone greased it: the smooth silk of fresh grease, or the dry, doubtful groan of old iron. The tide clock has entered the first band of night.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_night_glide",
+          "label": "Ease the crank; let the greased sled glide down.",
+          "target": "n_open_glide",
+          "condition": {
+            "==": [
+              {
+                "var": "dome_oiled"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_night_heave",
+          "label": "Heave the crank hard and fast, dry iron or not.",
+          "target": "n_dome_jam",
+          "condition": {
+            "==": [
+              {
+                "var": "dome_oiled"
+              },
+              false
+            ]
+          }
+        },
+        {
+          "id": "c_night_slow",
+          "label": "Work it down slow and steady, notch by patient notch.",
+          "target": "n_open_slow",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "clock",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "n_open_glide",
+      "body": "The greased sled rolls down its rails like water over stone, silent and true, and the boxcam comes to rest a hand's breadth above the dark pool. The whole cave opens below you, the tidefall's reflection shivering on the wet rock. The boring job with the grease tin pays itself off in one long easy breath.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glide_look",
+          "label": "Step to the rail and let the cave in.",
+          "target": "n_first_light"
+        }
+      ]
+    },
+    {
+      "id": "n_first_light",
+      "body": "Below the rail, the night steps inside the cave: the water is black glass, the rock walls glisten with salt, and deep in the pool the green-white glow is strengthening, threading upward like slow smoke. The boxcam waits, cable still and steady.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_first_band",
+          "label": "Find the deep pool; watch for the glow's full rising.",
+          "target": "n_band_watch"
+        }
+      ]
+    },
+    {
+      "id": "n_open_slow",
+      "body": "Notch by notch the dry winch grinds the sled down, safe and slow and maddening. By the time the boxcam is poised above the water, a first band of sea mist is already sliding in through the cave mouth from the west. A whole band of the night went to caution.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_slow_west",
+          "label": "Sled down at last; check the cave pool.",
+          "target": "n_slow_clouds"
+        }
+      ]
+    },
+    {
+      "id": "n_slow_clouds",
+      "body": "The pool is curdling. Mist pours over the water\u2019s surface like spilled milk. Somewhere beneath it, the tidefall keeps its meeting, ready or not. Maren joins you at the rail. Her lantern is held low and her quiet company feels easy.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_slowc_band",
+          "label": "Settle in; the mist owns the cave for now.",
+          "target": "n_band_watch"
+        }
+      ]
+    },
+    {
+      "id": "n_dome_jam",
+      "body": "The crank bucks, shrieks, and stops dead. The dry winch has seized, the sled hanging half a metre above the water, a mean slice of pool and no more. Your hands sting. Three ways out: raw force on the crank, fetching Maren and her grease tin from below, or the red emergency lever nobody has pulled in years.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_jam_bang",
+          "label": "Throw your whole weight on the crank.",
+          "target": "n_jam_bang"
+        },
+        {
+          "id": "c_jam_warden",
+          "label": "Swallow your pride; go down and fetch Maren.",
+          "target": "n_jam_warden",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_jam_force",
+          "label": "Pull the emergency lever, hard.",
+          "target": "n_jam_forced"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "n_jam_bang",
+      "body": "The crank gives with a BANG that rings the whole cave like a bell. The sled is free and grinds down to the water, but every turn of the winch now carries a dry shiver up through the rock and into your teeth. Knuckles skinned, pool won. The mechanism is still dry.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bang_band",
+          "label": "Shake out your hands and check the pool.",
+          "target": "n_band_watch"
+        }
+      ]
+    },
+    {
+      "id": "n_jam_warden",
+      "body": "Maren climbs up with the grease tin, laughing gently, not unkindly. Together you free the sled and grease the pulley properly, while precious dark slides past outside. A band of night spent. The mechanism now runs sweet and silent, and the cave pool glows faintly below.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_band",
+          "label": "Thank her and turn to the deep water.",
+          "target": "n_band_watch"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "dome_oiled",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "n_jam_forced",
+      "body": "The emergency lever moves something that was never meant to move that way. A soft awful crunch, and the sled stops for good at a crooked angle above the water, the rail visibly bent. Shame arrives before the echo dies. The cave holds its breath.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_forced_stare",
+          "label": "Stare at the bent rail and breathe.",
+          "target": "s1_bent"
+        }
+      ]
+    },
+    {
+      "id": "n_band_watch",
+      "body": "The first mist band slides across the cave pool, with the tidefall somewhere beneath it. Nothing to do but choose how to spend the wait: keep vigil at the rail with Maren, stage the darkroom tent for fast slide changes, gamble a slide on a shot through the thin gauzy edge of the mist, or doze on a camp cot and trust her to wake you. The tide clock ticks on, and you can feel your slides waiting in their carrier.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_band_vigil",
+          "label": "Keep vigil at the rail and wait it out.",
+          "target": "w1_vigil"
+        },
+        {
+          "id": "c_band_stage",
+          "label": "Use the wait: stage the darkroom tent for speed.",
+          "target": "d1_staging"
+        },
+        {
+          "id": "c_band_gauze",
+          "label": "Line up on the glow through the mist's thin edge.",
+          "target": "g0_gauze"
+        },
+        {
+          "id": "c_band_doze",
+          "label": "Doze in the warm tent until the mist clears.",
+          "target": "w4_doze",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "w1_vigil",
+      "body": "You keep the vigil at the rail, a tin cup of tea going cold in your hands. The mist band\u2019s silver underside crawls across the pool like a slow thought. Maren is a comfortable silence beside you, full of things worth asking. The cave drips. The glow waits.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_w1_story",
+          "label": "Ask about the slide she never got.",
+          "target": "w2_story"
+        },
+        {
+          "id": "c_w1_seams",
+          "label": "Study the mist for its seams and tears.",
+          "target": "w3_seams"
+        },
+        {
+          "id": "c_w1_clouds",
+          "label": "Have her name the kinds of mist, one by one.",
+          "target": "w5_clouds"
+        }
+      ]
+    },
+    {
+      "id": "w2_story",
+      "body": "Her story: the tidefall of '86, the slide she fumbled at the last moment, and why she has opened this cave every low tide since. 'Slides run out,' she says quietly, 'tides come back.' The mist band is thinning as she talks, the pool brightening beneath it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_w2_gap",
+          "label": "The mist is tearing open; stand ready.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "w3_seams",
+      "body": "You learn to read the mist's seams, the places where it wears thin and the green light leaks through. It's like watching fabric decide to tear. The band is nearly done, and it is stretched into rags over the dark water.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_w3_gap",
+          "label": "There, a rip of clear water; move.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "w5_clouds",
+      "body": "She tells you the names of the fog types. The ragged, fast-moving stuff underneath has an ugly name. You will never see a grey sea the same way again. Behind the last of it, a hard, small light waits under the water. It is patient, like a held breath.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_w5_gap",
+          "label": "The band's trailing edge; get to the viewfinder.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "w4_doze",
+      "body": "Maren wakes you kindly, but the tide clock is merciless: the mist cleared a while ago, and the tidefall's clearest window is already half spent. You were asleep while the glow rose. The stairs to the ledge go two at a time, your heart hammering.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_w4_gap",
+          "label": "Up the stairs, heart pounding.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "d1_staging",
+      "body": "The red light again, put to work. Slide holders lined up in order, dark-slides loosened a thumb's width, everything placed where blind hands will find it. The professional's trick of being fast by never hurrying. Outside, the cave echoes with dripping water and the faint green glow.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_swap",
+          "label": "Rehearse the slide swap once more.",
+          "target": "d2_swap"
+        },
+        {
+          "id": "c_d1_bath",
+          "label": "Check the developer bath and its thermometer.",
+          "target": "d4_bath"
+        }
+      ]
+    },
+    {
+      "id": "d2_swap",
+      "body": "The swap runs smooth as a shell game now: holder out, holder in, dark-slide, done. Your hands have stopped asking permission. Overhead, boots cross the rock ledge and the winch hums.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_up",
+          "label": "Maren is calling; the mist is tearing.",
+          "target": "d3_stairs"
+        }
+      ]
+    },
+    {
+      "id": "d4_bath",
+      "body": "Eighteen degrees exactly, the thermometer steady as a promise. Developer, stop, fixer, all mixed and waiting in their trays like a small silent orchestra. Maren's voice comes down the cave stairs, urgent and glad.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d4_up",
+          "label": "The mist is clearing; take the stairs.",
+          "target": "d3_stairs"
+        }
+      ]
+    },
+    {
+      "id": "d3_stairs",
+      "body": "Up the spiral stairs two at a time and out onto the ledge. The mist band is tearing itself to rags above the dark pool, and the water is nearly clear. Everything below is staged and ready. The green glow brightens like a slow fuse.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_gap",
+          "label": "To the viewfinder; here it comes.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "g0_gauze",
+      "body": "Through the viewfinder, the tidefall is a soft green blur behind the mist's thin gauzy edge, teasing. A slide spent now, through moving mist, is a slide that cannot be spent later in clear water. You know better. The shutter cable is in your hand anyway.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0_shoot",
+          "label": "Take the shot through the gauze; spend the slide.",
+          "target": "g1_gamble",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_g0_lower",
+          "label": "Lower the cable; save the slide for clear water.",
+          "target": "w1_vigil"
+        }
+      ]
+    },
+    {
+      "id": "g1_gamble",
+      "body": "Eight impatient minutes of exposure through drifting gauze, the guide glow swimming. The slide comes out of the boxcam holding either a tidefall or a smear, and only the developer knows which. One slide fewer now. The mist thins above you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1_race",
+          "label": "Race the slide down and develop it right now.",
+          "target": "g2_ghost_dev",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_g1_rack",
+          "label": "Rack the holder for later; stay with the water.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "g2_ghost_dev",
+      "body": "In the tray, a ghost swims up out of the glass: the tidefall as a smeared silk scarf, blurred by mist and hurry. And yet, faint at the upstream edge, a second thin tongue of light that shouldn't be there. Upstairs, the mist is clearing without you. The trip to the darkroom cost a band of the night.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2_stay",
+          "label": "Stay with the ghost; call Maren down to see.",
+          "target": "n_end_ghost"
+        },
+        {
+          "id": "c_g2_up",
+          "label": "Pin the ghost to dry and race back up.",
+          "target": "g4_race_up"
+        }
+      ]
+    },
+    {
+      "id": "g4_race_up",
+      "body": "Back up the spiral stairs with lungs burning and fixer smell still in your nose. On the ledge, the mist band is in rags, and the pool below is opening like a slow green eye.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g4_gap",
+          "label": "Get to the viewfinder before the eye opens fully.",
+          "target": "n_gap_opens"
+        }
+      ]
+    },
+    {
+      "id": "n_gap_opens",
+      "body": "The mist band tears open and there it is: the tidefall in clear dark water, a hard bright core of green-white light streaming upward, its tail combed out by a cold current. This is the window. How much night is left, and how many slides remain, decide everything after this. The tide clock is ticking, and the water will turn.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gap_look",
+          "label": "Take one long look with your own eyes first.",
+          "target": "n_look"
+        },
+        {
+          "id": "c_gap_warden",
+          "label": "Wave Maren to the rail to see it first.",
+          "target": "n_warden_look"
+        },
+        {
+          "id": "c_gap_work",
+          "label": "Straight to work; load a slide now.",
+          "target": "n_load1"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "clock",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "n_look",
+      "body": "One long look, spent like money: the tidefall stands in the viewfinder, its green-white plume combed out by a current nobody above water can feel. A sight to keep. Then hands take over from eyes, and the boxcam waits.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look_load",
+          "label": "Now the camera: load the first slide.",
+          "target": "n_attempt1"
+        }
+      ]
+    },
+    {
+      "id": "n_warden_look",
+      "body": "Maren bends to the viewfinder and goes quiet in the particular way of someone meeting an old appointment. 'Well now,' she says at last, stepping clear. 'Go get it.' The green light plays across her face.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_warden_load",
+          "label": "Load the first slide with steady hands.",
+          "target": "n_attempt1"
+        }
+      ]
+    },
+    {
+      "id": "n_load1",
+      "body": "Holder seated, dark-slide drawn, the winch cable taking up the glow's slow drift. The boxcam is a held breath at the water's edge. All that remains is the exposure itself, long minutes of stillness, and the green light climbing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_load_begin",
+          "label": "Open the shutter and begin the exposure.",
+          "target": "n_attempt1"
+        }
+      ]
+    },
+    {
+      "id": "n_attempt1",
+      "body": "The first exposure, eight full minutes with the guide glow pinned in the viewfinder. Stillness is the whole job, and every instinct argues against it: the itch to check the slide, the twitch to correct a hair of drift that would cure itself. The water breathes below.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_att1_hold",
+          "label": "Hold the glow. Breathe. Count the whole eight minutes.",
+          "target": "n_done1",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_att1_peek",
+          "label": "Halfway in, peek at the slide to be sure it is catching.",
+          "target": "n_fog1",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_att1_nudge",
+          "label": "The glow drifts a hair; nudge the sled to fix it.",
+          "target": "n_smear1",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "n_done1",
+      "body": "The shutter closes on a full clean exposure. The slide holder comes away cool and smooth as sea glass. What the glass actually caught depends on the night so far. It matters if the sled tracked smooth or shuddered. It also matters if the glow stood high in prime dark, or if it had already begun to sink toward the late water. The choice you make now simply follows the true state.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d1_perfect",
+          "label": "Carry the slide down like a relic; the night was perfect for it.",
+          "target": "p1_descent",
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  {
+                    "var": "dome_oiled"
+                  },
+                  true
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  2
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_d1_shiver",
+          "label": "Carry it down hoping the sled's dry shudder stayed out of the glass.",
+          "target": "q1_shudder",
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  {
+                    "var": "dome_oiled"
+                  },
+                  false
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  2
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_d1_late",
+          "label": "Carry it down knowing the glow sat low in thickening water.",
+          "target": "l1_low",
+          "condition": {
+            "==": [
+              {
+                "var": "clock"
+              },
+              3
+            ]
+          }
+        },
+        {
+          "id": "c_d1_dawn",
+          "label": "Carry it down through a cave already going grey at the mouth.",
+          "target": "z1_pale",
+          "condition": {
+            ">=": [
+              {
+                "var": "clock"
+              },
+              4
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "n_fog1",
+      "body": "The peek cost everything: a fan of grey fog eats across the slide where light licked in past the dark-slide. Eight minutes and a slide, gone in one second of doubt. The tidefall burns on below, not caring. You count the slides left in the carrier by feel, and the number is smaller.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fog_retry",
+          "label": "Load the next slide. Slower. You know the mistake now.",
+          "target": "n_reload",
+          "condition": {
+            "and": [
+              {
+                ">=": [
+                  {
+                    "var": "plates"
+                  },
+                  1
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  3
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_fog_lesson",
+          "label": "Take the fogged slide down and develop the lesson.",
+          "target": "n_lesson_dev"
+        },
+        {
+          "id": "c_fog_step",
+          "label": "Step back from the camera and let the water have it.",
+          "target": "n_stepback"
+        }
+      ]
+    },
+    {
+      "id": "n_smear1",
+      "body": "The nudge dragged the glow: the tidefall is a bright smear across the slide, eight minutes of light spread like butter. The winch would have carried the drift out on its own, if your hands had let it. You count the slides remaining in the wooden carrier, and the number is heavier than before.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_smear_retry",
+          "label": "Load another slide and trust the winch this time.",
+          "target": "n_reload",
+          "condition": {
+            "and": [
+              {
+                ">=": [
+                  {
+                    "var": "plates"
+                  },
+                  1
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  3
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_smear_lesson",
+          "label": "Develop the smear anyway; motion tells its own story.",
+          "target": "n_lesson_dev"
+        },
+        {
+          "id": "c_smear_step",
+          "label": "Step back from the camera; enough harm done.",
+          "target": "n_stepback"
+        }
+      ]
+    },
+    {
+      "id": "n_reload",
+      "body": "A fresh slide goes into the holder, and the old lesson goes in with it. You breathe until your hands are still. The night, which does not wait, has moved along a band while you reset. The glow rides lower now, and the shadows in the cave pool are longer.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reload_go",
+          "label": "Back to the viewfinder; begin again.",
+          "target": "n_attempt2"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "clock",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "n_attempt2",
+      "body": "The second exposure, wiser and later. The guide glow sits in the viewfinder, and your hands know their job now. But the tidefall rides lower than before, its light thinning, and some corner of your mind is counting slides instead of seconds.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_att2_hold",
+          "label": "Hold steady the full eight minutes; you know the count.",
+          "target": "n_done2",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_att2_rush",
+          "label": "Cut the exposure short to beat the sinking light.",
+          "target": "n_short2",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_att2_cap",
+          "label": "Cap the lens unspent; your nerve is gone. Step back.",
+          "target": "n_stepback"
+        }
+      ]
+    },
+    {
+      "id": "n_done2",
+      "body": "The second exposure runs its full honest length, and the holder comes away cool. The night has moved on around it, and what the glass holds depends on how late the water had grown. The choice here follows the true state of the tide clock.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d2_late",
+          "label": "Carry it down; the glow was low but the water still held.",
+          "target": "l1_low",
+          "condition": {
+            "<=": [
+              {
+                "var": "clock"
+              },
+              3
+            ]
+          }
+        },
+        {
+          "id": "c_d2_dawn",
+          "label": "Carry it down under a cave mouth already paling at the rim.",
+          "target": "z1_pale",
+          "condition": {
+            ">=": [
+              {
+                "var": "clock"
+              },
+              4
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "n_short2",
+      "body": "Pulled early: the shutter snaps shut minutes short, and the slide holds a starved thin image, a tidefall on rations. A real photograph, but barely fed with light. You open the wooden carrier and count what remains. The number is a small, hard thing.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_short_retry",
+          "label": "One more slide, the full count this time, glow be damned.",
+          "target": "n_attempt3",
+          "condition": {
+            "and": [
+              {
+                ">=": [
+                  {
+                    "var": "plates"
+                  },
+                  1
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  3
+                ]
+              }
+            ]
+          },
+          "effects": [
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_short_dev",
+          "label": "Develop the thin slide; something beats nothing.",
+          "target": "n_thin_dev"
+        },
+        {
+          "id": "c_short_step",
+          "label": "Step back; the night has taken enough.",
+          "target": "n_stepback"
+        }
+      ]
+    },
+    {
+      "id": "n_attempt3",
+      "body": "The last-chance exposure at the raw end of night. Dawn grey is climbing the eastern cave mouth, and the tidefall hangs low with its tail going pale. One slide in the holder, hands cold, everything learned tonight gathered into one long stillness. The water stirs below, remembering the tide.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_att3_hold",
+          "label": "Expose it. Steady. Give it the whole count.",
+          "target": "n_done3",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_att3_cap",
+          "label": "Cap it; keep the last slide for another year.",
+          "target": "n_stepback"
+        }
+      ]
+    },
+    {
+      "id": "n_done3",
+      "body": "The shutter closes as true dawn puts its first grey light on the cave mouth. Whatever the glass caught, it caught against the coming day. The slide holder is cool in your hands, and the stairs down to the darkroom tent are dark and familiar.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_d3_down",
+          "label": "Down to the red light with the dawn slide.",
+          "target": "z1_pale"
+        }
+      ]
+    },
+    {
+      "id": "n_stepback",
+      "body": "You step back from the boxcam and let the night go. The tidefall rides on below, keeping its appointment without you. Maren's hand lands warm on one shoulder, and there is more than one good way to finish a night like this. The wooden carrier feels light and heavy at the same time. The slides that remain, spent or saved, carry no blame.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_step_eyes",
+          "label": "Watch it with your own eyes until it fades.",
+          "target": "n_end_eyes"
+        },
+        {
+          "id": "c_step_sketch",
+          "label": "Open the logbook and sketch it, plume angle and all.",
+          "target": "n_end_sketch"
+        },
+        {
+          "id": "c_step_ask",
+          "label": "Ask Maren what she would have done.",
+          "target": "n_end_words"
+        }
+      ]
+    },
+    {
+      "id": "n_lesson_dev",
+      "body": "Down in the red light, you develop the ruined slide on purpose, watching exactly how the failure wrote itself into the silver. Maren calls this the second-best use of a slide there is. The tray rocks gently in your hands, and the image tells its hard story.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lesson_retry",
+          "label": "Lesson learned; get back up there while water remains.",
+          "target": "n_reload",
+          "condition": {
+            "and": [
+              {
+                ">=": [
+                  {
+                    "var": "plates"
+                  },
+                  1
+                ]
+              },
+              {
+                "<=": [
+                  {
+                    "var": "clock"
+                  },
+                  3
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "c_lesson_study",
+          "label": "Measure the failure with her, edge to edge.",
+          "target": "n_end_lesson"
+        },
+        {
+          "id": "c_lesson_stay",
+          "label": "Stay in the warm red light; the night is done for you.",
+          "target": "n_end_redlight"
+        }
+      ]
+    },
+    {
+      "id": "n_thin_dev",
+      "body": "The starved slide goes through the trays, and a faint tidefall rises in it, real but weak, like a voice from another room. Maren turns it in the red light and mentions, casually, an old chemist's trick for feeding a thin image. The darkroom tent feels very small and very warm.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_thin_save",
+          "label": "Try the old intensifier trick together.",
+          "target": "n_end_thin_saved"
+        },
+        {
+          "id": "c_thin_honest",
+          "label": "Leave it honest and faint, exactly as shot.",
+          "target": "n_end_thin_honest"
+        }
+      ]
+    },
+    {
+      "id": "p1_descent",
+      "body": "Down the spiral stairs with the slide held like a live thing: a full exposure, prime water, and the sled ran silk-smooth the whole eight minutes. Everything is right and everyone knows it. Maren waits in the red light, saying nothing loudly. The tray is ready.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p1_self",
+          "label": "Develop it yourself: your slide, your hands.",
+          "target": "p2_self"
+        },
+        {
+          "id": "c_p1_with",
+          "label": "Ask her to stand at your shoulder while you work.",
+          "target": "p3_with"
+        }
+      ]
+    },
+    {
+      "id": "p2_self",
+      "body": "Alone at the trays with the biggest slide of your life. The developer whispers, the image climbs, and the temptation to lift the glass early crawls up both arms. The count is the only law left. The red light hums.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p2_full",
+          "label": "Full time. Count every second. Lift only when it is done.",
+          "target": "n_end_perfect"
+        },
+        {
+          "id": "c_p2_early",
+          "label": "You cannot bear it; lift the slide early to see.",
+          "target": "n_end_pulled"
+        }
+      ]
+    },
+    {
+      "id": "p3_with",
+      "body": "Her shadow is steady beside yours. Her voice is low: temperature, time, patience. The developer breathes. Something grand is rising in the dark red hush. The tidefall is coming up in the glass.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p3_count",
+          "label": "Count it out loud together to the last second.",
+          "target": "n_end_shared"
+        },
+        {
+          "id": "c_p3_early",
+          "label": "Your nerve breaks; you lift it early despite her.",
+          "target": "n_end_pulled"
+        }
+      ]
+    },
+    {
+      "id": "q1_shudder",
+      "body": "The exposure ran full and true, but for eight minutes the dry sled shuddered against every turn of the winch, and you felt each shiver through the cable. The slide went through it all. The stairs down to the darkroom are a long question you carry in both hands.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_q1_dev",
+          "label": "Develop it and face whatever the shudder wrote.",
+          "target": "q2_doubled"
+        },
+        {
+          "id": "c_q1_ask",
+          "label": "Ask Maren first whether a shiver can ruin a slide.",
+          "target": "q3_ask"
+        }
+      ]
+    },
+    {
+      "id": "q3_ask",
+      "body": "'Grease,' she says, wincing like someone remembering a bruise, 'before hauling. Always.' Then, kinder: 'But glass forgives more than you would think. Let us see what you got.' The tray waits.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_q3_dev",
+          "label": "Into the developer, then, and no more guessing.",
+          "target": "q2_doubled"
+        }
+      ]
+    },
+    {
+      "id": "q2_doubled",
+      "body": "The image rises. The tidefall is sharp and lovely. Every fleck of glow around it wears a tiny doubled edge. The sled's tremor is written into the glass like a name no one asked for. It is a good slide with an honest flaw, made in the red dark.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_q2_claim",
+          "label": "Claim it: title it honestly, tremor and all.",
+          "target": "n_end_shiver"
+        },
+        {
+          "id": "c_q2_compare",
+          "label": "Set it against the 1910 slide and measure the tremor.",
+          "target": "n_end_tremor"
+        }
+      ]
+    },
+    {
+      "id": "l1_low",
+      "body": "The exposure ran clean, but the glow sat low, shot through the thick trembling water near the bottom of the pool. The slide rode down the stairs like a coin at the bottom of a stream, real and wavering. The tray is ready, and the image will be whatever it is.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l1_now",
+          "label": "Develop it now, before doubt gets a vote.",
+          "target": "l2_amber"
+        },
+        {
+          "id": "c_l1_hands",
+          "label": "Warm your hands first; steady beats fast.",
+          "target": "l3_hands"
+        }
+      ]
+    },
+    {
+      "id": "l3_hands",
+      "body": "Two minutes over the camp stove, flexing feeling back into cold fingers while the slide waits patient in its holder. The same water is in the emulsion either way. Steadier hands carry it to the trays.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l3_dev",
+          "label": "Now the developer, with hands that obey.",
+          "target": "l2_amber"
+        }
+      ]
+    },
+    {
+      "id": "l2_amber",
+      "body": "The low-water slide develops into something true: the tidefall soft-edged and green-gold, wobbling with the deep current, plume and all, unmistakably itself. Not the dream slide, but absolutely a tidefall, absolutely caught. The glass holds the deep water's own light.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l2_proud",
+          "label": "Print it proud: the eleventh-hour slide.",
+          "target": "n_end_late"
+        },
+        {
+          "id": "c_l2_log",
+          "label": "Log the water conditions beside it like a scientist.",
+          "target": "n_end_provenance"
+        }
+      ]
+    },
+    {
+      "id": "z1_pale",
+      "body": "This slide was exposed against the coming dawn, and everyone in the red-lit tent knows it. The developer tray waits like a held breath. Some questions can still be left unasked until morning. The cave mouth is a pale grey arch.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_z1_dev",
+          "label": "Develop it; even dawn writes something.",
+          "target": "z2_wash"
+        },
+        {
+          "id": "c_z1_carry",
+          "label": "Leave it sealed; carry it to the Keepers' proper darkroom.",
+          "target": "n_end_carried"
+        }
+      ]
+    },
+    {
+      "id": "z2_wash",
+      "body": "A pale wash floods half the frame where dawn bled in, and in the clear half, a stub of tidefall stands dawn-drowned but defiant, its tail streaming into the fog like a flag into weather. Half ruined, half wonderful. The glass is cool.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_z2_mask",
+          "label": "Mask the fogged half and print the clear half.",
+          "target": "n_end_dawn"
+        },
+        {
+          "id": "c_z2_archive",
+          "label": "Give it whole to the Keepers' archive of honest failures.",
+          "target": "n_end_archive"
+        }
+      ]
+    },
+    {
+      "id": "s1_bent",
+      "body": "The sled hangs seized at a crooked angle above the water, its rail bent where the lever forced it. The winch is hurt, and it is nobody's fault but hurry's. Below, Maren's kettle is whistling, oblivious. The night is not over, but it is changed, and the green glow still pulses in the pool.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s1_confess",
+          "label": "Go down and confess to Maren now.",
+          "target": "s2_confess"
+        },
+        {
+          "id": "c_s1_geometry",
+          "label": "First work out what the crooked angle can still see.",
+          "target": "s3_geometry"
+        }
+      ]
+    },
+    {
+      "id": "s2_confess",
+      "body": "Maren looks at the bent rail a long quiet time. 'Iron forgives slower than people,' she says at last, 'but the water is still down there.' Together you measure the crooked slice of pool the sled's angle has left you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s2_plan",
+          "label": "Then let us use the slice we have.",
+          "target": "s4_lane"
+        }
+      ]
+    },
+    {
+      "id": "s3_geometry",
+      "body": "You sketch by lantern light. The jammed sled sweeps one narrow lane of water as the winch turns. The tidefall's glow crosses that lane just once tonight. It is a bent window, but a window. Maren shows up mid-diagram. She says nothing about the rail, not yet.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s3_plan",
+          "label": "Show her the lane and the crossing time.",
+          "target": "s4_lane"
+        }
+      ]
+    },
+    {
+      "id": "s4_lane",
+      "body": "The plan is patience itself: aim the boxcam down the crooked lane and wait for the tidefall to sail through it, one pass, no second helpings. Waiting for the crossing eats a band of the night. The tide clock ticks on, and the slides in your carrier feel like the last coins in a purse.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s4_wait",
+          "label": "Load a slide and wait dead-still on the lane.",
+          "target": "s_watch"
+        },
+        {
+          "id": "c_s4_test",
+          "label": "Spend one slide first to test the lane's exact edge.",
+          "target": "s6_test",
+          "condition": {
+            ">=": [
+              {
+                "var": "plates"
+              },
+              3
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_s4_away",
+          "label": "Put the slides away; tonight is for repairs.",
+          "target": "n_stepback"
+        }
+      ],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "clock",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "s_watch",
+      "body": "The long, dead-still wait on the lane, bioluminescent flecks wheeling slowly through the crooked frame like stars past a porthole. Maren brings up two tin mugs and the repair ledger, and does her waiting in figures. The water breathes.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_swatch_cross",
+          "label": "A brightening at the lane's edge: it is coming.",
+          "target": "s5_crossing"
+        }
+      ]
+    },
+    {
+      "id": "s6_test",
+      "body": "The test slide, developed quick and rough, maps the lane's true edges a finger's width off the notebook guess. Now the aim is certain, bought with glass. One slide fewer. The real shot must not miss. The tidefall's glow strengthens at the lane's edge.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s6_cross",
+          "label": "Re-aim on the corrected lane and wait for it.",
+          "target": "s5_crossing"
+        }
+      ]
+    },
+    {
+      "id": "s5_crossing",
+      "body": "The tidefall's head slides toward the crooked frame, brightening. There is time for exactly one exposure as it crosses, and the choice of what to catch: its bright core as it enters, or a gamble on the full sweep of tail behind it. The water will not wait.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s5_head",
+          "label": "Expose the moment its head enters the lane.",
+          "target": "s7_head",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            },
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_s5_tail",
+          "label": "Wait, and give the slide to the whole tail or nothing.",
+          "target": "s8_tail_wait",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            },
+            {
+              "op": "inc",
+              "var": "clock",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s7_head",
+      "body": "Caught: its hard bright head and half a tail, threaded clean through the bent frame before the sled's crooked edge cut it off. A real tidefall on real glass, through a broken window. The slide holder is cool in your hand. You count what remains in the carrier.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s7_develop",
+          "label": "Develop it with Maren, and face the rail tomorrow.",
+          "target": "n_end_slit"
+        },
+        {
+          "id": "c_s7_second",
+          "label": "Spend one more slide at the lane's far edge for its tail.",
+          "target": "s_second",
+          "condition": {
+            ">=": [
+              {
+                "var": "plates"
+              },
+              2
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "plates",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s8_tail_wait",
+      "body": "The gamble: let the head pass unphotographed and open the shutter on the long banner of tail sweeping through the frame. Eight minutes of ribbon and no tidefall core at all. The sled's bent edge closes the show as the shutter clicks home.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s8_dev",
+          "label": "Down to the red light to see what the ribbon holds.",
+          "target": "n_end_tail"
+        }
+      ]
+    },
+    {
+      "id": "s_second",
+      "body": "The second exposure at the lane's far edge catches what the first one missed: the tail's long ribbon trailing out of the crooked window. Two half-tidefalls on two slides, one whole current between them. The glass is cool and true.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ssec_dev",
+          "label": "Develop the pair together and lay them edge to edge.",
+          "target": "n_end_tail"
+        }
+      ]
+    },
+    {
+      "id": "n_end_perfect",
+      "body": "The full count holds and the slide comes up perfect: the tidefall razor-sharp, its plume split like light through a prism, the finest slide Gull Gate has made in forty years. Maren hangs it dripping beside the 1910 picture and writes your name on the card. Patience, grease, and one clear window\u2014all of it in the glass forever. The sea sighs at the cave mouth, and the tide is turning, but this moment belongs to you.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_perfect",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Tidefall Slide"
+      }
+    },
+    {
+      "id": "n_end_shared",
+      "body": "Counted out loud together to the last second, the slide comes up perfect: the tidefall sharp as cut glass with its doubled plume in full sail. Two names go on the card, hers steadying and yours doing, and the Keepers will argue happily forever about which mattered more. The light in the darkroom tent is red and warm, and the world outside is dawn.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_shared",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Two Counts, One Tidefall"
+      }
+    },
+    {
+      "id": "n_end_pulled",
+      "body": "Lifted early, the slide stops developing a breath before greatness: the tidefall lovely but faint, a whisper of the photograph it was becoming. It still goes on the Keepers' wall, and under it you write the truest caption in the room: thirty seconds more. The sea outside is indifferent, but the lesson stings clean and honest.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pulled",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Pulled Too Soon"
+      }
+    },
+    {
+      "id": "n_end_shiver",
+      "body": "The slide is fine, truly fine. The tidefall is sharp. Every speck of light around it wears the tiny doubled edge of the dry sled's tremor. You give it an honest title, tremor and all. The Keepers love it even more for the story. There is a quiet promise to grease the rail next time. And the green light was captured anyway.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_shiver",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Shivered Tide"
+      }
+    },
+    {
+      "id": "n_end_tremor",
+      "body": "Laid against the 1910 slide, the doubled lights become data: you and Maren measure the sled's shudder to a fraction and pin the comparison in the Keepers' lodge as the new calibration standard. The tidefall photo is flawed, the flaw becomes knowledge, and knowledge outlives tides.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_tremor",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Tremor Study"
+      }
+    },
+    {
+      "id": "n_end_late",
+      "body": "Softer than the dream, realer than iron: the low-water slide prints with the tidefall wobbling in deep current, plume and all, unmistakable. The Keepers cheer the eleventh-hour shot exactly because the night fought it. Late, trembling, and absolutely caught.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_late",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Eleventh-Hour Slide"
+      }
+    },
+    {
+      "id": "n_end_provenance",
+      "body": "Beside the soft late-water image, you log everything: depth, temperature, current, the honest wobble. Maren nods slowly, because a photograph with its provenance is science, and a photograph without is only a picture. The slide is modest, and the record makes it matter.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_provenance",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Slide and Provenance"
+      }
+    },
+    {
+      "id": "n_end_dawn",
+      "body": "The fogged half is masked away. The clear half prints. It is a dawn-drowned stub of tidefall. It stands up to the coming day, its tail streaming into the fog like a flag. Half a tidefall, a whole night's work. Nobody at the Keepers' lodge will say it is less than a photo of the glow.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_dawn",
+        "valence": "neutral",
+        "kind": "success",
+        "title": "Half Past Dawn"
+      }
+    },
+    {
+      "id": "n_end_archive",
+      "body": "The foggy dawn slide goes whole into the Keepers' archive of honest failures. It sits beside slides by better photographers on worse nights. Maren writes the label without pity or blame. You read the drawer's other cards and see you are in good company.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_archive",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Honest Archive"
+      }
+    },
+    {
+      "id": "n_end_carried",
+      "body": "The last slide rides home sealed in its holder. It is an unopened letter from the night. At the next Keepers' meeting, in a real darkroom, everyone will find out together what the dawn left of the tidefall. You carry it down the cliff path like something warm. The boxcam, the bent rail, and the long dark are behind you.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_carried",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Unopened Letter"
+      }
+    },
+    {
+      "id": "n_end_ghost",
+      "body": "The blurred slide, made by your haste, turns out to hold something the clean shots of other keepers may not. It shows a faint, smeared but measurable second plume upstream. Maren and you spend the rest of the night measuring the ghost. Overhead, the clear water goes unphotographed. The wrong shot taught the right thing.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_ghost",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Ghost Tidefall"
+      }
+    },
+    {
+      "id": "n_end_lesson",
+      "body": "With Maren, you measure the ruined slide from edge to edge. It gives up exactly how the fault wrote itself into the silver. It gets pinned to the Keepers' wall. A card in your writing explains the mistake, so the next junior member never has to make it. The failure becomes the lodge's textbook.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_lesson",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Teaching Slide"
+      }
+    },
+    {
+      "id": "n_end_redlight",
+      "body": "Dawn finds you still in the warm red light, the ruined slide rinsed and drying, understood completely and too late. Up in the cave, the water performed without you. Maren brings down two tin mugs and says nothing that needs saying. The walk home up the cliff is somehow not heavy.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_redlight",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Red Light, Long Night"
+      }
+    },
+    {
+      "id": "n_end_thin_saved",
+      "body": "The old intensifier trick feeds the starved image until a modest, believable tidefall stands in the glass, rescued by chemistry and a steady old hand. Not the slide of anyone's dreams, but a tidefall saved from nothing at all, and a whole branch of darkroom craft learned at midnight.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_thin_saved",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Saved in the Bath"
+      }
+    },
+    {
+      "id": "n_end_thin_honest",
+      "body": "Printed exactly as shot, the thin slide shows a faint tidefall on rations of light, and its caption says so plainly. Maren approves: better a true whisper than a fed-up lie. The Keepers' youngest member turns out to have the Keepers' oldest virtue.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_thin_honest",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Faint but True"
+      }
+    },
+    {
+      "id": "n_end_eyes",
+      "body": "No slide, only the long watch. You stay at the rail while the tidefall crosses and fades, memorizing what glass will not hold this time, the exact green-white of it and the slow comb of its tail. Maren watches too and says some sights are for keeping, not catching. Empty hands, full eyes, and the Keepers' respect.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_eyes",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Eyes Only"
+      }
+    },
+    {
+      "id": "n_end_sketch",
+      "body": "The pencil does what the slides would not: position, tail angle, brightness against the cave wall, all sketched into the Keepers' logbook in your careful hand. A hundred years from now, that page will be somebody's data. No photograph, but a real observation, formally entered.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_sketch",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Logbook Page"
+      }
+    },
+    {
+      "id": "n_end_words",
+      "body": "'What would I have done?' Maren considers the question honestly, then tells the truth: the same things, most of them, forty years ago. 'Slides run out,' she says, 'tides come back, and so do we.' The walk up the cliff at dawn is a failure carried lightly, with next year already forming in it.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_words",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Maren's Lesson"
+      }
+    },
+    {
+      "id": "n_end_slit",
+      "body": "Developed together in the red light: the tidefall's bright head is threaded clean through the bent frame. Half a tail and a hard slant of sled rail frame it like a keyhole. This is the best apology a bent winch ever received. Tomorrow there is a rail to fix and a repair fund to feed. Tonight there is, despite everything, a tidefall.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_slit",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Crooked Window"
+      }
+    },
+    {
+      "id": "n_end_tail",
+      "body": "The developed glass holds the long ribbon of the tidefall's tail sweeping the crooked lane, banner without a head, gorgeous and strange. Maren laughs until she has to sit down, then pins it up anyway. Nobody else on the coast has anything like it. A crooked night's crooked treasure, and the dawn light is grey and forgiving.",
+      "is_ending": true,
+      "ending": {
+        "id": "e_tail",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Headless Banner"
+      }
+    }
+  ]
+}

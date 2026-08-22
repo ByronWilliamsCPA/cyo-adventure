@@ -381,6 +381,136 @@ class TestOpenRouterProvider:
         assert calls == 3
 
     @pytest.mark.asyncio
+    async def test_exhaustion_error_names_the_last_attempts_cause(self) -> None:
+        """The exhaustion message carries the final attempt's own error.
+
+        Harness journals record ``str(exc)``, and the flattened message hid
+        the raw cause of every zero-content stop: 4 of 15 live (skeleton,
+        brief) pairs were lost to `content_filter` or finish_reason=None
+        replies journalled only as "transient failure persisted"
+        (AL-492/AL-512/UW-C309). An empty 200 with finish_reason None (the
+        predecessor's book-0 signature) must surface that shape in the raised
+        message. The `content_filter` shape has its own earlier stop now
+        (UW-C325) and is tested separately.
+        """
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(
+                200,
+                json={"choices": [{"message": {"content": ""}}]},
+            )
+
+        provider = _openrouter(handler, max_retries=2)
+        with pytest.raises(
+            ProviderError,
+            match=r"persisted after 2 attempts \(last: .*finish_reason=None",
+        ) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_a_second_content_filter_stop_ends_the_leg(self) -> None:
+        """UW-C325 interim (ruled 2026-08-21): two filter stops, never three.
+
+        The filter fires on the (skeleton, brief) pair and the measured third
+        identical attempt bought nothing, so the second zero-content
+        `content_filter` stop raises leg-fatal, spending exactly two calls of
+        a three-retry budget.
+        """
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            return httpx.Response(
+                200,
+                json={
+                    "choices": [
+                        {
+                            "message": {"content": ""},
+                            "finish_reason": "content_filter",
+                        }
+                    ]
+                },
+            )
+
+        provider = _openrouter(handler, max_retries=3)
+        with pytest.raises(
+            ProviderError, match=r"content_filter.*2.*times.*re-anchor"
+        ) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is True
+        assert calls == 2
+
+    @pytest.mark.asyncio
+    async def test_one_filter_stop_then_success_still_succeeds(self) -> None:
+        """A single filter stop stays retryable: intermittent rescues are real."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                return httpx.Response(
+                    200,
+                    json={
+                        "choices": [
+                            {
+                                "message": {"content": ""},
+                                "finish_reason": "content_filter",
+                            }
+                        ]
+                    },
+                )
+            return httpx.Response(
+                200,
+                json={
+                    "choices": [
+                        {"message": {"content": "ok"}, "finish_reason": "stop"}
+                    ],
+                    "usage": {"prompt_tokens": 1, "completion_tokens": 1},
+                },
+            )
+
+        provider = _openrouter(handler, max_retries=3)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result.text == "ok"
+        assert calls == 2
+
+    @pytest.mark.asyncio
+    async def test_a_400_surfaces_the_providers_structured_diagnostic(self) -> None:
+        """A 400's structured error.message reaches the raised error, truncated.
+
+        The flattened '(invalid or unavailable model)' hid a context overflow
+        that missed a 163,840-token window by one token (AL-514/UW-C320).
+        Only error.message (and OpenRouter's nested metadata.raw error
+        message) is read; the raw body is never echoed.
+        """
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nested = (
+                '{"error": {"message": "This model maximum context length is '
+                '163840 tokens.", "type": "invalid_request_error"}}'
+            )
+            return httpx.Response(
+                400,
+                json={
+                    "error": {
+                        "message": "Provider returned error",
+                        "code": 400,
+                        "metadata": {"raw": nested},
+                    }
+                },
+            )
+
+        provider = _openrouter(handler, max_retries=3)
+        with pytest.raises(
+            ProviderError, match=r"provider says: .*maximum context length"
+        ) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is True
+
+    @pytest.mark.asyncio
     async def test_connect_error_is_transient_and_retried(self) -> None:
         """A transport error (connect/timeout) is transient and retried."""
         calls = 0

@@ -463,20 +463,102 @@ def test_m4_path_decision_counter_is_exact_on_a_decision_chain() -> None:
 
 
 @pytest.mark.unit
-def test_m4_path_decision_counter_never_truncates_an_acyclic_parent(
+def test_m4_path_decision_counter_truncates_every_graph_shape(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """An acyclic parent is enumerated in full, so it never sets truncated.
+    """The sample cap bounds the enumeration on acyclic parents too.
 
-    The sample cap bounds only the cyclic search; the acyclic path set is
-    finite and exact by design. Pinning the cap below the fixture's path count
-    proves the acyclic branch ignores it: every root-to-ending path is still
-    returned and ``truncated`` stays False.
+    A previous revision exempted acyclic parents on the theory that a finite
+    path set is an enumerable one; a reconvergent DAG's path set is finite but
+    exponential, and the exhaustive walk hung past a minute on a 193-node
+    catalog skeleton (AL-520/UW-C322). Pinning the cap below the fixture's
+    path count proves the cap now applies: the walk stops and reports
+    ``truncated=True``, and exactness on acyclic parents comes from
+    ``_dag_decision_minmax`` instead.
     """
     monkeypatch.setattr(m4_ops, "_WALK_PATH_SAMPLE_CAP", 1)
     counts, truncated = path_decision_counts(_diamond_fixture())
-    assert truncated is False
-    assert sorted(counts) == [1, 2, 2]
+    assert truncated is True
+    assert len(counts) == 1
+
+
+def _reconvergent_lattice_fixture(layers: int) -> dict[str, object]:
+    """Return a DAG of ``layers`` stacked diamonds with 2**layers simple paths.
+
+    Every layer is a decision node with two choices into a shared next layer,
+    so every root-to-ending path crosses every decision: the exact per-path
+    decision count is ``layers`` on all 2**layers paths, while full
+    enumeration is exponential in ``layers``.
+    """
+    nodes: list[dict[str, object]] = []
+    for i in range(layers):
+        nxt = f"d{i + 1}" if i + 1 < layers else "fin"
+        nodes.append(
+            {
+                "id": f"d{i}",
+                "body": "b",
+                "is_ending": False,
+                "choices": [
+                    {"id": f"c{i}a", "label": "A", "target": f"m{i}a"},
+                    {"id": f"c{i}b", "label": "B", "target": f"m{i}b"},
+                ],
+            }
+        )
+        nodes.extend(
+            {
+                "id": f"m{i}{arm}",
+                "body": "b",
+                "is_ending": False,
+                "choices": [{"id": f"cm{i}{arm}", "label": "on", "target": nxt}],
+            }
+            for arm in ("a", "b")
+        )
+    nodes.append(
+        {
+            "id": "fin",
+            "body": "x",
+            "is_ending": True,
+            "ending": {
+                "id": "xf",
+                "kind": "success",
+                "valence": "positive",
+                "title": "F",
+            },
+        }
+    )
+    return {
+        "start_node": "d0",
+        "metadata": {
+            "age_band": "3-5",
+            "tier": 1,
+            "topology": "time_cave",
+            "ending_count": 1,
+        },
+        "variables": [],
+        "nodes": nodes,
+    }
+
+
+@pytest.mark.unit
+def test_dag_decision_minmax_matches_enumeration_on_small_fixtures() -> None:
+    """The DP agrees with the exhaustive counter wherever both are exact."""
+    for fixture in (_diamond_fixture(), _eight_decision_chain_fixture()):
+        counts, truncated = path_decision_counts(fixture)
+        assert truncated is False
+        assert m4_ops._dag_decision_minmax(fixture) == (min(counts), max(counts))
+
+
+@pytest.mark.unit
+def test_the_window_check_is_exact_and_fast_on_an_exponential_dag() -> None:
+    """A 2**48-path lattice resolves exactly without enumerating any path.
+
+    48 stacked diamonds give 281 trillion simple paths; enumeration cannot
+    finish, the linear-time DP must. The window check ran through the same DP
+    on both documents, so an identical candidate reports no breach.
+    """
+    lattice = _reconvergent_lattice_fixture(48)
+    assert m4_ops._dag_decision_minmax(lattice) == (48, 48)
+    assert m4_ops._decision_window_reason(lattice, lattice) is None
 
 
 @pytest.mark.unit

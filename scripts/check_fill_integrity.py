@@ -6,17 +6,18 @@ Usage:
 Four checks for the story-inventory authoring run (see
 ``docs/planning/story-inventory-initial-run.md`` section 5.1):
 
-1. Structural immutability: with every node ``body`` and every choice
-   ``label`` removed, the filled story must be byte-identical (canonical
-   JSON) to the skeleton. An author agent only writes leaf prose (bodies and
-   labels); any other difference is a hard fail. Choice labels are leaf
-   content, aligned with ``diversity/structure.py``'s
-   ``structure_fingerprint`` (the WS-0 labels-are-leaves decision): the
-   automated fill contract (``generation/templates/fill.md``) rewrites
-   labels per theme, so this check no longer treats that rewrite as a
-   structural violation. A label's *action-semantic* (what the choice
-   means, as opposed to its surface wording) is not checked here at all;
-   that is a Stage 1 fidelity concern, not a byte-equality one.
+1. Structural immutability: with every node ``body``, every choice
+   ``label``, the storybook ``title``, and every ending ``title`` removed,
+   the filled story must be byte-identical (canonical JSON) to the skeleton.
+   An author agent only writes leaf prose; any other difference is a hard
+   fail. Choice labels are leaf content, aligned with
+   ``diversity/structure.py``'s ``structure_fingerprint`` (the WS-0
+   labels-are-leaves decision), and titles are leaf content by the
+   2026-08-21 ruling (``live-structural-round-2026-08-21.md`` section 8.3;
+   ``--frozen-titles`` restores the pre-ruling comparison). A label's
+   *action-semantic* (what the choice means, as opposed to its surface
+   wording) is not checked here at all; that is a Stage 1 fidelity concern,
+   not a byte-equality one.
 2. No ``<<FILL`` markers may remain anywhere in the filled file.
 3. Word stats: per-node counts vs the band's per-node hard max (fail) and the
    story mean vs the band's advisory range (warning only; PL-19 mirrors this).
@@ -118,14 +119,25 @@ def _strip_leaf_fields(
             when the caller opts in.
 
     Returns:
-        A copy suitable for structure-only comparison: every node ``body``
-        and every choice ``label`` removed (and, when opted in, every
-        ending ``title``), leaving ids, targets, conditions, effects,
-        ending kind/valence, variables, and metadata.
+        A copy suitable for structure-only comparison: every node ``body``,
+        every choice ``label``, and every variable ``description`` removed
+        (and, when opted in, every ending ``title``), leaving ids, targets,
+        conditions, effects, ending kind/valence, variable
+        name/type/bounds/initial, and metadata.
     """
     copy: dict[str, Any] = json.loads(json.dumps(story))
     if allow_title_rewrite:
         copy.pop("title", None)
+    # Variable descriptions are theme documentation, writable under the
+    # 2026-08-21 freeze split (section 8.2 of the live-structural round doc;
+    # `normalize_filled_story` overlays them the same way). Only the machine
+    # fields (name, type, min/max, initial) stay in the comparison, so a
+    # themed description is a reskin, not a structural failure.
+    variables = copy.get("variables")
+    if isinstance(variables, list):
+        for variable in variables:
+            if isinstance(variable, dict):
+                variable.pop("description", None)
     nodes = copy.get("nodes")
     if isinstance(nodes, list):
         for node in nodes:
@@ -246,9 +258,21 @@ def main(argv: list[str] | None = None) -> int:
         "--allow-title-rewrite",
         action="store_true",
         help=(
-            "Permit the storybook title and ending titles to differ "
-            "(title-contract fills; titles are "
-            "leaf content per WS-0, AL-161)."
+            "Deprecated no-op: title rewrites are legal by default since the "
+            "2026-08-21 ruling (live-structural-round-2026-08-21.md section "
+            "8.3). Kept so existing invocations keep working."
+        ),
+    )
+    parser.add_argument(
+        "--frozen-titles",
+        action="store_true",
+        help=(
+            "Compare the storybook title and ending titles as frozen "
+            "structure, restoring the pre-ruling behavior. The 2026-08-21 "
+            "ruling makes both leaf content (WS-0 labels-are-leaves, AL-161, "
+            "live-structural-round-2026-08-21.md section 8.3), so by default "
+            "they are stripped from the structural comparison like bodies "
+            "and choice labels."
         ),
     )
     parser.add_argument(
@@ -323,8 +347,14 @@ def main(argv: list[str] | None = None) -> int:
     # structural failure that is not one. This previously depended on the flag
     # being passed by hand (AL-224 on this branch, renumbered in the merge).
     defers_titles = _defers_titles(skeleton)
-    allow_title_rewrite = args.allow_title_rewrite or defers_titles
-    if defers_titles and not args.allow_title_rewrite:
+    # Titles are leaf content by default (ruled 2026-08-21,
+    # docs/planning/live-structural-round-2026-08-21.md section 8.3): 15 of 16
+    # measured one-shot fills retitled endings, and the chunked path now
+    # carries the same affordance, so a title diff is a theme rewrite, not a
+    # structural violation. --frozen-titles restores the old comparison; a
+    # skeleton that defers its title as a FILL directive is exempt even then.
+    allow_title_rewrite = not args.frozen_titles or defers_titles
+    if defers_titles and args.frozen_titles:
         sys.stdout.write(
             "note  titles: the skeleton defers its title as a FILL directive, so "
             "title differences are expected and are not compared\n"

@@ -1,0 +1,22 @@
+{
+  "parent": "the-tin-whistle-map",
+  "steps": [
+    [
+      "M3",
+      "prune",
+      0
+    ],
+    [
+      "M3",
+      "prune",
+      1
+    ],
+    [
+      "M2",
+      "rng",
+      0
+    ]
+  ],
+  "held": true,
+  "reguide_outstanding": 44
+}

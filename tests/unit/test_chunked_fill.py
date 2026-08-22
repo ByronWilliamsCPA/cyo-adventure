@@ -305,6 +305,74 @@ def test_a_choice_target_survives_a_reply_that_tries_to_move_it() -> None:
 
 
 @pytest.mark.unit
+def test_an_ending_title_is_writable_and_the_rest_of_the_ending_is_not() -> None:
+    """``ending.title`` is leaf content (ruled 2026-08-21, section 8.3).
+
+    A reply may retitle an ending into the theme's vocabulary; the ending's
+    ``id``, ``kind``, and ``valence`` carry the PL-15 fail-state policy and
+    come from the skeleton whatever the reply contains.
+    """
+    skeleton = _all_fill_skeleton()
+
+    merged = merge_fill_batch(
+        skeleton,
+        ["n_happy_end"],
+        {
+            "n_happy_end": {
+                "body": "The lighthouse door swings open onto warm lamplight.",
+                "ending_title": "Lamplight Kept",
+                "ending": {"id": "e_evil", "kind": "death", "valence": "negative"},
+            }
+        },
+    )
+
+    ending = cast(
+        "dict[str, object]",
+        next(n for n in _nodes_of(merged) if n["id"] == "n_happy_end")["ending"],
+    )
+    assert ending["title"] == "Lamplight Kept"
+    assert ending["id"] == "e_friends"
+    assert ending["kind"] == "success"
+    assert ending["valence"] == "positive"
+
+
+@pytest.mark.unit
+def test_an_ending_title_for_a_non_ending_node_is_rejected() -> None:
+    """A title aimed at a node with no ending block is a mis-addressed reply."""
+    skeleton = _all_fill_skeleton()
+
+    with pytest.raises(ValidationError, match="no ending block"):
+        merge_fill_batch(
+            skeleton,
+            ["n_start"],
+            {
+                "n_start": {
+                    "body": "A fox waves from the crossroads.",
+                    "ending_title": "The Fox Remembers",
+                }
+            },
+        )
+
+
+@pytest.mark.unit
+def test_a_directive_returned_as_an_ending_title_is_rejected() -> None:
+    """An ending title is reader-visible text; a directive in one is a defect."""
+    skeleton = _all_fill_skeleton()
+
+    with pytest.raises(ValidationError, match="ending title"):
+        merge_fill_batch(
+            skeleton,
+            ["n_happy_end"],
+            {
+                "n_happy_end": {
+                    "body": "The lighthouse door swings open.",
+                    "ending_title": "<<FILL role=ending words=4>>",
+                }
+            },
+        )
+
+
+@pytest.mark.unit
 def test_a_batch_that_omits_a_node_is_rejected() -> None:
     """Partial is the dangerous answer, so it is not an answer.
 
@@ -507,7 +575,13 @@ async def test_a_feasible_skeleton_still_takes_the_untouched_one_shot_path() -> 
     provider = MockProvider(responses=[json.dumps(VALID_STORY)])
 
     outcome = await fill_skeleton(
-        skeleton, {"premise": "a fox"}, provider, PiiContext(child_names=frozenset())
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        PiiContext(child_names=frozenset()),
+        # Routing is under test, not delivery volume: the fixture
+        # commissions 10 words per node against terse canned bodies.
+        min_fill_rate=0,
     )
 
     assert outcome.status == "passed"
@@ -539,6 +613,9 @@ async def test_a_skeleton_over_the_cap_is_filled_batch_by_batch_and_merged(
         provider,
         PiiContext(child_names=frozenset()),
         settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        # Routing is under test, not delivery volume: the fixture
+        # commissions 10 words per node against terse canned bodies.
+        min_fill_rate=0,
         stage1_gate="skipped",
     )
 
@@ -701,6 +778,9 @@ async def test_a_bound_fill_that_fits_still_takes_the_one_shot_bound_prompt() ->
         provider,
         PiiContext(child_names=frozenset()),
         stage1_gate="skipped",
+        # Routing is under test, not delivery volume: the fixture
+        # commissions 10 words per node against terse canned bodies.
+        min_fill_rate=0,
         slot_bindings={"HERO": "Rosa"},
     )
 
@@ -740,6 +820,9 @@ async def test_a_bound_fill_over_the_cap_is_chunked_and_keeps_its_bound_values(
         provider,
         PiiContext(child_names=frozenset()),
         settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        # Routing is under test, not delivery volume: the fixture
+        # commissions 10 words per node against terse canned bodies.
+        min_fill_rate=0,
         stage1_gate="skipped",
         slot_bindings={"HERO": "Rosa"},
     )
@@ -1011,3 +1094,103 @@ def test_a_well_formed_bound_value_passes_through_unchanged() -> None:
 
     assert '"HERO": "Rosa"' in prompt.user
     assert '"PLACE": "Bellhaven"' in prompt.user
+
+
+# ---------------------------------------------------------------------------
+# Context-window bound (AL-514/UW-C320)
+# ---------------------------------------------------------------------------
+
+
+class _AskRecordingProvider:
+    """Mock provider that records the max_tokens of every call."""
+
+    def __init__(self, responses: list[str]) -> None:
+        self._responses = responses
+        self.asks: list[int] = []
+
+    async def complete(
+        self,
+        *,
+        system: str,
+        prompt: str,
+        max_tokens: int,
+    ) -> object:
+        self.asks.append(max_tokens)
+        from cyo_adventure.generation.usage import Completion, TokenUsage
+
+        return Completion(
+            text=self._responses[len(self.asks) - 1],
+            usage=TokenUsage(
+                provider="mock",
+                model="tiny/one-node",
+                input_tokens=1,
+                output_tokens=1,
+                duration_ms=1,
+            ),
+        )
+
+
+@pytest.mark.asyncio
+async def test_a_window_too_small_for_a_batch_refuses_without_spending(
+    tiny_cap_settings: _SmallOutputSettings,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A batch that cannot fit the known context window is never sent.
+
+    The 2026-08-21 chunked leg overflowed a 163,840-token window by one token
+    and paid for the rejected prompt (AL-514/UW-C320). With the window known
+    and too small, the fill refuses deterministically with zero provider
+    calls instead of buying an HTTP 400.
+    """
+    from cyo_adventure.generation.skeleton import MODEL_CONTEXT_WINDOWS
+
+    monkeypatch.setitem(MODEL_CONTEXT_WINDOWS, "tiny/one-node", 50)
+    skeleton = _all_fill_skeleton()
+    provider = MockProvider(responses=[])
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        PiiContext(child_names=frozenset()),
+        settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        stage1_gate="skipped",
+    )
+
+    assert outcome.status == "failed"
+    assert provider.calls == []
+
+
+@pytest.mark.asyncio
+async def test_a_known_window_clamps_the_batch_ask_below_the_cap(
+    tiny_cap_settings: _SmallOutputSettings,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The per-batch ask is min(cap, window minus estimated input).
+
+    With the input estimate pinned to 100 tokens and the window to 127, every
+    batch has 27 tokens of room: enough for a one-node batch (2 tokens per
+    commissioned word times 10 words), so the call proceeds, but the ask is
+    27 rather than the 30-token cap.
+    """
+    import cyo_adventure.generation.orchestrator as orch
+    from cyo_adventure.generation.skeleton import MODEL_CONTEXT_WINDOWS
+
+    monkeypatch.setitem(MODEL_CONTEXT_WINDOWS, "tiny/one-node", 127)
+    monkeypatch.setattr(orch, "estimate_input_tokens", lambda *_texts: 100)
+    skeleton = _all_fill_skeleton()
+    batches = plan_fill_batches(skeleton, max_tokens=_CAP_FOR_ONE)
+    provider = _AskRecordingProvider(responses=[_reply_for(batch) for batch in batches])
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        cast("object", provider),  # pyright: ignore[reportArgumentType]
+        PiiContext(child_names=frozenset()),
+        settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        stage1_gate="skipped",
+    )
+
+    assert outcome.status in {"passed", "needs_review"}
+    assert provider.asks
+    assert all(ask == 27 for ask in provider.asks)

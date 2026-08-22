@@ -1,0 +1,96 @@
+{
+  "skeletons": [
+    "the-hollow-sea.json"
+  ],
+  "structure_varies": false,
+  "brief_count": 2,
+  "differentiation_directives": null,
+  "mock": false,
+  "vendors": [
+    {
+      "label": "deepseek-v3.2-chunked",
+      "model": "deepseek/deepseek-v3.2",
+      "provider_order": [
+        "digitalocean"
+      ],
+      "family": "deepseek"
+    }
+  ],
+  "books": [
+    {
+      "vendor": "deepseek-v3.2-chunked",
+      "family": "deepseek",
+      "brief_index": 0,
+      "status": "failed",
+      "attempts": 0,
+      "latency_s": 27.8,
+      "grade": null,
+      "in_band": null,
+      "leaf_words": 0,
+      "fill_completeness": 0.0,
+      "complete": false,
+      "max_tokens": 65536,
+      "output_tokens": 2133,
+      "reasoning_tokens": 0,
+      "near_cap": false,
+      "reading_level_degraded": false,
+      "reading_level_nodes_dropped": 0,
+      "cost": 0.01824465,
+      "cost_complete": true,
+      "cost_unavailable_reason": "",
+      "file": null,
+      "error": null
+    },
+    {
+      "vendor": "deepseek-v3.2-chunked",
+      "family": "deepseek",
+      "brief_index": 1,
+      "status": "failed",
+      "attempts": 0,
+      "latency_s": 86.93,
+      "grade": null,
+      "in_band": null,
+      "leaf_words": 0,
+      "fill_completeness": 0.0,
+      "complete": false,
+      "max_tokens": 65536,
+      "output_tokens": 7349,
+      "reasoning_tokens": 0,
+      "near_cap": false,
+      "reading_level_degraded": false,
+      "reading_level_nodes_dropped": 0,
+      "cost": 0.0224162,
+      "cost_complete": true,
+      "cost_unavailable_reason": "",
+      "file": null,
+      "error": null
+    }
+  ],
+  "within_vendor": {},
+  "cross_vendor": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "same_brief_cross_vendor": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "same_family_cross_model": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "same_family_same_brief": {
+    "pairs": 0.0,
+    "mean_per_1000": 0.0,
+    "median_per_1000": 0.0,
+    "max_per_1000": 0.0
+  },
+  "excluded_incomplete": [],
+  "verdict": "not measured: fewer than two books were fully written"
+}

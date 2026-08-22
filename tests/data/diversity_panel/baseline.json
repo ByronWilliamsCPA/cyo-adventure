@@ -63,23 +63,23 @@
     },
     {
       "key": "a brave dragon guards her eggs~the wyvern of the north mountain",
-      "similar": true,
-      "similarity": 1.0
+      "similar": false,
+      "similarity": 0.0
     },
     {
       "key": "a space station rescue mission~astronauts stranded in orbit",
-      "similar": true,
-      "similarity": 1.0
+      "similar": false,
+      "similarity": 0.0
     },
     {
       "key": "a dinosaur dig in the desert~fossils hidden in the canyon",
-      "similar": true,
-      "similarity": 0.5
+      "similar": false,
+      "similarity": 0.0
     },
     {
       "key": "a wizard's first spell goes wrong~the witch of the forest school",
       "similar": true,
-      "similarity": 0.5
+      "similarity": 1.0
     },
     {
       "key": "a space station rescue mission~an undersea mermaid kingdom",
@@ -103,7 +103,7 @@
       "content_token_count": 2895,
       "distinct_1": 0.34715,
       "distinct_2": 0.879505,
-      "fingerprint": "afca8ac3ec5fa68a12bb0169d6380864bf8564703d883c78fd0ebb3896e84c04",
+      "fingerprint": "7e9fc03350d918ffc84a397dec78c5ad4f00f830d073d2984f9e00fccedba114",
       "self_bleu_lite": 0.392027
     },
     "cave-sea": {
@@ -111,7 +111,7 @@
       "content_token_count": 2988,
       "distinct_1": 0.335341,
       "distinct_2": 0.883681,
-      "fingerprint": "afca8ac3ec5fa68a12bb0169d6380864bf8564703d883c78fd0ebb3896e84c04",
+      "fingerprint": "7e9fc03350d918ffc84a397dec78c5ad4f00f830d073d2984f9e00fccedba114",
       "self_bleu_lite": 0.379113
     },
     "cave-space": {
@@ -119,7 +119,7 @@
       "content_token_count": 3678,
       "distinct_1": 0.327352,
       "distinct_2": 0.887628,
-      "fingerprint": "afca8ac3ec5fa68a12bb0169d6380864bf8564703d883c78fd0ebb3896e84c04",
+      "fingerprint": "7e9fc03350d918ffc84a397dec78c5ad4f00f830d073d2984f9e00fccedba114",
       "self_bleu_lite": 0.381389
     },
     "clockwork": {
@@ -127,7 +127,7 @@
       "content_token_count": 9330,
       "distinct_1": 0.18746,
       "distinct_2": 0.819164,
-      "fingerprint": "101d828e418aea1b76a9d6e622c30c53f598fb094f2ad32603700f84a81d88a6",
+      "fingerprint": "87b6aa17aaa18215f9c1345be1fff329d4f8a7c91d0a330e0d70bb7d710c6ffb",
       "self_bleu_lite": 0.495722
     },
     "clover": {
@@ -135,7 +135,7 @@
       "content_token_count": 358,
       "distinct_1": 0.399441,
       "distinct_2": 0.825444,
-      "fingerprint": "65e9ca910a2863b3a800dca75234bfb9cb30a29a602efaa2e76c065788dcb413",
+      "fingerprint": "261a6dd4aac3c631060bf7f9c7c229dc8a00136b0af55ed5eee228e5816a0082",
       "self_bleu_lite": 0.405449
     },
     "lantern": {
@@ -143,7 +143,7 @@
       "content_token_count": 1095,
       "distinct_1": 0.398174,
       "distinct_2": 0.924386,
-      "fingerprint": "aecee4e1178d030e325741a6ccb456ceed6e6aa5b0711e95413d69c36243c006",
+      "fingerprint": "e9b3ea2e70e30b1d82b4b76cb730bd33f793edbf43258784f9f1c8a093b58c6e",
       "self_bleu_lite": 0.31354
     },
     "skyship": {
@@ -151,7 +151,7 @@
       "content_token_count": 4780,
       "distinct_1": 0.286611,
       "distinct_2": 0.889032,
-      "fingerprint": "1348ffc051ab47230722e3845bd4def60bcbd52da626c0a4d059636c14f75025",
+      "fingerprint": "f56cc758a975374f89d415b565f701f3d0403fd78fb3c996f2de7a8d1baa3993",
       "self_bleu_lite": 0.389259
     },
     "skyship-submarine": {
@@ -159,7 +159,7 @@
       "content_token_count": 4007,
       "distinct_1": 0.366858,
       "distinct_2": 0.932734,
-      "fingerprint": "1348ffc051ab47230722e3845bd4def60bcbd52da626c0a4d059636c14f75025",
+      "fingerprint": "f56cc758a975374f89d415b565f701f3d0403fd78fb3c996f2de7a8d1baa3993",
       "self_bleu_lite": 0.294548
     }
   },

@@ -680,6 +680,44 @@ async def test_fill_skeleton_returns_passed_on_clean_fill() -> None:
 
 
 @pytest.mark.asyncio
+async def test_fill_skeleton_restores_frozen_fields_the_model_drifted() -> None:
+    """Frozen-field drift is normalized away before the gate (ruling 8.2).
+
+    The reply rewrites the story id and swaps an ending kind, the two
+    structure-critical mutation classes the 2026-08-21 live round measured
+    (`AL-510`); a retitled ending is a legal theme rewrite and survives. The
+    outcome's document carries the skeleton's frozen values, so the drift
+    costs no repair cycle and ships nothing.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    filled = copy.deepcopy(VALID_STORY)
+    filled["id"] = "sk_hijacked"
+    nodes = cast("list[dict[str, object]]", filled["nodes"])
+    ending_node = next(n for n in nodes if n.get("is_ending"))
+    ending = cast("dict[str, object]", ending_node["ending"])
+    original_kind = ending["kind"]
+    ending["kind"] = "death" if original_kind != "death" else "success"
+    ending["title"] = "The Lantern Kept"
+    provider = MockProvider(responses=[json.dumps(filled)])
+    pii = PiiContext(child_names=frozenset())
+
+    outcome = await fill_skeleton(skeleton, {"premise": "a fox"}, provider, pii)
+
+    assert outcome.status == "passed"
+    assert outcome.attempts == 0
+    assert outcome.storybook is not None
+    doc = cast("dict[str, object]", outcome.storybook)
+    assert doc["id"] == skeleton["id"]
+    out_nodes = cast("list[dict[str, object]]", doc["nodes"])
+    normalized_ending = cast(
+        "dict[str, object]",
+        next(n["ending"] for n in out_nodes if n.get("is_ending")),
+    )
+    assert normalized_ending["kind"] == original_kind
+    assert normalized_ending["title"] == "The Lantern Kept"
+
+
+@pytest.mark.asyncio
 async def test_fill_skeleton_repair_exhaustion_is_failed_not_a_returned_skeleton() -> (
     None
 ):
@@ -1184,3 +1222,72 @@ async def test_generate_story_stage_b_asks_no_more_than_the_model_can_emit() -> 
     )
     # And the clamp is load-bearing here, not incidentally satisfied.
     assert ceiling < MAX_FILL_OUTPUT_TOKENS
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_stamps_the_fill_rate_and_keeps_a_full_fill_passed() -> (
+    None
+):
+    """A full-delivery fill stays passed and carries its rate on the report.
+
+    Ruling 9.3 (2026-08-21, UW-C307): the rate is recorded on every outcome
+    that carries a book, floor breach or not, so review surfaces can show it.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+
+    outcome = await fill_skeleton(
+        skeleton, {"premise": "a fox"}, provider, PiiContext(child_names=frozenset())
+    )
+
+    assert outcome.status == "passed"
+    assert isinstance(outcome.report.get("fill_rate"), float)
+    assert outcome.report["fill_rate"] >= 0.6
+    assert outcome.report["fill_rate_floor"] == 0.6
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_forces_review_on_an_under_delivered_book() -> None:
+    """A gate-clean book under the fill-rate floor cannot ship unreviewed.
+
+    The AL-490 shape: 40-percent delivery with zero hard findings previously
+    returned "passed". Commissioning 400 words against the fixture's short
+    body forces the rate far under the floor; the outcome is needs_review,
+    never a hard block, and the report names the rate.
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    nodes = cast("list[dict[str, object]]", skeleton["nodes"])
+    nodes[0]["body"] = "<<FILL role=setup words=400 beats='greet the fox'>>"
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+
+    outcome = await fill_skeleton(
+        skeleton, {"premise": "a fox"}, provider, PiiContext(child_names=frozenset())
+    )
+
+    assert outcome.status == "needs_review"
+    assert outcome.storybook is not None
+    assert outcome.report["fill_rate"] < 0.6
+    assert any("fill_rate" in entry for entry in outcome.stage_log)
+
+
+@pytest.mark.asyncio
+async def test_a_zero_floor_measures_without_downgrading() -> None:
+    """min_fill_rate=0 is the documented measure-only setting."""
+    skeleton = _skeleton_with_fill_placeholder()
+    nodes = cast("list[dict[str, object]]", skeleton["nodes"])
+    nodes[0]["body"] = "<<FILL role=setup words=400 beats='greet the fox'>>"
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        PiiContext(child_names=frozenset()),
+        min_fill_rate=0,
+    )
+
+    assert outcome.status == "passed"
+    assert outcome.report["fill_rate"] < 0.6

@@ -114,6 +114,10 @@ def _record(
         latency_s=1.0,
         grade=4.0,
         in_band=1.0,
+        # A written book that delivered its commission in full; the analyze
+        # buckets under test do not read this, but the field is a required
+        # condition of the record (AL-491/AL-511: never read in_band alone).
+        fill_rate=1.0,
         leaf_words=len(text.split()),
         doc=_doc(text),
         error=None,
@@ -404,6 +408,7 @@ def test_analyze_with_one_usable_book_reports_not_measured() -> None:
             latency_s=0.1,
             grade=None,
             in_band=None,
+            fill_rate=None,
             leaf_words=0,
             doc=None,
             error="boom",

@@ -13,7 +13,7 @@ from __future__ import annotations
 import json
 import math
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.core.exceptions import ValidationError
 
@@ -265,6 +265,110 @@ MODEL_OUTPUT_CAPS: dict[str, int] = {
     "claude-sonnet-4-6": 128_000,
     "claude-haiku-4-5": 64_000,
 }
+
+
+def story_fill_rate(
+    skeleton: dict[str, object], filled: dict[str, object]
+) -> float | None:
+    """Return delivered over commissioned words, per-node surplus discounted.
+
+    The story-level fill-rate quantity ruled into the fill pipeline on
+    2026-08-21 (`UW-C307`, ruling 9.3 in
+    ``docs/planning/live-structural-round-2026-08-21.md``): each node is
+    credited at most what it was commissioned, so surplus on one node cannot
+    pay for an empty body on another, matching
+    ``scripts/check_fill_integrity.py``'s blocking check. Word counts use
+    whitespace splitting on both sides, as that script does.
+
+    Args:
+        skeleton: The pristine skeleton carrying ``words=`` directives.
+        filled: The filled story whose delivery is being measured.
+
+    Returns:
+        float | None: The capped ratio in [0, 1], or None when the skeleton
+        commissions nothing (no ``words=`` directives).
+    """
+    commissioned = commissioned_words_by_node(skeleton)
+    total = sum(commissioned.values())
+    if total <= 0:
+        return None
+    delivered: dict[str, int] = {}
+    nodes = filled.get("nodes")
+    for index, entry in enumerate(nodes if isinstance(nodes, list) else []):
+        if not isinstance(entry, dict):
+            continue
+        node = cast("dict[str, object]", entry)
+        body = node.get("body")
+        if not isinstance(body, str) or FILL_MARKER in body:
+            continue
+        node_id = node.get("id")
+        key = str(node_id) if node_id is not None else f"#{index}"
+        delivered[key] = delivered.get(key, 0) + len(body.split())
+    effective = sum(
+        min(delivered.get(key, 0), target) for key, target in commissioned.items()
+    )
+    return effective / total
+
+
+# Known CONTEXT windows (input plus output) per model id, the companion to
+# ``MODEL_OUTPUT_CAPS``. PARTIAL by construction, exactly like that table:
+# a missing row means "unknown", and :func:`resolve_context_window` returns
+# None rather than guessing, so only VERIFIED rows constrain anything.
+#
+# Why it exists: the chunked fill path bounds each batch's OUTPUT under the
+# resolved cap while the batch prompt carries the whole document, so input
+# grows with skeleton size and nothing checked input plus ask against the
+# endpoint's window. Measured 2026-08-21: a batch call requested 58,983
+# output tokens with a 104,858-token prompt against deepseek-v3.2's
+# 163,840-token window, one token over, HTTP 400 (`AL-514`/`UW-C320`).
+# #ASSUME: external resources: values transcribed from the OpenRouter
+# endpoints API for the pinned endpoints; per-endpoint variation exists for
+# some slugs, so record the MINIMUM across the endpoints a pin can reach.
+# #VERIFY: tests/unit/test_chunked_fill.py::
+# test_a_known_window_clamps_the_batch_ask_below_the_cap (reads this table
+# through resolve_context_window on the chunked path).
+MODEL_CONTEXT_WINDOWS: dict[str, int] = {
+    # Uniform 163,840 across every serving endpoint, read 2026-08-21.
+    "deepseek/deepseek-v3.2": 163_840,
+}
+
+
+def resolve_context_window(model: str | None) -> int | None:
+    """Return the model's known context window, or None when unknown.
+
+    Args:
+        model: The backend model id, or None when it is not known.
+
+    Returns:
+        int | None: The verified window, or None (no constraint) for a model
+        without a row; unlike :func:`resolve_output_cap` there is no safe
+        permissive default to fall back to, because the window bounds input
+        PLUS output and a wrong guess fails or truncates real requests.
+    """
+    if model is None:
+        return None
+    return MODEL_CONTEXT_WINDOWS.get(model)
+
+
+# Conservative characters-per-token divisor for estimating a prompt's input
+# tokens. Measured on the 2026-08-21 chunked batch prompt: 369,399 chars
+# tokenized to 104,858 tokens (3.52 chars/token); 3.0 deliberately
+# OVER-estimates the token count so the context bound errs toward asking for
+# less output, never toward another one-token overflow.
+_CHARS_PER_INPUT_TOKEN = 3.0
+
+
+def estimate_input_tokens(*texts: str) -> int:
+    """Conservatively estimate the input tokens of the given prompt parts.
+
+    Args:
+        *texts: The prompt strings that will be sent (system and user blocks).
+
+    Returns:
+        int: The estimated token count, rounded up.
+    """
+    total_chars = sum(len(text) for text in texts)
+    return math.ceil(total_chars / _CHARS_PER_INPUT_TOKEN)
 
 
 def active_fill_model(settings: object) -> str | None:

@@ -329,6 +329,22 @@ class NarrativeStyle(StrEnum):
     GAMEBOOK = "gamebook"
 
 
+class NarrativePerson(StrEnum):
+    """The grammatical person the prose addresses the reader in.
+
+    Ruled 2026-08-21 (`UW-C324`, section 9.4 of
+    ``docs/planning/live-structural-round-2026-08-21.md``): narrative person
+    was an unpinned degree of freedom, and three fills of one prose skeleton
+    scattered from 0.07 to 0.72 second-person node rates because nothing
+    declared which person the book is told in. Gamebooks are second-person by
+    genre convention; prose books must say which they are, so same-skeleton
+    siblings cannot ship in different persons.
+    """
+
+    SECOND = "second"
+    THIRD = "third"
+
+
 class SafetyScope(StrEnum):
     """A per-node hint marking a sensitive scene for the safety reviewer."""
 
@@ -407,6 +423,12 @@ class StoryMetadata(BaseModel):
     # only changes the envelope for 13-16/16+; lower bands are implicitly prose.
     length: Length | None = None
     narrative_style: NarrativeStyle = NarrativeStyle.PROSE
+    # The declared grammatical person (`UW-C324`, ruled 2026-08-21). ``None``
+    # means undeclared (legacy); the catalog is backfilled mechanically and a
+    # fill must honor the declaration where present. Gamebooks default to
+    # second person by convention; the checker in
+    # ``scripts/check_prose_craft.py`` keys on this field.
+    narrative_person: NarrativePerson | None = None
     # A non-production MVP/Test skeleton exists for prototyping, pipeline and
     # integration testing, and generator development. When ``False`` the L1-7
     # node-count budget is the band-independent MVP envelope (not the band's

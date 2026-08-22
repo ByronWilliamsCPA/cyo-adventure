@@ -4,6 +4,7 @@
   "title": "The Clockwork Menagerie",
   "version": 1,
   "metadata": {
+    "narrative_person": "third",
     "age_band": "8-11",
     "reading_level": {
       "scheme": "flesch_kincaid",

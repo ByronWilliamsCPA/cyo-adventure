@@ -717,20 +717,23 @@ _DECISIONS_FRACTION = 0.08
 #
 # The ceiling itself is NEW capability, not a tightening of an existing rule: the
 # owner named "too many endings" as a real failure mode and no rule expressed it.
-# It is advisory for now because these numbers are themselves suspect at the
-# young bands: applying them fails 7 committed skeletons, 5 of them at 3-5,
-# including `the-last-blue-cup` which was authored to the strict bar. A ceiling
-# that a fresh strict-bar skeleton violates is more likely miscalibrated than the
-# skeleton is (`UW-C283`).
-# #ASSUME: data-integrity: transcribed from ADR-011 section 5's table; the
-# gamebook rows are deliberately absent rather than zero.
+# It is advisory for now. The original young-band columns were suspect: applying
+# them failed 7 committed skeletons, 5 of them at 3-5, including
+# `the-last-blue-cup` which was authored to the strict bar. A ceiling that a
+# fresh strict-bar skeleton violates is more likely miscalibrated than the
+# skeleton is (`UW-C283`). The 2026-08-22 ADR-011 amendment (section 11 item 4,
+# `UW-C323` audit) recalibrated the four young-band ceilings upward against the
+# measured strict-bar shelf (shares 0.17-0.41; `the-big-cardboard-box` holds 18
+# endings against the old cap of 6), and the rows below carry the amended values.
+# #ASSUME: data-integrity: transcribed from ADR-011 section 5's table as amended
+# 2026-08-22; the gamebook rows are deliberately absent rather than zero.
 # #VERIFY: test_band_profile.py::test_cell_ending_bounds_match_the_adr_table and
 # ::test_scaled_floor_never_exceeds_the_cell_ceiling.
 _CELL_ENDING_BOUNDS: dict[tuple[str, str], tuple[int, int]] = {
-    ("3-5", "short"): (2, 4),
-    ("3-5", "medium"): (4, 6),
-    ("5-8", "short"): (6, 10),
-    ("5-8", "medium"): (10, 16),
+    ("3-5", "short"): (2, 8),
+    ("3-5", "medium"): (4, 18),
+    ("5-8", "short"): (6, 16),
+    ("5-8", "medium"): (10, 20),
     ("8-11", "short"): (12, 18),
     ("8-11", "medium"): (18, 28),
     ("8-11", "long"): (28, 40),
