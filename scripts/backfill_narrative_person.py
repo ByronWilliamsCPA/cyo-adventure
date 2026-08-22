@@ -1,6 +1,6 @@
 """Backfill ``metadata.narrative_person`` across the skeleton catalog.
 
-One-shot mechanical backfill for the 2026-08-21 `UW-C323` ruling (section 9.4
+One-shot mechanical backfill for the 2026-08-21 `UW-C324` ruling (section 9.4
 of ``docs/planning/live-structural-round-2026-08-21.md``): every skeleton
 declares the grammatical person its prose is told in, so a fill can be held to
 it and same-skeleton siblings cannot ship in different persons.

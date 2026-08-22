@@ -1097,7 +1097,7 @@ def test_a_well_formed_bound_value_passes_through_unchanged() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Context-window bound (AL-503/UW-C319)
+# Context-window bound (AL-514/UW-C320)
 # ---------------------------------------------------------------------------
 
 
@@ -1138,7 +1138,7 @@ async def test_a_window_too_small_for_a_batch_refuses_without_spending(
     """A batch that cannot fit the known context window is never sent.
 
     The 2026-08-21 chunked leg overflowed a 163,840-token window by one token
-    and paid for the rejected prompt (AL-503/UW-C319). With the window known
+    and paid for the rejected prompt (AL-514/UW-C320). With the window known
     and too small, the fill refuses deterministically with zero provider
     calls instead of buying an HTTP 400.
     """

@@ -16,7 +16,6 @@ import re
 from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.core.exceptions import ValidationError
-from cyo_adventure.validator.gate import run_gate
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -96,6 +95,23 @@ def load_skeleton(
             :func:`cyo_adventure.validator.gate.run_gate`'s blocking
             semantics.
     """
+    # Imported here rather than at module scope because `run_gate` is this
+    # module's ONLY heavy dependency, and it pulls
+    # validator.gate -> validator.choice_grammar -> diversity -> diversity.history
+    # -> sqlalchemy. Everything else in this file is pure text and table
+    # lookups, and most importers want only those: `scripts/check_fill_integrity.py`
+    # takes `commissioned_words_by_node`, `scripts/compare_vendors.py` takes
+    # `resolve_output_cap`, and `mutation/floors.py`, `mutation/sample_fill.py`
+    # and `flywheel/strategy.py` take `is_sidecar` or `FILL_MARKER`. At module
+    # scope this import made all of them fail to load without a database driver
+    # installed, and made the offline mutation core, which ADR-020 says reads no
+    # request, database or network, import the deterministic gate transitively.
+    # A local import here is narrower than splitting the module, because
+    # `load_skeleton` is the single gated function and the most widely imported
+    # symbol, so a split would repoint far more call sites than it protects.
+    # #VERIFY: test_the_module_imports_without_a_database_driver.
+    from cyo_adventure.validator.gate import run_gate  # noqa: PLC0415
+
     data: dict[str, object] = json.loads(path.read_text(encoding="utf-8"))
     result = run_gate(data, enforce_grammar=enforce_grammar)
     if report_sink is not None:
@@ -217,6 +233,18 @@ MAX_FILL_OUTPUT_TOKENS = 131_072
 # new default to `core/config.py` without a row here fails the suite.
 # #VERIFY: test_fill_output_cap.py::test_a_small_output_model_clamps_the_cap_down
 # covers the clamp and ::test_an_unknown_model_gets_the_default the passthrough.
+# A trailing date or build stamp on a model id, as in
+# `deepseek/deepseek-chat-v3.1-0813`. Four to eight digits so a version segment
+# like `claude-sonnet-4-6` or `claude-haiku-4-5` is NOT mistaken for one.
+_DATED_VARIANT_SUFFIX_RE = re.compile(r"-\d{4,8}$")
+
+# An OpenRouter routing or tier variant, as in `anthropic/claude-haiku-4.5:free`
+# or `...:nitro`. The same exact-lookup miss as a date stamp, in the suffix form
+# this repo actually configures: `scripts/yield_harness.py` documents
+# `--model google/gemma-4-31b-it:free`, ADR-003 names `:free` endpoints, and
+# `core/config.py` ships `ollama_model = "qwen2.5:14b"`.
+_VARIANT_SUFFIX_RE = re.compile(r":[^:]+$")
+
 MODEL_OUTPUT_CAPS: dict[str, int] = {
     "deepseek/deepseek-v4-pro": 393_216,
     "deepseek/deepseek-v4-flash": 384_000,
@@ -292,7 +320,7 @@ def story_fill_rate(
 # grows with skeleton size and nothing checked input plus ask against the
 # endpoint's window. Measured 2026-08-21: a batch call requested 58,983
 # output tokens with a 104,858-token prompt against deepseek-v3.2's
-# 163,840-token window, one token over, HTTP 400 (`AL-503`/`UW-C319`).
+# 163,840-token window, one token over, HTTP 400 (`AL-514`/`UW-C320`).
 # #ASSUME: external resources: values transcribed from the OpenRouter
 # endpoints API for the pinned endpoints; per-endpoint variation exists for
 # some slugs, so record the MINIMUM across the endpoints a pin can reach.
@@ -381,7 +409,34 @@ def resolve_output_cap(
     """
     if model is None:
         return default
-    return min(default, MODEL_OUTPUT_CAPS.get(model, default))
+    cap = MODEL_OUTPUT_CAPS.get(model)
+    if cap is None:
+        # #CRITICAL: data-integrity: a dated or pinned variant does not match
+        # its own undated row, and the comment above MODEL_OUTPUT_CAPS names
+        # that as the live way into the permissive fallback:
+        # `deepseek/deepseek-chat-v3.1-0813` took 131,072 against a real 32,768,
+        # four times what the backend can emit, and the over-ask truncates
+        # NON-EMPTY, which `AL-479` establishes is not leg-fatal and therefore
+        # spends the whole repair budget. Falling back to the undated row is
+        # strictly safer than the default: it can only lower the cap, so the
+        # error direction is engaging the chunked path too early rather than
+        # asking for prose the endpoint will not emit. A variant whose real
+        # ceiling is HIGHER than its base still needs its own row, because this
+        # table is looked up and never inferred.
+        # A trailing `:variant` is the SAME miss in the other suffix form, and
+        # it is the one this repo configures: closing only the dated form left
+        # `anthropic/claude-haiku-4.5:free` resolving to 131,072 against its
+        # row's 64,000. Both are stripped, most-specific candidate first, so a
+        # dated variant of a tiered slug still finds its base row.
+        # #VERIFY: test_a_dated_variant_inherits_its_undated_row and
+        # test_a_routing_variant_inherits_its_base_row.
+        candidate = model
+        for pattern in (_VARIANT_SUFFIX_RE, _DATED_VARIANT_SUFFIX_RE):
+            candidate = pattern.sub("", candidate)
+            if candidate in MODEL_OUTPUT_CAPS:
+                cap = MODEL_OUTPUT_CAPS[candidate]
+                break
+    return min(default, cap if cap is not None else default)
 
 
 _TOKENS_PER_FILL_WORD = 2.0
@@ -401,8 +456,20 @@ _FEASIBILITY_MARGIN = 0.8
 # `is_fill_feasible` return True under any cap at all: a fail-open in the guard
 # whose whole job is refusing a skeleton the backend cannot emit. No committed
 # skeleton uses the spaced form today, so this was latent rather than live, but
-# the two modules parse the same directive and must not disagree about it
-# (`AL-429`).
+# the two modules must recognise the same DIRECTIVE TOKEN (`AL-429`).
+#
+# The shared invariant is the token grammar and nothing more. The two modules
+# deliberately disagree about what they then DO with a match, and always have:
+# `identity.py::_word_estimate` takes `.search()`, so the FIRST directive in a
+# body, and falls back to `len(body.split())` for a body carrying no directive
+# at all; `commissioned_words_by_node` below takes `.findall()` and SUMS, skips
+# a body with no directive, skips a `words=0` node, and keys an id-less node
+# positionally where `identity.py::_fastest_finish_words` drops it. Those are
+# four different questions ("what does this one node budget" against "what did
+# this story commission"), so a convergence project would be chasing a property
+# that never held. Read the invariant as "same token, independent accounting",
+# and do not widen the pinning test into a membership or magnitude comparison:
+# it would fail immediately, or enshrine one caller's accounting as the other's.
 # #VERIFY: test_fill_output_cap.py::
 # test_a_spaced_words_directive_is_counted_like_the_strict_form pins the
 # tolerance, and ::test_the_fill_word_pattern_matches_the_mutation_core pins the

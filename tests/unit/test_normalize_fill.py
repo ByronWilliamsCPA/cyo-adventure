@@ -1,7 +1,7 @@
 """Tests for the freeze-split normalizer (2026-08-21 ruling, section 8.2).
 
 Each test reproduces a frozen-field mutation class the 2026-08-21 live round
-measured on real one-shot fills (`AL-499`): a story id rewrite, a
+measured on real one-shot fills (`AL-510`): a story id rewrite, a
 `metadata.themes` retheme, ending kind/valence drift, and a variable whose
 machine fields moved while its description was legitimately rethemed. The
 normalizer restores the frozen side and keeps the writable side.

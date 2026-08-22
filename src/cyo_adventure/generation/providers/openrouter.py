@@ -62,13 +62,13 @@ _ERROR_DETAIL_MAX_CHARS = 240
 
 # The exact substring ``_empty_content_message`` renders for a zero-content
 # `content_filter` stop (``finish_reason={value!r}``), matched by the
-# `UW-C324` interim retry cap in ``complete``. A structured field would be
+# `UW-C325` interim retry cap in ``complete``. A structured field would be
 # cleaner, but the message is authored two functions away in this module and
 # the repr form is deterministic.
 _CONTENT_FILTER_MARKER = "finish_reason='content_filter'"
 
 # Zero-content `content_filter` stops tolerated per prompt before the leg is
-# ended (`UW-C324` interim, ruled 2026-08-21): the measured third identical
+# ended (`UW-C325` interim, ruled 2026-08-21): the measured third identical
 # attempt bought nothing.
 _MAX_CONTENT_FILTER_STOPS = 2
 
@@ -208,7 +208,7 @@ class OpenRouterProvider:
         # ``scripts/compare_vendors.py`` resolved the permissive 131,072
         # default, which made ``MODEL_OUTPUT_CAPS`` unreachable and kept the
         # ``UW-C302`` chunked path from ever engaging there (measured: HTTP
-        # 400 in 0.6s on ``deepseek/deepseek-v3.2``; `AL-502`/`UW-C318`).
+        # 400 in 0.6s on ``deepseek/deepseek-v3.2``; `AL-513`/`UW-C319`).
         # ``fill_skeleton``'s worker call passes ``settings`` and so fell
         # back to the CONFIGURED model, which is correct until a leg's model
         # differs from the configuration (the provider-override paths).
@@ -304,7 +304,7 @@ class OpenRouterProvider:
         }
         url = f"{self._base_url}/chat/completions"
 
-        # Interim `UW-C324` policy (ruled 2026-08-21, section 9.5 of
+        # Interim `UW-C325` policy (ruled 2026-08-21, section 9.5 of
         # live-structural-round-2026-08-21.md): identical retries cap at TWO
         # for zero-content `content_filter` stops. The filter fires on the
         # (skeleton, brief) PAIR and the measured third identical attempt
@@ -327,7 +327,7 @@ class OpenRouterProvider:
                             f"finish_reason='content_filter' {filter_stops} "
                             "times for this prompt; the filter fires on the "
                             "(skeleton, brief) pair, so further identical "
-                            "retries are withheld (UW-C324); re-anchor the "
+                            "retries are withheld (UW-C325); re-anchor the "
                             "request instead"
                         )
                         raise ProviderError(
@@ -419,7 +419,7 @@ class OpenRouterProvider:
             # debugging session: the 2026-08-21 chunked leg overflowed a
             # 163,840-token window by exactly one token and the only
             # visible message was "invalid or unavailable model"
-            # (`AL-503`/`UW-C319`). Only the STRUCTURED error message is
+            # (`AL-514`/`UW-C320`). Only the STRUCTURED error message is
             # surfaced (never the raw body, which can echo request
             # content), and it is truncated.
             detail = _error_detail(response)

@@ -223,11 +223,23 @@ def _defers_titles(skeleton: dict[str, Any]) -> bool:
     """
     if "<<FILL" in str(skeleton.get("title") or ""):
         return True
-    return any(
-        "<<FILL"
-        in str(cast("dict[str, Any]", node.get("ending") or {}).get("title") or "")
-        for node in cast("list[dict[str, Any]]", skeleton.get("nodes") or [])
-    )
+    # `cast` is a type-checker assertion with NO runtime effect, so the previous
+    # comprehension raised AttributeError on a non-dict node instead of the
+    # clean message every other check in this file emits. Reachable from the
+    # hand-edited or partially written skeleton this checker exists for, and
+    # normally masked only because a FILL title short-circuits above.
+    nodes = skeleton.get("nodes")
+    if not isinstance(nodes, list):
+        return False
+    for node in nodes:
+        if not isinstance(node, dict):
+            continue
+        ending = node.get("ending")
+        if not isinstance(ending, dict):
+            continue
+        if "<<FILL" in str(ending.get("title") or ""):
+            return True
+    return False
 
 
 def main(argv: list[str] | None = None) -> int:

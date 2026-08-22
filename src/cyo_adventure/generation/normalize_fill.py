@@ -6,7 +6,7 @@ fill contract's freeze by function: machine-critical fields are frozen and the
 pipeline stops depending on model obedience for them, while theme-bearing text
 is writable. Measured motivation: across 16 committed one-shot fills, 4 mutated
 a frozen field and 15 drifted an ambiguous one, and every frozen mutation was a
-retheme of documentation text the freeze happened to cover (`AL-499`).
+retheme of documentation text the freeze happened to cover (`AL-510`).
 
 The normalizer is the inverse of ``check_fill_integrity``'s leaf stripping:
 the result STARTS from the skeleton and overlays exactly the writable leaf
@@ -24,7 +24,7 @@ name/type/bounds/initial, and ``metadata``) comes from the skeleton by
 construction, so model drift on a frozen field becomes a non-event rather than
 a shipped defect or a burned repair cycle. ``metadata`` currently includes
 ``themes``; the ruling wants themes re-derived at import rather than kept
-stale, and that deriver is separate scheduled work (`UW-C316`), so until it
+stale, and that deriver is separate scheduled work (`UW-C317`), so until it
 lands the skeleton's themes are what ship.
 
 Nodes and choices are matched by position after an id-alignment check, because

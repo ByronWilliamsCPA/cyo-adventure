@@ -290,7 +290,7 @@ async def run_with_retries(
     # 2026-08-20/21 live rounds lost 4 of 15 (skeleton, brief) pairs to
     # zero-content stops whose raw `finish_reason` was `content_filter` or
     # None, and each was journalled only as "transient failure persisted"
-    # (`AL-492`/`AL-501`/`UW-C309`). `raise ... from` preserves the chain for
+    # (`AL-492`/`AL-512`/`UW-C309`). `raise ... from` preserves the chain for
     # logs, but harness journals record `str(exc)`, so the cause has to live
     # in the message itself.
     msg = (

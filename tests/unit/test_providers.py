@@ -388,10 +388,10 @@ class TestOpenRouterProvider:
         the raw cause of every zero-content stop: 4 of 15 live (skeleton,
         brief) pairs were lost to `content_filter` or finish_reason=None
         replies journalled only as "transient failure persisted"
-        (AL-492/AL-501/UW-C309). An empty 200 with finish_reason None (the
+        (AL-492/AL-512/UW-C309). An empty 200 with finish_reason None (the
         predecessor's book-0 signature) must surface that shape in the raised
         message. The `content_filter` shape has its own earlier stop now
-        (UW-C324) and is tested separately.
+        (UW-C325) and is tested separately.
         """
 
         def handler(_request: httpx.Request) -> httpx.Response:
@@ -410,7 +410,7 @@ class TestOpenRouterProvider:
 
     @pytest.mark.asyncio
     async def test_a_second_content_filter_stop_ends_the_leg(self) -> None:
-        """UW-C324 interim (ruled 2026-08-21): two filter stops, never three.
+        """UW-C325 interim (ruled 2026-08-21): two filter stops, never three.
 
         The filter fires on the (skeleton, brief) pair and the measured third
         identical attempt bought nothing, so the second zero-content
@@ -482,7 +482,7 @@ class TestOpenRouterProvider:
         """A 400's structured error.message reaches the raised error, truncated.
 
         The flattened '(invalid or unavailable model)' hid a context overflow
-        that missed a 163,840-token window by one token (AL-503/UW-C319).
+        that missed a 163,840-token window by one token (AL-514/UW-C320).
         Only error.message (and OpenRouter's nested metadata.raw error
         message) is read; the raw body is never echoed.
         """

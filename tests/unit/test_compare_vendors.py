@@ -116,7 +116,7 @@ def _record(
         in_band=1.0,
         # A written book that delivered its commission in full; the analyze
         # buckets under test do not read this, but the field is a required
-        # condition of the record (AL-491/AL-500: never read in_band alone).
+        # condition of the record (AL-491/AL-511: never read in_band alone).
         fill_rate=1.0,
         leaf_words=len(text.split()),
         doc=_doc(text),
@@ -1535,3 +1535,181 @@ def test_main_records_no_directives_for_an_undirected_run(tmp_path: Path) -> Non
     assert report2["differentiation_directives"] is None, (
         "an all-null spec is an undirected run and must not record as directed"
     )
+
+
+def test_load_vendors_rejects_case_equivalent_labels(tmp_path: Path) -> None:
+    """Two labels differing only in case would collapse into one book file.
+
+    `_book_filename` builds the artifact name from the label, so on a
+    case-insensitive filesystem (the macOS and Windows default) the second
+    vendor overwrites the first vendor's already-paid-for books. The exact-match
+    uniqueness check this replaces let the pair through.
+    """
+    path = _write_vendors(
+        tmp_path,
+        [
+            {"label": "Anthropic", "model": "m", "provider_order": ["p"]},
+            {"label": "anthropic", "model": "m2", "provider_order": ["p"]},
+        ],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _load_vendors(path)
+
+    assert excinfo.value.code == 1
+
+
+@pytest.mark.parametrize("label", ["../escape", "sub/dir", ".", ".."])
+def test_load_vendors_rejects_a_label_that_is_not_a_bare_filename(
+    tmp_path: Path, label: str
+) -> None:
+    """A separator or traversal segment escapes the books directory.
+
+    The label is interpolated into the output filename and joined under the run
+    directory, so anything but a bare name writes somewhere the operator did not
+    name.
+    """
+    path = _write_vendors(
+        tmp_path, [{"label": label, "model": "m", "provider_order": ["p"]}]
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _load_vendors(path)
+
+    assert excinfo.value.code == 1
+
+
+def test_load_vendors_still_accepts_distinct_labels(tmp_path: Path) -> None:
+    """The hardening must not reject the ordinary slate.
+
+    Load-bearing for the two rejections above: a case-fold comparison that also
+    rejected genuinely distinct labels would fail every real run.
+    """
+    path = _write_vendors(
+        tmp_path,
+        [
+            {"label": "anthropic", "model": "m", "provider_order": ["p"]},
+            {"label": "grok", "model": "m2", "provider_order": ["p"]},
+        ],
+    )
+
+    assert [v.label for v in _load_vendors(path)] == ["anthropic", "grok"]
+
+
+def test_load_vendors_rejects_unicode_equivalent_labels(tmp_path: Path) -> None:
+    """Case folding alone does not unify Unicode normalization forms.
+
+    "Cafe\u0301" (NFD) and "Caf\u00e9" (NFC) casefold to DIFFERENT strings, so a
+    fold-only check accepts the pair, and macOS then resolves both book
+    filenames to one file: the same paid-artifact overwrite the fold was added
+    to stop, reached through the other equivalence.
+    """
+    path = _write_vendors(
+        tmp_path,
+        [
+            {"label": "Cafe\u0301", "model": "m", "provider_order": ["p"]},
+            {"label": "Caf\u00e9", "model": "m2", "provider_order": ["p"]},
+        ],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _load_vendors(path)
+
+    assert excinfo.value.code == 1
+
+
+@pytest.mark.parametrize("label", ["", "   ", "\t"])
+def test_load_vendors_rejects_an_empty_label(tmp_path: Path, label: str) -> None:
+    """An empty label passes the bare-name check and loses vendor identity.
+
+    `Path("").name == ""` equals the label, and `""` is not `"."` or `".."`, so
+    the traversal guard lets it through and `_book_filename` writes
+    `__00.json`: a valid file naming no vendor.
+    """
+    path = _write_vendors(
+        tmp_path, [{"label": label, "model": "m", "provider_order": ["p"]}]
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _load_vendors(path)
+
+    assert excinfo.value.code == 1
+
+
+@pytest.mark.parametrize(
+    "label",
+    [
+        "x\x00y",
+        "line\nbreak",
+        "bell\x07",
+        "del\x7f",
+        "gpt-4:free",
+        "star*",
+        "quest?",
+        'quo"te',
+        "pipe|x",
+        "lt<gt>",
+        # The separators are deliberately redundant with the bare-name check
+        # below them, and the two cases are NOT equivalent evidence. On POSIX
+        # only `\\` isolates the character guard, because a backslash is a legal
+        # POSIX filename character and nothing else refuses it; disabling the
+        # guard makes that case fail. `/` stays refused either way, since the
+        # bare-name check catches it too, so it is a portability control rather
+        # than a falsifiable test of this guard on this platform. Both are kept
+        # because the guard's point is that neither separator survives on
+        # EITHER platform, not just the one where it happens to be native.
+        "sub/dir",
+        "sub\\dir",
+    ],
+)
+def test_load_vendors_rejects_a_label_with_an_unsafe_character(
+    tmp_path: Path, label: str
+) -> None:
+    """A label that cannot be a filename must be refused BEFORE the run is billed.
+
+    `_load_vendors` exists to reject at load time; `persist_book`'s own note
+    records `AL-326`, where three books and 1,869 seconds of billed provider
+    time were lost because a write failed. A label carrying a NUL fails the
+    write on every platform, and Win32 rejects `< > : " | ? * \\ /` plus every
+    character below 0x20 in a path component, so a spec authored on Linux can be
+    unrunnable on Windows. Either way the failure lands after the spend, which
+    is the loss this guard is for.
+    """
+    path = _write_vendors(
+        tmp_path, [{"label": label, "model": "m", "provider_order": ["p"]}]
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _load_vendors(path)
+
+    assert excinfo.value.code == 1
+
+
+def test_load_vendors_accepts_the_labels_the_committed_specs_use(
+    tmp_path: Path,
+) -> None:
+    """The character guard must not refuse any real vendor label.
+
+    Load-bearing for the rejections above: a guard that also refused the
+    committed specs would fail every real run. These are the exact labels in
+    `docs/planning/vendor-comparison/vendors.json` and
+    `vendors-deepseek-v4-pro.json`.
+    """
+    labels = [
+        "anthropic-sonnet-4.6",
+        "anthropic-sonnet-5",
+        "openai-gpt-5.6-sol",
+        "xai-grok-4.6",
+        "moonshot-kimi-k3",
+        "google-gemini-3.1-pro",
+        "deepseek-v4-pro",
+    ]
+    path = _write_vendors(
+        tmp_path,
+        [
+            {"label": label, "model": f"m{n}", "provider_order": ["p"]}
+            for n, label in enumerate(labels)
+        ],
+    )
+
+    assert [v.label for v in _load_vendors(path)] == labels

@@ -332,7 +332,7 @@ class NarrativeStyle(StrEnum):
 class NarrativePerson(StrEnum):
     """The grammatical person the prose addresses the reader in.
 
-    Ruled 2026-08-21 (`UW-C323`, section 9.4 of
+    Ruled 2026-08-21 (`UW-C324`, section 9.4 of
     ``docs/planning/live-structural-round-2026-08-21.md``): narrative person
     was an unpinned degree of freedom, and three fills of one prose skeleton
     scattered from 0.07 to 0.72 second-person node rates because nothing
@@ -423,7 +423,7 @@ class StoryMetadata(BaseModel):
     # only changes the envelope for 13-16/16+; lower bands are implicitly prose.
     length: Length | None = None
     narrative_style: NarrativeStyle = NarrativeStyle.PROSE
-    # The declared grammatical person (`UW-C323`, ruled 2026-08-21). ``None``
+    # The declared grammatical person (`UW-C324`, ruled 2026-08-21). ``None``
     # means undeclared (legacy); the catalog is backfilled mechanically and a
     # fill must honor the declaration where present. Gamebooks default to
     # second person by convention; the checker in

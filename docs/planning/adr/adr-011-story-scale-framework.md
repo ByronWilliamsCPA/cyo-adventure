@@ -186,7 +186,7 @@ wpm (read aloud), 5-8 ~90, 8-11 ~120, 10-13 ~150, 13-16 ~190, 16+ ~220.
 
 > Rewritten 2026-08-22 (see section 11). This section originally read "Constants
 > (research-locked, all cells)" and pinned decisions per path at a flat "~4-8". The
-> `UW-C322` audit showed that constant arithmetically unsatisfiable in 10 of 18
+> `UW-C323` audit showed that constant arithmetically unsatisfiable in 10 of 18
 > production cells against this ADR's own sections 3, 5 and 10, flatly unsatisfiable
 > for every gamebook cell, and unsatisfiable as a floor at `3-5`; the catalog violates
 > it in both directions and the validator's PL-17 breadth floor forces gauntlets to
@@ -256,7 +256,7 @@ skeletons**, scoped like the section 10 grammar they derive from (the existing c
 is grandfathered). No validator rule gates decisions-per-path; PL-17 gates total
 decision-node floors. The M4 mutation operator self-enforces a decisions-per-path
 no-worsen guard and still carries the historical 4-8 constants pending per-cell
-re-derivation (`UW-C325`).
+re-derivation (`UW-C326`).
 
 ### 7. Topologies (6) and flow primitives
 
@@ -458,7 +458,7 @@ Enforcement lands as
 validator rules for new content (choiceless-run caps at the graph level for the discrete-page
 bands, acknowledgment checks at the fill gate); specifics belong to the implementation plan.
 
-### 11. Amendment (2026-08-22): derived decision windows and column recalibration (`UW-C322`)
+### 11. Amendment (2026-08-22): derived decision windows and column recalibration (`UW-C323`)
 
 Adopted on the owner ruling of 2026-08-21 ("the 4-8 constant seems out of line with the
 rest of ADR-011, especially sections 4 and 5"; recorded in
@@ -512,7 +512,7 @@ young-band rows recalibrated to item 4 (the ceiling is advisory; no committed sk
 changes gate verdict, and the seven skeletons the old columns flagged are absorbed).
 Deliberately **not** changed here: the M4 mutation operator still self-enforces the
 historical 4-8 window as a no-worsen guard; re-deriving M4's guard per cell is tracked
-as `UW-C325` in the unscheduled work register.
+as `UW-C326` in the unscheduled work register.
 
 ## Consequences
 

@@ -471,7 +471,7 @@ def test_m4_path_decision_counter_truncates_every_graph_shape(
     A previous revision exempted acyclic parents on the theory that a finite
     path set is an enumerable one; a reconvergent DAG's path set is finite but
     exponential, and the exhaustive walk hung past a minute on a 193-node
-    catalog skeleton (AL-509/UW-C321). Pinning the cap below the fixture's
+    catalog skeleton (AL-520/UW-C322). Pinning the cap below the fixture's
     path count proves the cap now applies: the walk stops and reports
     ``truncated=True``, and exactness on acyclic parents comes from
     ``_dag_decision_minmax`` instead.

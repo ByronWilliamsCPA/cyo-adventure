@@ -1152,7 +1152,7 @@ class _ChunkedFillContext:
     stage_log: list[str]
     slot_bindings: Mapping[str, str] | None = None
     # The resolved backend model id, for the context-window bound
-    # (`AL-503`/`UW-C319`); None when unknown, which constrains nothing.
+    # (`AL-514`/`UW-C320`); None when unknown, which constrains nothing.
     model: str | None = None
 
 
@@ -1243,7 +1243,7 @@ async def _fill_in_batches(
         # window. Nothing accounted for that: a batch call requested 58,983
         # output tokens on a 104,858-token prompt against a 163,840-token
         # window, one token over, HTTP 400 after the harness had already paid
-        # for the prompt (`AL-503`/`UW-C319`). Bound the ask by the KNOWN
+        # for the prompt (`AL-514`/`UW-C320`). Bound the ask by the KNOWN
         # window (unknown windows constrain nothing), and refuse outright
         # when the remaining room cannot hold the batch's expected output:
         # a deterministic refusal beats a paid 400 or a mid-batch truncation.
@@ -1324,7 +1324,7 @@ def _with_fill_rate(
     pair sits 0.035 above the default floor). The rate is recorded on every
     outcome that carries a book, floor breach or not, so review surfaces can
     show it; floors are a per-vendor, per-band calibration question and the
-    default stands until that calibration exists (`AL-500`/`AL-512`).
+    default stands until that calibration exists (`AL-511`/`AL-523`).
 
     Args:
         outcome: The outcome so far.
@@ -1491,7 +1491,7 @@ async def fill_skeleton(
             ``live-structural-round-2026-08-21.md``, `UW-C307`); the measured
             rate is stamped on the report either way. The 0.6 default is the
             `AL-490` calibration and stands until per-vendor, per-band floors
-            exist (`AL-500`/`AL-512`); pass ``0`` to measure without ever
+            exist (`AL-511`/`AL-523`); pass ``0`` to measure without ever
             downgrading.
 
     Returns:

@@ -768,7 +768,7 @@ def _build_parser() -> argparse.ArgumentParser:
             "Fail a book declared third-person whose second-person node rate "
             "exceeds this ceiling (default 0.35: committed third-person prose "
             "runs 0.0-0.27, and the live drift case shipped a 3-5 book fully "
-            "second-person against third-person beats; UW-C323)."
+            "second-person against third-person beats; UW-C324)."
         ),
     )
     parser.add_argument(
@@ -779,7 +779,7 @@ def _build_parser() -> argparse.ArgumentParser:
             "Fail a gamebook whose second-person node rate falls below this "
             "floor (default 0.5: committed gamebooks run 0.715-1.0; prose "
             "books are reported but never gated, since nothing pins their "
-            "person; AL-507/UW-C313)."
+            "person; AL-518/UW-C313)."
         ),
     )
     parser.add_argument(
@@ -919,7 +919,7 @@ _SECOND_PERSON_RE = re.compile(r"\b(you|your|yours|yourself)\b", re.IGNORECASE)
 
 @dataclass(frozen=True)
 class PersonReport:
-    """Second-person presence for one book (AL-507/UW-C313).
+    """Second-person presence for one book (AL-518/UW-C313).
 
     Attributes:
         nodes: Nodes with non-empty prose.
@@ -933,7 +933,7 @@ class PersonReport:
 
 
 def person_report(story: dict[str, Any]) -> PersonReport:
-    """Measure second-person presence per node (AL-507/UW-C313).
+    """Measure second-person presence per node (AL-518/UW-C313).
 
     Calibration (2026-08-21): committed gamebooks run 0.715 to 1.0,
     committed third-person prose 0.0 to 0.27, and three live fills of one
@@ -1039,7 +1039,7 @@ def _report(story: dict[str, Any], name: str, args: argparse.Namespace) -> bool:
     metadata = cast("dict[str, Any]", story.get("metadata") or {})
     declared = cast("str", metadata.get("narrative_person") or "")
     style = cast("str", metadata.get("narrative_style") or "")
-    # Keyed to the declared person (UW-C323, ruled 2026-08-21): a declared
+    # Keyed to the declared person (UW-C324, ruled 2026-08-21): a declared
     # second-person book must clear the floor, a declared third-person book
     # must stay under the ceiling, and an undeclared book falls back to the
     # gamebook-style floor only (the pre-declaration behavior).

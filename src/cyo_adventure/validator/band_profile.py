@@ -722,7 +722,7 @@ _DECISIONS_FRACTION = 0.08
 # `the-last-blue-cup` which was authored to the strict bar. A ceiling that a
 # fresh strict-bar skeleton violates is more likely miscalibrated than the
 # skeleton is (`UW-C283`). The 2026-08-22 ADR-011 amendment (section 11 item 4,
-# `UW-C322` audit) recalibrated the four young-band ceilings upward against the
+# `UW-C323` audit) recalibrated the four young-band ceilings upward against the
 # measured strict-bar shelf (shares 0.17-0.41; `the-big-cardboard-box` holds 18
 # endings against the old cap of 6), and the rows below carry the amended values.
 # #ASSUME: data-integrity: transcribed from ADR-011 section 5's table as amended

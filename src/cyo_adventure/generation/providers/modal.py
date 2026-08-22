@@ -107,7 +107,7 @@ class ModalProvider:
 
         Every adapter exposes this so ``resolve_output_cap`` sees the leg's
         real model through the provider wrappers rather than falling back to
-        the configured default (`AL-502`/`UW-C318`; the contract is asserted
+        the configured default (`AL-513`/`UW-C319`; the contract is asserted
         by test_provider_contract.py).
         """
         return self._model

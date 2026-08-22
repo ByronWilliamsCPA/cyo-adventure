@@ -22,7 +22,7 @@ When activated, follow these steps:
 
 ### 1. Gather Context
 
-**Full-suite pre-flight (`AL-516`)**: if the branch touches a shared contract
+**Full-suite pre-flight (`AL-527`)**: if the branch touches a shared contract
 (`storybook/models.py`, `schema/`, a dataclass other modules construct, or any
 validator rule id), run the FULL test suite (`uv run pytest tests/ --no-cov`)
 before preparing the PR. Targeted per-suite sweeps miss cross-cutting breakage:
