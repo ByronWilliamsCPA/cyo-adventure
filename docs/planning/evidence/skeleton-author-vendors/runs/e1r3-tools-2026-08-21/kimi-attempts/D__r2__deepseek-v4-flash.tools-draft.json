@@ -1,0 +1,434 @@
+{
+ "schema_version": "2.0",
+ "id": "school-play-recast",
+ "version": 1,
+ "title": "The Show Must Go On... Somehow",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 4.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "teamwork",
+   "resilience",
+   "creativity",
+   "leadership"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 14,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "node001",
+ "nodes": [
+  {
+   "id": "node001",
+   "body": "<<FILL role=setup words=70 beats='Cass finds Annie´s note quitting the lead two nights before opening. She takes a deep breath and walks to the auditorium.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch001",
+     "label": "Enter the auditorium",
+     "target": "node002"
+    }
+   ]
+  },
+  {
+   "id": "node002",
+   "body": "<<FILL role=decision words=75 beats='Mrs. Rivera suggests three replacements: Tim the understudy, Mia the stagehand, or Jamal from debate club. Cass must choose.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch002a",
+     "label": "Choose Tim",
+     "target": "node004"
+    },
+    {
+     "id": "ch002b",
+     "label": "Choose Mia",
+     "target": "node015"
+    },
+    {
+     "id": "ch002c",
+     "label": "Choose Jamal",
+     "target": "node025"
+    }
+   ]
+  },
+  {
+   "id": "node004",
+   "body": "<<FILL role=explore words=70 beats='Cass finds Tim backstage learning lines. He is nervous but willing. She encourages him and they start the first scene. Tim struggles with the monologue.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch004a",
+     "label": "Write cue cards",
+     "target": "node006"
+    },
+    {
+     "id": "ch004b",
+     "label": "Use a rap rhythm",
+     "target": "node008"
+    },
+    {
+     "id": "ch004c",
+     "label": "Shorten the monologue",
+     "target": "node010"
+    }
+   ]
+  },
+  {
+   "id": "node006",
+   "body": "<<FILL role=climax words=70 beats='The cast gathers for a final dress rehearsal. Everything is ready. Cass must make the final call.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch006a",
+     "label": "Add a spectacular ending",
+     "target": "node201"
+    },
+    {
+     "id": "ch006b",
+     "label": "Keep it simple and heartfelt",
+     "target": "node202"
+    },
+    {
+     "id": "ch006c",
+     "label": "Let the cast add their own flair",
+     "target": "node203"
+    }
+   ]
+  },
+  {
+   "id": "node008",
+   "body": "<<FILL role=decision words=70 beats='Tim raps the monologue perfectly. The cast loves it. Cass must decide how much to use the rap style.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch008a",
+     "label": "Keep it only for Tim",
+     "target": "node011"
+    },
+    {
+     "id": "ch008b",
+     "label": "Let the whole cast rap",
+     "target": "node012"
+    },
+    {
+     "id": "ch008c",
+     "label": "Revert to the original script",
+     "target": "node013"
+    }
+   ]
+  },
+  {
+   "id": "node010",
+   "body": "<<FILL role=ending words=85 beats='The shortened scene works. The play runs smoothly. Opening night is a success.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end010",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Shortened Monologue"
+   }
+  },
+  {
+   "id": "node011",
+   "body": "<<FILL role=ending words=85 beats='Tim´s rap solo gets a standing ovation. The play is a unique success.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end011",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Rap Solo Hit"
+   }
+  },
+  {
+   "id": "node012",
+   "body": "<<FILL role=ending words=85 beats='The whole cast raps. The play becomes a musical sensation. The audience cheers.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end012",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Rap Musical Triumph"
+   }
+  },
+  {
+   "id": "node013",
+   "body": "<<FILL role=ending words=85 beats='They revert to the original script. It is safe but reliable. The play goes well.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end013",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Classic Approach"
+   }
+  },
+  {
+   "id": "node015",
+   "body": "<<FILL role=explore words=70 beats='Cass finds Mia stacking chairs. Mia is excited to be asked. She has a strong, clear voice. Cass teaches her basic projection and gestures quickly.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch015a",
+     "label": "Start with basic acting",
+     "target": "node017"
+    },
+    {
+     "id": "ch015b",
+     "label": "Record and review",
+     "target": "node019"
+    },
+    {
+     "id": "ch015c",
+     "label": "Let her improvise freely",
+     "target": "node021"
+    }
+   ]
+  },
+  {
+   "id": "node017",
+   "body": "<<FILL role=decision words=70 beats='Mia overacts the scene. Cass must decide how to refine her.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch017a",
+     "label": "Use a mirror",
+     "target": "node018"
+    },
+    {
+     "id": "ch017b",
+     "label": "Add more rehearsal",
+     "target": "node021"
+    },
+    {
+     "id": "ch017c",
+     "label": "Record and review",
+     "target": "node019"
+    }
+   ]
+  },
+  {
+   "id": "node018",
+   "body": "<<FILL role=ending words=85 beats='Mia practices in front of a mirror. Her acting becomes natural. The show is a hit.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end018",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Mirror Practice Success"
+   }
+  },
+  {
+   "id": "node019",
+   "body": "<<FILL role=explore words=60 beats='Cass records Mia and they watch it back. Mia sees her overacting and adjusts. She runs the scene again and improves.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch019",
+     "label": "Continue working",
+     "target": "node020"
+    }
+   ]
+  },
+  {
+   "id": "node020",
+   "body": "<<FILL role=decision words=70 beats='Mia improves significantly. Cass must decide the next step.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch020a",
+     "label": "Add more rehearsal",
+     "target": "node021"
+    },
+    {
+     "id": "ch020b",
+     "label": "Trust her progress",
+     "target": "node024"
+    },
+    {
+     "id": "ch020c",
+     "label": "Pair her with a coach",
+     "target": "node035"
+    }
+   ]
+  },
+  {
+   "id": "node021",
+   "body": "<<FILL role=ending words=85 beats='Extra rehearsal makes Mia flawless. Opening night is a triumph.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end021",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Extra Rehearsal Payoff"
+   }
+  },
+  {
+   "id": "node024",
+   "body": "<<FILL role=ending words=85 beats='Trusting Mia works. She delivers a heartfelt performance.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end024",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Trust in Mia"
+   }
+  },
+  {
+   "id": "node025",
+   "body": "<<FILL role=explore words=60 beats='Cass finds Jamal in the library. He agrees to help. His memory is incredible. She considers the best approach.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch025a",
+     "label": "Teach him stage blocking first",
+     "target": "node027"
+    },
+    {
+     "id": "ch025b",
+     "label": "Focus on emotional pauses",
+     "target": "node030"
+    },
+    {
+     "id": "ch025c",
+     "label": "Let him use his debate style now",
+     "target": "node034"
+    }
+   ]
+  },
+  {
+   "id": "node027",
+   "body": "<<FILL role=decision words=70 beats='Jamal learns blocking in minutes. He is ready for a final touch. Cass must choose the best option.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch027a",
+     "label": "Add a dramatic monologue",
+     "target": "node006"
+    },
+    {
+     "id": "ch027b",
+     "label": "Focus on emotional pauses",
+     "target": "node030"
+    },
+    {
+     "id": "ch027c",
+     "label": "Let him use his debate style",
+     "target": "node034"
+    }
+   ]
+  },
+  {
+   "id": "node030",
+   "body": "<<FILL role=decision words=70 beats='The emotional pauses add depth. Cass must decide the final rehearsal strategy.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch030a",
+     "label": "Do a final run-through",
+     "target": "node032"
+    },
+    {
+     "id": "ch030b",
+     "label": "Send everyone home to rest",
+     "target": "node033"
+    },
+    {
+     "id": "ch030c",
+     "label": "Add a light effect",
+     "target": "node035"
+    }
+   ]
+  },
+  {
+   "id": "node032",
+   "body": "<<FILL role=ending words=85 beats='The final run-through is flawless. Opening night is a huge success.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end032",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Flawless Run"
+   }
+  },
+  {
+   "id": "node033",
+   "body": "<<FILL role=ending words=85 beats='The cast rests and performs with fresh energy. The emotional impact is even stronger.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end033",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Fresh Energy"
+   }
+  },
+  {
+   "id": "node034",
+   "body": "<<FILL role=ending words=85 beats='Jamal uses his debate style for a powerful speech. The play is a hit. Cass is proud.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end034",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Debate Style Wins"
+   }
+  },
+  {
+   "id": "node035",
+   "body": "<<FILL role=ending words=85 beats='Adding light effects enhances the mood. The play is visually stunning.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end035",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Light Effects Triumph"
+   }
+  },
+  {
+   "id": "node201",
+   "body": "<<FILL role=ending words=85 beats='The spectacular ending wows the audience. The play ends with a standing ovation. Cass is celebrated.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end201",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Spectacular Ending"
+   }
+  },
+  {
+   "id": "node202",
+   "body": "<<FILL role=ending words=85 beats='The simple, heartfelt performance touches everyone. The audience leaves with smiles. Cass feels proud.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end202",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Heartfelt Success"
+   }
+  },
+  {
+   "id": "node203",
+   "body": "<<FILL role=ending words=85 beats='The cast adds their own flair. The play is unique and memorable. Some moments are rough but the spirit wins.'>>",
+   "is_ending": true,
+   "ending": {
+    "id": "end203",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Cast Flair"
+   }
+  }
+ ]
+}

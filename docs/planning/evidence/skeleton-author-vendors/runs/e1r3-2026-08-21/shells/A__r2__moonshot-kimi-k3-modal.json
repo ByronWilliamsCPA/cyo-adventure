@@ -1,0 +1,453 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-and-the-changing-wind",
+ "version": 1,
+ "title": "Tomas and the Changing Wind",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "family and traditions",
+   "patience and practice",
+   "wind and weather",
+   "creative problem-solving"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n01-kite-drawer",
+ "nodes": [
+  {
+   "id": "n01-kite-drawer",
+   "body": "<<FILL role=setup words=68 beats='Saturday morning and the spring festival is one week away; Abuela unlocks the kite drawer of saved sticks, string, and tissue paper; outside, the school flag has already pointed three ways before breakfast'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n01-diamond",
+     "label": "Build the white diamond kite",
+     "target": "n02-diamond-build"
+    },
+    {
+     "id": "c-n01-dragon",
+     "label": "Build the long red dragon kite",
+     "target": "n03-dragon-build"
+    }
+   ]
+  },
+  {
+   "id": "n02-diamond-build",
+   "body": "<<FILL role=explore words=30 beats='two crossed sticks tied with string, one spar a thumb longer; white tissue spells PALOMA, little dove; a two-leg bridle tied while the glue dries'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n02-knot",
+     "label": "Tie the last knot",
+     "target": "n04-diamond-test"
+    }
+   ]
+  },
+  {
+   "id": "n03-dragon-build",
+   "body": "<<FILL role=explore words=30 beats='a long red head with fierce painted eyebrows; paper scales pasted row by row; eight little tails knotted on; they name him DRAGO and he needs real sky'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n03-scale",
+     "label": "Paste the last scale",
+     "target": "n15-dragon-test"
+    }
+   ]
+  },
+  {
+   "id": "n04-diamond-test",
+   "body": "<<FILL role=decision words=38 beats='Paloma is ready for her first test; Windy Hill bossing the sky with gusts, or the quiet backyard squeezed between the fences'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n04-hill",
+     "label": "Test her on Windy Hill",
+     "target": "n05-hill-dive"
+    },
+    {
+     "id": "c-n04-yard",
+     "label": "Test her in the quiet yard",
+     "target": "n06-yard-sigh"
+    }
+   ]
+  },
+  {
+   "id": "n05-hill-dive",
+   "body": "<<FILL role=explore words=28 beats='from Windy Hill Paloma leaps, loops twice, and dives into the soft grass; the hill wind is too rough for her light frame'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n05-brush",
+     "label": "Pick her out of the grass",
+     "target": "n07-fix-hill"
+    }
+   ]
+  },
+  {
+   "id": "n06-yard-sigh",
+   "body": "<<FILL role=explore words=28 beats='in the still yard Paloma lifts knee-high, wobbles, and sighs back down; heavy paper, breathless breeze, and Abuela tapping her chin'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n06-inside",
+     "label": "Carry her back inside",
+     "target": "n08-fix-yard"
+    }
+   ]
+  },
+  {
+   "id": "n07-fix-hill",
+   "body": "<<FILL role=decision words=40 beats='that night at the kitchen table the red notebook opens to a page called One Clever Change; grass-stained Paloma waits while the cocoa steams'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n07-tail",
+     "label": "Add a long ribbon tail",
+     "target": "n09-tail-build"
+    },
+    {
+     "id": "c-n07-skin",
+     "label": "Re-skin her with thin paper",
+     "target": "n10-skin-dry"
+    }
+   ]
+  },
+  {
+   "id": "n08-fix-yard",
+   "body": "<<FILL role=decision words=40 beats='the fence shadows go long across the yard; Paloma needs a different idea: learn the puff-waiting game with the cousins, or save her for the dusk sea wind'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n08-puffs",
+     "label": "Practice the puff-waiting game",
+     "target": "n12-puff-practice"
+    },
+    {
+     "id": "c-n08-dusk",
+     "label": "Save her for the dusk wind",
+     "target": "n13-dusk-notes"
+    }
+   ]
+  },
+  {
+   "id": "n09-tail-build",
+   "body": "<<FILL role=transition words=30 beats='a long ribbon tail knotted section by section; spoons and forks weigh it during practice pulls across the kitchen floor until the balance feels right'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n09-ribbon",
+     "label": "Knot the ribbon sections",
+     "target": "n11-ridge-plan"
+    }
+   ]
+  },
+  {
+   "id": "n10-skin-dry",
+   "body": "<<FILL role=transition words=26 beats='careful peeling, thin white paper, a smiling crayon sun on the front; Paloma dries overnight in the open window'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n10-dry",
+     "label": "Let the new skin dry",
+     "target": "e-paper-sun"
+    }
+   ]
+  },
+  {
+   "id": "n11-ridge-plan",
+   "body": "<<FILL role=climax words=38 beats='festival day: drums below, banners snapping; the ridge wind runs strong and steady and the bright tail streams like ribbon water'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n11-dance",
+     "label": "Dance her over the ridge",
+     "target": "e-ridge-dance"
+    },
+    {
+     "id": "c-n11-shape",
+     "label": "Enter the shape contest",
+     "target": "e-green-ribbon"
+    }
+   ]
+  },
+  {
+   "id": "n12-puff-practice",
+   "body": "<<FILL role=explore words=28 beats='three small cousins hold test flights of their own; Tomas times the calm pockets between puffs in the red notebook'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n12-count",
+     "label": "Count the calm pockets",
+     "target": "n14-calm-plan"
+    }
+   ]
+  },
+  {
+   "id": "n13-dusk-notes",
+   "body": "<<FILL role=transition words=26 beats='notes in the red notebook: the sea wind lies down flat at dusk; practice throws from the porch steps each golden evening'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n13-throws",
+     "label": "Practice porch throws at dusk",
+     "target": "e-lantern-glow"
+    }
+   ]
+  },
+  {
+   "id": "n14-calm-plan",
+   "body": "<<FILL role=climax words=40 beats='festival morning comes calm and cool; little puffs arrive, rest, then arrive again; light Paloma waits by the gate while the cousins bounce on their heels'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n14-afternoon",
+     "label": "Fly her all afternoon",
+     "target": "e-afternoon-puffs"
+    },
+    {
+     "id": "c-n14-teach",
+     "label": "Teach the cousins the pocket trick",
+     "target": "e-wind-reader"
+    }
+   ]
+  },
+  {
+   "id": "n15-dragon-test",
+   "body": "<<FILL role=decision words=38 beats='Drago needs real sky: the low field swirls with wind from three directions, while the porch steps offer one patient week of watching the school flag first'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n15-field",
+     "label": "Take him to the swirly field",
+     "target": "n16-field-tangle"
+    },
+    {
+     "id": "c-n15-porch",
+     "label": "Watch the wind from the porch",
+     "target": "n18-porch-watch"
+    }
+   ]
+  },
+  {
+   "id": "n16-field-tangle",
+   "body": "<<FILL role=explore words=28 beats='the field wind swirls from three directions at once; Drago knots all eight tails into one fat tangle before lunch'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n16-untangle",
+     "label": "Untangle the eight tails",
+     "target": "n17-dragon-fix"
+    }
+   ]
+  },
+  {
+   "id": "n17-dragon-fix",
+   "body": "<<FILL role=decision words=40 beats='too many friends arguing in one wind, Abuela says; the night fix is one strong ribbon and fresh string, or a proud walking plan if the sky stays bossy'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n17-ribbon",
+     "label": "One strong ribbon and new string",
+     "target": "n20-spool-count"
+    },
+    {
+     "id": "c-n17-poles",
+     "label": "Paint two tall parade poles",
+     "target": "n21-pole-paint"
+    }
+   ]
+  },
+  {
+   "id": "n18-porch-watch",
+   "body": "<<FILL role=explore words=28 beats='from the porch steps the school flag goes snap, rest, snap; the wind arrives in waves with calm pockets between'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n18-ink",
+     "label": "Write the counts in red ink",
+     "target": "n19-dragon-evening"
+    }
+   ]
+  },
+  {
+   "id": "n19-dragon-evening",
+   "body": "<<FILL role=decision words=40 beats='the red notebook fills with careful counts; festival evening can glow with lanterns along the walk, but the sky still owes Drago an answer'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n19-dusk",
+     "label": "Trust the golden dusk hour",
+     "target": "e-golden-hour"
+    },
+    {
+     "id": "c-n19-rest",
+     "label": "Let him rest this festival",
+     "target": "e-waiting-week"
+    }
+   ]
+  },
+  {
+   "id": "n20-spool-count",
+   "body": "<<FILL role=transition words=28 beats='one strong ribbon tail, a fresh spool of string, fifty turns counted twice; the bridle hangs level from two fingers'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n20-wind",
+     "label": "Wind fifty turns twice",
+     "target": "e-one-ribbon"
+    }
+   ]
+  },
+  {
+   "id": "n21-pole-paint",
+   "body": "<<FILL role=transition words=26 beats='two tall poles painted green; tape, jokes, and a parade route past the bakery in case the sky stays shy'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n21-paint",
+     "label": "Paint the poles green",
+     "target": "e-walking-dragon"
+    }
+   ]
+  },
+  {
+   "id": "e-ridge-dance",
+   "body": "<<FILL role=ending words=68 beats='the long tail holds the line and Paloma steadies over the ridge; she climbs the ridge wind and dips three times while the drums answer below; the crowd claps in rhythm; Abuela pins a bright ribbon on Tomas and calls him kite-captain of the hill'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-ridge-dance",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Ridge Wind Dance"
+   }
+  },
+  {
+   "id": "e-green-ribbon",
+   "body": "<<FILL role=ending words=68 beats='the shape contest is serious business; judges with clipboards circle while a sideways gust tries one last trick; the long tail wins the argument and Paloma hangs still as a painting; the green ribbon for Best Shape is taped to the kitchen wall'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-green-ribbon",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Green Ribbon"
+   }
+  },
+  {
+   "id": "e-paper-sun",
+   "body": "<<FILL role=ending words=42 beats='the thin white skin and the crayon sun do their quiet work; even the shy midday breeze lifts Paloma without one nosedive; the old heavy skin becomes a bookmark for Abuela'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-paper-sun",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Paper Sun"
+   }
+  },
+  {
+   "id": "e-afternoon-puffs",
+   "body": "<<FILL role=ending words=68 beats='Paloma rides every small puff over the middle field; each time the breeze rests, Tomas waits and counts, then launches her inside the calm; roasted corn from the cart tastes like patience; the red notebook gains a page called Soft Wind Tricks'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-afternoon-puffs",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "All the Afternoon Puffs"
+   }
+  },
+  {
+   "id": "e-wind-reader",
+   "body": "<<FILL role=ending words=68 beats='Tomas teaches the cousins the pocket trick: watch the flag, count the calm, launch inside it; their little kites rise one by one until the sky looks like confetti; a kite maker from the next street comes over to ask how he ties the knots'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-wind-reader",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Family of Wind Readers"
+   }
+  },
+  {
+   "id": "e-lantern-glow",
+   "body": "<<FILL role=ending words=42 beats='the dusk sea wind lies down flat and even; Paloma floats glowing above the lantern walk; a fisherman claps once, softly; some kites only fly in golden light'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-lantern-glow",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Lantern Glow"
+   }
+  },
+  {
+   "id": "e-one-ribbon",
+   "body": "<<FILL role=ending words=40 beats='festival ridge, drums below: the single strong tail drinks the wind; Drago steadies, climbs, and soars at last; even the bossy crow goes quiet on the fence post'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-one-ribbon",
+    "valence": "positive",
+    "kind": "success",
+    "title": "One Ribbon Is Enough"
+   }
+  },
+  {
+   "id": "e-walking-dragon",
+   "body": "<<FILL role=ending words=42 beats='the festival keeps a no-wind plan; Drago rides two green poles past the bakery, tails marching behind like a red river; the judges award a ribbon for best walking dragon'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-walking-dragon",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Walking Dragon"
+   }
+  },
+  {
+   "id": "e-golden-hour",
+   "body": "<<FILL role=ending words=68 beats='every golden evening of practice pays off; the sea wind slides in smooth and low and Drago flies the lantern hour end to end; gulls wheel over the beach path to inspect the visitor; knowing which wind is yours is the whole secret, Abuela says'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-golden-hour",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Golden Hour"
+   }
+  },
+  {
+   "id": "e-waiting-week",
+   "body": "<<FILL role=ending words=68 beats='some years the wisest kite stays on the shelf; Tomas and Abuela watch the sky shows from the grass with roasted corn, and the red notebook gets a list called Things To Test First; the drums are loud, the cocoa is sweet, and next spring already sounds very brave; waiting is also a way to win for later'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end-waiting-week",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Waiting Week"
+   }
+  }
+ ]
+}

@@ -1,0 +1,417 @@
+{
+ "schema_version": "2.0",
+ "id": "priya-and-the-lost-red-boot",
+ "version": 1,
+ "title": "Priya and the Lost Red Boot",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "perseverance",
+   "helping family",
+   "winter fun",
+   "asking for help"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "start-hilltop",
+ "nodes": [
+  {
+   "id": "start-hilltop",
+   "body": "<<FILL role=setup words=32 beats='First snowy day at Maple Hill; Priya and her little brother Arjun finish one last sled ride; Arjun wiggles his toes and one small red boot is gone'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-start-1",
+     "label": "Start the boot hunt",
+     "target": "trail-fork"
+    }
+   ]
+  },
+  {
+   "id": "trail-fork",
+   "body": "<<FILL role=decision words=36 beats='Mama expects them home for the walk before dark; Priya promises Arjun she will find the boot; the churned sled run stretches below while the sled shed and the big kids wait off to the side'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-fork-1",
+     "label": "Search the sled run",
+     "target": "sled-run-walk"
+    },
+    {
+     "id": "c-fork-2",
+     "label": "Go find helpers",
+     "target": "helper-choice"
+    }
+   ]
+  },
+  {
+   "id": "sled-run-walk",
+   "body": "<<FILL role=explore words=32 beats='Priya and Arjun tromp along the top of the run; the snow is churned into lumps; Arjun hops on one boot and squeezes the mitten of Priya'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-walk-1",
+     "label": "Look for clues",
+     "target": "run-split"
+    }
+   ]
+  },
+  {
+   "id": "run-split",
+   "body": "<<FILL role=decision words=36 beats='Two clues at once; a deep snow pile by their green sled makes a soft thump when Priya pats it, and long drag marks wiggle away down the slope toward the big bump'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-split-1",
+     "label": "Dig at the snow pile",
+     "target": "snow-pile"
+    },
+    {
+     "id": "c-split-2",
+     "label": "Follow the drag marks",
+     "target": "drag-marks"
+    }
+   ]
+  },
+  {
+   "id": "snow-pile",
+   "body": "<<FILL role=transition words=32 beats='The snow pile is taller than Arjun; Priya turns the green sled into a giant scoop; snow flies in sparkly clouds until a deep hole opens'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-pile-1",
+     "label": "Peer into the hole",
+     "target": "deep-hole"
+    }
+   ]
+  },
+  {
+   "id": "deep-hole",
+   "body": "<<FILL role=climax words=36 beats='The hole is a little blue-white snow cave; at the bottom Priya spots a stiff red lace and a soggy wet mitten; Arjun holds her scarf like a rope while she stretches down'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-hole-1",
+     "label": "Pull the frozen lace",
+     "target": "end-snow-cave"
+    },
+    {
+     "id": "c-hole-2",
+     "label": "Grab the wet mitten",
+     "target": "end-mitten-boot"
+    }
+   ]
+  },
+  {
+   "id": "drag-marks",
+   "body": "<<FILL role=transition words=32 beats='The drag marks wiggle downhill beside small boot prints and one sock print; Priya follows them like a detective to the big bump where the run gets fast'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-drag-1",
+     "label": "Search the big bump",
+     "target": "bump-drift"
+    }
+   ]
+  },
+  {
+   "id": "bump-drift",
+   "body": "<<FILL role=climax words=36 beats='A drift curls beside the big bump like a frozen wave; something small and round bumps up under the smooth snow skin; Priya can brush gently or stomp it flat to see faster'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-drift-1",
+     "label": "Brush the drift gently",
+     "target": "end-found-bottom"
+    },
+    {
+     "id": "c-drift-2",
+     "label": "Stomp the drift",
+     "target": "end-one-boot-walk"
+    }
+   ]
+  },
+  {
+   "id": "helper-choice",
+   "body": "<<FILL role=explore words=66 beats='Priya thinks good hunters ask for help; the old sled shed glows with lantern light where Mr. Okafor the hill caretaker knows every corner of Maple Hill; by the rope tow the big kids Sam and Lena saw Arjun spin past this morning; Arjun tugs both ways at once and Priya must choose'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-choice-1",
+     "label": "Knock at the sled shed",
+     "target": "okafor-office"
+    },
+    {
+     "id": "c-choice-2",
+     "label": "Wave to the big kids",
+     "target": "big-kids"
+    }
+   ]
+  },
+  {
+   "id": "okafor-office",
+   "body": "<<FILL role=decision words=66 beats='The sled shed smells like wood and wet wool and loaner sleds lean in rows; Mr. Okafor tips his warm hat and listens to the whole boot story; he says small red things love to hide in white snow; they can search the shadowy shed together or borrow his bright lantern and comb the run before dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-oka-1",
+     "label": "Search the shed together",
+     "target": "shed-corner"
+    },
+    {
+     "id": "c-oka-2",
+     "label": "Borrow the lantern",
+     "target": "lantern-walk"
+    }
+   ]
+  },
+  {
+   "id": "shed-corner",
+   "body": "<<FILL role=explore words=32 beats='In the back corner sit the loaner sleds carried in after the morning rides plus the found things box; Arjun tries a blue boot from the box and it flops like a clown shoe'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-corner-1",
+     "label": "Keep hunting the corner",
+     "target": "shed-search"
+    }
+   ]
+  },
+  {
+   "id": "shed-search",
+   "body": "<<FILL role=climax words=36 beats='A flipped red sled hides a pocket of shadows and the box has a deep unsorted bottom; outside the window the sky turns purple; Mr. Okafor offers his big hill map for a morning plan'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-search-1",
+     "label": "Flip the red sled",
+     "target": "end-shed-surprise"
+    },
+    {
+     "id": "c-search-2",
+     "label": "Plan a morning sweep",
+     "target": "end-hunt-tomorrow"
+    }
+   ]
+  },
+  {
+   "id": "lantern-walk",
+   "body": "<<FILL role=transition words=32 beats='The lantern makes the snow glow gold as Priya carries it down the run; every red thing on the hill glints like a jewel, scarves and flags and something low'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-lant-1",
+     "label": "Follow the glints",
+     "target": "lantern-glow"
+    }
+   ]
+  },
+  {
+   "id": "lantern-glow",
+   "body": "<<FILL role=climax words=36 beats='One low shape glints near the bottom of the run and another wink of red flashes from the dark pine trees; the sky is nearly night and there is time to check only one'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-glow-1",
+     "label": "Check the low shape",
+     "target": "end-lantern-find"
+    },
+    {
+     "id": "c-glow-2",
+     "label": "Peer at the pine trees",
+     "target": "end-snow-secret"
+    }
+   ]
+  },
+  {
+   "id": "big-kids",
+   "body": "<<FILL role=transition words=32 beats='Sam and Lena listen to the boot story and clap their mittens; Sam remembers Arjun laughing as his sled spun around this morning; they want to help right now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-kids-1",
+     "label": "Make a team plan",
+     "target": "team-plan"
+    }
+   ]
+  },
+  {
+   "id": "team-plan",
+   "body": "<<FILL role=climax words=36 beats='Lena says a line of hunters sees everything so the four of them spread out arm to arm across the run; Arjun rides the shoulders of Priya calling directions like a captain'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-team-1",
+     "label": "Sweep the fast lane",
+     "target": "sweep-run"
+    },
+    {
+     "id": "c-team-2",
+     "label": "Stop when the lamps hum",
+     "target": "lamp-lights"
+    }
+   ]
+  },
+  {
+   "id": "sweep-run",
+   "body": "<<FILL role=transition words=32 beats='The line of hunters brushes every lump in the fast lane; snow flies like confetti; near the bottom Lena shouts that she might see something small and red just as the first hill lamp flickers'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-sweep-1",
+     "label": "Run to Lena",
+     "target": "end-found-friends"
+    }
+   ]
+  },
+  {
+   "id": "lamp-lights",
+   "body": "<<FILL role=transition words=32 beats='The hill lamps hum on one by one and the snow turns lamp-post gold; the hunt must stop for tonight; Arjun yawns a huge yawn from the shoulders of Priya'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-lamp-1",
+     "label": "Turn toward home",
+     "target": "end-piggyback-parade"
+    }
+   ]
+  },
+  {
+   "id": "end-snow-cave",
+   "body": "<<FILL role=ending words=66 beats='Priya pulls the frozen lace and the little red boot pops free with a shower of snow; Arjun cheers and stuffs his cold toes inside; they stomp matching boot prints all the way home; Mama has hot cocoa waiting and Priya feels ten feet tall'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-snow-cave",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Snow Cave Boot"
+   }
+  },
+  {
+   "id": "end-mitten-boot",
+   "body": "<<FILL role=ending words=66 beats='Under the soggy mitten waits a whole snow nest of lost treasures, a whistle, a pom-pom, and the little red boot of Arjun tucked in the middle; Priya carries the extra treasures to the shed like a hero; Arjun wears his boot and a giant grin on the walk home to Mama'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-mitten-boot",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Mitten and a Boot"
+   }
+  },
+  {
+   "id": "end-found-bottom",
+   "body": "<<FILL role=ending words=68 beats='One gentle brush and the little red boot rises out of the drift like a treasure from the sea; Priya holds it up like a trophy while Arjun dances on one foot; warm boot, warm toes, warm hearts; they reach Mama at the gate just as the first stars blink on'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-found-bottom",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Found at the Big Bump"
+   }
+  },
+  {
+   "id": "end-one-boot-walk",
+   "body": "<<FILL role=ending words=66 beats='The stomp packs the snow down hard and the round shape sinks deeper out of reach; the hill lamps hum on which means time is up for today; Priya wraps the cold foot of Arjun in her spare scarf like a puffy sock; the one boot walk home is slow and a little sad, but tomorrow the hill will still be there'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-one-boot-walk",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The One Boot Walk"
+   }
+  },
+  {
+   "id": "end-shed-surprise",
+   "body": "<<FILL role=ending words=66 beats='There under the flipped red sled sits the little red boot, dry and safe, carried in with the loaners after the morning rides; Mr. Okafor laughs his big warm laugh; Arjun hugs the boot like a puppy before putting it on; they thank the caretaker twice and march home to tell Mama the story'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-shed-surprise",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Shed Surprise"
+   }
+  },
+  {
+   "id": "end-hunt-tomorrow",
+   "body": "<<FILL role=ending words=66 beats='No boot tonight, but Mr. Okafor marks every searched spot on his big hill map and promises a morning sweep; Priya copies the map in the snow outside so she remembers it too; Arjun rides home on her back planning tomorrow like a general; the hunt is paused, not over'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-hunt-tomorrow",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "A Hunt for Tomorrow"
+   }
+  },
+  {
+   "id": "end-lantern-find",
+   "body": "<<FILL role=ending words=66 beats='The lantern light lands on the low shape and there it is, the little red boot half buried where the sleds stop; Arjun squeals so loudly an owl hoots back; boot on, toes warm, lantern returned with two thank yous; Priya and Arjun glow all the way home to Mama'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-lantern-find",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Lantern Finds It"
+   }
+  },
+  {
+   "id": "end-snow-secret",
+   "body": "<<FILL role=ending words=66 beats='The wink of red in the pines is only a forgotten flag ribbon; the lantern oil runs low and the snow keeps its secret for tonight; Priya promises Arjun the hunt starts again after breakfast; he rides her shoulders through the gate where Mama waits with warm socks'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-snow-secret",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Snow Keeps a Secret"
+   }
+  },
+  {
+   "id": "end-found-friends",
+   "body": "<<FILL role=ending words=36 beats='It is the little red boot, dusted with sparkles; everyone cheers so loudly the pine trees drop snow; Arjun wears his boot and waves like a champion all the way home to Mama'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-found-friends",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Found with Friends"
+   }
+  },
+  {
+   "id": "end-piggyback-parade",
+   "body": "<<FILL role=ending words=36 beats='Priya turns the walk home into a piggyback parade with Sam and Lena marching behind; Mama meets them with dry socks and cocoa; the hill keeps one small secret until tomorrow'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-piggyback-parade",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Piggyback Parade"
+   }
+  }
+ ]
+}

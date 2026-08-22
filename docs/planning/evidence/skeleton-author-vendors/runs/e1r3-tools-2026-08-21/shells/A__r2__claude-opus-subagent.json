@@ -1,0 +1,418 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-and-the-changing-wind",
+ "version": 1,
+ "title": "Tomas and the Changing Wind",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "family",
+   "perseverance",
+   "craft",
+   "wind",
+   "festival"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n01-workshop",
+ "nodes": [
+  {
+   "id": "n01-workshop",
+   "body": "<<FILL role=setup words=32 beats='Tomas finds Abuela Rosa already in the workshop behind the bakery on the morning before the spring festival; bamboo, papel de china and a bowl of flour paste wait on the bench'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n01-1",
+     "label": "Look at the kite plans with Abuela",
+     "target": "n02-first-choice"
+    }
+   ]
+  },
+  {
+   "id": "n02-first-choice",
+   "body": "<<FILL role=decision words=36 beats='Outside the tin weather vane keeps swinging from east to north and back again; Abuela says a light kite and a strong wind kite are two different animals, and Tomas must pick one to build'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n02-1",
+     "label": "Build the light paper diamond",
+     "target": "n03-diamond-tails"
+    },
+    {
+     "id": "c-n02-2",
+     "label": "Build a kite for strong wind",
+     "target": "n13-cloth-or-box"
+    }
+   ]
+  },
+  {
+   "id": "n03-diamond-tails",
+   "body": "<<FILL role=decision words=68 beats='Tomas notches two bamboo strips into a cross while Abuela brushes flour paste over the papel de china; the paste smells like warm bread and the finished diamond lifts on a single breath; then Abuela holds up two tails, a long strip of paper and a rope of knotted dish rags, and warns that the wrong tail makes a kite dive or spin'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n03-1",
+     "label": "Tie on the long paper tail",
+     "target": "n04-paper-dive"
+    },
+    {
+     "id": "c-n03-2",
+     "label": "Tie on the knotted rag tail",
+     "target": "n08-rag-spin"
+    }
+   ]
+  },
+  {
+   "id": "n04-paper-dive",
+   "body": "<<FILL role=transition words=32 beats='On the first throw the paper diamond climbs over the fence, noses down and dives into the goat pen; the goats are not impressed and Tomas checks every knot twice'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n04-1",
+     "label": "Find out why the kite dives",
+     "target": "n05-fix-or-climb"
+    }
+   ]
+  },
+  {
+   "id": "n05-fix-or-climb",
+   "body": "<<FILL role=decision words=36 beats='Abuela says a diving kite means one of two things: the bridle knot sits too far back, or the barn is chopping the yard wind into pieces too rough to fly in'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n05-1",
+     "label": "Move the bridle knot forward",
+     "target": "n06-bridle-fix"
+    },
+    {
+     "id": "c-n05-2",
+     "label": "Carry the kite up Cerro Verde",
+     "target": "n07-end-paper-moon"
+    }
+   ]
+  },
+  {
+   "id": "n06-bridle-fix",
+   "body": "<<FILL role=transition words=32 beats='Tomas slides the bridle knot one thumb width toward the nose and feels the diamond stop fighting his hand; it climbs steady above the roof tiles until dark'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n06-1",
+     "label": "Take the steady kite to the festival",
+     "target": "n30-end-blue-ribbon"
+    }
+   ]
+  },
+  {
+   "id": "n07-end-paper-moon",
+   "body": "<<FILL role=ending words=68 beats='They climb Cerro Verde past the goat path and the fallen bell tower stones, where the wind is clean with nothing to break it; the diamond flies without one dive while the sky goes dark blue; from the hilltop the pale kite looks like a small paper moon on a string, and Tomas learns that the evening wind is the steadiest wind of all'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-paper-moon",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Paper Moon Above Cerro Verde"
+   }
+  },
+  {
+   "id": "n08-rag-spin",
+   "body": "<<FILL role=decision words=68 beats='The rag tail is heavy and the diamond rises fast, then spins in tight circles like a top and winds the line around itself; Tomas untangles forty turns of fishing line on the grass while the wind swings north and turns colder; three children from the bakery lane wander over to watch the show, and the smallest one, Nina, will not stop asking questions'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n08-1",
+     "label": "Let the little ones try the kite",
+     "target": "n09-children-watch"
+    },
+    {
+     "id": "c-n08-2",
+     "label": "Trim the rag tail shorter",
+     "target": "n10-trim-tail"
+    }
+   ]
+  },
+  {
+   "id": "n09-children-watch",
+   "body": "<<FILL role=decision words=68 beats='Tomas puts his hands over the hands of Nina on the reel, the way Abuela once did for him, and shows her where the pull begins; the diamond climbs and Nina laughs so hard she nearly drops the whole reel into the corn; Abuela watches from the step and says a kite has two jobs, flying and teaching, and Tomas must decide which job this one gets'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n09-1",
+     "label": "Teach the whole lane to fly",
+     "target": "n11-end-four-hands"
+    },
+    {
+     "id": "c-n09-2",
+     "label": "Give Nina the diamond to keep",
+     "target": "n21-end-nina-kite"
+    }
+   ]
+  },
+  {
+   "id": "n10-trim-tail",
+   "body": "<<FILL role=transition words=32 beats='Tomas cuts the rag tail down to three hands long and the spinning stops at once; the diamond hangs in the north wind as calm as a hawk over the corn'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n10-1",
+     "label": "Write down what the wind did",
+     "target": "n12-end-wind-map"
+    }
+   ]
+  },
+  {
+   "id": "n11-end-four-hands",
+   "body": "<<FILL role=ending words=68 beats='All afternoon Tomas runs the launches while Abuela knots tails, and one by one the children learn where the pull begins; by evening eleven of them can put a kite up alone and the whole bakery lane is full of paper in the air; Abuela says a kite that teaches somebody is worth more than a kite that wins a ribbon, and Tomas believes her'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-four-hands",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Four Hands on the String"
+   }
+  },
+  {
+   "id": "n12-end-wind-map",
+   "body": "<<FILL role=ending words=36 beats='Tomas draws the whole spring wind on the workshop wall in charcoal, east at dawn and north at noon; Abuela adds her marks from years ago and the two maps agree exactly'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-wind-map",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Map of the Wind"
+   }
+  },
+  {
+   "id": "n21-end-nina-kite",
+   "body": "<<FILL role=ending words=68 beats='Tomas winds the line onto a fresh stick and puts the paper diamond into the hands of Nina, who carries it home flat against her chest like a plate of eggs; at the festival the next day he has no kite of his own to fly, and it does not matter at all, because the diamond is up there over the plaza with Nina shouting under it'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-nina-kite",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Kite That Found a New Flyer"
+   }
+  },
+  {
+   "id": "n13-cloth-or-box",
+   "body": "<<FILL role=decision words=68 beats='For strong wind Abuela offers two shapes; she opens the cedar trunk and lifts out her old blue festival dress, wide enough for a delta with a bamboo spine, then points her chin at the long poles standing in the corner that would make a box kite as tall as Tomas; both of them need testing and there is only one day left'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n13-1",
+     "label": "Sew the blue cloth delta",
+     "target": "n14-delta-sew"
+    },
+    {
+     "id": "c-n13-2",
+     "label": "Raise the tall box kite",
+     "target": "n22-box-build"
+    }
+   ]
+  },
+  {
+   "id": "n14-delta-sew",
+   "body": "<<FILL role=explore words=32 beats='Abuela cuts a wide triangle from the blue dress and Tomas sews the hem with big crooked stitches, then slides a smooth bamboo spine into the pocket he has left open'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n14-1",
+     "label": "Carry the delta outside to test",
+     "target": "n15-where-to-test"
+    }
+   ]
+  },
+  {
+   "id": "n15-where-to-test",
+   "body": "<<FILL role=decision words=36 beats='Cloth is heavier than paper and needs real wind, not a puff; the corn rows funnel the breeze into a steady stream, while down at the Rio Claro the cold water pushes air straight upward'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n15-1",
+     "label": "Test the delta in the corn field",
+     "target": "n16-corn-field-tear"
+    },
+    {
+     "id": "c-n15-2",
+     "label": "Test the delta by the Rio Claro",
+     "target": "n17-river-run"
+    }
+   ]
+  },
+  {
+   "id": "n16-corn-field-tear",
+   "body": "<<FILL role=decision words=68 beats='The blue delta hums like a bee and pulls hard between the young corn rows, until a broken cornstalk catches the cloth and opens a small tear along the hem; Tomas holds the wounded kite while Abuela reaches into her apron for needle and thread; the wind is dropping fast and the light over the hills is going gold'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n16-1",
+     "label": "Mend the tear right here",
+     "target": "n19-mend-it"
+    },
+    {
+     "id": "c-n16-2",
+     "label": "Sit down and wait for the wind",
+     "target": "n20-end-quiet-hill"
+    }
+   ]
+  },
+  {
+   "id": "n17-river-run",
+   "body": "<<FILL role=transition words=32 beats='The delta leaps to the end of the line above the water in one breath; then the fishing line saws against a willow branch, thins, and parts with a small bright sound'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n17-1",
+     "label": "Watch the kite come down",
+     "target": "n18-end-river-kite"
+    }
+   ]
+  },
+  {
+   "id": "n18-end-river-kite",
+   "body": "<<FILL role=ending words=36 beats='The blue delta settles on the Rio Claro like a leaf and sails around the bend; Abuela says the cedar trunk still holds one more old dress, and tomorrow the two of them start again'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-river-kite",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Kite That Sailed Away"
+   }
+  },
+  {
+   "id": "n19-mend-it",
+   "body": "<<FILL role=transition words=32 beats='Abuela threads the needle in one try and sews the hem with tiny stitches while Tomas glues a patch of papel de china over the seam; the delta smells of paste and cedar'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n19-1",
+     "label": "Bring the mended kite to the festival",
+     "target": "n31-end-patch-flies"
+    }
+   ]
+  },
+  {
+   "id": "n20-end-quiet-hill",
+   "body": "<<FILL role=ending words=68 beats='The wind stops completely, the corn goes quiet and the torn delta lies on the grass like a sleeping bird; Abuela says the sky is only taking a breath, and while they wait on the warm stones she tells Tomas about the kite her own father built from a rice sack forty springs ago; the delta never flies that day, but Tomas carries the story home'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-quiet-hill",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Waiting With Abuela"
+   }
+  },
+  {
+   "id": "n22-box-build",
+   "body": "<<FILL role=explore words=32 beats='Four long bamboo poles and two paper bands become a box kite as tall as Tomas; it stands on the workshop bench like a paper lantern and hums when the door swings open'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n22-1",
+     "label": "Decide when to fly the box kite",
+     "target": "n23-when-to-fly"
+    }
+   ]
+  },
+  {
+   "id": "n23-when-to-fly",
+   "body": "<<FILL role=decision words=36 beats='Abuela warns that a box kite sulks in a soft breeze and wants steady wind; the morning gust is rattling the shutters right now, but the wide afternoon wind is still hours away'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n23-1",
+     "label": "Fly it now in the morning gust",
+     "target": "n24-rebuild-bridle"
+    },
+    {
+     "id": "c-n23-2",
+     "label": "Wait and pack it for tomorrow",
+     "target": "n25-end-night-plaza"
+    }
+   ]
+  },
+  {
+   "id": "n24-rebuild-bridle",
+   "body": "<<FILL role=transition words=32 beats='The jumpy gust tips the box kite onto one corner and snaps a paper band, so Tomas rebuilds the bridle with four legs while Abuela measures each leg against her forearm'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n24-1",
+     "label": "Take the level kite to the field",
+     "target": "n28-end-highest-kite"
+    }
+   ]
+  },
+  {
+   "id": "n25-end-night-plaza",
+   "body": "<<FILL role=ending words=68 beats='They wrap the box kite in an old sheet and stand it by the door; late in the evening the shutters tap twice as a new wind arrives, and Abuela, still awake over her dough, wraps them both in shawls; in the empty plaza the night wind lifts the tall kite past the bell tower where the swallows sleep, and only the two of them and the cat on the wall ever see it fly'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-night-plaza",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Night Kite Over the Bell Tower"
+   }
+  },
+  {
+   "id": "n28-end-highest-kite",
+   "body": "<<FILL role=ending words=36 beats='At the festival field the box kite goes up like a lantern and stays higher than forty other kites all afternoon; Tomas hands Abuela the reel and she does not give it back until dark'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-highest-kite",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Highest Kite at the Festival"
+   }
+  },
+  {
+   "id": "n30-end-blue-ribbon",
+   "body": "<<FILL role=ending words=36 beats='The judge walks the row with a tin measure while Tomas holds his line dead still; the paper diamond sits highest and steadiest of all, so the blue ribbon is tied to the reel and the drums start'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-blue-ribbon",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Blue Ribbon"
+   }
+  },
+  {
+   "id": "n31-end-patch-flies",
+   "body": "<<FILL role=ending words=36 beats='The mended delta flies all afternoon at the festival with the pale patch showing like a small cloud; Abuela tells everyone who asks that the stitches are the best part of the kite'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-patch-flies",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Patch That Flew"
+   }
+  }
+ ]
+}

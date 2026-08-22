@@ -1,0 +1,535 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "open_map",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "animals",
+   "school",
+   "problem solving"
+  ],
+  "estimated_minutes": 4,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "N1",
+ "nodes": [
+  {
+   "id": "N1",
+   "body": "<<FILL role=setup words=65 beats='Miri stands in the sunny schoolyard holding a bucket of grain. The wooden coop is open, and Little Pip, the smallest white hen, is missing! Miri scans the large school grounds. She can search the blooming garden, check the colorful playground, or investigate the old red barn.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N1_C1",
+     "label": "Search the garden",
+     "target": "N2"
+    },
+    {
+     "id": "N1_C2",
+     "label": "Check the playground",
+     "target": "N3"
+    },
+    {
+     "id": "N1_C3",
+     "label": "Explore the barn",
+     "target": "N4"
+    }
+   ]
+  },
+  {
+   "id": "N2",
+   "body": "<<FILL role=explore words=65 beats='The school garden is bursting with tall sunflowers and bushy green plants. Miri walks along the dirt path, listening for clucks. She can search around the wooden tool shed, check the leafy vegetable patch, or return to the main yard.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N2_C1",
+     "label": "Look in the shed",
+     "target": "N5"
+    },
+    {
+     "id": "N2_C2",
+     "label": "Search the vegetables",
+     "target": "N6"
+    },
+    {
+     "id": "N2_C3",
+     "label": "Return to the yard",
+     "target": "N1"
+    }
+   ]
+  },
+  {
+   "id": "N3",
+   "body": "<<FILL role=explore words=65 beats='The playground is quiet this morning. The colorful equipment casts long shadows on the grass. Miri looks around for any sign of white feathers. She can look closer at the sandy sandbox, search the tall swing set, or go back to the yard.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N3_C1",
+     "label": "Check the sandbox",
+     "target": "N7"
+    },
+    {
+     "id": "N3_C2",
+     "label": "Look near the swings",
+     "target": "N8"
+    },
+    {
+     "id": "N3_C3",
+     "label": "Return to the yard",
+     "target": "N1"
+    }
+   ]
+  },
+  {
+   "id": "N4",
+   "body": "<<FILL role=explore words=65 beats='The old red barn smells like dried hay and dust. The large double doors are wide open, inviting Miri into the cool shade. She can inspect the massive green tractor, climb up to the wooden hayloft, or walk back out to the yard.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N4_C1",
+     "label": "Inspect the tractor",
+     "target": "N9"
+    },
+    {
+     "id": "N4_C2",
+     "label": "Climb to the hayloft",
+     "target": "N10"
+    },
+    {
+     "id": "N4_C3",
+     "label": "Return to the yard",
+     "target": "N1"
+    }
+   ]
+  },
+  {
+   "id": "N5",
+   "body": "<<FILL role=explore words=65 beats='The wooden shed sits at the back of the garden. Its door is slightly open, revealing a messy interior. Miri peers inside. She can investigate the tall rack of gardening tools, look behind a stack of ceramic pots, or retreat to the garden path.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N5_C1",
+     "label": "Check the tools",
+     "target": "N11"
+    },
+    {
+     "id": "N5_C2",
+     "label": "Look at the pots",
+     "target": "N12"
+    },
+    {
+     "id": "N5_C3",
+     "label": "Go back to the garden",
+     "target": "N2"
+    }
+   ]
+  },
+  {
+   "id": "N6",
+   "body": "<<FILL role=explore words=65 beats='The vegetable patch is full of ripe crops and damp soil. Miri notices some small footprints in the dirt between the rows. She can check the dense tomato vines, search the leafy carrot bed, or head back to the main garden.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N6_C1",
+     "label": "Search the tomatoes",
+     "target": "N13"
+    },
+    {
+     "id": "N6_C2",
+     "label": "Check the carrots",
+     "target": "N14"
+    },
+    {
+     "id": "N6_C3",
+     "label": "Go back to the garden",
+     "target": "N2"
+    }
+   ]
+  },
+  {
+   "id": "N7",
+   "body": "<<FILL role=explore words=65 beats='The wooden sandbox is filled with bright yellow sand and scattered plastic toys. Miri wonders if Little Pip wanted to take a dust bath here. She can wade right into the middle of the sand, or walk back to the edge of the playground.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N7_C1",
+     "label": "Wade into the sand",
+     "target": "N15"
+    },
+    {
+     "id": "N7_C2",
+     "label": "Leave the sandbox",
+     "target": "N3"
+    }
+   ]
+  },
+  {
+   "id": "N8",
+   "body": "<<FILL role=explore words=65 beats='The tall metal swing set has black rubber seats dangling down. The ground underneath is covered in soft wood chips. Miri can look carefully underneath the nearby plastic slide, or step back to the center of the playground.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N8_C1",
+     "label": "Look under the slide",
+     "target": "N16"
+    },
+    {
+     "id": "N8_C2",
+     "label": "Leave the swings",
+     "target": "N3"
+    }
+   ]
+  },
+  {
+   "id": "N9",
+   "body": "<<FILL role=explore words=65 beats='The giant green tractor is parked in the middle of the barn floor. It is covered in a thick layer of dust. Miri can climb up to check the high driver seat, inspect the massive rubber tires, or go back to the barn entrance.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N9_C1",
+     "label": "Climb to the seat",
+     "target": "N17"
+    },
+    {
+     "id": "N9_C2",
+     "label": "Check the tires",
+     "target": "N18"
+    },
+    {
+     "id": "N9_C3",
+     "label": "Leave the tractor",
+     "target": "N4"
+    }
+   ]
+  },
+  {
+   "id": "N10",
+   "body": "<<FILL role=explore words=65 beats='Miri climbs the creaky wooden ladder to the hayloft. The golden hay is stacked in high, fragrant bales. She can search near the open high window, look in a dark dusty corner, or climb back down to the barn floor.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N10_C1",
+     "label": "Look out the window",
+     "target": "N19"
+    },
+    {
+     "id": "N10_C2",
+     "label": "Search the corner",
+     "target": "N20"
+    },
+    {
+     "id": "N10_C3",
+     "label": "Leave the hayloft",
+     "target": "N4"
+    }
+   ]
+  },
+  {
+   "id": "N11",
+   "body": "<<FILL role=explore words=65 beats='Miri carefully approaches the tall rack of metal spades and rakes. The tools are leaning haphazardly against the wall. She can peek right behind the largest shovel, or step back to the center of the shed.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N11_C1",
+     "label": "Peek behind the shovel",
+     "target": "N21"
+    },
+    {
+     "id": "N11_C2",
+     "label": "Return to the shed center",
+     "target": "N5"
+    }
+   ]
+  },
+  {
+   "id": "N12",
+   "body": "<<FILL role=explore words=65 beats='A wobbly tower of ceramic flower pots leans against the shed wall. Some of the bottom pots are quite large. Miri can look deeply inside the biggest pot, or walk back to the shed entrance.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N12_C1",
+     "label": "Look in the biggest pot",
+     "target": "N22"
+    },
+    {
+     "id": "N12_C2",
+     "label": "Return to the shed door",
+     "target": "N5"
+    }
+   ]
+  },
+  {
+   "id": "N13",
+   "body": "<<FILL role=explore words=65 beats='The tomato vines are tied to tall wooden stakes. Heavy red tomatoes hang near the ground, creating thick leafy shadows. Miri can pull the heavy leaves apart to look inside, or return to the vegetable path.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N13_C1",
+     "label": "Pull the leaves apart",
+     "target": "N23"
+    },
+    {
+     "id": "N13_C2",
+     "label": "Return to the path",
+     "target": "N6"
+    }
+   ]
+  },
+  {
+   "id": "N14",
+   "body": "<<FILL role=explore words=65 beats='The feathery green carrot tops sway in the gentle breeze. Miri spots a shallow hole dug into the soft earth. She can bend down to inspect the freshly dug hole, or walk back to the vegetable patch edge.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N14_C1",
+     "label": "Inspect the dug hole",
+     "target": "N24"
+    },
+    {
+     "id": "N14_C2",
+     "label": "Return to the vegetable patch",
+     "target": "N6"
+    }
+   ]
+  },
+  {
+   "id": "N15",
+   "body": "<<FILL role=explore words=65 beats='Miri steps into the deep, warm sand. She spots a bright red plastic bucket turned upside down, right in the center of the box. She can lift the plastic bucket, or walk back to the edge of the sand.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N15_C1",
+     "label": "Lift the red bucket",
+     "target": "N25"
+    },
+    {
+     "id": "N15_C2",
+     "label": "Walk back to the edge",
+     "target": "N7"
+    }
+   ]
+  },
+  {
+   "id": "N16",
+   "body": "<<FILL role=explore words=65 beats='The bright blue slide creates a long, dark tunnel underneath. Miri crouches down, trying to see into the deepest shadow. She can crawl all the way under, or stand up and return to the swings.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N16_C1",
+     "label": "Crawl into the shadow",
+     "target": "N26"
+    },
+    {
+     "id": "N16_C2",
+     "label": "Stand up from the slide",
+     "target": "N8"
+    }
+   ]
+  },
+  {
+   "id": "N17",
+   "body": "<<FILL role=explore words=65 beats='Miri pulls herself up by the metal handles to reach the high driver seat. The steering wheel is huge and black. She can lean over the heavy wheel to look down, or climb back down to the barn floor.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N17_C1",
+     "label": "Lean over the wheel",
+     "target": "N27"
+    },
+    {
+     "id": "N17_C2",
+     "label": "Climb down to the floor",
+     "target": "N9"
+    }
+   ]
+  },
+  {
+   "id": "N18",
+   "body": "<<FILL role=explore words=65 beats='The massive rear tires of the tractor are taller than Miri! The deep treads create little shelves of rubber. She can walk around to the dark back tire, or return to the front of the tractor.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N18_C1",
+     "label": "Check the back tire",
+     "target": "N28"
+    },
+    {
+     "id": "N18_C2",
+     "label": "Walk to the tractor front",
+     "target": "N9"
+    }
+   ]
+  },
+  {
+   "id": "N19",
+   "body": "<<FILL role=explore words=65 beats='A square window lets a bright beam of sunlight into the loft. Dust motes dance in the air near the ledge. Miri can look right over the wooden sill, or go back to the top of the stairs.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N19_C1",
+     "label": "Look over the sill",
+     "target": "N29"
+    },
+    {
+     "id": "N19_C2",
+     "label": "Go back to the stairs",
+     "target": "N10"
+    }
+   ]
+  },
+  {
+   "id": "N20",
+   "body": "<<FILL role=explore words=65 beats='The back corner of the hayloft is very dark. Miri sees a small, loose pile of hay that looks like a comfortable nest. She can reach into the soft hay pile, or turn back to the loft entrance.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "N20_C1",
+     "label": "Reach into the hay",
+     "target": "N30"
+    },
+    {
+     "id": "N20_C2",
+     "label": "Turn back to the entrance",
+     "target": "N10"
+    }
+   ]
+  },
+  {
+   "id": "N21",
+   "body": "<<FILL role=ending words=65 beats='Miri peeks behind the large shovel and finds her favorite lost trowel! It is a happy discovery, but Little Pip is not here. She decides to keep looking tomorrow.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "N21_end",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Found Trowel"
+   }
+  },
+  {
+   "id": "N22",
+   "body": "<<FILL role=ending words=65 beats='Miri looks into the large ceramic pot. Little Pip is curled up inside, fast asleep! Miri gently scoops up the small white hen and carries her safely back to the school coop.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "N22_end",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Sleepy Pot"
+   }
+  },
+  {
+   "id": "N23",
+   "body": "<<FILL role=ending words=65 beats='As Miri pulls the tomato leaves apart, a wild brown rabbit suddenly dashes out! Miri jumps back in surprise. Little Pip is nowhere to be seen in the garden.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "N23_end",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Rabbit Scare"
+   }
+  },
+  {
+   "id": "N24",
+   "body": "<<FILL role=ending words=65 beats='Miri inspects the hole and finds Little Pip happily pecking at a juicy orange carrot! Miri laughs, picks up her hungry hen, and brings her back to her friends in the yard.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "N24_end",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Carrot Snack"
+   }
+  },
+  {
+   "id": "N25",
+   "body": "<<FILL role=ending words=65 beats='Miri lifts the red bucket and discovers a shiny toy car buried in the sand. It is a fun treasure to find, but she still needs to locate her missing hen.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "N25_end",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Buried Toy"
+   }
+  },
+  {
+   "id": "N26",
+   "body": "<<FILL role=ending words=65 beats='Miri crawls under the slide but slips on a patch of wet mud. Her knees get completely dirty! Frustrated and messy, she decides to go wash up before searching anymore.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "N26_end",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Muddy Slip"
+   }
+  },
+  {
+   "id": "N27",
+   "body": "<<FILL role=ending words=65 beats='Miri leans over the wheel and accidentally presses the center button. HONK! The incredibly loud noise terrifies her, and she scurries out of the barn in a panic, leaving the search for later.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "N27_end",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Loud Honk"
+   }
+  },
+  {
+   "id": "N28",
+   "body": "<<FILL role=ending words=65 beats='Behind the massive back tire, Miri finds Little Pip roosting comfortably on a rubber tread. The clever hen clucks softly as Miri carefully lifts her down to take her home.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "N28_end",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Tire Roost"
+   }
+  },
+  {
+   "id": "N29",
+   "body": "<<FILL role=ending words=65 beats='Miri looks over the sill and enjoys a beautiful view of the entire schoolyard. She cannot spot Little Pip from up here, but she feels peaceful looking at the lovely morning.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "N29_end",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "High View"
+   }
+  },
+  {
+   "id": "N30",
+   "body": "<<FILL role=ending words=65 beats='Miri reaches into the soft hay and feels warm feathers! Little Pip has made a cozy bed in the corner. Miri happily hugs her hen and carries her down to the coop.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "N30_end",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Hay Bed"
+   }
+  }
+ ]
+}

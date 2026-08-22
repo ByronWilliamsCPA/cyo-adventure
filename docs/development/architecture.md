@@ -50,7 +50,6 @@ src/cyo_adventure/
 │   ├── provider.py         # GenerationProvider protocol
 │   ├── providers/
 │   │   ├── fallback.py     # FallbackProvider cascade (Layer 2)
-│   │   ├── ollama.py       # Ollama adapter (Layer 1, local fallback)
 │   │   └── openrouter.py   # OpenRouter adapter (Layer 1, primary)
 │   ├── queue.py            # enqueue_generation() (RQ)
 │   └── worker.py           # RQ worker entry point

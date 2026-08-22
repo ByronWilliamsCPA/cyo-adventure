@@ -33,7 +33,6 @@ cut over 2026-07-05).
 | `cyo-worker` | `cyo-worker:latest` | RQ generation worker (long-running, no inbound HTTP) |
 | `cyo-postgres` | `postgres:16-alpine` | Retained for one-redeploy rollback only; off the data path, tracked for removal in homelab-infra #577 |
 | `cyo-redis` | `redis:7-alpine` | Redis 7, port 6379, RQ job broker |
-| `cyo-ollama` | `ollama/ollama:latest` | Local LLM fallback, port 11434 |
 | `cyo-minio` | `minio/minio` | Object storage, planned Phase 5 |
 
 The backend and worker share the same Python codebase but run as separate containers.
@@ -73,8 +72,11 @@ Internal container-to-container communication uses Docker's bridge network:
 
 - `cyo-backend` -> `cyo-redis` (RQ enqueue, port 6379)
 - `cyo-worker` -> `cyo-redis` (job dequeue, port 6379)
-- `cyo-worker` -> `cyo-ollama` (LLM fallback, port 11434)
 - `cyo-worker` -> OpenRouter API (HTTPS, egress to internet, primary LLM)
+- `cyo-worker` -> Modal Auto Endpoint (HTTPS, egress to internet, cascade leg 3;
+  replaced the retired `cyo-ollama` container, which was removed ahead of the
+  homelab-to-Vultr move because a self-hosted GPU leg has no cloud equivalent at a
+  fallback-of-a-fallback's price. See ADR-003's 2026-08-18 amendment.)
 
 Egress to the managed database (not on the Docker bridge network):
 

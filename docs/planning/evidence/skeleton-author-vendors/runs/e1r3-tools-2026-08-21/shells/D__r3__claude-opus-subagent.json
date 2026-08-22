@@ -1,0 +1,847 @@
+{
+ "schema_version": "2.0",
+ "id": "the-two-star-tokens",
+ "version": 1,
+ "title": "The Two-Star Tokens",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 6.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "fairness",
+   "curiosity",
+   "evidence",
+   "community",
+   "honest trade"
+  ],
+  "estimated_minutes": 4,
+  "ending_count": 17,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "market-opens",
+ "nodes": [
+  {
+   "id": "market-opens",
+   "body": "<<FILL role=setup words=70 beats='Dawn on the Old Weighbridge as the Millgate harvest swap-market wakes; carts unload, chalk price boards go up along the pear row, and Auntie Pell sends Idris to open the seed stall with a fistful of brass swap-tokens for the day'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "market-opens-c1",
+     "label": "Open the seed stall for trade",
+     "target": "market-morning"
+    }
+   ]
+  },
+  {
+   "id": "market-morning",
+   "body": "<<FILL role=setup words=75 beats='Idris turns the tokens over on the seed sacks and two of them do not match; one star is punched clean through the brass and one is only pressed into it, and the whole market is spending both without a word'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "market-morning-c1",
+     "label": "Count the tokens in the jar",
+     "target": "token-jar"
+    },
+    {
+     "id": "market-morning-c2",
+     "label": "Read the chalk price boards",
+     "target": "chalk-boards"
+    },
+    {
+     "id": "market-morning-c3",
+     "label": "Take a mug to Nana Bevel",
+     "target": "nana-cider"
+    }
+   ]
+  },
+  {
+   "id": "token-jar",
+   "body": "<<FILL role=setup words=100 beats='Idris tips the seed-stall token jar onto a crate and sorts the brass by feel; some tokens have a star punched clean through the metal, others carry only a stamped star; the punched ones sound different when they drop'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "token-jar-c1",
+     "label": "Look closely at the two stars",
+     "target": "two-stars"
+    },
+    {
+     "id": "token-jar-c2",
+     "label": "Find Mira and watch her haggle",
+     "target": "mira-bargain"
+    },
+    {
+     "id": "token-jar-c3",
+     "label": "Walk up to the tinshop of Fenn",
+     "target": "fenn-tinshop"
+    }
+   ]
+  },
+  {
+   "id": "chalk-boards",
+   "body": "<<FILL role=setup words=100 beats='Idris walks the pear row reading chalk prices; one board lists two numbers for the same basket and the seller rubs one out when Idris looks; Millgate boards have never needed two numbers before'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "chalk-boards-c1",
+     "label": "Compare the two stars up close",
+     "target": "two-stars"
+    },
+    {
+     "id": "chalk-boards-c2",
+     "label": "Watch Mira pay for her onions",
+     "target": "mira-bargain"
+    },
+    {
+     "id": "chalk-boards-c3",
+     "label": "Ask the clerk about his token chest",
+     "target": "clerk-chest"
+    }
+   ]
+  },
+  {
+   "id": "nana-cider",
+   "body": "<<FILL role=setup words=100 beats='Nana Bevel pours cider and refuses a stamped-star token, asking for a punched one instead; she will not say why, only that punched tokens spend better up the hill and always have'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "nana-cider-c1",
+     "label": "Study the tokens in the sunlight",
+     "target": "two-stars"
+    },
+    {
+     "id": "nana-cider-c2",
+     "label": "Look inside the market token chest",
+     "target": "clerk-chest"
+    },
+    {
+     "id": "nana-cider-c3",
+     "label": "Carry a token up to Fenn",
+     "target": "fenn-tinshop"
+    }
+   ]
+  },
+  {
+   "id": "two-stars",
+   "body": "<<FILL role=explore words=100 beats='Idris lays two tokens side by side under the awning light; the older minting has a star punched right through the brass, the newer one has a star only pressed into the surface and a slightly wider rim'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "two-stars-c1",
+     "label": "Drop each token on the crate lid",
+     "target": "ring-test"
+    },
+    {
+     "id": "two-stars-c2",
+     "label": "Borrow the beam scale from Sefa",
+     "target": "beam-scale"
+    },
+    {
+     "id": "two-stars-c3",
+     "label": "Compare prices along the pear row",
+     "target": "price-drift"
+    }
+   ]
+  },
+  {
+   "id": "mira-bargain",
+   "body": "<<FILL role=explore words=100 beats='Mira Salk trades a bundle of onions and quietly pays in stamped-star tokens while keeping the punched ones knotted in her sleeve; asked why, she shrugs and says everyone does it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "mira-bargain-c1",
+     "label": "Track the prices Mira just paid",
+     "target": "price-drift"
+    },
+    {
+     "id": "mira-bargain-c2",
+     "label": "Look at the grain sacks of Bram",
+     "target": "bram-sacks"
+    },
+    {
+     "id": "mira-bargain-c3",
+     "label": "Listen to how each token rings",
+     "target": "ring-test"
+    }
+   ]
+  },
+  {
+   "id": "clerk-chest",
+   "body": "<<FILL role=explore words=100 beats='Torren Quill guards the market token chest under the weighbridge desk; Idris watches him sort incoming tokens into two trays without seeming to notice that he is doing it at all'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "clerk-chest-c1",
+     "label": "Weigh a handful on the beam scale",
+     "target": "beam-scale"
+    },
+    {
+     "id": "clerk-chest-c2",
+     "label": "Climb to the loft of Old Fenn",
+     "target": "loft-dies"
+    },
+    {
+     "id": "clerk-chest-c3",
+     "label": "Go and count the sacks of Bram",
+     "target": "bram-sacks"
+    }
+   ]
+  },
+  {
+   "id": "fenn-tinshop",
+   "body": "<<FILL role=explore words=100 beats='Old Fenn the tinsmith once ran the token press for the market guild; his shop smells of solder and hot brass, and he goes very quiet when Idris sets a stamped-star token on his bench'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "fenn-tinshop-c1",
+     "label": "Ask to see the old press dies",
+     "target": "loft-dies"
+    },
+    {
+     "id": "fenn-tinshop-c2",
+     "label": "Test how the two tokens ring",
+     "target": "ring-test"
+    },
+    {
+     "id": "fenn-tinshop-c3",
+     "label": "Check who is hoarding heavy brass",
+     "target": "bram-sacks"
+    }
+   ]
+  },
+  {
+   "id": "ring-test",
+   "body": "<<FILL role=explore words=100 beats='Idris drops each token on the crate lid; the punched star rings long and thin, the stamped star lands with a dull click; Mira makes Idris do it twenty times before she will believe it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ring-test-c1",
+     "label": "Sort the whole jar by its ring",
+     "target": "sort-the-jar"
+    },
+    {
+     "id": "ring-test-c2",
+     "label": "Find Weighmaster Sefa Dunn",
+     "target": "weighmaster-sefa"
+    },
+    {
+     "id": "ring-test-c3",
+     "label": "Count the price on every stall",
+     "target": "count-stalls"
+    }
+   ]
+  },
+  {
+   "id": "beam-scale",
+   "body": "<<FILL role=explore words=100 beats='Sefa Dunn lets Idris set ten tokens of each minting on the beam scale; the punched ten sit heavier by about the weight of a barley grain, a small difference that shows up every single time'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "beam-scale-c1",
+     "label": "Ask Sefa what the guild rule says",
+     "target": "weighmaster-sefa"
+    },
+    {
+     "id": "beam-scale-c2",
+     "label": "Sort the seed-stall jar by weight",
+     "target": "sort-the-jar"
+    },
+    {
+     "id": "beam-scale-c3",
+     "label": "Ask every seller one price question",
+     "target": "count-stalls"
+    }
+   ]
+  },
+  {
+   "id": "price-drift",
+   "body": "<<FILL role=explore words=100 beats='Idris fills two columns in the tally book and the numbers separate; a basket of pears costs six stamped tokens or five punched ones, and the gap is wider at the top of the row than it was last week'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "price-drift-c1",
+     "label": "Count the price on all thirty stalls",
+     "target": "count-stalls"
+    },
+    {
+     "id": "price-drift-c2",
+     "label": "Follow the punched tokens to Bram",
+     "target": "bram-watch"
+    },
+    {
+     "id": "price-drift-c3",
+     "label": "Close the book and say nothing",
+     "target": "end-shrug-it-off"
+    }
+   ]
+  },
+  {
+   "id": "loft-dies",
+   "body": "<<FILL role=explore words=100 beats='In the loft above the tinshop Idris finds two press dies wrapped in oilcloth; the older die has a punch pin, the newer one had its pin snap off years ago and was never repaired'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "loft-dies-c1",
+     "label": "Ask Fenn what happened to the pin",
+     "target": "press-story"
+    },
+    {
+     "id": "loft-dies-c2",
+     "label": "Take the dies to Weighmaster Sefa",
+     "target": "weighmaster-sefa"
+    },
+    {
+     "id": "loft-dies-c3",
+     "label": "Let Fenn show the dies and stop there",
+     "target": "end-two-coins"
+    }
+   ]
+  },
+  {
+   "id": "bram-sacks",
+   "body": "<<FILL role=explore words=100 beats='Bram the grain factor keeps two money boxes behind his oat sacks; Idris watches him pay out stamped tokens all morning and never once let a punched token leave his hand'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "bram-sacks-c1",
+     "label": "Watch the boxes of Bram all day",
+     "target": "bram-watch"
+    },
+    {
+     "id": "bram-sacks-c2",
+     "label": "Count what every stall charges",
+     "target": "count-stalls"
+    },
+    {
+     "id": "bram-sacks-c3",
+     "label": "Ask how the tokens were made",
+     "target": "press-story"
+    }
+   ]
+  },
+  {
+   "id": "sort-the-jar",
+   "body": "<<FILL role=decision words=100 beats='Idris and Mira sort every token in the seed-stall jar by ring and rim; forty-one stamped, nine punched, and the nine punched ones are the oldest and most worn brass in the jar'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "sort-the-jar-c1",
+     "label": "Chalk both prices on a spare board",
+     "target": "two-prices"
+    },
+    {
+     "id": "sort-the-jar-c2",
+     "label": "Ask Sefa to sign your numbers",
+     "target": "sefa-agrees"
+    },
+    {
+     "id": "sort-the-jar-c3",
+     "label": "Trade the last basket at an honest price",
+     "target": "end-fair-swap"
+    }
+   ]
+  },
+  {
+   "id": "count-stalls",
+   "body": "<<FILL role=decision words=100 beats='Idris walks all thirty-one stalls and asks each seller one question about price; twenty-two of them quietly quote a lower number for punched tokens and none of them names a reason'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "count-stalls-c1",
+     "label": "Post the two prices in public",
+     "target": "two-prices"
+    },
+    {
+     "id": "count-stalls-c2",
+     "label": "Get the weighmaster seal on it",
+     "target": "sefa-agrees"
+    },
+    {
+     "id": "count-stalls-c3",
+     "label": "Say it once and step away",
+     "target": "end-half-heard"
+    }
+   ]
+  },
+  {
+   "id": "press-story",
+   "body": "<<FILL role=decision words=100 beats='Fenn explains that when the punch pin snapped the guild told him to keep pressing anyway and to use cheaper brass to save the cost; nobody told the market and nobody wrote it down'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "press-story-c1",
+     "label": "Ask Fenn to say this out loud",
+     "target": "fenn-confesses"
+    },
+    {
+     "id": "press-story-c2",
+     "label": "Bring Sefa in as a witness",
+     "target": "sefa-agrees"
+    },
+    {
+     "id": "press-story-c3",
+     "label": "Put the story to Bram directly",
+     "target": "bram-offer"
+    }
+   ]
+  },
+  {
+   "id": "bram-watch",
+   "body": "<<FILL role=decision words=100 beats='Idris shadows Bram until dusk; every punched token that reaches his hand goes into the left money box and never comes back out again, and the left box is nearly full'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "bram-watch-c1",
+     "label": "Let Bram see that you noticed",
+     "target": "bram-offer"
+    },
+    {
+     "id": "bram-watch-c2",
+     "label": "Chalk the drift on your own board",
+     "target": "two-prices"
+    },
+    {
+     "id": "bram-watch-c3",
+     "label": "Quietly collect heavy tokens yourself",
+     "target": "end-quiet-profit"
+    }
+   ]
+  },
+  {
+   "id": "weighmaster-sefa",
+   "body": "<<FILL role=decision words=100 beats='Sefa Dunn is the one person at the market whose whole job is to be believed about weight; she listens, weighs a handful herself, and says this is the guild business she has been dreading'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "weighmaster-sefa-c1",
+     "label": "Ask Sefa to seal the tally page",
+     "target": "sefa-agrees"
+    },
+    {
+     "id": "weighmaster-sefa-c2",
+     "label": "Fetch Fenn to explain the press",
+     "target": "fenn-confesses"
+    },
+    {
+     "id": "weighmaster-sefa-c3",
+     "label": "Take the scale to the grain row",
+     "target": "bram-offer"
+    }
+   ]
+  },
+  {
+   "id": "end-two-coins",
+   "body": "<<FILL role=ending words=110 beats='Fenn carries both dies down to the weighbridge and holds up the snapped punch pin; the market understands in one breath that there were always two coins and never a plot, and Idris goes home known as the one who looked closely'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-two-coins",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Two Coins"
+   }
+  },
+  {
+   "id": "end-shrug-it-off",
+   "body": "<<FILL role=ending words=110 beats='Idris shuts the tally book and spends the tokens without looking at them; by the last day of the harvest swap-market the gap has doubled, the seed stall is short by a whole sack of barley, and nobody ever finds out why'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-shrug-it-off",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Not My Business"
+   }
+  },
+  {
+   "id": "two-prices",
+   "body": "<<FILL role=decision words=100 beats='Idris chalks both prices on a spare board and props it against the seed stall; three sellers laugh, two rub it out, and one stops to ask Idris where the numbers came from'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "two-prices-c1",
+     "label": "Ask the guild to meet in the open",
+     "target": "guild-meeting-set"
+    },
+    {
+     "id": "two-prices-c2",
+     "label": "Say it where everyone can hear",
+     "target": "crowd-gathers"
+    },
+    {
+     "id": "two-prices-c3",
+     "label": "Let the tally book stand as it is",
+     "target": "end-tally-stands"
+    }
+   ]
+  },
+  {
+   "id": "sefa-agrees",
+   "body": "<<FILL role=decision words=100 beats='Sefa Dunn signs the bottom of the page and presses the weighmaster seal into the wax; she warns Idris that a signed page turns a rumour into a charge that somebody has to answer'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "sefa-agrees-c1",
+     "label": "Call the guild to a meeting",
+     "target": "guild-meeting-set"
+    },
+    {
+     "id": "sefa-agrees-c2",
+     "label": "Read the page to the whole market",
+     "target": "crowd-gathers"
+    },
+    {
+     "id": "sefa-agrees-c3",
+     "label": "Keep two columns and be honest about it",
+     "target": "end-two-columns"
+    }
+   ]
+  },
+  {
+   "id": "fenn-confesses",
+   "body": "<<FILL role=decision words=100 beats='Fenn says it plainly at last: two mintings, four harvests, one broken punch pin, and a guild letter he still keeps in a tin telling him to carry on and say nothing about it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "fenn-confesses-c1",
+     "label": "Put the letter before the guild",
+     "target": "guild-meeting-set"
+    },
+    {
+     "id": "fenn-confesses-c2",
+     "label": "Settle it with Bram tonight",
+     "target": "bram-corner"
+    },
+    {
+     "id": "fenn-confesses-c3",
+     "label": "Watch the stalls close their shutters",
+     "target": "end-market-shuts"
+    }
+   ]
+  },
+  {
+   "id": "bram-offer",
+   "body": "<<FILL role=decision words=100 beats='Bram denies nothing; he offers Idris a swap of two stamped tokens for every punched one, points out that anybody else could have worked it out too, and calls it plain trading'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "bram-offer-c1",
+     "label": "Corner Bram with your own numbers",
+     "target": "bram-corner"
+    },
+    {
+     "id": "bram-offer-c2",
+     "label": "Take the offer to the crowd",
+     "target": "crowd-gathers"
+    },
+    {
+     "id": "bram-offer-c3",
+     "label": "Post both prices and leave it there",
+     "target": "end-two-columns"
+    }
+   ]
+  },
+  {
+   "id": "end-fair-swap",
+   "body": "<<FILL role=ending words=110 beats='Idris and Mira trade the last basket at six stamped or five punched and say the rate out loud to every buyer; three neighbouring stalls copy them by noon and that row ends the harvest on one honest price'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-fair-swap",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Fair Swap"
+   }
+  },
+  {
+   "id": "end-half-heard",
+   "body": "<<FILL role=ending words=110 beats='Idris says the true thing once and walks off before anybody can argue; some stalls change their boards and some do not, so the harvest ends with half the market fair and half of it drifting, and a tally book nobody quite finished reading'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-half-heard",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Half Heard"
+   }
+  },
+  {
+   "id": "end-quiet-profit",
+   "body": "<<FILL role=ending words=110 beats='Idris starts keeping the punched tokens too, and by the closing bell the jar under the seed sacks is heavy; the trick works exactly as it worked for Bram, and Idris finds that being right and being fair have quietly stopped being the same thing'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-quiet-profit",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Heavy Jar"
+   }
+  },
+  {
+   "id": "guild-meeting-set",
+   "body": "<<FILL role=transition words=100 beats='The guild agrees to meet on the weighbridge at the opening bell; word runs the length of the market before supper and half the stalls decide they will come and watch'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "guild-meeting-set-c1",
+     "label": "Ask Sefa to weigh in public",
+     "target": "weigh-in-public"
+    },
+    {
+     "id": "guild-meeting-set-c2",
+     "label": "Step up and speak first",
+     "target": "speak-first"
+    },
+    {
+     "id": "guild-meeting-set-c3",
+     "label": "Chalk a rate and let it work",
+     "target": "end-posted-rate"
+    }
+   ]
+  },
+  {
+   "id": "crowd-gathers",
+   "body": "<<FILL role=transition words=100 beats='Traders pack in around the weighbridge three deep; Bram stands at the front with both money boxes, Nana Bevel has her arms folded, and everybody is waiting for somebody to start'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "crowd-gathers-c1",
+     "label": "Start it yourself",
+     "target": "speak-first"
+    },
+    {
+     "id": "crowd-gathers-c2",
+     "label": "Ask for the scale instead of a speech",
+     "target": "weigh-in-public"
+    },
+    {
+     "id": "crowd-gathers-c3",
+     "label": "Walk out of the market for good",
+     "target": "end-walked-away"
+    }
+   ]
+  },
+  {
+   "id": "bram-corner",
+   "body": "<<FILL role=transition words=100 beats='Idris lays the signed page on the oat sacks; Bram reads it twice, agrees that the numbers are honest, and asks what the market is supposed to do about a thing everybody already does'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "bram-corner-c1",
+     "label": "Ask Bram to say that in public",
+     "target": "speak-first"
+    },
+    {
+     "id": "bram-corner-c2",
+     "label": "Settle the question on the scale",
+     "target": "weigh-in-public"
+    },
+    {
+     "id": "bram-corner-c3",
+     "label": "Let the scale settle it for good",
+     "target": "end-honest-scale"
+    }
+   ]
+  },
+  {
+   "id": "end-tally-stands",
+   "body": "<<FILL role=ending words=110 beats='The chalked board outlasts everyone who rubbed at it, and by dusk four stalls have copied the two columns; Millgate has no new rule yet, but it has a record, and every seller now knows how to check a token before taking it'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-tally-stands",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Tally Stands"
+   }
+  },
+  {
+   "id": "end-market-shuts",
+   "body": "<<FILL role=ending words=110 beats='Nobody will take brass from anybody; shutters come down before noon on the last day of the harvest swap-market, and Idris stands on the empty weighbridge holding a tally book that was right too loudly and too late'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-market-shuts",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Market Shuts Early"
+   }
+  },
+  {
+   "id": "end-two-columns",
+   "body": "<<FILL role=ending words=110 beats='Millgate keeps both mintings and posts both prices on every board, and Idris rules the two columns on the first board each morning; it is honest, it is more work, and nobody pretends any more that there is only one coin'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-two-columns",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Two Columns on the Board"
+   }
+  },
+  {
+   "id": "weigh-in-public",
+   "body": "<<FILL role=climax words=100 beats='Sefa Dunn weighs fifty of each minting while the market watches the beam; the punched fifty tip the scale and hold it down, and nobody in the crowd needs the number explained to them'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "weigh-in-public-c1",
+     "label": "Ask whether the press can be mended",
+     "target": "end-new-press"
+    },
+    {
+     "id": "weigh-in-public-c2",
+     "label": "Take the chest key from Torren",
+     "target": "end-idris-clerk"
+    },
+    {
+     "id": "weigh-in-public-c3",
+     "label": "Ask the guild to write the rule",
+     "target": "end-millgate-standard"
+    }
+   ]
+  },
+  {
+   "id": "speak-first",
+   "body": "<<FILL role=climax words=100 beats='Idris climbs onto the weighbridge stone and starts with the smallest true thing: two mintings, one market, four days of paired prices, and a tally book that anybody present may check'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "speak-first-c1",
+     "label": "Watch the market decide it trusts nobody",
+     "target": "end-lost-trust"
+    },
+    {
+     "id": "speak-first-c2",
+     "label": "Ask to keep the tally for the market",
+     "target": "end-tally-keeper"
+    },
+    {
+     "id": "speak-first-c3",
+     "label": "Ask them to honour both stars",
+     "target": "end-both-stars"
+    }
+   ]
+  },
+  {
+   "id": "end-posted-rate",
+   "body": "<<FILL role=ending words=110 beats='Idris chalks one line across the biggest board, six stamped equals five punched checked by the weighmaster, and every stall trades against it all day; by closing the two mintings are two shapes of the same money again'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-posted-rate",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Posted Rate"
+   }
+  },
+  {
+   "id": "end-walked-away",
+   "body": "<<FILL role=ending words=110 beats='Idris hands the tally book to Auntie Pell and goes home before anybody rules on anything; the drift is proved and nobody is fixing it, and the last day of the harvest swap-market trades on in two prices behind him'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-walked-away",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Idris Walks Away"
+   }
+  },
+  {
+   "id": "end-honest-scale",
+   "body": "<<FILL role=ending words=110 beats='The beam scale stays out on the weighbridge stone from that day on and any trader may ask for a weigh before taking brass; the drift stops within a week, because a scale in plain sight is harder to argue with than a rumour'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-honest-scale",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Honest Scale"
+   }
+  },
+  {
+   "id": "end-new-press",
+   "body": "<<FILL role=ending words=110 beats='A smith cuts a new punch pin, Fenn sets the old die on the bench, and the press stamps a clean bright token with a star punched right through it; Fenn lets Idris pull the lever for the first one and keeps that token on a nail above the bench'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-new-press",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Press Wakes Up"
+   }
+  },
+  {
+   "id": "end-lost-trust",
+   "body": "<<FILL role=ending words=110 beats='Everything Idris says is true and it changes nothing; Millgate stops believing in brass altogether and goes back to swapping goods for goods, which is slower and poorer, and Idris keeps a jar of tokens that nobody wants'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-lost-trust",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Nobody Trusts Brass"
+   }
+  },
+  {
+   "id": "end-idris-clerk",
+   "body": "<<FILL role=ending words=110 beats='Torren hands over the chest key in front of the guild and Idris becomes the youngest keeper the market has ever had; the first job is weighing the whole chest, and the second is teaching Mira the ring of each star'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-idris-clerk",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Idris Keeps the Chest"
+   }
+  },
+  {
+   "id": "end-millgate-standard",
+   "body": "<<FILL role=ending words=110 beats='The guild writes the Millgate standard into the rule book: one weight, one posted rate, and one chest weighed in public every harvest with the weighmaster watching; Idris is named in the margin as the person who counted'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-millgate-standard",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Millgate Standard"
+   }
+  },
+  {
+   "id": "end-tally-keeper",
+   "body": "<<FILL role=ending words=110 beats='Millgate makes Idris the keeper of the market tally, a real post with a shelf and a key, and the first entry is the four days of paired prices that started all of it; Mira signs beneath as the second pair of eyes'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-tally-keeper",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Tally Keeper"
+   }
+  },
+  {
+   "id": "end-both-stars",
+   "body": "<<FILL role=ending words=110 beats='The market keeps both mintings and a posted rate, and Millgate children learn the ring of each star before they learn the prices; nothing is undone, everything is written down, and the drift never gets to be a secret again'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-both-stars",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Both Stars Ring True"
+   }
+  }
+ ]
+}

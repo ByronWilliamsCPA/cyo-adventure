@@ -8,7 +8,7 @@ by getattr. An adapter that does not expose ``model`` therefore forwards
 the chunked path can never engage on that backend. That is not hypothetical:
 the OpenRouter adapter shipped without the property, a low-cap model was asked
 for 131,072 tokens one-shot, and the endpoint rejected the request outright
-(HTTP 400 in 0.6s, measured 2026-08-21; `AL-513`/`UW-C319`).
+(HTTP 400 in 0.6s, measured 2026-08-21; `AL-518`/`UW-C323`).
 
 This module pins the contract so the next adapter cannot reintroduce the
 blind spot.
@@ -21,7 +21,6 @@ import pytest
 from cyo_adventure.generation.metered import MeteredProvider
 from cyo_adventure.generation.providers.anthropic import AnthropicProvider
 from cyo_adventure.generation.providers.modal import ModalProvider
-from cyo_adventure.generation.providers.ollama import OllamaProvider
 from cyo_adventure.generation.providers.openrouter import OpenRouterProvider
 from cyo_adventure.generation.skeleton import MODEL_OUTPUT_CAPS, resolve_output_cap
 from cyo_adventure.generation.usage import UsageLedger
@@ -47,11 +46,6 @@ def _adapters() -> list[object]:
             base_url="https://anthropic.invalid",
             timeout_seconds=1,
         ),
-        OllamaProvider(
-            model=_MODEL,
-            base_url="https://ollama.invalid",
-            timeout_seconds=1,
-        ),
         ModalProvider(
             base_url="https://modal.invalid",
             model=_MODEL,
@@ -68,7 +62,7 @@ def test_every_provider_adapter_exposes_its_model() -> None:
         assert getattr(adapter, "model", None) == _MODEL, (
             f"{type(adapter).__name__} does not expose .model; cap resolution "
             "falls back to the permissive default and the chunked path can "
-            "never engage on this backend (AL-513/UW-C319)"
+            "never engage on this backend (AL-518/UW-C323)"
         )
 
 

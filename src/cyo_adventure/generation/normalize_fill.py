@@ -6,7 +6,7 @@ fill contract's freeze by function: machine-critical fields are frozen and the
 pipeline stops depending on model obedience for them, while theme-bearing text
 is writable. Measured motivation: across 16 committed one-shot fills, 4 mutated
 a frozen field and 15 drifted an ambiguous one, and every frozen mutation was a
-retheme of documentation text the freeze happened to cover (`AL-510`).
+retheme of documentation text the freeze happened to cover (`AL-515`).
 
 The normalizer is the inverse of ``check_fill_integrity``'s leaf stripping:
 the result STARTS from the skeleton and overlays exactly the writable leaf
@@ -24,7 +24,7 @@ name/type/bounds/initial, and ``metadata``) comes from the skeleton by
 construction, so model drift on a frozen field becomes a non-event rather than
 a shipped defect or a burned repair cycle. ``metadata`` currently includes
 ``themes``; the ruling wants themes re-derived at import rather than kept
-stale, and that deriver is separate scheduled work (`UW-C317`), so until it
+stale, and that deriver is separate scheduled work (`UW-C321`), so until it
 lands the skeleton's themes are what ship.
 
 How the fill is matched to the skeleton, exactly
@@ -56,7 +56,7 @@ skeleton's graph would fabricate a book, and the gate owns that verdict.
 Variables have no ``id``; their identity key is ``name``. They are matched by
 name when both sides carry the same unique name set, so a reordered fill keeps
 each description with its own variable. When the names disagree they fall back
-to position, because a RENAMED variable (the measured `AL-510` case, where the
+to position, because a RENAMED variable (the measured `AL-515` case, where the
 fill rethemes a variable's name and its description together) can only be
 recognised by where it sits, and refusing to normalize a whole book over a
 themed rename would defeat the purpose of the freeze split. A description
@@ -369,7 +369,7 @@ def _paired_variables(
     # identity key. When both sides carry the same unique name set the pairing
     # is by name, which keeps a reordered fill's description with its own
     # variable. When the names disagree the only remaining signal is position,
-    # and a themed RENAME (the measured `AL-510` case) is exactly that
+    # and a themed RENAME (the measured `AL-515` case) is exactly that
     # situation; the positional fallback is what preserves description
     # retheming instead of discarding the whole normalization over it. A
     # rename that ALSO reorders would mis-bind a description, which is

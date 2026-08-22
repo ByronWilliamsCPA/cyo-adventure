@@ -224,7 +224,7 @@ class BookRecord:
             read this without ``fill_rate`` beside it: the 2026-08-21 grid
             measured a thin book conforming BECAUSE it was thin and a full
             book out of band, so either number alone misleads
-            (`AL-491`/`AL-511`/`UW-C308`).
+            (`AL-491`/`AL-516`/`UW-C308`).
         fill_rate: The production ``story_fill_rate`` (per-node delivery capped
             at each node's commissioned ``words=`` target, so one node's
             surplus cannot mask another's shortfall), or ``None`` when the

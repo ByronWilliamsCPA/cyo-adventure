@@ -1,0 +1,484 @@
+{
+ "schema_version": "2.0",
+ "id": "kite-for-the-spring-festival",
+ "version": 1,
+ "title": "The Kite for the Spring Festival",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "family bonding",
+   "perseverance",
+   "problem-solving",
+   "spring festival"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 9,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=20 beats='Tomas and Grandma Rosa decide to build a kite together for the spring festival just three days away.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-start-1",
+     "label": "Pick a kite design to build",
+     "target": "choose-design"
+    }
+   ]
+  },
+  {
+   "id": "choose-design",
+   "body": "<<FILL role=decision words=45 beats='Grandma Rosa spreads three old patterns on the table, a box kite, a diamond kite, and a delta kite, and asks Tomas which to build and test first.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-choose-1",
+     "label": "Build and test the box kite",
+     "target": "box-test"
+    },
+    {
+     "id": "ch-choose-2",
+     "label": "Build and test the diamond kite",
+     "target": "diamond-test"
+    },
+    {
+     "id": "ch-choose-3",
+     "label": "Build and test the delta kite",
+     "target": "delta-test"
+    }
+   ]
+  },
+  {
+   "id": "box-test",
+   "body": "<<FILL role=decision words=55 beats='Tomas and Grandma Rosa finish the red box kite and carry it to the test hill, where the wind keeps doing something different every few minutes.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-boxtest-1",
+     "label": "It climbs steady and strong",
+     "target": "box-path"
+    },
+    {
+     "id": "ch-boxtest-2",
+     "label": "A sudden gust flips it sideways",
+     "target": "box-fix"
+    },
+    {
+     "id": "ch-boxtest-3",
+     "label": "The paper tears clean through the corner",
+     "target": "ending-watch"
+    }
+   ]
+  },
+  {
+   "id": "box-path",
+   "body": "<<FILL role=decision words=45 beats='The box kite climbs steadily above the test hill, and Tomas grins as the string tugs gently in his hand.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-boxpath-1",
+     "label": "Try a victory loop right here",
+     "target": "ending-trick-show"
+    },
+    {
+     "id": "ch-boxpath-2",
+     "label": "Carry it straight to the festival",
+     "target": "box-launch"
+    }
+   ]
+  },
+  {
+   "id": "box-launch",
+   "body": "<<FILL role=decision words=45 beats='At the festival grounds Grandma Rosa points toward windy Lantern Hill on one side and the crowded festival field on the other.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-boxlaunch-1",
+     "label": "Launch from Lantern Hill",
+     "target": "ending-hill-box"
+    },
+    {
+     "id": "ch-boxlaunch-2",
+     "label": "Launch from the festival field",
+     "target": "ending-field-box"
+    }
+   ]
+  },
+  {
+   "id": "box-fix",
+   "body": "<<FILL role=decision words=45 beats='The gust knocks the box kite flat in the grass, and Grandma Rosa asks Tomas how he would like to keep going.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-boxfix-1",
+     "label": "Try again right away",
+     "target": "box-retry"
+    },
+    {
+     "id": "ch-boxfix-2",
+     "label": "Ask Grandma Rosa to just watch instead",
+     "target": "ending-watch"
+    }
+   ]
+  },
+  {
+   "id": "box-retry",
+   "body": "<<FILL role=decision words=45 beats='Tomas steadies the frame and gives the box kite one more careful toss into the wind.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-boxretry-1",
+     "label": "It finally catches and climbs",
+     "target": "ending-quick-fix"
+    },
+    {
+     "id": "ch-boxretry-2",
+     "label": "It tumbles again, no matter what",
+     "target": "box-watch-transition"
+    }
+   ]
+  },
+  {
+   "id": "box-watch-transition",
+   "body": "<<FILL role=transition words=20 beats='They set the box kite aside on the grass and walk together toward the festival grounds without it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-boxwatch-1",
+     "label": "Find a spot to watch other kites",
+     "target": "ending-watch"
+    }
+   ]
+  },
+  {
+   "id": "diamond-test",
+   "body": "<<FILL role=decision words=55 beats='Grandma Rosa and Tomas finish the blue diamond kite and carry it to the test hill, watching the wind shift again and again.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-diatest-1",
+     "label": "It climbs steady and strong",
+     "target": "diamond-path"
+    },
+    {
+     "id": "ch-diatest-2",
+     "label": "The wind suddenly dies down",
+     "target": "diamond-fix"
+    },
+    {
+     "id": "ch-diatest-3",
+     "label": "The string tangles into a stubborn knot",
+     "target": "ending-watch"
+    }
+   ]
+  },
+  {
+   "id": "diamond-path",
+   "body": "<<FILL role=decision words=45 beats='The diamond kite climbs steadily above the test hill, dipping and swooping in slow lazy circles.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-diapath-1",
+     "label": "Try a victory loop right here",
+     "target": "ending-trick-show"
+    },
+    {
+     "id": "ch-diapath-2",
+     "label": "Carry it straight to the festival",
+     "target": "diamond-launch"
+    }
+   ]
+  },
+  {
+   "id": "diamond-launch",
+   "body": "<<FILL role=decision words=45 beats='At the festival grounds Grandma Rosa points toward windy Lantern Hill on one side and the crowded festival field on the other.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-dialaunch-1",
+     "label": "Launch from Lantern Hill",
+     "target": "ending-hill-diamond"
+    },
+    {
+     "id": "ch-dialaunch-2",
+     "label": "Launch from the festival field",
+     "target": "ending-field-diamond"
+    }
+   ]
+  },
+  {
+   "id": "diamond-fix",
+   "body": "<<FILL role=decision words=45 beats='The wind on the hill dies down completely, and Grandma Rosa asks Tomas how he would like to keep going.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-diafix-1",
+     "label": "Wait and try again right away",
+     "target": "diamond-retry"
+    },
+    {
+     "id": "ch-diafix-2",
+     "label": "Ask Grandma Rosa to just watch instead",
+     "target": "ending-watch"
+    }
+   ]
+  },
+  {
+   "id": "diamond-retry",
+   "body": "<<FILL role=decision words=45 beats='Tomas holds the diamond kite steady and waits for one more careful gust to try again.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-diaretry-1",
+     "label": "A fresh gust finally lifts it",
+     "target": "ending-quick-fix"
+    },
+    {
+     "id": "ch-diaretry-2",
+     "label": "The wind stays calm, no matter what",
+     "target": "diamond-watch-transition"
+    }
+   ]
+  },
+  {
+   "id": "diamond-watch-transition",
+   "body": "<<FILL role=transition words=20 beats='They set the diamond kite aside on the grass and walk together toward the festival grounds without it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-diawatch-1",
+     "label": "Find a spot to watch other kites",
+     "target": "ending-watch"
+    }
+   ]
+  },
+  {
+   "id": "delta-test",
+   "body": "<<FILL role=decision words=55 beats='Tomas and Grandma Rosa finish the yellow delta kite and carry it to the test hill, where the wind cannot seem to make up its mind.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-deltest-1",
+     "label": "It climbs steady and strong",
+     "target": "delta-path"
+    },
+    {
+     "id": "ch-deltest-2",
+     "label": "The wind swirls it in dizzy circles",
+     "target": "delta-fix"
+    },
+    {
+     "id": "ch-deltest-3",
+     "label": "One strut bends and will not straighten",
+     "target": "ending-watch"
+    }
+   ]
+  },
+  {
+   "id": "delta-path",
+   "body": "<<FILL role=decision words=45 beats='The delta kite climbs steadily above the test hill, gliding smooth and fast in one long arc.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-deltpath-1",
+     "label": "Try a victory loop right here",
+     "target": "ending-trick-show"
+    },
+    {
+     "id": "ch-deltpath-2",
+     "label": "Carry it straight to the festival",
+     "target": "delta-launch"
+    }
+   ]
+  },
+  {
+   "id": "delta-launch",
+   "body": "<<FILL role=decision words=45 beats='At the festival grounds Grandma Rosa points toward windy Lantern Hill on one side and the crowded festival field on the other.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-deltlaunch-1",
+     "label": "Launch from Lantern Hill",
+     "target": "ending-hill-delta"
+    },
+    {
+     "id": "ch-deltlaunch-2",
+     "label": "Launch from the festival field",
+     "target": "ending-field-delta"
+    }
+   ]
+  },
+  {
+   "id": "delta-fix",
+   "body": "<<FILL role=decision words=45 beats='The wind on the hill swirls the delta kite in dizzy circles, and Grandma Rosa asks Tomas how he would like to keep going.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-deltfix-1",
+     "label": "Try again right away",
+     "target": "delta-retry"
+    },
+    {
+     "id": "ch-deltfix-2",
+     "label": "Ask Grandma Rosa to just watch instead",
+     "target": "ending-watch"
+    }
+   ]
+  },
+  {
+   "id": "delta-retry",
+   "body": "<<FILL role=decision words=45 beats='Tomas angles the delta kite carefully and gives it one more careful toss into the swirling wind.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-deltretry-1",
+     "label": "It finally steadies and climbs",
+     "target": "ending-quick-fix"
+    },
+    {
+     "id": "ch-deltretry-2",
+     "label": "It spins again, no matter what",
+     "target": "delta-watch-transition"
+    }
+   ]
+  },
+  {
+   "id": "delta-watch-transition",
+   "body": "<<FILL role=transition words=20 beats='They set the delta kite aside on the grass and walk together toward the festival grounds without it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch-deltwatch-1",
+     "label": "Find a spot to watch other kites",
+     "target": "ending-watch"
+    }
+   ]
+  },
+  {
+   "id": "ending-watch",
+   "body": "<<FILL role=ending words=45 beats='Without a kite to fly, Tomas and Grandma Rosa spread a blanket at the festival and spend the afternoon happily watching all the other kites drift overhead together.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-watch",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Watching Together"
+   }
+  },
+  {
+   "id": "ending-trick-show",
+   "body": "<<FILL role=ending words=45 beats='Right there on the test hill Tomas sends the kite into one perfect looping trick, and Grandma Rosa laughs and claps so hard that a few neighbors wander over to watch too.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-trick-show",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Small but Mighty"
+   }
+  },
+  {
+   "id": "ending-quick-fix",
+   "body": "<<FILL role=ending words=45 beats='After one more careful try the kite finally catches the wind and climbs steady and true, and Tomas beams with pride at fixing the problem all on his own.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-quick-fix",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Quick Fix"
+   }
+  },
+  {
+   "id": "ending-hill-box",
+   "body": "<<FILL role=ending words=45 beats='On Lantern Hill the red box kite catches a strong, steady wind and soars high above the crowd while everyone below points and cheers.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-hill-box",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Flying Over Lantern Hill"
+   }
+  },
+  {
+   "id": "ending-field-box",
+   "body": "<<FILL role=ending words=45 beats='Down in the crowded festival field the red box kite dips between the food stalls and the flagpole, drawing laughs and applause from everyone nearby.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-field-box",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Dipping Through the Stalls"
+   }
+  },
+  {
+   "id": "ending-hill-diamond",
+   "body": "<<FILL role=ending words=45 beats='On Lantern Hill the blue diamond kite catches a strong, steady wind and dances high above the crowd in slow lazy circles.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-hill-diamond",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Dancing Above the Hill"
+   }
+  },
+  {
+   "id": "ending-field-diamond",
+   "body": "<<FILL role=ending words=45 beats='Down in the crowded festival field the blue diamond kite dips between the food stalls and the flagpole, drawing laughs and applause from everyone nearby.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-field-diamond",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Circling the Stalls"
+   }
+  },
+  {
+   "id": "ending-hill-delta",
+   "body": "<<FILL role=ending words=45 beats='On Lantern Hill the yellow delta kite catches a strong, steady wind and glides high above the crowd in one long, graceful arc.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-hill-delta",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Gliding Over the Hill"
+   }
+  },
+  {
+   "id": "ending-field-delta",
+   "body": "<<FILL role=ending words=45 beats='Down in the crowded festival field the yellow delta kite dips between the food stalls and the flagpole, drawing laughs and applause from everyone nearby.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-field-delta",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Skimming the Stalls"
+   }
+  }
+ ]
+}

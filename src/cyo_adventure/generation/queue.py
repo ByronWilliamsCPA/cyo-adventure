@@ -127,7 +127,7 @@ def enqueue_generation(
     """
     queue = get_queue(settings)
     # #CRITICAL: timing: RQ's default job_timeout (180s) is far shorter than a
-    # live Ollama generation run; every enqueue call must set job_timeout
+    # live multi-stage generation run; every enqueue call must set job_timeout
     # explicitly (see Settings.generation_job_timeout_seconds) so RQ's SIGALRM
     # never kills a still-healthy job mid-run.
     # #VERIFY: test_enqueue_generation_passes_job_timeout asserts the kwarg

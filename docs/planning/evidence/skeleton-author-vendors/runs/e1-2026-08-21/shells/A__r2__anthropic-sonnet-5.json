@@ -1,0 +1,516 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-and-the-changing-wind-kite",
+ "version": 1,
+ "title": "Tomas and the Kite for the Spring Festival",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "family teamwork",
+   "perseverance",
+   "creativity",
+   "celebration"
+  ],
+  "estimated_minutes": 4,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=65 beats='Tomas and Grandma Rosa spread fabric sticks and string across the porch the day before the spring festival; the wind outside keeps shifting from calm to gusty; they must choose which kite shape to build first: a sturdy diamond a wide box or a swooping delta'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Build a diamond kite",
+     "target": "diamond_intro"
+    },
+    {
+     "id": "c2",
+     "label": "Build a box kite",
+     "target": "box_intro"
+    },
+    {
+     "id": "c3",
+     "label": "Build a delta kite",
+     "target": "delta_intro"
+    }
+   ]
+  },
+  {
+   "id": "diamond_intro",
+   "body": "<<FILL role=decision words=55 beats='Tomas and Grandma Rosa cross two wooden sticks and stretch red fabric tight to finish the diamond kite; they carry it out to the meadow where the wind keeps changing; they must pick a wind to test it in'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Test it in the calm morning breeze",
+     "target": "diamond_calm"
+    },
+    {
+     "id": "c2",
+     "label": "Test it in the gusty afternoon wind",
+     "target": "diamond_gusty"
+    }
+   ]
+  },
+  {
+   "id": "box_intro",
+   "body": "<<FILL role=decision words=55 beats='Tomas and Grandma Rosa fold blue paper into a cube shape and glue the corners to finish the box kite; they walk it to the open meadow where the breeze keeps shifting; they must choose which wind to test it in'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Test it in the calm morning breeze",
+     "target": "box_calm"
+    },
+    {
+     "id": "c2",
+     "label": "Test it in the gusty afternoon wind",
+     "target": "box_gusty"
+    }
+   ]
+  },
+  {
+   "id": "delta_intro",
+   "body": "<<FILL role=decision words=55 beats='Tomas and Grandma Rosa shape a yellow triangle frame and tie a long ribbon tail to finish the delta kite; they bring it to the meadow where the wind never stays the same; they must decide which wind to test it in'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Test it in the calm morning breeze",
+     "target": "delta_calm"
+    },
+    {
+     "id": "c2",
+     "label": "Test it in the gusty afternoon wind",
+     "target": "delta_gusty"
+    }
+   ]
+  },
+  {
+   "id": "diamond_calm",
+   "body": "<<FILL role=decision words=55 beats='In the calm morning breeze the diamond kite barely lifts off the grass and hovers low near the ground; Tomas must decide how to give it more lift'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Wait patiently for more wind",
+     "target": "diamond_wait"
+    },
+    {
+     "id": "c2",
+     "label": "Run across the field to make your own wind",
+     "target": "diamond_run"
+    }
+   ]
+  },
+  {
+   "id": "diamond_gusty",
+   "body": "<<FILL role=explore words=30 beats='A sudden gust yanks the string hard and the diamond kite spins and dives wildly while Tomas and Grandma Rosa hold on tight and laugh'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "See how the diamond kite settles",
+     "target": "diamond_result"
+    }
+   ]
+  },
+  {
+   "id": "box_calm",
+   "body": "<<FILL role=explore words=30 beats='In the calm breeze the box kite drifts lazily sideways since its wide shape barely catches any wind at all'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "See how the box kite settles",
+     "target": "box_result"
+    }
+   ]
+  },
+  {
+   "id": "box_gusty",
+   "body": "<<FILL role=decision words=55 beats='A strong gust bends one corner of the box kite and the frame flaps loudly while the kite twists in the sky; Tomas must decide what to do'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Hold on tight and let it fly through the gust",
+     "target": "box_ride_through"
+    },
+    {
+     "id": "c2",
+     "label": "Bring it down quickly to check for damage",
+     "target": "box_check_damage"
+    }
+   ]
+  },
+  {
+   "id": "delta_calm",
+   "body": "<<FILL role=explore words=30 beats='In the calm breeze the delta kite glides smoothly in wide swooping curves that feel almost magical to watch'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "See how the delta kite settles",
+     "target": "delta_result"
+    }
+   ]
+  },
+  {
+   "id": "delta_gusty",
+   "body": "<<FILL role=decision words=55 beats='A sharp gust nearly tears the ribbon tail off the delta kite and it wobbles dangerously above the tall oak tree at the edge of the meadow; Tomas must decide how to save the ribbon'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Climb up carefully to untangle the ribbon",
+     "target": "delta_rescue_climb"
+    },
+    {
+     "id": "c2",
+     "label": "Ask Grandma Rosa for the long bamboo pole",
+     "target": "delta_rescue_pole"
+    }
+   ]
+  },
+  {
+   "id": "diamond_wait",
+   "body": "<<FILL role=explore words=30 beats='Tomas and Grandma Rosa sit patiently on the grass and soon a small new breeze lifts the diamond kite steadily into the sky'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Get ready for the festival",
+     "target": "diamond_result"
+    }
+   ]
+  },
+  {
+   "id": "diamond_run",
+   "body": "<<FILL role=climax words=30 beats='Tomas dashes across the meadow with the string in hand and the diamond kite suddenly leaps up and dances behind him in the wind he created'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "See what happens next",
+     "target": "ending_runners_kite"
+    }
+   ]
+  },
+  {
+   "id": "box_ride_through",
+   "body": "<<FILL role=explore words=30 beats='Tomas grips the string firmly and the box kite twists through the gust then steadies out flying strong and proud despite its bent corner'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Get ready for the festival",
+     "target": "box_result"
+    }
+   ]
+  },
+  {
+   "id": "box_check_damage",
+   "body": "<<FILL role=climax words=30 beats='Tomas and Grandma Rosa bring the kite down and inspect the bent corner closely finding it is only slightly bent and easy to fix later'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "See what happens next",
+     "target": "ending_careful_keeper"
+    }
+   ]
+  },
+  {
+   "id": "delta_rescue_climb",
+   "body": "<<FILL role=climax words=30 beats='Tomas climbs the low oak branch carefully and unhooks the ribbon tail himself while Grandma Rosa cheers proudly from below'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "See what happens next",
+     "target": "ending_ribbon_rescue"
+    }
+   ]
+  },
+  {
+   "id": "delta_rescue_pole",
+   "body": "<<FILL role=explore words=30 beats='Grandma Rosa stretches the long bamboo pole up to the branch and gently frees the ribbon tail so the delta kite can fly again'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Get ready for the festival",
+     "target": "delta_result"
+    }
+   ]
+  },
+  {
+   "id": "diamond_result",
+   "body": "<<FILL role=explore words=35 beats='Back home Tomas and Grandma Rosa reinforce the crossed sticks with extra tape and the diamond kite is ready for the festival morning'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Head to the festival",
+     "target": "festival_day"
+    }
+   ]
+  },
+  {
+   "id": "box_result",
+   "body": "<<FILL role=explore words=35 beats='Back home they patch the bent corner with a small bamboo splint and the box kite stands steady and ready for tomorrow festival'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Head to the festival",
+     "target": "festival_day"
+    }
+   ]
+  },
+  {
+   "id": "delta_result",
+   "body": "<<FILL role=explore words=35 beats='Back home they retie the ribbon tail securely and the delta kite glides true again ready for the festival'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Head to the festival",
+     "target": "festival_day"
+    }
+   ]
+  },
+  {
+   "id": "festival_day",
+   "body": "<<FILL role=decision words=65 beats='Sunny festival morning arrives with colorful kites filling the sky the judges tent set up near the field and their friend Mia struggling nearby with a tangled kite string; Tomas must choose what to do first'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Enter the flying contest",
+     "target": "contest_flight"
+    },
+    {
+     "id": "c2",
+     "label": "Help Mia fix her tangled kite",
+     "target": "help_friend"
+    },
+    {
+     "id": "c3",
+     "label": "Enter the decorating contest",
+     "target": "decorating_contest"
+    }
+   ]
+  },
+  {
+   "id": "contest_flight",
+   "body": "<<FILL role=decision words=50 beats='At the judges tent Tomas must decide how to impress the judges with his kite'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Fly as high as you can for the judges",
+     "target": "fly_high"
+    },
+    {
+     "id": "c2",
+     "label": "Show off looping tricks in the sky",
+     "target": "fly_tricks"
+    }
+   ]
+  },
+  {
+   "id": "help_friend",
+   "body": "<<FILL role=explore words=30 beats='Tomas and Grandma Rosa gently untangle the string from a branch and patch a torn corner on Mia kite until it lifts off happily again'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Watch Mia kite soar",
+     "target": "ending_new_friend"
+    }
+   ]
+  },
+  {
+   "id": "decorating_contest",
+   "body": "<<FILL role=decision words=50 beats='At the decorating booth full of paints and brushes Tomas must decide how to decorate his kite'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Paint careful swirling patterns",
+     "target": "decorate_careful"
+    },
+    {
+     "id": "c2",
+     "label": "Paint quick bold stripes",
+     "target": "decorate_quick"
+    }
+   ]
+  },
+  {
+   "id": "fly_high",
+   "body": "<<FILL role=climax words=30 beats='Tomas lets out more string and the kite climbs higher than every other kite in the sky while the crowd gasps and points upward'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "See if you win",
+     "target": "ending_best_flyer"
+    }
+   ]
+  },
+  {
+   "id": "fly_tricks",
+   "body": "<<FILL role=climax words=30 beats='Tomas dips and swoops the kite in playful loops while the crowd laughs and claps at every clever turn'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "See what the judges think",
+     "target": "ending_trick_star"
+    }
+   ]
+  },
+  {
+   "id": "decorate_careful",
+   "body": "<<FILL role=climax words=30 beats='Tomas paints slow careful spirals and stars with Grandma Rosa guiding his hand and the judges lean in admiring the fine detail'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "See the results",
+     "target": "ending_prettiest"
+    }
+   ]
+  },
+  {
+   "id": "decorate_quick",
+   "body": "<<FILL role=climax words=30 beats='Tomas paints bold bright stripes quickly and the kite looks cheerful and fun bouncing with color in the sunlight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "See the results",
+     "target": "ending_colorful"
+    }
+   ]
+  },
+  {
+   "id": "ending_runners_kite",
+   "body": "<<FILL role=ending words=35 beats='Tomas keeps running until the diamond kite catches a real gust and soars on its own while the whole meadow claps for his clever trick'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "runners_kite",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Wind You Make Yourself"
+   }
+  },
+  {
+   "id": "ending_careful_keeper",
+   "body": "<<FILL role=ending words=35 beats='They spend the rest of the afternoon fixing the small bend at home and though they miss the contest deadline they still enjoy watching the festival kites together'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "careful_keeper",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "A Careful Kind of Day"
+   }
+  },
+  {
+   "id": "ending_ribbon_rescue",
+   "body": "<<FILL role=ending words=35 beats='With the ribbon saved the delta kite flies steady for the rest of the day and Tomas feels proud for climbing up to rescue it himself'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ribbon_rescue",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Ribbon Rescue"
+   }
+  },
+  {
+   "id": "ending_new_friend",
+   "body": "<<FILL role=ending words=35 beats='Mia thanks Tomas and Grandma Rosa with a big smile and the three of them fly their kites side by side for the rest of the festival'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "new_friend",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "A New Kite Friend"
+   }
+  },
+  {
+   "id": "ending_best_flyer",
+   "body": "<<FILL role=ending words=35 beats='The judges announce Tomas kite flew the highest of the whole festival and hand him a shining paper ribbon for Best Flyer'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "best_flyer",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Best Flyer Award"
+   }
+  },
+  {
+   "id": "ending_trick_star",
+   "body": "<<FILL role=ending words=35 beats='The judges award Tomas a bright badge for the most creative flying they have ever seen at the festival'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "trick_star",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Kite Trick Champion"
+   }
+  },
+  {
+   "id": "ending_prettiest",
+   "body": "<<FILL role=ending words=35 beats='The judges choose the swirling stars and spirals as the prettiest design and Tomas proudly holds up his new ribbon'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "prettiest",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Prettiest Kite Prize"
+   }
+  },
+  {
+   "id": "ending_colorful",
+   "body": "<<FILL role=ending words=35 beats='The crowd votes the bold bright stripes their favorite kite of the day and everyone cheers as Tomas waves it high'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "colorful",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Crowd Favorite Colors"
+   }
+  }
+ ]
+}

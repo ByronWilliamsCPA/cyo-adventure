@@ -1,0 +1,290 @@
+{
+ "schema_version": "2.0",
+ "id": "priya-s-boot-quest",
+ "version": 1,
+ "title": "The Lost Boot",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "open_map",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 3.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "snow",
+   "family",
+   "problem solving",
+   "outdoor adventure",
+   "perseverance"
+  ],
+  "estimated_minutes": 4,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "opening",
+ "nodes": [
+  {
+   "id": "opening",
+   "body": "<<FILL role=setup words=70 beats='At the bottom of the sled run, Ravi says his boot is missing. Snow is deep. They must find it before walking home. Priya looks around, thinking where to start.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_op_next",
+     "label": "Keep looking",
+     "target": "transition_decision"
+    }
+   ]
+  },
+  {
+   "id": "transition_decision",
+   "body": "<<FILL role=transition words=60 beats='Priya turns to Ravi, then scans the hill and the path. She knows she needs a plan.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_tr_go",
+     "label": "Choose a place to search",
+     "target": "first_decision"
+    }
+   ]
+  },
+  {
+   "id": "first_decision",
+   "body": "<<FILL role=decision words=70 beats='Where should Priya look first? The hilltop, the sled path, or ask Ravi for a clue?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fd_hill",
+     "label": "Search the hilltop",
+     "target": "hill_opts"
+    },
+    {
+     "id": "c_fd_path",
+     "label": "Search the sled path",
+     "target": "path_opts"
+    },
+    {
+     "id": "c_fd_ask",
+     "label": "Ask Ravi for a clue",
+     "target": "ask_opts"
+    }
+   ]
+  },
+  {
+   "id": "hill_opts",
+   "body": "<<FILL role=decision words=70 beats='Priya climbs the hill. She sees a large rock and a fence. Which hiding spot should she check first?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ho_rock",
+     "label": "Look by the rock",
+     "target": "rock_climax"
+    },
+    {
+     "id": "c_ho_fence",
+     "label": "Look by the fence",
+     "target": "fence_climax"
+    }
+   ]
+  },
+  {
+   "id": "rock_climax",
+   "body": "<<FILL role=climax words=70 beats='Priya brushes snow from the rock. A muddy boot appears! She can take it or check the fence.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_rc_take",
+     "label": "Take the rock boot",
+     "target": "ending_hill"
+    },
+    {
+     "id": "c_rc_fence",
+     "label": "Check the fence instead",
+     "target": "fence_climax"
+    }
+   ]
+  },
+  {
+   "id": "fence_climax",
+   "body": "<<FILL role=climax words=70 beats='At the fence, a boot hangs from a nail. Priya can free it or go back to the rock.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fc_take",
+     "label": "Take the fence boot",
+     "target": "ending_fence"
+    },
+    {
+     "id": "c_fc_rock",
+     "label": "Go back to the rock",
+     "target": "rock_climax"
+    }
+   ]
+  },
+  {
+   "id": "path_opts",
+   "body": "<<FILL role=decision words=70 beats='On the sled path, Priya spots a glint in the snow and a set of footprints. Which clue should she follow?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_po_glint",
+     "label": "Investigate the glint",
+     "target": "glint_climax"
+    },
+    {
+     "id": "c_po_foot",
+     "label": "Follow the footprints",
+     "target": "foot_climax"
+    }
+   ]
+  },
+  {
+   "id": "glint_climax",
+   "body": "<<FILL role=climax words=70 beats='The glint is a piece of foil, but nearby a boot floats in the creek. Priya pulls it out. It is wet and cold. She can keep it or leave it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_gc_take",
+     "label": "Take the wet boot",
+     "target": "ending_wet"
+    },
+    {
+     "id": "c_gc_leave",
+     "label": "Leave it and take a different boot",
+     "target": "ending_wrong"
+    }
+   ]
+  },
+  {
+   "id": "foot_climax",
+   "body": "<<FILL role=climax words=70 beats='The footprints lead to a snow drift and a small shed. Priya finds a boot in each: one new, one old. Which will she bring to Ravi?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_fc_drift",
+     "label": "Take the boot from the drift",
+     "target": "ending_drift"
+    },
+    {
+     "id": "c_fc_shed",
+     "label": "Take the boot from the shed",
+     "target": "ending_shed"
+    }
+   ]
+  },
+  {
+   "id": "ask_opts",
+   "body": "<<FILL role=decision words=70 beats='Ravi remembers playing near the barn and the rabbit hole. Priya heads out and finds a boot at each spot. One is clean, one is cozy. Which will she choose?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c_ao_barn",
+     "label": "Take the barn boot",
+     "target": "ending_barn"
+    },
+    {
+     "id": "c_ao_rabbit",
+     "label": "Take the rabbit hole boot",
+     "target": "ending_rabbit"
+    }
+   ]
+  },
+  {
+   "id": "ending_hill",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=65 beats='Priya returns with the rock boot. Ravi is delighted. They walk home laughing through the snow.'>>",
+   "ending": {
+    "id": "end_hill",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Rock Boot"
+   }
+  },
+  {
+   "id": "ending_fence",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=65 beats='The fence boot fits perfectly. Ravi thanks his sister with a big grin.'>>",
+   "ending": {
+    "id": "end_fence",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Fence Find"
+   }
+  },
+  {
+   "id": "ending_wet",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=62 beats='The wet boot is cold but wearable. They hurry home to warm up.'>>",
+   "ending": {
+    "id": "end_wet",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Wet Boot"
+   }
+  },
+  {
+   "id": "ending_drift",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=60 beats='Perfect boot from the drift! Ravi puts it on and jumps for joy.'>>",
+   "ending": {
+    "id": "end_drift",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Drift Find"
+   }
+  },
+  {
+   "id": "ending_shed",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=63 beats='The old shed boot is scuffed but fits. Good enough for the walk home.'>>",
+   "ending": {
+    "id": "end_shed",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Shed Spare"
+   }
+  },
+  {
+   "id": "ending_barn",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=65 beats='The barn boot is clean and warm. Ravi gives Priya a grateful hug.'>>",
+   "ending": {
+    "id": "end_barn",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Barn Find"
+   }
+  },
+  {
+   "id": "ending_rabbit",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=65 beats='The rabbit hole yields a cozy boot. They walk home under falling snow, happy.'>>",
+   "ending": {
+    "id": "end_rabbit",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Rabbit Hollow"
+   }
+  },
+  {
+   "id": "ending_wrong",
+   "is_ending": true,
+   "body": "<<FILL role=ending words=65 beats='Priya picks the wrong boot. Ravi is sad. They will search again tomorrow.'>>",
+   "ending": {
+    "id": "end_wrong",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Wrong Boot"
+   }
+  }
+ ]
+}

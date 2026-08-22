@@ -184,7 +184,7 @@ tied to one child.
 ### 4. Admin processing (per-request provider and model)
 
 - The authoring-plan step is the explicit processing gate for every request.
-- It gains `provider` (anthropic / openrouter / modal / ollama) and `model`,
+- It gains `provider` (anthropic / openrouter / modal) and `model`,
   validated against a server-side allowlist (no free-string model IDs
   reaching billing).
 - `build_provider()` becomes a per-job factory taking these overrides and

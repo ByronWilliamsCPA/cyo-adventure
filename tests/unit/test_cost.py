@@ -22,6 +22,10 @@ from cyo_adventure.generation.usage import TokenUsage
 # why two tests below now build their own half-priced fixture instead.
 _HAIKU = ("openrouter", "anthropic/claude-haiku-4.5")  # $1 in / $5 out per Mtok
 _SONNET = ("openrouter", "anthropic/claude-sonnet-4.6")  # $3 in / $15 out
+# Ollama is a RETIRED backend whose price entry is deliberately retained so
+# pre-retirement rows stay costable (see the note in core/pricing.py). It is
+# still the only fully-priced-at-zero pair, which is exactly what this
+# fixture needs: a real table entry that contributes nothing to a total.
 _FREE = ("ollama", "qwen2.5:14b")  # fully priced at zero
 _UNPRICED = ("acme", "acme-1")  # absent from the table entirely
 

@@ -395,7 +395,7 @@ def test_density_ceiling_without_a_band_keeps_the_flat_prose_value() -> None:
 
 
 # ADR-011 section 5's endings column, transcribed row by row as amended
-# 2026-08-22 (section 11 item 4, the `UW-C323` audit). The gamebook rows state
+# 2026-08-22 (section 11 item 4, the `UW-C327` audit). The gamebook rows state
 # "many fails" and give no numbers, so they are absent here exactly as they are
 # absent from `_CELL_ENDING_BOUNDS`. The doc is the authority; this map exists
 # so a constant that drifts from it fails a test instead of shipping.

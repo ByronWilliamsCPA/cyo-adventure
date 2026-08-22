@@ -1,0 +1,32 @@
+{
+ "leg": "deepseek-v4-flash",
+ "family": "deepseek",
+ "cell_id": "B",
+ "band": "8-11",
+ "length": "short",
+ "style": "prose",
+ "replicate": 1,
+ "premise": "The town's old carousel breaks a week before the fete, and Nell, the mechanic's apprentice, thinks she can fix it if she can find the missing part.",
+ "attempts": 1,
+ "repair_rounds": 0,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 1,
+ "findings_lines_per_round": [
+  1
+ ],
+ "graph_check_exit": null,
+ "latency_s": 167.91,
+ "input_tokens": 2204,
+ "output_tokens": 20152,
+ "reasoning_tokens": 6789,
+ "finish_reasons": [
+  "stop"
+ ],
+ "min_catalog_distance": null,
+ "mean_catalog_distance": null,
+ "catalog_distance_note": "",
+ "last_feedback": "(no skeleton to check) output was not valid JSON: Invalid \\escape: line 37 column 68 (char 821)",
+ "shell_file": "shells/B__r1__deepseek-v4-flash.json",
+ "error": "ProviderError: openrouter returned leg-fatal HTTP 402 (authentication or credit failure)"
+}

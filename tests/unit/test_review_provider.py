@@ -24,11 +24,16 @@ def test_override_replaces_openrouter_model() -> None:
     assert result.review_provider == "openrouter"
 
 
-def test_override_replaces_ollama_model() -> None:
-    """An override replaces review_ollama_model when that backend is active."""
-    settings = Settings(review_provider="ollama", openai_api_key="k")
-    result = resolve_review_settings(settings, "llama3.1:70b")
-    assert result.review_ollama_model == "llama3.1:70b"
+def test_override_is_a_noop_for_modal_backend() -> None:
+    """The deferred modal backend has no review model to override.
+
+    Replaces the retired ollama case: openrouter is now the only backend with
+    a configurable review model, so every other branch must fall through
+    returning settings unchanged rather than writing an attribute nothing reads.
+    """
+    settings = Settings(review_provider="modal", openai_api_key="k")
+    result = resolve_review_settings(settings, "some-model")
+    assert result is settings
 
 
 def test_override_is_a_noop_for_mock_backend() -> None:

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import uuid
-from typing import cast
 
 from fastapi import APIRouter
 from sqlalchemy import select
@@ -15,7 +14,6 @@ from cyo_adventure.api.schemas import (
     AllowlistListView,
     AllowlistUpdateBody,
     AllowlistView,
-    ProviderName,
     error_responses,
 )
 from cyo_adventure.core.exceptions import (
@@ -51,10 +49,17 @@ def _require_admin(ctx: Context) -> None:
 
 
 def _view(row: ProviderModelAllowlist) -> AllowlistView:
-    """Map an ORM row to its response schema."""
+    """Map an ORM row to its response schema.
+
+    ``row.provider`` is passed through unnarrowed. It used to be
+    ``cast("ProviderName", ...)``, which is a no-op at runtime and so told the
+    type checker a story Pydantic did not believe: ``AllowlistView`` validated
+    the same field for real, and a row naming a retired backend raised instead.
+    See ``AllowlistView`` for why responses stay wider than requests.
+    """
     return AllowlistView(
         id=str(row.id),
-        provider=cast("ProviderName", row.provider),
+        provider=row.provider,
         model_id=row.model_id,
         enabled=row.enabled,
         display_name=row.display_name,

@@ -1,0 +1,526 @@
+{
+ "schema_version": "2.0",
+ "id": "lost-boot-in-snow",
+ "version": 1,
+ "title": "Lost Boot in the Snow",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "open_map",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 3.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "persistence",
+   "problem_solving",
+   "sibling_help",
+   "winter"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=70 beats='Priya and her little brother Ravi pack up sleds as snow falls. Ravi pats his foot and cries that his black boot is gone. Priya sees the long sled run covered in fresh snow. She must find the boot before their walk home. She decides to start searching.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_start_look",
+     "label": "Look for the boot",
+     "target": "first_choice"
+    }
+   ]
+  },
+  {
+   "id": "first_choice",
+   "body": "<<FILL role=explore words=70 beats='Priya stands at the top of the sled run. Fresh snow covers everything. She can go up the hill, down the hill, or along the pine trees to look for clues. Where should she search first?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_top",
+     "label": "Search up the hill",
+     "target": "top_hill"
+    },
+    {
+     "id": "ch_bottom",
+     "label": "Search down the hill",
+     "target": "bottom_hill"
+    },
+    {
+     "id": "ch_pines",
+     "label": "Search along the pine trees",
+     "target": "pine_trees"
+    }
+   ]
+  },
+  {
+   "id": "top_hill",
+   "body": "<<FILL role=explore words=70 beats='Priya trudges uphill through deep snow. Near the starting mound she sees a red mitten, but no boot. A squirrel chatters and flicks its tail toward a tall snowdrift. Priya looks around for clues.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_dig",
+     "label": "Dig into the snowdrift",
+     "target": "dig_drift"
+    },
+    {
+     "id": "ch_sled",
+     "label": "Look at the old sled",
+     "target": "check_sled"
+    },
+    {
+     "id": "ch_squirrel",
+     "label": "Follow the squirrel",
+     "target": "follow_squirrel"
+    }
+   ]
+  },
+  {
+   "id": "bottom_hill",
+   "body": "<<FILL role=explore words=68 beats='Priya slides down to the flat bottom. Packed snow shows sled tracks and a boot-shaped dent near the fence. A girl named Mei is patting a snowman and waves. Priya hurries over.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_mei",
+     "label": "Ask Mei what she saw",
+     "target": "ask_mei"
+    },
+    {
+     "id": "ch_prints",
+     "label": "Follow the boot-shaped dent",
+     "target": "boot_print_trail"
+    },
+    {
+     "id": "ch_hut",
+     "label": "Check the warming hut",
+     "target": "warming_hut"
+    }
+   ]
+  },
+  {
+   "id": "pine_trees",
+   "body": "<<FILL role=explore words=67 beats='Snow falls from the pine branches. Priya hears a soft crunch. Under a low branch she finds a wet wool sock on a twig. A rabbit hops away, and a crow calls from a tall pine.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_rabbit",
+     "label": "Follow the rabbit",
+     "target": "pine_rabbit"
+    },
+    {
+     "id": "ch_crow",
+     "label": "Follow the crow",
+     "target": "crow_tree"
+    },
+    {
+     "id": "ch_bush",
+     "label": "Search under the snowy bush",
+     "target": "bush_search"
+    }
+   ]
+  },
+  {
+   "id": "dig_drift",
+   "body": "<<FILL role=explore words=70 beats='Priya digs into the tall snowdrift with her mittens. She finds a blue bead, a broken sled piece, and a brown boot. It is not the black boot. She stops and thinks about where to look next.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_deep",
+     "label": "Dig even deeper",
+     "target": "deep_dig"
+    },
+    {
+     "id": "ch_sled_again",
+     "label": "Check the old sled",
+     "target": "check_sled"
+    }
+   ]
+  },
+  {
+   "id": "deep_dig",
+   "body": "<<FILL role=decision words=70 beats='Priya digs until snow reaches her elbows. She finds a toy car, a lost mitten, and then a black boot. The boot is stuck under a heavy root. She tugs, but it will not move.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_stick",
+     "label": "Pry the boot out with a stick",
+     "target": "end_stick_pry"
+    },
+    {
+     "id": "ch_hut_help",
+     "label": "Get help at the warming hut",
+     "target": "warming_hut"
+    }
+   ]
+  },
+  {
+   "id": "check_sled",
+   "body": "<<FILL role=explore words=68 beats='Priya kneels by the old sled. A scrap of black fabric hangs from a runner. It looks like boot lining. Faint marks lead into the woods and along the fence.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_woods",
+     "label": "Follow the marks into the woods",
+     "target": "sled_spot"
+    },
+    {
+     "id": "ch_fence",
+     "label": "Follow the fence line",
+     "target": "boot_print_trail"
+    }
+   ]
+  },
+  {
+   "id": "sled_spot",
+   "body": "<<FILL role=decision words=70 beats='Priya follows the marks to a spot near the fence. A black boot is half buried under a pile of leaves. She can see it, but it is wedged tight.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_fort_help",
+     "label": "Call the fort kids to help",
+     "target": "end_fort_help"
+    },
+    {
+     "id": "ch_burrow_treasure",
+     "label": "Dig around the root",
+     "target": "end_burrow_treasure"
+    }
+   ]
+  },
+  {
+   "id": "follow_squirrel",
+   "body": "<<FILL role=explore words=69 beats='The squirrel hops over the snow and stops by a hollow log. It chatters loudly and disappears inside. Priya peers at the log. A black boot sticks out of the far end, covered with dry leaves.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_log",
+     "label": "Explore the hollow log",
+     "target": "squirrel_log"
+    },
+    {
+     "id": "ch_crow_follow",
+     "label": "Follow the crow instead",
+     "target": "crow_tree"
+    }
+   ]
+  },
+  {
+   "id": "squirrel_log",
+   "body": "<<FILL role=decision words=70 beats='Priya peers deeper into the log. The boot is stuck. She can reach it with a stick, but she might have to wiggle it free carefully.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_rock",
+     "label": "Pry it out with a stick",
+     "target": "end_rock_spot"
+    },
+    {
+     "id": "ch_frozen",
+     "label": "Pull hard and fast",
+     "target": "end_frozen_boot"
+    },
+    {
+     "id": "ch_log_leaves",
+     "label": "Look at the leaves inside",
+     "target": "end_squirrel_stash"
+    }
+   ]
+  },
+  {
+   "id": "ask_mei",
+   "body": "<<FILL role=decision words=70 beats='Mei points to a snowy hump near the fence. She says a boot flew off a sled and landed by the snowman. Boot-shaped prints lead along the fence. Priya thanks her and looks around.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_snowman",
+     "label": "Examine the snowy hump",
+     "target": "mei_spot"
+    },
+    {
+     "id": "ch_prints_ask",
+     "label": "Follow the boot prints",
+     "target": "boot_print_trail"
+    }
+   ]
+  },
+  {
+   "id": "mei_spot",
+   "body": "<<FILL role=decision words=70 beats='Priya examines the snowy hump. The boot is there, but it is caught under a heavy snow block. She needs to dig it out carefully.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_snowman_secret",
+     "label": "Dig carefully",
+     "target": "end_snowman_secret"
+    },
+    {
+     "id": "ch_stick_pry_mei",
+     "label": "Use a stick to pry it",
+     "target": "end_stick_pry"
+    }
+   ]
+  },
+  {
+   "id": "boot_print_trail",
+   "body": "<<FILL role=explore words=69 beats='Priya follows the boot-shaped prints along the fence. The prints stop near a snow fort. Two children wave. They saw something shiny near the big rock by the fence.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_rock_trail",
+     "label": "Go to the big rock",
+     "target": "trail_end"
+    },
+    {
+     "id": "ch_hut_trail",
+     "label": "Visit the warming hut",
+     "target": "warming_hut"
+    }
+   ]
+  },
+  {
+   "id": "trail_end",
+   "body": "<<FILL role=decision words=70 beats='Priya reaches the big rock. The boot is wedged in a crack. She can use a stick to pry it out, or ask the children for help.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_fort_help_trail",
+     "label": "Ask the children for help",
+     "target": "end_fort_help"
+    },
+    {
+     "id": "ch_bush_stash",
+     "label": "Pull it out myself",
+     "target": "end_bush_stash"
+    }
+   ]
+  },
+  {
+   "id": "warming_hut",
+   "body": "<<FILL role=explore words=70 beats='Priya enters the warm hut. The caretaker gives her a dry mitten and says she saw a black boot near the fence. She points to boot-shaped marks in the snow outside.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_hut_search",
+     "label": "Follow the marks behind the hut",
+     "target": "hut_search"
+    },
+    {
+     "id": "ch_ask_mei_again",
+     "label": "Ask Mei for help",
+     "target": "ask_mei"
+    }
+   ]
+  },
+  {
+   "id": "hut_search",
+   "body": "<<FILL role=decision words=70 beats='Priya follows the marks to a spot behind the hut. The boot is half buried under a pile of snow. She can dig it out or ask the caretaker to help.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_burrow_hut",
+     "label": "Dig it out myself",
+     "target": "end_burrow_treasure"
+    },
+    {
+     "id": "ch_rock_hut",
+     "label": "Ask the caretaker",
+     "target": "end_rock_spot"
+    }
+   ]
+  },
+  {
+   "id": "pine_rabbit",
+   "body": "<<FILL role=explore words=68 beats='Priya follows the rabbit into a thicket. The rabbit stops at a burrow and hops inside. Near the burrow, a black boot sticks out of the snow like a small flag.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_rabbit_burrow",
+     "label": "Peek into the burrow",
+     "target": "rabbit_burrow"
+    },
+    {
+     "id": "ch_bush_rabbit",
+     "label": "Search under the bush",
+     "target": "bush_search"
+    }
+   ]
+  },
+  {
+   "id": "rabbit_burrow",
+   "body": "<<FILL role=decision words=70 beats='Priya kneels by the rabbit burrow. The boot is too far inside to grab. She needs a stick to pull it close, or she can ask the rabbit.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_bush_stash_rabbit",
+     "label": "Use a stick",
+     "target": "end_bush_stash"
+    },
+    {
+     "id": "ch_snowman_rabbit",
+     "label": "Ask the rabbit nicely",
+     "target": "end_snowman_secret"
+    }
+   ]
+  },
+  {
+   "id": "crow_tree",
+   "body": "<<FILL role=explore words=68 beats='Priya follows the crow to a tall pine. The crow drops a blue mitten and hops toward a hollow log. A black boot lies beside the log in dry leaves.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_crow_nest",
+     "label": "Check the hollow log",
+     "target": "crow_nest"
+    },
+    {
+     "id": "ch_warm_hut_crow",
+     "label": "Visit the warming hut",
+     "target": "warming_hut"
+    }
+   ]
+  },
+  {
+   "id": "crow_nest",
+   "body": "<<FILL role=decision words=70 beats='Priya approaches the log. The boot is caught on a root. She can pull hard or find a stick to lever it free.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_stick_pry_crow",
+     "label": "Use a stick",
+     "target": "end_stick_pry"
+    },
+    {
+     "id": "ch_frozen_crow",
+     "label": "Pull hard",
+     "target": "end_frozen_boot"
+    }
+   ]
+  },
+  {
+   "id": "bush_search",
+   "body": "<<FILL role=decision words=70 beats='Priya pushes aside the snowy bush branches. Under the bush she finds a stash of lost mittens, hats, and one black boot. It is the boot Ravi lost. It has a small dent but fits fine. She needs to decide how to get it out.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_stash_grab",
+     "label": "Grab the boot quickly",
+     "target": "end_bush_stash"
+    },
+    {
+     "id": "ch_fort_help_bush",
+     "label": "Call the fort children for help",
+     "target": "end_fort_help"
+    }
+   ]
+  },
+  {
+   "id": "end_stick_pry",
+   "body": "<<FILL role=ending words=70 beats='Priya grabs a strong stick and works it under the boot. She pulls hard, and the black boot pops free. It is cold and wet but whole. She holds it tight and runs back to Ravi.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_stick_pry_end",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Boot Rescue"
+   }
+  },
+  {
+   "id": "end_squirrel_stash",
+   "body": "<<FILL role=ending words=70 beats='Priya pulls the black boot from the hollow log. It is dusty and the toe is a little chewed, but it is the boot Ravi lost. She shakes off the leaves and runs back.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_squirrel_stash_end",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Squirrel Stash Surprise"
+   }
+  },
+  {
+   "id": "end_fort_help",
+   "body": "<<FILL role=ending words=70 beats='Priya calls the fort kids over. Together they lift the heavy root and free the black boot. The boot is damp but whole. The kids cheer. Priya runs back to Ravi before the snow gets deeper.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_fort_help_end",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Teamwork Saves the Boot"
+   }
+  },
+  {
+   "id": "end_burrow_treasure",
+   "body": "<<FILL role=ending words=70 beats='Priya peers into the burrow. A nest of leaves holds a black boot. The boot is dry but smells like rabbit. Priya pulls it out and checks the tag. The name Ravi is written inside. She hurries back.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_burrow_treasure_end",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Rabbit Burrow Treasure"
+   }
+  },
+  {
+   "id": "end_rock_spot",
+   "body": "<<FILL role=ending words=70 beats='Priya brushes snow off the big rock. A pile of acorns hides a black boot. The boot is wet but not damaged. She hugs it and races back to Ravi, who laughs and puts it on.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_rock_spot_end",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Under the Rock"
+   }
+  },
+  {
+   "id": "end_frozen_boot",
+   "body": "<<FILL role=ending words=70 beats='Priya hurries across the ice. A loud crack makes her jump to the far bank. She finds the black boot under the bush, but it is frozen stiff and split at the toe. She carries it home, sad and cold.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_frozen_boot_end",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Frozen Boot, Broken Boot"
+   }
+  },
+  {
+   "id": "end_snowman_secret",
+   "body": "<<FILL role=ending words=70 beats='Priya dusts snow from the snowman base. A black boot is half buried there. It is the boot Ravi lost, with a loose sole but still good. Priya pulls it out and runs to Ravi.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_snowman_secret_end",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Snowman Secret"
+   }
+  },
+  {
+   "id": "end_bush_stash",
+   "body": "<<FILL role=ending words=70 beats='Priya pushes aside the snowy bush branches. Under the bush she finds a stash of lost mittens, hats, and one black boot. It is the boot Ravi lost. It has a small dent but fits fine. She shouts with joy.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_bush_stash_end",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Winter Stash Find"
+   }
+  }
+ ]
+}

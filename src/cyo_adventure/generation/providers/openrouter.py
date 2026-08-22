@@ -65,13 +65,13 @@ _ERROR_DETAIL_MAX_CHARS = 240
 
 # The exact substring ``_empty_content_message`` renders for a zero-content
 # `content_filter` stop (``finish_reason={value!r}``), matched by the
-# `UW-C325` interim retry cap in ``complete``. A structured field would be
+# `UW-C329` interim retry cap in ``complete``. A structured field would be
 # cleaner, but the message is authored two functions away in this module and
 # the repr form is deterministic.
 _CONTENT_FILTER_MARKER = "finish_reason='content_filter'"
 
 # The zero-content `content_filter` stop that ENDS the leg, counted per prompt:
-# the second one aborts, so exactly one such stop is tolerated (`UW-C325`
+# the second one aborts, so exactly one such stop is tolerated (`UW-C329`
 # interim, ruled 2026-08-21). The measured third identical attempt bought
 # nothing, and the one intermittent rescue landed on a fresh call rather than
 # on attempt three.
@@ -176,8 +176,8 @@ class OpenRouterProvider:
     """A ``GenerationProvider`` that calls the OpenRouter chat-completions API.
 
     Satisfies the ``GenerationProvider`` protocol structurally. Construct one per
-    model id; the composite cascade holds several (primary, fallback model) plus
-    a local Ollama leg.
+    model id; the composite cascade holds two of these (primary, fallback model)
+    plus the Modal backstop leg.
 
     Args:
         api_key: OpenRouter API key (Bearer credential). Never logged.
@@ -248,7 +248,7 @@ class OpenRouterProvider:
         # ``scripts/compare_vendors.py`` resolved the permissive 131,072
         # default, which made ``MODEL_OUTPUT_CAPS`` unreachable and kept the
         # ``UW-C302`` chunked path from ever engaging there (measured: HTTP
-        # 400 in 0.6s on ``deepseek/deepseek-v3.2``; `AL-513`/`UW-C319`).
+        # 400 in 0.6s on ``deepseek/deepseek-v3.2``; `AL-518`/`UW-C323`).
         # ``fill_skeleton``'s worker call passes ``settings`` and so fell
         # back to the CONFIGURED model, which is correct until a leg's model
         # differs from the configuration (the provider-override paths).
@@ -344,7 +344,7 @@ class OpenRouterProvider:
         }
         url = f"{self._base_url}/chat/completions"
 
-        # Interim `UW-C325` policy (ruled 2026-08-21, section 9.5 of
+        # Interim `UW-C329` policy (ruled 2026-08-21, section 9.5 of
         # live-structural-round-2026-08-21.md): identical retries cap at TWO
         # for zero-content `content_filter` stops. The filter fires on the
         # (skeleton, brief) PAIR and the measured third identical attempt
@@ -367,7 +367,7 @@ class OpenRouterProvider:
                             f"finish_reason='content_filter' {filter_stops} "
                             "times for this prompt; the filter fires on the "
                             "(skeleton, brief) pair, so further identical "
-                            "retries are withheld (UW-C325); re-anchor the "
+                            "retries are withheld (UW-C329); re-anchor the "
                             "request instead"
                         )
                         raise ProviderError(
@@ -459,7 +459,7 @@ class OpenRouterProvider:
             # debugging session: the 2026-08-21 chunked leg overflowed a
             # 163,840-token window by exactly one token and the only visible
             # message was "invalid or unavailable model"
-            # (`AL-514`/`UW-C320`). The diagnostic goes to the operator log
+            # (`AL-519`/`UW-C324`). The diagnostic goes to the operator log
             # and stops there. It is third-party free text on a path that
             # ends at a guardian-visible `job.error` field, so it cannot ride
             # in the exception message; see ``_error_detail``'s #CRITICAL

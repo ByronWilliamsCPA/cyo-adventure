@@ -1,0 +1,40 @@
+{
+ "leg": "deepseek-v4-flash",
+ "family": "deepseek",
+ "cell_id": "A",
+ "band": "5-8",
+ "length": "short",
+ "style": "prose",
+ "replicate": 1,
+ "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+ "attempts": 5,
+ "repair_rounds": 4,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  3,
+  2,
+  2,
+  2,
+  2
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 769.98,
+ "input_tokens": 31556,
+ "output_tokens": 93247,
+ "reasoning_tokens": 65536,
+ "finish_reasons": [
+  "stop",
+  "stop",
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "min_catalog_distance": null,
+ "mean_catalog_distance": null,
+ "catalog_distance_note": "shell not coercible against any of 5 peers",
+ "last_feedback": "ERROR   L1-1   L1-1 schema: document does not conform to Storybook schema at 'metadata/estimated_minutes': 2.5 is not of type 'integer'\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/smoke2-2026-08-21/shells/A__r1__deepseek-v4-flash.json failed structural validation: L1-1 schema: document does not conform to Storybook schema at 'metadata/estimated_minutes': 2.5 is not of type 'integer'",
+ "shell_file": "shells/A__r1__deepseek-v4-flash.json",
+ "error": ""
+}

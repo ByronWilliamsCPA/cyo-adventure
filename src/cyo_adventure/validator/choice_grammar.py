@@ -17,7 +17,7 @@ section 10):
   into) must not exceed the band's words-per-stop ceiling.
 * **CG-6 outbound staging**: a decision node's own body should share at least
   one content word with each of its OWN choice labels, so the prose stages
-  what the choices promise (`AL-495`/`AL-519`/`UW-C312`; the outbound
+  what the choices promise (`AL-495`/`AL-524`/`UW-C312`; the outbound
   companion to CG-4, with the same heuristic caveat and its calibration in
   :func:`check_outbound_staging`'s docstring).
 * **CG-4 fill-gate acknowledgment**: a decision-child node's opening sentence
@@ -1045,7 +1045,7 @@ def check_fill_gate_acknowledgment(story: Storybook) -> ValidationReport:
 def check_outbound_staging(story: Storybook) -> ValidationReport:
     """CG-6: flag a choice label whose content no word of its OWN body stages.
 
-    The outbound companion to CG-4 (`AL-495`/`AL-519`/`UW-C312`). CG-4 is
+    The outbound companion to CG-4 (`AL-495`/`AL-524`/`UW-C312`). CG-4 is
     strictly inbound (does the ARRIVING node acknowledge the choice just
     taken); nothing asked whether a node's prose introduces what its own
     outbound choices promise, so a body about boarding a boat could offer

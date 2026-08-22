@@ -28,7 +28,7 @@ tags:
 >
 > **Note (2026-08-22)**: "unchanged" above is a statement about this decision's blast radius, and it
 > still holds: nothing here edited ADR-011. ADR-011's constants themselves are no longer what this
-> document describes. Its section 6 was rewritten on 2026-08-22 (`UW-C323`, ADR-011 section 11):
+> document describes. Its section 6 was rewritten on 2026-08-22 (`UW-C327`, ADR-011 section 11):
 > decisions per path is now a **derived per-cell window** rather than a research-locked flat
 > "~4-8", which survives only as the JHM 2019 anchor for the `8-11`/`10-13` Short prose region. The
 > two references below (Context, Alternative 1) quote the pre-amendment wording because they record

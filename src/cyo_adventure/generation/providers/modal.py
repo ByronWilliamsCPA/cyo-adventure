@@ -1,12 +1,25 @@
-"""Modal generation provider adapter (ADR-010 experimental leg).
+"""Modal generation provider adapter (cascade leg 3).
 
 Calls a Modal Auto Endpoint's OpenAI-compatible chat-completions API and returns
 the model text. Structurally mirrors ``OpenRouterProvider``: the same Layer-1
 retry/backoff via ``run_with_retries``, the same transient-vs-leg-fatal HTTP
-status split, and the same ``strip_code_fences`` normalization. This leg is
-experimental only (ADR-010 item 2): ``build_provider`` never wraps it in the
-production ``FallbackProvider`` cascade; selecting ``generation_provider=modal``
-is an explicit, offline-only choice.
+status split, the same ``finish_reason`` handling on an empty body, and the same
+``strip_code_fences`` normalization.
+
+This leg is no longer offline-only. Since the 2026-08-18 Ollama retirement
+``build_provider`` appends it to the production ``FallbackProvider`` cascade as
+leg 3 whenever ``MODAL_BASE_URL`` and ``MODAL_MODEL`` are both set, so it is the
+backstop that keeps the cascade spanning two vendors (ADR-003 as amended
+2026-08-18, amending ADR-010 Decision 2). Being last matters for error
+classification: a leg-fatal failure here ends the job rather than falling
+through to another leg.
+
+Two vendor-shape differences from OpenRouter, both recorded in the 2026-08-20
+smoke test: reasoning tokens arrive flat on ``usage`` rather than under
+``completion_tokens_details``, and no ``cost`` field is returned at all, so
+spend accounting for this leg comes from Modal billing rather than the response
+(there is also no ``core/pricing.py`` row, so ``CostEstimate.complete`` is
+``False`` for Modal-served completions).
 """
 
 from __future__ import annotations
@@ -21,6 +34,8 @@ from cyo_adventure.generation.providers._base import (
     DEFAULT_BACKOFF_BASE_SECONDS,
     DEFAULT_MAX_RETRIES,
     dig_content,
+    dig_finish_reason,
+    dig_flat_reasoning_tokens,
     dig_usage,
     elapsed_ms,
     run_with_retries,
@@ -107,7 +122,7 @@ class ModalProvider:
 
         Every adapter exposes this so ``resolve_output_cap`` sees the leg's
         real model through the provider wrappers rather than falling back to
-        the configured default (`AL-513`/`UW-C319`; the contract is asserted
+        the configured default (`AL-518`/`UW-C323`; the contract is asserted
         by test_provider_contract.py).
         """
         return self._model
@@ -234,6 +249,36 @@ class ModalProvider:
             leg_fatal=True,
         )
 
+    @staticmethod
+    def _empty_content_message(
+        finish_reason: str | None, reasoning_tokens: int | None
+    ) -> str:
+        """Say why an empty completion was empty, so the log names the cause.
+
+        Args:
+            finish_reason: The reason the backend reported, or ``None``.
+            reasoning_tokens: Hidden reasoning tokens reported, or ``None``.
+
+        Returns:
+            The error text. Mirrors ``OpenRouterProvider``'s wording so a
+            cascade failure reads the same whichever leg produced it, and
+            carries both figures because ``run_with_retries`` logs the
+            exception string on every transient retry.
+        """
+        if finish_reason == "length":
+            spent = (
+                f", {reasoning_tokens} of them on reasoning" if reasoning_tokens else ""
+            )
+            return (
+                "modal completion hit the token budget and returned no "
+                f"usable content (finish_reason=length{spent}); retrying at the "
+                "same cap would buy the same wall, so this leg is not retried"
+            )
+        return (
+            "modal response had no message content "
+            f"(finish_reason={finish_reason!r}, reasoning_tokens={reasoning_tokens!r})"
+        )
+
     def _extract_completion(
         self, response: httpx.Response, started: float
     ) -> Completion:
@@ -258,11 +303,25 @@ class ModalProvider:
                 msg, provider="modal", model=self._model, leg_fatal=False
             ) from exc
 
+        finish_reason = dig_finish_reason(payload)
+        reasoning_tokens = dig_flat_reasoning_tokens(payload)
         content = dig_content(payload)
         if not content:
-            msg = "modal response had no message content"
+            # #CRITICAL: external-resources: a truncated completion and a dead
+            # endpoint return the same empty bytes and want opposite responses.
+            # Without this split the adapter retried a deterministic budget
+            # exhaustion at the identical cap until the retry budget was gone,
+            # which the 2026-08-20 smoke test named as the blocking adapter gap
+            # before this leg could take real traffic. As leg 3 there is no
+            # further leg to fall through to, so burning the budget here is the
+            # job's whole failure path, not a delay before the next attempt.
+            # #VERIFY: test_modal_provider.py asserts leg_fatal True for
+            # finish_reason=length and False for every other empty body.
             raise ProviderError(
-                msg, provider="modal", model=self._model, leg_fatal=False
+                self._empty_content_message(finish_reason, reasoning_tokens),
+                provider="modal",
+                model=self._model,
+                leg_fatal=finish_reason == "length",
             )
         input_tokens, output_tokens = dig_usage(payload)
         return Completion(
@@ -273,5 +332,7 @@ class ModalProvider:
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
                 duration_ms=elapsed_ms(started),
+                reasoning_tokens=reasoning_tokens,
             ),
+            finish_reason=finish_reason,
         )

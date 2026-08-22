@@ -1,0 +1,40 @@
+{
+ "leg": "openai-gpt-5.6-sol",
+ "family": "openai",
+ "cell_id": "A",
+ "band": "5-8",
+ "length": "short",
+ "style": "prose",
+ "replicate": 1,
+ "premise": "Miri looks after the school's three hens for the holiday week, and one morning the smallest hen is missing.",
+ "attempts": 5,
+ "repair_rounds": 4,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  2,
+  3,
+  2,
+  3,
+  13
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 347.57,
+ "input_tokens": 27843,
+ "output_tokens": 26276,
+ "reasoning_tokens": 7670,
+ "finish_reasons": [
+  "stop",
+  "stop",
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "min_catalog_distance": 0.10958999750333218,
+ "mean_catalog_distance": 0.326715558685996,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "last_feedback": "ERROR   PL-18  PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'miri-and-the-missing-hen'\nWARNING CG-1   node=pavilion-search CG-1 grammar: 10 of 19 non-ending nodes are single-choice, above band '5-8's 50% allowance of 9 in story 'miri-and-the-missing-hen'; the band's cadence is an average, so a long scene is fine only if the story spends decisions elsewhere (advisory only, new-content grammar per ADR-011 section 10)\nWARNING CG-3   node=ending-sack-nest CG-3 grammar: node 'ending-sack-nest' is a rendered stop on its own at ~138 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=ending-compost-egg CG-3 grammar: node 'ending-compost-egg' is a rendered stop on its own at ~138 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=ending-hedge-home CG-3 grammar: node 'ending-hedge-home' is a rendered stop on its own at ~138 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=ending-cart-hideaway CG-3 grammar: node 'ending-cart-hideaway' is a rendered stop on its own at ~138 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=ending-flowerpot-queen CG-3 grammar: node 'ending-flowerpot-queen' is a rendered stop on its own at ~138 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=ending-greenhouse-help CG-3 grammar: node 'ending-greenhouse-help' is a rendered stop on its own at ~138 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=ending-bench-rest CG-3 grammar: node 'ending-bench-rest' is a rendered stop on its own at ~138 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=ending-bean-patch-nest CG-3 grammar: node 'ending-bean-patch-nest' is a rendered stop on its own at ~138 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=ending-pavilion-champion CG-3 grammar: node 'ending-pavilion-champion' is a rendered stop on its own at ~138 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nWARNING CG-3   node=ending-search-continues CG-3 grammar: node 'ending-search-continues' is a rendered stop on its own at ~138 words, above band '5-8' words-per-stop ceiling 70 in story 'miri-and-the-missing-hen' (advisory only)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/smoke2-2026-08-21/shells/A__r1__openai-gpt-5.6-sol.json failed structural validation: PL-18 topology: declared 'time_cave' is not admissible for the graph (admissible: ['branch_and_bottleneck', 'gauntlet']) in story 'miri-and-the-missing-hen'",
+ "shell_file": "shells/A__r1__openai-gpt-5.6-sol.json",
+ "error": ""
+}

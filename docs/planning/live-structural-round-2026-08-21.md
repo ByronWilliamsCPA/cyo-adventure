@@ -436,7 +436,7 @@ against the current contract and instruments. The five defects above are each ca
 lesson with a register row; items 2 through 5 are tooling-scale work, and item 1 is a design
 decision the owner already holds (`UW-C315`'s lever question).
 
-## 7.6 The mid-band fill-rate hole is substantially vendor-shaped (UW-C318)
+## 7.6 The mid-band fill-rate hole is substantially vendor-shaped (UW-C322)
 
 With credits restored, the two worst mid-band grid pairs were re-run on the production-family
 model (`anthropic/claude-sonnet-5`, amazon-bedrock/global pin, probed):
@@ -495,7 +495,7 @@ only by billing:
 - Found while composing it: **`M4` with default parameters hangs past 60 seconds on this
   193-node parent** (its decisions-per-path window enumerates simple paths), while `M2`
   applies instantly and `M3` in about 3 seconds. The most structural operator in the set is
-  currently impractical at catalog scale with default parameters (`AL-520`/`UW-C322`), which
+  currently impractical at catalog scale with default parameters (`AL-525`/`UW-C326`), which
   bounds how big a mutant the lever can produce today.
 - The fill run (`out/live-structural-2026-08-21/mutant-pair/`) failed with **HTTP 402 on both
   legs**: the OpenRouter account's prepaid credits are exhausted (`/api/v1/credits` reads
@@ -531,14 +531,14 @@ The product condition, with a structural mutation AND deliberately distant brief
 WORSE than the same-structure baseline. Every same-skeleton-family pair now measured (96.3
 raw, 110.7 directed, 202 hand-authored twins, and the three above) sits in a 96-243 band,
 24 to 60 times budget, regardless of directive, author, or a prune-scale mutation.
-Conclusion for section 8.1's ruling: a 2-node prune plus outcome remap, which per `AL-521`
+Conclusion for section 8.1's ruling: a 2-node prune plus outcome remap, which per `AL-526`
 is the LARGEST mutant the machinery can currently produce on this parent (M4 insert is
-categorically ineligible on window-breaching catalog parents, `UW-C323`), is not the lever.
+categorically ineligible on window-breaching catalog parents, `UW-C327`), is not the lever.
 Reaching the any-reader bar needs structural change on a different scale, which is gated on
-the `UW-C323` owner decision, or the interim same-skeleton-per-reader serving constraint
+the `UW-C327` owner decision, or the interim same-skeleton-per-reader serving constraint
 becomes the standing policy.
 
-### 8.2 Freeze split (`UW-C317`): adopted as recommended
+### 8.2 Freeze split (`UW-C321`): adopted as recommended
 
 - Machine-critical fields (every `id`, `target`, `condition`, `effects`, `on_enter`,
   `start_node`, `is_ending`, variable `name`/`type`/`min`/`max`/`initial`, ending
@@ -567,7 +567,7 @@ cite this section.
 Five further rulings, made after the implementation phase's measurements. Site of record for
 each, as with section 8.
 
-### 9.1 `UW-C323` (decisions-per-path window): audit ADR-011 before ruling
+### 9.1 `UW-C327` (decisions-per-path window): audit ADR-011 before ruling
 
 The owner judges the 4-8 constant out of line with the rest of ADR-011, especially the
 section 4-5 scale envelopes: a long book confined to 4-8 decisions per path plausibly cannot
@@ -581,8 +581,8 @@ against the ADR's own sections 3, 5 and 10. The owner ratified the cleanup ("cle
 and the audit's full 10-point amendment set is applied as ADR-011 section 11: derived per-cell
 decision windows replace the flat 4-8, gamebooks are exempted in favor of the PL-17 breadth
 floor, the young-band endings ceilings are recalibrated (mirrored into `_CELL_ENDING_BOUNDS`),
-and the stale prose assertions are corrected in place. `UW-C323` is done; re-deriving M4's
-guard per cell, which is what re-enables insert-decision on catalog parents, is `UW-C326`.
+and the stale prose assertions are corrected in place. `UW-C327` is done; re-deriving M4's
+guard per cell, which is what re-enables insert-decision on catalog parents, is `UW-C330`.
 
 ### 9.2 Bulk vendor direction: cost-effective models, engineered to quality
 
@@ -600,13 +600,13 @@ ship without a human but a 0.63-class good fill is never machine-rejected. Floor
 calibrated per vendor and band before any hardening; the current 0.6 default stands until
 that calibration exists.
 
-### 9.4 `UW-C324` (narrative person): a dedicated metadata field
+### 9.4 `UW-C328` (narrative person): a dedicated metadata field
 
 Ruled option A: a dedicated `metadata.narrative_person` declaration per skeleton, backfilled
 mechanically (from the beats' own pronouns where declared, from the committed fill
 otherwise), with the person-consistency check keyed to the declaration.
 
-### 9.5 `UW-C325` (pair-unfillable policy): retry with variation
+### 9.5 `UW-C329` (pair-unfillable policy): retry with variation
 
 Ruled as recommended: the production design is re-anchoring, not blind retries. A story
 request whose (skeleton, brief) pairing trips a provider filter twice should be re-paired

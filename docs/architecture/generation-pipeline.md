@@ -90,7 +90,7 @@ skeleton *selection* happens earlier, at plan time in
 
 The provider is a three-layer failure model:
 
-**Layer 1 (per adapter):** Each `OpenRouterProvider` or `OllamaProvider` retries
+**Layer 1 (per adapter):** Each `OpenRouterProvider`, `AnthropicProvider`, or `ModalProvider` retries
 transient failures (connection errors, HTTP 429, HTTP 5xx) against the **same** model
 with exponential backoff. Leg-fatal errors (HTTP 400/401/402/403/404 for OpenRouter, where
 404 is a churned/unavailable model, the case the fallback leg exists for) are not retried.
@@ -145,7 +145,6 @@ the row is still created and a 202 is returned (the job can be recovered by a sw
 | `src/cyo_adventure/generation/guarded.py` | `PiiGuardedProvider` (structural PII wrapper) |
 | `src/cyo_adventure/generation/providers/fallback.py` | `FallbackProvider` cascade |
 | `src/cyo_adventure/generation/providers/openrouter.py` | OpenRouter adapter (Layer 1) |
-| `src/cyo_adventure/generation/providers/ollama.py` | Ollama adapter (Layer 1) |
 | `src/cyo_adventure/generation/queue.py` | `enqueue_generation()` |
 | `src/cyo_adventure/generation/worker.py` | RQ worker entry point |
 | `src/cyo_adventure/api/generation.py` | API routers: concepts, jobs, validate |

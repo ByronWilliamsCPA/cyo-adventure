@@ -8,7 +8,7 @@ There are four of them, and they form two independent axes:
 * unbound against bound (``fill_bound.md``, ``fill_subset_bound.md``), the
   variants that additionally fence validated theme values.
 
-``AL-526`` recorded the freeze-split ruling reaching only some sites of record.
+``AL-531`` recorded the freeze-split ruling reaching only some sites of record.
 The narrative-person ruling then repeated it: the clause landed in ``fill.md``
 while ``check_prose_craft.py`` began failing books on
 ``metadata.narrative_person``, so a chunked or bound fill was gated on an

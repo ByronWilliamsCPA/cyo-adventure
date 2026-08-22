@@ -1,0 +1,804 @@
+{
+ "schema_version": "2.0",
+ "id": "two-nights-to-places",
+ "version": 1,
+ "title": "Two Nights to Places",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 6.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "teamwork",
+   "creative problem solving",
+   "courage over stage fright"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 15,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "backstage-thursday",
+ "nodes": [
+  {
+   "id": "backstage-thursday",
+   "body": "<<FILL role=setup words=70 beats='Thursday night after rehearsal at Ridgeline Middle School; stage manager Cass finds a folded note taped to the prop table saying Marisol Vega quits the lead role of Professor Ida; the play The Comet Over Miller Pond opens Saturday; Cass grips her clipboard and counts what she still has'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "backstage-thursday-c1",
+     "label": "Read the note again and get moving",
+     "target": "first-call"
+    }
+   ]
+  },
+  {
+   "id": "first-call",
+   "body": "<<FILL role=decision words=75 beats='The cast drifts toward the green room not yet knowing; the theater smells of fresh paint from the comet backdrop; Cass has one night to pick her first move and no script for this'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "first-call-c1",
+     "label": "Call the cast into the green room",
+     "target": "meet-green-room"
+    },
+    {
+     "id": "first-call-c2",
+     "label": "Go find Marisol before she leaves",
+     "target": "find-marisol"
+    },
+    {
+     "id": "first-call-c3",
+     "label": "Bring the note straight to Mr. Reyes",
+     "target": "tell-reyes"
+    }
+   ]
+  },
+  {
+   "id": "meet-green-room",
+   "body": "<<FILL role=explore words=110 beats='Green room with cocoa cups and half painted stars; Cass reads the note aloud; gasps and one dropped script; Toni steadies the room from the props corner while Priya asks who will say the comet monologue; Cass must turn thirty panicking kids into a working crew before the building closes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "meet-green-room-c1",
+     "label": "Map every scene on the whiteboard",
+     "target": "whiteboard-scene-map"
+    },
+    {
+     "id": "meet-green-room-c2",
+     "label": "Let Devon speak up about the role",
+     "target": "devon-steps-up"
+    },
+    {
+     "id": "meet-green-room-c3",
+     "label": "Huddle with Toni and Priya first",
+     "target": "crew-council"
+    }
+   ]
+  },
+  {
+   "id": "find-marisol",
+   "body": "<<FILL role=explore words=110 beats='Cass catches Marisol at the bike rack under the parking lot lights; Marisol wipes her eyes and says she meant it; she froze mid monologue Wednesday, someone laughed from the wings, and gymnastics regionals are Saturday morning; she rides off, and Cass walks back inside carrying the real reasons'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "find-marisol-c1",
+     "label": "Chart what the show truly needs",
+     "target": "whiteboard-scene-map"
+    },
+    {
+     "id": "find-marisol-c2",
+     "label": "Ask Devon if he could step in",
+     "target": "devon-steps-up"
+    },
+    {
+     "id": "find-marisol-c3",
+     "label": "Tell Mr. Reyes what she learned",
+     "target": "reyes-joins-in"
+    }
+   ]
+  },
+  {
+   "id": "tell-reyes",
+   "body": "<<FILL role=explore words=110 beats='Mr. Reyes is stacking chairs in the band room when Cass hands him the note; he reads it twice, takes off his glasses, and admits he ran Wednesday too hard; then he asks Cass what she thinks before saying what he thinks, and offers to back whatever workable plan she brings by morning'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "tell-reyes-c1",
+     "label": "Build a scene map with the cast",
+     "target": "whiteboard-scene-map"
+    },
+    {
+     "id": "tell-reyes-c2",
+     "label": "Pull in Toni and Priya to plan",
+     "target": "crew-council"
+    },
+    {
+     "id": "tell-reyes-c3",
+     "label": "Keep Mr. Reyes in the huddle",
+     "target": "reyes-joins-in"
+    }
+   ]
+  },
+  {
+   "id": "whiteboard-scene-map",
+   "body": "<<FILL role=decision words=110 beats='Toni rolls out the whiteboard; eleven scenes in the show and six lean on Professor Ida; Cass circles which are group scenes that can absorb a gap and which cannot; the red marker squeaks; the list makes the problem smaller and sharper at the same time, and three rescue shapes start to appear'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "whiteboard-scene-map-c1",
+     "label": "Post the map on the callboard",
+     "target": "pin-the-master-list"
+    },
+    {
+     "id": "whiteboard-scene-map-c2",
+     "label": "Walk the hallway and think it out",
+     "target": "quiet-hallway-walk"
+    },
+    {
+     "id": "whiteboard-scene-map-c3",
+     "label": "Phone Toni later to pressure test",
+     "target": "call-with-toni"
+    }
+   ]
+  },
+  {
+   "id": "devon-steps-up",
+   "body": "<<FILL role=decision words=110 beats='Devon Park stands up by the costume rack and admits he knows most of the Ida lines from calling cues all month; his voice shakes on the word monologue; he tries the comet speech under the ghost light, stumbles twice, then lands the last four lines so cleanly that Toni stops sorting props to listen'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "devon-steps-up-c1",
+     "label": "Write his name on the master list",
+     "target": "pin-the-master-list"
+    },
+    {
+     "id": "devon-steps-up-c2",
+     "label": "Weigh the risk on a hallway walk",
+     "target": "quiet-hallway-walk"
+    },
+    {
+     "id": "devon-steps-up-c3",
+     "label": "Get a goodnight verdict from Reyes",
+     "target": "reyes-nod-goodnight"
+    }
+   ]
+  },
+  {
+   "id": "crew-council",
+   "body": "<<FILL role=decision words=110 beats='Cass, Toni, and Priya spread the script across the prop table like a map; Toni argues the show is closer than it feels, Priya lists which light cues can flex, and together they sketch three rescues; promote Devon, share the role, or win Marisol back; the custodian Mr. Hollis rattles his keys at the door'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "crew-council-c1",
+     "label": "Pin the three plans up tonight",
+     "target": "pin-the-master-list"
+    },
+    {
+     "id": "crew-council-c2",
+     "label": "Keep talking on the phone at home",
+     "target": "call-with-toni"
+    },
+    {
+     "id": "crew-council-c3",
+     "label": "Run the plans past Mr. Reyes",
+     "target": "reyes-nod-goodnight"
+    }
+   ]
+  },
+  {
+   "id": "reyes-joins-in",
+   "body": "<<FILL role=decision words=110 beats='Reyes drafts a message to families and hovers over sending one to Principal Grant; once adults officially know, options narrow fast; Cass asks for twelve hours to bring him a working plan first; he looks at her a long moment, holds the messages, and hands her his annotated script like a baton'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "reyes-joins-in-c1",
+     "label": "Take the script to the hallway",
+     "target": "quiet-hallway-walk"
+    },
+    {
+     "id": "reyes-joins-in-c2",
+     "label": "Call Toni to split the tasks",
+     "target": "call-with-toni"
+    },
+    {
+     "id": "reyes-joins-in-c3",
+     "label": "Say goodnight and start at dawn",
+     "target": "reyes-nod-goodnight"
+    }
+   ]
+  },
+  {
+   "id": "pin-the-master-list",
+   "body": "<<FILL role=transition words=70 beats='Cass pins the master scene list to the callboard and circles the six Professor Ida scenes in red; whatever happens tomorrow starts from this sheet; she photographs it, flips off the ghost light by habit, and catches the late bus with a plan half formed'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "pin-the-master-list-c1",
+     "label": "Make the call tonight",
+     "target": "thursday-commit"
+    }
+   ]
+  },
+  {
+   "id": "quiet-hallway-walk",
+   "body": "<<FILL role=transition words=70 beats='Cass walks the dark hallway past the trophy case and the play flyer with Marisol on it; she replays the night, sorts what she can control from what she cannot, and by the exit door the choice has narrowed itself to three real options'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "quiet-hallway-walk-c1",
+     "label": "Choose before the bus comes",
+     "target": "thursday-commit"
+    }
+   ]
+  },
+  {
+   "id": "call-with-toni",
+   "body": "<<FILL role=transition words=70 beats='On the phone Toni does what Toni does; asks blunt questions until the fog clears; can Devon carry it, can the ensemble share it, can Marisol come back; by bedtime the three options are written on the bathroom mirror in dry erase marker'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "call-with-toni-c1",
+     "label": "Sleep on it and commit",
+     "target": "thursday-commit"
+    }
+   ]
+  },
+  {
+   "id": "reyes-nod-goodnight",
+   "body": "<<FILL role=transition words=70 beats='Mr. Reyes walks Cass to the front doors and says the thing she needed; stage managers save more shows than stars do; Mr. Hollis holds the door and tips his cap; outside the air is cold and the decision is suddenly simple to see if not to make'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "reyes-nod-goodnight-c1",
+     "label": "Text the cast the decision",
+     "target": "thursday-commit"
+    }
+   ]
+  },
+  {
+   "id": "thursday-commit",
+   "body": "<<FILL role=decision words=75 beats='Ten at night Thursday; Cass opens the cast group chat and types the message that will set the whole rebuild in motion; three plans, one send button, and thirty people waiting on her word'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "thursday-commit-c1",
+     "label": "Promote Devon to Professor Ida",
+     "target": "plan-devon"
+    },
+    {
+     "id": "thursday-commit-c2",
+     "label": "Share the role across the ensemble",
+     "target": "plan-ensemble"
+    },
+    {
+     "id": "thursday-commit-c3",
+     "label": "Win Marisol back by fixing Wednesday",
+     "target": "plan-marisol"
+    }
+   ]
+  },
+  {
+   "id": "plan-devon",
+   "body": "<<FILL role=decision words=110 beats='Friday six in the morning; Devon meets Cass at the auditorium doors holding a script bristling with sticky notes; he has been up since four; Cass turns the impossible day into a schedule; lines by lunch, blocking by three, confidence by curtain; the first crack shows when he calls himself a stand in'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "plan-devon-c1",
+     "label": "Drill the lines scene by scene",
+     "target": "dv-mid-lines"
+    },
+    {
+     "id": "plan-devon-c2",
+     "label": "Work on his nerves before lines",
+     "target": "dv-mid-confidence"
+    },
+    {
+     "id": "plan-devon-c3",
+     "label": "Pile on every drill at once",
+     "target": "ending-second-empty-chair"
+    }
+   ]
+  },
+  {
+   "id": "dv-mid-lines",
+   "body": "<<FILL role=decision words=110 beats='Lunch period line drills in the costume loft; Toni feeds cues while Cass tracks which speeches stick; the comet monologue keeps collapsing at the same line about light taking years to arrive; Devon growls at himself until Cass invents a memory hook using the ghost light, and the line finally holds'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "dv-mid-lines-c1",
+     "label": "Face the dress rehearsal jam",
+     "target": "devon-dress-crisis"
+    },
+    {
+     "id": "dv-mid-lines-c2",
+     "label": "Push through to a full run",
+     "target": "devon-full-run"
+    },
+    {
+     "id": "dv-mid-lines-c3",
+     "label": "Build the show around prompting",
+     "target": "ending-cue-by-cue"
+    }
+   ]
+  },
+  {
+   "id": "dv-mid-confidence",
+   "body": "<<FILL role=decision words=110 beats='Cass finds Devon hiding in the light booth before the afternoon run; he says everyone will compare him to Marisol; Cass tells him about her own first headset night when she called a blackout one page early; they laugh, Priya rigs him a soft blue pulse to mark every entrance, and the fear shrinks to carrying size'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "dv-mid-confidence-c1",
+     "label": "Take the courage into dress",
+     "target": "devon-dress-crisis"
+    },
+    {
+     "id": "dv-mid-confidence-c2",
+     "label": "Prove it with a full run now",
+     "target": "devon-full-run"
+    },
+    {
+     "id": "dv-mid-confidence-c3",
+     "label": "Keep a prompter as his net",
+     "target": "ending-cue-by-cue"
+    }
+   ]
+  },
+  {
+   "id": "devon-dress-crisis",
+   "body": "<<FILL role=climax words=110 beats='Friday dress rehearsal; the comet rig jams halfway across the painted sky right as Devon reaches the monologue, and the whole rebuilt show wobbles on one breath; Cass has three heartbeats to choose; the hand crank Mr. Hollis oiled, the backup fader Priya taped, or stopping the run to fix it cold'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "devon-dress-crisis-c1",
+     "label": "Crank the comet across by hand",
+     "target": "ending-comet-lands"
+    },
+    {
+     "id": "devon-dress-crisis-c2",
+     "label": "Ride the backup fader through",
+     "target": "ending-gaff-tape"
+    },
+    {
+     "id": "devon-dress-crisis-c3",
+     "label": "Hold the comet and relight it",
+     "target": "ending-half-light"
+    }
+   ]
+  },
+  {
+   "id": "devon-full-run",
+   "body": "<<FILL role=climax words=110 beats='Saturday night, house full, programs run out; mid monologue Devon goes silent, the same silence that broke Wednesday, and a kindergartner in row four shouts the word comet; Cass is close enough to whisper the line, Toni holds the cue card, and the chorus is one hum away from covering'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "devon-full-run-c1",
+     "label": "Whisper the line like a relay",
+     "target": "ending-comet-lands"
+    },
+    {
+     "id": "devon-full-run-c2",
+     "label": "Signal the chorus to carry him",
+     "target": "ending-gaff-tape"
+    },
+    {
+     "id": "devon-full-run-c3",
+     "label": "Let the pause become the moment",
+     "target": "ending-half-light"
+    }
+   ]
+  },
+  {
+   "id": "ending-second-empty-chair",
+   "body": "<<FILL role=ending words=105 beats='The extra drilling tips Devon over the edge; Friday evening he leaves his script on the prop table with an apology sticky note, the second quiet exit in two days; the Saturday slot goes to the jazz band; Cass sits in row F hurting for him more than for the show, and starts a list titled next time, beginning with the words go slower'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-second-empty-chair",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Second Empty Chair"
+   }
+  },
+  {
+   "id": "ending-cue-by-cue",
+   "body": "<<FILL role=ending words=105 beats='They stop pretending Devon can hold every line and build the show around prompting instead; Saturday night Cass kneels in the wings feeding him each speech half a beat early, like passing water in a relay; the audience never quite knows; the show happens, modest and stitched together, and Devon takes his bow shaking and grinning'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-cue-by-cue",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Cue by Cue"
+   }
+  },
+  {
+   "id": "ending-comet-lands",
+   "body": "<<FILL role=ending words=110 beats='The save works; the comet crosses the painted sky on the exact line about light finally arriving, and the room erupts; curtain call runs three bows long; Marisol cheers loudest from the aisle and Principal Grant asks Reyes if it can run two nights in spring; Sunday there is a new note on the callboard in red marker, thank you Cass, signed by the whole cast'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-comet-lands",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Comet Lands"
+   }
+  },
+  {
+   "id": "ending-gaff-tape",
+   "body": "<<FILL role=ending words=110 beats='It is not smooth, it is saved; the comet judders across on the backup, one speech rides on whispered prompts and the chorus hum, and the finale lands anyway; the audience gives the kind of standing ovation you earn by not quitting; backstage Toni slaps a strip of gaff tape on the shoulder of Cass like a medal, and nobody has ever meant one more'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-gaff-tape",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Held Together with Gaff Tape"
+   }
+  },
+  {
+   "id": "ending-half-light",
+   "body": "<<FILL role=ending words=110 beats='The rig never fully cooperates, so the show ends in half light with the chorus humming and the comet held still at the top of its arc; some of the audience thinks it was on purpose and honestly it half was; the reviews at Sunday lunch tables are kind but mixed; Cass files it as a real show with real flaws, finished, which Wednesday night felt impossible'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-half-light",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Show in Half Light"
+   }
+  },
+  {
+   "id": "plan-ensemble",
+   "body": "<<FILL role=decision words=110 beats='Friday morning Cass pitches the wild version; Professor Ida becomes four Idas, the role shared out with a passed telescope marking whoever speaks; Reyes blinks, then starts nodding; Ruth takes the funny scenes, Devon the star charts, sixth grader Amaya the quiet ones, and Toni reluctantly takes the finale'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "plan-ensemble-c1",
+     "label": "Carve the script into fair shares",
+     "target": "en-mid-carve"
+    },
+    {
+     "id": "plan-ensemble-c2",
+     "label": "Drill the telescope handoffs",
+     "target": "en-mid-handoffs"
+    },
+    {
+     "id": "plan-ensemble-c3",
+     "label": "Keep rewriting all day long",
+     "target": "ending-forty-loose-pages"
+    }
+   ]
+  },
+  {
+   "id": "en-mid-carve",
+   "body": "<<FILL role=decision words=110 beats='Four highlighters, four Idas; the comet monologue splits into a round with each Ida taking a verse; on paper it looks either brilliant or like homework that exploded; the lunchtime table read surprises everyone when the round actually works, four voices overlapping like light arriving from different years'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "en-mid-carve-c1",
+     "label": "Test it in a stumble through",
+     "target": "ensemble-stumble-run"
+    },
+    {
+     "id": "en-mid-carve-c2",
+     "label": "Stage the relay for real",
+     "target": "telescope-relay-night"
+    },
+    {
+     "id": "en-mid-carve-c3",
+     "label": "Lean into the chorus sound",
+     "target": "ending-accidental-chorus"
+    }
+   ]
+  },
+  {
+   "id": "en-mid-handoffs",
+   "body": "<<FILL role=decision words=110 beats='The telescope handoff is everything; whoever holds it is Ida; they drill passes in the hallway like a relay team until the moves go smooth; Amaya invents a two handed pass with a little turn that draws applause from passing eighth graders; timing is still shaky in scene five, the one with the storm of star charts'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "en-mid-handoffs-c1",
+     "label": "Run the whole show on its feet",
+     "target": "ensemble-stumble-run"
+    },
+    {
+     "id": "en-mid-handoffs-c2",
+     "label": "Save the polish for showtime",
+     "target": "telescope-relay-night"
+    },
+    {
+     "id": "en-mid-handoffs-c3",
+     "label": "Turn the round into a real song",
+     "target": "ending-accidental-chorus"
+    }
+   ]
+  },
+  {
+   "id": "ensemble-stumble-run",
+   "body": "<<FILL role=climax words=110 beats='Saturday afternoon final run with the doors opening in two hours; two dropped handoffs, one scene played by the wrong Ida entirely, and a finale that lands anyway; the cast comes off stage buzzing instead of broken; Cass holds the cue book and must pick what the audience will see tonight'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ensemble-stumble-run-c1",
+     "label": "Trust all four Idas fully",
+     "target": "ending-four-idas-bow"
+    },
+    {
+     "id": "ensemble-stumble-run-c2",
+     "label": "Cut the shakiest scene now",
+     "target": "ending-scene-nobody-saw"
+    },
+    {
+     "id": "ensemble-stumble-run-c3",
+     "label": "Keep every page and hope",
+     "target": "ending-brave-mess"
+    }
+   ]
+  },
+  {
+   "id": "telescope-relay-night",
+   "body": "<<FILL role=climax words=110 beats='Showtime; the four Idas pass the telescope like runners with a baton while Priya washes each one in her own color; in scene five the pass wobbles mid speech and the house holds its breath with the cast; Cass is on headset with one call to make about how the night finishes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "telescope-relay-night-c1",
+     "label": "Call the bold four voice finale",
+     "target": "ending-four-idas-bow"
+    },
+    {
+     "id": "telescope-relay-night-c2",
+     "label": "Simplify the last scene quietly",
+     "target": "ending-scene-nobody-saw"
+    },
+    {
+     "id": "telescope-relay-night-c3",
+     "label": "Let the wobble ride to the end",
+     "target": "ending-brave-mess"
+    }
+   ]
+  },
+  {
+   "id": "ending-forty-loose-pages",
+   "body": "<<FILL role=ending words=105 beats='One more rewrite becomes four more rewrites; by Friday night there are forty loose pages, three script versions backstage, and nobody sure which scene five is real; Reyes calls it before anyone melts down and moves the show to spring with the shared Ida idea intact; Cass tapes the best version into one binder so the lesson is not lost'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-forty-loose-pages",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Forty Loose Pages"
+   }
+  },
+  {
+   "id": "ending-accidental-chorus",
+   "body": "<<FILL role=ending words=105 beats='Splitting the monologue into a round accidentally makes something better than the original; Reyes moves it to the Saturday assembly as its own piece and the gym goes silent, then roars; the full play waits for spring, but the comet round becomes a thing the school talks about for weeks, and it was Cass who heard what it could be'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-accidental-chorus",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Accidental Chorus"
+   }
+  },
+  {
+   "id": "ending-four-idas-bow",
+   "body": "<<FILL role=ending words=110 beats='All four Idas hold, and the shared role turns out to be the point; a story about light reaching everyone lands harder told by four voices; at curtain call they bow holding the telescope together and the crowd comes up like a wave; Reyes announces the spring show will keep the four Ida version, and the program credits Cass as the one who rebuilt the sky'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-four-idas-bow",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Four Idas Bow"
+   }
+  },
+  {
+   "id": "ending-scene-nobody-saw",
+   "body": "<<FILL role=ending words=110 beats='The trimmed show works, the applause is real, and still Cass stands in the wings missing the storm of star charts nobody saw; cutting it was right and it also cost something true; she tapes its best page inside her binder cover as a promise to stage it someday; a finished show and a kept regret can ride home on the same bus, she learns'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-scene-nobody-saw",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Scene Nobody Saw"
+   }
+  },
+  {
+   "id": "ending-brave-mess",
+   "body": "<<FILL role=ending words=105 beats='The wobble never quite recovers; the fifth scene tangles, two Idas speak at once, and the ending feels sudden to half the lobby; a brave mess, Reyes calls it, the useful kind; the cast is oddly proud anyway, and Cass writes down what she would cut differently and what she would never cut again'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-brave-mess",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Brave Mess"
+   }
+  },
+  {
+   "id": "plan-marisol",
+   "body": "<<FILL role=decision words=110 beats='Friday before first period Cass finds Marisol at her locker with a folder labeled what changes; closed wings during her scenes, a cue card inside the telescope prop, two scenes trimmed, and her call time moved after the gymnastics meet; Marisol reads it twice and asks if the cast even wants her back'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "plan-marisol-c1",
+     "label": "Show her the trimmed script",
+     "target": "ma-mid-offer"
+    },
+    {
+     "id": "plan-marisol-c2",
+     "label": "Bring her what the cast made",
+     "target": "ma-mid-apology"
+    },
+    {
+     "id": "plan-marisol-c3",
+     "label": "Let everyone keep pushing her",
+     "target": "ending-guilt-trip"
+    }
+   ]
+  },
+  {
+   "id": "ma-mid-offer",
+   "body": "<<FILL role=decision words=110 beats='At lunch they go through the trims; two long speeches become shared scenes with Ruth, and the monologue keeps its best twelve lines instead of all thirty; Marisol reads the shortened speech under her breath and her shoulders drop an inch; smaller feels possible, and Devon offers to learn two scenes as her safety net'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ma-mid-offer-c1",
+     "label": "Ask her to try one run today",
+     "target": "marisol-returns-run"
+    },
+    {
+     "id": "ma-mid-offer-c2",
+     "label": "Make the two Ida deal official",
+     "target": "two-idas-deal"
+    },
+    {
+     "id": "ma-mid-offer-c3",
+     "label": "Just listen to what she needs",
+     "target": "ending-what-marisol-needed"
+    }
+   ]
+  },
+  {
+   "id": "ma-mid-apology",
+   "body": "<<FILL role=decision words=110 beats='The cast recorded a video at morning rehearsal; thirty kids saying come back with zero pressure and one terrible group kazoo fanfare; Marisol laughs and cries at the same time in the hallway; whoever laughed Wednesday is not louder than this, Cass says, and promises the wings stay closed during her scenes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ma-mid-apology-c1",
+     "label": "Invite her to the afternoon run",
+     "target": "marisol-returns-run"
+    },
+    {
+     "id": "ma-mid-apology-c2",
+     "label": "Offer the shared role instead",
+     "target": "two-idas-deal"
+    },
+    {
+     "id": "ma-mid-apology-c3",
+     "label": "Hear her real answer first",
+     "target": "ending-what-marisol-needed"
+    }
+   ]
+  },
+  {
+   "id": "marisol-returns-run",
+   "body": "<<FILL role=climax words=110 beats='Saturday night; regionals ended at one with a silver medal, and Marisol walks in at five with her gym bag still on her shoulder; the wings are closed, the cue card waits inside the telescope, and at the monologue the theater goes so quiet Cass can hear the follow spot hum; the frozen moment from Wednesday comes for her again'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "marisol-returns-run-c1",
+     "label": "Trust her to break through it",
+     "target": "ending-marisol-encore"
+    },
+    {
+     "id": "marisol-returns-run-c2",
+     "label": "Have the cast look up with her",
+     "target": "ending-stage-manager-bow"
+    },
+    {
+     "id": "marisol-returns-run-c3",
+     "label": "Cue the card in the telescope",
+     "target": "ending-notes-next-year"
+    }
+   ]
+  },
+  {
+   "id": "two-idas-deal",
+   "body": "<<FILL role=climax words=110 beats='They split the night; Marisol takes the finale she loves and Devon carries the early scenes, two Idas listed side by side in the program like co captains; at the handoff scene the two of them pass the telescope center stage, and the audience understands the play and the week at the same time; one last cue decides the final image'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "two-idas-deal-c1",
+     "label": "End on both Idas together",
+     "target": "ending-marisol-encore"
+    },
+    {
+     "id": "two-idas-deal-c2",
+     "label": "Give the last bow to the crew",
+     "target": "ending-stage-manager-bow"
+    },
+    {
+     "id": "two-idas-deal-c3",
+     "label": "Close on the quiet pond light",
+     "target": "ending-notes-next-year"
+    }
+   ]
+  },
+  {
+   "id": "ending-guilt-trip",
+   "body": "<<FILL role=ending words=105 beats='The pressure curdles; too many voices asking Marisol to come back turns the ask into a debt; she stops answering the group chat and her mom emails Reyes asking everyone to please stop; the show slides to spring and Marisol skips drama club for a month; Cass writes one line in her binder, an invitation only counts if no is a fine answer'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-guilt-trip",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Guilt Trip"
+   }
+  },
+  {
+   "id": "ending-what-marisol-needed",
+   "body": "<<FILL role=ending words=105 beats='Marisol finally says the whole truth; she does not want to be rescued back into the role, she wants a season off from being looked at; Cass hears it and stops campaigning; Saturday becomes a cabaret of scenes the cast already owns, Marisol runs the light board next to Priya, and the play itself waits for spring with her blessing'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-what-marisol-needed",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "What Marisol Needed"
+   }
+  },
+  {
+   "id": "ending-marisol-encore",
+   "body": "<<FILL role=ending words=110 beats='Marisol takes a breath the length of Wednesday and then the lines arrive, all of them, and the comet crosses the sky on the exact word light; the ovation starts before the blackout finishes; at the bike rack afterward she tells Cass the folder of changes is what brought her back, not the applause; the spring run is announced before the lobby empties'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-marisol-encore",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Marisol Encore"
+   }
+  },
+  {
+   "id": "ending-stage-manager-bow",
+   "body": "<<FILL role=ending words=110 beats='At curtain call Ruth breaks tradition, walks into the wings, and pulls Cass onto the stage by the sleeve; the audience stands, and Reyes starts a new Ridgeline rule on the spot, the stage manager bows last; Cass discovers she does not hate being looked at when the looking is shared; the photo of that bow hangs in the drama room for years'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-stage-manager-bow",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Stage Manager Bow"
+   }
+  },
+  {
+   "id": "ending-notes-next-year",
+   "body": "<<FILL role=ending words=105 beats='The cue card catches the wobble and the show finishes clean but quiet, a night saved by preparation more than magic; sweeping the stage by ghost light, Cass writes the real ending in her binder; what broke, what saved it, and who surprised her, mostly herself; she labels the page notes for next year, because there will absolutely be a next year'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-notes-next-year",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Notes for Next Year"
+   }
+  }
+ ]
+}

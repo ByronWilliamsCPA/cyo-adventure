@@ -325,6 +325,40 @@ _PRICES: dict[tuple[str, str], ModelPrice] = {
         source=_OPENROUTER_API,
         note="read live from https://openrouter.ai/api/v1/models",
     ),
+    # NO MODAL ROW, DELIBERATELY. Modal became cascade leg 3 on 2026-08-18 and
+    # is the one live backend with no entry here, which is the shape this
+    # module's own docstring warns about, so the absence is recorded rather
+    # than left to read as an oversight. Two reasons, both structural:
+    #
+    # 1. Modal Auto Endpoints bill GPU-seconds for a container the workspace
+    #    rents, not tokens against a published per-MTok rate. There is no
+    #    vendor number of the kind every other row in this table records, so
+    #    an `input_usd_per_mtok` here would be a derived guess wearing the
+    #    formatting of a dated, sourced fact. This table's value is that it
+    #    holds only the latter.
+    # 2. A Modal response carries no `cost` field (2026-08-20 smoke test), so
+    #    unlike OpenRouter there is no per-call figure to reconcile against.
+    #
+    # The consequence is intended and must not be "fixed" by inventing a rate:
+    # `price_for("modal", ...)` returns None, so a Modal-served completion
+    # reports CostEstimate(complete=False) and every report spanning one is a
+    # declared lower bound. That is the correct answer while the true cost is
+    # unknown. Closing it properly means recording measured GPU-second spend
+    # per accepted story from Modal billing and deciding how to express that in
+    # a per-token table, which is scheduled work, not a literal edit here.
+    # #ASSUME: payment/financial: leg 3 only serves traffic after both
+    # OpenRouter legs fail, so the unpriced share of any period is bounded by
+    # how often the cascade fell through, not by total volume. A period with
+    # heavy leg-3 use is exactly when this understatement matters most.
+    # #VERIFY: test_modal_has_no_price_row_and_reports_incomplete.
+    #
+    # RETIRED BACKEND, RETAINED PRICE. Ollama is no longer a live generation
+    # leg (the adapter, config surface, and allowlist row are all gone), but
+    # generation_job/token-usage rows written before the retirement still carry
+    # provider="ollama". Deleting this entry would not remove a cost, it would
+    # make every one of those historical rows unpriceable and silently flip
+    # CostEstimate.complete to False for any report spanning that period.
+    # Do not remove it; there is no live code path that can add a new one.
     ("ollama", "qwen2.5:14b"): ModelPrice(
         input_usd_per_mtok=Decimal(0),
         output_usd_per_mtok=Decimal(0),
@@ -333,7 +367,8 @@ _PRICES: dict[tuple[str, str], ModelPrice] = {
         note=(
             "zero VENDOR cost, not zero cost. Hardware, power and the operator's "
             "time are real and are not modelled here, so an all-Ollama run "
-            "reporting $0.00 means 'nothing was billed', not 'this was free'"
+            "reporting $0.00 means 'nothing was billed', not 'this was free'. "
+            "Historical only: the Ollama leg was retired ahead of the Vultr move"
         ),
     ),
 }

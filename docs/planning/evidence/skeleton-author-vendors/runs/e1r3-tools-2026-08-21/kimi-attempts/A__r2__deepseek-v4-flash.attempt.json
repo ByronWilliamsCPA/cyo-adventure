@@ -1,0 +1,519 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-kite-festival",
+ "version": 1,
+ "title": "Tomas and the Spring Kite",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 80,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "family",
+   "creativity",
+   "perseverance",
+   "wind",
+   "festival"
+  ],
+  "estimated_minutes": 6,
+  "ending_count": 7,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=70 beats='Tomas and Grandmother gather bamboo and paper in the garden. The wind blows softly. They talk about the spring festival.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "talk_more",
+     "label": "Keep talking",
+     "target": "talk_kites"
+    },
+    {
+     "id": "plan_kite",
+     "label": "Plan a kite",
+     "target": "plan_kite"
+    }
+   ]
+  },
+  {
+   "id": "talk_kites",
+   "body": "<<FILL role=explore words=70 beats='Grandmother tells Tomas about kites she made as a girl. Tomas listens closely. He is excited.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "plan_kite_now",
+     "label": "Plan a kite",
+     "target": "plan_kite"
+    },
+    {
+     "id": "fly_existing",
+     "label": "Fly an old kite",
+     "target": "fly_old_kite"
+    }
+   ]
+  },
+  {
+   "id": "fly_old_kite",
+   "body": "<<FILL role=ending words=55 beats='Tomas and Grandmother fly an old kite together. It is fun, but Tomas wants to build his own next year.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_old",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Old Kite Fun"
+   }
+  },
+  {
+   "id": "plan_kite",
+   "body": "<<FILL role=decision words=70 beats='Tomas says, \"Let us make a kite!\" Grandmother agrees. \"What shape?\" she asks.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_triangle",
+     "label": "Triangle kite",
+     "target": "build_triangle"
+    },
+    {
+     "id": "choice_diamond",
+     "label": "Diamond kite",
+     "target": "build_diamond"
+    },
+    {
+     "id": "choice_bird",
+     "label": "Bird kite",
+     "target": "build_bird"
+    }
+   ]
+  },
+  {
+   "id": "build_triangle",
+   "body": "<<FILL role=explore words=70 beats='They tie three bamboo sticks into a triangle. They glue red paper on. Tomas ties a long tail. The kite is ready.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "test_tri1",
+     "label": "Test it",
+     "target": "test_triangle1"
+    },
+    {
+     "id": "decorate_tri",
+     "label": "Decorate first",
+     "target": "decorate_tri"
+    }
+   ]
+  },
+  {
+   "id": "build_diamond",
+   "body": "<<FILL role=explore words=70 beats='They cross two sticks into a diamond. Yellow paper covers it. Grandmother adds a golden tail.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "test_dia1",
+     "label": "Test it",
+     "target": "test_diamond1"
+    },
+    {
+     "id": "decorate_dia",
+     "label": "Decorate first",
+     "target": "decorate_dia"
+    }
+   ]
+  },
+  {
+   "id": "build_bird",
+   "body": "<<FILL role=explore words=70 beats='They shape bamboo into a bird frame. Blue paper and feathers make it look real. Tomas is proud.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "test_brd1",
+     "label": "Test it",
+     "target": "test_bird1"
+    },
+    {
+     "id": "decorate_brd",
+     "label": "Decorate first",
+     "target": "decorate_brd"
+    }
+   ]
+  },
+  {
+   "id": "decorate_tri",
+   "body": "<<FILL role=explore words=70 beats='They add red ribbons and stickers. The triangle kite looks bright and cheerful.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "test_tri_dec",
+     "label": "Test it",
+     "target": "test_triangle1"
+    }
+   ]
+  },
+  {
+   "id": "decorate_dia",
+   "body": "<<FILL role=explore words=70 beats='They add golden ribbons and sparkly stickers. The diamond kite shines.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "test_dia_dec",
+     "label": "Test it",
+     "target": "test_diamond1"
+    }
+   ]
+  },
+  {
+   "id": "decorate_brd",
+   "body": "<<FILL role=explore words=70 beats='They paint feathers on the bird kite. It becomes even more beautiful.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "test_brd_dec",
+     "label": "Test it",
+     "target": "test_bird1"
+    }
+   ]
+  },
+  {
+   "id": "test_triangle1",
+   "body": "<<FILL role=transition words=70 beats='Tomas runs. The triangle kite lifts but the wind shifts. It wobbles and spirals down into the grass.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "tri_mod_a",
+     "label": "Shorten the tail",
+     "target": "triangle_mod_a"
+    },
+    {
+     "id": "tri_mod_b",
+     "label": "Add cross sticks",
+     "target": "triangle_mod_b"
+    },
+    {
+     "id": "tri_ask",
+     "label": "Ask Grandmother",
+     "target": "tri_advice"
+    }
+   ]
+  },
+  {
+   "id": "tri_advice",
+   "body": "<<FILL role=transition words=70 beats='Grandmother examines the kite. \"Maybe we need a longer tail,\" she says.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "tri_tail",
+     "label": "Try longer tail",
+     "target": "triangle_mod_a"
+    },
+    {
+     "id": "tri_cross",
+     "label": "Add cross sticks",
+     "target": "triangle_mod_b"
+    }
+   ]
+  },
+  {
+   "id": "test_diamond1",
+   "body": "<<FILL role=transition words=70 beats='The diamond kite soars high. Then a gust twists it. It flips and lands upside down. Grandmother examines it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "dia_mod_a",
+     "label": "Add a vent",
+     "target": "diamond_mod_a"
+    },
+    {
+     "id": "dia_mod_b",
+     "label": "Strengthen the frame",
+     "target": "diamond_mod_b"
+    },
+    {
+     "id": "dia_ask",
+     "label": "Ask Grandmother",
+     "target": "dia_advice"
+    }
+   ]
+  },
+  {
+   "id": "dia_advice",
+   "body": "<<FILL role=transition words=70 beats='Grandmother says, \"The wind is tricky. Let us make the kite stronger.\"'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "dia_strong",
+     "label": "Strengthen frame",
+     "target": "diamond_mod_b"
+    },
+    {
+     "id": "dia_vent",
+     "label": "Add a vent",
+     "target": "diamond_mod_a"
+    }
+   ]
+  },
+  {
+   "id": "test_bird1",
+   "body": "<<FILL role=transition words=70 beats='The bird kite flies gracefully, but a sudden wind turns it backward. It lands on the roof.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "brd_mod_a",
+     "label": "Add a stabilizer",
+     "target": "bird_mod_a"
+    },
+    {
+     "id": "brd_mod_b",
+     "label": "Change wing shape",
+     "target": "bird_mod_b"
+    },
+    {
+     "id": "brd_ask",
+     "label": "Ask Grandmother",
+     "target": "brd_advice"
+    }
+   ]
+  },
+  {
+   "id": "brd_advice",
+   "body": "<<FILL role=transition words=70 beats='Grandmother suggests a small tail. \"It will keep it steady,\" she says.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "brd_tail",
+     "label": "Add a tail",
+     "target": "bird_mod_a"
+    },
+    {
+     "id": "brd_wing",
+     "label": "Change wings",
+     "target": "bird_mod_b"
+    }
+   ]
+  },
+  {
+   "id": "triangle_mod_a",
+   "body": "<<FILL role=explore words=70 beats='Grandmother shortens the tail and ties extra ribbons. \"This should steady it,\" she says.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "tri_test_now",
+     "label": "Test now",
+     "target": "test_triangle2"
+    },
+    {
+     "id": "tri_deco",
+     "label": "Add more decorations",
+     "target": "deco_tri"
+    }
+   ]
+  },
+  {
+   "id": "triangle_mod_b",
+   "body": "<<FILL role=explore words=70 beats='They tie two more sticks across the frame. The triangle is now stronger. Tomas holds it up.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "tri_test_now_b",
+     "label": "Test now",
+     "target": "test_triangle2"
+    },
+    {
+     "id": "tri_deco_b",
+     "label": "Add more decorations",
+     "target": "deco_tri"
+    }
+   ]
+  },
+  {
+   "id": "deco_tri",
+   "body": "<<FILL role=explore words=70 beats='They tie colorful ribbons to the tail. The kite is now both strong and pretty.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "tri_test_deco",
+     "label": "Test now",
+     "target": "test_triangle2"
+    }
+   ]
+  },
+  {
+   "id": "diamond_mod_a",
+   "body": "<<FILL role=explore words=70 beats='They cut a small vent near the center. \"Wind can pass through safely,\" Grandmother explains.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "dia_test_now",
+     "label": "Test now",
+     "target": "test_diamond2"
+    },
+    {
+     "id": "dia_deco",
+     "label": "Add more decorations",
+     "target": "deco_dia"
+    }
+   ]
+  },
+  {
+   "id": "diamond_mod_b",
+   "body": "<<FILL role=explore words=70 beats='They add extra glue and a cross stick. The frame is now rigid and square.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "dia_test_now_b",
+     "label": "Test now",
+     "target": "test_diamond2"
+    },
+    {
+     "id": "dia_deco_b",
+     "label": "Add more decorations",
+     "target": "deco_dia"
+    }
+   ]
+  },
+  {
+   "id": "deco_dia",
+   "body": "<<FILL role=explore words=70 beats='They attach streamers to the diamond. It will look lovely in the sky.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "dia_test_deco",
+     "label": "Test now",
+     "target": "test_diamond2"
+    }
+   ]
+  },
+  {
+   "id": "bird_mod_a",
+   "body": "<<FILL role=explore words=70 beats='They add a small tail and adjust the wings. The bird looks more aerodynamic.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "brd_test_now",
+     "label": "Test now",
+     "target": "test_bird2"
+    },
+    {
+     "id": "brd_deco",
+     "label": "Add more details",
+     "target": "deco_brd"
+    }
+   ]
+  },
+  {
+   "id": "bird_mod_b",
+   "body": "<<FILL role=explore words=70 beats='They clip the wings narrower. It looks less like a bird but may cut the wind better.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "brd_test_now_b",
+     "label": "Test now",
+     "target": "test_bird2"
+    },
+    {
+     "id": "brd_deco_b",
+     "label": "Add more details",
+     "target": "deco_brd"
+    }
+   ]
+  },
+  {
+   "id": "deco_brd",
+   "body": "<<FILL role=explore words=70 beats='They paint bright eyes on the bird kite. It looks alive.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "brd_test_deco",
+     "label": "Test now",
+     "target": "test_bird2"
+    }
+   ]
+  },
+  {
+   "id": "test_triangle2",
+   "body": "<<FILL role=transition words=70 beats='The triangle kite flies better. It rises high. The wind changes again, but this time it recovers. Grandmother nods.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "go_fest_tri",
+     "label": "Go to festival",
+     "target": "festival_triangle"
+    }
+   ]
+  },
+  {
+   "id": "test_diamond2",
+   "body": "<<FILL role=transition words=70 beats='The diamond kite stays steady. It pulls strongly. Tomas holds the string firmly.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "go_fest_dia",
+     "label": "Go to festival",
+     "target": "festival_diamond"
+    }
+   ]
+  },
+  {
+   "id": "test_bird2",
+   "body": "<<FILL role=transition words=70 beats='The bird kite climbs steadily. The wind swirls but it recovers. It flies almost perfectly.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "go_fest_brd",
+     "label": "Go to festival",
+     "target": "festival_bird"
+    }
+   ]
+  },
+  {
+   "id": "festival_triangle",
+   "body": "<<FILL role=ending words=70 beats='At the festival, Tomas flies the triangle kite. It soars high and steady. Everyone claps. Grandmother hugs Tomas. \"We made a champion kite!\"'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_tri",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Triangle Triumph"
+   }
+  },
+  {
+   "id": "festival_diamond",
+   "body": "<<FILL role=ending words=70 beats='The diamond kite glides over the crowd. The wind is steady. It looks beautiful. Tomas feels proud.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_dia_mod",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Diamond in the Sky"
+   }
+  },
+  {
+   "id": "festival_bird",
+   "body": "<<FILL role=ending words=70 beats='The bird kite flaps its wings in the wind. It looks real. The festival guests cheer. Tomas and Grandmother smile.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_bird",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Bird Kite Soars"
+   }
+  }
+ ]
+}

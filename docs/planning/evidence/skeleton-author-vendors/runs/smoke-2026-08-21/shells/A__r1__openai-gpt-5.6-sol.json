@@ -1,0 +1,431 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "careful observation",
+   "kindness to animals",
+   "asking for help"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "holiday-duty",
+ "nodes": [
+  {
+   "id": "holiday-duty",
+   "body": "<<FILL role=setup words=25 beats='During holiday week, Miri unlocks Willowbank School and carries corn and fresh water toward the chicken yard for the morning hen check'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-enter-yard",
+     "label": "Enter the chicken yard",
+     "target": "missing-count"
+    }
+   ]
+  },
+  {
+   "id": "missing-count",
+   "body": "<<FILL role=setup words=45 beats='Dot and Goldie hurry from the coop, but tiny brown Pip does not follow; Miri checks the secure latch, counts twice, and finds fresh straw near the fence; she keeps the other hens safe and chooses where to begin searching'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-start-outside",
+     "label": "Search around the yard",
+     "target": "prepare-yard-search"
+    },
+    {
+     "id": "choice-start-inside",
+     "label": "Look for school clues",
+     "target": "prepare-classroom-search"
+    }
+   ]
+  },
+  {
+   "id": "prepare-yard-search",
+   "body": "<<FILL role=transition words=25 beats='Miri closes Dot and Goldie inside their run, takes the corn tin, and begins a slow circle around the quiet chicken yard'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-begin-yard-search",
+     "label": "Follow the yard path",
+     "target": "yard-choice"
+    }
+   ]
+  },
+  {
+   "id": "prepare-classroom-search",
+   "body": "<<FILL role=transition words=25 beats='Miri secures the run, wipes her shoes, and enters the quiet classroom where the holiday care chart hangs beside the feed cupboard'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-begin-classroom-search",
+     "label": "Check the classroom",
+     "target": "classroom-choice"
+    }
+   ]
+  },
+  {
+   "id": "yard-choice",
+   "body": "<<FILL role=explore words=45 beats='Beside the fence, Miri finds three clean brown feathers caught on a twig; near the rain barrel, small three-toed prints cross a muddy patch; both could belong to Pip, so Miri decides which clue to study first'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-study-yard-feathers",
+     "label": "Study the brown feathers",
+     "target": "follow-feather-line"
+    },
+    {
+     "id": "choice-study-yard-prints",
+     "label": "Follow the muddy prints",
+     "target": "follow-muddy-line"
+    }
+   ]
+  },
+  {
+   "id": "classroom-choice",
+   "body": "<<FILL role=explore words=45 beats='The care chart says Pip seeks low, dark corners on windy days; a note from caretaker Mr. Bell mentions yesterday’s fence repair; branches tap the window, and Miri chooses between using the chart or asking Mr. Bell'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-use-hen-chart",
+     "label": "Use the hen chart",
+     "target": "carry-chart-clue"
+    },
+    {
+     "id": "choice-ask-caretaker",
+     "label": "Ask Mr. Bell",
+     "target": "find-mr-bell"
+    }
+   ]
+  },
+  {
+   "id": "follow-feather-line",
+   "body": "<<FILL role=transition words=25 beats='The unbroken feathers form a short line toward a hedge gap, where bent leaves and one strand of straw point into the school garden'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-reach-garden-signs",
+     "label": "Trace the feather line",
+     "target": "garden-signs"
+    }
+   ]
+  },
+  {
+   "id": "follow-muddy-line",
+   "body": "<<FILL role=transition words=25 beats='Miri follows the prints behind the rain barrel until they split between the shadowy tool shed and a shallow water dish by the fence'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-reach-shed-signs",
+     "label": "Study the split trail",
+     "target": "shed-signs"
+    }
+   ]
+  },
+  {
+   "id": "carry-chart-clue",
+   "body": "<<FILL role=transition words=25 beats='Miri carries the chart outside and compares its picture of hiding Pip with the rhubarb leaves and overturned wheelbarrow in the school garden'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-use-hiding-clues",
+     "label": "Search the garden corners",
+     "target": "quiet-hiding"
+    }
+   ]
+  },
+  {
+   "id": "find-mr-bell",
+   "body": "<<FILL role=transition words=25 beats='Miri finds Mr. Bell sweeping by the side gate; he lends her a torch and recalls hearing a hen near the repaired fence'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-inspect-repair-clues",
+     "label": "Visit the repaired fence",
+     "target": "repair-clues"
+    }
+   ]
+  },
+  {
+   "id": "garden-signs",
+   "body": "<<FILL role=decision words=45 beats='Beyond the hedge gap, tiny prints circle the broad rhubarb leaves; a faint peep also sounds near the overturned wheelbarrow, though its loose handle squeaks in the wind; Miri chooses whether to trust the prints or the sound'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-trust-rhubarb-prints",
+     "label": "Follow the rhubarb prints",
+     "target": "approach-rhubarb"
+    },
+    {
+     "id": "choice-trust-wheelbarrow-peep",
+     "label": "Check the wheelbarrow",
+     "target": "approach-wheelbarrow"
+    }
+   ]
+  },
+  {
+   "id": "shed-signs",
+   "body": "<<FILL role=decision words=45 beats='The tool shed door stands slightly open, with potting soil scattered across its floor; beside the water dish, one fresh footprint leads toward a leafy fence corner; Miri decides which sign is more likely to reveal Pip'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-enter-tool-shed",
+     "label": "Look inside the shed",
+     "target": "inspect-shed-gap"
+    },
+    {
+     "id": "choice-follow-water-print",
+     "label": "Follow the water print",
+     "target": "wait-by-water"
+    }
+   ]
+  },
+  {
+   "id": "quiet-hiding",
+   "body": "<<FILL role=decision words=45 beats='The chart picture matches two sheltered places: a warm hollow beneath the rhubarb and a dark space behind stacked plant pots near the compost bin; Miri listens for a cluck and chooses which hiding corner to approach'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-check-warm-hollow",
+     "label": "Lift the rhubarb leaf",
+     "target": "lift-rhubarb-leaf"
+    },
+    {
+     "id": "choice-check-dark-pots",
+     "label": "Look behind the pots",
+     "target": "approach-plant-pots"
+    }
+   ]
+  },
+  {
+   "id": "repair-clues",
+   "body": "<<FILL role=decision words=45 beats='The repaired wire is firm, so Pip has not reached the road; straw clings to Mr. Bell’s garden cart, while fresh scratches pass beneath a low compost step; Miri chooses which safe place they should inspect together'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-check-garden-cart",
+     "label": "Search the garden cart",
+     "target": "search-cart-safely"
+    },
+    {
+     "id": "choice-check-compost-step",
+     "label": "Shine under the step",
+     "target": "inspect-compost-step"
+    }
+   ]
+  },
+  {
+   "id": "approach-rhubarb",
+   "body": "<<FILL role=climax words=25 beats='Miri kneels beside the largest leaf, hears a bubbling cluck underneath, and lifts the heavy green edge slowly with both hands'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-reveal-rhubarb",
+     "label": "See what is underneath",
+     "target": "ending-rhubarb-nest"
+    }
+   ]
+  },
+  {
+   "id": "approach-wheelbarrow",
+   "body": "<<FILL role=climax words=25 beats='A brown tail feather appears below the wheelbarrow; Miri blocks the garden path and raises one light handle without tipping the barrow'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-reveal-wheelbarrow",
+     "label": "Make a safe opening",
+     "target": "ending-wheelbarrow-homecoming"
+    }
+   ]
+  },
+  {
+   "id": "inspect-shed-gap",
+   "body": "<<FILL role=climax words=25 beats='Sunlight reveals hen prints crossing spilled soil toward a narrow gap beneath the shed wall, but no answering cluck comes from inside'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-record-shed-trail",
+     "label": "Record the fading trail",
+     "target": "ending-careful-report"
+    }
+   ]
+  },
+  {
+   "id": "wait-by-water",
+   "body": "<<FILL role=climax words=25 beats='Miri places three corn kernels beside the water dish, sits very still, and watches the leafy corner without calling or chasing'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-watch-leafy-corner",
+     "label": "Wait for the rustle",
+     "target": "ending-quiet-return"
+    }
+   ]
+  },
+  {
+   "id": "lift-rhubarb-leaf",
+   "body": "<<FILL role=climax words=25 beats='Warm straw fills a hollow beneath the leaf; Miri hears a soft cluck and notices a small brown shape guarding something pale'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-view-hidden-nest",
+     "label": "Peek into the nest",
+     "target": "ending-secret-egg"
+    }
+   ]
+  },
+  {
+   "id": "approach-plant-pots",
+   "body": "<<FILL role=climax words=25 beats='Miri calls Pip in her calm feeding voice; a flowerpot wobbles, and a proud brown head rises behind the stack'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-greet-pot-perch",
+     "label": "Offer Pip some corn",
+     "target": "ending-compost-crown"
+    }
+   ]
+  },
+  {
+   "id": "search-cart-safely",
+   "body": "<<FILL role=climax words=25 beats='Mr. Bell steadies the cart while Miri checks the straw-lined shelf beneath it; they hear a worried cluck behind a folded net'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-free-cart-hen",
+     "label": "Move the net together",
+     "target": "ending-team-rescue"
+    }
+   ]
+  },
+  {
+   "id": "inspect-compost-step",
+   "body": "<<FILL role=climax words=25 beats='Miri shines the torch below the wooden step and sees feathers beside a harmless loop of loose garden mesh; Mr. Bell kneels nearby'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice-open-step-path",
+     "label": "Clear a gentle path",
+     "target": "ending-step-rescue"
+    }
+   ]
+  },
+  {
+   "id": "ending-rhubarb-nest",
+   "body": "<<FILL role=ending words=45 beats='Pip sits safely in a snug straw nest beneath the rhubarb, with one small egg tucked under her; Miri guides Pip home with corn, carries the egg carefully, and marks the secret nesting place on the holiday chart'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "rhubarb-nest-ending",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Rhubarb Nest"
+   }
+  },
+  {
+   "id": "ending-wheelbarrow-homecoming",
+   "body": "<<FILL role=ending words=45 beats='Pip strolls from beneath the wheelbarrow, dusty but unharmed; Miri sets the barrow upright, leads Pip back with a corn trail, fastens the coop latch, and happily counts Dot, Goldie, and Pip twice'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "wheelbarrow-homecoming-ending",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Wheelbarrow Homecoming"
+   }
+  },
+  {
+   "id": "ending-careful-report",
+   "body": "<<FILL role=ending words=65 beats='The trail ends at dry leaves beyond the shed, and pickup time arrives before Pip appears; Miri feels disappointed, but she secures Dot and Goldie, leaves food and water, draws every clue on a clear map, and reports the missing hen to Mr. Bell so the careful search can continue'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "careful-report-ending",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Search Must Continue"
+   }
+  },
+  {
+   "id": "ending-quiet-return",
+   "body": "<<FILL role=ending words=45 beats='After a long rustle, Pip steps from the leafy corner and drinks; she pecks the waiting corn, then follows Miri calmly to the coop; Miri checks the latch and adds a spare garden water dish to the care plan'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "quiet-return-ending",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Pip Steps Out"
+   }
+  },
+  {
+   "id": "ending-secret-egg",
+   "body": "<<FILL role=ending words=45 beats='The brown shape is Pip, and the pale object is her first hidden egg; Miri gives Pip room to stand, then guides her toward the coop; the chart gains a bright note about checking warm nesting hollows'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "secret-egg-ending",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Pip and the Secret Egg"
+   }
+  },
+  {
+   "id": "ending-compost-crown",
+   "body": "<<FILL role=ending words=45 beats='Pip is perched on a round flowerpot like a tiny brown queen; she hops down for corn and follows Miri through the garden; Mr. Bell moves the pots away from the path before all three hens share breakfast'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "compost-crown-ending",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Compost Crown"
+   }
+  },
+  {
+   "id": "ending-team-rescue",
+   "body": "<<FILL role=ending words=45 beats='Mr. Bell lifts the folded net while Miri tempts Pip from the cart shelf with corn; Pip emerges safely, and the pair fasten the net in a closed cupboard before returning the smallest hen to her friends'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "team-rescue-ending",
+    "valence": "positive",
+    "kind": "success",
+    "title": "A Helpful Team"
+   }
+  },
+  {
+   "id": "ending-step-rescue",
+   "body": "<<FILL role=ending words=45 beats='Mr. Bell loosens the garden mesh, but Pip has already slipped out beside the pots; their cleared path and corn help her return safely; Miri records the discovery and helps secure the mesh for the next morning'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "step-rescue-ending",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "The Empty Loop and Safe Return"
+   }
+  }
+ ]
+}

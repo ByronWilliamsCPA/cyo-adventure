@@ -1,0 +1,138 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 3.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "problem-solving",
+   "animals",
+   "friendship"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=68 beats='Miri wakes early to feed three hens: Henrietta, Clover, and Pip. She counts one, two... only two. Pip is missing! Miri feels worried and sets out to search.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c1",
+     "label": "Search the garden",
+     "target": "garden"
+    },
+    {
+     "id": "c2",
+     "label": "Ask friend Leo",
+     "target": "friend"
+    }
+   ]
+  },
+  {
+   "id": "garden",
+   "body": "<<FILL role=explore words=65 beats='Miri searches among tomato plants. She finds a small white feather on a rose bush. It looks like Pip feather. Where next?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c3",
+     "label": "Check the shed",
+     "target": "shed"
+    },
+    {
+     "id": "c4",
+     "label": "Climb the old oak tree",
+     "target": "tree"
+    }
+   ]
+  },
+  {
+   "id": "friend",
+   "body": "<<FILL role=explore words=70 beats='Miri runs to Leo house. He saw a fox near the woods heading to the pond. Miri thanks him.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c5",
+     "label": "Search the woods",
+     "target": "woods"
+    },
+    {
+     "id": "c6",
+     "label": "Search the playground",
+     "target": "playground"
+    }
+   ]
+  },
+  {
+   "id": "shed",
+   "body": "<<FILL role=explore words=62 beats='Miri opens the creaky shed door. A broken egg on the floor, no Pip. She hears a faint cluck outside near bushes.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c7",
+     "label": "Look under bushes",
+     "target": "bushes"
+    },
+    {
+     "id": "c8",
+     "label": "Search the field",
+     "target": "field"
+    }
+   ]
+  },
+  {
+   "id": "tree",
+   "body": "<<FILL role=decision words=70 beats='Miri climbs the old oak tree. Midway, a nest of twigs and moss. Something gleams inside. Reach in or climb higher?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c9",
+     "label": "Reach into the nest",
+     "target": "nest_inspect"
+    },
+    {
+     "id": "c10",
+     "label": "Climb higher to look around",
+     "target": "tree_top"
+    }
+   ]
+  },
+  {
+   "id": "woods",
+   "body": "<<FILL role=explore words=68 beats='Miri enters the woods. Path splits. Rustle left, faint cluck right. Which way?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c11",
+     "label": "Investigate the rustle",
+     "target": "investigate"
+    },
+    {
+     "id": "c12",
+     "label": "Follow the cluck",
+     "target": "follow_cluck"
+    }
+   ]
+  }
+ ]
+}

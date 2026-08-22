@@ -814,7 +814,7 @@ product control, not a CI gate, and is therefore compatible with the no-blocking
 - **Framework ref:** not determined
 - **Legal ref:** not determined
 - **Class:** STATIC
-- **Protected property:** every provider path (Anthropic, OpenRouter, Ollama, Modal, fallback)
+- **Protected property:** every provider path (Anthropic, OpenRouter, Modal, fallback)
   terminates in the identical validator plus moderation gate, with no provider-specific shortcut
 - **Verification target:** each provider module under `generation/providers/` and its call path
   into `validator/` and `moderation/`
@@ -827,7 +827,7 @@ product control, not a CI gate, and is therefore compatible with the no-blocking
 - **Owner:** core-maintainer
 - **Last verified:** not verified
 - **Status:** mechanism unproven
-- **Check:** Every provider path (Anthropic, OpenRouter, Ollama, Modal, fallback) terminates in the
+- **Check:** Every provider path (Anthropic, OpenRouter, Modal, fallback) terminates in the
   identical validator plus moderation gate, with no provider-specific shortcut
 
 #### O-18
@@ -2390,7 +2390,7 @@ here rather than by SP-14 on that basis.
   trust boundary being described.
 - **Verification target:** the deployed TLS chain (Cloudflare Tunnel `cloudflared`, Pangolin, and
   the nginx origin, per `crypto-inventory.md` section 2, lines 61 to 69) and backend-to-provider
-  egress TLS (OpenRouter, Anthropic, Gemini, Supabase JWKS, Ollama).
+  egress TLS (OpenRouter, Anthropic, Gemini, Supabase JWKS, Modal).
 - **Failure oracle:** a check run from inside the network, or against an internal or loopback
   endpoint, is credited as verifying external TLS posture; or TLS policy, certificate validation,
   HSTS, or redirect behavior fails when probed from outside the network.

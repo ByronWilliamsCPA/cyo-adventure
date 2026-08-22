@@ -1,0 +1,541 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "open_map",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "caring for animals",
+   "careful looking",
+   "asking for help"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 9,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "s01_empty_perch",
+ "nodes": [
+  {
+   "id": "s01_empty_perch",
+   "body": "<<FILL role=setup words=68 beats='Miri unlocks the school coop on the first morning of the holiday week; Bramble and Toffee bustle out for their corn; the smallest hen Pip is not on her perch, the straw is scuffed into a small round hollow, and three grey feathers lie by the door'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_s01_1",
+     "label": "Go outside and start looking",
+     "target": "h_yard"
+    }
+   ]
+  },
+  {
+   "id": "h_yard",
+   "body": "<<FILL role=decision words=68 beats='Miri stands in the middle of the soaking yard with the seed tin and turns slowly round; the beech hedge is torn at the bottom, the shed door is swinging on its hinge, and beyond the raspberry canes the garden gate stands a hand width open'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_hy_1",
+     "label": "Go over to the beech hedge",
+     "target": "t1_to_the_hedge"
+    },
+    {
+     "id": "ch_hy_2",
+     "label": "Go over to the shed",
+     "target": "t2_to_the_shed"
+    },
+    {
+     "id": "ch_hy_3",
+     "label": "Go out to the garden gate",
+     "target": "t3_to_the_gate"
+    }
+   ]
+  },
+  {
+   "id": "t1_to_the_hedge",
+   "body": "<<FILL role=transition words=68 beats='Miri crosses the wet grass counting the grey feathers under her breath; the fifth one is snagged on a bramble at the foot of the beech hedge, where the ground is scratched bare in a wide patch and the leaves drip down her collar'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_t1_1",
+     "label": "Search along the hedge",
+     "target": "area_hedge"
+    }
+   ]
+  },
+  {
+   "id": "t2_to_the_shed",
+   "body": "<<FILL role=transition words=68 beats='Mr Odo the caretaker is oiling a hinge outside his shed and listens properly; the hens were fussing at first light, he says, and the roof banged all night; a frightened hen hides very low or very high, and he lends Miri his big rubber torch'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_t2_1",
+     "label": "Search around the shed",
+     "target": "area_shed"
+    }
+   ]
+  },
+  {
+   "id": "t3_to_the_gate",
+   "body": "<<FILL role=transition words=68 beats='the gate latch hangs loose on one screw and Miri remembers it banging in the night; out in the puddled lane a line of small three toed prints leads away past the bus stop, and the school fence runs the other way along the wet field'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_t3_1",
+     "label": "Search outside the gate",
+     "target": "area_gate"
+    }
+   ]
+  },
+  {
+   "id": "area_hedge",
+   "body": "<<FILL role=decision words=68 beats='the hedge runs the whole length of the yard; halfway along it a low ragged gap has a tuft of grey down caught at hen height, at the far end three compost bins steam gently in the corner, and behind them a bramble thicket rustles all by itself'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_ah_1",
+     "label": "Look at the gap in the hedge",
+     "target": "p_gap"
+    },
+    {
+     "id": "ch_ah_2",
+     "label": "Look at the compost bins",
+     "target": "p_compost"
+    },
+    {
+     "id": "ch_ah_3",
+     "label": "Look in the brambles",
+     "target": "p_brambles"
+    }
+   ]
+  },
+  {
+   "id": "area_shed",
+   "body": "<<FILL role=decision words=68 beats='the torch is heavy in both of Miri hands; a board has worked loose under the coop and left a dark gap in the floor, the shed rafters run away into shadow above the deck chairs, and the boiler cupboard door behind the hall has been propped open all week'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_as_1",
+     "label": "Look under the coop",
+     "target": "p_under_coop"
+    },
+    {
+     "id": "ch_as_2",
+     "label": "Look up in the rafters",
+     "target": "p_rafters"
+    },
+    {
+     "id": "ch_as_3",
+     "label": "Look in the boiler cupboard",
+     "target": "p_boiler"
+    }
+   ]
+  },
+  {
+   "id": "area_gate",
+   "body": "<<FILL role=decision words=68 beats='outside the gate the prints run down the lane toward the wide brown puddle and the blue door of Mrs Quill; the other way the long grass by the fence is pressed into a low tunnel, and past that the hay store stands with its door ajar'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_ag_1",
+     "label": "Follow the prints down the lane",
+     "target": "p_lane"
+    },
+    {
+     "id": "ch_ag_2",
+     "label": "Follow the tunnel in the grass",
+     "target": "p_field"
+    },
+    {
+     "id": "ch_ag_3",
+     "label": "Try the hay store",
+     "target": "p_hay_store"
+    }
+   ]
+  },
+  {
+   "id": "p_gap",
+   "body": "<<FILL role=decision words=68 beats='beyond the gap the ground drops into nettles and wide dock leaves, and one patch of green shivers and then goes completely still; the gap is just big enough for Miri if she goes through on her elbows and does not mind the twigs'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pg_1",
+     "label": "Crawl through the gap",
+     "target": "px_gap"
+    },
+    {
+     "id": "ch_pg_2",
+     "label": "Go back to the yard",
+     "target": "h_yard"
+    }
+   ]
+  },
+  {
+   "id": "px_gap",
+   "body": "<<FILL role=climax words=68 beats='Miri squeezes through on her elbows and kneels in the wet on the far side; she rattles the seed tin once and parts the last of the dock leaves very slowly with the back of her hand, holding her breath'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pxg_1",
+     "label": "Look under the dock leaves",
+     "target": "e01_nest_in_nettles"
+    }
+   ]
+  },
+  {
+   "id": "p_compost",
+   "body": "<<FILL role=decision words=68 beats='the three compost bins smell of grass cuttings and steam gently in the cold; an old sack lies flat across the warmest one, and something rustles underneath it and stops the moment Miri steps onto the gravel'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pc_1",
+     "label": "Lift the old sack",
+     "target": "px_compost"
+    },
+    {
+     "id": "ch_pc_2",
+     "label": "Go back to the yard",
+     "target": "h_yard"
+    }
+   ]
+  },
+  {
+   "id": "px_compost",
+   "body": "<<FILL role=climax words=68 beats='Miri takes one corner of the sack and lifts it a hand width at a time; warm compost steam rises into the cold air; underneath is a scooped hollow lined with dry grass and grey feathers, and the hollow is not empty'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pxc_1",
+     "label": "Lift the sack right off",
+     "target": "e02_warm_hollow"
+    }
+   ]
+  },
+  {
+   "id": "p_brambles",
+   "body": "<<FILL role=decision words=68 beats='the bramble thicket behind the bins is dark underneath and full of last year leaves; something in there is scuffling steadily, and there is no way in at all except on hands and knees through the thorns'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pb_1",
+     "label": "Push in after the scuffling",
+     "target": "px_brambles"
+    },
+    {
+     "id": "ch_pb_2",
+     "label": "Go back to the yard",
+     "target": "h_yard"
+    }
+   ]
+  },
+  {
+   "id": "px_brambles",
+   "body": "<<FILL role=climax words=68 beats='the thorns catch Miri coat at the shoulder and hold on; she crawls three slow steps into the dark under the brambles, with wet leaves against her cheek, and reaches toward the scuffling with one careful hand'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pxb_1",
+     "label": "Reach into the leaves",
+     "target": "e03_only_a_blackbird"
+    }
+   ]
+  },
+  {
+   "id": "p_under_coop",
+   "body": "<<FILL role=decision words=68 beats='Miri lies flat on the wet grass and shines the torch into the crawl space under the coop; the beam finds dust, a lost trowel and two round eyes blinking against the back wall, and the eyes do not come one step closer to the light'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_puc_1",
+     "label": "Slide the seed tray in",
+     "target": "px_seed_tray"
+    },
+    {
+     "id": "ch_puc_2",
+     "label": "Go back to the yard",
+     "target": "h_yard"
+    }
+   ]
+  },
+  {
+   "id": "px_seed_tray",
+   "body": "<<FILL role=climax words=68 beats='Miri switches the torch off, pushes the seed tray into the gap and taps its metal rim three times, then folds her hands in her lap; the scratching starts again in the dark and comes closer, slow and careful, one small step at a time'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pxs_1",
+     "label": "Wait without moving",
+     "target": "e04_seed_tray_trick"
+    }
+   ]
+  },
+  {
+   "id": "p_rafters",
+   "body": "<<FILL role=decision words=68 beats='inside the shed the torch beam climbs the wall past the paint tins and stops on the highest rafter, where a small round shape is wedged between the beam and the roof with one bright eye open; it is much too high for Miri to reach on her own'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pr_1",
+     "label": "Fetch Mr Odo and his ladder",
+     "target": "px_ladder"
+    },
+    {
+     "id": "ch_pr_2",
+     "label": "Go back to the yard",
+     "target": "h_yard"
+    }
+   ]
+  },
+  {
+   "id": "px_ladder",
+   "body": "<<FILL role=climax words=68 beats='Mr Odo stands the long ladder against the shed wall and Miri leans her whole weight on the bottom rung to hold it dead still; dust drifts down through the torch beam and a cross clucking starts up somewhere over their heads'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pxl_1",
+     "label": "Hold the ladder steady",
+     "target": "e05_up_in_rafters"
+    }
+   ]
+  },
+  {
+   "id": "p_boiler",
+   "body": "<<FILL role=decision words=68 beats='the boiler cupboard behind the hall is the warmest place in the whole school and its door has been propped open with a brick all week; inside, the big pipes tick and the floor is covered in a fine grey dust with marks in it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pbo_1",
+     "label": "Follow the marks in the dust",
+     "target": "px_boiler"
+    },
+    {
+     "id": "ch_pbo_2",
+     "label": "Go back to the yard",
+     "target": "h_yard"
+    }
+   ]
+  },
+  {
+   "id": "px_boiler",
+   "body": "<<FILL role=climax words=68 beats='the marks in the dust are three toed and they go in and do not come out again; Miri follows them past the mop bucket to the shelf above the warm pipe, and shines the torch along it very slowly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pxbo_1",
+     "label": "Shine the torch on the shelf",
+     "target": "e06_warmest_place"
+    }
+   ]
+  },
+  {
+   "id": "p_lane",
+   "body": "<<FILL role=decision words=68 beats='the prints stop dead at a wide brown puddle that fills the whole lane; on the far bank they start again along the wall of Mrs Quill, and from behind her hawthorn comes a small cross clucking, and then nothing at all'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pl_1",
+     "label": "Wade round to the hawthorn",
+     "target": "px_hawthorn"
+    },
+    {
+     "id": "ch_pl_2",
+     "label": "Go back to the yard",
+     "target": "h_yard"
+    }
+   ]
+  },
+  {
+   "id": "px_hawthorn",
+   "body": "<<FILL role=climax words=68 beats='Miri splashes round the edge of the puddle and parts the hawthorn with both hands; a muddy brown shape shuffles deeper into the twigs, grumbles at her, and watches her fingers very carefully indeed; Miri is cold and out of patience'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pxh_1",
+     "label": "Grab her before she runs",
+     "target": "e07_muddy_chase"
+    }
+   ]
+  },
+  {
+   "id": "p_field",
+   "body": "<<FILL role=decision words=68 beats='the tunnel through the long grass runs straight to the old water trough leaning against the wall; behind the trough the ground is dry and scratched into a shallow dust bath, but there is no hen in it and the tunnel simply stops'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pf_1",
+     "label": "Sit down and work it out",
+     "target": "px_trough"
+    },
+    {
+     "id": "ch_pf_2",
+     "label": "Go back to the yard",
+     "target": "h_yard"
+    }
+   ]
+  },
+  {
+   "id": "px_trough",
+   "body": "<<FILL role=climax words=68 beats='Miri sits on the cold trough edge with the envelope from her pocket and a stub of pencil, and writes down every place she has looked so far, in order; the list is long and neat and the field is not going to give her anything else today'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pxt_1",
+     "label": "Take the list back to school",
+     "target": "e08_note_on_the_door"
+    }
+   ]
+  },
+  {
+   "id": "p_hay_store",
+   "body": "<<FILL role=decision words=68 beats='the hay store smells of dust and warm straw and the light comes in in stripes through the boards; a single grey feather is stuck to the second bale up, and the stack of bales goes right to the tin roof'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_phs_1",
+     "label": "Climb the stack of bales",
+     "target": "px_bales"
+    },
+    {
+     "id": "ch_phs_2",
+     "label": "Go back to the yard",
+     "target": "h_yard"
+    }
+   ]
+  },
+  {
+   "id": "px_bales",
+   "body": "<<FILL role=climax words=68 beats='Miri climbs the stack one careful step at a time, testing each bale with her boot before she trusts it; at the top she can hear scratching, and there is a dark slot behind the last bale where the straw has been pulled about'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch_pxba_1",
+     "label": "Reach behind the top bale",
+     "target": "e09_in_the_hay_store"
+    }
+   ]
+  },
+  {
+   "id": "e01_nest_in_nettles",
+   "body": "<<FILL role=ending words=70 beats='Pip is crouched in a hollow of dry grass under the dock leaves with two warm eggs tucked beneath her; Miri lifts hen and eggs into her woolly hat and carries them back through the gap; Mr Odo mends the torn hedge that same afternoon and the eggs go to the kitchen'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_nest_in_nettles",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Nest in the Nettles"
+   }
+  },
+  {
+   "id": "e02_warm_hollow",
+   "body": "<<FILL role=ending words=70 beats='Pip is fast asleep in the warm compost hollow with seed husks stuck to her feathers; she grumbles at the daylight, stretches one wing, and follows the rattling seed tin all the way back to the run; Miri props the sack up on two sticks so it cannot happen again'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_warm_hollow",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Warm Under the Sack"
+   }
+  },
+  {
+   "id": "e03_only_a_blackbird",
+   "body": "<<FILL role=ending words=70 beats='the scuffling is a blackbird turning leaves over, and it clatters up through the thorns into the branches; Miri backs out with a torn pocket and scratched hands and nothing else; Pip walks in through the coop door by herself at dusk, and Miri never does find out where she spent the day'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_only_a_blackbird",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Only a Blackbird"
+   }
+  },
+  {
+   "id": "e04_seed_tray_trick",
+   "body": "<<FILL role=ending words=70 beats='Pip creeps out of the dark, eats two beakfuls from the tray, and lets Miri close both hands gently around her; she is dusty and cross and perfectly well; Miri carries her back to the run and wedges a brick into the gap under the coop floor so it cannot happen again'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_seed_tray_trick",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Seed Tray Trick"
+   }
+  },
+  {
+   "id": "e05_up_in_rafters",
+   "body": "<<FILL role=ending words=70 beats='Mr Odo climbs three rungs and lifts Pip down from the rafter, warm and indignant; she flew up there when the roof banged in the night and was far too proud to admit she was stuck; Miri carries her home under her coat while Mr Odo nails the loose roof sheet down'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_up_in_rafters",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Up in the Rafters"
+   }
+  },
+  {
+   "id": "e06_warmest_place",
+   "body": "<<FILL role=ending words=70 beats='Pip is sitting on the shelf above the warm pipe like a queen on a throne, with dust on her back and not the smallest wish to move; Miri lifts her down with both hands and carries her out into the cold; the boiler cupboard gets a proper latch before Friday'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_warmest_place",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Warmest Place in the School"
+   }
+  },
+  {
+   "id": "e07_muddy_chase",
+   "body": "<<FILL role=ending words=70 beats='Pip bursts out of the hawthorn and the chase goes twice round the puddle and once round the post box, and ends with Miri sitting down hard in the mud with nothing in her hands; Mrs Quill brings Pip round at teatime in a shopping bag; a hen, says Mr Odo kindly, is always faster than a hurry'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_muddy_chase",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Muddy Chase"
+   }
+  },
+  {
+   "id": "e08_note_on_the_door",
+   "body": "<<FILL role=ending words=70 beats='Miri writes PIP IS MISSING across the top of the list and pins it to the coop door with every searched place ticked off underneath; after lunch four children search the places that are not on the list, and Pip is found dozing behind the water butt at four o clock'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_note_on_the_door",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Note on the Door"
+   }
+  },
+  {
+   "id": "e09_in_the_hay_store",
+   "body": "<<FILL role=ending words=70 beats='behind the top bale Pip has scraped out a nest of loose straw and is sitting in it, warm and smug, with two brown eggs beneath her; Miri carries hen and eggs down the stack one careful step at a time, and Mr Odo mends the bent wire at the back of the run that afternoon'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "end_in_the_hay_store",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "In the Hay Store"
+   }
+  }
+ ]
+}

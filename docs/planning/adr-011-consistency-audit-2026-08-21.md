@@ -1,4 +1,4 @@
-# ADR-011 internal-consistency audit (UW-C323)
+# ADR-011 internal-consistency audit (UW-C327)
 
 **Date**: 2026-08-21
 **Commissioned by**: owner ruling 9.1 (`live-structural-round-2026-08-21.md` section 9.1)

@@ -686,7 +686,7 @@ async def test_fill_skeleton_restores_frozen_fields_the_model_drifted() -> None:
 
     The reply rewrites the story id and swaps an ending kind, the two
     structure-critical mutation classes the 2026-08-21 live round measured
-    (`AL-510`); a retitled ending is a legal theme rewrite and survives. The
+    (`AL-515`); a retitled ending is a legal theme rewrite and survives. The
     outcome's document carries the skeleton's frozen values, so the drift
     costs no repair cycle and ships nothing.
     """

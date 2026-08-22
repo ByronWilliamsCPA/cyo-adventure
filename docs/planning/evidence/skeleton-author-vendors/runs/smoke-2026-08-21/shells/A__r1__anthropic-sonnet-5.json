@@ -1,0 +1,429 @@
+{
+ "schema_version": "2.0",
+ "id": "the-smallest-hen-is-missing",
+ "version": 1,
+ "title": "The Smallest Hen Is Missing",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 1.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "courage",
+   "friendship",
+   "curiosity"
+  ],
+  "estimated_minutes": 4,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=25 beats='Monday of the school holiday, Miri unlocks the coop to feed Nutmeg, Pepper, and tiny Biscuit; Biscuits corner of straw is empty and the little door hangs open; Miri feels a worried flutter and decides to search the school grounds right away.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "start-c1",
+     "label": "Go outside and look for Biscuit",
+     "target": "first_decision"
+    }
+   ]
+  },
+  {
+   "id": "first_decision",
+   "body": "<<FILL role=decision words=45 beats='Standing in the yard, Miri counts three places a curious small hen might wander: the vegetable garden, the toolshed with its half-open door, or the playground where the swings creak; she must pick where to look first.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "first-c1",
+     "label": "Search near the vegetable garden",
+     "target": "garden_decision"
+    },
+    {
+     "id": "first-c2",
+     "label": "Look inside the toolshed",
+     "target": "shed_decision"
+    },
+    {
+     "id": "first-c3",
+     "label": "Check the playground",
+     "target": "playground_explore1"
+    }
+   ]
+  },
+  {
+   "id": "garden_decision",
+   "body": "<<FILL role=decision words=95 beats='In the garden, Miri finds small brown feathers caught on a cabbage leaf; a muddy trail splits two ways, one curling into the tall hedge along the fence, the other winding between rows of ripe tomatoes; she must choose which trail to follow first.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "garden-c1",
+     "label": "Push through the tall hedge",
+     "target": "hedge_explore1"
+    },
+    {
+     "id": "garden-c2",
+     "label": "Search among the tomato plants",
+     "target": "tomato_explore1"
+    }
+   ]
+  },
+  {
+   "id": "hedge_explore1",
+   "body": "<<FILL role=explore words=20 beats='Miri squeezes between hedge branches, leaves brushing her arms; somewhere close a soft clucking sound drifts through the green, and she creeps toward it, careful not to make the leaves rustle too loudly.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "hedge1-c1",
+     "label": "Creep closer to the clucking sound",
+     "target": "hedge_explore2"
+    }
+   ]
+  },
+  {
+   "id": "hedge_explore2",
+   "body": "<<FILL role=explore words=20 beats='Through a gap in the leaves, Miri spots a patch of flattened grass and a puff of small brown feathers; the clucking is louder now, coming from just behind a thick clump of leaves ahead of her.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "hedge2-c1",
+     "label": "Peek through the leaves",
+     "target": "hedge_decision2"
+    }
+   ]
+  },
+  {
+   "id": "hedge_decision2",
+   "body": "<<FILL role=decision words=30 beats='Miri sees a small shape tucked in the shadows behind the leaves; she is not sure yet if it is Biscuit or something else, and must decide whether to reach in quietly or call Biscuits name first.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "hedgedec-c1",
+     "label": "Reach in and check",
+     "target": "ending_found_hedge"
+    },
+    {
+     "id": "hedgedec-c2",
+     "label": "Call out for Biscuit",
+     "target": "ending_hedge_cat"
+    }
+   ]
+  },
+  {
+   "id": "tomato_explore1",
+   "body": "<<FILL role=explore words=20 beats='Miri follows small muddy footprints weaving between tomato stakes; a ladybug climbs a leaf beside her, and the footprints grow fainter as they head toward the last shady row of plants.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "tomato1-c1",
+     "label": "Follow the muddy footprints",
+     "target": "tomato_explore2"
+    }
+   ]
+  },
+  {
+   "id": "tomato_explore2",
+   "body": "<<FILL role=explore words=20 beats='At the last row, Miri kneels and lifts a low tomato leaf; underneath she spots a single curled feather resting in the dirt, and nothing else moves among the vines around her.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "tomato2-c1",
+     "label": "Look under the leaves",
+     "target": "tomato_decision2"
+    }
+   ]
+  },
+  {
+   "id": "tomato_decision2",
+   "body": "<<FILL role=decision words=30 beats='Holding the feather, Miri wonders whether to follow where it might have blown from, or to keep searching this last quiet row for any other clue Biscuit may have left behind.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "tomatodec-c1",
+     "label": "Pick up the feather",
+     "target": "ending_feathers_clue"
+    },
+    {
+     "id": "tomatodec-c2",
+     "label": "Search the last row",
+     "target": "ending_tomato_empty"
+    }
+   ]
+  },
+  {
+   "id": "shed_decision",
+   "body": "<<FILL role=decision words=95 beats='Inside the dim toolshed, Miri finds a tipped watering can and scattered straw; one path leads toward the warm compost heap steaming gently in the corner, another toward stacked hay bales piled near the door; she must choose a direction.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "shed-c1",
+     "label": "Check behind the compost heap",
+     "target": "compost_explore1"
+    },
+    {
+     "id": "shed-c2",
+     "label": "Climb toward the hay bales",
+     "target": "hay_explore1"
+    }
+   ]
+  },
+  {
+   "id": "compost_explore1",
+   "body": "<<FILL role=explore words=20 beats='Miri steps carefully around two tipped watering cans, their spouts pointing toward the compost heap; the heap steams faintly, warm from the sun, and something rustles softly inside the straw.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "compost1-c1",
+     "label": "Step around the watering cans",
+     "target": "compost_explore2"
+    }
+   ]
+  },
+  {
+   "id": "compost_explore2",
+   "body": "<<FILL role=explore words=20 beats='Behind the heap, Miri finds a small hollow scooped into the warm straw, just the right size for a hen to nestle in; the rustling sound comes again, closer this time.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "compost2-c1",
+     "label": "Look behind the heap",
+     "target": "compost_decision2"
+    }
+   ]
+  },
+  {
+   "id": "compost_decision2",
+   "body": "<<FILL role=decision words=30 beats='A small shape shifts in the warm straw hollow; Miri must decide whether to reach in gently to see who is hiding there, or call Biscuits name softly to check first.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "compostdec-c1",
+     "label": "Reach into the warm straw",
+     "target": "ending_found_compost"
+    },
+    {
+     "id": "compostdec-c2",
+     "label": "Call Biscuit's name",
+     "target": "ending_compost_wrong_hen"
+    }
+   ]
+  },
+  {
+   "id": "hay_explore1",
+   "body": "<<FILL role=explore words=20 beats='Miri climbs onto the first hay bale, straw poking her knees; from somewhere above, a faint peeping sound drifts down between the stacked golden bales near the shed wall.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "hay1-c1",
+     "label": "Climb the first hay bale",
+     "target": "hay_explore2"
+    }
+   ]
+  },
+  {
+   "id": "hay_explore2",
+   "body": "<<FILL role=explore words=20 beats='Balancing carefully, Miri peers into a gap between two bales; sunlight slants through, lighting up wisps of straw and a small huddled shape tucked near the very top.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "hay2-c1",
+     "label": "Peer between the bales",
+     "target": "hay_decision2"
+    }
+   ]
+  },
+  {
+   "id": "hay_decision2",
+   "body": "<<FILL role=decision words=30 beats='The little shape is just out of reach; Miri must choose whether to squeeze carefully between the bales to look closer, or climb to check the very top bale instead.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "haydec-c1",
+     "label": "Squeeze between the bales",
+     "target": "ending_found_hay"
+    },
+    {
+     "id": "haydec-c2",
+     "label": "Check the very top bale",
+     "target": "ending_hay_empty"
+    }
+   ]
+  },
+  {
+   "id": "playground_explore1",
+   "body": "<<FILL role=explore words=20 beats='Miri crosses the empty playground, gravel crunching underfoot; the swings sway gently in the breeze, and a faint scratching sound seems to come from somewhere near their wooden frame.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "play1-c1",
+     "label": "Walk toward the swings",
+     "target": "playground_explore2"
+    }
+   ]
+  },
+  {
+   "id": "playground_explore2",
+   "body": "<<FILL role=explore words=20 beats='Near the slide, Miri notices small scratch marks in the sand and a scatter of seed husks; the scratching sound grows clearer, coming from the shadowy space underneath the slide.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "play2-c1",
+     "label": "Look under the slide",
+     "target": "playground_decision2"
+    }
+   ]
+  },
+  {
+   "id": "playground_decision2",
+   "body": "<<FILL role=decision words=30 beats='Something small shuffles in the shade beneath the swings; Miri must decide whether to peek beneath them herself, or run to fetch the school caretaker to help her look properly.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "playdec-c1",
+     "label": "Peek beneath the swings",
+     "target": "ending_found_playground"
+    },
+    {
+     "id": "playdec-c2",
+     "label": "Ask a grown-up for help",
+     "target": "ending_playground_empty"
+    }
+   ]
+  },
+  {
+   "id": "ending_found_hedge",
+   "body": "<<FILL role=ending words=90 beats='Reaching gently into the leaves, Miri finds Biscuit blinking up at her, safe and only a little dusty; she scoops the small hen into her arms, feeling the tiny heartbeat, and carries her happily back to the coop to join Nutmeg and Pepper.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_found_hedge",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Found in the Hedge"
+   }
+  },
+  {
+   "id": "ending_hedge_cat",
+   "body": "<<FILL role=ending words=90 beats='Miri calls softly and the leaves part to reveal Soot, the school cat, curled up asleep, not Biscuit at all; Miri laughs quietly, gives Soot a gentle pat, and decides she will ask Mr Whistle to help her keep searching tomorrow.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_hedge_cat",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Just Soot the Cat"
+   }
+  },
+  {
+   "id": "ending_feathers_clue",
+   "body": "<<FILL role=ending words=90 beats='Miri tucks the small feather into her pocket and notices more feathers leading toward the garden fence; hopeful, she decides to show the caretaker this trail so they can follow it together first thing tomorrow morning.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_feathers_clue",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Trail of Feathers"
+   }
+  },
+  {
+   "id": "ending_tomato_empty",
+   "body": "<<FILL role=ending words=90 beats='Miri checks every leaf along the last row but finds nothing more than dirt and dew; disappointed, she brushes off her knees and heads toward the toolshed to ask Mr Whistle if he has seen the little hen.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_tomato_empty",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "No Sign Among the Tomatoes"
+   }
+  },
+  {
+   "id": "ending_found_compost",
+   "body": "<<FILL role=ending words=90 beats='Miri reaches into the warm straw and feels soft feathers; Biscuit blinks up at her, cozy and safe in the heaps gentle warmth; Miri lifts her out carefully, laughing with relief, and hurries to tell everyone the good news.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_found_compost",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Warm in the Compost Heap"
+   }
+  },
+  {
+   "id": "ending_compost_wrong_hen",
+   "body": "<<FILL role=ending words=90 beats='Miri calls softly and out waddles Pepper, not Biscuit at all, feathers fluffed and indignant; Miri sighs and smiles at the mix-up, gently carries Pepper back to the coop, and decides to keep looking near the hay bales next.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_compost_wrong_hen",
+    "valence": "neutral",
+    "kind": "setback",
+    "title": "Not Biscuit, Just Pepper"
+   }
+  },
+  {
+   "id": "ending_found_hay",
+   "body": "<<FILL role=ending words=90 beats='Squeezing between the bales, Miri spots Biscuit nestled snugly atop the golden straw, clucking softly; she carefully lifts the little hen down, tucks her close, and carries her home to the coop, tail feathers fluttering happily.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_found_hay",
+    "valence": "positive",
+    "kind": "success",
+    "title": "High Up in the Hay"
+   }
+  },
+  {
+   "id": "ending_hay_empty",
+   "body": "<<FILL role=ending words=90 beats='Climbing to the very top bale, Miri finds only loose straw and a startled sparrow that flutters away; no Biscuit here after all, so Miri climbs back down slowly and decides to go find Mr Whistle for help.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_hay_empty",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "No Biscuit in the Hay"
+   }
+  },
+  {
+   "id": "ending_found_playground",
+   "body": "<<FILL role=ending words=90 beats='Peeking beneath the swings, Miri finds Biscuit happily pecking at scattered seeds in the sand, completely unharmed; she gathers the small hen into her arms and skips all the way back to the coop, grinning the whole way.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_found_playground",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Under the Squeaky Swings"
+   }
+  },
+  {
+   "id": "ending_playground_empty",
+   "body": "<<FILL role=ending words=90 beats='No hen waits under the swings, only scattered seed husks; Miri runs to find the school caretaker, who smiles kindly and fetches a torch, promising that together they will find little Biscuit before the day is done.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_playground_empty",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Time to Ask for Help"
+   }
+  }
+ ]
+}

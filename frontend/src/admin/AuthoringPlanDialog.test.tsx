@@ -38,8 +38,8 @@ const ALLOWLIST_ROWS = [
   },
   {
     id: 'a3',
-    provider: 'ollama' as const,
-    model_id: 'qwen2.5:14b',
+    provider: 'modal' as const,
+    model_id: 'google/gemma-4-26b-a4b-it',
     enabled: true,
     display_name: null,
   },

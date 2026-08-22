@@ -2956,14 +2956,14 @@ _M4_VARIANT_MICRO_STUB = "micro-stub"
 # The gate does not enforce decisions-per-path (design 4.8), so M4 self-enforces
 # it: an operation may not push a path above the ceiling or drop a path below the
 # floor (the two-sided monotonic check in ``_decision_window_reason``).
-# #ASSUME: data-integrity: ADR-011 section 6 was amended 2026-08-22 (`UW-C323`):
+# #ASSUME: data-integrity: ADR-011 section 6 was amended 2026-08-22 (`UW-C327`):
 # the flat 4-8 window was replaced by derived per-cell windows (e.g. 6-15 at
 # 8-11 Short up to 17-43 at 16+ Long prose), so these constants now under-state
 # the amended ceilings and over-state the young-band floors. Kept as-is for now:
 # the guard is pre-gate hygiene, not the safety authority (the gate is), and the
 # mismatch only over-rejects at the amended ceilings while under-protecting the
-# higher flowed-band floors. Re-deriving the guard per cell is `UW-C326`.
-# #VERIFY: when `UW-C326` lands, key the window off the parent's
+# higher flowed-band floors. Re-deriving the guard per cell is `UW-C330`.
+# #VERIFY: when `UW-C330` lands, key the window off the parent's
 # (band, length, style) cell rather than these two module constants.
 _MIN_DECISIONS_PER_PATH = 4
 _MAX_DECISIONS_PER_PATH = 8
@@ -3063,7 +3063,7 @@ def path_decision_counts(story: Mapping[str, object]) -> tuple[tuple[int, ...], 
     revision enumerated acyclic parents exhaustively on the theory that a
     finite path set is an enumerable one; a reconvergent DAG's path set is
     finite but exponential, and the exhaustive walk hung for over a minute on
-    a 193-node catalog skeleton (`AL-520`/`UW-C322`). Callers needing the
+    a 193-node catalog skeleton (`AL-525`/`UW-C326`). Callers needing the
     exact min/max over an acyclic parent use :func:`_dag_decision_minmax`,
     which is linear time; a small fixture (under the cap) still gets the
     complete path set here with ``truncated=False``.
@@ -3086,7 +3086,7 @@ def path_decision_counts(story: Mapping[str, object]) -> tuple[tuple[int, ...], 
     # finite with tractable: a reconvergent DAG's simple-path set is finite
     # but exponential, and enumerating it hung for over 60 seconds on the
     # 193-node `the-tin-whistle-map` while `M2`/`M3` applied in seconds
-    # (`AL-520`/`UW-C322`). Callers that only need the min/max decision
+    # (`AL-525`/`UW-C326`). Callers that only need the min/max decision
     # count over an acyclic parent get the EXACT answer from
     # :func:`_dag_decision_minmax` in linear time instead; this enumerator
     # is a bounded sampler everywhere.
@@ -3116,7 +3116,7 @@ def _dag_decision_minmax(story: Mapping[str, object]) -> tuple[int, int] | None:
     Linear-time dynamic programming over reverse topological order, so the
     answer is EXACT on any acyclic parent however many simple paths it has,
     where full enumeration is exponential on reconvergent graphs
-    (`AL-520`/`UW-C322`). Counts the same quantity as
+    (`AL-525`/`UW-C326`). Counts the same quantity as
     :func:`path_decision_counts`: the number of decision nodes on the path,
     the start node included, ending nodes never (an ending is not a decision
     by definition).
@@ -3217,7 +3217,7 @@ def _decision_window_reason(
     # discarded at preconditions.
     # Exact linear-time DP on acyclic graphs; the bounded path sampler is the
     # fallback for cyclic ones. The DP is what makes this check tractable on
-    # catalog-scale reconvergent parents (`AL-520`/`UW-C322`): full simple-path
+    # catalog-scale reconvergent parents (`AL-525`/`UW-C326`): full simple-path
     # enumeration hung past 60 seconds on a 193-node branch_and_bottleneck.
     parent_minmax = _dag_decision_minmax(parent)
     cand_minmax = _dag_decision_minmax(candidate)

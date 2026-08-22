@@ -92,7 +92,7 @@ def test_story_metadata_requires_topology():
 
 
 def test_story_metadata_rejects_a_third_person_gamebook():
-    """UW-C324: a gamebook addresses the reader, so 'third' contradicts it.
+    """UW-C328: a gamebook addresses the reader, so 'third' contradicts it.
 
     Left representable, the combination inverts the person gate in
     scripts/check_prose_craft.py: a gamebook correctly written in second

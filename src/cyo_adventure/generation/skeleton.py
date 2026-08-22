@@ -252,8 +252,12 @@ _DATED_VARIANT_SUFFIX_RE = re.compile(r"-\d{4,8}$")
 # An OpenRouter routing or tier variant, as in `anthropic/claude-haiku-4.5:free`
 # or `...:nitro`. The same exact-lookup miss as a date stamp, in the suffix form
 # this repo actually configures: `scripts/yield_harness.py` documents
-# `--model google/gemma-4-31b-it:free`, ADR-003 names `:free` endpoints, and
-# `core/config.py` ships `ollama_model = "qwen2.5:14b"`.
+# `--model google/gemma-4-31b-it:free` and ADR-003 names `:free` endpoints. No
+# `core/config.py` default currently has this shape (`openrouter_model`,
+# `openrouter_fallback_model`, and `review_openrouter_model` are all undated,
+# unsuffixed ids); this pattern exists for an admin-supplied allowlist model id
+# (`api/provider_allowlist.py`) and for `:free`-suffixed endpoint ids, not a
+# shipped default.
 _VARIANT_SUFFIX_RE = re.compile(r":[^:]+$")
 
 
@@ -262,7 +266,7 @@ def _lookup_slug(table: Mapping[str, int], model: str) -> int | None:
 
     The ONE normalizer both per-model tables share. It existed inlined inside
     :func:`resolve_output_cap` until 2026-08-22, and the cost of that was
-    `UW-C320` reopening: :func:`resolve_context_window` was a bare ``dict.get``,
+    `UW-C324` reopening: :func:`resolve_context_window` was a bare ``dict.get``,
     so a pinned or dated slug resolved an output cap and no window at all, and a
     None window constrains nothing. Two normalizers drift; one cannot.
 
@@ -399,7 +403,7 @@ def story_fill_rate(
 # grows with skeleton size and nothing checked input plus ask against the
 # endpoint's window. Measured 2026-08-21: a batch call requested 58,983
 # output tokens with a 104,858-token prompt against deepseek-v3.2's
-# 163,840-token window, one token over, HTTP 400 (`AL-514`/`UW-C320`).
+# 163,840-token window, one token over, HTTP 400 (`AL-519`/`UW-C324`).
 # #ASSUME: external resources: values transcribed from the OpenRouter
 # endpoints API for the pinned endpoints; per-endpoint variation exists for
 # some slugs, so record the MINIMUM across the endpoints a pin can reach.
@@ -434,7 +438,7 @@ def resolve_context_window(model: str | None) -> int | None:
     # (`vendor/model:free`) or a dated one (`vendor/model-20260101`) therefore
     # resolved a cap and returned None here; None constrains nothing, the
     # chunked path's context bound went inert, and the exact unbounded ask
-    # `UW-C320` was filed for came back with no warning and no refusal.
+    # `UW-C324` was filed for came back with no warning and no refusal.
     # Sharing `_lookup_slug` with the cap is the whole fix: a second normalizer
     # is how this recurs. Inheriting the base row is the safe direction here
     # too. A variant whose real window is LARGER only makes the batch ask
@@ -486,8 +490,8 @@ def active_fill_model(settings: object) -> str | None:
     backend = getattr(settings, "generation_provider", None)
     field = {
         "openrouter": "openrouter_model",
-        "ollama": "ollama_model",
         "anthropic": "anthropic_model",
+        "modal": "modal_model",
     }.get(str(backend))
     if field is None:
         return None

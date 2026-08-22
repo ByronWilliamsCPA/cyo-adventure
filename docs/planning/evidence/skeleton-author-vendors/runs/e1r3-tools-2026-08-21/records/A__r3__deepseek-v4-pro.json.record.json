@@ -1,0 +1,30 @@
+{
+ "leg": "deepseek-v4-pro",
+ "family": "deepseek",
+ "cell_id": "A",
+ "band": "5-8",
+ "length": "short",
+ "style": "prose",
+ "replicate": 3,
+ "premise": "On the first snowy day, Priya must find her little brother's boot, lost somewhere along the sled run, before their walk home.",
+ "attempts": 1,
+ "repair_rounds": 0,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  4
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 0.0,
+ "input_tokens": null,
+ "output_tokens": null,
+ "reasoning_tokens": null,
+ "finish_reasons": [],
+ "min_catalog_distance": 0.3080119552856712,
+ "mean_catalog_distance": 0.3636940683417079,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "last_feedback": "ERROR   PL-29  PL-29 topology: band '5-8' may not declare 'branch_and_bottleneck' (allowed: ['loop_and_grow', 'open_map', 'time_cave']) in story 'priyas-snowy-search'\nERROR   PL-25  PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'priyas-snowy-search'\nWARNING PL-23  PL-23 clock: declared estimated_minutes 3 differs from the derived fastest-finish clock 2 min (225 words on the shortest satisfying path at 90 wpm) by 50% in story 'priyas-snowy-search' (advisory only)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1r3-tools-2026-08-21/shells/A__r3__deepseek-v4-pro.json failed structural validation: PL-29 topology: band '5-8' may not declare 'branch_and_bottleneck' (allowed: ['loop_and_grow', 'open_map', 'time_cave']) in story 'priyas-snowy-search'; PL-25 opening: first decision is 1 node(s) in, under the band '5-8' floor 2, and the prose before it does not cover the ground those nodes stand for, in story 'priyas-snowy-search'",
+ "shell_file": "shells/A__r3__deepseek-v4-pro.json",
+ "error": ""
+}

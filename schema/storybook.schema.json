@@ -233,7 +233,7 @@
       "type": "string"
     },
     "NarrativePerson": {
-      "description": "The grammatical person the prose addresses the reader in.\n\nRuled 2026-08-21 (`UW-C324`, section 9.4 of\n``docs/planning/live-structural-round-2026-08-21.md``): narrative person\nwas an unpinned degree of freedom, and three fills of one prose skeleton\nscattered from 0.07 to 0.72 second-person node rates because nothing\ndeclared which person the book is told in. Gamebooks are second-person by\ngenre convention; prose books must say which they are, so same-skeleton\nsiblings cannot ship in different persons.",
+      "description": "The grammatical person the prose addresses the reader in.\n\nRuled 2026-08-21 (`UW-C328`, section 9.4 of\n``docs/planning/live-structural-round-2026-08-21.md``): narrative person\nwas an unpinned degree of freedom, and three fills of one prose skeleton\nscattered from 0.07 to 0.72 second-person node rates because nothing\ndeclared which person the book is told in. Gamebooks are second-person by\ngenre convention; prose books must say which they are, so same-skeleton\nsiblings cannot ship in different persons.",
       "enum": [
         "second",
         "third"

@@ -1,0 +1,500 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "careful observation",
+   "kindness to animals",
+   "asking for help"
+  ],
+  "estimated_minutes": 2,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "holiday-arrival",
+ "nodes": [
+  {
+   "id": "holiday-arrival",
+   "body": "<<FILL role=setup words=20 beats='Miri arrives at the quiet school for holiday hen duty, carrying the care list and the coop key from Ms Green'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "walk-to-coop-choice",
+     "label": "Walk to the coop",
+     "target": "morning-count"
+    }
+   ]
+  },
+  {
+   "id": "morning-count",
+   "body": "<<FILL role=setup words=50 beats='Miri fills the water dish and counts Pepper and Dot, but tiny gray Pip is missing; she closes the yard gate, notices a pale feather near the coop, and remembers Pip was present yesterday; establish the coop, garden, shed, and caretaker office as safe places Miri can search first'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "begin-at-coop-choice",
+     "label": "Begin at the coop",
+     "target": "coop-first-look"
+    },
+    {
+     "id": "begin-in-garden-choice",
+     "label": "Begin in the garden",
+     "target": "garden-first-look"
+    },
+    {
+     "id": "find-mr-vale-choice",
+     "label": "Find Mr Vale",
+     "target": "caretaker-first-talk"
+    }
+   ]
+  },
+  {
+   "id": "coop-first-look",
+   "body": "<<FILL role=decision words=20 beats='Miri checks the latch, nesting boxes, and straw; she finds fresh mud beside a loose board and must choose whether to study it herself or ask Mr Vale about it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "study-coop-clues-choice",
+     "label": "Study the coop clues",
+     "target": "coop-clue-choice"
+    },
+    {
+     "id": "ask-about-coop-mud-choice",
+     "label": "Ask Mr Vale about the mud",
+     "target": "caretaker-first-talk"
+    }
+   ]
+  },
+  {
+   "id": "coop-clue-choice",
+   "body": "<<FILL role=decision words=50 beats='The loose board has a Pip-sized gap beneath it, and three corn kernels lead toward the potting bench; a second pale feather lies near the playground hedge, but a robin is hopping there; Miri must choose between the solid trail beside the coop and the more distant feather'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "follow-corn-from-coop-choice",
+     "label": "Follow the corn kernels",
+     "target": "corn-under-bench"
+    },
+    {
+     "id": "follow-hedge-feather-choice",
+     "label": "Follow the hedge feather",
+     "target": "feather-by-hedge"
+    }
+   ]
+  },
+  {
+   "id": "corn-under-bench",
+   "body": "<<FILL role=decision words=20 beats='The kernels end beneath the potting bench, where Miri hears a soft cluck behind an overturned seed tray; she can move the tray slowly or call Mr Vale before touching it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "move-seed-tray-choice",
+     "label": "Move the seed tray slowly",
+     "target": "pip-by-flowerpot"
+    },
+    {
+     "id": "call-mr-vale-at-bench-choice",
+     "label": "Call Mr Vale to the bench",
+     "target": "mr-vale-finds-pip"
+    }
+   ]
+  },
+  {
+   "id": "pip-by-flowerpot",
+   "body": "<<FILL role=climax words=20 beats='Miri kneels and finds Pip tucked safely between the tray and a flowerpot, dusty but calm and unhurt'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "carry-pip-home-choice",
+     "label": "Carry Pip back gently",
+     "target": "ending-loose-board-home"
+    }
+   ]
+  },
+  {
+   "id": "ending-loose-board-home",
+   "body": "<<FILL role=ending words=30 beats='Miri returns Pip to Pepper and Dot, gives her water, and asks Mr Vale to secure the loose board; she records every clue on Ms Green care list and completes the morning count'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "loose-board-success",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Pip Comes Home"
+   }
+  },
+  {
+   "id": "feather-by-hedge",
+   "body": "<<FILL role=decision words=20 beats='At the hedge, Miri discovers the pale feather belongs to a playground shuttlecock torn open by the wind; she can return to the coop or inspect the stronger corn trail'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "return-from-hedge-choice",
+     "label": "Return to the coop",
+     "target": "mr-vale-finds-pip"
+    },
+    {
+     "id": "check-bench-after-hedge-choice",
+     "label": "Check the corn trail",
+     "target": "corn-under-bench"
+    }
+   ]
+  },
+  {
+   "id": "mr-vale-finds-pip",
+   "body": "<<FILL role=climax words=20 beats='At the potting bench, Mr Vale gently lifts the light seed tray and finds Pip hiding beside a flowerpot and scattered corn'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "explain-wrong-clue-choice",
+     "label": "Tell Mr Vale about the clues",
+     "target": "ending-wrong-feather"
+    }
+   ]
+  },
+  {
+   "id": "ending-wrong-feather",
+   "body": "<<FILL role=ending words=30 beats='Pip is safe, but Miri wishes she had checked the stronger trail first; she writes that feathers can belong to other things and promises to compare clues before rushing away'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "wrong-feather-setback",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Tricky Feather"
+   }
+  },
+  {
+   "id": "garden-first-look",
+   "body": "<<FILL role=decision words=20 beats='Miri finds tiny three-toed prints in the bean bed and a pale feather pointing back toward the coop; she chooses which garden sign to study first'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "study-garden-signs-choice",
+     "label": "Study the tiny footprints",
+     "target": "garden-clue-choice"
+    },
+    {
+     "id": "compare-garden-feather-choice",
+     "label": "Follow the pale feather",
+     "target": "corn-under-bench"
+    }
+   ]
+  },
+  {
+   "id": "garden-clue-choice",
+   "body": "<<FILL role=decision words=50 beats='The prints circle a low lavender shelf where straw sticks out, while the scratched soil continues toward the garden shed; Miri hears a faint scrape from both directions as wind stirs the leaves, so she chooses whether to inspect the hidden straw or follow the clearer footprints'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "inspect-lavender-straw-choice",
+     "label": "Inspect the hidden straw",
+     "target": "lavender-nest"
+    },
+    {
+     "id": "follow-shed-prints-choice",
+     "label": "Follow the shed prints",
+     "target": "shed-door-trail"
+    }
+   ]
+  },
+  {
+   "id": "lavender-nest",
+   "body": "<<FILL role=decision words=20 beats='Behind the lavender, Miri finds a snug nest beneath the shelf and hears Pip answer with one quiet cluck; she can look inside without touching or call Mr Vale over'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "kneel-by-nest-choice",
+     "label": "Look inside the nest",
+     "target": "cream-egg-glimpse"
+    },
+    {
+     "id": "call-mr-vale-to-nest-choice",
+     "label": "Call Mr Vale over",
+     "target": "ending-secret-egg"
+    }
+   ]
+  },
+  {
+   "id": "cream-egg-glimpse",
+   "body": "<<FILL role=climax words=20 beats='Miri sees Pip sitting proudly beside a small cream-colored egg and keeps her hands outside the sheltered nest'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "fetch-care-guide-choice",
+     "label": "Fetch the care guide",
+     "target": "ending-secret-egg"
+    }
+   ]
+  },
+  {
+   "id": "ending-secret-egg",
+   "body": "<<FILL role=ending words=30 beats='Mr Vale brings the hen basket and care guide, and they move Pip only after preparing a safe place; Ms Green later praises Miri for finding the missing hen and her secret holiday egg'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "secret-egg-discovery",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Secret Holiday Egg"
+   }
+  },
+  {
+   "id": "shed-door-trail",
+   "body": "<<FILL role=decision words=20 beats='The footprints reach the half-open shed door, where Miri finds a gray feather and hears scratching; she can enter carefully or tempt Pip toward the doorway with corn'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "enter-shed-choice",
+     "label": "Enter the shed carefully",
+     "target": "shed-sound-choice"
+    },
+    {
+     "id": "scatter-corn-at-shed-choice",
+     "label": "Scatter corn at the doorway",
+     "target": "shadow-under-table"
+    }
+   ]
+  },
+  {
+   "id": "shed-sound-choice",
+   "body": "<<FILL role=decision words=50 beats='Inside the shed, scratching comes from behind a covered crate, but a quick gray shape darts beneath the potting table; Miri remembers that Pip may hide when frightened; she must choose whether to uncover the crate without moving it or follow the moving shape'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "uncover-shed-crate-choice",
+     "label": "Uncover the crate carefully",
+     "target": "crate-blanket-lift"
+    },
+    {
+     "id": "follow-shed-shadow-choice",
+     "label": "Follow the gray shape",
+     "target": "shadow-under-table"
+    }
+   ]
+  },
+  {
+   "id": "crate-blanket-lift",
+   "body": "<<FILL role=climax words=20 beats='Miri lifts one corner of the blanket, finds Pip safe behind a flowerpot, and calls Mr Vale to move the light crate while she holds the hen basket open'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "return-from-crate-choice",
+     "label": "Return Pip in the basket",
+     "target": "ending-crate-rescue"
+    }
+   ]
+  },
+  {
+   "id": "ending-crate-rescue",
+   "body": "<<FILL role=ending words=30 beats='Pip rides safely back to the coop, where Pepper and Dot greet her noisily; Miri checks her feet, blocks the loose board, and finishes every job on the holiday care list'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "careful-crate-success",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Careful Crate Rescue"
+   }
+  },
+  {
+   "id": "shadow-under-table",
+   "body": "<<FILL role=climax words=20 beats='The gray shape is a gardening glove pushed by the breeze; Miri waits, scatters corn, and watches Pip step calmly from behind the crate toward the open basket'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "offer-basket-after-waiting-choice",
+     "label": "Offer Pip the basket",
+     "target": "ending-patient-search"
+    }
+   ]
+  },
+  {
+   "id": "ending-patient-search",
+   "body": "<<FILL role=ending words=30 beats='Pip enters the basket for corn, and Miri carries her home without a chase; the search ends quietly, and Miri notes that patience helped a hidden hen feel safe enough to appear'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "patient-search-completion",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "A Patient Search"
+   }
+  },
+  {
+   "id": "caretaker-first-talk",
+   "body": "<<FILL role=decision words=20 beats='Miri tells caretaker Mr Vale that Pip is missing; he praises her for shutting the gate, then offers either his spoken clues or the written caretaker log'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "hear-mr-vale-clues-choice",
+     "label": "Hear Mr Vale's clues",
+     "target": "caretaker-clue-choice"
+    },
+    {
+     "id": "read-log-right-away-choice",
+     "label": "Read the caretaker log",
+     "target": "office-log-clue"
+    }
+   ]
+  },
+  {
+   "id": "caretaker-clue-choice",
+   "body": "<<FILL role=decision words=50 beats='Mr Vale lends Miri a tub of corn and recalls seeing something small near the rain barrels; children in the community garden point toward their tool shelter, while the caretaker log mentions scratching near a downpipe; Miri chooses which clue to check first'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "check-rain-barrels-choice",
+     "label": "Check the rain barrels",
+     "target": "barrel-corn-trail"
+    },
+    {
+     "id": "ask-young-gardeners-choice",
+     "label": "Ask the young gardeners",
+     "target": "gardeners-report"
+    },
+    {
+     "id": "read-caretaker-log-choice",
+     "label": "Read the caretaker log",
+     "target": "office-log-clue"
+    }
+   ]
+  },
+  {
+   "id": "barrel-corn-trail",
+   "body": "<<FILL role=decision words=20 beats='Behind the barrels, Miri finds damp hen prints near the downpipe; she can wait with a short corn trail or check the written log before approaching'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "wait-by-barrels-choice",
+     "label": "Wait with a corn trail",
+     "target": "pip-from-downpipe"
+    },
+    {
+     "id": "check-log-from-barrels-choice",
+     "label": "Check the caretaker log",
+     "target": "office-log-clue"
+    }
+   ]
+  },
+  {
+   "id": "pip-from-downpipe",
+   "body": "<<FILL role=climax words=20 beats='Pip emerges from beside the downpipe, pecking each kernel while Miri blocks the narrow gap with her basket'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "guide-pip-to-basket-choice",
+     "label": "Guide Pip into the basket",
+     "target": "ending-corn-trail"
+    }
+   ]
+  },
+  {
+   "id": "ending-corn-trail",
+   "body": "<<FILL role=ending words=30 beats='Pip follows the final kernels into the basket and returns safely to the coop; Miri and Mr Vale cover the downpipe gap and add the useful corn trick to Ms Green care list'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "corn-trail-success",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Corn Trail Home"
+   }
+  },
+  {
+   "id": "gardeners-report",
+   "body": "<<FILL role=transition words=20 beats='The young gardeners say a tiny gray hen slipped into their tool shelter before they closed the service gate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "plan-fence-rescue-choice",
+     "label": "Plan a safe rescue",
+     "target": "neighbors-lay-corn"
+    }
+   ]
+  },
+  {
+   "id": "neighbors-lay-corn",
+   "body": "<<FILL role=climax words=20 beats='Staying on her side of the fence, Miri guides the children as they lay corn from the shelter to the gate'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "welcome-pip-back-choice",
+     "label": "Welcome Pip back",
+     "target": "ending-helpful-neighbors"
+    }
+   ]
+  },
+  {
+   "id": "ending-helpful-neighbors",
+   "body": "<<FILL role=ending words=30 beats='Pip trots through the service gate and into Miri waiting basket; everyone cheers, and Miri thanks the young gardeners by promising vegetables from the school garden after the holiday'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "neighbor-team-success",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Helpful Garden Team"
+   }
+  },
+  {
+   "id": "office-log-clue",
+   "body": "<<FILL role=decision words=20 beats='In Mr Vale office, Miri reads about scratching near the downpipe and finds a muddy footprint; she can follow the exact print or try the log suggested corn trick'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "follow-office-log-choice",
+     "label": "Follow the muddy footprint",
+     "target": "pip-from-log-clue"
+    },
+    {
+     "id": "try-corn-from-log-choice",
+     "label": "Try corn by the downpipe",
+     "target": "pip-from-downpipe"
+    }
+   ]
+  },
+  {
+   "id": "pip-from-log-clue",
+   "body": "<<FILL role=climax words=20 beats='Miri follows the muddy print to the downpipe, finds Pip tucked behind a bucket, and uses the caretaker log to check that the narrow space is safe to approach'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "use-log-rescue-choice",
+     "label": "Guide Pip out with corn",
+     "target": "ending-caretaker-log"
+    }
+   ]
+  },
+  {
+   "id": "ending-caretaker-log",
+   "body": "<<FILL role=ending words=30 beats='Pip follows Miri corn into the basket and returns to Pepper and Dot; Miri circles the useful note in Mr Vale log and adds the downpipe gap to the school repair list'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "caretaker-log-discovery",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Clue in the Log"
+   }
+  }
+ ]
+}

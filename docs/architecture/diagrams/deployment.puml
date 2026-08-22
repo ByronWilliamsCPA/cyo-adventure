@@ -94,9 +94,6 @@ node "Homelab Server\n[Docker + Dockge]\n(ADR-004)" as homelab #E8F5E9 {
     database "Redis 7\nport 6379\nRQ job queue\n(no persistence required)" as redis_db #E0E0E0
   }
 
-  node "cyo-ollama\n[Docker container\nollama/ollama:latest]" as ollama_container #FFEBEE {
-    component "Ollama\nport 11434\nlocal LLM fallback\n(GPU if available)" as ollama_svc #FFEBEE
-  }
 
   node "cyo-minio [planned Phase 5]\n[Docker container\nminio/minio]" as minio_container #E0E0E0 {
     database "MinIO\nS3-compatible\nStorybook blob storage\nblog_ref column" as minio_db #E0E0E0
@@ -114,12 +111,10 @@ tls ..> pangolin : "access control"
 inner_tls --> fastapi_app : "HTTP (8000)"
 fastapi_app --> supabase_pg_cloud : "async SQLAlchemy 2\nsession pooler :5432\nas cyo_api (ADR-021)"
 fastapi_app --> redis_db : "rq.Queue\n6379"
-fastapi_app --> ollama_svc : "HTTP\n11434"
 rq_worker --> redis_db : "dequeue\n6379"
 rq_worker --> supabase_pg_cloud : "update job\nsession pooler :5432\nas cyo_worker (ADR-021)"
 rq_worker --> openrouter_cloud : "HTTPS\nLLM completions\n(primary)"
 rq_worker ..> extra_provider_cloud : "HTTPS\nadmin-selected job override\n(anthropic/modal)"
-rq_worker ..> ollama_svc : "HTTP\nLLM fallback"
 rq_worker ..> minio_db : "[Phase 5]\nS3 API"
 pwa_client --> supabase_cloud : "OIDC auth flow\n(Apple/Google via Supabase)"
 fastapi_app --> supabase_cloud : "OIDC token validation\n[non-local; local uses token-as-subject]"

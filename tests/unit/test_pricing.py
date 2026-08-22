@@ -283,3 +283,34 @@ def test_price_and_estimate_are_immutable() -> None:
     estimate = CostEstimate(amount_usd=Decimal(0), complete=True)
     with pytest.raises(FrozenInstanceError):
         setattr(estimate, "complete", False)  # noqa: B010  # frozen: must go via setattr
+
+
+@pytest.mark.unit
+def test_modal_has_no_price_row_and_reports_incomplete() -> None:
+    """Modal's missing price row is a deliberate gap, not a bug to close here.
+
+    Modal Auto Endpoints bill GPU-seconds for a rented container, not tokens
+    against a published per-MTok rate (see the "NO MODAL ROW, DELIBERATELY"
+    block in ``core/pricing.py``), so there is no vendor number of the kind
+    every other row in this table records. Fabricating an
+    ``input_usd_per_mtok``/``output_usd_per_mtok`` pair for it would dress a
+    guess as a dated, sourced fact, which is exactly what this module exists
+    to prevent. The correct behaviour is a declared lower bound
+    (``complete=False`` with a reason), the same shape
+    ``test_unpriced_model_is_incomplete_and_not_free`` pins for any unknown
+    pair, but nailed down here specifically for "modal" so a change that adds
+    a row for it (or otherwise makes it look priced) is caught immediately.
+
+    Someone who later closes this gap for real, by recording measured
+    GPU-second spend per accepted story and expressing it as a per-token rate,
+    is expected to update this test consciously rather than have it keep
+    passing by accident once a Modal row exists.
+    """
+    price = price_for("modal", "google/gemma-4-26b-a4b-it")
+    assert price is None
+
+    estimate = estimate_cost(price, input_tokens=10_000, output_tokens=10_000)
+
+    assert estimate.complete is False
+    assert estimate.reason
+    assert estimate.amount_usd == Decimal(0)

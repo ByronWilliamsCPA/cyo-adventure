@@ -1,0 +1,769 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "open_map",
+  "tier": 2,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "curiosity",
+   "perseverance",
+   "kindness",
+   "home"
+  ],
+  "estimated_minutes": 2,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [
+  {
+   "name": "areas_checked",
+   "type": "int",
+   "min": 0,
+   "max": 3,
+   "initial": 0
+  }
+ ],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=setup words=20 beats='It is the second morning of the school holidays, and Miri has promised Mrs. Alvarez she will look after the coop until term starts again. She swings open the gate with the feed bucket in hand, ready for the same easy routine as yesterday.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "start-c1",
+     "label": "Walk up to the coop",
+     "target": "yard1"
+    }
+   ]
+  },
+  {
+   "id": "yard1",
+   "body": "<<FILL role=decision words=45 beats='Miri counts only two hens waiting at the fence, Buttercup and Marigold. Pip, the smallest hen, is missing from her usual perch, and the coop latch is up with no sign of a struggle. Miri decides which part of the schoolyard to search first.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "yard1-c1",
+     "label": "Search near the coop and shed",
+     "target": "area-coop"
+    },
+    {
+     "id": "yard1-c2",
+     "label": "Search the vegetable garden",
+     "target": "area-garden"
+    },
+    {
+     "id": "yard1-c3",
+     "label": "Search behind the school building",
+     "target": "area-back"
+    }
+   ]
+  },
+  {
+   "id": "area-coop",
+   "body": "<<FILL role=explore words=55 beats='Near the coop, Miri finds three places worth a closer look: the toolshed door standing ajar, a loose board on the wooden ramp, and the shed itself where the rake and watering can are kept.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "area-coop-c1",
+     "label": "Check the coop ramp",
+     "target": "spot-ramp"
+    },
+    {
+     "id": "area-coop-c2",
+     "label": "Check the toolshed",
+     "target": "spot-shed"
+    },
+    {
+     "id": "area-coop-c3",
+     "label": "Check behind the nesting boxes",
+     "target": "spot-coop"
+    }
+   ]
+  },
+  {
+   "id": "area-garden",
+   "body": "<<FILL role=explore words=55 beats='In the vegetable patch, Miri spots three possible clues: muddy tracks near the tomato stakes, a gap in the fence board, and a rustle among the squash leaves.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "area-garden-c1",
+     "label": "Check the tomato stakes",
+     "target": "spot-tomato"
+    },
+    {
+     "id": "area-garden-c2",
+     "label": "Check the fence gap",
+     "target": "spot-fence"
+    },
+    {
+     "id": "area-garden-c3",
+     "label": "Check the squash leaves",
+     "target": "spot-garden"
+    }
+   ]
+  },
+  {
+   "id": "area-back",
+   "body": "<<FILL role=explore words=55 beats='Behind the school building, Miri sees three spots worth checking: the tipped-over wheelbarrow by the shed, the rain barrel where Whiskers the cat sits watching, and the shady steps of the porch.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "area-back-c1",
+     "label": "Check the porch steps",
+     "target": "spot-porch"
+    },
+    {
+     "id": "area-back-c2",
+     "label": "Check the wheelbarrow",
+     "target": "spot-wheelbarrow"
+    },
+    {
+     "id": "area-back-c3",
+     "label": "Check near the rain barrel",
+     "target": "spot-barrel"
+    }
+   ]
+  },
+  {
+   "id": "spot-ramp",
+   "body": "<<FILL role=decision words=65 beats='A faint peeping sound seems to drift from a narrow gap beneath the wooden ramp. Miri has to decide whether to keep listening here or move on before the morning gets away from her.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "spot-ramp-c1",
+     "label": "Lift the loose board right away",
+     "target": "e-found-ramp"
+    },
+    {
+     "id": "spot-ramp-c2",
+     "label": "Decide it is just the wind and move on",
+     "target": "e-setback"
+    },
+    {
+     "id": "spot-ramp-c3",
+     "label": "Kneel down and listen a bit longer",
+     "target": "detail-ramp"
+    }
+   ]
+  },
+  {
+   "id": "spot-tomato",
+   "body": "<<FILL role=decision words=65 beats='The muddy tracks trail off between two tomato stakes and simply stop, as if whatever made them hopped away. Miri has to decide whether to search this exact spot a little longer or give up here.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "spot-tomato-c1",
+     "label": "Search this exact spot a little longer",
+     "target": "e-final-found"
+    },
+    {
+     "id": "spot-tomato-c2",
+     "label": "Decide the trail has gone cold",
+     "target": "e-setback"
+    },
+    {
+     "id": "spot-tomato-c3",
+     "label": "Crouch down and check the soil closely",
+     "target": "detail-tomato"
+    }
+   ]
+  },
+  {
+   "id": "spot-porch",
+   "body": "<<FILL role=decision words=65 beats='A soft, steady clucking sound drifts out from the shadows beneath the porch steps. Miri has to decide whether to trust the sound or keep looking somewhere else instead.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "spot-porch-c1",
+     "label": "Trust the sound and look closer",
+     "target": "e-final-found"
+    },
+    {
+     "id": "spot-porch-c2",
+     "label": "Decide it might just be a bird outside",
+     "target": "e-setback"
+    },
+    {
+     "id": "spot-porch-c3",
+     "label": "Get down low and peer into the shadows",
+     "target": "detail-porch"
+    }
+   ]
+  },
+  {
+   "id": "spot-shed",
+   "body": "<<FILL role=explore words=65 beats='Inside the toolshed, Miri moves aside a rake and an old watering can. Something rustles behind the shelf of clay pots, too quiet and too small to be anything but a hen.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "spot-shed-c1",
+     "label": "Call for Pip right here",
+     "target": "e-shed"
+    },
+    {
+     "id": "spot-shed-c2",
+     "label": "Search behind the shelf carefully",
+     "target": "detail-shed"
+    },
+    {
+     "id": "spot-shed-c3",
+     "label": "Peek under the shelf for anything unusual",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "spot-coop",
+   "body": "<<FILL role=explore words=65 beats='Behind the tall nesting boxes, Miri finds scattered straw and a single small brown feather caught in a crack. The corner where Pip likes to dust-bathe is unusually quiet.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "spot-coop-c1",
+     "label": "Call for Pip right here",
+     "target": "e-coop"
+    },
+    {
+     "id": "spot-coop-c2",
+     "label": "Search every corner carefully",
+     "target": "detail-coop"
+    },
+    {
+     "id": "spot-coop-c3",
+     "label": "Look for anything unusual nearby",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "spot-fence",
+   "body": "<<FILL role=explore words=65 beats='The gap in the fence board is just wide enough for a small hen to squeeze through, with fresh feathers caught on the splintered wood at the edge.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "spot-fence-c1",
+     "label": "Call for Pip right here",
+     "target": "e-fence"
+    },
+    {
+     "id": "spot-fence-c2",
+     "label": "Search every corner carefully",
+     "target": "detail-fence"
+    },
+    {
+     "id": "spot-fence-c3",
+     "label": "Look for anything unusual nearby",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "spot-garden",
+   "body": "<<FILL role=explore words=65 beats='Among the squash leaves, Miri finds a small hollow pressed into the dirt, exactly the size and shape a hen might make while settling in for a while.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "spot-garden-c1",
+     "label": "Call for Pip right here",
+     "target": "e-garden"
+    },
+    {
+     "id": "spot-garden-c2",
+     "label": "Search every corner carefully",
+     "target": "detail-garden"
+    },
+    {
+     "id": "spot-garden-c3",
+     "label": "Look for anything unusual nearby",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "spot-wheelbarrow",
+   "body": "<<FILL role=explore words=65 beats='The old wheelbarrow sits tipped against the shed, its bed lined with straw that someone, or something small, has clearly nested in recently.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "spot-wheelbarrow-c1",
+     "label": "Call for Pip right here",
+     "target": "e-wheelbarrow"
+    },
+    {
+     "id": "spot-wheelbarrow-c2",
+     "label": "Search every corner carefully",
+     "target": "detail-wheelbarrow"
+    },
+    {
+     "id": "spot-wheelbarrow-c3",
+     "label": "Look for anything unusual nearby",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "spot-barrel",
+   "body": "<<FILL role=explore words=65 beats='Near the rain barrel, Whiskers the neighborhood cat sits very still, staring at something in the shadows with great interest, ears pricked forward.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "spot-barrel-c1",
+     "label": "Call for Pip right here",
+     "target": "e-barrel"
+    },
+    {
+     "id": "spot-barrel-c2",
+     "label": "Search every corner carefully",
+     "target": "detail-barrel"
+    },
+    {
+     "id": "spot-barrel-c3",
+     "label": "Look for anything unusual nearby",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "detail-shed",
+   "body": "<<FILL role=climax words=60 beats='Behind the shelf of clay pots, Miri finds a nest of soft rags and, tucked beside it, something she was not quite expecting to see.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "detail-shed-c1",
+     "label": "Reach in and see what it is",
+     "target": "confirm-shed"
+    },
+    {
+     "id": "detail-shed-c2",
+     "label": "Look even closer at the surprise",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "confirm-shed",
+   "body": "<<FILL role=climax words=55 beats='Miri holds very still and listens once more before reaching all the way in, making sure of what she is about to find behind the clay pots.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "confirm-shed-c1",
+     "label": "It is Pip, safe and sound",
+     "target": "e-shed"
+    },
+    {
+     "id": "confirm-shed-c2",
+     "label": "It is something else surprising",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "detail-coop",
+   "body": "<<FILL role=climax words=60 beats='Miri lifts the nesting box lid and finds nothing there, but crouching low she spots something unexpected tucked in the deepest, quietest corner of the coop.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "detail-coop-c1",
+     "label": "Reach in and see what it is",
+     "target": "confirm-coop"
+    },
+    {
+     "id": "detail-coop-c2",
+     "label": "Look even closer at the surprise",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "confirm-coop",
+   "body": "<<FILL role=climax words=55 beats='Miri holds very still and listens once more before reaching all the way in, making sure of what she is about to find in the quiet corner.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "confirm-coop-c1",
+     "label": "It is Pip, safe and sound",
+     "target": "e-coop"
+    },
+    {
+     "id": "confirm-coop-c2",
+     "label": "It is something else surprising",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "detail-fence",
+   "body": "<<FILL role=climax words=60 beats='Miri kneels by the fence gap and gently parts the tall grass, uncovering more than she expected to find in the narrow space.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "detail-fence-c1",
+     "label": "Reach in and see what it is",
+     "target": "confirm-fence"
+    },
+    {
+     "id": "detail-fence-c2",
+     "label": "Look even closer at the surprise",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "confirm-fence",
+   "body": "<<FILL role=climax words=55 beats='Miri holds very still and listens once more before reaching all the way in, making sure of what she is about to find by the fence gap.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "confirm-fence-c1",
+     "label": "It is Pip, safe and sound",
+     "target": "e-fence"
+    },
+    {
+     "id": "confirm-fence-c2",
+     "label": "It is something else surprising",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "detail-garden",
+   "body": "<<FILL role=climax words=60 beats='Miri kneels beside the small hollow in the dirt and brushes away a few squash leaves, uncovering something she was not expecting among the roots.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "detail-garden-c1",
+     "label": "Reach in and see what it is",
+     "target": "confirm-garden"
+    },
+    {
+     "id": "detail-garden-c2",
+     "label": "Look even closer at the surprise",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "confirm-garden",
+   "body": "<<FILL role=climax words=55 beats='Miri holds very still and listens once more before reaching all the way in, making sure of what she is about to find among the squash roots.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "confirm-garden-c1",
+     "label": "It is Pip, safe and sound",
+     "target": "e-garden"
+    },
+    {
+     "id": "confirm-garden-c2",
+     "label": "It is something else surprising",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "detail-wheelbarrow",
+   "body": "<<FILL role=climax words=60 beats='Digging carefully through the straw in the wheelbarrow, Miri uncovers something tucked beneath it that makes her gasp with surprise.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "detail-wheelbarrow-c1",
+     "label": "Reach in and see what it is",
+     "target": "confirm-wheelbarrow"
+    },
+    {
+     "id": "detail-wheelbarrow-c2",
+     "label": "Look even closer at the surprise",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "confirm-wheelbarrow",
+   "body": "<<FILL role=climax words=55 beats='Miri holds very still and listens once more before reaching all the way in, making sure of what she is about to find beneath the straw.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "confirm-wheelbarrow-c1",
+     "label": "It is Pip, safe and sound",
+     "target": "e-wheelbarrow"
+    },
+    {
+     "id": "confirm-wheelbarrow-c2",
+     "label": "It is something else surprising",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "detail-barrel",
+   "body": "<<FILL role=climax words=60 beats='Miri gently eases past the watching cat to peer into the shadow by the rain barrel, finding something there that explains the curious stare.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "detail-barrel-c1",
+     "label": "Reach in and see what it is",
+     "target": "confirm-barrel"
+    },
+    {
+     "id": "detail-barrel-c2",
+     "label": "Look even closer at the surprise",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "confirm-barrel",
+   "body": "<<FILL role=climax words=55 beats='Miri holds very still and listens once more before reaching all the way in, making sure of what she is about to find behind the rain barrel.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "confirm-barrel-c1",
+     "label": "It is Pip, safe and sound",
+     "target": "e-barrel"
+    },
+    {
+     "id": "confirm-barrel-c2",
+     "label": "It is something else surprising",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "detail-ramp",
+   "body": "<<FILL role=climax words=55 beats='Miri gets down close to the gap beneath the ramp, listening carefully before deciding exactly how to reach whatever is hiding inside.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "detail-ramp-c1",
+     "label": "Reach in slowly",
+     "target": "confirm-ramp"
+    },
+    {
+     "id": "detail-ramp-c2",
+     "label": "Look for anything unusual nearby",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "confirm-ramp",
+   "body": "<<FILL role=climax words=55 beats='Miri holds very still and listens once more before reaching all the way in, making sure of what she is about to find beneath the ramp.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "confirm-ramp-c1",
+     "label": "It is Pip, safe and sound",
+     "target": "e-found-ramp"
+    },
+    {
+     "id": "confirm-ramp-c2",
+     "label": "It is only the wind after all",
+     "target": "e-setback"
+    }
+   ]
+  },
+  {
+   "id": "detail-tomato",
+   "body": "<<FILL role=climax words=55 beats='Miri crouches lower among the tomato stakes, brushing back a few leaves before deciding exactly how to search the last bit of soft dirt.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "detail-tomato-c1",
+     "label": "Brush the soil aside slowly",
+     "target": "confirm-tomato"
+    },
+    {
+     "id": "detail-tomato-c2",
+     "label": "Look for anything unusual nearby",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "confirm-tomato",
+   "body": "<<FILL role=climax words=55 beats='Miri holds very still and listens once more before reaching all the way in, making sure of what she is about to find among the stakes.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "confirm-tomato-c1",
+     "label": "It is Pip, safe and sound",
+     "target": "e-final-found"
+    },
+    {
+     "id": "confirm-tomato-c2",
+     "label": "The trail really has gone cold",
+     "target": "e-setback"
+    }
+   ]
+  },
+  {
+   "id": "detail-porch",
+   "body": "<<FILL role=climax words=55 beats='Miri lies flat against the cool ground, peering under the porch steps and deciding exactly how far to reach into the shadowed gap.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "detail-porch-c1",
+     "label": "Reach into the shadows slowly",
+     "target": "confirm-porch"
+    },
+    {
+     "id": "detail-porch-c2",
+     "label": "Look for anything unusual nearby",
+     "target": "e-bonus-discovery"
+    }
+   ]
+  },
+  {
+   "id": "confirm-porch",
+   "body": "<<FILL role=climax words=55 beats='Miri holds very still and listens once more before reaching all the way in, making sure of what she is about to find beneath the steps.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "confirm-porch-c1",
+     "label": "It is Pip, safe and sound",
+     "target": "e-final-found"
+    },
+    {
+     "id": "confirm-porch-c2",
+     "label": "It really was just a bird outside",
+     "target": "e-setback"
+    }
+   ]
+  },
+  {
+   "id": "e-coop",
+   "body": "<<FILL role=ending words=65 beats='Miri calls softly and Pip pokes her head out from behind the water trough, having simply dozed off in a warm sunny patch. Miri scoops her up and carries her back to Buttercup and Marigold, the search over.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-coop",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Found in the Coop"
+   }
+  },
+  {
+   "id": "e-shed",
+   "body": "<<FILL role=ending words=65 beats='Behind the rake, Miri discovers Pip has built a cozy nest from old rags and settled in for the morning, warm and content. Miri gently carries her home, already planning to tell Mr. Douglas about the clever spot.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-shed",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Nest in the Toolshed"
+   }
+  },
+  {
+   "id": "e-fence",
+   "body": "<<FILL role=ending words=65 beats='Just past the splintered fence board, Miri spots Pip pecking calmly at the grass on the other side, unbothered by the whole adventure. Miri lifts her carefully back through the gap and heads for the coop.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-fence",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Through the Fence Gap"
+   }
+  },
+  {
+   "id": "e-garden",
+   "body": "<<FILL role=ending words=65 beats='Tucked into the small hollow among the squash leaves, Miri finds Pip settled and calm, having simply enjoyed a quiet morning away from the other hens. Miri carries her back, brushing garden dirt from her feathers.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-garden",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Among the Squash Leaves"
+   }
+  },
+  {
+   "id": "e-wheelbarrow",
+   "body": "<<FILL role=ending words=65 beats='Tucked deep in the straw of the old wheelbarrow, Miri finds Pip fast asleep, warm from the morning sun and perfectly fine. She carries her gently home, feathers ruffled but unhurt.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-wheelbarrow",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Wheelbarrow Nap"
+   }
+  },
+  {
+   "id": "e-barrel",
+   "body": "<<FILL role=ending words=65 beats='Behind the rain barrel, Miri finds Pip safely out of reach on a high ledge, with the watching cat merely curious rather than dangerous. Miri lifts her down and carries her home, relieved the cat was never a real threat.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-barrel",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Past the Curious Cat"
+   }
+  },
+  {
+   "id": "e-found-ramp",
+   "body": "<<FILL role=ending words=65 beats='Miri lifts the loose board and finds Pip curled beneath the ramp, warm and unhurt, blinking sleepily in the morning light. Miri carries her back to the coop and latches the door safely behind them both.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-found-ramp",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Beneath the Ramp"
+   }
+  },
+  {
+   "id": "e-final-found",
+   "body": "<<FILL role=ending words=65 beats='Just as Miri is about to give up on this last quiet corner, a small feathered shape stirs, and there is Pip, safe and calm after all. Miri carries her back to the coop, the long search finished at last.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-final-found",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Found After All"
+   }
+  },
+  {
+   "id": "e-setback",
+   "body": "<<FILL role=ending words=65 beats='By the time the lunch bell rings, Pip is still nowhere to be found, though Buttercup and Marigold remain safe in the coop. Miri and Mr. Douglas agree to keep searching together as soon as lunch is over.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-setback",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Not Yet, But Not Alone"
+   }
+  },
+  {
+   "id": "e-bonus-discovery",
+   "body": "<<FILL role=ending words=65 beats='Tucked into the quiet spot Miri almost overlooked, Pip is found curled beside a small clutch of speckled eggs she has been quietly guarding all along. Miri carries the happy news, and the eggs, back to share with Mr. Douglas.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-bonus-discovery",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Secret Surprise"
+   }
+  }
+ ]
+}

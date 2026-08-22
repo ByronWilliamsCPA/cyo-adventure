@@ -1,0 +1,32 @@
+{
+ "leg": "anthropic-sonnet-5",
+ "family": "anthropic",
+ "cell_id": "A",
+ "band": "5-8",
+ "length": "short",
+ "style": "prose",
+ "replicate": 2,
+ "premise": "Tomas and his grandmother build a kite for the spring festival, but the wind keeps changing and every new design needs testing.",
+ "attempts": 1,
+ "repair_rounds": 0,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  5
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 251.31,
+ "input_tokens": 3054,
+ "output_tokens": 26987,
+ "reasoning_tokens": 21317,
+ "finish_reasons": [
+  "stop"
+ ],
+ "min_catalog_distance": null,
+ "mean_catalog_distance": null,
+ "catalog_distance_note": "shell not coercible against any of 5 peers",
+ "last_feedback": "ERROR   L1-2   L1-2 ref: choice 'c1' not found or not unique in story 'tomas-and-the-changing-wind-kite' (referenced from choice id)\nERROR   L1-2   L1-2 ref: choice 'c2' not found or not unique in story 'tomas-and-the-changing-wind-kite' (referenced from choice id)\nERROR   L1-2   L1-2 ref: choice 'c3' not found or not unique in story 'tomas-and-the-changing-wind-kite' (referenced from choice id)\nERROR   L1-7   L1-7 budget: branch_depth out of range in story 'tomas-and-the-changing-wind-kite': 8 (allowed 0..7)\nFAIL gate: skeleton docs/planning/evidence/skeleton-author-vendors/runs/e1-2026-08-21/shells/A__r2__anthropic-sonnet-5.json failed structural validation: L1-2 ref: choice 'c1' not found or not unique in story 'tomas-and-the-changing-wind-kite' (referenced from choice id); L1-2 ref: choice 'c2' not found or not unique in story 'tomas-and-the-changing-wind-kite' (referenced from choice id); L1-2 ref: choice 'c3' not found or not unique in story 'tomas-and-the-changing-wind-kite' (referenced from choice id); L1-7 budget: branch_depth out of range in story 'tomas-and-the-changing-wind-kite': 8 (allowed 0..7)",
+ "shell_file": "shells/A__r2__anthropic-sonnet-5.json",
+ "error": "ProviderError: openrouter returned leg-fatal HTTP 402 (authentication or credit failure)"
+}

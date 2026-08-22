@@ -1,0 +1,418 @@
+{
+ "schema_version": "2.0",
+ "id": "priya-and-the-lost-boot",
+ "version": 7,
+ "title": "Priya and the Lost Boot",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "sibling love",
+   "perseverance",
+   "winter play",
+   "noticing clues",
+   "asking for help"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 10,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n0-first-snow",
+ "nodes": [
+  {
+   "id": "n0-first-snow",
+   "body": "<<FILL role=setup words=30 beats='First snow on Bramble Hill; the last sled run is done; little Ari has lost one blue boot with a silver lightning bolt, and the sun is sinking fast'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c01",
+     "label": "Zip up and face the hill",
+     "target": "n1-where-first"
+    }
+   ]
+  },
+  {
+   "id": "n1-where-first",
+   "body": "<<FILL role=decision words=36 beats='From the bottom Priya scans the hill: sled grooves climbing to the orange flags and the big pine, and below, the snow fort and creek bridge where Mia plays; Ari hugs his bare foot'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c02",
+     "label": "Comb the sled run yourselves",
+     "target": "sa1-red-sled"
+    },
+    {
+     "id": "c03",
+     "label": "Ask Mia by the snow fort",
+     "target": "hc1-mia-wave"
+    }
+   ]
+  },
+  {
+   "id": "sa1-red-sled",
+   "body": "<<FILL role=explore words=15 beats='Priya flips the red sled; no boot beneath it; blue yarn curls on the tow rope'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c04",
+     "label": "Follow the rope drag marks",
+     "target": "sa2-drag-marks"
+    }
+   ]
+  },
+  {
+   "id": "sa2-drag-marks",
+   "body": "<<FILL role=explore words=15 beats='The rope dragged over the bumpy middle; a grass tuft flutters blue threads; a tall pink drift glows below'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c05",
+     "label": "Stand mid-run and look both ways",
+     "target": "sd1-hill-map"
+    }
+   ]
+  },
+  {
+   "id": "hc1-mia-wave",
+   "body": "<<FILL role=explore words=15 beats='Mia waves from her crooked snow fort; the tunnel glows cold and blue; the creek shines below'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c06",
+     "label": "Crawl through the fort tunnel",
+     "target": "hc2-fort-tunnel"
+    }
+   ]
+  },
+  {
+   "id": "hc2-fort-tunnel",
+   "body": "<<FILL role=explore words=15 beats='Popping out of the tunnel: the ice hums softly; a long fallen branch leans against the snowy bank'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c07",
+     "label": "Step out toward the bridge",
+     "target": "hd1-creek-plan"
+    }
+   ]
+  },
+  {
+   "id": "sd1-hill-map",
+   "body": "<<FILL role=decision words=36 beats='Mid-run Priya weighs two scuffed trails: upward toward the sagging flag line and the arguing crow, or downward to the kicked-flat bumps and the tall drift'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c08",
+     "label": "Hike up toward flags and pine",
+     "target": "sd-top"
+    },
+    {
+     "id": "c09",
+     "label": "Hunt the lower bumps first",
+     "target": "sd-bot"
+    }
+   ]
+  },
+  {
+   "id": "sd-top",
+   "body": "<<FILL role=decision words=38 beats='At the hilltop the orange flag line sags where a blue thread hangs; a drag mark ends at the pine where the crow tugs a blue bootlace; the squirrel scolds from a leaf-stuffed hollow'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c10",
+     "label": "Shake the orange flag line",
+     "target": "gb-flag-line"
+    },
+    {
+     "id": "c11",
+     "label": "Walk the drag mark to the pine",
+     "target": "sd-pine"
+    }
+   ]
+  },
+  {
+   "id": "gb-flag-line",
+   "body": "<<FILL role=transition words=16 beats='Priya tugs the rope; the flags rattle overhead; something small and dark swings right above her nose'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c12",
+     "label": "Catch what drops down",
+     "target": "end-flags"
+    }
+   ]
+  },
+  {
+   "id": "sd-pine",
+   "body": "<<FILL role=decision words=40 beats='The crow pile winks with caps, one spoon, a marble, and a snug blue wedge; the hollow behind rustles with acorns; the shiny red button on the coat of Priya glints in the low sun'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c13",
+     "label": "Offer the crow your shiny button",
+     "target": "end-crow"
+    },
+    {
+     "id": "c14",
+     "label": "Reach into the dark hollow",
+     "target": "end-hollow"
+    }
+   ]
+  },
+  {
+   "id": "sd-bot",
+   "body": "<<FILL role=decision words=38 beats='Lower down, kicked-flat crust hugs the tuft with its matching blue threads; the tall drift holds one frosted blue boot-toe; the first path lamp buzzes awake'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c15",
+     "label": "Dig by the fluttering tuft",
+     "target": "gt-grass-tuft"
+    },
+    {
+     "id": "c16",
+     "label": "Climb toward the blue toe",
+     "target": "sd-drift"
+    }
+   ]
+  },
+  {
+   "id": "gt-grass-tuft",
+   "body": "<<FILL role=transition words=16 beats='Mittened hands scoop through the crust; something hard wiggles under the snow, cold as a popsicle'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c17",
+     "label": "Pull it out now",
+     "target": "end-tuft"
+    }
+   ]
+  },
+  {
+   "id": "sd-drift",
+   "body": "<<FILL role=decision words=40 beats='Priya climbs on knees and elbows while snow slides under her; the toe is nearly in reach; behind her the lamps flicker on and the sky turns the deep color of grape juice'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c18",
+     "label": "Grab the blue boot-toe",
+     "target": "end-drift"
+    },
+    {
+     "id": "c19",
+     "label": "Dig on in the dark",
+     "target": "end-dark"
+    }
+   ]
+  },
+  {
+   "id": "hd1-creek-plan",
+   "body": "<<FILL role=decision words=34 beats='By the bridge the ice shelf gleams below; the shed of Mr. Diaz holds the lost and found; Mia swings her sled bag and waits'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c20",
+     "label": "Search around the creek bridge",
+     "target": "hd-bridge"
+    },
+    {
+     "id": "c21",
+     "label": "Try the shed lost and found",
+     "target": "hd-shed"
+    }
+   ]
+  },
+  {
+   "id": "hd-bridge",
+   "body": "<<FILL role=decision words=38 beats='Under the bridge the boot sits on the ice shelf just past mittened reach; the long branch waits on the bank; past the bend the melt patch bubbles gray around a hard hump'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c22",
+     "label": "Fish with the long branch",
+     "target": "gs-long-branch"
+    },
+    {
+     "id": "c23",
+     "label": "Wade toward the melt patch",
+     "target": "gm-melt-patch"
+    }
+   ]
+  },
+  {
+   "id": "gs-long-branch",
+   "body": "<<FILL role=transition words=16 beats='Belly-down at the safe edge of the bank, Priya stretches the branch; the hooked tip taps the blue heel once, twice'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c24",
+     "label": "Hook the lace and lift",
+     "target": "end-stick"
+    }
+   ]
+  },
+  {
+   "id": "gm-melt-patch",
+   "body": "<<FILL role=transition words=16 beats='Two careful steps into the slush; the cold bites through her boots; both hands close around the muddy hump'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c25",
+     "label": "Heave it out of the mud",
+     "target": "end-mud"
+    }
+   ]
+  },
+  {
+   "id": "hd-shed",
+   "body": "<<FILL role=decision words=34 beats='The box holds three mittens, a plastic dinosaur, one huge green boot; Mia offers a fuzzy spare from her bag; the lamps along the path say home right now'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c26",
+     "label": "Leave a note in the box",
+     "target": "end-green"
+    },
+    {
+     "id": "c27",
+     "label": "Take the fuzzy spare boot",
+     "target": "end-spare"
+    }
+   ]
+  },
+  {
+   "id": "end-tuft",
+   "body": "<<FILL role=ending words=50 beats='Priya scoops the crust away and pulls, and out pops the blue lightning-bolt boot, dry inside; they tug it onto the foot of Ari, and the walk home is stomp-stomp-giggle all the way'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "eng-tuft",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Boot in the Grass"
+   }
+  },
+  {
+   "id": "end-drift",
+   "body": "<<FILL role=ending words=70 beats='Priya grabs the blue toe and pulls; the boot slides out with a quiet pouf of snow where the last bump flung it; the trip home is Ari riding the sled with both boots on, Priya pulling, stars coming out over Bramble Hill'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "eng-drift",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Toe in the Drift"
+   }
+  },
+  {
+   "id": "end-dark",
+   "body": "<<FILL role=ending words=70 beats='The plum-dark swallows the hill, and blue on black snow is invisible; the lamp path pulls them home with one foot of Ari in a doubled sock under a plastic bag; Mom promises flashlights at dawn, and Priya already knows where to look'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "eng-dark",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Too Dark to See Blue"
+   }
+  },
+  {
+   "id": "end-flags",
+   "body": "<<FILL role=ending words=50 beats='The small dark thing drops into her mittens: the boot, flung onto the flag line by the first whooshing run of the day; Ari cheers so loudly the flags rattle again, and two warm feet stomp home'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "eng-flags",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Caught on the Flag Line"
+   }
+  },
+  {
+   "id": "end-crow",
+   "body": "<<FILL role=ending words=70 beats='Priya sets the shiny red button on the snow and steps back; the crow snatches it, satisfied, and lets the blue wedge pull free: the boot at last; all winter the button may shine from a nest while Ari stomps home in two warm boots'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "eng-crow",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Trade with the Crow"
+   }
+  },
+  {
+   "id": "end-hollow",
+   "body": "<<FILL role=ending words=70 beats='Fingers close on cold rubber at the very back of the hollow; out comes the boot plus a rain of surprised acorns; Priya leaves the spoon and the marble for the squirrel, who stops scolding mid-chatter, and the walk home is loud and happy'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "eng-hollow",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "The Stash in the Tree"
+   }
+  },
+  {
+   "id": "end-stick",
+   "body": "<<FILL role=ending words=50 beats='Hook the lace loop, breathe out slow, lift steady; the boot swings over the bank and lands in the snow with a soft whump; Ari hugs it like a puppy, and two boots stomp home under brand-new stars'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "eng-stick",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Long-Branch Rescue"
+   }
+  },
+  {
+   "id": "end-mud",
+   "body": "<<FILL role=ending words=50 beats='The hump pops free with a shlurp: the boot, muddy outside and dry inside where it counts; Ari laughs at his mud-spattered boot the whole way home, and tonight there will be a bath for boots'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "eng-mud",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Mud Turtle Boot"
+   }
+  },
+  {
+   "id": "end-green",
+   "body": "<<FILL role=ending words=70 beats='Priya pins a note to the box: lost, one blue boot, silver lightning bolt, size small, loved very much; Mr. Diaz adds his flashlight to tomorrow and promises to watch the run; home is cocoa and a plan, which is not nothing at all'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "eng-green",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "One Green Boot"
+   }
+  },
+  {
+   "id": "end-spare",
+   "body": "<<FILL role=ending words=70 beats='Mia digs a fuzzy spare boot from her sled bag, nearly the right size; Ari walks home lopsided and proud between the two bigger kids; tomorrow the whole fort crew will search again, sleds loaded with flashlights and string cheese'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "eng-spare",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Spare and the Promise"
+   }
+  }
+ ]
+}

@@ -116,7 +116,7 @@ def _record(
         in_band=1.0,
         # A written book that delivered its commission in full; the analyze
         # buckets under test do not read this, but the field is a required
-        # condition of the record (AL-491/AL-511: never read in_band alone).
+        # condition of the record (AL-491/AL-516: never read in_band alone).
         fill_rate=1.0,
         leaf_words=len(text.split()),
         doc=_doc(text),

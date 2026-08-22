@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 # Mirrors the ck_provider_model_allowlist_provider CHECK constraint. mock is
 # deliberately absent: it is a CI-only test double, never a real generation
 # backend, so it can never be allowlisted.
-ALLOWLIST_PROVIDERS: tuple[str, ...] = ("anthropic", "openrouter", "modal", "ollama")
+ALLOWLIST_PROVIDERS: tuple[str, ...] = ("anthropic", "openrouter", "modal")
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,7 +51,6 @@ DEFAULT_ALLOWLIST: tuple[AllowlistSeed, ...] = (
         "anthropic/claude-sonnet-4.6",
         "OpenRouter fallback (Sonnet 4.6)",
     ),
-    AllowlistSeed("ollama", "qwen2.5:14b", "Ollama local default"),
 )
 
 

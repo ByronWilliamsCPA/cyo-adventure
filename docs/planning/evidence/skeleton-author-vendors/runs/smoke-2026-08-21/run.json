@@ -1,0 +1,19 @@
+{
+ "started_at": "2026-08-21T03:43:21+00:00",
+ "mock": false,
+ "vendors": [
+  "deepseek-v4-pro",
+  "deepseek-v4-flash",
+  "anthropic-sonnet-5",
+  "openai-gpt-5.6-sol",
+  "google-gemini-3.1-pro"
+ ],
+ "cells": [
+  "A"
+ ],
+ "replicates": 1,
+ "max_repair_rounds": 4,
+ "max_tokens": 32768,
+ "premises_file": "/home/user/cyo-adventure/docs/planning/evidence/sourcing-materials/premises.json",
+ "vendors_file": "/home/user/cyo-adventure/docs/planning/evidence/skeleton-author-vendors/vendors.json"
+}

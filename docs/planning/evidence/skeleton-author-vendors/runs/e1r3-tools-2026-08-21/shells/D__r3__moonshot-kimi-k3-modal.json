@@ -1,0 +1,877 @@
+{
+ "schema_version": "2.0",
+ "id": "the-two-mintings",
+ "version": 1,
+ "title": "The Two Mintings",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "fairness",
+   "honesty",
+   "attention to detail",
+   "community trust",
+   "money and value"
+  ],
+  "estimated_minutes": 4,
+  "ending_count": 14,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "mild",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "dawn-bell",
+ "nodes": [
+  {
+   "id": "dawn-bell",
+   "body": "<<FILL role=setup words=60 beats='Harvest swap-market dawn on Chaff Square; Idris and Grandmother Mab haul pickle barrels to their stall; everywhere tokens click in purses because the whole season of trading runs on them.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-dawn-a",
+     "label": "Help Mab open the stall",
+     "target": "sunrise-at-the-swap"
+    }
+   ]
+  },
+  {
+   "id": "sunrise-at-the-swap",
+   "body": "<<FILL role=setup words=85 beats='A carter pays with a wheat-sheaf token that rings oddly bright beside a dull oak-leaf token; the two mintings plainly differ, and earlier customers haggled differently over each; Idris decides what to check first.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-sunrise-a",
+     "label": "Sort the till into two piles",
+     "target": "till-tokens-sorted"
+    },
+    {
+     "id": "c-sunrise-b",
+     "label": "See why Sela is shouting",
+     "target": "sela-demands-more"
+    },
+    {
+     "id": "c-sunrise-c",
+     "label": "Carry the jug over to Pell",
+     "target": "pell-cider-grumble"
+    }
+   ]
+  },
+  {
+   "id": "till-tokens-sorted",
+   "body": "<<FILL role=explore words=95 beats='Idris sorts the morning till into wheat-sheaf and oak-leaf piles; the wheat pile sits brighter and heavier; weighed one against one on the butter scale, the wheat token tips the pan.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-till-a",
+     "label": "Drop one of each and listen",
+     "target": "bright-ring-test"
+    },
+    {
+     "id": "c-till-b",
+     "label": "Count the rim notches with a pin",
+     "target": "notches-on-the-rim"
+    },
+    {
+     "id": "c-till-c",
+     "label": "Open the old tobacco tin",
+     "target": "mabs-secret-tin"
+    }
+   ]
+  },
+  {
+   "id": "sela-demands-more",
+   "body": "<<FILL role=explore words=95 beats='Sela the spice seller refuses oak-leaf tokens unless the farmer adds one more; her saffron crate is chalked with two prices; the queue behind her starts muttering about honest brass.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-sela-a",
+     "label": "Read the East Row chalk boards",
+     "target": "east-row-boards"
+    },
+    {
+     "id": "c-sela-b",
+     "label": "Ask the miller his rate",
+     "target": "mill-half-value"
+    },
+    {
+     "id": "c-sela-c",
+     "label": "Ask Mab about the metal",
+     "target": "mabs-alloy-warning"
+    }
+   ]
+  },
+  {
+   "id": "pell-cider-grumble",
+   "body": "<<FILL role=explore words=95 beats='Pell at the cider press took nine oak-leaf tokens by lunch but the miller counted them at half; foam drips off his chin while he calls the whole market crooked.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-pell-a",
+     "label": "Watch the tinker at his brazier",
+     "target": "tinker-brazier"
+    },
+    {
+     "id": "c-pell-b",
+     "label": "Tail the mint apprentice down the lane",
+     "target": "shadowing-tamsin"
+    },
+    {
+     "id": "c-pell-c",
+     "label": "Hear the busker by the fountain",
+     "target": "buskers-rhyme"
+    }
+   ]
+  },
+  {
+   "id": "bright-ring-test",
+   "body": "<<FILL role=explore words=95 beats='Over the pickle counter Idris drops tokens one at a time; wheat-sheaf tokens ring like small bells, oak-leaf tokens thud like buttons; the difference lives in the metal, not the stamp.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-ring-a",
+     "label": "Take both kinds to the brass scales",
+     "target": "fenns-brass-scales"
+    },
+    {
+     "id": "c-ring-b",
+     "label": "Chalk a drift map on the board",
+     "target": "chalking-the-drift"
+    },
+    {
+     "id": "c-ring-c",
+     "label": "Ask the tinker what he melts",
+     "target": "barlo-owns-up"
+    }
+   ]
+  },
+  {
+   "id": "notches-on-the-rim",
+   "body": "<<FILL role=explore words=95 beats='Idris counts rim notches with a darning pin; wheat-sheaf tokens carry sixteen neat notches, oak-leaf fifteen worn ones; a few oak rims look freshly shaved smooth.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-notches-a",
+     "label": "Carry the count to warden Fenn",
+     "target": "fenns-brass-scales"
+    },
+    {
+     "id": "c-notches-b",
+     "label": "Tail Tamsin with her bag",
+     "target": "shadowing-tamsin"
+    },
+    {
+     "id": "c-notches-c",
+     "label": "Compare them with the shavings sack",
+     "target": "barlo-owns-up"
+    }
+   ]
+  },
+  {
+   "id": "mabs-secret-tin",
+   "body": "<<FILL role=explore words=100 beats='Under the counter Mab keeps a tobacco tin of wheat-sheaf tokens, every one she has taken all week; bright money for keeping, dull for spending, she says; Idris sees the drift has a home address.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-tin-a",
+     "label": "Map who hoards the bright coins",
+     "target": "hoard-map"
+    },
+    {
+     "id": "c-tin-b",
+     "label": "Check the mint ledger story",
+     "target": "mint-ledger"
+    },
+    {
+     "id": "c-tin-c",
+     "label": "Add the tin to the chalk map",
+     "target": "chalking-the-drift"
+    }
+   ]
+  },
+  {
+   "id": "east-row-boards",
+   "body": "<<FILL role=explore words=95 beats='On East Row every board reads two prices; honey two wheat or three oak, socks one wheat or two oak; the chalk is fresh, as if the whole row agreed at breakfast.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-east-a",
+     "label": "Copy the boards onto the drift map",
+     "target": "chalking-the-drift"
+    },
+    {
+     "id": "c-east-b",
+     "label": "Mark which stalls hoard wheat",
+     "target": "hoard-map"
+    },
+    {
+     "id": "c-east-c",
+     "label": "Ask about the Batch Forty ledger",
+     "target": "mint-ledger"
+    }
+   ]
+  },
+  {
+   "id": "mill-half-value",
+   "body": "<<FILL role=explore words=95 beats='At the mill the miller counts oak-leaf tokens at half and shrugs about bad metal; the flour sacks are chalked with two prices; the grumbling line reaches the lane.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-mill-a",
+     "label": "Match the rate to the mint ledger",
+     "target": "mint-ledger"
+    },
+    {
+     "id": "c-mill-b",
+     "label": "Shadow Tamsin across the yard",
+     "target": "shadowing-tamsin"
+    },
+    {
+     "id": "c-mill-c",
+     "label": "Report the half rate to Fenn",
+     "target": "fenns-brass-scales"
+    }
+   ]
+  },
+  {
+   "id": "mabs-alloy-warning",
+   "body": "<<FILL role=explore words=100 beats='Mab taps the counter and tells Idris the mint ran short of Bracken silver last winter, so Master Rook changed the alloy; she warns that a loud question empties a stall faster than a storm.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-alloy-a",
+     "label": "Hunt the Batch Forty ledger",
+     "target": "mint-ledger"
+    },
+    {
+     "id": "c-alloy-b",
+     "label": "Add the warning to the drift map",
+     "target": "chalking-the-drift"
+    },
+    {
+     "id": "c-alloy-c",
+     "label": "Follow Tamsin toward Kettle Lane",
+     "target": "shadowing-tamsin"
+    }
+   ]
+  },
+  {
+   "id": "tinker-brazier",
+   "body": "<<FILL role=explore words=95 beats='Barlo Quist the tinker sells brass buttons like little suns; beside his brazier sits a sack of oak-leaf tokens with rasped rims; he offers three buttons for each old token.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-brazier-a",
+     "label": "Listen to the tinker tell his side",
+     "target": "barlo-owns-up"
+    },
+    {
+     "id": "c-brazier-b",
+     "label": "See who shadows the shavings sack",
+     "target": "shadowing-tamsin"
+    },
+    {
+     "id": "c-brazier-c",
+     "label": "Mark the melt on the hoard map",
+     "target": "hoard-map"
+    }
+   ]
+  },
+  {
+   "id": "buskers-rhyme",
+   "body": "<<FILL role=explore words=100 beats='A busker by the fountain sings sixteen notches, fifteen lies, coins ring wrong at harvest; coins clack in her hat, mostly oak; the whole market already knows the song.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-busker-a",
+     "label": "Add the hat of coins to the map",
+     "target": "hoard-map"
+    },
+    {
+     "id": "c-busker-b",
+     "label": "Chalk the rhyme beside the map",
+     "target": "chalking-the-drift"
+    },
+    {
+     "id": "c-busker-c",
+     "label": "Ask the tinker about the song",
+     "target": "barlo-owns-up"
+    }
+   ]
+  },
+  {
+   "id": "fenns-brass-scales",
+   "body": "<<FILL role=explore words=100 beats='Old Fenn the weights warden balances tokens on his brass scales; five wheat outweigh five oak by the width of a barley grain; he frowns, writes nothing, and locks the scale box.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-fenn-a",
+     "label": "Request a hearing with Master Rook",
+     "target": "audience-with-rook"
+    },
+    {
+     "id": "c-fenn-b",
+     "label": "Start a private drift notebook",
+     "target": "the-drift-notebook"
+    },
+    {
+     "id": "c-fenn-c",
+     "label": "Watch the square turn quiet",
+     "target": "the-quiet-panic"
+    }
+   ]
+  },
+  {
+   "id": "chalking-the-drift",
+   "body": "<<FILL role=explore words=100 beats='Idris chalks a map on the big market board; arrows show wheat tokens flowing into tills and oak tokens pooling in pockets; children gather to watch the picture grow.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-chalk-a",
+     "label": "Carry the board talk to Rook",
+     "target": "audience-with-rook"
+    },
+    {
+     "id": "c-chalk-b",
+     "label": "Log a season of shifting prices",
+     "target": "the-drift-notebook"
+    },
+    {
+     "id": "c-chalk-c",
+     "label": "Read the mood of the crowd",
+     "target": "the-quiet-panic"
+    }
+   ]
+  },
+  {
+   "id": "shadowing-tamsin",
+   "body": "<<FILL role=explore words=95 beats='Idris shadows Tamsin the mint apprentice through Kettle Lane; she tips something bright into the culvert and hurries on; the water winks back with metal scraps.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-shadow-a",
+     "label": "Fish the culvert for scraps",
+     "target": "culvert-die-chips"
+    },
+    {
+     "id": "c-shadow-b",
+     "label": "Search the mint yard for the die",
+     "target": "cracked-die-box"
+    },
+    {
+     "id": "c-shadow-c",
+     "label": "Tell Rook about the bag",
+     "target": "audience-with-rook"
+    }
+   ]
+  },
+  {
+   "id": "hoard-map",
+   "body": "<<FILL role=explore words=95 beats='Idris sketches a hoard map; wheat tokens pool at the mill, in the spice strongbox, and in the family tobacco tin; the map looks like a river freezing solid.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-hoard-a",
+     "label": "Hear the quiet proposal from Sela",
+     "target": "shady-offer"
+    },
+    {
+     "id": "c-hoard-b",
+     "label": "Watch the panic gather shape",
+     "target": "the-quiet-panic"
+    },
+    {
+     "id": "c-hoard-c",
+     "label": "Add the hoards to the notebook",
+     "target": "the-drift-notebook"
+    }
+   ]
+  },
+  {
+   "id": "mint-ledger",
+   "body": "<<FILL role=explore words=100 beats='Rook opens the ledger to Batch Forty; the line reads copper raised, silver short, still legal; his hand shakes; on the shelf behind him a wrapped master die lies cracked.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-ledger-a",
+     "label": "Search the yard for the cracked die",
+     "target": "cracked-die-box"
+    },
+    {
+     "id": "c-ledger-b",
+     "label": "Confront Rook with the line",
+     "target": "audience-with-rook"
+    },
+    {
+     "id": "c-ledger-c",
+     "label": "Carry the numbers to Sela",
+     "target": "shady-offer"
+    }
+   ]
+  },
+  {
+   "id": "barlo-owns-up",
+   "body": "<<FILL role=explore words=100 beats='Barlo admits he melts oak tokens but only ones already ruined; the shaved rims, he swears, come from a stranger in a gray hood who pays him in buttons.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-barlo-a",
+     "label": "Comb the culvert for real proof",
+     "target": "culvert-die-chips"
+    },
+    {
+     "id": "c-barlo-b",
+     "label": "Carry the gray-hood tale to Sela",
+     "target": "shady-offer"
+    },
+    {
+     "id": "c-barlo-c",
+     "label": "Warn the square before lunch",
+     "target": "the-quiet-panic"
+    }
+   ]
+  },
+  {
+   "id": "audience-with-rook",
+   "body": "<<FILL role=decision words=105 beats='With a jar of pickles as toll Idris gains the mint-house step; over the ledger Master Rook admits the new batch carries less silver though still legal; the cracked master die sits wrapped on the shelf.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-rook-a",
+     "label": "Call a public market court",
+     "target": "market-court-gathers"
+    },
+    {
+     "id": "c-rook-b",
+     "label": "Order a great recount of tills",
+     "target": "the-great-recount"
+    },
+    {
+     "id": "c-rook-c",
+     "label": "Let Tamsin take the blame",
+     "target": "e-apprentice-scapegoat"
+    }
+   ]
+  },
+  {
+   "id": "the-drift-notebook",
+   "body": "<<FILL role=explore words=95 beats='The notebook shows oak prices up a full token since dawn, drifting like a stain in water; two neat columns of numbers march apart down the page.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-notebook-a",
+     "label": "Read the notebook at the recount",
+     "target": "the-great-recount"
+    },
+    {
+     "id": "c-notebook-b",
+     "label": "Show the numbers at the fountain",
+     "target": "riot-at-the-fountain"
+    },
+    {
+     "id": "c-notebook-c",
+     "label": "Sell the book to the wardens",
+     "target": "e-notebook-fortune"
+    }
+   ]
+  },
+  {
+   "id": "culvert-die-chips",
+   "body": "<<FILL role=decision words=100 beats='From the culvert Idris nets cloth-wrapped chips of steel; under the dirt they show die-marks, and a crack-line runs through one like lightning; someone threw away pieces of a master die.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-chips-a",
+     "label": "Put the chips before a court",
+     "target": "market-court-gathers"
+    },
+    {
+     "id": "c-chips-b",
+     "label": "Verify them at the great recount",
+     "target": "the-great-recount"
+    },
+    {
+     "id": "c-chips-c",
+     "label": "Keep one chip as a witness",
+     "target": "e-die-fragment"
+    }
+   ]
+  },
+  {
+   "id": "cracked-die-box",
+   "body": "<<FILL role=explore words=95 beats='In the mint yard under straw Idris finds the die box; the master wheat die lies split along its sheaf; every Batch Forty token carries the same lightning crack.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-diebox-a",
+     "label": "Bring the box to the market court",
+     "target": "market-court-gathers"
+    },
+    {
+     "id": "c-diebox-b",
+     "label": "Weigh it during the great recount",
+     "target": "the-great-recount"
+    },
+    {
+     "id": "c-diebox-c",
+     "label": "Pocket a shard of the old die",
+     "target": "e-die-fragment"
+    }
+   ]
+  },
+  {
+   "id": "the-quiet-panic",
+   "body": "<<FILL role=decision words=100 beats='By midafternoon the square goes quiet in a bad way; stalls hold prices in pencil instead of chalk; three farmers refuse any tokens at all; Idris must choose where to stand.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-panic-a",
+     "label": "Face the crowd at the fountain",
+     "target": "riot-at-the-fountain"
+    },
+    {
+     "id": "c-panic-b",
+     "label": "Channel the queue to the recount",
+     "target": "the-great-recount"
+    },
+    {
+     "id": "c-panic-c",
+     "label": "Watch the shutters come down",
+     "target": "e-silent-square"
+    }
+   ]
+  },
+  {
+   "id": "shady-offer",
+   "body": "<<FILL role=decision words=105 beats='Sela slides her two lists across; buy oak cheap from frightened farmers, she says, and swap it dear when the mint confesses; half the profit goes to whoever keeps the ledger quiet.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-shady-a",
+     "label": "Expose the scheme at the fountain",
+     "target": "riot-at-the-fountain"
+    },
+    {
+     "id": "c-shady-b",
+     "label": "Hand the ledger to the court",
+     "target": "market-court-gathers"
+    },
+    {
+     "id": "c-shady-c",
+     "label": "Shake hands on the deal",
+     "target": "e-brass-partners"
+    }
+   ]
+  },
+  {
+   "id": "market-court-gathers",
+   "body": "<<FILL role=decision words=105 beats='Rook bangs the market bell; benches scrape into a square; Fenn carries the scales, Tamsin carries the die chips, Barlo carries his buttons; half the harvest crowd becomes a jury.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-court-a",
+     "label": "Hear the verdict read aloud",
+     "target": "verdict-delivered"
+    },
+    {
+     "id": "c-court-b",
+     "label": "Send every till to the tally",
+     "target": "tally-posted"
+    },
+    {
+     "id": "c-court-c",
+     "label": "Step up when Fenn calls helpers",
+     "target": "e-wardens-apprentice"
+    }
+   ]
+  },
+  {
+   "id": "the-great-recount",
+   "body": "<<FILL role=transition words=100 beats='Tables stretch across the square; every stall tips its till; tokens pour in rivers of wheat and oak while children count in tens aloud; the market holds its breath.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-recount-a",
+     "label": "Post the tally for all to read",
+     "target": "tally-posted"
+    },
+    {
+     "id": "c-recount-b",
+     "label": "Force a handshake truce from it",
+     "target": "handshake-truce"
+    },
+    {
+     "id": "c-recount-c",
+     "label": "Feast the counters at dusk",
+     "target": "e-recount-jubilee"
+    }
+   ]
+  },
+  {
+   "id": "riot-at-the-fountain",
+   "body": "<<FILL role=climax words=105 beats='By the fountain the crowd splits into wheat-holders and oak-holders; both sides blame the mint, then each other; Idris steps onto the rim with the drift map held high.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-riot-a",
+     "label": "Divide them with handshake prices",
+     "target": "handshake-truce"
+    },
+    {
+     "id": "c-riot-b",
+     "label": "March the calm ones to the tally",
+     "target": "tally-posted"
+    },
+    {
+     "id": "c-riot-c",
+     "label": "Watch two prices take root",
+     "target": "e-two-price-town"
+    }
+   ]
+  },
+  {
+   "id": "verdict-delivered",
+   "body": "<<FILL role=climax words=105 beats='Fenn reads the verdict at the west steps; the mint must recast the die, weigh every hoard, and post drifts weekly; when he asks who brought the proof, the whole square points at Idris.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-verdict-a",
+     "label": "Open the fair exchange window",
+     "target": "e-fair-exchange"
+    },
+    {
+     "id": "c-verdict-b",
+     "label": "Ring in the season of new tokens",
+     "target": "e-new-minting"
+    },
+    {
+     "id": "c-verdict-c",
+     "label": "Fix the silver standard for good",
+     "target": "e-silver-standard"
+    }
+   ]
+  },
+  {
+   "id": "tally-posted",
+   "body": "<<FILL role=climax words=100 beats='The tally board hangs on the guildhall door; eleven thousand oak tokens against nine thousand wheat; the drift is not rumor but arithmetic, and arithmetic, Fenn says, can be unmade.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-tally-a",
+     "label": "Vote in the silver standard",
+     "target": "e-silver-standard"
+    },
+    {
+     "id": "c-tally-b",
+     "label": "Proclaim the amnesty fair",
+     "target": "e-amnesty-fair"
+    },
+    {
+     "id": "c-tally-c",
+     "label": "Let buttons linger beside tokens",
+     "target": "e-button-barter"
+    }
+   ]
+  },
+  {
+   "id": "handshake-truce",
+   "body": "<<FILL role=climax words=95 beats='It ends not with bells but with handshakes; stall by stall the square agrees what a token buys, and Idris chalks each promise on the board where everyone can read it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-truce-a",
+     "label": "Pardon the tinker in open court",
+     "target": "e-tinker-pardoned"
+    },
+    {
+     "id": "c-truce-b",
+     "label": "Keep buttons as honest money",
+     "target": "e-button-barter"
+    },
+    {
+     "id": "c-truce-c",
+     "label": "Proclaim an amnesty morning",
+     "target": "e-amnesty-fair"
+    }
+   ]
+  },
+  {
+   "id": "e-fair-exchange",
+   "body": "<<FILL role=ending words=100 beats='The exchange window opens under the warden seal; any token swaps at full weight, old oak for true wheat, while the crowd counts along; Mab trades her whole tobacco tin for flour, apples, and one bright new sheaf for luck.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-fair-exchange",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Fair Exchange Window"
+   }
+  },
+  {
+   "id": "e-new-minting",
+   "body": "<<FILL role=ending words=100 beats='All autumn the mint bell rings clear; new tokens pile in cedar boxes, one minting, one metal, one price; Idris keeps the cracked trial strike on a string as a reminder that money is only a promise kept.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-new-minting",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The First True Token"
+   }
+  },
+  {
+   "id": "e-silver-standard",
+   "body": "<<FILL role=ending words=100 beats='With Bracken silver flowing again the square settles into one price and easy change; traders from three villages over come to ring the famous true tokens, and Idris earns a stool beside the warden scales.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-silver-standard",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Silver Back in the Tokens"
+   }
+  },
+  {
+   "id": "e-recount-jubilee",
+   "body": "<<FILL role=ending words=100 beats='The recount ends in a feast as long as the tally tables; every counter gets a ribbon and every till gets checked in public; the jubilee becomes a yearly habit, scales and all.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-recount-jubilee",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Great Recount Feast"
+   }
+  },
+  {
+   "id": "e-amnesty-fair",
+   "body": "<<FILL role=ending words=100 beats='No names, no shame, just bags on the scale; the amnesty fair refills the market in one bright morning, and Grandmother Mab tells anyone who asks that her tin was the heaviest and proudest of all.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-amnesty-fair",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Amnesty at the Fountain"
+   }
+  },
+  {
+   "id": "e-wardens-apprentice",
+   "body": "<<FILL role=ending words=100 beats='Fenn pins the junior warden badge on with a stern speech about patience, then whispers that Idris did in one market day what seals had failed to do in a season; the scales get a new brass pan.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-wardens-apprentice",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Junior Warden Badge"
+   }
+  },
+  {
+   "id": "e-die-fragment",
+   "body": "<<FILL role=ending words=95 beats='One steel chip of the master die stays in the pocket of Idris, rubbed smooth as a worry stone; the market heals on its own crooked schedule, and the chip says what the ledgers will not.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-die-fragment",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Chip of the Master Die"
+   }
+  },
+  {
+   "id": "e-tinker-pardoned",
+   "body": "<<FILL role=ending words=95 beats='The court fines Barlo nine buttons and no more; he keeps his brazier, the tokens keep their notches, and his little brass moons become the honest souvenir of a very crooked season.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-tinker-pardoned",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Buttons for the Tinker"
+   }
+  },
+  {
+   "id": "e-button-barter",
+   "body": "<<FILL role=ending words=100 beats='Trust thaws slower than frost; for a whole season the square trades in buttons, eggs, and chalk tallies while tokens wait in tins; Barlo prospers wildly and tips Idris a moon of brass for the trouble.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-button-barter",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "The Button Barter Market"
+   }
+  },
+  {
+   "id": "e-notebook-fortune",
+   "body": "<<FILL role=ending words=100 beats='The wardens pay three silver pieces for the drift notebook, and it becomes their teaching book; Idris gets a line in the front in very small print, which somehow feels better than the money.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-notebook-fortune",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "The Drift Notebook Pays"
+   }
+  },
+  {
+   "id": "e-two-price-town",
+   "body": "<<FILL role=ending words=100 beats='The boards never go back to one price; wheat stalls and oak stalls glare across the square forever after; Idris can read the drift at a glance now, which feels less like a gift than it should.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-two-price-town",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Town of Two Prices"
+   }
+  },
+  {
+   "id": "e-silent-square",
+   "body": "<<FILL role=ending words=95 beats='Eleven stalls never lift their shutters again; the square stands silent at harvest, prices chalked for customers who went to towns with steadier money; the drift map fades unread on the board.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-silent-square",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Square Falls Silent"
+   }
+  },
+  {
+   "id": "e-brass-partners",
+   "body": "<<FILL role=ending words=100 beats='The strongbox grows heavy and Idris grows quiet; the profits are real, and the looks from the queue are real too; when the mint confesses at last, the partners count their coin in a shuttered stall.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-brass-partners",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Bargain in Brass"
+   }
+  },
+  {
+   "id": "e-apprentice-scapegoat",
+   "body": "<<FILL role=ending words=100 beats='The crowd wants one small neck to blame, and Tamsin is nearest; Rook keeps his desk, the tokens get recast, and Idris learns that a true story told halfway can still hang the wrong person.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "e-apprentice-scapegoat",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Apprentice Takes the Blame"
+   }
+  }
+ ]
+}

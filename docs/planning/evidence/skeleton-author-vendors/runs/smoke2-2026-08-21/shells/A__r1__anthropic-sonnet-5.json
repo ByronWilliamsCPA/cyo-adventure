@@ -1,0 +1,440 @@
+{
+ "schema_version": "2.0",
+ "id": "miri-and-the-missing-hen",
+ "version": 1,
+ "title": "Miri and the Missing Hen",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "responsibility",
+   "curiosity",
+   "friendship",
+   "courage",
+   "teamwork"
+  ],
+  "estimated_minutes": 3,
+  "ending_count": 9,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n1",
+ "nodes": [
+  {
+   "id": "n1",
+   "body": "<<FILL role=setup words=18 beats='Miri unlocks the school gate on a quiet holiday morning to feed Nutmeg, Clover, and tiny Pip; Nutmeg and Clover peck at corn but Pip is missing from the coop.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch1",
+     "label": "Start looking for Pip",
+     "target": "n2"
+    }
+   ]
+  },
+  {
+   "id": "n2",
+   "body": "<<FILL role=decision words=45 beats='Miri feels a flutter of worry and must choose where to search first for Pip: near the coop, inside the shed, or across the playground field.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch2",
+     "label": "Check near the coop",
+     "target": "coop1"
+    },
+    {
+     "id": "ch3",
+     "label": "Look inside the shed",
+     "target": "shed1"
+    },
+    {
+     "id": "ch4",
+     "label": "Search the playground field",
+     "target": "field1"
+    }
+   ]
+  },
+  {
+   "id": "coop1",
+   "body": "<<FILL role=explore words=18 beats='Miri crouches by the coop door and spots loose feathers scattered across the garden path in more than one direction.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch5",
+     "label": "Look closer at the coop",
+     "target": "coop2"
+    }
+   ]
+  },
+  {
+   "id": "coop2",
+   "body": "<<FILL role=decision words=45 beats='Miri weighs three ideas near the coop: peek in the nesting box, follow the garden path toward the field, or check a gap in the fence.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch6",
+     "label": "Peek in the nesting box",
+     "target": "coopToJ1"
+    },
+    {
+     "id": "ch7",
+     "label": "Follow the garden path",
+     "target": "coopToJ3"
+    },
+    {
+     "id": "ch8",
+     "label": "Check the fence gap",
+     "target": "coop_end"
+    }
+   ]
+  },
+  {
+   "id": "coop_end",
+   "body": "<<FILL role=ending words=60 beats='Miri checks the fence gap and finds only a few loose feathers caught on the wire; Pip is not there. Miri decides she must look again tomorrow, feeling a little worried but determined.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "coop_end",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Only Feathers"
+   }
+  },
+  {
+   "id": "shed1",
+   "body": "<<FILL role=explore words=18 beats='Miri walks around the shed and notices the door propped open with wisps of hay scattered near the step.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch9",
+     "label": "Step inside the shed",
+     "target": "shed2"
+    }
+   ]
+  },
+  {
+   "id": "shed2",
+   "body": "<<FILL role=decision words=45 beats='Inside the shed, Miri decides whether to check the cluttered tool corner, peek through the small window toward the field, or open the old cabinet.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch10",
+     "label": "Check the tool corner",
+     "target": "shedToJ1"
+    },
+    {
+     "id": "ch11",
+     "label": "Peek through the window",
+     "target": "shedToJ2"
+    },
+    {
+     "id": "ch12",
+     "label": "Open the old cabinet",
+     "target": "shed_end"
+    }
+   ]
+  },
+  {
+   "id": "shed_end",
+   "body": "<<FILL role=ending words=60 beats='Miri tugs open the old cabinet, but it is locked tight, dusty, and empty, with no sign of Pip anywhere inside. She sighs and decides to ask the caretaker for the key tomorrow.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "shed_end",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Locked and Empty"
+   }
+  },
+  {
+   "id": "field1",
+   "body": "<<FILL role=explore words=18 beats='At the playground, Miri hears laughter from the holiday club and scans the slide, swings, and fence for a small brown hen.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch13",
+     "label": "Look around the playground",
+     "target": "field2"
+    }
+   ]
+  },
+  {
+   "id": "field2",
+   "body": "<<FILL role=decision words=45 beats='Miri decides whether to check under the slide toward the shed side, peek through a fence hole toward the coop side, or ask her friends nearby.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch14",
+     "label": "Check under the slide",
+     "target": "fieldToJ2"
+    },
+    {
+     "id": "ch15",
+     "label": "Peek through the fence hole",
+     "target": "fieldToJ3"
+    },
+    {
+     "id": "ch16",
+     "label": "Ask friends nearby",
+     "target": "field_end"
+    }
+   ]
+  },
+  {
+   "id": "field_end",
+   "body": "<<FILL role=ending words=60 beats='Miri asks around the playground, but none of her friends have seen Pip today; only a few muddy little tracks lead off toward the field, a hopeful clue for later.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "field_end",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "A Muddy Trail"
+   }
+  },
+  {
+   "id": "coopToJ1",
+   "body": "<<FILL role=explore words=14 beats='The feather trail from the coop leads Miri toward the shed side of the garden, where the path narrows between two rose bushes.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch17",
+     "label": "Follow the trail toward the shed",
+     "target": "J1exp"
+    }
+   ]
+  },
+  {
+   "id": "shedToJ1",
+   "body": "<<FILL role=explore words=14 beats='Wisps of hay from the shed lead Miri toward the coop side, along a narrow path lined with rose bushes.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch18",
+     "label": "Follow the trail toward the coop",
+     "target": "J1exp"
+    }
+   ]
+  },
+  {
+   "id": "J1exp",
+   "body": "<<FILL role=explore words=14 beats='Both trails meet at a shady spot between the coop and shed, where soft rustling sounds come from a hidden nest of straw.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch19",
+     "label": "Look where the trails meet",
+     "target": "J1dec"
+    }
+   ]
+  },
+  {
+   "id": "J1dec",
+   "body": "<<FILL role=decision words=38 beats='Miri wonders whether to check the cozy nest of straw right in front of her, or listen for the soft clucking sound coming from somewhere above.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch20",
+     "label": "Check the cozy nest",
+     "target": "J1_end_success"
+    },
+    {
+     "id": "ch21",
+     "label": "Listen for clucking",
+     "target": "J1_end_alt"
+    }
+   ]
+  },
+  {
+   "id": "J1_end_success",
+   "body": "<<FILL role=ending words=60 beats='Miri lifts a curtain of leaves and finds Pip fast asleep in a cozy nest of straw between the coop and shed; relieved, she gathers the sleepy hen and carries her home to breakfast.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "J1_end_success",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Cozy in the Nest"
+   }
+  },
+  {
+   "id": "J1_end_alt",
+   "body": "<<FILL role=ending words=60 beats='Miri listens closely and hears soft clucking from a low branch above; peeking up, she spots Pip perched happily, safe and sound. Laughing, she coaxes the little hen down for breakfast.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "J1_end_alt",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Peek From Above"
+   }
+  },
+  {
+   "id": "coopToJ3",
+   "body": "<<FILL role=explore words=14 beats='The garden path from the coop curves past the tomato plants, heading out toward the open field on the far side of the school.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch22",
+     "label": "Follow the path toward the field",
+     "target": "J3exp"
+    }
+   ]
+  },
+  {
+   "id": "fieldToJ3",
+   "body": "<<FILL role=explore words=14 beats='Small tracks near the fence hole lead Miri back toward the garden, curving past tall grass toward the tomato plants near the coop.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch23",
+     "label": "Follow the path toward the coop",
+     "target": "J3exp"
+    }
+   ]
+  },
+  {
+   "id": "J3exp",
+   "body": "<<FILL role=explore words=14 beats='The two paths meet at the edge of the sunny field, where daisies sway and something small rustles happily among them.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch24",
+     "label": "Look where the trails meet",
+     "target": "J3dec"
+    }
+   ]
+  },
+  {
+   "id": "J3dec",
+   "body": "<<FILL role=decision words=38 beats='Miri must decide whether to run straight toward the sunny patch of daisies, or call out for Mr Owusu the caretaker to help her look first.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch25",
+     "label": "Run toward the sunny field",
+     "target": "J3_end_success"
+    },
+    {
+     "id": "ch26",
+     "label": "Call for Mr Owusu",
+     "target": "J3_end_alt"
+    }
+   ]
+  },
+  {
+   "id": "J3_end_success",
+   "body": "<<FILL role=ending words=60 beats='In the sunny field, Miri spots Pip chasing a butterfly among the daisies without a care in the world; she scoops up the happy little hen, and together they walk home.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "J3_end_success",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Butterflies and Home"
+   }
+  },
+  {
+   "id": "J3_end_alt",
+   "body": "<<FILL role=ending words=60 beats='Mr Owusu meets Miri partway, already cradling Pip in his arms; he had spotted the little hen wandering near the school gate. Grateful, Miri carries Pip the rest of the way home.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "J3_end_alt",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Rescued by Mr Owusu"
+   }
+  },
+  {
+   "id": "shedToJ2",
+   "body": "<<FILL role=explore words=14 beats='A trail of straw wisps from the shed window leads Miri out toward the playground field, where the ground turns soft and dusty.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch27",
+     "label": "Follow the trail toward the field",
+     "target": "J2exp"
+    }
+   ]
+  },
+  {
+   "id": "fieldToJ2",
+   "body": "<<FILL role=explore words=14 beats='Under the slide, dusty little scratch marks lead Miri back toward the shed, where the dirt turns soft and freshly scratched.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch28",
+     "label": "Follow the trail toward the shed",
+     "target": "J2exp"
+    }
+   ]
+  },
+  {
+   "id": "J2exp",
+   "body": "<<FILL role=explore words=14 beats='The two trails meet at a sunny patch of loose dirt near the fence, where little puffs of dust drift into the air.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch29",
+     "label": "Look where the trails meet",
+     "target": "J2dec"
+    }
+   ]
+  },
+  {
+   "id": "J2dec",
+   "body": "<<FILL role=decision words=38 beats='Miri decides whether to check the dusty patch where the puffs of dirt keep rising, or look closely at the fence gap just beyond it.'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "ch30",
+     "label": "Check the dusty patch",
+     "target": "J2_end_success"
+    },
+    {
+     "id": "ch31",
+     "label": "Check the fence gap closely",
+     "target": "J2_end_alt"
+    }
+   ]
+  },
+  {
+   "id": "J2_end_success",
+   "body": "<<FILL role=ending words=60 beats='Where the shed and field trails meet, Miri finds Pip mid dust bath, feathers puffed up in a happy cloud of dirt. Giggling, she scoops up the dusty little hen and heads for home.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "J2_end_success",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Dust Bath Delight"
+   }
+  },
+  {
+   "id": "J2_end_alt",
+   "body": "<<FILL role=ending words=60 beats='Miri finds the fence gap chewed wider than before, but no little hen in sight; worried, she decides to fetch Mr Owusu the caretaker right away for help finding Pip.'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "J2_end_alt",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "A Wider Gap"
+   }
+  }
+ ]
+}

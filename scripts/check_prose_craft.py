@@ -775,7 +775,7 @@ def _build_parser() -> argparse.ArgumentParser:
             "Fail a book declared third-person whose second-person node rate "
             "exceeds this ceiling (default 0.35: committed third-person prose "
             "runs 0.0-0.27, and the live drift case shipped a 3-5 book fully "
-            "second-person against third-person beats; UW-C324)."
+            "second-person against third-person beats; UW-C328)."
         ),
     )
     parser.add_argument(
@@ -789,8 +789,8 @@ def _build_parser() -> argparse.ArgumentParser:
             "is gated by --max-third-second-person instead, unless it is also "
             "styled gamebook, which is a contradictory declaration and is "
             "reported as one. A prose book declaring no person is reported but "
-            "not gated, since nothing pins its person (AL-518/UW-C313, "
-            "UW-C324)."
+            "not gated, since nothing pins its person (AL-523/UW-C313, "
+            "UW-C328)."
         ),
     )
     parser.add_argument(
@@ -936,7 +936,7 @@ _SECOND_PERSON_RE = re.compile(r"\b(you|your|yours|yourself)\b", re.IGNORECASE)
 
 @dataclass(frozen=True)
 class PersonReport:
-    """Second-person presence for one book (AL-518/UW-C313, UW-C324).
+    """Second-person presence for one book (AL-523/UW-C313, UW-C328).
 
     Attributes:
         nodes: Nodes with non-empty narration once dialogue is stripped. A
@@ -953,7 +953,7 @@ class PersonReport:
 
 
 def person_report(story: dict[str, Any]) -> PersonReport:
-    """Measure second-person presence in narration (AL-518/UW-C313, UW-C324).
+    """Measure second-person presence in narration (AL-523/UW-C313, UW-C328).
 
     Calibration (2026-08-21): committed gamebooks run 0.715 to 1.0,
     committed third-person prose 0.0 to 0.27, and three live fills of one
@@ -1081,7 +1081,7 @@ def _report(story: dict[str, Any], name: str, args: argparse.Namespace) -> bool:
     style = cast("str", metadata.get("narrative_style") or "")
     floor = cast("float", args.min_gamebook_second_person)
     ceiling = cast("float", args.max_third_second_person)
-    # Keyed to the declared person (UW-C324, ruled 2026-08-21): a declared
+    # Keyed to the declared person (UW-C328, ruled 2026-08-21): a declared
     # second-person book must clear the floor, a declared third-person book
     # must stay under the ceiling, and an undeclared book falls back to the
     # gamebook-style floor only (the pre-declaration behavior).

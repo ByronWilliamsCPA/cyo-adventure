@@ -1,0 +1,456 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-and-grandmas-spring-kite",
+ "version": 4,
+ "title": "Tomas and Grandma's Spring Kite",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 2.0,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "family",
+   "creativity",
+   "persistence",
+   "nature",
+   "festival"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 8,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "start",
+ "nodes": [
+  {
+   "id": "start",
+   "body": "<<FILL role=decision words=70 beats='Tomas, Grandma, spring festival tomorrow, windy yard, shed full of materials, decide what to build with'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "start_bamboo",
+     "label": "Use bamboo and paper",
+     "target": "choose_bamboo"
+    },
+    {
+     "id": "start_recycled",
+     "label": "Use recycled materials",
+     "target": "choose_recycled"
+    }
+   ]
+  },
+  {
+   "id": "choose_bamboo",
+   "body": "<<FILL role=decision words=70 beats='bamboo poles, Grandma shows old kite photos, decide which shape to try'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choose_bamboo_diamond",
+     "label": "Make a diamond kite",
+     "target": "build_diamond"
+    },
+    {
+     "id": "choose_bamboo_box",
+     "label": "Make a box kite",
+     "target": "build_box_bamboo"
+    }
+   ]
+  },
+  {
+   "id": "choose_recycled",
+   "body": "<<FILL role=decision words=70 beats='plastic bags, fishing rod, old newspapers, decide which shape to build'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choose_recycled_box",
+     "label": "Make a box kite",
+     "target": "build_box_recycled"
+    },
+    {
+     "id": "choose_recycled_sled",
+     "label": "Make a sled kite",
+     "target": "build_sled"
+    }
+   ]
+  },
+  {
+   "id": "build_diamond",
+   "body": "<<FILL role=decision words=70 beats='cut bamboo, glue paper, Tomas wants a wide diamond, Grandma suggests narrow shape'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "build_diamond_wide",
+     "label": "Build a wide diamond",
+     "target": "test_diamond"
+    },
+    {
+     "id": "build_diamond_narrow",
+     "label": "Build a narrow diamond",
+     "target": "test_diamond"
+    }
+   ]
+  },
+  {
+   "id": "build_box_bamboo",
+   "body": "<<FILL role=decision words=70 beats='bamboo frame, square cells, tape and glue, choose tall or wide shape'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "build_box_bamboo_tall",
+     "label": "Build a tall box",
+     "target": "test_box_bamboo"
+    },
+    {
+     "id": "build_box_bamboo_wide",
+     "label": "Build a wide box",
+     "target": "test_box_bamboo"
+    }
+   ]
+  },
+  {
+   "id": "build_box_recycled",
+   "body": "<<FILL role=decision words=70 beats='plastic bag, fishing rod sticks, tape, decide to use plastic bag or newspaper wrapping'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "build_box_recycled_bag",
+     "label": "Use a plastic bag",
+     "target": "test_box_recycled"
+    },
+    {
+     "id": "build_box_recycled_news",
+     "label": "Use newspaper",
+     "target": "test_box_recycled"
+    }
+   ]
+  },
+  {
+   "id": "build_sled",
+   "body": "<<FILL role=decision words=70 beats='old plastic sled sheet, string, choose big sheet or small sheet for kite'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "build_sled_big",
+     "label": "Use a big sheet",
+     "target": "test_sled"
+    },
+    {
+     "id": "build_sled_small",
+     "label": "Use a small sheet",
+     "target": "test_sled"
+    }
+   ]
+  },
+  {
+   "id": "test_diamond",
+   "body": "<<FILL role=decision words=70 beats='wind gusty, diamond kite wobbles, dives, need to fix it'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "test_diamond_tail",
+     "label": "Add a long tail",
+     "target": "mod_diamond"
+    },
+    {
+     "id": "test_diamond_weight",
+     "label": "Add a weight to the bottom",
+     "target": "mod_diamond"
+    }
+   ]
+  },
+  {
+   "id": "test_box_bamboo",
+   "body": "<<FILL role=decision words=70 beats='wind strong, box kite stable but dipping, need an adjustment'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "test_box_bamboo_fins",
+     "label": "Add fins to the sides",
+     "target": "mod_box_bamboo"
+    },
+    {
+     "id": "test_box_bamboo_tail",
+     "label": "Add a tail",
+     "target": "mod_box_bamboo"
+    }
+   ]
+  },
+  {
+   "id": "test_box_recycled",
+   "body": "<<FILL role=decision words=70 beats='wind shifts, recycled box kite flips, needs reinforcement'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "test_box_recycled_tape",
+     "label": "Tape joints tighter",
+     "target": "mod_box_recycled"
+    },
+    {
+     "id": "test_box_recycled_tail",
+     "label": "Add a long tail for balance",
+     "target": "mod_box_recycled"
+    }
+   ]
+  },
+  {
+   "id": "test_sled",
+   "body": "<<FILL role=decision words=70 beats='wind light, sled kite spins, needs more stability'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "test_sled_weight",
+     "label": "Add a weight to the nose",
+     "target": "mod_sled"
+    },
+    {
+     "id": "test_sled_tail",
+     "label": "Add a tail",
+     "target": "mod_sled"
+    }
+   ]
+  },
+  {
+   "id": "mod_diamond",
+   "body": "<<FILL role=decision words=70 beats='fix applied, diamond kite climbs, wind picks up, where to fly?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "mod_diamond_festival",
+     "label": "Take it to the festival",
+     "target": "test2_diamond"
+    },
+    {
+     "id": "mod_diamond_home",
+     "label": "Fly it in the backyard first",
+     "target": "test2_diamond"
+    }
+   ]
+  },
+  {
+   "id": "mod_box_bamboo",
+   "body": "<<FILL role=decision words=70 beats='adjustment done, box kite lifts higher, decide where to test'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "mod_box_bamboo_festival",
+     "label": "Go to the festival",
+     "target": "test2_box_bamboo"
+    },
+    {
+     "id": "mod_box_bamboo_home",
+     "label": "Try it at home first",
+     "target": "test2_box_bamboo"
+    }
+   ]
+  },
+  {
+   "id": "mod_box_recycled",
+   "body": "<<FILL role=decision words=70 beats='fix holds, recycled box kite steady, decide where to fly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "mod_box_recycled_festival",
+     "label": "Head to the festival",
+     "target": "test2_box_recycled"
+    },
+    {
+     "id": "mod_box_recycled_home",
+     "label": "Fly it near the house",
+     "target": "test2_box_recycled"
+    }
+   ]
+  },
+  {
+   "id": "mod_sled",
+   "body": "<<FILL role=decision words=70 beats='sled kite stabilizes, wind changes, where to try it?'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "mod_sled_festival",
+     "label": "Take it to the festival",
+     "target": "test2_sled"
+    },
+    {
+     "id": "mod_sled_home",
+     "label": "Fly it at the park first",
+     "target": "test2_sled"
+    }
+   ]
+  },
+  {
+   "id": "test2_diamond",
+   "body": "<<FILL role=decision words=70 beats='diamond kite soars beautifully, decide where to finally fly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "test2_diamond_festival",
+     "label": "Fly at the festival",
+     "target": "ending_diamond_festival"
+    },
+    {
+     "id": "test2_diamond_backyard",
+     "label": "Fly in the backyard",
+     "target": "ending_diamond_home"
+    }
+   ]
+  },
+  {
+   "id": "test2_box_bamboo",
+   "body": "<<FILL role=decision words=70 beats='box kite flies high and steady, decide final flight location'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "test2_box_bamboo_festival",
+     "label": "Enter the festival",
+     "target": "ending_box_bamboo_festival"
+    },
+    {
+     "id": "test2_box_bamboo_backyard",
+     "label": "Fly at home",
+     "target": "ending_box_bamboo_home"
+    }
+   ]
+  },
+  {
+   "id": "test2_box_recycled",
+   "body": "<<FILL role=decision words=70 beats='recycled box kite glides smoothly, decide where to fly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "test2_box_recycled_festival",
+     "label": "Go to the festival",
+     "target": "ending_box_recycled_festival"
+    },
+    {
+     "id": "test2_box_recycled_backyard",
+     "label": "Fly it near the garden",
+     "target": "ending_box_recycled_home"
+    }
+   ]
+  },
+  {
+   "id": "test2_sled",
+   "body": "<<FILL role=decision words=70 beats='sled kite swoops and rises, decide where to fly'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "test2_sled_festival",
+     "label": "Take it to the festival",
+     "target": "ending_sled_festival"
+    },
+    {
+     "id": "test2_sled_park",
+     "label": "Fly at the park",
+     "target": "ending_sled_crash"
+    }
+   ]
+  },
+  {
+   "id": "ending_diamond_festival",
+   "body": "<<FILL role=ending words=70 beats='festival field, diamond kite soars, gold ribbon prize, Grandma hugs Tomas, joy'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_diamond_festival_e",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Diamond Kite Wins at the Festival!"
+   }
+  },
+  {
+   "id": "ending_diamond_home",
+   "body": "<<FILL role=ending words=70 beats='backyard, diamond kite flies gently, Tomas and Grandma laugh, warm spring air'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_diamond_home_e",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "A Happy Backyard Flight"
+   }
+  },
+  {
+   "id": "ending_box_bamboo_festival",
+   "body": "<<FILL role=ending words=70 beats='festival crowd, box kite climbs perfectly, Tomas wins second prize, Grandma cheers'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_box_bamboo_festival_e",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Box Kite Triumph at the Festival!"
+   }
+  },
+  {
+   "id": "ending_box_bamboo_home",
+   "body": "<<FILL role=ending words=70 beats='home yard, box kite stable and high, Tomas and Grandma take turns flying'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_box_bamboo_home_e",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Steady Box Kite Fun"
+   }
+  },
+  {
+   "id": "ending_box_recycled_festival",
+   "body": "<<FILL role=ending words=70 beats='festival, recycled box kite flies high, surprise prize for creativity, Grandma proud'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_box_recycled_festival_e",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Recycled Box Shines at Festival!"
+   }
+  },
+  {
+   "id": "ending_box_recycled_home",
+   "body": "<<FILL role=ending words=70 beats='backyard, recycled box kite drifts lazily, Tomas smiles, learning new things'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_box_recycled_home_e",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "Relaxed Recycling Flight"
+   }
+  },
+  {
+   "id": "ending_sled_festival",
+   "body": "<<FILL role=ending words=70 beats='festival, sled kite glides low and fast, Tomas laughs, fun day'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_sled_festival_e",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Sled Kite Fun at the Festival!"
+   }
+  },
+  {
+   "id": "ending_sled_crash",
+   "body": "<<FILL role=ending words=70 beats='park, sled kite spins, crashes into bushes, Tomas and Grandma try again tomorrow'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_sled_crash_e",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Sled Kite Spins Out"
+   }
+  }
+ ]
+}

@@ -1,6 +1,6 @@
 """Shared retry/backoff driver for live ``GenerationProvider`` adapters.
 
-Both the OpenRouter and Ollama adapters own **Layer 1** of the failure model:
+Every live adapter (OpenRouter, Anthropic, Modal) owns **Layer 1** of the failure model:
 retry TRANSIENT failures against the same model with exponential backoff, and
 let leg-fatal failures propagate immediately so the cascade (Layer 2) can fail
 over. This module factors that loop out so each adapter only supplies its own
@@ -197,6 +197,34 @@ def dig_reasoning_tokens(payload: object) -> int | None:
     return coerce_token_count(details.get("reasoning_tokens"))
 
 
+def dig_flat_reasoning_tokens(payload: object) -> int | None:
+    """Safely extract ``usage.reasoning_tokens`` (top level of ``usage``).
+
+    Args:
+        payload: The decoded JSON response (untrusted shape).
+
+    Returns:
+        The reasoning-token count, or ``None`` when absent or unusable.
+
+    Note:
+        This is the flat sibling of :func:`dig_reasoning_tokens`, which reads
+        the OpenAI-shaped ``usage.completion_tokens_details.reasoning_tokens``.
+        A Modal Auto Endpoint reports the count one level higher, directly on
+        ``usage``, so the nested reader returns ``None`` against it and the
+        Modal leg reported no reasoning at all. Recorded in the 2026-08-20
+        smoke test (`docs/planning/handoff-modal-deepseek-v4-smoke-test-2026-08-20.md`).
+        The same ``None`` versus ``0`` discipline :func:`dig_usage` documents
+        applies: an absent block must not be flattened into a reported zero.
+    """
+    top = as_str_map(payload)
+    if top is None:
+        return None
+    usage = as_str_map(top.get("usage"))
+    if usage is None:
+        return None
+    return coerce_token_count(usage.get("reasoning_tokens"))
+
+
 def elapsed_ms(start: float) -> int:
     """Return whole milliseconds elapsed since a :func:`time.monotonic` reading.
 
@@ -290,7 +318,7 @@ async def run_with_retries(
     # 2026-08-20/21 live rounds lost 4 of 15 (skeleton, brief) pairs to
     # zero-content stops whose raw `finish_reason` was `content_filter` or
     # None, and each was journalled only as "transient failure persisted"
-    # (`AL-492`/`AL-512`/`UW-C309`). `raise ... from` preserves the chain for
+    # (`AL-492`/`AL-517`/`UW-C309`). `raise ... from` preserves the chain for
     # logs, but harness journals record `str(exc)`, so the cause has to live
     # in the message itself.
     msg = (

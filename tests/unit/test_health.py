@@ -1820,3 +1820,130 @@ class TestReadinessKwsDoesNotGate:
         assert response.status_code == 200
         assert body["checks"]["kws_verification"]["state"] == "unconfigured"
         assert body["checks"]["kws_verification"]["status"] is True
+
+
+class TestCheckGenerationCascade:
+    """Tests for the check_generation_cascade() readiness helper.
+
+    Since the 2026-08-18 Ollama retirement the default cascade is OpenRouter
+    primary, OpenRouter fallback, Modal backstop, so the first two legs sit
+    behind one vendor's account and Modal is the only thing making the chain
+    span two vendors. Before this check the sole signal that a deploy had
+    silently degraded to single-vendor was a per-job log line, which meant
+    noticing it required grepping worker logs for one string.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_reports_ok_when_the_modal_backstop_is_configured(self) -> None:
+        """Two vendors is the intended posture and reports no error text."""
+        from cyo_adventure.api.health import check_generation_cascade
+
+        with (
+            patch(
+                "cyo_adventure.api.health.settings.generation_provider",
+                new="openrouter",
+            ),
+            patch(
+                "cyo_adventure.core.config.Settings.modal_leg_configured",
+                new=property(lambda _self: True),
+            ),
+        ):
+            result = await check_generation_cascade()
+
+        assert result.name == "generation_cascade"
+        assert result.status is True
+        assert result.state == "ok"
+        assert result.error is None
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_reports_degraded_when_the_modal_backstop_is_absent(self) -> None:
+        """The single-vendor state is the whole reason this check exists.
+
+        Asserted on the error text as well as the state: an operator reading
+        a bare "degraded" cannot tell which of the cascade's three legs is
+        missing, and the actionable part is the env var pair to set.
+        """
+        from cyo_adventure.api.health import check_generation_cascade
+
+        with (
+            patch(
+                "cyo_adventure.api.health.settings.generation_provider",
+                new="openrouter",
+            ),
+            patch(
+                "cyo_adventure.core.config.Settings.modal_leg_configured",
+                new=property(lambda _self: False),
+            ),
+        ):
+            result = await check_generation_cascade()
+
+        assert result.status is False
+        assert result.state == "degraded"
+        assert result.error is not None
+        assert "MODAL_BASE_URL" in result.error
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_reports_unconfigured_when_this_process_runs_no_cascade(
+        self,
+    ) -> None:
+        """A tier on the mock or anthropic provider has no cascade to degrade.
+
+        Reporting "degraded" there would train operators to ignore the state,
+        which is how a real single-vendor deploy gets missed.
+        """
+        from cyo_adventure.api.health import check_generation_cascade
+
+        with patch("cyo_adventure.api.health.settings.generation_provider", new="mock"):
+            result = await check_generation_cascade()
+
+        assert result.status is True
+        assert result.state == "unconfigured"
+        assert result.error is None
+
+    @pytest.mark.unit
+    def test_a_degraded_cascade_does_not_take_the_pod_out_of_rotation(self) -> None:
+        """Degraded generation capacity must not stop serving reads to children.
+
+        This also pins the readiness route's response SHAPE. The check is
+        defined immediately above readiness() in the module, so a helper
+        inserted between the @router.get("/ready") decorator and readiness()
+        would silently rebind the route to the helper: the endpoint would
+        answer 200 with a single ReadinessCheck body and stop running the
+        database check entirely, while every function-level test above still
+        passed. Asserting that "checks" is present and holds the other checks
+        is what distinguishes those two worlds.
+        """
+        _, fake_get_session = _fake_session_with_queue_counts(0, 0, 0)
+
+        app = _make_app()
+        with (
+            patch(
+                "cyo_adventure.api.health.settings.generation_provider",
+                new="openrouter",
+            ),
+            patch(
+                "cyo_adventure.core.config.Settings.modal_leg_configured",
+                new=property(lambda _self: False),
+            ),
+            patch(
+                "cyo_adventure.api.health.settings.kws_verification_required",
+                new=False,
+            ),
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=fake_get_session,
+            ),
+            patch("cyo_adventure.api.health.settings.rate_limit_backend", "memory"),
+        ):
+            client = TestClient(app, raise_server_exceptions=True)
+            response = client.get("/api/v1/health/ready")
+
+        body = response.json()
+        assert response.status_code == 200
+        assert body["checks"]["generation_cascade"]["state"] == "degraded"
+        assert body["checks"]["generation_cascade"]["status"] is False
+        assert "database" in body["checks"]
+        assert body["status"] == "ok"

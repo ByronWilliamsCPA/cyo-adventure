@@ -1,0 +1,30 @@
+{
+ "leg": "deepseek-v4-flash",
+ "family": "deepseek",
+ "cell_id": "D",
+ "band": "10-13",
+ "length": "short",
+ "style": "prose",
+ "replicate": 2,
+ "premise": "Two nights before opening, the school play's lead quits, and stage manager Cass must re-plan the show around who is left.",
+ "attempts": 1,
+ "repair_rounds": 0,
+ "strict_pass": false,
+ "first_pass_clean": false,
+ "parse_failures": 0,
+ "findings_lines_per_round": [
+  8
+ ],
+ "graph_check_exit": 0,
+ "latency_s": 0.0,
+ "input_tokens": null,
+ "output_tokens": null,
+ "reasoning_tokens": null,
+ "finish_reasons": [],
+ "min_catalog_distance": 0.2043582337896664,
+ "mean_catalog_distance": 0.37046931565488306,
+ "catalog_distance_note": "vs 5 in-cell peers",
+ "last_feedback": "WARNING PL-23  PL-23 clock: declared estimated_minutes 3 differs from the derived fastest-finish clock 2 min (290 words on the shortest satisfying path at 150 wpm) by 50% in story 'school-play-recast' (advisory only)\nskeleton clock: PL-23 estimated_minutes 3 is OVER-DECLARED vs the derived fastest-finish clock 2 min (290 words at 150 wpm) by 50% (tolerance 25%)\nstats: nodes=26 endings=14 fill_nodes=26 cell=(10-13, short, prose) topology=branch_and_bottleneck tier=1\nwalk: P(satisfying ending, uniform reader) 100.0% (floor 15% for 10-13 prose)\nclock: declared estimated_minutes 3 vs derived 2 (PL-23 tolerance 25%)\nreconvergence: max in-degree 3 (hard cap 6 for 10-13 branch_and_bottleneck)\nendings depth-qualified: 11 of 14 at depth >= 4 against floor 4\nFAIL strict: PL-23 advisory is blocking for a newly drafted skeleton: PL-23 clock: declared estimated_minutes 3 differs from the derived fastest-finish clock 2 min (290 words on the shortest satisfying path at 150 wpm) by 50% in story 'school-play-recast' (advisory only)",
+ "shell_file": "shells/D__r2__deepseek-v4-flash.json",
+ "error": ""
+}

@@ -206,13 +206,13 @@ def test_production_skeletons_are_production_eligible(rel: str) -> None:
 def test_a_variant_slug_resolves_the_same_context_window_as_its_base_form(
     suffix: str,
 ) -> None:
-    """A pinned or dated slug must not lose its window (`UW-C320` reopened).
+    """A pinned or dated slug must not lose its window (`UW-C324` reopened).
 
     `resolve_context_window` was a bare `dict.get` while its declared companion
     `resolve_output_cap` already stripped these suffixes (`49d17a64`,
     `AL-500`), so `deepseek/deepseek-v3.2:free` resolved an output cap and a
     None window. None constrains nothing, so the chunked path's context bound
-    went inert and the unbounded ask that `UW-C320` was filed for came back,
+    went inert and the unbounded ask that `UW-C324` was filed for came back,
     silently: no warning, no refusal, just no bound.
     """
     base = "deepseek/deepseek-v3.2"

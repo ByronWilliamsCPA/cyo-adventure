@@ -1,0 +1,305 @@
+{
+ "schema_version": "2.0",
+ "id": "tomas-kite-festival",
+ "version": 1,
+ "title": "Tomas and the Wind",
+ "metadata": {
+  "age_band": "5-8",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "time_cave",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 4.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "family",
+   "creativity",
+   "perseverance",
+   "testing ideas",
+   "spring"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 7,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "none"
+  }
+ },
+ "variables": [],
+ "start_node": "node_1",
+ "nodes": [
+  {
+   "id": "node_1",
+   "body": "<<FILL role=setup words=70 beats='Tomas arrives at his grandmother house for spring festival; she brings out her old wooden chest full of kite-making tools and colorful papers'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_1_1",
+     "label": "Open the chest",
+     "target": "node_2"
+    }
+   ]
+  },
+  {
+   "id": "node_2",
+   "body": "<<FILL role=explore words=66 beats='They build their first kite with red paper and wooden sticks; Grandmother teaches Tomas how to attach the tail for balance'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_2_1",
+     "label": "Test the kite in the yard now",
+     "target": "node_3"
+    },
+    {
+     "id": "choice_2_2",
+     "label": "Add more decorations first",
+     "target": "node_3"
+    }
+   ]
+  },
+  {
+   "id": "node_3",
+   "body": "<<FILL role=explore words=68 beats='Tomas runs with the red kite in the yard; the wind is gentle and steady; the kite climbs high into the blue sky'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_3_1",
+     "label": "The wind suddenly shifts hard",
+     "target": "node_4"
+    },
+    {
+     "id": "choice_3_2",
+     "label": "The kite keeps climbing higher",
+     "target": "node_5"
+    }
+   ]
+  },
+  {
+   "id": "node_4",
+   "body": "<<FILL role=explore words=64 beats='The wind shifts and pushes the red kite high; Tomas pulls the string tight; the kite spins and dives'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_4_1",
+     "label": "Wind it in quickly and go to festival",
+     "target": "node_6"
+    },
+    {
+     "id": "choice_4_2",
+     "label": "Adjust the string carefully and fly on",
+     "target": "node_7"
+    }
+   ]
+  },
+  {
+   "id": "node_5",
+   "body": "<<FILL role=explore words=65 beats='The red kite climbs higher and higher; Tomas feels confident; Grandmother smiles knowing this design works well'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_5_1",
+     "label": "Bring it down and go to festival",
+     "target": "node_8"
+    },
+    {
+     "id": "choice_5_2",
+     "label": "Build a second design with yellow paper",
+     "target": "node_10"
+    },
+    {
+     "id": "choice_5_3",
+     "label": "Build a third design with square shape",
+     "target": "node_16"
+    }
+   ]
+  },
+  {
+   "id": "node_6",
+   "body": "<<FILL role=climax words=67 beats='At the spring festival, Tomas launches the red kite that he brought from home; it climbs steadily into the sky'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_1",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Festival Red Kite"
+   }
+  },
+  {
+   "id": "node_7",
+   "body": "<<FILL role=explore words=63 beats='Tomas adjusts carefully; the red kite steadies and climbs; he learns to control it better in the changing wind'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_7_1",
+     "label": "Bring it down and go to festival",
+     "target": "node_9"
+    }
+   ]
+  },
+  {
+   "id": "node_8",
+   "body": "<<FILL role=climax words=66 beats='At the festival, Tomas and Grandmother launch the red kite; it soars beautifully into the sky; they celebrate'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_2",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Red Kite Victory"
+   }
+  },
+  {
+   "id": "node_9",
+   "body": "<<FILL role=climax words=65 beats='At the festival, the kite Tomas learned to control in the wind flies perfectly; he is proud of his learning'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_3",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Control Mastery"
+   }
+  },
+  {
+   "id": "node_10",
+   "body": "<<FILL role=explore words=64 beats='Tomas and Grandmother build a second kite with yellow paper and thicker sticks for a stronger frame'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_10_1",
+     "label": "Test this yellow kite now",
+     "target": "node_11"
+    },
+    {
+     "id": "choice_10_2",
+     "label": "Test it more carefully",
+     "target": "node_11"
+    }
+   ]
+  },
+  {
+   "id": "node_11",
+   "body": "<<FILL role=explore words=67 beats='Tomas runs with the yellow kite; it climbs smoothly and sparkles in the sun; Grandmother smiles at this design'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_11_1",
+     "label": "The wind suddenly changes",
+     "target": "node_12"
+    },
+    {
+     "id": "choice_11_2",
+     "label": "The kite keeps flying steady",
+     "target": "node_13"
+    }
+   ]
+  },
+  {
+   "id": "node_12",
+   "body": "<<FILL role=explore words=61 beats='Sudden wind wobbles the yellow kite; Tomas leans and pulls; it steadies and climbs smoothly again'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_12_1",
+     "label": "Bring it down and go to festival",
+     "target": "node_14"
+    }
+   ]
+  },
+  {
+   "id": "node_13",
+   "body": "<<FILL role=explore words=62 beats='The yellow kite soars higher into the bright sky; Tomas keeps the string steady and perfect'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_13_1",
+     "label": "Bring it down and go to festival",
+     "target": "node_15"
+    }
+   ]
+  },
+  {
+   "id": "node_14",
+   "body": "<<FILL role=climax words=64 beats='At the festival, Tomas launches the steadied yellow kite; it dances beautifully in the wind for all to see'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_4",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "Yellow Dance"
+   }
+  },
+  {
+   "id": "node_15",
+   "body": "<<FILL role=climax words=65 beats='At the festival, the yellow kite sparkles in the sun as it rises; Tomas and Grandmother watch with pride'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_5",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Yellow Kite Shines"
+   }
+  },
+  {
+   "id": "node_16",
+   "body": "<<FILL role=explore words=65 beats='Tomas and Grandmother build a third kite with a square shape and different tail for more stability in wind'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_16_1",
+     "label": "Test this square kite",
+     "target": "node_17"
+    }
+   ]
+  },
+  {
+   "id": "node_17",
+   "body": "<<FILL role=explore words=66 beats='The square kite climbs fast and stays perfectly stable even in strong gusts of wind from all directions'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "choice_17_1",
+     "label": "Bring it down and go to festival",
+     "target": "node_18"
+    },
+    {
+     "id": "choice_17_2",
+     "label": "Combine best ideas and go to festival",
+     "target": "node_21"
+    }
+   ]
+  },
+  {
+   "id": "node_18",
+   "body": "<<FILL role=climax words=67 beats='At the festival, the square kite soars into the sky and stays perfectly balanced; Tomas and Grandmother celebrate'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_6",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Square Stability"
+   }
+  },
+  {
+   "id": "node_21",
+   "body": "<<FILL role=climax words=68 beats='At the festival, the perfect combined kite soars into the sky; Tomas holds the string steady; they celebrate together'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending_7",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Perfect Kite Complete"
+   }
+  }
+ ]
+}
