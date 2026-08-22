@@ -1,7 +1,7 @@
 # Live structural round: frozen-field mutation rate, directed delta, chunked path
 
 **Date**: 2026-08-21
-**Status**: executed; sections 7-9 hold the results, rulings, and resolutions (status line corrected 2026-08-22, PR #737 review)
+**Status**: complete; sub-run results in section 7, owner rulings in sections 8 and 9 acted on (status line corrected 2026-08-22, PR #737 review)
 **Predecessor**: `deepseek-v4-pro-live-fill-plan-2026-08-20.md` (PR #731 merged 2026-08-20)
 **Branch**: `claude/cyo-live-story-generation-kxm0ya`
 **Goal**: find remaining STRUCTURAL defects in the skeleton/fill contract before bulk skeleton and
