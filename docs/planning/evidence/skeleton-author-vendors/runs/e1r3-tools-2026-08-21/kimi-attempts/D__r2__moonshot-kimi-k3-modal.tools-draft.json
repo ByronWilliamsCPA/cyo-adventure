@@ -1,0 +1,886 @@
+{
+ "schema_version": "2.0",
+ "id": "cass-and-the-clockwork-garden",
+ "version": 1,
+ "title": "Cass and the Clockwork Garden",
+ "metadata": {
+  "age_band": "10-13",
+  "length": "short",
+  "narrative_style": "prose",
+  "topology": "branch_and_bottleneck",
+  "tier": 1,
+  "production_eligible": false,
+  "reading_level": {
+   "scheme": "flesch_kincaid",
+   "target": 5.5,
+   "tolerance": 1.5
+  },
+  "themes": [
+   "teamwork",
+   "adaptability",
+   "leadership under pressure",
+   "creative problem solving"
+  ],
+  "estimated_minutes": 5,
+  "ending_count": 14,
+  "content_flags": {
+   "violence": "none",
+   "scariness": "none",
+   "peril": "mild"
+  }
+ },
+ "variables": [],
+ "start_node": "n0-quit",
+ "nodes": [
+  {
+   "id": "n0-quit",
+   "body": "<<FILL role=setup words=110 beats='Two nights before opening, lead actress Priya Voss quits the fall play The Clockwork Garden by text during the stumble-through; stage manager Cass stands at the prompt table with the marked script while fourteen cast members stare; the broken windup key prop glints under the work light; Ms Okafor mouths one word: plan'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-n0-a",
+     "label": "Put the understudy in the lead",
+     "target": "a1-promote-jin"
+    },
+    {
+     "id": "c-n0-b",
+     "label": "Recruit the goalie from the soccer team",
+     "target": "a2-recruit-goalie"
+    },
+    {
+     "id": "c-n0-c",
+     "label": "Split the role across the whole cast",
+     "target": "a3-split-the-star"
+    }
+   ]
+  },
+  {
+   "id": "a1-promote-jin",
+   "body": "<<FILL role=decision words=105 beats='Cass weighs promoting Jin, the understudy who knows every Wren line cold but only at whisper volume; the script margins are fat with better ideas than the script; the question is whether quiet brilliance can hold center stage by Friday'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-a1-a",
+     "label": "Hand Jin the color-coded master script",
+     "target": "b1-jins-map"
+    },
+    {
+     "id": "c-a1-b",
+     "label": "Check the bus loop for Priya first",
+     "target": "b2-bus-loop"
+    },
+    {
+     "id": "c-a1-c",
+     "label": "Think it over from the light booth",
+     "target": "b3-booth-think"
+    }
+   ]
+  },
+  {
+   "id": "a2-recruit-goalie",
+   "body": "<<FILL role=decision words=100 beats='Cass corners Dinah Frost, the new goalie with the stadium voice, at her locker before practice; still wearing one glove, Dinah hears the pitch: Wren reimagined as the goalkeeper of the garden gate; she asks for one honest rehearsal before she says yes'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-a2-a",
+     "label": "Sketch a voice-only backup from the booth",
+     "target": "b3-booth-think"
+    },
+    {
+     "id": "c-a2-b",
+     "label": "Hold a locker-room audition for Dinah",
+     "target": "b4-goalie-tryout"
+    },
+    {
+     "id": "c-a2-c",
+     "label": "Draft a no-star rewrite just in case",
+     "target": "b5-napkin-rewrite"
+    }
+   ]
+  },
+  {
+   "id": "a3-split-the-star",
+   "body": "<<FILL role=decision words=100 beats='Cass and Bea colonize a cafeteria table with sticky notes; the plan: cut the star, keep the story, pass Wren hand to hand like a relay baton; the gear song grows four verses; someone writes the word ensemble on a napkin like a spell'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-a3-a",
+     "label": "Rewrite Wren as a relay part",
+     "target": "b5-napkin-rewrite"
+    },
+    {
+     "id": "c-a3-b",
+     "label": "Raise the shadow screen from the loft",
+     "target": "b6-shadow-screen"
+    },
+    {
+     "id": "c-a3-c",
+     "label": "Raid Jin's margin notes for answers",
+     "target": "b1-jins-map"
+    }
+   ]
+  },
+  {
+   "id": "b1-jins-map",
+   "body": "<<FILL role=explore words=100 beats='The annotated script becomes the master map; Jin color-codes every line by who is brave enough for it today; three stubborn lines get a brand-new label: anyone; Cass laminates the map and hangs it on a lanyard'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-b1-a",
+     "label": "Bring the master map to Ms Okafor",
+     "target": "c1-greenlight"
+    },
+    {
+     "id": "c-b1-b",
+     "label": "Put the understudy plan to a vote",
+     "target": "c2-jelly-vote"
+    },
+    {
+     "id": "c-b1-c",
+     "label": "Pin the map to the countdown grid",
+     "target": "c3-clock-grid"
+    }
+   ]
+  },
+  {
+   "id": "b2-bus-loop",
+   "body": "<<FILL role=explore words=100 beats='Cass catches Priya at the bus loop with her duffel bag; the lamp-trip video has reached every homeroom and she swears she is done being laughed at; Cass offers a hooded redesign and a promise the clip dies; Priya answers with silence that is not a no'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-b2-a",
+     "label": "Let the cast vote while she thinks",
+     "target": "c2-jelly-vote"
+    },
+    {
+     "id": "c-b2-b",
+     "label": "Buy one night with the rehearsal grid",
+     "target": "c3-clock-grid"
+    },
+    {
+     "id": "c-b2-c",
+     "label": "Save her a seat in the back row",
+     "target": "c4-back-row"
+    }
+   ]
+  },
+  {
+   "id": "b3-booth-think",
+   "body": "<<FILL role=explore words=100 beats='Cass climbs to the booth with the prompt book and a bag of pretzels; Ravi raises the ghost light; from the rail the stage looks smaller and the hole looks fixable; a voice-over-and-songs version of Wren takes shape in the cue margins'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-b3-a",
+     "label": "Watch for Priya from the booth rail",
+     "target": "c4-back-row"
+    },
+    {
+     "id": "c-b3-b",
+     "label": "Audition every fix on one stage",
+     "target": "c5-fix-audition"
+    },
+    {
+     "id": "c-b3-c",
+     "label": "Lock the poster copy before three",
+     "target": "c6-print-deadline"
+    }
+   ]
+  },
+  {
+   "id": "b4-goalie-tryout",
+   "body": "<<FILL role=explore words=100 beats='Dinah learns breath support by hissing at a wall of gym mats; goalie reflexes turn out to be stage reflexes; she nails the cross to the garden gate in two tries; the cast starts calling the gate Play Something Brave'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-b4-a",
+     "label": "Show Okafor the goalkeeper of gates",
+     "target": "c1-greenlight"
+    },
+    {
+     "id": "c-b4-b",
+     "label": "Let Dinah audition the whole fix",
+     "target": "c5-fix-audition"
+    },
+    {
+     "id": "c-b4-c",
+     "label": "Beat the printer with the big news",
+     "target": "c6-print-deadline"
+    }
+   ]
+  },
+  {
+   "id": "b5-napkin-rewrite",
+   "body": "<<FILL role=transition words=100 beats='The relay rewrite grows teeth: Mateo takes the jokes with a strict ad-lib budget, Bea takes the moon verses, Jin takes the garden speech; the count-off scene becomes the surprise favorite of the whole script'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-b5-a",
+     "label": "Build the sound ladder for a chorus show",
+     "target": "c7-sound-ladder"
+    },
+    {
+     "id": "c-b5-b",
+     "label": "Settle the bow order before it starts",
+     "target": "c8-bow-truce"
+    },
+    {
+     "id": "c-b5-c",
+     "label": "Invite Priya to watch it happen",
+     "target": "c4-back-row"
+    }
+   ]
+  },
+  {
+   "id": "b6-shadow-screen",
+   "body": "<<FILL role=explore words=100 beats='The old shadow screen comes down from the prop loft; Wren becomes a tall silhouette with shears that anyone can wear; Mateo practices shadow cartwheels; the lightning-shaped rip in the canvas is declared good luck'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-b6-a",
+     "label": "Light the shadow screen from the booth",
+     "target": "c7-sound-ladder"
+    },
+    {
+     "id": "c-b6-b",
+     "label": "Vote the shadow plan into the bows",
+     "target": "c8-bow-truce"
+    },
+    {
+     "id": "c-b6-c",
+     "label": "Clock the screen version on the grid",
+     "target": "c3-clock-grid"
+    }
+   ]
+  },
+  {
+   "id": "c1-greenlight",
+   "body": "<<FILL role=decision words=105 beats='Ms Okafor reads the rescue plan twice, taps the prompt book, and says yes with three conditions: nobody new gets hurt, the ending stays true, dress rehearsal decides everything; Cass writes the conditions on the whiteboard in capital letters'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-c1-a",
+     "label": "Re-block the frost waltz tonight",
+     "target": "d1-spike-tape"
+    },
+    {
+     "id": "c-c1-b",
+     "label": "Rebuild the coat into a cloak",
+     "target": "d2-twin-cloak"
+    },
+    {
+     "id": "c-c1-c",
+     "label": "Hang the fireflies over the garden",
+     "target": "d3-faithful"
+    }
+   ]
+  },
+  {
+   "id": "c2-jelly-vote",
+   "body": "<<FILL role=decision words=100 beats='The cast votes on the rescue plan with jelly beans in paper cups; it nearly ties; Ravi, who never votes, drops the deciding bean; Okafor makes the result law and names Cass keeper of the why'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-c2-a",
+     "label": "Tape the new blocking first",
+     "target": "d1-spike-tape"
+    },
+    {
+     "id": "c-c2-b",
+     "label": "Cut the storyteller cloak next",
+     "target": "d2-twin-cloak"
+    },
+    {
+     "id": "c-c2-c",
+     "label": "Give the colander key eleven seconds",
+     "target": "d4-key-eleven"
+    }
+   ]
+  },
+  {
+   "id": "c3-clock-grid",
+   "body": "<<FILL role=decision words=100 beats='Ms Okafor sets the countdown clock on the piano: forty-eight rehearsal hours and not one minute more, because tired actors crack; Cass builds a grid of scenes, songs, costumes, and cues; the cast signs the grid like a treaty'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-c3-a",
+     "label": "Rehearse under the firefly rule",
+     "target": "d3-faithful"
+    },
+    {
+     "id": "c-c3-b",
+     "label": "Rebuild the windup key on schedule",
+     "target": "d4-key-eleven"
+    },
+    {
+     "id": "c-c3-c",
+     "label": "Push tickets before the grid fills",
+     "target": "d5-ticket-push"
+    }
+   ]
+  },
+  {
+   "id": "c4-back-row",
+   "body": "<<FILL role=decision words=100 beats='Priya slips into the back row wearing her hood and claims she is only returning a library book; during the frost waltz she mouths every line without a sound; Cass weighs whether her being there changes the plan or just the welcome'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-c4-a",
+     "label": "Fold her notes into the waltz",
+     "target": "d1-spike-tape"
+    },
+    {
+     "id": "c-c4-b",
+     "label": "Let the ticket table answer rumors",
+     "target": "d5-ticket-push"
+    },
+    {
+     "id": "c-c4-c",
+     "label": "Keep a kettle warm in the green room",
+     "target": "d6-honey-tea"
+    }
+   ]
+  },
+  {
+   "id": "c5-fix-audition",
+   "body": "<<FILL role=decision words=100 beats='Wednesday becomes an audition of the fix itself; every candidate Wren plays one scene in the round while the cast scores with tally marks; the laughter surprises everybody; two front-runners emerge and one dark horse: the voice from the booth'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-c5-a",
+     "label": "Sew the twin-cloak test",
+     "target": "d2-twin-cloak"
+    },
+    {
+     "id": "c-c5-b",
+     "label": "Aim the borrowed lamp at the finalists",
+     "target": "d3-faithful"
+    },
+    {
+     "id": "c-c5-c",
+     "label": "Guard Bea's voice for the gear song",
+     "target": "d6-honey-tea"
+    }
+   ]
+  },
+  {
+   "id": "c6-print-deadline",
+   "body": "<<FILL role=decision words=100 beats='The programs go to print at three sharp; Cass must lock the billing: mystery casting, ensemble credit, or Priya with an understudy footnote; the copy machine is already warm; Tasha lobbies hard for a cloak on the cover'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-c6-a",
+     "label": "Print the colander key as the star",
+     "target": "d4-key-eleven"
+    },
+    {
+     "id": "c-c6-b",
+     "label": "Script the answer for ticket buyers",
+     "target": "d5-ticket-push"
+    },
+    {
+     "id": "c-c6-c",
+     "label": "Rest every voice on the list",
+     "target": "d6-honey-tea"
+    }
+   ]
+  },
+  {
+   "id": "c7-sound-ladder",
+   "body": "<<FILL role=explore words=95 beats='Cass and Ravi build the sound ladder: wind, chime, whisper, clank; cue eleven now blooms exactly on the word garden; the Frost Baron gets a duet with a gardener nobody sees'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-c7-a",
+     "label": "Chase the waltz around the drip",
+     "target": "d1-spike-tape"
+    },
+    {
+     "id": "c-c7-b",
+     "label": "Time the key to eleven seconds",
+     "target": "d4-key-eleven"
+    },
+    {
+     "id": "c-c7-c",
+     "label": "Trade the kettle whistle for honey tea",
+     "target": "d6-honey-tea"
+    }
+   ]
+  },
+  {
+   "id": "c8-bow-truce",
+   "body": "<<FILL role=explore words=100 beats='A real squabble breaks out over bow order; egos bump like flats in storage; Cass walks the cast through one idea: the last bow belongs to the audience; the fight ends with a spreadsheet and shared chips'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-c8-a",
+     "label": "Stitch the fight into the cloak",
+     "target": "d2-twin-cloak"
+    },
+    {
+     "id": "c-c8-b",
+     "label": "Sell the mystery cast at lunch",
+     "target": "d5-ticket-push"
+    },
+    {
+     "id": "c-c8-c",
+     "label": "Dim the fireflies for the truce",
+     "target": "d3-faithful"
+    }
+   ]
+  },
+  {
+   "id": "d1-spike-tape",
+   "body": "<<FILL role=transition words=100 beats='Spike tape migrates across the deck like weather; the roof leak over stage right becomes Lake Second Chance, a puddle the Frost Baron has forbidden anyone to cross; the waltz routes around it better than the old plan ever was'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-d1-a",
+     "label": "Take the stage for places",
+     "target": "x1-places"
+    },
+    {
+     "id": "c-d1-b",
+     "label": "Find the mic pack blinking red",
+     "target": "x2-mic-red"
+    },
+    {
+     "id": "c-d1-c",
+     "label": "Answer a knock at the booth door",
+     "target": "x3-booth-door"
+    }
+   ]
+  },
+  {
+   "id": "d2-twin-cloak",
+   "body": "<<FILL role=explore words=100 beats='Tasha rebuilds the Wren coat into a storyteller cloak with fourteen pockets, one per cast member, then sews a twin; the mirror moment in scene four suddenly works, because there is literally a second Wren to reflect'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-d2-a",
+     "label": "Do the fourteen-pocket check",
+     "target": "x1-places"
+    },
+    {
+     "id": "c-d2-b",
+     "label": "Dress loud enough for no mics",
+     "target": "x2-mic-red"
+    },
+    {
+     "id": "c-d2-c",
+     "label": "Count the folding chairs out front",
+     "target": "x4-full-house"
+    }
+   ]
+  },
+  {
+   "id": "d3-faithful",
+   "body": "<<FILL role=transition words=100 beats='The followspot lamp dies with a pop like a cap gun; the church on Elm lends a dimmer from three decades ago; Ravi christens it Old Faithful; the first test floods the whole clockwork garden gold'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-d3-a",
+     "label": "Test Old Faithful at half hour",
+     "target": "x2-mic-red"
+    },
+    {
+     "id": "c-d3-b",
+     "label": "Make room for Priya at the board",
+     "target": "x3-booth-door"
+    },
+    {
+     "id": "c-d3-c",
+     "label": "Watch the lobby fill past the rack",
+     "target": "x4-full-house"
+    }
+   ]
+  },
+  {
+   "id": "d4-key-eleven",
+   "body": "<<FILL role=explore words=95 beats='The broken windup key gets a funeral and a rebuild from a bike pedal and a colander; it spins for eleven seconds, which becomes the exact length of the new finale; Cass times it with a stopwatch and a grin'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-d4-a",
+     "label": "Call places with the key wound",
+     "target": "x1-places"
+    },
+    {
+     "id": "c-d4-b",
+     "label": "Offer the spare stool in the booth",
+     "target": "x3-booth-door"
+    },
+    {
+     "id": "c-d4-c",
+     "label": "Seat the goalkeeper-glove section",
+     "target": "x4-full-house"
+    }
+   ]
+  },
+  {
+   "id": "d5-ticket-push",
+   "body": "<<FILL role=transition words=100 beats='Ticket sales stall at forty seats; the school news crew runs the mystery-headline; the eighth grade group chat argues about the video clip; Cass scripts exactly what cast members say when anyone asks who plays Wren'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-d5-a",
+     "label": "Send the cast to places smiling",
+     "target": "x1-places"
+    },
+    {
+     "id": "c-d5-b",
+     "label": "Kill the mic and go old-school",
+     "target": "x2-mic-red"
+    },
+    {
+     "id": "c-d5-c",
+     "label": "Unfold every chair Hale owns",
+     "target": "x4-full-house"
+    }
+   ]
+  },
+  {
+   "id": "d6-honey-tea",
+   "body": "<<FILL role=transition words=100 beats='Bea wakes up with a whisper where her voice used to live; the honey tea protocol begins with a borrowed kettle and a strict schedule; she conducts the gear song in mime while the cast sings it for her, whisper-perfect'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-d6-a",
+     "label": "Go on book-and-whisper at places",
+     "target": "x2-mic-red"
+    },
+    {
+     "id": "c-d6-b",
+     "label": "Signal the booth from the wings",
+     "target": "x3-booth-door"
+    },
+    {
+     "id": "c-d6-c",
+     "label": "Let the crowd hear the hush",
+     "target": "x4-full-house"
+    }
+   ]
+  },
+  {
+   "id": "x1-places",
+   "body": "<<FILL role=climax words=110 beats='Opening night, half-hour call; costumes smell like paint and nerves; Jin shadowboxes the garden gate flat while Bea hums at sixty percent; Cass reads the schedule aloud like a spell that must be said in order; the rubber chicken guards the prompt table'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-x1-a",
+     "label": "Land act one like a skipped stone",
+     "target": "y1-act-one"
+    },
+    {
+     "id": "c-x1-b",
+     "label": "Spend an ad-lib to save the key",
+     "target": "y2-great-save"
+    },
+    {
+     "id": "c-x1-c",
+     "label": "Let the night peak too early",
+     "target": "e-golfclaps"
+    }
+   ]
+  },
+  {
+   "id": "x2-mic-red",
+   "body": "<<FILL role=climax words=100 beats='The single wireless mic pack dies with a sad little blink, minutes before curtain; the options are few: go old-school loud, hand the voice of the show to the calmest rookie on crew, or play the whole night soft; Cass has ninety seconds'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-x2-a",
+     "label": "Go old-school loud",
+     "target": "y2-great-save"
+    },
+    {
+     "id": "c-x2-b",
+     "label": "Hand the voice to the rookie",
+     "target": "y3-act-two"
+    },
+    {
+     "id": "c-x2-c",
+     "label": "Play the whole night in a whisper",
+     "target": "e-quiet-end"
+    }
+   ]
+  },
+  {
+   "id": "x3-booth-door",
+   "body": "<<FILL role=climax words=105 beats='Priya appears at the booth door asking for a job, any job, hood fully down; Ravi slides Old Faithful's controls an inch toward her; Cass must choose for her: the blazing spot, the sound board, or the best seat in the house'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-x3-a",
+     "label": "Hand her the blazing spot",
+     "target": "e-priyabooth"
+    },
+    {
+     "id": "c-x3-b",
+     "label": "Save her the back-row seat",
+     "target": "e-rosebackrow"
+    },
+    {
+     "id": "c-x3-c",
+     "label": "Point her at the final chorus",
+     "target": "y3-act-two"
+    }
+   ]
+  },
+  {
+   "id": "x4-full-house",
+   "body": "<<FILL role=climax words=100 beats='The ticket line reaches the bike rack; Hale orders more rows unfolded; the whole soccer squad arrives wearing goalkeeper gloves; the house will be the biggest this school stage has ever held'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-x4-a",
+     "label": "Drive act one to its landing",
+     "target": "y1-act-one"
+    },
+    {
+     "id": "c-x4-b",
+     "label": "Protect the quiet scene",
+     "target": "y2-great-save"
+    },
+    {
+     "id": "c-x4-c",
+     "label": "Play it once and play it true",
+     "target": "e-one-night"
+    }
+   ]
+  },
+  {
+   "id": "y1-act-one",
+   "body": "<<FILL role=climax words=105 beats='Act one lands like a skipped stone doing everything right; the gate gag wins the laugh inside three minutes; the cloak pass goes through clean; Okafor closes her eyes and smiles; the only question left is what the finale wants to become'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-y1-a",
+     "label": "Spin the key all eleven seconds",
+     "target": "e-roar"
+    },
+    {
+     "id": "c-y1-b",
+     "label": "Bloom the garden to the back row",
+     "target": "e-blooms"
+    },
+    {
+     "id": "c-y1-c",
+     "label": "Stand the gym on its feet",
+     "target": "e-ovation"
+    }
+   ]
+  },
+  {
+   "id": "y2-great-save",
+   "body": "<<FILL role=climax words=100 beats='The Baron drops the colander key mid-speech and Mateo spends one ad-lib to cover it; the laugh is huge and kind; Jin steps into the gap exactly like the map promised; the show bends and does not break'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-y2-a",
+     "label": "Drag the crew onstage at bows",
+     "target": "e-encorecrew"
+    },
+    {
+     "id": "c-y2-b",
+     "label": "Give Jin the garden speech alone",
+     "target": "e-jinvoice"
+    },
+    {
+     "id": "c-y2-c",
+     "label": "Race the band warm-up curfew",
+     "target": "e-curtainearly"
+    }
+   ]
+  },
+  {
+   "id": "y3-act-two",
+   "body": "<<FILL role=climax words=100 beats='Act two opens on the clanking whisper wave and the house goes quiet on schedule; the twin-cloak reveal lands with a gasp; somewhere backstage the silver paint is still drying on goalkeeper gloves'>>",
+   "is_ending": false,
+   "choices": [
+    {
+     "id": "c-y3-a",
+     "label": "Hang the signed cloak in the loft",
+     "target": "e-cloakends"
+    },
+    {
+     "id": "c-y3-b",
+     "label": "Turn Dinah loose at the gate",
+     "target": "e-dinahence"
+    },
+    {
+     "id": "c-y3-c",
+     "label": "Never say who Wren became",
+     "target": "e-wrenwho"
+    }
+   ]
+  },
+  {
+   "id": "e-roar",
+   "body": "<<FILL role=ending words=100 beats='The final gear turn spins for all eleven seconds under the fireflies; the cast counts it together in the dark; the roar starts in the goalkeeper-glove section and swallows the gym; Cass finally writes the word done in the prompt book'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-roar",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Roar at the Final Gear Turn"
+   }
+  },
+  {
+   "id": "e-one-night",
+   "body": "<<FILL role=ending words=100 beats='There will be exactly one performance of this version of the play, and everyone in the building knows it; the last cue fades over a stage littered with sticky notes and orange peels; nobody calls it anything but ours'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-one-night",
+    "valence": "neutral",
+    "kind": "completion",
+    "title": "One Night Only"
+   }
+  },
+  {
+   "id": "e-golfclaps",
+   "body": "<<FILL role=ending words=100 beats='Act two loses its thread somewhere past the gate and never finds it again; the ending arrives on time but tired; the applause is polite and golf-shaped; Cass learns what a near-miss feels like, and exactly what to fix in the morning'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-golfclaps",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Golf Claps"
+   }
+  },
+  {
+   "id": "e-wrenwho",
+   "body": "<<FILL role=ending words=95 beats='By Monday the only question anyone asks is who actually played Wren; the answer becomes a legend in four competing versions; the old video clip is finally dead; the cloak hangs in the loft like a riddle'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-wrenwho",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Wren Who?"
+   }
+  },
+  {
+   "id": "e-priyabooth",
+   "body": "<<FILL role=ending words=100 beats='Priya runs the borrowed lamp spot like she was born over the booth window; she does not take a bow, but she stays for the whole strike; the prompt book gains a new name in pencil: booth, second night and forever'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-priyabooth",
+    "valence": "neutral",
+    "kind": "discovery",
+    "title": "Priya in the Booth"
+   }
+  },
+  {
+   "id": "e-ovation",
+   "body": "<<FILL role=ending words=100 beats='The gym rises before the last light fades; somebody is beating time on a drum that belongs to the band; Hale is standing on a folding chair, which becomes a story of its own by Monday'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-ovation",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Standing Ovation in the Gym Lights"
+   }
+  },
+  {
+   "id": "e-encorecrew",
+   "body": "<<FILL role=ending words=100 beats='The cast drags the crew onstage for a second bow; Old Faithful gets its own ovation; the rubber chicken takes the deepest bow of all; the photo from that moment lives on the drama room door for years'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-encorecrew",
+    "valence": "positive",
+    "kind": "success",
+    "title": "An Encore for the Crew"
+   }
+  },
+  {
+   "id": "e-cloakends",
+   "body": "<<FILL role=ending words=100 beats='The storyteller cloak is hung in the costume loft with fourteen signatures stitched in the lining; next year someone new will wear it and find the notes in the pockets; the show fits whoever needs it'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-cloakends",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "The Cloak Fits Everyone"
+   }
+  },
+  {
+   "id": "e-curtainearly",
+   "body": "<<FILL role=ending words=100 beats='The gym noise treaty cracks when the band starts warming up early; Hale cuts the final scene for time on the spot; the cast bows in bewildered half-light; the crew swears a quiet oath about next time'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-curtainearly",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "Curtain Falls Early"
+   }
+  },
+  {
+   "id": "e-quiet-end",
+   "body": "<<FILL role=ending words=95 beats='Without the mic the whisper wave drowns in actual whispers; the house never settles after intermission; the last scene plays to chatter and blinking exit signs; the oranges in the green room taste like second place'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-quiet",
+    "valence": "negative",
+    "kind": "setback",
+    "title": "The Long Quiet"
+   }
+  },
+  {
+   "id": "e-blooms",
+   "body": "<<FILL role=ending words=100 beats='The clockwork garden blooms all the way to the back row; the gear song ends one heartbeat late, on purpose, and the house answers with a sound like sunrise; Ravi never lets anyone forget who hung the fireflies'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-blooms",
+    "valence": "positive",
+    "kind": "success",
+    "title": "The Clockwork Garden Blooms"
+   }
+  },
+  {
+   "id": "e-jinvoice",
+   "body": "<<FILL role=ending words=100 beats='Jin takes the garden speech alone at center, not loud at all, and the whole gym leans in to hear; the laminated map predicted it; the whisper turns out to be the loudest thing all night'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-jinvoice",
+    "valence": "positive",
+    "kind": "completion",
+    "title": "Jin Finds the Voice"
+   }
+  },
+  {
+   "id": "e-dinahence",
+   "body": "<<FILL role=ending words=100 beats='Dinah takes the big entrance like a penalty kick, glove and all, and the keeper-gloves section erupts; the garden gate has never been safer; the school has a brand-new legend with a whistle in it'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-dinahence",
+    "valence": "positive",
+    "kind": "success",
+    "title": "Dinah Takes the Big Entrance"
+   }
+  },
+  {
+   "id": "e-rosebackrow",
+   "body": "<<FILL role=ending words=100 beats='During bows a single rose arcs out of the back row and lands at the foot of the garden bed; Priya is already gone; the note says the view from the back row was the best seat in the house'>>",
+   "is_ending": true,
+   "choices": [],
+   "ending": {
+    "id": "ending-rosebackrow",
+    "valence": "positive",
+    "kind": "discovery",
+    "title": "A Rose from the Back Row"
+   }
+  }
+ ]
+}
