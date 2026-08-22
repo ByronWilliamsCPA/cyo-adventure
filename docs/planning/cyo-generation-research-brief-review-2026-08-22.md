@@ -371,4 +371,5 @@ were read at commit `01b7119` of `claude/model-selection-skeleton-dev-78yp7u`; a
 exists outside that branch this review cannot see it. Two files were copied verbatim onto this branch to
 support the review: the brief itself and
 [skeleton-sourcing-test-plan-2026-08-21.md](./skeleton-sourcing-test-plan-2026-08-21.md), which the brief
-links and the strict docs build requires.
+links and the strict docs build requires. The thirteen full agent reports behind this synthesis are preserved
+in `evidence/brief-review-2026-08-22/` (excluded from the docs build, like the other evidence directories).
