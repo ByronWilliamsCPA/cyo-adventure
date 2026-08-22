@@ -821,7 +821,8 @@ def _score_shell_mode(args: argparse.Namespace, cells: list[dict[str, Any]]) -> 
     # #CRITICAL: security: the leg label lands in a filename; a separator or
     # traversal component would resolve the shell/record paths outside
     # --out-dir and overwrite whatever the process can write.
-    # #VERIFY: only a flat token is accepted (test_score_shell_mode guards).
+    # #VERIFY: only a flat token is accepted
+    # (test_traversal_leg_rejected_before_paths).
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", args.score_leg):
         print(
             "Error: --score-leg must match [A-Za-z0-9][A-Za-z0-9._-]* "
