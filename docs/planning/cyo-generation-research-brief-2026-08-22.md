@@ -63,7 +63,7 @@ human judges anything. Because of finding 2 above, every gate is paired with a d
 **F3. Put the checker in the author's loop.** The single largest quality lever we have measured is
 not model choice but authoring regime: blind generate-and-repair produced 2 strict passes in 21
 attempts across seven models; the same models with permission to run the validator themselves
-passed 14 of 21 at ages 5-8 and swept the harder 10-13 cell (section 4.2). Structure authoring is
+passed 12 of 21 at ages 5-8 and 15 of 21 at ages 10-13 (section 4.2). Structure authoring is
 tool-use, not text generation.
 
 **F4. Select models per stage, not per pipeline.** The best prose model measured (DeepSeek V4 Pro)
@@ -202,7 +202,7 @@ under that censoring. **Tool-assisted** (the author may run the checker, ten-inv
 | claude-sonnet (subagent) | 1/3 (topology trap x2) | 3/3, 3-5 |
 | claude-haiku (subagent) | 2/3 | 1/3 |
 | moonshot Kimi-K3 (owner Modal endpoint) | 2/3, 7-8 | 3/3, 3-5 |
-| deepseek-v4-flash (OpenRouter) | 1/3 (call budget lost to unparseable output) | in flight at time of writing |
+| deepseek-v4-flash (OpenRouter) | 1/3 (call budget lost to unparseable output) | 2/3, 5-10 runs |
 | deepseek-v4-pro (OpenRouter) | 0/3 | 0/3 |
 
 What works: the tool-assisted regime, for every family; frontier Anthropic tiers converge fastest

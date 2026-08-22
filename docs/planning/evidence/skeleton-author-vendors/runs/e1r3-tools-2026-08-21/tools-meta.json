@@ -144,5 +144,29 @@
  "D__r3__moonshot-kimi-k3-modal": {
   "checker_runs": 4,
   "reported": "PASS"
+ },
+ "D__r1__deepseek-v4-pro": {
+  "checker_runs": null,
+  "reported": "FAIL"
+ },
+ "D__r2__deepseek-v4-pro": {
+  "checker_runs": 6,
+  "reported": "FAIL"
+ },
+ "D__r3__deepseek-v4-pro": {
+  "checker_runs": 10,
+  "reported": "FAIL"
+ },
+ "D__r1__deepseek-v4-flash": {
+  "checker_runs": null,
+  "reported": "PASS"
+ },
+ "D__r2__deepseek-v4-flash": {
+  "checker_runs": 10,
+  "reported": "FAIL"
+ },
+ "D__r3__deepseek-v4-flash": {
+  "checker_runs": 5,
+  "reported": "PASS"
  }
 }
