@@ -128,5 +128,9 @@
  "D__r2__claude-sonnet-subagent": {
   "checker_runs": 5,
   "reported": "PASS"
+ },
+ "D__r1__claude-sonnet-subagent": {
+  "checker_runs": 3,
+  "reported": "PASS"
  }
 }
