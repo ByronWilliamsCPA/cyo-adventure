@@ -3982,8 +3982,8 @@ guardian-approval invariant applies to every story in both scopes.</p>
 </tr>
 <tr>
 <td>LLM fallback</td>
-<td>OpenRouter (<code>anthropic/claude-sonnet-4.6</code>), then Ollama (local P40); <code>mock</code> default in CI</td>
-<td>Same interface; direct Anthropic SDK deferred</td>
+<td>OpenRouter (<code>anthropic/claude-sonnet-4.6</code>), then Modal; <code>mock</code> default in CI. The Ollama/P40 leg was retired 2026-08-18</td>
+<td>Same interface; direct Anthropic SDK now shipped, not deferred</td>
 </tr>
 <tr>
 <td>Moderation</td>
@@ -4377,7 +4377,7 @@ from Phase 0 are preconditions. See <a href="../adr/adr-003-frontier-llm-generat
 <li>Stage C (Repair): named failing node IDs and specific violations; cap at 3 attempts;
     no-progress abort (report or output hash unchanged); on exhaustion route to full regeneration
     or human review. Never auto-publish.</li>
-<li><strong>Provider interface</strong> (<code>GenerationProvider</code>): OpenRouter primary (Claude reached via OpenRouter); Ollama local fallback; direct Anthropic SDK deferred (ADR-003, amended 2026-06-22)
+<li><strong>Provider interface</strong> (<code>GenerationProvider</code>): OpenRouter primary (Claude reached via OpenRouter); Modal as cascade leg 3; direct Anthropic SDK shipped as a per-job leg (ADR-003, amended 2026-06-22 and 2026-08-18; the Ollama leg is retired)
   (<a href="../adr/adr-003-frontier-llm-generation/">ADR-003</a>).</li>
 <li><strong>Concept intake</strong>: concept brief fields as defined in <a href="../tech-spec/#authoring-pipeline-staged-generation">Tech Spec</a>;
   no real child PII in prompts.</li>
@@ -4406,7 +4406,9 @@ provider. Both are now met:</p>
    so Tier-2 structure-prompt tightening is the residual yield lever carried forward.</li>
 <li><strong>Concrete provider adapters</strong> shipped: OpenRouter (primary, in-provider fallback) and
    Ollama (homelab final fallback), selectable by config. A direct Anthropic SDK adapter
-   stays deferred (Claude is reached via OpenRouter).</li>
+   stays deferred (Claude is reached via OpenRouter).
+   <strong>Superseded 2026-08-18</strong>: Ollama is retired and Modal is cascade leg 3; the direct
+   Anthropic adapter shipped in WS-C PR1. See ADR-003's 2026-08-18 amendment.</li>
 </ol>
 <p>Full scope and the residual lever are in
 <a href="../phase-2b-live-provider/"><code>docs/planning/phase-2b-live-provider.md</code></a>.</p>
@@ -4675,7 +4677,7 @@ in the phase named):</p>
 </tr>
 <tr>
 <td>Homelab Ollama leg as a production generation fallback (<code>ollama_base_url</code>, <code>ollama_auth</code>, <code>ollama_ca_bundle</code> in prod config)</td>
-<td>Demoted to dev/family-tier only; public tier is OpenRouter-only</td>
+<td>✅ Resolved ahead of schedule (2026-08-18): the leg is <strong>removed entirely</strong>, not demoted, and Modal takes leg 3 (ADR-003 amendment). P9-11 below is satisfied by deletion rather than by configuration</td>
 <td>9 (P9-11)</td>
 </tr>
 <tr>
@@ -5132,7 +5134,7 @@ successful App Store submission.</p>
 <tr>
 <td>P9-11</td>
 <td>Public-tier generation provider configuration</td>
-<td>Production config uses OpenRouter only (primary model + in-provider fallback per ADR-003, reaffirmed by <a href="../adr/adr-010-modal-review-and-gated-generation/">ADR-010</a>); the homelab Ollama leg is <strong>not</strong> a public-tier fallback (availability and provider-terms posture): set <code>provider_fallback_enabled</code> accordingly and leave <code>ollama_*</code> settings unset in production; Ollama remains a dev/family-tier leg only; the Modal generation leg (post-launch backlog) joins the public path only via the ADR-010 promotion gate</td>
+<td><strong>Largely satisfied 2026-08-18 by the Ollama retirement</strong>: there is no <code>ollama_*</code> config to leave unset and no dev/family-tier Ollama leg to keep out of the public path, because the adapter is deleted. What remains of this item is the Modal leg's posture: Modal is now cascade leg 3 in every tier rather than an offline experiment, so the <a href="../adr/adr-010-modal-review-and-gated-generation/">ADR-010</a> promotion gate needs restating for a leg that is already on the production path (ADR-003 amendment, 2026-08-18)</td>
 </tr>
 <tr>
 <td>P9-12</td>
@@ -5988,7 +5990,7 @@ sign-off and pre-submission (P9-10)
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 9, 2026 15:35:42 UTC">August 9, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 18:41:23 UTC">August 22, 2026</span>
   </span>
 
     

@@ -4455,7 +4455,10 @@ composition root and builds the provider itself via the existing seam:</p>
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="c1"># operator to set GENERATION_PROVIDER etc.)</span>
 </span></code></pre></div>
 <p>Anthropic in production, Ollama for homelab-free runs, exactly the pipeline's own settings
-(WS-0 spec section 4). The judge loop is sequential over the panel's PS pairs (8 pairs in
+(WS-0 spec section 4). <strong>[Ollama was retired 2026-08-18 ahead of the homelab-to-Vultr move;
+see ADR-003's 2026-08-18 amendment. A homelab-free run now falls through to the same
+OpenRouter/Modal cascade production uses, not a separate free local leg.]</strong> The judge loop
+is sequential over the panel's PS pairs (8 pairs in
 v1; no concurrency machinery warranted). The scoring function takes the provider as a
 parameter (<code>_judge_pair(provider, a_text, b_text, band) -&gt; JudgeScore</code>), so unit tests
 drive it with the existing <code>MockProvider</code> and zero network.</p>
@@ -4695,7 +4698,7 @@ pass.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 18:41:23 UTC">August 22, 2026</span>
   </span>
 
     

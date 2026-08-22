@@ -3952,8 +3952,9 @@ the design plan):</p>
   injects <code>.env</code>, and non-local guard families trip otherwise). Note <code>Settings</code> in
   <code>core/config.py</code> declares <strong>no <code>env_file</code></strong>: it reads the process environment only, so in a
   bare shell or a worktree you must source the env yourself
-  (<code>set -a; . ./.env; set +a</code>) and symlink <code>certs/</code> (relative <code>OLLAMA_CA_BUNDLE</code> paths resolve
-  against the cwd). Worktrees share git, not untracked files.</li>
+  (<code>set -a; . ./.env; set +a</code>). The <code>certs/</code> symlink this step used to require is no longer
+  needed: <code>OLLAMA_CA_BUNDLE</code> was the only cwd-relative file-path setting and it went away with
+  the 2026-08-18 Ollama retirement. Worktrees share git, not untracked files.</li>
 </ul>
 <hr />
 <h2 id="stage-a-measurement-plus-leak-guards-no-gates-executable-now">Stage A: measurement plus leak guards (no gates; executable now)<a class="headerlink" href="#stage-a-measurement-plus-leak-guards-no-gates-executable-now" title="Permanent link">&para;</a></h2>
@@ -3992,8 +3993,9 @@ credentials come from <code>core.config.settings</code>, which reads the <strong
 (<code>Settings</code> has no <code>env_file</code>); <code>.env</code> reaches it via VS Code terminal injection or
 docker-compose, never directly. In a worktree, source it explicitly:
 <code>bash -c 'set -a; . ./.env; set +a; export ENVIRONMENT=local; exec uv run python scripts/measure_sentinel_survival.py ...'</code>
-and symlink <code>certs/</code> into the worktree (<code>ln -s ../../certs certs</code>) because <code>OLLAMA_CA_BUNDLE</code>
-is a cwd-relative path. A missing key surfaces as <code>ConfigurationError</code>.</p>
+The <code>certs/</code> symlink this step used to require is obsolete since the 2026-08-18 Ollama
+retirement removed <code>OLLAMA_CA_BUNDLE</code>, the only cwd-relative path setting. A missing key
+surfaces as <code>ConfigurationError</code>.</p>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <strong>Step 1: mock smoke run (free, proves the harness)</strong></li>
 </ul>
@@ -5143,7 +5145,7 @@ silently.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 18:41:23 UTC">August 22, 2026</span>
   </span>
 
     

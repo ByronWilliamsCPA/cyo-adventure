@@ -3575,6 +3575,10 @@ fully assembled prompt before it goes out. That guard checks the prompt against 
 against zero-width/compatibility-form tricks) and would catch it even if a guardian typed the
 child's real registered name into the story's protagonist-name field, since the guard scans
 the whole assembled prompt text, not just isolated fields.</p>
+<p><strong>[Superseded 2026-08-18: the Ollama leg named above was retired, and Modal took its place as
+the cascade's third leg. This passage is left naming Ollama because that is what the cited
+commit <code>66fe320</code> actually verified; see ADR-003's 2026-08-18 amendment for the current provider
+roster and <code>PiiGuardedProvider</code> coverage of the Modal leg.]</strong></p>
 <p><strong>The gap</strong>: the guard only knows about names already on file as a <code>child_profile</code> row (there is
 no birthdate to match against: <code>ChildProfile</code> has no birthdate column, by design; see 1e below).
 It has no way to catch a sibling's name, a friend's name, a home address, a school name,
@@ -4632,7 +4636,7 @@ advice or a certification of compliance.</em></p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 18:04:11 UTC">August 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 18:41:23 UTC">August 22, 2026</span>
   </span>
 
     

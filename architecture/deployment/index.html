@@ -3633,11 +3633,6 @@ cut over 2026-07-05).</p>
 <td>Redis 7, port 6379, RQ job broker</td>
 </tr>
 <tr>
-<td><code>cyo-ollama</code></td>
-<td><code>ollama/ollama:latest</code></td>
-<td>Local LLM fallback, port 11434</td>
-</tr>
-<tr>
 <td><code>cyo-minio</code></td>
 <td><code>minio/minio</code></td>
 <td>Object storage, planned Phase 5</td>
@@ -3676,8 +3671,11 @@ FastAPI container internally rather than Pangolin forwarding to it directly. See
 <ul>
 <li><code>cyo-backend</code> -&gt; <code>cyo-redis</code> (RQ enqueue, port 6379)</li>
 <li><code>cyo-worker</code> -&gt; <code>cyo-redis</code> (job dequeue, port 6379)</li>
-<li><code>cyo-worker</code> -&gt; <code>cyo-ollama</code> (LLM fallback, port 11434)</li>
 <li><code>cyo-worker</code> -&gt; OpenRouter API (HTTPS, egress to internet, primary LLM)</li>
+<li><code>cyo-worker</code> -&gt; Modal Auto Endpoint (HTTPS, egress to internet, cascade leg 3;
+  replaced the retired <code>cyo-ollama</code> container, which was removed ahead of the
+  homelab-to-Vultr move because a self-hosted GPU leg has no cloud equivalent at a
+  fallback-of-a-fallback's price. See ADR-003's 2026-08-18 amendment.)</li>
 </ul>
 <p>Egress to the managed database (not on the Docker bridge network):</p>
 <ul>
@@ -3817,7 +3815,7 @@ future image build were narrowed to copy just <code>src/</code>.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 5, 2026 04:02:38 UTC">August 5, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 18:41:23 UTC">August 22, 2026</span>
   </span>
 
     

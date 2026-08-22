@@ -3456,8 +3456,12 @@ Adventure system depends on.</p>
   model, claude-haiku-4.5) then leg 2 (fallback model, claude-sonnet-4.6). Stories are
   generated through a three-stage pipeline (Structure, Prose, Repair) with a provider
   fallback cascade.</li>
-<li><strong>Ollama</strong> is the local fallback LLM (leg 3). If both OpenRouter legs fail
-  (leg-fatal errors), the <code>FallbackProvider</code> cascade tries Ollama before giving up.</li>
+<li><strong>Modal</strong> is the non-OpenRouter backstop (leg 3), replacing the retired local
+  Ollama leg. If both OpenRouter legs fail (leg-fatal errors), the
+  <code>FallbackProvider</code> cascade tries Modal before giving up. The leg is included
+  only when <code>MODAL_BASE_URL</code> and <code>MODAL_MODEL</code> are set; with them unset the
+  cascade is two OpenRouter legs on one vendor and one account, and
+  <code>build_provider</code> logs <code>generation.cascade_single_vendor</code> at WARNING.</li>
 <li><strong>Supabase Auth</strong> provides OIDC identity (ADR-009). The guardian identity and child
   session are encoded in the token; the local dev environment uses a token-as-subject
   seam, while non-local environments verify the JWT via <code>jwt.PyJWKClient</code> (see <code>api/deps.py</code>).</li>
@@ -3587,7 +3591,7 @@ in <code>published</code>.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 10, 2026 18:04:11 UTC">August 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 18:41:23 UTC">August 22, 2026</span>
   </span>
 
     

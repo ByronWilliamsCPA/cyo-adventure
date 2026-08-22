@@ -4239,10 +4239,16 @@ stories because it refuses cross-tree input by construction (section 3.1).</p>
    a fixed rubric prompt: "Would a child who read story A feel story B is the same adventure?
    Answer a 0-10 similarity and one sentence why." Responses are cached to
    <code>out/diversity/judge-cache.json</code> keyed by <code>(sha256(a), sha256(b), rubric_version)</code> so reruns
-   are incremental. No embedding dependency is required for v1 of the optional layer; if
-   embedding distance is later wanted, the concrete path is the Ollama <code>/api/embeddings</code>
-   endpoint (already a reachable provider host in the homelab deployment) behind the same
-   <code>--with-embeddings</code> flag, cached the same way. Judge-first is deliberate: the plan's headline
+   are incremental. <strong>[Ollama was retired 2026-08-18 ahead of the homelab-to-Vultr move; see
+   ADR-003's 2026-08-18 amendment. "Anthropic in production, Ollama for homelab-free runs" no
+   longer names a live pair of settings; a homelab-free run now falls through to the same
+   OpenRouter/Modal cascade production uses.]</strong> No embedding dependency is required for v1 of
+   the optional layer; if embedding distance is later wanted, the concrete path is the Ollama
+   <code>/api/embeddings</code> endpoint (already a reachable provider host in the homelab deployment)
+   behind the same <code>--with-embeddings</code> flag, cached the same way. <strong>[That endpoint no longer
+   exists post-retirement: Ollama's config surface and adapter are gone. The embedding backend
+   choice for this optional layer is reopened, not decided by this document.]</strong> Judge-first is
+   deliberate: the plan's headline
    is defined as a judge question, and one networked mechanism is cheaper to maintain than two.</li>
 <li><strong>Calibration table:</strong> the harness emits <code>(PS_proxy, judge_score)</code> pairs; a Spearman rank
    correlation and a fitted monotone mapping (isotonic in spirit, implemented as a simple
@@ -4601,7 +4607,9 @@ running the eval step; <code>similarity_context</code> importable and documented
 <li><strong>Optional layer mechanism: judge model via the existing chat providers, cached batch runs.</strong>
   Alternative: embeddings-first (a new client surface; the judge form matches the plan's own
   definition of the headline metric; Ollama <code>/api/embeddings</code> is named as the concrete later
-  path if embedding distance is wanted).</li>
+  path if embedding distance is wanted). <strong>Ollama was retired 2026-08-18 (ADR-003's 2026-08-18
+  amendment); that concrete path no longer exists, and the embedding backend choice, if this
+  layer is ever built, is reopened rather than decided here.</strong></li>
 <li><strong>Saturation definition: fraction of cell slugs already used for a similar-theme story.</strong>
   Alternative: a continuous soft-saturation score (harder to threshold into the plan's
   TREE/LEAF/CATALOG ladder; can be added later as a secondary scalar without breaking the
@@ -4690,7 +4698,7 @@ appears only sentence-initially to confirm brief-entity coverage.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 00:28:46 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 18:41:23 UTC">August 22, 2026</span>
   </span>
 
     

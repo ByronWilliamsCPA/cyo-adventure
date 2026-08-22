@@ -3784,7 +3784,7 @@ substitution does not touch them either: it addresses identifiers, and this is t
 free text, sent verbatim, before storage.</p>
 <p>The <strong>LLM review provider</strong> stays in scope here but for a different reason, and an earlier
 draft gave the wrong one. It is not a child-typed-text path: it is built from the same
-<code>build_openrouter_leg</code> / <code>build_ollama_leg</code> adapters as generation
+<code>build_openrouter_leg</code> / <code>build_modal_leg</code> adapters as generation
 (<code>moderation/review_provider.py</code>), and <code>review_openrouter_model</code> defaults to an Anthropic model
 (<code>core/config.py:562</code>), so when <code>review_provider="openrouter"</code> the review leg rides the <strong>same
 guardrailed route</strong> as generation and carries <strong>generated prose</strong>, not child-typed words. What
@@ -3898,7 +3898,7 @@ counsel:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 20:28:02 UTC">August 12, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 18:41:23 UTC">August 22, 2026</span>
   </span>
 
     

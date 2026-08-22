@@ -2826,6 +2826,89 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#amendment-2026-08-22-modal-is-cascade-leg-3-not-primary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Amendment (2026-08-22): Modal is cascade leg 3, not primary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Amendment (2026-08-22): Modal is cascade leg 3, not primary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-promotion-gate-is-retired-for-the-backstop-role-not-for-primary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The promotion gate is retired for the backstop role, not for primary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-not-yet-satisfied" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is not yet satisfied
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amendment-direction-stated-both-ways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Amendment direction, stated both ways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status-unchanged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status unchanged
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#related_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3469,6 +3552,89 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#amendment-2026-08-22-modal-is-cascade-leg-3-not-primary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Amendment (2026-08-22): Modal is cascade leg 3, not primary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Amendment (2026-08-22): Modal is cascade leg 3, not primary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-promotion-gate-is-retired-for-the-backstop-role-not-for-primary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The promotion gate is retired for the backstop role, not for primary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-not-yet-satisfied" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is not yet satisfied
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amendment-direction-stated-both-ways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Amendment direction, stated both ways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status-unchanged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status unchanged
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#related_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3533,7 +3699,14 @@ model weights for tolerable cold starts. Two facts frame how to use that:</p>
    classifiers stay mandatory (existing config invariant).</li>
 <li><strong>Experimental <code>ModalProvider</code> generation leg, not on the public path.</strong> A new
    adapter behind <code>GenerationProvider</code>, using vLLM guided decoding targeted at the
-   Tier-2 structural failure modes. It runs offline experiments only.</li>
+   Tier-2 structural failure modes. It runs offline experiments only.<blockquote>
+<p><strong>Superseded 2026-08-22</strong>: see the
+<a href="#amendment-2026-08-22-modal-is-cascade-leg-3-not-primary">2026-08-22 amendment</a>
+below. Modal is now cascade leg 3 in production whenever <code>MODAL_BASE_URL</code> and
+<code>MODAL_MODEL</code> are both set; it is no longer offline-only, and the promotion gate in
+Decision 3 below governs only the primary role, not this backstop one.</p>
+</blockquote>
+</li>
 <li><strong>Promotion gate.</strong> The Modal leg may become generation primary only after: (a) the
    20-brief yield harness re-run clears &gt;=60% overall with Tier-2 no worse than the
    incumbent, and (b) measured cost per accepted story is recorded and accepted against
@@ -3574,6 +3747,67 @@ model weights for tolerable cold starts. Two facts frame how to use that:</p>
 <li><a href="../../phase-2b-live-provider/">Phase 2b results</a>: the incumbent yield measurement and
   the Tier-2 residual lever.</li>
 </ul>
+<h2 id="amendment-2026-08-22-modal-is-cascade-leg-3-not-primary">Amendment (2026-08-22): Modal is cascade leg 3, not primary<a class="headerlink" href="#amendment-2026-08-22-modal-is-cascade-leg-3-not-primary" title="Permanent link">&para;</a></h2>
+<h3 id="what-changed">What changed<a class="headerlink" href="#what-changed" title="Permanent link">&para;</a></h3>
+<p>Modal generation is no longer an offline-only experiment. <code>build_provider</code>
+(<code>generation/provider.py</code>) includes Modal as the fallback cascade's <strong>leg 3</strong>, ranked after
+both OpenRouter legs, whenever <code>settings.modal_leg_configured</code> is true (both
+<code>MODAL_BASE_URL</code> and <code>MODAL_MODEL</code> set); when it is not set, the cascade degrades to the
+two OpenRouter legs and logs <code>generation.cascade_single_vendor</code> at WARNING. This is the
+same change ADR-003's <a href="../adr-003-frontier-llm-generation/#amendment-2026-08-18-the-ollama-leg-is-retired-and-modal-takes-leg-3">2026-08-18 amendment</a> records: that amendment
+retires the local Ollama leg (which this ADR's original text never mentions, since Ollama
+had not yet been superseded when this ADR was written) and puts Modal in the vacated
+third-leg slot.</p>
+<h3 id="the-promotion-gate-is-retired-for-the-backstop-role-not-for-primary">The promotion gate is retired for the backstop role, not for primary<a class="headerlink" href="#the-promotion-gate-is-retired-for-the-backstop-role-not-for-primary" title="Permanent link">&para;</a></h3>
+<p>Decision 3 above sets a gate for making Modal <strong>generation primary</strong>: a 20-brief yield
+harness re-run clearing &gt;=60% overall with Tier-2 no worse than the incumbent, plus an
+accepted measured cost per accepted story. That gate is unmet, and nothing here claims
+otherwise. What changed is the role Modal now occupies without having cleared it:
+<strong>backstop</strong>, not <strong>primary</strong>. A leg that receives traffic only after both OpenRouter
+legs have already failed carries a materially different risk posture than a leg serving
+every request: cascade-wide yield exposure to Modal's own quality is bounded by how often
+both OpenRouter legs fail together, not by Modal's per-story success rate against the
+full request population. Retiring the gate for this narrower backstop role is therefore
+not the same claim as clearing it for primary. <strong>If Modal is ever proposed as primary,
+Decision 3's yield and cost bars still apply in full and remain outstanding</strong>; this
+amendment does not touch them.</p>
+<h3 id="what-is-not-yet-satisfied">What is not yet satisfied<a class="headerlink" href="#what-is-not-yet-satisfied" title="Permanent link">&para;</a></h3>
+<p>Two gaps, recorded honestly rather than closed by assertion:</p>
+<ul>
+<li><strong>No Modal pricing row exists in <code>core/pricing.py</code>, and this is deliberate rather than a
+  simple omission.</strong> Modal Auto Endpoints bill GPU-seconds for a rented container, not
+  tokens against a published per-MTok rate, and a Modal response carries no <code>cost</code> field,
+  so there is no vendor figure to record and no derived guess belongs in a table whose
+  value is that every row is dated and sourced. <code>price_for("modal", ...)</code> therefore
+  returns <code>None</code>, and a Modal-served completion reports <code>CostEstimate(complete=False)</code>.
+  That is the correct, honest answer while true GPU-second cost per accepted story is
+  unmeasured; it is not scheduled to close in this change set, and closing it properly
+  means recording measured Modal billing data first.</li>
+<li><strong><code>generation/providers/modal.py</code>'s handling of <code>finish_reason</code> is being brought in
+  line with the OpenRouter adapter in this same change set</strong>, so a <code>length</code> stop is
+  marked <code>leg_fatal</code> the same way it already is on the OpenRouter legs. Confirm this
+  landed before treating it as closed; it was still in progress as this amendment was
+  written.</li>
+</ul>
+<h3 id="amendment-direction-stated-both-ways">Amendment direction, stated both ways<a class="headerlink" href="#amendment-direction-stated-both-ways" title="Permanent link">&para;</a></h3>
+<p>This ADR's header records "Amends: ADR-003". ADR-003's 2026-08-18 amendment now
+supersedes this ADR's Decision 2 ("offline experiments only") and narrows Decision 3's
+promotion gate to the primary role only, as described above. Read together: ADR-003
+amends this ADR on that point, and this ADR continues to amend ADR-003 on every other
+point it originally addressed (the review backend, the vendor-minimization framing).
+Neither document silently governs the other's every claim after this pair of edits; each
+amendment states which of the other's claims it changes.</p>
+<h3 id="status-unchanged">Status unchanged<a class="headerlink" href="#status-unchanged" title="Permanent link">&para;</a></h3>
+<p>This ADR's <code>status: proposed</code> frontmatter is not changed by this amendment. This
+amendment records what has already shipped despite that status; it does not itself
+promote the ADR to Accepted.</p>
+<h3 id="related_1">Related<a class="headerlink" href="#related_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../adr-003-frontier-llm-generation/#amendment-2026-08-18-the-ollama-leg-is-retired-and-modal-takes-leg-3">ADR-003</a>:
+  the amendment this one is the ADR-010 side of.</li>
+<li><a href="../adr-004-homelab-first-deployment/#amendment-2026-08-22">ADR-004</a>: the
+  homelab-to-Vultr move that is why the Ollama leg needed retiring at all.</li>
+</ul>
 
 
 
@@ -3596,7 +3830,7 @@ model weights for tolerable cold starts. Two facts frame how to use that:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 4, 2026 20:08:53 UTC">July 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 18:41:23 UTC">August 22, 2026</span>
   </span>
 
     

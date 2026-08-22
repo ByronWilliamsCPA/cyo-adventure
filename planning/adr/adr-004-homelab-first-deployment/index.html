@@ -2817,6 +2817,67 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#amendment-2026-08-22-the-deployment-target-is-moving-off-the-homelab-to-vultr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Amendment (2026-08-22): the deployment target is moving off the homelab, to Vultr
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Amendment (2026-08-22): the deployment target is moving off the homelab, to Vultr">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-this-amendment-records-and-what-it-does-not-decide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What this amendment records, and what it does not decide
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-not-recorded-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is NOT recorded here
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#outstanding-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outstanding work
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#related_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3871,6 +3932,67 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#amendment-2026-08-22-the-deployment-target-is-moving-off-the-homelab-to-vultr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Amendment (2026-08-22): the deployment target is moving off the homelab, to Vultr
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Amendment (2026-08-22): the deployment target is moving off the homelab, to Vultr">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-this-amendment-records-and-what-it-does-not-decide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What this amendment records, and what it does not decide
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-not-recorded-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is NOT recorded here
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#outstanding-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outstanding work
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#related_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -4018,6 +4140,46 @@ always-on uptime and managed backups if the need arises.</p>
   the public tier's auth, database, and storage.</li>
 <li><a href="../../tech-spec/#infrastructure">Tech Spec: Infrastructure</a></li>
 </ul>
+<h2 id="amendment-2026-08-22-the-deployment-target-is-moving-off-the-homelab-to-vultr">Amendment (2026-08-22): the deployment target is moving off the homelab, to Vultr<a class="headerlink" href="#amendment-2026-08-22-the-deployment-target-is-moving-off-the-homelab-to-vultr" title="Permanent link">&para;</a></h2>
+<h3 id="what-this-amendment-records-and-what-it-does-not-decide">What this amendment records, and what it does not decide<a class="headerlink" href="#what-this-amendment-records-and-what-it-does-not-decide" title="Permanent link">&para;</a></h3>
+<p>The deployment target is moving off the homelab this ADR's Decision describes, to Vultr
+cloud hosting. This amendment <strong>records a decision already being acted on elsewhere in
+this change set; it does not make that decision here.</strong> The visible, already-shipped
+consequence is the retirement of the local Ollama generation leg: a self-hosted model has
+no home once the homelab that served it goes away, so retiring that leg ahead of the move
+is a direct, immediate consequence of the move rather than an independent choice. See
+ADR-003's <a href="../adr-003-frontier-llm-generation/#amendment-2026-08-18-the-ollama-leg-is-retired-and-modal-takes-leg-3">2026-08-18 amendment</a> and ADR-010's
+<a href="../adr-010-modal-review-and-gated-generation/#amendment-2026-08-22-modal-is-cascade-leg-3-not-primary">2026-08-22 amendment</a> for what replaced it.</p>
+<h3 id="what-is-not-recorded-here">What is NOT recorded here<a class="headerlink" href="#what-is-not-recorded-here" title="Permanent link">&para;</a></h3>
+<p>No instance sizing, region, timeline, or cost figures for the Vultr move are recorded
+anywhere in this repository as of this amendment. Every reference this amendment could
+find (<code>docs/architecture/deployment.md</code>, <code>docs/planning/roadmap.md</code>,
+<code>core/pricing.py</code>, and the retirement migration
+<code>supabase/migrations/20260818120000_retire_ollama_provider.sql</code>) states only that the
+Ollama leg's retirement is "ahead of the homelab-to-Vultr move", with no further detail
+given anywhere. That detail is not yet recorded, and this amendment does not invent it.</p>
+<h3 id="outstanding-work">Outstanding work<a class="headerlink" href="#outstanding-work" title="Permanent link">&para;</a></h3>
+<p><strong>The full migration decision record, the Vultr counterpart to this ADR's homelab
+decision, is still outstanding.</strong> Until it exists:</p>
+<ul>
+<li>The Pangolin/Authentik ingress, the R1 nginx topology
+  (<code>services/cyo-adventure/</code> in the separate <code>ByronWilliamsCPA/homelab-infra</code> repo), and
+  the docker-host backup regime this ADR's Decision and Consequences describe remain the
+  last fully-recorded deployment topology.</li>
+<li>This ADR's <code>Status</code> line ("Accepted...deployed and live behind Pangolin...") is
+  deliberately left unchanged by this amendment, because the move has not completed as of
+  this writing; a future amendment, or a dedicated ADR once the migration record exists,
+  should update it when Vultr hosting is actually live.</li>
+<li>No <code>UW-*</code> register entry currently tracks writing that migration record; this amendment
+  flags the gap rather than assigning it an ID it cannot verify.</li>
+</ul>
+<h3 id="related_1">Related<a class="headerlink" href="#related_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../adr-003-frontier-llm-generation/#amendment-2026-08-18-the-ollama-leg-is-retired-and-modal-takes-leg-3">ADR-003</a>:
+  the Ollama-retirement consequence of this move.</li>
+<li><a href="../adr-010-modal-review-and-gated-generation/#amendment-2026-08-22-modal-is-cascade-leg-3-not-primary">ADR-010</a>:
+  the leg that replaced it.</li>
+</ul>
 
 
 
@@ -4040,7 +4202,7 @@ always-on uptime and managed backups if the need arises.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 28, 2026 21:05:21 UTC">July 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 18:41:23 UTC">August 22, 2026</span>
   </span>
 
     
