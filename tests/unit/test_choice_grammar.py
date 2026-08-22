@@ -739,7 +739,7 @@ class TestRunGateForwardsTheFlag:
             / "valid"
             / "03_tier2_lantern.json"
         )
-        return json.loads(path.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
+        return json.loads(path.read_text(encoding="utf-8"))  # pyright: ignore[reportAny]
 
     def test_fixture_reaches_the_grammar_stage(self) -> None:
         """Guards the guard: the two tests below are only meaningful while
@@ -1105,7 +1105,7 @@ class TestVisibleRunCap:
         )
         # One conditioned choice elsewhere, so the walk is entered at all.
         nodes[0]["choices"] = [
-            *nodes[0]["choices"],  # type: ignore[misc]
+            *nodes[0]["choices"],  # pyright: ignore[reportGeneralTypeIssues]
             {
                 "id": "c_alt",
                 "label": "Shortcut.",
