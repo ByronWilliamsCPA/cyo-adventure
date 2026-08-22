@@ -186,6 +186,47 @@ def test_deepseek_v4_pro_fixture_carries_the_priced_pin() -> None:
 
 
 @pytest.mark.unit
+def test_deepseek_v3_2_fixture_carries_the_priced_pin() -> None:
+    """The v3.2 row's endpoint claim is bound to the fixture, not to prose.
+
+    This row carried a `#VERIFY` that said "re-run the endpoint probe", and a
+    prose marker verifies nothing: the row's leading comment went on naming
+    `digitalocean` (the take-3 pin, justified by its 128,000 output ceiling)
+    while the `note=` and the committed fixture both said `novita/fp8`, which
+    declares exactly the 65,536 resolved cap. A row that contradicts itself
+    about which endpoint it prices, under an `#ASSUME: payment` marker, is a
+    mispricing waiting to be quoted. The v4-pro row above binds its pin to a
+    test for the same reason; this mirrors it so the two cannot drift apart.
+    """
+    fixture = (
+        Path(__file__).resolve().parents[2]
+        / "docs/planning/vendor-comparison/vendors-deepseek-v32.json"
+    )
+    entries = json.loads(fixture.read_text(encoding="utf-8"))
+    (vendor,) = [e for e in entries if e["model"] == "deepseek/deepseek-v3.2"]
+    assert vendor["provider_order"] == ["novita/fp8"], (
+        "vendors-deepseek-v32.json no longer pins novita/fp8; the "
+        "deepseek/deepseek-v3.2 price row in core/pricing.py prices that "
+        "endpoint specifically and must be repriced with any repin"
+    )
+    price = PRICES[("openrouter", "deepseek/deepseek-v3.2")]
+    assert "novita/fp8" in price.note, (
+        "the deepseek/deepseek-v3.2 price row no longer names its pinned "
+        "endpoint; the pin contract above cannot be audited without it"
+    )
+    assert price.input_usd_per_mtok is not None
+    assert price.output_usd_per_mtok is not None
+    recorded = (
+        f"{price.input_usd_per_mtok.normalize()} / {price.output_usd_per_mtok:.2f}"
+    )
+    assert vendor["_price_per_mtok"] == recorded, (
+        "the fixture's recorded price no longer matches the price row; the "
+        "fixture's own note says the two move together, and a stale figure "
+        "there is how a comparison report quotes a price nobody paid"
+    )
+
+
+@pytest.mark.unit
 def test_every_seeded_entry_is_dated_and_sourced() -> None:
     """A price with no date or provenance cannot be audited or re-checked."""
     assert PRICES, "the table must not be empty; an empty table prices nothing"
