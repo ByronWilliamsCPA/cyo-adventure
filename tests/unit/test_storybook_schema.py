@@ -701,3 +701,23 @@ def test_every_satisfying_kind_consumer_reads_this_one_set() -> None:
     )
     for consumer in consumers:
         assert consumer is SATISFYING_ENDING_KINDS
+
+
+def test_a_gamebook_cannot_declare_third_person() -> None:
+    """A third-person gamebook is a contract contradiction (PR #737, I10).
+
+    The person checker holds declared-third books to a second-person ceiling
+    while the gamebook genre addresses the reader, so the representable
+    combination inverted the gate against a correct book; the model now
+    rejects it at parse time.
+    """
+    story = _minimal_tier1()
+    metadata = story["metadata"]
+    metadata["age_band"] = "13-16"
+    metadata["narrative_style"] = "gamebook"
+    metadata["narrative_person"] = "second"
+    Storybook.model_validate(story)
+
+    metadata["narrative_person"] = "third"
+    with pytest.raises(ValidationError, match="cannot declare narrative_person"):
+        Storybook.model_validate(story)

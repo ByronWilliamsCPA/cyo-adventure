@@ -90,7 +90,7 @@ def test_frozen_drift_is_restored_and_writable_retheming_is_kept() -> None:
     filled["metadata"] = {"age_band": "10-13", "tier": 2, "themes": ["oceanography"]}
     filled["variables"] = [
         {
-            "name": "slides",
+            "name": "plates",
             "type": "int",
             "min": 0,
             "max": 5,
@@ -128,7 +128,7 @@ def test_frozen_drift_is_restored_and_writable_retheming_is_kept() -> None:
     assert any("story.id" in note for note in result.restored)
     assert any("metadata" in note for note in result.restored)
     assert any("ending.kind" in note for note in result.restored)
-    assert any("variables[0].name" in note for note in result.restored)
+    assert any("'plates'.max restored" in note for note in result.restored)
 
 
 def test_choice_targets_are_restored_and_labels_kept() -> None:
@@ -140,7 +140,7 @@ def test_choice_targets_are_restored_and_labels_kept() -> None:
     choice = result.document["nodes"][0]["choices"][0]  # type: ignore[index]
     assert choice["target"] == "n2"
     assert choice["label"] == "Open the dome."
-    assert any("choice.target" in note for note in result.restored)
+    assert any(".target restored" in note for note in result.restored)
 
 
 def test_a_fill_with_a_different_node_count_is_not_normalized() -> None:
@@ -150,6 +150,131 @@ def test_a_fill_with_a_different_node_count_is_not_normalized() -> None:
 
     result = normalize_filled_story(_skeleton(), filled)
     assert result.skipped_reason is not None
+    assert result.document == filled
+
+
+def test_reordered_nodes_keep_their_prose_on_the_right_graph_positions() -> None:
+    """A reordered-but-correct fill is normalized by id, not by position.
+
+    PR #737 review, finding C2: the positional zip transplanted each body
+    onto the wrong node while "restoring" the ids, producing a structurally
+    perfect document with inverted prose that no downstream gate can catch.
+    """
+    filled = _obedient_fill()
+    filled["nodes"] = list(reversed(filled["nodes"]))  # type: ignore[arg-type]
+
+    result = normalize_filled_story(_skeleton(), filled)
+    assert result.skipped_reason is None
+    nodes = result.document["nodes"]
+    assert nodes[0]["id"] == "n1"  # type: ignore[index]
+    assert nodes[0]["body"] == "You climb the lane at dusk."  # type: ignore[index]
+    assert nodes[1]["id"] == "n2"  # type: ignore[index]
+    assert nodes[1]["body"] == "The comet holds still on the plate."  # type: ignore[index]
+
+
+def test_reordered_choices_keep_their_labels_on_the_right_targets() -> None:
+    """Choice labels follow their choice id, never their list position.
+
+    The reviewer's repro: skeleton offers c1 -> safe_room and c2 -> dark_pit;
+    the model returns the same ids reordered. A positional overlay put "climb
+    down into the pit" on the safe-room target.
+    """
+    skeleton: dict[str, object] = {
+        "id": "sk_two_choices",
+        "title": "Two Doors",
+        "metadata": {"age_band": "8-11", "tier": 1},
+        "start_node": "fork",
+        "nodes": [
+            {
+                "id": "fork",
+                "body": "<<FILL body>>",
+                "is_ending": False,
+                "choices": [
+                    {"id": "c1", "label": "<<FILL label>>", "target": "safe_room"},
+                    {"id": "c2", "label": "<<FILL label>>", "target": "dark_pit"},
+                ],
+            },
+            {"id": "safe_room", "body": "<<FILL body>>", "is_ending": True},
+            {"id": "dark_pit", "body": "<<FILL body>>", "is_ending": True},
+        ],
+    }
+    filled = copy.deepcopy(skeleton)
+    filled["nodes"][0]["body"] = "The tunnel splits."  # type: ignore[index]
+    filled["nodes"][0]["choices"] = [  # type: ignore[index]
+        {"id": "c2", "label": "Climb down into the pit.", "target": "dark_pit"},
+        {"id": "c1", "label": "Stay in the safe room.", "target": "safe_room"},
+    ]
+    filled["nodes"][1]["body"] = "Safe at last."  # type: ignore[index]
+    filled["nodes"][2]["body"] = "Down you go."  # type: ignore[index]
+
+    result = normalize_filled_story(skeleton, filled)
+    assert result.skipped_reason is None
+    choices = result.document["nodes"][0]["choices"]  # type: ignore[index]
+    by_id = {c["id"]: c for c in choices}
+    assert by_id["c1"]["target"] == "safe_room"
+    assert by_id["c1"]["label"] == "Stay in the safe room."
+    assert by_id["c2"]["target"] == "dark_pit"
+    assert by_id["c2"]["label"] == "Climb down into the pit."
+
+
+def test_reordered_variables_keep_their_descriptions() -> None:
+    """Variable descriptions follow the variable name, never the position."""
+    skeleton = _skeleton()
+    skeleton["variables"] = [
+        {
+            "name": "plates",
+            "type": "int",
+            "min": 0,
+            "max": 3,
+            "initial": 3,
+            "description": "Plates left.",
+        },
+        {
+            "name": "lamps",
+            "type": "int",
+            "min": 0,
+            "max": 2,
+            "initial": 2,
+            "description": "Lamps lit.",
+        },
+    ]
+    filled = copy.deepcopy(skeleton)
+    filled["nodes"][0]["body"] = "Prose."  # type: ignore[index]
+    filled["nodes"][0]["choices"][0]["label"] = "Go."  # type: ignore[index]
+    filled["nodes"][1]["body"] = "Done."  # type: ignore[index]
+    filled["variables"] = [
+        {
+            "name": "lamps",
+            "type": "int",
+            "min": 0,
+            "max": 2,
+            "initial": 2,
+            "description": "Storm lanterns still burning.",
+        },
+        {
+            "name": "plates",
+            "type": "int",
+            "min": 0,
+            "max": 3,
+            "initial": 3,
+            "description": "Unexposed plates in the satchel.",
+        },
+    ]
+
+    result = normalize_filled_story(skeleton, filled)
+    variables = {v["name"]: v for v in result.document["variables"]}  # type: ignore[union-attr]
+    assert variables["plates"]["description"] == "Unexposed plates in the satchel."
+    assert variables["lamps"]["description"] == "Storm lanterns still burning."
+
+
+def test_a_fill_with_renamed_node_ids_is_not_normalized() -> None:
+    """A renamed id makes the pairing ambiguous; the gate judges as written."""
+    filled = _obedient_fill()
+    filled["nodes"][0]["id"] = "n1_renamed"  # type: ignore[index]
+
+    result = normalize_filled_story(_skeleton(), filled)
+    assert result.skipped_reason is not None
+    assert "ids do not align" in result.skipped_reason
     assert result.document == filled
 
 

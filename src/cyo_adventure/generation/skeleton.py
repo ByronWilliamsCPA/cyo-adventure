@@ -303,7 +303,18 @@ def story_fill_rate(
             continue
         node_id = node.get("id")
         key = str(node_id) if node_id is not None else f"#{index}"
-        delivered[key] = delivered.get(key, 0) + len(body.split())
+        # #ASSUME: data-integrity: only the FIRST occurrence of a node id is
+        # credited. Accumulating duplicates let two nodes sharing one id pool
+        # their words against a single commissioned target, so a fill leaving
+        # one of them empty still cleared the floor (PR #737 review, I15; the
+        # duplicate-id laundering first flagged on #731). A duplicated id is
+        # structural garbage the gate rejects; this measure must not launder
+        # it into a passing rate first.
+        # #VERIFY: test_fill_output_cap.py::
+        # test_duplicate_node_ids_do_not_pool_their_delivery.
+        if key in delivered:
+            continue
+        delivered[key] = len(body.split())
     effective = sum(
         min(delivered.get(key, 0), target) for key, target in commissioned.items()
     )
@@ -347,7 +358,23 @@ def resolve_context_window(model: str | None) -> int | None:
     """
     if model is None:
         return None
-    return MODEL_CONTEXT_WINDOWS.get(model)
+    window = MODEL_CONTEXT_WINDOWS.get(model)
+    if window is None:
+        # #ASSUME: data-integrity: the same suffix normalization as
+        # resolve_output_cap, for the same reason: a pinned (`:variant`) or
+        # dated slug that misses its own row must inherit the base row, or
+        # the window resolves None and None constrains nothing, restoring
+        # the exact unbounded-ask overflow `UW-C320` was filed for while the
+        # cap side of the pair resolves correctly (PR #737 review, I16).
+        # #VERIFY: test_fill_output_cap.py::
+        # test_a_pinned_variant_inherits_its_base_context_window.
+        candidate = model
+        for pattern in (_VARIANT_SUFFIX_RE, _DATED_VARIANT_SUFFIX_RE):
+            candidate = pattern.sub("", candidate)
+            if candidate in MODEL_CONTEXT_WINDOWS:
+                window = MODEL_CONTEXT_WINDOWS[candidate]
+                break
+    return window
 
 
 # Conservative characters-per-token divisor for estimating a prompt's input

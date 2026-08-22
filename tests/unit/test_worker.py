@@ -467,6 +467,28 @@ class TestShouldPersistStorybook:
         )
         assert _should_persist_storybook(outcome) is True
 
+    def test_fill_rate_only_needs_review_persists_the_storybook(self) -> None:
+        """A fill-rate-floor downgrade on an otherwise-clean fill persists.
+
+        PR #737 review, finding C1: without this, a fill-rate-only
+        needs_review fell into the any-other branch, no Storybook was
+        created, moderation never ran, and the reviewer the downgrade exists
+        for had no book to review; stricter than the hard block ruling 9.3
+        forbids.
+        """
+        outcome = GenerationOutcome(
+            status="needs_review",
+            storybook={"id": "s1"},
+            report={
+                "fill_rate": 0.44,
+                "fill_rate_floor": 0.6,
+                "fill_rate_downgrade": True,
+            },
+            attempts=0,
+            stage_log=[],
+        )
+        assert _should_persist_storybook(outcome) is True
+
     def test_safety_flagged_needs_review_does_not_persist(self) -> None:
         """Regression guard: a safety-flagged needs_review (no Stage 1 key) must
         NOT persist -- this is the pre-existing, non-Plan-2 semantics that the

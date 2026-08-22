@@ -23,6 +23,13 @@ tags:
 > validator's structural rules, and ADR-011's scale constants are explicitly unchanged.
 > **Relates to**: ADR-011 (constants preserved), ADR-024 (go-back semantics extended to stops),
 > ADR-025 (any schema-visible additions ride minor versions).
+> **Superseded reference (2026-08-22)**: everywhere this document cites ADR-011's
+> "research-locked ~4-8 decisions per path", read it against ADR-011 section 11: the
+> `UW-C323` audit found that constant arithmetically unsatisfiable against ADR-011's own
+> sections 3, 5 and 10 (this ADR's stop grammar among the inputs that force it), and the
+> window is now derived per cell. Nothing in THIS ADR's decision changes: the stop flow is
+> presentation-layer, the graph is untouched, and the per-cell derivation in fact resolves
+> the tension section 10 of ADR-011 papered over with the "unchanged" claim.
 
 ## TL;DR
 

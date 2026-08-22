@@ -1245,6 +1245,9 @@ async def test_fill_skeleton_stamps_the_fill_rate_and_keeps_a_full_fill_passed()
     assert isinstance(outcome.report.get("fill_rate"), float)
     assert outcome.report["fill_rate"] >= 0.6
     assert outcome.report["fill_rate_floor"] == 0.6
+    # The exact-signal key must be ABSENT on a passing book: its presence is
+    # the worker's proof that a downgrade happened (PR #737 review, C1).
+    assert "fill_rate_downgrade" not in outcome.report
 
 
 @pytest.mark.asyncio
@@ -1270,6 +1273,9 @@ async def test_fill_skeleton_forces_review_on_an_under_delivered_book() -> None:
     assert outcome.storybook is not None
     assert outcome.report["fill_rate"] < 0.6
     assert any("fill_rate" in entry for entry in outcome.stage_log)
+    # The persistence signal (PR #737 review, C1): present exactly when this
+    # downgrade happened, so the worker still persists the book for review.
+    assert outcome.report["fill_rate_downgrade"] is True
 
 
 @pytest.mark.asyncio

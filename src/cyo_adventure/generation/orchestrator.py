@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, cast
 
@@ -63,6 +64,7 @@ from cyo_adventure.generation.reading_level_loop import (
     run_reading_level_loop,
 )
 from cyo_adventure.generation.skeleton import (
+    _FEASIBILITY_MARGIN,  # pyright: ignore[reportPrivateUsage]
     MAX_FILL_OUTPUT_TOKENS,
     active_fill_model,
     estimate_input_tokens,
@@ -1254,14 +1256,22 @@ async def _fill_in_batches(
         window = resolve_context_window(ctx.model)
         if window is not None:
             room = window - estimate_input_tokens(prompt.system, prompt.user)
+            batch_id_set = set(node_ids)
             batch_nodes = [
                 node
                 for node in cast("list[object]", document.get("nodes") or [])
                 if isinstance(node, dict)
-                and cast("dict[str, object]", node).get("id") in set(node_ids)
+                and cast("dict[str, object]", node).get("id") in batch_id_set
             ]
             needed = expected_output_tokens({"nodes": batch_nodes})
-            if room < needed:
+            # The planner packs batches so expected <= cap * _FEASIBILITY_MARGIN
+            # because reasoning tokens bill against the same budget and produce
+            # no prose. Granting an ask below needed / margin would strip that
+            # headroom and reproduce the mid-batch truncation this bound exists
+            # to prevent, so the refusal threshold carries the margin too
+            # (PR #737 review, I3).
+            needed_with_headroom = math.ceil(needed / _FEASIBILITY_MARGIN)
+            if room < needed_with_headroom:
                 _logger.warning(
                     "fill_batch_context_overflow",
                     batch=index,
@@ -1277,7 +1287,8 @@ async def _fill_in_batches(
                     f"L1-1 schema: chunked fill batch {index} of {len(batches)} "
                     f"cannot fit the model's {window}-token context window: the "
                     f"prompt leaves {room} tokens of room and the batch expects "
-                    f"{needed}; no completion was requested"
+                    f"{needed} plus reasoning headroom ({needed_with_headroom} "
+                    "total); no completion was requested"
                 )
                 return None, _synthetic_blocked_gate(failure, "fill_result")
             ask = min(ask, room)
@@ -1352,6 +1363,19 @@ def _with_fill_rate(
             fill_rate=round(fill_rate, 3),
             floor=min_fill_rate,
         )
+    # #CRITICAL: data-integrity: "fill_rate_downgrade" is an EXACT signal,
+    # exactly like "stage1_fidelity_violations": it is stamped only when THIS
+    # function downgrades an otherwise-passed fill for the floor, never for
+    # any other cause. worker._should_persist_storybook reads it to keep the
+    # book persistable, because ruling 9.3 forces review and never a hard
+    # block; without the key a fill-rate-only downgrade fell into the
+    # any-other-needs_review branch and the reviewer had NO book to review
+    # (PR #737 review, finding C1).
+    # #VERIFY: tests/unit/test_orchestrator.py::
+    # test_fill_skeleton_forces_review_on_an_under_delivered_book (asserts the
+    # key) and tests/unit/test_worker.py::
+    # test_fill_rate_only_needs_review_persists_the_storybook.
+    extra: dict[str, object] = {"fill_rate_downgrade": True} if downgrade else {}
     return GenerationOutcome(
         status="needs_review" if downgrade else outcome.status,
         storybook=outcome.storybook,
@@ -1359,6 +1383,7 @@ def _with_fill_rate(
             **outcome.report,
             "fill_rate": round(fill_rate, 4),
             "fill_rate_floor": min_fill_rate,
+            **extra,
         },
         attempts=outcome.attempts,
         stage_log=outcome.stage_log,
@@ -1430,14 +1455,16 @@ async def fill_skeleton(
       no degraded path, so it truncated, parsed as nothing, and burned the
       repair budget on every retry. Seven committed skeletons were in that
       state. Every batch carries the bound values, not just the first.
-    * Ending ``title`` text is not re-themed. One-shot fill returns the whole
-      document and ``fill.md`` does not list ``title`` among the fields it may
-      not change, so a one-shot book gets themed ending titles; the batch merge
-      reads only ``body`` and choice ``label``, so a chunked book keeps the
-      skeleton's authored titles under every theme. That is the safe direction
-      (an untrusted reply cannot reach the ending block at all) but it is
-      reader-visible, and it is one of the things `UW-C269` compares before this
-      path writes anything a child reads.
+    * Ending ``title`` text is re-themed on BOTH paths since the 2026-08-21
+      ruling (section 8.3): one-shot fill returns the whole document with
+      titles writable, and the batch merge accepts an optional
+      ``ending_title`` per ending node (``_merged_ending``), with the
+      ending's ``id``/``kind``/``valence`` still carried from the skeleton by
+      construction. An earlier draft of this bullet predated the ruling and
+      said the merge read only ``body`` and choice ``label`` (PR #737
+      review, I5). The whitelist shape is unchanged: an untrusted reply
+      still cannot reach any frozen ending field, and `UW-C269` compares the
+      two paths before this one writes anything a child reads.
 
     Args:
         skeleton: The matched skeleton dict, FILL directives intact.
@@ -1505,6 +1532,13 @@ async def fill_skeleton(
         ValidationError: If any assembled prompt contains forbidden PII. The
             provider is never called when this occurs.
     """
+    # #ASSUME: data-integrity: `nan < x` is False for every x, so a NaN floor
+    # silently disabled the fill-rate gate while reporting it configured
+    # (PR #737 review, suggested findings). Refuse it up front, before any
+    # provider spend.
+    if math.isnan(min_fill_rate):
+        msg = "min_fill_rate must be a number (got NaN); use 0 to measure only"
+        raise ConfigurationError(msg)
     stage_log: list[str] = []
     guarded_provider = PiiGuardedProvider(provider, forbidden=pii)
 

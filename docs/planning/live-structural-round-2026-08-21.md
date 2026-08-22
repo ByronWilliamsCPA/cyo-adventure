@@ -1,7 +1,7 @@
 # Live structural round: frozen-field mutation rate, directed delta, chunked path
 
 **Date**: 2026-08-21
-**Status**: planned; results appended below as they land
+**Status**: executed; sections 7-9 hold the results, rulings, and resolutions (status line corrected 2026-08-22, PR #737 review)
 **Predecessor**: `deepseek-v4-pro-live-fill-plan-2026-08-20.md` (PR #731 merged 2026-08-20)
 **Branch**: `claude/cyo-live-story-generation-kxm0ya`
 **Goal**: find remaining STRUCTURAL defects in the skeleton/fill contract before bulk skeleton and
@@ -383,7 +383,23 @@ differ from their skeletons under a contract that cannot say whether that is leg
 
 **Cost**: measured $3.28 metered (Run A $0.719, Run B $2.432, takes 3-4 $0.133) plus roughly
 $0.45 unmetered probing and replication, about **$3.75 total against the $2.85 estimate**,
-inside the twice-estimate stop rule. The grid alone ran 57 percent over its line item, almost
+inside the twice-estimate stop rule *at the time this section was written*.
+
+**Cost reconciliation (2026-08-22, PR #737 review, I13).** The paragraph above was written
+before the owner-authorized continuation (the mutation-diversity arms and the sonnet-5
+mid-band comparison) ran, and the final accounting must not hide behind it. Summing
+``books[].cost`` across the nine committed ``report.json`` files under
+``out/live-structural-2026-08-21/`` gives **$7.50 metered** for this round (19 books), plus
+the ~$0.45 unmetered probing above; adding the 2026-08-20 predecessor runs' committed
+reports brings the whole two-round program to roughly **$10.2 book-metered spend**. The
+earlier "~$8.9" figure quoted in the PR body was a running estimate that included unmetered
+probing but predated the final mutant-pair take; the committed reports are the record. On
+the stop rule: the plan's $5.70 line bounded THIS PLAN's original scope, and the original
+scope finished at ~$3.75, inside it; the continuation past that line (mutation experiment,
+sonnet-5 arm, ~$3.75 further) was separately and explicitly authorized by the owner
+("OpenRouter is restored. Complete the remaining work", recorded in section 7.6's context)
+rather than run under the original stop rule. That authorization should have been recorded
+here as a revised budget line when the continuation started; it is recorded now. The grid alone ran 57 percent over its line item, almost
 entirely book 9's 136-percent delivery and 2,810-second latency, which is worth knowing for
 bulk budgeting: a 16+ prose book can cost 3x a mid-band book of the same node count.
 

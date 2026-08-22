@@ -11,9 +11,13 @@ Inference order, most explicit source first:
    gamebook fills measure 0.715-1.0 second-person node rates).
 2. The beats' own pronouns: a skeleton whose ``<<FILL ... beats='...'>>``
    text uses second-person tokens on at least ``--beats-threshold`` of its
-   directive nodes (default 0.3) declares ``second``; the live rounds showed
-   fills track the beats' person closely where it is declared (0.45 beats
-   gave a 0.448 fill).
+   directive nodes declares ``second``; the live rounds showed fills track
+   the beats' person closely where it is declared (0.45 beats gave a 0.448
+   fill). The default is 0.5, the SAME floor ``check_prose_craft.py`` holds
+   a declared-second book to: an earlier 0.3 default declared books
+   ``second`` that the gate would then fail on the fills the beats predict
+   (PR #737 review, I2; `the-orchard-signal` at 0.31 was the reproduced
+   victim, corrected in the same commit).
 3. A committed fill at ``out/<slug>.filled.json``: its measured second-person
    node rate decides at 0.5.
 4. Otherwise ``third``, the committed-prose norm (0.0-0.27 measured).
@@ -71,6 +75,9 @@ def _infer(
         try:
             filled = json.loads(filled_path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
+            # #ASSUME: data-integrity: a committed fill that fails to parse
+            # is treated as absent (rule 4 decides), never as evidence; the
+            # skeleton itself is untouched either way.
             filled = None
         if isinstance(filled, dict):
             bodies = [
@@ -104,6 +111,12 @@ def _insert_person(path: Path, person: str) -> None:
         ValueError: If the metadata block cannot be located, or the edited
             file no longer parses to the expected value.
     """
+    # #CRITICAL: data-integrity: this edits every catalog skeleton IN PLACE
+    # by textual splice. The splice is only trusted because the edited text
+    # is re-parsed below and asserted to carry exactly the inserted value;
+    # any failure raises before write_text, so a skeleton is never written
+    # half-edited.
+    # #VERIFY: the re-parse assertion below; corrupt output raises ValueError.
     raw = path.read_text(encoding="utf-8")
     marker = '"metadata": {'
     at = raw.find(marker)
@@ -137,10 +150,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--beats-threshold",
         type=float,
-        default=0.3,
+        default=0.5,
         help=(
             "Fraction of directive nodes whose beats must use second-person "
-            "tokens for the beats to decide 'second' (default 0.3)."
+            "tokens for the beats to decide 'second' (default 0.5, matching "
+            "the check_prose_craft.py declared-second floor so the backfill "
+            "never declares a person its own gate predicts the fills will "
+            "fail; PR #737 review, I2)."
         ),
     )
     args = parser.parse_args(argv)

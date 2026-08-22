@@ -776,10 +776,12 @@ def _build_parser() -> argparse.ArgumentParser:
         type=float,
         default=0.5,
         help=(
-            "Fail a gamebook whose second-person node rate falls below this "
-            "floor (default 0.5: committed gamebooks run 0.715-1.0; prose "
-            "books are reported but never gated, since nothing pins their "
-            "person; AL-518/UW-C313)."
+            "Fail a book declared (or, for an undeclared gamebook, styled) "
+            "second-person whose second-person node rate falls below this "
+            "floor (default 0.5: committed gamebooks run 0.715-1.0). An "
+            "undeclared PROSE book is reported without gating; a declared "
+            "book is gated on its metadata.narrative_person declaration "
+            "(ruling 9.4; AL-518/UW-C313)."
         ),
     )
     parser.add_argument(
@@ -878,10 +880,16 @@ class SamenessReport:
 def sameness_report(story: dict[str, Any]) -> SamenessReport:
     """Count duplicate bodies and label collapse (AL-496/UW-C313).
 
+    Deliberate exception to the module's dialogue exemption: bodies are
+    compared RAW, because a byte-duplicated passage is a sameness defect
+    whether or not it contains quoted speech, and stripping dialogue would
+    merge distinct bodies that differ only in their quotes.
+
     The worst live book measured had 23 redundant nodes across 11 repeated
     texts and three label strings covering 89.8 percent of 674 choices; the
-    known-good corpus has zero duplicate bodies and top-3 shares of 2 to 20
-    percent.
+    known-good corpus has zero duplicate bodies and top-3 shares of 2 to 27
+    percent (the 0.02-0.27 range the --max-top3-label-share default is
+    calibrated against).
 
     Args:
         story: Decoded filled-story JSON.
@@ -937,11 +945,12 @@ def person_report(story: dict[str, Any]) -> PersonReport:
 
     Calibration (2026-08-21): committed gamebooks run 0.715 to 1.0,
     committed third-person prose 0.0 to 0.27, and three live fills of one
-    prose skeleton scattered to 0.07, 0.13 and 0.72 because nothing pins
-    narrative person for prose. Reported, not gated: the rule-worthy
-    comparison is against a DECLARED person, which the contract does not
-    yet carry; until it does, a gamebook far below the gamebook band is
-    the actionable signal.
+    prose skeleton scattered to 0.07, 0.13 and 0.72 before the contract
+    pinned narrative person. The contract now carries
+    ``metadata.narrative_person`` (ruling 9.4), and ``_report`` gates this
+    rate against the declaration: declared second-person books must clear
+    the floor, declared third-person books must stay under the ceiling, and
+    only an undeclared prose book is reported without gating.
 
     Args:
         story: Decoded filled-story JSON.
@@ -954,7 +963,11 @@ def person_report(story: dict[str, Any]) -> PersonReport:
         for node in cast("list[dict[str, Any]]", story.get("nodes") or [])
         if cast("str", node.get("body") or "").strip()
     ]
-    hits = sum(1 for body in nodes if _SECOND_PERSON_RE.search(body))
+    # Dialogue is exempt, per the module contract: a third-person book whose
+    # characters say "you" to each other is not narrating in second person,
+    # and counting quoted spans let ordinary dialogue breach the third-person
+    # ceiling on its own (PR #737 review, I8).
+    hits = sum(1 for body in nodes if _SECOND_PERSON_RE.search(strip_dialogue(body)))
     return PersonReport(
         nodes=len(nodes),
         second_person_nodes=hits,
@@ -963,7 +976,7 @@ def person_report(story: dict[str, Any]) -> PersonReport:
 
 
 def _report(story: dict[str, Any], name: str, args: argparse.Namespace) -> bool:
-    """Print all three detector reports for one book.
+    """Print every detector report for one book (tense, morals, told emotion, sameness, person).
 
     Args:
         story: Decoded filled-story JSON.
@@ -1044,7 +1057,15 @@ def _report(story: dict[str, Any], name: str, args: argparse.Namespace) -> bool:
     # must stay under the ceiling, and an undeclared book falls back to the
     # gamebook-style floor only (the pre-declaration behavior).
     person_breach = False
-    if declared == "second":
+    if declared == "third" and style == "gamebook":
+        # Contradictory declaration: the gamebook genre addresses the reader,
+        # so holding a correct second-person gamebook to the third-person
+        # ceiling would invert the gate (PR #737 review, I10). The model now
+        # rejects this combination at validation; a raw document carrying it
+        # is flagged as a contract error rather than measured.
+        person_breach = True
+        framing = "contradictory declaration: a gamebook cannot be third person"
+    elif declared == "second":
         person_breach = person.rate < cast("float", args.min_gamebook_second_person)
         framing = f"declared second, floor {args.min_gamebook_second_person:.0%}"
     elif declared == "third":

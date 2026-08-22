@@ -263,13 +263,17 @@ _PRICES: dict[tuple[str, str], ModelPrice] = {
         ),
     ),
     # Pinned-endpoint price, like the v4-pro row above: this run enablement row
-    # prices the `digitalocean` endpoint, the pin the 2026-08-21 chunked-path
+    # prices the `novita/fp8` endpoint, the pin the 2026-08-21 chunked-path
     # leg uses (`docs/planning/vendor-comparison/vendors-deepseek-v32.json`).
     # Probed 2026-08-21: digitalocean, novita/fp8 and siliconflow/fp8 return
     # 200; `atlas-cloud/fp8` returns 404 "no endpoints available matching your
-    # guardrail restrictions and data policy". DigitalOcean is the reachable
-    # US-hosted endpoint with a 128,000 declared output ceiling, above the
-    # slug's 65,536 `MODEL_OUTPUT_CAPS` row, so the resolved cap stays honest.
+    # guardrail restrictions and data policy". The pin moved from digitalocean
+    # to novita/fp8 after digitalocean passed its 512-token probe and then
+    # mangled every large chunked batch ask (take 3). Novita/fp8 declares
+    # exactly 65,536 output tokens, byte-equal to the slug's 65,536
+    # `MODEL_OUTPUT_CAPS` row, so the resolved cap is exact with no headroom;
+    # an earlier draft of this comment still named digitalocean and justified
+    # the cap by its 128,000 ceiling (PR #737 review, I4).
     # #ASSUME: payment: deliberately absent from
     # `scripts/refresh_pricing.py::_WANTED` for the same reason as the v4-pro
     # row: a refresh reads the slug's default route and would overwrite this

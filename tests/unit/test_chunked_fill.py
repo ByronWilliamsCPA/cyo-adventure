@@ -1194,3 +1194,73 @@ async def test_a_known_window_clamps_the_batch_ask_below_the_cap(
     assert outcome.status in {"passed", "needs_review"}
     assert provider.asks
     assert all(ask == 27 for ask in provider.asks)
+
+
+@pytest.mark.asyncio
+async def test_the_context_refusal_keeps_the_reasoning_headroom(
+    tiny_cap_settings: _SmallOutputSettings,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The refusal threshold is needed / margin, not raw needed (PR #737, I3).
+
+    The planner packs batches to expected <= cap * 0.8 because reasoning
+    tokens bill against the same budget; a one-node batch expecting 20 tokens
+    therefore needs ceil(20 / 0.8) = 25 tokens of room. With the input
+    estimate pinned to 100: a 124-token window (room 24) must refuse without
+    a provider call, and a 125-token window (room 25) must proceed.
+    """
+    import cyo_adventure.generation.orchestrator as orch
+    from cyo_adventure.generation.skeleton import MODEL_CONTEXT_WINDOWS
+
+    monkeypatch.setattr(orch, "estimate_input_tokens", lambda *_texts: 100)
+
+    monkeypatch.setitem(MODEL_CONTEXT_WINDOWS, "tiny/one-node", 124)
+    refusing = MockProvider(responses=[])
+    outcome = await fill_skeleton(
+        _all_fill_skeleton(),
+        {"premise": "a fox"},
+        refusing,
+        PiiContext(child_names=frozenset()),
+        settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        stage1_gate="skipped",
+    )
+    assert outcome.status == "failed"
+    assert refusing.calls == []
+
+    monkeypatch.setitem(MODEL_CONTEXT_WINDOWS, "tiny/one-node", 125)
+    skeleton = _all_fill_skeleton()
+    batches = plan_fill_batches(skeleton, max_tokens=_CAP_FOR_ONE)
+    provider = _AskRecordingProvider(responses=[_reply_for(batch) for batch in batches])
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        cast("object", provider),  # pyright: ignore[reportArgumentType]
+        PiiContext(child_names=frozenset()),
+        settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        stage1_gate="skipped",
+    )
+    assert outcome.status in {"passed", "needs_review"}
+    assert provider.asks
+    assert all(ask == 25 for ask in provider.asks)
+
+
+@pytest.mark.asyncio
+async def test_a_nan_fill_rate_floor_is_refused_before_any_spend() -> None:
+    """NaN compares False against everything, silently disabling the floor.
+
+    PR #737 review (suggested findings): the guard refuses the
+    configuration up front instead of running with a gate that reports
+    itself configured while never firing.
+    """
+    from cyo_adventure.core.exceptions import ConfigurationError
+
+    provider = MockProvider(responses=[])
+    with pytest.raises(ConfigurationError, match="NaN"):
+        await fill_skeleton(
+            _all_fill_skeleton(),
+            {"premise": "a fox"},
+            provider,
+            PiiContext(child_names=frozenset()),
+            min_fill_rate=float("nan"),
+        )
+    assert provider.calls == []

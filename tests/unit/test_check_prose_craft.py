@@ -436,3 +436,45 @@ def test_person_report_measures_second_person_rate() -> None:
     assert report.nodes == 2
     assert report.second_person_nodes == 1
     assert report.rate == 0.5
+
+
+def test_person_report_exempts_dialogue() -> None:
+    """Characters saying "you" to each other is not second-person narration.
+
+    PR #737 review, I8: without stripping dialogue, a third-person book with
+    ordinary quoted speech accrued second-person hits and could breach the
+    declared-third ceiling on dialogue alone.
+    """
+    from scripts.check_prose_craft import person_report
+
+    story = _story(
+        [
+            _node("n1", 'Nia lowered the rope. "You hold the other end," she said.'),
+            _node("n2", "Tom counted the rungs and kept his eyes on the lamp."),
+        ]
+    )
+    report = person_report(story)
+    assert report.second_person_nodes == 0
+    assert report.rate == 0.0
+
+
+def test_a_declared_third_gamebook_is_flagged_as_contradictory(
+    tmp_path: Path,
+) -> None:
+    """PR #737 review, I10: the branch order previously held a second-person
+    gamebook to the third-person ceiling, inverting the gate."""
+    from scripts.check_prose_craft import main
+
+    story = _story(
+        [
+            _node("n1", "You lift the latch and step through."),
+            _node("n2", "You climb the last rung into daylight."),
+        ]
+    )
+    story["metadata"] = {
+        "narrative_style": "gamebook",
+        "narrative_person": "third",
+    }
+    path = tmp_path / "contradictory.json"
+    path.write_text(json.dumps(story), encoding="utf-8")
+    assert main([str(path), "--check"]) == 1

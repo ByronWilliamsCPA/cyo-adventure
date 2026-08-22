@@ -27,11 +27,19 @@ a shipped defect or a burned repair cycle. ``metadata`` currently includes
 stale, and that deriver is separate scheduled work (`UW-C317`), so until it
 lands the skeleton's themes are what ship.
 
-Nodes and choices are matched by position after an id-alignment check, because
-position is what the fill contract preserves; a fill whose node or choice
-COUNT differs, or whose raw node list carries non-object entries, is not
-normalized (returned unchanged) since overlaying leaves onto a different or
-malformed graph would fabricate a book, and the gate owns that verdict.
+Nodes are matched **by id**, never by position: a model that re-emits the
+same nodes in a different order is a correct fill whose prose must land on
+the right graph positions, and a positional overlay would transplant bodies
+and choice labels onto the wrong targets while rebuilding a structurally
+perfect document no downstream gate can catch (PR #737 review, finding C2).
+Choices are matched by id within their node, and variables by name. A fill
+whose node id set does not exactly match the skeleton's (missing, extra,
+renamed, or duplicated ids), whose node count differs, or whose raw node
+list carries non-object entries is not normalized (returned unchanged),
+since overlaying leaves onto a different or malformed graph would fabricate
+a book, and the gate owns that verdict. Within a matched node, a choice id
+absent from the fill keeps the skeleton's label (noted), and an extra
+filled choice id is discarded (noted).
 """
 
 from __future__ import annotations
@@ -109,25 +117,39 @@ def _overlay_choices(
     notes: list[str],
     node_id: object,
 ) -> object:
-    """Return the skeleton node's choices with the fill's label text overlaid."""
+    """Return the skeleton node's choices with the fill's label text overlaid.
+
+    # #CRITICAL: data-integrity: choices are matched BY ID, never by
+    # position. A model that returns the same choices reordered is a correct
+    # fill; a positional overlay would attach each theme-specific label to
+    # the OPPOSITE frozen target ("Climb down into the pit" leading to the
+    # safe room), and the gate cannot catch it because the rebuilt graph is
+    # the skeleton's own by construction (PR #737 review, finding C2).
+    # #VERIFY: test_normalize_fill.py::
+    # test_reordered_choices_keep_their_labels_on_the_right_targets.
+    """
     skeleton_choices = skeleton_node.get("choices")
     if not isinstance(skeleton_choices, list):
         return skeleton_choices
     filled_raw = filled_node.get("choices")
-    filled_choices = filled_raw if isinstance(filled_raw, list) else []
+    filled_entries = filled_raw if isinstance(filled_raw, list) else []
+    filled_by_id: dict[object, dict[str, object]] = {}
+    for entry in cast("list[object]", filled_entries):
+        if isinstance(entry, dict):
+            filled_by_id[cast("dict[str, object]", entry).get("id")] = cast(
+                "dict[str, object]", entry
+            )
+    matched_ids: set[object] = set()
     rebuilt: list[object] = []
-    for index, entry in enumerate(cast("list[object]", skeleton_choices)):
+    for entry in cast("list[object]", skeleton_choices):
         if not isinstance(entry, dict):
             rebuilt.append(entry)
             continue
         choice = dict(cast("dict[str, object]", entry))
-        filled_entry = (
-            cast("list[object]", filled_choices)[index]
-            if index < len(filled_choices)
-            else None
-        )
-        if isinstance(filled_entry, dict):
-            filled_choice = cast("dict[str, object]", filled_entry)
+        choice_id = choice.get("id")
+        filled_choice = filled_by_id.get(choice_id)
+        if filled_choice is not None:
+            matched_ids.add(choice_id)
             label = _str_or_none(filled_choice.get("label"))
             if label is not None:
                 choice["label"] = label
@@ -135,11 +157,21 @@ def _overlay_choices(
                 _drift_notes(
                     filled_choice,
                     choice,
-                    ("id", "target", "condition", "effects"),
-                    f"node {node_id!r} choice",
+                    ("target", "condition", "effects"),
+                    f"node {node_id!r} choice {choice_id!r}",
                 )
             )
+        else:
+            notes.append(
+                f"node {node_id!r} choice {choice_id!r} absent from the fill; "
+                "skeleton label kept"
+            )
         rebuilt.append(choice)
+    notes.extend(
+        f"node {node_id!r} fill carries unknown choice id {extra_id!r}; discarded"
+        for extra_id in filled_by_id
+        if extra_id not in matched_ids
+    )
     return rebuilt
 
 
@@ -174,25 +206,39 @@ def _overlay_ending(
 def _overlay_variables(
     skeleton: dict[str, object], filled: dict[str, object], notes: list[str]
 ) -> object:
-    """Return the skeleton's variables with the fill's descriptions overlaid."""
+    """Return the skeleton's variables with the fill's descriptions overlaid.
+
+    # #ASSUME: data-integrity: variables are matched by NAME, not position,
+    # for the same reason nodes and choices are matched by id: a reordered
+    # variables list must not put one variable's themed description on
+    # another (PR #737 review, finding C2's variable-level sibling). A name
+    # absent from the fill keeps the skeleton description; an unknown name
+    # is discarded with a note.
+    # #VERIFY: test_normalize_fill.py::
+    # test_reordered_variables_keep_their_descriptions.
+    """
     skeleton_vars = skeleton.get("variables")
     if not isinstance(skeleton_vars, list):
         return skeleton_vars
     filled_raw = filled.get("variables")
-    filled_vars = filled_raw if isinstance(filled_raw, list) else []
+    filled_entries = filled_raw if isinstance(filled_raw, list) else []
+    filled_by_name: dict[object, dict[str, object]] = {}
+    for entry in cast("list[object]", filled_entries):
+        if isinstance(entry, dict):
+            filled_by_name[cast("dict[str, object]", entry).get("name")] = cast(
+                "dict[str, object]", entry
+            )
+    matched_names: set[object] = set()
     rebuilt: list[object] = []
-    for index, entry in enumerate(cast("list[object]", skeleton_vars)):
+    for entry in cast("list[object]", skeleton_vars):
         if not isinstance(entry, dict):
             rebuilt.append(entry)
             continue
         variable = dict(cast("dict[str, object]", entry))
-        filled_entry = (
-            cast("list[object]", filled_vars)[index]
-            if index < len(filled_vars)
-            else None
-        )
-        if isinstance(filled_entry, dict):
-            filled_var = cast("dict[str, object]", filled_entry)
+        name = variable.get("name")
+        filled_var = filled_by_name.get(name)
+        if filled_var is not None:
+            matched_names.add(name)
             description = _str_or_none(filled_var.get("description"))
             if description is not None and description != variable.get("description"):
                 variable["description"] = description
@@ -200,11 +246,16 @@ def _overlay_variables(
                 _drift_notes(
                     filled_var,
                     variable,
-                    ("name", "type", "min", "max", "initial"),
-                    f"variables[{index}]",
+                    ("type", "min", "max", "initial"),
+                    f"variable {name!r}",
                 )
             )
         rebuilt.append(variable)
+    notes.extend(
+        f"fill carries unknown variable {extra_name!r}; discarded"
+        for extra_name in filled_by_name
+        if extra_name not in matched_names
+    )
     return rebuilt
 
 
@@ -254,6 +305,31 @@ def normalize_filled_story(
                 "different graph would fabricate a book"
             ),
         )
+    # #CRITICAL: data-integrity: nodes are paired BY ID, and a fill whose id
+    # set does not exactly match the skeleton's is not normalized at all. A
+    # positional zip inverted prose against the frozen graph on a
+    # reordered-but-correct fill (each body and label landing on the wrong
+    # node while ids were "restored"), producing a structurally perfect
+    # document the gate cannot reject because the graph it validates is the
+    # skeleton's own by construction (PR #737 review, finding C2, reproduced
+    # by three reviewers). Missing, renamed, or duplicated ids make the
+    # pairing ambiguous, so those fills go to the gate as written.
+    # #VERIFY: test_normalize_fill.py::
+    # test_reordered_nodes_keep_their_prose_on_the_right_graph_positions and
+    # ::test_a_fill_with_renamed_node_ids_is_not_normalized.
+    skeleton_ids = [node.get("id") for node in skeleton_nodes]
+    filled_by_id: dict[object, dict[str, object]] = {
+        node.get("id"): node for node in filled_nodes
+    }
+    if len(filled_by_id) != len(filled_nodes) or set(filled_by_id) != set(skeleton_ids):
+        return NormalizedFill(
+            document=filled,
+            skipped_reason=(
+                "node ids do not align with the skeleton (missing, renamed, "
+                "or duplicated); pairing would be ambiguous, so the fill is "
+                "judged as written"
+            ),
+        )
 
     notes: list[str] = _story_level_notes(skeleton, filled)
     normalized: dict[str, object] = dict(skeleton)
@@ -264,10 +340,9 @@ def normalize_filled_story(
     normalized["variables"] = _overlay_variables(skeleton, filled, notes)
 
     rebuilt_nodes: list[object] = []
-    for skeleton_node, filled_node in zip(skeleton_nodes, filled_nodes, strict=True):
+    for skeleton_node in skeleton_nodes:
         node_id = skeleton_node.get("id")
-        if filled_node.get("id") != node_id:
-            notes.append(f"node id {filled_node.get('id')!r} restored to {node_id!r}")
+        filled_node = filled_by_id[node_id]
         node = dict(skeleton_node)
         body = _str_or_none(filled_node.get("body"))
         if body is not None:

@@ -68,6 +68,15 @@ read them in one sitting.
 - Do not repeat their imagery or their sentences. Consistent is not the same as repetitive: the world is shared, the wording is not.
 - If "Already Written" is empty, you are writing the opening batch and you are establishing those names yourself.
 
+## Narrative person
+
+`metadata.narrative_person` in the skeleton declares the grammatical person
+this book is told in (`"second"` addresses the reader as "you"; `"third"`
+follows a named protagonist). Write every passage in the declared person; do
+not drift between them, and do not diverge from the person the "Already
+Written" passages use. When the field is absent, follow the person the
+`beats=` directives use.
+
 ## Your Task
 
 Write final prose for every passage listed under "Passages To Write Now", and

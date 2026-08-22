@@ -370,7 +370,11 @@ def test_mirror_as_mock_preserves_the_family_layout() -> None:
     mirrored = _mirror_as_mock(slate)
 
     assert [v.lineage() for v in mirrored] == ["anth", "anth", "solo"]
-    assert {v.model for v in mirrored} == {"mock"}
+    # The declared models are KEPT (PR #737 review): the mock swap happens at
+    # the provider, and keeping the model lets the rehearsal resolve the same
+    # caps and context windows (and so the same chunked-path routing) as the
+    # paid run.
+    assert [v.model for v in mirrored] == ["m1", "m2", "m3"]
     assert all(v.provider_order == () for v in mirrored)
 
 

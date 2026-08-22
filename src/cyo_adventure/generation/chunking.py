@@ -456,6 +456,32 @@ def _merged_labels(
     return rebuilt
 
 
+def _apply_merged_ending(
+    merged: dict[str, object],
+    node: dict[str, object],
+    reply: dict[str, object],
+    node_id: str,
+) -> None:
+    """Set ``merged["ending"]`` from the reply when the node warrants one.
+
+    An explicit JSON null ``ending_title`` on a non-ending node must not mint
+    an ``"ending": None`` key the skeleton never carried (PR #737 review,
+    suggested findings); a node with no ending and no proposed title is left
+    untouched.
+
+    Args:
+        merged: The node being rebuilt, mutated in place.
+        node: The skeleton node.
+        reply: The reply entry for this node.
+        node_id: The node id, for error messages.
+    """
+    if "ending_title" not in reply and "ending" not in node:
+        return
+    merged_ending = _merged_ending(node, reply, node_id)
+    if merged_ending is not None or "ending" in node:
+        merged["ending"] = merged_ending
+
+
 def _merged_ending(
     node: dict[str, object], reply: dict[str, object], node_id: str
 ) -> object:
@@ -593,7 +619,6 @@ def merge_fill_batch(
         merged: dict[str, object] = {**node, "body": body}
         if "choices" in node:
             merged["choices"] = _merged_labels(node, node_reply, node_id)
-        if "ending_title" in node_reply or "ending" in node:
-            merged["ending"] = _merged_ending(node, node_reply, node_id)
+        _apply_merged_ending(merged, node, node_reply, node_id)
         rebuilt.append(merged)
     return {**document, "nodes": rebuilt}

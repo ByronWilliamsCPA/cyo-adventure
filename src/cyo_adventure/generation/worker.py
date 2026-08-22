@@ -1405,14 +1405,21 @@ def _should_persist_storybook(outcome: GenerationOutcome) -> bool:
     """Decide whether ``run_generation_job`` should persist ``outcome.storybook``.
 
     Always true for a clean ``"passed"`` outcome. Also true for a
-    ``"needs_review"`` outcome, but ONLY when the downgrade came from
-    :func:`~cyo_adventure.generation.orchestrator.fill_skeleton`'s own Stage 1
-    fidelity gate on an otherwise-clean fill: that function adds the
-    ``"stage1_fidelity_violations"`` key to ``outcome.report`` only when it
-    performs this specific downgrade (never for any other cause), so the
-    key's presence is an exact signal that the base outcome was clean before
-    Stage 1 touched it. This lets an admin reach the real story behind a
-    Stage-1-flagged fill instead of a job row pointing at nothing.
+    ``"needs_review"`` outcome, but ONLY when the downgrade came from one of
+    the two review-forcing gates that act on an otherwise-clean fill, each of
+    which stamps its own exact-signal key (present only when that gate
+    performed the downgrade, never for any other cause):
+
+    - ``"stage1_fidelity_violations"``, from ``fill_skeleton``'s Stage 1
+      fidelity gate; and
+    - ``"fill_rate_downgrade"``, from ``_with_fill_rate``'s story-level
+      fill-rate floor (ruling 9.3: the floor forces review, never a hard
+      block; without persistence the reviewer had no book to review, which
+      was stricter than a hard block; PR #737 review, finding C1).
+
+    Either key's presence is an exact signal that the base outcome was clean
+    before that gate touched it. This lets an admin reach the real story
+    behind a flagged fill instead of a job row pointing at nothing.
 
     Any OTHER ``"needs_review"`` (safety-flagged, or gate-blocked-with-doc
     after exhausting repairs -- both produced by
@@ -1432,9 +1439,12 @@ def _should_persist_storybook(outcome: GenerationOutcome) -> bool:
     """
     if outcome.storybook is None:
         return False
-    stage1_downgraded = "stage1_fidelity_violations" in outcome.report
+    clean_base_downgraded = (
+        "stage1_fidelity_violations" in outcome.report
+        or "fill_rate_downgrade" in outcome.report
+    )
     return outcome.status == "passed" or (
-        outcome.status == "needs_review" and stage1_downgraded
+        outcome.status == "needs_review" and clean_base_downgraded
     )
 
 

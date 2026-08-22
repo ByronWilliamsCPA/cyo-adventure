@@ -682,3 +682,48 @@ async def test_enqueue_over_quota_creates_no_job(
     with pytest.raises(StateTransitionError):
         await enqueue_concept_generation(concept_id, ctx, background)
     assert not any(isinstance(obj, GenerationJob) for obj in session.added)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_job_error_text_hidden_from_plain_guardian() -> None:
+    """A plain guardian sees a generic failure line, not the provider text.
+
+    PR #737 review, I14: ``job.error`` can carry an upstream ``error.message``
+    that quotes the flagged span of the rejected prompt, and returning it in
+    a 200 body bypassed the app-level error pruning entirely.
+    """
+    family_id = uuid.uuid4()
+    concept = Concept(family_id=family_id, brief=_VALID_BRIEF)
+    job = GenerationJob(concept_id=uuid.uuid4(), status="failed")
+    job.error = "upstream refused: flagged span 'quoted request content'"
+    session = _FakeSession(results={GenerationJob: job, Concept: concept})
+    ctx = RequestContext(
+        principal=_principal("guardian", family_id, uuid.uuid4(), is_admin=False),
+        session=session,
+    )
+
+    resp = await get_generation_job(str(uuid.uuid4()), ctx)
+
+    assert resp.error is not None
+    assert "quoted request content" not in resp.error
+    assert "admin" in resp.error
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_job_error_text_visible_to_admin() -> None:
+    """The raw diagnostic stays reachable for the operators it exists for."""
+    family_id = uuid.uuid4()
+    concept = Concept(family_id=family_id, brief=_VALID_BRIEF)
+    job = GenerationJob(concept_id=uuid.uuid4(), status="failed")
+    job.error = "upstream refused: finish_reason='content_filter'"
+    session = _FakeSession(results={GenerationJob: job, Concept: concept})
+    ctx = RequestContext(
+        principal=_principal("guardian", family_id, uuid.uuid4(), is_admin=True),
+        session=session,
+    )
+
+    resp = await get_generation_job(str(uuid.uuid4()), ctx)
+
+    assert resp.error == "upstream refused: finish_reason='content_filter'"

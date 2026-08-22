@@ -67,9 +67,18 @@ _ERROR_DETAIL_MAX_CHARS = 240
 # the repr form is deterministic.
 _CONTENT_FILTER_MARKER = "finish_reason='content_filter'"
 
-# Zero-content `content_filter` stops tolerated per prompt before the leg is
-# ended (`UW-C325` interim, ruled 2026-08-21): the measured third identical
-# attempt bought nothing.
+# Total zero-content `content_filter` stops allowed per prompt: the leg ends
+# ON the second stop, so exactly one identical retry is spent (`UW-C325`
+# interim, ruled 2026-08-21: cap identical retries at two attempts total,
+# because the measured third identical attempt bought nothing). An earlier
+# comment here read as "two stops tolerated BEFORE ending", one more than the
+# code performs (PR #737 review, informational).
+# #ASSUME: external-resources: the filter fires on the (skeleton, brief)
+# pair, not the transport, so retrying the identical prompt is spend without
+# information; the production re-anchoring flow lives above this adapter
+# (`UW-C325`).
+# #VERIFY: test_providers.py pins the leg ending on the second stop and a
+# one-stop-then-success rescue.
 _MAX_CONTENT_FILTER_STOPS = 2
 
 
@@ -80,6 +89,15 @@ def _error_detail(response: httpx.Response) -> str:
     ``error.metadata.raw`` payload's own ``error.message``, where the real
     upstream diagnostic lives), never the raw body, which can echo request
     content. Returns "" when no structured message exists.
+
+    # #ASSUME: security: even the structured ``error.message`` is upstream
+    # free text and can QUOTE the flagged span of the prompt it rejected, so
+    # this detail is operator material: it may reach logs, journals, and
+    # ``job.error``, and the API layer gates ``job.error`` on ``is_admin``
+    # before returning it to a guardian (PR #737 review, I14;
+    # ``api/generation.py::_error_for``).
+    # #VERIFY: test_generation_api_unit.py::
+    # test_job_error_text_hidden_from_plain_guardian.
 
     Args:
         response: The non-2xx HTTP response.
@@ -414,7 +432,7 @@ class OpenRouterProvider:
         # a client error cannot help.
         if status in {400, 404}:
             reason = "invalid request or unavailable model"
-            # A 400 carries the provider's own diagnostic (a context
+            # A 400 or 404 carries the provider's own diagnostic (a context
             # overflow, a parameter rejection), and flattening it cost a
             # debugging session: the 2026-08-21 chunked leg overflowed a
             # 163,840-token window by exactly one token and the only

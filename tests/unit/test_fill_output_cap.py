@@ -457,3 +457,45 @@ def test_the_module_imports_without_a_database_driver() -> None:
         "script and offline-mutation importers now need a database driver "
         f"installed to load a pure text helper. stdout={result.stdout!r}"
     )
+
+
+def test_a_pinned_variant_inherits_its_base_context_window() -> None:
+    """The window resolver normalizes suffixes exactly like the cap resolver.
+
+    PR #737 review, I16: a pinned (`:variant`) or dated slug resolved a CAP
+    through suffix normalization while the WINDOW came back None, and None
+    constrains nothing, restoring the unbounded-ask overflow `UW-C320` filed.
+    """
+    from cyo_adventure.generation.skeleton import resolve_context_window
+
+    base = resolve_context_window("deepseek/deepseek-v3.2")
+    assert base == 163_840
+    assert resolve_context_window("deepseek/deepseek-v3.2:free") == base
+    assert resolve_context_window("deepseek/deepseek-v3.2-0821") == base
+    assert resolve_context_window("vendor/unknown-model") is None
+    assert resolve_context_window(None) is None
+
+
+def test_duplicate_node_ids_do_not_pool_their_delivery() -> None:
+    """Only the first occurrence of a node id is credited (PR #737, I15).
+
+    Two filled nodes sharing one id previously summed their words against a
+    single commissioned target, so a fill leaving one empty still cleared
+    the floor; a duplicated id is the gate's rejection, not a passing rate.
+    """
+    from cyo_adventure.generation.skeleton import story_fill_rate
+
+    skeleton = {
+        "nodes": [
+            {"id": "dup", "body": "<<FILL role=setup words=10 beats='open'>>"},
+        ]
+    }
+    filled = {
+        "nodes": [
+            {"id": "dup", "body": "one two three four five"},
+            {"id": "dup", "body": "six seven eight nine ten"},
+        ]
+    }
+    rate = story_fill_rate(skeleton, filled)
+    assert rate is not None
+    assert rate == pytest.approx(0.5)

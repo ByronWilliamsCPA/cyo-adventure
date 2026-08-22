@@ -927,10 +927,12 @@ def _build_provider(
         )
     if max_tokens is not None:
         base = _CapOverrideProvider(inner=base, max_tokens=max_tokens)
-    if mock:
-        return base
     # Outermost, so `getattr(provider, "model", None)` sees it through every
     # inner wrapper; see _ModelStampedProvider for why the leg needs it at all.
+    # The MOCK path is stamped too (PR #737 review, suggested findings): the
+    # dry run's whole value is rehearsing the paid run's shape, and cap and
+    # context-window resolution key off the model, so an unstamped mock could
+    # no longer predict which skeletons take the chunked path.
     return _ModelStampedProvider(inner=base, model=vendor.model)
 
 
@@ -1881,7 +1883,10 @@ def _mirror_as_mock(vendors: list[Vendor]) -> list[Vendor]:
         replace(
             v,
             label=f"mock:{v.label}",
-            model="mock",
+            # The declared model is KEPT: the provider swap alone makes the leg
+            # free, and keeping the model lets the rehearsal resolve the same
+            # output caps and context windows the paid run will, so chunked-path
+            # routing is rehearsed too (PR #737 review, suggested findings).
             provider_order=(),
             family=v.lineage(),
         )

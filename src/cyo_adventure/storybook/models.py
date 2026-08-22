@@ -429,6 +429,35 @@ class StoryMetadata(BaseModel):
     # second person by convention; the checker in
     # ``scripts/check_prose_craft.py`` keys on this field.
     narrative_person: NarrativePerson | None = None
+
+    @model_validator(mode="after")
+    def _check_person_style_consistency(self) -> Self:
+        """Reject a third-person gamebook, which is a contract contradiction.
+
+        The gamebook genre addresses the reader ("you"), and the person
+        checker holds declared-third books to a second-person ceiling; a
+        representable ``gamebook`` + ``third`` combination therefore
+        inverted the gate against a correctly-written second-person gamebook
+        (PR #737 review, I10). Making the state unrepresentable is cheaper
+        than teaching every consumer the precedence.
+
+        Returns:
+            Self: The validated model.
+
+        Raises:
+            ValueError: If a gamebook declares third person.
+        """
+        if (
+            self.narrative_style is NarrativeStyle.GAMEBOOK
+            and self.narrative_person is NarrativePerson.THIRD
+        ):
+            msg = (
+                "narrative_style 'gamebook' cannot declare narrative_person "
+                "'third': gamebooks address the reader in second person"
+            )
+            raise ValueError(msg)
+        return self
+
     # A non-production MVP/Test skeleton exists for prototyping, pipeline and
     # integration testing, and generator development. When ``False`` the L1-7
     # node-count budget is the band-independent MVP envelope (not the band's
