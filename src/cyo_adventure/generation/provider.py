@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Final, Protocol
+from typing import TYPE_CHECKING, Final, Literal, Protocol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -28,6 +28,22 @@ from cyo_adventure.generation.usage import Completion, TokenUsage
 from cyo_adventure.utils.logging import get_logger
 
 logger = get_logger(__name__)
+
+# Which actor's request a generation job serves. Not a role: it is the
+# constraint that role implies on which billing account the job may reach.
+GenerationLane = Literal["family", "admin"]
+
+# #CRITICAL: security: the legs a kid- or guardian-triggered generation may
+# reach (D1, ruled 2026-08-23; UW-C346). The direct ``anthropic`` leg is absent
+# deliberately: routing family-triggered work through the operator's own
+# Anthropic account is outside that account's terms. This set is the only place
+# the rule is written down, and ``build_provider`` defaults to the lane it
+# constrains, so a new call site that says nothing is restricted, not exempt.
+# #VERIFY: tests/unit/test_provider_lane.py::
+# TestFamilyLaneRejectsTheDirectAnthropicLeg::test_the_restrictive_lane_is_the_default.
+_FAMILY_LANE_PROVIDERS: Final[frozenset[str]] = frozenset(
+    {"mock", "openrouter", "modal"}
+)
 
 # What MockProvider reports when a test does not inject its own usage: a call
 # that happened (so it is counted) but whose token cost is unknown, never zero.
@@ -528,6 +544,7 @@ def build_provider(
     *,
     provider_override: str | None = None,
     model_override: str | None = None,
+    lane: GenerationLane = "family",
 ) -> GenerationProvider:
     """Construct a :class:`GenerationProvider` from application settings.
 
@@ -572,14 +589,36 @@ def build_provider(
             ``authoring_metadata["model"]``), or ``None`` to use the
             resolved provider's default model from settings.
 
+        lane: Which actor's request this generation serves. ``"family"``
+            (the default, and the restrictive one) is any kid- or
+            guardian-triggered job and permits only the routed legs;
+            ``"admin"`` is out-of-band content generation an admin drives
+            and adds no constraint. Defaulting to the restrictive value is
+            deliberate: a call site that says nothing is restricted.
+
     Returns:
         A :class:`GenerationProvider` ready for injection into the worker.
 
     Raises:
-        ConfigurationError: For a resolved provider outside the known set, or
-            when a live provider's required credential is missing.
+        ConfigurationError: For a resolved provider outside the known set,
+            when a live provider's required credential is missing, or when
+            the resolved provider is not permitted on ``lane``.
     """
     provider = provider_override or settings.generation_provider
+
+    # #CRITICAL: security: enforced on the RESOLVED provider, so the override
+    # and the global default are both covered by one check, and enforced before
+    # any leg is constructed, so a rejected lane never builds a credentialled
+    # client. ``lane`` defaults to "family", which is the restricted lane.
+    # #VERIFY: tests/unit/test_provider_lane.py::
+    # TestFamilyLaneRejectsTheDirectAnthropicLeg.
+    if lane == "family" and provider not in _FAMILY_LANE_PROVIDERS:
+        msg = (
+            f"provider '{provider}' is not permitted on the 'family' generation "
+            "lane; a kid- or guardian-triggered job may use only "
+            f"{sorted(_FAMILY_LANE_PROVIDERS)}"
+        )
+        raise ConfigurationError(msg)
 
     if provider == "mock":
         # Queue enough copies for Stage A + Stage B + up to 3 repairs.

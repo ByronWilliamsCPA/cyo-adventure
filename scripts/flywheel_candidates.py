@@ -433,7 +433,9 @@ def _draft_best(catalog: Catalog, cell: Cell, best: _Survivor, model_id: str) ->
     # (it exhausts and raises); the run degrades to held with a clear stderr note
     # instead of a traceback, and still writes the held bundle.
     try:
-        provider = build_provider(settings, model_override=model_id)
+        # Offline admin harness, not the request path: the admin lane (D1,
+        # 2026-08-23, UW-C346) is what permits a direct-provider leg here.
+        provider = build_provider(settings, model_override=model_id, lane="admin")
         resolutions = asyncio.run(
             draft_resolutions(
                 best.chain.reguide,

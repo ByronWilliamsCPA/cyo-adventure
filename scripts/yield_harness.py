@@ -258,7 +258,9 @@ def _build_mock_factory() -> Callable[[], GenerationProvider]:
 
     def _factory() -> GenerationProvider:
         """Build a fresh MockProvider seeded with the canned story."""
-        return build_provider(_settings)
+        # Offline admin harness, not the request path: the admin lane (D1,
+        # 2026-08-23, UW-C346) is what permits a direct-provider leg here.
+        return build_provider(_settings, lane="admin")
 
     return _factory
 
@@ -399,7 +401,7 @@ def _build_live_factory(
 
     def _factory() -> GenerationProvider:
         """Build a fresh live provider from the resolved settings."""
-        return build_provider(settings)
+        return build_provider(settings, lane="admin")
 
     return _factory
 

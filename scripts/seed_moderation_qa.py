@@ -350,7 +350,9 @@ async def _moderate_new_books(session: AsyncSession, book_ids: list[str]) -> lis
         The ids whose moderation run raised and was rolled back, in the order
         they were attempted. Empty when every book succeeded.
     """
-    provider = build_provider(_default_settings)
+    # Offline admin harness, not the request path: the admin lane (D1,
+    # 2026-08-23, UW-C346) is what permits a direct-provider leg here.
+    provider = build_provider(_default_settings, lane="admin")
     pii = PiiContext(child_names=frozenset())
     failures: list[str] = []
     for book_id in book_ids:
