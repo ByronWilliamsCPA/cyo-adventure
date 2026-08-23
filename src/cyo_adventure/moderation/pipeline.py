@@ -27,6 +27,7 @@ from cyo_adventure.moderation.personalizable_slots import (
     PersonalizableSlotsUnset,
     personalizable_slot_ids_for_story,
 )
+from cyo_adventure.moderation.prose_craft import findings_from_prose_craft
 from cyo_adventure.moderation.repair import attempt_repair
 from cyo_adventure.moderation.report import (
     Finding,
@@ -399,6 +400,14 @@ async def run_moderation_pipeline(
         session=session, storybook=storybook, version_row=version_row, report=report
     )
 
+    # Advisory prose-craft guard (UW-C313, UW-C328): deterministic, local, and
+    # ADVISORY only, so unlike the ATG above it adds no repair targets and
+    # cannot move routing. Placed beside the ATG because both are gated on the
+    # same "routing not already decided" condition, not because they share a
+    # verdict class; see moderation/prose_craft.py for why a FLAG would be
+    # wrong here.
+    _apply_prose_craft_findings(version_row=version_row, report=report)
+
     # Soft gate: one bounded auto-repair, then re-moderate once.
     # #ASSUME: data-integrity: `personalizable_slots is not None` is, in
     # practice, always true here: a `None` resolution already added a
@@ -706,6 +715,27 @@ async def _apply_leaf_diversity_findings(
     for finding in await run_leaf_diversity_check(
         session=session, storybook=storybook, version_row=version_row
     ):
+        report.add(finding)
+
+
+def _apply_prose_craft_findings(
+    *,
+    version_row: StorybookVersion,
+    report: ModerationReport,
+) -> None:
+    """Append the prose-craft advisories to ``report``, if any.
+
+    Skipped once a hard block has decided routing, for a different reason than
+    the ATG's: these findings never gate, so their only value is being read by
+    the human approver an auto-rejected book will never reach.
+
+    Args:
+        version_row: The persisted version under moderation, read for its blob.
+        report: The accumulating report; findings are added in place.
+    """
+    if report.has_hard_block:
+        return
+    for finding in findings_from_prose_craft(version_row.blob):
         report.add(finding)
 
 
