@@ -26,6 +26,7 @@ from cyo_adventure.storybook.models import (
     Variable,
     VariableType,
 )
+from cyo_adventure.storybook.sentinels import find_sentinels
 from cyo_adventure.validator.report import Severity, ValidationReport
 from cyo_adventure.validator.series import (
     SERIES_MAX_SHARED_RUN_COVERAGE,
@@ -1257,6 +1258,47 @@ def test_the_fifteen_word_bound_sits_in_an_empty_gap_in_the_corpus() -> None:
     # neither edge of the gap is within rounding distance of the constant.
     assert SERIES_MAX_SHARED_RUN_WORDS / control.longest >= 1.8
     assert defect.longest / SERIES_MAX_SHARED_RUN_WORDS >= 6.5
+
+
+@pytest.mark.unit
+def test_sr10_measures_prose_that_carries_no_sentinels_yet() -> None:
+    """Tripwire on a latent inflation SR-10 cannot currently see.
+
+    `storybook_text` routes through `diversity.grams.story_text`, which does
+    NOT call `strip_sentinels`. A sentinel is `{~SLOTID:GenericWord~}` and
+    survives verbatim through fill, moderation, approval and storage by
+    design (ADR-023), so once that work is flag-ON a published body can carry
+    them. The grams tokenizer lowercases and splits on `[a-z']+`, so
+    `{~HERO:Explorer~}` contributes the tokens `hero` and `explorer`, and the
+    slot id half is IDENTICAL in every book that binds that slot. Two books
+    of one chain would then share tokens they do not share as prose, which
+    inflates runs and can bridge two otherwise-separate short runs into one
+    long one, in the direction of a false SR-10 ERROR.
+
+    This is latent, not live: every committed fill measures clean today, so
+    stripping would be a no-op and the rule is not currently wrong. It is
+    left unfixed on purpose, because the fix is a choice between two stated
+    invariants and not a mechanical edit: `grams.py` declares itself a pure
+    stdlib-only module, so it cannot import `storybook.sentinels`, while
+    stripping in `normalize.storybook_text` instead would give the series
+    validator a different definition of "a fill's prose" from the one the
+    request-path advisory uses, which is exactly the drift `AL-563` was
+    written about. Recorded as an open residual on `UW-C341`.
+
+    This test fails the moment a committed fill starts carrying sentinels,
+    which is the moment that decision has to be made rather than discovered.
+    """
+    for name in ("the-harrowstone-keep", "the-sunken-temple"):
+        text = _fill_text(name)
+        assert find_sentinels(text) == [], (
+            f"{name} now carries sentinels in the text SR-10 measures; the "
+            f"strip-or-not decision on UW-C341 is due"
+        )
+
+    # Pin the behaviour itself, so the tripwire cannot pass because someone
+    # quietly started stripping and the corpus question became moot.
+    bound = _prose_book(book_index=1, body="the {~HERO:Explorer~} walked north")
+    assert "{~HERO:Explorer~}" in storybook_text(bound, include_choice_labels=False)
 
 
 @pytest.mark.unit
