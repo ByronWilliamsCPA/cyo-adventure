@@ -23,8 +23,8 @@ branch `feat/step3-safety-approval-measurement`: R-11's gate-entry event and
 measurements are registered as `S-6` and `S-7` in the
 [diversity test register](./diversity-test-register.md) with their falsifiers fixed before either
 ran. NEITHER MEASUREMENT HAS RUN: S-6 waits on the `submitted` migration reaching an environment and
-accumulating enough rounds to pass its validity gate, and S-7 waits on an owner spend decision for
-the live review model. No result from either may be quoted until its artifact is committed. Steps 4
+accumulating enough rounds to pass its validity gate, and S-7's first measurement is the next scheduled
+`safety-eval.yml` run after this merges (see the correction under Step 3). No result from either may be quoted until its artifact is committed. Steps 4
 to 7 not started. This plan
 gives a phase home to the 14 critical and high findings, the five condensed medium and low bundles,
 and the seven-step sequence produced by the thirteen-agent review of the 2026-08-22 generation
@@ -193,6 +193,24 @@ D1 but not gated by it. "Not the model that wrote it" is correct under any fill 
 | R-6 | Adversarial safety harness per band, including 13-16 and 16+, registered with `S`-row discipline. The review's finding is that safety measurement lags quality measurement by an order of magnitude; this is the cheapest way to close the gap. Note the F2 correction: the safety seam runs but its body is a Phase-2 no-op, so `safety_flagged` is structurally always `False`. The harness must not treat that field as a signal. |
 | R-11 | Log approval duration and send-backs. The human gate is currently the least measured stage in the pipeline. |
 | Directive delta | Re-run at production `TREE` settings rather than the pilot settings. |
+
+**Correction (2026-08-23) to this step's "small spend" framing.** R-6 needs no spend
+decision and no new run to be commissioned. `.github/workflows/safety-eval.yml` has
+run the adversarial corpus against live classifiers every Sunday at 04:00 UTC since
+at least 2026-07-26 on existing repo secrets, gating on the acceptance thresholds in
+`tests/llm_eval/test_adversarial_safety_eval.py`. It picks up whatever the corpus
+contains, so extending the corpus IS commissioning the measurement; the marginal
+cost is a handful of extra calls inside a job that already runs. What those green
+runs never covered is the point: with no items at `13-16` or `16+`, every one of
+them measured four of the six bands, so "the safety eval is green" was never the
+same claim as "the gate holds at every band".
+
+A second constraint this step must respect, learned from the gate rather than the
+doc: `classify_item` scores an `expected_min_verdict` of `block` as MISSED when the
+pipeline merely FLAGS, and a class-A miss is a hard assertion. Setting an
+expectation above the documented route-to-human threshold turns a safe outcome into
+a red weekly run and a filed tracking issue, so a predicted bright-line block
+belongs in the item's rationale and the archived results, never in its expectation.
 
 **Acceptance:** each measurement is registered as an `S`-row with its falsifier declared before it
 runs, and its artifact is committed. No result is reported that the register does not carry, and no
