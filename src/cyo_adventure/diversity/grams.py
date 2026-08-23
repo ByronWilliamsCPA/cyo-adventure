@@ -17,8 +17,15 @@ measures the tree; only ``include_choice_labels=False`` measures the fill.
 The offline script keeps labels because its question is the whole recognition
 surface a reader sees, which is a different question.
 
-Pure module: stdlib only, in keeping with the rest of ``diversity``. Never
-imports ``db``, ``generation``, or ``sqlalchemy``.
+**Dependency rule: never imports ``db``, ``generation``, or ``sqlalchemy``**,
+so the offline scripts and the request path both reach it without dragging in
+a database session. This module previously claimed to be stdlib-only; that was
+never true in practice, because importing anything under ``cyo_adventure``
+already executes the package ``__init__`` and loads pydantic with it (790
+modules before this module's own imports are considered). The single
+first-party import here is ``storybook.sentinels``, itself confined to ``re``,
+``typing`` and ``core.exceptions``, and so reaching none of the three banned
+packages; measured marginal cost 4.9ms against a 361ms baseline (2026-08-23).
 """
 
 from __future__ import annotations
@@ -27,6 +34,8 @@ import math
 import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, cast
+
+from cyo_adventure.storybook.sentinels import strip_sentinels
 
 if TYPE_CHECKING:
     from collections.abc import Iterator, Mapping
@@ -197,8 +206,23 @@ def story_text(story: Mapping[str, Any], *, include_choice_labels: bool) -> str:
             identical across siblings); True to reproduce the offline
             script's whole-recognition-surface measure.
 
+    #ASSUME: data-integrity: sentinels are stripped to their inner generic word
+    before any caller measures this text. A sentinel is ``{~SLOTID:Generic~}``
+    (ADR-023) and survives verbatim through fill, moderation, approval and
+    storage by design, so a published body can carry them once that work is
+    flag-ON. The tokenizer lowercases and splits on ``[a-z']+``, so an unstripped
+    ``{~HERO:Explorer~}`` yields the tokens ``hero`` AND ``explorer``, and the
+    slot-id half is identical in every book binding that slot. That adds one
+    spurious shared token per sentinel inside a shared run, which can only
+    lengthen a run, never shorten it, so SR-10 in ``validator/series.py`` would
+    err toward a FALSE block. Stripping HERE rather than in
+    ``normalize.storybook_text`` keeps one definition of a fill's prose across
+    the blob path and the parsed-model path, which is the `AL-563` drift.
+    #VERIFY: tests/unit/test_diversity_grams.py::test_story_text_strips_sentinels_to_their_generic_word
+
     Returns:
-        Body prose, plus choice labels when requested, space-joined.
+        Body prose, plus choice labels when requested, space-joined, with
+        every sentinel replaced by its inner generic word.
     """
     raw_nodes = story.get("nodes")
     if not isinstance(raw_nodes, list):
@@ -219,7 +243,7 @@ def story_text(story: Mapping[str, Any], *, include_choice_labels: bool) -> str:
             for choice in cast("list[object]", raw_choices)
             if isinstance(choice, dict)
         )
-    return " ".join(parts)
+    return strip_sentinels(" ".join(parts))
 
 
 DEFAULT_MIN_RUN = 15

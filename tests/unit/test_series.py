@@ -1261,44 +1261,69 @@ def test_the_fifteen_word_bound_sits_in_an_empty_gap_in_the_corpus() -> None:
 
 
 @pytest.mark.unit
-def test_sr10_measures_prose_that_carries_no_sentinels_yet() -> None:
-    """Tripwire on a latent inflation SR-10 cannot currently see.
+def test_sr10_measures_sentinel_stripped_prose() -> None:
+    """A chain is not blocked by slot ids the reader never sees.
 
-    `storybook_text` routes through `diversity.grams.story_text`, which does
-    NOT call `strip_sentinels`. A sentinel is `{~SLOTID:GenericWord~}` and
-    survives verbatim through fill, moderation, approval and storage by
-    design (ADR-023), so once that work is flag-ON a published body can carry
-    them. The grams tokenizer lowercases and splits on `[a-z']+`, so
-    `{~HERO:Explorer~}` contributes the tokens `hero` and `explorer`, and the
-    slot id half is IDENTICAL in every book that binds that slot. Two books
-    of one chain would then share tokens they do not share as prose, which
-    inflates runs and can bridge two otherwise-separate short runs into one
-    long one, in the direction of a false SR-10 ERROR.
+    An ADR-023 sentinel is `{~SLOTID:Generic~}` and survives verbatim through
+    fill, moderation, approval and storage by design, so a published body can
+    carry them once that work is flag-ON. The grams tokenizer lowercases and
+    splits on `[a-z']+`, so an UNSTRIPPED `{~HERO:Explorer~}` yields both
+    `hero` and `explorer`, and the slot-id half is identical in every book that
+    binds that slot. Each sentinel inside a shared run therefore adds one
+    spurious shared token, which can only lengthen a run and never shorten it,
+    so the error is always a FALSE block on a legitimate chain.
 
-    This is latent, not live: every committed fill measures clean today, so
-    stripping would be a no-op and the rule is not currently wrong. It is
-    left unfixed on purpose, because the fix is a choice between two stated
-    invariants and not a mechanical edit: `grams.py` declares itself a pure
-    stdlib-only module, so it cannot import `storybook.sentinels`, while
-    stripping in `normalize.storybook_text` instead would give the series
-    validator a different definition of "a fill's prose" from the one the
-    request-path advisory uses, which is exactly the drift `AL-563` was
-    written about. Recorded as an open residual on `UW-C341`.
-
-    This test fails the moment a committed fill starts carrying sentinels,
-    which is the moment that decision has to be made rather than discovered.
+    `story_text` strips, which is what makes this chain pass. Twelve shared
+    words plus two sentinels measures 14 stripped and 16 unstripped, so the
+    bound (15, inclusive) falls between the two verdicts and this test fails if
+    the strip is removed. Stripping there rather than in `storybook_text` is
+    what keeps one definition of a fill's prose across the blob path and the
+    parsed-model path, which is the `AL-563` drift.
     """
     for name in ("the-harrowstone-keep", "the-sunken-temple"):
-        text = _fill_text(name)
-        assert find_sentinels(text) == [], (
-            f"{name} now carries sentinels in the text SR-10 measures; the "
-            f"strip-or-not decision on UW-C341 is due"
+        assert find_sentinels(_fill_text(name)) == [], (
+            f"{name} now carries sentinels; SR-10's calibration figures were "
+            f"measured on sentinel-free prose and need a recheck"
         )
 
-    # Pin the behaviour itself, so the tripwire cannot pass because someone
-    # quietly started stripping and the corpus question became moot.
     bound = _prose_book(book_index=1, body="the {~HERO:Explorer~} walked north")
-    assert "{~HERO:Explorer~}" in storybook_text(bound, include_choice_labels=False)
+    text = storybook_text(bound, include_choice_labels=False)
+    assert "{~HERO:Explorer~}" not in text
+    assert "Explorer" in text
+
+    shared = _distinct("shared", 12).split()
+    for offset, index in enumerate((4, 8)):
+        shared.insert(index + offset, "{~HERO:Explorer~}")
+    run = " ".join(shared)
+    filler_a, filler_b = _distinct("a", 1000), _distinct("b", 1000)
+
+    report = validate_series(
+        [
+            _prose_book(book_index=1, body=f"{run} {filler_a}"),
+            _prose_book(
+                book_index=2, body=f"{run} {filler_b}", entry="n0", is_final=True
+            ),
+        ]
+    )
+    assert _sr10(report) == []
+    assert report.ok, [f.message for f in report.findings]
+
+    # The bound really does sit between the two measurements, so the assertion
+    # above is load-bearing rather than passing for an unrelated reason.
+    stripped = shared_run_profile(
+        storybook_text(
+            _prose_book(book_index=1, body=f"{run} {filler_a}"),
+            include_choice_labels=False,
+        ),
+        storybook_text(
+            _prose_book(
+                book_index=2, body=f"{run} {filler_b}", entry="n0", is_final=True
+            ),
+            include_choice_labels=False,
+        ),
+    )
+    unstripped = shared_run_profile(f"{run} {filler_a}", f"{run} {filler_b}")
+    assert stripped.longest <= SERIES_MAX_SHARED_RUN_WORDS < unstripped.longest
 
 
 @pytest.mark.unit

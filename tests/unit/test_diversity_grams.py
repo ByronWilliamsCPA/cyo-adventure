@@ -389,3 +389,72 @@ def test_story_text_degrades_malformed_shapes_to_no_text() -> None:
     )
     assert overlap.shared == 0
     assert overlap.per_1000 == 0.0
+
+
+@pytest.mark.unit
+def test_story_text_strips_sentinels_to_their_generic_word() -> None:
+    """A sentinel contributes its generic word only, never its slot id.
+
+    An ADR-023 sentinel is ``{~SLOTID:Generic~}`` and survives verbatim through
+    fill, moderation, approval and storage by design, so a published body can
+    carry them once that work is flag-ON. The tokenizer lowercases and splits
+    on ``[a-z']+``, so an unstripped ``{~HERO:Explorer~}`` yields BOTH ``hero``
+    and ``explorer``, and the slot-id half is identical in every book that
+    binds that slot. Two books of one chain would then share tokens they do not
+    share as prose.
+
+    The bias is one-directional: each sentinel inside a shared run adds exactly
+    one spurious shared token, which can only lengthen a run, never shorten it.
+    So SR-10 in ``validator/series.py`` errs toward a FALSE block, blocking a
+    legitimate chain rather than admitting a copied one. The second half of
+    this test pins that consequence, not just the string rewrite, so deleting
+    the strip fails here and not only on a cosmetic assertion.
+    """
+    one = {"nodes": [{"body": "the {~HERO:Explorer~} walked north"}]}
+    assert story_text(one, include_choice_labels=False) == "the Explorer walked north"
+    assert "hero" not in tokenize(story_text(one, include_choice_labels=False))
+
+    # Choice labels take the same path, so they cannot reintroduce slot ids.
+    labelled: Any = {
+        "nodes": [{"body": "b", "choices": [{"label": "follow {~FOE:Shadow~}"}]}]
+    }
+    assert "{~FOE:Shadow~}" not in story_text(labelled, include_choice_labels=True)
+    assert "foe" not in tokenize(story_text(labelled, include_choice_labels=True))
+
+    # The consequence the strip exists for. Twelve shared real words sits under
+    # DEFAULT_MIN_RUN; two sentinels inside that run would push the unstripped
+    # measurement over it, which is a false SR-10 ERROR on a chain that shares
+    # no more prose than the bound already permits.
+    shared = [
+        "lantern",
+        "swung",
+        "harbor",
+        "gulls",
+        "circled",
+        "grey",
+        "stone",
+        "tower",
+        "dusk",
+        "rope",
+        "salt",
+        "gull",
+    ]
+    n_sentinels = 2
+    with_slots = list(shared)
+    for offset, index in enumerate((4, 8)):
+        with_slots.insert(index + offset, "{~HERO:Explorer~}")
+    run = " ".join(with_slots)
+    left = {"nodes": [{"body": f"alpha beta gamma {run} delta epsilon"}]}
+    right = {"nodes": [{"body": f"eta theta iota {run} kappa mu"}]}
+
+    stripped = shared_run_profile(
+        story_text(left, include_choice_labels=False),
+        story_text(right, include_choice_labels=False),
+    )
+    unstripped = shared_run_profile(
+        str(left["nodes"][0]["body"]), str(right["nodes"][0]["body"])
+    )
+
+    assert stripped.longest == len(shared) + n_sentinels
+    assert unstripped.longest == stripped.longest + n_sentinels
+    assert stripped.longest <= DEFAULT_MIN_RUN < unstripped.longest

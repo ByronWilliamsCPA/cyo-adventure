@@ -426,25 +426,14 @@ def storybook_text(book: Storybook, *, include_choice_labels: bool) -> str:
             fill-quality questions, since a shared skeleton supplies identical
             labels to every fill.
 
-    #EDGE: data-integrity: the returned text is NOT sentinel-stripped, because
-    ``story_text`` is the blob path's one definition of a fill's prose and
-    ``grams.py`` is a pure stdlib-only module that cannot import
-    ``storybook.sentinels``. A sentinel (``{~SLOTID:GenericWord~}``, ADR-023)
-    survives verbatim through fill, moderation, approval and storage by
-    design, and the grams tokenizer splits it into ``slotid`` plus its generic
-    word, so the slot-id half is identical in every book binding that slot.
-    Once ADR-023 is flag-ON that inflates SR-10's shared runs between books of
-    one chain, in the direction of a FALSE block. It is a no-op today: every
-    committed fill measures clean. Stripping here rather than in
-    ``story_text`` would give the series validator a different definition of
-    a fill's prose from the request-path advisory, which is the `AL-563`
-    drift, so this is an owner decision recorded on `UW-C341`, not an
-    oversight.
-    #VERIFY: tests/unit/test_series.py::
-    test_sr10_measures_prose_that_carries_no_sentinels_yet
+    The returned text IS sentinel-stripped, because ``story_text`` strips; see
+    its ``#ASSUME`` block for why an unstripped ``{~SLOTID:Generic~}`` (ADR-023)
+    would bias SR-10 toward a false block. Stripping there rather than here is
+    what keeps one definition of a fill's prose across both paths (`AL-563`).
 
     Returns:
-        The book's body prose, plus choice labels when requested.
+        The book's body prose, plus choice labels when requested, with every
+        sentinel replaced by its inner generic word.
     """
     return story_text(
         book.model_dump(mode="python"), include_choice_labels=include_choice_labels
