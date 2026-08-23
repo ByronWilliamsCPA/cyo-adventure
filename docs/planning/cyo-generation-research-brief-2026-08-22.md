@@ -14,6 +14,22 @@ selection matters.
 > claim below names its class and its artifact. Where a passage is labelled **owner practice**, it
 > is none of the three: it records what the owner currently does, carries no measurement behind it,
 > and must not be read as evidence that the practice is right.
+>
+> Stated plainly, because a reader assumes it rather than checking it: **every rater in this
+> programme to date is an LLM session, and no child has read any book produced by it.** Nothing
+> below rests on child response data, because none exists. "Model-judged" is the whole of the
+> perceptual evidence base, and "human-gated" means an adult approved a book for publication, not
+> that a reader reacted to it.
+
+> **Three `S` namespaces collide in this document set; they are unrelated.** `S0`-`S9` (no hyphen,
+> from the [2026-08-10 brief](./cyo-generation-research-brief-2026-08-10.md) section 4) are the ten
+> *design-history levers*, the diversity designs tried and mostly refuted. `S0`/`S2`/`S3` (no
+> hyphen, from [skeleton-sourcing-test-plan-2026-08-21.md](./skeleton-sourcing-test-plan-2026-08-21.md)
+> section table) are the three *sourcing arms*: full reuse, stratified reuse, full bespoke. `S-0`
+> through `S-5` (hyphenated, in the [diversity test register](./diversity-test-register.md)) are
+> *register rows* holding the pre-registrations for this programme's experiments. The hyphen is the
+> only typographic tell between the second and third, so cite the register rows hyphenated and
+> always name the namespace on first use in a passage.
 
 ---
 
@@ -135,8 +151,11 @@ gates and review sit between the fill and the human who approves publication.
   strict checker against its own draft until it passes. Section 4.2 is the controlled measurement
   of exactly this regime.
 - **Offline accelerators.** `scripts/mutate_skeleton.py` (ADR-020) mutates existing skeletons
-  under an acceptance battery; `scripts/parameterize_skeleton.py` lifts a skeleton into a theme
-  contract for per-request binding. Both are catalog-time tools, never in the request path.
+  under an acceptance battery; `scripts/parameterize_skeleton.py` applies an agent-authored
+  slotting plan to a pristine skeleton (beats, ending titles, choice labels) and enforces that the
+  result is structurally identical to its input; it does not emit the theme contract, which is
+  authored separately and bound per request. Both are catalog-time tools, never in the request
+  path.
 - **Promotion.** A skeleton enters `skeletons/<band>/` only through a reviewed pull request; CI
   re-proves every changed skeleton from scratch (`.github/workflows/skeleton-promotion.yml`).
 
@@ -172,13 +191,15 @@ author, not by CI.
 ### 3.3 Story development
 
 - **Selection.** `generation/skeleton_match.py` matches the request's cell, filters to
-  production-eligible skeletons, and picks with recency weighting so a family sees the least
-  recently used armature; admin override exists but warns.
+  production-eligible skeletons, and draws one at random with inverse-frequency weights
+  (`1 / (1 + recent_count)`), so the draw is *weighted toward* the family's least recently used
+  armature rather than guaranteeing it: a weight strictly decreases with recent use but never
+  reaches zero, so a recently seen skeleton can still be drawn. Admin override exists but warns.
 - **Binding.** Theme contracts bind per-request settings, casts, and props
   (`scripts/bind_theme.py`); the differentiation directive
   (`build_differentiation_directive`) instructs the fill away from sibling books.
 - **Fill.** `generation/orchestrator.py::fill_skeleton` drives a staged fill through pluggable
-  providers (Anthropic, OpenRouter, Modal, Ollama), with chunked fills for large books, completion
+  providers (Anthropic, OpenRouter, Modal), with chunked fills for large books, completion
   caps sized per model, and bounded repair attempts. Every call is metered
   (`generation/usage.py`); cost accounting is response-level where the provider reports it.
 

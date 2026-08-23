@@ -18,6 +18,11 @@ component: Development-Tools
 > **Gates**: `ruff check`, `ruff format --check`, `basedpyright src/` (0 errors), `bandit`,
 > `check_rad_citations.py`, `check_lessons_log.py`, `check_work_linkage.py` all clean
 
+> **Catalog counts are dated.** Every skeleton, node and choice count below was measured on 2026-08-15,
+> when the catalog held 61 skeletons; on 2026-08-23 it holds 84 skeletons and 15,470 nodes
+> ([catalog census](./catalog-census.md), `UW-G24`). They are left as measured, because each one records
+> what a procedure returned on that date rather than describing the catalog today.
+
 ## Read this first: the ledger ids moved
 
 **The merge is done.** The 155 conflict hunks across 25 files are resolved in `42946a8` and the

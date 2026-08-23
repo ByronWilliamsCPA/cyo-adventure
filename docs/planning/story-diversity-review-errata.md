@@ -38,7 +38,8 @@ source: "Seven parallel adversarial reviewers (funnel proxy, path-mass model, tw
 The measurements were sound; the inferences drawn from them largely were not.
 
 Every quantitative claim across the three documents was independently re-derived, and essentially all of it
-reproduced: 61 skeletons / 58 production-eligible, 132 curated themes with zero overlap against the tag map's
+reproduced as at 2026-07-26 (catalog counts have moved since; see
+[catalog-census.md](./catalog-census.md) and `UW-G24`): 61 skeletons / 58 production-eligible, 132 curated themes with zero overlap against the tag map's
 12 values, the 0.333 Jaccard and the vocabulary asymmetry behind it, 1,778 gamebook endings splitting
 104 / 73 / 1, the shallow-tail tables at 25 / 33 / 50 percent, no `min_endings` breach once scoped to
 foreclosing terminals, and the count-versus-mass decoupling (confirmed strongly, under four independent reader

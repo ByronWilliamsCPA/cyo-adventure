@@ -207,7 +207,9 @@ So decision 2's "It stamps newly-published blobs with the current version" and d
 converse ("A story only carries a new field if it was published... at the minor that defines it")
 are both unenforced today; they hold only because no minor beyond `0` has ever existed. The
 concrete open question for the next minor bump: after `SCHEMA_MINOR = 1`, what stamps a document
-`2.1`, given 61 skeletons hardcode `"2.0"`, the Stage-A prompt pins nothing, and nothing in `src/`
+`2.1`, given that every skeleton hardcodes `"2.0"` (61 of them when this was measured on 2026-08-06;
+current totals in [catalog-census.md](../catalog-census.md), `UW-G24`), the Stage-A prompt pins nothing,
+and nothing in `src/`
 rewrites the field? Recorded rather than fixed here, since fixing every producer was out of scope
 for this branch; see `UW-A45` in `unscheduled-work-register.md`.
 

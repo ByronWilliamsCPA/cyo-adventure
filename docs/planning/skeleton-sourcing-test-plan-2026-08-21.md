@@ -30,6 +30,11 @@ a result exists voids that experiment's pre-registration.
 
 ---
 
+> **Catalog counts are dated.** Every skeleton, node and choice count below was measured on 2026-08-21,
+> when the catalog held 61 skeletons; on 2026-08-23 it holds 84 skeletons and 15,470 nodes
+> ([catalog census](./catalog-census.md), `UW-G24`). They are left as measured, because each one records
+> what a procedure returned on that date rather than describing the catalog today.
+
 ## 1. What "better results" has to mean
 
 A sourcing architecture is not judged on one axis. The arms below are scored on all five, because the

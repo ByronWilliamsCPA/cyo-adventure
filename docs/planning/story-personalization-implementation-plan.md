@@ -1276,7 +1276,8 @@ Per ADR-023 section 6: existing catalog content is test and development material
 child-linked production data, so there is no backward-compatibility obligation.
 
 - **Replace by default.** Regenerate stories onto the new sentinel-tagged standard. The volume is
-  small (61 skeletons, 45 with contracts) and it is test content.
+  small (61 skeletons, 45 with contracts as at 2026-07-25; current totals in
+  [catalog-census.md](./catalog-census.md), `UW-G24`) and it is test content.
 - **Repair only where a specific story is expensive to reproduce.** Repair here means a
   purpose-built reprocessing pass, not `moderation/repair.py::attempt_repair`, which is a narrow
   soft-gate re-prompt that "only produces the candidate revision; it does not decide whether to

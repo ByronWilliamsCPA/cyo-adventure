@@ -13,6 +13,11 @@
 > identity. Grounded in a code survey of the current generation and validation surface;
 > file:line citations below are from that survey.
 
+> **Catalog counts are dated.** Every skeleton, node and choice count below was measured on 2026-08-09,
+> when the catalog held 61 skeletons; on 2026-08-23 it holds 84 skeletons and 15,470 nodes
+> ([catalog census](./catalog-census.md), `UW-G24`). They are left as measured, because each one records
+> what a procedure returned on that date rather than describing the catalog today.
+
 ## 1. Why revisit this now
 
 The skeleton exists because of an early finding: given only a story-concept prompt, the

@@ -24,6 +24,11 @@ validator proves the book safe across exactly that range before it can be publis
 
 ---
 
+> **Catalog counts are dated.** Every skeleton, node and contract count below was measured on 2026-08-05,
+> when the catalog held 61 skeletons; on 2026-08-23 it holds 84 shells and 15,470 nodes
+> (`docs/planning/catalog-census.md`, `UW-G24`). They are left as measured, because each records what a
+> procedure returned on that date rather than describing the catalog today.
+
 ## 1. Provenance
 
 The open item is **SQ-22 / owner gate OG5** ("Pathfinder Phase 0 go/no-go"), recorded in
