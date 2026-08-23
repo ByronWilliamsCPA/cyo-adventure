@@ -1413,9 +1413,9 @@ def test_a_needs_review_from_another_cause_still_does_not_persist() -> None:
 def test_the_stage1_fidelity_downgrade_still_persists() -> None:
     """The original clean-downgrade signal keeps working after the widening.
 
-    `stage1_fidelity_violations` was the sole persist signal before the
-    fill-rate floor existed. An `any(...)` over a key tuple is easy to get
-    wrong in a way that only breaks one member, so both are asserted.
+    The fill-rate floor arrived second, so the older Stage 1 cause is the one
+    at risk of being dropped when the signalling changes; each cause is
+    therefore asserted on its own.
     """
     outcome = GenerationOutcome(
         status="needs_review",
@@ -1423,6 +1423,7 @@ def test_the_stage1_fidelity_downgrade_still_persists() -> None:
         report={"stage1_fidelity_violations": ["node n1 missed its beat"]},
         attempts=0,
         stage_log=[],
+        clean_downgrade=True,
     )
 
     assert _should_persist_storybook(outcome) is True

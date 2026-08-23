@@ -25,6 +25,7 @@ import pytest
 
 from cyo_adventure.db.models import Storybook as DbStorybook
 from cyo_adventure.db.models import StorybookVersion as DbStorybookVersion
+from cyo_adventure.diversity.grams import pairwise_overlap
 from cyo_adventure.diversity.history import HistoryEntry
 from cyo_adventure.diversity.normalize import coerce_storybook
 from cyo_adventure.diversity.panel import make_noun_swap_variant
@@ -34,7 +35,12 @@ from cyo_adventure.moderation.leaf_diversity import (
     findings_from_anti_template,
     run_leaf_diversity_check,
 )
-from cyo_adventure.moderation.report import ModerationReport, Source, Verdict
+from cyo_adventure.moderation.report import (
+    Finding,
+    ModerationReport,
+    Source,
+    Verdict,
+)
 
 _FILLS_DIR = Path("tests/data/diversity_panel/fills")
 _CAVE_SPACE_PATH = _FILLS_DIR / "the-cave-of-echoes.space-station.filled.json"
@@ -428,11 +434,20 @@ async def test_current_blob_invalid_is_noop(monkeypatch: pytest.MonkeyPatch) -> 
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_structure_drift_is_noop(monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_structure_drift_skips_the_anti_template_guard(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """A partner whose graph shape differs (skeleton revised between fills)
     exits at the fingerprint pre-check rather than reaching
     anti_template_verdict's raise (design doc section 3.2, "pre-check vs
-    catch-the-raise")."""
+    catch-the-raise").
+
+    Only the ATG is skipped. The partner here is a verbatim copy of the
+    current fill with one choice retargeted, so the position-independent
+    sibling-gram channel still reports; asserting an empty list would assert
+    that a structural edit launders a copied fill, which is the opposite of
+    what this module should do.
+    """
     storybook = _db_storybook(story_id="s2")
     current_raw = _load_blob(_CAVE_SPACE_PATH)
     version_row = _db_version(current_raw, story_id="s2")
@@ -459,7 +474,7 @@ async def test_structure_drift_is_noop(monkeypatch: pytest.MonkeyPatch) -> None:
         session=MagicMock(), storybook=storybook, version_row=version_row
     )
 
-    assert findings == []
+    assert [f for f in findings if f.category.startswith("leaf_diversity")] == []
 
 
 @pytest.mark.unit
@@ -490,10 +505,185 @@ async def test_fail_pair_produces_flags_and_summary(
     )
 
     flags = [f for f in findings if f.verdict is Verdict.FLAG]
-    advisories = [f for f in findings if f.verdict is Verdict.ADVISORY]
+    # Scoped to the ATG's own summary: a noun-swap near-copy also trips the
+    # sibling-gram advisory, which this test is not about.
+    advisories = [f for f in findings if f.category == "leaf_diversity_summary"]
     assert len(flags) > 0
     assert len(advisories) == 1
     assert "storybook s1 v3" in advisories[0].message
     for finding in flags:
         assert finding.category == "leaf_diversity"
         assert finding.node_id is not None
+
+
+# ---------------------------------------------------------------------------
+# Sibling-gram overlap advisory (R-3): verbatim wording shared with the
+# partner fill, a channel the ATG's node-aligned Jaccard distances cannot see.
+#
+# Every threshold assertion below is anchored on the committed cave-of-echoes
+# trio, measured 2026-08-22 (shared 4-grams per 1000 mean words):
+#
+#     pair                              body-only   with labels
+#     space vs dino   (re-themed)           33.74         72.73
+#     space vs sea    (re-themed)           22.20         61.21
+#     dino  vs sea    (re-themed)           38.41         80.08
+#     space vs its noun-swap variant       931.93        935.22
+#
+# The three re-themed pairs are the documented WS-2 success case, so the
+# advisory must stay silent on them; the noun-swap variant is a near-copy and
+# must be reported. Note the second column: counting choice labels drags every
+# re-themed pair over the threshold, which is why the request-path measure
+# excludes them.
+# ---------------------------------------------------------------------------
+
+
+def _sibling_gram_findings(findings: list[Finding]) -> list[Finding]:
+    return [f for f in findings if f.category == "sibling_gram_overlap"]
+
+
+async def _run_against_partner(
+    monkeypatch: pytest.MonkeyPatch,
+    current: dict[str, object],
+    partner: dict[str, object],
+) -> list[Finding]:
+    """Run the guard with ``partner`` as the family's prior same-tree fill."""
+    monkeypatch.setattr(
+        leaf_diversity_mod,
+        "load_family_history",
+        AsyncMock(return_value=[_history_entry()]),
+    )
+    monkeypatch.setattr(
+        leaf_diversity_mod, "load_version_blob", AsyncMock(return_value=partner)
+    )
+    return await leaf_diversity_mod.run_leaf_diversity_check(
+        session=MagicMock(),
+        storybook=_db_storybook(),
+        version_row=_db_version(current),
+    )
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_a_near_copy_partner_raises_a_sibling_gram_advisory(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A fill that reuses the partner's sentences verbatim is reported.
+
+    The noun-swap variant shares 931.93 grams per 1000 body words with its
+    source: the same near-copy the ATG catches by masked distance, caught
+    here through the independent verbatim-wording channel.
+    """
+    current, near_copy = _cave_space_fail_pair()
+
+    findings = await _run_against_partner(monkeypatch, current, near_copy)
+
+    gram = _sibling_gram_findings(findings)
+    assert len(gram) == 1
+    assert gram[0].verdict is Verdict.ADVISORY
+    assert gram[0].node_id is None
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_genuinely_rethemed_siblings_raise_no_advisory(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The WS-2 success case must stay silent.
+
+    dino-dig and space-station are one skeleton filled for two unrelated
+    themes and were accepted as distinct. At 33.74 body grams per 1000 they
+    sit well under the threshold, so a reviewer is not asked to adjudicate a
+    fill the programme already calls good.
+    """
+    dino = _load_blob(_FILLS_DIR / "the-cave-of-echoes.dino-dig.filled.json")
+    space = _load_blob(_CAVE_SPACE_PATH)
+
+    findings = await _run_against_partner(monkeypatch, space, dino)
+
+    assert _sibling_gram_findings(findings) == []
+
+
+@pytest.mark.unit
+def test_counting_choice_labels_would_flip_the_rethemed_verdict() -> None:
+    """The measured reason the request-path form excludes choice labels.
+
+    A skeleton hands every sibling fill the same ``choices[].label`` strings,
+    so a label-inclusive rate carries a floor the fill author cannot move. On
+    this real pair the labels alone are the difference between silence and a
+    false alarm.
+    """
+    dino = _load_blob(_FILLS_DIR / "the-cave-of-echoes.dino-dig.filled.json")
+    space = _load_blob(_CAVE_SPACE_PATH)
+
+    bodies_only = pairwise_overlap(space, dino, include_choice_labels=False)
+    with_labels = pairwise_overlap(space, dino, include_choice_labels=True)
+
+    assert bodies_only.per_1000 < leaf_diversity_mod.SIBLING_GRAM_ADVISORY_PER_1000
+    assert with_labels.per_1000 > leaf_diversity_mod.SIBLING_GRAM_ADVISORY_PER_1000
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_gram_advisory_still_reports_when_structure_drifted(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Structure drift ends the ATG, but must not end the gram check.
+
+    The ATG compares node-aligned distances, so a structurally revised
+    skeleton makes its comparison meaningless and it bails. The gram check is
+    position-independent: two fills that reuse wording reuse it whether or not
+    the tree moved, so it must survive that early return.
+    """
+    current, near_copy = _cave_space_fail_pair()
+    monkeypatch.setattr(
+        leaf_diversity_mod,
+        "structure_fingerprint",
+        MagicMock(side_effect=["fingerprint-a", "fingerprint-b"]),
+    )
+
+    findings = await _run_against_partner(monkeypatch, current, near_copy)
+
+    assert len(_sibling_gram_findings(findings)) == 1
+    assert not any(f.category == "leaf_diversity" for f in findings)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_gram_advisory_message_carries_no_story_prose(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Numbers and instructions only, the same contract as every finding here."""
+    current, near_copy = _cave_space_fail_pair()
+    bodies = [
+        cast("str", node["body"])
+        for node in cast("list[dict[str, object]]", current["nodes"])
+    ]
+
+    findings = await _run_against_partner(monkeypatch, current, near_copy)
+
+    for finding in _sibling_gram_findings(findings):
+        for body in bodies:
+            assert body not in finding.message
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_gram_advisory_never_blocks_and_never_drives_repair(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Advisory by contract: it may inform a human, never fail or repair a fill.
+
+    ADVISORY rather than FLAG on purpose. A FLAG would enter the pipeline's
+    single bounded repair, which a Stage 1 fidelity miss already competes for,
+    and would spend that budget on a judgment no threshold here is calibrated
+    to make.
+    """
+    current, near_copy = _cave_space_fail_pair()
+    report = ModerationReport()
+
+    findings = await _run_against_partner(monkeypatch, current, near_copy)
+    for finding in _sibling_gram_findings(findings):
+        report.add(finding)
+
+    assert not report.has_hard_block
+    assert not report.has_soft_flag

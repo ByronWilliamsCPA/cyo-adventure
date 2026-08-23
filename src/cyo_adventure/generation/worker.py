@@ -953,7 +953,9 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     structurally-clean fill re-enters the same ``max_repairs`` budget with a
     fidelity-aware repair prompt, and only downgrades an otherwise-``"passed"``
     fill to ``"needs_review"`` (recording ``"stage1_fidelity_violations"`` in
-    the report) once that shared budget is exhausted. The produced storybook is
+    the report for a human, and setting ``clean_downgrade`` on the outcome,
+    which is what the persist decision actually reads) once that shared budget
+    is exhausted. The produced storybook is
     never discarded, so a guardian/admin can still review the fill either way.
     This function no longer runs the gate or an outer retry loop itself; that
     logic now lives in the orchestrator so a fidelity miss and a structural
@@ -1086,6 +1088,7 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
             },
             attempts=outcome.attempts,
             stage_log=outcome.stage_log,
+            clean_downgrade=outcome.clean_downgrade,
         )
 
     # #CRITICAL: security: interpret_and_bind's return value is derived from an
@@ -1234,12 +1237,14 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     # The gate inside `fill_skeleton` scored `outcome.storybook`; everything
     # above may have rewritten it. Re-score the document that will actually be
     # persisted, so the stored validation_report describes the stored blob.
-    # A no-op transform short-circuits, so this costs nothing on the dormant
-    # path every contract on disk takes today.
-    gate_status, gate_report = (
+    # A no-op transform short-circuits, so this costs nothing on the path 46
+    # of the 47 contracts on disk take (measured 2026-08-23). It is not a
+    # dormant path: the-midnight-museum declares a personalizable slot and
+    # reaches the full regate.
+    gate_status, gate_report, gate_clean_downgrade = (
         _regate_after_transform(outcome, final_storybook, skeleton_slug=skeleton_slug)
         if final_storybook is not None
-        else (outcome.status, outcome.report)
+        else (outcome.status, outcome.report, outcome.clean_downgrade)
     )
 
     # WS-2 design section 7: the audit block a reviewer needs to see exactly
@@ -1312,6 +1317,7 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         stage_log=outcome.stage_log,
         sentinel_manifest=sentinel_manifest,
         personalization_eligible=personalization_eligible,
+        clean_downgrade=gate_clean_downgrade,
     )
 
 
@@ -1326,7 +1332,7 @@ def _regate_after_transform(
     final_storybook: dict[str, object],
     *,
     skeleton_slug: str,
-) -> tuple[Literal["passed", "needs_review", "failed"], dict[str, object]]:
+) -> tuple[Literal["passed", "needs_review", "failed"], dict[str, object], bool]:
     """Re-run the deterministic gate against the POST-transform document.
 
     #CRITICAL: data-integrity: ``fill_skeleton`` runs ``run_gate`` internally
@@ -1351,20 +1357,37 @@ def _regate_after_transform(
     status and report untouched, and that a transform which breaks the gate
     downgrades a "passed" outcome.
 
+    #CRITICAL: security: ``clean_downgrade`` is reconciled HERE, not carried
+    through by the caller. It means "the only thing wrong with this book is a
+    quality axis a human is meant to judge", and
+    :func:`_should_persist_storybook` turns it into a decision to persist. The
+    resolved status can keep the pre-transform ``needs_review`` (severity ties
+    favour it) while the report that actually gets persisted is the
+    POST-transform one describing a NEW safety block, so carrying the flag
+    through unconditionally would persist a safety-flagged book under a flag
+    asserting the opposite. A regate that blocks or safety-flags clears it.
+    #VERIFY: tests/unit/test_worker.py::
+    test_a_transform_that_trips_the_safety_gate_clears_the_clean_downgrade
+
     Args:
         outcome: The pre-transform outcome from ``fill_skeleton``.
         final_storybook: The post-transform document that will be persisted.
         skeleton_slug: Slug for the log line, when the verdicts disagree.
 
     Returns:
-        The reconciled ``(status, report)`` pair to return to the caller.
+        The reconciled ``(status, report, clean_downgrade)`` triple to return
+        to the caller.
     """
     if final_storybook == outcome.storybook:
-        # Byte-identical transform, which is the case for every contract on
-        # disk today (none declares a personalizable slot). Re-gating would
-        # burn the full validator budget to reproduce a verdict we already
-        # hold, so skip it entirely.
-        return outcome.status, outcome.report
+        # Byte-identical transform, which is the case for 46 of the 47
+        # contracts on disk (measured 2026-08-23). It is NOT the universal
+        # case: `skeletons/10-13/the-midnight-museum.contract.json` declares
+        # `HERO` as `kind: personalizable`, so that book rewrites bodies and
+        # takes the regate path below. Same correction as the
+        # `personalizable_slot_ids` comment earlier in this module.
+        # Re-gating an unchanged document would burn the full validator budget
+        # to reproduce a verdict we already hold, so skip it entirely.
+        return outcome.status, outcome.report, outcome.clean_downgrade
 
     # Scale is always "standard" on this path: fill_skeleton documents that
     # skeleton library files use genre-faithful authored node counts (ADR-011)
@@ -1406,7 +1429,14 @@ def _regate_after_transform(
         "status": outcome.status,
         "report": outcome.report,
     }
-    return status, report
+    # Survives only when the post-transform gate found nothing new. Tested
+    # against `regated`, not against `status`: a severity tie resolves to the
+    # pre-transform status, so `status` alone cannot tell "still just the
+    # quality downgrade" from "quality downgrade, and now a safety flag too".
+    clean_downgrade = (
+        outcome.clean_downgrade and not regated.blocked and not regated.safety_flagged
+    )
+    return status, report, clean_downgrade
 
 
 def _should_persist_storybook(outcome: GenerationOutcome) -> bool:
@@ -1416,27 +1446,27 @@ def _should_persist_storybook(outcome: GenerationOutcome) -> bool:
     ``"needs_review"`` outcome, but ONLY when the downgrade was applied by
     :func:`~cyo_adventure.generation.orchestrator.fill_skeleton` to a fill that
     was ``"passed"`` immediately before, on a quality axis a human is meant to
-    judge. Those are the CLEAN-DOWNGRADE signals, and each is a report key that
-    only its own downgrade path ever writes:
+    judge. Two causes qualify today: a Stage 1 fidelity miss that survived the
+    shared repair budget, and a story-level fill rate under the floor (ruling
+    9.3 of ``live-structural-round-2026-08-21.md``, `UW-C307`).
 
-    * ``"stage1_fidelity_violations"``: the Stage 1 fidelity gate ran out of
-      the shared repair budget on a structurally-clean fill. Written only by
-      that downgrade, so its presence proves the base outcome was clean before
-      Stage 1 touched it.
-    * ``"fill_rate_downgrade"``: the story-level fill rate fell under the floor
-      on a fill that was otherwise ``"passed"`` (ruling 9.3 of
-      ``live-structural-round-2026-08-21.md``, `UW-C307`). Written only by
-      :func:`~cyo_adventure.generation.orchestrator._with_fill_rate` and only
-      on the downgrade branch; the companion ``"fill_rate"`` and
-      ``"fill_rate_floor"`` keys are stamped on EVERY outcome carrying a book
-      and therefore identify nothing, which is why this key exists at all.
+    The signal read here is ``GenerationOutcome.clean_downgrade``, NOT the
+    diagnostic report keys those causes also stamp
+    (``"stage1_fidelity_violations"``, ``"fill_rate_downgrade"``). A report key
+    cannot carry this decision: :func:`_regate_after_transform` replaces the
+    report wholesale with the post-transform gate verdict and nests the
+    pre-transform one under ``"pre_reinsertion_gate"``, so a key-borne signal
+    disappears for exactly the fills whose document the reinsertion transform
+    rewrote. Reading the field instead makes the signal independent of every
+    report rebuild, and leaves the keys free to be recorded anywhere a human
+    should see them without moving this decision.
 
-    Both are quality verdicts about a book that already passed the safety and
-    structural gates, and ruling 9.3 is explicit that the fill-rate floor is
-    "never a hard block". Refusing to persist would make it stricter than a
-    hard block: no Storybook, no StorybookVersion, no moderation run, and a
-    job row pointing at nothing an admin can open. Persisting lets a human
-    reach the real book and make the call.
+    Both causes are quality verdicts about a book that already passed the
+    safety and structural gates, and ruling 9.3 is explicit that the fill-rate
+    floor is "never a hard block". Refusing to persist would make it stricter
+    than a hard block: no Storybook, no StorybookVersion, no moderation run,
+    and a job row pointing at nothing an admin can open. Persisting lets a
+    human reach the real book and make the call.
 
     Any OTHER ``"needs_review"`` (safety-flagged, or gate-blocked-with-doc
     after exhausting repairs, both produced by
@@ -1446,9 +1476,9 @@ def _should_persist_storybook(outcome: GenerationOutcome) -> bool:
     verdicts about content that has NOT been cleared, and that is pre-existing
     semantics this gate must not change.
 
-    Adding a third clean-downgrade cause means adding its own report key here
-    AND at the site that downgrades. A downgrade that stamps no distinguishing
-    key is indistinguishable from a safety block and silently drops the book.
+    Adding a third clean-downgrade cause means setting ``clean_downgrade`` at
+    the site that downgrades. A downgrade that leaves it False is
+    indistinguishable from a safety block and silently drops the book.
 
     Args:
         outcome: The pipeline outcome (from ``generate_story`` or
@@ -1461,21 +1491,19 @@ def _should_persist_storybook(outcome: GenerationOutcome) -> bool:
     if outcome.storybook is None:
         return False
     # #CRITICAL: data integrity: this predicate decides whether a generated
-    # book is reachable at all. A clean-downgrade cause whose key is missing
-    # here reads as a safety block, so the book is never written and the job
-    # row points at nothing; conversely a key stamped on a non-clean path
-    # would publish unreviewed content into the review queue's "has a book"
-    # state. Keep this set exactly equal to the keys written only on a
-    # clean-downgrade branch.
+    # book is reachable at all. A clean-downgrade cause that leaves
+    # `clean_downgrade` False reads as a safety block, so the book is never
+    # written and the job row points at nothing; conversely setting it on a
+    # non-clean path would publish unreviewed content into the review queue's
+    # "has a book" state. Every rebuild of a GenerationOutcome between the
+    # downgrade and here must carry the field forward.
     # #VERIFY: tests/unit/test_orchestrator.py::
-    # test_a_fill_rate_downgrade_is_marked_and_still_persists and
-    # ::test_a_needs_review_from_another_cause_still_does_not_persist.
-    clean_downgrade = any(
-        key in outcome.report
-        for key in ("stage1_fidelity_violations", "fill_rate_downgrade")
-    )
+    # test_a_fill_rate_downgrade_is_marked_and_still_persists,
+    # ::test_a_needs_review_from_another_cause_still_does_not_persist, and
+    # tests/unit/test_worker.py::TestShouldPersistStorybook::
+    # test_a_rewriting_transform_keeps_the_clean_downgrade_signal.
     return outcome.status == "passed" or (
-        outcome.status == "needs_review" and clean_downgrade
+        outcome.status == "needs_review" and outcome.clean_downgrade
     )
 
 
@@ -2272,15 +2300,18 @@ async def run_generation_job(
     and a :class:`~cyo_adventure.db.models.StorybookVersion` row, then links
     both back to the job.
 
-    On ``"needs_review"`` when the downgrade came from a Stage 1 fidelity
-    check on an otherwise-clean fill (signaled by
-    ``"stage1_fidelity_violations"`` in ``outcome.report``, the exact key
-    :func:`~cyo_adventure.generation.orchestrator.fill_skeleton` adds only for
-    this downgrade): the same
+    On ``"needs_review"`` when the downgrade came from a quality axis on an
+    otherwise-clean fill (signaled by ``outcome.clean_downgrade``, which
+    :func:`~cyo_adventure.generation.orchestrator.fill_skeleton` sets for a
+    Stage 1 fidelity miss or a fill rate under the floor, and which
+    :func:`_regate_after_transform` clears again if the post-transform gate
+    finds a new problem): the same
     Storybook/StorybookVersion creation and linking happens as for
     ``"passed"``, and the moderation pipeline still runs on the result, so a
     guardian/admin can review a real, queryable story instead of a job row
-    pointing at nothing.
+    pointing at nothing. The report keys those causes also stamp
+    (``"stage1_fidelity_violations"``, ``"fill_rate_downgrade"``) are
+    diagnostics for review surfaces and do not drive this decision.
 
     On any OTHER ``"needs_review"`` (safety-flagged by
     :func:`~cyo_adventure.generation.orchestrator._build_outcome`, or

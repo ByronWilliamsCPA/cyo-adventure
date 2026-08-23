@@ -8,6 +8,7 @@ Tests cover:
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 from dataclasses import dataclass
@@ -45,6 +46,7 @@ from cyo_adventure.generation.providers import (
 )
 from cyo_adventure.generation.usage import TokenUsage
 from cyo_adventure.generation.worker import (
+    _regate_after_transform,
     _review_stage2_override,
     _run_skeleton_fill,
     _should_persist_storybook,
@@ -60,6 +62,8 @@ from cyo_adventure.storybook.theme_contract import (
     SlotSpec,
     ThemeContract,
 )
+from cyo_adventure.validator.gate import GateResult
+from cyo_adventure.validator.report import ValidationReport
 from cyo_adventure.validator.slots import DENYLIST_VERSION
 
 if TYPE_CHECKING:
@@ -453,13 +457,18 @@ class TestShouldPersistStorybook:
         assert _should_persist_storybook(outcome) is False
 
     def test_stage1_downgraded_needs_review_persists(self) -> None:
-        """The NEW case: a Stage 1 downgrade on an otherwise-clean fill persists."""
+        """A Stage 1 downgrade on an otherwise-clean fill persists.
+
+        The report key rides along as the diagnostic a reviewer reads; the
+        persist decision comes from ``clean_downgrade``.
+        """
         outcome = GenerationOutcome(
             status="needs_review",
             storybook={"id": "s1"},
             report={"stage1_fidelity_violations": ["some violation"]},
             attempts=0,
             stage_log=[],
+            clean_downgrade=True,
         )
         assert _should_persist_storybook(outcome) is True
 
@@ -480,10 +489,139 @@ class TestShouldPersistStorybook:
                 "fill_rate_floor": 0.6,
                 "fill_rate_downgrade": True,
             },
+            clean_downgrade=True,
             attempts=0,
             stage_log=[],
         )
         assert _should_persist_storybook(outcome) is True
+
+    def test_a_rewriting_transform_keeps_the_clean_downgrade_signal(self) -> None:
+        """A real reinsertion transform must not strip the persist signal.
+
+        ``_regate_after_transform`` rebuilds the report from the FRESH gate
+        verdict and nests the pre-transform one under ``"pre_reinsertion_gate"``,
+        so a clean-downgrade signal carried as a top-level report key does not
+        survive a transform that actually rewrites the document. A fill that was
+        downgraded on a quality axis AND rewritten would then be dropped
+        entirely: no Storybook, no version, no moderation, and a job row
+        pointing at a book nobody can reach, which is the exact outcome the
+        downgrade paths exist to prevent. The signal therefore rides the
+        outcome, which no report rebuild can touch.
+
+        Live, not dormant: `skeletons/10-13/the-midnight-museum.contract.json`
+        declares `HERO` as `kind: personalizable`, so that book rewrites bodies
+        and reaches this path (ADR-023 D4). The 46 other contracts on disk take
+        the byte-identical short-circuit.
+        """
+        rewritten = copy.deepcopy(_CANNED_STORY)
+        nodes = rewritten["nodes"]
+        assert isinstance(nodes, list)
+        first = nodes[0]
+        assert isinstance(first, dict)
+        first["body"] = str(first["body"]) + " The lantern guttered once more."
+
+        pre = GenerationOutcome(
+            status="needs_review",
+            storybook=copy.deepcopy(_CANNED_STORY),
+            report={"fill_rate": 0.51, "fill_rate_downgrade": True},
+            attempts=0,
+            stage_log=[],
+            clean_downgrade=True,
+        )
+        status, report, clean_downgrade = _regate_after_transform(
+            pre, rewritten, skeleton_slug="s"
+        )
+        persisted = GenerationOutcome(
+            status=status,
+            storybook=rewritten,
+            report=report,
+            attempts=pre.attempts,
+            stage_log=pre.stage_log,
+            # The RECONCILED flag, not `pre.clean_downgrade`. Reading the
+            # returned value is the whole point: it is what the caller stores.
+            clean_downgrade=clean_downgrade,
+        )
+        # The report key really is gone: this is the stripping being guarded.
+        assert "fill_rate_downgrade" not in persisted.report
+        assert _should_persist_storybook(persisted) is True
+
+    def test_a_transform_that_trips_the_safety_gate_clears_the_clean_downgrade(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A regate that finds a NEW safety problem must not persist the book.
+
+        The reachable combination: a fill downgraded on a quality axis
+        (`clean_downgrade=True`, status `needs_review`), whose reinsertion
+        transform rewrites the document, whose post-transform gate then
+        safety-flags it. Severity ties favour the pre-transform status, so
+        `status` stays `needs_review` and reveals nothing; the report that
+        gets persisted is the post-transform one describing the safety flag.
+        Carrying the flag through unchanged would persist a safety-flagged
+        book, which `_should_persist_storybook` documents as forbidden ("those
+        are verdicts about content that has NOT been cleared").
+        """
+        rewritten = copy.deepcopy(_CANNED_STORY)
+        nodes = rewritten["nodes"]
+        assert isinstance(nodes, list)
+        first = nodes[0]
+        assert isinstance(first, dict)
+        first["body"] = str(first["body"]) + " The lantern guttered once more."
+
+        monkeypatch.setattr(
+            worker_module,
+            "run_gate",
+            lambda *_a, **_k: GateResult(
+                report=ValidationReport(),
+                blocked=False,
+                safety_flagged=True,
+                context="fill_result",
+            ),
+        )
+
+        pre = GenerationOutcome(
+            status="needs_review",
+            storybook=copy.deepcopy(_CANNED_STORY),
+            report={"fill_rate": 0.51, "fill_rate_downgrade": True},
+            attempts=0,
+            stage_log=[],
+            clean_downgrade=True,
+        )
+        status, report, clean_downgrade = _regate_after_transform(
+            pre, rewritten, skeleton_slug="s"
+        )
+
+        # The status is NOT the tell: the severity tie keeps the pre-transform
+        # verdict, so it reads identically to the benign quality downgrade.
+        assert status == "needs_review"
+        assert clean_downgrade is False
+
+        persisted = GenerationOutcome(
+            status=status,
+            storybook=rewritten,
+            report=report,
+            attempts=pre.attempts,
+            stage_log=pre.stage_log,
+            clean_downgrade=clean_downgrade,
+        )
+        assert _should_persist_storybook(persisted) is False
+
+    def test_a_diagnostic_report_key_alone_does_not_persist(self) -> None:
+        """Recording violations for a reader must not flip the persist decision.
+
+        The clean-downgrade report keys are diagnostics that review surfaces
+        read. Any future path that recorded them for a human (say, on a fill
+        that is ALSO safety-flagged) would, under the old key-as-signal rule,
+        silently start persisting a storybook the pre-existing semantics
+        deliberately drop.
+        """
+        outcome = GenerationOutcome(
+            status="needs_review",
+            storybook={"id": "s1"},
+            report={"stage1_fidelity_violations": ["node 'n1' is 12 words"]},
+            attempts=0,
+            stage_log=[],
+        )
+        assert _should_persist_storybook(outcome) is False
 
     def test_safety_flagged_needs_review_does_not_persist(self) -> None:
         """Regression guard: a safety-flagged needs_review (no Stage 1 key) must
@@ -2035,10 +2173,12 @@ async def test_fill_leaves_personalization_eligible_false_without_manifest(
 def test_regate_after_transform_skips_when_document_unchanged() -> None:
     """A byte-identical transform returns the original verdict untouched.
 
-    This is the dormant path every theme contract on disk takes today: none
-    declares a personalizable slot, so `reinsert_storybook` is a no-op and
-    re-running the full validator would only burn budget reproducing a
-    verdict already held.
+    This is the path 46 of the 47 theme contracts on disk take (measured
+    2026-08-23): they declare no personalizable slot, so `reinsert_storybook`
+    is a no-op and re-running the full validator would only burn budget
+    reproducing a verdict already held. It is not a dormant path;
+    `skeletons/10-13/the-midnight-museum.contract.json` declares one and
+    reaches the regate instead.
     """
     doc: dict[str, object] = {"title": "T", "nodes": []}
     outcome = GenerationOutcome(
@@ -2049,11 +2189,12 @@ def test_regate_after_transform_skips_when_document_unchanged() -> None:
         stage_log=[],
     )
 
-    status, report = worker_module._regate_after_transform(
+    status, report, clean_downgrade = worker_module._regate_after_transform(
         outcome, dict(doc), skeleton_slug="themed-slug"
     )
 
     assert status == "passed"
+    assert clean_downgrade is False
     assert report == {"marker": "pre-transform"}
     assert "pre_reinsertion_gate" not in report
 
@@ -2073,7 +2214,7 @@ def test_regate_after_transform_never_upgrades_a_blocked_outcome() -> None:
         stage_log=[],
     )
 
-    status, report = worker_module._regate_after_transform(
+    status, report, _clean_downgrade = worker_module._regate_after_transform(
         outcome, {"title": "after", "nodes": []}, skeleton_slug="themed-slug"
     )
 

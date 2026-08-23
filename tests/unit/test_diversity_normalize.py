@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from cyo_adventure.diversity.grams import story_text
 from cyo_adventure.diversity.normalize import (
     ENTITY_PLACEHOLDER,
     STOPWORDS,
@@ -14,6 +15,7 @@ from cyo_adventure.diversity.normalize import (
     extract_entities,
     jaccard_similarity,
     mask_tokens,
+    storybook_text,
     theme_signature,
 )
 from cyo_adventure.storybook.models import Storybook
@@ -185,3 +187,24 @@ def test_theme_signature_empty_brief_and_themes_is_empty() -> None:
 def test_stopwords_contains_common_function_words() -> None:
     """Sanity check: the stopword list covers core function words."""
     assert {"the", "a", "and", "is", "of"} <= STOPWORDS
+
+
+@pytest.mark.unit
+def test_storybook_text_is_the_same_definition_the_blob_path_uses() -> None:
+    """One definition of "a fill's prose", reachable from either shape.
+
+    ``grams.story_text`` reads a decoded blob and is what the request-path
+    advisory and the offline tools measure. The series validator holds parsed
+    ``Storybook`` objects instead. Extracting the prose a second way there
+    would be the two-copies-drift failure `AL-563` was written about, so this
+    helper routes the model through the same function rather than walking
+    ``nodes`` again.
+    """
+    if not _SPACE_STATION_FILL.is_file():
+        pytest.skip("pilot fill is not committed")
+    book = _load_story(_SPACE_STATION_FILL)
+    blob = book.model_dump(mode="python")
+    for labels in (True, False):
+        assert storybook_text(book, include_choice_labels=labels) == story_text(
+            blob, include_choice_labels=labels
+        )

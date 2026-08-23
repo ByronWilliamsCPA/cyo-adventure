@@ -1,4 +1,4 @@
-"""Cross-book series meta-validator (rules SR-1..SR-7, SR-9).
+"""Cross-book series meta-validator (rules SR-1..SR-10).
 
 Unlike the single-story gate (Layer 1, Layer 2, and the PL-* policy rules), this
 validator runs over a *chain* of books: a series is a meta-skeleton whose nodes
@@ -9,6 +9,12 @@ single ``series_entry_node`` (many endings -> one entry), with declared state
 carried across (or explicitly episodic for young/Tier-1 bands). v1 series are a
 linear chain.
 
+SR-10 is the one rule here that reads the prose rather than the structure: no
+two books of a chain may reuse a passage. It lives here because this is where
+the chain relationship is declared, and every other prose comparison in the
+system selects its partner by same skeleton within the same family, which a
+series of different skeletons can never satisfy (`AL-564`).
+
 Each book still passes its own single-story gate independently; this validator
 adds only the cross-book checks and returns its own report, so it is invoked
 separately from ``run_gate``.
@@ -16,9 +22,11 @@ separately from ``run_gate``.
 
 from __future__ import annotations
 
-from itertools import pairwise
+from itertools import combinations, pairwise
 from typing import TYPE_CHECKING
 
+from cyo_adventure.diversity.grams import shared_run_profile
+from cyo_adventure.diversity.normalize import storybook_text
 from cyo_adventure.storybook.models import (
     SATISFYING_ENDING_KINDS as _MODEL_SATISFYING_ENDING_KINDS,
 )
@@ -52,6 +60,37 @@ if TYPE_CHECKING:
 SATISFYING_ENDING_KINDS = _MODEL_SATISFYING_ENDING_KINDS
 _SATISFYING_KINDS = SATISFYING_ENDING_KINDS
 
+SERIES_MAX_SHARED_RUN_WORDS = 15
+"""SR-10: longest contiguous run of words two books of a chain may share.
+
+A series MAY repeat a phrase deliberately, and this bound is how that
+permission is expressed: a refrain is short by construction, so it never
+reaches the bound and needs no declaration, allowlist, or authoring step. A
+reused passage is long, and does. Measured 2026-08-23 over ALL 465 pairs of
+the committed corpus: the 464 non-series pairs run 2 to 8 shared words
+(median 5, one pair at 8) at exactly 0% coverage, so ordinary English does not
+reach 15 by chance, while the brass-lantern pair reaches 98 (`AL-564`). The
+corpus holds nothing between 8 and 98, so the bound is a line through empty
+space rather than a threshold on a crowded axis. Recomputed by
+`tests/unit/test_series.py::test_the_fifteen_word_bound_sits_in_an_empty_gap_in_the_corpus`.
+"""
+
+SERIES_MAX_SHARED_RUN_COVERAGE = 0.02
+"""SR-10: share of a book that may sit inside runs of 15+ shared words.
+
+The second bound catches many medium passages where the first sees only the
+longest one. Two percent of a 9,000-word book is 180 words, so a 20-word
+stanza repeated nine times still clears it; the brass-lantern pair sits at
+18.6%, and every unrelated pair at exactly 0.
+
+The 18.6% is `the-sunken-temple`'s share, not `the-harrowstone-keep`'s. The
+same 6,691 covered words are 16.8% of the 39,935-word keep and 18.6% of the
+35,920-word temple, and `RunProfile.coverage` reports the WORSE-affected side
+(see `shared_run_profile`), so quoting the larger book's denominator would
+describe a number the code never returns. Measured 2026-08-23 by running the
+shipped function over the two committed books.
+"""
+
 # Bands that must run episodic (no state carry) series, per ADR-011 section 8.
 _YOUNG_BANDS = frozenset({"3-5", "5-8"})
 
@@ -79,6 +118,7 @@ def validate_series(books: Sequence[Storybook]) -> ValidationReport:
         _check_final_flags(series_books, report)
         _check_continuity(series_books, report)
     _check_state_carry(series_books, report)
+    _check_prose_convergence(series_books, report)
     if well_formed:
         # SR-9 simulates the continuation handoff, so it needs the indices to be
         # well formed; a malformed chain has no meaningful "next book".
@@ -113,6 +153,79 @@ def _collect_series_books(
         else:
             series_books.append((book, series))
     return series_books
+
+
+def _check_prose_convergence(
+    series_books: list[_Book], report: ValidationReport
+) -> None:
+    """SR-10: no two books of a chain may reuse a passage of prose.
+
+    The gap this closes (`AL-564`): every other prose comparison in the system
+    selects its partner by SAME SKELETON within the SAME FAMILY, so a series
+    whose books are different skeletons is unreachable by all of them, and this
+    validator previously compared ids, entry nodes, carried variables and
+    reachability while never comparing a word of the text. The reader most
+    exposed to a chain that repeats itself is the child reading it straight
+    through, which is the intended way to read it.
+
+    Measured on RUN LENGTH rather than total overlap, because a series is the
+    one place where sharing wording can be deliberate: a refrain repeated on
+    purpose is short, and no volume measure can tell it from a copied
+    paragraph.
+
+    #ASSUME: timing dependencies: runs synchronously at approve-and-publish
+    time, inside `publishing/service.py::approve`, which holds the storybook
+    row under `SELECT ... FOR UPDATE`. Cost is `combinations`, so N(N-1)/2
+    pairs, and each book's prose is flattened once rather than once per pair.
+    The expensive input is a pair that REUSES prose, which is exactly the case
+    this rule exists to catch: the real brass-lantern pair (39,935 and 35,920
+    words, a 98-word shared run) measures about 0.29s, so a five-book chain of
+    that size and similarity is roughly 3s of blocked event loop. Keeping
+    `_longest_shared_run` linear per probe is what holds that number down; see
+    its own #ASSUME.
+    #VERIFY: test_sr10_catches_the_real_brass_lantern_pair runs the rule
+    against two committed 551-node books.
+
+    Args:
+        series_books: The chain, each book paired with its series metadata.
+        report: The report to add findings to.
+    """
+    texts = [
+        storybook_text(book, include_choice_labels=False) for book, _ in series_books
+    ]
+    # Ordered by `book_index` before pairing, so the finding names the later
+    # book of the chain whatever order the caller loaded them in.
+    # `publishing/service.py::_series_chain_docs` issues no ORDER BY and
+    # appends the version under approval last, so the input order is the
+    # database's, and this module's contract (see `validate_series`) is that
+    # rules key off `book_index` and are order-independent.
+    ordered = sorted(
+        zip(series_books, texts, strict=True),
+        key=lambda entry: (entry[0][1].book_index, entry[0][0].id),
+    )
+    for (left, left_text), (right, right_text) in combinations(ordered, 2):
+        profile = shared_run_profile(left_text, right_text)
+        within_run = profile.longest <= SERIES_MAX_SHARED_RUN_WORDS
+        within_coverage = profile.coverage <= SERIES_MAX_SHARED_RUN_COVERAGE
+        if within_run and within_coverage:
+            continue
+        report.add(
+            ValidationFinding(
+                rule_id="SR-10",
+                severity=Severity.ERROR,
+                story_id=right[0].id,
+                message=(
+                    f"SR-10 series: books '{left[0].id}' and '{right[0].id}' "
+                    f"reuse prose; longest shared passage {profile.longest} "
+                    f"words (limit {SERIES_MAX_SHARED_RUN_WORDS}), "
+                    f"{profile.coverage:.1%} of a book inside shared passages "
+                    f"of {SERIES_MAX_SHARED_RUN_WORDS}+ words (limit "
+                    f"{SERIES_MAX_SHARED_RUN_COVERAGE:.0%}). A repeated refrain "
+                    "is fine and cannot reach these bounds; rewrite the shared "
+                    "passages instead"
+                ),
+            )
+        )
 
 
 def _check_shared_id(series_books: list[_Book], report: ValidationReport) -> None:

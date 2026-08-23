@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+from collections import Counter
+
 import pytest
 
 from scripts.check_bible_diversity import mechanic_divergence, near_noun_swaps
 from scripts.check_narrative_contract import check_selection
-from scripts.check_sibling_fills import shared_grams
+from scripts.check_sibling_fills import ranked_shared, shared_grams
 
 
 def _bible(kinds: list[str]) -> dict[str, object]:
@@ -93,3 +95,28 @@ def test_nc7_validates_mechanism_and_uniqueness() -> None:
     errors, _ = check_selection(bad_sel, contract, bible)
     assert any("mechanism 'time-travel'" in e for e in errors)
     assert any("unique_within_story" in e for e in errors)
+
+
+def test_ranked_shared_breaks_count_ties_deterministically() -> None:
+    """The printed evidence list must not reorder between identical runs.
+
+    ``shared_grams`` builds its Counter by iterating per-fill gram SETS, and
+    a set of string tuples iterates in a hash-dependent order that PYTHONHASHSEED
+    varies per process. ``Counter.most_common`` is insertion-stable for ties, so
+    the reported "top shared grams" reordered run to run on the same input while
+    the gate number stayed fixed: an author diffing two runs saw churn that did
+    not exist. Ties break on the gram itself so the list is a function of the
+    input alone.
+    """
+    counts: Counter[tuple[str, ...]] = Counter(
+        {
+            ("zebra", "at", "the", "gate"): 3,
+            ("apple", "on", "the", "sill"): 3,
+            ("mango", "in", "the", "bowl"): 5,
+        }
+    )
+    assert ranked_shared(counts, 3) == [
+        (("mango", "in", "the", "bowl"), 5),
+        (("apple", "on", "the", "sill"), 3),
+        (("zebra", "at", "the", "gate"), 3),
+    ]

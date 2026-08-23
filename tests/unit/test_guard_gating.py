@@ -238,3 +238,44 @@ def test_guard_battery_series_books_overrides_the_default_count() -> None:
 
     vocabulary_calls = [c for c in calls if c[0] == "check_device_vocabulary.py"]
     assert _flag_value(vocabulary_calls[0][1], "--books") == "6"
+
+
+# --------------------------------------------------------------------------
+# AL-564 / UW-C341: cross-book convergence is observed, not gated
+# --------------------------------------------------------------------------
+
+
+def test_guard_battery_observes_cross_book_convergence_without_gating() -> None:
+    """The corpus observer runs on every multi-book battery, non-gating.
+
+    ``check_sibling_fills.py`` aggregates a whole sibling set against one
+    budget and reports no relationship per pair, so a series pair that shares
+    8,164 body 4-grams (`AL-564`) can be diluted by clean siblings and, even
+    unmasked, is not labelled as a series pair. The all-pairs observer names
+    it. It must NOT be invoked with ``--check``: the tool refuses that without
+    an explicit bound, and `UW-C341`'s ruling (`AL-568`) was that no bound on
+    this axis is the right one, since a rate cannot separate a refrain from a
+    reused passage. Gating lives in validator rule SR-10 on run length; this
+    row reports the ranked pair and never fails the battery.
+    """
+    calls, results = _battery_calls(["a.json", "b.json"])
+
+    convergence_calls = [c for c in calls if c[0] == "check_corpus_convergence.py"]
+    assert convergence_calls, "check_corpus_convergence.py was not invoked"
+    assert "--check" not in convergence_calls[0][1]
+    assert {"a.json", "b.json"} <= set(convergence_calls[0][1])
+
+    rows = [r for r in results if r.guard == "check_corpus_convergence"]
+    assert len(rows) == 1
+    assert rows[0].gating is False
+
+
+def test_guard_battery_skips_the_corpus_observer_for_a_single_book() -> None:
+    """One book yields no pairs, so the row is skipped and says so."""
+    calls, results = _battery_calls(["a.json"])
+
+    assert not [c for c in calls if c[0] == "check_corpus_convergence.py"]
+    rows = [r for r in results if r.guard == "check_corpus_convergence"]
+    assert len(rows) == 1
+    assert rows[0].ok is True
+    assert rows[0].gating is False

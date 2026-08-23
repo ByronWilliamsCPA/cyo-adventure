@@ -23,6 +23,7 @@ from typing import cast
 from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.diversity.grams import story_text
 from cyo_adventure.diversity.similarity_vocab import SIMILARITY_TAG_MAP
 from cyo_adventure.storybook.models import Storybook
 from cyo_adventure.storybook.sentinels import strip_sentinels
@@ -407,6 +408,36 @@ def coerce_storybook(blob: Storybook | Mapping[str, object]) -> Storybook:
     except PydanticValidationError as exc:
         msg = "story blob failed Storybook schema validation"
         raise ValidationError(msg, details={"error": str(exc)}) from exc
+
+
+def storybook_text(book: Storybook, *, include_choice_labels: bool) -> str:
+    """Flatten a parsed book's prose, using the blob path's one definition.
+
+    The request-path advisory and the offline tools measure a decoded blob via
+    :func:`cyo_adventure.diversity.grams.story_text`; the series validator
+    holds parsed models instead. Walking ``book.nodes`` here would be a second
+    copy of "what counts as a fill's prose", the drift `AL-563` was written
+    about, so the model is dumped and routed through that same function.
+
+    Args:
+        book: A parsed storybook.
+        include_choice_labels: See
+            :func:`cyo_adventure.diversity.grams.story_text`. False for
+            fill-quality questions, since a shared skeleton supplies identical
+            labels to every fill.
+
+    The returned text IS sentinel-stripped, because ``story_text`` strips; see
+    its ``#ASSUME`` block for why an unstripped ``{~SLOTID:Generic~}`` (ADR-023)
+    would bias SR-10 toward a false block. Stripping there rather than here is
+    what keeps one definition of a fill's prose across both paths (`AL-563`).
+
+    Returns:
+        The book's body prose, plus choice labels when requested, with every
+        sentinel replaced by its inner generic word.
+    """
+    return story_text(
+        book.model_dump(mode="python"), include_choice_labels=include_choice_labels
+    )
 
 
 def extract_entities(
