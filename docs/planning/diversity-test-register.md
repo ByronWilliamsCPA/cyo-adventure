@@ -1085,7 +1085,7 @@ independently worded contract per arm, is the only fill design measured to pass.
 | **D-1** | **yes, badly** | "Three arms on the same graph" reads naturally as one contract with one change restored per arm. That is exactly D-6's `verbatim` condition, three times over. D-1 needs **three independently worded contracts**, not three fills over one. Its cost was "3 fills, 2 raters"; the real cost is three contract-authoring jobs on top. |
 | **M-4** | **yes** | Same. Isolating stake economics tempts you to copy a contract and edit the stakes, which is the worst case: near-identical wording. Needs an independently worded contract per arm. |
 | **M-2** | **no** | Two *disjoint* tours of one large graph share no nodes, so there is no shared per-node contract to leak. D-6 leaves M-2 alone. |
-| **Q-2** | not by D-6 | Grafting needs contracts for both source graphs, and 2 of 61 skeletons have one (`AL-213`). Q-2 is blocked by contract coverage, not by convergence. |
+| **Q-2** | not by D-6 | Grafting needs contracts for both source graphs, and 2 of 84 skeletons have one (`AL-213`). Q-2 is blocked by contract coverage, not by convergence. |
 | **Q-3** | **no, and this now counts in its favour** | The skeleton-free path has no shared plan by construction, so it sidesteps both the layer dilemma and the sharing constraint. It was filed as the cheapest untried experiment; D-6 makes it the only queued row that structurally cannot hit this wall. |
 
 **One general lesson for the programme's costing.** Three rows in a row (D-2, M-4, D-1) were costed
@@ -1188,16 +1188,16 @@ The counting was never done, so it is done here. Across all six bands:
 | Band-by-length cells | 17 |
 | Mean skeletons per cell | 3.6 |
 | Cells holding 4 or fewer | **13 of 17** |
-| **Skeletons carrying a narrative contract** | **2 of 61** |
+| **Skeletons carrying a narrative contract** | **2 of 84** |
 
 The framework's premise holds: 13 of 17 cells hold four skeletons or fewer, so a child who
 requests four books in one cell has met every distinct graph it contains. The 10-13 band is 11
 skeletons over 1,610 nodes with a median of 149.
 
 **But depth in this catalog is not the capital that matters, and this programme is why.** Every
-measure built here runs off a *narrative contract*, and 2 of 61 skeletons have one. Measured on the
+measure built here runs off a *narrative contract*, and 2 of 84 skeletons have one. Measured on the
 one that ships with the catalog, a contract costs about 1.7KB per node of hand-authored
-specification; the catalog's 11,458 nodes would be roughly 17MB of it. Buying more skeletons buys
+specification; the catalog's 15,470 nodes would be roughly 23MB of it. Buying more skeletons buys
 graphs that no measure in this programme can score and that no architecture proposed to us can plan
 over.
 
@@ -1250,10 +1250,10 @@ until D-6 reports.**
 
 | ID | Test | Source | Thesis | Cheapest experiment (proposer's) | Falsifier | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| R2-2 | Typed choice-capsule library | reviewer 2 | The reusable unit is a fork-to-join *choice capsule*, not a scene. Mine the existing 11,458 nodes across 61 graphs rather than authoring a new library. | Extract 12 to 20 capsules from three existing graphs, place into compatible regions of the pilot graph, produce six decision programs as scene plans and choice cards only. Proposer: 20 to 40 human hours for the first set. | Cosmetically different capsules collapse to the same decision family, making the library a new finite formula. | queued |
+| R2-2 | Typed choice-capsule library | reviewer 2 | The reusable unit is a fork-to-join *choice capsule*, not a scene. Mine the existing 15,470 nodes across 84 graphs rather than authoring a new library. | Extract 12 to 20 capsules from three existing graphs, place into compatible regions of the pilot graph, produce six decision programs as scene plans and choice cards only. Proposer: 20 to 40 human hours for the first set. | Cosmetically different capsules collapse to the same decision family, making the library a new finite formula. | queued |
 | R1-2 | Component-based narrative assembly | reviewer 1 | Classical planner (ASP or STRIPS) over a scene library with preconditions and effects; validity by construction rather than by LLM verification. | 10 plot outlines from a 20-scene library; evaluate cohesion and decision overlap manually. Proposer: low compute, ~4 human hours. | The solver produces logically valid but narratively disjointed sequences, the proposer's stated "so what?" problem. | queued |
 | R2-3 | Decision-first attributed graph grammar | reviewer 2 | Compile a valid topology from invariant-preserving productions after sampling the decision portfolio. Most ambitious; the proposer explicitly says it must not precede the manual test, which is now done. | One branch-and-bottleneck grammar, three productions, 12 hand-authored decision frames, 50 structural plans without prose, deterministic verification, prose for 4. Proposer: 2 to 4 engineer-weeks after the decision schema exists. | Generated shapes are valid but dramatically flat, or the grammar's production repertoire becomes its own fingerprint. | queued |
-| Q-1 | Does catalog depth solve it | framework Q1 | A child exhausts a cell by roughly their fourth request at 3 to 4 skeletons per cell, and demand concentrates on medium length while the catalog is flat across lengths. | Not a research question. A capital question about depth against the demand curve. | Not falsifiable as stated; it is a purchasing decision. **But which purchase is now decided by D-6, and the counting has been done.** See below. | **done, ANSWERED and reframed** |
+| Q-1 | Does catalog depth solve it | framework Q1 | A child exhausts a cell by roughly their fourth request at 3 to 4 skeletons per cell, and demand concentrates on medium length while the catalog is flat across lengths. **Re-derived 2026-08-22 on the corrected census** (`docs/planning/catalog-census.md`): the offered grid is the 18 cells in `validator/band_profile.py::offered_cells()`, all 18 are covered, and they hold 3 to 5 shells (median 4), so exhaustion moves from the fourth request to the fourth or fifth. The conclusion is unchanged, and the arithmetic is a floor either way: it assumes no repeat before exhaustion, whereas `select_skeleton_for_cell` repeats with probability 1/(2n-1) on the second request alone. | Not a research question. A capital question about depth against the demand curve. | Not falsifiable as stated; it is a purchasing decision. **But which purchase is now decided by D-6, and the counting has been done.** See below. | **done, ANSWERED and reframed** |
 
 ## E. Retired
 

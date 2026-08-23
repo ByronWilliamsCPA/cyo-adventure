@@ -11,6 +11,14 @@
 > hygiene-passed contract and a recognition baseline under an identical protocol. The
 > mechanisms below are well evidenced; the catalog-level magnitudes need replication on a
 > production cell.
+>
+> Catalog counts here are as at 2026-08-10 and have not been re-run: the document says 61
+> skeletons and 11,458 nodes, and on 2026-08-22 the catalog is 84 and 15,470
+> ([catalog-census.md](./catalog-census.md), `UW-G24`). The figures are left as written
+> because each is a measurement taken on that date, not a claim about today; "2 of 61
+> skeletons pass" in section 3 would become a different fraction only by re-running the
+> gate, which this correction did not do. Read every count below as dated, and take
+> current state from the census.
 
 ---
 

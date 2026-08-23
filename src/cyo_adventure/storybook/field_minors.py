@@ -3,7 +3,7 @@
 ADR-025 decision 3 says a story only carries fields defined at its published
 minor. Nothing enforced it, and the two obvious enforcement points both cost
 more than they are worth: a publish-path stamper needs every producer to
-change, and a hand-update sweep would force-bump all 61 catalog skeletons on
+change, and a hand-update sweep would force-bump every catalog skeleton on
 every minor.
 
 The cheap enforcement is the converse, which is what ``L1-8`` checks: if a

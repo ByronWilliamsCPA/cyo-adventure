@@ -254,6 +254,9 @@ open.
 
 ### 4.2 Skeleton-stage model selection (register `S-1`, 2026-08-21)
 
+Full round record, including the per-attempt logs and the declaration order this summary
+compresses: [live-structural-round-2026-08-21.md](./live-structural-round-2026-08-21.md).
+
 Two conditions over the same premises, briefs, and strict bar. **Blind** (stateless
 generate-and-repair, six-round cap): 2 passes in 21 attempts across seven legs; every family
 censored at the cap almost everywhere, and the pre-registered repair-rounds endpoint was degenerate
