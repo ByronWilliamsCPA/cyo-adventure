@@ -13,9 +13,19 @@ component: Development-Tools
 
 # Generation research review: workstream plan
 
-Date: 2026-08-22, corrected 2026-08-23. Status: step 1 complete; step 2 partly executed, with one
-fix shipped (`41d30909`) and a second carried by open PR
-[#742](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/742). No other step started. This plan
+Date: 2026-08-22, corrected 2026-08-23. Status: step 1 complete. Step 2 executed, with one fix
+shipped (`41d30909`) and the rest carried by two open PRs,
+[#742](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/742) (convergence reporting and the
+series prose-reuse gate) and [#743](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/743) (the
+remaining request-path gaps, plus dating the catalog counts). Step 3's INSTRUMENTS are built on
+branch `feat/step3-safety-approval-measurement`: R-11's gate-entry event and
+`publishing/gate_metrics.py`, and R-6's corpus extension to the `13-16` and `16+` bands. Both
+measurements are registered as `S-6` and `S-7` in the
+[diversity test register](./diversity-test-register.md) with their falsifiers fixed before either
+ran. NEITHER MEASUREMENT HAS RUN: S-6 waits on the `submitted` migration reaching an environment and
+accumulating enough rounds to pass its validity gate, and S-7 waits on an owner spend decision for
+the live review model. No result from either may be quoted until its artifact is committed. Steps 4
+to 7 not started. This plan
 gives a phase home to the 14 critical and high findings, the five condensed medium and low bundles,
 and the seven-step sequence produced by the thirteen-agent review of the 2026-08-22 generation
 research brief.
