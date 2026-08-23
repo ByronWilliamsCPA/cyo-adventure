@@ -11,7 +11,11 @@ from cyo_adventure.api.review_surface import (
     build_review_queue_item,
     build_review_surface,
 )
-from cyo_adventure.api.schemas import FindingView, ReviewSurfaceView
+from cyo_adventure.api.schemas import (
+    FindingView,
+    GenerationMeasuresView,
+    ReviewSurfaceView,
+)
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
 from cyo_adventure.moderation.thresholds import ThresholdPolicy
@@ -1717,9 +1721,19 @@ def _measures(
     *,
     report: dict[str, object] | None = None,
     validation_report: dict[str, object] | None = None,
-) -> object:
-    """Project a surface and return only its generation-measures block."""
-    return build_review_surface(
+) -> GenerationMeasuresView:
+    """Project a surface and return only its generation-measures block.
+
+    Typed rather than `object` so the assertions below are checked against the
+    real view: with an `object` return every `measures.fill_rate` read is
+    unchecked, and a renamed field would only surface at runtime.
+
+    The block itself is always projected; it is the individual measurements
+    that degrade to `None`. Asserting that here keeps the distinction honest
+    and turns a regression that dropped the block into a named failure rather
+    than an `AttributeError` inside whichever test ran first.
+    """
+    measures = build_review_surface(
         status="needs_review",
         storybook_id="s1",
         version=1,
@@ -1727,9 +1741,11 @@ def _measures(
         moderation_report=report if report is not None else _report(),
         validation_report=validation_report,
     ).generation_measures
+    assert measures is not None, "the measures block must always be projected"
+    return measures
 
 
-def test_the_fill_rate_and_its_floor_reach_the_surface() -> None:
+def test_generation_measures_persisted_rate_and_floor_reach_the_surface() -> None:
     """The rate is persisted on every generated version and shown nowhere."""
     measures = _measures(
         validation_report=_validation_report(fill_rate=0.82, fill_rate_floor=0.6)
@@ -1739,7 +1755,7 @@ def test_the_fill_rate_and_its_floor_reach_the_surface() -> None:
     assert measures.fill_rate_downgrade is False
 
 
-def test_a_fill_rate_downgrade_is_distinguishable_from_a_passing_rate() -> None:
+def test_generation_measures_downgrade_is_distinguishable_from_a_passing_rate() -> None:
     """A downgraded book routes to review for a reason the reviewer must see.
 
     ``fill_rate`` alone cannot carry this: the rate is stamped on every
@@ -1755,7 +1771,7 @@ def test_a_fill_rate_downgrade_is_distinguishable_from_a_passing_rate() -> None:
     assert measures.fill_rate_downgrade is True
 
 
-def test_a_version_with_no_validation_report_reports_no_fill_rate() -> None:
+def test_generation_measures_absent_validation_report_yields_no_fill_rate() -> None:
     """An imported or pre-floor version has no rate, which is not a rate of 0."""
     measures = _measures(validation_report=None)
     assert measures.fill_rate is None
@@ -1763,7 +1779,7 @@ def test_a_version_with_no_validation_report_reports_no_fill_rate() -> None:
     assert measures.fill_rate_downgrade is False
 
 
-def test_a_malformed_fill_rate_degrades_to_absent_rather_than_raising() -> None:
+def test_generation_measures_malformed_fill_rate_degrades_to_absent() -> None:
     """``validation_report`` is a read-only annex; a bad value must not 500."""
     measures = _measures(
         validation_report=_validation_report(fill_rate="0.82", fill_rate_floor=None)
@@ -1772,14 +1788,16 @@ def test_a_malformed_fill_rate_degrades_to_absent_rather_than_raising() -> None:
     assert measures.fill_rate_floor is None
 
 
-def test_a_boolean_is_not_read_as_a_fill_rate() -> None:
+def test_generation_measures_boolean_fill_rate_degrades_to_absent() -> None:
     """``True`` is an int in Python, and 1.0 would read as a perfect fill."""
     measures = _measures(validation_report=_validation_report(fill_rate=True))
     assert measures.fill_rate is None
 
 
 @pytest.mark.parametrize("bad", [float("nan"), float("inf"), float("-inf")])
-def test_a_non_finite_fill_rate_degrades_to_absent(bad: float) -> None:
+def test_generation_measures_non_finite_fill_rate_degrades_to_absent(
+    bad: float,
+) -> None:
     """A non-finite rate is a `float`, so a bare type check lets it through.
 
     The approval screen renders the rate as ``Math.round(rate * 100)``, which
@@ -1792,7 +1810,9 @@ def test_a_non_finite_fill_rate_degrades_to_absent(bad: float) -> None:
 
 
 @pytest.mark.parametrize("bad", [82, 1.5, -0.1])
-def test_an_out_of_range_fill_rate_degrades_to_absent(bad: float) -> None:
+def test_generation_measures_out_of_range_fill_rate_degrades_to_absent(
+    bad: float,
+) -> None:
     """A rate persisted as a percentage renders as "8200%", not as an error.
 
     The unit-interval bound is what catches a producer that stamped ``82``
@@ -1803,7 +1823,7 @@ def test_an_out_of_range_fill_rate_degrades_to_absent(bad: float) -> None:
     assert measures.fill_rate is None
 
 
-def test_a_genuine_zero_fill_rate_is_kept_not_degraded() -> None:
+def test_generation_measures_genuine_zero_fill_rate_is_kept() -> None:
     """Zero is a real, and alarming, measurement: nothing in the book filled.
 
     It is also the value most at risk from a falsy guard, and it is precisely

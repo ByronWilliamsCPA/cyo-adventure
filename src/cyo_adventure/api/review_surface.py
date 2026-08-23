@@ -239,8 +239,8 @@ def _as_rate(value: object) -> float | None:
     # absent, matching the `bool` rejection above, so a malformed record can
     # only ever read as "not recorded".
     # #VERIFY: tests/unit/test_review_surface.py::
-    # test_a_non_finite_fill_rate_degrades_to_absent and
-    # ::test_an_out_of_range_fill_rate_degrades_to_absent.
+    # test_generation_measures_non_finite_fill_rate_degrades_to_absent and
+    # ::test_generation_measures_out_of_range_fill_rate_degrades_to_absent.
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return None
     rate = float(value)

@@ -161,19 +161,52 @@ def test_a_blob_with_no_readable_nodes_fails_open() -> None:
     assert findings_from_prose_craft({"id": "s1", "nodes": ["not a dict"]}) == []
 
 
-def test_no_finding_message_carries_story_prose() -> None:
+@pytest.mark.parametrize(
+    ("nodes", "expected_category"),
+    [
+        pytest.param(
+            [
+                _node(
+                    f"n{i}",
+                    "Priya unlocked the hydroponics bay with her "
+                    "grandmother's brass key.",
+                )
+                for i in range(10)
+            ],
+            "prose_craft_sameness",
+            id="sameness",
+        ),
+        pytest.param(
+            [
+                _node(
+                    f"n{i}",
+                    f"You unlock the hydroponics bay {i} with Priya's brass key.",
+                )
+                for i in range(10)
+            ],
+            "prose_craft_person",
+            id="person",
+        ),
+    ],
+)
+def test_no_finding_message_carries_story_prose(
+    nodes: list[dict[str, Any]], expected_category: str
+) -> None:
     """#CRITICAL guard: these messages ride a PII-guarded surface.
 
     The leaf-diversity precedent keeps its messages prose-free (instructions
     and numbers only) for exactly this reason. A body that leaked into a
     message would carry a child's personalized story text with it.
-    """
-    body = "Priya unlocked the hydroponics bay with her grandmother's brass key."
-    nodes = [_node(f"n{i}", body) for i in range(10)]
 
+    Both detectors are exercised because they are not equally risky. The
+    sameness message is numbers only, but the person message interpolates
+    ``verdict.framing``, which is the one non-numeric value either template
+    admits. A single-case version of this test fired only the sameness
+    detector, so the higher-risk template was uncovered by its own #VERIFY.
+    """
     findings = findings_from_prose_craft(_book(nodes, narrative_person="third"))
 
-    assert findings
+    assert [f.category for f in findings] == [expected_category]
     for finding in findings:
         assert "Priya" not in finding.message
         assert "hydroponics" not in finding.message

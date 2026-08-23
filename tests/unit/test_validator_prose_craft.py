@@ -17,6 +17,7 @@ import pytest
 
 from cyo_adventure.validator import prose_craft
 from cyo_adventure.validator.prose_craft import (
+    MAX_REDUNDANT_NODES,
     MAX_THIRD_SECOND_PERSON,
     MAX_TOP3_LABEL_SHARE,
     MIN_GAMEBOOK_SECOND_PERSON,
@@ -90,9 +91,17 @@ def test_label_collapse_is_not_judged_on_a_book_too_small_to_judge() -> None:
 
 
 def test_a_collapsed_label_set_on_a_large_book_breaches() -> None:
-    """The live failure: three strings covered 89.8 percent of 674 choices."""
-    report = sameness_report(_story(["a"] * 25, labels=["Go on", "Go back"]))
+    """The live failure: three strings covered 89.8 percent of 674 choices.
+
+    Bodies are deliberately distinct. Twenty-five copies of one body would
+    breach `max_redundant_nodes` on its own, so `breached` would stay True
+    with the label bound removed entirely and this test would not notice.
+    """
+    report = sameness_report(
+        _story([f"Body {i} differs." for i in range(25)], labels=["Go on", "Go back"])
+    )
     assert report.labels >= 40
+    assert report.redundant_nodes == 0, "the label share must be the only breach"
     assert report.top3_share > MAX_TOP3_LABEL_SHARE
     assert judge_sameness(report).breached is True
 
@@ -189,3 +198,6 @@ def test_the_script_defaults_are_the_shared_thresholds() -> None:
     assert defaults.max_top3_label_share == MAX_TOP3_LABEL_SHARE
     assert defaults.max_third_second_person == MAX_THIRD_SECOND_PERSON
     assert defaults.min_gamebook_second_person == MIN_GAMEBOOK_SECOND_PERSON
+    # The one threshold whose --help text still hardcodes its value, so a
+    # drift here is the least visible of the four.
+    assert defaults.max_redundant_nodes == MAX_REDUNDANT_NODES
