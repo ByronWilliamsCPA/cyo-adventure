@@ -23,6 +23,7 @@ import pytest
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.metered import MeteredProvider, ledger_of
 from cyo_adventure.generation.pii import PiiContext
+from cyo_adventure.generation.providers.fallback import FallbackProvider
 from cyo_adventure.generation.usage import Completion, TokenUsage, UsageLedger
 
 _REAL_CHILD = "Wilhelmina Featherstone"
@@ -398,3 +399,45 @@ def test_the_configured_backend_is_used_when_the_provider_declares_no_name(
     seen = _generator_seen_by_review_builder(monkeypatch, _StubProvider())
 
     assert seen == ["anthropic"]
+
+
+class _CascadeLeg:
+    """A cascade leg that answers, reporting the backend it really is."""
+
+    name = "openrouter:sonnet"
+
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
+        """Answer with usage attributed to the openrouter backend."""
+        del system, prompt, max_tokens
+        return Completion(
+            text="{}",
+            usage=TokenUsage(
+                provider="openrouter",
+                model="anthropic/claude-sonnet-4.6",
+                input_tokens=1,
+                output_tokens=1,
+                duration_ms=1,
+            ),
+        )
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_a_cascade_is_judged_on_the_leg_that_answered(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A cascade must not launder its way past the independence check.
+
+    ``FallbackProvider.name`` is a cascade label such as
+    ``"fallback[openrouter:haiku,openrouter:sonnet,modal]"``. That string
+    equals no configured backend, so judging on it makes
+    ``backend != generator_provider`` unconditionally true and grants tier-1
+    independence to every cascade run, whatever model actually answered. The
+    resolved leg is the only value that can be compared.
+    """
+    cascade = FallbackProvider(legs=[_CascadeLeg()])
+    await cascade.complete(system="s", prompt="u", max_tokens=1)
+
+    assert _generator_seen_by_review_builder(monkeypatch, cascade) == ["openrouter"]

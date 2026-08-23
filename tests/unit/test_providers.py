@@ -688,6 +688,68 @@ class TestFallbackProvider:
         cascade = FallbackProvider(legs=[_StubLeg("a", []), _StubLeg("b", [])])
         assert cascade.name == "fallback[a,b]"
 
+    def test_attribution_is_unknown_before_any_leg_answers(self) -> None:
+        """A cascade that has not run cannot name a backend or a model.
+
+        ``None`` is the only honest answer, and it is the one every caller
+        must see. The reviewer-independence check compares these strings for
+        equality and reads an unequal pair as "independent", so a confident
+        wrong label here is strictly worse than an absent one.
+        """
+        cascade = FallbackProvider(legs=[_StubLeg("a", []), _StubLeg("b", [])])
+        assert cascade.model is None
+        assert cascade.resolved_provider is None
+
+    @pytest.mark.asyncio
+    async def test_attribution_names_the_leg_that_answered(self) -> None:
+        """After a failover the cascade reports leg B, not leg A and not itself."""
+        cascade = FallbackProvider(
+            legs=[
+                _StubLeg("a", [ProviderError("down", leg_fatal=False)]),
+                _StubLeg("b", ["ok"]),
+            ]
+        )
+        await cascade.complete(system="s", prompt="u", max_tokens=10)
+        assert cascade.resolved_provider == "b"
+        assert cascade.model == "b-model"
+
+    @pytest.mark.asyncio
+    async def test_attribution_follows_a_later_failover(self) -> None:
+        """The attribution tracks the most recent answer, not the first one.
+
+        One cascade serves every completion of a story, so a leg that dies
+        mid-run moves the attribution. Recording only the first answer would
+        misattribute every call after the switch.
+        """
+        cascade = FallbackProvider(
+            legs=[
+                _StubLeg("a", ["first", ProviderError("gone", leg_fatal=True)]),
+                _StubLeg("b", ["second"]),
+            ]
+        )
+        await cascade.complete(system="s", prompt="u", max_tokens=10)
+        assert cascade.model == "a-model"
+        await cascade.complete(system="s", prompt="u", max_tokens=10)
+        assert cascade.model == "b-model"
+
+    @pytest.mark.asyncio
+    async def test_the_cascade_label_survives_a_failover(self) -> None:
+        """``name`` stays the cascade label; the resolved attribution is separate.
+
+        The job row wants to record which cascade ran, because that is what an
+        operator reading the run needs; the independence check wants the single
+        leg that answered. Collapsing the two into one field loses whichever
+        one it does not report.
+        """
+        cascade = FallbackProvider(
+            legs=[
+                _StubLeg("a", [ProviderError("down", leg_fatal=False)]),
+                _StubLeg("b", ["ok"]),
+            ]
+        )
+        await cascade.complete(system="s", prompt="u", max_tokens=10)
+        assert cascade.name == "fallback[a,b]"
+
 
 # ---------------------------------------------------------------------------
 # ProviderError construction invariant

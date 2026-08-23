@@ -30,7 +30,7 @@ from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from cyo_adventure.generation.provider import GenerationProvider
-    from cyo_adventure.generation.usage import Completion
+    from cyo_adventure.generation.usage import Completion, TokenUsage
 
 logger = get_logger(__name__)
 
@@ -49,8 +49,14 @@ def _leg_name(leg: GenerationProvider, index: int) -> str:
 class FallbackProvider:
     """An ordered cascade of ``GenerationProvider`` legs with failover.
 
-    Construct one per story (per generation job): the dead-leg set and the
-    attempt counter are per-run state.
+    Construct one per story (per generation job): the dead-leg set, the attempt
+    counter and the resolved attribution are per-run state.
+
+    The cascade reports two different things about itself and both are needed.
+    ``name`` is the cascade label, which records WHICH cascade ran; the
+    ``resolved_provider``/``model`` pair records WHAT answered, and is what the
+    worker stamps on the job row and what reviewer independence is judged
+    against.
 
     Args:
         legs: Ordered adapter legs. ``complete`` tries each live leg in turn.
@@ -59,7 +65,8 @@ class FallbackProvider:
 
     legs: list[GenerationProvider]
     max_total_attempts: int = _DEFAULT_MAX_TOTAL_ATTEMPTS
-    # #ASSUME: concurrency: _dead and _total_attempts are mutated without locking.
+    # #ASSUME: concurrency: _dead, _total_attempts and _answered are mutated
+    # without locking.
     # Safe today because complete() is awaited sequentially within one story and a
     # fresh FallbackProvider is constructed per generation job
     # (worker.process_generation_job). A future caller that invokes complete()
@@ -68,12 +75,49 @@ class FallbackProvider:
     # #VERIFY: worker builds a per-job provider; tests construct one per scenario.
     _dead: set[int] = field(default_factory=set, init=False, repr=False)
     _total_attempts: int = field(default=0, init=False, repr=False)
+    _answered: TokenUsage | None = field(default=None, init=False, repr=False)
 
     @property
     def name(self) -> str:
         """Return a cascade label naming the ordered legs (for the worker record)."""
         inner = ",".join(_leg_name(leg, i) for i, leg in enumerate(self.legs))
         return f"fallback[{inner}]"
+
+    @property
+    def resolved_provider(self) -> str | None:
+        """Return the backend of the leg that last answered, if any.
+
+        #CRITICAL: security: reviewer independence is decided by comparing this
+        against the review backend, so the cascade LABEL must never stand in for
+        it. ``name`` equals no configured backend, which makes "different
+        backend" trivially true and grants tier-1 independence to every cascade
+        run regardless of what answered. ``None`` before the first answer is
+        deliberate: an unknown generator weakens the verdict, a wrong one
+        silently defeats it.
+        #VERIFY: tests/unit/test_review_metering.py::
+        test_a_cascade_is_judged_on_the_leg_that_answered.
+
+        Returns:
+            The answering leg's own backend name, or ``None`` before any leg
+            has answered.
+        """
+        return None if self._answered is None else self._answered.provider
+
+    @property
+    def model(self) -> str | None:
+        """Return the model of the leg that last answered, if any.
+
+        Every real adapter exposes ``model``; this cascade could not, because
+        until a leg answers there is no single truthful value. The worker's
+        ``_model_label`` reads this attribute to stamp the job and version
+        rows, and without it fell through to the literal string ``"mock"`` for
+        every cascade run, which is also what reached the independence check.
+
+        Returns:
+            The answering leg's model id, or ``None`` before any leg has
+            answered.
+        """
+        return None if self._answered is None else self._answered.model
 
     async def complete(
         self, *, system: str, prompt: str, max_tokens: int
@@ -129,6 +173,7 @@ class FallbackProvider:
                         "fallback.leg_failover", leg=leg_name, error=str(exc)
                     )
                 continue
+            self._answered = result.usage
             logger.info("fallback.leg_ok", leg=leg_name)
             return result
 

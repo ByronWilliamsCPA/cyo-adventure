@@ -107,10 +107,19 @@ def _build_guarded_review(
     # direction as readily as the safe one: an override onto the review backend
     # would be persisted as `reviewer_independent=True`, so a model would review
     # its own output and the report would attest that it had not.
+    # A cascade adds a second way to get this wrong: FallbackProvider.name is a
+    # label like "fallback[openrouter:haiku,openrouter:sonnet,modal]", which
+    # equals no configured backend, so judging on it makes "different backend"
+    # unconditionally true and grants tier-1 independence to every cascade run
+    # whatever answered. A provider that resolved a leg reports that leg here,
+    # and only a provider that did not falls back to its own label.
     # #VERIFY: tests/unit/test_review_metering.py::
-    # test_independence_is_judged_against_the_resolved_generator_backend and
-    # ::test_the_configured_backend_is_used_when_the_provider_declares_no_name.
-    resolved_name: object = getattr(generation_provider, "name", None)
+    # test_independence_is_judged_against_the_resolved_generator_backend,
+    # ::test_the_configured_backend_is_used_when_the_provider_declares_no_name
+    # and ::test_a_cascade_is_judged_on_the_leg_that_answered.
+    resolved_name: object = getattr(
+        generation_provider, "resolved_provider", None
+    ) or getattr(generation_provider, "name", None)
     effective_generator = (
         resolved_name
         if isinstance(resolved_name, str) and resolved_name
