@@ -629,7 +629,7 @@ def _apply_reuse_cap(
     the draw would put a lock on the request path to prevent it.
     #VERIFY: `reuse_cap_relaxed` is False in that case, so the Selection does
     NOT record the duplicate as a known compromise. A future detector belongs
-    on the persisted pairing, not here.
+    on the persisted pairing, not here. Scheduled as `UW-C345`.
 
     Args:
         candidates: Every in-cell candidate slug.
