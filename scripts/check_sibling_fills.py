@@ -13,7 +13,10 @@ sibling-scoped n-gram check can.
 
 Deterministic: normalizes bodies plus choice labels (lowercase, punctuation
 stripped), extracts word 4-grams, drops grams made entirely of function
-words, and reports every gram appearing in two or more sibling fills.
+words, and reports every gram appearing in two or more sibling fills. The
+tokenizer, stop list and gram extraction live in
+``cyo_adventure.diversity.grams`` and are shared with the request-path
+advisory, so the calibration figures below keep describing the running code.
 With ``--check``, exits 1 when the count of distinct shared grams per 1000
 mean leaf words exceeds ``--max-shared-per-1000`` (default 4.0). The budget
 is length-normalized because a fixed count cannot serve both an 11-node and
@@ -26,12 +29,21 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from collections import Counter
 from itertools import combinations
 from pathlib import Path
 from typing import Any, cast
+
+from cyo_adventure.diversity.grams import (
+    STOPWORDS as _STOPWORDS,
+)
+from cyo_adventure.diversity.grams import (
+    content_grams,
+    pairwise_overlap,
+    story_text,
+    tokenize,
+)
 
 
 def _load(path: str) -> dict[str, Any] | None:
@@ -54,34 +66,21 @@ def _load(path: str) -> dict[str, Any] | None:
     return cast("dict[str, Any]", data)
 
 
-_WORD_RE = re.compile(r"[a-z']+")
-_STOPWORDS = frozenset(
-    "a an and are as at be but by for from had has he her his i in is it its "
-    "of on she so that the their them they this to was were will with you your "
-    "not no one out up down all what says said".split()
-)
-
-
 def _leaf_text(story: dict[str, Any]) -> str:
-    parts: list[str] = []
-    for node in cast("list[dict[str, Any]]", story.get("nodes") or []):
-        parts.append(str(node.get("body", "")))
-        parts.extend(
-            str(c.get("label", ""))
-            for c in cast("list[dict[str, Any]]", node.get("choices") or [])
-        )
-    return " ".join(parts)
+    """Return the whole recognition surface: node bodies plus choice labels.
+
+    Labels are included here and excluded on the request path. This tool asks
+    what a reader could recognize across two books, and a reader reads the
+    menu; ``moderation/leaf_diversity.py`` asks how much of the FILL was
+    reused, and the labels are the skeleton's, identical in every sibling by
+    construction.
+    """
+    return story_text(story, include_choice_labels=True)
 
 
-def _grams(text: str, n: int = 4) -> set[tuple[str, ...]]:
-    words = _WORD_RE.findall(text.lower())
-    grams: set[tuple[str, ...]] = set()
-    for i in range(len(words) - n + 1):
-        gram = tuple(words[i : i + n])
-        if all(word in _STOPWORDS for word in gram):
-            continue
-        grams.add(gram)
-    return grams
+def _grams(text: str, n: int = 4) -> frozenset[tuple[str, ...]]:
+    """Return the distinct content-bearing ``n``-grams in ``text``."""
+    return content_grams(text, n)
 
 
 def shared_grams(stories: list[dict[str, Any]], n: int = 4) -> Counter[tuple[str, ...]]:
@@ -113,15 +112,35 @@ def pairwise_shared_grams(
     reader calibrating against it should know no gate depends on it.
     #VERIFY: grep for the flag name before believing any claim that it gates.
     """
-    grams = [_grams(_leaf_text(story), n) for story in stories]
-    words = [len(_WORD_RE.findall(_leaf_text(story).lower())) for story in stories]
     pairs: list[tuple[int, int, int, float]] = []
     for i, j in combinations(range(len(stories)), 2):
-        count = len(grams[i] & grams[j])
-        mean_words = (words[i] + words[j]) / 2.0
-        rate = count / max(mean_words, 1.0) * 1000.0
-        pairs.append((i, j, count, rate))
+        overlap = pairwise_overlap(
+            stories[i], stories[j], include_choice_labels=True, n=n
+        )
+        pairs.append((i, j, overlap.shared, overlap.per_1000))
     return pairs
+
+
+def ranked_shared(
+    shared: Counter[tuple[str, ...]], limit: int
+) -> list[tuple[tuple[str, ...], int]]:
+    """Return the ``limit`` most-shared grams, ties broken by the gram itself.
+
+    ``Counter.most_common`` is insertion-stable for ties, and ``shared_grams``
+    inserts by iterating per-fill gram sets, whose order is hash-randomized per
+    process. Left alone, the printed evidence list therefore reorders between
+    two runs over identical input while the gate number stays fixed, which
+    reads as churn in the fills. Sorting on (-count, gram) makes the report a
+    function of its input.
+
+    Args:
+        shared: gram -> number of sibling fills containing it.
+        limit: How many rows to return.
+
+    Returns:
+        The highest-count grams first, alphabetical within a count.
+    """
+    return sorted(shared.items(), key=lambda item: (-item[1], item[0]))[:limit]
 
 
 def node_gram_concentration(
@@ -179,7 +198,7 @@ def menu_frame_overlap(
             ):
                 words = [
                     w
-                    for w in _WORD_RE.findall(str(choice.get("label", "")).lower())
+                    for w in tokenize(str(choice.get("label", "")))
                     if w not in _STOPWORDS
                 ]
                 if len(words) < 2:
@@ -225,16 +244,16 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         stories.append(story)
     shared = shared_grams(stories)
-    mean_words = sum(
-        len(_WORD_RE.findall(_leaf_text(story).lower())) for story in stories
-    ) / len(stories)
+    mean_words = sum(len(tokenize(_leaf_text(story))) for story in stories) / len(
+        stories
+    )
     per_1000 = len(shared) / max(mean_words, 1.0) * 1000.0
     budget = args.max_shared_per_1000
     sys.stdout.write(
         f"shared 4-grams across {len(stories)} fills: {len(shared)} "
         f"({per_1000:.1f} per 1000 mean leaf words; budget {budget})\n"
     )
-    for gram, count in shared.most_common(15):
+    for gram, count in ranked_shared(shared, 15):
         sys.stdout.write(f"  x{count}  {' '.join(gram)}\n")
     frames = menu_frame_overlap(stories)
     sys.stdout.write(

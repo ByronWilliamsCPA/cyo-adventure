@@ -20,9 +20,10 @@ design doc section 10).
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.diversity.grams import pairwise_overlap
 from cyo_adventure.diversity.history import load_family_history, load_version_blob
 from cyo_adventure.diversity.leaf import anti_template_verdict
 from cyo_adventure.diversity.normalize import coerce_storybook
@@ -33,11 +34,32 @@ from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from sqlalchemy.ext.asyncio import AsyncSession
 
     from cyo_adventure.db.models import Storybook, StorybookVersion
+    from cyo_adventure.diversity.history import HistoryEntry
 
 _logger = get_logger(__name__)
+
+SIBLING_GRAM_ADVISORY_PER_1000 = 60.0
+"""Body-only shared 4-grams per 1000 words above which a reviewer is told.
+
+Provisional and deliberately loose. The anchors, measured 2026-08-22 on the
+committed cave-of-echoes trio: three genuinely re-themed sibling fills of one
+skeleton score 22.20, 33.74 and 38.41, and a noun-swap near-copy of one of
+them scores 931.93. This floor sits at roughly 1.6x the highest acceptable
+observation and more than an order of magnitude below the copy ceiling, so it
+reports the shape it was built for and stays quiet on the shape the WS-2
+programme already calls a success.
+
+It is NOT a calibrated blocking threshold and must not become one on this
+evidence: four pairs from one skeleton cannot fix a production cutoff. The
+measurement is logged on every run regardless of the verdict
+(``moderation.sibling_gram_overlap``), so the real distribution accumulates
+and a later decision can be made from it rather than from this guess.
+"""
 
 
 def findings_from_anti_template(
@@ -116,6 +138,79 @@ def findings_from_anti_template(
     return findings
 
 
+def _sibling_gram_findings(
+    current_blob: Mapping[str, Any],
+    partner_blob: Mapping[str, Any],
+    *,
+    story_id: str,
+    partner: HistoryEntry,
+) -> list[Finding]:
+    """Measure verbatim-wording overlap with the partner fill and report it.
+
+    Runs on the RAW blobs, before ``coerce_storybook``, so it survives the two
+    paths that end the ATG early (an unparseable partner, a drifted structure).
+    Overlap is position-independent: two fills reuse wording whether or not
+    the tree still lines up, which is exactly when the ATG's node-aligned
+    distances go blind and this channel is the only one left.
+
+    Choice labels are excluded. The skeleton hands every sibling the same
+    labels, so counting them measures the tree rather than the fill; on the
+    calibration trio they alone move the re-themed pairs from 22-38 (silent)
+    to 61-80 (a false alarm). See ``diversity/grams.py``.
+
+    #ASSUME: data-integrity: either blob may be malformed; ``story_text``
+    degrades to empty text rather than raising, matching this module's
+    fail-open contract.
+    #VERIFY: tests/unit/test_diversity_grams.py::test_pairwise_overlap_survives_an_empty_story
+
+    Args:
+        current_blob: The raw blob of the fill under moderation.
+        partner_blob: The raw blob of the family's prior same-skeleton fill.
+        story_id: The current story's id, for the log line.
+        partner: The selected comparison partner, for the message and log.
+
+    Returns:
+        list[Finding]: One story-level ``Verdict.ADVISORY`` above
+            :data:`SIBLING_GRAM_ADVISORY_PER_1000`, otherwise ``[]``. Never a
+            ``FLAG``: a FLAG would enter the pipeline's single bounded repair,
+            and no threshold here is calibrated well enough to spend it.
+    """
+    overlap = pairwise_overlap(current_blob, partner_blob, include_choice_labels=False)
+    _logger.info(
+        "moderation.sibling_gram_overlap",
+        story_id=story_id,
+        partner_storybook_id=partner.storybook_id,
+        partner_version=partner.version,
+        shared_grams=overlap.shared,
+        mean_words=round(overlap.mean_words, 1),
+        per_1000=round(overlap.per_1000, 2),
+        threshold=SIBLING_GRAM_ADVISORY_PER_1000,
+    )
+    if overlap.per_1000 <= SIBLING_GRAM_ADVISORY_PER_1000:
+        return []
+    return [
+        Finding(
+            stage=0,
+            source=Source.PIPELINE,
+            category="sibling_gram_overlap",
+            verdict=Verdict.ADVISORY,
+            node_id=None,
+            score=None,
+            message=(
+                f"this fill shares {overlap.shared} distinct four-word "
+                f"phrases with storybook {partner.storybook_id} "
+                f"v{partner.version}, the family's previous fill of the same "
+                f"skeleton: {overlap.per_1000:.1f} per 1000 words against an "
+                f"advisory line of {SIBLING_GRAM_ADVISORY_PER_1000:.0f} "
+                "(choice labels excluded, since the skeleton supplies those "
+                "to both). Read the two side by side and confirm the wording "
+                "was re-imagined rather than reused; advisory only, "
+                "threshold provisional"
+            ),
+        )
+    ]
+
+
 async def run_leaf_diversity_check(
     *,
     session: AsyncSession,
@@ -183,12 +278,19 @@ async def run_leaf_diversity_check(
         )
         return []
 
+    gram_findings = _sibling_gram_findings(
+        version_row.blob,
+        partner_blob,
+        story_id=storybook.id,
+        partner=partner,
+    )
+
     try:
         current = coerce_storybook(version_row.blob)
         partner_fill = coerce_storybook(partner_blob)
     except ValidationError:
         _logger.warning("moderation.atg_blob_invalid", story_id=storybook.id)
-        return []
+        return gram_findings
 
     # Pre-check the structure fingerprint rather than catching
     # anti_template_verdict's raise (design doc section 3.2): a mismatch here
@@ -203,10 +305,10 @@ async def run_leaf_diversity_check(
             partner_storybook_id=partner.storybook_id,
             partner_version=partner.version,
         )
-        return []
+        return gram_findings
 
     atg = anti_template_verdict(current, partner_fill, brief_a=None, brief_b=None)
-    return findings_from_anti_template(
+    return gram_findings + findings_from_anti_template(
         atg,
         partner_storybook_id=partner.storybook_id,
         partner_version=partner.version,
