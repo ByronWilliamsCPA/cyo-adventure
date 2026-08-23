@@ -40,9 +40,17 @@ GenerationLane = Literal["family", "admin"]
 # Anthropic account is outside that account's terms. This set is the only place
 # the rule is written down, and ``build_provider`` defaults to the lane it
 # constrains, so a new call site that says nothing is restricted, not exempt.
+# PUBLIC (no leading underscore) because the rule now has to hold at two
+# boundaries, not one: ``build_provider`` refuses a forbidden leg at job time,
+# and ``api/provider_allowlist.py`` refuses to ENABLE a row naming one at
+# admin-write time. Importing the one set is what keeps those two answers from
+# drifting; a second copy in the API layer is how this rule would rot. The
+# api -> generation import direction is the sanctioned one (``api/remoderate.py``
+# already imports ``build_provider`` from here); the ban recorded in
+# tests/unit/test_allowlist.py is on the reverse.
 # #VERIFY: tests/unit/test_provider_lane.py::
 # TestFamilyLaneRejectsTheDirectAnthropicLeg::test_the_restrictive_lane_is_the_default.
-_FAMILY_LANE_PROVIDERS: Final[frozenset[str]] = frozenset(
+FAMILY_LANE_PROVIDERS: Final[frozenset[str]] = frozenset(
     {"mock", "openrouter", "modal"}
 )
 
@@ -630,11 +638,11 @@ def build_provider(
     # client. ``lane`` defaults to "family", which is the restricted lane.
     # #VERIFY: tests/unit/test_provider_lane.py::
     # TestFamilyLaneRejectsTheDirectAnthropicLeg.
-    if lane == "family" and provider not in _FAMILY_LANE_PROVIDERS:
+    if lane == "family" and provider not in FAMILY_LANE_PROVIDERS:
         msg = (
             f"provider '{provider}' is not permitted on the 'family' generation "
             "lane; a kid- or guardian-triggered job may use only "
-            f"{sorted(_FAMILY_LANE_PROVIDERS)}"
+            f"{sorted(FAMILY_LANE_PROVIDERS)}"
         )
         raise ConfigurationError(msg)
 

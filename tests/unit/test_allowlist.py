@@ -6,7 +6,7 @@ from typing import get_args
 
 from cyo_adventure.api.schemas import ProviderName
 from cyo_adventure.generation.allowlist import ALLOWLIST_PROVIDERS, DEFAULT_ALLOWLIST
-from cyo_adventure.generation.provider import _FAMILY_LANE_PROVIDERS
+from cyo_adventure.generation.provider import FAMILY_LANE_PROVIDERS
 
 
 def test_allowlist_providers_match_provider_name_literal() -> None:
@@ -71,7 +71,7 @@ def test_no_enabled_seed_row_names_a_provider_the_family_lane_forbids() -> None:
     This is the coherence property the D1 work exists to restore. Every
     authoring plan is created against a family story request, so every job the
     worker runs states ``lane="family"`` and `build_provider` rejects any
-    provider outside `_FAMILY_LANE_PROVIDERS`. An ENABLED allowlist row naming
+    provider outside `FAMILY_LANE_PROVIDERS`. An ENABLED allowlist row naming
     a forbidden provider is therefore a pair the admin dialog offers, the
     authoring-plan endpoint accepts, and the worker then fails on, with the
     failure arriving at generation time and attributed to the job rather than
@@ -80,7 +80,7 @@ def test_no_enabled_seed_row_names_a_provider_the_family_lane_forbids() -> None:
     forbidden = [
         seed
         for seed in DEFAULT_ALLOWLIST
-        if seed.enabled and seed.provider not in _FAMILY_LANE_PROVIDERS
+        if seed.enabled and seed.provider not in FAMILY_LANE_PROVIDERS
     ]
 
     assert not forbidden, f"enabled rows the family lane forbids: {forbidden}"

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import uuid
 from typing import TYPE_CHECKING
 
 import pytest
@@ -10,6 +11,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from cyo_adventure.db.models import ProviderModelAllowlist, ProviderModelAllowlistAudit
+from cyo_adventure.generation.provider import FAMILY_LANE_PROVIDERS
 from tests.integration.conftest import Seed, auth
 
 if TYPE_CHECKING:
@@ -68,19 +70,27 @@ async def test_list_starts_empty(client: AsyncClient, seed: Seed) -> None:
 async def test_add_then_list_with_audit(
     client: AsyncClient, seed: Seed, engine: AsyncEngine
 ) -> None:
-    """POST creates a row and an audit entry; the row shows up in GET."""
+    """POST creates a row and an audit entry; the row shows up in GET.
+
+    The happy path names ``openrouter`` rather than the direct ``anthropic``
+    leg it used to: this endpoint only ever creates ENABLED rows, and D1 forbids
+    an enabled row for a provider the family generation lane cannot use, so a
+    direct-anthropic POST is now a 422 (see
+    ``test_add_a_provider_the_family_lane_forbids_is_422``). The provider is
+    incidental to what this test pins; the rejection is not.
+    """
     res = await client.post(
         _URL,
         json={
-            "provider": "anthropic",
-            "model_id": "claude-opus-4-8",
+            "provider": "openrouter",
+            "model_id": "anthropic/claude-opus-4.8",
             "display_name": "Claude Opus 4.8",
         },
         headers=auth(seed.admin_token),
     )
     assert res.status_code == 201, res.text
     body = res.json()
-    assert body["provider"] == "anthropic"
+    assert body["provider"] == "openrouter"
     assert body["enabled"] is True
 
     listed = await client.get(_URL, headers=auth(seed.admin_token))
@@ -296,3 +306,132 @@ async def test_db_check_constraints_reject_invalid_values(
         with pytest.raises(IntegrityError):
             await session.flush()
         await session.rollback()
+
+
+# ---------------------------------------------------------------------------
+# Agreement with the D1 lane ruling at the write boundary (2026-08-23, UW-C346)
+# ---------------------------------------------------------------------------
+# `tests/unit/test_allowlist.py::
+# test_no_enabled_seed_row_names_a_provider_the_family_lane_forbids` pins the
+# same property for the code-side seed constant. That guard covers a static
+# Python literal only; the rows these endpoints write are what
+# `is_enabled_allowlist_pair` actually reads, so the runtime table needs its
+# own guard at the point untrusted admin input enters.
+
+
+async def _withdrawn_anthropic_row(engine: AsyncEngine) -> str:
+    """Insert the disabled direct-anthropic row D1's migration leaves behind.
+
+    Written straight through the ORM rather than through ``POST``: after the
+    fix the API refuses to create an enabled row for this provider, and this
+    is the state the migration actually produces (present, unselectable).
+
+    Args:
+        engine: The test container engine.
+
+    Returns:
+        str: The new row's id, as it appears in a URL path.
+    """
+    async with AsyncSession(engine) as session:
+        row = ProviderModelAllowlist(
+            provider="anthropic",
+            model_id="claude-sonnet-4-6",
+            enabled=False,
+            display_name="Claude Sonnet 4.6 (direct, withdrawn)",
+        )
+        session.add(row)
+        # The id is read BEFORE the commit: ``expire_on_commit`` would expire
+        # the instance and re-reading it would attempt IO outside the greenlet
+        # context (``MissingGreenlet``). The client-side ``uuid.uuid4`` default
+        # is applied at flush, so the value is already there.
+        await session.flush()
+        entry_id = str(row.id)
+        await session.commit()
+    return entry_id
+
+
+async def test_add_a_provider_the_family_lane_forbids_is_422(
+    client: AsyncClient, seed: Seed, engine: AsyncEngine
+) -> None:
+    """POST cannot create a row for a provider the family lane forbids.
+
+    ``add_allowlist_entry`` hardcodes ``enabled=True``, so a POST naming a
+    provider outside ``FAMILY_LANE_PROVIDERS`` can only produce the exact
+    incoherence D1 exists to remove: a pair the admin dialog offers, the
+    authoring-plan endpoint accepts via ``is_enabled_allowlist_pair``, and
+    ``build_provider(lane="family")`` then refuses at job time, so the
+    configuration error arrives as a generation failure attributed to the job.
+
+    The precondition assertion is deliberate: if D1 is ever reversed and the
+    direct leg is readmitted to the family lane, this test should fail there
+    and say why, not silently keep asserting a rule that no longer holds.
+    """
+    assert "anthropic" not in FAMILY_LANE_PROVIDERS
+
+    res = await client.post(
+        _URL,
+        json={"provider": "anthropic", "model_id": "claude-sonnet-4-6"},
+        headers=auth(seed.admin_token),
+    )
+
+    assert res.status_code == 422, res.text
+    async with AsyncSession(engine) as session:
+        rows = (await session.scalars(select(ProviderModelAllowlist))).all()
+        audits = (await session.scalars(select(ProviderModelAllowlistAudit))).all()
+    assert rows == []
+    assert audits == []
+
+
+async def test_reenabling_a_provider_the_family_lane_forbids_is_422(
+    client: AsyncClient, seed: Seed, engine: AsyncEngine
+) -> None:
+    """PUT cannot flip a withdrawn row back on.
+
+    The D1 migration disables the two direct-anthropic rows rather than
+    deleting them. Without a guard here, one PUT undoes that migration and
+    puts the pair back in front of ``is_enabled_allowlist_pair``, which is the
+    single read path the authoring-plan endpoint trusts.
+    """
+    entry_id = await _withdrawn_anthropic_row(engine)
+
+    res = await client.put(
+        f"{_URL}/{entry_id}",
+        json={"enabled": True},
+        headers=auth(seed.admin_token),
+    )
+
+    assert res.status_code == 422, res.text
+    async with AsyncSession(engine) as session:
+        row = await session.get(ProviderModelAllowlist, uuid.UUID(entry_id))
+        audits = (await session.scalars(select(ProviderModelAllowlistAudit))).all()
+    assert row is not None
+    assert row.enabled is False
+    assert audits == []
+
+
+async def test_a_withdrawn_row_stays_editable_while_it_stays_disabled(
+    client: AsyncClient, seed: Seed, engine: AsyncEngine
+) -> None:
+    """The rule is "may exist but may not be enabled", not "may not exist".
+
+    D1 still permits the direct leg for out-of-band admin content generation,
+    and the row has to remain expressible so the admin surface can show what
+    was withdrawn. So a PUT that leaves the row disabled is a normal update:
+    it succeeds, relabels the row, and audits itself like any other.
+    """
+    entry_id = await _withdrawn_anthropic_row(engine)
+
+    res = await client.put(
+        f"{_URL}/{entry_id}",
+        json={"enabled": False, "display_name": "withdrawn by D1"},
+        headers=auth(seed.admin_token),
+    )
+
+    assert res.status_code == 200, res.text
+    assert res.json()["enabled"] is False
+    assert res.json()["display_name"] == "withdrawn by D1"
+    async with AsyncSession(engine) as session:
+        audits = (await session.scalars(select(ProviderModelAllowlistAudit))).all()
+    assert [a.action for a in audits] == ["update"]
+    assert audits[0].old_enabled is False
+    assert audits[0].new_enabled is False

@@ -20,8 +20,10 @@ from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
     StateTransitionError,
+    ValidationError,
 )
 from cyo_adventure.db.models import ProviderModelAllowlist, ProviderModelAllowlistAudit
+from cyo_adventure.generation.provider import FAMILY_LANE_PROVIDERS
 
 router = APIRouter(
     prefix="/api/v1",
@@ -46,6 +48,58 @@ def _require_admin(ctx: Context) -> None:
     if not ctx.principal.is_admin:
         msg = "admin role required"
         raise AuthorizationError(msg, required_permission="admin")
+
+
+def _reject_enabling_outside_the_family_lane(
+    provider: str, *, enabled: bool, field: str
+) -> None:
+    """Refuse any write that would leave a forbidden provider's row enabled.
+
+    D1 (ruled 2026-08-23, ``UW-C346``) restricts kid- and guardian-triggered
+    generation to ``provider.py::FAMILY_LANE_PROVIDERS``. Every authoring plan
+    is created against a family story request, so the worker builds every one
+    of them with ``lane="family"``.
+
+    The rule enforced here is "a row whose provider is outside that set may
+    exist but may not be ENABLED", not "may not exist": D1 still permits the
+    direct leg for out-of-band admin content generation, the seed migration's
+    ``ON CONFLICT DO NOTHING`` makes a deleted row come back ENABLED on any
+    replay, and the admin surface has to be able to show what was withdrawn.
+
+    Args:
+        provider: The row's provider. On create this is untrusted request
+            input; on update it is the stored row's value, since the update
+            body cannot change it.
+        enabled: The enabled state the request is asking the row to end in.
+        field: The request field the rejection is attributed to.
+
+    Raises:
+        ValidationError: If an enabled row would name a provider the family
+            lane forbids (422).
+    """
+    # #CRITICAL: security: this is the runtime half of the D1 guard. Its
+    # code-side twin (tests/unit/test_allowlist.py::
+    # test_no_enabled_seed_row_names_a_provider_the_family_lane_forbids) covers
+    # only the static DEFAULT_ALLOWLIST literal, while the rows THIS router
+    # writes are what `is_enabled_allowlist_pair` actually reads and what the
+    # authoring-plan endpoint trusts. Without this check an admin can create or
+    # re-enable a forbidden pair, and `build_provider(lane="family")` then
+    # raises at job time, so a configuration error arrives as a generation
+    # failure attributed to the job.
+    # #VERIFY: tests/integration/test_provider_allowlist_api.py::
+    # test_add_a_provider_the_family_lane_forbids_is_422 and
+    # test_reenabling_a_provider_the_family_lane_forbids_is_422; the
+    # may-exist-while-disabled half is pinned by
+    # test_a_withdrawn_row_stays_editable_while_it_stays_disabled.
+    if not enabled or provider in FAMILY_LANE_PROVIDERS:
+        return
+    msg = (
+        f"provider '{provider}' may not be enabled on the allowlist: a kid- or "
+        "guardian-triggered generation job is not permitted to use it, so an "
+        "enabled row would be a pair the authoring-plan endpoint accepts and "
+        "the worker then refuses. The row may exist while disabled."
+    )
+    raise ValidationError(msg, field=field)
 
 
 def _view(row: ProviderModelAllowlist) -> AllowlistView:
@@ -109,9 +163,17 @@ async def add_allowlist_entry(body: AllowlistCreateBody, ctx: Context) -> Allowl
 
     Raises:
         AuthorizationError: If the caller is not an admin (403).
+        ValidationError: If the provider is one the family generation lane
+            forbids (422); this endpoint only ever creates enabled rows.
         StateTransitionError: If the pair already exists (409).
     """
     _require_admin(ctx)
+    # Checked before the duplicate pre-check so a rejected write does no DB
+    # work at all, and stated as enabled=True because that is what the INSERT
+    # below hardcodes: there is no way to ask this endpoint for a disabled row.
+    _reject_enabling_outside_the_family_lane(
+        body.provider, enabled=True, field="provider"
+    )
     # #ASSUME: concurrency: check-then-act on (provider, model_id) is unlocked;
     # two concurrent admin POSTs for the same pair can both miss the row and race
     # to INSERT. Admin-only and rare; the
@@ -183,6 +245,8 @@ async def update_allowlist_entry(
     Raises:
         AuthorizationError: If the caller is not an admin (403).
         ResourceNotFoundError: If no row exists for ``entry_id`` (404).
+        ValidationError: If the request would enable a row whose provider the
+            family generation lane forbids (422).
     """
     _require_admin(ctx)
     # #CRITICAL: security: admin-only mutation of the billing-control allowlist;
@@ -195,6 +259,12 @@ async def update_allowlist_entry(
     if row is None:
         msg = f"no allowlist entry '{entry_id}'"
         raise ResourceNotFoundError(msg)
+    # The 404 comes first (a missing row is not a lane question), then the lane
+    # guard, before any field is assigned or any audit row is staged. `enabled`
+    # is the field named because provider is not settable through this body.
+    _reject_enabling_outside_the_family_lane(
+        row.provider, enabled=body.enabled, field="enabled"
+    )
     old_enabled = row.enabled
     row.enabled = body.enabled
     row.display_name = body.display_name

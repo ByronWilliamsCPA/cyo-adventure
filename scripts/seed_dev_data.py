@@ -772,9 +772,13 @@ async def _seed_provider_allowlist(session: AsyncSession) -> bool:
     # #CRITICAL: security: these rows gate which (provider, model_id) pairs may
     # bill against a generation backend; generation/allowlist.py::
     # is_enabled_allowlist_pair is the single read path the authoring-plan
-    # endpoint trusts. Seeding exactly the enabled DEFAULT_ALLOWLIST pairs keeps
-    # the code-side mirror and the database in sync, the invariant the retired
-    # test_seed_matches_default_allowlist guarded.
+    # endpoint trusts. Seeding every DEFAULT_ALLOWLIST pair at its declared
+    # ``enabled`` value, rather than hardcoding True, keeps the code-side
+    # mirror and the database in sync: since D1 (`UW-C346`) two rows are
+    # deliberately present but disabled, and seeding a disabled row as enabled
+    # would hand a dev database a (provider, model_id) pair the worker's
+    # family lane refuses to run, turning a config mismatch into a
+    # generation-time failure attributed to the job.
     # #VERIFY: test_seed_dev_data_seeds_provider_allowlist.
     rows = await session.execute(
         select(ProviderModelAllowlist.provider, ProviderModelAllowlist.model_id)

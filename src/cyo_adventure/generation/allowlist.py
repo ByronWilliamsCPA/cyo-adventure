@@ -54,12 +54,17 @@ class AllowlistSeed:
 
 
 # #CRITICAL: security: an ENABLED row here is a pair the authoring-plan endpoint
-# will accept. Every authoring plan is created against a family story request,
-# so the worker builds every one of these on the "family" lane, where
-# `provider.py::_FAMILY_LANE_PROVIDERS` permits only the routed legs. An enabled
-# row naming a provider that lane forbids is a pair the admin dialog offers and
-# the worker then refuses, turning a configuration error into a generation-time
-# failure attributed to the job.
+# will accept. Every authoring plan is created by a guardian for a family
+# against a story request, so a job built from one runs on the "family" lane,
+# where `provider.py::FAMILY_LANE_PROVIDERS` permits only the routed legs. The
+# legacy concept-intake path (api/generation.py's
+# POST /concepts/{id}/generate) creates a job without going through this
+# endpoint, and without a story request or authoring metadata at all, but the
+# worker still forces lane="family" for it (generation/worker.py), so the same
+# restriction reaches that path too. An enabled row naming a provider either
+# path's family lane forbids is a pair the admin dialog offers and the worker
+# then refuses, turning a configuration error into a generation-time failure
+# attributed to the job.
 # #VERIFY: tests/unit/test_allowlist.py::
 # test_no_enabled_seed_row_names_a_provider_the_family_lane_forbids.
 DEFAULT_ALLOWLIST: tuple[AllowlistSeed, ...] = (

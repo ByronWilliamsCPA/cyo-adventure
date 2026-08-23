@@ -15,11 +15,13 @@
 --    ruling would hold only as a default rather than as a choice.
 --
 -- 2. DISABLE the two direct-anthropic rows. `generation/provider.py::build_provider`
---    now refuses the direct `anthropic` leg on the "family" lane, and every
---    authoring plan is created against a family story request, so an ENABLED
---    anthropic row is a pair this endpoint accepts and the worker then fails on.
---    The failure would surface at generation time, attributed to the job rather
---    than to the configuration that caused it.
+--    now refuses the direct `anthropic` leg on the "family" lane, and every job
+--    this covers was created by a guardian for a family, either from a story
+--    request or from the legacy concept intake (`POST /concepts/{id}/generate`,
+--    which carries no authoring metadata and so resolves the global default
+--    provider), so an ENABLED anthropic row is a pair this endpoint accepts and
+--    the worker then fails on. The failure would surface at generation time,
+--    attributed to the job rather than to the configuration that caused it.
 --
 -- #CRITICAL: security: DISABLE, never DELETE. `20260721230000_seed_provider_model_allowlist.sql`
 -- inserts these two rows with `ON CONFLICT ("provider", "model_id") DO NOTHING`,
@@ -56,10 +58,29 @@
 -- #VERIFY: tests/unit/test_openrouter_provider_pin.py::
 -- test_a_priced_pin_is_applied_when_the_caller_names_no_order.
 --
--- Idempotent: the INSERT is ON CONFLICT DO NOTHING on the natural key, and the
--- UPDATE is a no-op once both rows already read false. Deliberately NOT
--- ON CONFLICT DO UPDATE: an admin who has since renamed or re-enabled a row
+-- AUDIT GAP: this UPDATE writes no provider_model_allowlist_audit row, for the
+-- same reason `20260818120000_retire_ollama_provider.sql` states in full:
+-- changed_by is NOT NULL and foreign-keys to public.user(id), and this project
+-- has no system or service-account user to attribute a migration-driven change
+-- to. See that migration's comment for the complete reasoning; it is not
+-- repeated here.
+--
+-- Idempotent, under two different re-run policies for the two statements
+-- below, and the difference is deliberate rather than an inconsistency:
+--
+-- The INSERT is ON CONFLICT DO NOTHING on the natural key, not DO UPDATE: an
+-- admin who has since renamed or re-enabled one of the two deepseek rows
 -- through the API should not have that edit silently reverted by a re-run.
+--
+-- The UPDATE is a no-op once both anthropic rows already read false, but it
+-- does NOT preserve an admin's edit the way the INSERT does. Every re-run
+-- re-applies enabled = false (and the display_name CASE) to provider =
+-- 'anthropic' unconditionally, overriding any rename or re-enable an admin
+-- has made through the API since. That is correct under D1: the ruling
+-- withdraws the anthropic provider from the family lane wholesale, not only
+-- the two model ids seeded on 2026-07-21, so an admin-added anthropic row of
+-- any model id is exactly what this statement exists to catch, and the WHERE
+-- clause is scoped to the whole provider for that reason.
 
 INSERT INTO "public"."provider_model_allowlist"
     ("id", "provider", "model_id", "enabled", "display_name")
@@ -76,5 +97,6 @@ SET "enabled" = false,
         WHEN 'claude-sonnet-4-6' THEN 'Claude Sonnet 4.6 (direct, withdrawn)'
         WHEN 'claude-haiku-4-5' THEN 'Claude Haiku 4.5 (direct, withdrawn)'
         ELSE "display_name"
-    END
+    END,
+    "updated_at" = now()
 WHERE "provider" = 'anthropic';
