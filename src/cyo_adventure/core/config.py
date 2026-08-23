@@ -450,15 +450,43 @@ class Settings(BaseSettings):
     # guard on every prompt plus the OpenRouter workspace ZDR/no-training
     # guardrail, so a lab is disqualified by the data policy its endpoint enforces
     # (or by not being allowlisted), never by which lab it is.
-    # Primary is Haiku 4.5: the 2026-06-22 yield run measured it at 70% over the
-    # 20-brief sample (clears the >=60% gate) at ~3x lower cost than Sonnet, which
-    # stays as the reliable quality fallback if Haiku is unavailable. (Results:
-    # docs/planning/yield-results/phase-2b-2026-06-22-analysis.md.)
+    # Primary is DeepSeek V4 Pro (D1, ruled 2026-08-23, `UW-C346`; the ruling and
+    # its basis are in docs/planning/generation-review-workstream-plan-2026-08-22.md
+    # section 3). The ruling is PROVISIONAL and rests on open weights keeping a
+    # fine-tuning path available plus a low enough cost point to buy iteration
+    # speed; it makes no appeal to per-model quality rankings, so R-8's finding
+    # that those rankings are statistically unsupported does not undermine it.
+    # It replaces Haiku 4.5, which the 2026-06-22 yield run measured at 70% over
+    # a 20-brief sample (docs/planning/yield-results/phase-2b-2026-06-22-analysis.md);
+    # that measurement is superseded as a SELECTION basis, not falsified, and the
+    # >=60% yield gate it cleared still applies to the new leg.
+    #
+    # #CRITICAL: payment/financial: this slug's PRICES row is the price of ONE of
+    # its endpoints (`azure/us`), not of the slug's default route, so it is only
+    # a correct cost with the pin `core/pricing.py::ENDPOINT_PINS` supplies.
+    # It is also deliberately absent from scripts/refresh_pricing.py::_WANTED,
+    # whose own comment otherwise requires every priced OpenRouter model to be
+    # listed there: that script reads the slug's DEFAULT route, so including this
+    # row would overwrite the pinned price and understate every fill by ~25%.
+    # Re-price it by hand from /models/deepseek/deepseek-v4-pro/endpoints.
+    # #VERIFY: tests/unit/test_config.py::TestD1RuledGenerationDefaults::
+    # test_both_ruled_defaults_are_fully_priced and
+    # tests/unit/test_openrouter_provider_pin.py::
+    # test_a_priced_pin_is_applied_when_the_caller_names_no_order.
+    #
+    # The FALLBACK stays on a different vendor family on purpose. D1 rules on the
+    # fill and review legs and says nothing about this one, which exists for
+    # failure-domain coverage: a second DeepSeek slug would fail together with
+    # the first for any model-specific cause (a withdrawn slug, a guardrail
+    # change, an endpoint outage), which is most of what this leg is for.
+    # #VERIFY: tests/unit/test_config.py::TestD1RuledGenerationDefaults::
+    # test_the_fallback_leg_is_a_different_vendor_family.
+    #
     # #ASSUME: external-resources: these ids must be currently reachable on the
     # selected provider; build_provider/adapters map an unavailable model to
     # ProviderError so the orchestrator can fall back.
     # #VERIFY: Phase 2b adapter raises ProviderError on HTTP 400/404 invalid-model.
-    openrouter_model: str = "anthropic/claude-haiku-4.5"
+    openrouter_model: str = "deepseek/deepseek-v4-pro"
     openrouter_fallback_model: str = "anthropic/claude-sonnet-4.6"
     # Direct-Anthropic credential and defaults (WS-C PR1). Read from the
     # UNPREFIXED ANTHROPIC_API_KEY env var, matching the openrouter_api_key
@@ -564,7 +592,18 @@ class Settings(BaseSettings):
     # with the Ollama retirement, so "openrouter" is the only live backend here
     # until the slice-2b Modal review leg lands.
     review_provider: Literal["mock", "openrouter", "modal"] = "mock"
-    review_openrouter_model: str = "anthropic/claude-sonnet-4.6"
+    # DeepSeek V4 Flash per D1 (ruled 2026-08-23, `UW-C346`). Unlike the fill
+    # leg above, this slug's PRICES row is its DEFAULT route, so it needs no
+    # endpoint pin and `ENDPOINT_PINS` carries no entry for it.
+    # #ASSUME: external-resources: the Stage-1 batch-size 8 recall parity
+    # ratified on 2026-08-01 was measured against the THEN-current reviewer
+    # (Sonnet 4.6) and the current batch prompt. Changing the reviewer model
+    # invalidates that evidence by the terms the sweep itself recorded below,
+    # so the ratified batch size is now resting on an unmeasured reviewer.
+    # #VERIFY: re-run scripts/adversarial_harness.py --batch-size against this
+    # reviewer before treating the 2026-08-01 parity as current; tracked as the
+    # reviewer-swap half of `UW-C346`.
+    review_openrouter_model: str = "deepseek/deepseek-v4-flash"
     # Nodes reviewed per Stage-1 safety call (design doc moderation-review-
     # redesign-2026-07-28.md, section 2.2 item 2). At 1 every chunk is a
     # single-node call, byte-identical to the pre-chunking behavior the

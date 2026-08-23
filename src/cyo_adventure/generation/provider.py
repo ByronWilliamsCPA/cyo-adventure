@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from cyo_adventure.core.config import Settings
 
 from cyo_adventure.core.exceptions import BusinessLogicError, ConfigurationError
+from cyo_adventure.core.pricing import endpoint_pin_for
 from cyo_adventure.generation.providers import (
     AnthropicProvider,
     FallbackProvider,
@@ -411,20 +412,23 @@ class MockProvider:
 
 
 def build_openrouter_leg(
-    settings: Settings, model: str, *, provider_order: tuple[str, ...] = ()
+    settings: Settings, model: str, *, provider_order: tuple[str, ...] | None = None
 ) -> GenerationProvider:
     """Construct a single OpenRouter leg for ``model`` from settings.
 
     Args:
         settings: The application settings instance.
         model: The OpenRouter model id this leg targets.
-        provider_order: Optional backend pin, most preferred first. Empty (the
-            default, and what every production caller passes) leaves
-            OpenRouter's routing untouched. Offline measurement harnesses such
-            as ``scripts/compare_vendors.py`` set it so a run is attributable to
-            one backend; ``build_provider`` deliberately exposes no way to set
-            it, because a per-job pin has no production caller and would only
-            widen the settings surface.
+        provider_order: Optional backend pin, most preferred first. ``None``
+            (the default, and what every production caller passes) means
+            "unspecified", and defers to
+            :func:`~cyo_adventure.core.pricing.endpoint_pin_for`, which pins
+            only the slugs whose recorded price belongs to one endpoint rather
+            than to the slug's default route. An explicit tuple, INCLUDING an
+            empty one, is honoured verbatim: offline measurement harnesses such
+            as ``scripts/compare_vendors.py`` pass each vendor fixture's own
+            order, and a fixture that deliberately carries none must keep
+            measuring the unpinned route.
 
     Returns:
         An OpenRouter ``GenerationProvider`` adapter.
@@ -444,13 +448,27 @@ def build_openrouter_leg(
         )
         raise ConfigurationError(msg)
 
+    # #CRITICAL: payment/financial: an unspecified pin resolves to the endpoint
+    # the model's recorded price was read from, so a job's `cost_usd` is the
+    # price of the endpoint that actually answered. Distinguishing None from ()
+    # is what makes that possible without changing any measurement harness: a
+    # fixture that deliberately runs unpinned passes () and keeps doing so.
+    # #VERIFY: tests/unit/test_openrouter_provider_pin.py::
+    # test_a_priced_pin_is_applied_when_the_caller_names_no_order and
+    # ::test_an_explicit_empty_order_is_honoured_over_the_table.
+    resolved_order = (
+        endpoint_pin_for("openrouter", model)
+        if provider_order is None
+        else provider_order
+    )
+
     return OpenRouterProvider(
         api_key=settings.openrouter_api_key,
         model=model,
         base_url=settings.openrouter_base_url,
         timeout_seconds=settings.llm_timeout_seconds,
         effort=settings.llm_effort,
-        provider_order=provider_order,
+        provider_order=resolved_order,
     )
 
 

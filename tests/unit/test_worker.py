@@ -261,7 +261,8 @@ class TestBuildProviderLive:
         )
         provider = build_provider(settings)
         assert isinstance(provider, OpenRouterProvider)
-        assert provider.name == "openrouter:anthropic/claude-haiku-4.5"
+        # The shipped fill default since D1 (ruled 2026-08-23, `UW-C346`).
+        assert provider.name == "openrouter:deepseek/deepseek-v4-pro"
 
     def test_retired_ollama_provider_is_rejected(self) -> None:
         """ "ollama" is no longer a constructible backend, at the Settings boundary.

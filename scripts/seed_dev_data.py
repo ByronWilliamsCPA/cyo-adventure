@@ -788,7 +788,11 @@ async def _seed_provider_allowlist(session: AsyncSession) -> bool:
             ProviderModelAllowlist(
                 provider=seed.provider,
                 model_id=seed.model_id,
-                enabled=True,
+                # Not hardcoded True: since D1 (`UW-C346`) DEFAULT_ALLOWLIST
+                # carries rows that are deliberately present and disabled, and
+                # seeding those enabled would hand a dev database a pair the
+                # worker's family lane refuses to run.
+                enabled=seed.enabled,
                 display_name=seed.display_name,
             )
         )

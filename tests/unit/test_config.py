@@ -2314,3 +2314,69 @@ class TestKwsStartLimits:
             Settings(kws_open_attempt_minutes=0)
         with pytest.raises(ValidationError):
             Settings(kws_start_max_attempts_per_hour=0)
+
+
+class TestD1RuledGenerationDefaults:
+    """The legs D1 (ruled 2026-08-23, `UW-C346`) puts on the request path.
+
+    The ruling is a decision about which model bills a family-triggered job, so
+    it belongs in a test rather than only in a comment beside the default: a
+    silent edit to either string changes what every kid's story is generated
+    by and what it costs, and before these tests nothing in the suite read
+    either value.
+    """
+
+    @pytest.mark.unit
+    def test_the_fill_leg_default_is_the_ruled_model(self) -> None:
+        """The production fill leg runs DeepSeek V4 Pro."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().openrouter_model == "deepseek/deepseek-v4-pro"
+
+    @pytest.mark.unit
+    def test_the_review_leg_default_is_the_ruled_model(self) -> None:
+        """The moderation review leg runs DeepSeek V4 Flash."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().review_openrouter_model == "deepseek/deepseek-v4-flash"
+
+    @pytest.mark.unit
+    def test_both_ruled_defaults_are_fully_priced(self) -> None:
+        """A default with no price row silently costs every job as unknown.
+
+        `generation/worker.py::_stamp_provider_accounting` writes
+        `cost_complete = false` for an unpriced pair rather than inventing a
+        zero, so promoting a model with no `PRICES` entry would not fail: it
+        would make every subsequent cost figure a lower bound of unknown
+        tightness, which is exactly the state `UW-C239` closed. D3's unit-cost
+        model reads these figures, so the ruling and the price table have to
+        move together.
+        """
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.pricing import price_for
+
+        defaults = Settings()
+        for model in (defaults.openrouter_model, defaults.review_openrouter_model):
+            price = price_for("openrouter", model)
+            assert price is not None, f"{model} has no price row"
+            assert price.fully_priced, f"{model} is only half priced"
+
+    @pytest.mark.unit
+    def test_the_fallback_leg_is_a_different_vendor_family(self) -> None:
+        """The cascade's second leg is deliberately NOT another DeepSeek model.
+
+        D1's table rules on the fill and review legs and says nothing about the
+        fallback, which exists for failure-domain coverage rather than for
+        cost or quality. Keeping a different vendor family there is what makes
+        the second leg useful when the first fails for a model-specific reason
+        (a slug withdrawn, a guardrail change, an endpoint outage) rather than
+        for an account-wide one.
+        """
+        from cyo_adventure.core.config import Settings
+
+        defaults = Settings()
+
+        assert (
+            defaults.openrouter_fallback_model.split("/")[0]
+            != (defaults.openrouter_model.split("/")[0])
+        )
