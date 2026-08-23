@@ -198,6 +198,36 @@ def test_a_shell_without_nodes_is_rejected(tmp_path: Path) -> None:
         load_shells(tmp_path)
 
 
+def test_a_non_object_json_root_is_rejected(tmp_path: Path) -> None:
+    """A shell whose JSON root is not an object fails the same way.
+
+    `json.loads` happily returns a list or a string, and the old code reached
+    `.get()` on it, so one malformed shape raised the documented actionable
+    error and another raised a bare `AttributeError`.
+    """
+    (tmp_path / "listy.json").write_text('["not", "a", "shell"]', encoding="utf-8")
+    with pytest.raises(ValueError, match=r"listy\.json .*list at its JSON root"):
+        load_shells(tmp_path)
+
+
+def test_census_refuses_to_run_outside_the_repository_root(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The working-directory precondition is the guard, so pin it.
+
+    Review proposed a fixture that chdirs to the repository root for every
+    test that calls `census()`. That would make the suite green in a working
+    directory where the CLI itself refuses to run, which hides the guard
+    rather than proving it. Assert the refusal instead, and name
+    `skeleton_match` so the message keeps explaining why half an anchor is
+    worse than none.
+    """
+    monkeypatch.chdir(tmp_path)
+    with pytest.raises(ValueError, match="skeleton_match"):
+        census()
+
+
 def test_an_unknown_band_directory_is_named() -> None:
     """A stray directory names itself instead of raising a bare KeyError."""
     with pytest.raises(ValueError, match="not an age band"):

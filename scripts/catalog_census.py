@@ -146,9 +146,10 @@ def load_shells(root: Path = SKELETON_ROOT) -> list[Shell]:
     Raises:
         FileNotFoundError: If ``root`` does not exist, which almost always
             means the caller is not at the repository root.
-        ValueError: If a non-sidecar ``*.json`` file has no ``nodes`` list.
-            Skipping it would silently undercount the catalog, which is the
-            exact drift this census exists to detect (`UW-G24`).
+        ValueError: If a non-sidecar ``*.json`` file is not a JSON object, or
+            is one but has no ``nodes`` list. Skipping either would silently
+            undercount the catalog, which is the exact drift this census
+            exists to detect (`UW-G24`).
     """
     if not root.is_dir():
         msg = f"skeleton root {root} not found; run from the repository root"
@@ -157,7 +158,14 @@ def load_shells(root: Path = SKELETON_ROOT) -> list[Shell]:
     for path in sorted(root.rglob("*.json")):
         if is_sidecar(path):
             continue
-        story: dict[str, object] = json.loads(path.read_text(encoding="utf-8"))
+        decoded: object = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(decoded, dict):
+            msg = (
+                f"{path} has a {type(decoded).__name__} at its JSON root, not an "
+                "object; a shell must be a mapping"
+            )
+            raise ValueError(msg)
+        story: dict[str, object] = decoded
         metadata = story.get("metadata")
         eligible = (
             metadata.get("production_eligible") is True
