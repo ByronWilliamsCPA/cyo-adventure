@@ -963,3 +963,126 @@ def test_a_skeleton_that_is_not_valid_utf8_is_skipped_not_raised(
     monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
 
     assert candidates_for_cell("8-11", "short", "prose") == ["zzz-good"]
+
+
+# ---------------------------------------------------------------------------
+# Per-family reuse cap (UW-C315 ruling, 2026-08-21)
+# ---------------------------------------------------------------------------
+#
+# Measured: two fills of one skeleton from deliberately distant briefs share
+# 96.3 four-grams per 1000 leaf words against a budget of 4.0, and neither
+# candidate lever (the differentiation directive at 110.7, skeleton mutation at
+# 108.1) moves it. The ruling that follows is a product policy, not a weight:
+# until a lever reaches the bar, a family is not served two books off the same
+# skeleton. That is a HARD exclusion, and it deliberately overrides decision
+# C-4's never-zero novelty floor for this one case, because a floor that keeps
+# a used skeleton drawable at 1/(1+n) still ships the near-duplicate, just less
+# often.
+
+
+def test_a_skeleton_the_family_already_used_is_not_drawn_again() -> None:
+    """The cap, stated directly. No seed may reach a used slug."""
+    candidates = ["used", "fresh"]
+    picks = {
+        skeleton_match.select_skeleton_for_cell(
+            candidates, {"used": 1}, random.Random(seed)
+        ).slug
+        for seed in range(200)
+    }
+    assert picks == {"fresh"}
+
+
+def test_one_prior_use_is_enough_to_exclude() -> None:
+    """A single reuse is the whole defect; the cap does not wait for a count.
+
+    96.3 per 1000 is the score of the FIRST pair, so any count threshold above
+    one would ship the very books that produced the measurement. A slug used
+    exactly once is gone from the draw while unused siblings remain.
+    """
+    candidates = ["used", "a", "b"]
+    picks = {
+        skeleton_match.select_skeleton_for_cell(
+            candidates, {"used": 1}, random.Random(seed)
+        ).slug
+        for seed in range(200)
+    }
+    assert picks == {"a", "b"}
+
+
+def test_the_cap_relaxes_rather_than_leaving_the_family_with_no_story() -> None:
+    """A cell whose every candidate is used still yields a pick.
+
+    Refusing would make a family's Nth request in a small cell fail outright,
+    which trades a diversity defect for an availability outage. The relaxation
+    is recorded on the Selection instead, so the compromise is visible rather
+    than silent.
+    """
+    candidates = ["a", "b"]
+    selection = skeleton_match.select_skeleton_for_cell(
+        candidates, {"a": 1, "b": 4}, random.Random(0)
+    )
+    assert selection.slug in candidates
+    assert selection.reuse_cap_relaxed is True
+
+
+def test_the_relaxed_draw_still_prefers_the_least_used_skeleton() -> None:
+    """When every candidate is used, the old inverse-frequency weighting is
+    exactly what should decide, so the least-repeated book wins most often."""
+    candidates = ["once", "many"]
+    picks = [
+        skeleton_match.select_skeleton_for_cell(
+            candidates, {"once": 1, "many": 20}, random.Random(seed)
+        ).slug
+        for seed in range(200)
+    ]
+    assert picks.count("once") > picks.count("many")
+
+
+def test_a_selection_that_honored_the_cap_says_so() -> None:
+    """The flag distinguishes "cap held" from "cap could not be applied"."""
+    selection = skeleton_match.select_skeleton_for_cell(
+        ["used", "fresh"], {"used": 3}, random.Random(0)
+    )
+    assert selection.reuse_cap_relaxed is False
+
+
+def test_the_cap_never_hides_a_candidate_from_the_admin() -> None:
+    """``alternatives`` is the admin's view of the cell, not the draw pool.
+
+    An excluded slug must still be listed, or the reviewer cannot see that an
+    out-of-cell override is available to them.
+    """
+    selection = skeleton_match.select_skeleton_for_cell(
+        ["used", "fresh"], {"used": 2}, random.Random(0)
+    )
+    assert selection.alternatives == ("used", "fresh")
+
+
+def test_a_family_with_no_history_is_unaffected_by_the_cap() -> None:
+    """An empty usage map excludes nothing and stays a uniform draw."""
+    candidates = ["cave-of-echoes", "clockwork-menagerie", "sky-ship-stowaway"]
+    selection = skeleton_match.select_skeleton_for_cell(
+        candidates, {}, random.Random(7)
+    )
+    assert selection.slug == "cave-of-echoes"
+    assert selection.reuse_cap_relaxed is False
+
+
+def test_theme_overlap_cannot_buy_a_used_skeleton_back_into_the_draw() -> None:
+    """The cap outranks the W2.2 overlap bonus.
+
+    Overlap multiplies a weight; it must not resurrect an excluded slug, or a
+    request whose premise matches the family's last book would reliably draw
+    that same book.
+    """
+    candidates = ["used", "fresh"]
+    picks = {
+        skeleton_match.select_skeleton_for_cell(
+            candidates,
+            {"used": 1},
+            random.Random(seed),
+            theme_overlap={"used": 1.0, "fresh": 0.0},
+        ).slug
+        for seed in range(100)
+    }
+    assert picks == {"fresh"}

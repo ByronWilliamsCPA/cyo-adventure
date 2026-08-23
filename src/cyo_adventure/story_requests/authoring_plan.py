@@ -52,6 +52,7 @@ if TYPE_CHECKING:
         AuthoringPlanRequest,
     )
     from cyo_adventure.db.models import Concept, StoryRequest
+    from cyo_adventure.generation.skeleton_match import Selection
 
 logger = get_logger(__name__)
 
@@ -298,6 +299,50 @@ class _Differentiation:
     prior_theme_tags: tuple[str, ...] = ()
 
 
+def _repetition_warnings(
+    selection: Selection, level: DifferentiationLevel
+) -> list[str]:
+    """Return the reviewer-facing warnings about a repetitive pick.
+
+    Two independent repetition signals, kept together because they are read
+    together: the hard same-skeleton reuse cap having lapsed, and the softer
+    same-theme saturation of the cell. Extracted from the caller so adding a
+    signal does not push it over the complexity limit again.
+
+    Args:
+        selection: The pick returned by ``select_skeleton_for_cell``.
+        level: The WS-4 differentiation level recommended for this request.
+
+    Returns:
+        Zero to two non-blocking warning strings, most severe first.
+    """
+    warnings: list[str] = []
+    if selection.reuse_cap_relaxed:
+        # The one path that knowingly serves a family a second book off a
+        # skeleton they have already read. Measured convergence for such a
+        # pair is 96.3 shared four-grams per 1000 leaf words against a budget
+        # of 4.0 (`UW-C315`), so a reviewer has to see it here rather than
+        # learn it from a reader who says the book felt familiar.
+        warnings.append(
+            "this family has already read every skeleton in this cell within "
+            "the recency window; the same-skeleton reuse cap could not be "
+            "honored and this book may read as a near-duplicate."
+        )
+    if level is DifferentiationLevel.LEAF:
+        warnings.append(
+            "every skeleton in this cell has already been used for a "
+            "similar-theme story for this family; relying on leaf-level "
+            "differentiation."
+        )
+    elif level is DifferentiationLevel.CATALOG:
+        warnings.append(
+            "this cell is saturated for this theme (multiple similar-theme "
+            "stories per skeleton); consider authoring a new skeleton for "
+            "the cell."
+        )
+    return warnings
+
+
 async def _resolve_skeleton_fill(
     session: AsyncSession,
     plan: AuthoringPlanRequest,
@@ -452,18 +497,7 @@ async def _resolve_skeleton_fill(
         similar_usage=sim_ctx.similar_count_per_slug,
         theme_overlap=theme_overlap,
     )
-    if sim_ctx.recommendation is DifferentiationLevel.LEAF:
-        warnings.append(
-            "every skeleton in this cell has already been used for a "
-            "similar-theme story for this family; relying on leaf-level "
-            "differentiation."
-        )
-    elif sim_ctx.recommendation is DifferentiationLevel.CATALOG:
-        warnings.append(
-            "this cell is saturated for this theme (multiple similar-theme "
-            "stories per skeleton); consider authoring a new skeleton for "
-            "the cell."
-        )
+    warnings.extend(_repetition_warnings(selection, sim_ctx.recommendation))
     if sim_ctx.recommendation is not DifferentiationLevel.TREE:
         # A signal for the WS-8 catalog flywheel (design section 4.1): how often a
         # cell escalates past tree-level differentiation is the "this cell needs a

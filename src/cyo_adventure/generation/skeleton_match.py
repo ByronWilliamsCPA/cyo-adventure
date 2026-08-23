@@ -84,10 +84,18 @@ class Selection:
     Attributes:
         slug: The chosen skeleton slug (may be an out-of-cell override).
         alternatives: Every in-cell candidate slug, as an immutable tuple.
+            The admin's view of the cell, not the pool the draw ran over: a
+            slug excluded by the reuse cap is still listed here, so a reviewer
+            can see the option they may override to.
+        reuse_cap_relaxed: True when every in-cell candidate had already been
+            used by this family, so the reuse cap could not be honored and the
+            draw fell back to inverse-frequency weighting over all of them.
+            False on both the ordinary path and the no-history path.
     """
 
     slug: str
     alternatives: tuple[str, ...]
+    reuse_cap_relaxed: bool = False
 
     def __post_init__(self) -> None:
         """Reject an empty alternatives tuple.
@@ -594,6 +602,44 @@ def _blended_weight(recent_count: int, similar_count: int) -> float:
     return 1.0 / (1 + recent_count + _THEME_REUSE_PENALTY * similar_count)
 
 
+def _apply_reuse_cap(
+    candidates: list[str], recent_usage: Mapping[str, int]
+) -> tuple[list[str], bool]:
+    """Drop candidates this family has already read, unless that empties the cell.
+
+    #CRITICAL: data-integrity: this is a product policy with a measurement
+    behind it, not a tuning weight. Two fills of one skeleton from deliberately
+    distant briefs share 96.3 four-grams per 1000 leaf words against a budget
+    of 4.0, and both candidate levers measured worse (directive 110.7,
+    mutation 108.1), so a family served the same skeleton twice gets a
+    recognizably duplicate book. Weighting cannot express this: an
+    inverse-frequency floor keeps the duplicate drawable, merely rarer. The
+    exclusion therefore overrides decision C-4's never-zero floor for the
+    same-skeleton case specifically, and only for as long as no lever reaches
+    the bar (`UW-C315`).
+    #VERIFY: tests/unit/test_skeleton_match.py::
+    test_a_skeleton_the_family_already_used_is_not_drawn_again.
+
+    Args:
+        candidates: Every in-cell candidate slug.
+        recent_usage: {slug: count} over the family's recency window.
+
+    Returns:
+        ``(pool, relaxed)``: the slugs the draw may run over, and whether the
+        cap had to be given up because every candidate was already used.
+    """
+    unused = [slug for slug in candidates if recent_usage.get(slug, 0) == 0]
+    if unused:
+        return unused, False
+    # Every candidate is used. Refusing here would fail a family's Nth request
+    # in a small cell outright, trading a diversity defect for an availability
+    # outage, so the draw falls back to the pre-cap weighting and the caller is
+    # told. Note the cap is bounded by the recency window (_RECENT_WINDOW), not
+    # by all history: "not reused in the family's last 20 books", which is what
+    # keeps a small cell from exhausting itself permanently.
+    return candidates, True
+
+
 def select_skeleton_for_cell(
     candidates: list[str],
     recent_usage: dict[str, int],
@@ -652,22 +698,29 @@ def select_skeleton_for_cell(
     if not candidates:
         msg = "select_skeleton_for_cell requires at least one candidate"
         raise ValidationError(msg, field="candidates", value=None)
+    # The cap runs BEFORE any weighting, so neither the theme-overlap bonus nor
+    # a low similar-theme count can buy an already-read skeleton back into the
+    # draw. An overlap bonus multiplies a weight; on an excluded slug there is
+    # no weight left to multiply.
+    pool, relaxed = _apply_reuse_cap(candidates, recent_usage)
     if similar_usage is None:
-        base_weights = [_weight(recent_usage.get(slug, 0)) for slug in candidates]
+        base_weights = [_weight(recent_usage.get(slug, 0)) for slug in pool]
     else:
         base_weights = [
             _blended_weight(recent_usage.get(slug, 0), similar_usage.get(slug, 0))
-            for slug in candidates
+            for slug in pool
         ]
     if theme_overlap is None:
         weights = base_weights
     else:
         weights = [
             weight * (1.0 + theme_overlap.get(slug, 0.0))
-            for weight, slug in zip(base_weights, candidates, strict=True)
+            for weight, slug in zip(base_weights, pool, strict=True)
         ]
-    pick = rng.choices(candidates, weights=weights, k=1)[0]
-    return Selection(slug=pick, alternatives=tuple(candidates))
+    pick = rng.choices(pool, weights=weights, k=1)[0]
+    return Selection(
+        slug=pick, alternatives=tuple(candidates), reuse_cap_relaxed=relaxed
+    )
 
 
 # How many of the family's most recent storybook_version rows to weight
