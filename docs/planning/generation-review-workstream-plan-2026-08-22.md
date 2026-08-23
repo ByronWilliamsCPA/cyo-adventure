@@ -68,15 +68,42 @@ the census or carrying its measurement date. `UW-G24` closes.
 
 ### Step 2. Wire the floors (days, unblocked)
 
-The review's R-3 finding is that the delivery floors exist only where nobody ships from. This was
-confirmed and is sharper than the brief admits: `check_fill_integrity.py` and `check_sibling_fills.py`
-are reachable only from `run_guard_battery.py`, a hand-run harness that no workflow or hook
-references. The only fill-integrity constant that runs on the request path is
-`_WORD_COUNT_TOLERANCE = 0.4`.
+The review's R-3 finding is that the delivery floors exist only where nobody ships from. The
+reachability half is confirmed and is sharper than the brief admits: `check_fill_integrity.py` and
+`check_sibling_fills.py` are reachable only from `run_guard_battery.py`, a hand-run harness that no
+workflow or hook references.
+
+**Correction, 2026-08-22.** The inference drawn from that, that the fill-rate floor is therefore
+unenforced at request time, is false, and this plan asserted it before checking. Executing the step
+produced an enforcement map instead: every blocking check in `check_fill_integrity.py` already has a
+request-path enforcer.
+
+| `check_fill_integrity.py` blocking check | Request-path enforcer |
+| --- | --- |
+| Leftover `<<FILL ...>>` directives | `fidelity_gate.run_stage1_gate` via `has_unfilled_directives` |
+| Structure preserved against the skeleton | `fidelity_gate.run_stage1_gate` via `structure_violations` |
+| Band per-node word maximum (`words_per_node_profile`) | Validator rule **PL-19** (`validator/policy.py::_check_words_per_node`) at `Severity.ERROR` |
+| Story-level fill rate >= 0.6 | `orchestrator._with_fill_rate`, shipped by PR [#737](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/737) (`41d30909`) one day before this plan was written |
+
+The last row is doubly moot: `word_count_violations` admits a node only within
+`[0.6 * target, 1.4 * target]`, so `sum(delivered) >= 0.6 * sum(target)` holds by construction and a
+story-level 0.6 floor cannot fire on the request path at all. Wiring it was a provable no-op.
+
+What the step actually found is recorded as `AL-551` and fixed on branch
+`fix/stage1-persist-signal-coupling`: the persist gate that lets a clean-downgraded fill reach a
+human keyed on a report-dict key that `worker._regate_after_transform` replaces wholesale, so a
+downgraded fill whose document the reinsertion transform rewrote would have been dropped with no
+`Storybook`, no `StorybookVersion`, and no moderation run. It is dormant only until ADR-023 D4
+lands a contract that declares a personalizable slot. The signal now rides
+`GenerationOutcome.clean_downgrade`, a typed field every rebuild carries forward.
+
+The general lesson, which applies to the rest of this step: "the constant lives in a script" is
+evidence about that script, not about the request path. Confirm the absence of an enforcer before
+scheduling work to add one.
 
 | Finding | Work |
 | --- | --- |
-| R-3 | Move the fill-rate 0.6 floor into the generation worker or the validator gate. Wire the sibling-gram check for same-skeleton fills. Both currently exist as scripts and are described in prose as enforcing something. |
+| R-3 | ~~Move the fill-rate 0.6 floor into the generation worker or the validator gate.~~ **Done and moot, see the correction above.** Wire the sibling-gram check for same-skeleton fills; that half stands, and it is the only fill-integrity measure with no request-path enforcer. |
 | R-2 (partial) | Surface fill-rate, sibling-gram, and the safety summary on the approval screen, so the human gate sees what the automated gate measured. |
 | Medium: path coherence | Build the two cheap proposed detectors: the outbound choice-grammar companion, and the duplicate-body plus POV checks. Give chunked fills a repair budget; today they have zero and differ contractually from one-shot fills. |
 | Medium: fidelity judge | Stop defaulting the fidelity judge to the model that wrote the fill. It currently reviews itself. |
@@ -84,8 +111,9 @@ references. The only fill-integrity constant that runs on the request path is
 | `UW-C338` | Adopt the convention that any doc claim a check "enforces" or "gates" something names its invoker (workflow file, hook id, or call site under `src/`), so this class of claim is falsifiable next time. |
 
 **Acceptance:** every floor the brief describes as a pipeline defense has a named invoker on the
-request path, and a test that fails when the invoker is removed. `UW-C105`, `UW-C147`, `UW-C315`
-and `UW-C338` close.
+request path, and a test that fails when the invoker is removed. Where the enforcer already exists
+under a different name, the acceptance is the citation, not new code. `UW-C105`, `UW-C147`,
+`UW-C315` and `UW-C338` close.
 
 **Dependency note:** the fidelity-judge item touches which model reviews a fill, and is adjacent to
 D1 but not gated by it. "Not the model that wrote it" is correct under any fill assignment.
