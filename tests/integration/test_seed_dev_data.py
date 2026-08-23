@@ -19,6 +19,8 @@ from typing import TYPE_CHECKING
 import pytest
 from sqlalchemy import and_, delete, exists, func, select
 
+import scripts.seed_dev_data as seed_dev_data_module
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.models import (
     ChildProfile,
     Family,
@@ -452,3 +454,23 @@ async def test_seed_dev_data_backfills_series_chain_on_existing_db(
         assignments = (await session.scalars(select(StorybookAssignment))).all()
         assert len(versions) == 5
         assert len(assignments) == 5
+
+
+async def test_seed_dev_data_refuses_a_series_chain_that_reuses_prose(
+    monkeypatch: pytest.MonkeyPatch,
+    engine: AsyncEngine,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """The chain gate is wired into this copy of the seeder too.
+
+    `seed_series_catalog.py` and this script carry duplicated copies of the
+    same fixture builder, so a gate added to one and not the other leaves the
+    bypass open in whichever environment the ungated script seeds. The
+    duplication is deliberate (scripts/ is not importable), which makes it a
+    standing drift risk rather than a one-off.
+    """
+    prose = seed_dev_data_module._BOOK_PROSE
+    monkeypatch.setattr(seed_dev_data_module, "_BOOK_PROSE", (prose[0], dict(prose[0])))
+
+    with pytest.raises(ValidationError, match="SR-10"):
+        await seed_dev_data(engine=engine, session_factory=sessions)
