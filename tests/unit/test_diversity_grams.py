@@ -9,12 +9,15 @@ stops the two from drifting.
 
 from __future__ import annotations
 
+import random
+import time
 from typing import Any
 
 import pytest
 
 from cyo_adventure.diversity import grams as grams_mod
 from cyo_adventure.diversity.grams import (
+    DEFAULT_MIN_RUN,
     STOPWORDS,
     GramOverlap,
     RunProfile,
@@ -22,6 +25,7 @@ from cyo_adventure.diversity.grams import (
     pairwise_overlap,
     shared_run_profile,
     story_text,
+    tokenize,
 )
 from scripts import check_sibling_fills
 from scripts.check_sibling_fills import _STOPWORDS as _SCRIPT_STOPWORDS
@@ -158,10 +162,14 @@ def test_the_offline_script_holds_no_second_copy_of_the_stop_list() -> None:
 # The per-1000 rate above is a VOLUME measure and cannot separate one copied
 # passage from many deliberate short echoes, which is precisely the question a
 # series raises: a refrain repeated on purpose is legitimate, a reused
-# paragraph is not. Run LENGTH separates them cleanly. Measured 2026-08-23 on
-# the committed corpus: every unrelated pair's longest shared run is 4 to 8
-# words, while the brass-lantern series pair reaches 98 words across 246
-# distinct passages of 15+ words, 16.8% of the book.
+# paragraph is not. Run LENGTH separates them cleanly. Measured 2026-08-23 over
+# all 465 pairs of the committed corpus: the 464 non-series pairs run 2 to 8
+# words (median 5, one pair at 8) at 0% coverage, while the series pair
+# reaches 98 words across 246
+# distinct passages of 15+ words, 18.6% of book 2. Coverage is the worse of the
+# two sides, not a mean: the same 6,691 covered words are 16.8% of book 1's
+# 39,935 and 18.6% of book 2's 35,920, and `shared_run_profile` returns the
+# larger share.
 
 
 def _words(prefix: str, count: int) -> str:
@@ -231,3 +239,153 @@ def test_shared_run_profile_survives_empty_text() -> None:
     profile = shared_run_profile("", "")
     assert profile.longest == 0
     assert profile.coverage == 0.0
+
+
+def test_a_long_shared_run_does_not_cost_quadratic_time() -> None:
+    """The run search must stay linear per probe, because it runs under a lock.
+
+    ``validator/series.py`` calls this once per pair of books from inside
+    ``publishing/service.py::approve``, which holds the storybook row under
+    ``SELECT ... FOR UPDATE``. The original implementation materialized every
+    ``k``-gram as a tuple, costing O(len * k) per probe; two 16,000-word books
+    sharing a half-length passage took 14.7s, all of it inside the lock. The
+    rolling-hash version measures ~0.16s for the same input.
+
+    The bound is deliberately loose (a 30x margin over the measured figure, and
+    still ~100x under the old implementation) so this is a regression guard
+    against reintroducing the quadratic term, not a tight performance
+    assertion that would flake on a loaded CI runner.
+    """
+    words = [f"w{i % 3000}" for i in range(8000)]
+    shared = words[:8000]
+    left = [f"l{i}" for i in range(8000)] + shared
+    right = [f"r{i}" for i in range(8000)] + shared
+
+    start = time.perf_counter()
+    longest = grams_mod._longest_shared_run(left, right)
+    elapsed = time.perf_counter() - start
+
+    assert longest == 8000
+    assert elapsed < 5.0
+
+
+def test_the_rolling_hash_agrees_with_materialized_windows() -> None:
+    """The fast path must return exactly what the naive definition returns.
+
+    Small alphabets are the adversarial case: they force both hash collisions
+    and many equal windows at once, which is where a hash-based search can
+    diverge from the definition it is meant to implement.
+    """
+
+    def naive(left: list[str], right: list[str]) -> int:
+        best = 0
+        limit = min(len(left), len(right))
+        for k in range(1, limit + 1):
+            windows = {tuple(left[i : i + k]) for i in range(len(left) - k + 1)}
+            if any(
+                tuple(right[j : j + k]) in windows for j in range(len(right) - k + 1)
+            ):
+                best = k
+        return best
+
+    rng = random.Random(7)
+    for _ in range(300):
+        alphabet = [f"w{i}" for i in range(rng.choice([1, 2, 3, 8]))]
+        left = [rng.choice(alphabet) for _ in range(rng.randint(0, 30))]
+        right = [rng.choice(alphabet) for _ in range(rng.randint(0, 30))]
+        assert grams_mod._longest_shared_run(left, right) == naive(left, right), (
+            left,
+            right,
+        )
+
+
+def test_coverage_counts_a_run_at_the_minimum_but_not_one_below_it() -> None:
+    """``DEFAULT_MIN_RUN`` is inclusive, and one word short of it counts zero.
+
+    The threshold is the seam between "a refrain, which is legitimate" and "a
+    reused passage". Nothing else pins whether it is ``>=`` or ``>``, so an
+    off-by-one here would silently move which books SR-10 blocks.
+    """
+    at_limit = _words("shared", DEFAULT_MIN_RUN)
+    below = _words("shared", DEFAULT_MIN_RUN - 1)
+
+    exact = shared_run_profile(
+        f"{at_limit} {_words('left', 200)}", f"{at_limit} {_words('right', 200)}"
+    )
+    assert exact.longest == DEFAULT_MIN_RUN
+    assert exact.covered_words == DEFAULT_MIN_RUN
+
+    short = shared_run_profile(
+        f"{below} {_words('left', 200)}", f"{below} {_words('right', 200)}"
+    )
+    assert short.longest == DEFAULT_MIN_RUN - 1
+    assert short.covered_words == 0
+    assert short.coverage == 0.0
+
+
+def test_shared_run_profile_handles_one_empty_side() -> None:
+    """An empty book against a real one is zero, not a division error."""
+    assert shared_run_profile("", _words("a", 50)).longest == 0
+    assert shared_run_profile(_words("a", 50), "").coverage == 0.0
+
+
+def test_a_story_shorter_than_the_gram_width_yields_no_grams() -> None:
+    """A two-word fill produces no 4-grams rather than a malformed window."""
+    assert content_grams("the lantern", 4) == frozenset()
+    assert (
+        pairwise_overlap(
+            _story(["the lantern"]),
+            _story(["the lantern"]),
+            include_choice_labels=False,
+        ).shared
+        == 0
+    )
+
+
+def test_tokenize_drops_characters_outside_the_ascii_word_class() -> None:
+    """Accented and hyphenated words are split, not preserved.
+
+    ``_WORD_RE`` is ``[a-z']+`` over lowercased text, so "Renee" with an acute
+    accent splits at the accent and a hyphenated word becomes two tokens. This
+    is a real property of a children's-story corpus, where character names
+    carry accents, so it is pinned here rather than left to be discovered.
+    """
+    assert tokenize("Ren\u00e9e ran") == ["ren", "e", "ran"]
+    assert tokenize("half-lit lantern") == ["half", "lit", "lantern"]
+    assert tokenize("don't stop") == ["don't", "stop"]
+
+
+def test_story_text_degrades_malformed_shapes_to_no_text() -> None:
+    """Every malformed blob shape contributes no text instead of raising.
+
+    The `#ASSUME` on ``story_text`` enumerates these shapes by name. The test
+    it used to cite passed a well-formed ``{"nodes": []}`` and asserted a
+    division-by-zero guard, so none of the shapes was actually covered and a
+    regression in the ``isinstance`` guards would have kept that test green.
+    """
+    no_text: list[Any] = [
+        {},
+        {"nodes": None},
+        {"nodes": "garbage"},
+        {"nodes": 17},
+        {"nodes": [1, 2, 3]},
+        {"nodes": ["not a dict"]},
+        {"nodes": [{"id": "n0"}]},
+    ]
+    for blob in no_text:
+        assert story_text(blob, include_choice_labels=False).strip() == "", blob
+        assert story_text(blob, include_choice_labels=True).strip() == "", blob
+
+    # A null body is the one shape that is not silently empty: `str(None)`
+    # contributes the literal token. Harmless (it is one stopword-free token
+    # shared by any two such books, far below every bound) but pinned here so
+    # the behaviour is a decision rather than a surprise.
+    null_body: Any = {"nodes": [{"id": "n0", "body": None}]}
+    assert story_text(null_body, include_choice_labels=False).strip() == "None"
+
+    # And the pair path built on it stays defined rather than dividing by zero.
+    overlap = pairwise_overlap(
+        {"nodes": "garbage"}, {"nodes": None}, include_choice_labels=False
+    )
+    assert overlap.shared == 0
+    assert overlap.per_1000 == 0.0

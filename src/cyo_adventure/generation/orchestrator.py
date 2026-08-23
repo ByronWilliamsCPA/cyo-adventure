@@ -1410,19 +1410,18 @@ def _with_fill_rate(
             fill_rate=round(fill_rate, 3),
             floor=min_fill_rate,
         )
-        # #CRITICAL: data-integrity: `fill_rate` alone cannot tell a persister
-        # that THIS function caused the downgrade, because the rate is stamped
-        # on every outcome carrying a book, breach or not. Without a key set
-        # only on the downgrade, `worker.py::_should_persist_storybook` sees a
-        # `needs_review` it cannot distinguish from a safety-flagged one and
-        # persists NOTHING: no Storybook, no StorybookVersion, no moderation,
-        # and a job row pointing at a book nobody can reach. Ruling 9.3 says
-        # this gate is never a hard block, so silence here would be stricter
-        # than the hard block the ruling refused.
-        # #VERIFY: tests/unit/test_orchestrator.py::
-        # test_a_fill_rate_downgrade_is_marked_and_still_persists stamps the
-        # key, and tests/unit/test_worker.py::
-        # test_fill_rate_only_needs_review_persists_the_storybook reads it.
+        # This key is a DIAGNOSTIC for review surfaces, not the persist
+        # signal. `fill_rate` alone cannot tell a persister that THIS function
+        # caused the downgrade, because the rate is stamped on every outcome
+        # carrying a book, breach or not; the key names the cause for a human
+        # reading the report. The persist DECISION rides
+        # `GenerationOutcome.clean_downgrade` (set just below), because
+        # `worker.py::_regate_after_transform` replaces the report wholesale
+        # for any fill whose document the reinsertion transform rewrote, so a
+        # key-borne signal would vanish for exactly those fills.
+        # #VERIFY: tests/unit/test_worker.py::
+        # test_a_diagnostic_report_key_alone_does_not_persist asserts the key
+        # alone does NOT persist.
         report["fill_rate_downgrade"] = True
     return GenerationOutcome(
         status="needs_review" if downgrade else outcome.status,
@@ -1796,8 +1795,9 @@ async def fill_skeleton(
     # A structurally-clean fill that still fails Stage 1 after the shared budget
     # is exhausted downgrades from "passed" to "needs_review". The storybook is
     # kept (never discarded) and the violations are recorded so an admin can
-    # reach the real story; worker.py keys its persist decision on this exact
-    # report field.
+    # reach the real story. The `stage1_fidelity_violations` key is that record
+    # for a human; the persist decision rides `clean_downgrade` on the outcome
+    # below, which no report rebuild can strip.
     if stage1_violations and outcome.status == "passed":
         # Built via the GenerationOutcome constructor directly (not
         # dataclasses.replace): replace()'s generic TypeVar-bound return type

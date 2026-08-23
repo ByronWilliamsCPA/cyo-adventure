@@ -46,11 +46,14 @@ import sys
 from dataclasses import dataclass
 from itertools import combinations
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 from cyo_adventure.diversity.grams import pairwise_overlap
 
-_CLASSES = ("series", "sibling", "unrelated")
+# The relationship set is closed: the summary block iterates it, so a fourth
+# member would need a row in the report as well as a branch in classify_pair.
+_Relationship = Literal["series", "sibling", "unrelated"]
+_CLASSES: tuple[_Relationship, ...] = ("series", "sibling", "unrelated")
 
 
 @dataclass(frozen=True, slots=True)
@@ -67,12 +70,12 @@ class PairRow:
 
     left: str
     right: str
-    relationship: str
+    relationship: _Relationship
     shared: int
     per_1000: float
 
 
-def classify_pair(first: dict[str, Any], second: dict[str, Any]) -> str:
+def classify_pair(first: dict[str, Any], second: dict[str, Any]) -> _Relationship:
     """Name the relationship between two fills.
 
     Ordered by how much a shared phrase matters to a reader. A series is
@@ -162,7 +165,7 @@ def _load_corpus(paths: list[Path]) -> dict[str, dict[str, Any]] | None:
     for path in paths:
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
             sys.stderr.write(f"error: cannot load {path}: {exc}\n")
             return None
         if not isinstance(data, dict):
@@ -229,8 +232,10 @@ def main(argv: list[str] | None = None) -> int:
         type=float,
         default=None,
         help=(
-            "Bound for --check. No default on purpose: where it belongs is an "
-            "open owner decision (UW-C341)."
+            "Bound for --check. No default on purpose: UW-C341 was ruled on "
+            "2026-08-23, and the ruling was that a rate is the wrong axis "
+            "entirely, so the series case is gated by SR-10 on run length "
+            "(AL-568). Any bound here is the caller's own."
         ),
     )
     args = parser.parse_args(argv)
@@ -262,6 +267,20 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     bound = cast("float | None", args.max_per_1000) if args.check else None
+
+    # A gate that measured nothing has not passed. Convergence is a property
+    # of a SET, so one file (or a directory that globbed to one) yields zero
+    # pairs; returning 0 there would report "ok" for an input the tool never
+    # compared, which is how an empty artifact silently satisfies a gate.
+    # Observe mode still prints the same line and exits 0: reporting on an
+    # incomplete corpus is a legitimate thing to ask for.
+    if args.check and not rows:
+        sys.stderr.write(
+            f"error: --check needs at least two fills to compare; "
+            f"{len(corpus)} given, 0 pairs measured\n"
+        )
+        return 2
+
     _write_verdict(rows, bound)
 
     if bound is not None and any(row.per_1000 > bound for row in rows):

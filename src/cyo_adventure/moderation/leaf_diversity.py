@@ -2,8 +2,13 @@
 
 Advisory and fail-open by contract (see
 ``docs/planning/ws1-leaf-diversity-sprint-design.md`` section 3): every
-no-partner, first-use, malformed-blob, or structure-drift path returns an
-empty finding list and the pipeline proceeds unchanged. The guard never
+no-partner, first-use, malformed-blob, or structure-drift path proceeds
+unchanged rather than raising. The no-partner and first-use paths return an
+empty finding list. The malformed-blob and structure-drift paths return the
+POSITION-INDEPENDENT sibling-gram findings instead (R-3): those are computed
+from raw text before the blob is coerced, so they survive a document the
+structural comparison cannot read, and suppressing them would discard a
+signal that is still valid. The guard never
 blocks, never auto-rejects, and never touches approve/publish; its only
 power is to add soft-``FLAG`` findings that ride the moderation pipeline's
 one existing bounded repair (``moderation/repair.py``), after which the
@@ -161,7 +166,7 @@ def _sibling_gram_findings(
     #ASSUME: data-integrity: either blob may be malformed; ``story_text``
     degrades to empty text rather than raising, matching this module's
     fail-open contract.
-    #VERIFY: tests/unit/test_diversity_grams.py::test_pairwise_overlap_survives_an_empty_story
+    #VERIFY: tests/unit/test_diversity_grams.py::test_story_text_degrades_malformed_shapes_to_no_text
 
     Args:
         current_blob: The raw blob of the fill under moderation.
@@ -220,8 +225,11 @@ async def run_leaf_diversity_check(
     """Run the anti-template guard against the family's prior same-tree fill.
 
     Advisory and fail-open by contract: every no-partner, first-use,
-    malformed-blob, or structure-drift path returns ``[]`` and the pipeline
-    proceeds unchanged. Never raises on data problems; a ``SQLAlchemyError``
+    malformed-blob, or structure-drift path proceeds unchanged rather than
+    raising. The first two return ``[]``; the malformed-blob and
+    structure-drift paths return the sibling-gram findings, which are computed
+    from raw text and stay valid when the structural comparison cannot run.
+    Never raises on data problems; a ``SQLAlchemyError``
     from either read is the one exception that is allowed to propagate (see
     module docstring).
 
@@ -235,8 +243,11 @@ async def run_leaf_diversity_check(
     Returns:
         list[Finding]: Findings to append to the moderation report: per-node
             soft FLAGs on an ATG FAIL (repair targets), one story-level
-            ADVISORY summary on FAIL or WARN, ``[]`` on PASS or any
-            fail-open path.
+            ADVISORY summary on FAIL or WARN, and the sibling-gram ADVISORY
+            when the gram rate clears its threshold. ``[]`` on a clean PASS
+            and on the no-partner and first-use paths; the malformed-blob and
+            structure-drift paths return whatever the sibling-gram channel
+            produced, which may be non-empty.
     """
     # #CRITICAL: data-integrity: the draft under moderation is already visible
     # to same-transaction queries (persist_storybook ran, nothing committed), so

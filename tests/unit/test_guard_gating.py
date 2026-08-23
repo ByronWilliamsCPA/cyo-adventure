@@ -253,8 +253,10 @@ def test_guard_battery_observes_cross_book_convergence_without_gating() -> None:
     8,164 body 4-grams (`AL-564`) can be diluted by clean siblings and, even
     unmasked, is not labelled as a series pair. The all-pairs observer names
     it. It must NOT be invoked with ``--check``: the tool refuses that without
-    an explicit bound, and where the bound belongs is an open owner decision
-    (`UW-C341`). Until then the row reports and never fails the battery.
+    an explicit bound, and `UW-C341`'s ruling (`AL-568`) was that no bound on
+    this axis is the right one, since a rate cannot separate a refrain from a
+    reused passage. Gating lives in validator rule SR-10 on run length; this
+    row reports the ranked pair and never fails the battery.
     """
     calls, results = _battery_calls(["a.json", "b.json"])
 

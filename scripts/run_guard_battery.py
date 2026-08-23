@@ -187,9 +187,12 @@ def battery(
         )
 
     if len(filled) >= _PAIR:
-        # No --check: the tool refuses a bound it was not given, and where the
-        # bound belongs is an open owner decision (UW-C341). Reported, never
-        # gating, until it is ruled.
+        # No --check, permanently. UW-C341 was ruled on 2026-08-23 (AL-568)
+        # and the ruling was that a per-1000 RATE is the wrong axis: it cannot
+        # separate a deliberate refrain from a reused passage. Gating moved to
+        # validator rule SR-10, which bounds run LENGTH. This row survives as
+        # the ranked view that names the offending pair, which SR-10's
+        # per-chain verdict does not, so it reports and never gates.
         code, detail = _run("check_corpus_convergence.py", *filled, "--top", "3")
         out.append(
             Result(
