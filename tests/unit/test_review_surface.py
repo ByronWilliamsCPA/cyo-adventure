@@ -1778,6 +1778,45 @@ def test_a_boolean_is_not_read_as_a_fill_rate() -> None:
     assert measures.fill_rate is None
 
 
+@pytest.mark.parametrize("bad", [float("nan"), float("inf"), float("-inf")])
+def test_a_non_finite_fill_rate_degrades_to_absent(bad: float) -> None:
+    """A non-finite rate is a `float`, so a bare type check lets it through.
+
+    The approval screen renders the rate as ``Math.round(rate * 100)``, which
+    turns these into the literal strings "NaN%" and "Infinity%" beside a real
+    measurement. An approver cannot tell that from a number the gate actually
+    produced, so "not recorded" is the safer projection.
+    """
+    measures = _measures(validation_report=_validation_report(fill_rate=bad))
+    assert measures.fill_rate is None
+
+
+@pytest.mark.parametrize("bad", [82, 1.5, -0.1])
+def test_an_out_of_range_fill_rate_degrades_to_absent(bad: float) -> None:
+    """A rate persisted as a percentage renders as "8200%", not as an error.
+
+    The unit-interval bound is what catches a producer that stamped ``82``
+    where the reader expects ``0.82``. Without it the value is a perfectly
+    ordinary float and reaches the screen unchallenged.
+    """
+    measures = _measures(validation_report=_validation_report(fill_rate=bad))
+    assert measures.fill_rate is None
+
+
+def test_a_genuine_zero_fill_rate_is_kept_not_degraded() -> None:
+    """Zero is a real, and alarming, measurement: nothing in the book filled.
+
+    It is also the value most at risk from a falsy guard, and it is precisely
+    the reading an approver most needs to see, so it must survive the range
+    check that rejects the corrupt values above.
+    """
+    measures = _measures(
+        validation_report=_validation_report(fill_rate=0.0, fill_rate_floor=0.6)
+    )
+    assert measures.fill_rate == pytest.approx(0.0)
+    assert measures.fill_rate is not None
+
+
 def test_safety_concerns_are_counted_for_the_approver() -> None:
     """The roll-up answers "what did the gate object to", not "how many rows"."""
     report: dict[str, object] = {

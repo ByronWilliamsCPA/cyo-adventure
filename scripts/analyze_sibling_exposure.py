@@ -88,7 +88,12 @@ matter when reading any figure this script prints:
 
 - A curve is no longer a smooth probability. A cell of size ``M`` is repeat-free
   for ``M`` requests and repeats for certain on request ``M + 1``. Pool size, not
-  luck, sets the horizon, and "grow the catalog" is now the only lever.
+  luck, sets the horizon, and "grow the catalog" is now the only lever. That
+  exact horizon holds only while the family's history fits inside the twenty-row
+  recency window that bounds the cap: the cap excludes what the family read in
+  its last ``_RECENT_WINDOW`` books, not what it ever read, so past request 20
+  the earliest picks age out and become drawable again. Read every horizon
+  printed here as "within the recency window".
 - **Exposure figures published from runs before the cap are superseded**, not
   merely imprecise: they were computed under a model where an already-read
   skeleton stayed drawable. Re-run before citing one.
@@ -566,11 +571,13 @@ def required_pool_size(
     within Monte Carlo noise of 0.5; raise ``trials`` to tighten it.
 
     Under the same-skeleton reuse cap the pigeonhole lower bound below is TIGHT
-    for a single reader: a pool of ``N`` is repeat-free for exactly ``N``
-    requests, so the answer is always ``max(len(base), target_request)`` and the
-    bisection resolves on its first probe. The search is kept because it is not
-    tight for the multi-reader and exhausted-cell paths, where the cap relaxes
-    and the draw goes back to being probabilistic.
+    for a single reader whose history fits the twenty-row recency window that
+    bounds the cap: a pool of ``N`` is repeat-free for exactly ``N`` requests, so
+    the answer is ``max(len(base), target_request)`` and the bisection resolves
+    on its first probe. The search is kept because it is not tight elsewhere:
+    past ``_RECENT_WINDOW`` requests the family's earliest picks age out of the
+    window and become drawable again, and on the multi-reader and exhausted-cell
+    paths the cap relaxes and the draw goes back to being probabilistic.
 
     Args:
         base: The real in-cell candidate slugs.

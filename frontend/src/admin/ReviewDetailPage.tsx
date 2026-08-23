@@ -14,7 +14,7 @@ import { makePassageEditApi } from '../guardian/passageEditApi'
 import { Finding, passageDomId, Passage, RankedFinding } from '../guardian/ReviewPassage'
 import {
   makeReviewApi,
-  type GenerationMeasures,
+  type GenerationMeasuresView,
   type ReviewSurface,
   type SendBackReasonCode,
   type Visibility,
@@ -98,7 +98,7 @@ function asPercent(rate: number | null | undefined): string | null {
  * clean bill from a check that never ran. The safety roll-up comes from the
  * moderation gate, which does run.
  */
-function GenerationMeasuresBlock({ measures }: { measures: GenerationMeasures }) {
+function GenerationMeasuresBlock({ measures }: { measures: GenerationMeasuresView }) {
   const rate = asPercent(measures.fill_rate)
   const floor = asPercent(measures.fill_rate_floor)
   const concerns = measures.safety_concerns ?? []
@@ -116,11 +116,18 @@ function GenerationMeasuresBlock({ measures }: { measures: GenerationMeasures })
               {floor === null ? null : (
                 <span className="cyo-text-muted">of the commissioned words (floor {floor})</span>
               )}
-              {measures.fill_rate_downgrade ? (
-                <FlagBadge tone="flag" label="Below the fill floor" />
-              ) : null}
             </>
           )}
+          {/*
+            Outside the rate branch on purpose: the downgrade flag is persisted
+            independently of the rate, so a version whose rate is absent or
+            malformed can still have been routed as below-floor. Nesting the
+            badge inside the rate branch hid exactly that combination, which is
+            the case an approver most needs to see.
+          */}
+          {measures.fill_rate_downgrade ? (
+            <FlagBadge tone="flag" label="Below the fill floor" />
+          ) : null}
         </li>
         <li className="review-measures__item">
           {concerns.length === 0 ? (

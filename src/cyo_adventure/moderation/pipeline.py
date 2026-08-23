@@ -7,7 +7,7 @@ stages, persists the aggregated report, and drives ``submit`` / ``auto_reject``.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Final, cast
 
 import httpx
 from pydantic import ValidationError
@@ -76,6 +76,14 @@ _MAX_REPAIR_TOKENS = 32000
 # public name from a dedicated module instead of this module's internals.
 
 
+#: Sentinel distinguishing "this provider declares no `resolved_provider`, so
+#: it is not a cascade and its own name is authoritative" from "this cascade
+#: declares one and its value is `None`, so no leg has answered yet". A plain
+#: `None` default cannot express that difference, and conflating the two is
+#: what grants a fresh cascade unconditional reviewer independence.
+_NO_CASCADE: Final = object()
+
+
 def _build_guarded_review(
     review_settings: Settings,
     *,
@@ -112,19 +120,33 @@ def _build_guarded_review(
     # label like "fallback[openrouter:haiku,openrouter:sonnet,modal]", which
     # equals no configured backend, so judging on it makes "different backend"
     # unconditionally true and grants tier-1 independence to every cascade run
-    # whatever answered. A provider that resolved a leg reports that leg here,
-    # and only a provider that did not falls back to its own label.
+    # whatever answered. Only the leg that answered may speak for a cascade.
+    # #CRITICAL: security: the two cases below are told apart by the PRESENCE
+    # of `resolved_provider`, never by its truthiness. A cascade that has not
+    # answered reports `None`, and collapsing that to the provider's own `name`
+    # (as `resolved or name` would) reinstates the composite label and the
+    # unconditional independence it grants. This is reachable in production:
+    # api/remoderate.py and generation/import_story.py both build a FRESH
+    # cascade that has answered nothing at the moment this runs. An
+    # unresolvable cascade therefore falls through to the CONFIGURED backend,
+    # the same safe comparison a provider declaring no name already gets,
+    # which fails closed when the reviewer shares that backend.
     # #VERIFY: tests/unit/test_review_metering.py::
     # test_independence_is_judged_against_the_resolved_generator_backend,
-    # ::test_the_configured_backend_is_used_when_the_provider_declares_no_name
-    # and ::test_a_cascade_is_judged_on_the_leg_that_answered.
-    resolved_name: object = getattr(
-        generation_provider, "resolved_provider", None
-    ) or getattr(generation_provider, "name", None)
+    # ::test_the_configured_backend_is_used_when_the_provider_declares_no_name,
+    # ::test_a_cascade_is_judged_on_the_leg_that_answered,
+    # ::test_an_unanswered_cascade_does_not_grant_independence,
+    # ::test_a_metered_cascade_is_judged_on_the_leg_that_answered and
+    # ::test_metering_does_not_invent_a_resolution_for_a_plain_provider.
+    resolved: object = getattr(generation_provider, "resolved_provider", _NO_CASCADE)
+    if resolved is _NO_CASCADE:
+        # Not a cascade: this provider's own name IS the backend that ran.
+        candidate: object = getattr(generation_provider, "name", None)
+    else:
+        # A cascade: the answering leg, or nothing. Never its own label.
+        candidate = resolved
     effective_generator = (
-        resolved_name
-        if isinstance(resolved_name, str) and resolved_name
-        else generator_provider
+        candidate if isinstance(candidate, str) and candidate else generator_provider
     )
     review_provider, independent = build_review_provider(
         review_settings,
@@ -400,14 +422,6 @@ async def run_moderation_pipeline(
         session=session, storybook=storybook, version_row=version_row, report=report
     )
 
-    # Advisory prose-craft guard (UW-C313, UW-C328): deterministic, local, and
-    # ADVISORY only, so unlike the ATG above it adds no repair targets and
-    # cannot move routing. Placed beside the ATG because both are gated on the
-    # same "routing not already decided" condition, not because they share a
-    # verdict class; see moderation/prose_craft.py for why a FLAG would be
-    # wrong here.
-    _apply_prose_craft_findings(version_row=version_row, report=report)
-
     # Soft gate: one bounded auto-repair, then re-moderate once.
     # #ASSUME: data-integrity: `personalizable_slots is not None` is, in
     # practice, always true here: a `None` resolution already added a
@@ -455,6 +469,24 @@ async def run_moderation_pipeline(
             mock_reviewer_outside_local=mock_reviewer_outside_local,
             personalizable_slots=personalizable_slots,
         )
+
+    # Advisory prose-craft guard (UW-C313, UW-C328): deterministic, local, and
+    # ADVISORY only, so unlike the ATG above it adds no repair targets and
+    # cannot move routing; see moderation/prose_craft.py for why a FLAG would
+    # be wrong here.
+    # #CRITICAL: data-integrity: this runs AFTER the repair branch, not beside
+    # the ATG. An adopted repair returns a FRESH ModerationReport that replaces
+    # `report` wholesale and rewrites `version_row.blob`, so measuring earlier
+    # would both DISCARD every advisory on exactly the books that repaired and
+    # describe prose that is no longer stored. The same wholesale-replacement
+    # hazard is what `mock_reviewer_outside_local` is threaded into
+    # `_attempt_and_adopt_repair` to survive. `_apply_prose_craft_findings`
+    # early-returns on a hard block, which still holds here: after an adopted
+    # repair the flag reflects the repaired report's own verdict.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_prose_craft_advisory_survives_an_adopted_repair and
+    # ::test_prose_craft_measures_the_repaired_blob.
+    _apply_prose_craft_findings(version_row=version_row, report=report)
 
     _persist_report(version_row, report)
 

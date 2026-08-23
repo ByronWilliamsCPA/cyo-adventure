@@ -63,7 +63,11 @@ def test_duplicate_bodies_produce_an_advisory() -> None:
 
     assert len(findings) == 1
     assert findings[0].category == "prose_craft_sameness"
-    assert "2" in findings[0].message
+    # Not `"2" in message`: the fixed calibration text ("0.02 to 0.27") and
+    # the label count both contain a 2, so that passes at any count.
+    assert findings[0].message.startswith(
+        "self-repetition: 2 nodes repeat another node's exact body"
+    )
 
 
 def test_the_advisory_never_gates() -> None:

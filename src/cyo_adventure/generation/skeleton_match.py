@@ -620,6 +620,17 @@ def _apply_reuse_cap(
     #VERIFY: tests/unit/test_skeleton_match.py::
     test_a_skeleton_the_family_already_used_is_not_drawn_again.
 
+    #ASSUME: concurrency: `recent_usage` is a snapshot read before this call,
+    not a reservation. Two requests from one family that overlap between the
+    read and the version row's insert both see the same slug as unused and can
+    both draw it, so the cap is a strong preference rather than a guarantee.
+    That is accepted: a family issuing two simultaneous requests is rare, the
+    consequence is one duplicate pairing rather than data loss, and serialising
+    the draw would put a lock on the request path to prevent it.
+    #VERIFY: `reuse_cap_relaxed` is False in that case, so the Selection does
+    NOT record the duplicate as a known compromise. A future detector belongs
+    on the persisted pairing, not here.
+
     Args:
         candidates: Every in-cell candidate slug.
         recent_usage: {slug: count} over the family's recency window.

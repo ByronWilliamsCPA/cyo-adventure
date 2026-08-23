@@ -664,7 +664,10 @@ def test_concentrating_demand_brings_the_first_repeat_forward() -> None:
     assert peaked.repeat_probability[6] > flat.repeat_probability[6]
     assert peaked.first_more_likely_than_not is not None
     assert flat.first_more_likely_than_not is not None
-    assert peaked.first_more_likely_than_not <= flat.first_more_likely_than_not
+    # Strictly earlier, not merely no later: equality would satisfy `<=`
+    # while showing the two regimes crossing together, which is the
+    # opposite of what the docstring claims.
+    assert peaked.first_more_likely_than_not < flat.first_more_likely_than_not
 
 
 @pytest.mark.unit

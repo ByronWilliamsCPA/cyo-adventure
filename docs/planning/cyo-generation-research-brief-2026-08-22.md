@@ -21,6 +21,9 @@ selection matters.
 > perceptual evidence base, and "human-gated" means an adult approved a book for publication, not
 > that a reader reacted to it.
 
+<!-- Separates two distinct blockquotes; without it markdownlint reads the pair
+     as one quote with a blank line inside (MD028). -->
+
 > **Three `S` namespaces collide in this document set; they are unrelated.** `S0`-`S9` (no hyphen,
 > from the [2026-08-10 brief](./cyo-generation-research-brief-2026-08-10.md) section 4) are the ten
 > *design-history levers*, the diversity designs tried and mostly refuted. `S0`/`S2`/`S3` (no
@@ -191,10 +194,15 @@ author, not by CI.
 ### 3.3 Story development
 
 - **Selection.** `generation/skeleton_match.py` matches the request's cell, filters to
-  production-eligible skeletons, and draws one at random with inverse-frequency weights
-  (`1 / (1 + recent_count)`), so the draw is *weighted toward* the family's least recently used
-  armature rather than guaranteeing it: a weight strictly decreases with recent use but never
-  reaches zero, so a recently seen skeleton can still be drawn. Admin override exists but warns.
+  production-eligible skeletons, and then applies two stages in order. First a hard filter
+  (`_apply_reuse_cap`): every skeleton the family read within its last 20 books is removed from the
+  pool outright, unless that would empty the cell, in which case the cap is given up and the
+  `Selection` records `reuse_cap_relaxed`. Only what survives is then drawn at random with
+  inverse-frequency weights (`1 / (1 + recent_count)`), which *tilt* the draw toward the least
+  recently used armature without ever reaching zero. The ordering is what matters when reading the
+  two together: the never-zero weight floor governs the pool, not entry to it, so within the
+  recency window an already-read skeleton is not merely rarer, it is unavailable. Admin override
+  exists but warns.
 - **Binding.** Theme contracts bind per-request settings, casts, and props
   (`scripts/bind_theme.py`); the differentiation directive
   (`build_differentiation_directive`) instructs the fill away from sibling books.

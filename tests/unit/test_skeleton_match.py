@@ -1035,7 +1035,38 @@ def test_the_relaxed_draw_still_prefers_the_least_used_skeleton() -> None:
         ).slug
         for seed in range(200)
     ]
-    assert picks.count("once") > picks.count("many")
+    # A bare `>` passes at 101/99, which the weighting does not predict:
+    # 1/(1+1) against 1/(1+20) is roughly a 91/9 split. Assert a margin
+    # loose enough for sampling noise over 200 draws and tight enough to
+    # fail if the weighting flattens.
+    assert picks.count("once") > 3 * picks.count("many")
+
+
+def test_a_lone_unused_candidate_is_drawn_with_the_cap_intact() -> None:
+    """A one-skeleton cell is the smallest pool the cap can run over.
+
+    The boundary matters because the relaxation branch triggers on an empty
+    result, and a pool of one is where "filtered to nothing" and "filtered to
+    everything" are one element apart.
+    """
+    selection = skeleton_match.select_skeleton_for_cell(["only"], {}, random.Random(0))
+    assert selection.slug == "only"
+    assert selection.reuse_cap_relaxed is False
+
+
+def test_a_lone_used_candidate_relaxes_rather_than_failing() -> None:
+    """The other half of the boundary: the only candidate is already read.
+
+    Excluding it would leave `rng.choices` an empty population, which raises,
+    so a family's second request in a single-skeleton cell would 500 rather
+    than serve a repeat. The repeat is the correct trade, and the relaxation
+    flag is what keeps it visible.
+    """
+    selection = skeleton_match.select_skeleton_for_cell(
+        ["only"], {"only": 3}, random.Random(0)
+    )
+    assert selection.slug == "only"
+    assert selection.reuse_cap_relaxed is True
 
 
 def test_a_selection_that_honored_the_cap_says_so() -> None:

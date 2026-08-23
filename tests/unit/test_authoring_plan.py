@@ -1071,4 +1071,6 @@ async def test_a_cell_with_room_left_warns_about_nothing() -> None:
             actor=_admin_actor(),
         )
     assert result.skeleton_slug != _CELL_8_11_SHORT_PROSE[0]
-    assert not any("already read every skeleton" in w for w in result.warnings)
+    # The docstring claims silence, so assert silence: probing for one
+    # absent substring would pass with any other warning present.
+    assert result.warnings == []

@@ -8,6 +8,7 @@ per-node findings) and whole-story findings.
 
 from __future__ import annotations
 
+import math
 from typing import TYPE_CHECKING, cast
 
 from pydantic import ValidationError as PydanticValidationError
@@ -215,7 +216,7 @@ def build_review_surface(
 
 
 def _as_rate(value: object) -> float | None:
-    """Narrow a persisted JSON value to a rate, or ``None`` on any mismatch.
+    """Narrow a persisted JSON value to a rate in [0, 1], or ``None`` otherwise.
 
     ``bool`` is excluded explicitly: it is an ``int`` subclass in Python, so
     ``True`` would otherwise project as a fill rate of 1.0, which reads as a
@@ -225,12 +226,27 @@ def _as_rate(value: object) -> float | None:
         value: The raw value read from the persisted report.
 
     Returns:
-        The rate as a float, or ``None`` when the value is absent or not a
-        number.
+        The rate as a float, or ``None`` when the value is absent, not a
+        number, or outside the unit interval.
     """
+    # #ASSUME: data-integrity: every caller renders this as a percentage
+    # (`Math.round(rate * 100)` on the approval screen), so a value that is
+    # merely a `float` is not yet safe to show. `NaN`, `inf`, and a rate
+    # persisted as a percentage (82 rather than 0.82) all pass a bare type
+    # check and render as "NaN%", "Infinity%", or "8200%" beside a real
+    # measurement, which is worse than reporting the value as unavailable: an
+    # approver cannot tell a corrupt rate from a measured one. Degrade to
+    # absent, matching the `bool` rejection above, so a malformed record can
+    # only ever read as "not recorded".
+    # #VERIFY: tests/unit/test_review_surface.py::
+    # test_a_non_finite_fill_rate_degrades_to_absent and
+    # ::test_an_out_of_range_fill_rate_degrades_to_absent.
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return None
-    return float(value)
+    rate = float(value)
+    if not math.isfinite(rate) or not (0.0 <= rate <= 1.0):
+        return None
+    return rate
 
 
 def _generation_measures(
@@ -261,7 +277,16 @@ def _generation_measures(
         # unavailable on 12 nodes"), not the book. Counting them beside content
         # concerns would tell an approver a story raised a safety concern when
         # what happened is that a backend was down.
-        if view.structural or view.concern is None:
+        # The `category` test is belt-and-suspenders rather than a second bug
+        # fix: every concern-bearing non-safety finding today also sets
+        # `structural=True` (moderation/stages.py's `reviewer_unavailable`,
+        # pipeline.py's `mock_reviewer_active`), and synthesis routes
+        # structural findings to its passthrough list so the flag survives the
+        # merge. But this field is named for safety and is read as such by an
+        # approver, so it should not depend on every future concern-bearing
+        # finding remembering to mark itself structural. `category="safety"` is
+        # set once, in `stages._safety_finding`, and synthesis preserves it.
+        if view.structural or view.category != "safety" or view.concern is None:
             continue
         counts[view.concern] = counts.get(view.concern, 0) + 1
     return GenerationMeasuresView(

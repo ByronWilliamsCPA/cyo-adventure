@@ -76,8 +76,15 @@ Every command above maps to a definition-of-done requirement in 0.4; none is opt
 - **Safety invariants that no brief may violate**: content never bypasses the validator gate plus
   human approval (ADR-005); the 12-value echo vocabulary in `diversity/normalize.py::_THEME_TAG_MAP`
   is frozen (kid-facing, `#CRITICAL`); no premise text crosses a family boundary or enters a prompt
-  outside the `UNTRUSTED_USER_INPUT` fence; selection weights never reach zero (decision C-4);
-  `generation/binding.py` stays fail-closed.
+  outside the `UNTRUSTED_USER_INPUT` fence; selection *weights* never reach zero (decision C-4, and see
+  the scope note below); `generation/binding.py` stays fail-closed.
+- **Scope of the C-4 floor (superseded in one case).** C-4 governs the weighting, not the candidate pool.
+  A dated owner ruling (`live-structural-round-2026-08-21.md` section 8.1) overrides it for the
+  same-skeleton case specifically: `generation/skeleton_match.py::_apply_reuse_cap` removes a skeleton the
+  family has already read *before* any weight is computed, because two fills of one skeleton share 96.3
+  four-grams per 1000 leaf words against a budget of 4.0, which no weighting can express. The cap relaxes
+  rather than emptying a cell, and C-4's `1/(1 + x)` floor still governs every weight computed after it.
+  This is an interim serving constraint that lapses when a lever reaches the diversity bar (`UW-C315`).
 
 ### 0.4 Definition-of-done template (applies to every brief unless it overrides)
 
@@ -326,7 +333,9 @@ attraction `weight *= (1 + theme_overlap)` up to 2x (`_theme_overlap_bonus`,
 
 **Tests.** Existing selection tests must pass untouched where behavior is unchanged; new: cap
 simulation (concentration toward 1/3), per-profile preference and fallback, distinct-storybook
-window, structural term never zeroes a weight (C-4 pinned).
+window, structural term never zeroes a weight (C-4 pinned; the same-skeleton reuse cap is a separate
+hard filter that runs BEFORE weighting, so it does not make this assertion false, and a test for it must
+not be satisfied by the cap having removed the candidate).
 
 **Size M. Depends: nothing (A1-A5 delivered). Gate OG2 for the cap value only; land 2-4 regardless.**
 
@@ -475,7 +484,7 @@ SQ-13/SQ-14.**
 
 ### SQ-13: Combined A20 + variants rollout
 
-**Status quo.** 14 skeletons / 4,305 FILL nodes unslotted (UW-G01, distribution extremely uneven:
+**Status quo** (a point-in-time inventory, not a live count; [catalog-census.md](./catalog-census.md) is the count source, and every figure in this paragraph predates the 84-shell census)**.** 14 skeletons / 4,305 FILL nodes unslotted (UW-G01, distribution extremely uneven:
 677/550/550 at the top; the smallest UNSLOTTED skeletons are 105 and 32 nodes; the 25- and 11-node MVP seeds are the two already-delivered A20 slices, not backlog); 47 contracts exist. Scope correction from PR review: the rollout covers the 58 production-eligible skeletons, not only the unslotted set; the 13 unslotted PRODUCTION skeletons get the combined pass (the 14th no-contract file is the MVP seed `the-sunken-signal`, excluded with the test-tier scaffolds), the 45 production already-contracted skeletons get a variants-only pass, and every per-skeleton pass backfills subject-axis values into the skeleton's existing `metadata.themes` list (a real field on all 61 skeletons as at 2026-08-02; current totals in [catalog-census.md](./catalog-census.md), `UW-G24`; the 9-of-22 gap is subject VALUES missing from it, not a missing field). The A20 toolchain is proven:
 `scripts/parameterize_skeleton.py` applies a slotting plan with fingerprint unchanged;
 `scripts/check_theme_contract.py` runs seven acceptance checks; two authoring conventions are

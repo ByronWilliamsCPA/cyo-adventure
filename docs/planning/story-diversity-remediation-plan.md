@@ -896,8 +896,11 @@ Constraints every deliverable holds:
 1. The ADR-011 constraint grammar stays frozen. No deliverable requests a safety exception, and none should be
    granted one.
 2. Every generated story passes the full `validator/` gate and `moderation/` review before publish.
-3. The novelty floor: selection never fully excludes an eligible candidate. Every weighting change keeps the
-   `1/(1 + ...)` form.
+3. The novelty floor: every weighting change keeps the `1/(1 + ...)` form, so no *weight* reaches zero.
+   Superseded in one case: a dated owner ruling (`live-structural-round-2026-08-21.md` section 8.1) lets the
+   same-skeleton reuse cap exclude a skeleton the family has already read, before weighting runs. Selection
+   therefore CAN fully exclude an eligible candidate, but only that candidate and only while the cap holds;
+   the cap relaxes rather than emptying a cell, and lapses when a lever reaches the bar (`UW-C315`).
 4. **New: no diversity mechanism may create, persist, render, or export personal data that the system does not
    already hold for the story-generation purpose.** This is the generalisation of section 1.1 and it binds
    D1-D4 and D11.

@@ -415,6 +415,30 @@ describe('ReviewDetailPage', () => {
       expect(block?.textContent).not.toContain('0%')
     })
 
+    it('shows a measured fill rate of zero rather than calling it unrecorded', async () => {
+      // The inverse of the test above, and the reading an approver most needs:
+      // nothing filled. Zero is the value a falsy check silently converts into
+      // "not recorded", which would present a total generation failure as an
+      // ordinary missing measurement.
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          generation_measures: {
+            fill_rate: 0,
+            fill_rate_floor: 0.6,
+            fill_rate_downgrade: true,
+            safety_concerns: [],
+          },
+        },
+      })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'What the automated gate measured' })
+      const block = document.getElementById('generation-measures')
+      expect(block?.textContent).toContain('0%')
+      expect(block?.textContent).not.toMatch(/not recorded/i)
+      expect(screen.getByText(/below the fill floor/i)).toBeInTheDocument()
+    })
+
     it('rolls up the moderation gate concerns with their counts', async () => {
       mockGet.mockResolvedValue({
         data: {
@@ -433,9 +457,10 @@ describe('ReviewDetailPage', () => {
       renderAt('s1')
       await screen.findByRole('heading', { name: 'What the automated gate measured' })
       const block = document.getElementById('generation-measures')
-      expect(block?.textContent).toContain('safety')
-      expect(block?.textContent).toContain('3')
-      expect(block?.textContent).toContain('pacing')
+      // Concern and count together: `toContain('3')` alone also matched the
+      // '3' inside an unrelated percentage elsewhere in the block.
+      expect(block?.textContent).toContain('safety (3)')
+      expect(block?.textContent).toContain('pacing (1)')
     })
 
     it('states plainly that the gate raised no content concerns', async () => {
