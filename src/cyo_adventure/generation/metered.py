@@ -31,13 +31,20 @@ persisted record is the per-job aggregate on ``generation_job``.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Final, cast
 
 from cyo_adventure.generation.usage import Completion, TokenUsage
 
 if TYPE_CHECKING:
     from cyo_adventure.generation.provider import GenerationProvider
     from cyo_adventure.generation.usage import UsageLedger
+
+#: Attributes forwarded to the wrapped provider by name, preserving whether
+#: the inner provider declares them at all. A caller distinguishes "this is not
+#: a cascade" from "this cascade has not answered yet" by presence versus
+#: value, so forwarding a value for an inner provider that has no such
+#: attribute would erase that distinction. See :meth:`MeteredProvider.__getattr__`.
+_FORWARDED_ATTRS: Final[frozenset[str]] = frozenset({"resolved_provider"})
 
 __all__ = ["MeteredProvider", "ledger_of"]
 
@@ -75,10 +82,9 @@ class MeteredProvider:
     # `getattr(provider, "name", None) or <configured default>`. A wrapper that
     # did not forward them would not fail; it would silently relabel every job
     # with the configured default, so an audit of which provider ran a job
-    # would read the config rather than the run. These two attributes are the
-    # complete set the codebase reads off a provider today (worker.py
-    # `_provider_label`/`_model_label`); a blanket `__getattr__` is deliberately
-    # not used, since it would also forward typos.
+    # would read the config rather than the run. A blanket `__getattr__` is
+    # deliberately not used, since it would also forward typos; anything else
+    # the codebase reads off a provider must be named in `_FORWARDED_ATTRS`.
     # #VERIFY: test_the_wrapper_forwards_the_provider_and_model_labels,
     # test_absent_labels_are_forwarded_as_none.
 
@@ -103,6 +109,46 @@ class MeteredProvider:
         """
         inner_model: object = getattr(self._inner, "model", None)
         return inner_model if isinstance(inner_model, str) else None
+
+    # #CRITICAL: security: `resolved_provider` is forwarded because
+    # moderation/pipeline.py judges reviewer independence on the backend that
+    # ACTUALLY answered. A cascade reports the answering leg there and `None`
+    # before any leg has answered, while its `name` is a composite label
+    # ("fallback[...]") that equals no configured backend. A wrapper that
+    # swallowed the attribute would make the pipeline read `name` instead, so
+    # "different backend" would be unconditionally true and every metered
+    # cascade run would persist `reviewer_independent=True` whatever answered:
+    # a model could review its own output while the report attested it had not.
+    # Forwarding by `__getattr__` (rather than a property) is what preserves
+    # ABSENCE: a wrapped non-cascade provider must still look like it has no
+    # `resolved_provider`, because the pipeline reads presence to decide
+    # whether the provider's own `name` may speak for it.
+    # #VERIFY: tests/unit/test_review_metering.py::
+    # test_a_metered_cascade_is_judged_on_the_leg_that_answered and
+    # ::test_metering_does_not_invent_a_resolution_for_a_plain_provider.
+
+    def __getattr__(self, item: str) -> object:
+        """Forward the small set of provider attributes named in `_FORWARDED_ATTRS`.
+
+        Called only when normal attribute lookup fails, so it never shadows
+        ``ledger``, ``name``, ``model``, or ``complete``.
+
+        Args:
+            item: The attribute name being looked up.
+
+        Returns:
+            The inner provider's value for a forwarded attribute.
+
+        Raises:
+            AttributeError: If the attribute is not forwarded, or the inner
+                provider does not declare it. Raising here is load-bearing:
+                it is what lets a caller tell a wrapped non-cascade provider
+                apart from a cascade that has not answered.
+        """
+        if item in _FORWARDED_ATTRS:
+            return getattr(self._inner, item)
+        msg = f"{type(self).__name__!r} object has no attribute {item!r}"
+        raise AttributeError(msg)
 
     async def complete(
         self, *, system: str, prompt: str, max_tokens: int

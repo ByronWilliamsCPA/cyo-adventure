@@ -21,6 +21,11 @@ Pydantic models), and three parallel document audits compared the requirement do
 implementation, and the open-issue registers (authoring lessons log, unscheduled work register,
 story-structure improvement plan, R1 debt register, diversity errata) against the code and data.
 
+> **Catalog counts are dated.** Every skeleton, node and contract count below was measured on 2026-08-09,
+> when the catalog held 61 skeletons; on 2026-08-23 it holds 84 shells and 15,470 nodes
+> (`docs/planning/catalog-census.md`, `UW-G24`). They are left as measured, because each records what a
+> procedure returned on that date rather than describing the catalog today.
+
 ## Verdict
 
 The catalog is **mechanically clean**: every automated gate the project defines passes today.

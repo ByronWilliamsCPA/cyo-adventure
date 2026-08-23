@@ -14,6 +14,7 @@ import { makePassageEditApi } from '../guardian/passageEditApi'
 import { Finding, passageDomId, Passage, RankedFinding } from '../guardian/ReviewPassage'
 import {
   makeReviewApi,
+  type GenerationMeasuresView,
   type ReviewSurface,
   type SendBackReasonCode,
   type Visibility,
@@ -73,6 +74,80 @@ type RescreenState =
  * deliberately excluded (ADR-005: approval is safety-critical and must be a
  * deliberate, recorded human action).
  */
+/**
+ * Renders a rate as a whole percentage, or `null` when there is no rate.
+ *
+ * The null return is the point: an absent measurement must not render as
+ * "0%", which an approver would read as a book that filled nothing.
+ */
+function asPercent(rate: number | null | undefined): string | null {
+  return typeof rate === 'number' ? `${Math.round(rate * 100)}%` : null
+}
+
+/**
+ * The measurements behind the routing decision, shown alongside the findings
+ * they explain (R-2).
+ *
+ * Without this the approval screen showed findings but not the numbers the
+ * automated gate judged them on, so a book that scraped past the fill floor
+ * and one that cleared it comfortably looked identical.
+ *
+ * Deliberately absent: the deterministic validator's `safety_flagged`. Its
+ * SAFE-14 producer is a Phase-2 stub that returns an empty finding list by
+ * construction, so it is structurally always false and would read here as a
+ * clean bill from a check that never ran. The safety roll-up comes from the
+ * moderation gate, which does run.
+ */
+function GenerationMeasuresBlock({ measures }: { measures: GenerationMeasuresView }) {
+  const rate = asPercent(measures.fill_rate)
+  const floor = asPercent(measures.fill_rate_floor)
+  const concerns = measures.safety_concerns ?? []
+  return (
+    <div className="review-group review-measures" id="generation-measures">
+      <h2>What the automated gate measured</h2>
+      <ul className="review-measures__list">
+        <li className="review-measures__item">
+          {rate === null ? (
+            <span className="cyo-text-muted">Fill rate not recorded for this version.</span>
+          ) : (
+            <>
+              <span className="review-measures__label">Fill rate</span>
+              <span className="review-measures__value">{rate}</span>
+              {floor === null ? null : (
+                <span className="cyo-text-muted">of the commissioned words (floor {floor})</span>
+              )}
+            </>
+          )}
+          {/*
+            Outside the rate branch on purpose: the downgrade flag is persisted
+            independently of the rate, so a version whose rate is absent or
+            malformed can still have been routed as below-floor. Nesting the
+            badge inside the rate branch hid exactly that combination, which is
+            the case an approver most needs to see.
+          */}
+          {measures.fill_rate_downgrade ? (
+            <FlagBadge tone="flag" label="Below the fill floor" />
+          ) : null}
+        </li>
+        <li className="review-measures__item">
+          {concerns.length === 0 ? (
+            <span className="cyo-text-muted">The moderation gate raised no content concerns.</span>
+          ) : (
+            <>
+              <span className="review-measures__label">Concerns raised</span>
+              {concerns.map((entry) => (
+                <span key={entry.concern} className="review-measures__concern">
+                  {entry.concern} ({entry.count})
+                </span>
+              ))}
+            </>
+          )}
+        </li>
+      </ul>
+    </div>
+  )
+}
+
 export function ReviewDetailPage() {
   usePageTitle('Review')
   const { storybookId = '' } = useParams()
@@ -398,6 +473,10 @@ export function ReviewDetailPage() {
         <p className="review-repaired-hint cyo-text-muted">
           This story was auto-repaired. Compare with the previous version to see what changed.
         </p>
+      ) : null}
+
+      {surface.generation_measures ? (
+        <GenerationMeasuresBlock measures={surface.generation_measures} />
       ) : null}
 
       {surface.version > 1 ? (

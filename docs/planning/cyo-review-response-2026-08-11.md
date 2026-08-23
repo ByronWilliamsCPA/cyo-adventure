@@ -18,6 +18,11 @@ source: "second external review of cyo-generation-research-brief-2026-08-10.md"
 > **Responds to**: the executive assessment returned against
 > [the research brief](./cyo-generation-research-brief-2026-08-10.md), Part II
 > **Status**: draft, pending owner sign-off before it goes back to the reviewer
+>
+> **Catalog counts**: every skeleton, node and choice count below was measured on 2026-08-11, when the
+> catalog held 61 skeletons and 11,458 nodes; on 2026-08-23 it holds 84 and 15,470
+> ([catalog census](./catalog-census.md), `UW-G24`). They stand as measured, because each one dates a
+> verification of a reviewer's claim rather than describing the catalog today.
 
 ## 0. Summary
 

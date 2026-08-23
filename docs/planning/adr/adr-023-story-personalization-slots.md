@@ -310,8 +310,10 @@ a proposed caveat note against the Route A record.
 ### 5. Eligibility is a per-story marker, not a global assumption
 
 - For theme-contract-bound (parameterized) skeletons, name eligibility is whether the bound
-  contract declares a `HERO`-equivalent identity slot. This is not universal: 45 of 61 skeletons
-  in the catalog have a contract at all, and `HERO` is declared in 39 of those 45.
+  contract declares a `HERO`-equivalent identity slot. This is not universal: measured 2026-07-25, 45 of the
+  catalog's 61 skeletons had a contract at all, and `HERO` was declared in 39 of those 45. The proportion
+  moves as the catalog grows (current totals: [catalog-census.md](../catalog-census.md), `UW-G24`); the
+  per-story eligibility rule does not.
 - For the older non-parameterized `ConceptBrief` path, eligibility is a boolean set at generation
   time.
 - **Pronoun eligibility is a separate per-skeleton flag from name eligibility**, and is off by
@@ -981,6 +983,10 @@ satisfying ending").
 
 Recorded so a reader does not inherit a stale premise from the design conversation this ADR came
 out of.
+
+Every catalog count in this section was measured on 2026-07-25 against a 61-skeleton catalog. The counts are
+left as measured because each dates a verification rather than asserting live state; for current totals see
+[catalog-census.md](../catalog-census.md) (`UW-G24`).
 
 - **The Route A citation is imprecise, and the code repeats it.** The remediation plan has no
   numbered "Section 5 Decision 4". The self-naming ruling lives as the third bullet of Section 2

@@ -323,6 +323,13 @@ measurement of the shipped skeleton corpus (61 skeletons) corrected that wording
 this note records the finding, how it lines up against the JHM "essentially a tree (max
 indegree 1.5)" anchor above, and the resulting enforcement stance.
 
+The counts in this clarification are as measured on 2026-07-27, when the catalog held 61 skeletons and
+11,438 nodes; on 2026-08-23 it holds 84 skeletons and 15,470 nodes
+([catalog-census.md](../catalog-census.md), `UW-G24`). They are left as written because each is a measurement
+taken on that date rather than a claim about today: "54 of 61" becomes a different fraction only by re-running
+the topology pass, which this note did not do. Read every count below as dated, and take current state from
+the census.
+
 - **The JHM figure is a mean of per-book maxima, and we exceed it.** JHM's "max indegree
   1.5 (range 1-3)" is the mean across books of each book's most-reconverged page, not a
   hard ceiling. The like-for-like statistic on our corpus is the mean of each skeleton's

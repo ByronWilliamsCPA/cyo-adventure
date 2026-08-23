@@ -13,9 +13,33 @@
 
 import { type AxiosInstance, isAxiosError } from 'axios'
 
-import type { ContentFlagLevel, ContentFlags, FindingSeverity } from '../client/types.gen'
+import type {
+  ContentFlagLevel,
+  ContentFlags,
+  FindingSeverity,
+  GenerationMeasuresView,
+  SafetyConcernCount,
+} from '../client/types.gen'
 
-export type { ContentFlagLevel, ContentFlags, FindingSeverity }
+/**
+ * Re-exported from the generated client for the reason the module docstring
+ * gives for ContentFlags: a hand-written mirror of a backend response type can
+ * drift silently, because the OpenAPI drift gate compares the GENERATED files
+ * and never sees a hand-typed copy that has fallen behind.
+ *
+ * `fill_rate` is deliberately nullable on the backend rather than defaulting to
+ * zero: a version with no recorded rate (an imported book, or one generated
+ * before the rate was stamped) is not a book that filled nothing. Consumers
+ * must test for absence explicitly, never for falsiness, since a genuine rate
+ * of 0 is a real measurement.
+ */
+export type {
+  ContentFlagLevel,
+  ContentFlags,
+  FindingSeverity,
+  GenerationMeasuresView,
+  SafetyConcernCount,
+}
 
 export type FindingVerdict = 'block' | 'flag' | 'advisory' | 'pass'
 
@@ -94,6 +118,10 @@ export interface ReviewSurface {
   structural_findings?: FindingView[]
   low_advisory_findings?: FindingView[]
   validator_findings?: ValidatorFindingView[]
+  // R-2: the measurements behind the routing decision. Absent on an older
+  // backend response, in which case the console renders no measures block at
+  // all rather than an empty one that reads as "nothing was measured".
+  generation_measures?: GenerationMeasuresView
 }
 
 export interface ApprovedResult {

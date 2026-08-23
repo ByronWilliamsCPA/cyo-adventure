@@ -39,12 +39,13 @@ The method
    band below 13-16) are collapsed into one row rather than counted twice,
    matching ``diversity/incell.py``'s convention.
 2. **Curves.** Simulate a family issuing N successive requests into the SAME
-   cell, drawing each pick with the real ``select_skeleton_for_cell`` and the
-   real weighting. History state is rebuilt between draws exactly as the
-   production caller builds it (see ``_family_state``), including the
-   twenty-row recency window. Reported per N: P(a child has met a repeat by
-   their Nth request), the expected number of distinct skeletons THAT CHILD has
-   seen, and the first N at which a repeat is more likely than not.
+   cell, drawing each pick with the real ``select_skeleton_for_cell``, the real
+   weighting and the real same-skeleton reuse cap. History state is rebuilt
+   between draws exactly as the production caller builds it (see
+   ``_family_state``), including the twenty-row recency window. Reported per N:
+   P(a child has met a repeat by their Nth request), the expected number of
+   distinct skeletons THAT CHILD has seen, and the first N at which a repeat is
+   more likely than not.
 3. **Siblings.** The same curve with 1, 2 and 3 readers sharing the family
    history, run once under the shipped family scope and once under a
    child-scoped counterfactual, so the cost of the scoping choice is a number
@@ -75,6 +76,27 @@ advance for a real family:
   selector's STRONGEST anti-repeat setting.
 
 Real families sit between the two, so the two curves bound the true rate.
+
+**The reuse cap collapsed that bracket.** ``select_skeleton_for_cell`` now runs
+``_apply_reuse_cap`` as a hard filter BEFORE weighting, removing every candidate
+the family has already read unless that would empty the pool. This simulation
+models "similar" as "the family has read this same slug" (see
+``_family_state``), so the slugs the theme penalty de-weights are exactly the
+slugs the cap removes, and the two regimes now return identical curves except
+where a cell is exhausted and the cap relaxes. Two consequences follow, and both
+matter when reading any figure this script prints:
+
+- A curve is no longer a smooth probability. A cell of size ``M`` is repeat-free
+  for ``M`` requests and repeats for certain on request ``M + 1``. Pool size, not
+  luck, sets the horizon, and "grow the catalog" is now the only lever. That
+  exact horizon holds only while the family's history fits inside the twenty-row
+  recency window that bounds the cap: the cap excludes what the family read in
+  its last ``_RECENT_WINDOW`` books, not what it ever read, so past request 20
+  the earliest picks age out and become drawable again. Read every horizon
+  printed here as "within the recency window".
+- **Exposure figures published from runs before the cap are superseded**, not
+  merely imprecise: they were computed under a model where an already-read
+  skeleton stayed drawable. Re-run before citing one.
 
 Length demand is NOT uniform
 ----------------------------
@@ -367,6 +389,14 @@ def _family_state(
     regime); otherwise none do and the map is all-zero, which
     ``_blended_weight`` reduces exactly to ``_weight``.
 
+    That proxy makes ``similar_usage`` non-zero on exactly the slugs
+    ``recent_usage`` is non-zero on, which the same-skeleton reuse cap now
+    removes before weighting. The same-theme regime is therefore inert in this
+    simulation except where a cell is exhausted and the cap relaxes. Modelling a
+    themed but UNREAD sibling would need a real theme-overlap map (the
+    ``theme_overlap`` argument of :func:`simulate_exposure` is the hook), not
+    this slug-identity stand-in.
+
     Args:
         history: The family's prior picks, oldest first.
         candidates: The in-cell candidate slugs.
@@ -539,6 +569,15 @@ def required_pool_size(
     the answer and then bisects, rather than scanning every size. The estimate is
     stochastic, so a reported size can be off by one when the true crossing sits
     within Monte Carlo noise of 0.5; raise ``trials`` to tighten it.
+
+    Under the same-skeleton reuse cap the pigeonhole lower bound below is TIGHT
+    for a single reader whose history fits the twenty-row recency window that
+    bounds the cap: a pool of ``N`` is repeat-free for exactly ``N`` requests, so
+    the answer is ``max(len(base), target_request)`` and the bisection resolves
+    on its first probe. The search is kept because it is not tight elsewhere:
+    past ``_RECENT_WINDOW`` requests the family's earliest picks age out of the
+    window and become drawable again, and on the multi-reader and exhausted-cell
+    paths the cap relaxes and the draw goes back to being probabilistic.
 
     Args:
         base: The real in-cell candidate slugs.

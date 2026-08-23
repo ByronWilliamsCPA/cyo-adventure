@@ -97,9 +97,10 @@ output.
 (story-scale: band x length x style) merged to `main` on 2026-07-03 (PR #70), establishing
 the corrected skeleton baseline (18-cell coverage grid, per-cell node budgets, PL-17..21
 policy teeth). **Updated 2026-07-20**: the "zero production-eligible skeletons" statement is
-stale. `main` now carries 61 skeleton JSONs (58 flagged `production_eligible: true`) and 23
+stale. As at that date `main` carried 61 skeleton JSONs (58 flagged `production_eligible: true`) and 23
 filled stories, committed via PR #289 (14-story inventory run), #292 (Wave 4 gamebook
-fills), and #297 (a two-book series stress test); see
+fills), and #297 (a two-book series stress test); for current catalog totals see
+[catalog-census.md](./catalog-census.md) (`UW-G24`). See
 [story-inventory-initial-run.md](./story-inventory-initial-run.md). None of these 23 are yet
 imported to Postgres or published (ADR-005 human-approval and a running DB/`--family` are
 required for that step), so "zero in the catalog" is still true, "zero in the repo" is not.

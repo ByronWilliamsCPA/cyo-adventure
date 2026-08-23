@@ -23,6 +23,7 @@ import pytest
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.metered import MeteredProvider, ledger_of
 from cyo_adventure.generation.pii import PiiContext
+from cyo_adventure.generation.providers.fallback import FallbackProvider
 from cyo_adventure.generation.usage import Completion, TokenUsage, UsageLedger
 
 _REAL_CHILD = "Wilhelmina Featherstone"
@@ -398,3 +399,106 @@ def test_the_configured_backend_is_used_when_the_provider_declares_no_name(
     seen = _generator_seen_by_review_builder(monkeypatch, _StubProvider())
 
     assert seen == ["anthropic"]
+
+
+class _CascadeLeg:
+    """A cascade leg that answers, reporting the backend it really is."""
+
+    name = "openrouter:sonnet"
+
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
+        """Answer with usage attributed to the openrouter backend."""
+        del system, prompt, max_tokens
+        return Completion(
+            text="{}",
+            usage=TokenUsage(
+                provider="openrouter",
+                model="anthropic/claude-sonnet-4.6",
+                input_tokens=1,
+                output_tokens=1,
+                duration_ms=1,
+            ),
+        )
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_a_cascade_is_judged_on_the_leg_that_answered(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A cascade must not launder its way past the independence check.
+
+    ``FallbackProvider.name`` is a cascade label such as
+    ``"fallback[openrouter:haiku,openrouter:sonnet,modal]"``. That string
+    equals no configured backend, so judging on it makes
+    ``backend != generator_provider`` unconditionally true and grants tier-1
+    independence to every cascade run, whatever model actually answered. The
+    resolved leg is the only value that can be compared.
+    """
+    cascade = FallbackProvider(legs=[_CascadeLeg()])
+    await cascade.complete(system="s", prompt="u", max_tokens=1)
+
+    assert _generator_seen_by_review_builder(monkeypatch, cascade) == ["openrouter"]
+
+
+@pytest.mark.unit
+def test_an_unanswered_cascade_does_not_grant_independence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A cascade that has not run yet must not review itself into independence.
+
+    A fresh ``FallbackProvider`` reports ``resolved_provider is None``, because
+    no leg has answered. Collapsing that ``None`` onto the cascade's own
+    ``name`` would hand ``build_review_provider`` a label like
+    ``fallback[anthropic,openrouter]``, which equals no configured backend and
+    so compares as different from every reviewer. The independence check would
+    pass unconditionally, and the persisted report would attest to a separation
+    that was never established.
+
+    The configured backend is the right answer here: it is what the job would
+    have run on, and it is a real backend name the comparison can bite on.
+    """
+    cascade = FallbackProvider(legs=[_CascadeLeg()])
+
+    assert _generator_seen_by_review_builder(monkeypatch, cascade) == ["anthropic"]
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_a_metered_cascade_is_judged_on_the_leg_that_answered(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Metering must not hide which leg of a cascade wrote the story.
+
+    The worker wraps the generation provider in ``MeteredProvider`` before the
+    moderation pipeline ever sees it, so every independence verdict on the
+    worker path is taken against the wrapper. If the wrapper does not forward
+    ``resolved_provider``, the answering leg becomes invisible and the verdict
+    silently degrades to the unanswered-cascade case above.
+    """
+    cascade = FallbackProvider(legs=[_CascadeLeg()])
+    await cascade.complete(system="s", prompt="u", max_tokens=1)
+    metered = MeteredProvider(cascade, ledger=UsageLedger())
+
+    assert _generator_seen_by_review_builder(monkeypatch, metered) == ["openrouter"]
+
+
+@pytest.mark.unit
+def test_metering_does_not_invent_a_resolution_for_a_plain_provider(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Wrapping a non-cascade provider must not make it look like a cascade.
+
+    ``MeteredProvider`` forwards ``resolved_provider`` by ``__getattr__``
+    rather than by a property returning ``None``, and that choice is what this
+    pins. A property would answer ``None`` for a provider that declares no such
+    attribute, erasing the difference between "this is not a cascade, so its
+    own name is authoritative" and "this cascade has not answered yet". The
+    wrapped provider here declares ``modal`` and no resolution, so it must
+    still be judged as ``modal``.
+    """
+    metered = MeteredProvider(_NamedProvider(), ledger=UsageLedger())
+
+    assert _generator_seen_by_review_builder(monkeypatch, metered) == ["modal"]

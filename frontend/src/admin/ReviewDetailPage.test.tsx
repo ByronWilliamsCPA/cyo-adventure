@@ -351,6 +351,147 @@ describe('ReviewDetailPage', () => {
     })
   })
 
+  describe('what the automated gate measured (R-2)', () => {
+    /*
+      The approval screen showed findings without showing the measurements
+      behind the routing decision, so an approver could not tell a book that
+      scraped past a floor from one that cleared it comfortably. Every value
+      here is a read of something already persisted on the version row.
+    */
+    it('shows the fill rate against the floor it was judged on', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          generation_measures: {
+            fill_rate: 0.82,
+            fill_rate_floor: 0.6,
+            fill_rate_downgrade: false,
+            safety_concerns: [],
+          },
+        },
+      })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'What the automated gate measured' })
+      const block = document.getElementById('generation-measures')
+      expect(block?.textContent).toContain('82%')
+      expect(block?.textContent).toContain('60%')
+    })
+
+    it('names the fill floor as the reason for review when it was breached', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          generation_measures: {
+            fill_rate: 0.41,
+            fill_rate_floor: 0.6,
+            fill_rate_downgrade: true,
+            safety_concerns: [],
+          },
+        },
+      })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'What the automated gate measured' })
+      expect(screen.getByText(/below the fill floor/i)).toBeInTheDocument()
+    })
+
+    it('says the fill rate was not recorded rather than showing it as zero', async () => {
+      // A book with no measurement is not a book that filled nothing: an
+      // imported story, or one generated before the rate was stamped.
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          generation_measures: {
+            fill_rate: null,
+            fill_rate_floor: null,
+            fill_rate_downgrade: false,
+            safety_concerns: [],
+          },
+        },
+      })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'What the automated gate measured' })
+      const block = document.getElementById('generation-measures')
+      expect(block?.textContent).toMatch(/not recorded/i)
+      expect(block?.textContent).not.toContain('0%')
+    })
+
+    it('shows a measured fill rate of zero rather than calling it unrecorded', async () => {
+      // The inverse of the test above, and the reading an approver most needs:
+      // nothing filled. Zero is the value a falsy check silently converts into
+      // "not recorded", which would present a total generation failure as an
+      // ordinary missing measurement.
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          generation_measures: {
+            fill_rate: 0,
+            fill_rate_floor: 0.6,
+            fill_rate_downgrade: true,
+            safety_concerns: [],
+          },
+        },
+      })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'What the automated gate measured' })
+      const block = document.getElementById('generation-measures')
+      expect(block?.textContent).toContain('0%')
+      expect(block?.textContent).not.toMatch(/not recorded/i)
+      expect(screen.getByText(/below the fill floor/i)).toBeInTheDocument()
+    })
+
+    it('rolls up the moderation gate concerns with their counts', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          generation_measures: {
+            fill_rate: 0.9,
+            fill_rate_floor: 0.6,
+            fill_rate_downgrade: false,
+            safety_concerns: [
+              { concern: 'safety', count: 3 },
+              { concern: 'pacing', count: 1 },
+            ],
+          },
+        },
+      })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'What the automated gate measured' })
+      const block = document.getElementById('generation-measures')
+      // Concern and count together: `toContain('3')` alone also matched the
+      // '3' inside an unrelated percentage elsewhere in the block.
+      expect(block?.textContent).toContain('safety (3)')
+      expect(block?.textContent).toContain('pacing (1)')
+    })
+
+    it('states plainly that the gate raised no content concerns', async () => {
+      // The empty case must read as a measured result, not as a missing
+      // section a reviewer might mistake for "nothing ran".
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          generation_measures: {
+            fill_rate: 0.9,
+            fill_rate_floor: 0.6,
+            fill_rate_downgrade: false,
+            safety_concerns: [],
+          },
+        },
+      })
+      renderAt('s1')
+      await screen.findByRole('heading', { name: 'What the automated gate measured' })
+      expect(screen.getByText(/no content concerns/i)).toBeInTheDocument()
+    })
+
+    it('renders nothing at all when an older backend omits the block', async () => {
+      mockGet.mockResolvedValue({ data: SURFACE })
+      renderAt('s1')
+      await screen.findByText('possibly scary')
+      expect(
+        screen.queryByRole('heading', { name: 'What the automated gate measured' })
+      ).not.toBeInTheDocument()
+    })
+  })
+
   it('renders sentinels visibly for the reviewer', async () => {
     // ADR-023 section 10: markers are shown DELIBERATELY in review and never in
     // the reader. This asserts the negative, that the admin surface does not

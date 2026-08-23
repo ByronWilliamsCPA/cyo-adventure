@@ -16,6 +16,11 @@ audience: product-owner, engineering
 
 # Kid-Appeal Design and Architecture Review (2026-08-01)
 
+> **Catalog counts are dated.** Every skeleton, node and choice count below was measured on 2026-08-01,
+> when the catalog held 61 skeletons; on 2026-08-23 it holds 84 skeletons and 15,470 nodes
+> ([catalog census](./catalog-census.md), `UW-G24`). They are left as measured, because each one records
+> what a procedure returned on that date rather than describing the catalog today.
+
 ## Purpose and method
 
 This review asks one question of the whole system: **would a child pick this app up twice?** It covers

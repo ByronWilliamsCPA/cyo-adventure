@@ -89,8 +89,15 @@ if TYPE_CHECKING:
     from cyo_adventure.validator.gate import GateResult
 
 # Advisory rule ids a newly drafted skeleton may not carry (--strict). The
-# grandfathered catalog fires these on 40 of 61 skeletons; a new shell has no
-# excuse. Two deliberate absences: L2-13 (past the hand-authoring ceiling) is
+# grandfathered catalog fires these on 64 of its 84 shells, re-measured
+# 2026-08-23 through this script's own path (load_skeleton with
+# enforce_grammar=True), and the incidence is dominated by the grammar rules:
+# CG-3 on 64 shells, CG-2 on 54, CG-1 on 41, against PL-23 on 31, PL-24 on 19
+# and PL-26 on 6. It supersedes an undated "40 of 61" that predated the
+# catalog's growth and was never re-measured (`UW-G24`, `AL-551`). Cite
+# `docs/planning/catalog-census.md` for shell counts rather than transcribing
+# one here. A new shell has no excuse for any of them. Two deliberate
+# absences: L2-13 (past the hand-authoring ceiling) is
 # a caution about review method, not a defect in the shell; CG-4 (choice
 # label echoed in the next passage's opening) can only be judged on filled
 # prose, and on a shell every body is a ``<<FILL>>`` directive, so it fires

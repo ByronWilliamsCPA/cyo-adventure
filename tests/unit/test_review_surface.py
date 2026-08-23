@@ -11,7 +11,11 @@ from cyo_adventure.api.review_surface import (
     build_review_queue_item,
     build_review_surface,
 )
-from cyo_adventure.api.schemas import FindingView, ReviewSurfaceView
+from cyo_adventure.api.schemas import (
+    FindingView,
+    GenerationMeasuresView,
+    ReviewSurfaceView,
+)
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
 from cyo_adventure.moderation.thresholds import ThresholdPolicy
@@ -1689,3 +1693,248 @@ def test_validator_finding_with_unreadable_message_says_so() -> None:
     assert finding.rule_id == "RL-13"
     assert finding.severity == "warning"
     assert finding.node_id == "n1"
+
+
+# ---------------------------------------------------------------------------
+# Generation measures on the approval screen (R-2, partial)
+# ---------------------------------------------------------------------------
+#
+# "So the human gate sees what the automated gate measured." Two of the three
+# measures R-2 names are covered here: the fill rate against its floor, which
+# is persisted on every generated version and shown nowhere, and a safety
+# roll-up over the concerns the moderation gate actually raised. The third,
+# sibling-gram overlap, has no request-path producer on this branch yet.
+#
+# Deliberately NOT surfaced: the deterministic gate's own `safety_flagged`.
+# SAFE-14 is a Phase-2 stub that returns an empty finding list by
+# construction (validator/safety.py), so that field is structurally always
+# False, and putting it on an approval screen would read as "safety: clean"
+# from a check that never ran.
+
+
+def _validation_report(**overrides: object) -> dict[str, object]:
+    """Build a persisted validation report carrying the fill-rate keys."""
+    return {"ok": True, "findings": [], **overrides}
+
+
+def _measures(
+    *,
+    report: dict[str, object] | None = None,
+    validation_report: dict[str, object] | None = None,
+) -> GenerationMeasuresView:
+    """Project a surface and return only its generation-measures block.
+
+    Typed rather than `object` so the assertions below are checked against the
+    real view: with an `object` return every `measures.fill_rate` read is
+    unchecked, and a renamed field would only surface at runtime.
+
+    The block itself is always projected; it is the individual measurements
+    that degrade to `None`. Asserting that here keeps the distinction honest
+    and turns a regression that dropped the block into a named failure rather
+    than an `AttributeError` inside whichever test ran first.
+    """
+    measures = build_review_surface(
+        status="needs_review",
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=report if report is not None else _report(),
+        validation_report=validation_report,
+    ).generation_measures
+    assert measures is not None, "the measures block must always be projected"
+    return measures
+
+
+def test_generation_measures_persisted_rate_and_floor_reach_the_surface() -> None:
+    """The rate is persisted on every generated version and shown nowhere."""
+    measures = _measures(
+        validation_report=_validation_report(fill_rate=0.82, fill_rate_floor=0.6)
+    )
+    assert measures.fill_rate == pytest.approx(0.82)
+    assert measures.fill_rate_floor == pytest.approx(0.6)
+    assert measures.fill_rate_downgrade is False
+
+
+def test_generation_measures_downgrade_is_distinguishable_from_a_passing_rate() -> None:
+    """A downgraded book routes to review for a reason the reviewer must see.
+
+    ``fill_rate`` alone cannot carry this: the rate is stamped on every
+    outcome that carries a book, breach or not, which is why the orchestrator
+    stamps a separate key on the downgrade itself.
+    """
+    measures = _measures(
+        validation_report=_validation_report(
+            fill_rate=0.41, fill_rate_floor=0.6, fill_rate_downgrade=True
+        )
+    )
+    assert measures.fill_rate == pytest.approx(0.41)
+    assert measures.fill_rate_downgrade is True
+
+
+def test_generation_measures_absent_validation_report_yields_no_fill_rate() -> None:
+    """An imported or pre-floor version has no rate, which is not a rate of 0."""
+    measures = _measures(validation_report=None)
+    assert measures.fill_rate is None
+    assert measures.fill_rate_floor is None
+    assert measures.fill_rate_downgrade is False
+
+
+def test_generation_measures_malformed_fill_rate_degrades_to_absent() -> None:
+    """``validation_report`` is a read-only annex; a bad value must not 500."""
+    measures = _measures(
+        validation_report=_validation_report(fill_rate="0.82", fill_rate_floor=None)
+    )
+    assert measures.fill_rate is None
+    assert measures.fill_rate_floor is None
+
+
+def test_generation_measures_boolean_fill_rate_degrades_to_absent() -> None:
+    """``True`` is an int in Python, and 1.0 would read as a perfect fill."""
+    measures = _measures(validation_report=_validation_report(fill_rate=True))
+    assert measures.fill_rate is None
+
+
+@pytest.mark.parametrize("bad", [float("nan"), float("inf"), float("-inf")])
+def test_generation_measures_non_finite_fill_rate_degrades_to_absent(
+    bad: float,
+) -> None:
+    """A non-finite rate is a `float`, so a bare type check lets it through.
+
+    The approval screen renders the rate as ``Math.round(rate * 100)``, which
+    turns these into the literal strings "NaN%" and "Infinity%" beside a real
+    measurement. An approver cannot tell that from a number the gate actually
+    produced, so "not recorded" is the safer projection.
+    """
+    measures = _measures(validation_report=_validation_report(fill_rate=bad))
+    assert measures.fill_rate is None
+
+
+@pytest.mark.parametrize("bad", [82, 1.5, -0.1])
+def test_generation_measures_out_of_range_fill_rate_degrades_to_absent(
+    bad: float,
+) -> None:
+    """A rate persisted as a percentage renders as "8200%", not as an error.
+
+    The unit-interval bound is what catches a producer that stamped ``82``
+    where the reader expects ``0.82``. Without it the value is a perfectly
+    ordinary float and reaches the screen unchallenged.
+    """
+    measures = _measures(validation_report=_validation_report(fill_rate=bad))
+    assert measures.fill_rate is None
+
+
+def test_generation_measures_genuine_zero_fill_rate_is_kept() -> None:
+    """Zero is a real, and alarming, measurement: nothing in the book filled.
+
+    It is also the value most at risk from a falsy guard, and it is precisely
+    the reading an approver most needs to see, so it must survive the range
+    check that rejects the corrupt values above.
+    """
+    measures = _measures(
+        validation_report=_validation_report(fill_rate=0.0, fill_rate_floor=0.6)
+    )
+    assert measures.fill_rate == pytest.approx(0.0)
+    assert measures.fill_rate is not None
+
+
+def test_safety_concerns_are_counted_for_the_approver() -> None:
+    """The roll-up answers "what did the gate object to", not "how many rows"."""
+    report: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n_start",
+                "verdict": "flag",
+                "score": None,
+                "message": "mild peril",
+                "concern": "frightening_content",
+            },
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n_end",
+                "verdict": "flag",
+                "score": None,
+                "message": "mild peril",
+                "concern": "frightening_content",
+            },
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": None,
+                "verdict": "advisory",
+                "score": None,
+                "message": "a knife is described",
+                "concern": "real_world_danger",
+            },
+        ]
+    }
+    measures = _measures(report=report)
+    assert [(c.concern, c.count) for c in measures.safety_concerns] == [
+        ("frightening_content", 2),
+        ("real_world_danger", 1),
+    ]
+
+
+def test_a_pipeline_concern_is_not_counted_as_a_safety_concern() -> None:
+    """ "The reviewer was unavailable" is not something the book did.
+
+    Structural findings describe the pipeline, and counting them beside
+    content concerns would tell an approver a story raised a safety concern
+    when what actually happened is that a backend was down.
+    """
+    report: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "pipeline",
+                "category": "reviewer_unavailable",
+                "node_id": None,
+                "verdict": "flag",
+                "score": None,
+                "message": "reviewer unavailable on 12 nodes",
+                "concern": "reviewer_unavailable",
+                "structural": True,
+            },
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n_start",
+                "verdict": "flag",
+                "score": None,
+                "message": "mild peril",
+                "concern": "cruelty",
+            },
+        ]
+    }
+    measures = _measures(report=report)
+    assert [c.concern for c in measures.safety_concerns] == ["cruelty"]
+
+
+def test_a_clean_book_reports_no_safety_concerns() -> None:
+    """An empty list, not an absent block: "nothing raised" is a real answer."""
+    assert _measures(report={"findings": []}).safety_concerns == []
+
+
+def test_a_clean_check_is_not_counted_as_a_concern() -> None:
+    """A ``pass`` verdict records that a check ran, not that it objected."""
+    report: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n_start",
+                "verdict": "pass",
+                "score": None,
+                "message": "clean",
+                "concern": "frightening_content",
+            }
+        ]
+    }
+    assert _measures(report=report).safety_concerns == []

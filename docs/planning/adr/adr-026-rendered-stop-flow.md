@@ -49,7 +49,9 @@ beats, preserving the researched genre shape, the words-per-node ceilings, and e
 ## Context
 
 The owner ruled that every page a child stops on must offer a choice (design review D1). Measured:
-69% of non-ending nodes are single-choice; 0 of 61 skeletons would satisfy the ruling structurally.
+69% of non-ending nodes are single-choice; 0 of 61 skeletons would satisfy the ruling structurally (measured
+2026-08-01, when the catalog held 61 skeletons; current totals in
+[catalog-census.md](../catalog-census.md), `UW-G24`).
 But ADR-011, as it read at this decision, research-locked decisions-per-path at ~4-8 and mandates
 linear passages as the substance carrier, anchored on measurement of the printed genre (that flat
 constant was superseded on 2026-08-22; see the note under Status). The conflict is presentational: print flows
@@ -101,7 +103,8 @@ instead.
 Satisfy D1 structurally rather than presentationally: rewrite skeletons and generation prompts so
 no non-ending node has exactly one choice.
 
-Rejected. 69% of non-ending nodes are single-choice and 0 of 61 skeletons would pass, so this is a
+Rejected. 69% of non-ending nodes are single-choice and 0 of 61 skeletons would pass on the 2026-08-01
+catalog measured under Context, so this is a
 rewrite of the entire catalog, not a change to it. It also fought ADR-011's research lock directly:
 at the time of this decision, decisions-per-path was anchored at a flat ~4-8 on measurement of the
 printed genre, and linear passages are the substance carrier. The rejection does not depend on that

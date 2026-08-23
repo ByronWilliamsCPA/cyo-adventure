@@ -19,6 +19,11 @@ source: "synthesis of docs/planning/cyo-review-response-2026-08-12.md and cyo-re
 > [fourth and fifth review response](./cyo-review-response-2026-08-12b.md)
 > **Status**: draft, pending owner sign-off. Register rows are added on sign-off, not before.
 
+> **Catalog counts are dated.** Every skeleton, node and choice count below was measured on 2026-08-12,
+> when the catalog held 61 skeletons; on 2026-08-23 it holds 84 skeletons and 15,470 nodes
+> ([catalog census](./catalog-census.md), `UW-G24`). They are left as measured, because each one records
+> what a procedure returned on that date rather than describing the catalog today.
+
 ## 0. How an item earns its place
 
 Every item below carries a **decision rule written before the work runs**. This is not ceremony. Six

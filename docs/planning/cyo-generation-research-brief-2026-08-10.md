@@ -52,6 +52,11 @@
 
 ---
 
+> **Catalog counts are dated.** Every skeleton, node and choice count below was measured on 2026-08-10,
+> when the catalog held 61 skeletons; on 2026-08-23 it holds 84 skeletons and 15,470 nodes
+> ([catalog census](./catalog-census.md), `UW-G24`). They are left as measured, because each one records
+> what a procedure returned on that date rather than describing the catalog today.
+
 ## 0. What we are asking you to do
 
 > **Superseded 2026-08-13 by section 32.** This section states the task as it was first posed and

@@ -1907,10 +1907,14 @@ def test_pl29_allows_a_topology_the_band_permits() -> None:
 def test_pl29_accepts_every_committed_skeleton() -> None:
     """The rule blocks nothing that already exists.
 
-    Measured before shipping it: all 61 committed skeletons satisfy their
-    band's row, so this is a guard against new drafts rather than a
-    retroactive judgement on the catalog. If this fails, either a skeleton
-    landed that should not have or the row itself moved.
+    Measured before shipping it (2026-08-12, when the catalog held 61
+    shells): every committed skeleton satisfied its band's row, so this is a
+    guard against new drafts rather than a retroactive judgement on the
+    catalog. The count is deliberately not restated as current state; this
+    test iterates whatever the catalog holds when it runs, and
+    `docs/planning/catalog-census.md` is the one place a shell count comes
+    from (`UW-G24`). If this fails, either a skeleton landed that should not
+    have or the row itself moved.
     """
     import json
     from pathlib import Path

@@ -1021,8 +1021,10 @@ async def test_fill_skeleton_bound_path_threads_differentiation_directive() -> N
     the free-text one.
 
     fill_skeleton accepted the directive but only forwarded it to
-    build_fill_prompt; on the slot_bindings path (47 of 61 skeletons, the
-    production direction) it was silently discarded. This pins that the
+    build_fill_prompt; on the slot_bindings path (47 theme contracts against
+    84 shells as of 2026-08-23, the production direction; see
+    `docs/planning/catalog-census.md` rather than trusting this figure to
+    stay current, `UW-G24`) it was silently discarded. This pins that the
     directive the caller passes actually reaches the provider on that path.
     """
     marker = "UNIQUE-BOUND-DIFF-MARKER-4471"

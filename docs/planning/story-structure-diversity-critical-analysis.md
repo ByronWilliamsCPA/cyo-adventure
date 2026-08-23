@@ -54,6 +54,11 @@ source: "Full read of skeletons/ (61 files), generation/skeleton_match.py, story
 
 # Story Structure Diversity: Critical Analysis of the Structural Ceiling
 
+> **Catalog counts are dated.** Every skeleton and node count below was measured on 2026-08-02, when the
+> catalog held 61 skeletons; on 2026-08-23 it holds 84 shells and 15,470 nodes
+> ([catalog census](./catalog-census.md), `UW-G24`). They are left as measured, because each records what a
+> procedure returned on that date rather than describing the catalog today.
+
 ## 1. The question, and the verdict
 
 The observed failure: instead of a wide variety of unique stories, the pipeline produced a few base

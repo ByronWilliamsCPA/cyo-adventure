@@ -1018,3 +1018,59 @@ async def test_skeleton_fill_auto_pick_family_id_none_is_unchanged() -> None:
     )
     assert result.skeleton_slug in _CELL_8_11_SHORT_PROSE
     assert result.warnings == []
+
+
+# ---------------------------------------------------------------------------
+# The per-family reuse cap surfaces when it cannot be honored (UW-C315)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_a_cell_the_family_has_read_out_warns_that_the_reuse_cap_lapsed() -> None:
+    """An exhausted cell still produces a plan, and says the cap did not hold.
+
+    The reuse cap relaxes rather than failing the request, so without this
+    warning the one case that knowingly ships a same-skeleton repeat is the
+    one case nobody is told about.
+    """
+    session = _FakeSession()
+    concept = _short_prose_8_11_concept()
+    with patch(
+        "cyo_adventure.story_requests.authoring_plan.recent_skeleton_usage",
+        new=AsyncMock(return_value=dict.fromkeys(_CELL_8_11_SHORT_PROSE, 1)),
+    ):
+        result = await build_authoring_plan(
+            session,
+            _request(),
+            concept,
+            AuthoringPlanRequest(
+                method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+            ),
+            actor=_admin_actor(),
+        )
+    assert result.skeleton_slug in _CELL_8_11_SHORT_PROSE
+    assert any("already read every skeleton" in w for w in result.warnings)
+
+
+@pytest.mark.asyncio
+async def test_a_cell_with_room_left_warns_about_nothing() -> None:
+    """The ordinary path stays silent; the warning marks a real compromise."""
+    session = _FakeSession()
+    concept = _short_prose_8_11_concept()
+    with patch(
+        "cyo_adventure.story_requests.authoring_plan.recent_skeleton_usage",
+        new=AsyncMock(return_value={_CELL_8_11_SHORT_PROSE[0]: 1}),
+    ):
+        result = await build_authoring_plan(
+            session,
+            _request(),
+            concept,
+            AuthoringPlanRequest(
+                method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+            ),
+            actor=_admin_actor(),
+        )
+    assert result.skeleton_slug != _CELL_8_11_SHORT_PROSE[0]
+    # The docstring claims silence, so assert silence: probing for one
+    # absent substring would pass with any other warning present.
+    assert result.warnings == []

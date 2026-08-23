@@ -291,8 +291,9 @@ def prove_shell(shell_path: Path, *, skeletons_root: Path) -> list[str]:
         return reasons
 
     # A seed skeleton declares ``metadata.production_eligible: false`` and is a
-    # legitimate, merged member of the catalog (3 of 61 shells at the time of
-    # writing). check_skeleton rejects such a shell by default with
+    # legitimate, merged member of the catalog (3 of 61 shells as measured
+    # 2026-07-28; docs/planning/catalog-census.md carries current totals).
+    # check_skeleton rejects such a shell by default with
     # "cell: not production_eligible (pass --allow-mvp for seeds)", so the CI
     # job -- which passes the raw changed-file list of any PR touching
     # skeletons/** -- failed unconditionally whenever a seed was in the diff.

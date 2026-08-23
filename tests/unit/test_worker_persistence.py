@@ -22,6 +22,8 @@ from cyo_adventure.db.models import Concept, GenerationJob, Storybook, Storybook
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.generation.orchestrator import GenerationOutcome
 from cyo_adventure.generation.provider import _CANNED_STORY_JSON, MockProvider
+from cyo_adventure.generation.providers.fallback import FallbackProvider
+from cyo_adventure.generation.usage import Completion, TokenUsage
 from cyo_adventure.generation.worker import (
     _model_label,
     _provider_label,
@@ -523,6 +525,47 @@ def test_model_label_falls_back_to_mock() -> None:
 def test_provider_label_falls_back_to_settings() -> None:
     """_provider_label returns the configured provider for a nameless provider."""
     assert _provider_label(MockProvider(responses=[])) == "mock"
+
+
+class _AnsweringLeg:
+    """A cascade leg that answers once, reporting its own backend and model."""
+
+    name = "openrouter"
+
+    async def complete(
+        self, *, system: str, prompt: str, max_tokens: int
+    ) -> Completion:
+        """Answer with usage attributed to this leg."""
+        del system, prompt, max_tokens
+        return Completion(
+            text="{}",
+            usage=TokenUsage(
+                provider="openrouter",
+                model="anthropic/claude-sonnet-4.6",
+                input_tokens=1,
+                output_tokens=1,
+                duration_ms=1,
+            ),
+        )
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_model_label_of_a_cascade_names_the_leg_that_answered() -> None:
+    """The job row must record the model that wrote the book.
+
+    ``FallbackProvider`` is the default production path, so if it declares no
+    model the label falls through to the literal string ``"mock"`` and every
+    cascade run is recorded as a mock run. That corrupts cost attribution and,
+    worse, feeds ``build_review_provider`` a generator model that can never
+    equal the review model, which makes the tier-3 "reviewed its own output"
+    detection structurally unable to fire on exactly the path where the
+    configured fallback model and the configured review model are the same.
+    """
+    cascade = FallbackProvider(legs=[_AnsweringLeg()])
+    await cascade.complete(system="s", prompt="u", max_tokens=1)
+
+    assert _model_label(cascade) == "anthropic/claude-sonnet-4.6"
 
 
 @pytest.mark.unit

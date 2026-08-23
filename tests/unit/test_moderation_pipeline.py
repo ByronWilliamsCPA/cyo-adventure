@@ -27,7 +27,7 @@ import math
 import uuid
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, cast
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, create_autospec
 
 import httpx
 import pytest
@@ -45,6 +45,8 @@ from cyo_adventure.moderation import pipeline as pipeline_mod
 from cyo_adventure.moderation.leaf_diversity import (
     run_leaf_diversity_check as _real_run_leaf_diversity_check,
 )
+from cyo_adventure.moderation.prose_craft import findings_from_prose_craft
+from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.sentinels import wrap
 from cyo_adventure.storybook.theme_contract import SlotScope, SlotSpec, ThemeContract
@@ -2611,3 +2613,212 @@ async def test_review_batch_size_covers_two_full_batches_plus_remainder(
     )
     assert len(set(reviewed)) == len(reviewed)  # no node reviewed twice
     assert _aggregate(version)["nodes_reviewed"] == _NODE_COUNT
+
+
+# ---------------------------------------------------------------------------
+# Prose-craft advisory (UW-C313 / UW-C328): wiring, not detection
+# ---------------------------------------------------------------------------
+#
+# The detectors are covered in test_validator_prose_craft.py and the finding
+# shapes in test_moderation_prose_craft.py. What these two pin is the pair of
+# decisions the pipeline itself owns: that an advisory reaches the persisted
+# report WITHOUT changing routing, and that the guard does not run once a hard
+# block has already decided routing.
+
+
+def _prose_craft_advisory() -> Finding:
+    """Build one prose-craft ADVISORY, as the real guard would emit it."""
+    return Finding(
+        stage=0,
+        source=Source.PIPELINE,
+        category="prose_craft_sameness",
+        verdict=Verdict.ADVISORY,
+        node_id=None,
+        score=None,
+        message="self-repetition: 3 nodes repeat another node's exact body",
+    )
+
+
+@pytest.mark.unit
+async def test_prose_craft_advisory_reaches_the_report_without_gating(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """An ADVISORY must be persisted and must not change where the book goes.
+
+    This is the whole point of the guard: the evidence lands in front of the
+    human approver, and nothing about the automated routing moves. A future
+    change promoting these to FLAG would silently start spending the pipeline's
+    one bounded repair on a defect a repair prompt cannot fix.
+    """
+    story, version = _story(), _version_with_slug()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+    monkeypatch.setattr(
+        pipeline_mod,
+        "findings_from_prose_craft",
+        create_autospec(
+            findings_from_prose_craft, return_value=[_prose_craft_advisory()]
+        ),
+    )
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+    generation_provider = MockProvider(responses=[])
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=generation_provider,
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    auto_reject.assert_not_awaited()
+    # No repair was attempted: an ADVISORY does not set has_soft_flag.
+    assert generation_provider.calls == []
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    findings = cast("list[dict[str, object]]", moderation_report["findings"])
+    advisories = [f for f in findings if f.get("category") == "prose_craft_sameness"]
+    assert len(advisories) == 1
+    assert advisories[0]["verdict"] == Verdict.ADVISORY
+
+
+@pytest.mark.unit
+async def test_prose_craft_skipped_on_hard_block(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """Routing is already decided, so the measurement would change nothing.
+
+    Same gate as the ATG guard: an auto-rejected book is not going to a human
+    approver, so the advisory has no reader.
+    """
+    story, version = _story(), _version_with_slug()
+    _load(mock_session, story, version)
+    review_seam(_safety_block_review_provider())
+
+    prose_craft = create_autospec(findings_from_prose_craft, return_value=[])
+    monkeypatch.setattr(pipeline_mod, "findings_from_prose_craft", prose_craft)
+    auto_reject = AsyncMock()
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    auto_reject.assert_awaited_once()
+    prose_craft.assert_not_called()
+
+
+@pytest.mark.unit
+async def test_prose_craft_advisory_survives_an_adopted_repair(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """An ADVISORY must survive an adopted repair onto the persisted report.
+
+    Same failure shape as ``test_mock_review_stamp_survives_adopted_repair``:
+    ``_attempt_and_adopt_repair`` replaces the pipeline's ``report`` wholesale
+    with the one built inside it, and that replacement is what gets persisted.
+    Appending the advisory before the repair therefore dropped it on exactly
+    the books most likely to have earned one, since a book whose prose is
+    repetitive enough to trip the detector is also a book likely to be
+    soft-flagged and repaired.
+
+    This drives the REAL repair path: safety FLAGs every node on the first
+    pass, the generation provider answers with a schema-valid revision, and
+    the revision is adopted.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider(safety_flags_first_pass=True))
+    monkeypatch.setattr(
+        pipeline_mod,
+        "findings_from_prose_craft",
+        create_autospec(
+            findings_from_prose_craft, return_value=[_prose_craft_advisory()]
+        ),
+    )
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    revised_blob: dict[str, object] = {**_BLOB, "title": "The Forest Path (revised)"}
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[json.dumps(revised_blob)]),
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    summary = cast("dict[str, object]", moderation_report["summary"])
+    # The repair really was adopted: without this the test passes vacuously on
+    # the pre-repair report, which is the report that already carried it.
+    assert summary["repaired"] is True
+    findings = cast("list[dict[str, object]]", moderation_report["findings"])
+    advisories = [f for f in findings if f.get("category") == "prose_craft_sameness"]
+    assert len(advisories) == 1
+
+
+@pytest.mark.unit
+async def test_prose_craft_measures_the_repaired_blob(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """The measurement must describe the prose a human will actually read.
+
+    The other half of running the guard after the repair rather than before
+    it. Measured pre-repair, the advisory reports the sameness of prose that
+    no longer exists: a repair that fixed the repetition would still be
+    reported as repetitive, and one that introduced it would be reported as
+    clean. Either way the number in front of the approver describes a
+    different book than the one on the version row.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider(safety_flags_first_pass=True))
+    titles_measured: list[object] = []
+
+    def _capture(blob: dict[str, object]) -> list[Finding]:
+        titles_measured.append(blob.get("title"))
+        return []
+
+    monkeypatch.setattr(
+        pipeline_mod,
+        "findings_from_prose_craft",
+        create_autospec(findings_from_prose_craft, side_effect=_capture),
+    )
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", AsyncMock())
+    revised_blob: dict[str, object] = {**_BLOB, "title": "The Forest Path (revised)"}
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[json.dumps(revised_blob)]),
+        pii=_pii(),
+    )
+
+    assert version.blob["title"] == "The Forest Path (revised)"
+    assert titles_measured == ["The Forest Path (revised)"]
