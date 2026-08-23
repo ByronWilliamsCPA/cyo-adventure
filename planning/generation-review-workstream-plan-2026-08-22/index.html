@@ -3466,12 +3466,30 @@
 
 
 <h1 id="generation-research-review-workstream-plan">Generation research review: workstream plan<a class="headerlink" href="#generation-research-review-workstream-plan" title="Permanent link">&para;</a></h1>
-<p>Date: 2026-08-22, corrected 2026-08-23. Status: step 1 complete; step 2 partly executed, with one
-fix shipped (<code>41d30909</code>) and a second carried by open PR
-<a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/742">#742</a>. No other step started. This plan
-gives a phase home to the 14 critical and high findings, the five condensed medium and low bundles,
-and the seven-step sequence produced by the thirteen-agent review of the 2026-08-22 generation
-research brief.</p>
+<p>Date: 2026-08-22, corrected 2026-08-23. This plan gives a phase home to the 14 critical and high
+findings, the five condensed medium and low bundles, and the seven-step sequence produced by the
+thirteen-agent review of the 2026-08-22 generation research brief.</p>
+<p>Status as of 2026-08-23:</p>
+<ul>
+<li><strong>Step 1: complete.</strong></li>
+<li><strong>Step 2: complete and merged.</strong> One fix shipped directly (<code>41d30909</code>); the rest landed as
+  <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/742">#742</a> (<code>37a08a60</code>, convergence
+  reporting and the series prose-reuse gate) and
+  <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/743">#743</a> (<code>9ea50b40</code>, the remaining
+  request-path gaps, plus dating the catalog counts).</li>
+<li><strong>Step 3: instruments built, neither measurement run.</strong> R-11's gate-entry event with
+  <code>publishing/gate_metrics.py</code>, and R-6's corpus extension to the <code>13-16</code> and <code>16+</code> bands. Both are
+  registered as <code>S-6</code> and <code>S-7</code> in the <a href="../diversity-test-register/">diversity test register</a> with
+  their falsifiers fixed before either ran. The distinction is the one Step 3's acceptance clause
+  turns on: an instrument existing is not a measurement having happened. <code>S-6</code> waits on the
+  <code>submitted</code> migration reaching an environment and accumulating enough rounds to clear its validity
+  gate; <code>S-7</code>'s first measurement is the next scheduled <code>safety-eval.yml</code> run once its corpus lands
+  on <code>main</code> (see the correction under Step 3, which retires this step's "small spend" framing). No
+  result from either may be quoted anywhere until its artifact is committed. Step 3's third work
+  item, the directive delta re-run at production <code>TREE</code> settings, is untouched by this and remains
+  outstanding alongside the two measurements.</li>
+<li><strong>Steps 4 to 7: not started.</strong></li>
+</ul>
 <p><strong>Citation note.</strong> The <code>R-*</code> IDs used throughout are the review's own numbering. That review's
 artifact is not committed, so no <code>R-*</code> ID in this document resolves to anything in the tree; the
 findings are traceable only through this plan's restatements of them. <code>R-12</code> is not carried here at
@@ -3695,6 +3713,22 @@ D1 but not gated by it. "Not the model that wrote it" is correct under any fill 
 </tr>
 </tbody>
 </table>
+<p><strong>Correction (2026-08-23) to this step's "small spend" framing.</strong> R-6 needs no spend
+decision and no new run to be commissioned. <code>.github/workflows/safety-eval.yml</code> has
+run the adversarial corpus against live classifiers every Sunday at 04:00 UTC since
+at least 2026-07-26 on existing repo secrets, gating on the acceptance thresholds in
+<code>tests/llm_eval/test_adversarial_safety_eval.py</code>. It picks up whatever the corpus
+contains, so extending the corpus IS commissioning the measurement; the marginal
+cost is a handful of extra calls inside a job that already runs. What those green
+runs never covered is the point: with no items at <code>13-16</code> or <code>16+</code>, every one of
+them measured four of the six bands, so "the safety eval is green" was never the
+same claim as "the gate holds at every band".</p>
+<p>A second constraint this step must respect, learned from the gate rather than the
+doc: <code>classify_item</code> scores an <code>expected_min_verdict</code> of <code>block</code> as MISSED when the
+pipeline merely FLAGS, and a class-A miss is a hard assertion. Setting an
+expectation above the documented route-to-human threshold turns a safe outcome into
+a red weekly run and a filed tracking issue, so a predicted bright-line block
+belongs in the item's rationale and the archived results, never in its expectation.</p>
 <p><strong>Acceptance:</strong> each measurement is registered as an <code>S</code>-row with its falsifier declared before it
 runs, and its artifact is committed. No result is reported that the register does not carry, and no
 harness reads <code>safety_flagged</code> as a signal while <code>validator/safety.py::check_safety</code> remains a
@@ -3954,7 +3988,7 @@ land." Two of those lines are now labelled proposals and one of them, the fill a
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 23, 2026 18:03:37 UTC">August 23, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 23, 2026 22:26:10 UTC">August 23, 2026</span>
   </span>
 
     
