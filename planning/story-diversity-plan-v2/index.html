@@ -3662,6 +3662,41 @@ to gather, and it is currently available.</p>
 <h2 id="1-basis-what-is-established">1. Basis: what is established<a class="headerlink" href="#1-basis-what-is-established" title="Permanent link">&para;</a></h2>
 <p>Each of these was re-derived independently, from source, by a reviewer instructed to refute it. Nothing else in
 this document is treated as established.</p>
+<p><strong>Dated recount, 2026-08-22 (<code>UW-G24</code>).</strong> The table below was measured against a 61-shell catalog.
+Rows that are pure catalog counts have moved; rows measured by running something (decision nodes, slot
+distinctness beyond <code>HERO</code>, the echo floor, the isomorphic pair) were not re-run and are left as dated
+measurements rather than silently edited. Current values, from
+<a href="../catalog-census/">catalog-census.md</a> and a direct scan of <code>skeletons/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Row as written</th>
+<th>2026-08-22</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>61 skeletons, 58 production-eligible</td>
+<td><strong>84 shells, 74 production-eligible</strong></td>
+</tr>
+<tr>
+<td>24 <code>(band, length, style)</code> cells, 6 empty, 15 of 18 non-empty hold exactly three trees</td>
+<td>the offered grid is <strong>18 cells</strong> (<code>validator/band_profile.py::offered_cells()</code>), <strong>all 18 covered</strong>, sizes 3 to 5, median 4. The 24-cell cross-product was never the offered grid, so the "6 empty" cells are combinations ADR-011 does not sell</td>
+</tr>
+<tr>
+<td>45 of 61 skeletons have a <code>.contract.json</code>; 39 of those 45 declare a <code>HERO</code> slot; 16 have none</td>
+<td><strong>47 of 84</strong>; <strong>40 of those 47</strong> declare <code>HERO</code> in <code>default_binding</code>; <strong>37 have none</strong>. The sidecar count barely moved, so the gap widened because the catalog grew</td>
+</tr>
+<tr>
+<td><code>HERO</code> binds 39 contracts to 28 distinct values (ratio 0.72)</td>
+<td><strong>40 contracts, still 28 distinct values (ratio 0.70)</strong>; <code>Wren</code> is now reused 7 times</td>
+</tr>
+<tr>
+<td>Theme-contract coverage by band: <code>5-8</code> and <code>8-11</code> 100%, <code>3-5</code> 86%, <code>10-13</code> 64%, <code>16+</code> 64%, <code>13-16</code> 57%</td>
+<td><strong><code>8-11</code> 75%, <code>5-8</code> 67%, <code>3-5</code> 64%, <code>10-13</code> 53%, <code>16+</code> 50%, <code>13-16</code> 42%.</strong> Every band fell and the anti-correlation with band survives; 27 of the 37 uncovered shells are at <code>10-13</code> and above</td>
+</tr>
+</tbody>
+</table>
 <table>
 <thead>
 <tr>
@@ -4282,7 +4317,7 @@ cheap to fix relative to authoring trees, and it becomes <strong>A20</strong>.</
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 2, 2026 18:08:08 UTC">August 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 23, 2026 15:27:07 UTC">August 23, 2026</span>
   </span>
 
     

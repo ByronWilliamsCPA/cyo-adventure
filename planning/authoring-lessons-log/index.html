@@ -8921,6 +8921,116 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>open</td>
 <td>Cited by <code>UW-C337</code>.</td>
 </tr>
+<tr>
+<td>AL-551</td>
+<td>2026-08-22</td>
+<td>brief correction PR #738 (review of the 2026-08-22 research brief)</td>
+<td>docs</td>
+<td><strong>A figure that is exactly right at some past commit is the signature of a hand-copied count, and it decays silently.</strong> The 2026-08-22 brief said the catalog spans "61 graphs and 11,458 nodes". That was not an estimate or a typo: it was precisely correct at commit <code>154d44f</code> on 2026-08-12, and was then copied by hand into roughly 40 sites while the catalog grew to 84 shells and 15,470 nodes. Nothing flagged it, because every copy agreed with every other copy.</td>
+<td>Emit the census from a script and have each document cite it, so a count cannot be transcribed. Shipped here; where each document cites it from stays open under <code>UW-G24</code>.</td>
+<td>applied</td>
+<td><code>scripts/catalog_census.py</code>, <code>docs/planning/catalog-census.md</code></td>
+</tr>
+<tr>
+<td>AL-552</td>
+<td>2026-08-22</td>
+<td>brief correction PR #738 (review of the 2026-08-22 research brief)</td>
+<td>tooling</td>
+<td><strong>A script that exists is not a gate that runs, and prose describing it as enforcing something is how the gap survives.</strong> Three claims in one brief said a check enforces a floor when nothing on the request path calls it: <code>check_fill_integrity.py</code> and <code>check_sibling_fills.py</code> are reachable only from <code>run_guard_battery.py</code>, a hand-run harness no workflow or hook references, and the anti-clone <code>TAU_CELL</code> floor was attributed to <code>check_skeleton.py --strict</code> when it lives in <code>mutation/floors.py</code>. The cheap tell in all three is dependency direction: the script imports from <code>src/</code>, which reads like integration and is the opposite of it.</td>
+<td>Require any doc claim that a check enforces or gates something to name the invoker (workflow file, pre-commit hook id, or call site in <code>src/</code>) rather than the script path.</td>
+<td>open</td>
+<td>Cited by <code>UW-C338</code>.</td>
+</tr>
+<tr>
+<td>AL-553</td>
+<td>2026-08-22</td>
+<td>brief correction PR #738 (review of the 2026-08-22 research brief)</td>
+<td>validator</td>
+<td><strong><code>check_skeleton.py --strict</code> is an authoring-time convention, not a gate: CI never passes it.</strong> The promotion workflow calls <code>check_promotion_bundle.py</code>, which invokes <code>check_skeleton.py</code> with only the shell path and a conditional <code>--allow-mvp</code>. Everything <code>--strict</code> adds is therefore enforced by whoever authored the skeleton and by nothing else. Withdrawn as a lesson: the decision it proposes was already open twice in the register before this run, and a third row would have degraded the register rather than informed it.</td>
+<td>None; superseded by the existing rows. Recorded so the next person who rediscovers this reaches the open decision instead of filing a fourth copy.</td>
+<td>rejected</td>
+<td>Duplicate of <code>UW-C116</code> and <code>UW-C158</code>, which both already carry this decision.</td>
+</tr>
+<tr>
+<td>AL-554</td>
+<td>2026-08-22</td>
+<td>brief correction PR #738 (review of the 2026-08-22 research brief)</td>
+<td>metadata</td>
+<td><strong>Coverage was reported against a cell grid that does not exist, and three independent analyses each invented a different one.</strong> Asked how many skeletons a cell holds, one grouped on (band, length) and ignored style, one read a <code>style</code> metadata key where the key is <code>narrative_style</code>, and one built the 24-way band-by-length-by-style space. All three then reported empty cells. The offered grid is <code>validator/band_profile.py::offered_cells()</code>, 18 cells, and against it the catalog is 18 of 18 covered with no gap: a 3-5 long and an 8-11 gamebook are combinations ADR-011 does not sell, so they are not uncovered cells. Reporting against an invented grid manufactures a gap and then invites work to close it.</td>
+<td>Read coverage from <code>offered_cells()</code> and never from a cross-product of the enums; the census script now does this and is the citable source.</td>
+<td>applied</td>
+<td><code>scripts/catalog_census.py</code>, <code>docs/planning/catalog-census.md</code></td>
+</tr>
+<tr>
+<td>AL-555</td>
+<td>2026-08-22</td>
+<td>brief correction PR #738 (review of the 2026-08-22 research brief)</td>
+<td>docs</td>
+<td><strong>Compressing a cost result into a quality claim reversed a production assignment, and the contradicting number was in our own evidence base.</strong> The brief called DeepSeek V4 Pro "the best prose model measured" and derived "fill with V4 Pro" from it. On the blind panel V4 Pro is fifth of eight at -0.13 z; what it actually holds is the lowest cost per delivered book ($0.0398). The 2026-08-10 brief states the trade explicitly against <code>xai-grok-4.6</code>, 4.9x cheaper for 0.74 of judged quality, and the two figures quoted alongside it are differences between legs rather than levels, which is a second way the same passage invites garbling.</td>
+<td>When a leg's standing is quoted, name the axis and the rank on it, and mark a z-score or rate as a difference or a level explicitly. A stage assignment derived from a superlative should cite the table row it came from.</td>
+<td>open</td>
+<td>Cited by <code>UW-C339</code>.</td>
+</tr>
+<tr>
+<td>AL-556</td>
+<td>2026-08-23</td>
+<td>catalog census review (PR #740)</td>
+<td>tooling</td>
+<td><strong>Anchoring one of two catalog readers makes them disagree, which is worse than both being wrong together.</strong> <code>load_shells</code> honours a <code>root</code> argument, but cell coverage comes from <code>iter_cells</code>, which reaches <code>skeleton_match._SKELETON_ROOT</code>, a module-level relative constant with no override. Anchoring only the first turned a wrong-directory run from consistently empty into a census whose totals and coverage described different catalogs, which still looks authoritative.</td>
+<td>Refuse rather than half-fix: check the working directory in <code>census()</code> and name <code>skeleton_match</code> as the reason, until the selector root itself is parameterised.</td>
+<td>applied</td>
+<td><code>scripts/catalog_census.py::census</code> raises a <code>ValueError</code> naming the real cause; the partial anchoring was reverted in the same pass rather than shipped.</td>
+</tr>
+<tr>
+<td>AL-557</td>
+<td>2026-08-23</td>
+<td>catalog census review (PR #740)</td>
+<td>metadata</td>
+<td><strong>Generating a figure removes transcription drift but not label drift: two different quantities were both reported as "production-eligible shells".</strong> 81 shells declare <code>metadata.production_eligible</code>, but only 74 are reachable through a cell ADR-011 offers, and the generated document reported the second under a label that reads as the first. A document citing that row would transcribe a number measuring something other than its name.</td>
+<td>Report both counts and make each row say what it counts, not what it is loosely called.</td>
+<td>applied</td>
+<td><code>scripts/catalog_census.py</code> emits <code>declared_production_eligible</code> and <code>reachable_in_offered_cells</code>; <code>tests/unit/test_catalog_census.py::test_the_two_eligibility_counts_are_distinct_and_ordered</code>.</td>
+</tr>
+<tr>
+<td>AL-558</td>
+<td>2026-08-23</td>
+<td>catalog census review (PR #740)</td>
+<td>docs</td>
+<td><strong>A stale-count sweep keyed on the current era's phrasings cannot find figures that went stale in an earlier era.</strong> The <code>UW-G24</code> sweep grepped <code>61 skeletons</code>, <code>61 graphs</code>, <code>11,458</code>, <code>3-4 skeletons per cell</code> and <code>N of 61</code>, and so could not match <code>docs/architecture/story-skeletons.md</code>'s "Of the 21 catalogued skeletons", a four-times-stale figure sitting two lines below its own generated 84-row table. It was in none of the three <code>UW-G24</code> buckets.</td>
+<td>Sweep structurally rather than by known phrasings: emit candidate sites from a script that flags a numeral within a few tokens of a catalog noun, so a pre-<code>61</code> figure is still a candidate.</td>
+<td>open</td>
+<td></td>
+</tr>
+<tr>
+<td>AL-559</td>
+<td>2026-08-23</td>
+<td>catalog census review (PR #740)</td>
+<td>tooling</td>
+<td><strong>A verification flag that is evaluated after a write flag performs the write.</strong> <code>--write</code> was tested before <code>--check</code>, so <code>scripts/catalog_census.py --check --write</code> rewrote the tracked document and exited 0. In a CI or pre-commit context that silently converts a check into an unreviewed edit of a committed artifact.</td>
+<td>Put mutually exclusive CLI modes in an <code>argparse</code> mutually exclusive group rather than relying on branch order.</td>
+<td>applied</td>
+<td><code>scripts/catalog_census.py</code> uses <code>add_mutually_exclusive_group</code>; <code>tests/unit/test_catalog_census.py::test_check_and_write_cannot_be_combined</code> asserts exit code 2.</td>
+</tr>
+<tr>
+<td>AL-560</td>
+<td>2026-08-23</td>
+<td>catalog census review (PR #740)</td>
+<td>validator</td>
+<td><strong>Ordering-only assertions on two maxima pass when both entries are the same object, so the conflation they exist to catch is invisible to them.</strong> The census reports a largest-by-nodes and a largest-by-commissioned-words shell, and the test asserted only that each was at least the other on its own axis. Those hold trivially when one shell is reported twice, which is the exact defect that once gave a 677-node graph a word count it never had.</td>
+<td>Compare every reported extremum against an independent recomputation, not against the other reported extremum.</td>
+<td>applied</td>
+<td><code>tests/unit/test_catalog_census.py::test_node_and_word_maxima_are_reported_separately</code> compares against <code>max(load_shells(CATALOG_ROOT), key=...)</code> on both axes.</td>
+</tr>
+<tr>
+<td>AL-561</td>
+<td>2026-08-23</td>
+<td>pr-740-review</td>
+<td>tooling</td>
+<td><strong>A newly documented error contract only holds for the malformed shape you were thinking about.</strong> <code>load_shells</code> was hardened to raise a <code>ValueError</code> naming the path when a non-sidecar <code>*.json</code> has no <code>nodes</code> list, and its docstring promised that. A shell with a list or a string at its JSON root still reached <code>.get()</code> and raised a bare <code>AttributeError</code>, so which error an author saw, and whether it named the offending file, depended on how the file was malformed. The half that pointed at the cause was the half someone had already thought about.</td>
+<td>When adding a <code>Raises:</code> clause to a catalog loader, enumerate the shapes the decoder can actually return (<code>json.loads</code> returns list, str, int and null as readily as dict) and give each the same actionable error, then test one case per shape rather than one case per clause.</td>
+<td>applied</td>
+<td><code>66f42225</code>; <code>scripts/catalog_census.py::load_shells</code> validates the root type; <code>tests/unit/test_catalog_census.py::test_a_non_object_json_root_is_rejected</code>.</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -8960,7 +9070,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 22, 2026 21:47:22 UTC">August 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 23, 2026 15:27:07 UTC">August 23, 2026</span>
   </span>
 
     
