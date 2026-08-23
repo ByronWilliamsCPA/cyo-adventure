@@ -252,6 +252,20 @@ to gather, and it is currently available.
 Each of these was re-derived independently, from source, by a reviewer instructed to refute it. Nothing else in
 this document is treated as established.
 
+**Dated recount, 2026-08-22 (`UW-G24`).** The table below was measured against a 61-shell catalog.
+Rows that are pure catalog counts have moved; rows measured by running something (decision nodes, slot
+distinctness beyond `HERO`, the echo floor, the isomorphic pair) were not re-run and are left as dated
+measurements rather than silently edited. Current values, from
+[catalog-census.md](./catalog-census.md) and a direct scan of `skeletons/`:
+
+| Row as written | 2026-08-22 |
+| --- | --- |
+| 61 skeletons, 58 production-eligible | **84 shells, 74 production-eligible** |
+| 24 `(band, length, style)` cells, 6 empty, 15 of 18 non-empty hold exactly three trees | the offered grid is **18 cells** (`validator/band_profile.py::offered_cells()`), **all 18 covered**, sizes 3 to 5, median 4. The 24-cell cross-product was never the offered grid, so the "6 empty" cells are combinations ADR-011 does not sell |
+| 45 of 61 skeletons have a `.contract.json`; 39 of those 45 declare a `HERO` slot; 16 have none | **47 of 84**; **40 of those 47** declare `HERO` in `default_binding`; **37 have none**. The sidecar count barely moved, so the gap widened because the catalog grew |
+| `HERO` binds 39 contracts to 28 distinct values (ratio 0.72) | **40 contracts, still 28 distinct values (ratio 0.70)**; `Wren` is now reused 7 times |
+| Theme-contract coverage by band: `5-8` and `8-11` 100%, `3-5` 86%, `10-13` 64%, `16+` 64%, `13-16` 57% | **`8-11` 75%, `5-8` 67%, `3-5` 64%, `10-13` 53%, `16+` 50%, `13-16` 42%.** Every band fell and the anti-correlation with band survives; 27 of the 37 uncovered shells are at `10-13` and above |
+
 | Fact | How verified |
 | --- | --- |
 | 61 skeletons, 58 production-eligible | `is_sidecar` + `_production_candidates` |

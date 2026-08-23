@@ -233,7 +233,8 @@ in PROJECT-PLAN.md section 1's audit note):
   both missing from PROJECT-PLAN.md's ADR table; ADR-020 and ADR-021 (merged the same day,
   after this audit was written) are missing too and are not yet reconciled here at all.
 - The Content workstream note in PROJECT-PLAN.md section 1 ("main still has zero
-  production-eligible skeletons") is stale: 61 skeletons (58 production-eligible) and 23
+  production-eligible skeletons") is stale: 84 skeletons (74 production-eligible, recounted 2026-08-22 against
+  [catalog-census.md](./catalog-census.md); it was 61 and 58 when this bullet was written) and 23
   filled stories are committed to `main` (PRs #289, #292, #297); none are yet imported to
   Postgres or published, so "zero in the catalog" is still accurate, "zero in the repo" is not.
 - Design docs describing real, still-open, unscheduled work with no reference anywhere in
