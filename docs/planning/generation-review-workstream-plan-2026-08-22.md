@@ -33,7 +33,9 @@ Status as of 2026-08-23:
   `submitted` migration reaching an environment and accumulating enough rounds to clear its validity
   gate; `S-7`'s first measurement is the next scheduled `safety-eval.yml` run once its corpus lands
   on `main` (see the correction under Step 3, which retires this step's "small spend" framing). No
-  result from either may be quoted anywhere until its artifact is committed.
+  result from either may be quoted anywhere until its artifact is committed. Step 3's third work
+  item, the directive delta re-run at production `TREE` settings, is untouched by this and remains
+  outstanding alongside the two measurements.
 - **Steps 4 to 7: not started.**
 
 **Citation note.** The `R-*` IDs used throughout are the review's own numbering. That review's
