@@ -133,10 +133,13 @@ by narrative role.
 
 <!-- END GENERATED: skeleton-catalog -->
 
-Of the 21 catalogued skeletons, 18 are production-eligible and give full-matrix
-coverage: one skeleton per `(age_band, length, narrative_style)` cell of the ADR-011
-production matrix (18 cells total), each declaring its `length`, `narrative_style`
-(where the band is style-aware), and `production_eligible: true`. The remaining three
+Most catalogued skeletons are production-eligible and together cover every
+`(age_band, length, narrative_style)` cell the ADR-011 production matrix offers, each
+declaring its `length`, `narrative_style` (where the band is style-aware), and
+`metadata.production_eligible: true`. For the current shell, node, and per-cell counts
+see [the catalog census](../planning/catalog-census.md), which is generated from the
+catalog; the figures that used to be written out here were correct on the day they were
+typed and then went stale in place (`UW-G24`). Three skeletons
 (The Clocktower Cipher, The Sunken Signal, The Lost Mitten) declare
 `production_eligible: false` and no `length` or `narrative_style`: they are ADR-011
 section 1a MVP/Test-tier development seeds (a band-independent 8-45 node envelope,
