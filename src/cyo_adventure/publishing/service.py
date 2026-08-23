@@ -101,12 +101,17 @@ def _reject_mqa_fixture_outside_staging(storybook_id: str) -> None:
         raise BusinessLogicError(msg, rule="mqa_fixture_outside_staging")
 
 
-async def submit(session: AsyncSession, storybook: Storybook) -> None:
+async def submit(session: AsyncSession, storybook: Storybook, *, actor: Actor) -> None:
     """Move a draft or needs-revision story into review.
 
     Args:
         session: The request session (caller owns the transaction).
         storybook: The story to submit.
+        actor: Who caused the entry. ``Actor.system()`` for the moderation
+            pipeline's own submit, a real principal for a human resubmitting
+            a sent-back story. Required rather than defaulted so a new caller
+            has to state which it is; a default would silently attribute a
+            person's action to the machine.
 
     Raises:
         StateTransitionError: If the story is not in ``draft``/``needs_revision``.
@@ -148,8 +153,27 @@ async def submit(session: AsyncSession, storybook: Storybook) -> None:
         if version_row is not None and version_row.moderation_report is None:
             msg = "cannot submit a version that has never been screened by moderation"
             raise BusinessLogicError(msg, rule="submit_without_moderation")
+    from_state = storybook.status
     storybook.status = target.value
     await session.flush()
+    # #CRITICAL: data-integrity: this is the ONLY marker of a story entering the
+    # review queue, and R-11 approval duration is measured from it. The
+    # moderation pipeline's MODERATION_COMPLETED marks the first entry only;
+    # a resubmission after a send-back re-runs no moderation, so without this
+    # row every review round past the first has no start timestamp and its
+    # duration is unrecoverable from the event log.
+    # #VERIFY: test_resubmit_after_send_back_writes_submitted_event and
+    # test_moderation_submit_stamps_the_system_actor in
+    # tests/integration/test_pipeline_event_instrumentation.py.
+    await record_event(
+        session,
+        actor,
+        entity_type="storybook",
+        entity_id=storybook.id,
+        event_type=EventType.SUBMITTED,
+        from_state=from_state,
+        to_state=target.value,
+    )
 
 
 async def auto_reject(session: AsyncSession, storybook: Storybook) -> None:

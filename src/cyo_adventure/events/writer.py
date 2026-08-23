@@ -33,6 +33,12 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
         {"overall_verdict", "repaired", "counts"}
     ),
     EventType.REPAIR_APPLIED: frozenset({"stage"}),
+    # Gate entry carries no payload by design: the from_state already
+    # distinguishes a first submit (draft) from a resubmission after a
+    # send-back (needs_revision), and the actor_role distinguishes the
+    # pipeline from a person. Nothing further is needed to measure
+    # approval duration, and anything a reviewer typed would be free text.
+    EventType.SUBMITTED: frozenset(),
     # Review-scorecard calibration (2026-08): the closed-vocabulary reason
     # code a reviewer selects alongside their free-text reason
     # (publishing/reason_codes.py::SendBackReasonCodeLiteral, validated by

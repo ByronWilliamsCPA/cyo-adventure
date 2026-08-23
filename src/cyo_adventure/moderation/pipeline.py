@@ -497,7 +497,7 @@ async def run_moderation_pipeline(
     if report.has_hard_block:
         await service.auto_reject(session, storybook)
     else:
-        await service.submit(session, storybook)
+        await service.submit(session, storybook, actor=Actor.system())
 
     # #CRITICAL: data-integrity: this is the durable audit-trail record of the
     # moderation outcome (spec D3); the payload is restricted to enum verdicts,

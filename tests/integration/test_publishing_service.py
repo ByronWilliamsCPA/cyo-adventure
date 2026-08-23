@@ -17,6 +17,7 @@ from cyo_adventure.db.models import (
     StoryRequest,
     User,
 )
+from cyo_adventure.events import Actor
 from cyo_adventure.publishing import service as approval_service
 from tests.conftest import make_clean_moderation_report
 
@@ -260,7 +261,7 @@ async def test_submit_then_send_back(
             moderation_report=make_clean_moderation_report(),
         )
         principal = _principal(guardian_id, book.family_id)
-        await approval_service.submit(session, book)
+        await approval_service.submit(session, book, actor=Actor.system())
         assert book.status == "in_review"
         await approval_service.send_back(
             session, principal, book, "too scary", reason_code="safety_concern"
@@ -279,8 +280,9 @@ async def test_submit_without_moderation_raises(
     """
     async with sessions() as session:
         book, _guardian_id = await _make_story(session, status="draft")
+        actor = Actor.system()
         with pytest.raises(BusinessLogicError):
-            await approval_service.submit(session, book)
+            await approval_service.submit(session, book, actor=actor)
         assert book.status == "draft"
 
 

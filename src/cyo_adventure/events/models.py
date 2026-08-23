@@ -49,6 +49,14 @@ class EventType(StrEnum):
     GENERATION_FINISHED = "generation_finished"
     MODERATION_COMPLETED = "moderation_completed"
     REPAIR_APPLIED = "repair_applied"
+    # R-11 human-gate measurement: a story ENTERS the review queue
+    # (publishing/service.py::submit, the sole draft|needs_revision ->
+    # in_review hop). Written on every submit, automated or human, so
+    # approval duration always has a start timestamp; the ACTOR is what
+    # separates the moderation pipeline's own submit (system) from a human
+    # resubmitting a sent-back story (admin/guardian). Pairs with RELEASED
+    # and SENT_BACK, which mark the two ways a round ends.
+    SUBMITTED = "submitted"
     SENT_BACK = "sent_back"
     RELEASED = "released"
     # A5 incident/pull-everywhere path: an admin archives a published story

@@ -31,6 +31,7 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.events import Actor
 
 
 def _principal(role: str) -> Principal:
@@ -188,7 +189,14 @@ async def test_latest_version_none_raises_404() -> None:
 async def test_submit_handler_calls_service_and_returns_view(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """submit_storybook delegates to service.submit and echoes a state view."""
+    """submit_storybook delegates to service.submit and echoes a state view.
+
+    Also pins the audit stamp the handler passes down: ``_principal`` and
+    ``_story`` build unrelated families, so this is a CROSS-family submit and
+    ``acting_role`` resolves to admin. An own-family submit by a dual-role
+    adult stamps their base role instead; that path is covered end to end in
+    tests/integration/test_pipeline_event_instrumentation.py.
+    """
     book = _story("draft")
     session = AsyncMock(spec=AsyncSession)
     session.execute = AsyncMock(return_value=_execute_result(book))
@@ -203,7 +211,11 @@ async def test_submit_handler_calls_service_and_returns_view(
     view = await approval.submit_storybook("s1", ctx)
 
     assert view.id == "s1"
-    submit_mock.assert_awaited_once_with(ctx.session, book)
+    submit_mock.assert_awaited_once_with(
+        ctx.session,
+        book,
+        actor=Actor(actor_id=ctx.principal.user_id, actor_role="admin"),
+    )
 
 
 # ---------------------------------------------------------------------------

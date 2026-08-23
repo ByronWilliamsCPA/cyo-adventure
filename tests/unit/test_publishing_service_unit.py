@@ -23,6 +23,7 @@ from cyo_adventure.core.exceptions import (
     StateTransitionError,
 )
 from cyo_adventure.db.models import Storybook, StorybookVersion, StoryRequest
+from cyo_adventure.events import Actor
 from cyo_adventure.publishing import service
 from tests.conftest import make_clean_moderation_report
 
@@ -56,10 +57,12 @@ async def test_submit_draft_moves_to_in_review() -> None:
     story = _story("draft")
     session = AsyncMock(spec=AsyncSession)
 
-    await service.submit(session, story)
+    await service.submit(session, story, actor=Actor.system())
 
     assert story.status == "in_review"
-    session.flush.assert_awaited_once()
+    # Two flushes, not one: the status transition, then record_event's
+    # SUBMITTED row. Both land in the caller's transaction (events spec D1).
+    assert session.flush.await_count == 2
 
 
 @pytest.mark.unit
@@ -68,10 +71,12 @@ async def test_submit_needs_revision_moves_to_in_review() -> None:
     story = _story("needs_revision")
     session = AsyncMock(spec=AsyncSession)
 
-    await service.submit(session, story)
+    await service.submit(session, story, actor=Actor.system())
 
     assert story.status == "in_review"
-    session.flush.assert_awaited_once()
+    # Two flushes, not one: the status transition, then record_event's
+    # SUBMITTED row. Both land in the caller's transaction (events spec D1).
+    assert session.flush.await_count == 2
 
 
 @pytest.mark.unit
@@ -79,9 +84,10 @@ async def test_submit_illegal_status_raises() -> None:
     """submit() on an already-published story raises StateTransitionError; no flush."""
     story = _story("published")
     session = AsyncMock(spec=AsyncSession)
+    actor = Actor.system()
 
     with pytest.raises(StateTransitionError):
-        await service.submit(session, story)
+        await service.submit(session, story, actor=actor)
 
     session.flush.assert_not_awaited()
 
@@ -99,9 +105,10 @@ async def test_submit_without_moderation_report_raises() -> None:
     session = AsyncMock(spec=AsyncSession)
     session.scalar = AsyncMock(return_value=1)
     session.get = AsyncMock(return_value=version_row)
+    actor = Actor.system()
 
     with pytest.raises(BusinessLogicError):
-        await service.submit(session, story)
+        await service.submit(session, story, actor=actor)
 
     assert story.status == "draft"
     session.flush.assert_not_awaited()
@@ -121,10 +128,12 @@ async def test_submit_with_moderation_report_succeeds() -> None:
     session.scalar = AsyncMock(return_value=1)
     session.get = AsyncMock(return_value=version_row)
 
-    await service.submit(session, story)
+    await service.submit(session, story, actor=Actor.system())
 
     assert story.status == "in_review"
-    session.flush.assert_awaited_once()
+    # Two flushes, not one: the status transition, then record_event's
+    # SUBMITTED row. Both land in the caller's transaction (events spec D1).
+    assert session.flush.await_count == 2
 
 
 @pytest.mark.unit

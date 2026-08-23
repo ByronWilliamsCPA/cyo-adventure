@@ -19,6 +19,7 @@ from cyo_adventure.db.models import (
     StorybookVersion,
     User,
 )
+from cyo_adventure.events.models import Actor
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import (
     _CANNED_STORY,
@@ -38,6 +39,7 @@ from cyo_adventure.moderation.stages import (
 from cyo_adventure.moderation.stages import (
     run_safety_stage as _real_safety,
 )
+from cyo_adventure.publishing import service as publishing_service
 from tests.conftest import make_clean_moderation_report
 from tests.integration._event_assertions import assert_single_event, fetch_events
 from tests.integration.conftest import Seed, Stranger, auth
@@ -161,6 +163,41 @@ async def _seed_in_review_storybook(
             User(family_id=fam.id, role="admin", authn_subject="admin-a", is_admin=True)
         )
         session.add(Storybook(id=story_id, family_id=fam.id, status="in_review"))
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id},
+                moderation_report=make_clean_moderation_report(),
+            )
+        )
+        await session.commit()
+
+
+async def _seed_screened_storybook(
+    sessions: async_sessionmaker[AsyncSession], story_id: str, *, status: str
+) -> None:
+    """Seed a story whose latest version already carries a moderation report.
+
+    ``submit`` refuses any version moderation has never screened, so the
+    submit-path tests cannot reuse ``_seed_draft_storybook`` (whose version row
+    has no report). Both submit entry points seed from here: ``draft`` is where
+    the moderation pipeline's own submit starts, ``needs_revision`` is the state
+    a story rests in between a send-back and a human resubmission.
+
+    Args:
+        sessions: Session factory for the test database.
+        story_id: Storybook id to create.
+        status: Lifecycle status to rest at (``draft`` or ``needs_revision``).
+    """
+    async with sessions() as session:
+        fam = Family(name="Submit Event Test Family")
+        session.add(fam)
+        await session.flush()
+        session.add(
+            User(family_id=fam.id, role="admin", authn_subject="admin-a", is_admin=True)
+        )
+        session.add(Storybook(id=story_id, family_id=fam.id, status=status))
         session.add(
             StorybookVersion(
                 storybook_id=story_id,
@@ -325,6 +362,64 @@ async def test_send_back_writes_sent_back_event(
         actor_role="admin",
     )
     assert event.payload == {"reason_code": "safety_concern"}
+
+
+async def test_resubmit_after_send_back_writes_submitted_event(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A human resubmitting a sent-back story marks its RE-ENTRY to the gate.
+
+    Without this event the second review round has no start timestamp.
+    ``POST /submit`` does not re-run moderation, so no ``moderation_completed``
+    follows it, and the only other gate-entry marker is the one the moderation
+    pipeline writes on the FIRST pass. Approval duration past round one is
+    therefore unmeasurable without this row (R-11).
+    """
+    story_id = "s_resubmit_event"
+    await _seed_screened_storybook(sessions, story_id, status="needs_revision")
+
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/submit", headers=auth("admin-a")
+    )
+    assert resp.status_code == 200, resp.text
+
+    await assert_single_event(
+        sessions,
+        event_type="submitted",
+        entity_type="storybook",
+        to_state="in_review",
+        actor_role="admin",
+    )
+
+
+async def test_moderation_submit_stamps_the_system_actor(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """The automated first entry to the gate is stamped system, not a person.
+
+    Gate entry is logged uniformly, so a duration measurement never has to
+    special-case where the entry came from; the ACTOR is what separates the
+    pipeline's own submit from a human resubmission. This mirrors how
+    ``needs_revision`` cannot distinguish auto-reject from a human send-back
+    while the ``sent_back`` event can (see publishing/state_machine.py).
+    """
+    story_id = "s_pipeline_submit_event"
+    await _seed_screened_storybook(sessions, story_id, status="draft")
+
+    async with sessions() as session:
+        book = await session.get(Storybook, story_id)
+        assert book is not None
+        await publishing_service.submit(session, book, actor=Actor.system())
+        await session.commit()
+
+    event = await assert_single_event(
+        sessions,
+        event_type="submitted",
+        entity_type="storybook",
+        to_state="in_review",
+        actor_role="system",
+    )
+    assert event.payload == {}
 
 
 async def test_kid_create_writes_request_created(
