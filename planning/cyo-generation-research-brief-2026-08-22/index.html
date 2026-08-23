@@ -3491,6 +3491,25 @@ selection matters.</p>
 claim below names its class and its artifact. Where a passage is labelled <strong>owner practice</strong>, it
 is none of the three: it records what the owner currently does, carries no measurement behind it,
 and must not be read as evidence that the practice is right.</p>
+<p>Stated plainly, because a reader assumes it rather than checking it: <strong>every rater in this
+programme to date is an LLM session, and no child has read any book produced by it.</strong> Nothing
+below rests on child response data, because none exists. "Model-judged" is the whole of the
+perceptual evidence base, and "human-gated" means an adult approved a book for publication, not
+that a reader reacted to it.</p>
+</blockquote>
+<!-- Separates two distinct blockquotes; without it markdownlint reads the pair
+     as one quote with a blank line inside (MD028). -->
+
+<blockquote>
+<p><strong>Three <code>S</code> namespaces collide in this document set; they are unrelated.</strong> <code>S0</code>-<code>S9</code> (no hyphen,
+from the <a href="../cyo-generation-research-brief-2026-08-10/">2026-08-10 brief</a> section 4) are the ten
+<em>design-history levers</em>, the diversity designs tried and mostly refuted. <code>S0</code>/<code>S2</code>/<code>S3</code> (no
+hyphen, from <a href="../skeleton-sourcing-test-plan-2026-08-21/">skeleton-sourcing-test-plan-2026-08-21.md</a>
+section table) are the three <em>sourcing arms</em>: full reuse, stratified reuse, full bespoke. <code>S-0</code>
+through <code>S-5</code> (hyphenated, in the <a href="../diversity-test-register/">diversity test register</a>) are
+<em>register rows</em> holding the pre-registrations for this programme's experiments. The hyphen is the
+only typographic tell between the second and third, so cite the register rows hyphenated and
+always name the namespace on first use in a passage.</p>
 </blockquote>
 <hr />
 <h2 id="1-the-core-challenge">1. The core challenge<a class="headerlink" href="#1-the-core-challenge" title="Permanent link">&para;</a></h2>
@@ -3597,8 +3616,11 @@ gates and review sit between the fill and the human who approves publication.</p
   strict checker against its own draft until it passes. Section 4.2 is the controlled measurement
   of exactly this regime.</li>
 <li><strong>Offline accelerators.</strong> <code>scripts/mutate_skeleton.py</code> (ADR-020) mutates existing skeletons
-  under an acceptance battery; <code>scripts/parameterize_skeleton.py</code> lifts a skeleton into a theme
-  contract for per-request binding. Both are catalog-time tools, never in the request path.</li>
+  under an acceptance battery; <code>scripts/parameterize_skeleton.py</code> applies an agent-authored
+  slotting plan to a pristine skeleton (beats, ending titles, choice labels) and enforces that the
+  result is structurally identical to its input; it does not emit the theme contract, which is
+  authored separately and bound per request. Both are catalog-time tools, never in the request
+  path.</li>
 <li><strong>Promotion.</strong> A skeleton enters <code>skeletons/&lt;band&gt;/</code> only through a reviewed pull request; CI
   re-proves every changed skeleton from scratch (<code>.github/workflows/skeleton-promotion.yml</code>).</li>
 </ul>
@@ -3633,13 +3655,20 @@ author, not by CI.</p>
 <h3 id="33-story-development">3.3 Story development<a class="headerlink" href="#33-story-development" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Selection.</strong> <code>generation/skeleton_match.py</code> matches the request's cell, filters to
-  production-eligible skeletons, and picks with recency weighting so a family sees the least
-  recently used armature; admin override exists but warns.</li>
+  production-eligible skeletons, and then applies two stages in order. First a hard filter
+  (<code>_apply_reuse_cap</code>): every skeleton the family read within its last 20 books is removed from the
+  pool outright, unless that would empty the cell, in which case the cap is given up and the
+  <code>Selection</code> records <code>reuse_cap_relaxed</code>. Only what survives is then drawn at random with
+  inverse-frequency weights (<code>1 / (1 + recent_count)</code>), which <em>tilt</em> the draw toward the least
+  recently used armature without ever reaching zero. The ordering is what matters when reading the
+  two together: the never-zero weight floor governs the pool, not entry to it, so within the
+  recency window an already-read skeleton is not merely rarer, it is unavailable. Admin override
+  exists but warns.</li>
 <li><strong>Binding.</strong> Theme contracts bind per-request settings, casts, and props
   (<code>scripts/bind_theme.py</code>); the differentiation directive
   (<code>build_differentiation_directive</code>) instructs the fill away from sibling books.</li>
 <li><strong>Fill.</strong> <code>generation/orchestrator.py::fill_skeleton</code> drives a staged fill through pluggable
-  providers (Anthropic, OpenRouter, Modal, Ollama), with chunked fills for large books, completion
+  providers (Anthropic, OpenRouter, Modal), with chunked fills for large books, completion
   caps sized per model, and bounded repair attempts. Every call is metered
   (<code>generation/usage.py</code>); cost accounting is response-level where the provider reports it.</li>
 </ul>
@@ -3870,7 +3899,7 @@ board. Lessons <code>AL-510</code>..<code>AL-514</code> and work rows <code>UW-C
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 23, 2026 15:27:07 UTC">August 23, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 23, 2026 20:40:10 UTC">August 23, 2026</span>
   </span>
 
     

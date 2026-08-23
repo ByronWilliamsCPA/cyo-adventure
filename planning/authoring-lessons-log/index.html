@@ -3405,6 +3405,14 @@ survived two phase boundaries is either genuinely low value (mark it <code>rejec
 <p><strong>Status discipline.</strong> <code>accepted</code> means the change is agreed but unbuilt, and it must appear in a
 plan somewhere. <code>applied</code> means the change is merged and the <code>Ref</code> proves it. Nothing moves to
 <code>applied</code> on the strength of intent.</p>
+<p><strong>Catalog counts inside a row are dated by that row's <code>Date</code>.</strong> A lesson that says "20 of 61 skeletons"
+records what a sweep returned on the day it ran, and is never rewritten when the catalog grows; current
+totals live in <a href="../catalog-census/">catalog-census.md</a> (<code>UW-G24</code>).</p>
+<p><strong>A count a row <em>quotes</em> from somewhere else keeps its own date, not the row's.</strong> A lesson that
+re-measures a prior claim carries two figures, and only the new one belongs to the row's <code>Date</code>.
+Give the quoted figure its source date inline, or mark it <code>undated</code> when the source never carried
+one. Without that, the rule above silently backdates the quoted figure to the day the row was
+written, which is the error the row exists to correct.</p>
 <hr />
 <h2 id="log">Log<a class="headerlink" href="#log" title="Permanent link">&para;</a></h2>
 <table>
@@ -9181,6 +9189,96 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
 <td>applied</td>
 <td><code>UW-C341</code> residual (b); this branch is based on PR #742's head <code>d313eea9</code> and rebases onto <code>main</code> when #742 merges</td>
 </tr>
+<tr>
+<td>AL-577</td>
+<td>2026-08-23</td>
+<td><code>UW-G24</code> re-measurement of <code>check_skeleton.py</code>'s advisory incidence</td>
+<td>tooling</td>
+<td><strong><code>run_gate(doc)</code> is a weaker oracle than <code>check_skeleton.py --strict</code>, and the gap is silent.</strong> Re-measuring the script's own undated "40 of 61 skeletons fire a blocking advisory" claim through a bare <code>run_gate(doc)</code> returned 35 of 84 with <strong>zero</strong> <code>CG-*</code> findings, which reads as a real result rather than a broken probe. <code>run_gate</code> defaults <code>enforce_grammar=False</code> (<code>UW-C24</code>), so the entire <code>CG-1</code>/<code>CG-2</code>/<code>CG-3</code> family cannot fire; the script instead calls <code>load_skeleton(path, enforce_grammar=bool(args.strict), report_sink=...)</code>. Reproducing that load path gives 64 of 84, and the incidence is dominated by grammar (<code>CG-3</code> 64, <code>CG-2</code> 54, <code>CG-1</code> 41, against <code>PL-23</code> 31, <code>PL-24</code> 19, <code>PL-26</code> 6). A measurement of "what this gate says" that does not call the gate the way the gate is called measures a different gate.</td>
+<td>Give <code>check_skeleton.py</code> a <code>--census</code>-style re-measure mode that runs the real load path over the catalog and prints per-rule incidence, so re-measuring a claim about the script is a call to the script rather than a re-implementation of it.</td>
+<td>open</td>
+<td></td>
+</tr>
+<tr>
+<td>AL-578</td>
+<td>2026-08-23</td>
+<td>step 2, R-2 approval-screen measures</td>
+<td>validator</td>
+<td><strong><code>GateResult.safety_flagged</code> is structurally always <code>False</code>, so it must never be rendered as a safety summary.</strong> It derives from SAFE-14, whose producer <code>validator/safety.py</code> is a documented Phase-2 stub that returns an empty list (<code>validator/gate.py:33</code>, <code>:212</code>, and the <code>GateResult</code> docstring at <code>:99-101</code>). An approval screen that shows "no safety flags" sourced from it reports a clean bill from a check that never ran, which is worse than showing nothing; the real evidence is the moderation gate's per-concern counts, which is what the shipped block uses. The field is discoverable, plausibly named, and wrong to trust.</td>
+<td>Make the field impossible to misread at its definition: return <code>None</code> (not <code>False</code>) while SAFE-14 is a stub, or rename it <code>safety_flagged_unimplemented</code>, so a consumer must handle the "not measured" case.</td>
+<td>open</td>
+<td></td>
+</tr>
+<tr>
+<td>AL-579</td>
+<td>2026-08-23</td>
+<td>step 2, R-2 approval-screen measures</td>
+<td>tooling</td>
+<td><strong>An absent measurement must not project as zero, and the invariant has to be enforced on both sides of a generated contract.</strong> A version with no recorded <code>fill_rate</code> (an imported book, or one generated before the rate was stamped) is not a book that filled nothing, so the backend projects <code>float \| None</code> and the frontend's <code>asPercent</code> returns <code>null</code> rather than <code>"0%"</code>. Two details are easy to miss: <code>bool</code> must be excluded from the rate reader explicitly, because it is an <code>int</code> subclass and a persisted <code>True</code> projects as a perfect <code>1.0</code>; and the whole measures block renders only when the field is present, so an older backend response produces no section rather than an empty one that reads as "nothing was measured".</td>
+<td>Applied. A frontend test asserts the negative (<code>not.toContain('0%')</code>) so the zero-projection cannot come back through a later refactor.</td>
+<td>applied</td>
+<td><code>src/cyo_adventure/api/review_surface.py::_as_rate</code> and <code>frontend/src/admin/ReviewDetailPage.tsx::asPercent</code> both test for absence rather than falsiness; <code>frontend/src/admin/ReviewDetailPage.test.tsx</code> asserts <code>not.toContain('0%')</code> (PR #743).</td>
+</tr>
+<tr>
+<td>AL-580</td>
+<td>2026-08-23</td>
+<td>step 2, path-coherence detector extraction</td>
+<td>tooling</td>
+<td><strong>Two same-named functions that return different text are worse than one awkwardly named function.</strong> <code>strip_dialogue</code> existed in both <code>validator/dialogue.py</code> and <code>scripts/check_prose_craft.py</code> with different quote handling (one covers curly doubles but not careful singles), so "the narration" meant two things depending on which module a caller had imported, and the catalogue's own unquoted house style ("Almost there, Nina whispered.") was scanned as narrator prose in one of them. The extraction deliberately did <strong>not</strong> reuse the name: the shared helper is <code>narration_of</code>, named for what the caller wants back.</td>
+<td>Applied. When extracting a duplicated helper, check whether the name is already taken by a function with different semantics; renaming the new one is cheaper than making two call sites agree.</td>
+<td>applied</td>
+<td><code>src/cyo_adventure/validator/prose_craft.py::narration_of</code> is the renamed single copy; <code>tests/unit/test_validator_prose_craft.py::test_the_offline_script_holds_no_second_copy_of_the_detectors</code> pins the re-export identity (PR #743).</td>
+</tr>
+<tr>
+<td>AL-581</td>
+<td>2026-08-23</td>
+<td>step 2, same-skeleton reuse cap</td>
+<td>tooling</td>
+<td><strong>A change to a shared selection function must be validated against its OFFLINE consumers, not only its request-path ones.</strong> Capping same-skeleton reuse (<code>skeleton_match._apply_reuse_cap</code>) broke four tests in <code>scripts/analyze_sibling_exposure.py</code>'s suite, because that script deliberately calls the real <code>select_skeleton_for_cell</code> "so the counts reflect ... exactly as selection sees them". Nothing in the request path failed. Two second-order findings fell out: the curve changed KIND, from a smooth probability to a step function at pool exhaustion, so <code>required_pool_size</code> is now exactly the pigeonhole bound; and the same-theme regime went inert, because <code>_family_state</code> models "similar" as "same slug", making the theme penalty's targets a strict subset of the cap's. A hard filter placed ahead of a soft penalty can render the penalty unreachable, and nothing fails when it does: the two regimes just quietly converge.</td>
+<td>Re-run and republish the sibling-exposure figures, which were all computed under the uncapped model and are superseded rather than merely imprecise; and give the simulator a real theme-overlap path so the same-theme regime measures something the cap does not already subsume.</td>
+<td>open</td>
+<td><code>UW-C343</code></td>
+</tr>
+<tr>
+<td>AL-582</td>
+<td>2026-08-23</td>
+<td>PR #743 review fix (C1)</td>
+<td>tooling</td>
+<td><strong>A wrapper that forwards an attribute by property erases the difference between "absent" and "present but <code>None</code>", and a tri-state attribute needs that difference.</strong> <code>FallbackProvider.resolved_provider</code> answers three things: a leg name (a cascade that ran), <code>None</code> (a cascade that has not run), and <em>nothing at all</em> (not a cascade, so the provider's own <code>name</code> is authoritative). <code>MeteredProvider</code> wraps the generation provider on the worker path before the moderation pipeline sees it, and did not forward the attribute, so every cascade looked like a non-cascade and reviewer independence was judged on the cascade's composite label. The obvious repair, a property returning <code>None</code> when the inner provider has no such attribute, fixes the cascade case and breaks the plain-provider case in the same stroke: a wrapped Modal provider would then read as a cascade that had not answered. Only <code>__getattr__</code> preserves absence.</td>
+<td>Applied. Name the forwarded surface in a module constant (<code>_FORWARDED_ATTRS</code>) so it is enumerable rather than scattered across properties, and pin the absence case with a test that wraps a NON-cascade provider, which is the assertion a property implementation fails.</td>
+<td>applied</td>
+<td><code>src/cyo_adventure/generation/metered.py::MeteredProvider.__getattr__</code>; <code>tests/unit/test_review_metering.py::test_metering_does_not_invent_a_resolution_for_a_plain_provider</code> (PR #743)</td>
+</tr>
+<tr>
+<td>AL-583</td>
+<td>2026-08-23</td>
+<td>PR #743 review fix (C1)</td>
+<td>validator</td>
+<td><strong><code>a or b</code> on a tri-state attribute silently re-substitutes the value you were trying to avoid.</strong> The reviewer-independence check read the answering backend as <code>getattr(p, "resolved_provider", None) or getattr(p, "name", None)</code>. For a cascade that had not yet answered, the first operand is <code>None</code>, so the fallback supplies the cascade's own composite label (<code>fallback[anthropic,openrouter]</code>), which equals no configured backend and therefore compares as independent of every reviewer. The attestation persisted on the version row then claimed a separation that was never established, and it failed OPEN: the more cascades in play, the more books were attested independent without being so. Two distinct mechanisms (this and <code>AL-582</code>) defeated the same attestation, and fixing either alone left it defeated.</td>
+<td>Applied. Where absence and <code>None</code> mean different things, read with an explicit sentinel (<code>getattr(obj, name, _NO_CASCADE)</code>) and branch on identity, never with <code>or</code>. When an attestation is persisted for a human, its failure direction is worth stating in the RAD marker: this one failed toward "independent".</td>
+<td>applied</td>
+<td><code>src/cyo_adventure/moderation/pipeline.py::_build_guarded_review</code>; <code>tests/unit/test_review_metering.py::test_an_unanswered_cascade_does_not_grant_independence</code> (PR #743)</td>
+</tr>
+<tr>
+<td>AL-584</td>
+<td>2026-08-23</td>
+<td>PR #743 review fix (I1)</td>
+<td>process</td>
+<td><strong>A guard added beside a related guard inherits its POSITION, and a delete-mutation cannot tell you that the position is wrong.</strong> The prose-craft advisory was appended next to the anti-template guard, which put it before the bounded repair. Two consequences, both invisible: an adopted repair replaces the report object wholesale, so the advisory was dropped on exactly the books most likely to have earned one; and the measurement described the pre-repair prose rather than the blob the approver would read. The pre-existing tests were position-blind. Deleting the call failed them, which looks like coverage and is not: it only proves the guard runs.</td>
+<td>Applied. To prove an ordering fix, mutate by MOVING the call back to its old position, not by deleting it; a delete mutation that kills the old tests and the new ones alike has measured nothing about order. For any measurement persisted for a human reader, assert the identity of the artifact measured, not only that a finding appeared.</td>
+<td>applied</td>
+<td><code>src/cyo_adventure/moderation/pipeline.py</code> (call moved before <code>_persist_report</code>); <code>tests/unit/test_moderation_pipeline.py::test_prose_craft_measures_the_repaired_blob</code> and <code>::test_prose_craft_advisory_survives_an_adopted_repair</code> (PR #743)</td>
+</tr>
+<tr>
+<td>AL-585</td>
+<td>2026-08-23</td>
+<td>PR #743 review fix (CodeRabbit thread on <code>test_validator_prose_craft.py</code>)</td>
+<td>tooling</td>
+<td><strong>An assertion satisfied by two independent bounds tests neither of them.</strong> <code>test_a_collapsed_label_set_on_a_large_book_breaches</code> built its fixture from <code>_story(["a"] * 25, ...)</code>, giving 25 byte-identical bodies. That is <code>redundant_nodes == 24</code>, so <code>judge_sameness</code> breached on the duplicate-body bound before the label bound was ever consulted, and the test asserting <code>breached is True</code> passed through the wrong term. Reproduced: with the label bound mutated to <code>over_labels = False</code> the test stayed GREEN on the old fixture and FAILS on distinct bodies, which is the discrimination the test name always claimed. The same shape hid in the <code>#CRITICAL</code> prose-leakage guard: its <code>#VERIFY</code> test built 10 identical third-person bodies, so the second-person rate was 0.0 and <code>prose_craft_person</code> never fired, leaving the one template that interpolates non-numeric <code>verdict.framing</code> uncovered by its own citation. A fixture that trips several bounds at once is not a stronger test, it is an untargeted one.</td>
+<td>Give <code>judge_sameness</code> (and any multi-bound judge) a per-bound breakdown on the <code>Judgment</code>, so a test can assert WHICH bound fired rather than that something did; until then, any fixture for a multi-bound judge must assert the non-target bounds are quiet.</td>
+<td>open</td>
+<td><code>UW-C344</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -9220,7 +9318,7 @@ plan somewhere. <code>applied</code> means the change is merged and the <code>Re
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 23, 2026 19:48:01 UTC">August 23, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 23, 2026 20:40:10 UTC">August 23, 2026</span>
   </span>
 
     

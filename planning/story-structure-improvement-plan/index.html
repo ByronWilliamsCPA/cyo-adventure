@@ -3980,7 +3980,7 @@ Stage 0 and can interleave.</p>
 <tbody>
 <tr>
 <td>SQ-07</td>
-<td><strong>Selection rebalance.</strong> (a) Cap the W2.2 theme-overlap attraction bonus (owner gate OG2 picks the cap; default proposal 1.3x) so it cannot dominate a 3-tree cell cross-family; (b) add per-profile history scoping with family fallback; &copy; count distinct storybooks, not version rows, in the recency window; (d) de-weight candidates by <code>structural_distance</code> and valence-histogram proximity to the reader's recent trees. The <code>1/(1+x)</code> novelty floor is preserved throughout (decision C-4).</td>
+<td><strong>Selection rebalance.</strong> (a) Cap the W2.2 theme-overlap attraction bonus (owner gate OG2 picks the cap; default proposal 1.3x) so it cannot dominate a 3-tree cell cross-family; (b) add per-profile history scoping with family fallback; &copy; count distinct storybooks, not version rows, in the recency window; (d) de-weight candidates by <code>structural_distance</code> and valence-histogram proximity to the reader's recent trees. The <code>1/(1+x)</code> novelty floor is preserved throughout the WEIGHTING (decision C-4); it does not govern the candidate pool, which the same-skeleton reuse cap narrows first per the dated ruling in <code>live-structural-round-2026-08-21.md</code> section 8.1.</td>
 <td>Analysis 4 items 2-3, 5; plan v2 deferred row (per-profile)</td>
 <td>M</td>
 <td>Monte Carlo over the shipped selector: cross-family first-request concentration on a themed tree drops from ~&frac12; toward ~&#8531;; per-profile repeat rate measured and reported; all existing selection tests pass</td>
@@ -4071,7 +4071,7 @@ its schedule.</p>
 <td><strong>Per-path experience metrics</strong> in <code>structure_features</code>: decision cadence over rendered stops (post-ADR-026 the stop, not the node, is the experience unit), corridor ratio, outcome-mix entropy over sampled walks, median-walk depth, agency density (share of decision stops whose options reach different ending valences; single definition, shared with the implementation brief and the metric tests). Wire into SQ-07's de-weighting and the flywheel ranking key.</td>
 <td>Analysis 6.3; plan v2 walker (validated, 0 divergences / 1,800 walks)</td>
 <td>M</td>
-<td>Metrics computed for all 61 skeletons and committed as a baseline; selection and ranking consume at least two of them; unit tests pin the walker lockstep property</td>
+<td>Metrics computed for every skeleton in the catalog (61 when this row was written on 2026-08-02; current totals in <a href="../catalog-census/">catalog-census.md</a>, <code>UW-G24</code>) and committed as a baseline; selection and ranking consume at least two of them; unit tests pin the walker lockstep property</td>
 </tr>
 <tr>
 <td>SQ-16</td>
@@ -4648,7 +4648,7 @@ actual disposition rather than a conditional one. Stage 2's contradiction is clo
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 18:34:55 UTC">August 8, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 23, 2026 20:40:10 UTC">August 23, 2026</span>
   </span>
 
     
