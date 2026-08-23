@@ -7,8 +7,20 @@ from pathlib import Path
 
 import pytest
 
+from cyo_adventure.generation.skeleton import is_sidecar
 from cyo_adventure.validator.band_profile import offered_cells
-from scripts.catalog_census import GENERATED_DOC, census, load_shells, main, render
+from scripts.catalog_census import (
+    GENERATED_DOC,
+    _band_rank,
+    census,
+    load_shells,
+    main,
+    render,
+)
+
+# Anchored to the repository rather than the process working directory, so a
+# run from a subdirectory fails visibly instead of globbing nothing and passing.
+CATALOG_ROOT = Path(__file__).resolve().parents[2] / "skeletons"
 
 
 @pytest.fixture(scope="module")
@@ -24,14 +36,15 @@ def test_sidecars_are_not_counted_as_shells() -> None:
     two of the three sidecar suffixes left a `.narrative.json` counted as a
     skeleton with zero commissioned words.
     """
-    paths = {s.path for s in load_shells()}
-    sidecars = [
-        p
-        for p in Path("skeletons").rglob("*.json")
-        if p.name.count(".") > 1  # <slug>.<kind>.json
-    ]
+    paths = {s.path for s in load_shells(CATALOG_ROOT)}
+    all_json = set(CATALOG_ROOT.rglob("*.json"))
+    # Use the shared predicate rather than a dot-count heuristic: counting dots
+    # classifies any multi-dot slug as a sidecar, so the test would agree with a
+    # broken implementation for the wrong reason.
+    sidecars = {p for p in all_json if is_sidecar(p)}
     assert sidecars, "expected the catalog to contain sidecars to exclude"
-    assert not (paths & set(sidecars))
+    assert not (paths & sidecars)
+    assert paths == all_json - sidecars
 
 
 def test_every_shell_reports_nodes_and_words(data: dict[str, object]) -> None:
@@ -79,11 +92,19 @@ def test_no_offered_cell_is_uncovered(data: dict[str, object]) -> None:
     assert data["cells"]["uncovered"] == 0
 
 
-def test_production_eligible_is_a_subset_of_all_shells(
+def test_the_two_eligibility_counts_are_distinct_and_ordered(
     data: dict[str, object],
 ) -> None:
-    """Eligibility only ever removes shells."""
-    assert data["cells"]["production_eligible_shells"] <= data["totals"]["shells"]
+    """Declaring the flag and being reachable in an offered cell differ.
+
+    Both were previously reported under one "production-eligible shells"
+    label, so a document quoting that row transcribed a number that measured
+    something else (`UW-G24`).
+    """
+    cells = data["cells"]
+    declared = cells["declared_production_eligible"]
+    reachable = cells["reachable_in_offered_cells"]
+    assert reachable <= declared <= data["totals"]["shells"]
 
 
 def test_node_and_word_maxima_are_reported_separately(
@@ -95,6 +116,22 @@ def test_node_and_word_maxima_are_reported_separately(
     had (`AL-551`).
     """
     largest = data["largest"]
+    # Compare against an independent computation. The ordering assertions alone
+    # also pass when both entries are the SAME shell, so a conflated maximum
+    # would go undetected by them.
+    shells = load_shells(CATALOG_ROOT)
+    expected_nodes = max(shells, key=lambda s: s.nodes)
+    expected_words = max(shells, key=lambda s: s.commissioned_words)
+
+    assert largest["by_nodes"]["nodes"] == expected_nodes.nodes
+    assert (
+        largest["by_nodes"]["commissioned_words"] == expected_nodes.commissioned_words
+    )
+    assert largest["by_commissioned_words"]["nodes"] == expected_words.nodes
+    assert (
+        largest["by_commissioned_words"]["commissioned_words"]
+        == expected_words.commissioned_words
+    )
     assert largest["by_nodes"]["nodes"] >= largest["by_commissioned_words"]["nodes"]
     assert (
         largest["by_commissioned_words"]["commissioned_words"]
@@ -108,7 +145,7 @@ def test_generated_doc_is_current() -> None:
     This is the anti-decay mechanism: a skeleton added without regenerating
     fails here rather than silently contradicting the prose that cites it.
     """
-    assert GENERATED_DOC.read_text() == render(census())
+    assert GENERATED_DOC.read_text(encoding="utf-8") == render(census())
 
 
 def test_check_mode_detects_a_stale_doc(tmp_path: Path, monkeypatch) -> None:
@@ -124,3 +161,44 @@ def test_json_mode_is_machine_readable(capsys: pytest.CaptureFixture[str]) -> No
     assert main(["--json"]) == 0
     payload = json.loads(capsys.readouterr().out)
     assert payload["totals"]["shells"] > 0
+
+
+def test_check_and_write_cannot_be_combined() -> None:
+    """Asking for a check must never perform a write.
+
+    `--write` was evaluated before `--check`, so `--check --write` rewrote the
+    tracked document and exited 0, turning a verification into an unreviewed
+    edit.
+    """
+    with pytest.raises(SystemExit) as exc:
+        main(["--check", "--write"])
+    assert exc.value.code == 2
+
+
+def test_missing_doc_is_reported_as_missing_not_stale(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A doc that was never generated is a different fault from a stale one."""
+    absent = tmp_path / "never-generated.md"
+    monkeypatch.setattr("scripts.catalog_census.GENERATED_DOC", absent)
+    assert main(["--check"]) == 1
+    assert "missing" in capsys.readouterr().err
+
+
+def test_a_shell_without_nodes_is_rejected(tmp_path: Path) -> None:
+    """A malformed shell fails loudly rather than shrinking every total.
+
+    Silently skipping it would undercount the catalog, which is precisely the
+    drift this census exists to detect (`UW-G24`).
+    """
+    (tmp_path / "broken.json").write_text('{"title": "no nodes"}', encoding="utf-8")
+    with pytest.raises(ValueError, match=r"broken\.json"):
+        load_shells(tmp_path)
+
+
+def test_an_unknown_band_directory_is_named() -> None:
+    """A stray directory names itself instead of raising a bare KeyError."""
+    with pytest.raises(ValueError, match="not an age band"):
+        _band_rank("not-a-band")

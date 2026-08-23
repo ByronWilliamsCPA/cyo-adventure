@@ -14,7 +14,8 @@ and then went stale in place (`AL-551`, `UW-G24`).
 | Shells (sidecars excluded) | 84 |
 | Nodes | 15,470 |
 | Commissioned words | 1,426,348 |
-| Production-eligible shells | 74 |
+| Shells declaring `production_eligible` | 81 |
+| ...of those, reachable in an offered cell | 74 |
 
 ## By band
 
