@@ -112,6 +112,28 @@ for that quantity; the three S-namespaces are disambiguated in the brief's gloss
 evidence-class preamble states that no child has read any book. `UW-G24`'s citation-sites bucket
 closes. Its gate-outcome bucket stays open under D4, so `UW-G24` itself does not close here.
 
+**Executed 2026-08-23, and four of the five buckets were already closed when it started.** Checking
+each against the tree rather than against this table found: the evidence-class preamble already
+states that every rater is an LLM session and no child has read any book; the three `S` namespaces
+already have a glossary blockquote; "guaranteed LRU" already reads "tilt the draw toward the least
+recently used ... without ever reaching zero"; the parameterize script is already described as
+applying an agent-authored slotting plan; and all four judgement-call sites already carry a date or
+a census pointer. Sweeping all 27 files that quote a 61-skeleton figure for a dating anchor found
+exactly one without one. Those landed in [#738](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/738)
+and [#743](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/743), both of which postdate this
+table's drafting.
+
+**Two corrections to the R-3 residual row itself.** First, its cited sites are in the wrong
+document: `cyo-generation-research-brief-2026-08-10.md` makes no enforcement claim about either
+delivery check, and both stale claims are in the **2026-08-22** brief, at its F2 principle and in
+section 3.4. Second, the residual was wider than "the fill-rate floor is described as unwired": by
+2026-08-23 **both** delivery measurements had a request-path counterpart, so both sites were false
+on both halves. The fill-rate floor runs at `orchestrator._with_fill_rate` (ruling 9.3: forces
+`needs_review`, never blocks) and the sibling-gram measure at `moderation/leaf_diversity.py` through
+the shared `diversity/grams.py`, which reached `main` as `37a08a60`. `UW-C105`'s enumerated item (3),
+which said that module existed "only on open PR #742", was stale for the same reason and is
+corrected in the register.
+
 ### Step 2. Wire the floors (days, unblocked)
 
 The review's R-3 finding is that the delivery floors exist only where nobody ships from. The

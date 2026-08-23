@@ -86,12 +86,12 @@ authored, validated, and reviewed separately from the prose that fills it. Every
 **F2. Deterministic gates come first, and they are floors, not scores.** Structure, budgets, reading
 level, and graph soundness are checked by code before any model or human judges anything. Because of
 finding 2 above, every gate needs a paired delivery measurement (fill rate, word delivery) so a
-hollow pass is visible; those measurements are written but are not yet wired into the request path
-(section 3.4). Safety is the exception and does not belong in that list at all: the gate calls its
-safety seam on any story that clears Layer 1 (`validator/gate.py:213`; broken input returns before
-it, `:153-162` and `:169-174`), but the seam's body is a Phase-2 no-op returning an empty report
-(`validator/safety.py:41-57`), so `GateResult.safety_flagged` is structurally always `False`.
-Deterministic safety classification is unbuilt. What protects a child today is the moderation
+hollow pass is visible; both such measurements now run on the request path, one forcing review and
+one advisory, and neither blocks (section 3.4). Safety is the exception and does not belong in that
+list at all: the gate calls its safety seam on any story that clears Layer 1 (`validator/gate.py:213`;
+broken input returns before it, `:153-162` and `:169-174`), but the seam's body is a Phase-2 no-op
+returning an empty report (`validator/safety.py:41-57`), so `GateResult.safety_flagged` is
+structurally always `False`. Deterministic safety classification is unbuilt. What protects a child today is the moderation
 classifiers, the LLM reviewer, and mandatory human approval, which are the model-judged and
 human-gated classes, not this one.
 
@@ -218,18 +218,32 @@ author, not by CI.
 - **The story gate** (`scripts/run_story_gate.py`, `validator/`): Layer 1 and Layer 2 rules,
   reading level against the band target, and band-profile conformance, plus the safety seam F2
   describes, which emits nothing today. Blocking findings stop the book; advisories are recorded.
-- **Delivery measurements**, because of F2's floor problem, and both are offline scripts rather
-  than pipeline stages: `scripts/check_fill_integrity.py` applies a minimum fill rate (0.6,
-  calibrated so the `UW-C307` under-delivering books fail) and `scripts/check_sibling_fills.py`
-  measures shared 4-grams against same-skeleton siblings (budget 4.0 per 1000). Neither is called
-  from `src/`; their programmatic invokers are `scripts/run_guard_battery.py`, a hand-run dev harness
-  that no CI workflow or pre-commit hook references, and `scripts/compare_vendors.py:1194`, which
-  imports `pairwise_shared_grams` for the section 4.1 comparison. The only delivery check the request
-  path performs today is the Stage-1 fidelity gate's per-node `_WORD_COUNT_TOLERANCE = 0.4`
-  (`generation/fidelity.py:28-30`), described by its own comment as "a generous starting tolerance,
-  not calibrated against real fill runs yet", and it cannot see a story-level shortfall. Track the
-  production wiring of both checks at `UW-C307` and `UW-C315`; the register carries their current
-  status, which this document deliberately does not restate.
+- **Delivery measurements**, because of F2's floor problem. Both began as offline scripts; as of
+  2026-08-23 both also have a request-path counterpart, reached through a shared definition rather
+  than a second copy of the formula, and neither counterpart blocks. *Story-level fill rate:*
+  `scripts/check_fill_integrity.py` applies a minimum rate (0.6, calibrated so the `UW-C307`
+  under-delivering books fail), and the request path applies the same 0.6 through
+  `generation/skeleton.py::story_fill_rate`, called from `orchestrator._with_fill_rate` on every
+  `fill_skeleton` outcome carrying a book; the RQ worker passes no override, so the default is what
+  production runs. Per ruling 9.3 (2026-08-21) a passing book under the floor is **downgraded to
+  `needs_review`, never hard-blocked**, so a thin book cannot ship without a human while a
+  0.63-class good fill is never machine-rejected. *Same-skeleton sibling grams:*
+  `scripts/check_sibling_fills.py` measures shared 4-grams against siblings (budget 4.0 per 1000)
+  and keeps choice labels, because its question is the whole recognition surface a reader sees,
+  while `moderation/leaf_diversity.py` reads the same `diversity/grams.py` with
+  `include_choice_labels=False`, because a skeleton supplies byte-identical labels to every sibling
+  fill and including them measures the tree rather than either fill; that counterpart is advisory by
+  contract, emitting soft `FLAG` findings that ride the moderation pipeline's one bounded repair and
+  then the human gate. The scripts themselves are still called from no `src/` module; their
+  programmatic invokers remain `scripts/run_guard_battery.py`, a hand-run dev harness that no CI
+  workflow or pre-commit hook references, and `scripts/compare_vendors.py:1194`. The Stage-1
+  fidelity gate's per-node `_WORD_COUNT_TOLERANCE = 0.4` (`generation/fidelity.py:30`), described by
+  its own comment as "a generous starting tolerance, not calibrated against real fill runs yet", is
+  unchanged and still cannot see a story-level shortfall; what changed is that it is no longer the
+  only delivery check the request path performs. `UW-C307` is closed on this. The residual is
+  narrower than the original ask and stays open at `UW-C105` and `UW-C315`: no blocking sibling
+  gate, one repair round rather than capped revise-regate rounds, and no request-path counterpart to
+  the menu-frame check.
 - **Craft checks**: `check_prose_craft.py` (tense, told-emotion, moral tags) and the per-path
   measures used in evaluation.
 
