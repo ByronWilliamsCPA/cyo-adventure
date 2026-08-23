@@ -14,24 +14,14 @@
 -- #VERIFY: tests/unit/test_pipeline_event_check_vocab.py's drift guard pins the
 -- event_type list against cyo_adventure.db.models._PIPELINE_EVENT_TYPE_VALUES.
 --
--- Written to be idempotent (checks the current constraint definition before
--- acting), mirroring 20260721000000_add_cell_saturated_to_pipeline_event.sql,
--- so it is a no-op if applied a second time or if the constraint already
--- includes its new value.
-DO $$
-BEGIN
-    IF EXISTS (
-        SELECT 1
-        FROM pg_constraint
-        WHERE conname = 'ck_pipeline_event_event_type'
-          AND conrelid = '"public"."pipeline_event"'::regclass
-          AND pg_get_constraintdef(oid) NOT LIKE '%''book_unassigned''%'
-    ) THEN
-        ALTER TABLE "public"."pipeline_event"
-            DROP CONSTRAINT "ck_pipeline_event_event_type";
-        ALTER TABLE "public"."pipeline_event"
-            ADD CONSTRAINT "ck_pipeline_event_event_type"
-            CHECK ((("event_type")::"text" = ANY ((ARRAY['request_created'::character varying, 'request_approved'::character varying, 'request_declined'::character varying, 'plan_assigned'::character varying, 'generation_started'::character varying, 'generation_finished'::character varying, 'moderation_completed'::character varying, 'repair_applied'::character varying, 'sent_back'::character varying, 'released'::character varying, 'threshold_changed'::character varying, 'noise_floor_changed'::character varying, 'book_assigned'::character varying, 'book_unassigned'::character varying, 'rated'::character varying, 'kid_flagged'::character varying, 'flag_resolved'::character varying, 'user_managed'::character varying, 'family_managed'::character varying, 'family_connection_changed'::character varying, 'node_edited'::character varying, 'profile_viewed'::character varying, 'cell_saturated'::character varying])::"text"[])));
-    END IF;
-END
-$$;
+-- Re-application safe by convergence rather than by inspection: DROP CONSTRAINT
+-- IF EXISTS then an unconditional ADD. The guard this replaced acted only when
+-- the constraint existed AND lacked the new value, so a database missing it
+-- entirely took the false branch and the migration reported success having left
+-- the column unconstrained. ADD CONSTRAINT revalidates the table, which is a
+-- one-off scan because each file applies once.
+ALTER TABLE "public"."pipeline_event"
+    DROP CONSTRAINT IF EXISTS "ck_pipeline_event_event_type";
+ALTER TABLE "public"."pipeline_event"
+    ADD CONSTRAINT "ck_pipeline_event_event_type"
+    CHECK ((("event_type")::"text" = ANY ((ARRAY['request_created'::character varying, 'request_approved'::character varying, 'request_declined'::character varying, 'plan_assigned'::character varying, 'generation_started'::character varying, 'generation_finished'::character varying, 'moderation_completed'::character varying, 'repair_applied'::character varying, 'sent_back'::character varying, 'released'::character varying, 'threshold_changed'::character varying, 'noise_floor_changed'::character varying, 'book_assigned'::character varying, 'book_unassigned'::character varying, 'rated'::character varying, 'kid_flagged'::character varying, 'flag_resolved'::character varying, 'user_managed'::character varying, 'family_managed'::character varying, 'family_connection_changed'::character varying, 'node_edited'::character varying, 'profile_viewed'::character varying, 'cell_saturated'::character varying])::"text"[])));

@@ -50,6 +50,7 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.events import Actor
 from cyo_adventure.moderation.thresholds import load_admin_noise_floor
 from cyo_adventure.publishing import service as approval_service
 from cyo_adventure.publishing.state_machine import Visibility
@@ -134,7 +135,25 @@ async def _load_admin_story(ctx: Context, storybook_id: str) -> Storybook:
 async def submit_storybook(storybook_id: str, ctx: Context) -> SubmittedView:
     """Submit a draft or needs-revision story for review (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
-    await approval_service.submit(ctx.session, book)
+    # #CRITICAL: security: same own-family-aware persona stamping as the
+    # send-back and release endpoints. An owner resubmitting their own
+    # family's story is audited as guardian even though the route is
+    # admin-gated; only a cross-family resubmit is stamped admin.
+    # #VERIFY: test_dual_role_same_family_submit_stamps_guardian and
+    # test_dual_role_foreign_family_submit_stamps_admin in
+    # tests/integration/test_pipeline_event_instrumentation.py. Both name the
+    # submit path specifically: the file's other submit tests seed an admin
+    # whose base role is already admin, so acting_role's two branches return
+    # the same string for them and an inverted family comparison would still
+    # satisfy their assertions.
+    await approval_service.submit(
+        ctx.session,
+        book,
+        actor=Actor.from_principal(
+            ctx.principal,
+            acting_role=ctx.principal.acting_role(book.family_id).value,
+        ),
+    )
     return SubmittedView(
         id=book.id,
         status=cast("Literal['in_review']", book.status),

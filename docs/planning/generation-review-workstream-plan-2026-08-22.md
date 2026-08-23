@@ -13,12 +13,30 @@ component: Development-Tools
 
 # Generation research review: workstream plan
 
-Date: 2026-08-22, corrected 2026-08-23. Status: step 1 complete; step 2 partly executed, with one
-fix shipped (`41d30909`) and a second carried by open PR
-[#742](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/742). No other step started. This plan
-gives a phase home to the 14 critical and high findings, the five condensed medium and low bundles,
-and the seven-step sequence produced by the thirteen-agent review of the 2026-08-22 generation
-research brief.
+Date: 2026-08-22, corrected 2026-08-23. This plan gives a phase home to the 14 critical and high
+findings, the five condensed medium and low bundles, and the seven-step sequence produced by the
+thirteen-agent review of the 2026-08-22 generation research brief.
+
+Status as of 2026-08-23:
+
+- **Step 1: complete.**
+- **Step 2: complete and merged.** One fix shipped directly (`41d30909`); the rest landed as
+  [#742](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/742) (`37a08a60`, convergence
+  reporting and the series prose-reuse gate) and
+  [#743](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/743) (`9ea50b40`, the remaining
+  request-path gaps, plus dating the catalog counts).
+- **Step 3: instruments built, neither measurement run.** R-11's gate-entry event with
+  `publishing/gate_metrics.py`, and R-6's corpus extension to the `13-16` and `16+` bands. Both are
+  registered as `S-6` and `S-7` in the [diversity test register](./diversity-test-register.md) with
+  their falsifiers fixed before either ran. The distinction is the one Step 3's acceptance clause
+  turns on: an instrument existing is not a measurement having happened. `S-6` waits on the
+  `submitted` migration reaching an environment and accumulating enough rounds to clear its validity
+  gate; `S-7`'s first measurement is the next scheduled `safety-eval.yml` run once its corpus lands
+  on `main` (see the correction under Step 3, which retires this step's "small spend" framing). No
+  result from either may be quoted anywhere until its artifact is committed. Step 3's third work
+  item, the directive delta re-run at production `TREE` settings, is untouched by this and remains
+  outstanding alongside the two measurements.
+- **Steps 4 to 7: not started.**
 
 **Citation note.** The `R-*` IDs used throughout are the review's own numbering. That review's
 artifact is not committed, so no `R-*` ID in this document resolves to anything in the tree; the
@@ -183,6 +201,24 @@ D1 but not gated by it. "Not the model that wrote it" is correct under any fill 
 | R-6 | Adversarial safety harness per band, including 13-16 and 16+, registered with `S`-row discipline. The review's finding is that safety measurement lags quality measurement by an order of magnitude; this is the cheapest way to close the gap. Note the F2 correction: the safety seam runs but its body is a Phase-2 no-op, so `safety_flagged` is structurally always `False`. The harness must not treat that field as a signal. |
 | R-11 | Log approval duration and send-backs. The human gate is currently the least measured stage in the pipeline. |
 | Directive delta | Re-run at production `TREE` settings rather than the pilot settings. |
+
+**Correction (2026-08-23) to this step's "small spend" framing.** R-6 needs no spend
+decision and no new run to be commissioned. `.github/workflows/safety-eval.yml` has
+run the adversarial corpus against live classifiers every Sunday at 04:00 UTC since
+at least 2026-07-26 on existing repo secrets, gating on the acceptance thresholds in
+`tests/llm_eval/test_adversarial_safety_eval.py`. It picks up whatever the corpus
+contains, so extending the corpus IS commissioning the measurement; the marginal
+cost is a handful of extra calls inside a job that already runs. What those green
+runs never covered is the point: with no items at `13-16` or `16+`, every one of
+them measured four of the six bands, so "the safety eval is green" was never the
+same claim as "the gate holds at every band".
+
+A second constraint this step must respect, learned from the gate rather than the
+doc: `classify_item` scores an `expected_min_verdict` of `block` as MISSED when the
+pipeline merely FLAGS, and a class-A miss is a hard assertion. Setting an
+expectation above the documented route-to-human threshold turns a safe outcome into
+a red weekly run and a filed tracking issue, so a predicted bright-line block
+belongs in the item's rationale and the archived results, never in its expectation.
 
 **Acceptance:** each measurement is registered as an `S`-row with its falsifier declared before it
 runs, and its artifact is committed. No result is reported that the register does not carry, and no

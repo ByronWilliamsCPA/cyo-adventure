@@ -162,7 +162,12 @@ _PIPELINE_EVENT_TYPE_VALUES = (
     # supabase/migrations/20260809100000_add_notification_digest_ready_to_pipeline_event.sql,
     # which is the newest migration to replace this CHECK and therefore carries
     # the full cumulative value list.
-    "'notification_digest_ready'"
+    "'notification_digest_ready', "
+    # R-11 human-gate measurement. Added alongside
+    # supabase/migrations/20260823120000_add_submitted_to_pipeline_event.sql,
+    # which is the newest migration to replace this CHECK and therefore carries
+    # the full cumulative value list.
+    "'submitted'"
 )
 _PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (
