@@ -232,7 +232,7 @@ The human minutes will dominate cost at scale, and nothing currently accounts fo
 
 | Finding | Work |
 | --- | --- |
-| R-5 | Unit-cost model page per `UW-G19` and `E5`, with a stated per-book cap by band. **The cap derives from a revenue target that does not exist yet: see D3.** |
+| R-5 | Unit-cost model page per `UW-G19` and experiment `E5` of the skeleton-sourcing test plan, with a stated per-book cap by band. **D3 partially ruled 2026-08-23: credits scale with length and band, human minutes are costed, and the price point stays a parameter.** |
 | R-5 | Shadow-price the subagent legs; meter covers; price the Anthropic and Modal providers. **ADR-003 caveat:** the ADR prefers OpenRouter independent of price, so a pricing result cannot by itself re-route a leg; treat this as input to D1, not as a routing decision. |
 | Medium: 4.5 artifacts | The per-leg dollar figures have no committed artifact; they are owner billing prose, not deterministic accounting from run records. Either commit the accounting or relabel the figures. |
 | Medium: "credits checks" | The brief names a guard that does not exist. Build the endpoint pinning, credits preflight, and daily spend counter, or remove the claim. |
@@ -310,18 +310,55 @@ Each decision below carries what has been measured for it. None is made here.
 
 ### D1. Which leg fills
 
-**Blocks:** steps 6 and 7, and the unit-cost model in step 4.
+**Ruled 2026-08-23, provisionally.** The measurement that preceded the ruling is kept below,
+because the ruling deliberately does not rest on it.
 
-The brief's "fill with V4 Pro" was derived from a superlative that describes cost, not quality. The
-priced trade, from the 2026-08-10 brief, is explicit: `xai-grok-4.6` costs 4.9x more for 0.74 of
-judged quality. In per-book terms that is $0.0398 against $0.1963 for +0.74 z and +0.14 in-band.
+| Lane | Triggered by | Provider | Model |
+| --- | --- | --- | --- |
+| Fill | kid or guardian request | OpenRouter or Modal | `deepseek/deepseek-v4-pro`, **provisional** |
+| Review | kid or guardian request | OpenRouter or Modal | `deepseek/deepseek-v4-flash`, expected to persist |
+| Non-production content | admin, out of band | Claude subscription | Sonnet 5 |
 
-The complication is that this decision and step 6 are mutually entangled: R-8 says the per-model
-rankings that would inform the decision are themselves unsupported. Two coherent orders exist.
-Either rule provisionally now and let step 6's replication confirm or overturn it, or run step 6
-first and rule on its output, accepting that the fill stage stays unassigned for about a week.
+**Basis, in the owner's terms.** DeepSeek was chosen for fill because it is open-weights, which
+keeps fine-tuning available as a future option, and because the lower cost point buys iteration
+speed while the process is still being refined. V4 Flash was chosen for review because it was the
+more effective tool on that task and is likewise a fine-tuning target. Note what this basis is not:
+it makes no appeal to the per-model quality rankings, so R-8's finding that those rankings are
+statistically unsupported does not undermine it. Step 6's replication can inform the revisit, but it
+cannot by itself overturn a ruling made on optionality grounds.
 
-**Tracked by:** `UW-C339`, `AL-555`.
+**Revisit trigger.** The fill assignment is explicitly provisional and is to be re-taken before
+production use. The review assignment is expected to stand.
+
+**The lane rule is new, and the code has no equivalent.** Generation that a kid or a guardian
+triggers may route through OpenRouter or Modal; it may never route through the owner's Anthropic
+subscription, which would breach that subscription's terms. Admin, non-production content generation
+may use Sonnet 5 through the subscription, because the admin controls what goes in. Three facts
+about the current tree bear on implementing this:
+
+- **No DeepSeek model is a shipped default.** `openrouter_model` is `anthropic/claude-haiku-4.5`
+  (`core/config.py:461`); `openrouter_fallback_model` and `review_openrouter_model` are both
+  `anthropic/claude-sonnet-4.6` (`:462`, `:567`). All four models this ruling names are already
+  priced in `core/pricing.py`, so the change is configuration, not missing pricing data.
+- **No DeepSeek row is allowlisted.** `supabase/migrations/20260721230000_seed_provider_model_allowlist.sql`
+  seeds four Anthropic rows, two of them direct-provider. An admin authoring plan naming a DeepSeek
+  model is rejected today, so the ruling needs a migration as well.
+- **The allowlist is not the control this rule needs.** `is_enabled_allowlist_pair` has one call
+  site, `story_requests/authoring_plan.py:274`, reached only when `plan.mechanism ==
+  "automated_provider"`. The fill and review legs read `Settings` instead, and `generation_provider`
+  is a single global `Literal["mock", "anthropic", "openrouter", "modal"]` (`core/config.py:415`)
+  carrying no notion of who triggered the job. The lane rule has no enforcement point today.
+
+**Enforcement, ruled 2026-08-23: actor-scoped provider resolution.** A kid- or guardian-triggered
+job derives its provider from the requester rather than from a global setting, so it cannot reach a
+prohibited leg even under misconfiguration. One clarification the ruling's wording invites: the
+direct `anthropic` leg is API-key-billed (`generation/providers/anthropic.py` takes an
+`anthropic_api_key` Bearer credential), not subscription-billed, so no code path reaches the
+subscription today. The subscription lane is an out-of-band human workflow whose output enters
+through admin import. What actor-scoping buys is that the rule stops depending on that staying true.
+
+**Tracked by:** `UW-C339`, `AL-555`, and `UW-C346` for the configuration, migration and enforcement
+work the ruling releases.
 
 ### D2. Is the strict bar the production bar
 
@@ -357,14 +394,38 @@ adds reject nothing independently.
 
 ### D3. The economics target
 
-**Blocks:** step 4 entirely.
+**Partially ruled 2026-08-23.** Two of the three inputs are fixed; the price point is deliberately
+not, because pricing dynamics are unobservable without users.
 
-A per-book cost cap by band cannot be derived without a revenue assumption. The review references a
-20%-of-revenue target; that target is not recorded anywhere in the tree. This decision needs a
-number from the owner, plus a position on whether human approval minutes are costed at a notional
-rate or excluded with that exclusion stated.
+| Input | Position |
+| --- | --- |
+| Revenue anchor | A subscription at **$1.99 or $4.99**. Which of the two is open. |
+| Cost allocation | A **credit system**, credits scaling with book length and age band: shorter and lower-band books cost fewer credits, longer and higher-band books cost more. |
+| Human approval minutes | **Costed at a notional rate**, not excluded. |
 
-**Tracked by:** `UW-G19`, `E5`.
+The 20%-of-revenue target the review referenced remains unrecorded anywhere in the tree, and is not
+adopted here.
+
+**What this releases.** Step 4 is no longer fully blocked, and the credit ruling is the substantive
+half. A per-book ceiling that scales with length and band is what the step's acceptance criterion
+asks for, and `offered_cells()`'s 18 cells give it a domain. The unit-cost model can be built now
+with the revenue target as a **parameter** rather than a constant, running both price points as
+scenarios and resolving when a number exists. Hard-coding a guessed target now is the failure mode
+this plan exists to prevent.
+
+**What is still blocked.** No absolute per-book cap may be quoted until a price point is chosen. The
+model's structure is not blocked; its calibration against revenue is.
+
+**The prerequisite is engineering, not a decision.** `UW-G19` remains unbuilt: the generation job
+record carries no token counts, no cost and no duration, so every leg price the model consumes today
+is an estimate. Costing human minutes has the same shape, and its measurement is already registered
+as the R-11 approval-duration baseline; until that lands, the notional rate is an assumption the
+model must state rather than absorb.
+
+**Tracked by:** `UW-G19`, and `E5` in
+[skeleton-sourcing-test-plan-2026-08-21.md](./skeleton-sourcing-test-plan-2026-08-21.md), section
+"E5: safety, operations, and review economics". The bare `E5` this row previously carried reads as a
+register ID and matches no register row; it is an experiment ID in that document.
 
 ### D4. Where documents cite the census, and whether `--check` gates
 
@@ -400,8 +461,17 @@ Steps 1r, 2 and 3 are unblocked and account for the majority of the review's con
 including its most serious wiring finding (R-3) and the safety-measurement gap (R-6). Step 5 can
 start on everything except its R-9 half.
 
-Steps 4, 6 and 7 are blocked on D3, D1, and D1 respectively.
+**Updated 2026-08-23 by the D1 and D3 rulings.** Steps 6 and 7 are released by D1 and can start.
+Step 4 is released in structure by D3's credit-allocation and human-minutes positions; it stays
+parameterized on the price point rather than blocked by it, and no absolute per-book cap may be
+quoted until a price point is chosen. `UW-G19`'s telemetry remains its prerequisite, and that is
+engineering rather than a decision. Only the R-9 half of step 5 is still gated, on D2, which is
+unruled. D1 also releases implementation work that was not previously anywhere in this plan: the
+leg-default change, the allowlist migration, and the actor-scoped provider resolution recorded at
+`UW-C346`.
 
 The review's own judgement is worth restating as the reason for this ordering: "the expensive risk
 is letting section 4.2's consequence lines harden into production policy before the corrections
-land." Two of those lines are now labelled proposals and one of them, the fill assignment, is D1.
+land." Two of those lines are now labelled proposals. One of them, the fill assignment, is D1, and
+its ruling is deliberately provisional with a revisit trigger, so the proposal label stays honest
+rather than being retired by the ruling.
