@@ -19,6 +19,8 @@ from typing import TYPE_CHECKING
 import pytest
 from sqlalchemy import select
 
+import scripts.seed_series_catalog as seed_series_catalog
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.models import (
     ChildProfile,
     Family,
@@ -356,3 +358,37 @@ async def test_seed_series_catalog_production_with_confirm_reaches_db(
             select(Series).where(Series.title == "Ember Trail")
         )
         assert series is not None
+
+
+async def test_seed_refuses_a_chain_that_reuses_prose_and_writes_nothing(
+    monkeypatch: pytest.MonkeyPatch,
+    engine: AsyncEngine,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """The chain gate is wired into `seed`, not merely defined beside it.
+
+    `test_series_fixture_books_do_not_reuse_prose` proves `_assert_chain_clean`
+    works; nothing there proves `seed` CALLS it, so deleting the call site
+    would leave that test green while restoring the whole bypass. This drives
+    the real entry point with book 2's prose reset to book 1's and demands the
+    refusal, plus an empty table: the gate has to run BEFORE the inserts, or a
+    rejected chain still lands rows.
+    """
+    _set_env(monkeypatch)
+    async with sessions() as session:
+        family, _profile = await _seed_family_with_child(session, "E2E Test Family")
+        await _seed_admin(session, family.id, "series-admin")
+        await session.commit()
+
+    prose = seed_series_catalog._BOOK_PROSE
+    monkeypatch.setattr(seed_series_catalog, "_BOOK_PROSE", (prose[0], dict(prose[0])))
+
+    with pytest.raises(ValidationError, match="SR-10"):
+        await seed(engine=engine, session_factory=sessions)
+
+    async with sessions() as session:
+        assert (
+            await session.scalar(select(Series).where(Series.title == "Ember Trail"))
+            is None
+        )
+        assert (await session.scalars(select(Storybook.id))).all() == []

@@ -39,8 +39,10 @@ from cyo_adventure.db.models import (
     User,
 )
 from cyo_adventure.generation.allowlist import DEFAULT_ALLOWLIST
+from cyo_adventure.storybook.models import Storybook as StorybookDoc
 from cyo_adventure.validator.gate import run_gate
 from cyo_adventure.validator.report import Severity
+from cyo_adventure.validator.series import validate_series
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping
@@ -151,6 +153,95 @@ def _assert_gate_clean(blob: Mapping[str, object]) -> None:
     raise ValidationError(message, field="status", value="published")
 
 
+def _assert_chain_clean(blobs: list[dict[str, object]]) -> None:
+    """Raise if the series chain about to be seeded fails the cross-book gate.
+
+    # #CRITICAL: data-integrity: ``_assert_gate_clean`` runs
+    # ``validator.gate.run_gate`` per BLOB, and ``run_gate`` never reaches
+    # ``validate_series``, which is a per-CHAIN check. Every cross-book rule is
+    # therefore invisible to a per-blob loop, including SR-10 (prose reuse
+    # across a chain, a ``Severity.ERROR`` that blocks
+    # ``publishing/service.py::approve``). Without this function the seeded
+    # rows are published into staging and production without any chain rule
+    # ever being applied to them, because this script writes
+    # ``status="published"`` directly instead of going through ``approve``.
+    # #VERIFY: test_series_fixture_books_do_not_reuse_prose runs this function
+    # over the blobs this script actually builds, and would have failed on the
+    # pre-2026-08-23 fixture.
+
+    Args:
+        blobs: Every raw story JSON mapping of one series, in book order.
+
+    Raises:
+        ValidationError: If ``validate_series`` reports any ERROR-severity
+            finding, naming every failing rule id so the failure is
+            actionable from the raised message alone.
+    """
+    books = [StorybookDoc.model_validate(blob) for blob in blobs]
+    report = validate_series(books)
+    errors = [f for f in report.findings if f.severity is Severity.ERROR]
+    if not errors:
+        return
+    rule_summary = "; ".join(f"{f.rule_id}: {f.message}" for f in errors)
+    message = (
+        f"seed_dev_data: refusing to seed a {len(books)}-book series as "
+        f"published: the cross-book series validator reported "
+        f"{len(errors)} ERROR finding(s) [{rule_summary}]"
+    )
+    raise ValidationError(message, field="status", value="published")
+
+
+# Per-book body prose, keyed by node role.
+#
+# #CRITICAL: data-integrity: the two books MUST NOT share long verbatim
+# passages. Before 2026-08-23 every body was ``f"{title}: <one shared
+# sentence>"``, so the books differed only by the digit in ``title``, which the
+# diversity tokenizer (``[a-z']+`` over lowercased text) discards outright.
+# The pair therefore measured a longest shared run of 87 words at 100.00%
+# coverage: as prose, book 2 WAS book 1. That is a validator-visible defect now
+# that ``_assert_chain_clean`` runs SR-10 over the chain, and it was a bad
+# fixture before that, because the seeded rows are reader-visible
+# (``status="published"``, ``visibility="catalog"``, plus a
+# ``StorybookAssignment``), so a child could open both books of the demo series
+# and read the same story twice. Book 1 keeps the prose it has always had; book
+# 2 carries its own leg of the journey.
+# #VERIFY: test_series_fixture_books_do_not_reuse_prose asserts the chain is
+# SR-10 clean, and asserts the longest shared run is under the bound rather
+# than only that no finding fired.
+_BOOK_PROSE: tuple[dict[str, str], ...] = (
+    {  # book 1
+        "start": "the trail begins.",
+        "decision1": "a fork in the path demands a choice.",
+        "fork_brave": "courage steadies your steps.",
+        "fork_plain": "careful steps carry you onward.",
+        "hub": "the trail opens onto a ridge.",
+        "path_explore": "the ridge reveals a hidden view.",
+        "path_rush": "the trail narrows ahead.",
+        "decision3": "the last stretch offers one more choice.",
+        "end_explore": "the view makes the whole journey worth it.",
+        "end_careful": "journey's end, safely reached.",
+        "end_hasty": "haste costs you a scraped knee, but you make it.",
+        "bonus": "your courage opens a hidden shortcut.",
+        "end_bonus": "the shortcut leads to a triumphant finish.",
+    },
+    {  # book 2
+        "start": "the river crossing waits below.",
+        "decision1": "two rope bridges sway above the water.",
+        "fork_brave": "you pick the long bridge and breathe slowly.",
+        "fork_plain": "you test every plank before trusting it.",
+        "hub": "both bridges land on the same warm rock.",
+        "path_explore": "a heron lifts off and shows you the far bank.",
+        "path_rush": "the current speeds up where the canyon tightens.",
+        "decision3": "only one span of water still stands between you and camp.",
+        "end_explore": "you reach camp with a story about the heron.",
+        "end_careful": "you arrive dry, boots in hand, grinning.",
+        "end_hasty": "a soaked sock is the only price you pay.",
+        "bonus": "your courage finds a stepping stone nobody else spotted.",
+        "end_bonus": "you cross first and wave the others over.",
+    },
+)
+
+
 def _series_blob(
     story_id: str, title: str, book_index: int, series_id: str
 ) -> dict[str, object]:
@@ -208,6 +299,13 @@ def _series_blob(
         ``metadata.series`` block declares the start node as the series entry
         node and marks the book as state-carrying.
     """
+    if not 1 <= book_index <= len(_BOOK_PROSE):
+        msg = (
+            f"_series_blob: no body prose for book_index {book_index}; "
+            f"_BOOK_PROSE covers books 1 to {len(_BOOK_PROSE)}"
+        )
+        raise ValidationError(msg, field="book_index", value=book_index)
+    prose = _BOOK_PROSE[book_index - 1]
     prefix = f"n_e{book_index}"
     start = f"{prefix}_start"
     decision1 = f"{prefix}_decision1"
@@ -257,7 +355,7 @@ def _series_blob(
     nodes: list[dict[str, object]] = [
         {
             "id": start,
-            "body": f"{title}: the trail begins.",
+            "body": f"{title}: {prose['start']}",
             "is_ending": False,
             "choices": [
                 {"id": f"c_{prefix}_start_on", "label": "Set out", "target": decision1}
@@ -265,7 +363,7 @@ def _series_blob(
         },
         {
             "id": decision1,
-            "body": f"{title}: a fork in the path demands a choice.",
+            "body": f"{title}: {prose['decision1']}",
             "is_ending": False,
             "choices": [
                 {
@@ -283,7 +381,7 @@ def _series_blob(
         },
         {
             "id": fork_brave,
-            "body": f"{title}: courage steadies your steps.",
+            "body": f"{title}: {prose['fork_brave']}",
             "is_ending": False,
             "choices": [
                 {"id": f"c_{prefix}_fork_brave_on", "label": "Onward", "target": hub}
@@ -291,7 +389,7 @@ def _series_blob(
         },
         {
             "id": fork_plain,
-            "body": f"{title}: careful steps carry you onward.",
+            "body": f"{title}: {prose['fork_plain']}",
             "is_ending": False,
             "choices": [
                 {"id": f"c_{prefix}_fork_plain_on", "label": "Onward", "target": hub}
@@ -299,13 +397,13 @@ def _series_blob(
         },
         {
             "id": hub,
-            "body": f"{title}: the trail opens onto a ridge.",
+            "body": f"{title}: {prose['hub']}",
             "is_ending": False,
             "choices": hub_choices,
         },
         {
             "id": path_explore,
-            "body": f"{title}: the ridge reveals a hidden view.",
+            "body": f"{title}: {prose['path_explore']}",
             "is_ending": False,
             "choices": [
                 {
@@ -317,7 +415,7 @@ def _series_blob(
         },
         {
             "id": path_rush,
-            "body": f"{title}: the trail narrows ahead.",
+            "body": f"{title}: {prose['path_rush']}",
             "is_ending": False,
             "choices": [
                 {"id": f"c_{prefix}_rush_on", "label": "Onward", "target": decision3}
@@ -325,7 +423,7 @@ def _series_blob(
         },
         {
             "id": decision3,
-            "body": f"{title}: the last stretch offers one more choice.",
+            "body": f"{title}: {prose['decision3']}",
             "is_ending": False,
             "choices": [
                 {
@@ -342,7 +440,7 @@ def _series_blob(
         },
         {
             "id": end_explore,
-            "body": f"{title}: the view makes the whole journey worth it.",
+            "body": f"{title}: {prose['end_explore']}",
             "is_ending": True,
             "ending": {
                 "id": f"e_{prefix}_explore",
@@ -354,7 +452,7 @@ def _series_blob(
         },
         {
             "id": end_careful,
-            "body": f"{title}: journey's end, safely reached.",
+            "body": f"{title}: {prose['end_careful']}",
             "is_ending": True,
             "ending": {
                 "id": f"e_{prefix}_careful",
@@ -366,7 +464,7 @@ def _series_blob(
         },
         {
             "id": end_hasty,
-            "body": f"{title}: haste costs you a scraped knee, but you make it.",
+            "body": f"{title}: {prose['end_hasty']}",
             "is_ending": True,
             "ending": {
                 "id": f"e_{prefix}_hasty",
@@ -381,7 +479,7 @@ def _series_blob(
         nodes.append(
             {
                 "id": bonus,
-                "body": f"{title}: your courage opens a hidden shortcut.",
+                "body": f"{title}: {prose['bonus']}",
                 "is_ending": False,
                 "choices": [
                     {
@@ -395,7 +493,7 @@ def _series_blob(
         nodes.append(
             {
                 "id": end_bonus,
-                "body": f"{title}: the shortcut leads to a triumphant finish.",
+                "body": f"{title}: {prose['end_bonus']}",
                 "is_ending": True,
                 "ending": {
                     "id": f"e_{prefix}_bonus",
@@ -490,9 +588,16 @@ async def _seed_series_chain(session: AsyncSession) -> bool:
     session.add(series)
     await session.flush()
 
-    for story_id, title, book_index in _SERIES_BOOKS:
-        blob = _series_blob(story_id, title, book_index, str(series.id))
+    blobs = [
+        _series_blob(story_id, title, book_index, str(series.id))
+        for story_id, title, book_index in _SERIES_BOOKS
+    ]
+    for blob in blobs:
         _assert_gate_clean(blob)
+    # Per-blob gating cannot see a cross-book rule; SR-10 lives here.
+    _assert_chain_clean(blobs)
+
+    for (story_id, _title, book_index), blob in zip(_SERIES_BOOKS, blobs, strict=True):
         session.add(
             Storybook(
                 id=story_id,
