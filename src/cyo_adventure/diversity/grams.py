@@ -186,6 +186,138 @@ def story_text(story: Mapping[str, Any], *, include_choice_labels: bool) -> str:
     return " ".join(parts)
 
 
+DEFAULT_MIN_RUN = 15
+"""Words in a shared contiguous run before it counts toward coverage.
+
+Fifteen is roughly twice the highest run any unrelated pair of the committed
+corpus produces (measured 2026-08-23: 4 to 8 words across six control pairs),
+so ordinary English cannot reach it by chance, and it is far below the 98-word
+run of the brass-lantern series pair. Its purpose is to let a deliberate
+refrain cost nothing: a phrase short enough to be a refrain never enters the
+coverage total at all.
+"""
+
+
+@dataclass(frozen=True, slots=True)
+class RunProfile:
+    """Shared *contiguous* wording between two fills.
+
+    A length measure, deliberately unlike :class:`GramOverlap`'s volume
+    measure. Volume cannot separate one reused paragraph from many short
+    deliberate echoes, because it only totals overlap; run length can, because
+    a refrain is short by definition and a copied passage is not.
+
+    Attributes:
+        longest: Words in the longest contiguous run present in both fills.
+        covered_words: Words of the more affected fill lying inside a run of
+            at least ``min_run`` words.
+        total_words: That same fill's word count, the coverage denominator.
+        coverage: ``covered_words / total_words``, taken from whichever fill
+            is worse affected. Not a mean: a mean would let a long book absorb
+            a short one's entire text and still report a small number.
+    """
+
+    longest: int
+    covered_words: int
+    total_words: int
+    coverage: float
+
+
+def _kgrams(words: list[str], k: int) -> set[tuple[str, ...]]:
+    """Return every contiguous ``k``-word window of ``words``."""
+    return {tuple(words[i : i + k]) for i in range(len(words) - k + 1)}
+
+
+def _longest_shared_run(left: list[str], right: list[str]) -> int:
+    """Return the longest contiguous word run present in both token lists.
+
+    Doubling search then bisection, so the cost tracks the answer rather than
+    the input: two unrelated fills settle in a handful of set builds because
+    they stop sharing runs almost immediately.
+
+    Args:
+        left: One fill's tokens.
+        right: The other fill's tokens.
+
+    Returns:
+        The run length in words; ``0`` when the two share no word at all.
+    """
+    limit = min(len(left), len(right))
+    if limit == 0 or not _kgrams(left, 1) & _kgrams(right, 1):
+        return 0
+    low, probe = 1, 2
+    while probe <= limit and _kgrams(left, probe) & _kgrams(right, probe):
+        low = probe
+        probe *= 2
+    high = min(probe, limit + 1)
+    while low + 1 < high:
+        mid = (low + high) // 2
+        if _kgrams(left, mid) & _kgrams(right, mid):
+            low = mid
+        else:
+            high = mid
+    return low
+
+
+def _covered_words(words: list[str], other: list[str], k: int) -> int:
+    """Return how many of ``words`` lie inside a ``k``-word run shared with ``other``.
+
+    Args:
+        words: The fill being measured.
+        other: The fill compared against.
+        k: Minimum run length; shorter echoes are not counted.
+
+    Returns:
+        The number of covered word positions, each counted once however many
+        overlapping runs contain it.
+    """
+    if len(words) < k or len(other) < k:
+        return 0
+    shared = _kgrams(other, k)
+    covered, reach = 0, -1
+    for i in range(len(words) - k + 1):
+        if tuple(words[i : i + k]) in shared:
+            covered += (i + k) - max(i, reach + 1)
+            reach = i + k - 1
+    return covered
+
+
+def shared_run_profile(
+    text_a: str, text_b: str, *, min_run: int = DEFAULT_MIN_RUN
+) -> RunProfile:
+    """Measure the shared contiguous wording between two fills.
+
+    Answers "did these two reuse a passage", where
+    :func:`pairwise_overlap` answers "how much wording do they share in
+    total". A series needs the first question: sharing a refrain on purpose is
+    legitimate craft, and only the length measure can tell it from a copied
+    paragraph.
+
+    Args:
+        text_a: One fill's prose.
+        text_b: The other fill's prose.
+        min_run: Run length at which coverage starts counting.
+
+    Returns:
+        RunProfile: The longest shared run and the worse side's coverage.
+    """
+    left, right = tokenize(text_a), tokenize(text_b)
+    covered_left = _covered_words(left, right, min_run)
+    covered_right = _covered_words(right, left, min_run)
+    share_left = covered_left / max(len(left), 1)
+    share_right = covered_right / max(len(right), 1)
+    if share_right > share_left:
+        covered, total, coverage = covered_right, len(right), share_right
+    else:
+        covered, total, coverage = covered_left, len(left), share_left
+    return RunProfile(
+        longest=_longest_shared_run(left, right),
+        covered_words=covered,
+        total_words=total,
+        coverage=coverage,
+    )
+
+
 def pairwise_overlap(
     first: Mapping[str, Any],
     second: Mapping[str, Any],

@@ -107,10 +107,10 @@ def test_check_without_an_explicit_bound_refuses_rather_than_inventing_one(
 ) -> None:
     """``--check`` with no bound exits 2 and says why.
 
-    Where the bound sits is an open owner decision (`UW-C341`): a series may
-    share phrasing deliberately, and the only anchors so far are one converged
-    pair at 215 and a corpus whose every other pair is under 13. A default
-    would be a guess that later reads as a ruling, so the tool declines.
+    A rate cannot separate a deliberate refrain from a reused passage, since it
+    totals overlap and both raise the total. That is why no default bound is
+    shipped here and why the series case is gated by validator rule SR-10 on
+    run LENGTH instead (`AL-568`). The tool declines rather than guessing.
     """
     code = main(
         [
@@ -120,7 +120,7 @@ def test_check_without_an_explicit_bound_refuses_rather_than_inventing_one(
         ]
     )
     assert code == 2
-    assert "UW-C341" in capsys.readouterr().err
+    assert "SR-10" in capsys.readouterr().err
 
 
 def test_check_gates_on_an_explicitly_given_bound(
@@ -207,7 +207,7 @@ def test_observe_mode_ends_with_a_summary_that_claims_no_verdict(
     ``scripts/run_guard_battery.py`` reads a checker's last "ok"/"FAIL" line,
     falling back to its final line, so a tool run without a bound must end on
     something a battery row can quote. It must not end on "ok": the observed
-    corpus contains a real defect, and no bound has been ruled, so an "ok"
+    corpus contains a real defect, and no bound on this rate exists, so an "ok"
     would be a verdict this tool is deliberately not entitled to give.
     """
     assert (
@@ -223,7 +223,7 @@ def test_observe_mode_ends_with_a_summary_that_claims_no_verdict(
     assert not last.startswith(("ok", "FAIL"))
     assert "215" in last
     assert "series" in last
-    assert "UW-C341" in last
+    assert "SR-10" in last
 
 
 def test_check_mode_ends_with_an_ok_line_when_the_corpus_clears_the_bound(

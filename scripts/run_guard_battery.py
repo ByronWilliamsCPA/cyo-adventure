@@ -39,9 +39,9 @@ battery never implies the prose was read.
 "is this set within budget" against an aggregate; `check_corpus_convergence`
 answers "which two books, and are they siblings, a series, or unrelated". The
 second exists because a series pair sharing 8,164 body 4-grams survived the
-first (`AL-564`), and it cannot gate yet: whether a series may repeat phrasing
-deliberately is an open owner decision (`UW-C341`), and a bound invented here
-would read as a ruling.
+first (`AL-564`). It reports rather than gates because no bound on this RATE
+has been ruled; the series case is gated instead by validator rule SR-10, on
+run length, which `scripts/build_series_book.py` already runs (`AL-568`).
 
 **Pairwise guards need pairs.** Convergence and device collision are properties
 of a *set* of books, not of one, and the two most expensive failures in this

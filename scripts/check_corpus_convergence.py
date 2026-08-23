@@ -22,10 +22,13 @@ Measured over the committed corpus on 2026-08-23 (465 pairs of
     series       1     215.25  215.25   215.25
 
 The defect is 16.7x the highest of every other pair, so RANKING finds it and no
-threshold is required to. That matters, because where a bound belongs is an
-open owner decision (`UW-C341`): a series may repeat a refrain deliberately in
-a way two unrelated books may not. So ``--check`` gates only on a bound the
-caller states, and refuses to run against an invented default.
+threshold is required to. This tool still ships no default bound on the RATE,
+and ``--check`` gates only on one the caller states. The series case is now
+gated elsewhere and on a different measure: `UW-C341` was ruled on 2026-08-23
+(`AL-568`), and validator rule SR-10 blocks a chain whose books share a
+contiguous run of more than 15 words, because run LENGTH is the dimension on
+which a deliberate refrain and a reused passage do not overlap. A rate cannot
+express that permission, which is why it is not the thing that gates.
 
 Choice labels are excluded from the measure, since a shared skeleton supplies
 them identically to every fill and they would score the tree rather than the
@@ -188,8 +191,8 @@ def _write_verdict(rows: list[PairRow], bound: float | None) -> None:
     ``scripts/run_guard_battery.py`` summarizes a checker by its last
     "ok"/"FAIL" line and falls back to the final line printed, so the ranked
     table alone would be summarized by whichever pair happened to rank last.
-    Observe mode deliberately prints neither prefix: with no bound ruled
-    (`UW-C341`) this tool reports a measurement, not a verdict.
+    Observe mode deliberately prints neither prefix: with no bound on the rate
+    this tool reports a measurement, not a verdict.
 
     Args:
         rows: Every measured pair.
@@ -202,7 +205,7 @@ def _write_verdict(rows: list[PairRow], bound: float | None) -> None:
     top = worst[0]
     where = f"{top.per_1000:.2f}/1000 [{top.relationship}] {top.left} ~ {top.right}"
     if bound is None:
-        sys.stdout.write(f"top pair {where}; no bound ruled (UW-C341)\n")
+        sys.stdout.write(f"top pair {where}; no rate bound, see SR-10\n")
     elif top.per_1000 > bound:
         sys.stdout.write(f"FAIL {where} exceeds {bound:.2f}\n")
     else:
@@ -235,9 +238,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.check and args.max_per_1000 is None:
         sys.stderr.write(
             "error: --check needs an explicit --max-per-1000. This tool ships no "
-            "default bound, because whether a series may repeat phrasing "
-            "deliberately is an open owner decision (UW-C341), and a default "
-            "would read as a ruling. Run without --check to observe.\n"
+            "default bound on the rate: a rate cannot separate a deliberate "
+            "refrain from a reused passage, which is why the series case is "
+            "gated by validator rule SR-10 on run LENGTH instead (AL-568). Run "
+            "without --check to observe.\n"
         )
         return 2
 

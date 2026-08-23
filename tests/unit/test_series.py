@@ -982,3 +982,129 @@ def test_an_entry_node_absent_from_the_story_falls_back_to_the_start_node() -> N
         [sender, _receiver_whose_prologue_grants_the_key(entry="b_nonexistent")]
     )
     assert [f for f in report.errors if f.rule_id == "SR-9"] == []
+
+
+# ---------------------------------------------------------------------------
+# SR-10: a series may repeat a phrase; it may not reuse a passage
+# ---------------------------------------------------------------------------
+#
+# Measured 2026-08-23 across the committed corpus (`AL-564`, `AL-568`): every
+# unrelated pair's longest shared contiguous run is 4 to 8 words, while the
+# brass-lantern series pair reaches 98 words over 246 distinct passages of 15+
+# words, 16.8% of the book. A deliberate refrain is short by construction and
+# therefore cannot reach the bound, which is what lets the rule permit one
+# without any declaration, allowlist, or authoring step.
+
+
+def _prose_book(
+    *,
+    book_index: int,
+    body: str,
+    is_final: bool = False,
+    entry: str | None = None,
+) -> Storybook:
+    """A chain-valid book whose single non-ending node carries ``body``."""
+    book = _book(book_index=book_index, is_final=is_final, entry=entry, win=True)
+    return book.model_copy(
+        update={
+            "nodes": [
+                book.nodes[0].model_copy(update={"body": body}),
+                book.nodes[1],
+            ]
+        }
+    )
+
+
+def _distinct(prefix: str, count: int) -> str:
+    """Return ``count`` words that cannot collide with any other prefix."""
+    return " ".join(f"{prefix}{i}" for i in range(count))
+
+
+def _sr10(report: ValidationReport) -> list[str]:
+    """Return the SR-10 messages in a report."""
+    return [f.message for f in report.findings if f.rule_id == "SR-10"]
+
+
+@pytest.mark.unit
+def test_sr10_flags_a_passage_reused_between_two_books() -> None:
+    """A shared 40-word passage is reuse, and blocks the chain."""
+    passage = _distinct("shared", 40)
+    report = validate_series(
+        [
+            _prose_book(book_index=1, body=f"{_distinct('a', 60)} {passage}"),
+            _prose_book(
+                book_index=2,
+                body=f"{_distinct('b', 60)} {passage}",
+                entry="n0",
+                is_final=True,
+            ),
+        ]
+    )
+    messages = _sr10(report)
+    assert len(messages) == 1
+    assert "40" in messages[0]
+    assert not report.ok
+
+
+@pytest.mark.unit
+def test_sr10_allows_a_refrain_repeated_across_the_chain() -> None:
+    """The decision this rule encodes: a repeated phrase is legitimate craft.
+
+    The refrain appears twice in each book, so a volume measure would count it
+    four times over. Run length does not care how often a short phrase recurs.
+    """
+    refrain = "the brass lantern never tells lies"
+    report = validate_series(
+        [
+            _prose_book(
+                book_index=1,
+                body=f"{refrain} {_distinct('a', 80)} {refrain}",
+            ),
+            _prose_book(
+                book_index=2,
+                body=f"{refrain} {_distinct('b', 80)} {refrain}",
+                entry="n0",
+                is_final=True,
+            ),
+        ]
+    )
+    assert _sr10(report) == []
+    assert report.ok, [f.message for f in report.findings]
+
+
+@pytest.mark.unit
+def test_sr10_names_both_books_and_carries_no_prose() -> None:
+    """The message must identify the pair without quoting the shared text.
+
+    A series chain can span families once catalog books enter a chain, and a
+    validation message is read by whoever is holding the failing publish.
+    """
+    passage = _distinct("shared", 40)
+    report = validate_series(
+        [
+            _prose_book(book_index=1, body=passage),
+            _prose_book(book_index=2, body=passage, entry="n0", is_final=True),
+        ]
+    )
+    message = _sr10(report)[0]
+    assert "book1" in message
+    assert "book2" in message
+    assert "shared0" not in message
+
+
+@pytest.mark.unit
+def test_sr10_catches_the_real_brass_lantern_pair() -> None:
+    """The falsification: the defect that motivated the rule must fail it.
+
+    `AL-564`. Both books are committed, so unlike the wyrmreach fixtures above
+    this one actually executes.
+    """
+    books = [
+        Storybook.model_validate(
+            json.loads((_REPO_ROOT / "out" / f"{name}.filled.json").read_text())
+        )
+        for name in ("the-harrowstone-keep", "the-sunken-temple")
+    ]
+    messages = _sr10(validate_series(books))
+    assert len(messages) == 1
+    assert "98" in messages[0]

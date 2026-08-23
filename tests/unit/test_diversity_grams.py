@@ -17,8 +17,10 @@ from cyo_adventure.diversity import grams as grams_mod
 from cyo_adventure.diversity.grams import (
     STOPWORDS,
     GramOverlap,
+    RunProfile,
     content_grams,
     pairwise_overlap,
+    shared_run_profile,
     story_text,
 )
 from scripts import check_sibling_fills
@@ -147,3 +149,85 @@ def test_the_offline_script_holds_no_second_copy_of_the_stop_list() -> None:
     assert _SCRIPT_STOPWORDS is STOPWORDS
     assert check_sibling_fills.tokenize is grams_mod.tokenize
     assert check_sibling_fills.content_grams is content_grams
+
+
+# ---------------------------------------------------------------------------
+# Shared contiguous runs (SR-10): length, not volume
+# ---------------------------------------------------------------------------
+#
+# The per-1000 rate above is a VOLUME measure and cannot separate one copied
+# passage from many deliberate short echoes, which is precisely the question a
+# series raises: a refrain repeated on purpose is legitimate, a reused
+# paragraph is not. Run LENGTH separates them cleanly. Measured 2026-08-23 on
+# the committed corpus: every unrelated pair's longest shared run is 4 to 8
+# words, while the brass-lantern series pair reaches 98 words across 246
+# distinct passages of 15+ words, 16.8% of the book.
+
+
+def _words(prefix: str, count: int) -> str:
+    """Return ``count`` distinct words, so nothing collides by accident."""
+    return " ".join(f"{prefix}{i}" for i in range(count))
+
+
+def test_shared_run_profile_measures_the_longest_contiguous_run() -> None:
+    """The headline number is the length of the longest shared passage."""
+    run = _words("shared", 20)
+    profile = shared_run_profile(
+        f"{_words('a', 40)} {run} {_words('b', 40)}",
+        f"{_words('c', 40)} {run} {_words('d', 40)}",
+    )
+    assert isinstance(profile, RunProfile)
+    assert profile.longest == 20
+
+
+def test_a_short_refrain_repeated_many_times_costs_no_coverage() -> None:
+    """The rule this exists to express: a phrase may repeat, a passage may not.
+
+    A six-word refrain three times over is deliberate craft. It must register
+    its true length and contribute nothing at all to coverage, because
+    coverage counts only words inside runs at or above ``min_run``.
+    """
+    refrain = "the brass lantern never tells lies"
+    left = f"{_words('a', 60)} {refrain} {_words('b', 60)} {refrain}"
+    right = f"{_words('c', 60)} {refrain} {_words('d', 60)} {refrain}"
+    profile = shared_run_profile(left, right)
+    assert profile.longest == 6
+    assert profile.coverage == 0.0
+
+
+def test_coverage_counts_only_words_inside_long_runs() -> None:
+    """A copied passage is counted; the noise around it is not."""
+    passage = _words("shared", 30)
+    profile = shared_run_profile(
+        f"{passage} {_words('a', 70)}",
+        f"{passage} {_words('b', 70)}",
+    )
+    assert profile.longest == 30
+    assert profile.coverage == pytest.approx(0.3)
+
+
+def test_coverage_is_measured_against_the_more_affected_book() -> None:
+    """A short book copied wholesale into a long one is not diluted.
+
+    Dividing by a mean, or by the longer text, would let a novella absorb a
+    picture book's entire text and still report a small number. The measure is
+    the worse of the two sides.
+    """
+    small = _words("shared", 40)
+    profile = shared_run_profile(small, f"{small} {_words('big', 4000)}")
+    assert profile.coverage == pytest.approx(1.0)
+
+
+def test_shared_run_profile_of_unrelated_prose_is_clean() -> None:
+    """Two texts with no long shared passage report zero, not a small number."""
+    profile = shared_run_profile(_words("a", 200), _words("b", 200))
+    assert profile.longest == 0
+    assert profile.coverage == 0.0
+    assert profile.covered_words == 0
+
+
+def test_shared_run_profile_survives_empty_text() -> None:
+    """An empty book divides by a floor, not by zero."""
+    profile = shared_run_profile("", "")
+    assert profile.longest == 0
+    assert profile.coverage == 0.0
