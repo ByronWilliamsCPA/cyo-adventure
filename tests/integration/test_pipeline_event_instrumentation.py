@@ -209,6 +209,43 @@ async def _seed_screened_storybook(
         await session.commit()
 
 
+async def _seed_screened_storybook_for_family(
+    sessions: async_sessionmaker[AsyncSession],
+    story_id: str,
+    family_id: uuid.UUID,
+    *,
+    status: str,
+) -> None:
+    """Seed a screened Storybook owned by a caller-supplied family.
+
+    The sibling ``_seed_screened_storybook`` mints its own family and an admin
+    whose base ``role`` is already ``admin``, which makes it useless for
+    exercising ``Principal.acting_role``: both of that method's branches return
+    ``"admin"`` for such a user, so an inverted family comparison would still
+    satisfy the assertion. This variant attaches the story to an existing family
+    (``seed.family_id`` or ``stranger.family_id``) so the own-family and
+    foreign-family branches produce DIFFERENT stamps and the assertion can tell
+    them apart.
+
+    Args:
+        sessions: Session factory for the test database.
+        story_id: Storybook id to create.
+        family_id: Family that owns the story.
+        status: Lifecycle status to rest at (``draft`` or ``needs_revision``).
+    """
+    async with sessions() as session:
+        session.add(Storybook(id=story_id, family_id=family_id, status=status))
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id},
+                moderation_report=make_clean_moderation_report(),
+            )
+        )
+        await session.commit()
+
+
 async def _seed_in_review_storybook_for_family(
     sessions: async_sessionmaker[AsyncSession],
     story_id: str,
@@ -420,6 +457,65 @@ async def test_moderation_submit_stamps_the_system_actor(
         actor_role="system",
     )
     assert event.payload == {}
+
+
+async def test_dual_role_same_family_submit_stamps_guardian(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """A dual-role adult resubmitting their own family's story acts as guardian.
+
+    Submit is admin-gated at the route, but the audit stamp follows the same
+    own-family rule as send-back and publish: the owner's guardian base persona,
+    not admin. Paired with its foreign-family sibling below, this is what makes
+    ``Principal.acting_role``'s two branches distinguishable for the submit path;
+    neither of the other two submit tests can tell them apart, because the admin
+    they seed returns ``"admin"`` from either branch.
+    """
+    story_id = "s_submit_dual_same_family"
+    await _seed_screened_storybook_for_family(
+        sessions, story_id, seed.family_id, status="needs_revision"
+    )
+
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/submit", headers=auth(seed.dual_token)
+    )
+    assert resp.status_code == 200, resp.text
+
+    await assert_single_event(
+        sessions,
+        event_type="submitted",
+        entity_type="storybook",
+        to_state="in_review",
+        actor_role="guardian",
+    )
+
+
+async def test_dual_role_foreign_family_submit_stamps_admin(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    stranger: Stranger,
+) -> None:
+    """A dual-role adult resubmitting a foreign family's story acts as admin."""
+    story_id = "s_submit_dual_foreign_family"
+    await _seed_screened_storybook_for_family(
+        sessions, story_id, stranger.family_id, status="needs_revision"
+    )
+
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/submit", headers=auth(seed.dual_token)
+    )
+    assert resp.status_code == 200, resp.text
+
+    await assert_single_event(
+        sessions,
+        event_type="submitted",
+        entity_type="storybook",
+        to_state="in_review",
+        actor_role="admin",
+    )
 
 
 async def test_kid_create_writes_request_created(

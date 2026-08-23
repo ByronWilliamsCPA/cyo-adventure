@@ -139,8 +139,13 @@ async def submit_storybook(storybook_id: str, ctx: Context) -> SubmittedView:
     # send-back and release endpoints. An owner resubmitting their own
     # family's story is audited as guardian even though the route is
     # admin-gated; only a cross-family resubmit is stamped admin.
-    # #VERIFY: api/deps.py::Principal.acting_role; the dual-role stamping
-    # tests in tests/integration/test_pipeline_event_instrumentation.py.
+    # #VERIFY: test_dual_role_same_family_submit_stamps_guardian and
+    # test_dual_role_foreign_family_submit_stamps_admin in
+    # tests/integration/test_pipeline_event_instrumentation.py. Both name the
+    # submit path specifically: the file's other submit tests seed an admin
+    # whose base role is already admin, so acting_role's two branches return
+    # the same string for them and an inverted family comparison would still
+    # satisfy their assertions.
     await approval_service.submit(
         ctx.session,
         book,

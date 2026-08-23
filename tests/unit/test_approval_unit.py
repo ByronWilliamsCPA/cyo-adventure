@@ -194,7 +194,8 @@ async def test_submit_handler_calls_service_and_returns_view(
     Also pins the audit stamp the handler passes down: ``_principal`` and
     ``_story`` build unrelated families, so this is a CROSS-family submit and
     ``acting_role`` resolves to admin. An own-family submit by a dual-role
-    adult stamps their base role instead; that path is covered end to end in
+    adult stamps their base role instead; that path is covered end to end by
+    test_dual_role_same_family_submit_stamps_guardian in
     tests/integration/test_pipeline_event_instrumentation.py.
     """
     book = _story("draft")
