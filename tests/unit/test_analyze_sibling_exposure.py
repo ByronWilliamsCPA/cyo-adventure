@@ -11,16 +11,24 @@ ones: they pin that a single reader makes the family and child history scopes
 identical, that a correctly-scoped selector is indifferent to sibling count, and
 that the shipped family-scoped selector is not.
 
-Closed forms used below, for a single reader's SECOND request into a cell of
-size ``M`` after one prior pick (weights from ``skeleton_match._weight`` and
-``_blended_weight``):
+Selection now applies a HARD same-skeleton reuse cap ahead of the weighted draw
+(``skeleton_match._apply_reuse_cap``), so an already-read slug is removed from
+the candidate list rather than merely de-weighted. Within one cell that makes
+the first ``M`` requests repeat-free by construction and request ``M + 1`` a
+certain repeat, which is what the in-cell tests below pin.
 
-- distinct-theme: the used slug weighs ``1 / 2`` and each of the ``M - 1``
-  others weighs ``1``, so ``P(repeat) = 0.5 / (0.5 + M - 1) = 1 / (2M - 1)``.
-  For ``M = 3`` that is ``0.2``.
-- same-theme: the used slug weighs ``1 / (1 + 1 + 3) = 0.2`` against the same
-  ``M - 1`` ones, so ``P(repeat) = 0.2 / (0.2 + M - 1)``. For ``M = 3`` that is
-  ``1 / 11``, about ``0.0909``.
+The pre-cap closed forms are kept here as the superseded baseline, because they
+are what the published exposure figures were computed under. For a single
+reader's SECOND request into a cell of size ``M`` after one prior pick (weights
+from ``skeleton_match._weight`` and ``_blended_weight``):
+
+- distinct-theme: the used slug weighed ``1 / 2`` and each of the ``M - 1``
+  others weighed ``1``, so ``P(repeat) = 0.5 / (0.5 + M - 1) = 1 / (2M - 1)``.
+  For ``M = 3`` that was ``0.2``; under the cap it is ``0``.
+- same-theme: the used slug weighed ``1 / (1 + 1 + 3) = 0.2`` against the same
+  ``M - 1`` ones, so ``P(repeat) = 0.2 / (0.2 + M - 1)``. For ``M = 3`` that was
+  ``1 / 11``; under the cap it is also ``0``, because the cap excludes exactly
+  the slugs the theme penalty de-weighted.
 
 The non-uniform-length-demand additions are covered from the same angle: the
 demand shares are checked against arithmetic that does not go through the
@@ -92,21 +100,39 @@ def _curve(
 
 
 @pytest.mark.unit
-def test_distinct_theme_second_request_matches_the_closed_form() -> None:
-    """A three-skeleton cell repeats on request 2 with probability 1/(2M-1)."""
-    curve = _curve(["a", "b", "c"])
+def test_the_reuse_cap_exhausts_a_cell_before_it_repeats() -> None:
+    """A cell of size M is repeat-free for M requests, then repeats for certain.
+
+    This supersedes the pre-cap closed form ``1 / (2M - 1)`` at request 2 (0.2
+    for ``M = 3``). The cap is a hard filter, not a weight, so the outcome is
+    deterministic rather than probabilistic: exhaustion, not luck, is what
+    produces the first repeat.
+    """
+    curve = _curve(["a", "b", "c"], requests=5)
 
     assert curve.pool_size == 3
-    assert curve.repeat_probability[0] == 0.0
-    assert curve.repeat_probability[1] == pytest.approx(0.2, abs=_TOLERANCE)
+    assert curve.repeat_probability[:3] == (0.0, 0.0, 0.0)
+    assert curve.repeat_probability[3] == 1.0
+    assert curve.repeat_probability[4] == 1.0
 
 
 @pytest.mark.unit
-def test_same_theme_regime_applies_the_theme_reuse_penalty() -> None:
-    """The same-theme regime de-weights the used slug by the 3x penalty."""
-    curve = _curve(["a", "b", "c"], similar_reuse=True)
+def test_the_theme_penalty_is_inert_inside_one_cell_under_the_cap() -> None:
+    """The same-theme penalty cannot move a curve once the cap runs.
 
-    assert curve.repeat_probability[1] == pytest.approx(1 / 11, abs=_TOLERANCE)
+    ``_family_state`` models "similar" as "the family has read THIS slug", so
+    ``similar_usage`` is non-zero on exactly the slugs ``recent_usage`` is
+    non-zero on, which are exactly the slugs ``_apply_reuse_cap`` now removes
+    before weighting. Every surviving candidate therefore has zero similar
+    usage and both regimes produce the identical curve. This holds across cells
+    too, not just within one: the cap subsumes the simulator's whole notion of
+    theme reuse. The penalty survives only in the relaxed case, where a cell is
+    exhausted and every candidate comes back with usage of its own.
+    """
+    distinct = _curve(["a", "b", "c"], requests=5)
+    same = _curve(["a", "b", "c"], similar_reuse=True, requests=5)
+
+    assert same.repeat_probability == distinct.repeat_probability
 
 
 @pytest.mark.unit
@@ -170,21 +196,21 @@ def test_invalid_simulation_inputs_are_rejected(
     pool: list[str], trials: int, requests: int
 ) -> None:
     """An empty pool or a non-positive trial/request count raises."""
+    rng = random.Random(_SEED)
     with pytest.raises(ValueError, match=r"requires a non-empty|at least 1"):
-        simulate_exposure(
-            pool, trials=trials, requests=requests, rng=random.Random(_SEED)
-        )
+        simulate_exposure(pool, trials=trials, requests=requests, rng=rng)
 
 
 @pytest.mark.unit
 def test_an_unknown_history_scope_is_rejected() -> None:
     """Only the two named scopes are simulatable."""
+    rng = random.Random(_SEED)
     with pytest.raises(ValueError, match=r"unknown history scope"):
         simulate_exposure(
             ["a", "b"],
             trials=10,
             requests=2,
-            rng=random.Random(_SEED),
+            rng=rng,
             scope="household",
         )
 
@@ -303,7 +329,13 @@ def test_required_pool_size_accepts_a_pool_that_already_clears_the_target() -> N
 
 @pytest.mark.unit
 def test_required_pool_size_grows_a_pool_that_does_not() -> None:
-    """A three-pool must grow to delay a likely repeat past request 5."""
+    """A three-pool must grow to delay a likely repeat past request 5.
+
+    Under the reuse cap the answer is exact rather than probabilistic: a pool
+    of ``N`` is repeat-free for its first ``N`` requests, so clearing request 5
+    needs exactly 5 and no more. Before the cap the search had to overshoot,
+    because a repeat was merely unlikely at each step and the tail accumulated.
+    """
     size = required_pool_size(
         ["a", "b", "c"],
         target_request=5,
@@ -311,8 +343,7 @@ def test_required_pool_size_grows_a_pool_that_does_not() -> None:
         rng=random.Random(_SEED),
     )
 
-    assert size is not None
-    assert size > 5
+    assert size == 5
 
 
 @pytest.mark.unit
@@ -610,21 +641,27 @@ def test_concentrating_demand_brings_the_first_repeat_forward() -> None:
     Same catalog, same band, same seed: peaking demand on medium makes a child
     meet a repeated tree sooner, because the flat catalog spreads its skeletons
     evenly over demand that is not evenly spread.
+
+    The reuse cap pushed the whole horizon out without changing that ordering,
+    so the comparison moved from request 4 to request 7 and the run needs 14
+    requests for the flat regime to cross even odds at all. Peaking still bites
+    first, and by a wider margin than before: concentrating demand exhausts a
+    cell, and exhaustion is what a capped selector repeats on.
     """
     flat = simulate_band_exposure(
         cell_demand("10-13", length_demand("flat")),
         trials=6000,
-        requests=6,
+        requests=14,
         rng=random.Random(_SEED),
     )
     peaked = simulate_band_exposure(
         cell_demand("10-13", length_demand("strongly-medium-weighted")),
         trials=6000,
-        requests=6,
+        requests=14,
         rng=random.Random(_SEED),
     )
 
-    assert peaked.repeat_probability[3] > flat.repeat_probability[3]
+    assert peaked.repeat_probability[6] > flat.repeat_probability[6]
     assert peaked.first_more_likely_than_not is not None
     assert flat.first_more_likely_than_not is not None
     assert peaked.first_more_likely_than_not <= flat.first_more_likely_than_not
@@ -670,13 +707,14 @@ def test_invalid_band_simulation_inputs_are_rejected(
 ) -> None:
     """The mixed-cell simulation validates exactly what the single-cell one does."""
     demand = cell_demand("10-13", length_demand("flat"))
+    rng = random.Random(_SEED)
 
     with pytest.raises(ValueError, match=r"at least 1"):
         simulate_band_exposure(
             demand,
             trials=trials,
             requests=requests,
-            rng=random.Random(_SEED),
+            rng=rng,
             children=children,
         )
 
@@ -685,19 +723,21 @@ def test_invalid_band_simulation_inputs_are_rejected(
 def test_a_band_with_no_demand_at_all_is_rejected() -> None:
     """An all-zero regime names no cell to draw from."""
     demand = cell_demand("10-13", {"short": 0.0, "medium": 0.0, "long": 0.0})
+    rng = random.Random(_SEED)
 
     with pytest.raises(ValueError, match=r"at least one cell with demand"):
-        simulate_band_exposure(demand, trials=10, requests=2, rng=random.Random(_SEED))
+        simulate_band_exposure(demand, trials=10, requests=2, rng=rng)
 
 
 @pytest.mark.unit
 def test_an_unknown_scope_is_rejected_by_the_band_simulation() -> None:
     """Only the two named history scopes are simulatable here too."""
     demand = cell_demand("10-13", length_demand("flat"))
+    rng = random.Random(_SEED)
 
     with pytest.raises(ValueError, match=r"unknown history scope"):
         simulate_band_exposure(
-            demand, trials=10, requests=2, rng=random.Random(_SEED), scope="household"
+            demand, trials=10, requests=2, rng=rng, scope="household"
         )
 
 
@@ -811,9 +851,11 @@ def test_the_optimal_split_is_never_worse_than_an_even_one() -> None:
 def test_a_fixed_budget_goes_to_medium_when_demand_is_peaked_there() -> None:
     """The answer that should drive the build order, pinned on a real band.
 
-    10-13 has all three tiers populated at 3-4 skeletons, so nothing is missing
-    and the only question is where the demand is. Under a 0.15/0.75/0.10
-    regime the budget belongs almost entirely in medium.
+    10-13 has all three length tiers populated (see
+    `docs/planning/catalog-census.md`, the one place a shell count comes from;
+    a per-cell count is deliberately not transcribed here, `UW-G24`), so
+    nothing is missing and the only question is where the demand is. Under a
+    0.15/0.75/0.10 regime the budget belongs almost entirely in medium.
     """
     demand = cell_demand("10-13", length_demand("strongly-medium-weighted"))
 
@@ -845,13 +887,15 @@ def test_a_fixed_budget_creates_a_missing_cell_before_thickening_a_thin_one() ->
 @pytest.mark.unit
 def test_a_negative_budget_is_rejected() -> None:
     """A budget is a count of skeletons to author, never a debt."""
+    demand = cell_demand("10-13", length_demand("flat"))
+    rng = random.Random(_SEED)
     with pytest.raises(ValueError, match="cannot be negative"):
         optimal_split(
-            cell_demand("10-13", length_demand("flat")),
+            demand,
             budget=-1,
             horizon=4,
             trials=10,
-            rng=random.Random(_SEED),
+            rng=rng,
         )
 
 
