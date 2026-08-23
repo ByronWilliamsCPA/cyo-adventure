@@ -155,7 +155,11 @@ async def submit(session: AsyncSession, storybook: Storybook, *, actor: Actor) -
             raise BusinessLogicError(msg, rule="submit_without_moderation")
     from_state = storybook.status
     storybook.status = target.value
-    await session.flush()
+    # No flush here: record_event flushes internally, so the status write and
+    # the event row land in one round trip and one transaction, exactly as
+    # approve() below does it. An explicit flush at this point bought no extra
+    # atomicity (the caller's unit of work already spans both) and only split
+    # one round trip into two.
     # #CRITICAL: data-integrity: this is the ONLY marker of a story entering the
     # review queue, and R-11 approval duration is measured from it. The
     # moderation pipeline's MODERATION_COMPLETED marks the first entry only;

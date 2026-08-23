@@ -128,9 +128,12 @@ async def test_a_full_send_back_and_resubmit_cycle_reads_back_as_two_rounds(
         await session.commit()
 
     async with sessions() as session:
-        rounds = build_rounds(await load_gate_events(session))
+        built = build_rounds(await load_gate_events(session))
 
-    mine = [r for r in rounds if r.storybook_id == story_id]
+    # Filtering to this test's own story is why summarize_rounds takes the
+    # rounds and the drop count separately: the subset is this story's, the
+    # drop count is the whole log's, and only the caller knows that.
+    mine = [r for r in built.rounds if r.storybook_id == story_id]
     assert [r.round_index for r in mine] == [1, 2]
     assert [r.outcome for r in mine] == [GateOutcome.SENT_BACK, GateOutcome.RELEASED]
     # Real clock, so only the sign and the ordering are assertable here; the
@@ -139,7 +142,7 @@ async def test_a_full_send_back_and_resubmit_cycle_reads_back_as_two_rounds(
         assert round_.duration_seconds is not None
         assert round_.duration_seconds >= 0
 
-    summary = summarize_rounds(mine)
+    summary = summarize_rounds(mine, unpaired_decisions=built.unpaired_decisions)
     assert summary.decided_rounds == 2
     assert summary.send_back_rate == 0.5
     assert summary.released_storybooks == 1
@@ -157,10 +160,18 @@ async def test_a_story_still_in_review_reads_back_as_an_open_round(
         await session.commit()
 
     async with sessions() as session:
-        rounds = build_rounds(await load_gate_events(session))
+        built = build_rounds(await load_gate_events(session))
 
-    mine = [r for r in rounds if r.storybook_id == story_id]
+    # Filtering to this test's own story is why summarize_rounds takes the
+    # rounds and the drop count separately: the subset is this story's, the
+    # drop count is the whole log's, and only the caller knows that.
+    mine = [r for r in built.rounds if r.storybook_id == story_id]
     assert len(mine) == 1
     assert mine[0].outcome is None
     assert mine[0].duration_seconds is None
-    assert summarize_rounds(mine).send_back_rate is None
+    assert (
+        summarize_rounds(
+            mine, unpaired_decisions=built.unpaired_decisions
+        ).send_back_rate
+        is None
+    )

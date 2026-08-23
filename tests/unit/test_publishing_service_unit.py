@@ -60,9 +60,11 @@ async def test_submit_draft_moves_to_in_review() -> None:
     await service.submit(session, story, actor=Actor.system())
 
     assert story.status == "in_review"
-    # Two flushes, not one: the status transition, then record_event's
-    # SUBMITTED row. Both land in the caller's transaction (events spec D1).
-    assert session.flush.await_count == 2
+    # One flush, not two: record_event flushes, and that single flush carries
+    # the status transition with it. Atomicity comes from the caller's
+    # transaction (events spec D1), not from flushing twice inside it, so a
+    # second await here would be a wasted round trip rather than a guarantee.
+    assert session.flush.await_count == 1
 
 
 @pytest.mark.unit
@@ -74,9 +76,11 @@ async def test_submit_needs_revision_moves_to_in_review() -> None:
     await service.submit(session, story, actor=Actor.system())
 
     assert story.status == "in_review"
-    # Two flushes, not one: the status transition, then record_event's
-    # SUBMITTED row. Both land in the caller's transaction (events spec D1).
-    assert session.flush.await_count == 2
+    # One flush, not two: record_event flushes, and that single flush carries
+    # the status transition with it. Atomicity comes from the caller's
+    # transaction (events spec D1), not from flushing twice inside it, so a
+    # second await here would be a wasted round trip rather than a guarantee.
+    assert session.flush.await_count == 1
 
 
 @pytest.mark.unit
@@ -131,9 +135,11 @@ async def test_submit_with_moderation_report_succeeds() -> None:
     await service.submit(session, story, actor=Actor.system())
 
     assert story.status == "in_review"
-    # Two flushes, not one: the status transition, then record_event's
-    # SUBMITTED row. Both land in the caller's transaction (events spec D1).
-    assert session.flush.await_count == 2
+    # One flush, not two: record_event flushes, and that single flush carries
+    # the status transition with it. Atomicity comes from the caller's
+    # transaction (events spec D1), not from flushing twice inside it, so a
+    # second await here would be a wasted round trip rather than a guarantee.
+    assert session.flush.await_count == 1
 
 
 @pytest.mark.unit

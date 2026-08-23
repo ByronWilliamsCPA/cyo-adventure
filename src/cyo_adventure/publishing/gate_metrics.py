@@ -78,15 +78,37 @@ class GateRound:
         storybook_id: The story under review.
         round_index: 1-based position in this story's sequence of rounds.
         entered_at: When the story entered the queue (the ``submitted`` event).
-        decided_at: When a person decided, or ``None`` while still in review.
-        outcome: The decision, or ``None`` while still in review.
+        decision: ``(decided_at, outcome)`` once a person has closed the
+            round, or ``None`` while it is still open. The time and the
+            outcome travel as one value because neither exists without the
+            other: as two independent optionals, half the type's four states
+            were unreachable in practice yet perfectly constructible, and a
+            reader had to know which of the two to test for openness. Read
+            them back through :attr:`decided_at` and :attr:`outcome`.
     """
 
     storybook_id: str
     round_index: int
     entered_at: datetime
-    decided_at: datetime | None
-    outcome: GateOutcome | None
+    decision: tuple[datetime, GateOutcome] | None
+
+    @property
+    def decided_at(self) -> datetime | None:
+        """Return when a person decided, or ``None`` while still in review.
+
+        Returns:
+            The decision timestamp; ``None`` for an open round.
+        """
+        return None if self.decision is None else self.decision[0]
+
+    @property
+    def outcome(self) -> GateOutcome | None:
+        """Return how the round ended, or ``None`` while still in review.
+
+        Returns:
+            The outcome; ``None`` for an open round.
+        """
+        return None if self.decision is None else self.decision[1]
 
     @property
     def duration_seconds(self) -> float | None:
@@ -95,9 +117,35 @@ class GateRound:
         Returns:
             Seconds between entry and decision; ``None`` for an open round.
         """
-        if self.decided_at is None:
+        if self.decision is None:
             return None
-        return (self.decided_at - self.entered_at).total_seconds()
+        decided_at, _ = self.decision
+        return (decided_at - self.entered_at).total_seconds()
+
+
+@dataclass(frozen=True)
+class GateRounds:
+    """Rounds paired out of a gate-event stream, with what could not pair.
+
+    ``build_rounds`` returns this rather than a bare list so the count of
+    dropped decisions cannot be left behind. That count is the only evidence
+    that the rounds are a partial view: a corpus consisting entirely of
+    pre-migration decisions pairs into ZERO rounds and yields a summary of
+    all-``None`` rates, which is indistinguishable from a gate nobody has
+    used yet unless the drop count travels alongside.
+
+    Attributes:
+        rounds: Paired rounds, sorted by storybook id then round index.
+        unpaired_decisions: Decisions seen with no preceding entry, and so
+            excluded from ``rounds``. Expected to be non-zero and roughly
+            constant on real data: every gate decision written before the
+            ``submitted`` migration is one of these. A number that keeps
+            GROWING means entries are going missing after the migration,
+            which is a defect rather than a historical artefact.
+    """
+
+    rounds: list[GateRound]
+    unpaired_decisions: int
 
 
 @dataclass(frozen=True)
@@ -108,6 +156,10 @@ class GateSummary:
         total_rounds: Every round, open or decided.
         decided_rounds: Rounds a person actually closed.
         open_rounds: Rounds still sitting in the queue.
+        unpaired_decisions: Decisions that never paired, passed through from
+            :class:`GateRounds`. Report it next to any rate computed here:
+            the rates describe the paired rounds only, and this is the size
+            of what they leave out.
         send_back_rate: Send-backs over DECIDED rounds, or ``None`` if none
             are decided. Never 0.0 for "no data": a rate of zero is a claim
             about reviewer behaviour, absence of data is not.
@@ -120,6 +172,7 @@ class GateSummary:
     total_rounds: int
     decided_rounds: int
     open_rounds: int
+    unpaired_decisions: int
     send_back_rate: float | None
     median_duration_seconds: float | None
     released_storybooks: int
@@ -128,7 +181,7 @@ class GateSummary:
 
 def build_rounds(
     events: Iterable[tuple[str, str, datetime]],
-) -> list[GateRound]:
+) -> GateRounds:
     """Pair gate events into review rounds, per storybook.
 
     Args:
@@ -136,7 +189,8 @@ def build_rounds(
             order. Event types outside the three gate events are ignored.
 
     Returns:
-        Rounds sorted by storybook id then round index.
+        The rounds, sorted by storybook id then round index, together with
+        the number of decisions that could not be paired.
     """
     # Sorting by timestamp is what makes pairing meaningful; the loader's row
     # order is not guaranteed, and callers may hand us a merged sequence.
@@ -156,6 +210,7 @@ def build_rounds(
     rounds: list[GateRound] = []
     open_round: dict[str, tuple[int, datetime]] = {}
     next_index: dict[str, int] = {}
+    unpaired_decisions = 0
 
     for storybook_id, event_type, occurred_at in ordered:
         if event_type == EventType.SUBMITTED.value:
@@ -177,7 +232,10 @@ def build_rounds(
         entry = open_round.pop(storybook_id, None)
         if entry is None:
             # A decision with no entry: a pre-migration row. Dropped rather
-            # than paired, see this module's docstring.
+            # than paired, see this module's docstring, but COUNTED, because
+            # a silent drop makes a partial measurement look like a complete
+            # one.
+            unpaired_decisions += 1
             continue
         index, entered_at = entry
         rounds.append(
@@ -185,15 +243,17 @@ def build_rounds(
                 storybook_id=storybook_id,
                 round_index=index,
                 entered_at=entered_at,
-                decided_at=occurred_at,
-                outcome=outcome,
+                decision=(occurred_at, outcome),
             )
         )
 
     for storybook_id, entry in open_round.items():
         _close(rounds, storybook_id, entry)
 
-    return sorted(rounds, key=lambda r: (r.storybook_id, r.round_index))
+    return GateRounds(
+        rounds=sorted(rounds, key=lambda r: (r.storybook_id, r.round_index)),
+        unpaired_decisions=unpaired_decisions,
+    )
 
 
 def _close(
@@ -216,17 +276,28 @@ def _close(
             storybook_id=storybook_id,
             round_index=index,
             entered_at=entered_at,
-            decided_at=None,
-            outcome=None,
+            decision=None,
         )
     )
 
 
-def summarize_rounds(rounds: Sequence[GateRound]) -> GateSummary:
+def summarize_rounds(
+    rounds: Sequence[GateRound],
+    *,
+    unpaired_decisions: int,
+) -> GateSummary:
     """Aggregate rounds into the R-11 headline figures.
 
+    Takes the rounds as a plain sequence so a caller can summarise a subset
+    (one family, one date range) without rebuilding them, and takes the drop
+    count as a REQUIRED keyword for the same reason it exists at all: a
+    default of zero would let a caller silently assert completeness it has
+    not checked.
+
     Args:
-        rounds: Rounds from :func:`build_rounds`.
+        rounds: Rounds, or a subset of them, from :func:`build_rounds`.
+        unpaired_decisions: ``GateRounds.unpaired_decisions`` for the stream
+            these rounds came from, passed through to the summary.
 
     Returns:
         The summary. Every ratio is ``None`` rather than 0.0 when its
@@ -247,6 +318,7 @@ def summarize_rounds(rounds: Sequence[GateRound]) -> GateSummary:
         total_rounds=len(rounds),
         decided_rounds=len(decided),
         open_rounds=len(rounds) - len(decided),
+        unpaired_decisions=unpaired_decisions,
         send_back_rate=(sent_back / len(decided)) if decided else None,
         median_duration_seconds=statistics.median(durations) if durations else None,
         released_storybooks=len(release_round),

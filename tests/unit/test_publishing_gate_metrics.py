@@ -36,7 +36,9 @@ def _ev(
 @pytest.mark.unit
 def test_a_submit_then_release_is_one_decided_round() -> None:
     """The simplest shape: one entry, one decision, one measured duration."""
-    rounds = build_rounds([_ev(EventType.SUBMITTED, 0), _ev(EventType.RELEASED, 30)])
+    rounds = build_rounds(
+        [_ev(EventType.SUBMITTED, 0), _ev(EventType.RELEASED, 30)]
+    ).rounds
 
     assert len(rounds) == 1
     assert rounds[0].storybook_id == "s1"
@@ -60,7 +62,7 @@ def test_a_send_back_and_resubmit_are_two_rounds() -> None:
             _ev(EventType.SUBMITTED, 100),
             _ev(EventType.RELEASED, 115),
         ]
-    )
+    ).rounds
 
     assert [r.round_index for r in rounds] == [1, 2]
     assert [r.outcome for r in rounds] == [GateOutcome.SENT_BACK, GateOutcome.RELEASED]
@@ -75,7 +77,7 @@ def test_an_undecided_round_carries_no_duration() -> None:
     would silently pull the average down by exactly the reviews that are
     running long, which is the opposite of what the measurement is for.
     """
-    rounds = build_rounds([_ev(EventType.SUBMITTED, 0)])
+    rounds = build_rounds([_ev(EventType.SUBMITTED, 0)]).rounds
 
     assert len(rounds) == 1
     assert rounds[0].outcome is None
@@ -93,8 +95,13 @@ def test_a_decision_before_any_submit_is_dropped() -> None:
     migration. Dropping it is the only honest option, and it is why
     ``summarize_rounds`` reports a decided count rather than assuming every
     decision in the log is measurable.
+
+    Dropping it silently would be a different mistake, so the drop is
+    COUNTED. Without that count, a log consisting only of pre-migration
+    decisions produces zero rounds and an all-``None`` summary, which reads
+    identically to a gate no one has used.
     """
-    rounds = build_rounds(
+    built = build_rounds(
         [
             _ev(EventType.RELEASED, 0),
             _ev(EventType.SUBMITTED, 100),
@@ -102,8 +109,9 @@ def test_a_decision_before_any_submit_is_dropped() -> None:
         ]
     )
 
-    assert len(rounds) == 1
-    assert rounds[0].duration_seconds == 30 * 60
+    assert len(built.rounds) == 1
+    assert built.rounds[0].duration_seconds == 30 * 60
+    assert built.unpaired_decisions == 1
 
 
 @pytest.mark.unit
@@ -116,7 +124,7 @@ def test_rounds_are_kept_separate_per_storybook() -> None:
             _ev(EventType.RELEASED, 20, story="s2"),
             _ev(EventType.SENT_BACK, 40, story="s1"),
         ]
-    )
+    ).rounds
 
     by_story = {r.storybook_id: r for r in rounds}
     assert by_story["s1"].outcome is GateOutcome.SENT_BACK
@@ -141,7 +149,7 @@ def test_summary_reports_send_back_rate_over_decided_rounds_only() -> None:
     An open round has no outcome, so including it would make the send-back
     rate drift downward purely because reviews are in flight.
     """
-    rounds = build_rounds(
+    built = build_rounds(
         [
             _ev(EventType.SUBMITTED, 0, story="s1"),
             _ev(EventType.SENT_BACK, 10, story="s1"),
@@ -151,7 +159,9 @@ def test_summary_reports_send_back_rate_over_decided_rounds_only() -> None:
         ]
     )
 
-    summary = summarize_rounds(rounds)
+    summary = summarize_rounds(
+        built.rounds, unpaired_decisions=built.unpaired_decisions
+    )
 
     assert summary.total_rounds == 3
     assert summary.decided_rounds == 2
@@ -167,7 +177,9 @@ def test_summary_of_no_decided_rounds_reports_none_not_zero() -> None:
     A 0.0 send-back rate reads as "reviewers never send anything back", which
     is a claim; ``None`` reads as "not measurable yet", which is the truth.
     """
-    summary = summarize_rounds(build_rounds([_ev(EventType.SUBMITTED, 0)]))
+    summary = summarize_rounds(
+        build_rounds([_ev(EventType.SUBMITTED, 0)]).rounds, unpaired_decisions=0
+    )
 
     assert summary.decided_rounds == 0
     assert summary.send_back_rate is None
@@ -181,7 +193,7 @@ def test_rounds_to_release_counts_only_stories_that_reached_release() -> None:
     A story sent back twice and still unresolved would otherwise cap the
     metric at its current round count and understate the true cost.
     """
-    rounds = build_rounds(
+    built = build_rounds(
         [
             _ev(EventType.SUBMITTED, 0, story="done"),
             _ev(EventType.SENT_BACK, 10, story="done"),
@@ -192,7 +204,41 @@ def test_rounds_to_release_counts_only_stories_that_reached_release() -> None:
         ]
     )
 
-    summary = summarize_rounds(rounds)
+    summary = summarize_rounds(
+        built.rounds, unpaired_decisions=built.unpaired_decisions
+    )
 
     assert summary.released_storybooks == 1
     assert summary.mean_rounds_to_release == 2.0
+
+
+@pytest.mark.unit
+def test_summary_carries_the_unpaired_decision_count() -> None:
+    """A rate and the size of what it omits must be reportable together.
+
+    Every rate here is computed over PAIRED rounds. A log whose decisions
+    mostly predate the ``submitted`` migration therefore yields a confident
+    send-back rate drawn from a small tail of it, and nothing in the summary
+    would say so if the drop count stopped at :class:`GateRounds`. Carrying
+    it onto the summary is what lets a reader see the denominator's true
+    context next to the number.
+    """
+    built = build_rounds(
+        [
+            _ev(EventType.RELEASED, 0, story="pre_1"),
+            _ev(EventType.SENT_BACK, 1, story="pre_2"),
+            _ev(EventType.SUBMITTED, 100, story="after"),
+            _ev(EventType.RELEASED, 130, story="after"),
+        ]
+    )
+
+    summary = summarize_rounds(
+        built.rounds, unpaired_decisions=built.unpaired_decisions
+    )
+
+    assert built.unpaired_decisions == 2
+    assert summary.unpaired_decisions == 2
+    # One measurable round out of three decisions in the log: the rate is
+    # honest about its own denominator only because the other two are counted.
+    assert summary.decided_rounds == 1
+    assert summary.send_back_rate == 0.0
