@@ -1948,6 +1948,49 @@ class ValidatorFindingView(BaseModel):
     message: str
 
 
+class SafetyConcernCount(BaseModel):
+    """How many findings the moderation gate raised under one concern."""
+
+    concern: str
+    count: int = Field(ge=1)
+
+
+class GenerationMeasuresView(BaseModel):
+    """What the automated gate measured, for the human gate that follows (R-2).
+
+    Every field is a read of something already persisted; nothing here is
+    recomputed at request time. The block exists because the approval screen
+    was showing findings without showing the measurements behind the routing
+    decision, so an approver could not tell a book that scraped past a floor
+    from one that cleared it comfortably.
+
+    Deliberately absent: the deterministic gate's ``safety_flagged``. Its
+    SAFE-14 producer is a Phase-2 stub that returns an empty finding list by
+    construction, so the field is structurally always ``False`` and would read
+    on an approval screen as a clean bill from a check that never ran. The
+    safety evidence here comes from the moderation gate, which does run.
+
+    Attributes:
+        fill_rate: Share of commissioned words the fill actually produced, or
+            ``None`` for a version with no recorded rate (an imported book, or
+            one generated before the rate was stamped). Not zero: a book with
+            no measurement is not a book that filled nothing.
+        fill_rate_floor: The floor the rate was judged against, or ``None``.
+        fill_rate_downgrade: Whether falling under that floor is what routed
+            this book to review. The rate alone cannot answer this, because it
+            is stamped on every outcome carrying a book, breach or not.
+        safety_concerns: Surfaced content concerns with their finding counts,
+            most frequent first. Pipeline-structural findings ("the reviewer
+            was unavailable") are excluded: they describe the run, not the
+            book.
+    """
+
+    fill_rate: float | None = None
+    fill_rate_floor: float | None = None
+    fill_rate_downgrade: bool = False
+    safety_concerns: list[SafetyConcernCount] = Field(default_factory=list)
+
+
 class ReviewSurfaceView(BaseModel):
     """The full guardian review surface for one story version (C3-4)."""
 
@@ -1970,6 +2013,12 @@ class ReviewSurfaceView(BaseModel):
     structural_findings: list[FindingView] = Field(default_factory=list)
     low_advisory_findings: list[FindingView] = Field(default_factory=list)
     validator_findings: list[ValidatorFindingView] = Field(default_factory=list)
+    # R-2: the measurements behind the routing decision, so the human gate
+    # sees what the automated gate measured. Defaults empty so a caller that
+    # passes no validation_report still projects a valid surface.
+    generation_measures: GenerationMeasuresView = Field(
+        default_factory=GenerationMeasuresView
+    )
 
     @model_validator(mode="after")
     def _no_pass_verdict_leaks(self) -> ReviewSurfaceView:

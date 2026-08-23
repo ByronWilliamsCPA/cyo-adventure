@@ -2087,6 +2087,56 @@ export type GenerationJobResponse = {
 };
 
 /**
+ * GenerationMeasuresView
+ *
+ * What the automated gate measured, for the human gate that follows (R-2).
+ *
+ * Every field is a read of something already persisted; nothing here is
+ * recomputed at request time. The block exists because the approval screen
+ * was showing findings without showing the measurements behind the routing
+ * decision, so an approver could not tell a book that scraped past a floor
+ * from one that cleared it comfortably.
+ *
+ * Deliberately absent: the deterministic gate's ``safety_flagged``. Its
+ * SAFE-14 producer is a Phase-2 stub that returns an empty finding list by
+ * construction, so the field is structurally always ``False`` and would read
+ * on an approval screen as a clean bill from a check that never ran. The
+ * safety evidence here comes from the moderation gate, which does run.
+ *
+ * Attributes:
+ * fill_rate: Share of commissioned words the fill actually produced, or
+ * ``None`` for a version with no recorded rate (an imported book, or
+ * one generated before the rate was stamped). Not zero: a book with
+ * no measurement is not a book that filled nothing.
+ * fill_rate_floor: The floor the rate was judged against, or ``None``.
+ * fill_rate_downgrade: Whether falling under that floor is what routed
+ * this book to review. The rate alone cannot answer this, because it
+ * is stamped on every outcome carrying a book, breach or not.
+ * safety_concerns: Surfaced content concerns with their finding counts,
+ * most frequent first. Pipeline-structural findings ("the reviewer
+ * was unavailable") are excluded: they describe the run, not the
+ * book.
+ */
+export type GenerationMeasuresView = {
+    /**
+     * Fill Rate
+     */
+    fill_rate?: number | null;
+    /**
+     * Fill Rate Floor
+     */
+    fill_rate_floor?: number | null;
+    /**
+     * Fill Rate Downgrade
+     */
+    fill_rate_downgrade?: boolean;
+    /**
+     * Safety Concerns
+     */
+    safety_concerns?: Array<SafetyConcernCount>;
+};
+
+/**
  * GuardianBookItem
  *
  * A published family book as the guardian browses it to assign (Task 2.2).
@@ -4195,6 +4245,7 @@ export type ReviewSurfaceView = {
      * Validator Findings
      */
     validator_findings?: Array<ValidatorFindingView>;
+    generation_measures?: GenerationMeasuresView;
 };
 
 /**
@@ -4275,6 +4326,22 @@ export type Ring2ConsentView = {
      * Revoked At
      */
     revoked_at: string | null;
+};
+
+/**
+ * SafetyConcernCount
+ *
+ * How many findings the moderation gate raised under one concern.
+ */
+export type SafetyConcernCount = {
+    /**
+     * Concern
+     */
+    concern: string;
+    /**
+     * Count
+     */
+    count: number;
 };
 
 /**

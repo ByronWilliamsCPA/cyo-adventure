@@ -71,6 +71,27 @@ export interface ValidatorFindingView {
   message: string
 }
 
+export interface SafetyConcernCount {
+  concern: string
+  count: number
+}
+
+/**
+ * What the automated gate measured, read back for the human gate that
+ * follows (R-2). Every field is a projection of something already persisted
+ * on the version row; nothing here is recomputed in the browser.
+ *
+ * `fill_rate` is deliberately nullable rather than defaulting to zero: a
+ * version with no recorded rate (an imported book, or one generated before
+ * the rate was stamped) is not a book that filled nothing.
+ */
+export interface GenerationMeasures {
+  fill_rate?: number | null
+  fill_rate_floor?: number | null
+  fill_rate_downgrade?: boolean
+  safety_concerns?: SafetyConcernCount[]
+}
+
 export interface FlaggedPassage {
   node_id: string
   prose: string
@@ -94,6 +115,10 @@ export interface ReviewSurface {
   structural_findings?: FindingView[]
   low_advisory_findings?: FindingView[]
   validator_findings?: ValidatorFindingView[]
+  // R-2: the measurements behind the routing decision. Absent on an older
+  // backend response, in which case the console renders no measures block at
+  // all rather than an empty one that reads as "nothing was measured".
+  generation_measures?: GenerationMeasures
 }
 
 export interface ApprovedResult {

@@ -16,11 +16,13 @@ from cyo_adventure.api.schemas import (
     ContentSummaryView,
     FindingView,
     FlaggedPassage,
+    GenerationMeasuresView,
     GuardianFinding,
     GuardianValidatorNote,
     ReviewQueueItem,
     ReviewSummary,
     ReviewSurfaceView,
+    SafetyConcernCount,
     ValidatorFindingView,
     ValidatorSeverity,
 )
@@ -205,10 +207,74 @@ def build_review_surface(
             structural_findings=structural,
             low_advisory_findings=low_advisory,
             validator_findings=_validator_findings(validation_report),
+            generation_measures=_generation_measures(validation_report, all_views),
         )
     except PydanticValidationError as exc:
         msg = "review surface cannot be built from a malformed moderation report"
         raise ValidationError(msg, field="moderation_report") from exc
+
+
+def _as_rate(value: object) -> float | None:
+    """Narrow a persisted JSON value to a rate, or ``None`` on any mismatch.
+
+    ``bool`` is excluded explicitly: it is an ``int`` subclass in Python, so
+    ``True`` would otherwise project as a fill rate of 1.0, which reads as a
+    perfect fill rather than as the corrupt value it is.
+
+    Args:
+        value: The raw value read from the persisted report.
+
+    Returns:
+        The rate as a float, or ``None`` when the value is absent or not a
+        number.
+    """
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return float(value)
+
+
+def _generation_measures(
+    validation_report: dict[str, object] | None,
+    views: list[FindingView],
+) -> GenerationMeasuresView:
+    """Project the measurements behind the routing decision (R-2).
+
+    Read-only, like ``_validator_findings``: a missing or malformed value
+    degrades to absent rather than raising, because ``validation_report`` is a
+    read-only annex to the review surface and a corrupt rate is not worth
+    failing the whole approval screen over.
+
+    Args:
+        validation_report: The stored generation/validation report, or
+            ``None``.
+        views: Every finding already narrowed and floor-filtered for this
+            surface, so the roll-up counts exactly what the approver sees.
+
+    Returns:
+        GenerationMeasuresView: The fill rate against its floor, plus the
+        surfaced content concerns with their counts.
+    """
+    report = validation_report or {}
+    counts: dict[str, int] = {}
+    for view in views:
+        # Structural findings describe the pipeline ("the reviewer was
+        # unavailable on 12 nodes"), not the book. Counting them beside content
+        # concerns would tell an approver a story raised a safety concern when
+        # what happened is that a backend was down.
+        if view.structural or view.concern is None:
+            continue
+        counts[view.concern] = counts.get(view.concern, 0) + 1
+    return GenerationMeasuresView(
+        fill_rate=_as_rate(report.get("fill_rate")),
+        fill_rate_floor=_as_rate(report.get("fill_rate_floor")),
+        fill_rate_downgrade=_as_bool(report.get("fill_rate_downgrade")),
+        # Count descending, then concern ascending: a stable order, so a
+        # re-render of an unchanged report never reshuffles the block.
+        safety_concerns=[
+            SafetyConcernCount(concern=concern, count=count)
+            for concern, count in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+        ],
+    )
 
 
 def _target_node_count(view: FindingView) -> int:
