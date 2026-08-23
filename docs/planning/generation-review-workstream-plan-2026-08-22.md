@@ -13,22 +13,28 @@ component: Development-Tools
 
 # Generation research review: workstream plan
 
-Date: 2026-08-22, corrected 2026-08-23. Status: step 1 complete. Step 2 executed, with one fix
-shipped (`41d30909`) and the rest carried by two open PRs,
-[#742](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/742) (convergence reporting and the
-series prose-reuse gate) and [#743](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/743) (the
-remaining request-path gaps, plus dating the catalog counts). Step 3's INSTRUMENTS are built on
-branch `feat/step3-safety-approval-measurement`: R-11's gate-entry event and
-`publishing/gate_metrics.py`, and R-6's corpus extension to the `13-16` and `16+` bands. Both
-measurements are registered as `S-6` and `S-7` in the
-[diversity test register](./diversity-test-register.md) with their falsifiers fixed before either
-ran. NEITHER MEASUREMENT HAS RUN: S-6 waits on the `submitted` migration reaching an environment and
-accumulating enough rounds to pass its validity gate, and S-7's first measurement is the next scheduled
-`safety-eval.yml` run after this merges (see the correction under Step 3). No result from either may be quoted until its artifact is committed. Steps 4
-to 7 not started. This plan
-gives a phase home to the 14 critical and high findings, the five condensed medium and low bundles,
-and the seven-step sequence produced by the thirteen-agent review of the 2026-08-22 generation
-research brief.
+Date: 2026-08-22, corrected 2026-08-23. This plan gives a phase home to the 14 critical and high
+findings, the five condensed medium and low bundles, and the seven-step sequence produced by the
+thirteen-agent review of the 2026-08-22 generation research brief.
+
+Status as of 2026-08-23:
+
+- **Step 1: complete.**
+- **Step 2: complete and merged.** One fix shipped directly (`41d30909`); the rest landed as
+  [#742](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/742) (`37a08a60`, convergence
+  reporting and the series prose-reuse gate) and
+  [#743](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/743) (`9ea50b40`, the remaining
+  request-path gaps, plus dating the catalog counts).
+- **Step 3: instruments built, neither measurement run.** R-11's gate-entry event with
+  `publishing/gate_metrics.py`, and R-6's corpus extension to the `13-16` and `16+` bands. Both are
+  registered as `S-6` and `S-7` in the [diversity test register](./diversity-test-register.md) with
+  their falsifiers fixed before either ran. The distinction is the one Step 3's acceptance clause
+  turns on: an instrument existing is not a measurement having happened. `S-6` waits on the
+  `submitted` migration reaching an environment and accumulating enough rounds to clear its validity
+  gate; `S-7`'s first measurement is the next scheduled `safety-eval.yml` run once its corpus lands
+  on `main` (see the correction under Step 3, which retires this step's "small spend" framing). No
+  result from either may be quoted anywhere until its artifact is committed.
+- **Steps 4 to 7: not started.**
 
 **Citation note.** The `R-*` IDs used throughout are the review's own numbering. That review's
 artifact is not committed, so no `R-*` ID in this document resolves to anything in the tree; the
