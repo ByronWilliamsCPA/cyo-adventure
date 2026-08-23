@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pytest
 
+from cyo_adventure.diversity.grams import shared_run_profile
+from cyo_adventure.diversity.normalize import storybook_text
 from cyo_adventure.storybook.models import (
     AgeBand,
     Choice,
@@ -24,8 +26,13 @@ from cyo_adventure.storybook.models import (
     Variable,
     VariableType,
 )
+from cyo_adventure.storybook.sentinels import find_sentinels
 from cyo_adventure.validator.report import Severity, ValidationReport
-from cyo_adventure.validator.series import validate_series
+from cyo_adventure.validator.series import (
+    SERIES_MAX_SHARED_RUN_COVERAGE,
+    SERIES_MAX_SHARED_RUN_WORDS,
+    validate_series,
+)
 
 
 def _book(
@@ -672,7 +679,9 @@ def _load_wyrmreach() -> list[Storybook]:
         path = _REPO_ROOT / "out" / name
         if not path.is_file():
             pytest.skip(f"out/{name} is not committed; tracked by UW-F19 and UW-F20")
-        books.append(Storybook.model_validate(json.loads(path.read_text())))
+        books.append(
+            Storybook.model_validate(json.loads(path.read_text(encoding="utf-8")))
+        )
     return books
 
 
@@ -982,3 +991,356 @@ def test_an_entry_node_absent_from_the_story_falls_back_to_the_start_node() -> N
         [sender, _receiver_whose_prologue_grants_the_key(entry="b_nonexistent")]
     )
     assert [f for f in report.errors if f.rule_id == "SR-9"] == []
+
+
+# ---------------------------------------------------------------------------
+# SR-10: a series may repeat a phrase; it may not reuse a passage
+# ---------------------------------------------------------------------------
+#
+# Measured 2026-08-23 across all 465 pairs of the committed corpus (`AL-564`,
+# `AL-568`): the 464 non-series pairs run 2 to 8 words, median 5, exactly one
+# at 8, every one of them at 0% coverage, while the
+# brass-lantern series pair reaches 98 words over 246 distinct passages of 15+
+# words, 18.6% of book 2. The 6,691 covered words are 16.8% of the 39,935-word
+# book 1 and 18.6% of the 35,920-word book 2; `RunProfile.coverage` reports the
+# WORSE-affected side, so 18.6% is the number the rule actually compares
+# against the 2% bound. A deliberate refrain is short by construction and
+# therefore cannot reach the bound, which is what lets the rule permit one
+# without any declaration, allowlist, or authoring step.
+
+
+def _prose_book(
+    *,
+    book_index: int,
+    body: str,
+    is_final: bool = False,
+    entry: str | None = None,
+) -> Storybook:
+    """A chain-valid book whose single non-ending node carries ``body``."""
+    book = _book(book_index=book_index, is_final=is_final, entry=entry, win=True)
+    return book.model_copy(
+        update={
+            "nodes": [
+                book.nodes[0].model_copy(update={"body": body}),
+                book.nodes[1],
+            ]
+        }
+    )
+
+
+def _distinct(prefix: str, count: int) -> str:
+    """Return ``count`` words that cannot collide with any other prefix."""
+    return " ".join(f"{prefix}{i}" for i in range(count))
+
+
+def _sr10(report: ValidationReport) -> list[str]:
+    """Return the SR-10 messages in a report."""
+    return [f.message for f in report.findings if f.rule_id == "SR-10"]
+
+
+@pytest.mark.unit
+def test_sr10_flags_a_passage_reused_between_two_books() -> None:
+    """A shared 40-word passage is reuse, and blocks the chain."""
+    passage = _distinct("shared", 40)
+    report = validate_series(
+        [
+            _prose_book(book_index=1, body=f"{_distinct('a', 60)} {passage}"),
+            _prose_book(
+                book_index=2,
+                body=f"{_distinct('b', 60)} {passage}",
+                entry="n0",
+                is_final=True,
+            ),
+        ]
+    )
+    messages = _sr10(report)
+    assert len(messages) == 1
+    assert "40" in messages[0]
+    assert not report.ok
+
+
+@pytest.mark.unit
+def test_sr10_allows_a_refrain_repeated_across_the_chain() -> None:
+    """The decision this rule encodes: a repeated phrase is legitimate craft.
+
+    The refrain appears twice in each book, so a volume measure would count it
+    four times over. Run length does not care how often a short phrase recurs.
+    """
+    refrain = "the brass lantern never tells lies"
+    report = validate_series(
+        [
+            _prose_book(
+                book_index=1,
+                body=f"{refrain} {_distinct('a', 80)} {refrain}",
+            ),
+            _prose_book(
+                book_index=2,
+                body=f"{refrain} {_distinct('b', 80)} {refrain}",
+                entry="n0",
+                is_final=True,
+            ),
+        ]
+    )
+    assert _sr10(report) == []
+    assert report.ok, [f.message for f in report.findings]
+
+
+@pytest.mark.unit
+def test_sr10_run_bound_is_inclusive_at_the_limit_and_fires_one_word_over() -> None:
+    """Fifteen words is a refrain; sixteen is a reused passage.
+
+    The two books carry enough distinct filler that coverage stays under 2% in
+    BOTH cases, so only the run-length bound can decide the verdict. Nothing
+    else in the suite pins whether the comparison is ``<=`` or ``<``, and an
+    off-by-one either permanently blocks a legitimate 15-word refrain or lets a
+    16-word reused passage through as one.
+    """
+    filler_a, filler_b = _distinct("a", 1000), _distinct("b", 1000)
+
+    at_limit = _distinct("shared", SERIES_MAX_SHARED_RUN_WORDS)
+    permitted = validate_series(
+        [
+            _prose_book(book_index=1, body=f"{at_limit} {filler_a}"),
+            _prose_book(
+                book_index=2, body=f"{at_limit} {filler_b}", entry="n0", is_final=True
+            ),
+        ]
+    )
+    assert _sr10(permitted) == []
+
+    one_over = _distinct("shared", SERIES_MAX_SHARED_RUN_WORDS + 1)
+    blocked = validate_series(
+        [
+            _prose_book(book_index=1, body=f"{one_over} {filler_a}"),
+            _prose_book(
+                book_index=2, body=f"{one_over} {filler_b}", entry="n0", is_final=True
+            ),
+        ]
+    )
+    assert len(_sr10(blocked)) == 1
+    assert f"{SERIES_MAX_SHARED_RUN_WORDS + 1} words" in _sr10(blocked)[0]
+
+
+@pytest.mark.unit
+def test_sr10_coverage_bound_fires_while_every_run_is_within_the_limit() -> None:
+    """Many passages at the limit are caught by volume, not by length.
+
+    This is the case the second bound exists for and the only one that
+    distinguishes it: ten separate 15-word reuses leave ``longest`` at exactly
+    15, so the run bound passes, and only the coverage bound can catch a book
+    that is three quarters copied. Without this test the coverage check could
+    be deleted and the suite would stay green.
+    """
+    runs = [_distinct(f"shared{n}", SERIES_MAX_SHARED_RUN_WORDS) for n in range(10)]
+    # Different separators on each side, so adjacent shared runs cannot merge
+    # into one longer run and push `longest` past the bound.
+    body_a = " ".join(f"{run} {_distinct(f'gapa{n}', 5)}" for n, run in enumerate(runs))
+    body_b = " ".join(f"{run} {_distinct(f'gapb{n}', 5)}" for n, run in enumerate(runs))
+
+    report = validate_series(
+        [
+            _prose_book(book_index=1, body=body_a),
+            _prose_book(book_index=2, body=body_b, entry="n0", is_final=True),
+        ]
+    )
+
+    messages = _sr10(report)
+    assert len(messages) == 1
+    # The run bound is satisfied; the verdict comes entirely from coverage.
+    assert f"longest shared passage {SERIES_MAX_SHARED_RUN_WORDS} words" in messages[0]
+
+
+@pytest.mark.unit
+def test_sr10_compares_every_pair_not_only_adjacent_books() -> None:
+    """Books 1 and 3 reusing prose must be caught even when book 2 is clean.
+
+    ``_check_prose_convergence`` uses ``combinations``, but ``pairwise`` is
+    imported in this same module for the rules that genuinely are adjacency
+    rules, so an adjacent-only implementation is a live possibility rather than
+    a strawman. A chain that skips a book is exactly how it would hide.
+    """
+    passage = _distinct("shared", 40)
+    report = validate_series(
+        [
+            _prose_book(book_index=1, body=f"{passage} {_distinct('a', 80)}"),
+            _prose_book(book_index=2, body=_distinct("b", 200), entry="n0"),
+            _prose_book(
+                book_index=3,
+                body=f"{passage} {_distinct('c', 80)}",
+                entry="n0",
+                is_final=True,
+            ),
+        ]
+    )
+
+    messages = _sr10(report)
+    assert len(messages) == 1
+    assert "'book1'" in messages[0]
+    assert "'book3'" in messages[0]
+    assert "'book2'" not in messages[0]
+
+
+@pytest.mark.unit
+def test_sr10_names_both_books_and_carries_no_prose() -> None:
+    """The message must identify the pair without quoting the shared text.
+
+    A series chain can span families once catalog books enter a chain, and a
+    validation message is read by whoever is holding the failing publish.
+    """
+    passage = _distinct("shared", 40)
+    report = validate_series(
+        [
+            _prose_book(book_index=1, body=passage),
+            _prose_book(book_index=2, body=passage, entry="n0", is_final=True),
+        ]
+    )
+    message = _sr10(report)[0]
+    assert "book1" in message
+    assert "book2" in message
+    assert "shared0" not in message
+
+
+_CONTROL_PAIR = ("the-hollow-lighthouse", "the-midnight-museum")
+_DEFECT_PAIR = ("the-harrowstone-keep", "the-sunken-temple")
+
+
+def _fill_text(name: str) -> str:
+    """Return one committed fill's body prose, choice labels excluded."""
+    blob = json.loads(
+        (_REPO_ROOT / "out" / f"{name}.filled.json").read_text(encoding="utf-8")
+    )
+    return storybook_text(Storybook.model_validate(blob), include_choice_labels=False)
+
+
+@pytest.mark.unit
+def test_the_fifteen_word_bound_sits_in_an_empty_gap_in_the_corpus() -> None:
+    """Recompute the calibration the 15-word bound rests on.
+
+    A constant justified only by a number in a commit message rots the moment
+    the corpus grows. This recomputes both ends of the gap the bound sits in.
+
+    Full sweep of the 31 committed top-level fills, 465 pairs, measured
+    2026-08-23 by running the shipped ``shared_run_profile`` over every pair
+    (17.9s; the earlier quadratic implementation could not do this at all):
+
+        longest shared run   pairs
+                 2 words       3
+                 3 words     103
+                 4 words     120
+                 5 words     155
+                 6 words      69
+                 7 words      13
+                 8 words       1   <- the highest control
+                98 words       1   <- the AL-564 defect, and the only one
+
+    Every one of the 464 control pairs sits at exactly 0% coverage. Nothing at
+    all falls between 8 words and 98, so the bound is not a threshold picked
+    on a crowded axis: it is a line drawn through empty space, which is why
+    `AL-568` could rule without an allowlist. This test pins the two edges of
+    that gap, since a regression that matters would have to move one of them.
+    """
+    control = shared_run_profile(*(_fill_text(n) for n in _CONTROL_PAIR))
+    defect = shared_run_profile(*(_fill_text(n) for n in _DEFECT_PAIR))
+
+    # The worst control the corpus offers still clears the bound with room.
+    assert control.longest == 8
+    assert control.coverage == 0.0
+    assert control.longest < SERIES_MAX_SHARED_RUN_WORDS
+
+    # The defect that motivated the rule breaks BOTH bounds, not just one.
+    assert defect.longest == 98
+    assert defect.longest > SERIES_MAX_SHARED_RUN_WORDS
+    assert defect.coverage > SERIES_MAX_SHARED_RUN_COVERAGE
+    assert round(defect.coverage, 4) == 0.1863
+
+    # The property that makes the bound cheap: it is not near anything. It
+    # clears the worst control by 1.87x and undercuts the defect by 6.53x, so
+    # neither edge of the gap is within rounding distance of the constant.
+    assert SERIES_MAX_SHARED_RUN_WORDS / control.longest >= 1.8
+    assert defect.longest / SERIES_MAX_SHARED_RUN_WORDS >= 6.5
+
+
+@pytest.mark.unit
+def test_sr10_measures_sentinel_stripped_prose() -> None:
+    """A chain is not blocked by slot ids the reader never sees.
+
+    An ADR-023 sentinel is `{~SLOTID:Generic~}` and survives verbatim through
+    fill, moderation, approval and storage by design, so a published body can
+    carry them once that work is flag-ON. The grams tokenizer lowercases and
+    splits on `[a-z']+`, so an UNSTRIPPED `{~HERO:Explorer~}` yields both
+    `hero` and `explorer`, and the slot-id half is identical in every book that
+    binds that slot. Each sentinel inside a shared run therefore adds one
+    spurious shared token, which can only lengthen a run and never shorten it,
+    so the error is always a FALSE block on a legitimate chain.
+
+    `story_text` strips, which is what makes this chain pass. Twelve shared
+    words plus two sentinels measures 14 stripped and 16 unstripped, so the
+    bound (15, inclusive) falls between the two verdicts and this test fails if
+    the strip is removed. Stripping there rather than in `storybook_text` is
+    what keeps one definition of a fill's prose across the blob path and the
+    parsed-model path, which is the `AL-563` drift.
+    """
+    for name in ("the-harrowstone-keep", "the-sunken-temple"):
+        assert find_sentinels(_fill_text(name)) == [], (
+            f"{name} now carries sentinels; SR-10's calibration figures were "
+            f"measured on sentinel-free prose and need a recheck"
+        )
+
+    bound = _prose_book(book_index=1, body="the {~HERO:Explorer~} walked north")
+    text = storybook_text(bound, include_choice_labels=False)
+    assert "{~HERO:Explorer~}" not in text
+    assert "Explorer" in text
+
+    shared = _distinct("shared", 12).split()
+    for offset, index in enumerate((4, 8)):
+        shared.insert(index + offset, "{~HERO:Explorer~}")
+    run = " ".join(shared)
+    filler_a, filler_b = _distinct("a", 1000), _distinct("b", 1000)
+
+    report = validate_series(
+        [
+            _prose_book(book_index=1, body=f"{run} {filler_a}"),
+            _prose_book(
+                book_index=2, body=f"{run} {filler_b}", entry="n0", is_final=True
+            ),
+        ]
+    )
+    assert _sr10(report) == []
+    assert report.ok, [f.message for f in report.findings]
+
+    # The bound really does sit between the two measurements, so the assertion
+    # above is load-bearing rather than passing for an unrelated reason.
+    stripped = shared_run_profile(
+        storybook_text(
+            _prose_book(book_index=1, body=f"{run} {filler_a}"),
+            include_choice_labels=False,
+        ),
+        storybook_text(
+            _prose_book(
+                book_index=2, body=f"{run} {filler_b}", entry="n0", is_final=True
+            ),
+            include_choice_labels=False,
+        ),
+    )
+    unstripped = shared_run_profile(f"{run} {filler_a}", f"{run} {filler_b}")
+    assert stripped.longest <= SERIES_MAX_SHARED_RUN_WORDS < unstripped.longest
+
+
+@pytest.mark.unit
+def test_sr10_catches_the_real_brass_lantern_pair() -> None:
+    """The falsification: the defect that motivated the rule must fail it.
+
+    `AL-564`. Both books are committed, so unlike the wyrmreach fixtures above
+    this one actually executes.
+    """
+    books = [
+        Storybook.model_validate(
+            json.loads(
+                (_REPO_ROOT / "out" / f"{name}.filled.json").read_text(encoding="utf-8")
+            )
+        )
+        for name in ("the-harrowstone-keep", "the-sunken-temple")
+    ]
+    messages = _sr10(validate_series(books))
+    assert len(messages) == 1
+    assert "98" in messages[0]

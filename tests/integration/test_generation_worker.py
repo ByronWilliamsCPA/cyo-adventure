@@ -753,14 +753,18 @@ async def test_stage1_downgraded_needs_review_still_persists_storybook(
     orphaning, since here the story was never persisted in the first place.
 
     After the #133 rework the Stage 1 fidelity gate runs INSIDE
-    orchestrator.fill_skeleton, so fill_skeleton itself emits the
-    ``"stage1_fidelity_violations"`` report key on a budget-exhausted downgrade.
-    Here fill_skeleton is monkeypatched (a bare-name import in worker.py) to
-    return that exact needs_review-with-key outcome deterministically, isolating
-    the behavior under test to worker.py's persist gate rather than depending on
-    the mock review backend's own soft-flagging behavior (see
-    test_worker_runs_fill_skeleton_for_authoring_metadata_jobs's docstring,
-    which documents that ambiguity for the undowngraded case).
+    orchestrator.fill_skeleton, so on a budget-exhausted downgrade fill_skeleton
+    sets ``clean_downgrade=True`` on the outcome (and emits the
+    ``"stage1_fidelity_violations"`` report key as a human-facing diagnostic).
+    The FIELD is what worker.py's persist gate reads: the report key alone
+    cannot carry the decision, because _regate_after_transform rebuilds the
+    report from the post-transform gate verdict and nests the pre-transform one
+    under ``"pre_reinsertion_gate"``. Here fill_skeleton is monkeypatched (a
+    bare-name import in worker.py) to return that exact outcome
+    deterministically, isolating the behavior under test to worker.py's persist
+    gate rather than depending on the mock review backend's own soft-flagging
+    behavior (see test_worker_runs_fill_skeleton_for_authoring_metadata_jobs's
+    docstring, which documents that ambiguity for the undowngraded case).
     """
     job_id: uuid.UUID = gen_seed_authoring["job_id"]  # type: ignore[assignment]
     filled = json.loads(_filled_skeleton_json())
@@ -778,6 +782,7 @@ async def test_stage1_downgraded_needs_review_still_persists_storybook(
             },
             attempts=3,
             stage_log=[],
+            clean_downgrade=True,
         )
 
     monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill_skeleton)
@@ -825,10 +830,10 @@ async def test_non_stage1_needs_review_still_creates_no_storybook(
 
     Simulates orchestrator._build_outcome's own needs_review (safety-flagged,
     or gate-blocked-with-doc after exhausting repairs) by having fill_skeleton
-    itself return needs_review with no "stage1_fidelity_violations" key. Item
-    3's widened persist gate must not touch this pre-existing, non-Plan-2
-    case: the job ends up needs_review with no Storybook created, exactly as
-    before this fix.
+    itself return needs_review with ``clean_downgrade`` left at its False
+    default. Item 3's widened persist gate must not touch this pre-existing,
+    non-Plan-2 case: the job ends up needs_review with no Storybook created,
+    exactly as before this fix.
     """
     job_id: uuid.UUID = gen_seed_authoring["job_id"]  # type: ignore[assignment]
     filled = json.loads(_filled_skeleton_json())

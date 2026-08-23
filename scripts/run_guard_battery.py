@@ -26,6 +26,7 @@ one is calibrated for, so that "did this book pass" has a single answer.
 | `check_promise_discharge` | does a choice promise what nothing delivers | yes |
 | `check_device_vocabulary` | can the contract's vocabulary support the series | yes |
 | `check_sibling_fills` | do sibling books converge on shared wording | yes, with 2+ books |
+| `check_corpus_convergence` | which PAIR converges, and how it is related | no, observed only |
 | `check_device_collision` | do sibling books share their props | yes, with 2+ bindings |
 
 **What it deliberately does not run.** `check_fill_fidelity` and
@@ -33,6 +34,14 @@ one is calibrated for, so that "did this book pass" has a single answer.
 programme has twice measured as unanswerable lexically, and neither can gate.
 They are reported as follow-up work rather than folded in, so that a green
 battery never implies the prose was read.
+
+**One pairwise row reports rather than gates.** `check_sibling_fills` answers
+"is this set within budget" against an aggregate; `check_corpus_convergence`
+answers "which two books, and are they siblings, a series, or unrelated". The
+second exists because a series pair sharing 8,164 body 4-grams survived the
+first (`AL-564`). It reports rather than gates because no bound on this RATE
+has been ruled; the series case is gated instead by validator rule SR-10, on
+run length, which `scripts/build_series_book.py` already runs (`AL-568`).
 
 **Pairwise guards need pairs.** Convergence and device collision are properties
 of a *set* of books, not of one, and the two most expensive failures in this
@@ -173,6 +182,34 @@ def battery(
                 scope="skipped",
                 ok=True,
                 detail="one book given; convergence is a property of a set",
+                gating=False,
+            )
+        )
+
+    if len(filled) >= _PAIR:
+        # No --check, permanently. UW-C341 was ruled on 2026-08-23 (AL-568)
+        # and the ruling was that a per-1000 RATE is the wrong axis: it cannot
+        # separate a deliberate refrain from a reused passage. Gating moved to
+        # validator rule SR-10, which bounds run LENGTH. This row survives as
+        # the ranked view that names the offending pair, which SR-10's
+        # per-chain verdict does not, so it reports and never gates.
+        code, detail = _run("check_corpus_convergence.py", *filled, "--top", "3")
+        out.append(
+            Result(
+                "check_corpus_convergence",
+                "all pairs, relationship-labelled",
+                code == 0,
+                detail,
+                gating=False,
+            )
+        )
+    else:
+        out.append(
+            Result(
+                guard="check_corpus_convergence",
+                scope="skipped",
+                ok=True,
+                detail="one book given; a pair is the unit of convergence",
                 gating=False,
             )
         )
