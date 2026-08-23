@@ -33,7 +33,7 @@ import hashlib
 import json
 import math
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Literal, cast
+from typing import TYPE_CHECKING, Final, Literal, cast
 
 from cyo_adventure.core.exceptions import ConfigurationError, ValidationError
 from cyo_adventure.generation.chunking import (
@@ -83,7 +83,7 @@ from cyo_adventure.validator.report import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Mapping
+    from collections.abc import Callable, Mapping, Sequence
 
     from cyo_adventure.core.config import Settings
     from cyo_adventure.generation.concept import ConceptBrief
@@ -1129,6 +1129,15 @@ def _unfillable_outcome(
     )
 
 
+# One re-ask for the whole chunked fill. A batch reply that will not parse is
+# usually a transient formatting slip, and re-asking that one batch is the only
+# repair a chunked fill can afford: the whole-document repair loop is held at
+# zero here because its prompt asks back the document that did not fit
+# (`AL-329`). Shared rather than per-batch so a systematically broken run costs
+# one extra call, not one per batch.
+_MAX_BATCH_RETRIES: Final[int] = 1
+
+
 @dataclass(frozen=True, slots=True)
 class _ChunkedFillContext:
     """Everything a chunked fill needs beyond the skeleton and the brief.
@@ -1146,6 +1155,10 @@ class _ChunkedFillContext:
             batch: the bound-values block is the only place a batch learns the
             theme's names, so omitting it from later batches would leave them
             re-inventing the world the first batch bound.
+        max_batch_retries: Re-asks available across the whole fill, shared by
+            every batch rather than allotted per batch. A per-batch allowance
+            would let a run that never parses double the call count of the
+            book, which is the cost profile chunking exists to avoid.
     """
 
     provider: PiiGuardedProvider
@@ -1153,9 +1166,59 @@ class _ChunkedFillContext:
     differentiation_directive: str
     stage_log: list[str]
     slot_bindings: Mapping[str, str] | None = None
+    # Total re-asks available across the WHOLE chunked fill, not per batch.
+    max_batch_retries: int = _MAX_BATCH_RETRIES
     # The resolved backend model id, for the context-window bound
     # (`AL-519`/`UW-C324`); None when unknown, which constrains nothing.
     model: str | None = None
+
+
+async def _merge_one_batch_attempt(
+    ctx: _ChunkedFillContext,
+    prompt: StagePrompt,
+    *,
+    ask: int,
+    document: dict[str, object],
+    node_ids: Sequence[str],
+) -> tuple[dict[str, object] | None, str | None]:
+    """Run one batch completion and fold the reply into the document.
+
+    Split out of the batch loop so the re-ask is a two-line retry there rather
+    than another level of nesting inside an already-dense function.
+
+    Args:
+        ctx: The grouped chunked-fill context.
+        prompt: This batch's prompt.
+        ask: The resolved ``max_tokens`` for this call.
+        document: The document to merge into.
+        node_ids: The ids this batch was asked to write.
+
+    Returns:
+        ``(merged_document, None)`` on success, or ``(None, reason)`` when the
+        reply carried no usable prose.
+    """
+    # #ASSUME: external-resources: one network completion per call. A provider
+    # exception propagates for rollback and RQ retry exactly as elsewhere on this
+    # path; only a malformed REPLY becomes a rejection reason, and only a
+    # rejection is worth re-asking, because a provider fault has already
+    # exhausted the adapter's own transient retries.
+    # #VERIFY: no ProviderError is caught here; tests/unit/test_chunked_fill.py::
+    # test_an_unusable_batch_reply_is_re_asked_and_the_book_survives covers the
+    # reply path.
+    completion = await ctx.provider.complete(
+        system=prompt.system, prompt=prompt.user, max_tokens=ask
+    )
+    try:
+        payload: object = json.loads(completion.text)  # pyright: ignore[reportAny]
+    except (json.JSONDecodeError, RecursionError):
+        # Caught for the same reason _run_one_stage catches both: a deeply
+        # nested reply raises RecursionError rather than JSONDecodeError
+        # under CPython 3.14.
+        payload = None
+    try:
+        return merge_fill_batch(document, node_ids, payload), None
+    except ValidationError as exc:
+        return None, str(exc)
 
 
 async def _fill_in_batches(
@@ -1214,6 +1277,7 @@ async def _fill_in_batches(
     skeleton_json = json.dumps(skeleton)
     brief_json = json.dumps(theme_brief)
     document = skeleton
+    retries_left = ctx.max_batch_retries
     for index, node_ids in enumerate(batches, start=1):
         payload_for_batch = FillBatchPayload(
             nodes_to_fill_json=json.dumps(batch_request(document, node_ids)),
@@ -1300,32 +1364,46 @@ async def _fill_in_batches(
                 )
                 return None, _synthetic_blocked_gate(failure, "fill_result")
             ask = min(ask, room)
-        completion = await ctx.provider.complete(
-            system=prompt.system, prompt=prompt.user, max_tokens=ask
+        merged, rejection = await _merge_one_batch_attempt(
+            ctx, prompt, ask=ask, document=document, node_ids=node_ids
         )
-        try:
-            payload: object = json.loads(completion.text)  # pyright: ignore[reportAny]
-        except (json.JSONDecodeError, RecursionError):
-            # Caught for the same reason _run_one_stage catches both: a deeply
-            # nested reply raises RecursionError rather than JSONDecodeError
-            # under CPython 3.14.
-            payload = None
-        try:
-            document = merge_fill_batch(document, node_ids, payload)
-        except ValidationError as exc:
+        # A re-ask is the only repair shape this path can afford. Every
+        # whole-document repair prompt asks back the thing that did not fit,
+        # which is why that budget is zero here (`AL-329`); one batch fits the
+        # cap by construction, because the partitioner sized it to. Without
+        # this, one unusable reply threw away every batch already paid for.
+        # #VERIFY: tests/unit/test_chunked_fill.py::
+        # test_an_unusable_batch_reply_is_re_asked_and_the_book_survives and
+        # ::test_the_batch_re_ask_budget_is_shared_across_the_whole_fill.
+        while merged is None and retries_left > 0:
+            retries_left -= 1
+            _logger.warning(
+                "fill_batch_retry",
+                batch=index,
+                batches=len(batches),
+                remaining=retries_left,
+                reason=rejection,
+            )
+            ctx.stage_log.append(f"stage_fill:batch_{index}_of_{len(batches)}_retry")
+            merged, rejection = await _merge_one_batch_attempt(
+                ctx, prompt, ask=ask, document=document, node_ids=node_ids
+            )
+        if merged is None:
             _logger.warning(
                 "fill_batch_rejected",
                 batch=index,
                 batches=len(batches),
                 nodes=len(node_ids),
-                reason=str(exc),
+                reason=rejection,
             )
             ctx.stage_log.append(f"stage_fill:batch_{index}_of_{len(batches)}_rejected")
             where = f"batch {index} of {len(batches)}"
             failure = (
-                f"L1-1 schema: chunked fill {where} produced no usable prose: {exc}"
+                f"L1-1 schema: chunked fill {where} produced no usable prose: "
+                f"{rejection}"
             )
             return None, _synthetic_blocked_gate(failure, "fill_result")
+        document = merged
         ctx.stage_log.append(f"stage_fill:batch_{index}_of_{len(batches)}_merged")
     return document, run_gate(document, "standard", context="fill_result")
 

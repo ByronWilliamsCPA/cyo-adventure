@@ -649,7 +649,11 @@ async def test_a_batch_that_returns_nothing_fails_the_whole_fill(
     """
     skeleton = _all_fill_skeleton()
     batches = plan_fill_batches(skeleton, max_tokens=_CAP_FOR_ONE)
-    provider = MockProvider(responses=[_reply_for(batches[0]), "not json at all"])
+    # Two unusable replies for batch 2: the first spends the shared re-ask
+    # budget, the second has nothing left to spend and is terminal.
+    provider = MockProvider(
+        responses=[_reply_for(batches[0]), "not json at all", "still not json"]
+    )
 
     outcome = await fill_skeleton(
         skeleton,
@@ -664,9 +668,85 @@ async def test_a_batch_that_returns_nothing_fails_the_whole_fill(
     assert outcome.status == "failed"
     assert outcome.storybook is None
     assert outcome.attempts == 0
-    assert len(provider.calls) == 2
+    assert len(provider.calls) == 3
     assert "stage_fill:batch_2_of_8_rejected" in outcome.stage_log
     assert "unfilled_skeleton_returned" not in outcome.report
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_an_unusable_batch_reply_is_re_asked_and_the_book_survives(
+    tiny_cap_settings: _SmallOutputSettings,
+) -> None:
+    """One bad reply out of eight must not cost the seven good ones.
+
+    A chunked fill is many calls, and failing the whole book on the first
+    unusable reply throws away every batch already paid for. The re-ask is the
+    one repair shape this path can afford: it asks for THAT BATCH again, which
+    fits the cap by construction, rather than for the whole document, which is
+    the thing that does not fit and is why `AL-329` set the whole-document
+    repair budget to zero here.
+    """
+    skeleton = _all_fill_skeleton()
+    batches = plan_fill_batches(skeleton, max_tokens=_CAP_FOR_ONE)
+    good = [_reply_for(batch, with_labels=True) for batch in batches]
+    provider = MockProvider(responses=[good[0], "not json at all", *good[1:]])
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        PiiContext(child_names=frozenset()),
+        settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        min_fill_rate=0,
+        stage1_gate="skipped",
+    )
+
+    assert outcome.status == "passed"
+    assert outcome.storybook == VALID_STORY
+    # Eight batches plus exactly one re-ask: the retry re-sends one batch, not
+    # the book.
+    assert len(provider.calls) == 9
+    assert "stage_fill:batch_2_of_8_retry" in outcome.stage_log
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_the_batch_re_ask_budget_is_shared_across_the_whole_fill(
+    tiny_cap_settings: _SmallOutputSettings,
+) -> None:
+    """The budget is a per-book total, not a per-batch allowance.
+
+    A per-batch allowance would let a systematically broken run double the
+    call count of a book that was never going to parse, which is the cost
+    profile chunking exists to avoid. Batch 2 spends the one re-ask; batch 3's
+    first unusable reply is therefore terminal.
+    """
+    skeleton = _all_fill_skeleton()
+    batches = plan_fill_batches(skeleton, max_tokens=_CAP_FOR_ONE)
+    provider = MockProvider(
+        responses=[
+            _reply_for(batches[0]),
+            "not json at all",
+            _reply_for(batches[1]),
+            "not json either",
+        ]
+    )
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        PiiContext(child_names=frozenset()),
+        settings=cast("object", tiny_cap_settings),  # pyright: ignore[reportArgumentType]
+        stage1_gate="skipped",
+    )
+
+    assert outcome.status == "failed"
+    assert outcome.storybook is None
+    assert len(provider.calls) == 4
+    assert "stage_fill:batch_2_of_8_retry" in outcome.stage_log
+    assert "stage_fill:batch_3_of_8_rejected" in outcome.stage_log
 
 
 @pytest.mark.unit
