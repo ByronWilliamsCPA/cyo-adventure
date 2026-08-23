@@ -8,6 +8,7 @@ Tests cover:
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 from dataclasses import dataclass
@@ -45,6 +46,7 @@ from cyo_adventure.generation.providers import (
 )
 from cyo_adventure.generation.usage import TokenUsage
 from cyo_adventure.generation.worker import (
+    _regate_after_transform,
     _review_stage2_override,
     _run_skeleton_fill,
     _should_persist_storybook,
@@ -453,13 +455,18 @@ class TestShouldPersistStorybook:
         assert _should_persist_storybook(outcome) is False
 
     def test_stage1_downgraded_needs_review_persists(self) -> None:
-        """The NEW case: a Stage 1 downgrade on an otherwise-clean fill persists."""
+        """A Stage 1 downgrade on an otherwise-clean fill persists.
+
+        The report key rides along as the diagnostic a reviewer reads; the
+        persist decision comes from ``clean_downgrade``.
+        """
         outcome = GenerationOutcome(
             status="needs_review",
             storybook={"id": "s1"},
             report={"stage1_fidelity_violations": ["some violation"]},
             attempts=0,
             stage_log=[],
+            clean_downgrade=True,
         )
         assert _should_persist_storybook(outcome) is True
 
@@ -480,10 +487,74 @@ class TestShouldPersistStorybook:
                 "fill_rate_floor": 0.6,
                 "fill_rate_downgrade": True,
             },
+            clean_downgrade=True,
             attempts=0,
             stage_log=[],
         )
         assert _should_persist_storybook(outcome) is True
+
+    def test_a_rewriting_transform_keeps_the_clean_downgrade_signal(self) -> None:
+        """A real reinsertion transform must not strip the persist signal.
+
+        ``_regate_after_transform`` rebuilds the report from the FRESH gate
+        verdict and nests the pre-transform one under ``"pre_reinsertion_gate"``,
+        so a clean-downgrade signal carried as a top-level report key does not
+        survive a transform that actually rewrites the document. A fill that was
+        downgraded on a quality axis AND rewritten would then be dropped
+        entirely: no Storybook, no version, no moderation, and a job row
+        pointing at a book nobody can reach, which is the exact outcome the
+        downgrade paths exist to prevent. The signal therefore rides the
+        outcome, which no report rebuild can touch.
+
+        Dormant today only because every contract on disk takes the
+        byte-identical short-circuit; it arms the moment one declares a
+        personalizable slot (ADR-023 D4).
+        """
+        rewritten = copy.deepcopy(_CANNED_STORY)
+        nodes = rewritten["nodes"]
+        assert isinstance(nodes, list)
+        first = nodes[0]
+        assert isinstance(first, dict)
+        first["body"] = str(first["body"]) + " The lantern guttered once more."
+
+        pre = GenerationOutcome(
+            status="needs_review",
+            storybook=copy.deepcopy(_CANNED_STORY),
+            report={"fill_rate": 0.51, "fill_rate_downgrade": True},
+            attempts=0,
+            stage_log=[],
+            clean_downgrade=True,
+        )
+        status, report = _regate_after_transform(pre, rewritten, skeleton_slug="s")
+        persisted = GenerationOutcome(
+            status=status,
+            storybook=rewritten,
+            report=report,
+            attempts=pre.attempts,
+            stage_log=pre.stage_log,
+            clean_downgrade=pre.clean_downgrade,
+        )
+        # The report key really is gone: this is the stripping being guarded.
+        assert "fill_rate_downgrade" not in persisted.report
+        assert _should_persist_storybook(persisted) is True
+
+    def test_a_diagnostic_report_key_alone_does_not_persist(self) -> None:
+        """Recording violations for a reader must not flip the persist decision.
+
+        The clean-downgrade report keys are diagnostics that review surfaces
+        read. Any future path that recorded them for a human (say, on a fill
+        that is ALSO safety-flagged) would, under the old key-as-signal rule,
+        silently start persisting a storybook the pre-existing semantics
+        deliberately drop.
+        """
+        outcome = GenerationOutcome(
+            status="needs_review",
+            storybook={"id": "s1"},
+            report={"stage1_fidelity_violations": ["node 'n1' is 12 words"]},
+            attempts=0,
+            stage_log=[],
+        )
+        assert _should_persist_storybook(outcome) is False
 
     def test_safety_flagged_needs_review_does_not_persist(self) -> None:
         """Regression guard: a safety-flagged needs_review (no Stage 1 key) must

@@ -198,6 +198,25 @@ class GenerationOutcome:
             non-fill early-return path in ``_run_skeleton_fill`` (e.g. the
             cannot-carry degraded-interpretation return), none of which has
             resolved a manifest yet.
+        clean_downgrade: ``True`` only when :func:`fill_skeleton` took a fill
+            that was ``"passed"`` immediately before and downgraded it to
+            ``"needs_review"`` on a quality axis a human is meant to judge:
+            a Stage 1 fidelity miss that survived the repair budget, or a
+            story-level fill rate under the floor.
+            ``generation/worker.py::_should_persist_storybook`` reads this to
+            decide whether to persist the storybook behind a flagged fill, so
+            it is a load-bearing signal, NOT a diagnostic.
+
+            It rides the outcome rather than a report key on purpose. The
+            causes each stamp a diagnostic report key too
+            (``"stage1_fidelity_violations"``, ``"fill_rate_downgrade"``), but
+            a report is rebuilt downstream:
+            ``worker.py::_regate_after_transform`` replaces it with the
+            post-transform gate verdict and nests the old one under
+            ``"pre_reinsertion_gate"``, so a key-borne signal silently vanishes
+            for any fill whose document the reinsertion transform actually
+            rewrites. This field survives every such rebuild, so recording the
+            diagnostics anywhere stays a diagnostic act.
     """
 
     status: Literal["passed", "needs_review", "failed"]
@@ -207,6 +226,7 @@ class GenerationOutcome:
     stage_log: list[str]
     sentinel_manifest: dict[str, object] | None = None
     personalization_eligible: bool = False
+    clean_downgrade: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -626,6 +646,7 @@ def _with_stage1_posture(
         stage_log=outcome.stage_log,
         sentinel_manifest=outcome.sentinel_manifest,
         personalization_eligible=outcome.personalization_eligible,
+        clean_downgrade=outcome.clean_downgrade,
     )
 
 
@@ -738,6 +759,9 @@ def _with_reading_level(
         report={**outcome.report, "reading_level": result.to_report()},
         attempts=outcome.attempts,
         stage_log=outcome.stage_log,
+        sentinel_manifest=outcome.sentinel_manifest,
+        personalization_eligible=outcome.personalization_eligible,
+        clean_downgrade=outcome.clean_downgrade,
     )
 
 
@@ -1406,6 +1430,9 @@ def _with_fill_rate(
         report=report,
         attempts=outcome.attempts,
         stage_log=outcome.stage_log,
+        sentinel_manifest=outcome.sentinel_manifest,
+        personalization_eligible=outcome.personalization_eligible,
+        clean_downgrade=outcome.clean_downgrade or downgrade,
     )
 
 
@@ -1786,6 +1813,9 @@ async def fill_skeleton(
             },
             attempts=outcome.attempts,
             stage_log=outcome.stage_log,
+            sentinel_manifest=outcome.sentinel_manifest,
+            personalization_eligible=outcome.personalization_eligible,
+            clean_downgrade=True,
         )
 
     outcome = _with_fill_rate(outcome, skeleton, min_fill_rate, stage_log)
