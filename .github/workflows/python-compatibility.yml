@@ -87,12 +87,15 @@ jobs:
         # Force bash on all platforms; Windows runners default to PowerShell,
         # which cannot parse the backslash line-continuations below (ParserError).
         #
-        # No -x. This matrix exists to find platform-specific breakage, and a
-        # platform usually breaks in more than one place at once: #740 landed
-        # two independent Windows defects, and -x reported only whichever one
-        # random ordering reached first. Three pushes each showed a single
-        # failure and read as one intermittent problem rather than two bugs,
-        # because fixing the reported one would only have revealed the next.
+        # No -x. This matrix exists to find platform-specific breakage, and
+        # once a platform is broken it tends to accumulate: the Windows leg
+        # failed seventeen runs in a row, from #719 on 2026-08-16 through
+        # 2026-08-24. For the first twelve there was one defect (os.kill on
+        # Windows) and -x named it every time. #740 then added a second,
+        # independent one (a host path separator in the census), and from that
+        # point -x could only ever report whichever of the two random ordering
+        # reached first: fixing the named one would have revealed the next, one
+        # red run at a time. That is the cost this removes.
         # A leg that runs to completion costs the same wall clock it already
         # spends when green and names every failure in one run. It does make
         # the failing path longer than the passing one, which is why the job
