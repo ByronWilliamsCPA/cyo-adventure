@@ -257,6 +257,24 @@ git ls-tree --name-only origin/main supabase/migrations/
    production dataset, including children's profile data, so they are subject to the same handling
    rules as any production extract (see [Section 8](#8-secrets-and-keys-inventory)).
 
+   **Check that you can actually run this before you need it.** On 2026-08-24 this step was not
+   executable: the local checkout is `supabase link`ed to staging, no operator held
+   `SUPABASE_DB_PASSWORD` for production, and `gh secret list --env backups` returned nothing, so
+   `supabase-backup.yml` could not have produced an artifact on any night it ran. Do not close that
+   gap by adding a dump-and-upload step to a workflow: this repository is **public**, GitHub
+   workflow artifacts are readable by anyone with repo read access, and a `supabase db dump` is the
+   entire production dataset. A restore point has to land somewhere access-controlled (the R2
+   backup bucket, or Supabase's own managed backups), never in CI artifact storage.
+
+   When no dump is possible, do not proceed blind and do not proceed unbounded: read the pending
+   set for destructive verbs and take a targeted snapshot of exactly what they touch. On the
+   2026-08-24 apply, all 18 pending migrations were scanned; every `DROP` was a
+   drop-then-recreate of a constraint, policy, or index, and the only data-touching statements were
+   two `UPDATE`s and one `DELETE FROM provider_model_allowlist`. Nothing touched child, family,
+   story, or reading data, so a five-row snapshot of that one table, rendered as a replayable
+   `INSERT`, was a proportionate restore point. That reasoning is the substitute for a dump, and it
+   only works because it was written down before the dispatch.
+
 2. **Confirm staging is green on the same migration set.** The workflow's own RUN POLICY requires it:
    only dispatch production after the staging deploy of the same migrations and config has succeeded.
    Check the most recent successful `Deploy Supabase Migrations (staging)` run and confirm its commit
