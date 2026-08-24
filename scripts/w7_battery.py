@@ -344,9 +344,14 @@ def _alive_windows(pid: int) -> bool:
     it would *deliver a Ctrl-C* to a process the harness only meant to ask
     about. Neither outcome is a probe.
 
-    `OpenProcess` plus `GetExitCodeProcess` is the actual question. `ctypes`
-    keeps it in the standard library rather than adding `psutil`, which this
-    project has only as a transitive development dependency.
+    `OpenProcess` plus `WaitForSingleObject` asks the actual question: whether
+    the process handle is signaled. `GetExitCodeProcess` cannot answer it,
+    because `STILL_ACTIVE` is 259 and 259 is also a perfectly legal exit code,
+    so a previous run that exited 259 would read as live and wedge the harness
+    for good. Microsoft documents the ambiguity and points at the wait
+    functions instead. `ctypes` keeps this in the standard library rather than
+    adding `psutil`, which this project has only as a transitive development
+    dependency.
 
     Args:
         pid: A process id.
@@ -356,15 +361,20 @@ def _alive_windows(pid: int) -> bool:
     """
     import ctypes  # noqa: PLC0415 - Windows-only, kept out of the POSIX path
 
-    # #ASSUME: external resources: the Win32 error and access-right constants
-    # below are stable ABI, documented in the Windows SDK headers, so they are
-    # inlined rather than discovered at runtime.
+    # #ASSUME: external resources: the Win32 error, access-right and wait-result
+    # constants below are stable ABI, documented in the Windows SDK headers, so
+    # they are inlined rather than discovered at runtime.
     # #VERIFY: covered by tests/unit/test_w7_battery.py, which exercises this
     # branch on every platform through a fake kernel32.
     error_access_denied = 5
     error_invalid_parameter = 87
-    process_query_limited_information = 0x1000
-    still_active = 259
+    # SYNCHRONIZE alone, not PROCESS_QUERY_LIMITED_INFORMATION: it is the only
+    # right `WaitForSingleObject` needs, and asking for less is likelier to be
+    # granted, so a restricted process gives a real answer instead of the
+    # access-denied fallback below.
+    synchronize = 0x0010_0000
+    wait_object_0 = 0x0000_0000
+    wait_timeout = 0x0000_0102
 
     # `OpenProcess`'s second parameter is `bInheritHandle`, which is positional
     # in the Win32 ABI and so cannot be passed by keyword (ruff FBT003); naming
@@ -376,24 +386,19 @@ def _alive_windows(pid: int) -> bool:
     # ctypes defaults every foreign function to a `c_int` return and to
     # by-guess argument conversion. Win32 `HANDLE` is pointer-sized, so on
     # 64-bit Windows an untyped `OpenProcess` truncates its handle to 32 bits,
-    # and the truncated value is then passed back to `GetExitCodeProcess` and
+    # and the truncated value is then passed back to `WaitForSingleObject` and
     # `CloseHandle`. Declaring the signatures keeps the handle intact and stops
-    # a wrong one being closed. DWORD is `c_uint32`, BOOL is `c_int`, HANDLE is
-    # `c_void_p`; a NULL `c_void_p` result arrives as None, which is falsy, so
-    # the failure branch below still reads correctly.
+    # a wrong one being waited on or closed. DWORD is `c_uint32`, BOOL is
+    # `c_int`, HANDLE is `c_void_p`; a NULL `c_void_p` result arrives as None,
+    # which is falsy, so the failure branch below still reads correctly.
     kernel32.OpenProcess.argtypes = (ctypes.c_uint32, ctypes.c_int, ctypes.c_uint32)
     kernel32.OpenProcess.restype = ctypes.c_void_p
-    kernel32.GetExitCodeProcess.argtypes = (
-        ctypes.c_void_p,
-        ctypes.POINTER(ctypes.c_ulong),
-    )
-    kernel32.GetExitCodeProcess.restype = ctypes.c_int
+    kernel32.WaitForSingleObject.argtypes = (ctypes.c_void_p, ctypes.c_uint32)
+    kernel32.WaitForSingleObject.restype = ctypes.c_uint32
     kernel32.CloseHandle.argtypes = (ctypes.c_void_p,)
     kernel32.CloseHandle.restype = ctypes.c_int
 
-    handle = kernel32.OpenProcess(
-        process_query_limited_information, inherit_handle, pid
-    )
+    handle = kernel32.OpenProcess(synchronize, inherit_handle, pid)
     if not handle:
         code = ctypes.get_last_error()
         if code == error_access_denied:
@@ -406,12 +411,18 @@ def _alive_windows(pid: int) -> bool:
         # on a guess is the exact double-run this guard exists to prevent.
         return True
     try:
-        exit_code = ctypes.c_ulong()
-        if not kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code)):
+        # A zero timeout polls rather than waits, so this never blocks the
+        # caller on another run's lifetime.
+        waited = kernel32.WaitForSingleObject(handle, 0)
+        if waited == wait_timeout:
             return True
-        # A handle can outlive the process that it names, so an openable pid is
-        # not yet a live one.
-        return exit_code.value == still_active
+        if waited == wait_object_0:
+            # Signaled means terminated. A handle can outlive the process it
+            # names, so an openable pid is not yet a live one.
+            return False
+        # WAIT_FAILED, WAIT_ABANDONED, or anything undocumented: no answer, so
+        # keep the lock rather than guess it away.
+        return True
     finally:
         kernel32.CloseHandle(handle)
 

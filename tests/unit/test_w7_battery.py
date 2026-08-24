@@ -479,6 +479,14 @@ def test_a_corrupted_lock_file_reads_as_dead(tmp_path: Path) -> None:
 # --------------------------------------------------------------------------
 
 
+# The Win32 wait results and access right the probe depends on, named here so
+# the tests assert against the contract rather than against bare integers.
+SYNCHRONIZE = 0x0010_0000
+WAIT_OBJECT_0 = 0x0000_0000
+WAIT_TIMEOUT = 0x0000_0102
+WAIT_FAILED = 0xFFFF_FFFF
+
+
 class _FakeWinFunc:
     """A stand-in for one ctypes foreign function.
 
@@ -508,29 +516,25 @@ class _FakeKernel32:
     """
 
     def __init__(
-        self, *, handle: int, last_error: int = 0, exit_code: int | None = None
+        self, *, handle: int, last_error: int = 0, waited: int = WAIT_TIMEOUT
     ) -> None:
         self._handle = handle
         self.last_error = last_error
-        self._exit_code = exit_code
+        self._waited = waited
         self.closed: list[int] = []
+        self.access_requested: int | None = None
+        self.timeout_requested: int | None = None
         self.OpenProcess = _FakeWinFunc(self._open_process)
-        self.GetExitCodeProcess = _FakeWinFunc(self._get_exit_code_process)
+        self.WaitForSingleObject = _FakeWinFunc(self._wait_for_single_object)
         self.CloseHandle = _FakeWinFunc(self._close_handle)
 
-    def _open_process(self, _access: int, _inherit: bool, _pid: int) -> int:
+    def _open_process(self, access: int, _inherit: bool, _pid: int) -> int:
+        self.access_requested = access
         return self._handle
 
-    def _get_exit_code_process(self, _handle: int, out: Any) -> int:
-        # `out` arrives as the `ctypes.byref` argument object the production
-        # code passes; `cast` accepts it, but it has no public static type, so
-        # `Any` is the honest annotation rather than a suppressed error.
-        if self._exit_code is None:
-            return 0
-        ctypes.cast(
-            out, ctypes.POINTER(ctypes.c_ulong)
-        ).contents.value = self._exit_code
-        return 1
+    def _wait_for_single_object(self, _handle: int, timeout: int) -> int:
+        self.timeout_requested = timeout
+        return self._waited
 
     def _close_handle(self, handle: int) -> int:
         self.closed.append(handle)
@@ -581,7 +585,9 @@ def test_windows_reads_an_openable_running_process_as_live(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A process still running is live, and its handle is not leaked."""
-    fake = _use_fake_kernel32(monkeypatch, _FakeKernel32(handle=1234, exit_code=259))
+    fake = _use_fake_kernel32(
+        monkeypatch, _FakeKernel32(handle=1234, waited=WAIT_TIMEOUT)
+    )
     monkeypatch.setattr(sys, "platform", "win32")
 
     assert _alive("4321") is True
@@ -589,15 +595,18 @@ def test_windows_reads_an_openable_running_process_as_live(
 
 
 @pytest.mark.unit
-def test_windows_reads_an_exited_process_as_dead(
+def test_windows_reads_a_signaled_process_as_dead(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A handle can outlive its process, so openable is not yet live.
 
     Reading an exited pid as live would wedge the harness behind a lock whose
-    holder is gone, which is the failure `single_run` exists to avoid.
+    holder is gone, which is the failure `single_run` exists to avoid. A
+    signaled process handle means terminated, whatever the exit code was.
     """
-    fake = _use_fake_kernel32(monkeypatch, _FakeKernel32(handle=99, exit_code=0))
+    fake = _use_fake_kernel32(
+        monkeypatch, _FakeKernel32(handle=99, waited=WAIT_OBJECT_0)
+    )
     monkeypatch.setattr(sys, "platform", "win32")
 
     assert _alive("4321") is False
@@ -676,7 +685,9 @@ def test_windows_declares_pointer_sized_handles_before_calling(
     declarations here makes that a property of the code rather than a comment
     about it.
     """
-    fake = _use_fake_kernel32(monkeypatch, _FakeKernel32(handle=1234, exit_code=259))
+    fake = _use_fake_kernel32(
+        monkeypatch, _FakeKernel32(handle=1234, waited=WAIT_TIMEOUT)
+    )
     monkeypatch.setattr(sys, "platform", "win32")
 
     assert _alive("4321") is True
@@ -687,11 +698,85 @@ def test_windows_declares_pointer_sized_handles_before_calling(
         ctypes.c_int,
         ctypes.c_uint32,
     )
-    assert fake.GetExitCodeProcess.argtypes == (
-        ctypes.c_void_p,
-        ctypes.POINTER(ctypes.c_ulong),
-    )
+    assert fake.WaitForSingleObject.argtypes == (ctypes.c_void_p, ctypes.c_uint32)
+    assert fake.WaitForSingleObject.restype is ctypes.c_uint32
     assert fake.CloseHandle.argtypes == (ctypes.c_void_p,)
+
+
+@pytest.mark.unit
+def test_a_process_that_exited_with_code_259_is_not_mistaken_for_a_running_one(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """259 is STILL_ACTIVE and also a legal exit code, so it cannot be the test.
+
+    This is why the probe asks `WaitForSingleObject` for the handle's signaled
+    state rather than reading `GetExitCodeProcess`. A run that exited with 259
+    is gone, and reading it as live would leave the lock standing over a dead
+    holder forever, which is precisely the wedge `single_run` exists to avoid.
+    Windows signals the handle either way, so the exit code never enters into
+    it.
+    """
+    fake = _use_fake_kernel32(
+        monkeypatch, _FakeKernel32(handle=259, waited=WAIT_OBJECT_0)
+    )
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is False
+    assert fake.closed == [259]
+
+
+@pytest.mark.unit
+def test_windows_reads_a_failed_wait_as_live(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An unanswered wait must not clear someone else's lock.
+
+    WAIT_FAILED is not an answer, so the conservative reading is the only safe
+    one: guessing dead starts the second paid run, guessing live costs an
+    operator one manual check. The handle is still released.
+    """
+    fake = _use_fake_kernel32(monkeypatch, _FakeKernel32(handle=77, waited=WAIT_FAILED))
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+    assert fake.closed == [77], "the process handle outlived the probe"
+
+
+@pytest.mark.unit
+def test_windows_polls_rather_than_waiting_on_the_other_run(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A zero timeout, so the probe never blocks on another run's lifetime.
+
+    `WaitForSingleObject` with any other timeout would make a liveness question
+    into a wait for the paid run to finish.
+    """
+    fake = _use_fake_kernel32(
+        monkeypatch, _FakeKernel32(handle=1234, waited=WAIT_TIMEOUT)
+    )
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+    assert fake.timeout_requested == 0
+
+
+@pytest.mark.unit
+def test_windows_asks_only_for_the_right_the_wait_needs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """SYNCHRONIZE only: a narrower request is likelier to be granted.
+
+    `WaitForSingleObject` needs nothing else, and every right that is asked for
+    and refused turns a definite answer into the access-denied fallback, which
+    reports live without knowing.
+    """
+    fake = _use_fake_kernel32(
+        monkeypatch, _FakeKernel32(handle=1234, waited=WAIT_TIMEOUT)
+    )
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+    assert fake.access_requested == SYNCHRONIZE
 
 
 @pytest.mark.unit
