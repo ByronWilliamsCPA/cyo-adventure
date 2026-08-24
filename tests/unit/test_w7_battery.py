@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from pathlib import Path
 
 from scripts.judge_books import Verdict
@@ -478,6 +479,25 @@ def test_a_corrupted_lock_file_reads_as_dead(tmp_path: Path) -> None:
 # --------------------------------------------------------------------------
 
 
+class _FakeWinFunc:
+    """A stand-in for one ctypes foreign function.
+
+    Callable like the real thing, and crucially it *accepts* the `argtypes`
+    and `restype` assignments `_alive_windows` makes. A plain bound method
+    would raise `AttributeError` on those, so this class is what lets the
+    production code declare its Win32 signatures without the tests having to
+    special-case it.
+    """
+
+    def __init__(self, impl: Callable[..., int]) -> None:
+        self._impl = impl
+        self.argtypes: object = None
+        self.restype: object = None
+
+    def __call__(self, *args: Any) -> int:
+        return self._impl(*args)
+
+
 class _FakeKernel32:
     """A stand-in for the Win32 calls `_alive_windows` makes.
 
@@ -494,11 +514,14 @@ class _FakeKernel32:
         self.last_error = last_error
         self._exit_code = exit_code
         self.closed: list[int] = []
+        self.OpenProcess = _FakeWinFunc(self._open_process)
+        self.GetExitCodeProcess = _FakeWinFunc(self._get_exit_code_process)
+        self.CloseHandle = _FakeWinFunc(self._close_handle)
 
-    def OpenProcess(self, _access: int, _inherit: bool, _pid: int) -> int:  # noqa: N802
+    def _open_process(self, _access: int, _inherit: bool, _pid: int) -> int:
         return self._handle
 
-    def GetExitCodeProcess(self, _handle: int, out: Any) -> int:  # noqa: N802
+    def _get_exit_code_process(self, _handle: int, out: Any) -> int:
         # `out` arrives as the `ctypes.byref` argument object the production
         # code passes; `cast` accepts it, but it has no public static type, so
         # `Any` is the honest annotation rather than a suppressed error.
@@ -509,7 +532,7 @@ class _FakeKernel32:
         ).contents.value = self._exit_code
         return 1
 
-    def CloseHandle(self, handle: int) -> int:  # noqa: N802
+    def _close_handle(self, handle: int) -> int:
         self.closed.append(handle)
         return 1
 
@@ -605,6 +628,70 @@ def test_windows_refuses_to_call_an_unrecognised_failure_dead(
     monkeypatch.setattr(sys, "platform", "win32")
 
     assert _alive("4321") is True
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("pid", ["0", "-1", "-999"])
+def test_a_non_positive_pid_is_a_corrupted_lock_not_a_process(pid: str) -> None:
+    """0 and negatives are not process ids, and reading them as live wedges us.
+
+    A lock is written with `os.getpid()`, so a non-positive value can only be a
+    corrupted file. Handing one to POSIX `kill` inverts the answer instead of
+    erroring: 0 means the caller's own process group and -1 means every process
+    it may signal, so both succeed and report live. A lock truncated to `0`
+    would then block every later run forever, which is the precise failure
+    `test_a_corrupted_lock_file_reads_as_dead` exists to rule out.
+    """
+    assert _alive(pid) is False
+
+
+@pytest.mark.unit
+def test_a_non_positive_pid_never_reaches_the_platform_probe(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The guard must run before either branch, not inside one of them."""
+
+    def _forbidden(*_args: object, **_kwargs: object) -> None:
+        msg = "a non-positive pid must not reach the platform probe"
+        raise AssertionError(msg)
+
+    monkeypatch.setattr(os, "kill", _forbidden)
+    monkeypatch.setattr(ctypes, "WinDLL", _forbidden, raising=False)
+
+    assert _alive("0") is False
+    monkeypatch.setattr(sys, "platform", "win32")
+    assert _alive("0") is False
+
+
+@pytest.mark.unit
+def test_windows_declares_pointer_sized_handles_before_calling(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A HANDLE is pointer-sized and ctypes would otherwise return `c_int`.
+
+    Leaving the signatures undeclared truncates a handle above 2**32 on 64-bit
+    Windows, and the truncated value is then passed back to
+    `GetExitCodeProcess` and `CloseHandle`, so the probe can report on (or
+    close) something other than the process it opened. Asserting the
+    declarations here makes that a property of the code rather than a comment
+    about it.
+    """
+    fake = _use_fake_kernel32(monkeypatch, _FakeKernel32(handle=1234, exit_code=259))
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+
+    assert fake.OpenProcess.restype is ctypes.c_void_p
+    assert fake.OpenProcess.argtypes == (
+        ctypes.c_uint32,
+        ctypes.c_int,
+        ctypes.c_uint32,
+    )
+    assert fake.GetExitCodeProcess.argtypes == (
+        ctypes.c_void_p,
+        ctypes.POINTER(ctypes.c_ulong),
+    )
+    assert fake.CloseHandle.argtypes == (ctypes.c_void_p,)
 
 
 @pytest.mark.unit

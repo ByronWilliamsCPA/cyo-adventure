@@ -310,6 +310,17 @@ def _alive(pid: str) -> bool:
         numeric = int(pid)
     except ValueError:
         return False
+    if numeric <= 0:
+        # A lock is written with `os.getpid()`, which is always positive, so a
+        # non-positive value is a corrupted file rather than a process. Passing
+        # one through would do the opposite of reading it as dead: POSIX `kill`
+        # takes 0 to mean the caller's own process group and -1 to mean every
+        # process it may signal, so both succeed and report live, and on
+        # Windows pid 0 is the System Idle Process, whose `OpenProcess` failure
+        # is ERROR_ACCESS_DENIED, which reads as live below. Either way a
+        # truncated lock would wedge the harness permanently, which is the one
+        # outcome this guard must never produce.
+        return False
     if sys.platform == "win32":
         return _alive_windows(numeric)
     try:
@@ -361,6 +372,25 @@ def _alive_windows(pid: int) -> bool:
     inherit_handle = False
 
     kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)  # pyright: ignore[reportAttributeAccessIssue]
+
+    # ctypes defaults every foreign function to a `c_int` return and to
+    # by-guess argument conversion. Win32 `HANDLE` is pointer-sized, so on
+    # 64-bit Windows an untyped `OpenProcess` truncates its handle to 32 bits,
+    # and the truncated value is then passed back to `GetExitCodeProcess` and
+    # `CloseHandle`. Declaring the signatures keeps the handle intact and stops
+    # a wrong one being closed. DWORD is `c_uint32`, BOOL is `c_int`, HANDLE is
+    # `c_void_p`; a NULL `c_void_p` result arrives as None, which is falsy, so
+    # the failure branch below still reads correctly.
+    kernel32.OpenProcess.argtypes = (ctypes.c_uint32, ctypes.c_int, ctypes.c_uint32)
+    kernel32.OpenProcess.restype = ctypes.c_void_p
+    kernel32.GetExitCodeProcess.argtypes = (
+        ctypes.c_void_p,
+        ctypes.POINTER(ctypes.c_ulong),
+    )
+    kernel32.GetExitCodeProcess.restype = ctypes.c_int
+    kernel32.CloseHandle.argtypes = (ctypes.c_void_p,)
+    kernel32.CloseHandle.restype = ctypes.c_int
+
     handle = kernel32.OpenProcess(
         process_query_limited_information, inherit_handle, pid
     )
