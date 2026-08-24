@@ -1,5 +1,5 @@
 # Adversarial Safety Evaluation for CYO Adventure
-# Runs the adversarial corpus against the REAL moderation classifiers and gates
+# Runs the adversarial corpus against the REAL Stage-1 review model and gates
 # on the per-class acceptance thresholds in
 # docs/planning/safety/adversarial-safety-evaluation.md (the `llm_eval` tier in
 # tests/llm_eval/). The gate lives in the pytest assertions: classes A/B must be

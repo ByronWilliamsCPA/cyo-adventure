@@ -469,10 +469,14 @@ undifferentiated number.
 
 ## Running the evaluation
 
-`scripts/adversarial_harness.py` reads the corpus, runs each item through the real
-moderation stages using the configured `review_provider` (and Stage-0 classifiers
-when keys are present), compares the observed verdict to the item's expected
-minimum, and reports a per-class catch-rate against the thresholds below.
+`scripts/adversarial_harness.py` reads the corpus, runs each item through the
+real Stage-1 safety stage (`moderation.stages.run_safety_stage`) using the
+configured `review_provider`, compares the observed verdict to the item's
+expected minimum, and reports a per-class catch-rate against the thresholds
+below. **It has no Stage-0 leg**: `run_classifiers` is reached only from
+`moderation/pipeline.py` and `moderation/rescreen.py`, and the harness imports
+neither. The Stage-0 credential the eval demands is a construction precondition
+of `Settings._require_classifier_when_reviewing`, not a stage that executes.
 
 Mock mode is a wiring check only. Because the mock review provider returns `"{}"`
 (fail-safe FLAG at Stage 1), the harness **refuses to report a mock run as
