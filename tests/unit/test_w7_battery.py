@@ -10,19 +10,25 @@ does not own.
 
 from __future__ import annotations
 
+import ctypes
 import itertools
 import json
 import os
-from typing import TYPE_CHECKING
+import sys
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from pathlib import Path
 
 from scripts.judge_books import Verdict
 from scripts.w7_battery import (
+    _MAX_PID,
     DEFECT_CRITERION,
+    _alive,
+    _alive_windows,
     blend_to_grade,
     cohens_kappa,
     load_panel,
@@ -468,6 +474,391 @@ def test_a_corrupted_lock_file_reads_as_dead(tmp_path: Path) -> None:
         pass
 
     assert not (tmp_path / ".run.lock").exists()
+
+
+# --------------------------------------------------------------------------
+# Process liveness (the lock's only question)
+# --------------------------------------------------------------------------
+
+
+# The Win32 wait results and access right the probe depends on, named here so
+# the tests assert against the contract rather than against bare integers.
+SYNCHRONIZE = 0x0010_0000
+WAIT_OBJECT_0 = 0x0000_0000
+WAIT_TIMEOUT = 0x0000_0102
+WAIT_FAILED = 0xFFFF_FFFF
+
+
+class _FakeWinFunc:
+    """A stand-in for one ctypes foreign function.
+
+    Callable like the real thing, and crucially it *accepts* the `argtypes`
+    and `restype` assignments `_alive_windows` makes. A plain bound method
+    would raise `AttributeError` on those, so this class is what lets the
+    production code declare its Win32 signatures without the tests having to
+    special-case it.
+    """
+
+    def __init__(self, impl: Callable[..., int]) -> None:
+        self._impl = impl
+        self.argtypes: object = None
+        self.restype: object = None
+
+    def __call__(self, *args: Any) -> int:
+        return self._impl(*args)
+
+
+class _FakeKernel32:
+    """A stand-in for the Win32 calls `_alive_windows` makes.
+
+    Lets the Windows branch be exercised on Linux and macOS, where the real
+    `ctypes.WinDLL` does not exist. Without this the branch would be tested
+    only by the Windows CI job, which is the job that already let the defect
+    through to `main`.
+    """
+
+    def __init__(
+        self, *, handle: int, last_error: int = 0, waited: int = WAIT_TIMEOUT
+    ) -> None:
+        self._handle = handle
+        self.last_error = last_error
+        self._waited = waited
+        self.closed: list[int] = []
+        self.access_requested: int | None = None
+        self.inherit_requested: bool | None = None
+        self.pid_requested: int | None = None
+        self.timeout_requested: int | None = None
+        self.OpenProcess = _FakeWinFunc(self._open_process)
+        self.WaitForSingleObject = _FakeWinFunc(self._wait_for_single_object)
+        self.CloseHandle = _FakeWinFunc(self._close_handle)
+
+    def _open_process(self, access: int, inherit: bool, pid: int) -> int:
+        self.access_requested = access
+        self.inherit_requested = inherit
+        self.pid_requested = pid
+        return self._handle
+
+    def _wait_for_single_object(self, _handle: int, timeout: int) -> int:
+        self.timeout_requested = timeout
+        return self._waited
+
+    def _close_handle(self, handle: int) -> int:
+        self.closed.append(handle)
+        return 1
+
+
+def _use_fake_kernel32(
+    monkeypatch: pytest.MonkeyPatch, fake: _FakeKernel32
+) -> _FakeKernel32:
+    """Point `_alive_windows` at *fake* and return it."""
+    # `raising=False` on both: `WinDLL` and `get_last_error` are Windows-only
+    # attributes, so neither exists on the Linux and macOS runners this test is
+    # here to make useful.
+    monkeypatch.setattr(ctypes, "WinDLL", lambda *_a, **_k: fake, raising=False)
+    monkeypatch.setattr(
+        ctypes, "get_last_error", lambda: fake.last_error, raising=False
+    )
+    return fake
+
+
+@pytest.mark.unit
+def test_windows_liveness_never_signals_the_process_it_asks_about(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """`os.kill(pid, 0)` is not a probe on Windows; it is a Ctrl-C.
+
+    Signal 0 is `CTRL_C_EVENT` there, so CPython routes it to
+    `GenerateConsoleCtrlEvent`. Against an ordinary pid it fails with
+    `WinError 87`, which is how the lock check raised instead of answering.
+    Against a console process group it would succeed, and interrupt a process
+    the harness only meant to ask about. Neither is acceptable, so the Windows
+    path must not reach `os.kill` at all.
+    """
+
+    def _forbidden(*_args: object, **_kwargs: object) -> None:
+        msg = "the Windows liveness probe must not signal the process"
+        raise AssertionError(msg)
+
+    monkeypatch.setattr(sys, "platform", "win32")
+    monkeypatch.setattr(os, "kill", _forbidden)
+    _use_fake_kernel32(monkeypatch, _FakeKernel32(handle=0, last_error=87))
+
+    assert _alive("999999") is False
+
+
+@pytest.mark.unit
+def test_windows_reads_an_openable_running_process_as_live(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A process still running is live, and its handle is not leaked."""
+    fake = _use_fake_kernel32(
+        monkeypatch, _FakeKernel32(handle=1234, waited=WAIT_TIMEOUT)
+    )
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+    assert fake.closed == [1234], "the process handle outlived the probe"
+
+
+@pytest.mark.unit
+def test_windows_reads_a_signaled_process_as_dead(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A handle can outlive its process, so openable is not yet live.
+
+    Reading an exited pid as live would wedge the harness behind a lock whose
+    holder is gone, which is the failure `single_run` exists to avoid. A
+    signaled process handle means terminated, whatever the exit code was.
+    """
+    fake = _use_fake_kernel32(
+        monkeypatch, _FakeKernel32(handle=99, waited=WAIT_OBJECT_0)
+    )
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is False
+    assert fake.closed == [99]
+
+
+@pytest.mark.unit
+def test_windows_reads_someone_elses_process_as_live(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Access denied means it exists, matching the POSIX PermissionError arm."""
+    _use_fake_kernel32(monkeypatch, _FakeKernel32(handle=0, last_error=5))
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+
+
+@pytest.mark.unit
+def test_windows_refuses_to_call_an_unrecognised_failure_dead(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An unexplained probe failure must not clear someone else's lock.
+
+    Guessing "dead" starts the second paid run this guard was written to stop;
+    guessing "live" costs an operator one manual check.
+    """
+    _use_fake_kernel32(monkeypatch, _FakeKernel32(handle=0, last_error=1450))
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+
+
+# Every value the pid guard must reject, and why each one is here:
+#
+#   "0", "-1"   POSIX `kill` reads these as "my own process group" and "every
+#               process I may signal", so both succeed and report live.
+#   "-999"      converted mod 2**32 by the Win32 DWORD argtype, so it asks
+#               about pid 4294966297 rather than failing.
+#   2**31       the exact value at which `os.kill` raises `OverflowError`
+#               converting to C `int`, crashing instead of answering.
+#   2**32+1234  truncates to pid 1234 on Windows, so a live and unrelated
+#               process would hold the lock forever.
+_REJECTED_PIDS = ("0", "-1", "-999", str(2**31), str(2**32 + 1234))
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("pid", _REJECTED_PIDS)
+def test_a_pid_outside_the_probe_range_is_a_corrupted_lock_not_a_process(
+    pid: str,
+) -> None:
+    """A lock is written with `os.getpid()`, so these can only be corruption.
+
+    Reading any of them as live would block every later run forever, which is
+    the precise failure `test_a_corrupted_lock_file_reads_as_dead` exists to
+    rule out. Reading `2**31` as anything at all requires the guard: without
+    it `os.kill` raises `OverflowError` here rather than returning a verdict.
+    """
+    assert _alive(pid) is False
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("pid", _REJECTED_PIDS)
+@pytest.mark.parametrize("platform", ["linux", "win32"])
+def test_a_rejected_pid_never_reaches_the_platform_probe(
+    monkeypatch: pytest.MonkeyPatch, pid: str, platform: str
+) -> None:
+    """The guard must run before either branch, not inside one of them.
+
+    Asserting the value alone is not enough to catch a regression: on Linux
+    `os.kill(-999, 0)` happens to raise `ProcessLookupError` because no process
+    group 999 exists, so `_alive("-999")` returns False by host coincidence
+    whether or not the guard is there. Forbidding the probe outright is what
+    makes every case here discriminate.
+    """
+
+    def _forbidden(*_args: object, **_kwargs: object) -> None:
+        msg = f"pid {pid} must not reach the platform probe"
+        raise AssertionError(msg)
+
+    monkeypatch.setattr(sys, "platform", platform)
+    monkeypatch.setattr(os, "kill", _forbidden)
+    monkeypatch.setattr(ctypes, "WinDLL", _forbidden, raising=False)
+
+    assert _alive(pid) is False
+
+
+@pytest.mark.unit
+def test_the_windows_probe_refuses_a_pid_it_cannot_ask_about() -> None:
+    """The Win32 branch defends its own precondition rather than inheriting it.
+
+    ctypes converts an out-of-range int mod 2**32 against the `c_uint32`
+    argtype instead of raising, so a caller that reached here past the guard
+    would get a confident answer about an entirely different process. Refusing
+    is the loud alternative to that silence.
+    """
+    with pytest.raises(ValueError, match=r"outside 1\.\.\d+,"):
+        _alive_windows(2**32 + 1234)
+    with pytest.raises(ValueError, match=r"outside 1\.\.\d+,"):
+        _alive_windows(0)
+    assert _MAX_PID == 2**31 - 1
+
+
+@pytest.mark.unit
+def test_windows_declares_pointer_sized_handles_before_calling(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A HANDLE is pointer-sized and ctypes would otherwise return `c_int`.
+
+    Leaving the signatures undeclared truncates a handle above 2**32 on 64-bit
+    Windows, and the truncated value is then passed back to
+    `GetExitCodeProcess` and `CloseHandle`, so the probe can report on (or
+    close) something other than the process it opened. Asserting the
+    declarations here makes that a property of the code rather than a comment
+    about it.
+    """
+    fake = _use_fake_kernel32(
+        monkeypatch, _FakeKernel32(handle=1234, waited=WAIT_TIMEOUT)
+    )
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+
+    assert fake.OpenProcess.restype is ctypes.c_void_p
+    assert fake.OpenProcess.argtypes == (
+        ctypes.c_uint32,
+        ctypes.c_int,
+        ctypes.c_uint32,
+    )
+
+
+@pytest.mark.unit
+def test_windows_asks_about_the_pid_it_was_given_without_inheriting(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """`OpenProcess` takes three arguments and all three have to be right.
+
+    The access mask and the wait timeout were already asserted; the pid and
+    `bInheritHandle` were passed and then discarded by the fake, so a probe
+    that asked about the wrong process, or that leaked an inheritable handle
+    into every child the harness later spawns, looked identical to a correct
+    one from the test suite's point of view.
+    """
+    fake = _use_fake_kernel32(
+        monkeypatch, _FakeKernel32(handle=1234, waited=WAIT_TIMEOUT)
+    )
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+
+    assert fake.pid_requested == 4321, "the probe asked about a different process"
+    assert fake.inherit_requested is False, "the handle was opened inheritable"
+    assert fake.WaitForSingleObject.argtypes == (ctypes.c_void_p, ctypes.c_uint32)
+    assert fake.WaitForSingleObject.restype is ctypes.c_uint32
+    assert fake.CloseHandle.argtypes == (ctypes.c_void_p,)
+
+
+@pytest.mark.unit
+def test_a_process_that_exited_with_code_259_is_not_mistaken_for_a_running_one(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """259 is STILL_ACTIVE and also a legal exit code, so it cannot be the test.
+
+    This is why the probe asks `WaitForSingleObject` for the handle's signaled
+    state rather than reading `GetExitCodeProcess`. A run that exited with 259
+    is gone, and reading it as live would leave the lock standing over a dead
+    holder forever, which is precisely the wedge `single_run` exists to avoid.
+    Windows signals the handle either way, so the exit code never enters into
+    it.
+    """
+    fake = _use_fake_kernel32(
+        monkeypatch, _FakeKernel32(handle=259, waited=WAIT_OBJECT_0)
+    )
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is False
+    assert fake.closed == [259]
+
+
+@pytest.mark.unit
+def test_windows_reads_a_failed_wait_as_live(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An unanswered wait must not clear someone else's lock.
+
+    WAIT_FAILED is not an answer, so the conservative reading is the only safe
+    one: guessing dead starts the second paid run, guessing live costs an
+    operator one manual check. The handle is still released.
+    """
+    fake = _use_fake_kernel32(monkeypatch, _FakeKernel32(handle=77, waited=WAIT_FAILED))
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+    assert fake.closed == [77], "the process handle outlived the probe"
+
+
+@pytest.mark.unit
+def test_windows_polls_rather_than_waiting_on_the_other_run(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A zero timeout, so the probe never blocks on another run's lifetime.
+
+    `WaitForSingleObject` with any other timeout would make a liveness question
+    into a wait for the paid run to finish.
+    """
+    fake = _use_fake_kernel32(
+        monkeypatch, _FakeKernel32(handle=1234, waited=WAIT_TIMEOUT)
+    )
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+    assert fake.timeout_requested == 0
+
+
+@pytest.mark.unit
+def test_windows_asks_only_for_the_right_the_wait_needs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """SYNCHRONIZE only: a narrower request is likelier to be granted.
+
+    `WaitForSingleObject` needs nothing else, and every right that is asked for
+    and refused turns a definite answer into the access-denied fallback, which
+    reports live without knowing.
+    """
+    fake = _use_fake_kernel32(
+        monkeypatch, _FakeKernel32(handle=1234, waited=WAIT_TIMEOUT)
+    )
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+    assert fake.access_requested == SYNCHRONIZE
+
+
+@pytest.mark.unit
+def test_a_corrupted_lock_reads_as_dead_on_windows_too(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The malformed-pid guard must run before the platform branch."""
+    monkeypatch.setattr(sys, "platform", "win32")
+    monkeypatch.setattr(
+        ctypes,
+        "WinDLL",
+        lambda *_a, **_k: pytest.fail("a malformed pid must not reach Win32"),
+        raising=False,
+    )
+
+    assert _alive("not-a-pid") is False
 
 
 # --------------------------------------------------------------------------

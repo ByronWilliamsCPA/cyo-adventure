@@ -481,6 +481,16 @@ replace this line with the merge date once it lands. A scheduled backup exists a
 the restore side is documented below but **not yet drilled against a live project** -- see the
 `#VERIFY` note at the end of this section before relying on it in a real incident.
 
+> **No backup has ever completed successfully as of 2026-08-11.** All six secrets the workflow
+> needs are absent from every scope, so the one run that executed (2026-08-10) died on
+> `BACKUP_ENCRYPTION_KEY must decode to 32 bytes for AES-256 (got 0)`. The runs before it never
+> executed at all: the job named the `production` environment, whose required-reviewer rule parks
+> a scheduled run in `waiting` until it expires as `cancelled`. That is the identical trap this
+> runbook already documents for `e2e-prod.yml` in Section 7, and it is why `production-e2e` exists.
+> The backup job now names a dedicated **`backups`** environment with no protection rules, holding
+> only its six credentials. Populating those secrets is the remaining step; until one run reports
+> success, treat this section as untested and assume there is nothing to restore from.
+
 ### What runs today
 
 `.github/workflows/supabase-backup.yml` runs

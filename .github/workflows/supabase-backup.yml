@@ -3,10 +3,20 @@
 # per-tier lifecycle expiry. Closes issue #558 / UW-D27 (docs/planning/roadmap.md
 # Phase 5, docs/operations/runbook.md section 6).
 #
-# Required secrets on the `production` GitHub Environment (none of these exist yet as
-# Actions secrets -- they are net-new, distinct from the app's runtime R2 credentials
-# and from the existing SUPABASE_DB_PASSWORD used by supabase-production.yml, which
-# authenticates `supabase link` rather than a raw connection string):
+# Required secrets on the `backups` GitHub Environment. They are net-new, distinct from
+# the app's runtime R2 credentials and from the existing SUPABASE_DB_PASSWORD used by
+# supabase-production.yml, which authenticates `supabase link` rather than a raw
+# connection string.
+#
+# Why a dedicated `backups` environment rather than `production`: an environment does two
+# separate jobs, it scopes secrets and it gates deployments. This workflow wants the first
+# and is broken by the second. `production` carries a required-reviewer protection rule,
+# so every nightly run parked in `waiting` until a human approved it, and an unapproved
+# run is eventually expired as `cancelled` rather than failed. Three of the four runs
+# preceding 2026-08-11 never executed for that reason, and `production` supplied this job
+# no secret it actually reads, so the gate was the only thing it contributed. The `backups`
+# environment therefore has NO protection rules; it exists solely to keep these six
+# credentials out of reach of every other workflow in the repository.
 #
 #   SUPABASE_DB_URL          Direct (non-pooler) Postgres connection string. Per
 #                             docs/operations/runbook.md's Supavisor-pooling warning,
@@ -34,6 +44,11 @@
 # job; docs/operations/runbook.md section 7 documents the convention). Uses the
 # `ci-failure` label (shared with planning-linkage.yml and the other non-E2E scheduled
 # jobs) rather than `e2e-alert`, since this is an ops job, not an E2E tier.
+#
+# What the alert does NOT cover: a run that never happens at all emits no conclusion to
+# alert on, so silence here is not evidence of a healthy backup. Verifying that a recent
+# backup actually exists is the runbook's job (docs/operations/runbook.md section 6), not
+# this workflow's.
 #
 # Injection posture: this workflow DOES read event input. `workflow_dispatch` supplies
 # three retention inputs, and `inputs.*` IS `github.event.inputs.*`, so it is event data
@@ -90,7 +105,7 @@ jobs:
     name: Dump, encrypt, and upload
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    environment: production
+    environment: backups
     permissions:
       # contents alone. Actions has NO step-level `permissions` key, so any scope
       # granted here is held by every step in this job, including the one that runs
@@ -155,9 +170,16 @@ jobs:
             --monthly-days "$MONTHLY_DAYS"
 
   alert:
-    name: Alert on failure
+    name: Alert on failure or cancellation
     needs: backup
-    if: failure()
+    # `failure() || cancelled()`, not `failure()` alone. A cancelled backup produces no
+    # backup just as surely as a failed one, and `failure()` does not match a
+    # cancellation, so a cancelled run alerted nobody. Known limitation: when the whole
+    # workflow RUN is cancelled, GitHub may not schedule this job at all, so this covers
+    # a cancelled `backup` job rather than guaranteeing coverage of every cancellation
+    # path. The dominant source of those cancellations (an expired environment approval)
+    # is removed by the `backups` environment above.
+    if: failure() || cancelled()
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -204,7 +226,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: existing.number,
-                body: `Scheduled database backup failed again on ${today}. Run: ${runUrl}`,
+                body: `Scheduled database backup did not complete on ${today}. Run: ${runUrl}`,
               })
             } else {
               await github.rest.issues.create({
@@ -213,7 +235,7 @@ jobs:
                 title: `${marker} scheduled database backup failing`,
                 labels: ['ci-failure'],
                 body: [
-                  'The scheduled `Database backup` workflow (`.github/workflows/supabase-backup.yml`) failed.',
+                  'The scheduled `Database backup` workflow (`.github/workflows/supabase-backup.yml`) did not complete: it either failed or was cancelled.',
                   '',
                   'This is the nightly `supabase db dump` -> AES-256-GCM encrypt -> tiered R2',
                   'upload job (issue #558 / UW-D27). A failure here means one of:',

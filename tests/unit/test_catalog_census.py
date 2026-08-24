@@ -3,15 +3,18 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
 import pytest
 
+import scripts.catalog_census as catalog_census
 from cyo_adventure.generation.skeleton import is_sidecar
 from cyo_adventure.validator.band_profile import offered_cells
 from scripts.catalog_census import (
     GENERATED_DOC,
+    Shell,
     _band_rank,
+    _doc_path,
     census,
     load_shells,
     main,
@@ -146,6 +149,73 @@ def test_generated_doc_is_current() -> None:
     fails here rather than silently contradicting the prose that cites it.
     """
     assert GENERATED_DOC.read_text(encoding="utf-8") == render(census())
+
+
+def test_a_document_path_is_forward_slashed_on_every_platform() -> None:
+    """The census names a repository location, not a host filesystem location.
+
+    `str(path)` renders the host separator, so a census generated on Windows
+    disagreed with the committed document generated on Linux and
+    `test_generated_doc_is_current` failed there and only there. That is a
+    Windows-only red on a check that no per-PR job runs, so the guard has to be
+    one every platform can fail: a Windows path is asserted here directly
+    rather than waiting for a Windows runner to produce one.
+    """
+    windows = PureWindowsPath("skeletons") / "16+" / "the-tenfold-siege.json"
+    assert _doc_path(windows) == "skeletons/16+/the-tenfold-siege.json"
+    posix = PurePosixPath("skeletons/16+/the-tenfold-siege.json")
+    assert _doc_path(posix) == "skeletons/16+/the-tenfold-siege.json"
+    assert _doc_path(windows) == _doc_path(posix)
+
+
+def test_the_generated_doc_carries_no_host_separator(data: dict[str, object]) -> None:
+    """No path anywhere in the rendered census may carry a backslash."""
+    largest = data["largest"]
+    assert isinstance(largest, dict)
+    for superlative in ("by_nodes", "by_commissioned_words"):
+        entry: object = largest[superlative]
+        assert isinstance(entry, dict)
+        path: object = entry["path"]
+        assert isinstance(path, str)
+        assert "\\" not in path
+        assert path.startswith("skeletons/")
+    body = render(data)
+    paths = [line for line in body.splitlines() if "`skeletons" in line]
+    assert paths, "expected the largest-graph table to cite skeleton paths"
+    assert not [line for line in paths if "\\" in line]
+
+
+def test_a_windows_catalog_path_is_forward_slashed_before_it_reaches_the_doc(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The forward-slashing has to happen in `census`, not on the host.
+
+    `test_the_generated_doc_carries_no_host_separator` reads the real catalog,
+    so on a Linux runner `PosixPath.__str__` emits no backslash whether or not
+    `_doc_path` normalises anything: that test passes with the fix reverted and
+    can only ever fail on the Windows job, which is the job that let the defect
+    reach `main` in the first place. Feeding `census` a Windows-pathed shell
+    makes the same regression fail on every platform, which is the whole point
+    of catching it in a unit test rather than in CI.
+    """
+    windows_shell = Shell(
+        path=PureWindowsPath("skeletons") / "16+" / "the-tenfold-siege.json",
+        band="16+",
+        nodes=999_999,
+        commissioned_words=999_999,
+        production_eligible=True,
+    )
+    monkeypatch.setattr(catalog_census, "load_shells", lambda: [windows_shell])
+
+    data = census()
+
+    largest = data["largest"]
+    assert isinstance(largest, dict)
+    for superlative in ("by_nodes", "by_commissioned_words"):
+        entry: object = largest[superlative]
+        assert isinstance(entry, dict)
+        assert entry["path"] == "skeletons/16+/the-tenfold-siege.json"
+    assert "\\" not in render(data)
 
 
 def test_check_mode_detects_a_stale_doc(tmp_path: Path, monkeypatch) -> None:
