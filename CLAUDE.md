@@ -1057,8 +1057,17 @@ uv run pytest tests/unit/test_example.py::test_function_name -v
 - **Compliance/release**: `accessibility-compliance-weekly.yml` (ADR-029; weekly, non-blocking
   axe scan against `main`, WCAG 2.2 plus best-practice rules; the per-PR WCAG 2.1 AA gate lives
   in `ci.yml`'s `frontend-e2e` job instead), `sbom.yml`, `reuse.yml`, `validate-cruft.yml`,
-  `release.yml` (two-phase, ruleset-compatible flow, issues #183/#157/#158:
-  a `propose` job runs python-semantic-release's writer
+  `release.yml` (two-phase, ruleset-compatible flow, issues #183/#157/#158.
+  The two jobs take different triggers: `propose` runs on a **daily schedule**
+  (01:00 UTC) so a day's merges batch into ONE release PR, while `publish` stays
+  on `push` because its guard reads `head_commit.message`, which exists only on
+  a push event. `propose` also runs `scripts/check_release_tag_sync.py` first,
+  which fails the run when `pyproject.toml`'s version has no matching tag: that
+  is the signature of a `publish` failure, and it deadlocks the pipeline
+  permanently while every subsequent run still reports success (it happened on
+  2026-08-17 via a transient API 503 and went unnoticed for a week; runbook
+  section 7.2).
+  In detail: a `propose` job runs python-semantic-release's writer
   (`--no-commit/--no-tag/--no-push`) to bump `pyproject.toml` and GENERATE the
   CHANGELOG from Conventional Commits (PSR `mode="update"` splices each version
   in at the `<!-- version list -->` marker, preserving history), re-locks,
