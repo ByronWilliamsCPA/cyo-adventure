@@ -504,11 +504,23 @@ the restore side is documented below but **not yet drilled against a live projec
    (the public covers bucket is one typo away) would otherwise be silently accepted. Initialize
    a brand-new bucket once with `--init-bucket`; never as part of the scheduled run.
 1. Executes `supabase db dump` three times (roles, schema, data-via-COPY) against
-   `SUPABASE_DB_URL`, which **must be the direct (non-pooler) connection string** --
-   [ADR-009](../planning/adr/adr-009-supabase-platform.md)'s Supavisor pooling constraints
-   (`CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE`) apply to any long-lived dump/restore
-   connection, and a hand-rolled dump against the pooler URL can corrupt prepared-statement
-   state under the transaction-mode pooler.
+   `SUPABASE_DB_URL`, which **must be the Supavisor session-mode pooler on port 5432**
+   (`postgresql://postgres.<ref>:<password>@aws-0-us-east-1.pooler.supabase.com:5432/postgres`),
+   **not** the transaction-mode pooler on port 6543.
+   [ADR-009](../planning/adr/adr-009-supabase-platform.md)'s Supavisor constraints
+   (`CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE`) describe the **transaction-mode**
+   pooler, which reassigns backends mid-session and can corrupt prepared-statement state
+   on a long-lived dump connection. Session mode holds one backend for the life of the
+   connection and is the supported route for `pg_dump`/`pg_dumpall`; the production
+   `cyo-adventure-db-backup` sidecar has dumped this database through it since 2026-07.
+
+   > **This instruction previously said "direct (non-pooler)" and that was wrong in a way
+   > that could not work.** `db.<project-ref>.supabase.co` resolves to **AAAA only** (no
+   > IPv4 A record) on this project. `supabase db dump` runs `pg_dumpall` inside a Docker
+   > container, whose default bridge network is IPv4-only, and GitHub-hosted runners have
+   > no IPv6 egress either. Both therefore fail with `could not translate host name ... to
+   > address: Name or service not known` before any authentication happens. Verified
+   > 2026-08-24. Restoring the direct route would require the Supabase IPv4 add-on.
 2. Encrypts each leg with AES-256-GCM (a random nonce per file; the key never leaves the
    `BACKUP_ENCRYPTION_KEY` secret and is not derivable from the ciphertext).
 3. Uploads to a **dedicated** R2 bucket (`R2_BACKUP_BUCKET`, distinct from the public covers
@@ -522,9 +534,10 @@ the restore side is documented below but **not yet drilled against a live projec
    quietly empty the bucket with zero red runs. It also doubles as the only exercise of the R2
    **read** path, so a token scoped without list permission is caught here rather than during a
    restore. An empty bucket is accepted only under `--init-bucket`.
-5. Asserts a per-prefix R2 lifecycle expiration rule (self-healing if the bucket configuration
-   ever drifts): daily 7 days, weekly 28 days, monthly 180 days by default, tunable via
-   `workflow_dispatch` inputs. This bounds total retained storage to roughly 7 + 4 + 6 = 17
+5. Applies a per-prefix R2 lifecycle expiration rule **where the token permits it**: daily
+   7 days, weekly 28 days, monthly 180 days. In this deployment it does not permit it, so the
+   rules are hand-set and neither the self-healing nor the `workflow_dispatch` retention inputs
+   are live; see the blockquote below before relying on either. This bounds total retained storage to roughly 7 + 4 + 6 = 17
    backup sets at any time, sized for limited R2 space rather than unbounded growth -- re-tune
    the day counts once real dump sizes are known (see the `#ASSUME` in the script's module
    docstring). Retention values are validated before anything else runs, against per-tier floors
@@ -532,9 +545,40 @@ the restore side is documented below but **not yet drilled against a live projec
    a deliberate shrink below a floor needs `--force-retention`, and the ordering rule is never
    waived.
 
+   > **In this deployment the script does NOT assert these rules; they are set by hand.** R2
+   > scopes API tokens by permission *class*, and lifecycle is a bucket-level operation that an
+   > object-scoped token may not call. R2's admin permissions cannot be restricted to a single
+   > bucket, so an admin token able to manage lifecycle here could also delete the public covers
+   > bucket. We kept the least-privilege token, so `ensure_lifecycle_rules()` logs
+   > `backup_lifecycle_unmanaged` and continues instead of failing the run.
+   >
+   > The three rules are configured on the `cyo-backups` bucket in the Cloudflare dashboard
+   > (R2 > the bucket > Settings > Object lifecycle rules), and must stay in sync with the
+   > defaults above:
+   >
+   > | Rule name | Prefix | Action | Days |
+   > | --- | --- | --- | --- |
+   > | `expire-daily` | `daily/` | Delete objects | 7 |
+   > | `expire-weekly` | `weekly/` | Delete objects | 28 |
+   > | `expire-monthly` | `monthly/` | Delete objects | 180 |
+   >
+   > Three consequences to hold onto:
+   >
+   > - **No automated check can confirm these rules exist or stayed correct**, because the token
+   >   cannot read lifecycle config either. Retention silently not working looks exactly like
+   >   retention working. Re-check the dashboard by eye whenever you touch the bucket.
+   > - **The `workflow_dispatch` retention inputs no longer reach R2.** They still validate against
+   >   the floors and still appear in the run log, but the dashboard is the only thing that decides
+   >   when an object expires. Changing retention means editing the rules by hand AND passing the
+   >   matching inputs, or the log and reality diverge.
+   > - The bucket also carries a `Default Multipart Abort Rule` that this script does not own. If
+   >   the token is ever widened, the next run's `put_bucket_lifecycle_configuration` would REPLACE
+   >   the whole configuration and delete it; `backup_lifecycle_replacing_foreign_rules` warns
+   >   first, and that warning must be believed.
+
 The step order is deliberate: nothing is expired or mutated until a good backup is positively
-confirmed. The lifecycle write is last, so a run that fails its dump cannot leave a bad retention
-value behind; the staleness check sits between the upload and the lifecycle write, so today's
+confirmed. The lifecycle write is last (when the token permits it at all), so a run that fails its
+dump cannot leave a bad retention value behind; the staleness check sits between the upload and the lifecycle write, so today's
 backup is safely stored before the alarm fires and an incident starts with one more good backup,
 not one fewer.
 
