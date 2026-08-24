@@ -564,6 +564,15 @@ async def test_family_lane_forbidden_pair_is_422(
         assert row.enabled is True
 
     req_id = await _approved_request_id(client, seed, "a lantern in the deep")
+
+    # Job identities before the rejected request, compared as a set afterwards.
+    # NOT filtered on GenerationJob.provider: build_authoring_plan never
+    # populates that column (it records the chosen pair in
+    # authoring_metadata), so a provider filter matches nothing on this path
+    # whether or not a job was created, and the assertion could not fail.
+    async with sessions() as session:
+        jobs_before = set((await session.scalars(select(GenerationJob.id))).all())
+
     res = await client.post(
         f"{_CREATE}/{req_id}/authoring-plan",
         json={
@@ -587,18 +596,12 @@ async def test_family_lane_forbidden_pair_is_422(
     assert "value" not in body["details"]
 
     # No job was created: the refusal happens before anything is persisted.
-    # Filtered on the provider rather than on the request, because a
+    # Compared against the pre-request set rather than filtered, because a
     # GenerationJob carries no story-request column and other tests in this
-    # module legitimately leave openrouter jobs behind.
+    # module legitimately leave jobs behind.
     async with sessions() as session:
-        jobs = (
-            await session.scalars(
-                select(GenerationJob).where(
-                    GenerationJob.provider == _LANE_FORBIDDEN_PROVIDER
-                )
-            )
-        ).all()
-        assert not jobs
+        jobs_after = set((await session.scalars(select(GenerationJob.id))).all())
+    assert jobs_after == jobs_before
 
 
 async def test_skeleton_fill_response_includes_alternatives(

@@ -218,8 +218,10 @@ describe('ProviderAllowlistPage', () => {
         data: {
           error: 'ValidationError',
           message:
-            "provider 'openrouter' may not be enabled on the allowlist: a kid- or " +
-            'guardian-triggered generation job is not permitted to use it.',
+            "provider 'anthropic' may not be enabled on the allowlist: a kid- or " +
+            'guardian-triggered generation job is not permitted to use it, so an ' +
+            'enabled row would be a pair the authoring-plan endpoint accepts and ' +
+            'the worker then refuses. The row may exist while disabled.',
           code: 'VALIDATION_ERROR',
           details: { field: 'provider' },
         },
@@ -229,14 +231,20 @@ describe('ProviderAllowlistPage', () => {
     renderPage()
     await screen.findByText('claude-sonnet-4-6')
 
-    await user.selectOptions(screen.getByLabelText('Provider'), 'openrouter')
-    await user.type(screen.getByLabelText('Model id'), 'some/forbidden-model')
+    // 'anthropic' is the provider the family lane forbids; 'openrouter' is
+    // permitted, so a fixture naming it would assert a response the backend
+    // can never produce (api/provider_allowlist.py returns 422 only for a
+    // provider outside FAMILY_LANE_PROVIDERS).
+    await user.selectOptions(screen.getByLabelText('Provider'), 'anthropic')
+    await user.type(screen.getByLabelText('Model id'), 'claude-sonnet-4-6')
     await user.click(screen.getByRole('button', { name: 'Add to allowlist' }))
 
     expect(
       await screen.findByText(
-        "provider 'openrouter' may not be enabled on the allowlist: a kid- or " +
-          'guardian-triggered generation job is not permitted to use it.'
+        "provider 'anthropic' may not be enabled on the allowlist: a kid- or " +
+          'guardian-triggered generation job is not permitted to use it, so an ' +
+          'enabled row would be a pair the authoring-plan endpoint accepts and ' +
+          'the worker then refuses. The row may exist while disabled.'
       )
     ).toBeInTheDocument()
     expect(
@@ -245,6 +253,23 @@ describe('ProviderAllowlistPage', () => {
   })
 
   it('surfaces the server rejection reason when re-enabling a provider the family lane forbids (422)', async () => {
+    // The row must start DISABLED so the button under test is 'Enable'.
+    // Clicking 'Disable' would exercise the one write the backend still
+    // permits ("The row may exist while disabled"), so that fixture would
+    // pass with the 422 guard deleted. `field` is 'enabled' on this path,
+    // not 'provider': api/provider_allowlist.py passes field="enabled" from
+    // the update handler and field="provider" from the create handler.
+    mockList({
+      rows: [
+        {
+          id: 'a1',
+          provider: 'anthropic',
+          model_id: 'claude-sonnet-4-6',
+          enabled: false,
+          display_name: 'Claude Sonnet 4.6 (direct)',
+        },
+      ],
+    })
     mockPut.mockRejectedValue({
       isAxiosError: true,
       response: {
@@ -253,9 +278,11 @@ describe('ProviderAllowlistPage', () => {
           error: 'ValidationError',
           message:
             "provider 'anthropic' may not be enabled on the allowlist: a kid- or " +
-            'guardian-triggered generation job is not permitted to use it.',
+            'guardian-triggered generation job is not permitted to use it, so an ' +
+            'enabled row would be a pair the authoring-plan endpoint accepts and ' +
+            'the worker then refuses. The row may exist while disabled.',
           code: 'VALIDATION_ERROR',
-          details: { field: 'provider' },
+          details: { field: 'enabled' },
         },
       },
     })
@@ -263,12 +290,21 @@ describe('ProviderAllowlistPage', () => {
     renderPage()
     await screen.findByText('claude-sonnet-4-6')
 
-    await user.click(screen.getByRole('button', { name: 'Disable claude-sonnet-4-6' }))
+    await user.click(screen.getByRole('button', { name: 'Enable claude-sonnet-4-6' }))
+
+    await waitFor(() =>
+      expect(mockPut).toHaveBeenCalledWith('/v1/admin/provider-allowlist/a1', {
+        enabled: true,
+        display_name: 'Claude Sonnet 4.6 (direct)',
+      })
+    )
 
     expect(
       await screen.findByText(
         "provider 'anthropic' may not be enabled on the allowlist: a kid- or " +
-          'guardian-triggered generation job is not permitted to use it.'
+          'guardian-triggered generation job is not permitted to use it, so an ' +
+          'enabled row would be a pair the authoring-plan endpoint accepts and ' +
+          'the worker then refuses. The row may exist while disabled.'
       )
     ).toBeInTheDocument()
     expect(

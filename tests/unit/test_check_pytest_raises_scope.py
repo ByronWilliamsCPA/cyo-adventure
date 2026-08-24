@@ -447,3 +447,80 @@ def test_all_mode_and_explicit_paths_are_mutually_exclusive(tmp_path: Path) -> N
     )
 
     assert _MODULE.main(["--all", "--root", str(tmp_path), str(path)]) == 2
+
+
+def test_all_mode_checks_the_checker_itself(tmp_path: Path) -> None:
+    """`--all` scans `scripts/check_pytest_raises_scope.py`, not only `tests/`.
+
+    The hook's `files:` regex names the checker's own file as in scope, so
+    `--all` has to reach it or the two scopes diverge and the mode stops being
+    the tree-wide equivalent of the hook. Asserted through a real violation
+    planted in the discovered copy rather than by inspecting the returned list,
+    so dropping the `own_file` branch fails this test instead of quietly
+    narrowing what CI covers.
+    """
+    (tmp_path / "tests").mkdir()
+    _write(
+        tmp_path / "tests" / "test_clean.py",
+        """
+        import pytest
+
+        def helper():
+            return 1
+
+        def test_one_call():
+            with pytest.raises(ValueError):
+                helper()
+        """,
+    )
+    (tmp_path / "scripts").mkdir()
+    own_file = _write(
+        tmp_path / "scripts" / "check_pytest_raises_scope.py",
+        """
+        import pytest
+
+        def setup():
+            return 1
+
+        def do_work():
+            raise ValueError("boom")
+
+        def test_two_calls():
+            with pytest.raises(ValueError):
+                setup()
+                do_work()
+        """,
+    )
+
+    assert _MODULE.discover_paths(tmp_path) == [
+        tmp_path / "tests" / "test_clean.py",
+        own_file,
+    ]
+    assert _MODULE.main(["--all", "--root", str(tmp_path)]) == 1
+
+
+def test_discover_paths_omits_the_checker_when_the_tree_lacks_it(
+    tmp_path: Path,
+) -> None:
+    """A tree with no `scripts/` yields only the `tests/` files, and does not raise.
+
+    The guard exists because `--root` may point at a tree that is not this
+    repository; discovery has to degrade to the files that are there rather
+    than append a path that does not exist and fail later as "cannot check".
+    """
+    (tmp_path / "tests").mkdir()
+    only = _write(
+        tmp_path / "tests" / "test_clean.py",
+        """
+        import pytest
+
+        def helper():
+            return 1
+
+        def test_one_call():
+            with pytest.raises(ValueError):
+                helper()
+        """,
+    )
+
+    assert _MODULE.discover_paths(tmp_path) == [only]
