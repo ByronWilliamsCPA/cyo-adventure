@@ -67,17 +67,35 @@ mechanism, with no state-machine change.
 
 ### 1. Widen the status guard
 
-Replace the inequality at `api/remoderate.py:407` with a membership test against a
-named module-level constant:
+Replace the inequality at `api/remoderate.py:407` with a membership test against
+named module-level constants:
 
 ```python
-_REMODERATABLE_STATUSES = frozenset({Status.PUBLISHED, Status.IN_REVIEW})
+REMODERATABLE_STATUSES: frozenset[Status] = frozenset(
+    {Status.PUBLISHED, Status.IN_REVIEW}
+)
+
+REMODERATABLE_STATUS_VALUES: frozenset[str] = frozenset(
+    s.value for s in REMODERATABLE_STATUSES
+)
 ```
 
-`draft`, `needs_revision`, and `archived` remain rejected. The `rule` string is
-renamed off `remoderate_requires_published`, which the widened set falsifies.
+Two constants, and both public, which is a deliberate departure from the single
+underscore-prefixed name this section first specified. `Storybook.status` is stored
+as a `str`, so the guard needs the value set, while a reader reasoning about the
+admission set against `LEGAL_TRANSITIONS` needs the `Status` members; deriving the
+second from the first is what keeps them from drifting apart. They are public
+because `scripts/remoderate_books.py` validates an operator's explicit `--book-id`
+against the same set, so the sweep refuses an inadmissible status before
+`--execute` touches any book rather than aborting mid-sweep on this module's 400.
+A private constant would have forced a second copy of a security-relevant
+admission set into the script, which is the failure the naming avoids.
 
-A named frozenset rather than an inline `in (a, b)` for the same reason
+`draft`, `needs_revision`, and `archived` remain rejected. The `rule` string is
+renamed off `remoderate_requires_published`, which the widened set falsifies, to
+`remoderate_requires_reviewable_status`.
+
+Named frozensets rather than an inline `in (a, b)` for the same reason
 `_GATE_ENTRY_POINTS` exists in `tests/unit/test_gate_capacity_limiter.py`: the set
 is the thing a future reader needs to find, and enumerating it in one place keeps a
 third status from being added at a call site.
@@ -255,6 +273,27 @@ chain reaches first.
 false for the population this adds and false in the dangerous direction. It states
 the invariant (this sweep never moves a book) and spells out both consequences,
 since `--book-id` can mix the two populations.
+
+`list_in_review_targets` returns what it had to drop as well as what it selected.
+An `in_review` book with no version row is a corrupt-at-rest anomaly the review
+queue also skips, and skipping it is right: one anomaly must not make the whole
+sweep unselectable. Reporting it only to the structured log is not, because the
+book is then neither `failed` nor `blocked` and reaches an operator through no
+channel the sweep itself owns. The sweep would print a tidy target count and exit
+0 having covered fewer books than the queue lists, and the all-excluded case is
+worse still: it takes `main()`'s "no target books found" early return, which is
+indistinguishable from a genuinely empty queue. So the ids come back to the
+caller, `main()` names them above the target count, and any exclusion exits
+nonzero on the dry-run path too, which is where an operator checks coverage
+before spending on LLM calls.
+
+The ids are returned rather than derived by recounting the eligible population
+with a second query. A book INSERTed between the two queries would be reported as
+excluded when it had merely arrived late.
+
+`main()` also names the books whose text the repair pass rewrote, which only the
+`in_review` arm can produce. Rolled into the plain success count it is invisible,
+and a reviewer would approve prose they had never read.
 
 ## Non-goals
 

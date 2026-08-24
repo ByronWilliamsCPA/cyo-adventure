@@ -573,6 +573,92 @@ def test_main_exits_nonzero_when_a_book_is_blocked(
     assert "s1 v1" in out
 
 
+def test_main_exits_nonzero_when_a_book_was_excluded(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A book the listing could not target is a coverage gap, not a clean run.
+
+    An excluded book is neither failed nor blocked, so before this it produced
+    no exit-code signal at all: the sweep printed a tidy "1 target book(s)"
+    and exited 0 while a second queued book went un-re-moderated.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)],
+        executed=True,
+        succeeded=[("s1", 1)],
+        excluded=["s_versionless"],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main(result)
+
+    assert excinfo.value.code is not None
+    assert "1 book(s) excluded" in str(excinfo.value.code)
+    out = capsys.readouterr().out
+    assert "EXCLUDED from the target list" in out
+    # The id has to be in the SUMMARY, not only in a structured log an
+    # operator would have to be tailing separately to see.
+    assert "s_versionless" in out
+
+
+def test_main_exits_nonzero_when_every_book_was_excluded(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The all-excluded case is the worst one: it looks like an empty queue.
+
+    With no targets at all, main() takes its "no target books found" early
+    return, which is indistinguishable from a genuinely empty review queue
+    unless the exclusions are reported on that path too.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[], executed=True, excluded=["s_a", "s_b"]
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main(result)
+
+    assert excinfo.value.code is not None
+    assert "2 in_review book(s)" in str(excinfo.value.code)
+    assert "s_a, s_b" in capsys.readouterr().out
+
+
+def test_main_reports_exclusions_on_the_dry_run_path(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A dry run is where an operator checks coverage BEFORE spending on LLMs."""
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)], executed=False, excluded=["s_versionless"]
+    )
+
+    with pytest.raises(SystemExit):
+        _run_main(result)
+
+    assert "s_versionless" in capsys.readouterr().out
+
+
+def test_main_names_the_books_the_repair_pass_rewrote(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A repaired book's stored text is no longer what the reviewer last read.
+
+    Rolled up with plain successes it is invisible, and a reviewer would
+    approve prose they never saw.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)],
+        executed=True,
+        succeeded=[("s1", 1)],
+        repaired=[("s1", 1)],
+    )
+
+    _run_main(result)
+
+    out = capsys.readouterr().out
+    assert "REPAIRED" in out
+    assert "re-read before approving" in out
+    assert "s1 v1" in out
+
+
 def test_main_exits_zero_when_every_book_comes_back_clean(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -671,22 +757,29 @@ async def test_list_in_review_targets_returns_latest_version_per_book() -> None:
         [("s_zebra", 4), ("s_apple", 2)],
     )
 
-    targets = await remoderate_books.list_in_review_targets(session)
+    listing = await remoderate_books.list_in_review_targets(session)
 
-    assert targets == [("s_apple", 2), ("s_zebra", 4)]
+    assert listing.targets == [("s_apple", 2), ("s_zebra", 4)]
+    assert listing.excluded == []
 
 
 @pytest.mark.asyncio
 async def test_list_in_review_targets_skips_books_with_no_version_row() -> None:
-    """A versionless in_review book is skipped, not fatal, mirroring the queue."""
+    """A versionless in_review book is skipped, not fatal, mirroring the queue.
+
+    It is also REPORTED. Skipping silently would let the sweep cover fewer
+    books than the review queue lists while printing a clean target count, so
+    the dropped id has to come back to the caller, not only to the log.
+    """
     session = _grouped_max_session(
         [_in_review_storybook("s_ok"), _in_review_storybook("s_versionless")],
         [("s_ok", 1)],
     )
 
-    targets = await remoderate_books.list_in_review_targets(session)
+    listing = await remoderate_books.list_in_review_targets(session)
 
-    assert targets == [("s_ok", 1)]
+    assert listing.targets == [("s_ok", 1)]
+    assert listing.excluded == ["s_versionless"]
 
 
 @pytest.mark.asyncio
@@ -699,9 +792,10 @@ async def test_list_in_review_targets_skips_the_version_query_when_empty() -> No
     session = AsyncMock()
     session.execute = AsyncMock(return_value=books_result)
 
-    targets = await remoderate_books.list_in_review_targets(session)
+    listing = await remoderate_books.list_in_review_targets(session)
 
-    assert targets == []
+    assert listing.targets == []
+    assert listing.excluded == []
     assert session.execute.await_count == 1
 
 
@@ -783,6 +877,75 @@ async def test_sweep_in_review_selects_via_list_in_review_targets() -> None:
     assert result.targets == [("s_a", 3)]
     assert result.executed is False
     remod.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_sweep_reports_books_excluded_from_the_listing() -> None:
+    """sweep() carries the listing's exclusions through to its result.
+
+    The exclusion is discovered inside list_in_review_targets, so unless
+    sweep() threads it onto SweepResult, main() has nothing to print and
+    nothing to signal in its exit code.
+    """
+    session = _grouped_max_session(
+        [_in_review_storybook("s_ok"), _in_review_storybook("s_versionless")],
+        [("s_ok", 1)],
+    )
+
+    result = await remoderate_books.sweep(
+        engine=_mock_engine(),
+        session_factory=_mock_session_factory(session),
+        in_review=True,
+    )
+
+    assert result.targets == [("s_ok", 1)]
+    assert result.excluded == ["s_versionless"]
+
+
+@pytest.mark.asyncio
+async def test_sweep_records_repaired_books() -> None:
+    """A book whose text the repair pass rewrote is recorded separately."""
+    session = _grouped_max_session([_in_review_storybook("s_a")], [("s_a", 3)])
+    outcome = MagicMock()
+    outcome.overall_verdict = "pass"
+    outcome.repaired = True
+    with patch.object(
+        remoderate_books,
+        "remoderate_storybook_version",
+        new=AsyncMock(return_value=outcome),
+    ):
+        result = await remoderate_books.sweep(
+            engine=_mock_engine(),
+            session_factory=_mock_session_factory(session),
+            in_review=True,
+            execute=True,
+        )
+
+    assert result.succeeded == [("s_a", 3)]
+    assert result.repaired == [("s_a", 3)]
+
+
+@pytest.mark.asyncio
+async def test_sweep_leaves_repaired_empty_when_nothing_was_rewritten() -> None:
+    """The repaired list must discriminate, not just mirror succeeded."""
+    session = _grouped_max_session([_in_review_storybook("s_a")], [("s_a", 3)])
+    outcome = MagicMock()
+    outcome.overall_verdict = "pass"
+    outcome.repaired = False
+    with patch.object(
+        remoderate_books,
+        "remoderate_storybook_version",
+        new=AsyncMock(return_value=outcome),
+    ):
+        result = await remoderate_books.sweep(
+            engine=_mock_engine(),
+            session_factory=_mock_session_factory(session),
+            in_review=True,
+            execute=True,
+        )
+
+    assert result.succeeded == [("s_a", 3)]
+    assert result.repaired == []
 
 
 def test_parse_args_accepts_in_review() -> None:

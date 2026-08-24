@@ -84,6 +84,20 @@ def _ctx(principal: Principal, session: AsyncMock) -> RequestContext:
     return RequestContext(principal=principal, session=session)
 
 
+def _expected_validation_report(blob: dict[str, object]) -> dict[str, object]:
+    """The stored ``validation_report`` the endpoint should produce for ``blob``.
+
+    Mirrors ``api/remoderate.py::_fresh_validation_report``. Asserting against
+    a bare ``report.to_dict()`` is what let the missing ``gate_context`` ship:
+    the stored payload carries the posture the run was made under, and a
+    comparison that omits it cannot see the omission.
+    """
+    result = run_fill_gate(blob)
+    expected: dict[str, object] = dict(result.report.to_dict())
+    expected["gate_context"] = result.context
+    return expected
+
+
 def _blob() -> dict[str, object]:
     return copy.deepcopy(_CANNED_STORY)
 
@@ -591,6 +605,96 @@ async def test_event_records_prior_reviewer_independent_provenance(
     assert result.prior_reviewer_independent is False
     added = mock_async_session.add.call_args.args[0]
     assert added.payload["prior_reviewer_independent"] is False
+
+
+async def test_repaired_is_read_from_the_report_summary_not_its_top_level(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`repaired` surfaces from summary.repaired, where the report actually puts it.
+
+    moderation/report.py::to_dict nests the flag beside hard_block and
+    soft_flag. A top-level read parses without error and returns False for
+    every book forever, so the response and the audit event would both assert
+    "nothing was rewritten" about a book whose prose was in fact replaced.
+    This fixture puts the flag ONLY in summary, so a top-level read fails it.
+    """
+    version_row = _version_row()
+    _wire_session(mock_async_session, _story(status="in_review"), version_row)
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        version_row.moderation_report = {
+            "findings": [],
+            "summary": {
+                "hard_block": False,
+                "soft_flag": False,
+                "count": 0,
+                "repaired": True,
+                "reviewer_independent": True,
+            },
+            "aggregate": {"nodes_reviewed": 3, "pass_counts": {}},
+        }
+        raise StateTransitionError(
+            "cannot submit", rule="invalid_state_transition", context={}
+        )
+
+    monkeypatch.setattr(
+        remoderate_api, "run_moderation_pipeline", AsyncMock(side_effect=_fake_pipeline)
+    )
+
+    result = await remoderate_api.remoderate_storybook_version(
+        mock_async_session, "s1", 1, _remod_ctx(actor=Actor.from_principal(_ADMIN))
+    )
+
+    assert result.repaired is True
+    added = mock_async_session.add.call_args.args[0]
+    assert added.payload["repaired"] is True
+
+
+async def test_repaired_is_false_when_the_pipeline_adopted_no_repair(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The flag must discriminate, not report True for every run that succeeded."""
+    version_row = _version_row()
+    _wire_session(mock_async_session, _story(status="in_review"), version_row)
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        version_row.moderation_report = {
+            "findings": [],
+            "summary": {
+                "hard_block": False,
+                "soft_flag": False,
+                "count": 0,
+                "repaired": False,
+                "reviewer_independent": True,
+            },
+            "aggregate": {"nodes_reviewed": 3, "pass_counts": {}},
+        }
+        raise StateTransitionError(
+            "cannot submit", rule="invalid_state_transition", context={}
+        )
+
+    monkeypatch.setattr(
+        remoderate_api, "run_moderation_pipeline", AsyncMock(side_effect=_fake_pipeline)
+    )
+
+    result = await remoderate_api.remoderate_storybook_version(
+        mock_async_session, "s1", 1, _remod_ctx(actor=Actor.from_principal(_ADMIN))
+    )
+
+    assert result.repaired is False
+    added = mock_async_session.add.call_args.args[0]
+    assert added.payload["repaired"] is False
+
+
+async def test_report_repaired_tolerates_a_malformed_stored_report() -> None:
+    """A JSONB column holds whatever was stored, including a null summary."""
+    assert remoderate_api._report_repaired(None) is False
+    assert remoderate_api._report_repaired({}) is False
+    assert remoderate_api._report_repaired({"summary": None}) is False
+    assert remoderate_api._report_repaired({"summary": "not-a-dict"}) is False
+    assert remoderate_api._report_repaired({"summary": {}}) is False
+    # A truthy non-bool must not read as a repair.
+    assert remoderate_api._report_repaired({"summary": {"repaired": "yes"}}) is False
 
 
 # ---------------------------------------------------------------------------
@@ -1136,7 +1240,7 @@ async def test_remoderation_refreshes_the_stored_validation_report(
     await remoderate_api.trigger_remoderate("s1", 1, _ctx(_ADMIN, mock_async_session))
 
     assert version_row.validation_report is not stale
-    assert version_row.validation_report == run_fill_gate(_blob()).report.to_dict()
+    assert version_row.validation_report == _expected_validation_report(_blob())
 
 
 # ---------------------------------------------------------------------------
@@ -1183,10 +1287,13 @@ async def test_slot_contract_resolved_from_the_version_not_a_job(
     """The resolved slot set is passed to the pipeline explicitly.
 
     Without this the pipeline falls back to a generation_job lookup, and all
-    seventeen production books have no job row, so it resolves the fail-closed
-    None and manufactures a sentinel_integrity_violation BLOCK out of absent
-    provenance: it would overwrite every accurate report and, because repair is
-    gated on not having a hard block, suppress the repair enabled alongside it.
+    seventeen production books have no job row, so it resolves an EMPTY
+    frozenset (not None: see personalizable_slot_ids_for_story's docstring for
+    why empty is right there). An empty declared set makes every well-formed
+    sentinel in the blob read as "unknown_slot", manufacturing a
+    sentinel_integrity_violation BLOCK out of absent provenance rather than out
+    of the prose, which would overwrite the accurate stored report and, because
+    repair is gated on not having a hard block, suppress the repair too.
     """
     version_row = _version_row()
     version_row.skeleton_slug = "any-slug"
@@ -1212,6 +1319,95 @@ async def test_slot_contract_resolved_from_the_version_not_a_job(
         {"companion"}
     )
     assert pipeline.await_args.kwargs["allow_repair"] is True
+
+
+async def test_published_arm_leaves_the_slot_contract_to_the_pipeline(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A published book still resolves its slots the way it always has.
+
+    Passing an explicit value suppresses the pipeline's generation_job lookup
+    entirely. A published, generated, job-backed book whose version predates
+    the skeleton_slug column (never backfilled) resolves a real contract from
+    its job today; resolving from the version instead would hand the pipeline
+    an empty set and manufacture the exact block the override exists to avoid,
+    on the arm this endpoint's widening is meant to leave untouched.
+    """
+    version_row = _version_row()
+    version_row.skeleton_slug = None
+    _wire_session(mock_async_session, _story(status="published"), version_row)
+    monkeypatch.setattr(
+        remoderate_api,
+        "personalizable_slot_ids_for_version",
+        lambda _row: pytest.fail("published must not resolve from the version"),
+    )
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        version_row.moderation_report = _PASSING_REPORT
+
+    pipeline = AsyncMock(side_effect=_fake_pipeline)
+    monkeypatch.setattr(remoderate_api, "run_moderation_pipeline", pipeline)
+
+    await remoderate_api.remoderate_storybook_version(
+        mock_async_session, "s1", 1, _remod_ctx()
+    )
+
+    assert pipeline.await_args is not None
+    assert (
+        pipeline.await_args.kwargs["personalizable_slots"]
+        is remoderate_api.PERSONALIZABLE_SLOTS_UNSET
+    )
+    assert pipeline.await_args.kwargs["allow_repair"] is False
+
+
+@pytest.mark.parametrize("status", ["published", "archived", "draft", "needs_revision"])
+async def test_repair_is_refused_for_any_status_other_than_in_review(
+    status: str,
+) -> None:
+    """Repair authorisation is an allow-list, so a new status fails closed.
+
+    The predicate was `status != published`, which is default-open over an open
+    enum: `archived` satisfies this module's admission criterion (no legal
+    submit or auto_reject hop), so admitting it would have silently authorised
+    LLM prose rewriting of a book that was published and may sit in a child's
+    offline cache. Both status-pinning tests would have stayed green while it
+    happened, because neither asserts anything about repair.
+    """
+    assert remoderate_api._allow_repair_for(status) is False
+
+
+async def test_repair_is_allowed_only_for_in_review() -> None:
+    """The one status the allow-list admits, so the guard is not vacuous."""
+    assert remoderate_api._allow_repair_for(Status.IN_REVIEW.value) is True
+
+
+async def test_remoderation_stamps_the_gate_context_on_the_stored_report(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The stored report records the posture its gate run was made under.
+
+    `GateReport.to_dict()` returns only {ok, findings}; the posture lives on
+    the GateResult. generation/worker.py stamps it as `gate_context` before
+    persisting, so a report written here without it is indistinguishable, to
+    the admin review surface, from one produced under the catalog-time
+    "skeleton" posture where a retained <<FILL>> directive is legal input.
+    """
+    version_row = _version_row()
+    _wire_session(mock_async_session, _story(status="in_review"), version_row)
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        version_row.moderation_report = _PASSING_REPORT
+
+    monkeypatch.setattr(
+        remoderate_api, "run_moderation_pipeline", AsyncMock(side_effect=_fake_pipeline)
+    )
+
+    await remoderate_api.remoderate_storybook_version(
+        mock_async_session, "s1", 1, _remod_ctx()
+    )
+
+    assert isinstance(version_row.validation_report, dict)
+    assert version_row.validation_report["gate_context"] == "fill_result"
 
 
 async def test_published_book_still_disallows_repair(
@@ -1281,10 +1477,10 @@ async def test_repaired_blob_gets_a_matching_validation_report(
         mock_async_session, "s1", 1, _remod_ctx()
     )
 
-    assert version_row.validation_report == run_fill_gate(repaired).report.to_dict()
+    assert version_row.validation_report == _expected_validation_report(repaired)
     # The discriminating half: without the post-pipeline pass the stored report
     # is the PRE-repair one, so these two must differ or the test proves nothing.
-    assert version_row.validation_report != run_fill_gate(_blob()).report.to_dict()
+    assert version_row.validation_report != _expected_validation_report(_blob())
 
 
 async def test_remoderatable_statuses_cannot_be_moved_by_the_pipeline() -> None:

@@ -296,3 +296,27 @@ async def test_version_with_an_unlocatable_slug_fails_closed() -> None:
     )
 
     assert personalizable_slot_ids_for_version(version_row) is None
+
+
+async def test_version_resolution_fails_closed_when_the_catalog_is_unreadable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An unreadable skeleton catalog fails closed, it does not crash the caller.
+
+    find_skeleton_band SCANS the catalog directory, so a permission fault or a
+    hung mount raises a raw OSError rather than a ValidationError. Uncaught it
+    escapes this function and takes down the whole re-moderation request, even
+    though the contract load a few lines later already treats the identical
+    fault on the identical catalog as a fail-closed None.
+    """
+
+    def _unreadable(_slug: str) -> str | None:
+        msg = "skeleton catalog is unreadable"
+        raise PermissionError(msg)
+
+    monkeypatch.setattr(pslots_mod, "find_skeleton_band", _unreadable)
+    version_row = StorybookVersion(
+        storybook_id="s1", version=1, blob={}, skeleton_slug="any-slug"
+    )
+
+    assert personalizable_slot_ids_for_version(version_row) is None

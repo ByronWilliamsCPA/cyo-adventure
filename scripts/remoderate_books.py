@@ -216,7 +216,20 @@ async def list_mock_moderated_targets(session: AsyncSession) -> list[tuple[str, 
     return sorted(targets)
 
 
-async def list_in_review_targets(session: AsyncSession) -> list[tuple[str, int]]:
+@dataclass(frozen=True, slots=True)
+class InReviewListing:
+    """What an in_review target listing selected, and what it had to drop.
+
+    Attributes:
+        targets: ``(storybook_id, version)`` pairs the sweep can act on.
+        excluded: Ids of in_review books that could not be targeted.
+    """
+
+    targets: list[tuple[str, int]]
+    excluded: list[str]
+
+
+async def list_in_review_targets(session: AsyncSession) -> InReviewListing:
     """Find every in_review book, at the version its reviewer is looking at.
 
     Unlike the published selectors, this one applies NO report-content filter.
@@ -231,8 +244,11 @@ async def list_in_review_targets(session: AsyncSession) -> list[tuple[str, int]]
             its own row lock per-book).
 
     Returns:
+        An :class:`InReviewListing` whose ``targets`` holds
         ``(storybook_id, version)`` pairs sorted by storybook id, one per
-        in_review book, at that book's HIGHEST version number.
+        in_review book, at that book's HIGHEST version number, and whose
+        ``excluded`` holds the sorted ids of any in_review book that had to
+        be dropped for want of a version row.
 
     """
     # #CRITICAL: data-integrity: "the version under review" is max(version),
@@ -250,7 +266,7 @@ async def list_in_review_targets(session: AsyncSession) -> list[tuple[str, int]]
     # #EDGE: data-integrity: short-circuit before issuing a degenerate empty
     # IN query, exactly as api/approval.py's queue does for the same reason.
     if not ids:
-        return []
+        return InReviewListing(targets=[], excluded=[])
     latest_rows = cast(
         "list[tuple[str, int]]",
         (
@@ -266,23 +282,32 @@ async def list_in_review_targets(session: AsyncSession) -> list[tuple[str, int]]
     )
     latest = dict(latest_rows)
     targets: list[tuple[str, int]] = []
+    excluded: list[str] = []
     for storybook_id in ids:
         version = latest.get(storybook_id)
-        # #EDGE: data-integrity: an in_review book with no version row is a
-        # corrupt-at-rest anomaly the review queue also logs and drops. Skip
+        # #CRITICAL: data-integrity: an in_review book with no version row is
+        # a corrupt-at-rest anomaly the review queue also logs and drops. Skip
         # it rather than raising, so one anomaly cannot make the whole sweep
-        # unselectable, but log it, since nothing else would show an operator
-        # that the sweep silently covered fewer books than the queue lists.
+        # unselectable, but RETURN it as well as logging it. A log line alone
+        # only reaches an operator who is separately tailing structured logs,
+        # so the sweep would otherwise cover fewer books than the review queue
+        # lists while printing a clean target count and exiting 0. Returning
+        # the ids alongside the targets is what lets main() say so and signal
+        # it in the exit code. It is deliberately returned rather than
+        # recounted with a second query: a book INSERTed between two queries
+        # would be misreported as excluded when it merely arrived late.
         # #VERIFY: tests/unit/test_remoderate_books.py::
-        # test_list_in_review_targets_skips_books_with_no_version_row.
+        # test_list_in_review_targets_skips_books_with_no_version_row and
+        # ::test_sweep_reports_books_excluded_from_the_listing.
         if version is None:
             _logger.warning(
                 "remoderate_books.in_review_book_has_no_version",
                 storybook_id=storybook_id,
             )
+            excluded.append(storybook_id)
             continue
         targets.append((storybook_id, version))
-    return sorted(targets)
+    return InReviewListing(targets=sorted(targets), excluded=sorted(excluded))
 
 
 async def _resolve_in_review_version(session: AsyncSession, book_id: str) -> int:
@@ -422,6 +447,18 @@ class SweepResult:
     # ::test_main_exits_nonzero_when_a_book_is_blocked.
     blocked: list[tuple[str, int]] = field(default_factory=list)
     flagged: list[tuple[str, int]] = field(default_factory=list)
+    repaired: list[tuple[str, int]] = field(default_factory=list)
+    # #CRITICAL: data-integrity: a book the listing dropped is neither
+    # `failed` nor `blocked`, so before this field it produced NO exit-code
+    # signal and NO summary line: a sweep could cover fewer books than the
+    # review queue lists and still print a clean count and exit 0. The
+    # structured warning alone only reaches an operator who is separately
+    # tailing logs, which is exactly the person a sweep summary exists to
+    # spare.
+    # #VERIFY: tests/unit/test_remoderate_books.py::
+    # test_sweep_reports_books_excluded_from_the_listing and
+    # ::test_main_exits_nonzero_when_a_book_was_excluded.
+    excluded: list[str] = field(default_factory=list)
 
 
 async def sweep(
@@ -497,21 +534,25 @@ async def sweep(
     active_settings = settings if settings is not None else _default_settings
 
     async with new_session() as session:
+        excluded: list[str] = []
         if book_ids:
             targets = await _resolve_book_id_targets(session, book_ids)
         elif in_review:
-            targets = await list_in_review_targets(session)
+            listing = await list_in_review_targets(session)
+            targets = listing.targets
+            excluded = listing.excluded
         else:
             targets = await list_mock_moderated_targets(session)
 
         if not execute:
-            return SweepResult(targets=targets, executed=False)
+            return SweepResult(targets=targets, executed=False, excluded=excluded)
 
         ctx = RemoderateContext(settings=active_settings, actor=Actor.system())
         succeeded: list[tuple[str, int]] = []
         failed: list[tuple[str, int]] = []
         blocked: list[tuple[str, int]] = []
         flagged: list[tuple[str, int]] = []
+        repaired: list[tuple[str, int]] = []
         for storybook_id, version in targets:
             try:
                 # #CRITICAL: data-integrity: one COMMIT per book, not one
@@ -559,6 +600,16 @@ async def sweep(
                     blocked.append((storybook_id, version))
                 elif result.overall_verdict == "flag":
                     flagged.append((storybook_id, version))
+                if result.repaired:
+                    # #ASSUME: data-integrity: a repaired book has had its
+                    # stored text REWRITTEN by the repair pass, so the verdict
+                    # an operator reads describes prose that is no longer what
+                    # they last reviewed. Rolled up with plain successes it is
+                    # invisible; called out, it tells them which books need a
+                    # fresh read before approval.
+                    # #VERIFY: tests/unit/test_remoderate_books.py::
+                    # test_sweep_records_repaired_books.
+                    repaired.append((storybook_id, version))
         return SweepResult(
             targets=targets,
             executed=True,
@@ -566,6 +617,8 @@ async def sweep(
             failed=failed,
             blocked=blocked,
             flagged=flagged,
+            repaired=repaired,
+            excluded=excluded,
         )
 
 
@@ -613,14 +666,30 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
+def _exit_on_excluded(result: SweepResult) -> None:
+    """Exit nonzero when the sweep could not see every eligible book.
+
+    Args:
+        result: The sweep outcome to inspect.
+    """
+    if result.excluded:
+        sys.exit(
+            f"remoderate_books: {len(result.excluded)} in_review book(s) "
+            "were excluded from this sweep and remain un-re-moderated."
+        )
+
+
 def main() -> None:
     """Entry point for the re-moderation sweep script.
 
-    Prints the target list always. In dry-run (default), that is the only
-    output. When ``--execute`` is given, also prints the succeeded/failed
-    counts, the fresh verdicts, and exits nonzero if anything failed OR if
-    any book came back hard-blocked, so neither a partial sweep nor a book
-    that just failed re-moderation is ever read as a clean success.
+    Prints the target list always, preceded by an exclusion warning whenever
+    the sweep covered fewer books than the review queue holds. In dry-run
+    (default), that is the only output. When ``--execute`` is given, also
+    prints the succeeded/failed counts, the fresh verdicts, which books the
+    repair pass rewrote, and exits nonzero if anything failed OR if any book
+    came back hard-blocked OR if any book was excluded, so neither a partial
+    sweep nor a book that just failed re-moderation is ever read as a clean
+    success.
     """
     args = _parse_args()
     result = asyncio.run(
@@ -632,8 +701,19 @@ def main() -> None:
         )
     )
 
+    if result.excluded:
+        # Printed before the target count, because the target count is exactly
+        # the number this line corrects: without it, a sweep covering 15 of 17
+        # queued books reads as a complete pass over "15 target book(s)".
+        print(
+            f"remoderate_books: WARNING, {len(result.excluded)} in_review "
+            "book(s) were EXCLUDED from the target list because they have no "
+            "version row, and were NOT re-moderated: " + ", ".join(result.excluded)
+        )
+
     if not result.targets:
         print("remoderate_books: no target books found.")
+        _exit_on_excluded(result)
         return
 
     print(f"remoderate_books: {len(result.targets)} target book(s):")
@@ -642,6 +722,7 @@ def main() -> None:
 
     if not result.executed:
         print("remoderate_books: dry run, nothing executed. Pass --execute to run.")
+        _exit_on_excluded(result)
         return
 
     print(
@@ -654,6 +735,13 @@ def main() -> None:
             "remoderate_books: soft-flagged (status unchanged by this sweep, "
             "review when convenient): "
             + ", ".join(f"{sid} v{v}" for sid, v in result.flagged)
+        )
+    if result.repaired:
+        print(
+            "remoderate_books: REPAIRED, the stored text of these books was "
+            "rewritten by the repair pass and differs from what was last "
+            "reviewed; re-read before approving: "
+            + ", ".join(f"{sid} v{v}" for sid, v in result.repaired)
         )
     if result.blocked:
         # A hard block is the one outcome that needs a human today, and this
@@ -675,10 +763,11 @@ def main() -> None:
             "remoderate_books: failed (rolled back, retry by re-running): "
             + ", ".join(f"{sid} v{v}" for sid, v in result.failed)
         )
-    if result.failed or result.blocked:
+    if result.failed or result.blocked or result.excluded:
         sys.exit(
             f"remoderate_books: {len(result.failed)} book(s) failed "
-            f"re-moderation, {len(result.blocked)} book(s) hard-blocked."
+            f"re-moderation, {len(result.blocked)} book(s) hard-blocked, "
+            f"{len(result.excluded)} book(s) excluded."
         )
 
 

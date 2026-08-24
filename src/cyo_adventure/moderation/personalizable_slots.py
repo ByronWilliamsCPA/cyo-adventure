@@ -410,6 +410,58 @@ async def personalizable_slot_fields_for_story(
     return personalizable_slot_fields(contract)
 
 
+def _band_for_version(version_row: StorybookVersion, slug: str) -> str | None:
+    """Recover the band directory a version's skeleton slug lives under.
+
+    Args:
+        version_row: The version being resolved, for log attribution.
+        slug: The version's ``skeleton_slug``.
+
+    Returns:
+        The band directory name, or None if the slug does not resolve to
+        exactly one readable band. Every None is fail-closed: the caller must
+        not substitute an empty contract for one it could not read.
+    """
+    try:
+        band = find_skeleton_band(slug)
+    except CoreValidationError:
+        # A traversing or ambiguous slug. Fail closed rather than pick a band:
+        # the version claims provenance that cannot be resolved to one file.
+        _logger.warning(
+            "moderation.version_contract_slug_unresolvable",
+            story_id=version_row.storybook_id,
+            slug=slug,
+        )
+        return None
+    except OSError as exc:
+        # #CRITICAL: external-resources: find_skeleton_band SCANS the catalog
+        # (skeleton_match.py::_locate_skeleton walks _SKELETON_ROOT.iterdir()),
+        # so an unreadable or hung skeleton root raises a raw OSError here, NOT
+        # a CoreValidationError. Uncaught it escapes the caller entirely and
+        # takes down the whole re-moderation request, while the contract load
+        # already catches OSError on the very same catalog: the asymmetry was
+        # an oversight, not a decision. Fail closed like every other
+        # unrecoverable arm, under its OWN log event, because "the catalog is
+        # unreadable" and "this slug does not resolve" need different
+        # responses from whoever reads the line.
+        # #VERIFY: tests/unit/test_personalizable_slots.py::
+        # test_version_resolution_fails_closed_when_the_catalog_is_unreadable.
+        _logger.warning(
+            "moderation.version_contract_band_scan_failed",
+            story_id=version_row.storybook_id,
+            slug=slug,
+            error=str(exc)[:500],
+        )
+        return None
+    if band is None:
+        _logger.warning(
+            "moderation.version_contract_band_missing",
+            story_id=version_row.storybook_id,
+            slug=slug,
+        )
+    return band
+
+
 def personalizable_slot_ids_for_version(
     version_row: StorybookVersion,
 ) -> frozenset[str] | None:
@@ -455,23 +507,8 @@ def personalizable_slot_ids_for_version(
     slug = version_row.skeleton_slug
     if not slug:
         return frozenset()
-    try:
-        band = find_skeleton_band(slug)
-    except CoreValidationError:
-        # A traversing or ambiguous slug. Fail closed rather than pick a band:
-        # the version claims provenance that cannot be resolved to one file.
-        _logger.warning(
-            "moderation.version_contract_slug_unresolvable",
-            story_id=version_row.storybook_id,
-            slug=slug,
-        )
-        return None
+    band = _band_for_version(version_row, slug)
     if band is None:
-        _logger.warning(
-            "moderation.version_contract_band_missing",
-            story_id=version_row.storybook_id,
-            slug=slug,
-        )
         return None
     try:
         skeleton_path = resolve_skeleton_path(band, slug)

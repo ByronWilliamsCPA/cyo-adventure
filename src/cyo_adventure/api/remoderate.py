@@ -158,11 +158,13 @@ import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
+from anyio.to_thread import run_sync
 from fastapi import APIRouter
 from pydantic import BaseModel
 from sqlalchemy import select
 
 from cyo_adventure.api.deps import Context
+from cyo_adventure.api.gate_limits import gate_limiter
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
@@ -176,6 +178,8 @@ from cyo_adventure.generation.import_story import IMPORT_PROVIDER
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_provider
 from cyo_adventure.moderation.personalizable_slots import (
+    PERSONALIZABLE_SLOTS_UNSET,
+    PersonalizableSlotsArg,
     personalizable_slot_ids_for_version,
 )
 from cyo_adventure.moderation.pipeline import run_moderation_pipeline
@@ -187,6 +191,33 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
     from cyo_adventure.core.config import Settings
+    from cyo_adventure.validator.gate import GateResult
+
+
+def _fresh_validation_report(gate_result: GateResult) -> dict[str, object]:
+    """Build the stored ``validation_report`` payload from a gate result.
+
+    Mirrors ``generation/worker.py``'s composition so the admin review surface
+    is never comparing a report that records the posture it was produced under
+    against one that silently omits it.
+
+    Args:
+        gate_result: The result of a :func:`run_fill_gate` call over the blob.
+
+    Returns:
+        dict[str, object]: The report dict, carrying its ``gate_context``.
+    """
+    # #CRITICAL: data-integrity: `GateReport.to_dict()` returns only
+    # {ok, findings}; the posture the run was made under lives on the
+    # GateResult, not the report. generation/worker.py stamps it as
+    # `gate_context` before persisting, and a report written here without it
+    # is indistinguishable, to the review surface, from one produced under the
+    # catalog-time "skeleton" posture where a retained <<FILL>> is legal input.
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_remoderation_stamps_the_gate_context_on_the_stored_report.
+    report: dict[str, object] = dict(gate_result.report.to_dict())
+    report["gate_context"] = gate_result.context
+    return report
 
 
 def _allow_repair_for(status: str) -> bool:
@@ -200,8 +231,7 @@ def _allow_repair_for(status: str) -> bool:
         status: The storybook's current status value.
 
     Returns:
-        True for a pre-publish book a human still gates, False for a published
-        one.
+        True for a pre-publish book a human still gates, False otherwise.
     """
     # #CRITICAL: security: published stays False, absolutely. A published book
     # is a guardian-approved artifact a child may be reading offline, so a
@@ -215,7 +245,19 @@ def _allow_repair_for(status: str) -> bool:
     # test_published_blob_unchanged_when_repair_disallowed and
     # ::test_published_book_still_disallows_repair pin the published arm;
     # ::test_in_review_book_allows_repair pins the other.
-    return status != Status.PUBLISHED.value
+    #
+    # #CRITICAL: security: an ALLOW-list, not `!= PUBLISHED`. The negation was
+    # default-open over an open enum: every status absent from
+    # LEGAL_TRANSITIONS' submit/auto_reject hops satisfies this module's
+    # admission criterion, and `archived` satisfies it too. Under the negation,
+    # admitting `archived` to REMODERATABLE_STATUSES would silently authorise
+    # LLM prose rewriting of a book that was published (and may sit in a
+    # child's offline cache) with no guardian approval, and both pinning tests
+    # below would stay green while it happened. The allow-list fails closed:
+    # a newly admitted status gets repair only when someone writes it here.
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_repair_is_refused_for_any_status_other_than_in_review.
+    return status == Status.IN_REVIEW.value
 
 
 # #CRITICAL: security: the whole set of statuses this endpoint will re-moderate.
@@ -305,6 +347,7 @@ class RemoderateResult:
     structural_count: int
     duration_seconds: float
     prior_reviewer_independent: bool | None
+    repaired: bool
 
 
 class RemoderateResultView(BaseModel):
@@ -318,6 +361,17 @@ class RemoderateResultView(BaseModel):
     structural_count: int
     duration_seconds: float
     prior_reviewer_independent: bool | None
+    # #ASSUME: data-integrity: the ONLY signal that this endpoint rewrote a
+    # book's prose. Without it an operator sweeping the review queue sees
+    # "succeeded: 17" and cannot tell which books an LLM edited, because the
+    # pipeline's own MODERATION_COMPLETED event (which carries `repaired`) is
+    # unreachable on this path.
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_repaired_is_read_from_the_report_summary_not_its_top_level asserts
+    # both surfaces (the returned view and the audit event payload);
+    # ::test_repaired_is_false_when_the_pipeline_adopted_no_repair proves the
+    # flag discriminates rather than reporting True for every run.
+    repaired: bool
 
 
 def _view(result: RemoderateResult) -> RemoderateResultView:
@@ -331,6 +385,7 @@ def _view(result: RemoderateResult) -> RemoderateResultView:
         structural_count=result.structural_count,
         duration_seconds=result.duration_seconds,
         prior_reviewer_independent=result.prior_reviewer_independent,
+        repaired=result.repaired,
     )
 
 
@@ -384,6 +439,33 @@ async def _family_child_names(
         select(ChildProfile.display_name).where(ChildProfile.family_id == family_id)
     )
     return frozenset(rows.all())
+
+
+def _report_repaired(report: dict[str, object] | None) -> bool:
+    """Return whether the pipeline adopted a repair on this run.
+
+    Args:
+        report: The freshly stored moderation report, or None.
+
+    Returns:
+        bool: True only when the report explicitly records a repair.
+    """
+    # #CRITICAL: data-integrity: the flag lives at ``summary.repaired``, NOT at
+    # the report's top level (moderation/report.py::to_dict nests it beside
+    # hard_block and soft_flag). A top-level read here parses without error and
+    # returns False for every book forever, which is the silent direction: the
+    # response and the audit event would both assert "nothing was rewritten"
+    # about a book whose prose the repair pass had in fact replaced. Read
+    # defensively for the same reason _prior_reviewer_independent does: the
+    # column is JSONB, so its runtime shape is whatever was stored.
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_repaired_is_read_from_the_report_summary_not_its_top_level.
+    if report is None:
+        return False
+    summary = report.get("summary")
+    if not isinstance(summary, dict):
+        return False
+    return cast("dict[str, object]", summary).get("repaired") is True
 
 
 def _prior_reviewer_independent(report: dict[str, object] | None) -> bool | None:
@@ -539,7 +621,19 @@ async def remoderate_storybook_version(
     # stale report is replaced; tests/unit/test_gate.py::
     # test_run_fill_gate_reproduces_the_fill_result_posture pins the helper
     # to the posture the import producer uses.
-    version_row.validation_report = run_fill_gate(version_row.blob).report.to_dict()
+    #
+    # #CRITICAL: concurrency: offloaded via anyio.to_thread under the shared
+    # gate_limiter(), never called inline. run_gate is pure synchronous CPU
+    # measured at 49.6s worst case (see api/node_edit.py), so an inline call
+    # here would stall the event loop for that window and block every other
+    # in-flight request, including a child mid-read (AL-035). The limiter is
+    # the same process-wide one api/node_edit.py and api/generation.py use,
+    # so the three routes share one bound rather than three independent ones.
+    # #VERIFY: tests/unit/test_gate_capacity_limiter.py::
+    # test_both_gate_call_sites_share_one_limiter inspects this module.
+    version_row.validation_report = _fresh_validation_report(
+        await run_sync(run_fill_gate, version_row.blob, limiter=gate_limiter())
+    )
 
     prior_reviewer_independent = _prior_reviewer_independent(
         version_row.moderation_report
@@ -589,6 +683,42 @@ async def remoderate_storybook_version(
     )
 
     allow_repair = _allow_repair_for(storybook.status)
+
+    # #CRITICAL: data-integrity: resolved from the VERSION, and only for the
+    # in_review arm this endpoint newly admits.
+    #
+    # Why the version at all: an in_review book here is an offline import with
+    # no GenerationJob row (17 of 17 in production, 2026-08-24). The pipeline's
+    # own fallback, personalizable_slot_ids_for_story, returns an EMPTY
+    # frozenset for a story with no job row (not the fail-closed None: see that
+    # function's docstring for why empty is the right answer there), and an
+    # empty declared set makes check_sentinel_integrity_at_rest report every
+    # well-formed sentinel in the blob as "unknown_slot". No book currently in
+    # review carries a sentinel, so this is defensive rather than a live fault
+    # today; it stops being defensive the first time a sentinel-bearing book
+    # reaches the review gate.
+    #
+    # Why NOT for published: passing an explicit value suppresses the job-row
+    # lookup entirely. A published, generated, job-backed book whose version
+    # predates the skeleton_slug column (the column is never backfilled)
+    # resolves a real contract from its job today and would resolve an empty
+    # set here, manufacturing exactly the block this argument exists to avoid,
+    # on the arm this change is meant to leave alone. Leaving published UNSET
+    # keeps its behaviour bit-identical to before this endpoint was widened.
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_slot_contract_resolved_from_the_version_not_a_job and
+    # ::test_published_arm_leaves_the_slot_contract_to_the_pipeline.
+    slot_contract: PersonalizableSlotsArg = PERSONALIZABLE_SLOTS_UNSET
+    if storybook.status == Status.IN_REVIEW.value:
+        # #ASSUME: timing: offloaded because this walks the skeleton catalog
+        # directory and reads two JSON files; inline it would block the event
+        # loop on a cold cache or a network-backed catalog volume. No gate
+        # limiter: this is a short filesystem read, not the CPU-bound gate, so
+        # it must not contend for the gate's bounded slots.
+        # #VERIFY: no api module calls personalizable_slot_ids_for_version
+        # outside a run_sync offload.
+        slot_contract = await run_sync(personalizable_slot_ids_for_version, version_row)
+
     started = time.monotonic()
     try:
         await run_moderation_pipeline(
@@ -599,21 +729,9 @@ async def remoderate_storybook_version(
             generation_provider=generation_provider,
             pii=pii,
             allow_repair=allow_repair,
-            # #CRITICAL: data-integrity: passed EXPLICITLY, never left to the
-            # pipeline's own resolution. Its fallback recovers the slot
-            # contract from the story's GenerationJob row, and every book this
-            # endpoint's in_review scope admits is an offline import with no
-            # such row (verified against production 2026-08-24: 17 of 17), so
-            # the fallback resolves the fail-closed None and the pipeline turns
-            # that into a sentinel_integrity_violation BLOCK manufactured out
-            # of absent provenance rather than anything in the prose. That
-            # would overwrite every accurate stored report and, because the
-            # repair branch is gated on `not report.has_hard_block`, suppress
-            # the repair enabled just above.
-            # #VERIFY: tests/unit/test_remoderate_unit.py::
-            # test_slot_contract_resolved_from_the_version_not_a_job fails if
-            # this argument is removed.
-            personalizable_slots=personalizable_slot_ids_for_version(version_row),
+            # Resolved above, scoped to the in_review arm. See the marker
+            # there for why the version and why not for published books.
+            personalizable_slots=slot_contract,
         )
     except StateTransitionError:
         # #CRITICAL: security: expected and swallowed for every call this
@@ -680,11 +798,19 @@ async def remoderate_storybook_version(
         # #VERIFY: tests/unit/test_remoderate_unit.py::
         # test_repaired_blob_gets_a_matching_validation_report fails if this
         # block is deleted.
-        version_row.validation_report = run_fill_gate(version_row.blob).report.to_dict()
+        #
+        # #CRITICAL: concurrency: offloaded under the shared gate_limiter()
+        # for the same reason as the entry re-gate above.
+        # #VERIFY: tests/unit/test_gate_capacity_limiter.py::
+        # test_both_gate_call_sites_share_one_limiter.
+        version_row.validation_report = _fresh_validation_report(
+            await run_sync(run_fill_gate, version_row.blob, limiter=gate_limiter())
+        )
 
     overall_verdict, verdict_counts, structural_count = _summarize_report(
         version_row.moderation_report
     )
+    repaired = _report_repaired(version_row.moderation_report)
 
     if overall_verdict == "block":
         # #CRITICAL: security: a hard block does not move the book, and how
@@ -743,6 +869,7 @@ async def remoderate_storybook_version(
             "overall_verdict": overall_verdict,
             "counts": verdict_counts,
             "prior_reviewer_independent": prior_reviewer_independent,
+            "repaired": repaired,
         },
     )
 
@@ -755,6 +882,7 @@ async def remoderate_storybook_version(
         structural_count=structural_count,
         duration_seconds=duration,
         prior_reviewer_independent=prior_reviewer_independent,
+        repaired=repaired,
     )
 
 
