@@ -68,6 +68,11 @@ name: Semantic Release
   # UTC force-pull of :latest, so a day's work is normally versioned, tagged
   # and rebuilt before production picks it up, keeping the deployed image's
   # org.opencontainers.image.revision traceable to a released tag.
+  # That 02:19 pull is a Portainer Business GitOps stack auto-update. It is
+  # configured in the Portainer console (Stacks > cyo-adventure > automatic
+  # updates), NOT in this repo and NOT in homelab-infra, so grepping either
+  # tree for the time finds nothing. Confirm or change it there, and re-check
+  # it if this cron moves.
   # #ASSUME timing: the release PR clears CI and the merge queue inside that
   # ~80-minute window. #VERIFY nothing breaks if it does not; the deploy tracks
   # :latest rather than the tag, so a late release only delays tag/changelog
@@ -586,8 +591,7 @@ jobs:
     name: Tag and GitHub Release
     # #ASSUME external-resource: the merge queue squash-merges the release PR
     # using its "chore(release): vX.Y.Z" title as the commit subject, so this
-    # prefix match fires (the propose job's negative guard relies on the same
-    # convention). If the repo's squash-merge commit-message setting drifts
+    # prefix match fires. If the repo's squash-merge commit-message setting drifts
     # (e.g. to the PR number or the default merge message), publish silently
     # never runs and every release stalls. #VERIFY the repo keeps "Default
     # commit message" = "Pull request title" for squash merges (Settings >
@@ -622,3 +626,95 @@ jobs:
             --target "${GITHUB_SHA}" \
             --title "v${VERSION}" \
             --notes-file release-notes.md
+
+  alert:
+    name: Alert on failure or cancellation
+    needs: [propose, publish]
+    # `failure() || cancelled()`, not `failure()` alone: `failure()` does not match a
+    # cancellation, and a cancelled release leaves the pipeline in exactly the state
+    # this workflow exists to avoid.
+    #
+    # #CRITICAL external-resource: `propose` now runs unattended on a schedule, so
+    # nobody is watching the Actions tab when it fails. The 2026-08-17 incident was a
+    # transient API 503 in `publish` that nobody noticed for a week, which is the same
+    # silence in the other job.
+    # #VERIFY this job files or comments on a `ci-failure` issue so a failure produces
+    # a GitHub notification rather than only a red run.
+    #
+    # `needs` names both jobs deliberately. Only one of them runs per event (`propose`
+    # on schedule/dispatch, `publish` on push), and a skipped `need` does not suppress
+    # a job whose `if:` does not test `success()`.
+    if: failure() || cancelled()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      # write, isolated to this job, so neither release job holds it while running
+      # repository code with the RELEASE_TOKEN in scope.
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: File or comment on the pinned issue
+        # Same alerting pattern as supabase-backup.yml's `alert` job: find an OPEN issue
+        # labelled `ci-failure` whose title starts with this workflow's marker and comment
+        # on it, or open one if none exists, so repo watchers get GitHub's native
+        # notification instead of a red run nobody looks for.
+        #
+        # This covers a release job that FAILS. It cannot cover one that never runs at all
+        # (a schedule GitHub disabled after 60 days of repository inactivity, a deleted
+        # secret), because there is no run to report. That gap is covered inside the
+        # pipeline instead, by scripts/check_release_tag_sync.py, which fails the next
+        # `propose` that does happen when the version and tag have desynced.
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const marker = '[release]'
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure',
+              per_page: 100,
+            })
+            const existing = issues.find((issue) => issue.title.startsWith(marker))
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Release workflow did not complete on ${today} (event: ${context.eventName}). Run: ${runUrl}`,
+              })
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `${marker} release workflow failing`,
+                labels: ['ci-failure'],
+                body: [
+                  'The `Release` workflow (`.github/workflows/release.yml`) did not complete: ' +
+                    'it either failed or was cancelled.',
+                  '',
+                  'The pipeline has two jobs and they fail differently:',
+                  '',
+                  '- `propose` (daily 01:00 UTC schedule) opens the `release/vX.Y.Z` PR. ' +
+                    'A failure here means no release PR for that day, and merges keep accumulating.',
+                  '- `publish` (push of a `chore(release):` commit) creates the tag and GitHub Release. ' +
+                    'A failure here leaves `pyproject.toml` bumped with no matching tag, which DEADLOCKS ' +
+                    'the pipeline: every later `propose` recomputes the same version forever.',
+                  '',
+                  'The `publish` case is the 2026-08-17 incident. Do not close this issue on the ' +
+                    'strength of a later green run: a green `propose` does not prove the tag exists.',
+                  '',
+                  'Diagnosis and recovery: `docs/operations/runbook.md` section 7.2.',
+                  '',
+                  `Run: ${runUrl}`,
+                ].join('\n'),
+              })
+            }
