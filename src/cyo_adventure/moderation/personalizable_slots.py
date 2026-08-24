@@ -427,6 +427,8 @@ def _band_for_version(version_row: StorybookVersion, slug: str) -> str | None:
     except CoreValidationError:
         # A traversing or ambiguous slug. Fail closed rather than pick a band:
         # the version claims provenance that cannot be resolved to one file.
+        # #VERIFY: tests/unit/test_personalizable_slots.py::
+        # test_version_with_a_traversing_slug_fails_closed.
         _logger.warning(
             "moderation.version_contract_slug_unresolvable",
             story_id=version_row.storybook_id,
@@ -518,7 +520,12 @@ def personalizable_slot_ids_for_version(
         # which raises a raw OSError or JSONDecodeError (a ValueError subclass),
         # NOT a CoreValidationError, when a catalog file has moved or been
         # corrupted. Mirrors _contract_for_job's note on the identical chain.
-        # #VERIFY: the same fail-closed None as every other unrecoverable arm.
+        # #VERIFY: tests/unit/test_personalizable_slots.py::
+        # test_version_with_an_unreadable_contract_fails_closed pins this
+        # fail-closed None, and
+        # test_version_on_a_legacy_skeleton_returns_the_empty_set pins that
+        # the no-sidecar arm below stays the EMPTY set rather than collapsing
+        # into it.
         _logger.warning(
             "moderation.version_contract_load_failed",
             story_id=version_row.storybook_id,

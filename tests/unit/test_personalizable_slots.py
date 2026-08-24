@@ -320,3 +320,71 @@ async def test_version_resolution_fails_closed_when_the_catalog_is_unreadable(
     )
 
     assert personalizable_slot_ids_for_version(version_row) is None
+
+
+# A real catalog skeleton with NO ".contract.json" sidecar, so load_contract_for
+# takes its legacy arm and returns None. Asserting against a slug that has a
+# sidecar could not tell "no contract to read" apart from "a contract that
+# declares nothing", and those are different states of the catalog.
+# Re-derive with:
+#   for f in skeletons/*/*.json; do [ -f "${f%.json}.contract.json" ] ||
+#       echo "$f"; done
+_LEGACY_SLUG = "the-blackout-week"
+
+
+async def test_version_with_a_traversing_slug_fails_closed() -> None:
+    """A slug escaping the skeleton root returns None; it does not read a file.
+
+    find_skeleton_band raises ValidationError rather than returning None for a
+    traversing slug, so this lands on a DIFFERENT arm than
+    ::test_version_with_an_unlocatable_slug_fails_closed above, which resolves
+    through the band-is-None path. Both fail closed, and the separation matters:
+    a merely-absent slug is a catalog gap, while a traversing one is a hostile
+    or corrupt ``skeleton_slug`` on a row that is about to be re-moderated. The
+    fail-closed None keeps it from being read as an empty contract, which would
+    let a forged sentinel pass as personalization.
+    """
+    version_row = StorybookVersion(
+        storybook_id="s1", version=1, blob={}, skeleton_slug="../../etc/passwd"
+    )
+
+    assert personalizable_slot_ids_for_version(version_row) is None
+
+
+async def test_version_with_an_unreadable_contract_fails_closed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A contract that cannot be loaded returns None, not an empty set.
+
+    Distinct from the band scan above: the band resolved, the path resolved, and
+    the read itself failed. That is the arm a moved or corrupted catalog file
+    lands on, and it must not be confused with the legacy no-sidecar arm below,
+    which returns the empty set. One means "this book declares no personalizable
+    slot", the other means "we do not know what it declares".
+    """
+
+    def _unreadable(_path: object) -> dict[str, object]:
+        msg = "skeleton file vanished mid-read"
+        raise OSError(msg)
+
+    monkeypatch.setattr(pslots_mod, "load_skeleton", _unreadable)
+    version_row = StorybookVersion(
+        storybook_id="s1", version=1, blob={}, skeleton_slug=_REAL_SLUG
+    )
+
+    assert personalizable_slot_ids_for_version(version_row) is None
+
+
+async def test_version_on_a_legacy_skeleton_returns_the_empty_set() -> None:
+    """A skeleton with no contract sidecar declares no slots: empty, not None.
+
+    The third leg of the tri-state, and the one that carries the real risk of
+    being collapsed into the fail-closed None by a future edit. A legacy
+    skeleton genuinely declares nothing, so blocking it would manufacture a
+    safety verdict for a book whose only fault is predating theme contracts.
+    """
+    version_row = StorybookVersion(
+        storybook_id="s1", version=1, blob={}, skeleton_slug=_LEGACY_SLUG
+    )
+
+    assert personalizable_slot_ids_for_version(version_row) == frozenset()
