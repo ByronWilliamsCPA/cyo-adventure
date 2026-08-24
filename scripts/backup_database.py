@@ -3,9 +3,10 @@
 Closes the gap `docs/operations/runbook.md` section 6 has documented since Phase 5 as
 "no backup script, restore script, or restore runbook anywhere in this repository"
 (issue #558, `UW-D27`). Runs three `supabase db dump` legs (roles, schema, data) against
-the DIRECT (non-pooled) database connection -- the runbook's Supavisor-pooling warning
-applies to any long-lived dump/restore connection, not just this script -- encrypts each
-file, and uploads to a dedicated R2 bucket under a tiered prefix.
+the SESSION-mode Supavisor pooler on port 5432 (NOT the direct host, which publishes
+AAAA only and is unreachable from the CLI's IPv4-only dump container; NOT transaction mode
+on 6543, which reassigns backends mid-session), encrypts each file, and uploads to a
+dedicated R2 bucket under a tiered prefix.
 
 # #CRITICAL: data integrity: the lifecycle rules below are NOT asserted by this script
 # in the current deployment. The backup R2 token is object-scoped, so every bucket-level
@@ -643,15 +644,22 @@ def run_dump_leg(db_url: str, out_path: Path, extra_args: tuple[str, ...]) -> No
 
     # #CRITICAL: external resources: requires the Supabase CLI on PATH (the workflow
     # installs it via supabase/setup-cli, matching supabase-staging.yml/
-    # supabase-production.yml's pinned version) and a reachable, DIRECT (non-pooler)
-    # Postgres connection. The runbook documents Supavisor pooling as a known source of
-    # dump/restore trouble; SUPABASE_DB_URL must be the direct connection string, not
-    # the pgbouncer/Supavisor pooler URL used elsewhere in the app.
-    # #VERIFY: this has not been run against a live Supabase project from this repo;
-    # the first scheduled or manual workflow run is the real verification.
+    # supabase-production.yml's pinned version) and a reachable SESSION-mode Supavisor
+    # connection on port 5432. Until 2026-08-24 this block required the DIRECT
+    # (non-pooler) host and forbade the pooler outright. That instruction was wrong and
+    # unrunnable: the direct host publishes AAAA only, while the CLI dumps from inside an
+    # IPv4-only Docker bridge network and GitHub runners have no IPv6 egress, so name
+    # resolution fails before authentication. The runbook's pooling warning is about
+    # TRANSACTION mode on 6543, which reassigns backends mid-session; session mode holds
+    # one backend for the life of the connection and is what the production
+    # cyo-adventure-db-backup sidecar has dumped this same database through since 2026-07.
+    # Do not "restore" the direct host: it cannot resolve from either dump environment.
+    # #VERIFY: test_backup_database.py::test_run_dump_leg_passes_the_db_url_through_to_the_cli,
+    # ::test_run_dump_leg_propagates_cli_failure. Both dump legs were additionally run
+    # against live session mode on 2026-08-24, producing this project's first backup.
 
     Args:
-        db_url: Direct Postgres connection string.
+        db_url: Supavisor session-mode connection string (port 5432).
         out_path: File to write the dump SQL to.
         extra_args: Additional flags for this leg (e.g. ``("--role-only",)``).
 
@@ -1133,7 +1141,8 @@ def run_backup(
     # off, so the incident starts with one more good backup, not one fewer.
 
     Args:
-        db_url: Direct Postgres connection string for ``supabase db dump``.
+        db_url: Supavisor session-mode connection string (port 5432) for
+            ``supabase db dump``.
         r2_account_id: Cloudflare account id.
         r2_access_key_id: Scoped backup-bucket R2 access key id.
         r2_secret_access_key: Scoped backup-bucket R2 secret key.

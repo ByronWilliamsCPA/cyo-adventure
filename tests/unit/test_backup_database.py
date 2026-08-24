@@ -795,7 +795,7 @@ def test_rollback_uploads_deletes_when_the_upload_reported_no_etag() -> None:
     assert mock_client.delete_object.call_args.kwargs["Key"] == "k1"
 
 
-def test_run_dump_leg_invokes_supabase_cli_with_direct_db_url(tmp_path: Path) -> None:
+def test_run_dump_leg_passes_the_db_url_through_to_the_cli(tmp_path: Path) -> None:
     out_path = tmp_path / "schema.sql"
     with patch.object(backup_database.subprocess, "run") as mock_run:
         backup_database.run_dump_leg("postgresql://direct", out_path, ())
