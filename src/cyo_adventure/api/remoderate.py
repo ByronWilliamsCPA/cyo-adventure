@@ -10,7 +10,7 @@ trigger it through the ordinary generation path.
 
 Scope: PUBLISHED and IN_REVIEW versions
 ---------------------------------------
-This endpoint admits exactly the statuses in ``_REMODERATABLE_STATUSES`` and
+This endpoint admits exactly the statuses in ``REMODERATABLE_STATUSES`` and
 rejects every other with ``BusinessLogicError`` (400).
 
 The membership rule is not a preference, it is the state machine.
@@ -58,7 +58,7 @@ Why the pipeline's own state-transition call is caught, not avoided
 ``run_moderation_pipeline`` is not modified (out of scope; owned by workstream
 B2/B3 for other reasons in this concurrent effort, and a stable contract this
 module deliberately does not fork). Calling it unmodified on any status in
-``_REMODERATABLE_STATUSES`` means its own terminal
+``REMODERATABLE_STATUSES`` means its own terminal
 ``service.submit``/``service.auto_reject`` call ALWAYS raises
 ``StateTransitionError``, because none of ``(PUBLISHED, SUBMIT)``,
 ``(PUBLISHED, AUTO_REJECT)``, ``(IN_REVIEW, SUBMIT)``, or
@@ -74,7 +74,7 @@ never the freshly written report.
 
 That absence is the whole admission rule, which is why widening the status
 guard is safe without touching the pipeline: a status may only be added to
-``_REMODERATABLE_STATUSES`` while BOTH its SUBMIT and AUTO_REJECT hops stay
+``REMODERATABLE_STATUSES`` while BOTH its SUBMIT and AUTO_REJECT hops stay
 absent from ``LEGAL_TRANSITIONS``. Adding either hop later would silently turn
 this endpoint into one that moves books, so
 ``tests/unit/test_remoderate_unit.py`` pins the invariant directly rather than
@@ -232,12 +232,17 @@ def _allow_repair_for(status: str) -> bool:
 # ::test_in_review_status_is_not_changed_by_remoderation and
 # ::test_published_state_unchanged_after_real_remoderation pin that neither
 # admitted status can move.
-_REMODERATABLE_STATUSES: frozenset[Status] = frozenset(
+# Public, not module-private: scripts/remoderate_books.py resolves an
+# operator's explicit --book-id against this same set, so that the sweep
+# refuses an inadmissible status BEFORE --execute touches any book rather
+# than aborting mid-sweep on this module's 400. Two copies of a
+# security-relevant admission set is the failure this avoids.
+REMODERATABLE_STATUSES: frozenset[Status] = frozenset(
     {Status.PUBLISHED, Status.IN_REVIEW}
 )
 
-_REMODERATABLE_STATUS_VALUES: frozenset[str] = frozenset(
-    s.value for s in _REMODERATABLE_STATUSES
+REMODERATABLE_STATUS_VALUES: frozenset[str] = frozenset(
+    s.value for s in REMODERATABLE_STATUSES
 )
 
 
@@ -471,7 +476,7 @@ async def remoderate_storybook_version(
     Raises:
         ResourceNotFoundError: If the storybook or version does not exist (404).
         BusinessLogicError: If the storybook's status is not in
-            ``_REMODERATABLE_STATUSES`` (400).
+            ``REMODERATABLE_STATUSES`` (400).
     """
     # #CRITICAL: concurrency: loads and locks the storybook row under the same
     # SELECT ... FOR UPDATE pattern api/approval.py::_load_admin_story and
@@ -501,8 +506,8 @@ async def remoderate_storybook_version(
             resource_type="StorybookVersion",
             resource_id=f"{storybook_id}:{version}",
         )
-    if storybook.status not in _REMODERATABLE_STATUS_VALUES:
-        allowed = ", ".join(sorted(_REMODERATABLE_STATUS_VALUES))
+    if storybook.status not in REMODERATABLE_STATUS_VALUES:
+        allowed = ", ".join(sorted(REMODERATABLE_STATUS_VALUES))
         msg = (
             f"cannot re-moderate storybook '{storybook_id}': its status is "
             f"{storybook.status!r}, which is not re-moderatable (allowed: "
@@ -617,7 +622,7 @@ async def remoderate_storybook_version(
         # all absent from publishing/state_machine.py::LEGAL_TRANSITIONS, so
         # assert_transition always raises here, BEFORE storybook.status is
         # touched. The catch is only ever correct while that stays true, which
-        # is why _REMODERATABLE_STATUSES is pinned against LEGAL_TRANSITIONS
+        # is why REMODERATABLE_STATUSES is pinned against LEGAL_TRANSITIONS
         # by test rather than by convention. The fresh report was already persisted to version_row by
         # the pipeline's _persist_report call, which runs before its
         # terminal submit/auto_reject attempt, so nothing written is lost.

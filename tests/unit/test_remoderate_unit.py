@@ -239,7 +239,7 @@ async def test_unknown_version_raises_404(mock_async_session: AsyncMock) -> None
 async def test_non_remoderatable_status_rejected(
     status: str, mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Every status outside _REMODERATABLE_STATUSES is rejected pre-pipeline.
+    """Every status outside REMODERATABLE_STATUSES is rejected pre-pipeline.
 
     'in_review' left this set deliberately. For the three that remain, the
     pipeline's terminal submit/auto_reject IS a legal hop and would actually
@@ -1298,7 +1298,7 @@ async def test_remoderatable_statuses_cannot_be_moved_by_the_pipeline() -> None:
     touched and the endpoint catches it.
 
     Nothing in the type system enforces that. Adding a status to
-    ``_REMODERATABLE_STATUSES``, or adding a hop to ``LEGAL_TRANSITIONS`` for
+    ``REMODERATABLE_STATUSES``, or adding a hop to ``LEGAL_TRANSITIONS`` for
     a status already in it, would silently convert a report-only endpoint into
     one that moves books past the human gate ADR-005 requires. This test is
     the enforcement.
@@ -1306,12 +1306,12 @@ async def test_remoderatable_statuses_cannot_be_moved_by_the_pipeline() -> None:
     Async despite awaiting nothing: this module's ``pytestmark`` applies
     ``pytest.mark.asyncio`` to every test in the file.
     """
-    for status in remoderate_api._REMODERATABLE_STATUSES:
+    for status in remoderate_api.REMODERATABLE_STATUSES:
         for action in (Action.SUBMIT, Action.AUTO_REJECT):
             assert (status, action) not in LEGAL_TRANSITIONS, (
                 f"({status}, {action}) is now a legal transition, so "
                 f"re-moderating a {status} book would MOVE it. Either remove "
-                f"{status} from _REMODERATABLE_STATUSES or stop calling "
+                f"{status} from REMODERATABLE_STATUSES or stop calling "
                 f"run_moderation_pipeline unmodified."
             )
 
@@ -1329,7 +1329,7 @@ async def test_remoderatable_statuses_excludes_every_movable_status() -> None:
         if action in {Action.SUBMIT, Action.AUTO_REJECT}
     }
     assert movable, "sanity: LEGAL_TRANSITIONS should have movable statuses"
-    assert not (movable & remoderate_api._REMODERATABLE_STATUSES), (
+    assert not (movable & remoderate_api.REMODERATABLE_STATUSES), (
         "a status the pipeline can move is admitted for re-moderation"
     )
     # The specific statuses this pins today, so the sanity check above cannot

@@ -15,7 +15,7 @@ Dry-run is the default and only LISTS the target books; nothing is written
 to the database and no LLM calls are made. Pass ``--execute`` to actually
 call :func:`remoderate_storybook_version` for each target.
 
-Two independent ways to pick targets, mutually exclusive:
+Three independent ways to pick targets, mutually exclusive:
 
 - ``--mock-moderated``: query the database for published books whose stored
   report carries the mock-reviewer stamp (``summary.reviewer_independent is
@@ -26,9 +26,17 @@ Two independent ways to pick targets, mutually exclusive:
   full writer set). This is how the 18-book sweep
   itself will be selected; the exact list is not hardcoded here so it always
   reflects live database state, not a snapshot that can drift.
+- ``--in-review``: query the database for every book sitting at the human
+  review gate, targeting each at its LATEST version (the one the admin review
+  queue shows, ``api/approval.py``). Unlike ``--mock-moderated`` this applies
+  no report-content filter: an in_review book's stored report is about to be
+  acted on by a reviewer whatever it says, so re-deriving it is the point
+  rather than a remedy for a specific defect. This is how the seventeen books
+  stuck in review since 2026-07-21 are swept.
 - ``--book-id STORYBOOK_ID`` (repeatable): re-moderate specific storybooks by
-  id, at each one's ``current_published_version``. For a one-off re-run or a
-  manually curated subset.
+  id, at each one's ``current_published_version`` or, for an in_review book,
+  its latest version. For a one-off re-run, a manually curated subset, or a
+  single-book canary before a full sweep.
 
 Run against staging or production, dry-run (default, lists only)::
 
@@ -39,6 +47,11 @@ Actually execute the sweep::
 
     ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
         uv run python scripts/remoderate_books.py --mock-moderated --execute
+
+Sweep the books waiting at the review gate::
+
+    ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
+        uv run python scripts/remoderate_books.py --in-review --execute
 
 Re-moderate specific books::
 
@@ -67,10 +80,14 @@ import sys
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, cast
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from cyo_adventure.api.remoderate import RemoderateContext, remoderate_storybook_version
+from cyo_adventure.api.remoderate import (
+    REMODERATABLE_STATUS_VALUES,
+    RemoderateContext,
+    remoderate_storybook_version,
+)
 from cyo_adventure.core.config import settings as _default_settings
 from cyo_adventure.core.database import get_engine
 from cyo_adventure.core.exceptions import ResourceNotFoundError
@@ -199,10 +216,110 @@ async def list_mock_moderated_targets(session: AsyncSession) -> list[tuple[str, 
     return sorted(targets)
 
 
+async def list_in_review_targets(session: AsyncSession) -> list[tuple[str, int]]:
+    """Find every in_review book, at the version its reviewer is looking at.
+
+    Unlike the published selectors, this one applies NO report-content filter.
+    A published book is swept only if its stored report looks mock-moderated,
+    because a published book with a good report needs nothing. An in_review
+    book is different: it is sitting at the human gate, so a reviewer is about
+    to act on whatever its stored report says, however old, and re-deriving it
+    is the point rather than a remedy for a specific defect.
+
+    Args:
+        session: An active session (read-only; the re-moderation call takes
+            its own row lock per-book).
+
+    Returns:
+        ``(storybook_id, version)`` pairs sorted by storybook id, one per
+        in_review book, at that book's HIGHEST version number.
+
+    """
+    # #CRITICAL: data-integrity: "the version under review" is max(version),
+    # the same rule api/approval.py uses in BOTH places it needs one
+    # (::_latest_version for approve/send-back, and the review queue's grouped
+    # max for the listing). An in_review book has no current_published_version
+    # to point the way, so any other rule here would re-derive the verdicts of
+    # a version the reviewer is not looking at, and write them onto the row
+    # that reviewer WILL act on.
+    # #VERIFY: tests/unit/test_remoderate_books.py::
+    # test_list_in_review_targets_returns_latest_version_per_book.
+    stmt = select(Storybook).where(Storybook.status == Status.IN_REVIEW.value)
+    storybooks = (await session.execute(stmt)).scalars().all()
+    ids = [storybook.id for storybook in storybooks]
+    # #EDGE: data-integrity: short-circuit before issuing a degenerate empty
+    # IN query, exactly as api/approval.py's queue does for the same reason.
+    if not ids:
+        return []
+    latest_rows = cast(
+        "list[tuple[str, int]]",
+        (
+            await session.execute(
+                select(
+                    StorybookVersion.storybook_id,
+                    func.max(StorybookVersion.version),
+                )
+                .where(StorybookVersion.storybook_id.in_(ids))
+                .group_by(StorybookVersion.storybook_id)
+            )
+        ).all(),
+    )
+    latest = dict(latest_rows)
+    targets: list[tuple[str, int]] = []
+    for storybook_id in ids:
+        version = latest.get(storybook_id)
+        # #EDGE: data-integrity: an in_review book with no version row is a
+        # corrupt-at-rest anomaly the review queue also logs and drops. Skip
+        # it rather than raising, so one anomaly cannot make the whole sweep
+        # unselectable, but log it, since nothing else would show an operator
+        # that the sweep silently covered fewer books than the queue lists.
+        # #VERIFY: tests/unit/test_remoderate_books.py::
+        # test_list_in_review_targets_skips_books_with_no_version_row.
+        if version is None:
+            _logger.warning(
+                "remoderate_books.in_review_book_has_no_version",
+                storybook_id=storybook_id,
+            )
+            continue
+        targets.append((storybook_id, version))
+    return sorted(targets)
+
+
+async def _resolve_in_review_version(session: AsyncSession, book_id: str) -> int:
+    """Return the version an explicitly named in_review book is reviewed at.
+
+    Args:
+        session: An active session.
+        book_id: The storybook id named on the command line.
+
+    Returns:
+        int: The book's highest version number.
+
+    Raises:
+        ResourceNotFoundError: If the book has no version rows at all.
+    """
+    latest = await session.scalar(
+        select(func.max(StorybookVersion.version)).where(
+            StorybookVersion.storybook_id == book_id
+        )
+    )
+    if latest is None:
+        msg = f"storybook {book_id!r} is in_review but has no versions"
+        raise ResourceNotFoundError(
+            msg, resource_type="StorybookVersion", resource_id=book_id
+        )
+    return latest
+
+
 async def _resolve_book_id_targets(
     session: AsyncSession, book_ids: list[str]
 ) -> list[tuple[str, int]]:
-    """Resolve explicit ``--book-id`` values to their current published version.
+    """Resolve explicit ``--book-id`` values to the version to re-moderate.
+
+    Which version that is depends on status, because the two re-moderatable
+    statuses point at their subject differently: a published book names it in
+    ``current_published_version``, while an in_review book has no such pointer
+    and is reviewed at its highest version.
 
     Args:
         session: An active session.
@@ -213,8 +330,10 @@ async def _resolve_book_id_targets(
         ids collapsed to their first occurrence.
 
     Raises:
-        ResourceNotFoundError: If a named storybook does not exist, or has
-            no ``current_published_version`` (nothing to re-moderate).
+        ResourceNotFoundError: If a named storybook does not exist, is in a
+            status re-moderation does not admit, or has no version to
+            re-moderate (no ``current_published_version`` when published, no
+            version rows at all when in_review).
     """
     # #CRITICAL: data-integrity: unlike the --mock-moderated path, this one
     # RAISES on an unresolvable id instead of skipping it. An operator naming
@@ -248,6 +367,31 @@ async def _resolve_book_id_targets(
             raise ResourceNotFoundError(
                 msg, resource_type="Storybook", resource_id=book_id
             )
+        # #CRITICAL: security: the status check happens HERE, before
+        # --execute touches anything, even though api/remoderate.py rejects an
+        # inadmissible status too. Deferring to the endpoint would abort the
+        # sweep mid-flight, after earlier books had already committed their
+        # re-moderations and spent the LLM calls, leaving the operator to
+        # work out which half ran. It also keeps the failure legible: "you
+        # named a draft" beats a BusinessLogicError surfacing from inside a
+        # loop. The two sets are kept identical by importing the endpoint's
+        # own frozenset rather than restating it.
+        # #VERIFY: tests/unit/test_remoderate_books.py::
+        # test_resolve_book_id_targets_refuses_a_status_remoderation_rejects.
+        if storybook.status not in REMODERATABLE_STATUS_VALUES:
+            msg = (
+                f"storybook {book_id!r} has status {storybook.status!r}, which "
+                f"re-moderation does not admit (allowed: "
+                f"{', '.join(sorted(REMODERATABLE_STATUS_VALUES))})"
+            )
+            raise ResourceNotFoundError(
+                msg, resource_type="Storybook", resource_id=book_id
+            )
+        if storybook.status == Status.IN_REVIEW.value:
+            targets.append(
+                (book_id, await _resolve_in_review_version(session, book_id))
+            )
+            continue
         if storybook.current_published_version is None:
             msg = f"storybook {book_id!r} has no current_published_version"
             raise ResourceNotFoundError(
@@ -287,12 +431,14 @@ async def sweep(
     settings: Settings | None = None,
     book_ids: list[str] | None = None,
     mock_moderated: bool = False,
+    in_review: bool = False,
     execute: bool = False,
 ) -> SweepResult:
     """Select and (optionally) re-moderate the target books.
 
-    Exactly one of ``book_ids`` (non-empty) or ``mock_moderated`` selects the
-    target set; see the module docstring's two selection modes.
+    Exactly one of ``book_ids`` (non-empty), ``mock_moderated``, or
+    ``in_review`` selects the target set; see the module docstring's three
+    selection modes.
 
     Args:
         engine: Async engine to bind the session to. Defaults to the app's
@@ -306,6 +452,8 @@ async def sweep(
         book_ids: Explicit storybook ids to target.
         mock_moderated: If True, target every book
             :func:`list_mock_moderated_targets` finds.
+        in_review: If True, target every book
+            :func:`list_in_review_targets` finds.
         execute: When False (default), only lists the targets; nothing is
             written and no LLM calls are made. When True, calls
             :func:`remoderate_storybook_version` for each target and commits
@@ -322,13 +470,21 @@ async def sweep(
         something the sweep already handled.
 
     Raises:
-        ValueError: If neither or both of ``book_ids``/``mock_moderated`` are
-            given.
+        ValueError: If zero, or more than one, of
+            ``book_ids``/``mock_moderated``/``in_review`` is given.
     """
-    if bool(book_ids) == mock_moderated:
+    # #CRITICAL: data-integrity: counting selectors, not the two-way equality
+    # this replaced. `bool(book_ids) == mock_moderated` happened to be a
+    # correct XOR for two flags and silently stops being one for three: with
+    # in_review added it would accept `--mock-moderated --in-review` together
+    # and then quietly run whichever branch the if/elif chain reached first.
+    # #VERIFY: tests/unit/test_remoderate_books.py::
+    # test_sweep_raises_when_two_of_three_selectors_given.
+    chosen = [bool(book_ids), mock_moderated, in_review]
+    if sum(chosen) != 1:
         msg = (
-            "sweep() requires exactly one of a non-empty book_ids list or "
-            "mock_moderated=True, not both or neither"
+            "sweep() requires exactly one selector: a non-empty book_ids "
+            "list, mock_moderated=True, or in_review=True"
         )
         raise ValueError(msg)
 
@@ -341,11 +497,12 @@ async def sweep(
     active_settings = settings if settings is not None else _default_settings
 
     async with new_session() as session:
-        targets = (
-            await _resolve_book_id_targets(session, book_ids)
-            if book_ids
-            else await list_mock_moderated_targets(session)
-        )
+        if book_ids:
+            targets = await _resolve_book_id_targets(session, book_ids)
+        elif in_review:
+            targets = await list_in_review_targets(session)
+        else:
+            targets = await list_mock_moderated_targets(session)
 
         if not execute:
             return SweepResult(targets=targets, executed=False)
@@ -420,7 +577,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
     Returns:
         The parsed namespace (``book_id`` list, ``mock_moderated`` bool,
-        ``execute`` bool).
+        ``in_review`` bool, ``execute`` bool).
     """
     parser = argparse.ArgumentParser(description=__doc__)
     selector = parser.add_mutually_exclusive_group(required=True)
@@ -429,15 +586,23 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="append",
         dest="book_id",
         metavar="STORYBOOK_ID",
-        help="Re-moderate this storybook id (repeatable). Mutually exclusive "
-        "with --mock-moderated.",
+        help="Re-moderate this storybook id (repeatable), at its current "
+        "published version or, for an in_review book, its latest version. "
+        "Mutually exclusive with the other selectors.",
     )
     selector.add_argument(
         "--mock-moderated",
         action="store_true",
         help="Target every published book whose current version looks "
         "mock-moderated (see module docstring's selection criteria). "
-        "Mutually exclusive with --book-id.",
+        "Mutually exclusive with the other selectors.",
+    )
+    selector.add_argument(
+        "--in-review",
+        action="store_true",
+        dest="in_review",
+        help="Target every in_review book, at its latest version, with no "
+        "report-content filter. Mutually exclusive with the other selectors.",
     )
     parser.add_argument(
         "--execute",
@@ -462,6 +627,7 @@ def main() -> None:
         sweep(
             book_ids=args.book_id,
             mock_moderated=args.mock_moderated,
+            in_review=args.in_review,
             execute=args.execute,
         )
     )
@@ -485,17 +651,24 @@ def main() -> None:
     )
     if result.flagged:
         print(
-            "remoderate_books: soft-flagged (still published, review when "
-            "convenient): " + ", ".join(f"{sid} v{v}" for sid, v in result.flagged)
+            "remoderate_books: soft-flagged (status unchanged by this sweep, "
+            "review when convenient): "
+            + ", ".join(f"{sid} v{v}" for sid, v in result.flagged)
         )
     if result.blocked:
-        # A hard block on a published book is the one outcome that needs a
-        # human today: the book is STILL published and STILL readable, because
-        # ADR-005 reserves every status change for a human. Print it loudly
-        # and exit nonzero even though the re-moderation itself succeeded.
+        # A hard block is the one outcome that needs a human today, and this
+        # sweep does not provide one: ADR-005 reserves every status change for
+        # a person, so each blocked book is exactly where it was. What that
+        # means depends on which population was swept, and main() deliberately
+        # spells out both rather than naming the mode, because --book-id can
+        # mix them: a published book is still readable by a child RIGHT NOW,
+        # while an in_review book is merely still queued. Print it loudly and
+        # exit nonzero even though the re-moderation itself succeeded.
         print(
-            "remoderate_books: HARD BLOCK, still published and readable, "
-            "act on these: " + ", ".join(f"{sid} v{v}" for sid, v in result.blocked)
+            "remoderate_books: HARD BLOCK, status unchanged by this sweep. A "
+            "published book here is STILL published and STILL readable by a "
+            "child; an in_review book is still waiting in the review queue. "
+            "Act on these: " + ", ".join(f"{sid} v{v}" for sid, v in result.blocked)
         )
     if result.failed:
         print(
