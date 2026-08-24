@@ -300,6 +300,29 @@ describe('ReaderChrome', () => {
       expect(playChoiceTapSound).not.toHaveBeenCalled()
     })
 
+    it('ignores clicks originating inside a modal dialog', async () => {
+      // Regression pin for the invariant that went missing when the
+      // design-system Dialog dropped its stopPropagation handler (PR #754).
+      // That handler was a mouse listener on a role="dialog" element, so it had
+      // to go for accessibility; what it was incidentally providing was a
+      // shield for this document-level listener. Without the guard in
+      // ReaderChrome, a dialog rendering choice-shaped markup over the reader
+      // would fire the choice-tap sound behind it.
+      render(
+        <div>
+          <ReaderChrome position={{ label: 'Page 1' }} />
+          <div role="dialog" aria-modal="true" aria-label="Confirm">
+            <button type="button" data-testid="choice-in-dialog">
+              Keep reading
+            </button>
+          </div>
+        </div>
+      )
+      await screen.findByRole('button', { name: 'Turn sound effects off' })
+      fireEvent.click(screen.getByTestId('choice-in-dialog'))
+      expect(playChoiceTapSound).not.toHaveBeenCalled()
+    })
+
     it('plays the page-turn sound when the position label changes, not on the first render', async () => {
       const { rerender } = render(<ReaderChrome position={{ label: 'Page 1' }} />)
       await screen.findByRole('button', { name: 'Turn sound effects off' })
