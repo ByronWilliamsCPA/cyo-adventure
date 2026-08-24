@@ -760,7 +760,7 @@ nothing alerts.
 
 This has happened once: on 2026-08-17 `gh release create v0.82.0` hit a transient
 `HTTP 503: No server is currently available to service your request` and never created the tag.
-Seven days and twenty-five commits passed before anyone noticed the release PRs had stopped.
+Seven days and twenty-three commits passed before anyone noticed the release PRs had stopped.
 
 **Detection.** `propose`'s "Check release state is in sync" step
 (`scripts/check_release_tag_sync.py`) now fails the run on exactly this condition, so a repeat
