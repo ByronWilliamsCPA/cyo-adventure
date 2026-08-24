@@ -47,7 +47,7 @@ from cyo_adventure.storybook.reinsertion import (
     verify_manifest,
 )
 from cyo_adventure.utils.logging import get_logger
-from cyo_adventure.validator.gate import run_gate
+from cyo_adventure.validator.gate import run_fill_gate
 from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity_at_rest
 
 if TYPE_CHECKING:
@@ -152,7 +152,7 @@ async def import_filled_story(
     # "<<FILL" directive means the blob was never written and PL-27 must
     # reject it. Every other checker abstains on a directive body rather
     # than failing, so without the posture an unwritten book imports clean.
-    result = run_gate(request.blob, context="fill_result")
+    result = run_fill_gate(request.blob)
     if result.blocked:
         messages = (
             "; ".join(f.message for f in result.report.errors)

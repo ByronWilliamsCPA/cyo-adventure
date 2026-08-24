@@ -17,7 +17,7 @@ from unittest.mock import patch
 
 import pytest
 
-from cyo_adventure.validator.gate import GateResult, run_gate
+from cyo_adventure.validator.gate import GateResult, run_fill_gate, run_gate
 
 # ---------------------------------------------------------------------------
 # Fixture paths
@@ -807,3 +807,25 @@ def test_fill_result_context_blocks_a_directive_in_a_choice_label() -> None:
         f.rule_id == "PL-27" and "label still holds" in f.message
         for f in result.report.errors
     )
+
+
+@pytest.mark.unit
+def test_run_fill_gate_reproduces_the_fill_result_posture() -> None:
+    """The shared helper is exactly ``run_gate(..., context="fill_result")``.
+
+    ``run_fill_gate`` exists so that every writer of
+    ``storybook_version.validation_report`` produces its report under one
+    posture: generation/import_story.py, api/node_edit.py and
+    api/remoderate.py all route through it. Two copies of the same call can
+    drift silently, and the review surface would then rank reports built under
+    different postures against each other. This pins the helper to the
+    expression it replaced.
+    """
+    story = _unfilled_story()
+
+    assert (
+        run_fill_gate(story).report.to_dict()
+        == run_gate(story, context="fill_result").report.to_dict()
+    )
+    assert run_fill_gate(story).context == "fill_result"
+    assert run_fill_gate(story).blocked

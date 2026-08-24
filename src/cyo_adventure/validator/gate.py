@@ -112,6 +112,34 @@ class GateResult:
     context: GateContext = "skeleton"
 
 
+def run_fill_gate(data: Mapping[str, object]) -> GateResult:
+    """Run the gate over a FILLED storybook blob, the way every producer must.
+
+    Every writer of ``storybook_version.validation_report`` must run the gate
+    the same way, or the admin review surface ranks reports that were produced
+    under different postures against each other and the comparison is
+    meaningless. The posture that matters here is ``context="fill_result"``:
+    under the default ``"skeleton"`` context a retained ``<<FILL ...>>``
+    directive is expected, and a filled book judged that way silently passes
+    PL-27. This is the single definition of "validate a filled book", shared by
+    generation/import_story.py and api/remoderate.py rather than spelled out at
+    each call site.
+
+    ``enforce_grammar`` stays at its default. Turning it on surfaces CG-*
+    findings, which are WARNING-only and never set ``blocked``, but it must be
+    turned on for ALL producers in one change or the stored reports diverge
+    again; see the review-surface projection allowlist in
+    api/review_surface.py::_VALIDATOR_RULE_IDS.
+
+    Args:
+        data: The stored storybook blob (raw decoded JSON mapping).
+
+    Returns:
+        GateResult: The merged report, block status, safety flag, and context.
+    """
+    return run_gate(data, context="fill_result")
+
+
 def run_gate(
     data: Mapping[str, object],
     scale: Scale = "standard",

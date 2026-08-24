@@ -44,6 +44,7 @@ from cyo_adventure.events import Actor
 from cyo_adventure.generation.import_story import IMPORT_PROVIDER
 from cyo_adventure.generation.provider import _CANNED_STORY, MockProvider
 from cyo_adventure.moderation import pipeline as pipeline_mod
+from cyo_adventure.validator.gate import run_fill_gate
 
 if TYPE_CHECKING:
     from sqlalchemy import Select
@@ -1020,3 +1021,43 @@ async def test_remoderate_response_excludes_child_names(
     for name in names:
         assert name not in serialized
         assert name not in event_payload
+
+
+# ---------------------------------------------------------------------------
+# Validator refresh (the review surface's deterministic input)
+# ---------------------------------------------------------------------------
+
+
+async def test_remoderation_refreshes_the_stored_validation_report(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Re-moderation re-runs the validator gate over the stored blob.
+
+    Before this, ``POST /admin/remoderate`` refreshed ``moderation_report``
+    and left ``validation_report`` exactly as the import or generation run
+    wrote it, however many rule changes ago. The admin review surface reads
+    the stored report and never re-runs the gate by design
+    (api/review_surface.py::_validator_findings), so a stale report is
+    displayed as current forever. Re-moderation is the one admin-triggered
+    entry point that re-derives a book's automated verdicts, so it is where
+    the deterministic half has to be re-derived too.
+    """
+    stale = {"findings": [{"rule_id": "RL-13", "severity": "warning"}], "ok": True}
+    version_row = _version_row()
+    version_row.validation_report = stale
+    _wire_session(mock_async_session, _story(), version_row)
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        version_row.moderation_report = _PASSING_REPORT
+        raise StateTransitionError(
+            "cannot submit", rule="invalid_state_transition", context={}
+        )
+
+    monkeypatch.setattr(
+        remoderate_api, "run_moderation_pipeline", AsyncMock(side_effect=_fake_pipeline)
+    )
+
+    await remoderate_api.trigger_remoderate("s1", 1, _ctx(_ADMIN, mock_async_session))
+
+    assert version_row.validation_report is not stale
+    assert version_row.validation_report == run_fill_gate(_blob()).report.to_dict()

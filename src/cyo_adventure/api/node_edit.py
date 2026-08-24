@@ -14,7 +14,7 @@ endpoint never calls ``publishing.service.approve``).
 
 Re-review mechanics
 --------------------
-Every edit re-runs the deterministic gate (``validator.gate.run_gate``) over
+Every edit re-runs the deterministic gate (``validator.gate.run_fill_gate``) over
 the FULL edited blob, since a prose change can still blow a length or
 reading-level budget (L1-7 / RL-13) or, if a choice label was cleared to
 empty, ... (rejected earlier by the schema's ``min_length=1``, but a body
@@ -108,7 +108,7 @@ from cyo_adventure.storybook.reinsertion import (
     manifest_carries_tokens,
 )
 from cyo_adventure.utils.logging import get_logger
-from cyo_adventure.validator.gate import run_gate
+from cyo_adventure.validator.gate import run_fill_gate
 from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity_at_rest
 
 if TYPE_CHECKING:
@@ -558,7 +558,18 @@ async def edit_node(
     # smaller-than-the-default-pool properties. Re-measure the worst case
     # before the first character-enabled book ships, by timing run_gate over
     # the longwinter-station skeleton with a might/wits/nerve 0-2 envelope.
-    gate_result = await run_sync(run_gate, new_blob, limiter=gate_limiter())
+    # #CRITICAL: data integrity: run_fill_gate, not run_gate. The blob being
+    # re-gated here is a FILLED book, and the bare run_gate call this replaced
+    # defaulted to the catalog-time "skeleton" posture, under which a retained
+    # `<<FILL ...>>` directive is expected input rather than a defect. PL-27 is
+    # the only deterministic floor between an unwritten node and a human
+    # reviewer (validator/policy.py::check_fill_directives), so under the wrong
+    # posture an edit could replace prose with a directive, be accepted, and be
+    # recorded clean in the validation_report the review surface displays.
+    # #VERIFY: tests/unit/test_node_edit.py::
+    # test_edit_writing_a_fill_directive_is_rejected reproduces the acceptance
+    # this fixes.
+    gate_result = await run_sync(run_fill_gate, new_blob, limiter=gate_limiter())
     if gate_result.blocked:
         msg = "edited passage failed the validation gate"
         raise ValidationError(

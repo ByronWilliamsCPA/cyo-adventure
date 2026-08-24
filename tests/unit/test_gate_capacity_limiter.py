@@ -23,13 +23,22 @@ from cyo_adventure.core.exceptions import ConfigurationError
 
 _GATE_CALL_MODULES = (node_edit_module, generation_module)
 
+# Every name that enters the validator gate. Matching one literal name went
+# stale the moment api/node_edit.py switched to the run_fill_gate wrapper
+# (validator/gate.py), which is the shared "validate a filled book" posture;
+# the guard failed loudly on an empty match rather than passing vacuously,
+# but only because it asserts the call list is non-empty. Keep every gate
+# entry point in this one set so a future wrapper is added here rather than
+# escaping the shared limiter unobserved.
+_GATE_ENTRY_POINTS = frozenset({"run_gate", "run_fill_gate"})
+
 
 def _run_gate_dispatch_calls(source: str) -> list[ast.Call]:
-    """Return every ``run_sync(run_gate, ...)`` call in a module's source.
+    """Return every ``run_sync(<gate entry point>, ...)`` call in a module.
 
     Matches on the call shape (a call to a name ``run_sync`` whose first
-    positional argument is the name ``run_gate``) rather than on line
-    numbers, so it survives reformatting and reordering.
+    positional argument names one of ``_GATE_ENTRY_POINTS``) rather than on
+    line numbers, so it survives reformatting and reordering.
     """
     tree = ast.parse(source)
     calls: list[ast.Call] = []
@@ -41,7 +50,7 @@ def _run_gate_dispatch_calls(source: str) -> list[ast.Call]:
         if not (
             node.args
             and isinstance(node.args[0], ast.Name)
-            and node.args[0].id == "run_gate"
+            and node.args[0].id in _GATE_ENTRY_POINTS
         ):
             continue
         calls.append(node)
@@ -149,10 +158,13 @@ def test_both_gate_call_sites_share_one_limiter() -> None:
     for module in _GATE_CALL_MODULES:
         source = inspect.getsource(module)
         calls = _run_gate_dispatch_calls(source)
-        assert calls, f"{module.__name__} no longer dispatches run_gate via run_sync"
+        assert calls, (
+            f"{module.__name__} no longer dispatches a gate entry point "
+            f"({sorted(_GATE_ENTRY_POINTS)}) via run_sync"
+        )
         for call in calls:
             assert _passes_shared_limiter(call), (
-                f"{module.__name__}: run_sync(run_gate, ...) call at line "
+                f"{module.__name__}: run_sync(gate, ...) call at line "
                 f"{call.lineno} does not pass limiter=gate_limiter()"
             )
 

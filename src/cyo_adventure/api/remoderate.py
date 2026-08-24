@@ -139,6 +139,7 @@ from cyo_adventure.generation.provider import build_provider
 from cyo_adventure.moderation.pipeline import run_moderation_pipeline
 from cyo_adventure.publishing.state_machine import Status
 from cyo_adventure.utils.logging import get_logger
+from cyo_adventure.validator.gate import run_fill_gate
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -414,6 +415,28 @@ async def remoderate_storybook_version(
             rule="remoderate_requires_published",
             context={"storybook_id": storybook_id, "status": storybook.status},
         )
+
+    # #CRITICAL: data-integrity: re-derive the DETERMINISTIC half before the
+    # generative half runs (moderation-review-redesign-2026-07-28.md, design
+    # principle 4). The admin review surface reads the stored
+    # validation_report and never re-runs the gate itself
+    # (api/review_surface.py::_validator_findings is read-only by decision),
+    # so without this line a book keeps displaying whatever the gate said on
+    # the day it was imported, however many rule changes ago, and a reviewer
+    # reads a stale verdict as a current one. Re-moderation is the only
+    # admin-triggered path that re-derives a published book's automated
+    # verdicts, so it is the right place to re-derive both.
+    #
+    # run_fill_gate, not run_gate: the shared definition guarantees this
+    # report is produced under the same posture as the import producer's
+    # (generation/import_story.py), so the review surface is never ranking
+    # reports built under different contexts against each other.
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_remoderation_refreshes_the_stored_validation_report proves the
+    # stale report is replaced; tests/unit/test_gate.py::
+    # test_run_fill_gate_reproduces_the_fill_result_posture pins the helper
+    # to the posture the import producer uses.
+    version_row.validation_report = run_fill_gate(version_row.blob).report.to_dict()
 
     prior_reviewer_independent = _prior_reviewer_independent(
         version_row.moderation_report
