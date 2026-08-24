@@ -36,10 +36,11 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from cyo_adventure.db.models import GenerationJob
+from cyo_adventure.db.models import GenerationJob, StorybookVersion
 from cyo_adventure.moderation import personalizable_slots as pslots_mod
 from cyo_adventure.moderation.personalizable_slots import (
     personalizable_slot_fields_for_story,
+    personalizable_slot_ids_for_version,
 )
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.theme_contract import SlotScope, SlotSpec, ThemeContract
@@ -231,3 +232,67 @@ async def test_slot_fields_for_story_degrades_to_empty_when_the_skeleton_is_miss
     assert _PERSONALIZABLE_SLUG in caplog.text
     assert "8-11" in caplog.text
     assert story_id in caplog.text
+
+
+# ---------------------------------------------------------------------------
+# personalizable_slot_ids_for_version: the imported-book path, which has no job
+# ---------------------------------------------------------------------------
+
+# A real catalog skeleton whose contract declares a NON-EMPTY personalizable
+# slot set, so the assertion below can tell "the contract loaded" apart from
+# "no sidecar, empty set by default". Most catalog contracts declare no
+# personalizable slot at all, and against one of those the test would pass with
+# the contract chain entirely broken.
+# Re-derive with: grep -l personalizable skeletons/*/*.contract.json
+_REAL_SLUG = "the-midnight-museum"
+_REAL_SLUG_SLOTS = frozenset({"HERO"})
+
+
+async def test_version_resolution_needs_no_generation_job() -> None:
+    """An imported book resolves a real slot set with no job row in sight.
+
+    This is the production shape of all seventeen in_review books: provider
+    'import', skeleton_slug set, zero generation_job rows. Routed through
+    :func:`personalizable_slot_ids_for_story` they resolve the fail-closed
+    ``None``, moderation/pipeline.py turns that into a
+    sentinel_integrity_violation BLOCK, and a report describing absent
+    provenance overwrites one that described the prose.
+    """
+    version_row = StorybookVersion(
+        storybook_id="s1", version=1, blob={}, skeleton_slug=_REAL_SLUG
+    )
+
+    # Asserting the exact set, not merely `is not None`: an unresolvable
+    # contract returns the EMPTY set on the no-sidecar arm, so `is not None`
+    # would pass with the whole chain broken.
+    assert personalizable_slot_ids_for_version(version_row) == _REAL_SLUG_SLOTS
+
+
+async def test_version_without_a_slug_returns_the_empty_set() -> None:
+    """No slug means no personalizable slot could exist: an empty set, not None.
+
+    Distinct from the fail-closed ``None`` below, and the distinction is the
+    whole tri-state. A fresh-generation version has no skeleton, so there is
+    nothing a contract could declare; returning ``None`` here would manufacture
+    a block for a book that is simply not skeleton-backed.
+    """
+    version_row = StorybookVersion(
+        storybook_id="s1", version=1, blob={}, skeleton_slug=None
+    )
+
+    assert personalizable_slot_ids_for_version(version_row) == frozenset()
+
+
+async def test_version_with_an_unlocatable_slug_fails_closed() -> None:
+    """A slug naming no skeleton returns None, preserving the tri-state.
+
+    The version claims skeleton provenance, so a contract may genuinely declare
+    personalizable slots. Not finding it means the contract could not be
+    recovered, which must still fail closed rather than guess an empty set and
+    risk treating a real sentinel as forged.
+    """
+    version_row = StorybookVersion(
+        storybook_id="s1", version=1, blob={}, skeleton_slug="no-such-skeleton-anywhere"
+    )
+
+    assert personalizable_slot_ids_for_version(version_row) is None
