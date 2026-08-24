@@ -46,7 +46,7 @@ Status as of 2026-08-23:
   control over-blocked (`A7-control-onband-grief-13-16`, an on-band bereavement passage), which is
   the pre-registered blocking finding for those bands, and class E caught 1 of 4 executable items.
   The over-block is what turned CI red; the class-E result is not asserted by the shipped test at
-  all. Remediation is a moderation-threshold calibration decision and belongs to the owner. Step 3's
+  all. Remediation is not a threshold change: `moderation/thresholds.py` only filters which recorded findings surface, and `moderation/pipeline.py` does not import it, so the levers that reach this verdict are the band safety prompt and the review model. See the `S-7` row for the full reading. Step 3's
   third work item, the directive delta re-run at production `TREE` settings, is untouched by this
   and remains outstanding alongside `S-6`.
 - **Steps 4 to 7: not started**, and no longer uniformly blocked. D3's partial ruling releases
