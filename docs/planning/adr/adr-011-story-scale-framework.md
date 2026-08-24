@@ -245,11 +245,11 @@ govern counts** (encoded as `band_profile.py::_CELL_ENDING_BOUNDS`, `UW-C283`), 
 old "prose ~15-22% of nodes" is demoted to a corpus-level descriptive figure: applied
 per cell it inverted against section 5 at the corners (floor above ceiling in three
 cells) and the committed young-band shelf measures 17-41%. The authoring target is
-single-parent, and the shipped corpus is close to it (54 of 61
-skeletons hold every ending at indegree 1; see the 2026-07-27 clarification), but it is a
-guideline rather than a gate. Reconvergence is an internal bottleneck/hub property
-governed per topology (section 7), not an ending property; see the 2026-07-27
-clarification.
+single-parent, and the shipped corpus was close to it when last measured (54 of 61 skeletons
+held every ending at indegree 1, measured 2026-07-27; see the clarification below for the dating
+and the current-state pointer), but it is a guideline rather than a gate. Reconvergence is an
+internal bottleneck/hub property governed per topology (section 7), not an ending property; see
+the 2026-07-27 clarification.
 
 Scope and enforcement: the decision windows are **authoring guidelines for new
 skeletons**, scoped like the section 10 grammar they derive from (the existing catalog

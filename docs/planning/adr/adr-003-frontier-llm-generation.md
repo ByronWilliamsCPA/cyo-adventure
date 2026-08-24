@@ -658,3 +658,101 @@ decision with its own yield evidence and its own amendment.
   precedes the amendment of.
 - [ADR-010](./adr-010-modal-review-and-gated-generation.md): the Modal leg, no longer
   offline-only for generation.
+
+## Amendment (2026-08-23): the family lane closes to Anthropic and DeepSeek takes the fill leg
+
+### Status of this amendment
+
+The 2026-08-18 amendment closed with a "Not decided here" section reserving one change:
+
+> The **primary model** is unchanged by this amendment. `settings.openrouter_model` remains
+> `anthropic/claude-haiku-4.5`, pinned by the 2026-06-22 yield run. Replacing it is a separate
+> decision with its own yield evidence and its own amendment.
+
+This is that separate amendment. Read the next section before treating the reservation as
+satisfied on its own terms: the ruling this amendment records deliberately does **not** rest on
+yield evidence, so it discharges the "own amendment" half of that sentence and consciously
+declines the "own yield evidence" half. That divergence is the point of this section, not an
+oversight.
+
+### What changed
+
+Two `Settings` defaults move off Anthropic models, and a lane rule is added that the codebase
+previously had no equivalent for.
+
+| Setting | Was | Now |
+| --- | --- | --- |
+| `openrouter_model` (fill) | `anthropic/claude-haiku-4.5` | `deepseek/deepseek-v4-pro`, **provisional** |
+| `review_openrouter_model` | `anthropic/claude-sonnet-4.6` | `deepseek/deepseek-v4-flash` |
+| `openrouter_fallback_model` | `anthropic/claude-sonnet-4.6` | unchanged |
+
+**The lane rule.** Generation that a kid or a guardian triggers may route through OpenRouter or
+Modal; it may never route through the owner's Anthropic subscription, which would breach that
+subscription's terms. Admin, out-of-band content generation may still use the subscription,
+because the admin controls what goes in.
+
+Note precisely what the ban covers. It is a ban on the **direct `anthropic` provider leg**, which
+is subscription- or API-key-billed against the owner's own account. It is not a ban on Anthropic
+**models**: `openrouter_fallback_model` stays `anthropic/claude-sonnet-4.6` and remains permitted,
+because OpenRouter is the billing counterparty on that path. This is why
+`FAMILY_LANE_PROVIDERS` is a set of providers rather than of models.
+
+### Why the basis is optionality, not yield
+
+The 2026-06-22 pin was a yield decision. This one is not, and substituting one for the other
+without saying so would misrepresent what has been established.
+
+DeepSeek was chosen for the fill leg because it is open-weights, which keeps fine-tuning available
+as a future option, and because the lower cost point buys iteration speed while the authoring
+process is still being refined. V4 Flash was chosen for review because it was the more effective
+tool on that task and is likewise a fine-tuning target.
+
+What this basis is not: it makes no appeal to the per-model quality rankings. That matters,
+because `R-8` of the 2026-08-22 generation research review found those rankings statistically and
+methodologically unsupported. A ruling made on optionality grounds is therefore not undermined by
+`R-8`, and equally cannot be confirmed by a replication of the rankings. The step 6 replication can
+inform the revisit; it cannot by itself overturn this.
+
+### The fill assignment is provisional
+
+`openrouter_model` is to be **re-taken before production use**. The review assignment is expected
+to stand. Treat the fill row in the table above as a working default that carries a scheduled
+revisit, not as a settled pin of the kind the 2026-06-22 run produced. Until that revisit happens,
+this amendment leaves the ADR in a deliberately weaker state than the 2026-08-18 text it replaces:
+the primary model is now set by a provisional ruling rather than by a measured yield run.
+
+### Consequences
+
+- **The yield basis for the primary model is now open.** No yield run has been performed against
+  `deepseek/deepseek-v4-pro`. The 2026-06-22 figures describe a model that is no longer the
+  default, so they should not be cited as current evidence for fill quality.
+- **A ratified constant lost its basis in the same edit.** The Stage-1 batch size of 8 was ratified
+  on 2026-08-01 against Sonnet 4.6 as reviewer. Moving `review_openrouter_model` retires that
+  basis while leaving the number in place. Tracked at `UW-C347`.
+- **Price correctness now depends on an endpoint pin.** OpenRouter serves one slug from several
+  endpoints at different prices, so the `deepseek/deepseek-v4-pro` price row is only true with
+  respect to the `azure/us` endpoint it is pinned to. An unpinned route would record a confidently
+  wrong `cost_usd` while `cost_complete` still read `true`. See `AL-587`; the one-way containment
+  gap in the guard is tracked at `UW-C352`.
+- **Staging cannot gain a live reviewer without a further decision.** Staging pins its fill leg to
+  `deepseek/deepseek-v4-flash` for cost, and this amendment moves the review default to that same
+  slug, so the independence check in `moderation/review_provider.py` would read `False` for every
+  staging book while a real reviewer ran. Tracked at `UW-C349`.
+- **The allowlist needed a migration, not just a config change.** No DeepSeek row was allowlisted
+  before this ruling, so an admin authoring plan naming a DeepSeek model was rejected outright.
+
+### What this amendment does NOT relax
+
+- The OpenRouter-preferred routing established by the 2026-07-28 amendment is unchanged. Nothing
+  here reintroduces a direct-vendor leg on the family lane; it narrows what that lane may reach.
+- The minors' content data-handling constraint recorded above is unchanged, and DeepSeek models are
+  reached through OpenRouter under the same zero-data-retention posture as any other slug there.
+- The mandatory human approval gate is untouched.
+
+### Related
+
+- [ADR-010](./adr-010-modal-review-and-gated-generation.md): Modal, the other provider the family
+  lane permits.
+- `docs/planning/generation-review-workstream-plan-2026-08-22.md` section 3, decision D1: the
+  ruling this amendment records, including its revisit trigger.
+- `UW-C346`: the configuration, migration, and enforcement work implementing the lane rule.
