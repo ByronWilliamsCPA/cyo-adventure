@@ -111,6 +111,11 @@ export function ProviderAllowlistPage() {
       setActionError(
         classifyApiError(err, {
           transient: 'We could not add that entry. It may already be on the allowlist.',
+          // Opts into classifyApiError's 422 handling (UW-C351): a 422 here is
+          // the family-lane allowlist guard (commit d1fb0b7b), which returns a
+          // specific, actionable reason in the response body. This string is
+          // only the fallback for a 422 whose body can't be parsed.
+          validation: 'We could not add that entry.',
         }).message
       )
     } finally {
@@ -136,6 +141,9 @@ export function ProviderAllowlistPage() {
       setActionError(
         classifyApiError(err, {
           transient: 'We could not update that entry. Please try again.',
+          // Opts into classifyApiError's 422 handling (UW-C351): re-enabling a
+          // family-lane-forbidden row hits the same guard as create() above.
+          validation: 'We could not update that entry.',
         }).message
       )
     } finally {

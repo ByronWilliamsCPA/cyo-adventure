@@ -80,4 +80,94 @@ describe('classifyApiError', () => {
     expect(result.kind).toBe('server')
     expect(result.message).toMatch(/try again/i)
   })
+
+  it('still classifies a 422 as the residual transient bucket when the caller does not opt in', () => {
+    // Pins the opt-in contract: classifyApiError is shared by every console
+    // surface, so a 422 must keep its prior (transient) classification unless
+    // the caller explicitly asks for `validation` via an override, exactly as
+    // it would ask for custom `transient` copy.
+    const result = classifyApiError({
+      isAxiosError: true,
+      response: { status: 422, data: { message: 'provider may not be enabled' } },
+    })
+    expect(result.kind).toBe('transient')
+  })
+
+  it('classifies a 422 as validation, surfacing the server message, when the caller opts in', () => {
+    const result = classifyApiError(
+      {
+        isAxiosError: true,
+        response: {
+          status: 422,
+          data: { message: "provider 'openrouter' may not be enabled on the allowlist" },
+        },
+      },
+      { validation: 'fallback copy' }
+    )
+    expect(result.kind).toBe('validation')
+    expect(result.message).toBe("provider 'openrouter' may not be enabled on the allowlist")
+  })
+
+  it('joins a FastAPI request-validation 422 list-shaped detail into one readable message', () => {
+    const result = classifyApiError(
+      {
+        isAxiosError: true,
+        response: {
+          status: 422,
+          data: {
+            detail: [
+              { type: 'missing', loc: ['body', 'model_id'], msg: 'Field required' },
+              {
+                type: 'string_type',
+                loc: ['body', 'provider'],
+                msg: 'Input should be a valid string',
+              },
+            ],
+          },
+        },
+      },
+      { validation: 'fallback copy' }
+    )
+    expect(result.kind).toBe('validation')
+    expect(result.message).toBe('Field required; Input should be a valid string')
+  })
+
+  it('uses a string-shaped 422 detail directly', () => {
+    const result = classifyApiError(
+      {
+        isAxiosError: true,
+        response: { status: 422, data: { detail: 'not permitted' } },
+      },
+      { validation: 'fallback copy' }
+    )
+    expect(result.kind).toBe('validation')
+    expect(result.message).toBe('not permitted')
+  })
+
+  it('falls back to the caller-supplied validation override when the 422 body has no usable text', () => {
+    const result = classifyApiError(
+      { isAxiosError: true, response: { status: 422, data: {} } },
+      { validation: 'fallback copy' }
+    )
+    expect(result.kind).toBe('validation')
+    expect(result.message).toBe('fallback copy')
+  })
+
+  it('falls back to the validation override, never "[object Object]", when detail is a non-string non-list shape', () => {
+    const result = classifyApiError(
+      {
+        isAxiosError: true,
+        response: { status: 422, data: { detail: { unexpected: 'shape' } } },
+      },
+      { validation: 'fallback copy' }
+    )
+    expect(result.kind).toBe('validation')
+    expect(result.message).toBe('fallback copy')
+    expect(result.message).not.toContain('[object Object]')
+  })
+
+  it('does not misclassify a no-response network failure as validation even with a validation override present', () => {
+    const result = classifyApiError({ isAxiosError: true }, { validation: 'fallback copy' })
+    expect(result.kind).toBe('offline')
+  })
 })

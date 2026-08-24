@@ -24,9 +24,15 @@ from typing import TYPE_CHECKING
 from sqlalchemy import select
 
 from cyo_adventure.db.models import ProviderModelAllowlist
+from cyo_adventure.generation.provider import FAMILY_LANE_PROVIDERS
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
+
+    from cyo_adventure.generation.provider import GenerationLane
+
+logger = get_logger(__name__)
 
 # Mirrors the ck_provider_model_allowlist_provider CHECK constraint. mock is
 # deliberately absent: it is a CI-only test double, never a real generation
@@ -106,17 +112,33 @@ DEFAULT_ALLOWLIST: tuple[AllowlistSeed, ...] = (
 
 
 async def is_enabled_allowlist_pair(
-    session: AsyncSession, provider: str, model_id: str
+    session: AsyncSession,
+    provider: str,
+    model_id: str,
+    *,
+    lane: GenerationLane = "family",
 ) -> bool:
-    """Return whether ``(provider, model_id)`` is an enabled allowlist row.
+    """Return whether ``(provider, model_id)`` is selectable on ``lane``.
+
+    Two independent conditions, both required: the row must exist and be
+    enabled, and the provider must be one ``lane`` permits. The lane rule is a
+    parameter rather than a hardcoded family check because D1 withdrew the
+    direct Anthropic leg from family-triggered work only; out-of-band admin
+    generation may still use it, and hardcoding would make that legitimate
+    answer unreachable.
 
     Args:
         session: The request-scoped async session.
         provider: The provider name from untrusted admin input.
         model_id: The provider-native model id from untrusted admin input.
+        lane: Which actor's request the pair would serve. Keyword-only, and
+            defaults to the restrictive ``"family"`` lane, mirroring
+            ``generation/provider.py::build_provider``: a call site that says
+            nothing is restricted rather than exempt.
 
     Returns:
-        bool: True only when a row exists for the exact pair AND enabled=True.
+        bool: True only when a row exists for the exact pair, is enabled, and
+        names a provider ``lane`` permits.
     """
     # #CRITICAL: security: this is the control that keeps free-string model
     # ids out of billing. enabled=True is checked in the SAME query as the
@@ -131,4 +153,39 @@ async def is_enabled_allowlist_pair(
             ProviderModelAllowlist.enabled.is_(True),
         )
     )
-    return row is not None
+    if row is None:
+        return False
+
+    # #CRITICAL: security: the D1 lane rule (`UW-C346`) applied to the READ
+    # path, so a forbidden pair is refused whatever the table says. The API
+    # write path already refuses to create or enable such a row, but a
+    # migration, scripts/seed_dev_data.py, or raw SQL reaches the table
+    # without passing it, and this helper is the single answer the
+    # authoring-plan endpoint trusts. Imported from provider.py rather than
+    # restated here: one copy of the rule is what keeps the write-time, read-
+    # time, and job-time answers from drifting apart.
+    # #VERIFY: tests/integration/test_allowlist.py::
+    # test_family_lane_refuses_an_enabled_row_it_forbids and
+    # test_the_default_lane_is_the_restrictive_one and
+    # test_admin_lane_accepts_an_enabled_row_the_family_lane_forbids.
+    if lane == "family" and provider not in FAMILY_LANE_PROVIDERS:
+        # Logged rather than silently dropped: reaching this line means an
+        # enabled row the family lane forbids is sitting in the table, which
+        # no API caller can produce and which the at-rest CHECK constraint
+        # `ck_provider_model_allowlist_enabled_family_lane` (migration
+        # 20260823160000, `UW-C350` part (b)) now rejects at write time too.
+        # With all three layers in place this branch should be unreachable,
+        # so the log line is not a routine refusal notice: it means the
+        # constraint was dropped, or the row predates it, or a reader is
+        # asking about a table this process is not the only writer of. Treat
+        # a hit as a configuration defect to investigate, not as noise.
+        logger.warning(
+            "allowlist_pair_refused_by_lane",
+            provider=provider,
+            model_id=model_id,
+            lane=lane,
+            permitted_providers=sorted(FAMILY_LANE_PROVIDERS),
+        )
+        return False
+
+    return True

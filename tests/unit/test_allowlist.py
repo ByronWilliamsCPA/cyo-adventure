@@ -2,10 +2,15 @@
 
 from __future__ import annotations
 
+import inspect
 from typing import get_args
 
 from cyo_adventure.api.schemas import ProviderName
-from cyo_adventure.generation.allowlist import ALLOWLIST_PROVIDERS, DEFAULT_ALLOWLIST
+from cyo_adventure.generation.allowlist import (
+    ALLOWLIST_PROVIDERS,
+    DEFAULT_ALLOWLIST,
+    is_enabled_allowlist_pair,
+)
 from cyo_adventure.generation.provider import FAMILY_LANE_PROVIDERS
 
 
@@ -115,3 +120,36 @@ def test_the_direct_anthropic_rows_are_retained_but_disabled() -> None:
 
     assert anthropic, "the direct-anthropic rows should still be described"
     assert not any(seed.enabled for seed in anthropic)
+
+
+# ---------------------------------------------------------------------------
+# The read path's lane parameter (`UW-C350` part (a))
+# ---------------------------------------------------------------------------
+
+
+def test_the_direct_anthropic_provider_is_outside_the_family_lane() -> None:
+    """The read-path lane tests are built on the "anthropic" literal.
+
+    `tests/integration/test_allowlist.py` writes "anthropic" out as a literal
+    rather than deriving it from `FAMILY_LANE_PROVIDERS`, because a test whose
+    expectation is computed from the constant the production code reads moves
+    with that constant and can never fail (`AL-591`). The cost of the literal
+    is that those tests go vacuous if the ruling ever changes; this assertion
+    is what fails loudly instead of letting them pass while proving nothing.
+    """
+    assert "anthropic" not in FAMILY_LANE_PROVIDERS
+    assert "openrouter" in FAMILY_LANE_PROVIDERS
+
+
+def test_the_read_path_lane_defaults_to_the_restrictive_lane() -> None:
+    """`is_enabled_allowlist_pair` restricts a caller that names no lane.
+
+    The default is the whole point of the parameter: it mirrors
+    `build_provider`, so a call site added later inherits the restriction by
+    omission instead of an exemption by omission. Keyword-only so the lane
+    cannot be passed positionally, and so every call site spells the lane out.
+    """
+    lane = inspect.signature(is_enabled_allowlist_pair).parameters["lane"]
+
+    assert lane.default == "family"
+    assert lane.kind is inspect.Parameter.KEYWORD_ONLY

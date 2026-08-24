@@ -240,10 +240,20 @@ async def test_list_tolerates_a_retired_provider_row(
     try:
         async with AsyncSession(engine) as session:
             session.add(
+                # enabled=False is load-bearing, not incidental. Dropping
+                # ck_provider_model_allowlist_provider above is no longer
+                # enough to land this row: the family-lane CHECK added by
+                # 20260823160000 also rejects an ENABLED row naming a
+                # provider outside {modal, openrouter}, and 'ollama' is one.
+                # Inserting it disabled satisfies that CHECK without dropping
+                # a second constraint, and `enabled` is irrelevant to what
+                # this test actually proves (that `_view()` tolerates an
+                # out-of-Literal provider string); the assertion below reads
+                # only provider and model_id.
                 ProviderModelAllowlist(
                     provider="ollama",
                     model_id="retired-model",
-                    enabled=True,
+                    enabled=False,
                 )
             )
             await session.commit()
@@ -281,12 +291,25 @@ async def test_db_check_constraints_reject_invalid_values(
     value the app can never have produced.
     """
     async with AsyncSession(engine) as session:
+        # enabled=False and the named constraint are both load-bearing, and
+        # they work together. Since 20260823160000 an ENABLED row naming a
+        # provider outside {modal, openrouter} violates TWO CHECKs, and
+        # Postgres reports only the first one it hits: with enabled=True it
+        # reports ck_provider_model_allowlist_enabled_family_lane, so a bare
+        # `raises(IntegrityError)` here would pass even if
+        # ck_provider_model_allowlist_provider were dropped outright, which is
+        # the exact backstop this test exists to pin. Writing the row DISABLED
+        # satisfies the family-lane CHECK by its `enabled IS FALSE` arm, so the
+        # provider CHECK is the only one left that can reject it, and the
+        # `match` below then proves it did.
         session.add(
             ProviderModelAllowlist(
-                provider="not-a-provider", model_id="x", enabled=True
+                provider="not-a-provider", model_id="x", enabled=False
             )
         )
-        with pytest.raises(IntegrityError):
+        with pytest.raises(
+            IntegrityError, match="ck_provider_model_allowlist_provider"
+        ):
             await session.flush()
         await session.rollback()
 

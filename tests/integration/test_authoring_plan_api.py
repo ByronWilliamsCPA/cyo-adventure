@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, cast
 
 import pytest
 import pytest_asyncio
-from sqlalchemy import select
+from sqlalchemy import select, text
 
 from cyo_adventure.db.models import GenerationJob, ProviderModelAllowlist
 from cyo_adventure.generation import worker as worker_module
@@ -88,6 +88,32 @@ pytestmark = pytest.mark.asyncio
 _CREATE = "/api/v1/story-requests"
 
 
+# The pair every working test in this module names. openrouter, not the
+# direct anthropic leg it used to be: an authoring plan is a family-lane
+# question, and since D1 (`UW-C346`, `UW-C350`) the read path refuses a
+# provider that lane forbids however the row is set. Written as literals, not
+# derived from `FAMILY_LANE_PROVIDERS`, so the expectation cannot drift with
+# the constant the production code reads (`AL-591`);
+# tests/unit/test_allowlist.py::
+# test_the_direct_anthropic_provider_is_outside_the_family_lane is what fails
+# if the ruling ever changes.
+_LANE_OK_PROVIDER = "openrouter"
+_LANE_OK_MODEL = "deepseek/deepseek-v4-pro"
+
+# The pair the family lane forbids, seeded ENABLED. No API caller can produce
+# this row any more (api/provider_allowlist.py returns 422 for it), so it
+# stands for the one thing that still can: a migration, seed script, or raw
+# SQL. test_family_lane_forbidden_pair_is_422 is what observes it.
+_LANE_FORBIDDEN_PROVIDER = "anthropic"
+_LANE_FORBIDDEN_MODEL = "claude-sonnet-4-6"
+
+
+# The at-rest CHECK that `UW-C350` part (b) adds, naming the same rule. An
+# ENABLED row for a forbidden provider now violates it, so the veto test below
+# has to remove it to reach the state the read path defends against.
+_FAMILY_LANE_CHECK = "ck_provider_model_allowlist_enabled_family_lane"
+
+
 @pytest_asyncio.fixture(autouse=True)
 async def _seed_allowlist(sessions: async_sessionmaker[AsyncSession]) -> None:
     """Seed one enabled allowlist row so automated_provider requests validate.
@@ -95,16 +121,85 @@ async def _seed_allowlist(sessions: async_sessionmaker[AsyncSession]) -> None:
     Every test in this module either exercises mechanism='automated_provider'
     (which now requires an enabled allowlist pair) or is unaffected by the
     allowlist (mechanism='skill'); seeding one canonical row here keeps every
-    existing test body's literal provider/model working without a per-test
-    insert.
+    test body's literal provider/model working without a per-test insert.
     """
     async with sessions() as session:
         session.add(
             ProviderModelAllowlist(
-                provider="anthropic", model_id="claude-sonnet-4-6", enabled=True
+                provider=_LANE_OK_PROVIDER, model_id=_LANE_OK_MODEL, enabled=True
             )
         )
         await session.commit()
+
+
+@pytest_asyncio.fixture
+async def forbidden_enabled_row(
+    sessions: async_sessionmaker[AsyncSession],
+) -> AsyncIterator[None]:
+    """Put an ENABLED row the family lane forbids into the table, then undo it.
+
+    Two layers have to be stepped around to reach this state, which is the
+    measure of how deliberately unreachable it is: the API write path refuses
+    to create it (422 since `d1fb0b7b`), and the at-rest CHECK refuses to
+    store it (`UW-C350` part (b)). What remains is a database migrated before
+    that CHECK existed, or one where it has been dropped, which is exactly the
+    case the read-path veto is defence-in-depth for.
+
+    The constraint's own definition is read back from ``pg_constraint`` and
+    replayed verbatim on teardown rather than retyped here, so a later change
+    to the migration's predicate cannot be silently replaced by a stale copy
+    living in this test file. The app talks to its own connection, so unlike
+    tests/integration/test_allowlist.py this cannot ride on a rolled-back
+    transaction; the row and the constraint are restored explicitly instead.
+    """
+    async with sessions() as session:
+        definition = await session.scalar(
+            text(
+                "SELECT pg_get_constraintdef(oid) FROM pg_constraint "
+                "WHERE conname = :name"
+            ),
+            {"name": _FAMILY_LANE_CHECK},
+        )
+        assert definition is not None, (
+            f"{_FAMILY_LANE_CHECK} is absent; this test asserts the read path "
+            "still refuses a row the constraint would have blocked, so it has "
+            "nothing to prove if the constraint was never there"
+        )
+        await session.execute(
+            text(
+                "ALTER TABLE provider_model_allowlist "
+                f"DROP CONSTRAINT {_FAMILY_LANE_CHECK}"
+            )
+        )
+        session.add(
+            ProviderModelAllowlist(
+                provider=_LANE_FORBIDDEN_PROVIDER,
+                model_id=_LANE_FORBIDDEN_MODEL,
+                enabled=True,
+            )
+        )
+        await session.commit()
+    try:
+        yield
+    finally:
+        async with sessions() as session:
+            await session.execute(
+                text(
+                    "DELETE FROM provider_model_allowlist "
+                    "WHERE provider = :provider AND model_id = :model_id"
+                ),
+                {
+                    "provider": _LANE_FORBIDDEN_PROVIDER,
+                    "model_id": _LANE_FORBIDDEN_MODEL,
+                },
+            )
+            await session.execute(
+                text(
+                    "ALTER TABLE provider_model_allowlist "
+                    f"ADD CONSTRAINT {_FAMILY_LANE_CHECK} {definition}"
+                )
+            )
+            await session.commit()
 
 
 async def _approved_request_id(client: AsyncClient, seed: Seed, text: str) -> str:
@@ -162,8 +257,8 @@ async def test_fresh_generation_automated_provider_enqueues(
         json={
             "method": "fresh_generation",
             "mechanism": "automated_provider",
-            "provider": "anthropic",
-            "model": "claude-sonnet-4-6",
+            "provider": _LANE_OK_PROVIDER,
+            "model": _LANE_OK_MODEL,
             "prep_model": "openrouter/some-model",
         },
         headers=auth(seed.admin_token),
@@ -229,8 +324,8 @@ async def test_skeleton_fill_automated_provider_enqueues(
         json={
             "method": "skeleton_fill",
             "mechanism": "automated_provider",
-            "provider": "anthropic",
-            "model": "claude-sonnet-4-6",
+            "provider": _LANE_OK_PROVIDER,
+            "model": _LANE_OK_MODEL,
             "prep_model": "openrouter/some-model",
         },
         headers=auth(seed.admin_token),
@@ -283,8 +378,8 @@ async def test_not_yet_approved_is_409(client: AsyncClient, seed: Seed) -> None:
         json={
             "method": "fresh_generation",
             "mechanism": "automated_provider",
-            "provider": "anthropic",
-            "model": "claude-sonnet-4-6",
+            "provider": _LANE_OK_PROVIDER,
+            "model": _LANE_OK_MODEL,
             "prep_model": "openrouter/some-model",
         },
         headers=auth(seed.admin_token),
@@ -298,8 +393,8 @@ async def test_duplicate_authoring_plan_is_409(client: AsyncClient, seed: Seed) 
     body = {
         "method": "fresh_generation",
         "mechanism": "automated_provider",
-        "provider": "anthropic",
-        "model": "claude-sonnet-4-6",
+        "provider": _LANE_OK_PROVIDER,
+        "model": _LANE_OK_MODEL,
         "prep_model": "openrouter/some-model",
     }
     first = await client.post(
@@ -320,8 +415,8 @@ async def test_guardian_forbidden(client: AsyncClient, seed: Seed) -> None:
         json={
             "method": "fresh_generation",
             "mechanism": "automated_provider",
-            "provider": "anthropic",
-            "model": "claude-sonnet-4-6",
+            "provider": _LANE_OK_PROVIDER,
+            "model": _LANE_OK_MODEL,
             "prep_model": "openrouter/some-model",
         },
         headers=auth(seed.guardian_token),
@@ -337,8 +432,8 @@ async def test_child_forbidden(client: AsyncClient, seed: Seed) -> None:
         json={
             "method": "fresh_generation",
             "mechanism": "automated_provider",
-            "provider": "anthropic",
-            "model": "claude-sonnet-4-6",
+            "provider": _LANE_OK_PROVIDER,
+            "model": _LANE_OK_MODEL,
             "prep_model": "openrouter/some-model",
         },
         headers=auth(seed.child_token),
@@ -353,8 +448,8 @@ async def test_unknown_request_is_404(client: AsyncClient, seed: Seed) -> None:
         json={
             "method": "fresh_generation",
             "mechanism": "automated_provider",
-            "provider": "anthropic",
-            "model": "claude-sonnet-4-6",
+            "provider": _LANE_OK_PROVIDER,
+            "model": _LANE_OK_MODEL,
             "prep_model": "openrouter/some-model",
         },
         headers=auth(seed.admin_token),
@@ -377,8 +472,8 @@ async def test_skeleton_fill_automated_provider_runs_end_to_end(
         json={
             "method": "skeleton_fill",
             "mechanism": "automated_provider",
-            "provider": "anthropic",
-            "model": "claude-sonnet-4-6",
+            "provider": _LANE_OK_PROVIDER,
+            "model": _LANE_OK_MODEL,
             "prep_model": "mock",
         },
         headers=auth(seed.admin_token),
@@ -388,10 +483,10 @@ async def test_skeleton_fill_automated_provider_runs_end_to_end(
 
     # #ASSUME: external-resources: this test runs the worker against an
     # explicitly-injected mock provider so it stays hermetic (no network). The
-    # request body sets provider="anthropic", and the worker now honors that
+    # request body sets provider="openrouter", and the worker now honors that
     # per-job override over the settings default; passing a non-None provider
     # here intentionally bypasses that override so the test does not need a real
-    # ANTHROPIC_API_KEY. The override-read path itself is unit-tested in
+    # OPENROUTER_API_KEY. The override-read path itself is unit-tested in
     # test_worker.py::test_effective_provider_reads_job_authoring_override. A
     # mock provider cannot produce a schema-valid filled skeleton from a real
     # prompt, so this test only asserts the job REACHES a terminal status
@@ -417,7 +512,12 @@ async def test_skeleton_fill_automated_provider_runs_end_to_end(
 async def test_automated_provider_unallowlisted_model_is_422(
     client: AsyncClient, seed: Seed
 ) -> None:
-    """A provider/model pair with no enabled allowlist row is rejected."""
+    """A provider/model pair with no enabled allowlist row is rejected.
+
+    Refused for the absence of the row, not for the lane: no row matches, so
+    the read path answers False before the lane rule is ever consulted. The
+    lane refusal has its own test below.
+    """
     req_id = await _approved_request_id(client, seed, "a stray comet")
     res = await client.post(
         f"{_CREATE}/{req_id}/authoring-plan",
@@ -431,6 +531,74 @@ async def test_automated_provider_unallowlisted_model_is_422(
         headers=auth(seed.admin_token),
     )
     assert res.status_code == 422, res.text
+
+
+@pytest.mark.usefixtures("forbidden_enabled_row")
+async def test_family_lane_forbidden_pair_is_422(
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """An ENABLED row the family lane forbids is still refused by the endpoint.
+
+    The only place the D1 read-path veto (`UW-C350` part (a)) is observable end
+    to end: `is_enabled_allowlist_pair`'s own tests call the helper directly,
+    and the write-path guard in api/provider_allowlist.py never sees this row
+    because a migration, seed script, or raw SQL put it there. Without this
+    test the swap of every other body in this module to an openrouter pair
+    would have removed the last case that can watch the veto fire.
+
+    The refusal is NOT the absence of a row: the `forbidden_enabled_row`
+    fixture puts this exact pair in the table enabled, and the assertion below
+    proves it is there and enabled at the moment the request is made. What
+    refuses it is the lane.
+    """
+    async with sessions() as session:
+        row = await session.scalar(
+            select(ProviderModelAllowlist).where(
+                ProviderModelAllowlist.provider == _LANE_FORBIDDEN_PROVIDER,
+                ProviderModelAllowlist.model_id == _LANE_FORBIDDEN_MODEL,
+            )
+        )
+        assert row is not None, (
+            "the forbidden pair must exist for this test to mean anything"
+        )
+        assert row.enabled is True
+
+    req_id = await _approved_request_id(client, seed, "a lantern in the deep")
+    res = await client.post(
+        f"{_CREATE}/{req_id}/authoring-plan",
+        json={
+            "method": "fresh_generation",
+            "mechanism": "automated_provider",
+            "provider": _LANE_FORBIDDEN_PROVIDER,
+            "model": _LANE_FORBIDDEN_MODEL,
+            "prep_model": "openrouter/some-model",
+        },
+        headers=auth(seed.admin_token),
+    )
+
+    assert res.status_code == 422, res.text
+    body = res.json()
+    assert body["error"] == "ValidationError"
+    assert _LANE_FORBIDDEN_PROVIDER in body["message"]
+    assert body["details"]["field"] == "model"
+    # The admin's submitted value is pruned from the client body (CWE-209)
+    # while staying in the server log; asserted here because a frontend error
+    # classifier reads this shape.
+    assert "value" not in body["details"]
+
+    # No job was created: the refusal happens before anything is persisted.
+    # Filtered on the provider rather than on the request, because a
+    # GenerationJob carries no story-request column and other tests in this
+    # module legitimately leave openrouter jobs behind.
+    async with sessions() as session:
+        jobs = (
+            await session.scalars(
+                select(GenerationJob).where(
+                    GenerationJob.provider == _LANE_FORBIDDEN_PROVIDER
+                )
+            )
+        ).all()
+        assert not jobs
 
 
 async def test_skeleton_fill_response_includes_alternatives(
@@ -532,8 +700,8 @@ async def test_cross_band_override_producer_binds_consumer_fill(
         json={
             "method": "skeleton_fill",
             "mechanism": "automated_provider",
-            "provider": "anthropic",
-            "model": "claude-sonnet-4-6",
+            "provider": _LANE_OK_PROVIDER,
+            "model": _LANE_OK_MODEL,
             "prep_model": "mock",
             "skeleton_slug": _CROSS_BAND_SKELETON_SLUG,
         },
@@ -568,7 +736,7 @@ async def test_cross_band_override_producer_binds_consumer_fill(
     # module-wide by the _force_legacy_skeleton_fill autouse fixture above.
 
     # #ASSUME: external-resources: the injected MockProvider keeps the worker
-    # hermetic (no network); the per-job provider="anthropic" override is
+    # hermetic (no network); the per-job provider="openrouter" override is
     # intentionally bypassed exactly as in
     # test_skeleton_fill_automated_provider_runs_end_to_end. The budget is one
     # call for the fill, 22 Stage D repair-batch calls (this 253-node
