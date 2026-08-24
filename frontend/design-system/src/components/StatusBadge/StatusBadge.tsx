@@ -17,11 +17,7 @@ export interface StatusBadgeProps {
 export function StatusBadge({ status, label }: StatusBadgeProps) {
   const displayLabel = label ?? DEFAULT_LABELS[status]
   return (
-    <span
-      className={`cyo-status cyo-status--${status}`}
-      role="status"
-      aria-label={displayLabel}
-    >
+    <span className={`cyo-status cyo-status--${status}`} role="status" aria-label={displayLabel}>
       <span className="cyo-status__dot" aria-hidden="true" />
       <span className="cyo-status__label">{displayLabel}</span>
     </span>

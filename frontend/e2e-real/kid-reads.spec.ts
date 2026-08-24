@@ -70,9 +70,7 @@ test('the seeded child reads a real story to an ending', async ({ page }) => {
     // or blank body for the next node never satisfies this and fails here.
     await expect
       .poll(async () =>
-        (await page.getByTestId('ending-screen').count())
-          ? '__ended__'
-          : await passageText()
+        (await page.getByTestId('ending-screen').count()) ? '__ended__' : await passageText()
       )
       .not.toBe(previousBody)
     if (await page.getByTestId('ending-screen').count()) break

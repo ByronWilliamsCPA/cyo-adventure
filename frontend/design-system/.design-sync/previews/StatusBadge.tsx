@@ -26,7 +26,15 @@ export function Loading() {
 
 export function AllStatuses() {
   return (
-    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center', padding: '24px' }}>
+    <div
+      style={{
+        display: 'flex',
+        gap: '16px',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        padding: '24px',
+      }}
+    >
       <StatusBadge status="connected" />
       <StatusBadge status="offline" />
       <StatusBadge status="loading" />

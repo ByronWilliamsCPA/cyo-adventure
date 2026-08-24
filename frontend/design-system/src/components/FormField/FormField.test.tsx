@@ -7,7 +7,7 @@ describe('FormField', () => {
     render(
       <FormField label="Name">
         <input value="Alex" onChange={() => {}} />
-      </FormField>,
+      </FormField>
     )
     expect(screen.getByText('Name')).toBeInTheDocument()
     // Name-filtered query proves the label is associated with the control
@@ -19,7 +19,7 @@ describe('FormField', () => {
     render(
       <FormField label="Name">
         <input value="Alex" onChange={() => {}} />
-      </FormField>,
+      </FormField>
     )
     expect(screen.getByText('Name').closest('label')?.className).toContain('cyo-field')
   })
@@ -28,7 +28,7 @@ describe('FormField', () => {
     render(
       <FormField label="Name" className="request-form__field" htmlFor="name-input">
         <input id="name-input" value="Alex" onChange={() => {}} />
-      </FormField>,
+      </FormField>
     )
     const label = screen.getByText('Name').closest('label')
     expect(label?.className).toContain('request-form__field')

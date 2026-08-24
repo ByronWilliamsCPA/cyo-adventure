@@ -3,9 +3,7 @@ import { PassageText } from '@cyo/design-system'
 export function SingleParagraph() {
   return (
     <div style={{ padding: '32px', maxWidth: '600px' }}>
-      <PassageText
-        text="You stand at the edge of Thornwood Forest. The ancient trees stretch so high their canopy blots out the afternoon sun. Somewhere deep within, a branch snaps, and a flock of starlings bursts skyward in a dark, swirling cloud."
-      />
+      <PassageText text="You stand at the edge of Thornwood Forest. The ancient trees stretch so high their canopy blots out the afternoon sun. Somewhere deep within, a branch snaps, and a flock of starlings bursts skyward in a dark, swirling cloud." />
     </div>
   )
 }

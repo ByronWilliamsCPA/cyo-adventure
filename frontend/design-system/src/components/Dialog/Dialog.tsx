@@ -74,10 +74,7 @@ export function Dialog({ title, children, actions, open = true, onClose }: Dialo
   if (!open) return null
 
   return (
-    <div
-      className="cyo-dialog-backdrop"
-      onClick={onClose}
-    >
+    <div className="cyo-dialog-backdrop" onClick={onClose}>
       <div
         ref={dialogRef}
         role="dialog"

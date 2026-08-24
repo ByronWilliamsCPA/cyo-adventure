@@ -30,10 +30,7 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.flatConfigs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       // A horizontally-scrollable region (legal/PrivacyPolicyPage.tsx's
       // table wrappers) needs tabIndex=0 on its role="region" container so
       // keyboard users can scroll it (WAI-ARIA APG SCR26); this rule's
@@ -43,5 +40,5 @@ export default tseslint.config(
       // widening an existing one.
       'jsx-a11y/no-noninteractive-tabindex': ['error', { roles: ['region'] }],
     },
-  },
+  }
 )

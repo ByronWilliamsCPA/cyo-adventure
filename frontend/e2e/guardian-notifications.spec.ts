@@ -50,9 +50,7 @@ test('guardian opens the notification bell and sees the alert distinctly styled'
     route.fulfill({ json: { profiles: [{ id: 'p1' }] } })
   )
   await page.route('**/api/v1/review-queue', (route) => route.fulfill({ json: { items: [] } }))
-  await page.route('**/api/v1/generation-jobs', (route) =>
-    route.fulfill({ json: { jobs: [] } })
-  )
+  await page.route('**/api/v1/generation-jobs', (route) => route.fulfill({ json: { jobs: [] } }))
 
   await page.goto('/guardian')
 
