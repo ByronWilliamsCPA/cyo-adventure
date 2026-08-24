@@ -93,6 +93,11 @@ book is not reader-facing, a human still gates it before it ever is, and this is
 precisely the behaviour the ordinary generation path already applies to a
 pre-publish draft.
 
+This flag is load-bearing only once section 5 lands. Repair is gated on
+`not report.has_hard_block`, and without the contract fix every one of the seventeen
+books produces a fail-closed block, so `allow_repair=True` would be dead code on the
+exact population it was enabled for.
+
 This is the one place the endpoint's behaviour forks on status, so it is expressed
 as a named helper rather than an inline conditional, and the published invariant
 keeps its own dedicated test.
@@ -145,7 +150,58 @@ The `StateTransitionError` catch comment gains `(IN_REVIEW, SUBMIT)` and
 `(IN_REVIEW, AUTO_REJECT)` alongside the published pair, since that enumeration is
 the proof that status stays untouched.
 
-### 5. Tests
+### 5. Resolve the personalizable-slot contract from the version, not from a job row
+
+Verified against production on 2026-08-24: all seventeen books have **zero**
+`generation_job` rows, and all seventeen versions carry `provider = 'import'` with
+`skeleton_slug` populated. That makes the widening destructive as designed, and the
+auto-repair decision inert, for reasons neither is obvious from.
+
+`api/remoderate.py` does not pass `personalizable_slots`, so
+`run_moderation_pipeline` falls back to
+`personalizable_slot_ids_for_story(session, story_id)`, which recovers the contract
+from the story's `GenerationJob` row and returns `None` when there is none. The
+pipeline correctly treats `None` as fail-closed and adds a
+`sentinel_integrity_violation` **BLOCK**. That is right on the generation path, where
+a job row always exists. On this path it is a false alarm produced by absent
+provenance rather than by anything in the prose.
+
+Two consequences follow, and the second cancels an approved decision:
+
+- Every book's stored report would be overwritten with a hard block. Today all
+  seventeen store `hard_block = false` (sixteen with a soft flag, one clean), so the
+  run would replace seventeen accurate reports with seventeen uninformative ones.
+- The repair branch is gated on `not report.has_hard_block`, so the manufactured
+  block suppresses repair. `allow_repair=True` would never fire for any of the
+  seventeen.
+
+Status is unaffected: `(IN_REVIEW, AUTO_REJECT)` is not a legal hop either, so the
+terminal call still raises and is still swallowed. The damage is confined to the
+reports, which is why it would have been easy to miss.
+
+`import_filled_story` already avoids this by passing `personalizable_slots`
+explicitly rather than relying on the job lookup. Re-moderation does the same, from
+the one provenance the version actually carries:
+
+`skeleton_slug` to band via a scan of the skeleton root, then the existing
+`resolve_skeleton_path` to `load_skeleton` to `load_contract_for` to
+`personalizable_slot_ids` chain that `_contract_for_job` already runs.
+
+`skeleton_match.py::find_skeleton_metadata` performs that scan today but returns only
+the metadata, discarding the band directory it matched. The band is taken from the
+matched **directory**, not from the metadata's declared `age_band`. The two agree for
+every skeleton in the catalog today, and taking the directory keeps them from having
+to: a skeleton filed under one band while declaring another would otherwise resolve to
+a path that does not exist, and fail closed back to the same spurious block.
+
+The tri-state contract is preserved exactly as `personalizable_slot_ids_for_job`
+defines it. An empty frozenset means no personalizable slot could legitimately exist
+(no slug, or a legacy skeleton with no contract sidecar); `None` still means the
+contract genuinely could not be recovered and the pipeline must still fail closed.
+This change removes only the case where `None` meant "this book never had a
+generation job", which is true of every imported book and says nothing about safety.
+
+### 6. Tests
 
 - An `in_review` book refreshes its stored report and its status stays `in_review`.
 - An `in_review` book whose repair is adopted ends with `validation_report`
@@ -155,6 +211,11 @@ the proof that status stays untouched.
   The existing `test_published_blob_unchanged_when_repair_disallowed` must survive.
 - `draft`, `needs_revision`, and `archived` remain rejected.
 - The import-provider fallback genuinely serves a repair on the `in_review` path.
+- A version with a `skeleton_slug` and **no** `generation_job` row resolves a real
+  slot set and produces no `sentinel_integrity_violation` finding. This is the
+  production shape of all seventeen books, and without the fix it is a hard block.
+- A version whose `skeleton_slug` is absent, or names a skeleton that cannot be
+  located, still fails closed. The tri-state's `None` arm must survive.
 
 ## Non-goals
 
