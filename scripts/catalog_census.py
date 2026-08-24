@@ -102,9 +102,15 @@ def _band_rank(band: str) -> int:
 
 @dataclass(frozen=True)
 class Shell:
-    """One skeleton shell, with the three quantities documents quote."""
+    """One skeleton shell, with the three quantities documents quote.
 
-    path: Path
+    ``path`` is a `PurePath` rather than a `Path` because the census only ever
+    renders it as text (`_doc_path`) and never reads through it. Saying so lets
+    a test hand this a `PureWindowsPath` on a Linux runner, which is the only
+    way the separator regression can be caught anywhere but a Windows job.
+    """
+
+    path: PurePath
     band: str
     nodes: int
     commissioned_words: int
