@@ -22,8 +22,12 @@ from scripts.unit_cost_model import (
     GENERATED_DOC,
     LEG_MODELS,
     PRICE_POINTS_USD,
+    RULED_FILL_LEG,
+    RULED_REVIEW_LEG,
     cell_weights,
+    fill_costs,
     leg_costs,
+    load_fill_books,
     main,
     model,
     render,
@@ -194,3 +198,94 @@ def test_json_mode_is_machine_readable(capsys: pytest.CaptureFixture[str]) -> No
 
     assert payload["legs"]
     assert payload["cells"]
+
+
+def test_fill_cost_uses_billed_figures_rather_than_recomputed_ones() -> None:
+    """Fill cost comes from the runs' metered `cost`, not from a token estimate.
+
+    The vendor-comparison book records carry no `input_tokens`, so a recomputed
+    figure is not even derivable there. Using the metered value is therefore the
+    only honest option, and it is also the better one: it is what was billed.
+    """
+    fills = fill_costs()
+    assert fills, "no billed fill records found"
+    for row in fills.values():
+        assert row["source"] == "metered"
+        assert row["billed_usd"] > 0
+
+
+def test_fill_cost_is_measured_only_on_the_ruled_fill_leg() -> None:
+    """The gap is the point: no other leg has a billed fill record committed.
+
+    D1 ruled the fill leg to `deepseek-v4-pro`, which is the one leg this
+    evidence covers, so the model can price the ruled configuration and nothing
+    else. A future leg change re-opens this and the test should then fail.
+    """
+    assert set(fill_costs()) == {RULED_FILL_LEG}
+
+
+def test_failed_fill_books_cost_money_and_deliver_nothing() -> None:
+    """A book that errors is still billed, and the model must carry that.
+
+    Charging failures to the books that landed is the difference between cost
+    per call and cost per delivered book, which is the distinction the vendor
+    comparison found to be worth 4x on the worst leg.
+    """
+    row = fill_costs()[RULED_FILL_LEG]
+    assert row["books"] > row["delivered"], "no failed book in the corpus"
+    assert row["failed_usd"] > 0
+    assert row["usd_per_delivered_book"] > row["billed_usd"] / row["books"]
+
+
+def test_headroom_is_anchored_on_the_billed_fill_rate() -> None:
+    """Headroom scales the measured fill rate, not the skeleton-authoring rate.
+
+    Skeleton authoring and prose fill are different workloads on different
+    corpora; the earlier draft of this model scaled one by the other's word
+    counts, which is a category error.
+    """
+    data = model()
+    rate = fill_costs()[RULED_FILL_LEG]["usd_per_1k_words"]
+    for row in data["headroom"]:
+        assert row["basis"] == "billed fill, ruled leg"
+        assert row["usd_per_1k_words"] == rate
+
+
+def test_the_review_leg_carries_no_measured_fill_cost() -> None:
+    """The ruled review leg is unmeasured, and the model must say so.
+
+    Quoting a pair cost while only one half is measured is the failure this
+    guards: the review term is named as absent rather than silently omitted.
+    """
+    data = model()
+    assert RULED_REVIEW_LEG not in fill_costs()
+    assert RULED_REVIEW_LEG in data["assumptions"]["review_leg"]
+
+
+def test_billed_fill_books_are_attributed_to_a_catalog_band() -> None:
+    """Each billed book is joined to the skeleton it filled, so it has a band.
+
+    Without the join the fill corpus is a bare average and the scaling to other
+    cells is unfalsifiable. With it, the rate can be read per band and the
+    linearity assumption becomes checkable against real spread.
+    """
+    books = load_fill_books()
+    assert books
+    for book in books:
+        assert book["skeleton"], "book not joined to a skeleton"
+    banded = {b["band"] for b in books if b["band"]}
+    assert len(banded) >= 3, f"fill evidence spans too few bands: {banded}"
+
+
+def test_the_fill_rate_is_reported_per_band() -> None:
+    """The per-band breakdown exists and covers both newly-probed bands.
+
+    `13-16` and `16+` are the bands with the largest books and therefore the
+    ones where a wrong scaling assumption costs the most, so a model that
+    scales into them without any measurement there would be guessing hardest
+    exactly where it matters most.
+    """
+    bands = model()["fill_by_band"]
+    assert {"13-16", "16+"} <= set(bands)
+    for row in bands.values():
+        assert row["usd_per_1k_commissioned_words"] > 0

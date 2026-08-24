@@ -6,13 +6,17 @@ Regenerate with `uv run python scripts/unit_cost_model.py --write`.
 
 ## What is measured, and what is not
 
-Committed run records carry token counts for **2 of the 18 offered cells**: `5-8/short/prose`, `8-11/short/prose`. Every other cell in the tables below is scaled, not measured.
+This model reads two different corpora and they must not be confused. **Skeleton authoring** invents a story shell from a premise; **prose fill** writes the bodies for a shell that already exists. Only the second is what a family's book costs.
+
+The skeleton-authoring records carry token counts for **2 of the 18 offered cells**: `5-8/short/prose`, `8-11/short/prose`.
+
+The fill records are billed rather than recomputed and cover **3 of the 6 age bands**: `8-11`, `13-16`, `16+`. There is no delivered fill book at `3-5`, `5-8` or `10-13`, so every figure at those bands is scaled from the bands that were measured.
 
 These legs appear in the committed records but carry no token counts at all, so they cannot be costed from this evidence: `claude-fable-subagent`, `claude-haiku-subagent`, `claude-opus-subagent`, `claude-sonnet-subagent`, `moonshot-kimi-k3-modal`.
 
-## Per-leg cost, recomputed from committed tokens
+## Skeleton-authoring cost, recomputed from committed tokens
 
-Recomputed as `input_tokens x input price + output_tokens x output price` using `core/pricing.py`, over the committed run records that carry token counts. `delivered` counts records that also cleared the deterministic gate; the others cost money and delivered nothing.
+**This is not the cost of a book.** It prices inventing a story shell from a premise, and each record accumulates every attempt and repair round it took, so a record is a whole authoring episode rather than a call. Recomputed as `input_tokens x input price + output_tokens x output price` using `core/pricing.py`, over the committed run records that carry token counts. `delivered` counts records that also cleared the deterministic gate; the others cost money and delivered nothing.
 
 | Leg | Model | Records | No error | Delivered | Median $ | Min $ | Max $ | Reasoning share |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -21,6 +25,28 @@ Recomputed as `input_tokens x input price + output_tokens x output price` using 
 | `deepseek-v4-pro` | `deepseek/deepseek-v4-pro` | 8 | 7 | 0 | 0.2488 | 0.1476 | 0.5224 | 0.0% |
 | `google-gemini-3.1-pro` | `google/gemini-3.1-pro-preview` | 3 | 2 | 1 | 1.0447 | 0.7822 | 1.3072 | 73.5% |
 | `openai-gpt-5.6-sol` | `openai/gpt-5.6-sol` | 3 | 3 | 0 | 1.1104 | 0.9275 | 1.3429 | 30.8% |
+
+## Prose-fill cost, as billed
+
+This is what a book costs. The figures are metered, not recomputed: the book records carry no `input_tokens`, and the billed number is better evidence anyway because it already includes whichever endpoint, cache state and discount applied. Failed books are charged to the books that landed, because a call that returns nothing is still billed and still has to be retried.
+
+| Leg | Books | Delivered | Billed $ | Spent on failures $ | Words delivered | $/delivered book | $/1k words | $/1k words range | Output tok/word |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `deepseek-v4-pro` | 6 | 5 | 2.7364 | 0.0421 | 58,923 | 0.5473 | 0.0464 | 0.0325 to 0.0548 | 6.63 |
+
+### The same cost, per band
+
+The band is the catalog's classification of the skeleton each book filled, not anything the run asserted. This table is what makes the linear scaling below falsifiable: if dollars per commissioned word differed sharply across bands, scaling one rate by word count would be indefensible.
+
+| Band | Books | Billed $ | Commissioned words | Scorable words delivered | Scorable share | $/1k commissioned words |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `8-11` | 3 | 1.0922 | 58,722 | 29,503 | 50.2% | 0.0186 |
+| `13-16` | 1 | 0.5383 | 18,888 | 9,997 | 52.9% | 0.0285 |
+| `16+` | 1 | 1.0637 | 49,953 | 19,423 | 38.9% | 0.0213 |
+
+That rate spans 0.0186 to 0.0285, a factor of 1.53 across the bands measured, so a single rate scaled by commissioned words is a defensible approximation over this range and an extrapolation outside it.
+
+**Read the scorable share carefully.** It is measured scorable words over the skeleton's commission, and `measure_book` scores only what it can score, so a share near half is consistent with books delivering about half their commissioned length AND with the measurement excluding much of what they wrote. Nothing committed separates those, and the difference matters: the first would mean these books are short, the second would mean the dollars-per-word figures above are pessimistic by up to 2x.
 
 ## Credit weight by cell
 
@@ -49,15 +75,17 @@ D3 ruled credits scale with book length and age band. The scale is commissioned 
 
 ## Headroom at each candidate price point
 
-D3 left the subscription at $1.99 or $4.99 and did not choose, so no absolute per-book cap is derived here. Scaled figures assume linear scaling in commissioned words from the one measured cell.
+D3 left the subscription at $1.99 or $4.99 and did not choose, so no absolute per-book cap is derived here. Each cell's cost is the billed rate above times that cell's median commissioned words. **Fill only**: the ruled review leg has no billed record, so every share below is a floor.
 
-| Price | Anchor cell | Pair $ at anchor | Scaled min $ | Scaled max $ | Max share of price |
-| ---: | --- | ---: | ---: | ---: | ---: |
-| $1.99 | `5-8/short/prose` | 0.2782 | 0.0779 | 4.1379 | 207.9% |
-| $4.99 | `5-8/short/prose` | 0.2782 | 0.0779 | 4.1379 | 82.9% |
+| Price | $/1k words | Cheapest cell | Scaled min $ | Dearest cell | Scaled max $ | Max share of price |
+| ---: | ---: | --- | ---: | --- | ---: | ---: |
+| $1.99 | 0.0464 | `3-5/short/prose` | 0.0357 | `16+/long/gamebook` | 1.8970 | 95.3% |
+| $4.99 | 0.0464 | `3-5/short/prose` | 0.0357 | `16+/long/gamebook` | 1.8970 | 38.0% |
 
 ## Assumptions
 
-- **scaling**: Cost at an unmeasured cell is the measured pair cost scaled by commissioned words. Not measured; the scaling is linear by assumption and the frontier legs' reasoning share suggests it may not be.
+- **scaling**: Cost at an unmeasured cell is the billed dollars-per-thousand delivered words on the ruled fill leg, scaled by that cell's commissioned words. Linear by assumption, but the assumption is checkable here rather than bare: the per-thousand-word rate and its spread across the delivered books are both reported below, over the book-size range those books actually covered.
+- **review_leg**: D1 ruled the review leg to `deepseek-v4-flash`, and no committed run bills that leg on the fill workload, so every figure here is the FILL half of the pair only. The review pass is a real cost that is simply not measured; treat the headroom numbers as a floor, never as the pair.
+- **workloads**: Skeleton authoring and prose fill are separate workloads on separate corpora and must not be scaled by each other's word counts. The skeleton table below prices inventing a story shell, including every retry and repair round in the record; the fill table prices writing the prose for a finished shell.
 - **human_minutes**: D3 ruled that human approval minutes are costed at a notional rate rather than excluded, but named no rate, and S-6 has not run, so the minutes are unmeasured. No minutes term is folded into any figure here; every cost below is LLM spend only.
 - **modal**: Modal is billed per GPU-second and carries no per-MTok price, so a Modal-served leg cannot be costed from this table at all.
