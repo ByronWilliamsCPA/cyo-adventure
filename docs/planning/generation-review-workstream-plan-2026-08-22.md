@@ -74,7 +74,11 @@ Status as of 2026-08-23:
   pass/fail, and clauses (a) and (c) are untouched. The amendment governs the first run whose
   artifact records k draws per control, so the operative bar today is still the original one and
   the weekly gate stays red until the instrument lands. That instrument is `UW-C355`: findings-payload
-  archival first, then a `--repeats` leg over controls and positives alike, on a pinned backend.
+  archival first, then a `--repeats` leg over controls and positives alike. `UW-C355`'s fourth
+  proposed item, pinning the sampling path before repeating, was evaluated and withdrawn: pinning
+  the reviewer's temperature is what majority-of-k averages over, so it would collapse k draws back
+  to one (`AL-597`). The harness records the resolved model and backend pin instead of imposing
+  them.
 
   Step 3's third work item, the directive delta re-run at production `TREE` settings, is untouched
   by this and remains outstanding alongside `S-6`.
