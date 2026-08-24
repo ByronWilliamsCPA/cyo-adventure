@@ -315,9 +315,15 @@ First tranche of work. Each invalidates multiple rows at once.
   the inverse of the truth when written, has become true by a change in the world rather than by a
   correction in the document. Secret scanning, push protection, validity checks, and the
   GitGuardian PR status are unaffected and remain enabled, so the secret-scanning half of AC.4.2
-  still holds. Re-enabling is the same PATCH with `state=configured`; note that this repository is
-  public, where code scanning is not metered, so the billing pressure that motivated the change
-  most likely originates elsewhere in the account and re-enabling here may cost nothing.
+  still holds. Re-enabling is the same PATCH with `state=configured`, but that is not a free
+  action: **as of 2026-08-24 the account holder confirms GitHub code scanning is no longer free on
+  public repositories.** An earlier revision of this entry read "this repository is public, where
+  code scanning is not metered, so ... re-enabling here may cost nothing", and concluded the
+  billing pressure must originate elsewhere in the account. That was overtaken by a change in
+  GitHub's terms rather than by an error in reasoning, and it inverted the conclusion: the
+  2026-08-03 disable was a sound cost decision, not a mistake to reverse. Closing AC.4.2 therefore
+  means adding an analyzer that is free or already paid for, not restoring default setup by
+  default. The ranked routes are in the AC.4.2 row below.
 
   This entry is retained rather than deleted because the error is the instructive part. A control
   configured outside the artifact being searched is invisible to a search of that artifact, and
@@ -1113,9 +1119,29 @@ is visible as a section with no rows rather than as a question nobody asked.
   run and no CI secret scanning exists", false at the time and found by grepping
   `.github/workflows/`, which misses default setup because it has no workflow file; the second read
   "AISVS AC.4.2 is met, not failed", true when written and made false by the disable rather than by
-  any error in it. Closing this requires restoring SAST over `frontend/`, either by re-enabling
-  default setup (same PATCH with `state=configured`; note this repository is public, where code
-  scanning is not metered) or by adding a TypeScript-capable analyzer to CI.
+  any error in it. Closing this requires restoring SAST over `frontend/`, and the route matters
+  because re-enabling is no longer free: **as of 2026-08-24 the account holder confirms GitHub code
+  scanning is no longer free on public repositories**, so the same PATCH with `state=configured`
+  carries a real recurring cost. Ranked by cost, and by whether the result can actually block a
+  merge:
+
+  1. **Add security rules to the ESLint pass that already gates every pull request.**
+     `npm run lint` runs at `.github/workflows/ci.yml:191` with `--max-warnings=0` and already
+     covers `src/`, all five e2e directories, and the four Playwright configs. Adding
+     `eslint-plugin-security` and `eslint-plugin-no-unsanitized` costs nothing and blocks merges
+     today. This is lint-grade pattern matching, materially weaker than a taint engine, so treat
+     it as a floor rather than a complete answer.
+  2. **Add Semgrep OSS to CI** for genuine cross-file TypeScript rules. The CLI is free.
+     #VERIFY: whether SARIF upload into GitHub code scanning is itself metered under the current
+     terms; if it is, have the job fail on findings directly instead of routing through code
+     scanning alerts.
+  3. **Widen SonarCloud to `frontend/src`.** No new tooling cost, since SonarCloud already
+     analyzes this repository. Two limits: the effective `-Dsonar.sources=src` is set in the org
+     reusable workflow `ByronWilliamsCPA/.github/.github/workflows/python-sonarcloud.yml`, a
+     different repository, so the change is cross-repo; and per the entry above the SonarCloud
+     gate cannot block a pull request, so this buys visibility rather than enforcement.
+  4. **Re-enable code scanning default setup** (`state=configured`). Best analysis of the four,
+     and now a paid line item. This is an owner decision, not a remediation to apply.
 
 #### O-82
 
