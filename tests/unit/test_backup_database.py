@@ -277,6 +277,67 @@ def test_ensure_lifecycle_rules_asserts_three_prefixed_rules() -> None:
     assert by_prefix == {"daily/": 7, "weekly/": 28, "monthly/": 180}
 
 
+def test_ensure_lifecycle_rules_tolerates_a_lifecycle_read_denied_by_the_token() -> (
+    None
+):
+    """An object-scoped R2 token cannot read bucket config; that is not a failed backup.
+
+    R2 scopes API tokens by permission CLASS: an object-level token (put/get/head/list
+    objects) is refused every BUCKET-level call, lifecycle included. This project issues
+    an object-scoped token on purpose, so the three expiry rules are configured by hand
+    on the bucket and this script reports rather than asserts them. Treating the refusal
+    as fatal would have made every night's run red AFTER it had already uploaded three
+    good objects.
+    """
+    client = _mock_backup_client()
+    client.get_bucket_lifecycle_configuration.side_effect = _client_error(
+        "AccessDenied", "GetBucketLifecycleConfiguration"
+    )
+    policy = backup_database.RetentionPolicy()
+
+    with patch.object(backup_database._logger, "warning") as warn:
+        backup_database.ensure_lifecycle_rules(client, "backup-bucket", policy)
+
+    # The write is skipped, not merely attempted-and-swallowed: put_bucket_lifecycle_
+    # configuration REPLACES the whole configuration, so firing it blind would destroy
+    # hand-set rules this run could not read.
+    client.put_bucket_lifecycle_configuration.assert_not_called()
+    assert warn.call_args.args[0] == "backup_lifecycle_unmanaged"
+
+
+def test_ensure_lifecycle_rules_tolerates_a_lifecycle_write_denied_by_the_token() -> (
+    None
+):
+    """A token that can READ bucket config but not write it must not fail the run."""
+    client = _mock_backup_client()
+    client.put_bucket_lifecycle_configuration.side_effect = _client_error(
+        "AccessDenied", "PutBucketLifecycleConfiguration"
+    )
+    policy = backup_database.RetentionPolicy()
+
+    with patch.object(backup_database._logger, "warning") as warn:
+        backup_database.ensure_lifecycle_rules(client, "backup-bucket", policy)
+
+    assert warn.call_args.args[0] == "backup_lifecycle_unmanaged"
+
+
+def test_ensure_lifecycle_rules_still_raises_on_a_non_permission_lifecycle_error() -> (
+    None
+):
+    """Only a permission refusal degrades. A 500 is still a broken run.
+
+    Without this, the tolerance added for the object-scoped token would swallow every
+    lifecycle failure, and a genuinely broken bucket would report success.
+    """
+    client = _mock_backup_client()
+    client.put_bucket_lifecycle_configuration.side_effect = _client_error(
+        "500", "PutBucketLifecycleConfiguration"
+    )
+    policy = backup_database.RetentionPolicy()
+    with pytest.raises(ClientError):
+        backup_database.ensure_lifecycle_rules(client, "backup-bucket", policy)
+
+
 def test_run_backup_dry_run_makes_no_network_call() -> None:
     with patch.object(backup_database, "_build_client") as build_client:
         result = backup_database.run_backup(

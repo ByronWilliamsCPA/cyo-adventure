@@ -18,16 +18,31 @@
 # environment therefore has NO protection rules; it exists solely to keep these six
 # credentials out of reach of every other workflow in the repository.
 #
-#   SUPABASE_DB_URL          Direct (non-pooler) Postgres connection string. Per
-#                             docs/operations/runbook.md's Supavisor-pooling warning,
-#                             this must be the DIRECT connection
-#                             (db.<project-ref>.supabase.co:5432), not the pgbouncer/
-#                             Supavisor pooler URL the app itself uses at runtime.
+#   SUPABASE_DB_URL          Supavisor SESSION-mode pooler connection string, port 5432:
+#                             postgresql://postgres.<ref>:<pw>@aws-0-us-east-1.pooler
+#                             .supabase.com:5432/postgres. NOT the transaction-mode
+#                             pooler on 6543, which reassigns backends mid-session and
+#                             breaks a long-lived dump connection (ADR-009).
+#                             This said "the DIRECT connection
+#                             (db.<project-ref>.supabase.co:5432)" until 2026-08-24, and
+#                             that route CANNOT WORK from here: this project's direct
+#                             host publishes AAAA only (no IPv4), `supabase db dump` runs
+#                             pg_dumpall inside a Docker container whose default bridge is
+#                             IPv4-only, and GitHub-hosted runners have no IPv6 egress.
+#                             Both fail on name resolution before authentication. Session
+#                             mode is IPv4 and is what the production db-backup sidecar
+#                             has used successfully since 2026-07.
 #   R2_ACCOUNT_ID             Cloudflare account id.
 #   R2_BACKUP_ACCESS_KEY_ID   A scoped R2 API token, access to the backup bucket ONLY --
 #   R2_BACKUP_SECRET_ACCESS_KEY  deliberately separate from the app's cover-art upload
 #                             token, so one compromised credential cannot read/overwrite
-#                             the other's data.
+#                             the other's data. It is OBJECT-scoped, which means it may
+#                             not call bucket-level APIs: the three lifecycle expiry
+#                             rules are set BY HAND on the bucket and the script logs
+#                             `backup_lifecycle_unmanaged` rather than asserting them.
+#                             R2 admin permissions cannot be limited to one bucket, so
+#                             widening this token to manage lifecycle would also let it
+#                             delete the public covers bucket. See runbook section 6.
 #   R2_BACKUP_BUCKET          Destination bucket name, separate from the public covers
 #                             bucket (backups must never be publicly readable).
 #   BACKUP_ENCRYPTION_KEY     Base64-encoded 32-byte AES-256 key. Generate with:

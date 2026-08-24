@@ -7,6 +7,15 @@ the DIRECT (non-pooled) database connection -- the runbook's Supavisor-pooling w
 applies to any long-lived dump/restore connection, not just this script -- encrypts each
 file, and uploads to a dedicated R2 bucket under a tiered prefix.
 
+# #CRITICAL: data integrity: the lifecycle rules below are NOT asserted by this script
+# in the current deployment. The backup R2 token is object-scoped, so every bucket-level
+# call is refused, and R2 admin permissions cannot be narrowed to one bucket. The three
+# rules are set by hand on the bucket instead, and ensure_lifecycle_rules() degrades to a
+# `backup_lifecycle_unmanaged` warning. Nothing automated can confirm they are still
+# correct, because the token cannot read them either.
+# #VERIFY: re-check the rules by eye in the Cloudflare dashboard whenever the bucket is
+# touched; runbook section 6 holds the table they must match.
+
 Tiered retention (GFS rotation), sized for limited R2 space rather than kept forever:
 
 - ``daily/``   always written; expires after ``--daily-days``   (default 7)
@@ -36,7 +45,12 @@ Run recipe (mirrors scripts/backfill_covers_r2.py's dry-run convention)::
 
 Required environment variables (see .github/workflows/supabase-backup.yml):
 
-- ``SUPABASE_DB_URL``: direct (non-pooler) Postgres connection string.
+- ``SUPABASE_DB_URL``: Supavisor SESSION-mode pooler connection string on port 5432
+  (``postgresql://postgres.<ref>:<pw>@aws-0-us-east-1.pooler.supabase.com:5432/postgres``),
+  NOT the transaction-mode pooler on 6543. This said "direct (non-pooler)" until
+  2026-08-24; that route cannot work here, because the direct host publishes AAAA only
+  and both the Supabase CLI's dump container and GitHub runners are IPv4-only. See
+  ``docs/operations/runbook.md`` section 6.
 - ``R2_ACCOUNT_ID``: Cloudflare account id (shared with covers/storage.py).
 - ``R2_BACKUP_ACCESS_KEY_ID`` / ``R2_BACKUP_SECRET_ACCESS_KEY``: a scoped R2 API token
   with access to the backup bucket ONLY -- deliberately not the covers-upload token, so
@@ -102,7 +116,9 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 if TYPE_CHECKING:
     from mypy_boto3_s3.client import S3Client
 
-_logger = structlog.get_logger(__name__)
+# Annotated because `structlog.get_logger` returns Any, which makes every call site
+# below a reportAny warning under basedpyright strict.
+_logger: structlog.stdlib.BoundLogger = structlog.get_logger(__name__)
 
 _DUMP_TIMEOUT_SECONDS = 300.0
 _UPLOAD_TIMEOUT_SECONDS = 120.0
@@ -155,6 +171,17 @@ _OWNED_LIFECYCLE_RULE_IDS = frozenset(
 _NOT_FOUND_ERROR_CODES = frozenset({"404", "NoSuchKey", "NoSuchBucket", "NotFound"})
 _NO_LIFECYCLE_ERROR_CODES = frozenset(
     {"NoSuchLifecycleConfiguration", "NoSuchConfiguration"}
+)
+
+# R2 scopes API tokens by permission CLASS, and lifecycle is a BUCKET-level operation.
+# The backup token is deliberately object-scoped (put/get/head/list objects on one
+# bucket) because R2's admin permissions cannot be restricted to a single bucket, so an
+# admin token able to manage lifecycle here could also delete the public covers bucket.
+# The three expiry rules are therefore configured BY HAND on the bucket (runbook s6) and
+# this script reports rather than asserts them. A refusal is a known posture, not a
+# failed backup; anything else from the lifecycle API still fails the run.
+_LIFECYCLE_DENIED_ERROR_CODES = frozenset(
+    {"AccessDenied", "AccessDeniedException", "Forbidden", "403"}
 )
 
 # Environment variables the Supabase CLI subprocess is allowed to inherit. Everything
@@ -741,7 +768,7 @@ def verify_backup_bucket(
         _logger.info("backup_bucket_verified", bucket=bucket)
 
 
-def _report_foreign_lifecycle_rules(client: S3Client, bucket: str) -> None:
+def _report_foreign_lifecycle_rules(client: S3Client, bucket: str) -> bool:
     """Log any lifecycle rule already on the bucket that this script does not own.
 
     ``put_bucket_lifecycle_configuration`` replaces the whole configuration, so a rule
@@ -751,12 +778,32 @@ def _report_foreign_lifecycle_rules(client: S3Client, bucket: str) -> None:
     Args:
         client: R2 S3-compatible client.
         bucket: The backup bucket name.
+
+    Returns:
+        True when the caller may proceed to write lifecycle rules; False when the token
+        is refused bucket-level access, in which case the caller must NOT attempt the
+        write. A blind write would replace rules this run was unable to read, which is
+        exactly the silent loss the read-before-write exists to prevent.
     """
     try:
         current = client.get_bucket_lifecycle_configuration(Bucket=bucket)
     except ClientError as exc:
-        if _client_error_code(exc) in _NO_LIFECYCLE_ERROR_CODES:
-            return
+        code = _client_error_code(exc)
+        if code in _NO_LIFECYCLE_ERROR_CODES:
+            return True
+        if code in _LIFECYCLE_DENIED_ERROR_CODES:
+            _logger.warning(
+                "backup_lifecycle_unmanaged",
+                bucket=bucket,
+                operation="GetBucketLifecycleConfiguration",
+                error_code=code,
+                detail=(
+                    "object-scoped R2 token cannot read bucket lifecycle config; "
+                    "retention is enforced by hand-set rules on the bucket and is NOT "
+                    "verified by this run (see docs/operations/runbook.md section 6)"
+                ),
+            )
+            return False
         raise
     existing = [str(rule.get("ID", "")) for rule in current.get("Rules", [])]
     foreign = sorted(set(existing) - _OWNED_LIFECYCLE_RULE_IDS)
@@ -767,6 +814,7 @@ def _report_foreign_lifecycle_rules(client: S3Client, bucket: str) -> None:
             foreign_rule_ids=foreign,
             owned_rule_ids=sorted(_OWNED_LIFECYCLE_RULE_IDS),
         )
+    return True
 
 
 def ensure_lifecycle_rules(
@@ -794,25 +842,42 @@ def ensure_lifecycle_rules(
         policy: Retention day counts per tier, already validated by
             ``RetentionPolicy.__post_init__``.
     """
-    _report_foreign_lifecycle_rules(client, bucket)
-    client.put_bucket_lifecycle_configuration(
-        Bucket=bucket,
-        LifecycleConfiguration={
-            "Rules": [
-                {
-                    "ID": f"expire-{tier}",
-                    "Status": "Enabled",
-                    "Filter": {"Prefix": f"{tier}/"},
-                    "Expiration": {"Days": days},
-                }
-                for tier, days in (
-                    ("daily", policy.daily_days),
-                    ("weekly", policy.weekly_days),
-                    ("monthly", policy.monthly_days),
-                )
-            ]
-        },
-    )
+    if not _report_foreign_lifecycle_rules(client, bucket):
+        return
+    try:
+        client.put_bucket_lifecycle_configuration(
+            Bucket=bucket,
+            LifecycleConfiguration={
+                "Rules": [
+                    {
+                        "ID": f"expire-{tier}",
+                        "Status": "Enabled",
+                        "Filter": {"Prefix": f"{tier}/"},
+                        "Expiration": {"Days": days},
+                    }
+                    for tier, days in (
+                        ("daily", policy.daily_days),
+                        ("weekly", policy.weekly_days),
+                        ("monthly", policy.monthly_days),
+                    )
+                ]
+            },
+        )
+    except ClientError as exc:
+        code = _client_error_code(exc)
+        if code not in _LIFECYCLE_DENIED_ERROR_CODES:
+            raise
+        _logger.warning(
+            "backup_lifecycle_unmanaged",
+            bucket=bucket,
+            operation="PutBucketLifecycleConfiguration",
+            error_code=code,
+            detail=(
+                "object-scoped R2 token cannot write bucket lifecycle config; "
+                "retention is enforced by hand-set rules on the bucket and is NOT "
+                "asserted by this run (see docs/operations/runbook.md section 6)"
+            ),
+        )
 
 
 def upload_encrypted(
