@@ -24,11 +24,20 @@
 //     existed happened to exercise the same alternative. Hence one site per
 //     alternative.
 //
-// Adding a rule or an alternative means adding a site here, or CI fails.
-// Do not "fix" the code below, and do not delete a marker. Either disarms the
-// gate while leaving it green.
+// Adding a rule or an alternative means adding a site here, or CI fails; that
+// is now asserted structurally (alternatives are counted out of the rule file
+// and compared against markers) rather than left to the author to remember.
+// A rule-count floor covers the last hole: deleting a rule together with its
+// sites and markers satisfied every count comparison, because nothing expected
+// and nothing found agree.
+//
+// Do not "fix" the code below. Deleting a marker on its own turns CI red, which
+// is the intended behaviour; deleting a marker AND its site together is the
+// move that used to pass silently, and is what the floors above now catch.
 
 type Props = { html: string; url: string }
+
+declare function createCanaryClient(key: string): unknown
 
 /* ---- cyo-react-dangerously-set-inner-html ---- */
 
@@ -132,18 +141,26 @@ export const canaryPost = (frame: Window, msg: string): void =>
    long enough only to satisfy the rule's length floor. */
 
 // semgrep-expect: cyo-hardcoded-provider-credential
-const CANARY_ANTHROPIC = 'sk-ant-api03-AAAAAAAAAAAAAAAAAAAAAAAA'
+const CANARY_ANTHROPIC = 'sk-ant-api03-AAAAAAAAAAAAAAAAAAAAAAAA'  // pragma: allowlist secret
 // semgrep-expect: cyo-hardcoded-provider-credential
-const CANARY_OPENAI = 'sk-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+const CANARY_OPENAI = 'sk-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'  // pragma: allowlist secret
 // semgrep-expect: cyo-hardcoded-provider-credential
-const CANARY_GITHUB = 'ghp_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+const CANARY_GITHUB = 'ghp_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'  // pragma: allowlist secret
 // semgrep-expect: cyo-hardcoded-provider-credential
-const CANARY_GITHUB_PAT = 'github_pat_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+const CANARY_GITHUB_PAT = 'github_pat_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'  // pragma: allowlist secret
 // semgrep-expect: cyo-hardcoded-provider-credential
 const CANARY_AWS = 'AKIAAAAAAAAAAAAAAAAA' // pragma: allowlist secret
 // semgrep-expect: cyo-hardcoded-provider-credential
-const CANARY_JWT =
-  'eyJAAAAAAAAAAAAAAAAAAAA.AAAAAAAAAAAAAAAAAAAAAA.AAAAAAAAAAAAAAAAAAAAAA'
+const CANARY_JWT =  // pragma: allowlist secret
+  'eyJAAAAAAAAAAAAAAAAAAAA.AAAAAAAAAAAAAAAAAAAAAA.AAAAAAAAAAAAAAAAAAAAAA' // pragma: allowlist secret
+
+// The shapes an SDK credential actually takes: a config-object property and a
+// positional call argument. Neither is an assignment, and the rule matched only
+// assignments until PR #754.
+// semgrep-expect: cyo-hardcoded-provider-credential
+export const canaryClientConfig = { apiKey: 'sk-ant-BBBBBBBBBBBBBBBBBBBB' } // pragma: allowlist secret
+// semgrep-expect: cyo-hardcoded-provider-credential
+export const canaryClientCall = createCanaryClient('sk-ant-CCCCCCCCCCCCCCCCCCCC') // pragma: allowlist secret
 
 export {
   CANARY_ANTHROPIC,
@@ -175,6 +192,28 @@ export const safeClear = (el: HTMLElement): void => {
 
 export const safeRedirect = (): void => {
   window.location.href = '/guardian/login'
+}
+
+// One safe site per exclusion clause, not one per rule. Four of the eight
+// `pattern-not` clauses could be deleted with this fixture still green until
+// these were added; measured by deleting each clause in turn and re-running the
+// canary check. An exclusion with no negative site can rot undetected, which is
+// the same silent-drift failure the positive sites exist to prevent, running in
+// the opposite direction.
+export const safeClearOuter = (el: HTMLElement): void => {
+  el.outerHTML = ''
+}
+
+export const safeBareRedirect = (): void => {
+  location.href = '/guardian/login'
+}
+
+export const safeAssign = (): void => {
+  window.location.assign('/guardian/login')
+}
+
+export const safeReplace = (): void => {
+  window.location.replace('/guardian/login')
 }
 
 export const safePost = (frame: Window, msg: string): void =>

@@ -59,6 +59,12 @@ rules:
       - pattern: 'Function(...)'
       - pattern: 'window.eval(...)'
       - pattern: 'window.Function(...)'
+      # Literal-string form only, deliberately. `setTimeout($X, ...)` where $X is
+      # a variable is the genuinely dangerous case, but it is not distinguishable
+      # from the overwhelmingly common `setTimeout(handler, ms)` without type
+      # information Semgrep does not have, so matching it would fire on every
+      # legitimate timer in the codebase and the rule would be turned off. The
+      # literal form is what this rule can honestly detect.
       - pattern: 'setTimeout("...", ...)'
       - pattern: 'setInterval("...", ...)'
 
@@ -84,7 +90,13 @@ rules:
 
   - id: cyo-open-redirect
     languages: [typescript, javascript]
-    severity: WARNING
+    # ERROR like every other rule here. It was WARNING, which read as "this one
+    # is advisory" and was not: the gate partitions findings by RULE ID PREFIX,
+    # not by severity, so any `cyo-*` hit fails the job whatever this field
+    # says. The `--error` flag on the scan step is likewise inert because that
+    # step carries `continue-on-error: true`. Leaving a decorative severity here
+    # invites someone to reason about blocking from the wrong field.
+    severity: ERROR
     message: >-
       Navigating to a non-literal URL is an open-redirect sink (CWE-601).
       Validate against an allowlist, or use the router for in-app navigation.
@@ -125,7 +137,17 @@ rules:
       owasp: "A07:2021 - Identification and Authentication Failures"
       category: security
     patterns:
-      - pattern: '$NAME = "$SECRET"'
+      # An assignment is not the likely shape. An SDK credential in a frontend
+      # config object (`createClient({ apiKey: '...' })`) or passed positionally
+      # (`createClient('...')`) is, and the single assignment pattern matched
+      # neither: verified by reproduction on semgrep 1.157.0, where
+      # `{ apiKey: 'sk-ant-...' }`, `createClient('sk-ant-...')` and an array
+      # element all went unflagged. The metavariable-regex below is what keeps
+      # the wider shapes from firing on ordinary strings.
+      - pattern-either:
+          - pattern: '$NAME = "$SECRET"'
+          - pattern: '{ ..., $KEY: "$SECRET", ... }'
+          - pattern: '$FN(..., "$SECRET", ...)'
       - metavariable-regex:
           metavariable: $SECRET
           # Extended mode: whitespace and newlines are ignored, so the
