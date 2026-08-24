@@ -46,9 +46,38 @@ Status as of 2026-08-23:
   control over-blocked (`A7-control-onband-grief-13-16`, an on-band bereavement passage), which is
   the pre-registered blocking finding for those bands, and class E caught 1 of 4 executable items.
   The over-block is what turned CI red; the class-E result is not asserted by the shipped test at
-  all. Remediation is not a threshold change: `moderation/thresholds.py` only filters which recorded findings surface, and `moderation/pipeline.py` does not import it, so the levers that reach this verdict are the band safety prompt and the review model. See the `S-7` row for the full reading. Step 3's
-  third work item, the directive delta re-run at production `TREE` settings, is untouched by this
-  and remains outstanding alongside `S-6`.
+  all.
+
+  Three corrections to how that result was first recorded here, each verified by reproduction
+  rather than argued:
+
+    1. **Remediation is not a threshold change.** `moderation/thresholds.py` only filters which
+       already-recorded findings surface, and `moderation/pipeline.py` does not import it, so no
+       threshold value can turn `A7`'s `flag` into a `pass`. The levers that reach this verdict are
+       the band safety prompt and rubric (`moderation/stages.py`) and the review model itself.
+    2. **Stage 0 never ran.** The harness imports `moderation.stages.run_safety_stage` and nothing
+       else; `run_classifiers` is reachable only from `moderation/pipeline.py` and
+       `moderation/rescreen.py`. The Stage-0 credential the eval demands is a construction
+       precondition of `Settings._require_classifier_when_reviewing`. Every archived verdict is the
+       Stage-1 reviewer's, which makes `A10`'s catch a stronger result than was claimed and leaves
+       the corpus's bright-line predictions unmeasured (`AL-596`).
+    3. **The class-E figure is not yet a finding about the model.** Three documents state three
+       different class-E bars, so "1 of 4" depends on which one is read (`UW-C356`/`AL-595`).
+
+  **Owner amendment, 2026-08-24.** `S-7` clause (b) is amended from single-draw zero tolerance to
+  majority-of-k scoring, k odd and at least 3, on the ground that one draw of a stochastic reviewer
+  measures its variance rather than the gate's calibration: the Wilson 95% interval on the observed
+  1 of 5 is [0.036, 0.624], and a correctly calibrated gate with per-draw over-block propensity p
+  red-builds weekly at 1-(1-p)^5. Per this plan's own acceptance clause and the register's
+  amendment protocol, amending after artifacts exist voids that run's pre-registration for the
+  amended clause; the `A7` over-block therefore stands as a measurement and not as a pre-registered
+  pass/fail, and clauses (a) and (c) are untouched. The amendment governs the first run whose
+  artifact records k draws per control, so the operative bar today is still the original one and
+  the weekly gate stays red until the instrument lands. That instrument is `UW-C355`: findings-payload
+  archival first, then a `--repeats` leg over controls and positives alike, on a pinned backend.
+
+  Step 3's third work item, the directive delta re-run at production `TREE` settings, is untouched
+  by this and remains outstanding alongside `S-6`.
 - **Steps 4 to 7: not started**, and no longer uniformly blocked. D3's partial ruling releases
   step 4's structure: the unit-cost model can be built now with the price point carried as a
   parameter rather than a constant. D1's ruling releases step 6's R-8 replication and step 7.
