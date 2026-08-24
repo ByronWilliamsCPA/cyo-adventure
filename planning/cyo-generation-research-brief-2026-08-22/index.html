@@ -3557,12 +3557,12 @@ authored, validated, and reviewed separately from the prose that fills it. Every
 <p><strong>F2. Deterministic gates come first, and they are floors, not scores.</strong> Structure, budgets, reading
 level, and graph soundness are checked by code before any model or human judges anything. Because of
 finding 2 above, every gate needs a paired delivery measurement (fill rate, word delivery) so a
-hollow pass is visible; those measurements are written but are not yet wired into the request path
-(section 3.4). Safety is the exception and does not belong in that list at all: the gate calls its
-safety seam on any story that clears Layer 1 (<code>validator/gate.py:213</code>; broken input returns before
-it, <code>:153-162</code> and <code>:169-174</code>), but the seam's body is a Phase-2 no-op returning an empty report
-(<code>validator/safety.py:41-57</code>), so <code>GateResult.safety_flagged</code> is structurally always <code>False</code>.
-Deterministic safety classification is unbuilt. What protects a child today is the moderation
+hollow pass is visible; both such measurements now run on the request path, one forcing review and
+one advisory, and neither blocks (section 3.4). Safety is the exception and does not belong in that
+list at all: the gate calls its safety seam on any story that clears Layer 1 (<code>validator/gate.py:213</code>;
+broken input returns before it, <code>:153-162</code> and <code>:169-174</code>), but the seam's body is a Phase-2 no-op
+returning an empty report (<code>validator/safety.py:41-57</code>), so <code>GateResult.safety_flagged</code> is
+structurally always <code>False</code>. Deterministic safety classification is unbuilt. What protects a child today is the moderation
 classifiers, the LLM reviewer, and mandatory human approval, which are the model-judged and
 human-gated classes, not this one.</p>
 <p><strong>F3. Put the checker in the author's loop.</strong> The single largest quality lever we have measured is
@@ -3679,18 +3679,32 @@ author, not by CI.</p>
 <li><strong>The story gate</strong> (<code>scripts/run_story_gate.py</code>, <code>validator/</code>): Layer 1 and Layer 2 rules,
   reading level against the band target, and band-profile conformance, plus the safety seam F2
   describes, which emits nothing today. Blocking findings stop the book; advisories are recorded.</li>
-<li><strong>Delivery measurements</strong>, because of F2's floor problem, and both are offline scripts rather
-  than pipeline stages: <code>scripts/check_fill_integrity.py</code> applies a minimum fill rate (0.6,
-  calibrated so the <code>UW-C307</code> under-delivering books fail) and <code>scripts/check_sibling_fills.py</code>
-  measures shared 4-grams against same-skeleton siblings (budget 4.0 per 1000). Neither is called
-  from <code>src/</code>; their programmatic invokers are <code>scripts/run_guard_battery.py</code>, a hand-run dev harness
-  that no CI workflow or pre-commit hook references, and <code>scripts/compare_vendors.py:1194</code>, which
-  imports <code>pairwise_shared_grams</code> for the section 4.1 comparison. The only delivery check the request
-  path performs today is the Stage-1 fidelity gate's per-node <code>_WORD_COUNT_TOLERANCE = 0.4</code>
-  (<code>generation/fidelity.py:28-30</code>), described by its own comment as "a generous starting tolerance,
-  not calibrated against real fill runs yet", and it cannot see a story-level shortfall. Track the
-  production wiring of both checks at <code>UW-C307</code> and <code>UW-C315</code>; the register carries their current
-  status, which this document deliberately does not restate.</li>
+<li><strong>Delivery measurements</strong>, because of F2's floor problem. Both began as offline scripts; as of
+  2026-08-23 both also have a request-path counterpart, reached through a shared definition rather
+  than a second copy of the formula, and neither counterpart blocks. <em>Story-level fill rate:</em>
+  <code>scripts/check_fill_integrity.py</code> applies a minimum rate (0.6, calibrated so the <code>UW-C307</code>
+  under-delivering books fail), and the request path applies the same 0.6 through
+  <code>generation/skeleton.py::story_fill_rate</code>, called from <code>orchestrator._with_fill_rate</code> on every
+  <code>fill_skeleton</code> outcome carrying a book; the RQ worker passes no override, so the default is what
+  production runs. Per ruling 9.3 (2026-08-21) a passing book under the floor is <strong>downgraded to
+  <code>needs_review</code>, never hard-blocked</strong>, so a thin book cannot ship without a human while a
+  0.63-class good fill is never machine-rejected. <em>Same-skeleton sibling grams:</em>
+  <code>scripts/check_sibling_fills.py</code> measures shared 4-grams against siblings (budget 4.0 per 1000)
+  and keeps choice labels, because its question is the whole recognition surface a reader sees,
+  while <code>moderation/leaf_diversity.py</code> reads the same <code>diversity/grams.py</code> with
+  <code>include_choice_labels=False</code>, because a skeleton supplies byte-identical labels to every sibling
+  fill and including them measures the tree rather than either fill; that counterpart is advisory by
+  contract, emitting soft <code>FLAG</code> findings that ride the moderation pipeline's one bounded repair and
+  then the human gate. The scripts themselves are still called from no <code>src/</code> module; their
+  programmatic invokers remain <code>scripts/run_guard_battery.py</code>, a hand-run dev harness that no CI
+  workflow or pre-commit hook references, and <code>scripts/compare_vendors.py:1194</code>. The Stage-1
+  fidelity gate's per-node <code>_WORD_COUNT_TOLERANCE = 0.4</code> (<code>generation/fidelity.py:30</code>), described by
+  its own comment as "a generous starting tolerance, not calibrated against real fill runs yet", is
+  unchanged and still cannot see a story-level shortfall; what changed is that it is no longer the
+  only delivery check the request path performs. <code>UW-C307</code> is closed on this. The residual is
+  narrower than the original ask and stays open at <code>UW-C105</code> and <code>UW-C315</code>: no blocking sibling
+  gate, one repair round rather than capped revise-regate rounds, and no request-path counterpart to
+  the menu-frame check.</li>
 <li><strong>Craft checks</strong>: <code>check_prose_craft.py</code> (tense, told-emotion, moral tags) and the per-path
   measures used in evaluation.</li>
 </ul>
@@ -3899,7 +3913,7 @@ board. Lessons <code>AL-510</code>..<code>AL-514</code> and work rows <code>UW-C
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 23, 2026 20:40:10 UTC">August 23, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 24, 2026 04:45:22 UTC">August 24, 2026</span>
   </span>
 
     
