@@ -20,6 +20,7 @@ are loaded directly from their file paths via importlib.
 from __future__ import annotations
 
 import importlib.util
+import re
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -494,17 +495,33 @@ class TestReleaseTagSync:
         assert check_release_tag_sync.main(["--version", "3.1.4"]) == 1
         assert "::error::" in capsys.readouterr().err
 
-    def test_real_repo_is_in_sync(self) -> None:
-        """The live repository must satisfy its own guard.
+    def test_real_repo_matches_the_guard_format_assumptions(self) -> None:
+        """The live repo must satisfy the guard's format assumptions.
 
-        This is the positive control: if the guard's assumptions about
-        tag_format or the pyproject layout ever drift, this fails here rather
-        than reddening the release workflow.
+        This is the positive control for drift in python-semantic-release's
+        ``tag_format`` or in the pyproject layout, either of which would make
+        the guard report a desync that is not real.
+
+        It deliberately does NOT assert that the live repo is currently in
+        sync. A genuine desync is the incident the guard exists to detect, and
+        this module runs in the ``unit`` bucket that the required ``CI Gate``
+        depends on, so asserting live sync state here would redden the
+        required check on every unrelated PR for the whole duration of that
+        incident: all merges would be blocked exactly when the release
+        pipeline is already down, and indefinitely if publish stays broken.
         """
         version = check_release_tag_sync.read_pyproject_version()
-        assert (
-            check_release_tag_sync.find_desync(
-                version, check_release_tag_sync.git_tags()
-            )
-            is None
+        assert re.fullmatch(r"\d+\.\d+\.\d+", version), (
+            f"pyproject version {version!r} is not the bare X.Y.Z string the "
+            f"guard builds its expected tag from"
+        )
+
+        tags = check_release_tag_sync.git_tags()
+        if not tags:
+            pytest.skip("checkout fetched no tags; no tag_format to check")
+
+        prefix = re.escape(check_release_tag_sync.TAG_PREFIX)
+        assert any(re.fullmatch(rf"{prefix}\d+\.\d+\.\d+", tag) for tag in tags), (
+            f"no tag matches {check_release_tag_sync.TAG_PREFIX}X.Y.Z, so "
+            f"tag_format has drifted from what find_desync expects"
         )
