@@ -1098,17 +1098,40 @@ is visible as a section with no rows rather than as a question nobody asked.
 - **Failure oracle:** A pull request merges without CodeQL (or another SAST tool), secret
   scanning, IaC scanning, or SCA having run against it; or code scanning default setup, secret
   scanning, or push protection is found disabled at the repository level.
-- **Negative control:** not determined
+- **Negative control:** `tests/fixtures/semgrep-canary.tsx`, added by PR
+  [#754](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/754). It carries one instance of
+  every in-repo Semgrep rule, and the `semgrep-frontend` job fails unless every rule fires on it
+  and unless the defined rule count stays above a pinned floor. This is the first entry in this
+  register whose negative control is enforced by CI rather than described: a drifted SAST ruleset
+  and a clean tree are otherwise indistinguishable.
 - **Trigger:** every pull request
-- **Existing coverage:** secret scanning half only. Repository-level secret scanning, push
-  protection, and validity checks; GitGuardian Security Checks on pull requests. **No SAST**: code
-  scanning default setup was disabled 2026-08-03 (state `not-configured`), and the surviving
-  static analyzers are Python-only (Bandit, plus SonarCloud at `sonar.sources=src/`), so `frontend/`
-  has no SAST coverage at all. IaC scanning and SCA coverage remain unconfirmed.
+- **Existing coverage:** secret scanning half met; **SAST half in review, not yet landed.**
+  Repository-level secret scanning, push protection, and validity checks, plus GitGuardian
+  Security Checks on pull requests, cover the secret-scanning half and are unaffected throughout.
+  For the SAST half, `main` as of 2026-08-24 still has **no analyzer over `frontend/`**: code
+  scanning default setup is `not-configured`, and Bandit and SonarCloud are both Python-only
+  (`sonar.sources=src/`). Open PR #754 closes that on three of the four ranked routes below:
+  routes 1 (`eslint-plugin-security` and `eslint-plugin-no-unsanitized` on the `npm run lint` pass
+  that already blocks merges), 2 (a `semgrep-frontend` job with an in-repo ruleset, failing the
+  build directly rather than via SARIF upload, so no code-scanning metering is re-incurred), and
+  3 (`-Dsonar.sources=src,frontend/src`). Route 4 stays deliberately unused. **Do not mark this
+  row met until #754 merges**, and re-verify against `main` rather than against the pull request.
+  IaC scanning and SCA coverage remain unconfirmed and are untouched by #754.
+- **Residual once #754 lands**, all raised by the authors of the change rather than found in
+  review, and all carrying register rows: `UW-C365` (Semgrep's OSS TypeScript parser fails on 5
+  frontend test files, which are therefore analysed by nothing; pinned by identity, not by count,
+  so fixing five tests while breaking five production modules cannot hide the hole), `UW-C366`
+  (the SonarCloud widening rests on an unverified assumption about repeated `-D` precedence and
+  cannot be confirmed from a green run), `UW-C367` (frontend test files are excluded from Sonar
+  rather than declared as tests), and `UW-C369` (Semgrep pinned by version without a hash, unlike
+  every other pinned action in this repository).
 - **Phase home:** unassigned
 - **Owner:** core-maintainer
-- **Last verified:** not verified
-- **Status:** finding open
+- **Last verified:** 2026-08-24, against the live
+  `GET /repos/ByronWilliamsCPA/cyo-adventure/code-scanning/default-setup` (returns
+  `state: not-configured`) and against `sonar-project.properties:32` on `main`. Verified by API
+  and by file read, not by grepping `.github/workflows/`, which cannot see default setup at all.
+- **Status:** finding open, remediation in review (PR #754)
 - **Check:** **AC.4.2**: SAST, secret scanning, IaC scanning, and SCA run on every pull request.
   **Failing on SAST as of 2026-08-03.** Code scanning default setup was deliberately disabled on a
   billing rationale (`PATCH .../code-scanning/default-setup` with `state=not-configured`, endpoint
