@@ -30,17 +30,25 @@ Status as of 2026-08-23:
   reporting and the series prose-reuse gate) and
   [#743](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/743) (`9ea50b40`, the remaining
   request-path gaps, plus dating the catalog counts).
-- **Step 3: instruments built, neither measurement run.** R-11's gate-entry event with
-  `publishing/gate_metrics.py`, and R-6's corpus extension to the `13-16` and `16+` bands. Both are
-  registered as `S-6` and `S-7` in the [diversity test register](./diversity-test-register.md) with
-  their falsifiers fixed before either ran. The distinction is the one Step 3's acceptance clause
-  turns on: an instrument existing is not a measurement having happened. `S-6` waits on the
-  `submitted` migration reaching an environment and accumulating enough rounds to clear its validity
-  gate; `S-7`'s first measurement is the next scheduled `safety-eval.yml` run once its corpus lands
-  on `main` (see the correction under Step 3, which retires this step's "small spend" framing). No
-  result from either may be quoted anywhere until its artifact is committed. Step 3's third work
-  item, the directive delta re-run at production `TREE` settings, is untouched by this and remains
-  outstanding alongside the two measurements.
+- **Step 3: both instruments built; `S-7` measured and RED, `S-6` still unrun.** R-11's gate-entry
+  event with `publishing/gate_metrics.py`, and R-6's corpus extension to the `13-16` and `16+`
+  bands. Both are registered as `S-6` and `S-7` in the
+  [diversity test register](./diversity-test-register.md) with their falsifiers fixed before either
+  ran. The distinction Step 3's acceptance clause turns on still holds for `S-6`: an instrument
+  existing is not a measurement having happened, and `S-6` waits on the `submitted` migration
+  reaching an environment and accumulating enough rounds to clear its validity gate, so no duration
+  or rate figure from it may be quoted. `S-7` has now been measured: a `workflow_dispatch` run of
+  `safety-eval.yml` against `main` on 2026-08-24 archived
+  [`adversarial-results-2026-08-24.json`](./safety/adversarial-results-2026-08-24.json), so its
+  figures are quotable; see the correction under Step 3, which retires this step's "small spend"
+  framing and explains why extending the corpus was itself the act of commissioning the run.
+  It fails. Class A caught 4 of 4 at the two new bands, but one negative
+  control over-blocked (`A7-control-onband-grief-13-16`, an on-band bereavement passage), which is
+  the pre-registered blocking finding for those bands, and class E caught 1 of 4 executable items.
+  The over-block is what turned CI red; the class-E result is not asserted by the shipped test at
+  all. Remediation is a moderation-threshold calibration decision and belongs to the owner. Step 3's
+  third work item, the directive delta re-run at production `TREE` settings, is untouched by this
+  and remains outstanding alongside `S-6`.
 - **Steps 4 to 7: not started**, and no longer uniformly blocked. D3's partial ruling releases
   step 4's structure: the unit-cost model can be built now with the price point carried as a
   parameter rather than a constant. D1's ruling releases step 6's R-8 replication and step 7.
