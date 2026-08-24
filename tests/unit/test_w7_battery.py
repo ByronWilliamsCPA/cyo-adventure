@@ -10,10 +10,12 @@ does not own.
 
 from __future__ import annotations
 
+import ctypes
 import itertools
 import json
 import os
-from typing import TYPE_CHECKING
+import sys
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -23,6 +25,7 @@ if TYPE_CHECKING:
 from scripts.judge_books import Verdict
 from scripts.w7_battery import (
     DEFECT_CRITERION,
+    _alive,
     blend_to_grade,
     cohens_kappa,
     load_panel,
@@ -468,6 +471,156 @@ def test_a_corrupted_lock_file_reads_as_dead(tmp_path: Path) -> None:
         pass
 
     assert not (tmp_path / ".run.lock").exists()
+
+
+# --------------------------------------------------------------------------
+# Process liveness (the lock's only question)
+# --------------------------------------------------------------------------
+
+
+class _FakeKernel32:
+    """A stand-in for the Win32 calls `_alive_windows` makes.
+
+    Lets the Windows branch be exercised on Linux and macOS, where the real
+    `ctypes.WinDLL` does not exist. Without this the branch would be tested
+    only by the Windows CI job, which is the job that already let the defect
+    through to `main`.
+    """
+
+    def __init__(
+        self, *, handle: int, last_error: int = 0, exit_code: int | None = None
+    ) -> None:
+        self._handle = handle
+        self.last_error = last_error
+        self._exit_code = exit_code
+        self.closed: list[int] = []
+
+    def OpenProcess(self, _access: int, _inherit: bool, _pid: int) -> int:  # noqa: N802
+        return self._handle
+
+    def GetExitCodeProcess(self, _handle: int, out: Any) -> int:  # noqa: N802
+        # `out` arrives as the `ctypes.byref` argument object the production
+        # code passes; `cast` accepts it, but it has no public static type, so
+        # `Any` is the honest annotation rather than a suppressed error.
+        if self._exit_code is None:
+            return 0
+        ctypes.cast(
+            out, ctypes.POINTER(ctypes.c_ulong)
+        ).contents.value = self._exit_code
+        return 1
+
+    def CloseHandle(self, handle: int) -> int:  # noqa: N802
+        self.closed.append(handle)
+        return 1
+
+
+def _use_fake_kernel32(
+    monkeypatch: pytest.MonkeyPatch, fake: _FakeKernel32
+) -> _FakeKernel32:
+    """Point `_alive_windows` at *fake* and return it."""
+    # `raising=False` on both: `WinDLL` and `get_last_error` are Windows-only
+    # attributes, so neither exists on the Linux and macOS runners this test is
+    # here to make useful.
+    monkeypatch.setattr(ctypes, "WinDLL", lambda *_a, **_k: fake, raising=False)
+    monkeypatch.setattr(
+        ctypes, "get_last_error", lambda: fake.last_error, raising=False
+    )
+    return fake
+
+
+@pytest.mark.unit
+def test_windows_liveness_never_signals_the_process_it_asks_about(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """`os.kill(pid, 0)` is not a probe on Windows; it is a Ctrl-C.
+
+    Signal 0 is `CTRL_C_EVENT` there, so CPython routes it to
+    `GenerateConsoleCtrlEvent`. Against an ordinary pid it fails with
+    `WinError 87`, which is how the lock check raised instead of answering.
+    Against a console process group it would succeed, and interrupt a process
+    the harness only meant to ask about. Neither is acceptable, so the Windows
+    path must not reach `os.kill` at all.
+    """
+
+    def _forbidden(*_args: object, **_kwargs: object) -> None:
+        msg = "the Windows liveness probe must not signal the process"
+        raise AssertionError(msg)
+
+    monkeypatch.setattr(sys, "platform", "win32")
+    monkeypatch.setattr(os, "kill", _forbidden)
+    _use_fake_kernel32(monkeypatch, _FakeKernel32(handle=0, last_error=87))
+
+    assert _alive("999999") is False
+
+
+@pytest.mark.unit
+def test_windows_reads_an_openable_running_process_as_live(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A process still running is live, and its handle is not leaked."""
+    fake = _use_fake_kernel32(monkeypatch, _FakeKernel32(handle=1234, exit_code=259))
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+    assert fake.closed == [1234], "the process handle outlived the probe"
+
+
+@pytest.mark.unit
+def test_windows_reads_an_exited_process_as_dead(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A handle can outlive its process, so openable is not yet live.
+
+    Reading an exited pid as live would wedge the harness behind a lock whose
+    holder is gone, which is the failure `single_run` exists to avoid.
+    """
+    fake = _use_fake_kernel32(monkeypatch, _FakeKernel32(handle=99, exit_code=0))
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is False
+    assert fake.closed == [99]
+
+
+@pytest.mark.unit
+def test_windows_reads_someone_elses_process_as_live(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Access denied means it exists, matching the POSIX PermissionError arm."""
+    _use_fake_kernel32(monkeypatch, _FakeKernel32(handle=0, last_error=5))
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+
+
+@pytest.mark.unit
+def test_windows_refuses_to_call_an_unrecognised_failure_dead(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An unexplained probe failure must not clear someone else's lock.
+
+    Guessing "dead" starts the second paid run this guard was written to stop;
+    guessing "live" costs an operator one manual check.
+    """
+    _use_fake_kernel32(monkeypatch, _FakeKernel32(handle=0, last_error=1450))
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+
+
+@pytest.mark.unit
+def test_a_corrupted_lock_reads_as_dead_on_windows_too(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The malformed-pid guard must run before the platform branch."""
+    monkeypatch.setattr(sys, "platform", "win32")
+    monkeypatch.setattr(
+        ctypes,
+        "WinDLL",
+        lambda *_a, **_k: pytest.fail("a malformed pid must not reach Win32"),
+        raising=False,
+    )
+
+    assert _alive("not-a-pid") is False
 
 
 # --------------------------------------------------------------------------

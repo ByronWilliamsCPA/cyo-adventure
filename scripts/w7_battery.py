@@ -307,13 +307,83 @@ def _alive(pid: str) -> bool:
         so a corrupted lock cannot wedge the harness permanently.
     """
     try:
-        os.kill(int(pid), 0)
-    except (ValueError, ProcessLookupError):
+        numeric = int(pid)
+    except ValueError:
+        return False
+    if sys.platform == "win32":
+        return _alive_windows(numeric)
+    try:
+        os.kill(numeric, 0)
+    except ProcessLookupError:
         return False
     except PermissionError:
         # It exists and belongs to someone else, which still counts as live.
         return True
     return True
+
+
+def _alive_windows(pid: int) -> bool:
+    """Return whether *pid* names a live process, on Windows.
+
+    `os.kill(pid, 0)` is a POSIX idiom that does not survive the port. Signal 0
+    is `CTRL_C_EVENT` on Windows, so CPython routes it to
+    `GenerateConsoleCtrlEvent` rather than to a liveness check: against a pid
+    that is not a console process group it fails with `WinError 87`, which is
+    how this read as an error rather than as an answer, and against one that is
+    it would *deliver a Ctrl-C* to a process the harness only meant to ask
+    about. Neither outcome is a probe.
+
+    `OpenProcess` plus `GetExitCodeProcess` is the actual question. `ctypes`
+    keeps it in the standard library rather than adding `psutil`, which this
+    project has only as a transitive development dependency.
+
+    Args:
+        pid: A process id.
+
+    Returns:
+        ``True`` when the process exists and has not exited.
+    """
+    import ctypes  # noqa: PLC0415 - Windows-only, kept out of the POSIX path
+
+    # #ASSUME: external resources: the Win32 error and access-right constants
+    # below are stable ABI, documented in the Windows SDK headers, so they are
+    # inlined rather than discovered at runtime.
+    # #VERIFY: covered by tests/unit/test_w7_battery.py, which exercises this
+    # branch on every platform through a fake kernel32.
+    error_access_denied = 5
+    error_invalid_parameter = 87
+    process_query_limited_information = 0x1000
+    still_active = 259
+
+    # `OpenProcess`'s second parameter is `bInheritHandle`, which is positional
+    # in the Win32 ABI and so cannot be passed by keyword (ruff FBT003); naming
+    # it here says what the flag means instead of suppressing the rule.
+    inherit_handle = False
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)  # pyright: ignore[reportAttributeAccessIssue]
+    handle = kernel32.OpenProcess(
+        process_query_limited_information, inherit_handle, pid
+    )
+    if not handle:
+        code = ctypes.get_last_error()
+        if code == error_access_denied:
+            # It exists and belongs to someone else, which still counts as
+            # live, matching the PermissionError arm of the POSIX path.
+            return True
+        if code == error_invalid_parameter:
+            return False
+        # An unrecognised failure must not be read as "dead": clearing the lock
+        # on a guess is the exact double-run this guard exists to prevent.
+        return True
+    try:
+        exit_code = ctypes.c_ulong()
+        if not kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code)):
+            return True
+        # A handle can outlive the process that it names, so an openable pid is
+        # not yet a live one.
+        return exit_code.value == still_active
+    finally:
+        kernel32.CloseHandle(handle)
 
 
 def _book_key(book: str) -> str:
