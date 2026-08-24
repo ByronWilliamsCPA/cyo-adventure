@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
-import { type BadgeTone, FlagBadge, verdictTone } from './FlagBadge'
+import { type BadgeTone, FlagBadge } from './FlagBadge'
+import { verdictTone } from './verdictTone'
 
 describe('FlagBadge', () => {
   it('renders the default label for a tone', () => {
