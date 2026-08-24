@@ -207,7 +207,13 @@ repos:
         # nothing at all. e2e-staging-sweep, e2e-support and design-system/src
         # were all missing here, and the playwright configs are named
         # individually because they sit at the frontend root rather than in a
-        # directory. #VERIFY: widening the npm lint script means widening this.
+        # directory.
+        # #ASSUME: security: this glob and the `lint` script in
+        # frontend/package.json cover the same paths, so a file the SAST floor
+        # (eslint-plugin-security, no-unsanitized) reaches in CI is also
+        # reached at commit time.
+        # #VERIFY: widening the npm lint script means widening this; the two
+        # drifting is how design-system/ came to be linted by nothing at all.
         files: >-
           ^frontend/(src|design-system/src|e2e|e2e-real|e2e-staging|e2e-staging-sweep|e2e-support|e2e-prod)/.*\.tsx?$|^frontend/playwright[^/]*\.config\.ts$
         # frontend/eslint.config.js:8 already lists 'src/client' in its
