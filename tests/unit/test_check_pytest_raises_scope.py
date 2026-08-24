@@ -370,3 +370,80 @@ def test_script_is_clean_against_its_own_test_file() -> None:
     """
     this_file = Path(__file__).resolve()
     assert _MODULE.find_violations(this_file) == []
+
+
+# ---------------------------------------------------------------------------
+# `--all`: the tree-wide mode CI runs (`UW-C354`).
+#
+# The hook's `files:` regex only ever hands this checker STAGED paths, so a
+# violation in a file nobody stages is invisible indefinitely. Seven such
+# violations accumulated in tests/unit/test_replay.py on main, found only when
+# an unrelated `pre-commit run --all-files` surfaced them. Every sibling
+# checker (check_work_linkage, check_lessons_log, check_rad_citations) has an
+# independent CI leg; this one had none.
+#
+# `main([])` deliberately still exits 0 (see
+# test_main_returns_0_with_no_paths): that contract serves pre-commit and is
+# not changed here. `--all` is where vacuity has to be impossible instead,
+# because CI relies on it alone.
+# ---------------------------------------------------------------------------
+
+
+def test_all_mode_discovers_the_same_scope_the_hook_covers(tmp_path: Path) -> None:
+    """`--all` finds a violation in a file no caller named.
+
+    This is the whole point of the mode: nothing passes the offending path in,
+    so a checker that only ever sees named paths cannot report it.
+    """
+    tests_dir = tmp_path / "tests"
+    tests_dir.mkdir()
+    _write(
+        tests_dir / "test_unstaged.py",
+        """
+        import pytest
+
+        def helper():
+            return 1
+
+        def test_two_calls():
+            with pytest.raises(ValueError):
+                helper()
+                helper()
+        """,
+    )
+
+    assert _MODULE.main(["--all", "--root", str(tmp_path)]) == 1
+
+
+def test_all_mode_refuses_a_tree_with_nothing_to_scan(tmp_path: Path) -> None:
+    """Discovering zero files is a usage error, never a pass.
+
+    A gate that reports success on an empty scan is worse than no gate: a
+    mistyped root or a moved tests/ directory would read as "clean" forever.
+    `main([])` may exit 0 because pre-commit legitimately has nothing staged;
+    `--all` has no such excuse, because it chose the paths itself.
+    """
+    assert _MODULE.main(["--all", "--root", str(tmp_path)]) == 2
+
+
+def test_all_mode_and_explicit_paths_are_mutually_exclusive(tmp_path: Path) -> None:
+    """Naming paths alongside `--all` is a usage error rather than a silent winner.
+
+    Either the paths are ignored (the caller's intent is dropped) or they widen
+    the scan (the flag's name lies). Refusing says which the caller meant.
+    """
+    path = _write(
+        tmp_path / "test_clean.py",
+        """
+        import pytest
+
+        def helper():
+            return 1
+
+        def test_one_call():
+            with pytest.raises(ValueError):
+                helper()
+        """,
+    )
+
+    assert _MODULE.main(["--all", "--root", str(tmp_path), str(path)]) == 2
