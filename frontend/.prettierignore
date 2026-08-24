@@ -20,3 +20,16 @@ test-results/
 # disagreed with would turn every dependency bump red over a file no human
 # reads. Matches frontend/package-lock.json and design-system/package-lock.json.
 package-lock.json
+
+# design-sync output. These are gitignored, but by frontend/design-system/.gitignore,
+# and Prettier's default --ignore-path is ['.gitignore', '.prettierignore'] resolved
+# against the CWD only: it never reads a nested .gitignore. Without these entries
+# `npm run format:check` is green in CI (fresh checkout, no artefacts) and red on any
+# machine that has run design-sync, and `npm run format` would rewrite ~2.6 MB of
+# generated output including the 1.1 MB vendored design-system/ds-bundle/_vendor/react.js.
+# A gate that disagrees with itself by environment teaches people to stop reading it.
+# Kept in step with frontend/design-system/.gitignore; add here when adding there.
+design-system/ds-bundle/
+design-system/.ds-sync/
+design-system/.design-sync/.cache/
+design-system/.design-sync/learnings/
