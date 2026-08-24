@@ -1128,3 +1128,103 @@ async def test_remoderation_refreshes_the_stored_validation_report(
 
     assert version_row.validation_report is not stale
     assert version_row.validation_report == run_fill_gate(_blob()).report.to_dict()
+
+
+# ---------------------------------------------------------------------------
+# Auto-repair forks on status; the slot contract comes from the version
+# ---------------------------------------------------------------------------
+
+
+async def test_in_review_book_allows_repair(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A soft-FLAG in_review book reaches the repair branch.
+
+    The inverse of test_published_blob_unchanged_when_repair_disallowed, and
+    the pair is the point: this endpoint's behaviour forks on status, so each
+    arm carries its own test and neither can be changed silently.
+    """
+    version_row = _version_row()
+    _wire_session(mock_async_session, _story(status="in_review"), version_row)
+
+    def _build(settings: Settings, **kwargs: object) -> tuple[MockProvider, bool]:
+        del settings, kwargs
+        return _flagging_review_provider(), True
+
+    monkeypatch.setattr(pipeline_mod, "build_review_provider", _build)
+    # A non-None slot set is the repair branch's other precondition. Supplying
+    # it here keeps this test about allow_repair rather than about contract
+    # resolution, which has its own test below.
+    monkeypatch.setattr(
+        remoderate_api, "personalizable_slot_ids_for_version", lambda _row: frozenset()
+    )
+    repair = AsyncMock(side_effect=lambda **kw: kw["report"])
+    monkeypatch.setattr(pipeline_mod, "_attempt_and_adopt_repair", repair)
+
+    await remoderate_api.remoderate_storybook_version(
+        mock_async_session, "s1", 1, _remod_ctx(actor=Actor.from_principal(_ADMIN))
+    )
+
+    repair.assert_awaited_once()
+
+
+async def test_slot_contract_resolved_from_the_version_not_a_job(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The resolved slot set is passed to the pipeline explicitly.
+
+    Without this the pipeline falls back to a generation_job lookup, and all
+    seventeen production books have no job row, so it resolves the fail-closed
+    None and manufactures a sentinel_integrity_violation BLOCK out of absent
+    provenance: it would overwrite every accurate report and, because repair is
+    gated on not having a hard block, suppress the repair enabled alongside it.
+    """
+    version_row = _version_row()
+    version_row.skeleton_slug = "any-slug"
+    _wire_session(mock_async_session, _story(status="in_review"), version_row)
+    monkeypatch.setattr(
+        remoderate_api,
+        "personalizable_slot_ids_for_version",
+        lambda _row: frozenset({"companion"}),
+    )
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        version_row.moderation_report = _PASSING_REPORT
+
+    pipeline = AsyncMock(side_effect=_fake_pipeline)
+    monkeypatch.setattr(remoderate_api, "run_moderation_pipeline", pipeline)
+
+    await remoderate_api.remoderate_storybook_version(
+        mock_async_session, "s1", 1, _remod_ctx()
+    )
+
+    assert pipeline.await_args is not None
+    assert pipeline.await_args.kwargs["personalizable_slots"] == frozenset(
+        {"companion"}
+    )
+    assert pipeline.await_args.kwargs["allow_repair"] is True
+
+
+async def test_published_book_still_disallows_repair(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The published invariant survives the fork.
+
+    ADR-005: a published book is a guardian-approved artifact a child may be
+    reading offline, so re-moderation reports on it and never rewrites it.
+    """
+    version_row = _version_row()
+    _wire_session(mock_async_session, _story(status="published"), version_row)
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        version_row.moderation_report = _PASSING_REPORT
+
+    pipeline = AsyncMock(side_effect=_fake_pipeline)
+    monkeypatch.setattr(remoderate_api, "run_moderation_pipeline", pipeline)
+
+    await remoderate_api.remoderate_storybook_version(
+        mock_async_session, "s1", 1, _remod_ctx()
+    )
+
+    assert pipeline.await_args is not None
+    assert pipeline.await_args.kwargs["allow_repair"] is False

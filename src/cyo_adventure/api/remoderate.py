@@ -136,6 +136,9 @@ from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_even
 from cyo_adventure.generation.import_story import IMPORT_PROVIDER
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_provider
+from cyo_adventure.moderation.personalizable_slots import (
+    personalizable_slot_ids_for_version,
+)
 from cyo_adventure.moderation.pipeline import run_moderation_pipeline
 from cyo_adventure.publishing.state_machine import Status
 from cyo_adventure.utils.logging import get_logger
@@ -145,6 +148,36 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
     from cyo_adventure.core.config import Settings
+
+
+def _allow_repair_for(status: str) -> bool:
+    """Return whether auto-repair may run for a storybook in ``status``.
+
+    The one place this endpoint's behaviour forks on status, named so the fork
+    is greppable rather than buried in an inline conditional at the pipeline
+    call.
+
+    Args:
+        status: The storybook's current status value.
+
+    Returns:
+        True for a pre-publish book a human still gates, False for a published
+        one.
+    """
+    # #CRITICAL: security: published stays False, absolutely. A published book
+    # is a guardian-approved artifact a child may be reading offline, so a
+    # silent rewrite defeats ADR-005; the same rule is enforced structurally by
+    # api/node_edit.py::_EDITABLE_STATUSES, generation/series_link.py's
+    # embed_into_approved_blob guard, and moderation/rescreen.py.
+    # That reason does not transfer to in_review: the book is not reader-facing,
+    # a human still gates it before it ever is, and repair is exactly what the
+    # ordinary generation path already applies to a pre-publish draft.
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_published_blob_unchanged_when_repair_disallowed and
+    # ::test_published_book_still_disallows_repair pin the published arm;
+    # ::test_in_review_book_allows_repair pins the other.
+    return status != Status.PUBLISHED.value
+
 
 # #CRITICAL: security: the whole set of statuses this endpoint will re-moderate.
 # Enumerated here rather than inline so a third status cannot be added at a call
@@ -501,6 +534,7 @@ async def remoderate_storybook_version(
         lane="family",
     )
 
+    allow_repair = _allow_repair_for(storybook.status)
     started = time.monotonic()
     try:
         await run_moderation_pipeline(
@@ -510,7 +544,22 @@ async def remoderate_storybook_version(
             settings=ctx.settings,
             generation_provider=generation_provider,
             pii=pii,
-            allow_repair=False,
+            allow_repair=allow_repair,
+            # #CRITICAL: data-integrity: passed EXPLICITLY, never left to the
+            # pipeline's own resolution. Its fallback recovers the slot
+            # contract from the story's GenerationJob row, and every book this
+            # endpoint's in_review scope admits is an offline import with no
+            # such row (verified against production 2026-08-24: 17 of 17), so
+            # the fallback resolves the fail-closed None and the pipeline turns
+            # that into a sentinel_integrity_violation BLOCK manufactured out
+            # of absent provenance rather than anything in the prose. That
+            # would overwrite every accurate stored report and, because the
+            # repair branch is gated on `not report.has_hard_block`, suppress
+            # the repair enabled just above.
+            # #VERIFY: tests/unit/test_remoderate_unit.py::
+            # test_slot_contract_resolved_from_the_version_not_a_job fails if
+            # this argument is removed.
+            personalizable_slots=personalizable_slot_ids_for_version(version_row),
         )
     except StateTransitionError:
         # #CRITICAL: security: expected and swallowed for every call this
