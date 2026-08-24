@@ -36,7 +36,15 @@ jobs:
   test:
     name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
+    # 45, not 30. The 3.11 leg hit the old 30-minute ceiling on two of three
+    # consecutive runs (29m46s and 29m39s, both killed mid-suite) while 3.12
+    # and 3.13 finished the same suite in 22-24 and 3.14 in about 5: 3.11 is
+    # simply the slowest interpreter here and had no headroom left. A timeout
+    # is indistinguishable from a hang in the summary job, so a leg that
+    # routinely finishes seconds under its budget reports infrastructure
+    # capacity as though it were a test result. Removing -x also lengthens the
+    # failing path, which is exactly when the output matters most.
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -78,9 +86,23 @@ jobs:
       - name: Run tests
         # Force bash on all platforms; Windows runners default to PowerShell,
         # which cannot parse the backslash line-continuations below (ParserError).
+        #
+        # No -x. This matrix exists to find platform-specific breakage, and
+        # once a platform is broken it tends to accumulate: the Windows leg
+        # failed seventeen runs in a row, from #719 on 2026-08-16 through
+        # 2026-08-24. For the first twelve there was one defect (os.kill on
+        # Windows) and -x named it every time. #740 then added a second,
+        # independent one (a host path separator in the census), and from that
+        # point -x could only ever report whichever of the two random ordering
+        # reached first: fixing the named one would have revealed the next, one
+        # red run at a time. That is the cost this removes.
+        # A leg that runs to completion costs the same wall clock it already
+        # spends when green and names every failure in one run. It does make
+        # the failing path longer than the passing one, which is why the job
+        # timeout above was raised alongside this.
         shell: bash
         run: |
-          uv run pytest tests/ -v --tb=short -x \
+          uv run pytest tests/ -v --tb=short \
             --ignore=tests/integration \
             --ignore=tests/load \
             -m "not slow and not integration"

@@ -41,7 +41,7 @@ import json
 import statistics
 import sys
 from dataclasses import dataclass, field
-from pathlib import Path
+from pathlib import Path, PurePath
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -102,9 +102,15 @@ def _band_rank(band: str) -> int:
 
 @dataclass(frozen=True)
 class Shell:
-    """One skeleton shell, with the three quantities documents quote."""
+    """One skeleton shell, with the three quantities documents quote.
 
-    path: Path
+    ``path`` is a `PurePath` rather than a `Path` because the census only ever
+    renders it as text (`_doc_path`) and never reads through it. Saying so lets
+    a test hand this a `PureWindowsPath` on a Linux runner, which is the only
+    way the separator regression can be caught anywhere but a Windows job.
+    """
+
+    path: PurePath
     band: str
     nodes: int
     commissioned_words: int
@@ -189,6 +195,24 @@ def load_shells(root: Path = SKELETON_ROOT) -> list[Shell]:
             )
         )
     return shells
+
+
+def _doc_path(path: PurePath) -> str:
+    """Return *path* as it should appear in the generated document.
+
+    Always forward-slashed, never the host separator. The census is rendered
+    into a committed document that `test_generated_doc_is_current` compares
+    byte for byte, so `str(path)` makes the doc drift on Windows against the
+    same doc generated on Linux, and the census reports a repository location
+    rather than a location on whichever machine happened to run it.
+
+    Args:
+        path: A path to a catalog file.
+
+    Returns:
+        The path with ``/`` separators on every platform.
+    """
+    return path.as_posix()
 
 
 def census() -> dict[str, Any]:
@@ -295,12 +319,12 @@ def census() -> dict[str, Any]:
         },
         "largest": {
             "by_nodes": {
-                "path": str(by_nodes.path),
+                "path": _doc_path(by_nodes.path),
                 "nodes": by_nodes.nodes,
                 "commissioned_words": by_nodes.commissioned_words,
             },
             "by_commissioned_words": {
-                "path": str(by_words.path),
+                "path": _doc_path(by_words.path),
                 "nodes": by_words.nodes,
                 "commissioned_words": by_words.commissioned_words,
             },
