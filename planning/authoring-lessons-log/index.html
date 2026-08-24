@@ -9279,6 +9279,86 @@ written, which is the error the row exists to correct.</p>
 <td>open</td>
 <td><code>UW-C344</code></td>
 </tr>
+<tr>
+<td>AL-586</td>
+<td>2026-08-23</td>
+<td>D1 implementation (UW-C346)</td>
+<td>tooling</td>
+<td><strong>A register row's own premise rots, and the register is where a plan goes to check its premises.</strong> <code>UW-G19</code> read "the generation job record carries no token counts, no cost and no duration", and a schema change was scoped and about to be written on that basis. The tree said otherwise: migration <code>20260811160000</code> had added seven accounting columns twelve days earlier, with a <code>UsageLedger</code>, a price table and a <code>cost_complete</code> lower-bound flag. The row's ask was broader than what shipped, so it stayed correctly open, which is exactly why nothing flagged the stale half: an open row reads as an unstarted row. This is <code>AL-552</code>'s shape ("doc claims that a check enforces something are unverified") pointed at the register rather than at a brief, and it is the inverse direction <code>UW-C338</code> proposes no guard for.</td>
+<td>Proposed: before scoping work from a register row, grep the tree for the artifact the row says is missing, and treat a partially-delivered row as requiring its premise sentence to be dated or corrected rather than left standing. A cheap mechanical form: flag any open row whose text asserts a column, file or flag does not exist when a grep finds that name in <code>src/</code> or <code>supabase/migrations/</code>.</td>
+<td>open</td>
+<td><code>UW-C338</code></td>
+</tr>
+<tr>
+<td>AL-587</td>
+<td>2026-08-23</td>
+<td>D1 implementation (defaults and migration)</td>
+<td>tooling</td>
+<td><strong>A lookup table keyed more coarsely than the thing it describes returns a confident wrong number, not a missing one.</strong> <code>PRICES</code> is keyed <code>(provider, model)</code>, but OpenRouter serves one slug from many endpoints at different prices, so a row is only true with respect to a NAMED endpoint. The <code>deepseek/deepseek-v4-pro</code> row holds the pinned <code>azure/us</code> price ($1.91/$3.83) while the slug's default route (<code>novita/fp8</code>) bills $1.44/$2.88, so promoting the slug to the fill default without also pinning the route would have put roughly a 33% error into every job's <code>cost_usd</code> while <code>cost_complete</code> still read <code>true</code>. The same coarse key hides a second fact: declared output ceilings for this slug span 16,384 (DeepInfra) to 1,048,576 (CoreWeave/Parasail) against a single per-slug <code>MODEL_OUTPUT_CAPS</code> entry of 393,216. That table value is not the number the request carries: <code>resolve_output_cap</code> returns <code>min(MAX_FILL_OUTPUT_TOKENS, cap)</code> and <code>MAX_FILL_OUTPUT_TOKENS</code> is 131,072, so the effective ask is 131,072 and an unpinned route to the low end is still asked for 8x what it emits, and <code>AL-479</code> establishes that a non-empty truncation is not leg-fatal, so the run spends its whole repair budget re-asking rather than failing over. Pinning is a correctness requirement for this slug, not reproducibility hygiene.</td>
+<td>Applied. Keep the pin in the same module as the price it makes true (<code>ENDPOINT_PINS</code> beside <code>PRICES</code>) and bind the two with a test rather than a comment. Where a caller may legitimately want no pin, spell the three states out: <code>None</code> means unspecified and consults the table, an explicit tuple INCLUDING <code>()</code> is honoured verbatim, which is what let the offline comparison harness keep passing its fixtures' own orders unchanged.</td>
+<td>applied</td>
+<td><code>src/cyo_adventure/core/pricing.py::ENDPOINT_PINS</code> and <code>::endpoint_pin_for</code>; <code>tests/unit/test_openrouter_provider_pin.py::test_every_pinned_price_row_names_its_endpoint_in_the_note</code> and <code>::test_an_explicit_empty_order_is_honoured_over_the_table</code></td>
+</tr>
+<tr>
+<td>AL-588</td>
+<td>2026-08-23</td>
+<td>D1 implementation (reviewer leg)</td>
+<td>process</td>
+<td><strong>Evidence ratified against a named model is invalidated by a one-line default change, and nothing fails.</strong> The Stage-1 batch-size 8 recall parity ratified on 2026-08-01 was measured against the then-current reviewer (Sonnet 4.6) and recorded that conditionality in its own <code>#ASSUME</code>. Switching <code>review_openrouter_model</code> to <code>deepseek/deepseek-v4-flash</code> under D1 satisfies the ruling and retires the basis for the batch size in the same edit: the ratified number stays in the config, the sweep that justified it still exists, and the only thing joining them is a comment. Two leg defaults changed in this run and only one of them, the fill leg, had its supporting evidence in the same file.</td>
+<td>Re-run <code>scripts/adversarial_harness.py --batch-size</code> against the new reviewer before treating the 2026-08-01 parity as current. Structurally: where a ratified constant depends on another setting's value, bind the two in a test that names both, so changing the setting becomes a failing test that must be re-ratified or explicitly re-scoped rather than a comment nobody reads.</td>
+<td>open</td>
+<td><code>UW-C347</code></td>
+</tr>
+<tr>
+<td>AL-589</td>
+<td>2026-08-23</td>
+<td>D1 implementation (allowlist migration)</td>
+<td>tooling</td>
+<td><strong><code>ON CONFLICT DO NOTHING</code> makes a seed migration idempotent and makes DELETE non-durable, and the two facts are the same fact.</strong> <code>20260721230000_seed_provider_model_allowlist.sql</code> inserts its rows with <code>ON CONFLICT ("provider", "model_id") DO NOTHING</code>, which suppresses a re-insert only while the row EXISTS. Withdrawing a prohibited pair by deleting its row therefore lasts exactly until the next replay of that seed, which re-inserts it ENABLED, restoring the state the withdrawal existed to prevent and doing it silently. Reproduced against a local Supabase database inside a rolled-back transaction: after this migration a seed replay inserts 0 rows and both withdrawn rows stay <code>enabled = false</code>; delete them first and the same replay re-inserts both with <code>enabled = true</code>. The durable withdrawal is a state the seed's conflict target can still see, not the absence of one.</td>
+<td>Applied. Withdraw an allowlist-style row by disabling it, never by deleting it, whenever any migration inserts that row with a DO NOTHING conflict clause; a disabled row also leaves the admin surface able to show what was withdrawn instead of making it vanish. Where a migration's safety argument turns on replay behaviour, run the replay against a real database in a transaction you roll back and record the observed counts, since the argument and its counterfactual are both one psql call away.</td>
+<td>applied</td>
+<td><code>supabase/migrations/20260823140000_align_allowlist_with_d1_lane_ruling.sql</code> (the <code>UPDATE ... SET enabled = false</code> in place of a DELETE, with the reproduction recorded in its <code>#CRITICAL: security</code> block); <code>tests/unit/test_allowlist.py::test_the_direct_anthropic_rows_are_retained_but_disabled</code> pins the code-side mirror</td>
+</tr>
+<tr>
+<td>AL-590</td>
+<td>2026-08-23</td>
+<td>D1 implementation (context-window guard audit)</td>
+<td>tooling</td>
+<td><strong>A guard keyed on a lookup table is inert for every model absent from that table, and the table never contained a shipped default.</strong> <code>resolve_context_window</code> returns <code>None</code> for an unlisted slug, and <code>orchestrator.py</code>'s chunked-fill overflow guard (<code>AL-519</code>/<code>UW-C324</code>) runs its whole window/room/feasibility block only <code>if window is not None</code>. <code>MODEL_CONTEXT_WINDOWS</code> holds exactly one row, <code>deepseek/deepseek-v3.2</code>. That slug is not, and never was, any <code>Settings</code> default: before D1 the fill, review, and fallback legs defaulted to <code>anthropic/claude-haiku-4.5</code>, <code>anthropic/claude-sonnet-4.6</code>, and <code>claude-sonnet-4-6</code>, and after D1 they default to <code>deepseek/deepseek-v4-pro</code>, <code>deepseek/deepseek-v4-flash</code>, and <code>anthropic/claude-sonnet-4.6</code>. All six resolve <code>None</code>. The guard has therefore been live only for a run that explicitly selects <code>deepseek/deepseek-v3.2</code>, which is what the vendor-comparison harness does and is exactly the run the original overflow was observed on. So the fix for <code>UW-C324</code> was verified on the one configuration where it fires and shipped inert everywhere else, and no test failed, because every test that exercises the guard names the one slug that has a row. Note the sibling table does not share the defect: <code>MODEL_OUTPUT_CAPS</code> has nine rows and covers all three D1 defaults, because <code>resolve_output_cap</code> has a permissive fallback that made its coverage visible while <code>resolve_context_window</code>'s <code>None</code> made the absence silent.</td>
+<td>Two changes. First, populate <code>MODEL_CONTEXT_WINDOWS</code> for every model any <code>Settings</code> default resolves to, which needs the real per-endpoint context length probed rather than guessed (see <code>AL-587</code>: for a pinned OpenRouter slug the true figure is a property of the endpoint, not the slug). Second, and the part that stops the recurrence, add a test that asserts every model reachable from a <code>Settings</code> default resolves a non-<code>None</code> window, so the next default change fails loudly instead of silently disarming the guard. Model it on the existing <code>test_context_window_and_output_cap_normalize_variants_identically</code> parity test, which already catches normalizer divergence between the two tables but cannot catch a row that is simply missing from both sides of the comparison.</td>
+<td>open</td>
+<td><code>UW-C348</code></td>
+</tr>
+<tr>
+<td>AL-591</td>
+<td>2026-08-23</td>
+<td>D1 review remediation (seed allowlist test)</td>
+<td>tooling</td>
+<td><strong>A test that derives its expectation from a constant cannot be mutation-tested by mutating that constant.</strong> The seed-allowlist test was rewritten to assert <code>row.enabled == seed.enabled</code> over <code>DEFAULT_ALLOWLIST</code>, replacing a hardcoded <code>is True</code>. The obvious way to prove the new assertion discriminates, flip an <code>enabled</code> value in <code>DEFAULT_ALLOWLIST</code> and watch the test fail, is VACUOUS: the test reads its expectation from the same constant, so both sides move together and it passes on every mutation. The mutation that actually discriminates is in the PRODUCTION write path, <code>scripts/seed_dev_data.py</code> writing a hardcoded <code>enabled=True</code> instead of <code>enabled=seed.enabled</code>, which fails as <code>assert True == False</code>. The general shape: when a test and the code under test read the same source of truth, mutate the code, never the shared source. A parameterized test that loops over a fixture is the usual way into this, and it is the same family as the <code>acting_role</code> case where nine dual-role tests passed with the comparison inverted because the fixture made both branches agree.</td>
+<td>Applied: when proving a data-driven test discriminates, mutate the production code path, not the fixture or constant the test derives its expectation from. State the mutation and the observed failure in the review record, so a reviewer can tell a real discrimination proof from a vacuous one; a mutation that leaves the test green is evidence about the mutation, not about the test.</td>
+<td>applied</td>
+<td><code>d1fb0b7b</code> (the rewritten <code>test_seed_dev_data_seeds_provider_allowlist</code>, whose discrimination was proven by mutating <code>scripts/seed_dev_data.py</code>'s write path rather than <code>DEFAULT_ALLOWLIST</code>)</td>
+</tr>
+<tr>
+<td>AL-592</td>
+<td>2026-08-23</td>
+<td><code>UW-C350</code>(b) at-rest constraint (multi-CHECK shadowing)</td>
+<td>tooling</td>
+<td><strong>Adding a second CHECK to a table silently makes every existing <code>pytest.raises(IntegrityError)</code> test on that table a weaker oracle, because Postgres reports only the FIRST constraint the row violates.</strong> <code>test_db_check_constraints_reject_invalid_values</code> inserted <code>provider='not-a-provider', enabled=True</code> to pin <code>ck_provider_model_allowlist_provider</code>. Once <code>ck_provider_model_allowlist_enabled_family_lane</code> landed, that row violated BOTH, Postgres named the family-lane one, and the test went on passing while proving nothing about the constraint its own docstring names: it would still have passed with the provider CHECK dropped outright. The failure is invisible without naming the constraint, because the exception type is identical either way. Same family as <code>AL-591</code> (a test that passes while proving nothing) but a different mechanism: AL-591 was a shared constant moving both sides together, this is one assertion being satisfiable by two different causes. Found only because a <code>match=</code> was added on suspicion, not by any gate.</td>
+<td>When adding a CHECK to a table, grep the test tree for <code>raises(IntegrityError)</code> against that table and, for each, (a) add <code>match=&lt;constraint name&gt;</code> so the assertion names its cause, and (b) shape the row so only the intended constraint can reject it (here, writing it DISABLED satisfies the family-lane CHECK's <code>enabled IS FALSE</code> arm, leaving the provider CHECK as the only possible rejector). A bare <code>raises(IntegrityError)</code> on a multi-CHECK table should be treated as a defect, not a passing test.</td>
+<td>open</td>
+<td><code>UW-C350</code></td>
+</tr>
+<tr>
+<td>AL-593</td>
+<td>2026-08-23</td>
+<td><code>UW-C350</code> gate audit (S5778 backlog on main)</td>
+<td>tooling</td>
+<td><strong>A pre-commit hook with <code>pass_filenames: true</code> is not a gate on the repository, only on what someone happens to stage, and nothing reports the difference.</strong> <code>check-pytest-raises-scope</code> had accumulated seven S5778 violations in <code>tests/unit/test_replay.py</code> sitting on <code>main</code>. They were invisible because that file was never staged again after the commit that introduced them, and they surfaced only as a side effect of running <code>pre-commit run --all-files</code> for an unrelated change. The distinguishing signal is structural rather than behavioural: of the four checkers in <code>scripts/</code>, <code>check_work_linkage</code> and <code>check_lessons_log</code> run in <code>planning-linkage.yml</code> and <code>check_rad_citations</code> runs in <code>ci.yml</code>, while this one ran nowhere but pre-commit. <code>ci.yml</code> invokes exactly one hook tree-wide (<code>interrogate</code>), so hook membership implies nothing about CI coverage. A second trap sat behind the first: the script returned 0 when handed no paths, so the obvious CI wiring (a shell glob) would have passed vacuously the moment the glob stopped matching.</td>
+<td>APPLIED. Added <code>--all</code> to <code>scripts/check_pytest_raises_scope.py</code>, discovering the same scope the hook's <code>files:</code> regex covers so CI and pre-commit cannot disagree about what is checked, and made that mode exit 2 rather than 0 when it discovers nothing, so it can never pass vacuously. <code>main([])</code> still exits 0, which is a deliberate contract for the hook pinned by its own test and left unchanged. Wired as a step in <code>ci.yml</code>'s existing <code>rad-citations</code> job, which exists for this exact class of gap. The general rule this leaves behind: when adding a checker to <code>.pre-commit-config.yaml</code>, give it a tree-wide CI leg in the same change, or it is a lint for the author alone.</td>
+<td>applied</td>
+<td><code>.github/workflows/ci.yml</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -9318,7 +9398,7 @@ written, which is the error the row exists to correct.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 23, 2026 20:40:10 UTC">August 23, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 24, 2026 04:05:16 UTC">August 24, 2026</span>
   </span>
 
     
