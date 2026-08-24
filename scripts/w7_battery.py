@@ -296,6 +296,15 @@ def single_run(out_dir: Path) -> Generator[None]:
         lock.unlink(missing_ok=True)
 
 
+# The largest pid either platform's probe can carry without changing the
+# question being asked. POSIX `os.kill` converts through C `int` and raises
+# `OverflowError` at exactly 2**31; the Win32 probe takes a `c_uint32` DWORD,
+# and ctypes converts an out-of-range int mod 2**32 rather than raising, so an
+# oversized value silently becomes a different, possibly live, pid. 2**31 - 1
+# is under both, and far above any pid either kernel issues.
+_MAX_PID: Final[int] = 2**31 - 1
+
+
 def _alive(pid: str) -> bool:
     """Return whether *pid* names a live process.
 
@@ -303,17 +312,158 @@ def _alive(pid: str) -> bool:
         pid: A process id as written into the lock file.
 
     Returns:
-        ``True`` when the process exists. A malformed lock file reads as dead,
-        so a corrupted lock cannot wedge the harness permanently.
+        ``True`` when the process exists. Anything outside ``1.._MAX_PID``,
+        including a value no integer can be read out of, reads as dead, so a
+        corrupted lock cannot wedge the harness permanently.
     """
     try:
-        os.kill(int(pid), 0)
-    except (ValueError, ProcessLookupError):
+        numeric = int(pid)
+    except ValueError:
+        return False
+    if not 0 < numeric <= _MAX_PID:
+        # A lock is written with `os.getpid()`, so a value outside this range is
+        # a corrupted file rather than a process, and every way of passing one
+        # through is worse than reading it as dead.
+        #
+        # Below the range, POSIX `kill` inverts the answer instead of erroring:
+        # 0 means the caller's own process group and -1 means every process it
+        # may signal, so both succeed and report a live holder that does not
+        # exist. On Windows a negative value is converted mod 2**32 against the
+        # `c_uint32` argtype below, so `-1` asks about pid 4294967295 and any
+        # answer is about some unrelated process. (Windows pid 0 is the one
+        # benign case: `OpenProcess` rejects the System Idle Process with
+        # ERROR_INVALID_PARAMETER, which already reads as dead.
+        # ERROR_ACCESS_DENIED, the code that reads as live, is what the System
+        # process and the CSRSS processes return, not pid 0.)
+        #
+        # Above the range, `os.kill` raises `OverflowError` converting to C
+        # `int`, which is a crash rather than an answer, and Windows truncates
+        # as above, so a lock holding 2**32 + 1234 would probe pid 1234 and an
+        # innocent live process would hold the lock forever.
+        #
+        # Either direction, a corrupted lock would wedge the harness
+        # permanently, which is the one outcome this guard must never produce.
+        return False
+    if sys.platform == "win32":
+        return _alive_windows(numeric)
+    try:
+        os.kill(numeric, 0)
+    except ProcessLookupError:
         return False
     except PermissionError:
         # It exists and belongs to someone else, which still counts as live.
         return True
     return True
+
+
+def _alive_windows(pid: int) -> bool:
+    """Return whether *pid* names a live process, on Windows.
+
+    `os.kill(pid, 0)` is a POSIX idiom that does not survive the port. Signal 0
+    is `CTRL_C_EVENT` on Windows, so CPython routes it to
+    `GenerateConsoleCtrlEvent` rather than to a liveness check: against a pid
+    that is not a console process group it fails with `WinError 87`, which is
+    how this read as an error rather than as an answer, and against one that is
+    it would *deliver a Ctrl-C* to a process the harness only meant to ask
+    about. Neither outcome is a probe.
+
+    `OpenProcess` plus `WaitForSingleObject` asks the actual question: whether
+    the process handle is signaled. `GetExitCodeProcess` cannot answer it,
+    because `STILL_ACTIVE` is 259 and 259 is also a perfectly legal exit code,
+    so a previous run that exited 259 would read as live and wedge the harness
+    for good. Microsoft documents the ambiguity and points at the wait
+    functions instead. `ctypes` keeps this in the standard library rather than
+    adding `psutil`, which this project has only as a transitive development
+    dependency.
+
+    Args:
+        pid: A process id, already bounded to ``1.._MAX_PID`` by `_alive`.
+
+    Returns:
+        ``True`` when the process exists and has not exited.
+
+    Raises:
+        ValueError: If *pid* is outside the range the DWORD conversion can
+            carry unchanged.
+    """
+    # `_alive` bounds the pid before dispatching here and is the only caller,
+    # but restating the precondition is what keeps the `c_uint32` conversion
+    # below honest: ctypes converts an out-of-range int mod 2**32 instead of
+    # raising, so a caller that skipped the guard would quietly ask about a
+    # different process rather than fail. Refusing is the loud alternative.
+    if not 0 < pid <= _MAX_PID:
+        msg = (
+            f"pid {pid} is outside 1..{_MAX_PID}, the range this probe can ask "
+            "about without the DWORD conversion changing which process it names"
+        )
+        raise ValueError(msg)
+
+    import ctypes  # noqa: PLC0415 - Windows-only, kept out of the POSIX path
+
+    # #ASSUME: external resources: the Win32 error, access-right and wait-result
+    # constants below are stable ABI, documented in the Windows SDK headers, so
+    # they are inlined rather than discovered at runtime.
+    # #VERIFY: covered by tests/unit/test_w7_battery.py, which exercises this
+    # branch on every platform through a fake kernel32.
+    error_access_denied = 5
+    error_invalid_parameter = 87
+    # SYNCHRONIZE alone, not PROCESS_QUERY_LIMITED_INFORMATION: it is the only
+    # right `WaitForSingleObject` needs, and asking for less is likelier to be
+    # granted, so a restricted process gives a real answer instead of the
+    # access-denied fallback below.
+    synchronize = 0x0010_0000
+    wait_object_0 = 0x0000_0000
+    wait_timeout = 0x0000_0102
+
+    # `OpenProcess`'s second parameter is `bInheritHandle`, which is positional
+    # in the Win32 ABI and so cannot be passed by keyword (ruff FBT003); naming
+    # it here says what the flag means instead of suppressing the rule.
+    inherit_handle = False
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)  # pyright: ignore[reportAttributeAccessIssue]
+
+    # ctypes defaults every foreign function to a `c_int` return and to
+    # by-guess argument conversion. Win32 `HANDLE` is pointer-sized, so on
+    # 64-bit Windows an untyped `OpenProcess` truncates its handle to 32 bits,
+    # and the truncated value is then passed back to `WaitForSingleObject` and
+    # `CloseHandle`. Declaring the signatures keeps the handle intact and stops
+    # a wrong one being waited on or closed. DWORD is `c_uint32`, BOOL is
+    # `c_int`, HANDLE is `c_void_p`; a NULL `c_void_p` result arrives as None,
+    # which is falsy, so the failure branch below still reads correctly.
+    kernel32.OpenProcess.argtypes = (ctypes.c_uint32, ctypes.c_int, ctypes.c_uint32)
+    kernel32.OpenProcess.restype = ctypes.c_void_p
+    kernel32.WaitForSingleObject.argtypes = (ctypes.c_void_p, ctypes.c_uint32)
+    kernel32.WaitForSingleObject.restype = ctypes.c_uint32
+    kernel32.CloseHandle.argtypes = (ctypes.c_void_p,)
+    kernel32.CloseHandle.restype = ctypes.c_int
+
+    handle = kernel32.OpenProcess(synchronize, inherit_handle, pid)
+    if not handle:
+        code = ctypes.get_last_error()
+        if code == error_access_denied:
+            # It exists and belongs to someone else, which still counts as
+            # live, matching the PermissionError arm of the POSIX path.
+            return True
+        if code == error_invalid_parameter:
+            return False
+        # An unrecognised failure must not be read as "dead": clearing the lock
+        # on a guess is the exact double-run this guard exists to prevent.
+        return True
+    try:
+        # A zero timeout polls rather than waits, so this never blocks the
+        # caller on another run's lifetime.
+        waited = kernel32.WaitForSingleObject(handle, 0)
+        if waited == wait_timeout:
+            return True
+        if waited == wait_object_0:
+            # Signaled means terminated. A handle can outlive the process it
+            # names, so an openable pid is not yet a live one.
+            return False
+        # WAIT_FAILED, WAIT_ABANDONED, or anything undocumented: no answer, so
+        # keep the lock rather than guess it away.
+        return True
+    finally:
+        kernel32.CloseHandle(handle)
 
 
 def _book_key(book: str) -> str:
