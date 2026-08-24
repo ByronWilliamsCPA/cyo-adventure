@@ -220,7 +220,15 @@ repos:
         entry: >-
           bash -c 'cd frontend && files=(); for f in "$@"; do files+=("${f#frontend/}"); done; npx prettier --check "${files[@]}"' --
         language: system
-        files: ^frontend/src/.*\.(ts|tsx|css|json)$
+        # Tree-wide under frontend/, not just src/: e2e specs, the design-system
+        # package, eslint.config.js, index.html and README.md are all real
+        # sources and were previously unchecked here and in CI alike. Exclusions
+        # live in frontend/.prettierignore, which Prettier honours even for
+        # explicitly-passed paths, so they are not duplicated into this glob.
+        # The extension list is restricted to parsers Prettier actually has:
+        # this hook passes staged paths explicitly, and an unparseable path
+        # (nginx.conf, Dockerfile) makes Prettier exit non-zero rather than skip.
+        files: ^frontend/.*\.(ts|tsx|js|jsx|mjs|cjs|css|scss|json|md|html|ya?ml)$
         # frontend/src/client is generated (hey-api) build output committed raw
         # by design: the CI contract job diffs it against the generator's exact
         # output, so prettier-formatting it would create permanent drift.

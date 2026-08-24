@@ -13,3 +13,10 @@ dist/
 coverage/
 playwright-report/
 test-results/
+
+# npm-generated lockfiles, on the same rule as src/client/ above: generated
+# output is formatted by its generator, not by us. They agree with Prettier
+# today, but npm owns these files, and a future npm whose output Prettier
+# disagreed with would turn every dependency bump red over a file no human
+# reads. Matches frontend/package-lock.json and design-system/package-lock.json.
+package-lock.json
