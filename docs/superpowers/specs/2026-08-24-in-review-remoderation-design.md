@@ -217,6 +217,45 @@ generation job", which is true of every imported book and says nothing about saf
 - A version whose `skeleton_slug` is absent, or names a skeleton that cannot be
   located, still fails closed. The tri-state's `None` arm must survive.
 
+### 7. Give the sweep script a way to reach the new population
+
+Widening the endpoint is not enough to run anything. `scripts/remoderate_books.py`
+is the reviewable, versioned selection logic for which books get swept, and both
+of its selectors resolve `storybook.current_published_version`, which is NULL for
+an `in_review` book. `--mock-moderated` therefore cannot see one, and `--book-id`
+raises a 404 on one. The capability would have shipped with no path to it.
+
+Adds a third selector, `--in-review`, and makes `--book-id` resolve by status.
+
+`list_in_review_targets` takes every `in_review` book at `max(version)`. That is
+not a new rule: it is what `api/approval.py` uses in both places it needs one
+(`_latest_version` for approve and send-back, and the review queue's grouped max
+for the listing), so the sweep re-derives the verdicts of the exact version the
+reviewer is looking at. Any other rule would write fresh verdicts onto a row the
+reviewer is not about to act on.
+
+It applies no report-content filter, unlike `--mock-moderated`. The asymmetry is
+deliberate. A published book with a good report needs nothing, so that selector
+filters for a specific defect. An `in_review` book's stored report is about to be
+acted on by a human whatever it says, so re-deriving it is the point.
+
+`--book-id` refuses an inadmissible status at target resolution, importing the
+endpoint's own `REMODERATABLE_STATUS_VALUES` rather than restating it. Deferring
+to the endpoint's 400 would abort the sweep mid-flight, after earlier books had
+already committed their re-moderations and spent the LLM calls, leaving an
+operator to work out which half ran.
+
+The `sweep()` selector guard becomes a count rather than the two-way equality it
+replaced. `bool(book_ids) == mock_moderated` is a correct XOR for two flags and
+silently stops being one for three: with `in_review` added it accepts
+`--mock-moderated --in-review` together and runs whichever branch the `if`/`elif`
+chain reaches first.
+
+`main()`'s output no longer claims a dirty book is "still published", which is
+false for the population this adds and false in the dangerous direction. It states
+the invariant (this sweep never moves a book) and spells out both consequences,
+since `--book-id` can mix the two populations.
+
 ## Non-goals
 
 - **No state-machine change.** A hard block leaves the book in `in_review` and the
@@ -239,24 +278,44 @@ validity gate needs. Those come from real approvals, not from re-moderation.
 
 ## Operational follow-through
 
-Once this lands and deploys, all seventeen books are re-moderated in production.
-Two preconditions are unresolved and are confirmed before any production call
-rather than assumed:
+Once this lands, all seventeen books are re-moderated in production. There are two
+mechanisms, they differ in more than convenience, and the choice is the owner's.
 
-- The run uses `test_admin@williamshome.family`. Production holds exactly two
-  admin accounts and the other one, `byronawilliams@gmail.com`, authenticates
-  through Google OIDC, so it cannot mint a bearer token for a scripted loop.
-  Both are `role='guardian'` carrying the orthogonal `is_admin` capability;
-  no account holds an admin-only base role.
+**The sweep script, in-process.** `scripts/remoderate_books.py --in-review
+--execute` calls `remoderate_storybook_version` directly against whatever
+`CYO_ADVENTURE_DATABASE_URL` the operator points it at. Consequences: no bearer
+token is needed, so the Google-OIDC constraint below does not arise; no family
+boundary is crossed, because there is no request principal to scope; the audit
+trail stamps `Actor.system()`, which is the honest provenance for a bulk ops
+sweep rather than impersonating a test account; and the deployed image does not
+need to carry this change, because the run executes the local checkout. The cost
+is that it executes local, unreviewed-in-CI code with write access against the
+production database, and dry-run-by-default plus `--execute` is its only rail.
+
+**The HTTP endpoint, against the deployed service.** This runs only reviewed,
+deployed code and leaves a per-book admin principal in the audit trail, at the
+price of two preconditions:
+
+- It uses `test_admin@williamshome.family`. Production holds exactly two admin
+  accounts and the other one, `byronawilliams@gmail.com`, authenticates through
+  Google OIDC, so it cannot mint a bearer token for a scripted loop. Both are
+  `role='guardian'` carrying the orthogonal `is_admin` capability; no account
+  holds an admin-only base role.
 - That account sits in `E2E Test Family`, not the family owning the seventeen
   books, so the run crosses a family boundary. `_require_admin` gates on
   `ctx.principal.is_admin` alone and applies no family scoping, and
   `core/database.py::apply_family_rls_context` sets `app.is_admin` alongside
-  `app.family_id`, so the crossing is intended at both layers. It is confirmed
-  against one book before the other sixteen rather than assumed: an RLS-filtered
-  read surfaces as a 404 on every book, not as a 403, which reads like a bad
-  storybook id rather than a scoping failure.
-- Whether the deployed image carries this change.
+  `app.family_id`, so the crossing is intended at both layers. Confirm it against
+  one book before the other sixteen rather than assuming it: an RLS-filtered read
+  surfaces as a 404 on every book, not as a 403, which reads like a bad storybook
+  id rather than a scoping failure.
+
+Either way, the first book is a canary. Confirm its fresh report carries no
+`sentinel_integrity_violation` finding before touching the other sixteen: that
+finding is what section 5 exists to prevent, and its absence is the only direct
+evidence the version-resolved slot contract worked against real rows. Run books
+one at a time on the HTTP path, whose single-flight slot rejects rather than
+queues; the script already serialises and commits per book.
 
 Repair on the `in_review` path runs through the default configured provider for
 imported books, which under the D1 ruling is the restricted family lane. The direct
