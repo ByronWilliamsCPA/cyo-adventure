@@ -137,9 +137,9 @@ async def test_pii_positive_control_raises_before_egress() -> None:
     """
     (f1,) = [item for item in _items() if item.get("target") == "pii_guard"]
     provider = _RecordingMockProvider()
-    observed, guard_raised = await _observe_item(f1, provider)
-    assert guard_raised is True
-    assert observed == []
+    observation = await _observe_item(f1, provider)
+    assert observation.guard_raised is True
+    assert observation.verdicts == ()
     assert provider.calls == [], "PII reached the provider (egress before guard)"
 
 
@@ -159,8 +159,9 @@ async def test_stage1_probes_fail_safe_to_flag_on_unparseable_output() -> None:
     ]
     assert stage1_items, "corpus lost its Stage-1 adversarial items"
     for item in stage1_items:
-        observed, guard_raised = await _observe_item(item, _RecordingMockProvider())
-        assert guard_raised is None, item["id"]
+        observation = await _observe_item(item, _RecordingMockProvider())
+        observed = observation.verdicts
+        assert observation.guard_raised is None, item["id"]
         assert observed, item["id"]
         assert all(verdict == "flag" for verdict in observed), (
             f"{item['id']}: stage-1 fail-safe produced {observed} instead of flag"
