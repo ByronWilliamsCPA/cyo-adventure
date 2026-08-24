@@ -298,11 +298,19 @@ def test_ensure_lifecycle_rules_tolerates_a_lifecycle_read_denied_by_the_token()
     with patch.object(backup_database._logger, "warning") as warn:
         backup_database.ensure_lifecycle_rules(client, "backup-bucket", policy)
 
+    # Assert the READ was actually attempted, not just that the event fired: a
+    # regression that skipped lifecycle entirely and warned anyway would otherwise pass.
+    client.get_bucket_lifecycle_configuration.assert_called_once_with(
+        Bucket="backup-bucket"
+    )
     # The write is skipped, not merely attempted-and-swallowed: put_bucket_lifecycle_
     # configuration REPLACES the whole configuration, so firing it blind would destroy
     # hand-set rules this run could not read.
     client.put_bucket_lifecycle_configuration.assert_not_called()
+    # Both degraded paths log the SAME event name, so the event alone cannot tell them
+    # apart; the operation kwarg is what identifies which call was refused.
     assert warn.call_args.args[0] == "backup_lifecycle_unmanaged"
+    assert warn.call_args.kwargs["operation"] == "GetBucketLifecycleConfiguration"
 
 
 def test_ensure_lifecycle_rules_tolerates_a_lifecycle_write_denied_by_the_token() -> (
@@ -318,7 +326,11 @@ def test_ensure_lifecycle_rules_tolerates_a_lifecycle_write_denied_by_the_token(
     with patch.object(backup_database._logger, "warning") as warn:
         backup_database.ensure_lifecycle_rules(client, "backup-bucket", policy)
 
+    # The refusal has to come from the WRITE actually being issued; the readable
+    # config must not have short-circuited it.
+    client.put_bucket_lifecycle_configuration.assert_called_once()
     assert warn.call_args.args[0] == "backup_lifecycle_unmanaged"
+    assert warn.call_args.kwargs["operation"] == "PutBucketLifecycleConfiguration"
 
 
 def test_ensure_lifecycle_rules_still_raises_on_a_non_permission_lifecycle_error() -> (

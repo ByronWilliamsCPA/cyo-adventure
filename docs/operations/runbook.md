@@ -534,9 +534,10 @@ the restore side is documented below but **not yet drilled against a live projec
    quietly empty the bucket with zero red runs. It also doubles as the only exercise of the R2
    **read** path, so a token scoped without list permission is caught here rather than during a
    restore. An empty bucket is accepted only under `--init-bucket`.
-5. Asserts a per-prefix R2 lifecycle expiration rule (self-healing if the bucket configuration
-   ever drifts): daily 7 days, weekly 28 days, monthly 180 days by default, tunable via
-   `workflow_dispatch` inputs. This bounds total retained storage to roughly 7 + 4 + 6 = 17
+5. Applies a per-prefix R2 lifecycle expiration rule **where the token permits it**: daily
+   7 days, weekly 28 days, monthly 180 days. In this deployment it does not permit it, so the
+   rules are hand-set and neither the self-healing nor the `workflow_dispatch` retention inputs
+   are live; see the blockquote below before relying on either. This bounds total retained storage to roughly 7 + 4 + 6 = 17
    backup sets at any time, sized for limited R2 space rather than unbounded growth -- re-tune
    the day counts once real dump sizes are known (see the `#ASSUME` in the script's module
    docstring). Retention values are validated before anything else runs, against per-tier floors
