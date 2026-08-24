@@ -767,8 +767,8 @@ Seven days and twenty-five commits passed before anyone noticed the release PRs 
 surfaces on the next scheduled run rather than a week later. To check by hand:
 
 ```bash
-grep -m1 '^version' pyproject.toml     # e.g. 0.82.0
-git ls-remote --tags origin 'v0.82.0'  # empty output means DEADLOCKED
+VERSION="$(grep -m1 -Po '^version = "\K[^"]+' pyproject.toml)"
+git ls-remote --tags origin "v${VERSION}"   # empty output means DEADLOCKED
 ```
 
 **Fix.** Create the missing release on the `chore(release):` commit; the next scheduled `propose`
@@ -786,7 +786,8 @@ only the PR-creation step:
 
 ```bash
 gh workflow run release.yml --ref main -f dry_run=true
-# expect: "Next version: v0.83.0 (current v0.82.0)"
+# expect a version AHEAD of pyproject's, e.g. "Next version: v0.83.0 (current v0.82.0)".
+# A "nothing to do" here means the deadlock is NOT cleared.
 ```
 
 **Note the deploy is not gated on any of this.** The homelab stack force-pulls `:latest` on its own

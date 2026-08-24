@@ -467,6 +467,22 @@ class TestReleaseTagSync:
         )
         assert check_release_tag_sync.main(["--version", "3.1.4"]) == 0
 
+    def test_cli_reports_a_tagless_repo_as_a_first_release(
+        self, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """main() exits 0 on a tagless repo WITHOUT claiming the tag exists.
+
+        find_desync passes a tagless repo so the first-ever release is not
+        blocked. The success message has to say that, not "has tag vX.Y.Z",
+        which would be false and would mask a genuinely missing tag.
+        """
+        monkeypatch.setattr(check_release_tag_sync, "git_tags", lambda *_a, **_k: [])
+
+        assert check_release_tag_sync.main(["--version", "3.1.4"]) == 0
+        out = capsys.readouterr().out
+        assert "first release" in out
+        assert "has tag" not in out
+
     def test_cli_returns_one_on_desync(
         self, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
     ) -> None:

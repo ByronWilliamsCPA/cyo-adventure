@@ -136,12 +136,19 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     version = args.version or read_pyproject_version()
-    problem = find_desync(version, git_tags())
+    tags = git_tags()
+    problem = find_desync(version, tags)
 
     if problem is not None:
         # ::error:: renders as a GitHub Actions annotation on the job summary.
         print(f"::error::{problem}", file=sys.stderr)
         return 1
+
+    if not tags:
+        # find_desync deliberately passes a tagless repo so the first release is
+        # not blocked. Claiming a tag exists here would be false.
+        print(f"No tags yet: pyproject {version} would be the first release.")
+        return 0
 
     print(f"Release state in sync: pyproject {version} has tag {TAG_PREFIX}{version}.")
     return 0
