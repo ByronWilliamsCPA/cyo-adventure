@@ -57,6 +57,18 @@ def _cell_13_16_medium_prose() -> list[str]:
     return candidates_for_cell("13-16", "medium", "prose")
 
 
+# The pair the accepted-path tests name. openrouter, not the direct anthropic
+# leg they used to name: an authoring plan is a family-lane question, and since
+# D1 (`UW-C346`, `UW-C350`) the read path refuses a provider that lane forbids
+# however the allowlist row is set. Literals rather than anything derived from
+# `FAMILY_LANE_PROVIDERS`, so the expectation cannot move with the constant the
+# production code reads (`AL-591`).
+_LANE_OK_PROVIDER = "openrouter"
+_LANE_OK_MODEL = "deepseek/deepseek-v4-pro"
+_LANE_FORBIDDEN_PROVIDER = "anthropic"
+_LANE_FORBIDDEN_MODEL = "claude-sonnet-4-6"
+
+
 class _FakeResult:
     """A no-op result for the recent-usage query; every test starts with no history."""
 
@@ -143,8 +155,8 @@ async def test_fresh_generation_automated_provider_creates_queued_job() -> None:
             method="fresh_generation",
             mechanism="automated_provider",
             prep_model="openrouter/some-model",
-            provider="anthropic",
-            model="claude-sonnet-4-6",
+            provider=_LANE_OK_PROVIDER,
+            model=_LANE_OK_MODEL,
         ),
         actor=_admin_actor(),
     )
@@ -156,8 +168,8 @@ async def test_fresh_generation_automated_provider_creates_queued_job() -> None:
     # ONLY provider/model (no skeleton_slug), which is exactly what keeps the
     # worker routing it to generate_story rather than skeleton fill.
     assert result.job.authoring_metadata == {
-        "provider": "anthropic",
-        "model": "claude-sonnet-4-6",
+        "provider": _LANE_OK_PROVIDER,
+        "model": _LANE_OK_MODEL,
     }
 
 
@@ -225,8 +237,8 @@ async def test_skeleton_fill_automated_provider_creates_queued_job_with_metadata
         method="skeleton_fill",
         mechanism="automated_provider",
         prep_model="openrouter/some-model",
-        provider="anthropic",
-        model="claude-sonnet-4-6",
+        provider=_LANE_OK_PROVIDER,
+        model=_LANE_OK_MODEL,
     )
     result = await build_authoring_plan(
         session, _request(), concept, plan, actor=_admin_actor()
@@ -243,8 +255,8 @@ async def test_skeleton_fill_automated_provider_creates_queued_job_with_metadata
     assert metadata.pop("prior_titles") == []
     assert metadata.pop("prior_theme_tags") == []
     assert metadata == {
-        "provider": "anthropic",
-        "model": "claude-sonnet-4-6",
+        "provider": _LANE_OK_PROVIDER,
+        "model": _LANE_OK_MODEL,
         "skeleton_slug": result.skeleton_slug,
         "skeleton_band": "8-11",
         # WS-7 D7: auto-pick persists the in-cell alternatives for the re-route.
@@ -280,8 +292,8 @@ async def test_existing_job_for_concept_is_conflict() -> None:
         method="fresh_generation",
         mechanism="automated_provider",
         prep_model="openrouter/some-model",
-        provider="anthropic",
-        model="claude-sonnet-4-6",
+        provider=_LANE_OK_PROVIDER,
+        model=_LANE_OK_MODEL,
     )
     actor = _admin_actor()
     with pytest.raises(StateTransitionError):
@@ -341,14 +353,18 @@ def test_provider_model_rejected_when_mechanism_not_automated_provider() -> None
             method="skeleton_fill",
             mechanism="skill",
             prep_model="sonnet",
-            provider="anthropic",
-            model="claude-sonnet-4-6",
+            provider=_LANE_OK_PROVIDER,
+            model=_LANE_OK_MODEL,
         )
 
 
 @pytest.mark.asyncio
 async def test_unallowlisted_provider_model_is_rejected() -> None:
-    """A provider/model pair that is not an enabled allowlist row is a 422."""
+    """A provider/model pair that is not an enabled allowlist row is a 422.
+
+    Names a family-lane provider deliberately, so the missing row is the only
+    thing that can refuse it; the lane refusal is a separate test below.
+    """
     session = _FakeSession(allowlisted=False)
     request = _request()
     concept = _concept()
@@ -356,12 +372,48 @@ async def test_unallowlisted_provider_model_is_rejected() -> None:
         method="fresh_generation",
         mechanism="automated_provider",
         prep_model="openrouter/some-model",
-        provider="anthropic",
+        provider=_LANE_OK_PROVIDER,
         model="not-a-real-model",
     )
     actor = _admin_actor()
     with pytest.raises(ValidationError):
         await build_authoring_plan(session, request, concept, plan, actor=actor)
+
+
+@pytest.mark.asyncio
+async def test_family_lane_forbidden_provider_is_rejected_though_the_row_is_enabled() -> (
+    None
+):
+    """An enabled row for a forbidden provider is still refused (`UW-C350`(a)).
+
+    ``allowlisted=True`` makes the fake session answer the allowlist query with
+    a row, so the only thing left that can refuse this plan is the family-lane
+    rule the service states at the call site. This is the no-database view of
+    the same property `tests/integration/test_authoring_plan_api.py::
+    test_family_lane_forbidden_pair_is_422` proves through the endpoint.
+    """
+    session = _FakeSession(allowlisted=True)
+    plan = AuthoringPlanRequest(
+        method="fresh_generation",
+        mechanism="automated_provider",
+        prep_model="openrouter/some-model",
+        provider=_LANE_FORBIDDEN_PROVIDER,
+        model=_LANE_FORBIDDEN_MODEL,
+    )
+    # Built outside the raises block: S5778 allows exactly one invocation in
+    # the body, so a helper call in there could be the thing that raised.
+    request = _request()
+    concept = _concept()
+    actor = _admin_actor()
+
+    # `match=` on the provider, not a bare raise: `build_authoring_plan` has
+    # several other ValidationError paths (an unknown skeleton slug, a
+    # provider/model pair given for a mechanism that takes none), and a bare
+    # raise would be satisfied by any of them.
+    with pytest.raises(ValidationError, match=_LANE_FORBIDDEN_PROVIDER):
+        await build_authoring_plan(session, request, concept, plan, actor=actor)
+
+    assert not session.added, "nothing may be persisted for a refused plan"
 
 
 @pytest.mark.asyncio
@@ -437,8 +489,8 @@ async def test_fresh_generation_has_no_alternatives() -> None:
             method="fresh_generation",
             mechanism="automated_provider",
             prep_model="openrouter/some-model",
-            provider="anthropic",
-            model="claude-sonnet-4-6",
+            provider=_LANE_OK_PROVIDER,
+            model=_LANE_OK_MODEL,
         ),
         actor=_admin_actor(),
     )

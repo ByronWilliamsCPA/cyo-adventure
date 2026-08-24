@@ -207,6 +207,126 @@ describe('ProviderAllowlistPage', () => {
     ).toBeInTheDocument()
   })
 
+  it('surfaces the server rejection reason when adding a provider the family lane forbids (422)', async () => {
+    // Commit d1fb0b7b (UW-C346) added a runtime 422 for this case; UW-C351
+    // requires the admin to see the server's actual reason rather than the
+    // generic (and here wrong) "may already be on the allowlist" copy.
+    mockPost.mockRejectedValue({
+      isAxiosError: true,
+      response: {
+        status: 422,
+        data: {
+          error: 'ValidationError',
+          message:
+            "provider 'anthropic' may not be enabled on the allowlist: a kid- or " +
+            'guardian-triggered generation job is not permitted to use it, so an ' +
+            'enabled row would be a pair the authoring-plan endpoint accepts and ' +
+            'the worker then refuses. The row may exist while disabled.',
+          code: 'VALIDATION_ERROR',
+          details: { field: 'provider' },
+        },
+      },
+    })
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByText('claude-sonnet-4-6')
+
+    // 'anthropic' is the provider the family lane forbids; 'openrouter' is
+    // permitted, so a fixture naming it would assert a response the backend
+    // can never produce (api/provider_allowlist.py returns 422 only for a
+    // provider outside FAMILY_LANE_PROVIDERS).
+    await user.selectOptions(screen.getByLabelText('Provider'), 'anthropic')
+    await user.type(screen.getByLabelText('Model id'), 'claude-sonnet-4-6')
+    await user.click(screen.getByRole('button', { name: 'Add to allowlist' }))
+
+    expect(
+      await screen.findByText(
+        "provider 'anthropic' may not be enabled on the allowlist: a kid- or " +
+          'guardian-triggered generation job is not permitted to use it, so an ' +
+          'enabled row would be a pair the authoring-plan endpoint accepts and ' +
+          'the worker then refuses. The row may exist while disabled.'
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('We could not add that entry. It may already be on the allowlist.')
+    ).not.toBeInTheDocument()
+  })
+
+  it('surfaces the server rejection reason when re-enabling a provider the family lane forbids (422)', async () => {
+    // The row must start DISABLED so the button under test is 'Enable'.
+    // Clicking 'Disable' would exercise the one write the backend still
+    // permits ("The row may exist while disabled"), so that fixture would
+    // pass with the 422 guard deleted. `field` is 'enabled' on this path,
+    // not 'provider': api/provider_allowlist.py passes field="enabled" from
+    // the update handler and field="provider" from the create handler.
+    mockList({
+      rows: [
+        {
+          id: 'a1',
+          provider: 'anthropic',
+          model_id: 'claude-sonnet-4-6',
+          enabled: false,
+          display_name: 'Claude Sonnet 4.6 (direct)',
+        },
+      ],
+    })
+    mockPut.mockRejectedValue({
+      isAxiosError: true,
+      response: {
+        status: 422,
+        data: {
+          error: 'ValidationError',
+          message:
+            "provider 'anthropic' may not be enabled on the allowlist: a kid- or " +
+            'guardian-triggered generation job is not permitted to use it, so an ' +
+            'enabled row would be a pair the authoring-plan endpoint accepts and ' +
+            'the worker then refuses. The row may exist while disabled.',
+          code: 'VALIDATION_ERROR',
+          details: { field: 'enabled' },
+        },
+      },
+    })
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByText('claude-sonnet-4-6')
+
+    await user.click(screen.getByRole('button', { name: 'Enable claude-sonnet-4-6' }))
+
+    await waitFor(() =>
+      expect(mockPut).toHaveBeenCalledWith('/v1/admin/provider-allowlist/a1', {
+        enabled: true,
+        display_name: 'Claude Sonnet 4.6 (direct)',
+      })
+    )
+
+    expect(
+      await screen.findByText(
+        "provider 'anthropic' may not be enabled on the allowlist: a kid- or " +
+          'guardian-triggered generation job is not permitted to use it, so an ' +
+          'enabled row would be a pair the authoring-plan endpoint accepts and ' +
+          'the worker then refuses. The row may exist while disabled.'
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('We could not update that entry. Please try again.')
+    ).not.toBeInTheDocument()
+  })
+
+  it('falls back to generic add-failure copy when a 422 body carries no usable detail', async () => {
+    mockPost.mockRejectedValue({
+      isAxiosError: true,
+      response: { status: 422, data: {} },
+    })
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByText('claude-sonnet-4-6')
+
+    await user.type(screen.getByLabelText('Model id'), 'google/gemma-4-26b-a4b-it')
+    await user.click(screen.getByRole('button', { name: 'Add to allowlist' }))
+
+    expect(await screen.findByText('We could not add that entry.')).toBeInTheDocument()
+  })
+
   it('surfaces a refresh failure after a successful add, without discarding the saved change', async () => {
     // create() succeeds, but the follow-up list() refresh fails: the row was
     // saved server-side, so this must show the softer "reload to see it"

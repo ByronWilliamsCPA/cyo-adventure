@@ -2418,10 +2418,27 @@ async def run_generation_job(
                 else None
             )
             if effective_provider is None:
+                # #CRITICAL: security: every job this worker runs was created
+                # by a guardian for a family, either from a story request or
+                # from the legacy concept intake (api/generation.py's
+                # POST /concepts/{id}/generate, which carries no story request
+                # and no authoring metadata, so it resolves the global default
+                # provider below rather than an allowlist-validated override),
+                # so the book it produces reaches a child either way. D1
+                # (ruled 2026-08-23, UW-C346) restricts that work to the
+                # routed legs, and the lane is stated here rather than left to
+                # build_provider's default so the reason travels with the
+                # call. An admin's allowlisted override narrows WHICH
+                # permitted leg runs; it cannot widen the lane.
+                # #VERIFY: TestEffectiveProviderPerJobOverride::
+                # test_effective_provider_reads_job_authoring_override asserts
+                # the lane argument; tests/unit/test_provider_lane.py pins what
+                # the lane rejects.
                 effective_provider = build_provider(
                     _default_settings,
                     provider_override=_authoring_provider_override(authoring),
                     model_override=_authoring_model_override(authoring),
+                    lane="family",
                 )
             # #CRITICAL: concurrency: the ledger is created HERE, once per job,
             # and never module-level. The RQ worker runs jobs concurrently, and

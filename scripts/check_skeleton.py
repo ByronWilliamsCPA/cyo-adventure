@@ -45,6 +45,7 @@ from typing import TYPE_CHECKING, Any, cast
 import networkx as nx
 from pydantic import ValidationError as PydanticValidationError
 
+from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import ProjectBaseError
 from cyo_adventure.generation.binding import contract_path_for
 from cyo_adventure.generation.skeleton import (
@@ -54,6 +55,7 @@ from cyo_adventure.generation.skeleton import (
     MAX_FILL_OUTPUT_TOKENS,
     expected_output_tokens,
     load_skeleton,
+    resolve_output_cap,
 )
 from cyo_adventure.mutation.identity import recompute_estimated_minutes
 from cyo_adventure.storybook.models import (
@@ -166,11 +168,32 @@ _MAX_INDEGREE_CAPS: dict[str, int] = {
 _ENDING_DEPTH_QUALIFICATION_FRACTION = 1 / 3
 
 # The reference ceiling the fill-batching line reports against: the lowest cap
-# any shipped configuration resolves to (`anthropic/claude-haiku-4.5`, 64,000).
-# A job may override the model, so this is the conservative reading rather than
-# a promise about the serving model. It bounds no longer WHETHER a book fills,
-# only how many calls it takes, since `UW-C302` gave the bound path chunking too.
-_BOUND_FILL_REFERENCE_CAP = 64_000
+# any shipped configuration resolves to. Derived, not hand-transcribed, from
+# `MODEL_OUTPUT_CAPS` over the four models `Settings` actually defaults to for a
+# live-generation leg (fill, fallback, review, and the direct-anthropic
+# default), so a future ruling that moves any of those defaults (like D1,
+# 2026-08-23, which retired the previous lowest-cap default,
+# `anthropic/claude-haiku-4.5` at 64,000) keeps this constant honest without a
+# manual edit. A job may override the model, so this is the conservative
+# reading rather than a promise about the serving model. It bounds no longer
+# WHETHER a book fills, only how many calls it takes, since `UW-C302` gave the
+# bound path chunking too.
+_SHIPPED_FILL_LEG_MODELS: tuple[str, ...] = (
+    Settings.model_fields["openrouter_model"].default,
+    Settings.model_fields["openrouter_fallback_model"].default,
+    Settings.model_fields["review_openrouter_model"].default,
+    Settings.model_fields["anthropic_model"].default,
+)
+# `resolve_output_cap`, not a raw `MODEL_OUTPUT_CAPS[...]` subscript: the
+# subscript makes a default naming a model with no row a KeyError raised at
+# IMPORT time, which turns a stale doc figure into a crashed gate script. That
+# is not hypothetical, it is the live shape of `UW-C348`: the sibling table
+# `MODEL_CONTEXT_WINDOWS` has NO row for any shipped default right now. The
+# accessor also normalizes `:variant` and dated suffixes, which a subscript
+# cannot, so a pinned default resolves its base row instead of missing.
+_BOUND_FILL_REFERENCE_CAP = min(
+    resolve_output_cap(model) for model in _SHIPPED_FILL_LEG_MODELS
+)
 
 
 def _headroom(

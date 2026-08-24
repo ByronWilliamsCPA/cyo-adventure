@@ -2396,6 +2396,17 @@ class ModerationSetting(UpdatedAtMixin, Base):
 
 _ALLOWLIST_PROVIDER_VALUES = "'anthropic', 'openrouter', 'modal'"
 
+# The providers an ENABLED allowlist row may name, mirroring the
+# ck_provider_model_allowlist_enabled_family_lane CHECK added by
+# 20260823160000_constrain_allowlist_enabled_to_the_family_lane.sql. This is
+# the INTERSECTION of generation/provider.py::FAMILY_LANE_PROVIDERS with
+# _ALLOWLIST_PROVIDER_VALUES above, not a copy of either: 'mock' is family-lane
+# permitted but excluded from this table entirely by the sibling CHECK, and
+# 'anthropic' may hold a row here but only a DISABLED one (D1, `UW-C346`).
+# Spelled as a literal here rather than imported, for the same reason
+# _ALLOWLIST_PROVIDER_VALUES is: db/ does not import generation/.
+_FAMILY_LANE_ENABLED_PROVIDER_VALUES = "'modal', 'openrouter'"
+
 
 class ProviderModelAllowlist(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
     """Admin-editable allowlist of (provider, model_id) pairs eligible for generation.
@@ -2428,10 +2439,27 @@ class ProviderModelAllowlist(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin
     # that helper are round-tripped by
     # tests/integration/test_provider_model_allowlist_migration.py and
     # tests/integration/test_allowlist.py.
+    # #CRITICAL: security: the second CHECK is the at-rest half of the D1
+    # family-lane rule (`UW-C350`(b)): a row whose provider is outside
+    # generation/provider.py::FAMILY_LANE_PROVIDERS may EXIST but may not be
+    # ENABLED, because every reader of this table resolves to a family-lane
+    # generation job. Existence stays legal deliberately: the withdrawn
+    # anthropic rows are disabled rather than deleted, since the original seed
+    # migration's ON CONFLICT DO NOTHING would re-insert a deleted row ENABLED
+    # on any replay (`AL-589`). This mirror exists because the migration and
+    # the ORM are compared structurally; it is not a second enforcement point.
+    # #VERIFY: tests/integration/test_schema_parity.py::
+    # test_migrations_match_orm_models pins this against the migration, and
+    # tests/integration/test_allowlist_family_lane_constraint.py pins the
+    # migration's own predicate against FAMILY_LANE_PROVIDERS.
     __table_args__ = (
         CheckConstraint(
             f"provider IN ({_ALLOWLIST_PROVIDER_VALUES})",
             name="ck_provider_model_allowlist_provider",
+        ),
+        CheckConstraint(
+            f"enabled IS FALSE OR provider IN ({_FAMILY_LANE_ENABLED_PROVIDER_VALUES})",
+            name="ck_provider_model_allowlist_enabled_family_lane",
         ),
         UniqueConstraint(
             "provider", "model_id", name="uq_provider_model_allowlist_provider_model"

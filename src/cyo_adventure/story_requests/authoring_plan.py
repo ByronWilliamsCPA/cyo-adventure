@@ -271,7 +271,18 @@ async def _automated_provider_metadata(
     # or reaches a provider.
     # #VERIFY: test_unallowlisted_provider_model_is_rejected and
     # test_automated_provider_unallowlisted_model_is_422.
-    if not await is_enabled_allowlist_pair(session, plan.provider, plan.model):
+    #
+    # lane="family" is stated rather than defaulted, so the reason travels
+    # with the call, the way generation/worker.py states it for
+    # build_provider. An authoring plan is always built against an approved
+    # story request a guardian raised for their own family, and the job it
+    # creates is run by the worker on the family lane, so this endpoint is
+    # asking the family-lane question. Deciding it here rather than inheriting
+    # the default also means the answer stops depending on which default the
+    # helper happens to carry.
+    if not await is_enabled_allowlist_pair(
+        session, plan.provider, plan.model, lane="family"
+    ):
         msg = (
             f"provider '{plan.provider}' / model '{plan.model}' is not an "
             "enabled allowlist entry"

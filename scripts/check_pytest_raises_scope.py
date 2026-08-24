@@ -29,14 +29,29 @@ Usage::
 
     python scripts/check_pytest_raises_scope.py tests/unit/test_example.py
     python scripts/check_pytest_raises_scope.py $(git diff --name-only --cached)
+    python scripts/check_pytest_raises_scope.py --all
 
 With no paths, the script exits 0: a pre-commit run with no matching staged files must
-not fail the commit.
+not fail the commit. That is a deliberate contract for the hook, pinned by
+``tests/unit/test_check_pytest_raises_scope.py::test_main_returns_0_with_no_paths``,
+and ``--all`` does not change it.
+
+``--all`` exists because the hook only ever sees STAGED paths, so a violation in a file
+nobody stages is invisible indefinitely: seven accumulated in ``tests/unit/test_replay.py``
+on main and surfaced only through an unrelated ``pre-commit run --all-files``. Every
+sibling checker in this directory has an independent CI leg; this one had none
+(``UW-C354``). ``--all`` discovers the same scope the hook's ``files:`` regex covers, so
+CI and pre-commit cannot drift into disagreeing about what is checked.
+
+Vacuity is impossible in that mode by construction. ``main([])`` may exit 0 because
+pre-commit legitimately has nothing staged; ``--all`` chose the paths itself, so
+discovering none of them is a usage error rather than a clean tree.
 
 Exit codes:
     0 - no violations found (including when no paths were given).
     1 - at least one violation was found, or a file could not be read or parsed.
-    2 - argparse usage error.
+    2 - argparse usage error; ``--all`` combined with explicit paths; or ``--all``
+        discovering no files at all.
 """
 
 from __future__ import annotations
@@ -216,6 +231,30 @@ def _check_path(path: Path, problems: list[str]) -> list[Violation]:
         return []
 
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def discover_paths(root: Path) -> list[Path]:
+    r"""Return every file the pre-commit hook's ``files:`` regex would match.
+
+    Kept deliberately in lockstep with that regex
+    (``^(tests/.*\.py|scripts/check_pytest_raises_scope\.py)$``) so a file
+    checked on commit is the same file checked in CI. Widening one without the
+    other reintroduces exactly the blind spot ``--all`` exists to close.
+
+    Args:
+        root: Repository root to discover from.
+
+    Returns:
+        list[Path]: Sorted matching paths; empty when the tree holds none.
+    """
+    paths = sorted((root / "tests").rglob("*.py"))
+    own_file = root / "scripts" / "check_pytest_raises_scope.py"
+    if own_file.is_file():
+        paths.append(own_file)
+    return paths
+
+
 def main(argv: list[str] | None = None) -> int:
     """Check every named file for S5778 violations and report the results.
 
@@ -237,15 +276,45 @@ def main(argv: list[str] | None = None) -> int:
         nargs="*",
         help="Python files to check (typically the staged test files).",
     )
+    parser.add_argument(
+        "--all",
+        dest="scan_all",
+        action="store_true",
+        help="scan every file the pre-commit hook's files: regex covers",
+    )
+    parser.add_argument(
+        "--root",
+        default=str(REPO_ROOT),
+        help="repository root that --all discovers from (default: this checkout)",
+    )
     args = parser.parse_args(argv)
 
-    if not args.paths:
-        return 0
+    if args.scan_all and args.paths:
+        sys.stderr.write(
+            "check_pytest_raises_scope: --all takes no paths. Naming paths "
+            "alongside it would either drop them or widen the scan, and the "
+            "caller cannot tell which happened.\n"
+        )
+        return 2
+
+    if args.scan_all:
+        paths = discover_paths(Path(args.root))
+        if not paths:
+            sys.stderr.write(
+                "check_pytest_raises_scope: --all discovered no files under "
+                f"{args.root!r}. Discovering nothing is a usage error rather "
+                "than a pass, so this gate can never succeed vacuously.\n"
+            )
+            return 2
+    else:
+        if not args.paths:
+            return 0
+        paths = [Path(raw_path) for raw_path in args.paths]
 
     problems: list[str] = []
     violations: list[Violation] = []
-    for raw_path in args.paths:
-        violations.extend(_check_path(Path(raw_path), problems))
+    for path in paths:
+        violations.extend(_check_path(path, problems))
 
     for violation in violations:
         sys.stdout.write(f"{_format_violation(violation)}\n")

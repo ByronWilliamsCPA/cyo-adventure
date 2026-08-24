@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Final, Protocol
+from typing import TYPE_CHECKING, Final, Literal, Protocol
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from cyo_adventure.core.config import Settings
 
 from cyo_adventure.core.exceptions import BusinessLogicError, ConfigurationError
+from cyo_adventure.core.pricing import endpoint_pin_for
 from cyo_adventure.generation.providers import (
     AnthropicProvider,
     FallbackProvider,
@@ -28,6 +29,30 @@ from cyo_adventure.generation.usage import Completion, TokenUsage
 from cyo_adventure.utils.logging import get_logger
 
 logger = get_logger(__name__)
+
+# Which actor's request a generation job serves. Not a role: it is the
+# constraint that role implies on which billing account the job may reach.
+GenerationLane = Literal["family", "admin"]
+
+# #CRITICAL: security: the legs a kid- or guardian-triggered generation may
+# reach (D1, ruled 2026-08-23; UW-C346). The direct ``anthropic`` leg is absent
+# deliberately: routing family-triggered work through the operator's own
+# Anthropic account is outside that account's terms. This set is the only place
+# the rule is written down, and ``build_provider`` defaults to the lane it
+# constrains, so a new call site that says nothing is restricted, not exempt.
+# PUBLIC (no leading underscore) because the rule now has to hold at two
+# boundaries, not one: ``build_provider`` refuses a forbidden leg at job time,
+# and ``api/provider_allowlist.py`` refuses to ENABLE a row naming one at
+# admin-write time. Importing the one set is what keeps those two answers from
+# drifting; a second copy in the API layer is how this rule would rot. The
+# api -> generation import direction is the sanctioned one (``api/remoderate.py``
+# already imports ``build_provider`` from here); the ban recorded in
+# tests/unit/test_allowlist.py is on the reverse.
+# #VERIFY: tests/unit/test_provider_lane.py::
+# TestFamilyLaneRejectsTheDirectAnthropicLeg::test_the_restrictive_lane_is_the_default.
+FAMILY_LANE_PROVIDERS: Final[frozenset[str]] = frozenset(
+    {"mock", "openrouter", "modal"}
+)
 
 # What MockProvider reports when a test does not inject its own usage: a call
 # that happened (so it is counted) but whose token cost is unknown, never zero.
@@ -395,20 +420,23 @@ class MockProvider:
 
 
 def build_openrouter_leg(
-    settings: Settings, model: str, *, provider_order: tuple[str, ...] = ()
+    settings: Settings, model: str, *, provider_order: tuple[str, ...] | None = None
 ) -> GenerationProvider:
     """Construct a single OpenRouter leg for ``model`` from settings.
 
     Args:
         settings: The application settings instance.
         model: The OpenRouter model id this leg targets.
-        provider_order: Optional backend pin, most preferred first. Empty (the
-            default, and what every production caller passes) leaves
-            OpenRouter's routing untouched. Offline measurement harnesses such
-            as ``scripts/compare_vendors.py`` set it so a run is attributable to
-            one backend; ``build_provider`` deliberately exposes no way to set
-            it, because a per-job pin has no production caller and would only
-            widen the settings surface.
+        provider_order: Optional backend pin, most preferred first. ``None``
+            (the default, and what every production caller passes) means
+            "unspecified", and defers to
+            :func:`~cyo_adventure.core.pricing.endpoint_pin_for`, which pins
+            only the slugs whose recorded price belongs to one endpoint rather
+            than to the slug's default route. An explicit tuple, INCLUDING an
+            empty one, is honoured verbatim: offline measurement harnesses such
+            as ``scripts/compare_vendors.py`` pass each vendor fixture's own
+            order, and a fixture that deliberately carries none must keep
+            measuring the unpinned route.
 
     Returns:
         An OpenRouter ``GenerationProvider`` adapter.
@@ -428,13 +456,27 @@ def build_openrouter_leg(
         )
         raise ConfigurationError(msg)
 
+    # #CRITICAL: payment/financial: an unspecified pin resolves to the endpoint
+    # the model's recorded price was read from, so a job's `cost_usd` is the
+    # price of the endpoint that actually answered. Distinguishing None from ()
+    # is what makes that possible without changing any measurement harness: a
+    # fixture that deliberately runs unpinned passes () and keeps doing so.
+    # #VERIFY: tests/unit/test_openrouter_provider_pin.py::
+    # test_a_priced_pin_is_applied_when_the_caller_names_no_order and
+    # ::test_an_explicit_empty_order_is_honoured_over_the_table.
+    resolved_order = (
+        endpoint_pin_for("openrouter", model)
+        if provider_order is None
+        else provider_order
+    )
+
     return OpenRouterProvider(
         api_key=settings.openrouter_api_key,
         model=model,
         base_url=settings.openrouter_base_url,
         timeout_seconds=settings.llm_timeout_seconds,
         effort=settings.llm_effort,
-        provider_order=provider_order,
+        provider_order=resolved_order,
     )
 
 
@@ -528,6 +570,7 @@ def build_provider(
     *,
     provider_override: str | None = None,
     model_override: str | None = None,
+    lane: GenerationLane = "family",
 ) -> GenerationProvider:
     """Construct a :class:`GenerationProvider` from application settings.
 
@@ -572,14 +615,36 @@ def build_provider(
             ``authoring_metadata["model"]``), or ``None`` to use the
             resolved provider's default model from settings.
 
+        lane: Which actor's request this generation serves. ``"family"``
+            (the default, and the restrictive one) is any kid- or
+            guardian-triggered job and permits only the routed legs;
+            ``"admin"`` is out-of-band content generation an admin drives
+            and adds no constraint. Defaulting to the restrictive value is
+            deliberate: a call site that says nothing is restricted.
+
     Returns:
         A :class:`GenerationProvider` ready for injection into the worker.
 
     Raises:
-        ConfigurationError: For a resolved provider outside the known set, or
-            when a live provider's required credential is missing.
+        ConfigurationError: For a resolved provider outside the known set,
+            when a live provider's required credential is missing, or when
+            the resolved provider is not permitted on ``lane``.
     """
     provider = provider_override or settings.generation_provider
+
+    # #CRITICAL: security: enforced on the RESOLVED provider, so the override
+    # and the global default are both covered by one check, and enforced before
+    # any leg is constructed, so a rejected lane never builds a credentialled
+    # client. ``lane`` defaults to "family", which is the restricted lane.
+    # #VERIFY: tests/unit/test_provider_lane.py::
+    # TestFamilyLaneRejectsTheDirectAnthropicLeg.
+    if lane == "family" and provider not in FAMILY_LANE_PROVIDERS:
+        msg = (
+            f"provider '{provider}' is not permitted on the 'family' generation "
+            "lane; a kid- or guardian-triggered job may use only "
+            f"{sorted(FAMILY_LANE_PROVIDERS)}"
+        )
+        raise ConfigurationError(msg)
 
     if provider == "mock":
         # Queue enough copies for Stage A + Stage B + up to 3 repairs.

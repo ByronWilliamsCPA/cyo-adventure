@@ -726,20 +726,29 @@ class TestCheckVarValueBoundaries:
             name="courage", type=VariableType.INT, initial=0, min=minimum, max=maximum
         )
 
+    # Bind this to a local BEFORE a `pytest.raises` block, never call it
+    # inside one. S5778 allows exactly one invocation in the body, and the
+    # reason is not style: a block holding both `_int_var()` and
+    # `_check_var_value(...)` passes if `_int_var` is the thing that raised,
+    # so the boundary the test names would go unproven. Every rejection case
+    # below therefore reads `var = ...` first.
+
     def test_value_equal_to_declared_min_is_accepted(self) -> None:
         # Pins `<` rather than `<=`: at exactly the minimum the value is legal.
         _check_var_value("courage", -3, self._int_var(minimum=-3, maximum=3))
 
     def test_value_one_below_declared_min_is_rejected(self) -> None:
+        var = self._int_var(minimum=-3, maximum=3)
         with pytest.raises(ValidationError, match=r"is out of declared bounds"):
-            _check_var_value("courage", -4, self._int_var(minimum=-3, maximum=3))
+            _check_var_value("courage", -4, var)
 
     def test_value_equal_to_declared_max_is_accepted(self) -> None:
         _check_var_value("courage", 3, self._int_var(minimum=-3, maximum=3))
 
     def test_value_one_above_declared_max_is_rejected(self) -> None:
+        var = self._int_var(minimum=-3, maximum=3)
         with pytest.raises(ValidationError, match=r"is out of declared bounds"):
-            _check_var_value("courage", 4, self._int_var(minimum=-3, maximum=3))
+            _check_var_value("courage", 4, var)
 
     def test_only_a_min_is_enforced_when_max_is_absent(self) -> None:
         # Pins the `var.max is not None` guard: with no declared max, a large
@@ -764,32 +773,36 @@ class TestCheckVarValueBoundaries:
         _check_var_value("courage", 2**53 - 1, self._int_var())
 
     def test_one_past_the_float64_safe_boundary_is_rejected(self) -> None:
+        var = self._int_var()
         with pytest.raises(
             ValidationError, match=r"exceeds the float64-safe integer range"
         ):
-            _check_var_value("courage", 2**53, self._int_var())
+            _check_var_value("courage", 2**53, var)
 
     def test_the_float64_check_is_on_magnitude_not_sign(self) -> None:
         # Pins the `abs()`: without it a large NEGATIVE value slips through,
         # which is the half a positive-only test never reaches.
-        _check_var_value("courage", -(2**53 - 1), self._int_var())
+        var = self._int_var()
+        _check_var_value("courage", -(2**53 - 1), var)
         with pytest.raises(
             ValidationError, match=r"exceeds the float64-safe integer range"
         ):
-            _check_var_value("courage", -(2**53), self._int_var())
+            _check_var_value("courage", -(2**53), var)
 
     def test_bool_is_not_accepted_for_an_int_variable(self) -> None:
         # `isinstance(True, int)` is True in Python, so the explicit bool
         # rejection is load-bearing; both bools are checked because only one
         # of them is falsy.
+        var = self._int_var()
         for value in (True, False):
             with pytest.raises(ValidationError, match=r"requires an integer value"):
-                _check_var_value("courage", value, self._int_var())
+                _check_var_value("courage", value, var)
 
     def test_non_integer_is_rejected_for_an_int_variable(self) -> None:
+        var = self._int_var()
         for value in ("3", 3.0, None):
             with pytest.raises(ValidationError, match=r"requires an integer value"):
-                _check_var_value("courage", value, self._int_var())
+                _check_var_value("courage", value, var)
 
     def test_bool_variable_accepts_only_real_bools(self) -> None:
         var = Variable(name="has_key", type=VariableType.BOOL, initial=False)
@@ -807,7 +820,8 @@ class TestCheckVarValueBoundaries:
         # context is what an API caller actually reads back. Both land in
         # `details` (ValidationError folds `field`/`value` in there), and the
         # value is stringified on the way.
+        var = self._int_var(maximum=3)
         with pytest.raises(ValidationError) as excinfo:
-            _check_var_value("courage", 99, self._int_var(maximum=3))
+            _check_var_value("courage", 99, var)
         assert excinfo.value.details["field"] == "var_state"
         assert excinfo.value.details["value"] == "99"

@@ -390,7 +390,13 @@ async def test_import_provenance_falls_back_to_default_provider(
     ctx = _ctx(_ADMIN, mock_async_session)
     view = await remoderate_api.trigger_remoderate("s1", 1, ctx)
 
-    assert captured == {"provider_override": None, "model_override": None}
+    # "lane" pins D1 (2026-08-23, UW-C346): remoderation re-reviews a book
+    # that belongs to a family, so it may not reach the direct account.
+    assert captured == {
+        "provider_override": None,
+        "model_override": None,
+        "lane": "family",
+    }
     assert view.status == "published"
 
 
@@ -423,7 +429,11 @@ async def test_generated_provenance_passes_provider_and_model_through(
     ctx = _ctx(_ADMIN, mock_async_session)
     view = await remoderate_api.trigger_remoderate("s1", 1, ctx)
 
-    assert captured == {"provider_override": "openrouter", "model_override": "m-1"}
+    assert captured == {
+        "provider_override": "openrouter",
+        "model_override": "m-1",
+        "lane": "family",
+    }
     assert view.status == "published"
 
 

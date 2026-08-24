@@ -774,6 +774,26 @@ jobs:
       - name: Every RAD #VERIFY citation names a test that exists
         run: python3 scripts/check_rad_citations.py --all
 
+      # Same gap, same job, different checker (UW-C354). check-pytest-raises-scope
+      # was wired into .pre-commit-config.yaml with `pass_filenames: true`, so it
+      # only ever saw STAGED paths and a violation in a file nobody stages was
+      # invisible indefinitely. Seven accumulated in tests/unit/test_replay.py on
+      # main and surfaced only through an unrelated `pre-commit run --all-files`.
+      # Every sibling checker already had an independent CI leg (check_work_linkage
+      # and check_lessons_log in planning-linkage.yml, check_rad_citations in the
+      # step above); this one had none.
+      #
+      # `--all` rather than a shell glob: the script discovers the same scope the
+      # hook's `files:` regex covers, so CI and pre-commit cannot drift into
+      # disagreeing about what is checked, and a mistyped glob cannot quietly
+      # narrow the scan to nothing. It exits 2 rather than 0 if it discovers no
+      # files, so this step can never pass vacuously.
+      #
+      # Stdlib only (argparse, ast, pathlib), so no `uv sync` is needed here for
+      # the same reason the step above skips it.
+      - name: No pytest.raises block invokes more than one call (S5778)
+        run: python3 scripts/check_pytest_raises_scope.py --all
+
       # Guarded to pull_request only, and guarded again inside the step: on
       # the PR that introduces rad-citation-baseline.toml, the base ref has
       # no such file, and `git show BASE_REF:path` on a path absent from the
