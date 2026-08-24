@@ -5,10 +5,14 @@ from __future__ import annotations
 import inspect
 from typing import get_args
 
+import pytest
+
 from cyo_adventure.api.schemas import ProviderName
+from cyo_adventure.core.exceptions import ConfigurationError
 from cyo_adventure.generation.allowlist import (
     ALLOWLIST_PROVIDERS,
     DEFAULT_ALLOWLIST,
+    AllowlistSeed,
     is_enabled_allowlist_pair,
 )
 from cyo_adventure.generation.provider import FAMILY_LANE_PROVIDERS
@@ -89,6 +93,45 @@ def test_no_enabled_seed_row_names_a_provider_the_family_lane_forbids() -> None:
     ]
 
     assert not forbidden, f"enabled rows the family lane forbids: {forbidden}"
+
+
+def test_an_enabled_seed_naming_a_forbidden_provider_cannot_be_constructed() -> None:
+    """The invariant above is refused at construction, not merely asserted after.
+
+    The sibling test scans `DEFAULT_ALLOWLIST` and so can only fail where the
+    suite runs. `__post_init__` fails at import instead, and `DEFAULT_ALLOWLIST`
+    is a module-level literal, so an offending edit cannot reach a running
+    process at all. This test covers the raise the sibling cannot reach,
+    because a passing `DEFAULT_ALLOWLIST` never enters that branch.
+    """
+    with pytest.raises(ConfigurationError, match="family generation lane forbids"):
+        AllowlistSeed("anthropic", "claude-sonnet-4-6", "direct", enabled=True)
+
+
+def test_a_disabled_seed_naming_a_forbidden_provider_is_allowed() -> None:
+    """`enabled=False` is the sanctioned way to retire a row, so it must construct.
+
+    Deleting the row instead is the trap: the seed migration's
+    `ON CONFLICT DO NOTHING` suppresses a re-insert only while the row exists,
+    so a deleted row returns ENABLED on any replay. A guard that refused the
+    disabled form would push an editor toward exactly that.
+    """
+    seed = AllowlistSeed("anthropic", "claude-haiku-4-5", "withdrawn", enabled=False)
+
+    assert seed.enabled is False
+
+
+def test_a_seed_naming_a_provider_outside_the_allowlist_cannot_be_constructed() -> None:
+    """A provider the CHECK constraint rejects is refused before it reaches the DB.
+
+    `ALLOWLIST_PROVIDERS` mirrors `ck_provider_model_allowlist_provider`. The
+    dataclass docstring already claimed this as an invariant of the `provider`
+    field and nothing enforced it, so a retired provider such as `ollama` could
+    be seeded and would fail at insert time instead, where the error names a
+    constraint rather than the line that is wrong.
+    """
+    with pytest.raises(ConfigurationError, match="is not one of"):
+        AllowlistSeed("ollama", "llama3", "retired", enabled=False)
 
 
 def test_the_ruled_fill_and_review_models_are_enabled_seed_rows() -> None:
