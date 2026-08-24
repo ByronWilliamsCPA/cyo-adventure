@@ -146,6 +146,29 @@ if TYPE_CHECKING:
 
     from cyo_adventure.core.config import Settings
 
+# #CRITICAL: security: the whole set of statuses this endpoint will re-moderate.
+# Enumerated here rather than inline so a third status cannot be added at a call
+# site without passing the state-machine argument in the module docstring: a
+# status belongs here only if BOTH (status, SUBMIT) and (status, AUTO_REJECT)
+# are absent from publishing/state_machine.py::LEGAL_TRANSITIONS, which is what
+# makes the pipeline's terminal call always raise and this endpoint structurally
+# incapable of moving a book. `draft` and `needs_revision` fail that test (for
+# them the hop IS legal and the story would actually move, which is the ordinary
+# generation path's job); `archived` is out of scope.
+# #VERIFY: tests/unit/test_remoderate_unit.py::
+# test_non_remoderatable_status_rejected pins the rejected set;
+# ::test_in_review_status_is_not_changed_by_remoderation and
+# ::test_published_state_unchanged_after_real_remoderation pin that neither
+# admitted status can move.
+_REMODERATABLE_STATUSES: frozenset[Status] = frozenset(
+    {Status.PUBLISHED, Status.IN_REVIEW}
+)
+
+_REMODERATABLE_STATUS_VALUES: frozenset[str] = frozenset(
+    s.value for s in _REMODERATABLE_STATUSES
+)
+
+
 router = APIRouter(prefix="/api/v1", tags=["remoderate"])
 
 _logger = get_logger(__name__)
@@ -404,15 +427,16 @@ async def remoderate_storybook_version(
             resource_type="StorybookVersion",
             resource_id=f"{storybook_id}:{version}",
         )
-    if storybook.status != Status.PUBLISHED.value:
+    if storybook.status not in _REMODERATABLE_STATUS_VALUES:
+        allowed = ", ".join(sorted(_REMODERATABLE_STATUS_VALUES))
         msg = (
             f"cannot re-moderate storybook '{storybook_id}': its status is "
-            f"{storybook.status!r}, not 'published' (see module docstring "
-            "for the published-only scope)"
+            f"{storybook.status!r}, which is not re-moderatable (allowed: "
+            f"{allowed}; see module docstring for the scope)"
         )
         raise BusinessLogicError(
             msg,
-            rule="remoderate_requires_published",
+            rule="remoderate_requires_reviewable_status",
             context={"storybook_id": storybook_id, "status": storybook.status},
         )
 

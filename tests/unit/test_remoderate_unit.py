@@ -230,21 +230,88 @@ async def test_unknown_version_raises_404(mock_async_session: AsyncMock) -> None
         )
 
 
-@pytest.mark.parametrize("status", ["draft", "in_review", "needs_revision", "archived"])
-async def test_non_published_status_rejected(
+@pytest.mark.parametrize("status", ["draft", "needs_revision", "archived"])
+async def test_non_remoderatable_status_rejected(
     status: str, mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Every status but 'published' is rejected before the pipeline runs."""
+    """Every status outside _REMODERATABLE_STATUSES is rejected pre-pipeline.
+
+    'in_review' left this set deliberately. For the three that remain, the
+    pipeline's terminal submit/auto_reject IS a legal hop and would actually
+    move the story, which is the ordinary generation path's job, not this
+    endpoint's.
+    """
     _wire_session(mock_async_session, _story(status=status), _version_row())
     pipeline = AsyncMock()
     monkeypatch.setattr(remoderate_api, "run_moderation_pipeline", pipeline)
     ctx = _remod_ctx()
 
-    with pytest.raises(BusinessLogicError, match="not 'published'"):
+    with pytest.raises(BusinessLogicError, match="not re-moderatable"):
         await remoderate_api.remoderate_storybook_version(
             mock_async_session, "s1", 1, ctx
         )
     pipeline.assert_not_awaited()
+
+
+async def test_in_review_status_is_accepted(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """in_review reaches the pipeline instead of being rejected at the guard.
+
+    The seventeen books this widening exists for are all in_review, and every
+    whole-book re-derivation path in the codebase was published-scoped, so
+    before this the endpoint refused exactly the books that most needed it.
+    """
+    version_row = _version_row()
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        version_row.moderation_report = _PASSING_REPORT
+
+    _wire_session(mock_async_session, _story(status="in_review"), version_row)
+    pipeline = AsyncMock(side_effect=_fake_pipeline)
+    monkeypatch.setattr(remoderate_api, "run_moderation_pipeline", pipeline)
+
+    result = await remoderate_api.remoderate_storybook_version(
+        mock_async_session, "s1", 1, _remod_ctx()
+    )
+
+    pipeline.assert_awaited_once()
+    assert result.status == "in_review"
+
+
+async def test_in_review_status_is_not_changed_by_remoderation(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The book stays in_review: the same structural proof the published path uses.
+
+    LEGAL_TRANSITIONS holds (DRAFT, SUBMIT) and (NEEDS_REVISION, SUBMIT) but no
+    (IN_REVIEW, SUBMIT), and (DRAFT, AUTO_REJECT) but no (IN_REVIEW,
+    AUTO_REJECT), so the pipeline's terminal call always raises and this
+    endpoint's catch discards only the illegal move. _persist_report runs
+    BEFORE that attempt, so the fresh report survives. ADR-005 keeps every
+    status change a human's.
+    """
+    story = _story(status="in_review")
+    version_row = _version_row()
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        version_row.moderation_report = _PASSING_REPORT
+        raise StateTransitionError(
+            "cannot submit", rule="invalid_state_transition", context={}
+        )
+
+    _wire_session(mock_async_session, story, version_row)
+    monkeypatch.setattr(
+        remoderate_api, "run_moderation_pipeline", AsyncMock(side_effect=_fake_pipeline)
+    )
+
+    result = await remoderate_api.remoderate_storybook_version(
+        mock_async_session, "s1", 1, _remod_ctx()
+    )
+
+    assert story.status == "in_review"
+    assert result.status == "in_review"
+    assert version_row.moderation_report == _PASSING_REPORT
 
 
 # ---------------------------------------------------------------------------
