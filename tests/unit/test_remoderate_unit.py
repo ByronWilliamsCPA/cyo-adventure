@@ -1035,6 +1035,56 @@ async def test_hard_block_on_published_book_logs_warning(
     assert logger.warning.call_args.kwargs["storybook_id"] == "s1"
 
 
+async def test_hard_block_on_in_review_book_logs_its_own_status(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The `status` kwarg exists to separate two populations, so both must be pinned.
+
+    The published sibling asserts `status="published"`. Without this one, the
+    kwarg is only ever observed at a single value, and an operator reading the
+    stream could not tell a still-child-readable blocked book from one merely
+    still queued: exactly the distinction the kwarg was added for.
+    """
+    story = _story(status="in_review")
+    version_row = _version_row()
+    _wire_session(mock_async_session, story, version_row)
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        version_row.moderation_report = {
+            "findings": [{"verdict": "block", "structural": True}],
+            "summary": {
+                "hard_block": True,
+                "soft_flag": False,
+                "count": 1,
+                "repaired": False,
+                "reviewer_independent": True,
+            },
+            "aggregate": {"nodes_reviewed": 3, "pass_counts": {}},
+        }
+
+    monkeypatch.setattr(
+        remoderate_api, "run_moderation_pipeline", AsyncMock(side_effect=_fake_pipeline)
+    )
+    logger = MagicMock()
+    monkeypatch.setattr(remoderate_api, "_logger", logger)
+
+    result = await remoderate_api.remoderate_storybook_version(
+        mock_async_session,
+        "s1",
+        1,
+        _remod_ctx(actor=Actor.from_principal(_ADMIN)),
+    )
+
+    assert result.overall_verdict == "block"
+    assert story.status == "in_review"
+    logger.warning.assert_called_once()
+    assert (
+        logger.warning.call_args.args[0]
+        == "remoderate.hard_block_without_status_change"
+    )
+    assert logger.warning.call_args.kwargs["status"] == "in_review"
+
+
 async def test_clean_verdict_logs_no_hard_block_warning(
     mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:

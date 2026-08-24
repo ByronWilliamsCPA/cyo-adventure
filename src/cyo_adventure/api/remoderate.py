@@ -835,7 +835,10 @@ async def remoderate_storybook_version(
         # populations are separable by an operator reading the stream, since
         # only one of them means "a child can read a blocked book right now".
         # #VERIFY: tests/unit/test_remoderate_unit.py::
-        # test_hard_block_on_published_book_logs_warning. A passive admin-UI
+        # test_hard_block_on_published_book_logs_warning and
+        # ::test_hard_block_on_in_review_book_logs_its_own_status pin BOTH
+        # values of that ``status`` kwarg; one alone leaves the distinction
+        # the kwarg exists for unobserved. A passive admin-UI
         # surface for this state is deliberately NOT in this endpoint's scope;
         # it is a schema + frontend change tracked separately.
         _logger.warning(
