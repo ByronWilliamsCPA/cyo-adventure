@@ -493,7 +493,9 @@ class TestReleaseTagSync:
         )
 
         assert check_release_tag_sync.main(["--version", "3.1.4"]) == 1
-        assert "::error::" in capsys.readouterr().err
+        # stdout, not stderr: a workflow command is only interpreted as an
+        # annotation when the runner reads it from stdout.
+        assert "::error::" in capsys.readouterr().out
 
     def test_real_repo_matches_the_guard_format_assumptions(self) -> None:
         """The live repo must satisfy the guard's format assumptions.

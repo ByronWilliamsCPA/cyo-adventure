@@ -18,7 +18,11 @@ compute past 0.82.0, so the stall was permanent and silent.
 The desync is only ever reachable through that failure: in steady state the
 version in pyproject always equals the newest tag, and the one legitimate
 window where it does not (the ``chore(release):`` commit itself, before publish
-tags it) is a push the propose job skips by its own ``if:`` guard.
+tags it) is a push, and propose no longer runs on push at all: it is triggered
+only by the daily schedule and by workflow_dispatch. The shared release
+concurrency group (cancel-in-progress false) additionally queues a scheduled or
+dispatched propose behind an in-flight publish, so propose cannot observe that
+window mid-flight either.
 
 Usage:
     python scripts/check_release_tag_sync.py            # reads pyproject + git
@@ -75,13 +79,31 @@ def git_tags(repo_root: Path = REPO_ROOT) -> list[str]:
 
     Returns:
         Tag names, in git's default order. Empty if the repo has no tags.
+
+    Raises:
+        SystemExit: If git is unavailable or the tag listing fails.
     """
-    result = subprocess.run(
-        ["git", "-C", str(repo_root), "tag", "--list"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
+    # #CRITICAL external-resource: an empty return is indistinguishable from a
+    # repo that has never been tagged, and find_desync() passes that case, so a
+    # checkout that did not fetch tags turns this deadlock guard into a silent
+    # all-clear: exactly the failure mode it exists to catch.
+    # #VERIFY the calling job checks out with fetch-depth 0, which forces the
+    # tags refspec, or sets fetch-tags true; release.yml's propose job does both
+    # before invoking this script.
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(repo_root), "tag", "--list"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+    except FileNotFoundError as exc:
+        msg = "git is not available on PATH; cannot read the tag list"
+        raise SystemExit(msg) from exc
+    except subprocess.CalledProcessError as exc:
+        detail = (exc.stderr or "").strip() or f"exit status {exc.returncode}"
+        msg = f"git tag --list failed in {repo_root}: {detail}"
+        raise SystemExit(msg) from exc
     return [line.strip() for line in result.stdout.splitlines() if line.strip()]
 
 
@@ -115,7 +137,7 @@ def find_desync(version: str, tags: list[str]) -> str | None:
         f"by creating the missing release on the 'chore(release): {expected}' "
         f"commit, which unblocks the next push:\n"
         f"    gh run rerun <failed-publish-run-id> --failed\n"
-        f"See docs/operations/runbook.md section 7."
+        f"See docs/operations/runbook.md section 7.2."
     )
 
 
@@ -140,8 +162,11 @@ def main(argv: list[str] | None = None) -> int:
     problem = find_desync(version, tags)
 
     if problem is not None:
-        # ::error:: renders as a GitHub Actions annotation on the job summary.
-        print(f"::error::{problem}", file=sys.stderr)
+        # ::error:: renders as a GitHub Actions annotation on the job summary,
+        # but only when the runner reads it from stdout; on stderr it is just
+        # log text. Every other ::error:: emission in release.yml echoes to
+        # stdout for the same reason.
+        print(f"::error::{problem}")
         return 1
 
     if not tags:
