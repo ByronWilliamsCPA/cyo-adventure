@@ -231,17 +231,33 @@ repos:
       - id: frontend-prettier
         name: Prettier format check (frontend, staged files)
         entry: >-
-          bash -c 'cd frontend && files=(); for f in "$@"; do files+=("${f#frontend/}"); done; npx prettier --check "${files[@]}"' --
+          bash -c 'cd frontend && files=(); for f in "$@"; do files+=("${f#frontend/}"); done; npx prettier --check --ignore-unknown "${files[@]}"' --
         language: system
         # Tree-wide under frontend/, not just src/: e2e specs, the design-system
         # package, eslint.config.js, index.html and README.md are all real
         # sources and were previously unchecked here and in CI alike. Exclusions
         # live in frontend/.prettierignore, which Prettier honours even for
         # explicitly-passed paths, so they are not duplicated into this glob.
-        # The extension list is restricted to parsers Prettier actually has:
-        # this hook passes staged paths explicitly, and an unparseable path
-        # (nginx.conf, Dockerfile) makes Prettier exit non-zero rather than skip.
-        files: ^frontend/.*\.(ts|tsx|js|jsx|mjs|cjs|css|scss|json|md|html|ya?ml)$
+        # No extension list. This hook passes staged paths explicitly, and an
+        # unparseable path (nginx.conf, Dockerfile) makes Prettier exit
+        # non-zero rather than skip, which is why an allowlist was here. But
+        # `prettier --support-info` reports 115 extensions and the allowlist
+        # named 12, so 103 supported types (mts, cts, mdx, jsonc, json5, less,
+        # graphql, vue, webmanifest, ...) passed this hook untouched and were
+        # then checked by CI's `prettier --check .`: the hook and the gate
+        # disagreed about what "formatted" means, in the direction that lets a
+        # commit through and reds the PR.
+        #
+        # `--ignore-unknown` is the mechanism for exactly this: an unknown path
+        # is skipped instead of erroring. Verified on prettier 3.9.6: a
+        # Dockerfile alone exits 2 without the flag and 0 with it, a
+        # Dockerfile plus a misformatted .ts still exits 1, and .prettierignore
+        # is still honoured. The hook's scope is now the same `frontend/` tree
+        # CI checks, with the exclusions living in one place.
+        # #ASSUME: security: none; this is a formatting gate.
+        # #VERIFY: `npx prettier --support-info` is the source of truth for
+        # what Prettier can parse; do not reintroduce a hand-maintained list.
+        files: ^frontend/
         # frontend/src/client is generated (hey-api) build output committed raw
         # by design: the CI contract job diffs it against the generator's exact
         # output, so prettier-formatting it would create permanent drift.
