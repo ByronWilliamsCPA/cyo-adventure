@@ -20,6 +20,11 @@ thirteen-agent review of the 2026-08-22 generation research brief.
 Status as of 2026-08-23:
 
 - **Step 1: complete.**
+- **Step 1r: complete.** Executed 2026-08-23. Four of its five buckets were already closed before
+  it started, by [#738](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/738) and
+  [#743](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/743), and the R-3 residual row was
+  itself both mis-cited and understated. `UW-G24`'s gate-outcome bucket stays open under D4, so
+  `UW-G24` itself does not close here.
 - **Step 2: complete and merged.** One fix shipped directly (`41d30909`); the rest landed as
   [#742](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/742) (`37a08a60`, convergence
   reporting and the series prose-reuse gate) and
@@ -36,7 +41,16 @@ Status as of 2026-08-23:
   result from either may be quoted anywhere until its artifact is committed. Step 3's third work
   item, the directive delta re-run at production `TREE` settings, is untouched by this and remains
   outstanding alongside the two measurements.
-- **Steps 4 to 7: not started.**
+- **Steps 4 to 7: not started**, and no longer uniformly blocked. D3's partial ruling releases
+  step 4's structure: the unit-cost model can be built now with the price point carried as a
+  parameter rather than a constant. D1's ruling releases step 6's R-8 replication and step 7.
+  Step 5's R-9 half remains blocked on D2. Section 3 states, per decision, what its ruling does
+  and does not release.
+- **Decisions: two of the four are now made.** D1 was ruled provisionally and D3 partially, both
+  on 2026-08-23. D2 and D4 remain open. D1's family-lane rule is implemented on PR
+  [#747](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/747), open at the time of writing;
+  that PR is also what answers and enforces the `#CRITICAL` register row `UW-A14` and its sibling
+  `UW-E13`, whose statuses should move when it merges rather than now.
 
 **Citation note.** The `R-*` IDs used throughout are the review's own numbering. That review's
 artifact is not committed, so no `R-*` ID in this document resolves to anything in the tree; the
@@ -49,11 +63,17 @@ is sound and that the brief itself is not yet trustworthy as a decision document
 recommendations are engineering we can schedule, and which are rulings only the owner can
 make? This plan separates the two and refuses to plan past a ruling.
 
-**What this plan does not do.** It does not make the four decisions in section 3. Each is written
-with its measured inputs and its options, and then stops. Nothing downstream of an unmade decision
-is planned in detail here, because planning it would require assuming an answer, and the review's
-own headline failure was a consequence line hardening into policy before the evidence under it was
-checked.
+**What this plan does not do.** It makes none of the four decisions in section 3 itself. Each is
+written with its measured inputs and its options, and then stops. Nothing downstream of an unmade
+decision is planned in detail here, because planning it would require assuming an answer, and the
+review's own headline failure was a consequence line hardening into policy before the evidence
+under it was checked.
+
+**What has changed since, and by whom.** The owner ruled D1 and partly ruled D3 on 2026-08-23. That
+lifts the constraint above for the steps those rulings release, and it does so from outside this
+document, which is the intended direction. The rulings are recorded in section 3 rather than folded
+into the step tables, so that a step's gating status and the decision that gates it stay separately
+readable, and so that a revisit changes one place.
 
 ---
 
@@ -328,7 +348,11 @@ names each adjacent programme and live loop it reconciles with.
 
 ## 3. Decisions this plan stops at
 
-Each decision below carries what has been measured for it. None is made here.
+Each decision below carries what has been measured for it. **Two of the four have since been
+made:** D1 provisionally and D3 partially, both on 2026-08-23. D2 and D4 remain open. Where a
+ruling exists it is stated above the measurement that preceded it, and that measurement is kept
+rather than replaced, so a later revisit can see what the ruling did and did not rest on. D1's in
+particular rests on optionality rather than on any measured ranking, and says so.
 
 ### D1. Which leg fills
 
@@ -383,6 +407,9 @@ through admin import. What actor-scoping buys is that the rule stops depending o
 work the ruling releases.
 
 ### D2. Is the strict bar the production bar
+
+**Open as of 2026-08-23.** The measurement below is fresh and the decision is ready to take; what
+is missing is the ruling, not evidence for it.
 
 **Blocks:** the R-9 half of step 5.
 
@@ -450,6 +477,11 @@ model must state rather than absorb.
 register ID and matches no register row; it is an experiment ID in that document.
 
 ### D4. Where documents cite the census, and whether `--check` gates
+
+**Partly resolved 2026-08-23, and by reproduction rather than by ruling.** The CI half of the
+question was answered false: a stale census already fails the build. What remains genuinely open is
+whether to add a pre-commit hook as well, and the unowned gate-outcome gap named at the end of this
+section.
 
 **Blocks:** whether step 1 stays fixed.
 
