@@ -51,16 +51,12 @@ test('guardian opens Reading from the nav and expands a child card', async ({ pa
   await page.route('**/api/v1/families/me/reading-summary', (route) =>
     route.fulfill({ json: SUMMARY })
   )
-  await page.route('**/api/v1/reading-history/p1', (route) =>
-    route.fulfill({ json: HISTORY })
-  )
+  await page.route('**/api/v1/reading-history/p1', (route) => route.fulfill({ json: HISTORY }))
   await page.route('**/api/v1/profiles', (route) =>
     route.fulfill({ json: { profiles: [{ id: 'p1' }] } })
   )
   await page.route('**/api/v1/review-queue', (route) => route.fulfill({ json: { items: [] } }))
-  await page.route('**/api/v1/generation-jobs', (route) =>
-    route.fulfill({ json: { jobs: [] } })
-  )
+  await page.route('**/api/v1/generation-jobs', (route) => route.fulfill({ json: { jobs: [] } }))
 
   await page.goto('/guardian')
   await page.getByRole('link', { name: 'Reading', exact: true }).click()

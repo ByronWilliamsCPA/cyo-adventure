@@ -5,9 +5,14 @@ import { Dialog, type DialogProps } from './Dialog'
 function renderDialog(overrides: Partial<DialogProps> = {}) {
   const onClose = vi.fn()
   const utils = render(
-    <Dialog title="Chapter complete!" onClose={onClose} actions={<button type="button">Continue</button>} {...overrides}>
+    <Dialog
+      title="Chapter complete!"
+      onClose={onClose}
+      actions={<button type="button">Continue</button>}
+      {...overrides}
+    >
       <p>You reached the end of this chapter.</p>
-    </Dialog>,
+    </Dialog>
   )
   return { onClose, ...utils }
 }
@@ -93,9 +98,14 @@ describe('Dialog', () => {
     expect(document.activeElement).not.toBe(trigger)
 
     rerender(
-      <Dialog title="Chapter complete!" onClose={onClose} open={false} actions={<button type="button">Continue</button>}>
+      <Dialog
+        title="Chapter complete!"
+        onClose={onClose}
+        open={false}
+        actions={<button type="button">Continue</button>}
+      >
         <p>You reached the end of this chapter.</p>
-      </Dialog>,
+      </Dialog>
     )
     expect(document.activeElement).toBe(trigger)
     trigger.remove()

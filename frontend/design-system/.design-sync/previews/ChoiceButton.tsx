@@ -18,7 +18,15 @@ export function Selected() {
 
 export function ChoiceList() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '24px', maxWidth: '480px' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+        padding: '24px',
+        maxWidth: '480px',
+      }}
+    >
       <ChoiceButton label="Enter the ancient stone doorway" />
       <ChoiceButton label="Call out to see if anyone is home" />
       <ChoiceButton label="Hide behind the mossy boulders and wait" selected />

@@ -42,10 +42,18 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# Workflow-level default. Every job below also declares `contents: read`, so
+# this block only governs a job that forgets to. It previously granted
+# `security-events: write` and `pull-requests: write`, neither of which any job
+# uses: nothing here uploads SARIF (see the comment on --sarif below) and
+# nothing comments on a PR. The Semgrep report step writes findings as
+# `::warning`/`::notice` workflow commands, which the runner renders as
+# annotations without any token scope at all.
+# #ASSUME: security: no step in this workflow needs a write scope.
+# #VERIFY: adding an upload-sarif or a PR-comment step means granting that
+# scope on THAT JOB, not here.
 permissions:
   contents: read
-  security-events: write
-  pull-requests: write
 
 # Standalone security workflow
 jobs:
@@ -100,11 +108,296 @@ jobs:
             osv-scanner-report.json
           retention-days: 30
 
+  # SAST for the TypeScript tree (frontend/). Added because nothing else covers
+  # it: Bandit is Python-only, OSV-Scanner reads dependency manifests rather
+  # than source, and the CodeQL default setup that used to scan this repo was
+  # disabled on 2026-08-03 on a cost rationale and is deliberately NOT being
+  # re-enabled. Semgrep OSS is the replacement: Apache-2.0/LGPL CLI, no seat
+  # cost, no account.
+  #
+  # Deliberately NOT wired to GitHub code scanning. The obvious shape here
+  # would be `--sarif` plus `github/codeql-action/upload-sarif`, which would
+  # give annotations and a dismissal workflow. We do not use it because it is
+  # unverified whether SARIF ingestion into code scanning is metered under the
+  # terms that apply to this repository, and avoiding a paid dependency is the
+  # entire reason Semgrep was chosen over re-enabling CodeQL. Buying back a
+  # billing question through the side door would defeat that. The job fails
+  # the build directly instead (`--error` exits 1 on any finding), which is
+  # the stronger control anyway: a SARIF upload is advisory and dismissible,
+  # a non-zero exit is not. Revisit only with a written answer on metering.
+  #
+  # Semgrep OSS only. No AppSec Platform, no `semgrep ci`, no
+  # SEMGREP_APP_TOKEN, no `semgrep login`. Consequences that are easy to miss:
+  #   - `--metrics=off` is REQUIRED, not cosmetic. Semgrep's default is
+  #     `auto`, and `auto` means metrics ARE sent whenever the config is
+  #     pulled from the registry, which is exactly what this job does.
+  #     Verified against https://docs.semgrep.dev/metrics and against
+  #     `semgrep scan --help` on the pinned version.
+  #   - `--disable-version-check` suppresses the separate "a new version is
+  #     available" call to semgrep.dev. Not a privacy control, just one less
+  #     unnecessary egress and a slightly faster exit.
+  semgrep-frontend:
+    name: Semgrep SAST (frontend)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          # Semgrep's own runtime, unrelated to the project's Python target.
+          # Pinned to a version Semgrep publishes wheels for.
+          python-version: '3.12'
+
+      - name: Install Semgrep
+        run: pip install --no-cache-dir semgrep==1.157.0
+
+      # #CRITICAL: security: a SAST ruleset that has drifted out of matching real
+      #   code reports zero findings and is indistinguishable from a clean tree.
+      #   This is not hypothetical here: the Semgrep registry packs enabled below
+      #   catch only 1 of 8 planted defects in this codebase's TypeScript React
+      #   idiom, because their taint sources match `function C({ x })` and
+      #   `function C(x)` but neither `function C({ x }: Props)` nor
+      #   `const C = ({ x }: Props) => ...`. The in-repo ruleset exists for that
+      #   reason and this step is what keeps it honest.
+      # #VERIFY: scan the canary fixture, which carries one instance of every
+      #   in-repo rule, and fail unless every rule id appears in the results.
+      - name: Prove the ruleset still matches real code
+        env:
+          # Deleting a rule together with its canary sites and markers left the
+          # per-rule count comparison green: nothing expected and nothing found
+          # agree. A floor on the rule count is what makes the ruleset shrinking
+          # a failure rather than a silent narrowing.
+          SEMGREP_MIN_RULES: '6'
+        run: |
+          set -euo pipefail
+          semgrep scan \
+            --config=.semgrep/frontend-security.yml \
+            --metrics=off --disable-version-check --no-git-ignore \
+            --json --output=canary.json \
+            tests/fixtures/semgrep-canary.tsx || true
+          python3 - <<'PY'
+          import json, os, sys, pathlib, re, collections
+          fixture = pathlib.Path("tests/fixtures/semgrep-canary.tsx").read_text()
+          rules = pathlib.Path(".semgrep/frontend-security.yml").read_text()
+
+          # Counts, not just rule ids: a rule spans several `pattern-either`
+          # shapes, so an id-only assertion still passes when one shape stops
+          # matching. One marker per vulnerable site, one finding expected each.
+          want = collections.Counter(re.findall(r"^\s*//\s*semgrep-expect:\s*(\S+)", fixture, re.M))
+          got = collections.Counter(
+              r["check_id"].split(".")[-1] for r in json.load(open("canary.json"))["results"]
+          )
+          defined = set(re.findall(r"^\s*-\s*id:\s*(\S+)", rules, re.M))
+
+          failed = False
+          for rule in sorted(defined | set(want)):
+              exp, act = want[rule], got[rule]
+              status = "ok" if exp == act else "MISMATCH"
+              print(f"  {status:>8}  {rule}: expected {exp}, got {act}")
+              if exp != act:
+                  failed = True
+          uncovered = defined - set(want)
+          if uncovered:
+              print("FAIL: rules with no canary site:", ", ".join(sorted(uncovered)))
+              failed = True
+
+          # Per-rule counts catch a BROKEN alternative but not an ADDED one: a
+          # new `pattern-either` branch with no canary site fires nowhere, so
+          # expected and actual agree at the old number and the check stays
+          # green. The fixture's contract is one site per alternative, so assert
+          # it structurally instead of trusting the author to remember.
+          for block in re.split(r"^  - id: ", rules, flags=re.M)[1:]:
+              rid = block.split("\n", 1)[0].strip()
+              alts = (len(re.findall(r"^\s+-\s+pattern:\s", block, re.M))
+                      + len(re.findall(r"^\s{4}pattern:\s", block, re.M)))
+              if want[rid] < alts:
+                  print(f"FAIL: {rid} has {alts} pattern alternative(s) but only "
+                        f"{want[rid]} canary site(s); every alternative needs one.")
+                  failed = True
+
+          # And a floor on the rule count, because deleting a rule along with its
+          # sites and markers satisfies every comparison above.
+          if len(defined) < int(os.environ["SEMGREP_MIN_RULES"]):
+              print(f"FAIL: {len(defined)} rules defined, below the pinned floor of "
+                    f"{os.environ['SEMGREP_MIN_RULES']}. A rule was removed.")
+              failed = True
+          if failed:
+              print()
+              print("Fewer findings than markers means the ruleset has drifted out of")
+              print("matching a shape it claims to cover, or a rule gained no canary site.")
+              print("More findings than markers means an exclusion broke and the rule now")
+              print("fires on one of the deliberately-safe sites. Fix the rule or add the")
+              print("site. Do not silence this by editing a marker: that disarms the gate.")
+              sys.exit(1)
+          print("OK: every rule fires on every shape it covers.")
+          PY
+
+      # The registry packs ride along because they cost nothing, but they are a
+      # supplement, not the gate: see the measurement in the step above. They are
+      # also remotely mutable, so the reporting step below treats their findings
+      # as annotations and only the in-repo `cyo-*` rules can fail the build.
+      #
+      # `--exclude` matches path SEGMENTS with basename-style globs, not path
+      # prefixes. `--exclude=frontend/coverage` was a silent no-op; `--exclude=coverage`
+      # is the form that works. Verified by reproduction on semgrep 1.157.0: with a
+      # file at `sub/deep.tsx`, `--exclude=frontend/sub` left it scanned and
+      # `--exclude=sub` removed it. Harmless while the target is `frontend/`, and a
+      # permanently red build the moment the target widens to `.`.
+      #
+      # `frontend/src/client/` IS scanned here, and is excluded from Sonar, from
+      # the eslint hook and from the prettier hook. That asymmetry is deliberate,
+      # not an oversight. The other three are style and drift gates, and the
+      # directory is @hey-api/openapi-ts output whose byte-exact form the
+      # `contract` CI job asserts: formatting or lint-fixing it would create
+      # permanent drift. Semgrep neither rewrites nor warns on ignored paths, and
+      # generated code is shipped code, so the SAST floor covers it.
+      # #ASSUME: security: a vulnerability in generated client code reaches users
+      #   exactly as one in hand-written code does.
+      # #VERIFY: if this directory is ever excluded here too, the reason must be
+      #   something other than "the other gates exclude it".
+      #
+      # `--max-target-bytes=0` disables the 1 MB default target cap. A file over the
+      # cap is dropped SILENTLY: it still appears in `paths.scanned`, produces no
+      # `errors` entry, and yields no findings, so neither guard below can observe
+      # it. Reproduced with a 1,200,048-byte .tsx carrying a real innerHTML sink.
+      # Nothing under frontend/ exceeds 1 MB today; design-system/ds-bundle does.
+      - name: Scan the frontend
+        run: |
+          set -euo pipefail
+          semgrep scan \
+            --config=.semgrep/frontend-security.yml \
+            --config=p/typescript --config=p/react --config=p/xss \
+            --metrics=off --disable-version-check \
+            --exclude=semgrep-canary.tsx \
+            --exclude=coverage \
+            --max-target-bytes=0 \
+            --json --output=semgrep.json \
+            --error \
+            frontend/
+        continue-on-error: true
+
+      # #ASSUME: external resources: Semgrep's OSS TypeScript parser cannot fully
+      #   parse 5 frontend test files today, and reports them as warn-level
+      #   `errors` while still exiting 0, so an unanalysed file is invisible
+      #   unless it is asserted. They are pinned by IDENTITY in
+      #   .semgrep/unparseable-baseline.txt rather than by count: a count is
+      #   satisfied by any five files, so fixing five tests while breaking five
+      #   production modules would keep the total at 5 and move the hole onto
+      #   code that matters. Tracked as UW-C365.
+      # #VERIFY: fail when the set of unparseable files gains a member, and
+      #   separately when any error-level (rule or engine) diagnostic appears,
+      #   which is budgeted at zero because a rule file that fails to parse
+      #   produces no findings and would otherwise read as a clean scan.
+      - name: Report findings and guard scan coverage
+        env:
+          # 560 files scan today. The floor is a tripwire for a scan that stopped
+          # covering the tree (a bad --exclude, a moved directory, a partial
+          # checkout), not a target; it sits just under the real number so that a
+          # collapse is caught rather than absorbed by slack.
+          SEMGREP_MIN_SCANNED: '550'
+          SEMGREP_UNPARSEABLE_BASELINE: .semgrep/unparseable-baseline.txt
+          # In-repo rule ids all carry this prefix. Findings from the remotely
+          # mutable registry packs are reported as annotations but cannot fail a
+          # required check: Semgrep publishing a new p/react rule overnight would
+          # otherwise red every unchanged commit on a rule nobody here chose.
+          SEMGREP_BLOCKING_PREFIX: 'cyo-'
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, sys
+
+          d = json.load(open("semgrep.json"))
+          findings, errors = d["results"], d["errors"]
+          scanned = len(d["paths"]["scanned"])
+
+          # `level` separates the two error classes cleanly: target syntax errors
+          # are 'warn' and carry a path, rule/engine errors are 'error' and carry
+          # path=None. Verified by reproduction on semgrep 1.157.0.
+          unparseable = {e["path"] for e in errors if e["level"] == "warn" and e.get("path")}
+          hard = [e for e in errors if e["level"] == "error"]
+          print(f"scanned {scanned} files, {len(findings)} findings, "
+                f"{len(unparseable)} unparseable, {len(hard)} rule/engine errors")
+
+          failed = False
+
+          if scanned < int(os.environ["SEMGREP_MIN_SCANNED"]):
+              print(f"FAIL: only {scanned} files scanned; the scan is not covering the tree.")
+              failed = True
+
+          for e in hard:
+              # `type` is a plain string for most diagnostics but a list for a
+              # few (`['PartialParsing', [spans]]`); take the tag either way so
+              # the failure line stays readable.
+              etype = e["type"] if isinstance(e["type"], str) else e["type"][0]
+              print(f"FAIL: {etype}: {e['message'].splitlines()[0]}")
+              failed = True
+          if hard:
+              print("A rule that fails to load reports no findings, which is")
+              print("indistinguishable from a clean scan. This is budgeted at zero.")
+
+          baseline_path = pathlib.Path(os.environ["SEMGREP_UNPARSEABLE_BASELINE"])
+          baseline = {
+              ln.strip() for ln in baseline_path.read_text().splitlines()
+              if ln.strip() and not ln.startswith("#")
+          }
+          for path in sorted(unparseable):
+              print(f"  unparsed: {path}{'' if path in baseline else '  <-- NEW'}")
+          new_unparseable = unparseable - baseline
+          if new_unparseable:
+              print(f"FAIL: {len(new_unparseable)} newly unparseable file(s):")
+              for path in sorted(new_unparseable):
+                  print(f"  {path}")
+              print("Unparseable code is analysed by nothing. Fix the file, or add it")
+              print(f"to {baseline_path} deliberately, named in the commit message.")
+              failed = True
+          fixed = baseline - unparseable
+          if fixed:
+              print(f"NOTE: {len(fixed)} baseline entr(y/ies) now parse; remove from")
+              print(f"{baseline_path} to keep the pin honest: {', '.join(sorted(fixed))}")
+
+          blocking_prefix = os.environ["SEMGREP_BLOCKING_PREFIX"]
+          blocking, advisory = [], []
+          for r in findings:
+              rule = r["check_id"].split(".")[-1]
+              (blocking if rule.startswith(blocking_prefix) else advisory).append((rule, r))
+
+          for rule, r in blocking + advisory:
+              # GitHub annotations are one line: a message carrying a newline is
+              # truncated at it. Registry-pack messages routinely contain them.
+              msg = " ".join(r["extra"]["message"].split())
+              kind = "error" if rule.startswith(blocking_prefix) else "warning"
+              print(f"::{kind} file={r['path']},line={r['start']['line']}::{rule}: {msg}")
+              print(f"  {r['path']}:{r['start']['line']}  {r['check_id']}")
+
+          if advisory:
+              print(f"NOTE: {len(advisory)} registry-pack finding(s) reported as annotations.")
+              print("These do not fail the build; the packs are fetched at scan time and")
+              print("are outside this repository's control. Triage them, do not ignore them.")
+          if blocking:
+              print(f"FAIL: {len(blocking)} security findings from the in-repo ruleset.")
+              print("Fix the finding. To suppress a justified false positive, put")
+              print("`// nosemgrep: <rule-id>` on the line IMMEDIATELY above the match,")
+              print("with the reasoning in the comment lines above that.")
+              failed = True
+
+          sys.exit(1 if failed else 0)
+          PY
+
   security-gate-success:
     name: Security Gate Validation
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [security]
+    needs: [security, semgrep-frontend]
     if: always()
     permissions:
       contents: read
@@ -114,11 +407,34 @@ jobs:
         with:
           egress-policy: audit
 
+      # This job is the required status check that stands in for the whole
+      # workflow, so every job it aggregates must be named here explicitly.
+      # `needs:` alone is not enough: with `if: always()` a failed upstream job
+      # still lets this one run, so an unread result is an ignored result.
       - name: Check security scan results
+        env:
+          SECURITY_RESULT: ${{ needs.security.result }}
+          SEMGREP_RESULT: ${{ needs.semgrep-frontend.result }}
         run: |
-          if [ "${{ needs.security.result }}" == "success" ]; then
-            echo "Security Gate passed"
-          else
-            echo "Security Gate failed: ${{ needs.security.result }}"
+          set -euo pipefail
+
+          failed=0
+          for entry in \
+            "Security Scan:${SECURITY_RESULT}" \
+            "Semgrep SAST (frontend):${SEMGREP_RESULT}"; do
+            label="${entry%%:*}"
+            result="${entry#*:}"
+            if [ "${result}" = "success" ]; then
+              echo "- ${label}: passed"
+            else
+              echo "::error::${label} reported ${result}."
+              echo "- ${label}: ${result}"
+              failed=1
+            fi
+          done
+
+          if [ "${failed}" -ne 0 ]; then
+            echo "Security Gate failed"
             exit 1
           fi
+          echo "Security Gate passed"

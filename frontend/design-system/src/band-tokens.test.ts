@@ -21,11 +21,9 @@ const NEUTRAL_BANDS = new Set(['13-16', '16+'])
 
 describe('band-tokens.css tier coverage', () => {
   it('accounts for every AgeBand literal in a tier selector or as neutral', () => {
-    const selectorBands = [...css.matchAll(/\[data-age-band='([^']+)'\]/g)].map(
-      (match) => match[1],
-    )
+    const selectorBands = [...css.matchAll(/\[data-age-band='([^']+)'\]/g)].map((match) => match[1])
     const missing = ALL_AGE_BANDS.filter(
-      (band) => !selectorBands.includes(band) && !NEUTRAL_BANDS.has(band),
+      (band) => !selectorBands.includes(band) && !NEUTRAL_BANDS.has(band)
     )
     expect(missing).toEqual([])
 
@@ -42,9 +40,9 @@ describe('band-tokens.css tier coverage', () => {
   })
 
   it('places the reduced-motion overrides after every tier block', () => {
-    const tierBlockEnds = [
-      ...css.matchAll(/:where\(\[data-age-band='[^{]*\{[^}]*\}/g),
-    ].map((match) => (match.index ?? 0) + match[0].length)
+    const tierBlockEnds = [...css.matchAll(/:where\(\[data-age-band='[^{]*\{[^}]*\}/g)].map(
+      (match) => (match.index ?? 0) + match[0].length
+    )
     const reducedMotionStart = css.indexOf('@media (prefers-reduced-motion: reduce)')
     const reduceMotionAttrStart = css.indexOf("[data-reduce-motion='true']")
 

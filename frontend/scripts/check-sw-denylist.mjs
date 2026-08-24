@@ -43,6 +43,15 @@ function fail(message) {
 
 function read(path, what) {
   try {
+    // #ASSUME: security: detect-non-literal-fs-filename fires on the `path`
+    // PARAMETER, which is as far as it looks; it does no dataflow, so it
+    // cannot see that both call sites pass a module-level constant. SOURCE
+    // and SERVICE_WORKER are `join()`ed off `import.meta.url` (lines 30-32)
+    // and nothing here reads argv, env, stdin, or the network, so there is no
+    // attacker-controlled component to traverse with.
+    // #VERIFY: re-check if `read()` ever gains a caller whose path argument is
+    // not a module-level constant.
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- both callers pass module constants
     return readFileSync(path, 'utf8')
   } catch (error) {
     fail(

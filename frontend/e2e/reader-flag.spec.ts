@@ -84,9 +84,7 @@ test('submitting a reason posts the structured flag and shows the kid-language c
   await expect(dialog.getByRole('textbox')).toHaveCount(0)
   await dialog.getByRole('button', { name: 'It scared me' }).click()
 
-  await expect(
-    page.getByText("Thanks for telling us. A grown-up will take a look.")
-  ).toBeVisible()
+  await expect(page.getByText('Thanks for telling us. A grown-up will take a look.')).toBeVisible()
   expect(flagBody).toMatchObject({
     profile_id: 'child-a',
     storybook_id: 's_lantern_cave',
@@ -105,7 +103,10 @@ test('a 409 cap response shows the gentle "told us a lot already" message', asyn
   await expect(page.getByTestId('reader')).toBeVisible()
 
   await page.getByRole('button', { name: 'Tell a grown-up' }).click()
-  await page.getByRole('dialog', { name: 'Tell a grown-up' }).getByRole('button', { name: 'It was confusing' }).click()
+  await page
+    .getByRole('dialog', { name: 'Tell a grown-up' })
+    .getByRole('button', { name: 'It was confusing' })
+    .click()
 
   await expect(page.getByText("You've told us a lot already.")).toBeVisible()
   await expect(page.getByRole('dialog')).toHaveCount(0)
@@ -132,9 +133,7 @@ test('a failed flag submit still reassures the child and never dead-ends them', 
     .click()
 
   // Reassured with the exact success copy, never a scary error alert.
-  await expect(
-    page.getByText('Thanks for telling us. A grown-up will take a look.')
-  ).toBeVisible()
+  await expect(page.getByText('Thanks for telling us. A grown-up will take a look.')).toBeVisible()
   await expect(page.getByText('Something went wrong. Try again.')).toHaveCount(0)
   await expect(page.getByRole('alert')).toHaveCount(0)
   // Not a dead end: the dialog closes and the reader stays fully usable.

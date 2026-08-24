@@ -165,9 +165,7 @@ test.describe('admin authored request (AdminRequestsPage)', () => {
       page.getByRole('button', { name: 'Send request' }).click(),
     ])
 
-    await expect(
-      page.getByText('Request approved. Story generation has started.')
-    ).toBeVisible()
+    await expect(page.getByText('Request approved. Story generation has started.')).toBeVisible()
     expect(requestBody).toEqual({
       request_text: 'A story for the whole family',
       age_band: '8-11',

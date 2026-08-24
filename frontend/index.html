@@ -121,7 +121,7 @@
          inline (not a module) so it runs synchronously, and wrapped in
          try/catch since localStorage can throw in private-mode Safari. -->
     <script>
-      (function () {
+      ;(function () {
         // Read the stored preference in its OWN try: if localStorage throws
         // (private-mode Safari, disabled-storage policy), fall through to the
         // OS preference below instead of skipping it and defaulting to light.

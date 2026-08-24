@@ -23,9 +23,15 @@ export function Sizes() {
 export function Disabled() {
   return (
     <div style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '24px' }}>
-      <Button variant="primary" disabled>Loading…</Button>
-      <Button variant="ghost" disabled>Skip</Button>
-      <Button variant="danger" disabled>Delete</Button>
+      <Button variant="primary" disabled>
+        Loading…
+      </Button>
+      <Button variant="ghost" disabled>
+        Skip
+      </Button>
+      <Button variant="danger" disabled>
+        Delete
+      </Button>
     </div>
   )
 }

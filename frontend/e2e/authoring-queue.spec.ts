@@ -81,11 +81,13 @@ test('an admin builds a skill-mechanism authoring plan and the row disappears', 
   // first recognized Claude Code session model; no input is required.
   await page.getByRole('button', { name: 'Create plan' }).click()
 
-  await expect.poll(() => posted).toMatchObject({
-    method: 'skeleton_fill',
-    mechanism: 'skill',
-    prep_model: 'sonnet',
-  })
+  await expect
+    .poll(() => posted)
+    .toMatchObject({
+      method: 'skeleton_fill',
+      mechanism: 'skill',
+      prep_model: 'sonnet',
+    })
   // Scope the disappearance assertion to the queue ROW, not raw text. The
   // request title is a substring of the open dialog's heading ("Build
   // authoring plan: A story about a friendly dr..."), whose full text lives
@@ -132,11 +134,13 @@ test('an automated-provider plan is constrained to the enabled allowlist', async
   await page.getByRole('combobox', { name: /^Model/ }).selectOption('claude-sonnet-4-6')
   await page.getByRole('button', { name: 'Create plan' }).click()
 
-  await expect.poll(() => posted).toMatchObject({
-    mechanism: 'automated_provider',
-    provider: 'anthropic',
-    model: 'claude-sonnet-4-6',
-  })
+  await expect
+    .poll(() => posted)
+    .toMatchObject({
+      mechanism: 'automated_provider',
+      provider: 'anthropic',
+      model: 'claude-sonnet-4-6',
+    })
 })
 
 test('fresh generation forces the automated-provider mechanism', async ({ page }) => {

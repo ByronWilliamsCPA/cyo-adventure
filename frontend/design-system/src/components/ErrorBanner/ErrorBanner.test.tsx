@@ -29,7 +29,7 @@ describe('ErrorBanner', () => {
     render(
       <ErrorBanner onRetry={() => {}} retryLabel="Retry loading">
         Failed to load.
-      </ErrorBanner>,
+      </ErrorBanner>
     )
     expect(screen.getByRole('button', { name: 'Retry loading' })).toBeInTheDocument()
   })

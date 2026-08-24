@@ -9,7 +9,12 @@ export interface ErrorBannerProps {
   className?: string
 }
 
-export function ErrorBanner({ children, onRetry, retryLabel = 'Try again', className }: ErrorBannerProps) {
+export function ErrorBanner({
+  children,
+  onRetry,
+  retryLabel = 'Try again',
+  className,
+}: ErrorBannerProps) {
   return (
     <div role="alert" className={['cyo-error', className].filter(Boolean).join(' ')}>
       {children}

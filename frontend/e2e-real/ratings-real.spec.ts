@@ -36,7 +36,10 @@ test('a tapped rating persists across reload', async ({ page }) => {
   const stars = page.getByRole('group', { name: 'Rate The Tide Pool Mystery' })
   await expect(stars).toBeVisible()
   await stars.getByRole('button', { name: '4 stars' }).click()
-  await expect(stars.getByRole('button', { name: '4 stars' })).toHaveAttribute('aria-pressed', 'true')
+  await expect(stars.getByRole('button', { name: '4 stars' })).toHaveAttribute(
+    'aria-pressed',
+    'true'
+  )
 
   await page.reload()
   const starsAfterReload = page.getByRole('group', { name: 'Rate The Tide Pool Mystery' })

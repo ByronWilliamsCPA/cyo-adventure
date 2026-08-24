@@ -36,18 +36,18 @@ npm run build
 
 ### Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server with HMR |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run test` | Run tests in watch mode |
-| `npm run test:run` | Run tests once |
-| `npm run test:coverage` | Run tests with coverage |
-| `npm run lint` | Lint code |
-| `npm run lint:fix` | Fix lint issues |
-| `npm run format` | Format code with Prettier |
-| `npm run typecheck` | Run TypeScript type checking |
+| Command                   | Description                      |
+| ------------------------- | -------------------------------- |
+| `npm run dev`             | Start dev server with HMR        |
+| `npm run build`           | Build for production             |
+| `npm run preview`         | Preview production build         |
+| `npm run test`            | Run tests in watch mode          |
+| `npm run test:run`        | Run tests once                   |
+| `npm run test:coverage`   | Run tests with coverage          |
+| `npm run lint`            | Lint code                        |
+| `npm run lint:fix`        | Fix lint issues                  |
+| `npm run format`          | Format code with Prettier        |
+| `npm run typecheck`       | Run TypeScript type checking     |
 | `npm run generate-client` | Generate API client from OpenAPI |
 
 ### API Integration
@@ -111,10 +111,10 @@ docker run -p 80:80 \
 
 ## Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `VITE_API_URL` | Backend API URL | `http://localhost:8000` |
-| `VITE_DEBUG` | Enable debug mode | `false` |
+| Variable       | Description       | Default                 |
+| -------------- | ----------------- | ----------------------- |
+| `VITE_API_URL` | Backend API URL   | `http://localhost:8000` |
+| `VITE_DEBUG`   | Enable debug mode | `false`                 |
 
 Create `.env.local` for local overrides (gitignored).
 
@@ -212,7 +212,7 @@ Because every run authenticates a real account against a live system, CI executi
 default-deny: `requireProdCredentials()` throws whenever `CI` is set. Exactly one audited
 exception exists, `.github/workflows/e2e-prod.yml`, which runs the tier daily on cron and
 clears `CI` to an empty string for its test-run step. That is an owner-directed decision
-recorded in `docs/planning/test-traceability-matrix.md`, not a workaround: any *other*
+recorded in `docs/planning/test-traceability-matrix.md`, not a workaround: any _other_
 workflow that clears or unsets `CI` is an unreviewed second override.
 
 ```bash

@@ -106,15 +106,9 @@ test.beforeEach(async ({ page, context }) => {
   // ADR-014: the kid surface is gated by DeviceAuthorizedRoute; without a
   // valid device grant /read/* redirects to guardian login.
   await seedDeviceGrant(context)
-  await page.route('**/api/v1/storybooks/s_ember_1/**', (route) =>
-    route.fulfill({ json: BOOK1 })
-  )
-  await page.route('**/api/v1/storybooks/s_ember_2/**', (route) =>
-    route.fulfill({ json: BOOK2 })
-  )
-  await page.route('**/api/v1/series-next/**', (route) =>
-    route.fulfill({ json: SERIES_NEXT })
-  )
+  await page.route('**/api/v1/storybooks/s_ember_1/**', (route) => route.fulfill({ json: BOOK1 }))
+  await page.route('**/api/v1/storybooks/s_ember_2/**', (route) => route.fulfill({ json: BOOK2 }))
+  await page.route('**/api/v1/series-next/**', (route) => route.fulfill({ json: SERIES_NEXT }))
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
       return route.fulfill({ status: 404, json: { error: 'not found' } })

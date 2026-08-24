@@ -9,7 +9,8 @@
  */
 import { Button } from '@ds/components/Button'
 import { PassageText } from '@ds/components/PassageText'
-import { FlagBadge, verdictTone } from './FlagBadge'
+import { FlagBadge } from './FlagBadge'
+import { verdictTone } from './verdictTone'
 import type { FindingView } from './reviewApi'
 import type { StoryNodeView } from './storyReadThrough'
 

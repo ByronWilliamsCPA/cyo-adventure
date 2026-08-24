@@ -210,6 +210,19 @@ export function ReaderChrome({
     function onDocumentClick(event: MouseEvent): void {
       const target = event.target
       if (!(target instanceof Element)) return
+      // #ASSUME: UI state: a document-level listener sees clicks from anywhere
+      // in the tree, including inside a modal rendered over the reader. The
+      // design-system Dialog used to shield it by accident: its dialog element
+      // carried an onClick calling stopPropagation(), and React's synthetic
+      // stopPropagation also stops the native event, so nothing inside a dialog
+      // ever reached document. That handler was a mouse listener on a
+      // role="dialog" element, tripped jsx-a11y, and was removed; the shielding
+      // went with it. Guard here instead of putting the listener back: the
+      // assumption belongs to this delegation, not to every dialog that might
+      // ever render choice-like markup.
+      // #VERIFY: covered by "ignores clicks originating inside a modal dialog"
+      // in ReaderChrome.test.tsx.
+      if (target.closest('[role="dialog"]')) return
       if (target.closest('[data-testid^="choice-"]')) {
         emitReaderSoundEvent('choice-tap')
       }

@@ -54,9 +54,7 @@ import { signInAsStagingTestUser } from '../e2e-staging/support/auth'
  * this shared staging family.
  */
 test.describe('staging device-grant sweep', () => {
-  test('the test guardian family holds no active device grant after the tier', async ({
-    page,
-  }) => {
+  test('the test guardian family holds no active device grant after the tier', async ({ page }) => {
     // A sign-in failure (wrong password, sustained 429, staging down) throws
     // out of this helper and fails the spec. That is correct and deliberate:
     // an unlistable family is an unproven family.

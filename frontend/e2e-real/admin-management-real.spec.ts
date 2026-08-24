@@ -288,10 +288,7 @@ test.describe('S-3 admin_users.py: self-lockout guard and is_admin escalation', 
   }
 
   async function userId(familyId: string, role: 'admin' | 'guardian'): Promise<string> {
-    const res = await apiGet(
-      ADMIN_BEARER,
-      `/api/v1/admin/users?family_id=${familyId}&role=${role}`
-    )
+    const res = await apiGet(ADMIN_BEARER, `/api/v1/admin/users?family_id=${familyId}&role=${role}`)
     expect(res.status, `admin users list (role=${role}) failed`).toBe(200)
     const body = (await res.json()) as {
       users: { id: string; role: string; is_admin: boolean }[]
@@ -300,10 +297,11 @@ test.describe('S-3 admin_users.py: self-lockout guard and is_admin escalation', 
     // plain guardian filter to the row that is NOT dual-role; when looking up
     // the admin, Dev Family seeds exactly one role='admin' row (dev-admin).
     const match =
-      role === 'guardian'
-        ? body.users.find((u) => !u.is_admin)
-        : body.users.find((u) => u.is_admin)
-    expect(match, `no ${role} row found in Dev Family (is_admin=${role !== 'guardian'})`).toBeDefined()
+      role === 'guardian' ? body.users.find((u) => !u.is_admin) : body.users.find((u) => u.is_admin)
+    expect(
+      match,
+      `no ${role} row found in Dev Family (is_admin=${role !== 'guardian'})`
+    ).toBeDefined()
     return match!.id
   }
 
@@ -339,9 +337,7 @@ test.describe('S-3 admin_users.py: self-lockout guard and is_admin escalation', 
       const resp = await apiPatch(ADMIN_BEARER, `/api/v1/admin/users/${guardianId}`, {
         is_admin: true,
       })
-      expect(resp.status, 'is_admin escalation PATCH must succeed for a non-self target').toBe(
-        200
-      )
+      expect(resp.status, 'is_admin escalation PATCH must succeed for a non-self target').toBe(200)
       const body = (await resp.json()) as { id: string; is_admin: boolean; role: string }
       expect(body.is_admin, 'escalated row must report is_admin: true').toBe(true)
       expect(body.role, 'escalation must not silently change the role').toBe('guardian')

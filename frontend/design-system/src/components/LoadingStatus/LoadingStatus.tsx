@@ -15,7 +15,11 @@ export interface LoadingStatusProps {
  */
 export function LoadingStatus({ children, className = '' }: LoadingStatusProps) {
   return (
-    <div role="status" aria-live="polite" className={['cyo-loading', className].filter(Boolean).join(' ')}>
+    <div
+      role="status"
+      aria-live="polite"
+      className={['cyo-loading', className].filter(Boolean).join(' ')}
+    >
       {children ?? 'Loading…'}
     </div>
   )

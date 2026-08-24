@@ -26,7 +26,7 @@ describe('ChoiceButton', () => {
     render(<ChoiceButton label="Take the left path" />)
     expect(screen.getByRole('button', { name: 'Take the left path' })).toHaveAttribute(
       'type',
-      'button',
+      'button'
     )
   })
 

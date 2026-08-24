@@ -133,7 +133,10 @@ test('a PIN-protected profile shows the padlock, gently retries a wrong PIN, off
         },
       })
     }
-    return route.fulfill({ status: 403, json: { code: 'PIN_MISMATCH', detail: 'PIN did not match' } })
+    return route.fulfill({
+      status: 403,
+      json: { code: 'PIN_MISMATCH', detail: 'PIN did not match' },
+    })
   })
 
   await page.goto('/kids')

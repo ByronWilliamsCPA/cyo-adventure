@@ -126,9 +126,7 @@ test('checking "Also grant admin capability" on invite posts is_admin: true', as
   await page.goto('/admin/users')
   await page.getByLabel('Email').fill('dual@example.com')
   await page.getByLabel('Family').selectOption('fam-a')
-  await page
-    .getByRole('checkbox', { name: /also grant admin capability/i })
-    .check()
+  await page.getByRole('checkbox', { name: /also grant admin capability/i }).check()
   await page.getByRole('button', { name: 'Send invite' }).click()
 
   await expect

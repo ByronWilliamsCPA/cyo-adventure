@@ -631,13 +631,15 @@ jobs:
   # a formattable artifact, and one sat unformatted indefinitely with every gate
   # green.
   #
-  # The frontend has the SAME gap and this job does NOT close it: `format:check`
-  # (frontend/package.json) is scoped to `src/**`, so `e2e/`, `e2e-real/`, and
-  # the root config files are unchecked, and 130 files under frontend/ are
-  # unformatted as of this commit. Widening that glob is a 130-file mechanical
-  # reformat, deliberately not bundled into a validator change; it is scheduled
-  # as UW-C33 (AL-100). Do not read this job as covering the frontend: ruff does
-  # not format TypeScript.
+  # The frontend had the SAME gap and this job does NOT close it; the frontend's
+  # own gate does. `format:check` (frontend/package.json) was scoped to `src/**`,
+  # leaving `e2e/`, `e2e-real/` and the root config files unchecked; it now runs
+  # `prettier --check .` over the whole frontend tree, and the resulting 53-file
+  # mechanical reformat landed as its own commit (UW-C33 / AL-100). The earlier
+  # "130 files" figure quoted here was not wrong, it was measured in a different
+  # environment: 77 of those files are design-sync output that a fresh checkout
+  # does not have, now excluded via frontend/.prettierignore. Do not read this
+  # job as covering the frontend either way: ruff does not format TypeScript.
   #
   # Its own job rather than a step inside `contract` or `schema-docs`: those two
   # are required checks whose NAMES are the repo's claim about what was

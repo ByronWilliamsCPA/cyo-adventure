@@ -14,8 +14,8 @@ export function ConflictDialog() {
         }
       >
         <p style={{ margin: 0 }}>
-          You were reading <strong>The Enchanted Forest</strong> on your tablet. Which version
-          would you like to continue from?
+          You were reading <strong>The Enchanted Forest</strong> on your tablet. Which version would
+          you like to continue from?
         </p>
       </Dialog>
     </div>
@@ -31,8 +31,8 @@ export function ClosableDialog() {
         actions={<Button variant="primary">Continue to next chapter</Button>}
       >
         <p style={{ margin: 0 }}>
-          You chose wisely: the river path led you to the hidden village. Your adventure
-          score: <strong>3 out of 5 stars</strong>.
+          You chose wisely: the river path led you to the hidden village. Your adventure score:{' '}
+          <strong>3 out of 5 stars</strong>.
         </p>
       </Dialog>
     </div>
