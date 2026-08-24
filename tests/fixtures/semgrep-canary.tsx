@@ -64,8 +64,16 @@ export const canaryEval = (src: string): unknown => eval(src)
 // semgrep-expect: cyo-dynamic-code-execution
 export const canaryFnCtor = (src: string): unknown => new Function(src)
 
+// The Function constructor is callable with and without `new`; those parse as
+// different nodes, so each needs its own site.
+// semgrep-expect: cyo-dynamic-code-execution
+export const canaryBareFnCtor = (src: string): unknown => Function(src)
+
 // semgrep-expect: cyo-dynamic-code-execution
 export const canaryWindowEval = (src: string): unknown => window.eval(src)
+
+// semgrep-expect: cyo-dynamic-code-execution
+export const canaryWindowFnCtor = (src: string): unknown => window.Function(src)
 
 // semgrep-expect: cyo-dynamic-code-execution
 export const canaryTimeoutString = (): number => setTimeout('doThing()', 10)

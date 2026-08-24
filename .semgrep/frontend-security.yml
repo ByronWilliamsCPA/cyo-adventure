@@ -53,7 +53,12 @@ rules:
     pattern-either:
       - pattern: 'eval(...)'
       - pattern: 'new Function(...)'
+      # The Function constructor is callable without `new` and compiles code
+      # either way. Semgrep parses the two as different nodes, so the bare call
+      # needs its own alternative; verified by reproduction on PR #754.
+      - pattern: 'Function(...)'
       - pattern: 'window.eval(...)'
+      - pattern: 'window.Function(...)'
       - pattern: 'setTimeout("...", ...)'
       - pattern: 'setInterval("...", ...)'
 
