@@ -4662,7 +4662,7 @@
       },
       "body": {
        "mode": "raw",
-       "raw": "{\n  \"provider\": \"anthropic\",\n  \"model_id\": \"newman-test-model\"\n}",
+       "raw": "{\n  \"provider\": \"openrouter\",\n  \"model_id\": \"newman-test-model\"\n}",
        "options": {
         "raw": {
          "language": "json"
@@ -4763,6 +4763,60 @@
         "provider-allowlist",
         "{{allowlist_entry_id}}"
        ]
+      }
+     },
+     "response": []
+    },
+    {
+     "name": "POST provider-allowlist with a provider the family lane forbids -> 422",
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "exec": [
+         "pm.test(\"status is 422\", function () { pm.response.to.have.status(422); });",
+         "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+         "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+         "pm.test(\"error body names ValidationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ValidationError\"); });",
+         "pm.test(\"message names the refused provider\", function () { var body = pm.response.json(); pm.expect(body.message).to.include(\"anthropic\"); });"
+        ],
+        "type": "text/javascript"
+       }
+      }
+     ],
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Authorization",
+        "value": "Bearer {{admin_token}}",
+        "type": "text"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/api/v1/admin/provider-allowlist",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "api",
+        "v1",
+        "admin",
+        "provider-allowlist"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\n  \"provider\": \"anthropic\",\n  \"model_id\": \"newman-lane-refused-model\"\n}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
       }
      },
      "response": []

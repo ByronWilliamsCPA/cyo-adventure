@@ -1607,6 +1607,8 @@ export const listAllowlistApiV1AdminProviderAllowlistGet = <ThrowOnError extends
  *
  * Raises:
  * AuthorizationError: If the caller is not an admin (403).
+ * ValidationError: If the provider is one the family generation lane
+ * forbids (422); this endpoint only ever creates enabled rows.
  * StateTransitionError: If the pair already exists (409).
  */
 export const addAllowlistEntryApiV1AdminProviderAllowlistPost = <ThrowOnError extends boolean = false>(options: Options<AddAllowlistEntryApiV1AdminProviderAllowlistPostData, ThrowOnError>): RequestResult<AddAllowlistEntryApiV1AdminProviderAllowlistPostResponses, AddAllowlistEntryApiV1AdminProviderAllowlistPostErrors, ThrowOnError> => (options.client ?? client).post<AddAllowlistEntryApiV1AdminProviderAllowlistPostResponses, AddAllowlistEntryApiV1AdminProviderAllowlistPostErrors, ThrowOnError>({
@@ -1659,6 +1661,8 @@ export const deleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDelete = <Thr
  * Raises:
  * AuthorizationError: If the caller is not an admin (403).
  * ResourceNotFoundError: If no row exists for ``entry_id`` (404).
+ * ValidationError: If the request would enable a row whose provider the
+ * family generation lane forbids (422).
  */
 export const updateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPut = <ThrowOnError extends boolean = false>(options: Options<UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutData, ThrowOnError>): RequestResult<UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutResponses, UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutErrors, ThrowOnError> => (options.client ?? client).put<UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutResponses, UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutErrors, ThrowOnError>({
     responseType: 'json',
