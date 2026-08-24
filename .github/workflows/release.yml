@@ -7,7 +7,8 @@
 # never work here (issue #157; GH013 on every run). This workflow splits
 # the release into two phases that respect the rulesets:
 #
-#   1. propose  - on every push to main (except release-bump merges):
+#   1. propose  - once a day on a schedule (and on demand via
+#      workflow_dispatch), batching every merge since the last tag:
 #      compute the next version from conventional commits, then run
 #      python-semantic-release's writer (--no-commit/--no-tag/--no-push) to
 #      bump pyproject.toml and splice the new version section into
@@ -48,9 +49,36 @@
 name: Semantic Release
 
 "on":
+  # The two jobs below deliberately take DIFFERENT triggers.
+  #
+  # `publish` needs `push`: it fires when the "chore(release):" commit lands on
+  # main, and its guard reads github.event.head_commit.message, which exists
+  # only on a push event. Do not move it to the schedule.
+  #
+  # `propose` runs on the schedule instead of on every push, so a day's merges
+  # are batched into ONE release PR (one version bump, one tag, one changelog
+  # section listing every PR) rather than one release per merge. PSR computes
+  # the bump from every commit since the last tag, so batching changes the
+  # cadence and not the resulting version.
   push:
     branches:
       - main
+
+  # 01:00 UTC daily. Chosen to sit before the homelab Portainer stack's 02:19
+  # UTC force-pull of :latest, so a day's work is normally versioned, tagged
+  # and rebuilt before production picks it up, keeping the deployed image's
+  # org.opencontainers.image.revision traceable to a released tag.
+  # #ASSUME timing: the release PR clears CI and the merge queue inside that
+  # ~80-minute window. #VERIFY nothing breaks if it does not; the deploy tracks
+  # :latest rather than the tag, so a late release only delays tag/changelog
+  # hygiene by a day. Adjust the hour here if the window proves too tight.
+  # #EDGE external-resource: GitHub delays or drops scheduled runs under load,
+  # and disables schedules after 60 days of repository inactivity.
+  # #VERIFY a missed day self-heals: the next run still sees every commit since
+  # the last tag, so nothing is lost, it is only released later.
+  schedule:
+    - cron: '0 1 * * *'
+
   workflow_dispatch:
     inputs:
       force_level:
@@ -79,13 +107,11 @@ permissions:
 jobs:
   propose:
     name: Propose Release PR
-    # Skip when the push IS the release-bump merge landing on main; that
-    # push is handled by the publish job below.
-    # #ASSUME external: python-semantic-release recomputes the same version on
-    # the just-bumped commit, so even without this guard the job would no-op
-    # rather than double-bump. #VERIFY do not delete the head_commit.message
-    # guard on that assumption alone: a PSR change could break the no-op and
-    # cause a double bump, so the message guard is the real protection.
+    # Runs on the daily schedule (and on demand), never on push. Batching a
+    # day's merges into one release PR is the point; it also means this job
+    # can no longer observe the release-bump commit landing on main, so the
+    # old head_commit.message guard against re-proposing on that push is gone
+    # along with the push trigger that made it necessary.
     # #ASSUME external: releases are cut only from stable main. The pipeline is
     # intentionally main-only: PSR's [branches.main] sets prerelease=false, so
     # the writer emits a clean X.Y.Z into pyproject.toml and CHANGELOG. A
@@ -97,8 +123,8 @@ jobs:
     # here. #VERIFY propose runs only for refs/heads/main.
     if: >-
       github.ref == 'refs/heads/main' &&
-      (github.event_name == 'workflow_dispatch' ||
-       !startsWith(github.event.head_commit.message, 'chore(release):'))
+      (github.event_name == 'schedule' ||
+       github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -148,6 +174,21 @@ jobs:
 
       - name: Set up Python
         run: uv python install 3.14
+
+      # #CRITICAL data-integrity: this release flow keeps release state in TWO
+      # places, the version in pyproject.toml (written when the release PR
+      # merges) and the git tag (written by the publish job afterwards). A
+      # failure between them desynchronises the pair and DEADLOCKS the
+      # pipeline: PSR computes the next version from the last TAG, so it keeps
+      # returning the version pyproject already carries, the NEXT == CURRENT
+      # gate below reports "nothing to do", and every run exits SUCCESS having
+      # released nothing. That is exactly what a transient GitHub API 503 on
+      # 2026-08-17 caused; it went unnoticed for a week because the deadlock's
+      # steady state is indistinguishable from a quiet day.
+      # #VERIFY keep this step BEFORE "Compute next version" so the diagnosis
+      # is the reported failure rather than a benign-looking no-op.
+      - name: Check release state is in sync
+        run: python3 scripts/check_release_tag_sync.py
 
       - name: Compute next version
         id: version

@@ -1,8 +1,9 @@
 """Unit tests for the release helper scripts.
 
 Covers scripts/extract_changelog_section.py (turns a released section into
-GitHub Release notes) and scripts/inject_changelog_footer_link.py (adds the
-Keep-a-Changelog compare-link footer that python-semantic-release omits).
+GitHub Release notes), scripts/inject_changelog_footer_link.py (adds the
+Keep-a-Changelog compare-link footer that python-semantic-release omits), and
+scripts/check_release_tag_sync.py (the propose job's deadlock guard).
 
 CHANGELOG.md is GENERATED at release time by python-semantic-release
 (mode="update" splices each version in at the ``<!-- version list -->``
@@ -43,6 +44,7 @@ def _load(name: str) -> ModuleType:
 
 extract_changelog_section = _load("extract_changelog_section")
 inject_changelog_footer_link = _load("inject_changelog_footer_link")
+check_release_tag_sync = _load("check_release_tag_sync")
 
 pytestmark = pytest.mark.unit
 
@@ -392,3 +394,101 @@ class TestRealChangelog:
         assert text.index("[99.0.0]:") < text.index(f"[{latest}]:")
         # Idempotent on a second run.
         assert inject_changelog_footer_link.inject("99.0.0", latest, copied) is False
+
+
+class TestReleaseTagSync:
+    """scripts/check_release_tag_sync.py: the propose job's deadlock guard.
+
+    The guard must fire on exactly one condition (a pyproject version with no
+    corresponding tag) and stay silent on every legitimate state, or a false
+    positive would red the release workflow on every push.
+    """
+
+    def test_in_sync_passes(self) -> None:
+        """The steady state: the declared version is the newest tag."""
+        tags = ["v0.81.0", "v0.81.1", "v0.82.0"]
+        assert check_release_tag_sync.find_desync("0.82.0", tags) is None
+
+    def test_missing_tag_is_reported(self) -> None:
+        """The 2026-08-17 deadlock: bump merged, publish failed, no tag."""
+        tags = ["v0.81.0", "v0.81.1"]
+        problem = check_release_tag_sync.find_desync("0.82.0", tags)
+
+        assert problem is not None
+        assert "0.82.0" in problem
+        assert "v0.82.0" in problem
+        assert "DEADLOCKED" in problem
+
+    def test_no_tags_at_all_passes(self) -> None:
+        """A repo that has never released has a version but no tags.
+
+        Firing here would fail the very first release, so absence of ALL tags
+        is a distinct state from absence of THIS version's tag.
+        """
+        assert check_release_tag_sync.find_desync("0.1.0", []) is None
+
+    def test_unrelated_tags_do_not_satisfy_the_check(self) -> None:
+        """A tag set without this version's tag is still a desync.
+
+        Guards against a substring-style check passing on ``v0.82.0-rc1`` or
+        on a longer version that merely contains the declared one.
+        """
+        assert check_release_tag_sync.find_desync("0.82.0", ["v0.82.00"]) is not None
+        assert check_release_tag_sync.find_desync("0.8.0", ["v0.82.0"]) is not None
+
+    def test_unprefixed_tag_does_not_satisfy_the_check(self) -> None:
+        """PSR's tag_format is ``v{version}``; a bare tag is not that tag."""
+        assert check_release_tag_sync.find_desync("0.82.0", ["0.82.0"]) is not None
+
+    def test_reads_version_from_pyproject(self, tmp_path: Path) -> None:
+        """The version comes from the first ``version = "..."`` line."""
+        pyproject = tmp_path / "pyproject.toml"
+        pyproject.write_text(
+            '[project]\nname = "x"\nversion = "1.2.3"\n\n'
+            '[tool.other]\nversion = "9.9.9"\n',
+            encoding="utf-8",
+        )
+        assert check_release_tag_sync.read_pyproject_version(pyproject) == "1.2.3"
+
+    def test_missing_version_line_exits(self, tmp_path: Path) -> None:
+        """A pyproject without a version line is a hard error, not a pass."""
+        pyproject = tmp_path / "pyproject.toml"
+        pyproject.write_text('[project]\nname = "x"\n', encoding="utf-8")
+
+        with pytest.raises(SystemExit):
+            check_release_tag_sync.read_pyproject_version(pyproject)
+
+    def test_cli_returns_zero_when_in_sync(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """main() exits 0 and says so when the pair is in sync."""
+        monkeypatch.setattr(
+            check_release_tag_sync, "git_tags", lambda *_a, **_k: ["v3.1.4"]
+        )
+        assert check_release_tag_sync.main(["--version", "3.1.4"]) == 0
+
+    def test_cli_returns_one_on_desync(
+        self, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """main() exits 1 and annotates the failure for GitHub Actions."""
+        monkeypatch.setattr(
+            check_release_tag_sync, "git_tags", lambda *_a, **_k: ["v3.1.3"]
+        )
+
+        assert check_release_tag_sync.main(["--version", "3.1.4"]) == 1
+        assert "::error::" in capsys.readouterr().err
+
+    def test_real_repo_is_in_sync(self) -> None:
+        """The live repository must satisfy its own guard.
+
+        This is the positive control: if the guard's assumptions about
+        tag_format or the pyproject layout ever drift, this fails here rather
+        than reddening the release workflow.
+        """
+        version = check_release_tag_sync.read_pyproject_version()
+        assert (
+            check_release_tag_sync.find_desync(
+                version, check_release_tag_sync.git_tags()
+            )
+            is None
+        )
