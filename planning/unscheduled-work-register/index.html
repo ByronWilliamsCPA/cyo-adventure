@@ -6472,6 +6472,30 @@ substantially the same work under different headings. Do not triple-book.</p>
 <td>4b</td>
 <td>done</td>
 </tr>
+<tr>
+<td>UW-C355</td>
+<td><code>AL-594</code> <strong><code>scripts/</code> is a production-adjacent tree that three of the repository's quality gates do not read.</strong> <code>pyproject.toml</code> sets <code>[tool.basedpyright] include = ["src"]</code>, <code>[tool.coverage.run] omit</code> lists <code>scripts/*</code>, and <code>sonarcloud.yml</code> passes <code>source-directory: 'src'</code>, so no type checker, no coverage measurement, and no SAST covers this directory; the ruff per-file-ignores for <code>scripts/**/*.py</code> additionally drop <code>BLE</code>, the rule family that would have flagged the missing <code>OverflowError</code> arm found in the PR #749 review. Two mechanical consequences observed on that PR: the <code># pyright: ignore[reportAttributeAccessIssue]</code> written on the <code>ctypes.WinDLL</code> line is inert because basedpyright never reads the file, and two rounds of bot review were needed to converge on ctypes ABI declarations a type checker would have settled in one. Widening the gates means absorbing whatever backlog they then report, which is an owner call rather than a PR-sized change.</td>
+<td>CI hygiene</td>
+<td>decision</td>
+</tr>
+<tr>
+<td>UW-C356</td>
+<td><code>AL-595</code> <strong>A workflow was red for eight days and seventeen consecutive runs with nothing reporting it.</strong> <code>python-compatibility.yml</code> runs on push to <code>main</code>, on a weekly schedule, and on dispatch, but never on <code>pull_request</code> (a deliberate cost decision, #306), so a failure is visible only to whoever opens the Actions tab. The Windows leg failed every run from #719 (2026-08-16) through 2026-08-24 with a plainly named <code>OSError: [WinError 87]</code>, and #740 then added a second, independent Windows defect into the same silence. Removing <code>-x</code> (PR #749) changes how much a red run reports, not whether anyone learns it went red. Options: a failure-issue job modelled on <code>supabase-backup.yml</code>'s <code>alert</code>, or a scheduled digest.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C357</td>
+<td>The <code>python-compatibility.yml</code> 3.11 leg is both slow and <strong>highly variable</strong>, which matters more than either fact alone. Eight samples of the <code>Run tests</code> step, measured at step granularity because job wall clock includes runner setup: 18.6, 26.1, 26.8, 28.6, 29.5, 29.7, 29.8, 31.9 minutes (runs 32428712031 through 32736921879). That is a 13-minute spread around a ~29-minute median, against the 45-minute ceiling PR #749 raised it to, and roughly 3x the 3.14 leg on the same runner. The raise was correct and the evidence is in the sample: the 29.7 and 29.8 entries are <code>cancelled</code> runs, which is how the old 30-minute ceiling reports a kill, and a cancelled run reads as a supersession rather than a timeout. The open question is the variance, not the median. A single 31m54s reading (run 32692322011, quoted in the PR #749 description) is within normal spread and is not by itself evidence of a regression; a leg whose worst case sits 13 minutes above its best has less real headroom than the ceiling suggests.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C358</td>
+<td>No gate asserts that every commit reaching <code>main</code> carries a verified signature, though <code>CLAUDE.md</code> mandates <code>git commit -S</code>. Every commit on PR #749 was in fact verified, which is the point: the property held and nothing would have reported it had it not. A mandate with no detector is folklore; the check is one <code>gh api</code> call per commit in a PR-scoped job. Filed from the PR #749 review, which verified it by hand.</td>
+<td>CI hygiene</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-d-untracked-github-issues">Cluster D: untracked GitHub issues<a class="headerlink" href="#cluster-d-untracked-github-issues" title="Permanent link">&para;</a></h2>
@@ -8192,7 +8216,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 24, 2026 04:45:22 UTC">August 24, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 24, 2026 15:44:42 UTC">August 24, 2026</span>
   </span>
 
     

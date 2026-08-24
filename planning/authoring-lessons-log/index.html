@@ -9359,6 +9359,26 @@ written, which is the error the row exists to correct.</p>
 <td>applied</td>
 <td><code>.github/workflows/ci.yml</code></td>
 </tr>
+<tr>
+<td>AL-594</td>
+<td>2026-08-24</td>
+<td>PR #749 review (<code>UW-C355</code>)</td>
+<td>tooling</td>
+<td><strong>A test that asserts a property of the host's own output cannot detect a host-portability regression.</strong> <code>scripts/catalog_census.py</code> rendered <code>str(path)</code> into a committed document, so the census generated on Windows disagreed with the one committed from Linux. The fix (<code>_doc_path</code> calling <code>as_posix</code>) was right, but the regression test read the real catalog and asserted that no backslash appeared: on a Linux runner <code>PosixPath.__str__</code> emits no backslash whether or not the fix is present, so the test passed with the fix reverted and could only ever fail on the Windows job, which is the job that let the defect through in the first place. The general shape: when the defect is that output varies by host, the oracle has to supply the foreign host's input, not observe the local host's output.</td>
+<td>APPLIED in this change: <code>Shell.path</code> is typed <code>PurePath</code> rather than <code>Path</code>, which is honest (the census renders it and never reads through it) and lets <code>test_a_windows_catalog_path_is_forward_slashed_before_it_reaches_the_doc</code> feed <code>census()</code> a <code>PureWindowsPath</code> shell on any runner. Verified by mutation: reverting <code>_doc_path</code> to <code>str(path)</code> fails that test on Linux.</td>
+<td>applied</td>
+<td>PR #749</td>
+</tr>
+<tr>
+<td>AL-595</td>
+<td>2026-08-24</td>
+<td>PR #749 review (<code>UW-C356</code>)</td>
+<td>process</td>
+<td><strong>A CI rationale written from memory attributed two defects to one PR, and the wrong attribution was committed into a source comment where it outlives the review that could have caught it.</strong> Removing <code>-x</code> from <code>python-compatibility.yml</code> was justified in a committed comment reading "#740 landed two independent Windows defects, and -x reported only whichever one random ordering reached first". <code>git log -S'os.kill' -- scripts/w7_battery.py</code> returns exactly one commit, <code>edfc3b38</code> (#719, 2026-08-16), and <code>f6adbc67</code> (#740) touched only <code>scripts/catalog_census.py</code>. <code>gh run list</code> shows twelve failing runs before #740 in which <code>-x</code> named the single defect correctly every time. The conclusion (drop <code>-x</code>) survived the check; the premise did not. A rationale comment is a durable claim about history and deserves the evidence standard of a test assertion, not of a recollection.</td>
+<td>APPLIED in this change: the comment now cites the seventeen-run failure window, names #719 as the origin of the first defect and #740 as the second, and says the masking window is the last five runs rather than all of them. Corroborating command: <code>gh run list --workflow=python-compatibility.yml --limit 25</code>.</td>
+<td>applied</td>
+<td>PR #749</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -9398,7 +9418,7 @@ written, which is the error the row exists to correct.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 24, 2026 04:05:16 UTC">August 24, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 24, 2026 15:44:42 UTC">August 24, 2026</span>
   </span>
 
     
