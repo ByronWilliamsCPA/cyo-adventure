@@ -78,9 +78,18 @@ jobs:
       - name: Run tests
         # Force bash on all platforms; Windows runners default to PowerShell,
         # which cannot parse the backslash line-continuations below (ParserError).
+        #
+        # No -x. This matrix exists to find platform-specific breakage, and a
+        # platform usually breaks in more than one place at once: #740 landed
+        # two independent Windows defects, and -x reported only whichever one
+        # random ordering reached first. Three pushes each showed a single
+        # failure and read as one intermittent problem rather than two bugs,
+        # because fixing the reported one would only have revealed the next.
+        # A leg that runs to completion costs the same wall clock it already
+        # spends when green and names every failure in one run.
         shell: bash
         run: |
-          uv run pytest tests/ -v --tb=short -x \
+          uv run pytest tests/ -v --tb=short \
             --ignore=tests/integration \
             --ignore=tests/load \
             -m "not slow and not integration"
