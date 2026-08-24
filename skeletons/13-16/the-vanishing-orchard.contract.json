@@ -550,7 +550,10 @@
           "KEE_CHAR",
           "NEIGHBOR_GIRL"
         ]
-      }
+      },
+      "kind": "personalizable",
+      "personalization_field": "protagonist_first_name",
+      "role_safety": "protagonist"
     },
     {
       "id": "HERO_FULL",

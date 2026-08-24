@@ -65,7 +65,10 @@
         "max_words": 6,
         "forbid": ["weapon"],
         "distinct_from": ["COMPANION"]
-      }
+      },
+      "kind": "personalizable",
+      "personalization_field": "protagonist_first_name",
+      "role_safety": "protagonist"
     },
     {
       "id": "COMPANION",

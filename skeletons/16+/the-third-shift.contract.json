@@ -65,7 +65,10 @@
         "max_words": 6,
         "forbid": ["weapon"],
         "distinct_from": ["SUPERVISOR", "GHOST_NAME", "ROUTE_A_CHAR", "ROUTE_B_CHAR", "ROUTE_C_CHAR"]
-      }
+      },
+      "kind": "personalizable",
+      "personalization_field": "protagonist_first_name",
+      "role_safety": "protagonist"
     },
     {
       "id": "SUPERVISOR",

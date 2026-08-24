@@ -22,7 +22,7 @@
     "sleet"
   ],
   "default_binding": {
-    "HERO": "Vera Lindqvist",
+    "HERO": "Vera",
     "THRESHOLD": "the last northbound overnight train of the season",
     "ENTRANCE": "the platform",
     "OPENING_MOMENT": "sleet turns to snow",
@@ -92,7 +92,10 @@
           "weapon"
         ],
         "distinct_from": []
-      }
+      },
+      "kind": "personalizable",
+      "personalization_field": "protagonist_first_name",
+      "role_safety": "protagonist"
     },
     {
       "id": "THRESHOLD",

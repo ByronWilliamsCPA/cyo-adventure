@@ -76,7 +76,10 @@
           "weapon"
         ],
         "distinct_from": []
-      }
+      },
+      "kind": "personalizable",
+      "personalization_field": "protagonist_first_name",
+      "role_safety": "protagonist"
     },
     {
       "id": "WARDEN",

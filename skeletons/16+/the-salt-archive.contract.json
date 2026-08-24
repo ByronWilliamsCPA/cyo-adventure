@@ -15,7 +15,7 @@
     "tideline"
   ],
   "default_binding": {
-    "HERO": "Maren Coll",
+    "HERO": "Maren",
     "TOWN": "Saltmere",
     "FOUNDER": "Elias Verrin",
     "CONTRIBUTOR": "Nan Ostler",
@@ -101,7 +101,10 @@
           "CONTRIBUTOR",
           "FOUNDER"
         ]
-      }
+      },
+      "kind": "personalizable",
+      "personalization_field": "protagonist_first_name",
+      "role_safety": "protagonist"
     },
     {
       "id": "TOWN",
