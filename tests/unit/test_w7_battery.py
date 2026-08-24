@@ -25,8 +25,10 @@ if TYPE_CHECKING:
 
 from scripts.judge_books import Verdict
 from scripts.w7_battery import (
+    _MAX_PID,
     DEFECT_CRITERION,
     _alive,
+    _alive_windows,
     blend_to_grade,
     cohens_kappa,
     load_panel,
@@ -523,13 +525,17 @@ class _FakeKernel32:
         self._waited = waited
         self.closed: list[int] = []
         self.access_requested: int | None = None
+        self.inherit_requested: bool | None = None
+        self.pid_requested: int | None = None
         self.timeout_requested: int | None = None
         self.OpenProcess = _FakeWinFunc(self._open_process)
         self.WaitForSingleObject = _FakeWinFunc(self._wait_for_single_object)
         self.CloseHandle = _FakeWinFunc(self._close_handle)
 
-    def _open_process(self, access: int, _inherit: bool, _pid: int) -> int:
+    def _open_process(self, access: int, inherit: bool, pid: int) -> int:
         self.access_requested = access
+        self.inherit_requested = inherit
+        self.pid_requested = pid
         return self._handle
 
     def _wait_for_single_object(self, _handle: int, timeout: int) -> int:
@@ -639,37 +645,74 @@ def test_windows_refuses_to_call_an_unrecognised_failure_dead(
     assert _alive("4321") is True
 
 
-@pytest.mark.unit
-@pytest.mark.parametrize("pid", ["0", "-1", "-999"])
-def test_a_non_positive_pid_is_a_corrupted_lock_not_a_process(pid: str) -> None:
-    """0 and negatives are not process ids, and reading them as live wedges us.
+# Every value the pid guard must reject, and why each one is here:
+#
+#   "0", "-1"   POSIX `kill` reads these as "my own process group" and "every
+#               process I may signal", so both succeed and report live.
+#   "-999"      converted mod 2**32 by the Win32 DWORD argtype, so it asks
+#               about pid 4294966297 rather than failing.
+#   2**31       the exact value at which `os.kill` raises `OverflowError`
+#               converting to C `int`, crashing instead of answering.
+#   2**32+1234  truncates to pid 1234 on Windows, so a live and unrelated
+#               process would hold the lock forever.
+_REJECTED_PIDS = ("0", "-1", "-999", str(2**31), str(2**32 + 1234))
 
-    A lock is written with `os.getpid()`, so a non-positive value can only be a
-    corrupted file. Handing one to POSIX `kill` inverts the answer instead of
-    erroring: 0 means the caller's own process group and -1 means every process
-    it may signal, so both succeed and report live. A lock truncated to `0`
-    would then block every later run forever, which is the precise failure
-    `test_a_corrupted_lock_file_reads_as_dead` exists to rule out.
+
+@pytest.mark.unit
+@pytest.mark.parametrize("pid", _REJECTED_PIDS)
+def test_a_pid_outside_the_probe_range_is_a_corrupted_lock_not_a_process(
+    pid: str,
+) -> None:
+    """A lock is written with `os.getpid()`, so these can only be corruption.
+
+    Reading any of them as live would block every later run forever, which is
+    the precise failure `test_a_corrupted_lock_file_reads_as_dead` exists to
+    rule out. Reading `2**31` as anything at all requires the guard: without
+    it `os.kill` raises `OverflowError` here rather than returning a verdict.
     """
     assert _alive(pid) is False
 
 
 @pytest.mark.unit
-def test_a_non_positive_pid_never_reaches_the_platform_probe(
-    monkeypatch: pytest.MonkeyPatch,
+@pytest.mark.parametrize("pid", _REJECTED_PIDS)
+@pytest.mark.parametrize("platform", ["linux", "win32"])
+def test_a_rejected_pid_never_reaches_the_platform_probe(
+    monkeypatch: pytest.MonkeyPatch, pid: str, platform: str
 ) -> None:
-    """The guard must run before either branch, not inside one of them."""
+    """The guard must run before either branch, not inside one of them.
+
+    Asserting the value alone is not enough to catch a regression: on Linux
+    `os.kill(-999, 0)` happens to raise `ProcessLookupError` because no process
+    group 999 exists, so `_alive("-999")` returns False by host coincidence
+    whether or not the guard is there. Forbidding the probe outright is what
+    makes every case here discriminate.
+    """
 
     def _forbidden(*_args: object, **_kwargs: object) -> None:
-        msg = "a non-positive pid must not reach the platform probe"
+        msg = f"pid {pid} must not reach the platform probe"
         raise AssertionError(msg)
 
+    monkeypatch.setattr(sys, "platform", platform)
     monkeypatch.setattr(os, "kill", _forbidden)
     monkeypatch.setattr(ctypes, "WinDLL", _forbidden, raising=False)
 
-    assert _alive("0") is False
-    monkeypatch.setattr(sys, "platform", "win32")
-    assert _alive("0") is False
+    assert _alive(pid) is False
+
+
+@pytest.mark.unit
+def test_the_windows_probe_refuses_a_pid_it_cannot_ask_about() -> None:
+    """The Win32 branch defends its own precondition rather than inheriting it.
+
+    ctypes converts an out-of-range int mod 2**32 against the `c_uint32`
+    argtype instead of raising, so a caller that reached here past the guard
+    would get a confident answer about an entirely different process. Refusing
+    is the loud alternative to that silence.
+    """
+    with pytest.raises(ValueError, match=r"outside 1\.\.\d+,"):
+        _alive_windows(2**32 + 1234)
+    with pytest.raises(ValueError, match=r"outside 1\.\.\d+,"):
+        _alive_windows(0)
+    assert _MAX_PID == 2**31 - 1
 
 
 @pytest.mark.unit
@@ -698,6 +741,29 @@ def test_windows_declares_pointer_sized_handles_before_calling(
         ctypes.c_int,
         ctypes.c_uint32,
     )
+
+
+@pytest.mark.unit
+def test_windows_asks_about_the_pid_it_was_given_without_inheriting(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """`OpenProcess` takes three arguments and all three have to be right.
+
+    The access mask and the wait timeout were already asserted; the pid and
+    `bInheritHandle` were passed and then discarded by the fake, so a probe
+    that asked about the wrong process, or that leaked an inheritable handle
+    into every child the harness later spawns, looked identical to a correct
+    one from the test suite's point of view.
+    """
+    fake = _use_fake_kernel32(
+        monkeypatch, _FakeKernel32(handle=1234, waited=WAIT_TIMEOUT)
+    )
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    assert _alive("4321") is True
+
+    assert fake.pid_requested == 4321, "the probe asked about a different process"
+    assert fake.inherit_requested is False, "the handle was opened inheritable"
     assert fake.WaitForSingleObject.argtypes == (ctypes.c_void_p, ctypes.c_uint32)
     assert fake.WaitForSingleObject.restype is ctypes.c_uint32
     assert fake.CloseHandle.argtypes == (ctypes.c_void_p,)

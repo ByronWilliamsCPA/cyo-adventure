@@ -296,6 +296,15 @@ def single_run(out_dir: Path) -> Generator[None]:
         lock.unlink(missing_ok=True)
 
 
+# The largest pid either platform's probe can carry without changing the
+# question being asked. POSIX `os.kill` converts through C `int` and raises
+# `OverflowError` at exactly 2**31; the Win32 probe takes a `c_uint32` DWORD,
+# and ctypes converts an out-of-range int mod 2**32 rather than raising, so an
+# oversized value silently becomes a different, possibly live, pid. 2**31 - 1
+# is under both, and far above any pid either kernel issues.
+_MAX_PID: Final[int] = 2**31 - 1
+
+
 def _alive(pid: str) -> bool:
     """Return whether *pid* names a live process.
 
@@ -303,23 +312,37 @@ def _alive(pid: str) -> bool:
         pid: A process id as written into the lock file.
 
     Returns:
-        ``True`` when the process exists. A malformed lock file reads as dead,
-        so a corrupted lock cannot wedge the harness permanently.
+        ``True`` when the process exists. Anything outside ``1.._MAX_PID``,
+        including a value no integer can be read out of, reads as dead, so a
+        corrupted lock cannot wedge the harness permanently.
     """
     try:
         numeric = int(pid)
     except ValueError:
         return False
-    if numeric <= 0:
-        # A lock is written with `os.getpid()`, which is always positive, so a
-        # non-positive value is a corrupted file rather than a process. Passing
-        # one through would do the opposite of reading it as dead: POSIX `kill`
-        # takes 0 to mean the caller's own process group and -1 to mean every
-        # process it may signal, so both succeed and report live, and on
-        # Windows pid 0 is the System Idle Process, whose `OpenProcess` failure
-        # is ERROR_ACCESS_DENIED, which reads as live below. Either way a
-        # truncated lock would wedge the harness permanently, which is the one
-        # outcome this guard must never produce.
+    if not 0 < numeric <= _MAX_PID:
+        # A lock is written with `os.getpid()`, so a value outside this range is
+        # a corrupted file rather than a process, and every way of passing one
+        # through is worse than reading it as dead.
+        #
+        # Below the range, POSIX `kill` inverts the answer instead of erroring:
+        # 0 means the caller's own process group and -1 means every process it
+        # may signal, so both succeed and report a live holder that does not
+        # exist. On Windows a negative value is converted mod 2**32 against the
+        # `c_uint32` argtype below, so `-1` asks about pid 4294967295 and any
+        # answer is about some unrelated process. (Windows pid 0 is the one
+        # benign case: `OpenProcess` rejects the System Idle Process with
+        # ERROR_INVALID_PARAMETER, which already reads as dead.
+        # ERROR_ACCESS_DENIED, the code that reads as live, is what the System
+        # process and the CSRSS processes return, not pid 0.)
+        #
+        # Above the range, `os.kill` raises `OverflowError` converting to C
+        # `int`, which is a crash rather than an answer, and Windows truncates
+        # as above, so a lock holding 2**32 + 1234 would probe pid 1234 and an
+        # innocent live process would hold the lock forever.
+        #
+        # Either direction, a corrupted lock would wedge the harness
+        # permanently, which is the one outcome this guard must never produce.
         return False
     if sys.platform == "win32":
         return _alive_windows(numeric)
@@ -354,11 +377,27 @@ def _alive_windows(pid: int) -> bool:
     dependency.
 
     Args:
-        pid: A process id.
+        pid: A process id, already bounded to ``1.._MAX_PID`` by `_alive`.
 
     Returns:
         ``True`` when the process exists and has not exited.
+
+    Raises:
+        ValueError: If *pid* is outside the range the DWORD conversion can
+            carry unchanged.
     """
+    # `_alive` bounds the pid before dispatching here and is the only caller,
+    # but restating the precondition is what keeps the `c_uint32` conversion
+    # below honest: ctypes converts an out-of-range int mod 2**32 instead of
+    # raising, so a caller that skipped the guard would quietly ask about a
+    # different process rather than fail. Refusing is the loud alternative.
+    if not 0 < pid <= _MAX_PID:
+        msg = (
+            f"pid {pid} is outside 1..{_MAX_PID}, the range this probe can ask "
+            "about without the DWORD conversion changing which process it names"
+        )
+        raise ValueError(msg)
+
     import ctypes  # noqa: PLC0415 - Windows-only, kept out of the POSIX path
 
     # #ASSUME: external resources: the Win32 error, access-right and wait-result
