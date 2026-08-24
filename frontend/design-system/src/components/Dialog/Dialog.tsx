@@ -74,7 +74,26 @@ export function Dialog({ title, children, actions, open = true, onClose }: Dialo
   if (!open) return null
 
   return (
-    <div className="cyo-dialog-backdrop" onClick={onClose}>
+    // The backdrop is decorative: role="presentation" keeps it out of the
+    // accessibility tree, which is correct because it carries no information
+    // and must not be a tab stop. Dismissal is not lost for keyboard users:
+    // the Escape branch of onKeyDown above closes the dialog, and that is the
+    // keyboard equivalent of the backdrop click, not something a listener on
+    // this div could provide.
+    //
+    // Closing is gated on `target === currentTarget` (the click landed on the
+    // backdrop itself, not bubbled up from inside) rather than on a
+    // stopPropagation handler attached to the dialog. That handler was a
+    // mouse-event listener on a role="dialog" element, which is a
+    // non-interactive role, so it both tripped jsx-a11y and put behaviour on
+    // an element that should have none. This form needs no listener there.
+    <div
+      className="cyo-dialog-backdrop"
+      role="presentation"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+    >
       <div
         ref={dialogRef}
         role="dialog"
@@ -82,7 +101,6 @@ export function Dialog({ title, children, actions, open = true, onClose }: Dialo
         aria-labelledby={titleId}
         className="cyo-dialog"
         tabIndex={-1}
-        onClick={(e) => e.stopPropagation()}
       >
         <h2 id={titleId} className="cyo-dialog__title">
           {title}
