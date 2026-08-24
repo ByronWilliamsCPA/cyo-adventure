@@ -508,6 +508,73 @@ def resolve_skeleton_path(band: str, slug: str) -> Path:
     return candidate
 
 
+def _locate_skeleton(slug: str) -> tuple[str, Path] | None:
+    """Return the (band directory name, path) holding ``<slug>.json``.
+
+    The single definition of "which band holds this slug", shared by
+    :func:`find_skeleton_metadata` and :func:`find_skeleton_band` so the
+    ambiguity and traversal rules cannot drift between them.
+
+    Args:
+        slug: The skeleton's filename stem (untrusted).
+
+    Returns:
+        The matched band directory name and its path, or None if no band
+        directory has a file named "<slug>.json".
+
+    Raises:
+        ValidationError: If ``slug`` traverses outside the skeleton root (via
+            :func:`resolve_skeleton_path`), or if the same "<slug>.json"
+            exists in two or more bands (ambiguous).
+    """
+    if not _SKELETON_ROOT.is_dir():
+        return None
+    matches: list[tuple[str, Path]] = []
+    for band_dir in sorted(_SKELETON_ROOT.iterdir()):
+        if not band_dir.is_dir():
+            continue
+        path = resolve_skeleton_path(band_dir.name, slug)
+        if path.is_file():
+            matches.append((band_dir.name, path))
+    if len(matches) > 1:
+        bands = ", ".join(sorted(band for band, _ in matches))
+        msg = f"ambiguous skeleton_slug '{slug}' present in multiple bands: {bands}"
+        raise ValidationError(msg, field="skeleton_slug", value=slug)
+    if not matches:
+        return None
+    return matches[0]
+
+
+def find_skeleton_band(slug: str) -> str | None:
+    """Return the band directory name holding ``<slug>.json``.
+
+    Used by :func:`~cyo_adventure.moderation.personalizable_slots.personalizable_slot_ids_for_version`
+    to recover the band a ``StorybookVersion`` does not store, so an imported
+    book's theme contract can be loaded without a ``GenerationJob`` row.
+
+    The band is the matched DIRECTORY, deliberately not the metadata's declared
+    ``age_band``. The two agree for every skeleton in the catalog today; taking
+    the directory means they never have to. A skeleton filed under one band
+    while declaring another would otherwise resolve to a path that does not
+    exist, and its caller would fail closed to a block that reads as a safety
+    verdict rather than as a catalog inconsistency.
+
+    Args:
+        slug: The skeleton's filename stem, from
+            ``StorybookVersion.skeleton_slug``.
+
+    Returns:
+        The band directory name (e.g. "8-11"), or None if no band directory
+        has a file named "<slug>.json".
+
+    Raises:
+        ValidationError: If ``slug`` traverses outside the skeleton root, or if
+            the same "<slug>.json" exists in two or more bands.
+    """
+    located = _locate_skeleton(slug)
+    return None if located is None else located[0]
+
+
 def find_skeleton_metadata(slug: str) -> StoryMetadata | None:
     """Return a skeleton's typed metadata by scanning every band directory.
 
@@ -535,22 +602,10 @@ def find_skeleton_metadata(slug: str) -> StoryMetadata | None:
             exists in two or more bands (ambiguous); or if exactly one exists
             but is unreadable or has invalid metadata (present-but-corrupt).
     """
-    if not _SKELETON_ROOT.is_dir():
+    located = _locate_skeleton(slug)
+    if located is None:
         return None
-    matches: list[tuple[str, Path]] = []
-    for band_dir in sorted(_SKELETON_ROOT.iterdir()):
-        if not band_dir.is_dir():
-            continue
-        path = resolve_skeleton_path(band_dir.name, slug)
-        if path.is_file():
-            matches.append((band_dir.name, path))
-    if len(matches) > 1:
-        bands = ", ".join(sorted(band for band, _ in matches))
-        msg = f"ambiguous skeleton_slug '{slug}' present in multiple bands: {bands}"
-        raise ValidationError(msg, field="skeleton_slug", value=slug)
-    if not matches:
-        return None
-    metadata = _load_metadata(matches[0][1])
+    metadata = _load_metadata(located[1])
     if metadata is None:
         msg = f"skeleton_slug '{slug}' exists but is unreadable or has invalid metadata"
         raise ValidationError(msg, field="skeleton_slug", value=slug)
