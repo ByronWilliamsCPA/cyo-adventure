@@ -23,6 +23,37 @@ import tseslint from 'typescript-eslint'
 // Read this as a statement about the tool, not about the code: a lint-grade
 // pattern matcher found zero real defects in ~80k lines. It is a floor under
 // the SAST gap, not a substitute for a dataflow engine.
+// eslint-plugin-security 4.0.1 ships 14 rules; 2 are disabled below, so 12 are
+// armed. The count is asserted rather than assumed because the derivation reads
+// the plugin's shape at load time: a 5.x that moves the preset to
+// `configs.flat.recommended` throws loudly, but an intermediate release that
+// shipped `rules = {}` would yield ZERO armed rules with no error at all, and CI
+// would stay green having run no security rules. That is the same "a clean scan
+// and no scan look identical" failure the Semgrep canary exists to prevent, and
+// it deserves the same treatment on this side.
+const SECURITY_RULES_EXPECTED = 12
+
+function securityRulesAtError() {
+  const preset = security.configs?.recommended?.rules
+  if (!preset || typeof preset !== 'object') {
+    throw new Error(
+      'eslint-plugin-security: configs.recommended.rules is missing. The plugin ' +
+        'layout changed; update this derivation rather than dropping the rules.'
+    )
+  }
+  const armed = Object.keys(preset)
+    .filter((rule) => !SECURITY_RULES_OFF.has(rule))
+    .map((rule) => [rule, 'error'])
+  if (armed.length !== SECURITY_RULES_EXPECTED) {
+    throw new Error(
+      `eslint-plugin-security: expected ${SECURITY_RULES_EXPECTED} armed rules, ` +
+        `derived ${armed.length}. Reconcile SECURITY_RULES_OFF and this count ` +
+        'deliberately; do not adjust the number to match.'
+    )
+  }
+  return armed
+}
+
 const SECURITY_RULES_OFF = new Set([
   // Fires on EVERY computed member access, including `STATUS_LABELS[status]`
   // and `change.payload[key]`. 64 of the 74 findings, all idiomatic TypeScript
@@ -42,7 +73,14 @@ export default tseslint.config(
   { ignores: ['dist', 'node_modules', 'src/client'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
-    files: ['**/*.{ts,tsx}'],
+    // `js`/`mjs` are in this glob DELIBERATELY. A flat-config block's rules
+    // reach only the files its `files` glob matches, so before this the
+    // build-side JavaScript (eslint.config.js, scripts/*.mjs) matched no block
+    // with rules and ESLint reported zero problems for it unconditionally:
+    // listing those paths in package.json's lint globs was decorative. Proven
+    // by mutation on 2026-08-24 (an unused const plus a non-literal RegExp in
+    // each file: 0 problems before, 3 in a .tsx file).
+    files: ['**/*.{ts,tsx,js,mjs,cjs}'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -81,23 +119,53 @@ export default tseslint.config(
       // frontend/ at all.
       //
       // Severity is pinned to 'error' DELIBERATELY and must stay that way.
-      // eslint-plugin-security ships all 14 of its rules at 'warn', and the
-      // lint step in ci.yml runs `npm run lint` without --max-warnings=0, so
-      // ESLint exits 0 on warnings. Spreading the plugin's recommended config
-      // would therefore have added a security scanner that cannot fail a
-      // build. Do not relax any of these to 'warn' without also making the CI
-      // lint step fail on warnings.
+      // eslint-plugin-security ships all 14 of its rules at 'warn'. Spreading
+      // the plugin's recommended config would have added a security scanner
+      // whose findings could not fail a build. `npm run lint` now also carries
+      // --max-warnings=0, matching the pre-commit hook, so a warning is fatal
+      // either way; 'error' is kept as the belt to that braces, because the
+      // severity is then visible here rather than depending on a flag in
+      // package.json. Do not relax any of these to 'warn'.
       //
       // no-unsanitized ships at 'error' already; it is listed explicitly
       // rather than spread so that the severity is visible at the call site
       // and survives an upstream default change.
       'no-unsanitized/method': 'error',
       'no-unsanitized/property': 'error',
-      ...Object.fromEntries(
-        Object.keys(security.configs.recommended.rules)
-          .filter((rule) => !SECURITY_RULES_OFF.has(rule))
-          .map((rule) => [rule, 'error'])
-      ),
+      ...Object.fromEntries(securityRulesAtError()),
+    },
+  },
+  {
+    // Files outside every tsconfig's `include`. The design-sync preview files
+    // are hand-authored (committed by #210 and #219), and the two config files
+    // are build inputs, so all of them are worth linting; none of them is
+    // reachable from tsconfig.json's project reference graph, so
+    // `projectService` rejects them outright with "was not found by the
+    // project service". Parsing them without type information keeps every
+    // AST-based rule armed, eslint-plugin-security and no-unsanitized
+    // included, and drops only the rules that need a type checker.
+    //
+    // #ASSUME: security: the type-aware rules dropped here are correctness
+    // rules (no-floating-promises, no-unsafe-*), not security rules; the
+    // security floor described above is AST-only and survives intact.
+    // #VERIFY: if a type-aware SECURITY rule is ever added to this config,
+    // add these paths to a tsconfig instead of widening this block.
+    files: [
+      'design-system/.design-sync/previews/**/*.{ts,tsx}',
+      'design-system/vite.config.ts',
+      'openapi-ts.config.ts',
+      'eslint.config.js',
+      'scripts/**/*.mjs',
+    ],
+    extends: [tseslint.configs.disableTypeChecked],
+    languageOptions: {
+      // The build-side files here run under Node, not in a browser, so they
+      // need Node globals for js.configs.recommended's no-undef.
+      globals: { ...globals.node },
+      parserOptions: {
+        projectService: false,
+        project: false,
+      },
     },
   },
   {
@@ -116,6 +184,9 @@ export default tseslint.config(
       'e2e-support/**/*.{ts,tsx}',
       'src/test/**/*.{ts,tsx}',
       'src/**/*.test.{ts,tsx}',
+      // design-system/src entered the lint glob in this PR; its tests are the
+      // same kind of code and need the same exemption.
+      'design-system/src/**/*.test.{ts,tsx}',
     ],
     rules: {
       'security/detect-non-literal-regexp': 'off',

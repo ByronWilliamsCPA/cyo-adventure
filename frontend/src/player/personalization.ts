@@ -112,7 +112,7 @@ const SENTINEL_RE = new RegExp(SENTINEL_PATTERN_FALLBACK, 'g')
  * guaranteeing no marker fragment reaches a child; the at-rest gate is what
  * keeps real prose from ever containing these shapes.
  */
-// safe-regex flags
+// #ASSUME: security: safe-regex flags
 // this on STAR HEIGHT alone (the `*` inside the outer `*`), without checking
 // whether the alternation is ambiguous. It is not: `[^{}]` and `\{[^{}]*\}`
 // are disjoint on their first character, so the engine never has two live
