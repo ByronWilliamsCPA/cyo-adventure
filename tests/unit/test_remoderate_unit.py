@@ -44,6 +44,11 @@ from cyo_adventure.events import Actor
 from cyo_adventure.generation.import_story import IMPORT_PROVIDER
 from cyo_adventure.generation.provider import _CANNED_STORY, MockProvider
 from cyo_adventure.moderation import pipeline as pipeline_mod
+from cyo_adventure.publishing.state_machine import (
+    LEGAL_TRANSITIONS,
+    Action,
+    Status,
+)
 from cyo_adventure.validator.gate import run_fill_gate
 
 if TYPE_CHECKING:
@@ -918,7 +923,11 @@ async def test_hard_block_on_published_book_logs_warning(
     # The block changed nothing about the book itself; that is the point.
     assert story.status == "published"
     logger.warning.assert_called_once()
-    assert logger.warning.call_args.args[0] == "remoderate.hard_block_on_published_book"
+    assert (
+        logger.warning.call_args.args[0]
+        == "remoderate.hard_block_without_status_change"
+    )
+    assert logger.warning.call_args.kwargs["status"] == "published"
     assert logger.warning.call_args.kwargs["storybook_id"] == "s1"
 
 
@@ -1276,3 +1285,54 @@ async def test_repaired_blob_gets_a_matching_validation_report(
     # The discriminating half: without the post-pipeline pass the stored report
     # is the PRE-repair one, so these two must differ or the test proves nothing.
     assert version_row.validation_report != run_fill_gate(_blob()).report.to_dict()
+
+
+async def test_remoderatable_statuses_cannot_be_moved_by_the_pipeline() -> None:
+    """Every admitted status must be one the pipeline's terminal call cannot move.
+
+    This is the invariant the whole endpoint rests on. ``remoderate`` calls
+    ``run_moderation_pipeline`` unmodified, and that pipeline always ends by
+    attempting ``submit`` (clean/repaired) or ``auto_reject`` (hard block).
+    The endpoint is safe only because both hops are ILLEGAL for every status
+    it admits, so ``assert_transition`` raises before ``storybook.status`` is
+    touched and the endpoint catches it.
+
+    Nothing in the type system enforces that. Adding a status to
+    ``_REMODERATABLE_STATUSES``, or adding a hop to ``LEGAL_TRANSITIONS`` for
+    a status already in it, would silently convert a report-only endpoint into
+    one that moves books past the human gate ADR-005 requires. This test is
+    the enforcement.
+
+    Async despite awaiting nothing: this module's ``pytestmark`` applies
+    ``pytest.mark.asyncio`` to every test in the file.
+    """
+    for status in remoderate_api._REMODERATABLE_STATUSES:
+        for action in (Action.SUBMIT, Action.AUTO_REJECT):
+            assert (status, action) not in LEGAL_TRANSITIONS, (
+                f"({status}, {action}) is now a legal transition, so "
+                f"re-moderating a {status} book would MOVE it. Either remove "
+                f"{status} from _REMODERATABLE_STATUSES or stop calling "
+                f"run_moderation_pipeline unmodified."
+            )
+
+
+async def test_remoderatable_statuses_excludes_every_movable_status() -> None:
+    """The converse: no status the pipeline CAN move may be admitted.
+
+    Guards the other direction of the same invariant, so a future widening
+    that admits ``draft`` or ``needs_revision`` fails here rather than in
+    production. Both of those have a legal SUBMIT hop today.
+    """
+    movable = {
+        status
+        for (status, action) in LEGAL_TRANSITIONS
+        if action in {Action.SUBMIT, Action.AUTO_REJECT}
+    }
+    assert movable, "sanity: LEGAL_TRANSITIONS should have movable statuses"
+    assert not (movable & remoderate_api._REMODERATABLE_STATUSES), (
+        "a status the pipeline can move is admitted for re-moderation"
+    )
+    # The specific statuses this pins today, so the sanity check above cannot
+    # go vacuous if LEGAL_TRANSITIONS is restructured.
+    assert Status.DRAFT in movable
+    assert Status.NEEDS_REVISION in movable
