@@ -116,14 +116,17 @@ class TestBuildProviderLive:
         """anthropic without a credential raises ConfigurationError by key name."""
         settings = Settings(generation_provider="anthropic", anthropic_api_key=None)  # type: ignore[call-arg]
         with pytest.raises(ConfigurationError) as exc_info:
-            build_provider(settings)
+            build_provider(settings, lane="admin")
         assert "ANTHROPIC_API_KEY" in str(exc_info.value)
 
     def test_anthropic_key_value_not_leaked_in_error(self) -> None:
         """A missing-key error never echoes any key value."""
         settings = Settings(generation_provider="anthropic", anthropic_api_key=None)  # type: ignore[call-arg]
+        # lane="admin" on purpose: on the family lane this would raise the lane
+        # error instead, and the assertion would pass without ever reaching the
+        # credential path it claims to cover.
         with pytest.raises(ConfigurationError) as exc_info:
-            build_provider(settings)
+            build_provider(settings, lane="admin")
         assert "Bearer" not in str(exc_info.value)
 
     def test_anthropic_with_key_builds_bare_leg(self) -> None:
@@ -131,7 +134,7 @@ class TestBuildProviderLive:
         settings = Settings(  # type: ignore[call-arg]
             generation_provider="anthropic", anthropic_api_key="test-key"
         )
-        provider = build_provider(settings)
+        provider = build_provider(settings, lane="admin")
         assert isinstance(provider, AnthropicProvider)
         assert provider.model == settings.anthropic_model
 
@@ -258,7 +261,8 @@ class TestBuildProviderLive:
         )
         provider = build_provider(settings)
         assert isinstance(provider, OpenRouterProvider)
-        assert provider.name == "openrouter:anthropic/claude-haiku-4.5"
+        # The shipped fill default since D1 (ruled 2026-08-23, `UW-C346`).
+        assert provider.name == "openrouter:deepseek/deepseek-v4-pro"
 
     def test_retired_ollama_provider_is_rejected(self) -> None:
         """ "ollama" is no longer a constructible backend, at the Settings boundary.
@@ -359,7 +363,7 @@ class TestBuildProviderOverrides:
         settings = Settings(  # type: ignore[call-arg]
             generation_provider="mock", anthropic_api_key="test-key"
         )
-        provider = build_provider(settings, provider_override="anthropic")
+        provider = build_provider(settings, provider_override="anthropic", lane="admin")
         assert isinstance(provider, AnthropicProvider)
 
     def test_model_override_replaces_openrouter_primary_only(self) -> None:
@@ -380,7 +384,9 @@ class TestBuildProviderOverrides:
         settings = Settings(  # type: ignore[call-arg]
             generation_provider="anthropic", anthropic_api_key="test-key"
         )
-        provider = build_provider(settings, model_override="claude-opus-4-8")
+        provider = build_provider(
+            settings, model_override="claude-opus-4-8", lane="admin"
+        )
         assert isinstance(provider, AnthropicProvider)
         assert provider.model == "claude-opus-4-8"
 
@@ -388,7 +394,12 @@ class TestBuildProviderOverrides:
         """A provider_override outside the known branches raises, naming the value."""
         settings = Settings()  # type: ignore[call-arg]
         with pytest.raises(ConfigurationError) as exc_info:
-            build_provider(settings, provider_override="not-a-real-provider")
+            # lane="admin" so the unknown-provider branch is what raises;
+            # the family lane would reject the value earlier, for a different
+            # reason, and this test would stop covering the branch it names.
+            build_provider(
+                settings, provider_override="not-a-real-provider", lane="admin"
+            )
         assert "not-a-real-provider" in str(exc_info.value)
 
 
@@ -970,9 +981,11 @@ class TestEffectiveProviderPerJobOverride:
             *,
             provider_override: str | None,
             model_override: str | None,
+            lane: str,
         ) -> MockProvider:
             captured["provider_override"] = provider_override
             captured["model_override"] = model_override
+            captured["lane"] = lane
             # Stop the run right here: this test only checks that
             # build_provider was called with the job's override, so raise a
             # specific sentinel rather than letting the run fail later with an
@@ -988,7 +1001,10 @@ class TestEffectiveProviderPerJobOverride:
             id=job_id,
             concept_id=concept_id,
             status="queued",
-            authoring_metadata={"provider": "anthropic", "model": "claude-opus-4-8"},
+            authoring_metadata={
+                "provider": "openrouter",
+                "model": "deepseek/deepseek-v4-pro",
+            },
         )
         concept = Concept(
             id=concept_id, family_id=uuid_mod.uuid4(), brief={"age_band": "8-11"}
@@ -1024,8 +1040,14 @@ class TestEffectiveProviderPerJobOverride:
         with pytest.raises(_OverrideCapturedError):
             await worker_module.run_generation_job(job_id, session_factory=factory)
 
-        assert captured["provider_override"] == "anthropic"
-        assert captured["model_override"] == "claude-opus-4-8"
+        assert captured["provider_override"] == "openrouter"
+        assert captured["model_override"] == "deepseek/deepseek-v4-pro"
+        # D1 (2026-08-23, UW-C346): every job this worker runs serves a family
+        # story request, so the worker states the restricted lane explicitly
+        # rather than relying on build_provider's default. An admin's
+        # allowlisted override narrows WHICH permitted leg runs; it cannot
+        # widen the lane, because the book still reaches a child.
+        assert captured["lane"] == "family"
 
     @pytest.mark.asyncio
     async def test_effective_provider_config_error_does_not_crash_finally(
@@ -1057,6 +1079,7 @@ class TestEffectiveProviderPerJobOverride:
             *,
             provider_override: str | None,
             model_override: str | None,
+            lane: str,
         ) -> object:
             msg = "no such provider"
             raise ConfigurationError(msg)

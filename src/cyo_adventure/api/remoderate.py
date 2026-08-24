@@ -439,10 +439,19 @@ async def remoderate_storybook_version(
     else:
         provider_override = version_row.provider
         model_override = version_row.model
+    # #EDGE: security: remoderation replays a stored version's provider, and the
+    # book it re-reviews belongs to a family, so it runs on the restricted lane
+    # (D1, 2026-08-23, UW-C346). A version whose stored provider is the direct
+    # `anthropic` leg is therefore refused rather than replayed. Reachable only
+    # for rows written before the lane rule; the live default has been an
+    # OpenRouter cascade throughout.
+    # #VERIFY: tests/unit/test_provider_lane.py pins what the lane refuses;
+    # tracked at UW-C346 if a legacy row ever needs a documented fallback.
     generation_provider = build_provider(
         ctx.settings,
         provider_override=provider_override,
         model_override=model_override,
+        lane="family",
     )
 
     started = time.monotonic()

@@ -134,17 +134,48 @@ def test_every_configured_default_model_has_a_cap() -> None:
 
 
 @pytest.mark.unit
-def test_a_configured_default_below_the_cap_actually_clamps() -> None:
-    """The rows must be load-bearing, not merely present.
+def test_the_clamp_is_load_bearing_for_at_least_one_row() -> None:
+    """The rows must be capable of clamping, not merely present.
 
-    A row equal to the default would satisfy the presence test above while
-    leaving the over-ask in place, so assert the resolved cap for the shipped
-    OpenRouter default is genuinely lower than what a one-shot fill would
-    otherwise request.
+    A table whose every row sat at or above `MAX_FILL_OUTPUT_TOKENS` would
+    satisfy the presence test above while leaving every over-ask in place, so
+    the mechanism has to be shown non-vacuous somewhere.
+
+    This asserted the SHIPPED OpenRouter default specifically until D1 (ruled
+    2026-08-23, `UW-C346`) moved that default from `anthropic/claude-haiku-4.5`
+    (64,000, genuinely clamping) to `deepseek/deepseek-v4-pro` (393,216, ample).
+    That premise was a fact about which model shipped, not an invariant, and
+    the direction it moved is the desirable one: see the test below.
+    """
+    clamping = [
+        model
+        for model in MODEL_OUTPUT_CAPS
+        if resolve_output_cap(model) < MAX_FILL_OUTPUT_TOKENS
+    ]
+
+    assert clamping, "no row in MODEL_OUTPUT_CAPS can clamp a one-shot fill"
+
+
+@pytest.mark.unit
+def test_the_shipped_fill_default_can_emit_a_whole_one_shot_fill() -> None:
+    """The default model's ceiling must not sit under the one-shot fill ask.
+
+    A default whose ceiling is BELOW `MAX_FILL_OUTPUT_TOKENS` asks for prose
+    the endpoint will not emit, and the resulting truncation is non-empty,
+    which `AL-479` establishes is not leg-fatal: the run therefore spends its
+    whole repair budget re-asking rather than failing over. Headroom here is
+    the state that avoids that, and it is why D1's leg choice is checked
+    against this table rather than only against price.
+
+    Note this is a claim about the SLUG's recorded ceiling. The slug is served
+    by endpoints declaring anywhere from 16,384 to 1,048,576, which is why the
+    request path pins the endpoint the price was read from; the pinned
+    `azure/us` declares 384,000 (see
+    docs/planning/vendor-comparison/vendors-deepseek-v4-pro.json).
     """
     default_model = Settings.model_fields["openrouter_model"].default
 
-    assert resolve_output_cap(default_model) < MAX_FILL_OUTPUT_TOKENS
+    assert resolve_output_cap(default_model) == MAX_FILL_OUTPUT_TOKENS
 
 
 @pytest.mark.unit

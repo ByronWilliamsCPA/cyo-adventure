@@ -21,6 +21,7 @@ import pytest
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import ProviderError
+from cyo_adventure.core.pricing import ENDPOINT_PINS, PRICES
 from cyo_adventure.generation.provider import build_openrouter_leg
 from cyo_adventure.generation.providers import OpenRouterProvider
 
@@ -210,8 +211,10 @@ async def test_a_completion_truncated_at_the_budget_is_not_retried() -> None:
         }
     )
 
+    leg = _leg(client)
+
     with pytest.raises(ProviderError, match="hit the token budget") as excinfo:
-        _ = await _leg(client).complete(system="s", prompt="p", max_tokens=10)
+        _ = await leg.complete(system="s", prompt="p", max_tokens=10)
 
     assert len(attempts) == 1
     assert excinfo.value.leg_fatal is True
@@ -227,8 +230,10 @@ async def test_an_empty_body_without_a_length_reason_is_still_retried() -> None:
         {"choices": [{"message": {"content": ""}, "finish_reason": "error"}]}
     )
 
+    leg = _leg(client)
+
     with pytest.raises(ProviderError, match="transient failure persisted") as excinfo:
-        _ = await _leg(client).complete(system="s", prompt="p", max_tokens=10)
+        _ = await leg.complete(system="s", prompt="p", max_tokens=10)
 
     assert len(attempts) == 3
     assert excinfo.value.leg_fatal is False
@@ -288,3 +293,72 @@ async def test_a_backend_reporting_no_reasoning_block_reports_unknown() -> None:
     completion = await _leg(client).complete(system="s", prompt="p", max_tokens=10)
 
     assert completion.usage.reasoning_tokens is None
+
+
+# ---------------------------------------------------------------------------
+# The priced-endpoint pin on the REQUEST path (D1, ruled 2026-08-23; UW-C346)
+# ---------------------------------------------------------------------------
+# Until D1, the pin was a measurement-harness affordance and every production
+# caller left it empty, which `build_openrouter_leg`'s own docstring recorded as
+# a deliberate choice. D1 puts `deepseek/deepseek-v4-pro` on the production fill
+# leg, and that slug's PRICES row is the price of ONE of its 18 endpoints
+# (`azure/us`). An unpinned production run would therefore be served by the
+# slug's default route and costed against a different endpoint's price, and
+# would sit anywhere in that slug's 16,384-to-1,048,576 declared output-ceiling
+# spread. The pin is what makes the recorded cost the cost that was paid.
+
+
+def test_a_priced_pin_is_applied_when_the_caller_names_no_order() -> None:
+    """A model with a pinned price row is pinned to that endpoint by default."""
+    assert _leg_kwargs("deepseek/deepseek-v4-pro")["provider_order"] == ("azure/us",)
+
+
+def test_a_model_without_a_pin_entry_stays_unpinned() -> None:
+    """Absence in the pin table means OpenRouter's own routing, as before."""
+    assert _leg_kwargs("deepseek/deepseek-v4-flash")["provider_order"] == ()
+
+
+def test_an_explicit_empty_order_is_honoured_over_the_table() -> None:
+    """An explicit ``()`` means "deliberately unpinned", not "unspecified".
+
+    ``scripts/compare_vendors.py`` passes each vendor fixture's own
+    ``provider_order`` verbatim, and some fixtures carry none on purpose (the
+    script warns about them rather than inventing a pin). If the table
+    overrode an explicit empty tuple, those runs would silently acquire a pin
+    the fixture never asked for and stop measuring what they claim to.
+    """
+    recorded = _leg_kwargs("deepseek/deepseek-v4-pro", provider_order=())
+
+    assert recorded["provider_order"] == ()
+
+
+def test_an_explicit_order_overrides_the_table() -> None:
+    """A caller naming an endpoint outranks the default pin for that slug."""
+    recorded = _leg_kwargs("deepseek/deepseek-v4-pro", provider_order=("novita/fp8",))
+
+    assert recorded["provider_order"] == ("novita/fp8",)
+
+
+def test_every_pinned_model_has_a_price_row() -> None:
+    """A pin without a price row would pin an endpoint nothing prices.
+
+    The pin exists to make the recorded price attributable, so a pin whose
+    pair carries no price is not a safer default, it is a pin with no purpose.
+    """
+    assert set(ENDPOINT_PINS) <= set(PRICES)
+
+
+def test_every_pinned_price_row_names_its_endpoint_in_the_note() -> None:
+    """The price row must say which endpoint it priced.
+
+    This is the invariant the whole mechanism rests on: ``PRICES`` holds one
+    price per (provider, model) while the slug is served by many endpoints at
+    different prices, so the row is only correct with respect to a named
+    endpoint. Binding the two here means a future price refresh that silently
+    replaces a pinned row with the slug's default-route price fails a test
+    instead of quietly overstating or understating every job's cost.
+    """
+    for key, order in ENDPOINT_PINS.items():
+        note = PRICES[key].note
+        assert order, f"{key} has an empty pin"
+        assert order[0] in note, f"{key} price note does not name {order[0]}"

@@ -576,7 +576,9 @@ def _run_judge_pass(
     # pass needs a live provider. Keeps the offline CI gate lightweight.
     from cyo_adventure.generation.provider import build_provider  # noqa: PLC0415
 
-    provider = build_provider(settings)
+    # Offline admin harness, not the request path: the admin lane (D1,
+    # 2026-08-23, UW-C346) is what permits a direct-provider leg here.
+    provider = build_provider(settings, lane="admin")
 
     cache = _load_baseline(cache_path)  # same tolerant-load shape as a baseline
 

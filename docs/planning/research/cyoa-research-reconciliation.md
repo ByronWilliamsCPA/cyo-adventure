@@ -168,9 +168,10 @@ implication:
    depth. Keep 8-11 tree-dominant; introduce more reconvergence at 10-13+.
 
    **Correction (2026-08-03):** this finding does not hold for this repository's own skeleton corpus and
-   must not be treated as a design target here. A measurement of the shipped corpus (61 skeletons) found
-   that 54 of 61 have every ending at indegree exactly 1: endings are single-parent terminals, not
-   reconvergent leaves, and the ~15-22% ending share is achieved by breadth (many terminals off a branchy
+   must not be treated as a design target here. A measurement of the shipped corpus taken 2026-07-27,
+   when it held 61 skeletons (on 2026-08-23 it holds 84; see [catalog-census.md](../catalog-census.md),
+   `UW-G24`), found that 54 of 61 have every ending at indegree exactly 1: endings are single-parent
+   terminals, not reconvergent leaves, and the ~15-22% ending share is achieved by breadth (many terminals off a branchy
    spine), not by folding paths into shared endings. Reconvergence is real, but it concentrates at internal
    bottleneck/hub nodes, not at endings. Resolution: ADR-011 section 7 ("Clarification (2026-07-27):
    reconvergence and endings"), landed via PR #425 (merged 2026-07-28, commit "docs(adr-011): clarify

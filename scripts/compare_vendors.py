@@ -920,7 +920,9 @@ def _build_provider(
         A provider ready for one book.
     """
     if mock:
-        base = build_provider(Settings())
+        # Offline admin harness, not the request path: the admin lane (D1,
+        # 2026-08-23, UW-C346) is what permits a direct-provider leg here.
+        base = build_provider(Settings(), lane="admin")
     else:
         base = build_openrouter_leg(
             settings, vendor.model, provider_order=vendor.provider_order

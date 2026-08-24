@@ -940,10 +940,17 @@ async def test_authoring_plan_writes_plan_assigned(
     # against the enabled allowlist. The integration schema is built via
     # create_all, which does not run the migration's seed rows, so insert one
     # enabled pair here (mirrors tests/integration/test_authoring_plan_api.py).
+    # openrouter, not the direct anthropic leg this used to name: since D1
+    # (`UW-C346`, `UW-C350`) an authoring plan is a family-lane question, the
+    # read path refuses a provider that lane forbids, and an ENABLED row for
+    # one no longer satisfies the table's own CHECK either. This test is about
+    # the plan_assigned event, so it wants a pair that is simply accepted.
     async with sessions() as session:
         session.add(
             ProviderModelAllowlist(
-                provider="anthropic", model_id="claude-sonnet-4-6", enabled=True
+                provider="openrouter",
+                model_id="deepseek/deepseek-v4-pro",
+                enabled=True,
             )
         )
         await session.commit()
@@ -956,8 +963,8 @@ async def test_authoring_plan_writes_plan_assigned(
             "prep_model": "openrouter/some-model",
             # Use the seeded-enabled pair so the plan is accepted and the
             # plan_assigned event is written.
-            "provider": "anthropic",
-            "model": "claude-sonnet-4-6",
+            "provider": "openrouter",
+            "model": "deepseek/deepseek-v4-pro",
         },
     )
     assert resp.status_code == 201, resp.text

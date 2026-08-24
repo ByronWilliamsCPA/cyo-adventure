@@ -80,4 +80,177 @@ describe('classifyApiError', () => {
     expect(result.kind).toBe('server')
     expect(result.message).toMatch(/try again/i)
   })
+
+  it('still classifies a 422 as the residual transient bucket when the caller does not opt in', () => {
+    // Pins the opt-in contract: classifyApiError is shared by every console
+    // surface, so a 422 must keep its prior (transient) classification unless
+    // the caller explicitly asks for `validation` via an override, exactly as
+    // it would ask for custom `transient` copy.
+    const result = classifyApiError({
+      isAxiosError: true,
+      response: { status: 422, data: { message: 'provider may not be enabled' } },
+    })
+    expect(result.kind).toBe('transient')
+  })
+
+  it('classifies a 422 as validation, surfacing the server message, when the caller opts in', () => {
+    const result = classifyApiError(
+      {
+        isAxiosError: true,
+        response: {
+          status: 422,
+          data: { message: "provider 'openrouter' may not be enabled on the allowlist" },
+        },
+      },
+      { validation: 'fallback copy' }
+    )
+    expect(result.kind).toBe('validation')
+    expect(result.message).toBe("provider 'openrouter' may not be enabled on the allowlist")
+  })
+
+  it('joins a FastAPI request-validation 422 list-shaped detail into one readable message', () => {
+    const result = classifyApiError(
+      {
+        isAxiosError: true,
+        response: {
+          status: 422,
+          data: {
+            detail: [
+              { type: 'missing', loc: ['body', 'model_id'], msg: 'Field required' },
+              {
+                type: 'string_type',
+                loc: ['body', 'provider'],
+                msg: 'Input should be a valid string',
+              },
+            ],
+          },
+        },
+      },
+      { validation: 'fallback copy' }
+    )
+    expect(result.kind).toBe('validation')
+    expect(result.message).toBe('Field required; Input should be a valid string')
+  })
+
+  it('uses a string-shaped 422 detail directly', () => {
+    const result = classifyApiError(
+      {
+        isAxiosError: true,
+        response: { status: 422, data: { detail: 'not permitted' } },
+      },
+      { validation: 'fallback copy' }
+    )
+    expect(result.kind).toBe('validation')
+    expect(result.message).toBe('not permitted')
+  })
+
+  it('falls back to the caller-supplied validation override when the 422 body has no usable text', () => {
+    const result = classifyApiError(
+      { isAxiosError: true, response: { status: 422, data: {} } },
+      { validation: 'fallback copy' }
+    )
+    expect(result.kind).toBe('validation')
+    expect(result.message).toBe('fallback copy')
+  })
+
+  it('falls back to the validation override, never "[object Object]", when detail is a non-string non-list shape', () => {
+    const result = classifyApiError(
+      {
+        isAxiosError: true,
+        response: { status: 422, data: { detail: { unexpected: 'shape' } } },
+      },
+      { validation: 'fallback copy' }
+    )
+    expect(result.kind).toBe('validation')
+    expect(result.message).toBe('fallback copy')
+    expect(result.message).not.toContain('[object Object]')
+  })
+
+  it('does not misclassify a no-response network failure as validation even with a validation override present', () => {
+    const result = classifyApiError({ isAxiosError: true }, { validation: 'fallback copy' })
+    expect(result.kind).toBe('offline')
+  })
+
+  it('ignores a whitespace-only message and uses the detail underneath it', () => {
+    // A blank `message` key is present-but-useless. Returning it would render
+    // an empty error banner, which reads as "no error" to the user, so the
+    // parser has to fall through to `detail` rather than treat presence as
+    // usability.
+    const result = classifyApiError(
+      {
+        isAxiosError: true,
+        response: { status: 422, data: { message: '   ', detail: 'not permitted' } },
+      },
+      { validation: 'fallback copy' }
+    )
+    expect(result.kind).toBe('validation')
+    expect(result.message).toBe('not permitted')
+  })
+
+  it('falls back when a whitespace-only detail string is the only text on offer', () => {
+    const result = classifyApiError(
+      { isAxiosError: true, response: { status: 422, data: { detail: '  \n ' } } },
+      { validation: 'fallback copy' }
+    )
+    expect(result.kind).toBe('validation')
+    expect(result.message).toBe('fallback copy')
+  })
+
+  it('joins only the usable entries of a mixed list-shaped detail', () => {
+    // FastAPI is not the only producer of a list `detail`; a partly-malformed
+    // list must yield the readable part rather than all-or-nothing, and must
+    // not leak `undefined` or `[object Object]` into the joined string.
+    const result = classifyApiError(
+      {
+        isAxiosError: true,
+        response: {
+          status: 422,
+          data: {
+            detail: [
+              { msg: 'field required' },
+              { msg: 42 },
+              { msg: '   ' },
+              { noMsgKey: 'ignored' },
+              null,
+              'a bare string',
+              { msg: 'value is not a valid integer' },
+            ],
+          },
+        },
+      },
+      { validation: 'fallback copy' }
+    )
+    expect(result.kind).toBe('validation')
+    expect(result.message).toBe('field required; value is not a valid integer')
+    expect(result.message).not.toContain('undefined')
+    expect(result.message).not.toContain('[object Object]')
+  })
+
+  it('falls back when every entry of a list-shaped detail filters out', () => {
+    // An empty join would produce '', and an empty message renders as a banner
+    // with no text. The override exists for exactly this case.
+    const result = classifyApiError(
+      {
+        isAxiosError: true,
+        response: { status: 422, data: { detail: [{ msg: '  ' }, { other: 1 }, null] } },
+      },
+      { validation: 'fallback copy' }
+    )
+    expect(result.kind).toBe('validation')
+    expect(result.message).toBe('fallback copy')
+  })
+
+  it('falls back when the 422 body is not an object at all', () => {
+    // A proxy or an error page can return a plain string body with a 422
+    // status. Indexing it for `.message` would yield undefined on a string and
+    // could throw on null, so the type check has to precede the property read.
+    for (const data of ['Unprocessable Entity', null, 42, undefined]) {
+      const result = classifyApiError(
+        { isAxiosError: true, response: { status: 422, data } },
+        { validation: 'fallback copy' }
+      )
+      expect(result.kind).toBe('validation')
+      expect(result.message).toBe('fallback copy')
+    }
+  })
 })

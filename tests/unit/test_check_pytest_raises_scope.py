@@ -370,3 +370,157 @@ def test_script_is_clean_against_its_own_test_file() -> None:
     """
     this_file = Path(__file__).resolve()
     assert _MODULE.find_violations(this_file) == []
+
+
+# ---------------------------------------------------------------------------
+# `--all`: the tree-wide mode CI runs (`UW-C354`).
+#
+# The hook's `files:` regex only ever hands this checker STAGED paths, so a
+# violation in a file nobody stages is invisible indefinitely. Seven such
+# violations accumulated in tests/unit/test_replay.py on main, found only when
+# an unrelated `pre-commit run --all-files` surfaced them. Every sibling
+# checker (check_work_linkage, check_lessons_log, check_rad_citations) has an
+# independent CI leg; this one had none.
+#
+# `main([])` deliberately still exits 0 (see
+# test_main_returns_0_with_no_paths): that contract serves pre-commit and is
+# not changed here. `--all` is where vacuity has to be impossible instead,
+# because CI relies on it alone.
+# ---------------------------------------------------------------------------
+
+
+def test_all_mode_discovers_the_same_scope_the_hook_covers(tmp_path: Path) -> None:
+    """`--all` finds a violation in a file no caller named.
+
+    This is the whole point of the mode: nothing passes the offending path in,
+    so a checker that only ever sees named paths cannot report it.
+    """
+    tests_dir = tmp_path / "tests"
+    tests_dir.mkdir()
+    _write(
+        tests_dir / "test_unstaged.py",
+        """
+        import pytest
+
+        def helper():
+            return 1
+
+        def test_two_calls():
+            with pytest.raises(ValueError):
+                helper()
+                helper()
+        """,
+    )
+
+    assert _MODULE.main(["--all", "--root", str(tmp_path)]) == 1
+
+
+def test_all_mode_refuses_a_tree_with_nothing_to_scan(tmp_path: Path) -> None:
+    """Discovering zero files is a usage error, never a pass.
+
+    A gate that reports success on an empty scan is worse than no gate: a
+    mistyped root or a moved tests/ directory would read as "clean" forever.
+    `main([])` may exit 0 because pre-commit legitimately has nothing staged;
+    `--all` has no such excuse, because it chose the paths itself.
+    """
+    assert _MODULE.main(["--all", "--root", str(tmp_path)]) == 2
+
+
+def test_all_mode_and_explicit_paths_are_mutually_exclusive(tmp_path: Path) -> None:
+    """Naming paths alongside `--all` is a usage error rather than a silent winner.
+
+    Either the paths are ignored (the caller's intent is dropped) or they widen
+    the scan (the flag's name lies). Refusing says which the caller meant.
+    """
+    path = _write(
+        tmp_path / "test_clean.py",
+        """
+        import pytest
+
+        def helper():
+            return 1
+
+        def test_one_call():
+            with pytest.raises(ValueError):
+                helper()
+        """,
+    )
+
+    assert _MODULE.main(["--all", "--root", str(tmp_path), str(path)]) == 2
+
+
+def test_all_mode_checks_the_checker_itself(tmp_path: Path) -> None:
+    """`--all` scans `scripts/check_pytest_raises_scope.py`, not only `tests/`.
+
+    The hook's `files:` regex names the checker's own file as in scope, so
+    `--all` has to reach it or the two scopes diverge and the mode stops being
+    the tree-wide equivalent of the hook. Asserted through a real violation
+    planted in the discovered copy rather than by inspecting the returned list,
+    so dropping the `own_file` branch fails this test instead of quietly
+    narrowing what CI covers.
+    """
+    (tmp_path / "tests").mkdir()
+    _write(
+        tmp_path / "tests" / "test_clean.py",
+        """
+        import pytest
+
+        def helper():
+            return 1
+
+        def test_one_call():
+            with pytest.raises(ValueError):
+                helper()
+        """,
+    )
+    (tmp_path / "scripts").mkdir()
+    own_file = _write(
+        tmp_path / "scripts" / "check_pytest_raises_scope.py",
+        """
+        import pytest
+
+        def setup():
+            return 1
+
+        def do_work():
+            raise ValueError("boom")
+
+        def test_two_calls():
+            with pytest.raises(ValueError):
+                setup()
+                do_work()
+        """,
+    )
+
+    assert _MODULE.discover_paths(tmp_path) == [
+        tmp_path / "tests" / "test_clean.py",
+        own_file,
+    ]
+    assert _MODULE.main(["--all", "--root", str(tmp_path)]) == 1
+
+
+def test_discover_paths_omits_the_checker_when_the_tree_lacks_it(
+    tmp_path: Path,
+) -> None:
+    """A tree with no `scripts/` yields only the `tests/` files, and does not raise.
+
+    The guard exists because `--root` may point at a tree that is not this
+    repository; discovery has to degrade to the files that are there rather
+    than append a path that does not exist and fail later as "cannot check".
+    """
+    (tmp_path / "tests").mkdir()
+    only = _write(
+        tmp_path / "tests" / "test_clean.py",
+        """
+        import pytest
+
+        def helper():
+            return 1
+
+        def test_one_call():
+            with pytest.raises(ValueError):
+                helper()
+        """,
+    )
+
+    assert _MODULE.discover_paths(tmp_path) == [only]

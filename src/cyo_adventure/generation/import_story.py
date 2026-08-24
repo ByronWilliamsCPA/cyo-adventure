@@ -253,7 +253,10 @@ async def import_filled_story(
         story_id=story_id,
         version=params.version,
         settings=_default_settings,
-        generation_provider=build_provider(_default_settings),
+        # Family-serving: this import is scoped to a family story request,
+        # so the moderation provider runs on the restricted lane (D1,
+        # 2026-08-23, UW-C346).
+        generation_provider=build_provider(_default_settings, lane="family"),
         pii=pii,
         review_model_override=request.review_model_override,
         personalizable_slots=personalizable_slots,

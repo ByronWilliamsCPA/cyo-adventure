@@ -57,9 +57,11 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
 
 __all__ = [
+    "ENDPOINT_PINS",
     "PRICES",
     "CostEstimate",
     "ModelPrice",
+    "endpoint_pin_for",
     "estimate_cost",
     "price_for",
 ]
@@ -381,6 +383,56 @@ _PRICES: dict[tuple[str, str], ModelPrice] = {
 PRICES: Mapping[tuple[str, str], ModelPrice] = MappingProxyType(_PRICES)
 
 
+# Which OpenRouter endpoint a priced row was priced AGAINST, most preferred
+# first, for the slugs whose price is endpoint-specific rather than the slug's
+# default route.
+#
+# #CRITICAL: payment/financial: this table and `_PRICES` are one fact split
+# across two literals. `PRICES` holds exactly one price per (provider, model),
+# but OpenRouter serves a single slug from many endpoints at different prices,
+# so such a row is only true WITH RESPECT TO a named endpoint. Sending the call
+# unpinned means paying one endpoint's price and recording another's, and the
+# job still reports `cost_complete = true`, so the error arrives as a confident
+# wrong number rather than as a missing one. For `deepseek/deepseek-v4-pro` the
+# recorded `azure/us` price is about a third above the default `novita/fp8`
+# route, so an unpinned production run would OVERstate every fill's cost.
+# #VERIFY: tests/unit/test_openrouter_provider_pin.py::
+# test_every_pinned_price_row_names_its_endpoint_in_the_note binds each pin to
+# its price row's note, and ::test_every_pinned_model_has_a_price_row rejects a
+# pin for an unpriced pair.
+#
+# #CRITICAL: external-resources: pinning also bounds the output ceiling. The
+# declared ceiling for `deepseek/deepseek-v4-pro` ranges from 16,384 to
+# 1,048,576 across its endpoints while `generation/skeleton.py`'s
+# MODEL_OUTPUT_CAPS holds one number per slug (393,216 for this one) and cannot
+# express that spread. An unpinned run can therefore be routed to an endpoint
+# whose real ceiling is a twentieth of what the caller sized its request
+# against. `azure/us` is also the endpoint whose reachability was probed on
+# 2026-08-20; three others 404 under this account's data-policy guardrail.
+# #VERIFY: the probe and the per-endpoint ceiling spread are recorded in
+# docs/planning/vendor-comparison/vendors-deepseek-v4-pro.json
+# (`_pinning_rationale`).
+#
+# #ASSUME: payment/financial: moving a pin means editing THREE places together,
+# this table, the `_PRICES` row above it, and the offline comparison fixture in
+# docs/planning/vendor-comparison/ that pins the same slug for measurement.
+# The fixture already records the documented hand-fallback for this row
+# (`novita/fp8`, if Azure rate-limits) and names the price row as its co-edit;
+# this table is the third site that entry predates.
+# #VERIFY: test_every_pinned_price_row_names_its_endpoint_in_the_note fails if
+# this table and the price row diverge; nothing mechanically ties either to the
+# fixture, so that edge is a review obligation.
+_ENDPOINT_PINS: dict[tuple[str, str], tuple[str, ...]] = {
+    ("openrouter", "deepseek/deepseek-v4-pro"): ("azure/us",),
+}
+
+# Exported read-only for the same reason as `PRICES`: a runtime mutation would
+# repoint a live cost measurement with nothing in the source to audit.
+ENDPOINT_PINS: Mapping[tuple[str, str], tuple[str, ...]] = MappingProxyType(
+    _ENDPOINT_PINS
+)
+
+
 @dataclass(frozen=True, slots=True)
 class CostEstimate:
     """What a set of token counts cost, and how much of that is actually known.
@@ -415,6 +467,22 @@ def price_for(provider: str, model: str) -> ModelPrice | None:
         means unknown; callers must not substitute zero.
     """
     return PRICES.get((provider, model))
+
+
+def endpoint_pin_for(provider: str, model: str) -> tuple[str, ...]:
+    """Return the endpoint pin the recorded price for this pair assumes.
+
+    Args:
+        provider: The adapter's short name, keyed as :data:`PRICES` keys it.
+        model: The model id the call will be issued against.
+
+    Returns:
+        The endpoint order to send, most preferred first, or an empty tuple
+        when this pair's price is the slug's default route and no pin is
+        needed. Empty means "leave the vendor's routing alone", which is what
+        every slug priced from its default route wants.
+    """
+    return ENDPOINT_PINS.get((provider, model), ())
 
 
 def estimate_cost(

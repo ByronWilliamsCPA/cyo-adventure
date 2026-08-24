@@ -355,7 +355,11 @@ async def _run_all(
     """
     trials: list[TrialRecord] = []
     for provider_name in providers:
-        provider = build_provider(_default_settings, provider_override=provider_name)
+        # Offline admin harness, not the request path: the admin lane (D1,
+        # 2026-08-23, UW-C346) is what permits a direct-provider leg here.
+        provider = build_provider(
+            _default_settings, provider_override=provider_name, lane="admin"
+        )
         for specimen in specimens:
             try:
                 outcome = await _run_trial(specimen, provider, max_repairs=max_repairs)

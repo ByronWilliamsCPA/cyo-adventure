@@ -290,10 +290,14 @@ async def test_seed_dev_data_seeds_provider_allowlist(
     Guards the ADR-012 regression: the schema-only Supabase baseline no longer
     carries the allowlist seed rows the retired Alembic migration inserted, so
     without this seeding a fresh environment rejects every generation request at
-    the authoring-plan gate. Asserts every declared pair is present, enabled,
-    and accepted by the runtime read path is_enabled_allowlist_pair, that a
-    non-allowlisted pair (mock) is rejected, and that a second seed run neither
-    duplicates rows nor errors (idempotent).
+    the authoring-plan gate. Asserts every declared pair is present with its
+    declared display_name and its declared ``enabled`` value (post-D1,
+    ``UW-C346``, two rows are seeded present but disabled rather than
+    enabled), that the runtime read path is_enabled_allowlist_pair agrees
+    with that per-row ``enabled`` value in both directions (accepting the
+    enabled rows, rejecting the disabled ones), that a non-allowlisted pair
+    (mock) is rejected, and that a second seed run neither duplicates rows
+    nor errors (idempotent).
     """
     await seed_dev_data(engine=engine, session_factory=sessions)
     async with sessions() as session:
@@ -304,10 +308,11 @@ async def test_seed_dev_data_seeds_provider_allowlist(
         for seed in DEFAULT_ALLOWLIST:
             row = seeded.get((seed.provider, seed.model_id))
             assert row is not None
-            assert row.enabled is True
+            assert row.enabled == seed.enabled
             assert row.display_name == seed.display_name
-            assert await is_enabled_allowlist_pair(
-                session, seed.provider, seed.model_id
+            assert (
+                await is_enabled_allowlist_pair(session, seed.provider, seed.model_id)
+                == seed.enabled
             )
 
         assert not await is_enabled_allowlist_pair(session, "mock", "mock-model")
