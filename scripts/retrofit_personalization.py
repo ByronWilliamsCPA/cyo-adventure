@@ -56,6 +56,7 @@ from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.models import StorybookVersion
 from cyo_adventure.generation.binding import load_contract_for, render_bound_skeleton
 from cyo_adventure.storybook.reinsertion import (
+    manifest_carries_tokens,
     reinsert_storybook,
     strip_model_sentinels,
 )
@@ -411,8 +412,10 @@ async def sweep(
                 )
                 continue
 
+            eligible = manifest_carries_tokens(plan.manifest)
             detail = (
-                f"{plan.tokens_reinserted}/{plan.tokens_expected} tokens reinserted"
+                f"{plan.tokens_reinserted}/{plan.tokens_expected} tokens "
+                f"reinserted, eligible={eligible}"
             )
             if not execute:
                 outcomes.append(
@@ -424,7 +427,20 @@ async def sweep(
 
             version.blob = plan.document
             version.sentinel_manifest = plan.manifest
-            version.personalization_eligible = True
+            # #CRITICAL: data-integrity: the reader trusts this column
+            # verbatim and prompts the child for a name whenever it is True
+            # (frontend/src/reader/ReaderRoute.tsx returns null only on an
+            # explicit False). Coverage is bimodal across this catalog: a
+            # second-person book such as `the-drowned-court` names its hero
+            # nowhere, so the transform reinserts 0 of 289 expected tokens and
+            # `build_manifest` still returns a mapping, just an empty one.
+            # Stamping True there asks a child for a name that no page will
+            # ever show. Ask the SAME shared predicate the import path asks
+            # (`generation/import_story.py`) rather than inventing a second
+            # rule for one column; a divergent rule is worse than the bug.
+            # #VERIFY: tests/unit/test_retrofit_personalization.py::
+            #   test_a_zero_coverage_book_is_not_stamped_eligible
+            version.personalization_eligible = manifest_carries_tokens(plan.manifest)
             await session.commit()
             _logger.info(
                 "retrofit_applied",
@@ -432,6 +448,7 @@ async def sweep(
                 version=version.version,
                 tokens_reinserted=plan.tokens_reinserted,
                 tokens_expected=plan.tokens_expected,
+                personalization_eligible=version.personalization_eligible,
             )
             outcomes.append(
                 BookOutcome(

@@ -223,3 +223,114 @@ def test_document_surfaces_covers_every_reinsertion_surface() -> None:
         "n1.ending.title": "E",
         "n1.choices[0].label": "C",
     }
+
+
+class _FakeVersion:
+    """A stand-in for one ``StorybookVersion`` row the sweep may write to."""
+
+    def __init__(self, blob: dict[str, object]) -> None:
+        """Store the row's starting state.
+
+        Args:
+            blob: The stored storybook document.
+        """
+        self.storybook_id = "sk_fake"
+        self.version = 1
+        self.skeleton_slug = _NAMED_HERO_BOOK
+        self.blob = blob
+        self.sentinel_manifest: dict[str, object] | None = None
+        self.personalization_eligible = False
+
+
+class _FakeSession:
+    """The narrowest async session the sweep's write path actually uses."""
+
+    def __init__(self) -> None:
+        """Start with no commits recorded."""
+        self.commits = 0
+
+    async def __aenter__(self) -> _FakeSession:
+        """Enter the context.
+
+        Returns:
+            _FakeSession: This session.
+        """
+        return self
+
+    async def __aexit__(self, *_: object) -> bool:
+        """Leave the context without swallowing exceptions.
+
+        Returns:
+            bool: Always ``False``.
+        """
+        return False
+
+    async def commit(self) -> None:
+        """Record a commit."""
+        self.commits += 1
+
+    async def rollback(self) -> None:
+        """Accept a rollback."""
+
+
+@pytest.mark.parametrize(
+    ("tokens", "expected_eligible"),
+    [({}, False), ({"HERO": {"count": 3}}, True)],
+)
+def test_a_zero_coverage_book_is_not_stamped_eligible(
+    monkeypatch: pytest.MonkeyPatch,
+    tokens: dict[str, object],
+    expected_eligible: bool,
+) -> None:
+    """The eligibility stamp must follow coverage, not merely a plan.
+
+    The reader prompts a child for a name whenever this column is True, so a
+    book whose prose names its hero nowhere (``the-drowned-court`` reinserts
+    0 of 289 expected tokens) must come out ineligible. ``build_manifest``
+    returns ``{"tokens": {}}`` rather than ``None`` for such a document, so a
+    presence test would stamp True and ask for a name no page can show.
+
+    Both directions are asserted: an empty tally must not stamp, and a
+    non-empty one must.
+
+    Args:
+        monkeypatch: Pytest's patching fixture.
+        tokens: The manifest tally the planner reports.
+        expected_eligible: The stamp the write path must produce.
+    """
+    import asyncio
+
+    from scripts import retrofit_personalization as module
+
+    _, _, blob = _load(_NAMED_HERO_BOOK)
+    row = _FakeVersion(blob)
+    session = _FakeSession()
+
+    async def _targets(*_: object) -> list[_FakeVersion]:
+        return [row]
+
+    def _plan(*_: object) -> module.RetrofitPlan:
+        return module.RetrofitPlan(
+            document=blob,
+            manifest={"tokens": tokens},
+            tokens_expected=289,
+            tokens_reinserted=sum(
+                cast("dict[str, int]", v)["count"] for v in tokens.values()
+            ),
+        )
+
+    monkeypatch.setattr(module, "_select_targets", _targets)
+    monkeypatch.setattr(module, "plan_retrofit", _plan)
+
+    outcomes = asyncio.run(
+        module.sweep(
+            session_factory=lambda: cast("object", session),  # pyright: ignore[reportArgumentType]
+            skeleton_root=_CATALOG_ROOT,
+            execute=True,
+        )
+    )
+
+    assert session.commits == 1
+    assert outcomes[0].status == "retrofitted"
+    assert row.personalization_eligible is expected_eligible
+    assert f"eligible={expected_eligible}" in outcomes[0].detail
