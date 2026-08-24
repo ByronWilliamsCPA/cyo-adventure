@@ -428,8 +428,12 @@ class TestMainRoutesToSweepOnlyWhenBatchSizeGiven:
 
         def _fake_build_review_provider_for_cli(
             _name: str,
-        ) -> tuple[ReviewProvider, adversarial_harness.ReviewProviderName, int]:
-            return MockProvider(responses=["{}"] * 50), "mock", 8
+        ) -> tuple[
+            ReviewProvider, adversarial_harness.ReviewProviderName, int, str | None
+        ]:
+            # The mock backend has no configurable model, so the resolved review
+            # model is None and endpoint_pin_for is never consulted.
+            return MockProvider(responses=["{}"] * 50), "mock", 8, None
 
         monkeypatch.setattr(
             adversarial_harness,

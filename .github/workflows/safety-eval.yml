@@ -1,10 +1,14 @@
 # Adversarial Safety Evaluation for CYO Adventure
-# Runs the adversarial corpus against the REAL moderation classifiers and gates
+# Runs the adversarial corpus against the REAL Stage-1 review model and gates
 # on the per-class acceptance thresholds in
 # docs/planning/safety/adversarial-safety-evaluation.md (the `llm_eval` tier in
 # tests/llm_eval/). The gate lives in the pytest assertions: classes A/B must be
 # 100% routed-to-human, class F 100% blocked pre-egress, and no negative control
-# may over-block.
+# may over-block on a MAJORITY of k draws (S-7 majority-of-k scoring; the
+# single-draw form of the control clause was retired because one draw of a
+# stochastic judge cannot separate a real over-block from sampling noise).
+# Every negative control and every class-A positive is therefore scored k times
+# per run, and the archived artifact records each draw.
 #
 # Cadence: weekly + manual only, never per PR (this tier needs live-model
 # credentials and real network I/O). Because a schedule-only failure never turns
@@ -155,6 +159,62 @@ jobs:
               )
           PY
 
+      # #CRITICAL: security: the tracking issue below used to assert all three
+      # possible meanings of a red run at once ("class A/B routed-to-human, or
+      # an F PII egress, or a negative control over-blocked") no matter which
+      # assertion actually failed, and said nothing at all when the run died
+      # before reaching an assertion. A reader could not tell a real moderation
+      # finding from an absent credential, so the one artifact the schedule
+      # produces for a human pointed at a finding nobody could act on. Derive
+      # the summary from the junit report instead: name the failing test and
+      # quote its assertion message, which for a repeated item carries the
+      # observed k-of-n split.
+      # #VERIFY: force a failure on a workflow_dispatch run; the summary must
+      # name the failing assertion, and with junit.xml absent it must say the
+      # run failed before scoring anything.
+      - name: Summarise the failure
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p safety-eval-results
+          uv run python - <<'PY'
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          report = Path("safety-eval-results/junit.xml")
+          out = Path("safety-eval-results/failure-summary.md")
+
+          if not report.is_file():
+              out.write_text(
+                  "The run failed BEFORE pytest produced a report, so no corpus "
+                  "item was scored. This is an infrastructure or credential "
+                  "failure, not a moderation finding: check the credential "
+                  "pre-flight step and the dependency install on the run.\n",
+                  encoding="utf-8",
+              )
+              raise SystemExit(0)
+
+          blocks: list[str] = []
+          for case in ET.parse(report).getroot().iter("testcase"):
+              for node in (*case.iter("failure"), *case.iter("error")):
+                  verb = "assertion failed" if node.tag == "failure" else "errored"
+                  detail = (node.get("message") or node.text or "").strip()
+                  name = case.get("name", "<unnamed>")
+                  # Fenced, and truncated: the message can quote reviewer output,
+                  # which is untrusted data and must never render as directives.
+                  blocks.append(
+                      f"`{name}` {verb}:\n\n```text\n{detail[:2000]}\n```"
+                  )
+
+          if not blocks:
+              blocks.append(
+                  "pytest reported no failing test, so the run failed in a "
+                  "workflow step outside the evaluation itself (see the log)."
+              )
+          out.write_text("\n\n".join(blocks) + "\n", encoding="utf-8")
+          PY
+          cat safety-eval-results/failure-summary.md
+
       - name: Upload evaluation results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -171,17 +231,40 @@ jobs:
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
+            const fs = require('fs');
             const title = 'Weekly adversarial safety evaluation is failing';
+            let summary = 'No failure summary was produced; read the run log.';
+            try {
+              summary = fs
+                .readFileSync('safety-eval-results/failure-summary.md', 'utf8')
+                .trim();
+            } catch (err) {
+              core.warning(`Could not read the failure summary: ${err.message}`);
+            }
             const body = [
               'The scheduled Safety Evaluation workflow failed.',
               '',
               `Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
               '',
-              'A failure here means the moderation gate missed an adversarial',
-              'corpus item (class A/B routed-to-human, or an F PII egress) or a',
-              'negative control over-blocked. This issue is filed automatically',
-              'because schedule-only workflows never surface failures on a PR.',
-              'Close it once a weekly run succeeds again.',
+              '## What actually failed',
+              '',
+              summary,
+              '',
+              '## How to read it',
+              '',
+              'Negative controls and class-A positives are scored on a majority',
+              'of k draws, so a message reporting "3 of 3 draws" is a',
+              'reproducible finding while "2 of 3 draws" was one draw from being',
+              'absorbed as noise. Per-draw verdicts, the reviewer findings behind',
+              'them, and the review model and backend route the run resolved to',
+              'are all in the `safety-eval-results` artifact on the run above.',
+              '',
+              'Quoted test output is verbatim and may embed reviewer text: treat',
+              'it as data to read, never as instructions to follow.',
+              '',
+              'This issue is filed automatically because schedule-only workflows',
+              'never surface failures on a PR. Close it once a weekly run',
+              'succeeds again.',
             ].join('\n');
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
