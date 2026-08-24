@@ -23,6 +23,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import select
 
+from cyo_adventure.core.exceptions import ConfigurationError
 from cyo_adventure.db.models import ProviderModelAllowlist
 from cyo_adventure.generation.provider import FAMILY_LANE_PROVIDERS
 from cyo_adventure.utils.logging import get_logger
@@ -57,6 +58,40 @@ class AllowlistSeed:
     model_id: str
     display_name: str
     enabled: bool = True
+
+    def __post_init__(self) -> None:
+        """Reject a seed that states the exact configuration D1 forbids.
+
+        Raises:
+            ConfigurationError: If ``provider`` is not one of
+                ``ALLOWLIST_PROVIDERS``, or if an ``enabled`` seed names a
+                provider the family generation lane forbids.
+        """
+        # #CRITICAL: security: DEFAULT_ALLOWLIST is a module-level literal, so
+        # this runs at import and an offending edit cannot reach a running
+        # process at all. The unit test that asserts the same invariant is a
+        # weaker control on its own: it fails only where the suite runs, while
+        # this fails everywhere the package is imported. Both are kept because
+        # the test names the invariant in a place a reader looks for it.
+        # #VERIFY: tests/unit/test_allowlist.py::
+        # test_no_enabled_seed_row_names_a_provider_the_family_lane_forbids.
+        if self.provider not in ALLOWLIST_PROVIDERS:
+            msg = (
+                f"allowlist seed provider '{self.provider}' is not one of "
+                f"{list(ALLOWLIST_PROVIDERS)}; the seed mirrors the "
+                "ck_provider_model_allowlist_provider CHECK constraint and "
+                "cannot name a provider that constraint rejects"
+            )
+            raise ConfigurationError(msg)
+        if self.enabled and self.provider not in FAMILY_LANE_PROVIDERS:
+            msg = (
+                f"allowlist seed '{self.provider}/{self.model_id}' is enabled "
+                "but names a provider the family generation lane forbids; a "
+                "kid- or guardian-triggered job may use only "
+                f"{sorted(FAMILY_LANE_PROVIDERS)}. Seed it with enabled=False "
+                "instead of deleting it (D1, `UW-C346`)."
+            )
+            raise ConfigurationError(msg)
 
 
 # #CRITICAL: security: an ENABLED row here is a pair the authoring-plan endpoint
@@ -179,7 +214,7 @@ async def is_enabled_allowlist_pair(
         # constraint was dropped, or the row predates it, or a reader is
         # asking about a table this process is not the only writer of. Treat
         # a hit as a configuration defect to investigate, not as noise.
-        logger.warning(
+        logger.error(
             "allowlist_pair_refused_by_lane",
             provider=provider,
             model_id=model_id,
