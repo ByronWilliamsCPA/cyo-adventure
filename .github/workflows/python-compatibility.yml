@@ -36,7 +36,15 @@ jobs:
   test:
     name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
+    # 45, not 30. The 3.11 leg hit the old 30-minute ceiling on two of three
+    # consecutive runs (29m46s and 29m39s, both killed mid-suite) while 3.12
+    # and 3.13 finished the same suite in 22-24 and 3.14 in about 5: 3.11 is
+    # simply the slowest interpreter here and had no headroom left. A timeout
+    # is indistinguishable from a hang in the summary job, so a leg that
+    # routinely finishes seconds under its budget reports infrastructure
+    # capacity as though it were a test result. Removing -x also lengthens the
+    # failing path, which is exactly when the output matters most.
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -86,7 +94,9 @@ jobs:
         # failure and read as one intermittent problem rather than two bugs,
         # because fixing the reported one would only have revealed the next.
         # A leg that runs to completion costs the same wall clock it already
-        # spends when green and names every failure in one run.
+        # spends when green and names every failure in one run. It does make
+        # the failing path longer than the passing one, which is why the job
+        # timeout above was raised alongside this.
         shell: bash
         run: |
           uv run pytest tests/ -v --tb=short \
