@@ -1228,3 +1228,51 @@ async def test_published_book_still_disallows_repair(
 
     assert pipeline.await_args is not None
     assert pipeline.await_args.kwargs["allow_repair"] is False
+
+
+async def test_repaired_blob_gets_a_matching_validation_report(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """After an adopted repair, validation_report describes the REPAIRED blob.
+
+    The pre-pipeline gate pass stays where it is, because design principle 4
+    (deterministic before generative) wants those findings available to the
+    generative stage. That ordering was safe only while allow_repair=False
+    guaranteed the blob could not change underneath it. With repair enabled the
+    blob does change, so without a second pass the stored verdict would
+    describe prose that no longer exists: staleness that is invisible rather
+    than merely old, introduced by the fix for the visible kind.
+    """
+    version_row = _version_row()
+    repaired = _blob()
+    nodes = repaired["nodes"]
+    assert isinstance(nodes, list)
+    first = nodes[0]
+    assert isinstance(first, dict)
+    # Long, subordinate-clause-heavy prose, deliberately. The fill gate's
+    # findings are driven by reading-level metrics, so a short substitution
+    # (or a title change) produces a byte-identical report and the
+    # discriminating assertion below would pass with the code under test
+    # deleted.
+    first["body"] = (
+        "Notwithstanding the extraordinarily convoluted circumstances, the "
+        "protagonist deliberated interminably. " * 12
+    )
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        version_row.blob = repaired
+        version_row.moderation_report = _PASSING_REPORT
+
+    _wire_session(mock_async_session, _story(status="in_review"), version_row)
+    monkeypatch.setattr(
+        remoderate_api, "run_moderation_pipeline", AsyncMock(side_effect=_fake_pipeline)
+    )
+
+    await remoderate_api.remoderate_storybook_version(
+        mock_async_session, "s1", 1, _remod_ctx()
+    )
+
+    assert version_row.validation_report == run_fill_gate(repaired).report.to_dict()
+    # The discriminating half: without the post-pipeline pass the stored report
+    # is the PRE-repair one, so these two must differ or the test proves nothing.
+    assert version_row.validation_report != run_fill_gate(_blob()).report.to_dict()

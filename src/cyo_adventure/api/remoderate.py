@@ -605,6 +605,27 @@ async def remoderate_storybook_version(
         raise
     duration = time.monotonic() - started
 
+    if allow_repair:
+        # #CRITICAL: data-integrity: the gate pass above runs BEFORE the
+        # generative half by design (moderation-review-redesign-2026-07-28.md,
+        # design principle 4: deterministic before generative), which was safe
+        # only while allow_repair=False guaranteed the blob could not change
+        # underneath it. On the repair-enabled path the pipeline may adopt a
+        # repair and assign version_row.blob = revised, so without this second
+        # pass moderation_report would describe the repaired prose while
+        # validation_report described prose that no longer exists. That is a
+        # worse staleness than the month-old reports this endpoint's re-gating
+        # exists to fix, because it is invisible rather than merely old.
+        #
+        # Re-deriving unconditionally on this path is deliberate and cheaper
+        # than detecting whether a repair was actually adopted:
+        # run_moderation_pipeline returns None and signals nothing, and
+        # run_fill_gate is deterministic and makes no LLM call.
+        # #VERIFY: tests/unit/test_remoderate_unit.py::
+        # test_repaired_blob_gets_a_matching_validation_report fails if this
+        # block is deleted.
+        version_row.validation_report = run_fill_gate(version_row.blob).report.to_dict()
+
     overall_verdict, verdict_counts, structural_count = _summarize_report(
         version_row.moderation_report
     )
