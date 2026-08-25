@@ -172,30 +172,39 @@ the proof that status stays untouched.
 
 Verified against production on 2026-08-24: all seventeen books have **zero**
 `generation_job` rows, and all seventeen versions carry `provider = 'import'` with
-`skeleton_slug` populated. That makes the widening destructive as designed, and the
-auto-repair decision inert, for reasons neither is obvious from.
+`skeleton_slug` populated. The widening therefore lands on a population whose
+slot provenance the pipeline cannot recover the way it does on the generation path.
 
 `api/remoderate.py` does not pass `personalizable_slots`, so
 `run_moderation_pipeline` falls back to
 `personalizable_slot_ids_for_story(session, story_id)`, which recovers the contract
-from the story's `GenerationJob` row and returns `None` when there is none. The
-pipeline correctly treats `None` as fail-closed and adds a
-`sentinel_integrity_violation` **BLOCK**. That is right on the generation path, where
-a job row always exists. On this path it is a false alarm produced by absent
-provenance rather than by anything in the prose.
+from the story's `GenerationJob` row. With no such row it returns an **empty
+frozenset**, not the fail-closed `None`: that branch is deliberate, and its `#ASSUME`
+records why. Failing closed there would make the at-rest scan newly treat every
+brace-bearing legacy story as sentinel-corrupt, a behaviour change well outside the
+slot contract's remit.
 
-Two consequences follow, and the second cancels an approved decision:
+An empty declared set is the right answer for a story that genuinely has no theme
+contract. It is the wrong answer for one that has a contract reachable by a different
+route, which is exactly these seventeen: the set says "nothing is personalizable"
+about books whose `skeleton_slug` can still resolve a real slot set.
 
-- Every book's stored report would be overwritten with a hard block. Today all
-  seventeen store `hard_block = false` (sixteen with a soft flag, one clean), so the
-  run would replace seventeen accurate reports with seventeen uninformative ones.
-- The repair branch is gated on `not report.has_hard_block`, so the manufactured
-  block suppresses repair. `allow_repair=True` would never fire for any of the
-  seventeen.
+The consequence is narrower than a block, and it is worth stating precisely rather
+than overstating it:
 
-Status is unaffected: `(IN_REVIEW, AUTO_REJECT)` is not a legal hop either, so the
-terminal call still raises and is still swallowed. The damage is confined to the
-reports, which is why it would have been easy to miss.
+- `check_sentinel_integrity_at_rest` compares each well-formed sentinel's slot id
+  against the declared set, so against an empty set every one of them is reported as
+  `unknown_slot`.
+- No book currently in review carries a sentinel, so today this produces no findings
+  at all. All seventeen store `hard_block = false` (sixteen with a soft flag, one
+  clean) and would keep doing so. The fix is defensive, and it stops being defensive
+  the first time a sentinel-bearing book reaches the review gate.
+- Because there is no manufactured hard block, the repair branch's
+  `not report.has_hard_block` gate is not tripped and `allow_repair=True` is not
+  suppressed. The auto-repair decision stands as approved.
+
+Status is unaffected either way: `(IN_REVIEW, AUTO_REJECT)` is not a legal hop, so the
+terminal call still raises and is still swallowed.
 
 `import_filled_story` already avoids this by passing `personalizable_slots`
 explicitly rather than relying on the job lookup. Re-moderation does the same, from
@@ -232,8 +241,11 @@ generation job", which is true of every imported book and says nothing about saf
 - A version with a `skeleton_slug` and **no** `generation_job` row resolves a real
   slot set and produces no `sentinel_integrity_violation` finding. This is the
   production shape of all seventeen books, and without the fix it is a hard block.
-- A version whose `skeleton_slug` is absent, or names a skeleton that cannot be
-  located, still fails closed. The tri-state's `None` arm must survive.
+- A version whose `skeleton_slug` names a skeleton that cannot be located, or whose
+  slug traverses, still fails closed. The tri-state's `None` arm must survive. An
+  ABSENT slug is the other arm and returns the empty set: no slug means no reachable
+  contract, which is the same "nothing is personalizable" the job-row branch reports,
+  not "we could not find out".
 
 ### 7. Give the sweep script a way to reach the new population
 

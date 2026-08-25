@@ -16,7 +16,11 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from cyo_adventure.core.exceptions import ResourceNotFoundError
+from cyo_adventure.api.remoderate import RemoderateResult
+from cyo_adventure.core.exceptions import (
+    BusinessLogicError,
+    ResourceNotFoundError,
+)
 from cyo_adventure.db.models import Storybook
 from cyo_adventure.events.models import SYSTEM_ACTOR_ROLE
 
@@ -851,8 +855,15 @@ async def test_resolve_book_id_targets_refuses_a_status_remoderation_rejects(
     )
     session.scalar = AsyncMock(return_value=3)
 
-    with pytest.raises(ResourceNotFoundError, match="does not admit"):
+    # BusinessLogicError, not ResourceNotFoundError: the book EXISTS. This is the
+    # same error the endpoint raises for the same condition
+    # (api/remoderate.py::remoderate_storybook_version), and the rule name is
+    # asserted so the two paths cannot drift into describing one book two ways.
+    with pytest.raises(BusinessLogicError, match="does not admit") as excinfo:
         await remoderate_books._resolve_book_id_targets(session, ["s_x"])
+    # ``rule`` is folded into ``details`` by the constructor, not kept as an
+    # attribute, so read it where it actually lands.
+    assert excinfo.value.details["rule"] == "remoderate_requires_reviewable_status"
 
 
 @pytest.mark.asyncio
@@ -906,7 +917,10 @@ async def test_sweep_reports_books_excluded_from_the_listing() -> None:
 async def test_sweep_records_repaired_books() -> None:
     """A book whose text the repair pass rewrote is recorded separately."""
     session = _grouped_max_session([_in_review_storybook("s_a")], [("s_a", 3)])
-    outcome = MagicMock()
+    # spec= so a renamed or dropped field on RemoderateResult fails here rather
+    # than being invented by the mock. It is a slots dataclass, so its fields
+    # are real class attributes and spec actually sees them.
+    outcome = MagicMock(spec=RemoderateResult)
     outcome.overall_verdict = "pass"
     outcome.repaired = True
     with patch.object(
@@ -929,7 +943,10 @@ async def test_sweep_records_repaired_books() -> None:
 async def test_sweep_leaves_repaired_empty_when_nothing_was_rewritten() -> None:
     """The repaired list must discriminate, not just mirror succeeded."""
     session = _grouped_max_session([_in_review_storybook("s_a")], [("s_a", 3)])
-    outcome = MagicMock()
+    # spec= so a renamed or dropped field on RemoderateResult fails here rather
+    # than being invented by the mock. It is a slots dataclass, so its fields
+    # are real class attributes and spec actually sees them.
+    outcome = MagicMock(spec=RemoderateResult)
     outcome.overall_verdict = "pass"
     outcome.repaired = False
     with patch.object(

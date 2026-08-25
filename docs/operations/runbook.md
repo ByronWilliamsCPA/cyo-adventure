@@ -229,11 +229,21 @@ service whose health endpoint is green.
 **Detect drift before you need to.** Compare the applied head against the repo:
 
 ```bash
-# Applied on the live project (needs the project linked; see the workflow's link step)
-supabase migration list --linked
+# The ref you are about to deploy. Measure everything against THIS, not against
+# origin/main: the dispatch below takes a ref, and a merge landing between the
+# check and the dispatch would otherwise change the migration set silently.
+REF="${REF:-origin/main}"
 
-# What the repo carries. Anything listed here that the query above does not show is pending.
-git ls-tree --name-only origin/main supabase/migrations/
+# Applied on PRODUCTION. Do NOT use --linked here: this checkout is linked to
+# STAGING (Pre-flight step 1 records why), so --linked reports the wrong
+# database and the comparison below would come out clean against the wrong one.
+# SUPABASE_DB_URL is the production Supavisor session-mode pooler string on port
+# 5432, defined in [Section 6](#6-backup-and-restore); the direct host is
+# IPv6-only and is unreachable from most operator networks.
+supabase migration list --db-url "$SUPABASE_DB_URL"
+
+# What that ref carries. Anything listed here that the command above does not show is pending.
+git ls-tree --name-only "$REF" supabase/migrations/
 ```
 
 #### Pre-flight
@@ -246,12 +256,29 @@ git ls-tree --name-only origin/main supabase/migrations/
 
    ```bash
    # Roles, schema, and data as three files, so a partial restore is possible.
-   # Requires SUPABASE_DB_PASSWORD for the target project.
+   # --db-url, NOT --linked: this checkout is linked to STAGING, so --linked here
+   # would dump staging and leave you believing you held a production restore point.
+   # SUPABASE_DB_URL is the production session-mode pooler string (Section 6).
+   set -euo pipefail
    ts="$(date -u +%Y%m%dT%H%M%SZ)"
-   supabase db dump --linked --role-only  > "preflight-${ts}-roles.sql"
-   supabase db dump --linked              > "preflight-${ts}-schema.sql"
-   supabase db dump --linked --data-only  > "preflight-${ts}-data.sql"
+   out="$(mktemp -d)"
+   supabase db dump --db-url "$SUPABASE_DB_URL" --role-only > "$out/preflight-${ts}-roles.sql"
+   supabase db dump --db-url "$SUPABASE_DB_URL"             > "$out/preflight-${ts}-schema.sql"
+   supabase db dump --db-url "$SUPABASE_DB_URL" --data-only > "$out/preflight-${ts}-data.sql"
+
+   # A dump that failed can still leave a file. Refuse to proceed on an empty one.
+   for f in "$out/preflight-${ts}"-*.sql; do
+     [ -s "$f" ] || { echo "EMPTY DUMP, do not dispatch: $f" >&2; exit 1; }
+   done
+   echo "dumps in $out"
    ```
+
+   **These are not a platform backup, and the distinction decides what they can restore.**
+   `supabase db dump` covers the application schema and cluster roles. It does NOT include the
+   Supabase-managed schemas (`auth`, `storage`) or Storage objects. `auth.users` is therefore
+   absent, and that table is the authoritative source for adult account emails (`public.user.email`
+   is NULL for the two oldest adults). Treat these files as an application-table restore point;
+   anything that needs auth or Storage back has to come from Supabase's own managed backups.
 
    Store these off the runner and off the operator laptop's temp directory. They contain the full
    production dataset, including children's profile data, so they are subject to the same handling
@@ -277,8 +304,18 @@ git ls-tree --name-only origin/main supabase/migrations/
 
 2. **Confirm staging is green on the same migration set.** The workflow's own RUN POLICY requires it:
    only dispatch production after the staging deploy of the same migrations and config has succeeded.
-   Check the most recent successful `Deploy Supabase Migrations (staging)` run and confirm its commit
-   is an ancestor of what you are about to push.
+   Check the most recent successful `Deploy Supabase Migrations (staging)` run and compare its
+   **migration set** against the ref you are dispatching, not merely its ancestry. An ancestor check
+   passes vacuously in the case that matters: if staging succeeded at commit A and you dispatch
+   descendant B, A is still an ancestor of B even when B adds migrations staging never ran.
+
+   ```bash
+   STAGING_SHA="$(gh run list --workflow=supabase-staging.yml --status=success --limit=1 \
+     --json headSha --jq '.[0].headSha')"
+   diff <(git ls-tree --name-only "$STAGING_SHA" supabase/migrations/) \
+        <(git ls-tree --name-only "$REF"         supabase/migrations/) \
+     && echo "same migration set" || echo "DIFFERENT: staging did not validate this set"
+   ```
 
 3. **Read the pending set, do not just count it.** Migrations that create indexes concurrently,
    rewrite constraints, or backfill data have post-deploy checks of their own; several carry a
@@ -293,7 +330,10 @@ workflow asserts `SUPABASE_PROJECT_ID` is non-empty and matches `[remotes.produc
 inherited project reference from pointing the push at the wrong database.
 
 ```bash
-gh workflow run supabase-production.yml
+# --ref pins the dispatch to the commit staging validated above. Without it the
+# workflow runs the DEFAULT BRANCH, so a merge landing in between silently
+# changes the migration set after the pre-flight checks passed.
+gh workflow run supabase-production.yml --ref "$REF"
 gh run watch "$(gh run list --workflow=supabase-production.yml --limit=1 --json databaseId   --jq '.[0].databaseId')"
 ```
 
@@ -339,8 +379,13 @@ A green workflow run is not evidence the schema is correct. Run all four checks:
    a broad smoke test:
 
    ```bash
-   curl -sS -o /dev/null -w '%{http_code}\n' \
-     -H "Authorization: Bearer $TOKEN" https://cyo.williamshome.family/api/v1/me
+   # --connect-timeout/--max-time so a wedged origin fails instead of hanging, and an
+   # explicit status test so the command's own exit code carries the verdict: bare
+   # `curl -sS` exits 0 while printing 500, which reads as a pass in any script.
+   code="$(curl -sS --connect-timeout 5 --max-time 20 -o /dev/null -w '%{http_code}' \
+     -H "Authorization: Bearer $TOKEN" https://cyo.williamshome.family/api/v1/me)"
+   echo "$code"
+   [ "$code" = "200" ] || { echo "NOT 200, drift is not cleared" >&2; exit 1; }
    ```
 
    A 200 is the pass. A 500 here against a green `/health/ready` is the drift signature described at

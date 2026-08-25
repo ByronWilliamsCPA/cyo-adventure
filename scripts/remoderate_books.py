@@ -90,7 +90,10 @@ from cyo_adventure.api.remoderate import (
 )
 from cyo_adventure.core.config import settings as _default_settings
 from cyo_adventure.core.database import get_engine
-from cyo_adventure.core.exceptions import ResourceNotFoundError
+from cyo_adventure.core.exceptions import (
+    BusinessLogicError,
+    ResourceNotFoundError,
+)
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.events.models import Actor
 from cyo_adventure.publishing.state_machine import Status
@@ -355,10 +358,14 @@ async def _resolve_book_id_targets(
         ids collapsed to their first occurrence.
 
     Raises:
-        ResourceNotFoundError: If a named storybook does not exist, is in a
-            status re-moderation does not admit, or has no version to
-            re-moderate (no ``current_published_version`` when published, no
-            version rows at all when in_review).
+        ResourceNotFoundError: If a named storybook does not exist, or exists
+            but has no version to re-moderate (no ``current_published_version``
+            when published, no version rows at all when in_review).
+        BusinessLogicError: If a named storybook exists but is in a status
+            re-moderation does not admit. Kept distinct from the not-found case
+            on purpose: a caller that catches ResourceNotFoundError to mean
+            "that id is gone, skip it" must not also swallow "you named a
+            draft", which is an operator mistake worth stopping for.
     """
     # #CRITICAL: data-integrity: unlike the --mock-moderated path, this one
     # RAISES on an unresolvable id instead of skipping it. An operator naming
@@ -397,10 +404,12 @@ async def _resolve_book_id_targets(
         # inadmissible status too. Deferring to the endpoint would abort the
         # sweep mid-flight, after earlier books had already committed their
         # re-moderations and spent the LLM calls, leaving the operator to
-        # work out which half ran. It also keeps the failure legible: "you
-        # named a draft" beats a BusinessLogicError surfacing from inside a
-        # loop. The two sets are kept identical by importing the endpoint's
-        # own frozenset rather than restating it.
+        # work out which half ran. Checking early is about WHERE the sweep
+        # stops; it says nothing about which error to raise, so this mirrors
+        # the endpoint's BusinessLogicError and its rule name rather than
+        # reporting an existing book as missing. Both the admissible set and
+        # the rule name come from the endpoint rather than being restated, so
+        # the two paths cannot drift into disagreeing about the same book.
         # #VERIFY: tests/unit/test_remoderate_books.py::
         # test_resolve_book_id_targets_refuses_a_status_remoderation_rejects.
         if storybook.status not in REMODERATABLE_STATUS_VALUES:
@@ -409,8 +418,10 @@ async def _resolve_book_id_targets(
                 f"re-moderation does not admit (allowed: "
                 f"{', '.join(sorted(REMODERATABLE_STATUS_VALUES))})"
             )
-            raise ResourceNotFoundError(
-                msg, resource_type="Storybook", resource_id=book_id
+            raise BusinessLogicError(
+                msg,
+                rule="remoderate_requires_reviewable_status",
+                context={"storybook_id": book_id, "status": storybook.status},
             )
         if storybook.status == Status.IN_REVIEW.value:
             targets.append(

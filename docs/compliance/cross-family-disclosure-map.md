@@ -346,7 +346,8 @@ egress guard in 3.6 addresses the LLM leg of that risk but not the human-review 
 
 ### 3.6 `POST /api/v1/admin/rescreen` and `POST /api/v1/admin/remoderate/{id}/{version}`
 
-`rescreen.py:121`, `remoderate.py:873` (the route) into `remoderate.py:523` (the work).
+`rescreen.py:121` (`trigger_rescreen`), `remoderate.py:892` (the route, `trigger_remoderate`)
+into `remoderate.py:539` (the work, `remoderate_storybook_version`).
 
 Cross-family content re-review.
 
@@ -360,13 +361,14 @@ returns nothing. Read the rest of this section as being about `remoderate.py` an
 
 Note that `_family_child_names` is not one shared helper: it is three independent module-private
 definitions of the same shape, duplicated deliberately rather than imported
-(`remoderate.py:394-398` explains why, citing this codebase's avoidance of cross-module underscore
-imports). Three copies of a PII guard is three places a fix has to land, which is worth knowing
-before relying on any one of them.
+(`remoderate.py:397-401`, in `_family_child_names`'s docstring, explains why, citing this codebase's
+avoidance of cross-module underscore imports). Three copies of a PII guard is three places a fix has
+to land, which is worth knowing before relying on any one of them.
 
 - `node_edit.py:295-312` (docstring is explicit:
   "the story's family, not necessarily the caller's, for the admin cross-family case")
-- `remoderate.py:389-437`, the query at `remoderate.py:436`, called at `remoderate.py:626`
+- `remoderate.py:392-441` (`_family_child_names`), the query at `remoderate.py:439`, called at
+  `remoderate.py:642` (inside `remoderate_storybook_version`)
 - `story_requests.py:112-125`
 
 **Scope, as of 2026-08-24**: `remoderate.py` admits `in_review` storybooks as well as `published`

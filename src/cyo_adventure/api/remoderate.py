@@ -741,8 +741,9 @@ async def remoderate_storybook_version(
         # assert_transition always raises here, BEFORE storybook.status is
         # touched. The catch is only ever correct while that stays true, which
         # is why REMODERATABLE_STATUSES is pinned against LEGAL_TRANSITIONS
-        # by test rather than by convention. The fresh report was already persisted to version_row by
-        # the pipeline's _persist_report call, which runs before its
+        # by test rather than by convention. The fresh report was already
+        # persisted to version_row by the pipeline's _persist_report call,
+        # which runs before its
         # terminal submit/auto_reject attempt, so nothing written is lost.
         # #VERIFY: tests/unit/test_remoderate_unit.py::
         # test_published_status_unchanged_after_remoderation asserts

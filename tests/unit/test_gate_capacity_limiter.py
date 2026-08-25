@@ -94,13 +94,23 @@ def _api_modules_touching_the_gate() -> list[ModuleType]:
 
     Discovered from the package directory rather than enumerated, so a router
     added later is covered without anyone remembering to add it here.
+
+    Selection runs through the same two AST passes the assertions use, rather
+    than a substring scan for the entry-point names. A substring scan answers a
+    different question: it matches the names wherever they appear, including in
+    the prose explaining why a module deliberately does NOT call the gate.
+
+    The predicate is the UNION of the two shapes, and it has to be. Selecting on
+    ``_direct_gate_calls`` alone would return exactly the modules that VIOLATE
+    the rule and drop every compliant one, so the loop below would find nothing
+    to check while the inline-call assertion appeared to pass.
     """
     modules: list[ModuleType] = []
     for path in sorted(_API_PACKAGE_DIR.glob("*.py")):
-        if path.name == "__init__.py" or path.name == "gate_limits.py":
+        if path.name in {"__init__.py", "gate_limits.py"}:
             continue
         source = path.read_text(encoding="utf-8")
-        if not any(entry in source for entry in _GATE_ENTRY_POINTS):
+        if not _run_gate_dispatch_calls(source) and not _direct_gate_calls(source):
             continue
         modules.append(import_module(f"cyo_adventure.api.{path.stem}"))
     return modules
