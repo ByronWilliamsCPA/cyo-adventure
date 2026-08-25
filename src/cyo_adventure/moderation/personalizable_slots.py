@@ -334,6 +334,18 @@ def _stored_slug(slug: object) -> str | None:
             slug that merely has stray whitespace keeps resolving exactly as
             it does today; only the wholly-blank case changes arm.
     """
+    # #ASSUME: data-integrity: a blank stored slug is ABSENT provenance, not a
+    # contract that failed to load, so it resolves the benign empty frozenset
+    # rather than PERSONALIZABLE_SLOTS_UNRECOVERABLE. This is the one arm this
+    # helper MOVES: the job path used to fail closed on an empty string and
+    # both paths used to fail closed on a whitespace-only one. It is the
+    # benign direction on a fail-closed control, so it is deliberately narrow:
+    # only a slug with NO non-whitespace content qualifies, and a slug with
+    # real content keeps resolving unstripped, exactly as before.
+    # #VERIFY: tests/unit/test_personalizable_slots.py::
+    # test_a_blank_slug_resolves_the_benign_arm_from_a_job and
+    # tests/unit/test_personalizable_slots.py::
+    # test_a_blank_slug_resolves_the_same_arm_from_a_job_and_a_version.
     if not isinstance(slug, str) or not slug.strip():
         return None
     return slug
