@@ -75,7 +75,8 @@ def _wire_legacy(
     simplest fixture that lets the pre-persist reinsertion step run without a
     full WS-2 ``ThemeContract``. Note this does NOT wire up
     ``moderation.personalizable_slots``'s own skeleton loading (a separate
-    module-level import), so `personalizable_slots` resolves `None` for every
+    module-level import), so `personalizable_slots` resolves
+    `PERSONALIZABLE_SLOTS_UNRECOVERABLE` for every
     test in this file: the at-rest re-scan is gated on it being a real
     `frozenset` (Task 6c, M1) and is exercised, with that resolution
     controlled directly, in

@@ -67,15 +67,8 @@ class PersonalizableSlotsUnset:
     and have it still fail closed, never have it reinterpreted as "resolve it
     yourself, the caller forgot".
 
-    Originally this existed because the fail-closed arm was spelled ``None``,
-    which could not also mean "unset". The fail-closed arm now has its own
-    type (:class:`PersonalizableSlotsUnrecoverable`), so the collision is
-    gone, but the state this marker names is still a real and separate one:
-    ``None`` would work again today and is not reinstated, because two
-    marker types that read alike are easier to keep straight than one type
-    and one ``None`` that do not. A dedicated sentinel TYPE (not a shared
-    ``object()``) lets ``isinstance`` narrow the parameter cleanly under
-    BasedPyright strict mode.
+    A dedicated sentinel TYPE (not a shared ``object()``) lets ``isinstance``
+    narrow the parameter cleanly under BasedPyright strict mode.
     """
 
     __slots__ = ()
@@ -110,14 +103,20 @@ class PersonalizableSlotsUnrecoverable:
     wanted has always been an error, so "a caller forgot to handle it" was
     caught at every typed boundary. A truthiness test was the one shape that
     type-checked perfectly under the ``None`` spelling and still routed a
-    security control the wrong way. That is the hole this type closes, and
-    :meth:`__bool__` closes it twice over. Because the method returns
-    :data:`~typing.NoReturn`, BasedPyright rejects ``if not slots:`` over
-    :data:`PersonalizableSlots` outright ("Invalid conditional operand of
-    type PersonalizableSlots"), so the mistake now fails the type gate rather
-    than shipping; and a value that reaches such a test untyped -- through
-    ``object``, ``Any``, or a mock -- still raises at runtime. Narrowing to
-    the ``frozenset`` arm first both type-checks and runs, which is precisely
+    security control the wrong way. That is the hole this type closes, with
+    two defences of UNEQUAL reach. Because :meth:`__bool__` returns
+    :data:`~typing.NoReturn`, BasedPyright rejects the shapes that take a
+    conditional operand directly -- ``if slots``, ``if not slots``, ``while
+    slots``, ``assert slots``, a ternary condition, and a comprehension
+    ``if`` -- with "Invalid conditional operand of type PersonalizableSlots",
+    so those fail the type gate rather than shipping. Other truthiness
+    shapes ESCAPE the type gate and type-check clean: ``bool(slots)``,
+    ``slots or x``, ``slots and x``, and ``any([slots])`` are caught only by
+    the runtime ``TypeError`` :meth:`__bool__` raises. That matters because
+    :mod:`cyo_adventure.generation.persistence` prescribes exactly the
+    ``bool(...) and ...`` shape as the house recipe, so treat the runtime
+    raise, not the type gate, as the backstop there. Narrowing to the
+    ``frozenset`` arm first both type-checks and runs, which is precisely
     the reading that stays legitimate.
 
     Deliberately NOT falsy-by-omission and NOT truthy either. Either choice

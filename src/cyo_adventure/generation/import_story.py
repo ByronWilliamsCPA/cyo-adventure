@@ -828,11 +828,12 @@ async def resume_manual_fill(
     personalizable sentinel as an ``unknown_slot`` the moment a real
     personalizable contract ships); and the backstop's own band recovery
     reads only the raw ``authoring_metadata`` key, not this function's own
-    brief-band fallback (I2). A resolution of ``None`` (the contract is
-    genuinely uncomputable, as opposed to merely a render/binding failure)
-    is threaded through unchanged and makes the moderation entry fail closed
-    on this resume (M1), rather than the story silently persisting clean
-    with no entry-level check at all.
+    brief-band fallback (I2). A resolution of
+    ``PERSONALIZABLE_SLOTS_UNRECOVERABLE`` (the contract is genuinely
+    uncomputable, as opposed to merely a render/binding failure) is threaded
+    through unchanged and makes the moderation entry fail closed on this
+    resume (M1), rather than the story silently persisting clean with no
+    entry-level check at all.
 
     Args:
         session: Open async session; the story/version write still follows
@@ -917,8 +918,9 @@ async def resume_manual_fill(
     # `authoring_metadata` key alone, closing I2), then threaded through
     # `import_filled_story` into the moderation entry below, so it uses the
     # exact answer `personalizable_slot_ids_for_story` would have produced
-    # for this job had it been linked in time -- never a guess. A `None`
-    # result (contract genuinely uncomputable) is threaded through verbatim
+    # for this job had it been linked in time -- never a guess. A
+    # `PERSONALIZABLE_SLOTS_UNRECOVERABLE` result (contract genuinely
+    # uncomputable) is threaded through verbatim
     # too: the moderation entry backstop then fails closed on this resume
     # (M1), rather than the pre-Task-6c gap where an uncomputable contract
     # here silently persisted a clean-looking version with no entry-level
@@ -961,9 +963,10 @@ async def resume_manual_fill(
     # (`check_sentinel_integrity_at_rest`) only runs when `personalizable_slots`
     # is a real `frozenset` (Task 6c, M1): when the contract itself is
     # unrecoverable, this step is skipped and the moderation-entry backstop
-    # this function threads `personalizable_slots` into (below) fails closed on
-    # that same marker instead, so this is a deferred check, not a new gap. Also dormant, like the worker's own
-    # check, whenever `personalizable_slot_ids` resolves empty (every
+    # this function threads `personalizable_slots` into (below) fails closed
+    # on that same marker instead, so this is a deferred check, not a new
+    # gap. Also dormant, like the worker's own check, whenever
+    # `personalizable_slot_ids` resolves empty (every
     # contract on disk today): the transform has no expected tokens to
     # reinsert, so it is a byte-identical no-op, and
     # `check_sentinel_integrity_at_rest` derives zero expected sentinels for

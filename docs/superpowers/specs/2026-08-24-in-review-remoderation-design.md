@@ -179,7 +179,8 @@ slot provenance the pipeline cannot recover the way it does on the generation pa
 `run_moderation_pipeline` falls back to
 `personalizable_slot_ids_for_story(session, story_id)`, which recovers the contract
 from the story's `GenerationJob` row. With no such row it returns an **empty
-frozenset**, not the fail-closed `None`: that branch is deliberate, and its `#ASSUME`
+frozenset**, not the fail-closed `PERSONALIZABLE_SLOTS_UNRECOVERABLE`: that branch is
+deliberate, and its `#ASSUME`
 records why. Failing closed there would make the at-rest scan newly treat every
 brace-bearing legacy story as sentinel-corrupt, a behaviour change well outside the
 slot contract's remit.

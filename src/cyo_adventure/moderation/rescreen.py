@@ -543,11 +543,8 @@ async def _rescreen_one(
         # rather than guessing an empty declared set, matching
         # `_sentinel_corruption_reasons`' own uncomputable branch.
         #
-        # The default is written out rather than left to `.get`'s implicit
-        # `None`. It used to ride on that implicit value back when `None` WAS
-        # the fail-closed state; the two coincided by luck of spelling, and a
-        # reader had no way to tell a deliberate fail-closed default from an
-        # author who simply did not think about the missing-key case.
+        # The default is written out so a deliberate fail-closed default is
+        # distinguishable from an unconsidered missing-key case.
         reasons.extend(
             _sentinel_corruption_reasons(
                 version_row.blob,

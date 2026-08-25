@@ -294,13 +294,14 @@ async def test_resume_missing_metadata_band_falls_back_to_brief_band(
     assert captured["personalizable_slots"] == frozenset({"HERO"})
 
 
-async def test_resume_uncomputable_contract_threads_none_and_fails_closed(
+async def test_resume_uncomputable_contract_threads_unrecoverable_marker_fails_closed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """(M1 fix proof) A ``skeleton_slug`` present but the skeleton/contract
-    genuinely uncomputable (file missing) threads ``None`` through to the
-    moderation entry, which fails closed on it, instead of the story
-    persisting clean with no entry-level check at all.
+    genuinely uncomputable (file missing) threads
+    ``PERSONALIZABLE_SLOTS_UNRECOVERABLE`` through to the moderation entry,
+    which fails closed on it, instead of the story persisting clean with no
+    entry-level check at all.
     """
     concept = Concept(id=uuid.uuid4(), family_id=uuid.uuid4(), brief={})
     job = GenerationJob(

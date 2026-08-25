@@ -11,6 +11,9 @@ from cyo_adventure.generation.import_story import (
     _str_meta,
     import_filled_story,
 )
+from cyo_adventure.moderation.personalizable_slots import (
+    PERSONALIZABLE_SLOTS_UNRECOVERABLE,
+)
 
 
 class _FakeResult:
@@ -364,10 +367,11 @@ async def test_import_leaves_personalization_eligible_false_for_empty_slot_set(
 async def test_import_leaves_personalization_eligible_false_when_slots_unresolved(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Fail-closed: an unresolvable slot set (``None``) stays False even with tokens.
+    """Fail-closed: ``PERSONALIZABLE_SLOTS_UNRECOVERABLE`` stays False with tokens.
 
     The manifest here is token-bearing, so the only leg that can hold this
-    False is the tri-state slot set normalizing to falsy.
+    False is the tri-state slot set's fail-closed marker normalizing to falsy
+    rather than being mistaken for a declared ``frozenset``.
     """
     moderation = AsyncMock()
     monkeypatch.setattr(
@@ -379,7 +383,9 @@ async def test_import_leaves_personalization_eligible_false_when_slots_unresolve
         family_id=uuid.uuid4(),
         sentinel_manifest=dict(_POPULATED_MANIFEST),
     )
-    await import_filled_story(session, request, personalizable_slots=None)
+    await import_filled_story(
+        session, request, personalizable_slots=PERSONALIZABLE_SLOTS_UNRECOVERABLE
+    )
     versions = [r for r in session.added if isinstance(r, StorybookVersion)]
     assert len(versions) == 1
     assert versions[0].personalization_eligible is False
