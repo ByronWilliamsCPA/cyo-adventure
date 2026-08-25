@@ -190,6 +190,7 @@ SPDX-FileCopyrightText = "2025 Byron Williams"
 [[annotations]]
 path = [
     "frontend/.env.example",  # Frontend environment template
+    "frontend/.env.local.example",  # Frontend local dev secrets template (compose env_file)
     "frontend/.env.e2e-prod.example",  # Production smoke e2e credential template
     "frontend/.env.e2e-staging.example",  # Staging smoke e2e credential template
     "frontend/.gitignore",  # Frontend git exclusions
