@@ -822,9 +822,14 @@ export function ReviewDetailPage() {
         </Button>
         <Button
           onClick={() => openDialog('approve')}
-          disabled={surface.status !== 'in_review'}
+          disabled={surface.status !== 'in_review' || surface.report_unusable}
           aria-describedby={
-            surface.status !== 'in_review' ? 'review-actions-disabled-hint' : undefined
+            [
+              surface.status !== 'in_review' ? 'review-actions-disabled-hint' : null,
+              surface.report_unusable ? 'review-approve-unusable-hint' : null,
+            ]
+              .filter((id): id is string => id !== null)
+              .join(' ') || undefined
           }
         >
           Approve
@@ -885,6 +890,25 @@ export function ReviewDetailPage() {
           Only published stories can be re-screened.
         </p>
       ) : null}
+      {/*
+        #CRITICAL: security: an unusable report carries no genuine content
+        judgment (fail-safe or mock-reviewer artifacts only), so there is
+        nothing an override reason could justify approving over. The backend
+        rejects approval unconditionally in this state
+        (rule="approve_with_unusable_moderation", publishing/service.py); this
+        disables Approve to match rather than letting the confirm dialog open
+        with no override field and round-trip to a guaranteed 400. Re-screen
+        stays visible (never hidden), matching the SOP's "re-run moderation"
+        guidance from the unusable-report banner above.
+        #VERIFY: ReviewDetailPage.test.tsx "disables Approve and points to
+        Re-screen when the report is unusable" test.
+      */}
+      {surface.report_unusable ? (
+        <p id="review-approve-unusable-hint" className="review-actionbar__hint cyo-text-muted">
+          This report has no genuine content judgment; re-run moderation with Re-screen before
+          approving.
+        </p>
+      ) : null}
 
       {dialog === 'approve' ? (
         <Dialog
@@ -901,9 +925,20 @@ export function ReviewDetailPage() {
                 #VERIFY: this confirm dialog gates the action and the backend
                 re-checks the story is screened and still in review, rejecting
                 anything unscreened (ReviewDetailPage.test.tsx approve + rejection).
+                The `surface.report_unusable` clause is defense in depth: the
+                Approve button that opens this dialog is already disabled in
+                that state, so this branch should be unreachable in practice,
+                but the backend rejects unconditionally
+                (rule="approve_with_unusable_moderation") and this keeps the
+                confirm button from ever being the one live control in that
+                state.
               */}
               <Button
-                disabled={submitting || (needsOverride && overrideReason.trim().length < 10)}
+                disabled={
+                  submitting ||
+                  surface.report_unusable ||
+                  (needsOverride && overrideReason.trim().length < 10)
+                }
                 onClick={() =>
                   void runAction(() =>
                     reviewApi.approve(

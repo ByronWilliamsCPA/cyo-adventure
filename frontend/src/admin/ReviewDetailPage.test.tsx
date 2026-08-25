@@ -1484,6 +1484,37 @@ describe('ReviewDetailPage', () => {
       expect(await screen.findByText(/re-run moderation before reviewing/i)).toBeInTheDocument()
     })
 
+    it('disables Approve and points to Re-screen when the report is unusable, without disabling Re-screen for an unrelated reason', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          report_unusable: true,
+        },
+      })
+      renderAt('s1')
+
+      const approve = await screen.findByRole('button', { name: /^Approve$/i })
+      expect(approve).toBeDisabled()
+      // Accessible reason: a screen-reader user hears why Approve is greyed
+      // out, not just that it is.
+      const hint = await screen.findByText(
+        /no genuine content judgment; re-run moderation with re-screen/i
+      )
+      expect(approve).toHaveAttribute('aria-describedby', hint.id)
+
+      // Defense in depth: clicking the (disabled) Approve control cannot open
+      // the dialog, so there is no confirm button to guarantee a 400 on.
+      expect(screen.queryByRole('button', { name: /Confirm approve/i })).not.toBeInTheDocument()
+
+      // Re-screen itself is untouched by this fix: it is still on the page,
+      // still gated solely by its own published-only precondition (this
+      // fixture is `in_review`, matching the unusable-report banner test
+      // above), not hidden or newly disabled because of report_unusable.
+      const rescreen = await screen.findByRole('button', { name: /^Re-screen$/i })
+      expect(rescreen).toBeDisabled()
+      expect(rescreen).toHaveAttribute('aria-describedby', 'review-rescreen-disabled-hint')
+    })
+
     it('requires an override reason before approving over a block finding', async () => {
       const user = userEvent.setup()
       mockGet.mockResolvedValue({
