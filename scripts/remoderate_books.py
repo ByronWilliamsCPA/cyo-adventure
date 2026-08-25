@@ -22,7 +22,7 @@ Three independent ways to pick targets, mutually exclusive:
   False``, design doc 2.4) or a fail-safe-degraded marker
   (``moderation/stages.py``'s ``reviewer_unavailable`` structural finding, or
   the literal "defaulted to fail-safe" substring, which current code and a
-  pre-Stage-A report both emit; see ``_FAIL_SAFE_MESSAGE_SUBSTRING`` for the
+  pre-Stage-A report both emit; see ``FAIL_SAFE_MESSAGE_SUBSTRING`` for the
   full writer set). This is how the 18-book sweep
   itself will be selected; the exact list is not hardcoded here so it always
   reflects live database state, not a snapshot that can drift.
@@ -103,6 +103,10 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.events.models import Actor
+from cyo_adventure.moderation.report import (
+    FAIL_SAFE_MESSAGE_SUBSTRING,
+    MOCK_MODERATED_CONCERNS,
+)
 from cyo_adventure.publishing.state_machine import Status
 from cyo_adventure.utils.logging import get_logger
 
@@ -138,12 +142,10 @@ _logger = get_logger(__name__)
 # section 4 decision 5; `grep -n "defaulted to fail-safe"
 # src/cyo_adventure/moderation/stages.py` enumerates the complete writer set
 # above, and must be re-run if that file's parse paths change.
-_FAIL_SAFE_MESSAGE_SUBSTRING = "defaulted to fail-safe"
-
-# Structured concern taxonomy markers (moderation/report.py::CONCERN_TAXONOMY)
-# that identify a mock-moderated or fail-safe-degraded report even when the
-# message text has since changed.
-_MOCK_MODERATED_CONCERNS = frozenset({"mock_reviewer_active", "reviewer_unavailable"})
+# The substring and concern-marker constants themselves now live in
+# moderation/report.py (see its FAIL_SAFE_MESSAGE_SUBSTRING and
+# MOCK_MODERATED_CONCERNS module attributes), so this script and the
+# pipeline share one definition instead of two copies drifting apart.
 
 
 def _is_mock_moderated(report: dict[str, object] | None) -> bool:
@@ -159,6 +161,14 @@ def _is_mock_moderated(report: dict[str, object] | None) -> bool:
         True if the report's ``summary.reviewer_independent`` is False, or
         any finding carries a mock/fail-safe concern marker, or any finding
         message contains the legacy fail-safe substring.
+
+    Note:
+        Deliberately NOT ``moderation.report.moderation_report_unusable()``:
+        this function selects a book for re-moderation on an ANY-match (one
+        fail-safe finding is enough), while that predicate is an ALL-match
+        (approval blocks only when every finding is a pipeline artifact and
+        no genuine judgment exists at all). The two semantics serve different
+        callers and must not be collapsed into one.
     """
     if report is None:
         return False
@@ -175,10 +185,10 @@ def _is_mock_moderated(report: dict[str, object] | None) -> bool:
         if not isinstance(finding, dict):
             continue
         entry = cast("dict[str, object]", finding)
-        if entry.get("concern") in _MOCK_MODERATED_CONCERNS:
+        if entry.get("concern") in MOCK_MODERATED_CONCERNS:
             return True
         message = entry.get("message")
-        if isinstance(message, str) and _FAIL_SAFE_MESSAGE_SUBSTRING in message:
+        if isinstance(message, str) and FAIL_SAFE_MESSAGE_SUBSTRING in message:
             return True
     return False
 

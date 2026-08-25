@@ -18,7 +18,7 @@ from sqlalchemy import func, select
 
 from cyo_adventure.db.models import PipelineEvent, StorybookVersion
 from cyo_adventure.events import EventType
-from cyo_adventure.moderation.report import Verdict
+from cyo_adventure.moderation.report import LEGACY_FAIL_SAFE_MESSAGES, Verdict
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
@@ -64,12 +64,8 @@ _OVERRIDABLE_VERDICTS = frozenset({Verdict.ADVISORY.value, Verdict.FLAG.value})
 # report has gone through code that stamps "structural" explicitly.
 # #VERIFY: tests/unit/test_moderation_insights.py::
 # TestAggregateInsights::test_legacy_fail_safe_message_without_structural_key_is_excluded.
-_LEGACY_FAIL_SAFE_MESSAGES = frozenset(
-    {
-        "verdict parse failed; defaulted to fail-safe",
-        "unknown verdict; defaulted to fail-safe",
-    }
-)
+# The frozenset itself lives in moderation/report.py (LEGACY_FAIL_SAFE_MESSAGES)
+# so both this module and moderation/stages.py's writers share one definition.
 
 
 @dataclass(frozen=True, slots=True)
@@ -236,7 +232,7 @@ def _fold_finding_into_accumulator(
     # #VERIFY: tests/unit/test_moderation_insights.py::
     # TestAggregateInsights::test_structural_findings_excluded_from_override_rate.
     is_legacy_fail_safe = "structural" not in finding and (
-        finding.get("message") in _LEGACY_FAIL_SAFE_MESSAGES
+        finding.get("message") in LEGACY_FAIL_SAFE_MESSAGES
     )
     if finding.get("structural") is True or is_legacy_fail_safe:
         accumulator.structural_findings += 1

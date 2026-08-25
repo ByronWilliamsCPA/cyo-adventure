@@ -13,6 +13,8 @@ from cyo_adventure.moderation.report import (
     ModerationReport,
     Source,
     Verdict,
+    moderation_report_unusable,
+    severe_finding_counts,
 )
 
 pytestmark = pytest.mark.unit
@@ -298,3 +300,107 @@ def test_absent_concern_is_still_allowed() -> None:
         message="m",
     )
     assert finding.concern is None
+
+
+class TestModerationReportUnusable:
+    """moderation_report_unusable() over the persisted JSONB shape."""
+
+    def _fail_safe_finding(self, **overrides: object) -> dict[str, object]:
+        base: dict[str, object] = {
+            "stage": "review",
+            "source": "llm_safety",
+            "category": "llm_safety",
+            "node_id": "n1",
+            "verdict": "flag",
+            "score": None,
+            "message": "unknown verdict; defaulted to fail-safe",
+        }
+        base.update(overrides)
+        return base
+
+    def _report(
+        self, findings: list[dict[str, object]], *, independent: bool = True
+    ) -> dict[str, object]:
+        return {
+            "findings": findings,
+            "aggregate": {"nodes_reviewed": 1, "pass_counts": {}},
+            "summary": {
+                "count": len(findings),
+                "hard_block": False,
+                "soft_flag": bool(findings),
+                "repaired": False,
+                "reviewer_independent": independent,
+            },
+        }
+
+    def test_none_report_is_unusable(self) -> None:
+        assert moderation_report_unusable(None) is True
+
+    def test_clean_report_is_usable(self) -> None:
+        assert moderation_report_unusable(self._report([])) is False
+
+    def test_all_fail_safe_legacy_rows_are_unusable(self) -> None:
+        # Legacy pre-Stage-A rows: no "structural" key, no "concern" key.
+        report = self._report(
+            [self._fail_safe_finding(node_id=f"n{i}") for i in range(3)]
+        )
+        assert moderation_report_unusable(report) is True
+
+    def test_parse_failed_variant_is_unusable(self) -> None:
+        report = self._report(
+            [
+                self._fail_safe_finding(
+                    message="verdict parse failed; defaulted to fail-safe"
+                )
+            ]
+        )
+        assert moderation_report_unusable(report) is True
+
+    def test_mock_reviewer_summary_flag_is_unusable(self) -> None:
+        genuine = self._fail_safe_finding(
+            message="cruelty to animals", severity="medium"
+        )
+        assert (
+            moderation_report_unusable(self._report([genuine], independent=False))
+            is True
+        )
+
+    def test_structural_only_report_is_unusable(self) -> None:
+        structural = self._fail_safe_finding(
+            message="reviewer unavailable",
+            structural=True,
+            concern="reviewer_unavailable",
+        )
+        assert moderation_report_unusable(self._report([structural])) is True
+
+    def test_mixed_genuine_and_fail_safe_is_usable(self) -> None:
+        findings = [
+            self._fail_safe_finding(),
+            self._fail_safe_finding(message="frightening imagery", severity="medium"),
+        ]
+        assert moderation_report_unusable(self._report(findings)) is False
+
+
+class TestSevereFindingCounts:
+    def test_counts_blocks_and_highs_separately(self) -> None:
+        report = {
+            "findings": [
+                {"verdict": "block", "severity": "high", "message": "a"},
+                {"verdict": "flag", "severity": "high", "message": "b"},
+                {"verdict": "flag", "severity": "medium", "message": "c"},
+                {"verdict": "advisory", "severity": "low", "message": "d"},
+            ]
+        }
+        assert severe_finding_counts(report) == (1, 1)
+
+    def test_none_and_empty(self) -> None:
+        assert severe_finding_counts(None) == (0, 0)
+        assert severe_finding_counts({"findings": []}) == (0, 0)
+
+    def test_high_severity_advisory_does_not_gate(self) -> None:
+        # Advisories never gate (SOP contract); a stray severity=high on an
+        # advisory must not force an override reason at approval.
+        report = {
+            "findings": [{"verdict": "advisory", "severity": "high", "message": "a"}]
+        }
+        assert severe_finding_counts(report) == (0, 0)

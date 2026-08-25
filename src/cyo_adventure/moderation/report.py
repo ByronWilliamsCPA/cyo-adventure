@@ -75,6 +75,19 @@ CONCERN_TAXONOMY: frozenset[str] = frozenset(
     }
 )
 
+# The two exact messages the Stage-1 parser emits when it cannot extract a
+# verdict (moderation/stages.py). They are load-bearing at rest: legacy
+# pre-Stage-A reports are detected by these strings because those rows lack
+# the ``structural`` and ``concern`` keys. Do not reword without a data
+# migration story for stored reports.
+UNKNOWN_VERDICT_FAIL_SAFE_MESSAGE = "unknown verdict; defaulted to fail-safe"
+PARSE_FAILED_FAIL_SAFE_MESSAGE = "verdict parse failed; defaulted to fail-safe"
+FAIL_SAFE_MESSAGE_SUBSTRING = "defaulted to fail-safe"
+LEGACY_FAIL_SAFE_MESSAGES = frozenset(
+    {UNKNOWN_VERDICT_FAIL_SAFE_MESSAGE, PARSE_FAILED_FAIL_SAFE_MESSAGE}
+)
+MOCK_MODERATED_CONCERNS = frozenset({"mock_reviewer_active", "reviewer_unavailable"})
+
 
 @dataclass(frozen=True, slots=True)
 class Finding:
@@ -232,3 +245,62 @@ class ModerationReport:
                 "reviewer_independent": self.reviewer_independent,
             },
         }
+
+
+def moderation_report_unusable(report: dict[str, object] | None) -> bool:
+    """True when a stored report carries no genuine content judgment.
+
+    Operates on the persisted JSONB shape (``to_dict()`` output), including
+    legacy pre-Stage-A rows that lack ``structural``/``concern`` keys. A
+    report is unusable when it is absent, when the reviewer was not
+    independent (mock), or when every finding is a pipeline artifact
+    (structural, fail-safe message, or a MOCK_MODERATED_CONCERNS concern).
+    An empty findings list on an independent report is a genuine all-clear,
+    not an unusable report.
+    """
+    if report is None:
+        return True
+    summary = report.get("summary")
+    if isinstance(summary, dict) and summary.get("reviewer_independent") is False:
+        return True
+    findings = report.get("findings")
+    if not isinstance(findings, list) or not findings:
+        return False
+    for finding in findings:
+        if not isinstance(finding, dict):
+            continue
+        if finding.get("structural") is True:
+            continue
+        if finding.get("concern") in MOCK_MODERATED_CONCERNS:
+            continue
+        message = finding.get("message")
+        if isinstance(message, str) and FAIL_SAFE_MESSAGE_SUBSTRING in message:
+            continue
+        return False  # at least one genuine judgment
+    return True
+
+
+def severe_finding_counts(report: dict[str, object] | None) -> tuple[int, int]:
+    """Return ``(block_count, high_severity_flag_count)`` for a stored report.
+
+    A ``block`` verdict counts once in the first slot regardless of its
+    severity; a ``flag`` verdict with ``severity == "high"`` counts in the
+    second. Advisories NEVER count here regardless of severity: advisories
+    must never gate, and this function feeds the approval override gate and
+    its audit payload.
+    """
+    if not report:
+        return (0, 0)
+    findings = report.get("findings")
+    if not isinstance(findings, list):
+        return (0, 0)
+    blocks = 0
+    highs = 0
+    for finding in findings:
+        if not isinstance(finding, dict):
+            continue
+        if finding.get("verdict") == "block":
+            blocks += 1
+        elif finding.get("verdict") == "flag" and finding.get("severity") == "high":
+            highs += 1
+    return (blocks, highs)

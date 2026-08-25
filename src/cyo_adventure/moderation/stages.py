@@ -24,7 +24,14 @@ import json
 import re
 from typing import TYPE_CHECKING, cast
 
-from cyo_adventure.moderation.report import Finding, FindingSeverity, Source, Verdict
+from cyo_adventure.moderation.report import (
+    PARSE_FAILED_FAIL_SAFE_MESSAGE,
+    UNKNOWN_VERDICT_FAIL_SAFE_MESSAGE,
+    Finding,
+    FindingSeverity,
+    Source,
+    Verdict,
+)
 from cyo_adventure.moderation.review_provider import completion_text
 from cyo_adventure.utils.logging import get_logger
 
@@ -278,7 +285,7 @@ def _parse_verdict(raw: str | None, *, fail_safe: Verdict) -> tuple[Verdict, str
     # function, not an accident of what the stdlib happens to raise.
     if raw is None:
         _logger.warning("verdict_parse_failed", raw=_log_excerpt(raw))
-        return fail_safe, "verdict parse failed; defaulted to fail-safe", True
+        return fail_safe, PARSE_FAILED_FAIL_SAFE_MESSAGE, True
     try:
         # json.loads is typed -> Any; we deliberately re-bind to object and narrow
         # via isinstance below, so the reportAny here is an intentional boundary.
@@ -291,10 +298,10 @@ def _parse_verdict(raw: str | None, *, fail_safe: Verdict) -> tuple[Verdict, str
         reason = str(payload.get("reason", ""))
     except (json.JSONDecodeError, AttributeError, TypeError):
         _logger.warning("verdict_parse_failed", raw=_log_excerpt(raw))
-        return fail_safe, "verdict parse failed; defaulted to fail-safe", True
+        return fail_safe, PARSE_FAILED_FAIL_SAFE_MESSAGE, True
     if verdict is None:
         _logger.warning("verdict_unknown", raw=_log_excerpt(raw))
-        return fail_safe, "unknown verdict; defaulted to fail-safe", True
+        return fail_safe, UNKNOWN_VERDICT_FAIL_SAFE_MESSAGE, True
     return verdict, reason, False
 
 
@@ -360,7 +367,7 @@ def _structured_verdict_from_payload(
             fail_safe,
             "other",
             FindingSeverity.HIGH,
-            "unknown verdict; defaulted to fail-safe",
+            UNKNOWN_VERDICT_FAIL_SAFE_MESSAGE,
             True,
         )
     reason = str(payload.get("reason", ""))
@@ -395,7 +402,7 @@ def _parse_structured_verdict(
             fail_safe,
             "other",
             FindingSeverity.HIGH,
-            "verdict parse failed; defaulted to fail-safe",
+            PARSE_FAILED_FAIL_SAFE_MESSAGE,
             True,
         )
     try:
@@ -413,7 +420,7 @@ def _parse_structured_verdict(
             fail_safe,
             "other",
             FindingSeverity.HIGH,
-            "verdict parse failed; defaulted to fail-safe",
+            PARSE_FAILED_FAIL_SAFE_MESSAGE,
             True,
         )
     return _structured_verdict_from_payload(payload, fail_safe=fail_safe)
