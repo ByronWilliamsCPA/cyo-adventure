@@ -1543,13 +1543,19 @@ export const triggerRescreenApiV1AdminRescreenPost = <ThrowOnError extends boole
 /**
  * Trigger Remoderate
  *
- * Re-run moderation over one published storybook version (admin only).
+ * Re-run moderation over one storybook version (admin only).
  *
- * Runs synchronously and returns the fresh report's verdict summary. The
- * book's ``status`` is never changed by this call (ADR-005: a published
- * book stays published; the guardian/admin remains the only path that can
- * ever move it again). See the module docstring for the published-only
- * scope, the disabled auto-repair, and what a hard block does not do.
+ * Accepts a version whose storybook is ``published`` or ``in_review``, and
+ * runs synchronously, returning the fresh report's verdict summary. The
+ * book's ``status`` is never changed by this call (ADR-005: a published book
+ * stays published, an in_review book stays at the human gate; the
+ * guardian/admin remains the only path that can ever move either one).
+ *
+ * Auto-repair follows the status: a ``published`` book is reported on and
+ * never rewritten, while an ``in_review`` book may have a soft-flagged node
+ * repaired in place, exactly as on the generation path that produced it,
+ * because a human still reviews the result before any child sees it. See the
+ * module docstring for the full scope rule and what a hard block does not do.
  *
  * Args:
  * storybook_id: The storybook id from the path.
@@ -1562,8 +1568,9 @@ export const triggerRescreenApiV1AdminRescreenPost = <ThrowOnError extends boole
  * Raises:
  * AuthorizationError: If the caller is not an admin (403).
  * ResourceNotFoundError: If the storybook or version does not exist (404).
- * BusinessLogicError: If the storybook is not currently published, or if
- * a re-moderation is already in flight on this worker (400).
+ * BusinessLogicError: If the storybook's status is neither ``published``
+ * nor ``in_review``, or if a re-moderation is already in flight on
+ * this worker (400).
  */
 export const triggerRemoderateApiV1AdminRemoderateStorybookIdVersionPost = <ThrowOnError extends boolean = false>(options: Options<TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostData, ThrowOnError>): RequestResult<TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostResponses, TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostErrors, ThrowOnError> => (options.client ?? client).post<TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostResponses, TriggerRemoderateApiV1AdminRemoderateStorybookIdVersionPostErrors, ThrowOnError>({
     responseType: 'json',

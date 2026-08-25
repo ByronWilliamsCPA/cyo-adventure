@@ -8,6 +8,7 @@ tests/unit/test_seed_moderation_qa.py.
 
 from __future__ import annotations
 
+import asyncio
 import importlib.util
 import sys
 from pathlib import Path
@@ -16,7 +17,11 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from cyo_adventure.core.exceptions import ResourceNotFoundError
+from cyo_adventure.api.remoderate import RemoderateResult
+from cyo_adventure.core.exceptions import (
+    BusinessLogicError,
+    ResourceNotFoundError,
+)
 from cyo_adventure.db.models import Storybook
 from cyo_adventure.events.models import SYSTEM_ACTOR_ROLE
 
@@ -548,8 +553,9 @@ def test_main_exits_nonzero_when_a_book_is_blocked(
 ) -> None:
     """A hard block is a SUCCESSFUL call whose outcome still needs a human.
 
-    The book is still published and still readable (ADR-005 reserves every
-    status change for a human), so a zero exit here would report "sweep
+    The sweep never changes status (ADR-005 reserves that for a person), so a
+    blocked book is exactly where it was: a published one still readable by a
+    child, an in_review one still queued. A zero exit here would report "sweep
     clean" over a book that just failed moderation.
     """
     result = remoderate_books.SweepResult(
@@ -565,7 +571,96 @@ def test_main_exits_nonzero_when_a_book_is_blocked(
     assert excinfo.value.code is not None
     assert "1 book(s) hard-blocked" in str(excinfo.value.code)
     out = capsys.readouterr().out
-    assert "HARD BLOCK, still published and readable" in out
+    assert "HARD BLOCK, status unchanged by this sweep" in out
+    # The published consequence must survive verbatim: it is the half that
+    # means a child can read a blocked book right now.
+    assert "STILL readable by a child" in out
+    assert "s1 v1" in out
+
+
+def test_main_exits_nonzero_when_a_book_was_excluded(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A book the listing could not target is a coverage gap, not a clean run.
+
+    An excluded book is neither failed nor blocked, so before this it produced
+    no exit-code signal at all: the sweep printed a tidy "1 target book(s)"
+    and exited 0 while a second queued book went un-re-moderated.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)],
+        executed=True,
+        succeeded=[("s1", 1)],
+        excluded=["s_versionless"],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main(result)
+
+    assert excinfo.value.code is not None
+    assert "1 book(s) excluded" in str(excinfo.value.code)
+    out = capsys.readouterr().out
+    assert "EXCLUDED from the target list" in out
+    # The id has to be in the SUMMARY, not only in a structured log an
+    # operator would have to be tailing separately to see.
+    assert "s_versionless" in out
+
+
+def test_main_exits_nonzero_when_every_book_was_excluded(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The all-excluded case is the worst one: it looks like an empty queue.
+
+    With no targets at all, main() takes its "no target books found" early
+    return, which is indistinguishable from a genuinely empty review queue
+    unless the exclusions are reported on that path too.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[], executed=True, excluded=["s_a", "s_b"]
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main(result)
+
+    assert excinfo.value.code is not None
+    assert "2 in_review book(s)" in str(excinfo.value.code)
+    assert "s_a, s_b" in capsys.readouterr().out
+
+
+def test_main_reports_exclusions_on_the_dry_run_path(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A dry run is where an operator checks coverage BEFORE spending on LLMs."""
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)], executed=False, excluded=["s_versionless"]
+    )
+
+    with pytest.raises(SystemExit):
+        _run_main(result)
+
+    assert "s_versionless" in capsys.readouterr().out
+
+
+def test_main_names_the_books_the_repair_pass_rewrote(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A repaired book's stored text is no longer what the reviewer last read.
+
+    Rolled up with plain successes it is invisible, and a reviewer would
+    approve prose they never saw.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)],
+        executed=True,
+        succeeded=[("s1", 1)],
+        repaired=[("s1", 1)],
+    )
+
+    _run_main(result)
+
+    out = capsys.readouterr().out
+    assert "REPAIRED" in out
+    assert "re-read before approving" in out
     assert "s1 v1" in out
 
 
@@ -603,7 +698,7 @@ def test_main_reports_soft_flags_without_exiting_nonzero(
     _run_main(result)
 
     out = capsys.readouterr().out
-    assert "soft-flagged (still published, review when convenient)" in out
+    assert "soft-flagged (status unchanged by this sweep, review when" in out
 
 
 def test_main_exits_nonzero_when_a_book_fails(
@@ -620,3 +715,386 @@ def test_main_exits_nonzero_when_a_book_fails(
 
     assert "1 book(s) failed" in str(excinfo.value.code)
     assert "failed (rolled back, retry by re-running)" in capsys.readouterr().out
+
+
+# ---------------------------------------------------------------------------
+# list_in_review_targets and the in_review arm of _resolve_book_id_targets
+# ---------------------------------------------------------------------------
+
+
+def _in_review_storybook(book_id: str) -> Storybook:
+    return Storybook(id=book_id, status="in_review", current_published_version=None)
+
+
+def _grouped_max_session(
+    books: list[Storybook], latest: list[tuple[str, int]]
+) -> AsyncMock:
+    """Build a session whose two execute() calls return books then max-versions.
+
+    Args:
+        books: Rows the storybook listing query returns.
+        latest: ``(storybook_id, max_version)`` rows the grouped query returns.
+
+    Returns:
+        An ``AsyncMock`` session wired for exactly that two-query sequence.
+    """
+    scalars_result = MagicMock()
+    scalars_result.all = MagicMock(return_value=books)
+    books_result = MagicMock()
+    books_result.scalars = MagicMock(return_value=scalars_result)
+    latest_result = MagicMock()
+    latest_result.all = MagicMock(return_value=latest)
+    session = AsyncMock()
+    session.execute = AsyncMock(side_effect=[books_result, latest_result])
+    return session
+
+
+@pytest.mark.asyncio
+async def test_list_in_review_targets_returns_latest_version_per_book() -> None:
+    """An in_review book is targeted at its HIGHEST version, sorted by id.
+
+    That is the same version the admin review queue shows
+    (api/approval.py::_latest_version), so the sweep re-derives the verdicts a
+    reviewer is actually looking at rather than a superseded draft's.
+    """
+    session = _grouped_max_session(
+        [_in_review_storybook("s_zebra"), _in_review_storybook("s_apple")],
+        [("s_zebra", 4), ("s_apple", 2)],
+    )
+
+    listing = await remoderate_books.list_in_review_targets(session)
+
+    assert listing.targets == [("s_apple", 2), ("s_zebra", 4)]
+    assert listing.excluded == []
+
+
+@pytest.mark.asyncio
+async def test_list_in_review_targets_skips_books_with_no_version_row() -> None:
+    """A versionless in_review book is skipped, not fatal, mirroring the queue.
+
+    It is also REPORTED. Skipping silently would let the sweep cover fewer
+    books than the review queue lists while printing a clean target count, so
+    the dropped id has to come back to the caller, not only to the log.
+    """
+    session = _grouped_max_session(
+        [_in_review_storybook("s_ok"), _in_review_storybook("s_versionless")],
+        [("s_ok", 1)],
+    )
+
+    listing = await remoderate_books.list_in_review_targets(session)
+
+    assert listing.targets == [("s_ok", 1)]
+    assert listing.excluded == ["s_versionless"]
+
+
+@pytest.mark.asyncio
+async def test_list_in_review_targets_skips_the_version_query_when_empty() -> None:
+    """No in_review books means no degenerate empty IN query is issued."""
+    scalars_result = MagicMock()
+    scalars_result.all = MagicMock(return_value=[])
+    books_result = MagicMock()
+    books_result.scalars = MagicMock(return_value=scalars_result)
+    session = AsyncMock()
+    session.execute = AsyncMock(return_value=books_result)
+
+    listing = await remoderate_books.list_in_review_targets(session)
+
+    assert listing.targets == []
+    assert listing.excluded == []
+    assert session.execute.await_count == 1
+
+
+@pytest.mark.asyncio
+async def test_resolve_book_id_targets_uses_latest_version_for_in_review_book() -> None:
+    """An explicitly named in_review book resolves, at its latest version.
+
+    Before re-moderation admitted in_review, this raised 404: the book has no
+    current_published_version and there was no other rule. It must not, or an
+    operator cannot canary a single book before sweeping the rest.
+    """
+    session = AsyncMock()
+    session.get = AsyncMock(return_value=_in_review_storybook("s_review"))
+    session.scalar = AsyncMock(return_value=7)
+
+    targets = await remoderate_books._resolve_book_id_targets(session, ["s_review"])
+
+    assert targets == [("s_review", 7)]
+
+
+@pytest.mark.asyncio
+async def test_resolve_book_id_targets_raises_404_for_versionless_in_review() -> None:
+    session = AsyncMock()
+    session.get = AsyncMock(return_value=_in_review_storybook("s_empty"))
+    session.scalar = AsyncMock(return_value=None)
+
+    with pytest.raises(ResourceNotFoundError):
+        await remoderate_books._resolve_book_id_targets(session, ["s_empty"])
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("status", ["archived", "needs_revision", "draft"])
+async def test_resolve_book_id_targets_refuses_a_status_remoderation_rejects(
+    status: str,
+) -> None:
+    """An inadmissible status raises here rather than reaching the endpoint's 400.
+
+    Every fixture deliberately carries a RESOLVABLE version, both a live
+    ``current_published_version`` and a max(version) row. Without that, the
+    test passes with the status guard deleted, because the old
+    "no current_published_version" raise catches a null-pointer fixture for
+    entirely unrelated reasons; the status check is then never the thing under
+    test. ``archived`` is the realistic case: an archived book keeps the
+    publish pointer it had, so nothing but the status guard stops it.
+
+    Failing at target resolution keeps ``--execute`` from touching a single
+    book, rather than aborting mid-sweep after earlier books have already
+    committed their re-moderations and spent the LLM calls.
+    """
+    session = AsyncMock()
+    session.get = AsyncMock(
+        return_value=Storybook(id="s_x", status=status, current_published_version=2)
+    )
+    session.scalar = AsyncMock(return_value=3)
+
+    # BusinessLogicError, not ResourceNotFoundError: the book EXISTS. This is the
+    # same error the endpoint raises for the same condition
+    # (api/remoderate.py::remoderate_storybook_version), and the rule name is
+    # asserted so the two paths cannot drift into describing one book two ways.
+    with pytest.raises(BusinessLogicError, match="does not admit") as excinfo:
+        await remoderate_books._resolve_book_id_targets(session, ["s_x"])
+    # ``rule`` is folded into ``details`` by the constructor, not kept as an
+    # attribute, so read it where it actually lands.
+    assert excinfo.value.details["rule"] == "remoderate_requires_reviewable_status"
+
+
+@pytest.mark.asyncio
+async def test_sweep_raises_when_two_of_three_selectors_given() -> None:
+    with pytest.raises(ValueError, match="exactly one"):
+        await remoderate_books.sweep(mock_moderated=True, in_review=True)
+
+
+@pytest.mark.asyncio
+async def test_sweep_in_review_selects_via_list_in_review_targets() -> None:
+    """--in-review routes selection to the in_review lister, and stays dry by default."""
+    session = _grouped_max_session([_in_review_storybook("s_a")], [("s_a", 3)])
+    with patch.object(
+        remoderate_books, "remoderate_storybook_version", new=AsyncMock()
+    ) as remod:
+        result = await remoderate_books.sweep(
+            engine=_mock_engine(),
+            session_factory=_mock_session_factory(session),
+            in_review=True,
+        )
+
+    assert result.targets == [("s_a", 3)]
+    assert result.executed is False
+    remod.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_sweep_reports_books_excluded_from_the_listing() -> None:
+    """sweep() carries the listing's exclusions through to its result.
+
+    The exclusion is discovered inside list_in_review_targets, so unless
+    sweep() threads it onto SweepResult, main() has nothing to print and
+    nothing to signal in its exit code.
+    """
+    session = _grouped_max_session(
+        [_in_review_storybook("s_ok"), _in_review_storybook("s_versionless")],
+        [("s_ok", 1)],
+    )
+
+    result = await remoderate_books.sweep(
+        engine=_mock_engine(),
+        session_factory=_mock_session_factory(session),
+        in_review=True,
+    )
+
+    assert result.targets == [("s_ok", 1)]
+    assert result.excluded == ["s_versionless"]
+
+
+@pytest.mark.asyncio
+async def test_sweep_records_repaired_books() -> None:
+    """A book whose text the repair pass rewrote is recorded separately."""
+    session = _grouped_max_session([_in_review_storybook("s_a")], [("s_a", 3)])
+    # spec= so a renamed or dropped field on RemoderateResult fails here rather
+    # than being invented by the mock. It is a slots dataclass, so its fields
+    # are real class attributes and spec actually sees them.
+    outcome = MagicMock(spec=RemoderateResult)
+    outcome.overall_verdict = "pass"
+    outcome.repaired = True
+    with patch.object(
+        remoderate_books,
+        "remoderate_storybook_version",
+        new=AsyncMock(return_value=outcome),
+    ):
+        result = await remoderate_books.sweep(
+            engine=_mock_engine(),
+            session_factory=_mock_session_factory(session),
+            in_review=True,
+            execute=True,
+        )
+
+    assert result.succeeded == [("s_a", 3)]
+    assert result.repaired == [("s_a", 3)]
+
+
+@pytest.mark.asyncio
+async def test_sweep_leaves_repaired_empty_when_nothing_was_rewritten() -> None:
+    """The repaired list must discriminate, not just mirror succeeded."""
+    session = _grouped_max_session([_in_review_storybook("s_a")], [("s_a", 3)])
+    # spec= so a renamed or dropped field on RemoderateResult fails here rather
+    # than being invented by the mock. It is a slots dataclass, so its fields
+    # are real class attributes and spec actually sees them.
+    outcome = MagicMock(spec=RemoderateResult)
+    outcome.overall_verdict = "pass"
+    outcome.repaired = False
+    with patch.object(
+        remoderate_books,
+        "remoderate_storybook_version",
+        new=AsyncMock(return_value=outcome),
+    ):
+        result = await remoderate_books.sweep(
+            engine=_mock_engine(),
+            session_factory=_mock_session_factory(session),
+            in_review=True,
+            execute=True,
+        )
+
+    assert result.succeeded == [("s_a", 3)]
+    assert result.repaired == []
+
+
+def test_parse_args_accepts_in_review() -> None:
+    args = remoderate_books._parse_args(["--in-review"])
+
+    assert args.in_review is True
+    assert args.mock_moderated is False
+    assert args.book_id is None
+
+
+def test_parse_args_rejects_in_review_with_mock_moderated(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    with pytest.raises(SystemExit):
+        remoderate_books._parse_args(["--in-review", "--mock-moderated"])
+    assert "not allowed with argument" in capsys.readouterr().err
+
+
+@pytest.mark.asyncio
+async def test_sweep_times_out_a_wedged_book_and_releases_its_lock() -> None:
+    """A wedged book is bounded, rolled back, and kept out of ``failed``.
+
+    The rollback is the assertion that matters, not the bucket. Postgres holds
+    ``remoderate_storybook_version``'s ``SELECT ... FOR UPDATE`` on the
+    storybook row until the transaction ends, so until this rollback runs, an
+    admin's approve or send-back on THIS book blocks behind a hung provider
+    call with no timeout of its own. ``log == ["rollback"]`` is the closest a
+    unit test gets to observing that release.
+    """
+    session, log = _execute_session(["s_wedged"])
+
+    async def _wedged(
+        _session: object, _storybook_id: str, _version: int, _ctx: object
+    ) -> object:
+        await asyncio.sleep(5)
+        msg = "unreachable: the timeout must fire first"
+        raise AssertionError(msg)
+
+    with patch.object(
+        remoderate_books,
+        "remoderate_storybook_version",
+        AsyncMock(side_effect=_wedged),
+    ):
+        result = await remoderate_books.sweep(
+            engine=_mock_engine(),
+            session_factory=_mock_session_factory(session),
+            book_ids=["s_wedged"],
+            execute=True,
+            per_book_timeout_seconds=0.01,
+        )
+
+    assert log == ["rollback"]
+    assert result.timed_out == [("s_wedged", 1)]
+    # Deliberately NOT in `failed`: a provider error says re-run, a timeout
+    # says find out what is wedged first, and collapsing them hides which
+    # happened.
+    assert result.failed == []
+    assert result.succeeded == []
+
+
+@pytest.mark.asyncio
+async def test_sweep_abandons_remaining_targets_after_a_timeout() -> None:
+    """A timeout stops the sweep, and the books it skipped are still reported.
+
+    Two properties, and the second is the one a summary-only assertion would
+    miss. The call count proves the sweep STOPPED rather than racing through
+    the rest; ``not_attempted`` proves the skipped books still produce an
+    operator-visible signal instead of vanishing between ``targets`` and
+    ``succeeded``.
+    """
+    session, _log = _execute_session(["s_a", "s_b", "s_c"])
+    calls: list[str] = []
+
+    async def _wedge_the_first(
+        _session: object, storybook_id: str, _version: int, _ctx: object
+    ) -> object:
+        calls.append(storybook_id)
+        await asyncio.sleep(5)
+        msg = "unreachable: the timeout must fire first"
+        raise AssertionError(msg)
+
+    with patch.object(
+        remoderate_books,
+        "remoderate_storybook_version",
+        AsyncMock(side_effect=_wedge_the_first),
+    ):
+        result = await remoderate_books.sweep(
+            engine=_mock_engine(),
+            session_factory=_mock_session_factory(session),
+            book_ids=["s_a", "s_b", "s_c"],
+            execute=True,
+            per_book_timeout_seconds=0.01,
+        )
+
+    assert calls == ["s_a"]
+    assert result.timed_out == [("s_a", 1)]
+    assert result.not_attempted == [("s_b", 1), ("s_c", 1)]
+
+
+def test_main_exits_nonzero_when_a_book_timed_out(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A timeout and its abandoned books are a summary line and a nonzero exit.
+
+    Same reasoning as the excluded-book case: a book that produced neither a
+    success nor a failure would otherwise leave a sweep printing a tidy count
+    and exiting 0 with most of its work undone.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[("s_a", 1), ("s_b", 1)],
+        executed=True,
+        timed_out=[("s_a", 1)],
+        not_attempted=[("s_b", 1)],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main(result)
+
+    assert excinfo.value.code is not None
+    assert "1 book(s) timed out" in str(excinfo.value.code)
+    assert "1 book(s) not attempted" in str(excinfo.value.code)
+    out = capsys.readouterr().out
+    assert "TIMED OUT" in out
+    # Both ids in the SUMMARY, not only in a structured log.
+    assert "s_a" in out
+    assert "s_b" in out
+
+
+def test_parse_args_defaults_the_per_book_timeout() -> None:
+    """The bound is on by default; an operator has to opt OUT, not opt in."""
+    args = remoderate_books._parse_args(["--in-review"])
+
+    assert args.per_book_timeout == remoderate_books._PER_BOOK_TIMEOUT_SECONDS
+    assert remoderate_books._PER_BOOK_TIMEOUT_SECONDS > 0

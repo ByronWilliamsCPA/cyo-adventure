@@ -10,26 +10,48 @@ from __future__ import annotations
 import ast
 import inspect
 import threading
+from importlib import import_module
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 import anyio
 import pydantic
 import pytest
 
-from cyo_adventure.api import generation as generation_module
-from cyo_adventure.api import node_edit as node_edit_module
+import cyo_adventure.api
 from cyo_adventure.api.gate_limits import gate_limiter
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import ConfigurationError
 
-_GATE_CALL_MODULES = (node_edit_module, generation_module)
+if TYPE_CHECKING:
+    from types import ModuleType
+
+_API_PACKAGE_DIR = Path(cyo_adventure.api.__file__).parent
+
+# The modules this guard must cover are DISCOVERED, never listed. A hand-kept
+# tuple named node_edit and generation and silently stopped covering
+# api/remoderate.py the moment that module grew its own gate call, which is
+# AL-604's lesson applied to the other axis: the entry-point set was made
+# explicit, but the module set stayed a literal and went stale the same way.
+# Discovery closes the class rather than the instance, so a new router that
+# calls the gate is covered on the day it is written.
+
+# Every name that enters the validator gate. Matching one literal name went
+# stale the moment api/node_edit.py switched to the run_fill_gate wrapper
+# (validator/gate.py), which is the shared "validate a filled book" posture;
+# the guard failed loudly on an empty match rather than passing vacuously,
+# but only because it asserts the call list is non-empty. Keep every gate
+# entry point in this one set so a future wrapper is added here rather than
+# escaping the shared limiter unobserved.
+_GATE_ENTRY_POINTS = frozenset({"run_gate", "run_fill_gate"})
 
 
 def _run_gate_dispatch_calls(source: str) -> list[ast.Call]:
-    """Return every ``run_sync(run_gate, ...)`` call in a module's source.
+    """Return every ``run_sync(<gate entry point>, ...)`` call in a module.
 
     Matches on the call shape (a call to a name ``run_sync`` whose first
-    positional argument is the name ``run_gate``) rather than on line
-    numbers, so it survives reformatting and reordering.
+    positional argument names one of ``_GATE_ENTRY_POINTS``) rather than on
+    line numbers, so it survives reformatting and reordering.
     """
     tree = ast.parse(source)
     calls: list[ast.Call] = []
@@ -41,11 +63,57 @@ def _run_gate_dispatch_calls(source: str) -> list[ast.Call]:
         if not (
             node.args
             and isinstance(node.args[0], ast.Name)
-            and node.args[0].id == "run_gate"
+            and node.args[0].id in _GATE_ENTRY_POINTS
         ):
             continue
         calls.append(node)
     return calls
+
+
+def _direct_gate_calls(source: str) -> list[ast.Call]:
+    """Return every call that invokes a gate entry point INLINE.
+
+    A gate entry point passed as ``run_sync``'s first positional argument is a
+    reference, not a call, so it never appears here: only a genuine
+    ``run_fill_gate(blob)`` in the module body does. That is the shape which
+    runs the gate on the event loop, and it is what this guard exists to
+    reject.
+    """
+    tree = ast.parse(source)
+    return [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id in _GATE_ENTRY_POINTS
+    ]
+
+
+def _api_modules_touching_the_gate() -> list[ModuleType]:
+    """Import every ``cyo_adventure.api`` module that references the gate.
+
+    Discovered from the package directory rather than enumerated, so a router
+    added later is covered without anyone remembering to add it here.
+
+    Selection runs through the same two AST passes the assertions use, rather
+    than a substring scan for the entry-point names. A substring scan answers a
+    different question: it matches the names wherever they appear, including in
+    the prose explaining why a module deliberately does NOT call the gate.
+
+    The predicate is the UNION of the two shapes, and it has to be. Selecting on
+    ``_direct_gate_calls`` alone would return exactly the modules that VIOLATE
+    the rule and drop every compliant one, so the loop below would find nothing
+    to check while the inline-call assertion appeared to pass.
+    """
+    modules: list[ModuleType] = []
+    for path in sorted(_API_PACKAGE_DIR.glob("*.py")):
+        if path.name in {"__init__.py", "gate_limits.py"}:
+            continue
+        source = path.read_text(encoding="utf-8")
+        if not _run_gate_dispatch_calls(source) and not _direct_gate_calls(source):
+            continue
+        modules.append(import_module(f"cyo_adventure.api.{path.stem}"))
+    return modules
 
 
 def _passes_shared_limiter(call: ast.Call) -> bool:
@@ -146,13 +214,30 @@ def test_both_gate_call_sites_share_one_limiter() -> None:
     call site: that version stayed green with ``limiter=gate_limiter()``
     deleted from both call sites entirely.
     """
-    for module in _GATE_CALL_MODULES:
+    modules = _api_modules_touching_the_gate()
+    assert modules, (
+        "no cyo_adventure.api module references a gate entry point "
+        f"({sorted(_GATE_ENTRY_POINTS)}); discovery is broken, not the code"
+    )
+    for module in modules:
         source = inspect.getsource(module)
+
+        inline = _direct_gate_calls(source)
+        assert not inline, (
+            f"{module.__name__}: gate entry point called INLINE at line(s) "
+            f"{[c.lineno for c in inline]}. run_gate is pure synchronous CPU "
+            "(49.6s worst case); it must be offloaded via "
+            "run_sync(..., limiter=gate_limiter()) or it stalls the event loop."
+        )
+
         calls = _run_gate_dispatch_calls(source)
-        assert calls, f"{module.__name__} no longer dispatches run_gate via run_sync"
+        assert calls, (
+            f"{module.__name__} no longer dispatches a gate entry point "
+            f"({sorted(_GATE_ENTRY_POINTS)}) via run_sync"
+        )
         for call in calls:
             assert _passes_shared_limiter(call), (
-                f"{module.__name__}: run_sync(run_gate, ...) call at line "
+                f"{module.__name__}: run_sync(gate, ...) call at line "
                 f"{call.lineno} does not pass limiter=gate_limiter()"
             )
 

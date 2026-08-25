@@ -554,7 +554,8 @@ async def test_import_id_check_fires_when_gate_passes_without_id() -> None:
         report=ValidationReport(), blocked=False, safety_flagged=False
     )
     with patch(
-        "cyo_adventure.generation.import_story.run_gate", return_value=fake_result
+        "cyo_adventure.generation.import_story.run_fill_gate",
+        return_value=fake_result,
     ):
         request = ImportRequest(blob=blob, family_id=uuid.uuid4())
         with pytest.raises(ValidationError, match="no string id"):

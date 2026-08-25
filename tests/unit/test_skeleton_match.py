@@ -1117,3 +1117,32 @@ def test_theme_overlap_cannot_buy_a_used_skeleton_back_into_the_draw() -> None:
         for seed in range(100)
     }
     assert picks == {"fresh"}
+
+
+# ---------------------------------------------------------------------------
+# find_skeleton_band: recovering the band a StorybookVersion does not store
+# ---------------------------------------------------------------------------
+
+
+def test_find_skeleton_band_returns_the_matching_directory() -> None:
+    """The band comes from the directory that holds the file.
+
+    ``moderation/personalizable_slots.py::personalizable_slot_ids_for_version``
+    resolves a theme contract from a ``StorybookVersion``, which carries a
+    ``skeleton_slug`` and no band. Deriving the band from the metadata's
+    declared ``age_band`` instead would resolve to a path that does not exist
+    whenever a skeleton is filed under one band while declaring another, and
+    fail closed to the very block that resolver exists to avoid.
+    """
+    assert skeleton_match.find_skeleton_band("the-cave-of-echoes") == "8-11"
+
+
+def test_find_skeleton_band_returns_none_for_an_absent_slug() -> None:
+    """An absent slug is None, not an exception: the caller fails closed itself."""
+    assert skeleton_match.find_skeleton_band("no-such-skeleton-anywhere") is None
+
+
+def test_find_skeleton_band_rejects_a_traversing_slug() -> None:
+    """resolve_skeleton_path's containment check still applies to this entry point."""
+    with pytest.raises(ValidationError):
+        skeleton_match.find_skeleton_band("../../etc/passwd")

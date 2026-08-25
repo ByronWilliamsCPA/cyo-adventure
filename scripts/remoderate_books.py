@@ -15,7 +15,7 @@ Dry-run is the default and only LISTS the target books; nothing is written
 to the database and no LLM calls are made. Pass ``--execute`` to actually
 call :func:`remoderate_storybook_version` for each target.
 
-Two independent ways to pick targets, mutually exclusive:
+Three independent ways to pick targets, mutually exclusive:
 
 - ``--mock-moderated``: query the database for published books whose stored
   report carries the mock-reviewer stamp (``summary.reviewer_independent is
@@ -26,9 +26,24 @@ Two independent ways to pick targets, mutually exclusive:
   full writer set). This is how the 18-book sweep
   itself will be selected; the exact list is not hardcoded here so it always
   reflects live database state, not a snapshot that can drift.
+- ``--in-review``: query the database for every book sitting at the human
+  review gate, targeting each at its LATEST version (the one the admin review
+  queue shows, ``api/approval.py``). Unlike ``--mock-moderated`` this applies
+  no report-content filter: an in_review book's stored report is about to be
+  acted on by a reviewer whatever it says, so re-deriving it is the point
+  rather than a remedy for a specific defect. This is how the seventeen books
+  stuck in review since 2026-07-21 are swept.
 - ``--book-id STORYBOOK_ID`` (repeatable): re-moderate specific storybooks by
-  id, at each one's ``current_published_version``. For a one-off re-run or a
-  manually curated subset.
+  id, at each one's ``current_published_version`` or, for an in_review book,
+  its latest version. For a one-off re-run, a manually curated subset, or a
+  single-book canary before a full sweep.
+
+Every executed book is bounded by ``--per-book-timeout`` (default 900s).
+Exceeding it rolls that book back, which is what releases the ``FOR UPDATE``
+row lock an admin's approve or send-back would otherwise queue behind, and
+abandons the remaining targets rather than driving them through the same
+wedged provider. Both the timed-out book and the abandoned ones are named in
+the summary and force a nonzero exit.
 
 Run against staging or production, dry-run (default, lists only)::
 
@@ -39,6 +54,11 @@ Actually execute the sweep::
 
     ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
         uv run python scripts/remoderate_books.py --mock-moderated --execute
+
+Sweep the books waiting at the review gate::
+
+    ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
+        uv run python scripts/remoderate_books.py --in-review --execute
 
 Re-moderate specific books::
 
@@ -65,15 +85,22 @@ import argparse
 import asyncio
 import sys
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Final, cast
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from cyo_adventure.api.remoderate import RemoderateContext, remoderate_storybook_version
+from cyo_adventure.api.remoderate import (
+    REMODERATABLE_STATUS_VALUES,
+    RemoderateContext,
+    remoderate_storybook_version,
+)
 from cyo_adventure.core.config import settings as _default_settings
 from cyo_adventure.core.database import get_engine
-from cyo_adventure.core.exceptions import ResourceNotFoundError
+from cyo_adventure.core.exceptions import (
+    BusinessLogicError,
+    ResourceNotFoundError,
+)
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.events.models import Actor
 from cyo_adventure.publishing.state_machine import Status
@@ -199,10 +226,135 @@ async def list_mock_moderated_targets(session: AsyncSession) -> list[tuple[str, 
     return sorted(targets)
 
 
+@dataclass(frozen=True, slots=True)
+class InReviewListing:
+    """What an in_review target listing selected, and what it had to drop.
+
+    Attributes:
+        targets: ``(storybook_id, version)`` pairs the sweep can act on.
+        excluded: Ids of in_review books that could not be targeted.
+    """
+
+    targets: list[tuple[str, int]]
+    excluded: list[str]
+
+
+async def list_in_review_targets(session: AsyncSession) -> InReviewListing:
+    """Find every in_review book, at the version its reviewer is looking at.
+
+    Unlike the published selectors, this one applies NO report-content filter.
+    A published book is swept only if its stored report looks mock-moderated,
+    because a published book with a good report needs nothing. An in_review
+    book is different: it is sitting at the human gate, so a reviewer is about
+    to act on whatever its stored report says, however old, and re-deriving it
+    is the point rather than a remedy for a specific defect.
+
+    Args:
+        session: An active session (read-only; the re-moderation call takes
+            its own row lock per-book).
+
+    Returns:
+        An :class:`InReviewListing` whose ``targets`` holds
+        ``(storybook_id, version)`` pairs sorted by storybook id, one per
+        in_review book, at that book's HIGHEST version number, and whose
+        ``excluded`` holds the sorted ids of any in_review book that had to
+        be dropped for want of a version row.
+
+    """
+    # #CRITICAL: data-integrity: "the version under review" is max(version),
+    # the same rule api/approval.py uses in BOTH places it needs one
+    # (::_latest_version for approve/send-back, and the review queue's grouped
+    # max for the listing). An in_review book has no current_published_version
+    # to point the way, so any other rule here would re-derive the verdicts of
+    # a version the reviewer is not looking at, and write them onto the row
+    # that reviewer WILL act on.
+    # #VERIFY: tests/unit/test_remoderate_books.py::
+    # test_list_in_review_targets_returns_latest_version_per_book.
+    stmt = select(Storybook).where(Storybook.status == Status.IN_REVIEW.value)
+    storybooks = (await session.execute(stmt)).scalars().all()
+    ids = [storybook.id for storybook in storybooks]
+    # #EDGE: data-integrity: short-circuit before issuing a degenerate empty
+    # IN query, exactly as api/approval.py's queue does for the same reason.
+    if not ids:
+        return InReviewListing(targets=[], excluded=[])
+    latest_rows = cast(
+        "list[tuple[str, int]]",
+        (
+            await session.execute(
+                select(
+                    StorybookVersion.storybook_id,
+                    func.max(StorybookVersion.version),
+                )
+                .where(StorybookVersion.storybook_id.in_(ids))
+                .group_by(StorybookVersion.storybook_id)
+            )
+        ).all(),
+    )
+    latest = dict(latest_rows)
+    targets: list[tuple[str, int]] = []
+    excluded: list[str] = []
+    for storybook_id in ids:
+        version = latest.get(storybook_id)
+        # #CRITICAL: data-integrity: an in_review book with no version row is
+        # a corrupt-at-rest anomaly the review queue also logs and drops. Skip
+        # it rather than raising, so one anomaly cannot make the whole sweep
+        # unselectable, but RETURN it as well as logging it. A log line alone
+        # only reaches an operator who is separately tailing structured logs,
+        # so the sweep would otherwise cover fewer books than the review queue
+        # lists while printing a clean target count and exiting 0. Returning
+        # the ids alongside the targets is what lets main() say so and signal
+        # it in the exit code. It is deliberately returned rather than
+        # recounted with a second query: a book INSERTed between two queries
+        # would be misreported as excluded when it merely arrived late.
+        # #VERIFY: tests/unit/test_remoderate_books.py::
+        # test_list_in_review_targets_skips_books_with_no_version_row and
+        # ::test_sweep_reports_books_excluded_from_the_listing.
+        if version is None:
+            _logger.warning(
+                "remoderate_books.in_review_book_has_no_version",
+                storybook_id=storybook_id,
+            )
+            excluded.append(storybook_id)
+            continue
+        targets.append((storybook_id, version))
+    return InReviewListing(targets=sorted(targets), excluded=sorted(excluded))
+
+
+async def _resolve_in_review_version(session: AsyncSession, book_id: str) -> int:
+    """Return the version an explicitly named in_review book is reviewed at.
+
+    Args:
+        session: An active session.
+        book_id: The storybook id named on the command line.
+
+    Returns:
+        int: The book's highest version number.
+
+    Raises:
+        ResourceNotFoundError: If the book has no version rows at all.
+    """
+    latest = await session.scalar(
+        select(func.max(StorybookVersion.version)).where(
+            StorybookVersion.storybook_id == book_id
+        )
+    )
+    if latest is None:
+        msg = f"storybook {book_id!r} is in_review but has no versions"
+        raise ResourceNotFoundError(
+            msg, resource_type="StorybookVersion", resource_id=book_id
+        )
+    return latest
+
+
 async def _resolve_book_id_targets(
     session: AsyncSession, book_ids: list[str]
 ) -> list[tuple[str, int]]:
-    """Resolve explicit ``--book-id`` values to their current published version.
+    """Resolve explicit ``--book-id`` values to the version to re-moderate.
+
+    Which version that is depends on status, because the two re-moderatable
+    statuses point at their subject differently: a published book names it in
+    ``current_published_version``, while an in_review book has no such pointer
+    and is reviewed at its highest version.
 
     Args:
         session: An active session.
@@ -213,8 +365,14 @@ async def _resolve_book_id_targets(
         ids collapsed to their first occurrence.
 
     Raises:
-        ResourceNotFoundError: If a named storybook does not exist, or has
-            no ``current_published_version`` (nothing to re-moderate).
+        ResourceNotFoundError: If a named storybook does not exist, or exists
+            but has no version to re-moderate (no ``current_published_version``
+            when published, no version rows at all when in_review).
+        BusinessLogicError: If a named storybook exists but is in a status
+            re-moderation does not admit. Kept distinct from the not-found case
+            on purpose: a caller that catches ResourceNotFoundError to mean
+            "that id is gone, skip it" must not also swallow "you named a
+            draft", which is an operator mistake worth stopping for.
     """
     # #CRITICAL: data-integrity: unlike the --mock-moderated path, this one
     # RAISES on an unresolvable id instead of skipping it. An operator naming
@@ -248,6 +406,35 @@ async def _resolve_book_id_targets(
             raise ResourceNotFoundError(
                 msg, resource_type="Storybook", resource_id=book_id
             )
+        # #CRITICAL: security: the status check happens HERE, before
+        # --execute touches anything, even though api/remoderate.py rejects an
+        # inadmissible status too. Deferring to the endpoint would abort the
+        # sweep mid-flight, after earlier books had already committed their
+        # re-moderations and spent the LLM calls, leaving the operator to
+        # work out which half ran. Checking early is about WHERE the sweep
+        # stops; it says nothing about which error to raise, so this mirrors
+        # the endpoint's BusinessLogicError and its rule name rather than
+        # reporting an existing book as missing. Both the admissible set and
+        # the rule name come from the endpoint rather than being restated, so
+        # the two paths cannot drift into disagreeing about the same book.
+        # #VERIFY: tests/unit/test_remoderate_books.py::
+        # test_resolve_book_id_targets_refuses_a_status_remoderation_rejects.
+        if storybook.status not in REMODERATABLE_STATUS_VALUES:
+            msg = (
+                f"storybook {book_id!r} has status {storybook.status!r}, which "
+                f"re-moderation does not admit (allowed: "
+                f"{', '.join(sorted(REMODERATABLE_STATUS_VALUES))})"
+            )
+            raise BusinessLogicError(
+                msg,
+                rule="remoderate_requires_reviewable_status",
+                context={"storybook_id": book_id, "status": storybook.status},
+            )
+        if storybook.status == Status.IN_REVIEW.value:
+            targets.append(
+                (book_id, await _resolve_in_review_version(session, book_id))
+            )
+            continue
         if storybook.current_published_version is None:
             msg = f"storybook {book_id!r} has no current_published_version"
             raise ResourceNotFoundError(
@@ -255,6 +442,27 @@ async def _resolve_book_id_targets(
             )
         targets.append((book_id, storybook.current_published_version))
     return targets
+
+
+# #CRITICAL: concurrency: an unbounded per-book call is an unbounded row-lock
+# hold. remoderate_storybook_version takes SELECT ... FOR UPDATE on the
+# storybook row (api/remoderate.py) and Postgres holds it until this loop's
+# COMMIT, so a wedged provider call does not merely stall the sweep: it blocks
+# api/approval.py::_load_admin_story, and therefore an admin's approve,
+# send-back, or archive on that exact book, for as long as it hangs. That
+# contention is new with the in_review widening, because in_review books are
+# precisely the ones a reviewer is working on.
+#
+# 900s is derived, not picked: core/config.py bounds a FULL multi-stage
+# generation at generation_job_timeout_seconds = 1800, and re-moderation is
+# strictly less work than generation (a review fan-out plus optional repair,
+# plus two run_fill_gate passes at ~50s worst case each). Half the generation
+# bound leaves ample headroom over any healthy run while still being an order
+# of magnitude below "forever".
+# #VERIFY: tests/unit/test_remoderate_books.py::
+# test_sweep_times_out_a_wedged_book_and_releases_its_lock and
+# ::test_sweep_abandons_remaining_targets_after_a_timeout.
+_PER_BOOK_TIMEOUT_SECONDS: Final = 900.0
 
 
 @dataclass(frozen=True, slots=True)
@@ -278,6 +486,29 @@ class SweepResult:
     # ::test_main_exits_nonzero_when_a_book_is_blocked.
     blocked: list[tuple[str, int]] = field(default_factory=list)
     flagged: list[tuple[str, int]] = field(default_factory=list)
+    repaired: list[tuple[str, int]] = field(default_factory=list)
+    # #CRITICAL: data-integrity: a book the listing dropped is neither
+    # `failed` nor `blocked`, so before this field it produced NO exit-code
+    # signal and NO summary line: a sweep could cover fewer books than the
+    # review queue lists and still print a clean count and exit 0. The
+    # structured warning alone only reaches an operator who is separately
+    # tailing logs, which is exactly the person a sweep summary exists to
+    # spare.
+    # #VERIFY: tests/unit/test_remoderate_books.py::
+    # test_sweep_reports_books_excluded_from_the_listing and
+    # ::test_main_exits_nonzero_when_a_book_was_excluded.
+    excluded: list[str] = field(default_factory=list)
+    # #CRITICAL: data-integrity: a timeout abandons the rest of the sweep, so
+    # without these two lists the abandoned books would produce no exit-code
+    # signal and no summary line, which is the same silent-gap failure the
+    # `excluded` field above exists to prevent. `timed_out` is kept out of
+    # `failed` on purpose: a provider error is worth re-running, a timeout is
+    # worth investigating first, and collapsing them hides which happened.
+    # #VERIFY: tests/unit/test_remoderate_books.py::
+    # test_sweep_abandons_remaining_targets_after_a_timeout and
+    # ::test_main_exits_nonzero_when_a_book_timed_out.
+    timed_out: list[tuple[str, int]] = field(default_factory=list)
+    not_attempted: list[tuple[str, int]] = field(default_factory=list)
 
 
 async def sweep(
@@ -287,12 +518,15 @@ async def sweep(
     settings: Settings | None = None,
     book_ids: list[str] | None = None,
     mock_moderated: bool = False,
+    in_review: bool = False,
     execute: bool = False,
+    per_book_timeout_seconds: float = _PER_BOOK_TIMEOUT_SECONDS,
 ) -> SweepResult:
     """Select and (optionally) re-moderate the target books.
 
-    Exactly one of ``book_ids`` (non-empty) or ``mock_moderated`` selects the
-    target set; see the module docstring's two selection modes.
+    Exactly one of ``book_ids`` (non-empty), ``mock_moderated``, or
+    ``in_review`` selects the target set; see the module docstring's three
+    selection modes.
 
     Args:
         engine: Async engine to bind the session to. Defaults to the app's
@@ -300,12 +534,18 @@ async def sweep(
         session_factory: Callable returning a new ``AsyncSession``. Defaults
             to a sessionmaker bound to ``engine``; tests inject a mocked
             session factory here so no real database connection is required.
+        per_book_timeout_seconds: Wall-clock bound on ONE book's
+            re-moderation. Exceeding it rolls that book back (releasing its
+            row lock) and abandons the remaining targets; see
+            :data:`_PER_BOOK_TIMEOUT_SECONDS`.
         settings: Settings passed through to
             :func:`remoderate_storybook_version` (provider construction).
             Defaults to the app's shared settings.
         book_ids: Explicit storybook ids to target.
         mock_moderated: If True, target every book
             :func:`list_mock_moderated_targets` finds.
+        in_review: If True, target every book
+            :func:`list_in_review_targets` finds.
         execute: When False (default), only lists the targets; nothing is
             written and no LLM calls are made. When True, calls
             :func:`remoderate_storybook_version` for each target and commits
@@ -322,13 +562,21 @@ async def sweep(
         something the sweep already handled.
 
     Raises:
-        ValueError: If neither or both of ``book_ids``/``mock_moderated`` are
-            given.
+        ValueError: If zero, or more than one, of
+            ``book_ids``/``mock_moderated``/``in_review`` is given.
     """
-    if bool(book_ids) == mock_moderated:
+    # #CRITICAL: data-integrity: counting selectors, not the two-way equality
+    # this replaced. `bool(book_ids) == mock_moderated` happened to be a
+    # correct XOR for two flags and silently stops being one for three: with
+    # in_review added it would accept `--mock-moderated --in-review` together
+    # and then quietly run whichever branch the if/elif chain reached first.
+    # #VERIFY: tests/unit/test_remoderate_books.py::
+    # test_sweep_raises_when_two_of_three_selectors_given.
+    chosen = [bool(book_ids), mock_moderated, in_review]
+    if sum(chosen) != 1:
         msg = (
-            "sweep() requires exactly one of a non-empty book_ids list or "
-            "mock_moderated=True, not both or neither"
+            "sweep() requires exactly one selector: a non-empty book_ids "
+            "list, mock_moderated=True, or in_review=True"
         )
         raise ValueError(msg)
 
@@ -341,21 +589,28 @@ async def sweep(
     active_settings = settings if settings is not None else _default_settings
 
     async with new_session() as session:
-        targets = (
-            await _resolve_book_id_targets(session, book_ids)
-            if book_ids
-            else await list_mock_moderated_targets(session)
-        )
+        excluded: list[str] = []
+        if book_ids:
+            targets = await _resolve_book_id_targets(session, book_ids)
+        elif in_review:
+            listing = await list_in_review_targets(session)
+            targets = listing.targets
+            excluded = listing.excluded
+        else:
+            targets = await list_mock_moderated_targets(session)
 
         if not execute:
-            return SweepResult(targets=targets, executed=False)
+            return SweepResult(targets=targets, executed=False, excluded=excluded)
 
         ctx = RemoderateContext(settings=active_settings, actor=Actor.system())
         succeeded: list[tuple[str, int]] = []
         failed: list[tuple[str, int]] = []
         blocked: list[tuple[str, int]] = []
         flagged: list[tuple[str, int]] = []
-        for storybook_id, version in targets:
+        repaired: list[tuple[str, int]] = []
+        timed_out: list[tuple[str, int]] = []
+        not_attempted: list[tuple[str, int]] = []
+        for index, (storybook_id, version) in enumerate(targets):
             try:
                 # #CRITICAL: data-integrity: one COMMIT per book, not one
                 # savepoint inside a single sweep-wide transaction. A
@@ -373,9 +628,39 @@ async def sweep(
                 # #VERIFY: tests/unit/test_remoderate_books.py::
                 # test_sweep_commits_after_each_book and
                 # ::test_sweep_continues_after_one_failure.
-                result = await remoderate_storybook_version(
-                    session, storybook_id, version, ctx
+                async with asyncio.timeout(per_book_timeout_seconds):
+                    result = await remoderate_storybook_version(
+                        session, storybook_id, version, ctx
+                    )
+            except TimeoutError:
+                # #CRITICAL: concurrency: caught BEFORE the generic handler and
+                # handled differently on purpose. asyncio.timeout raises the
+                # builtin TimeoutError, which `except Exception` below would
+                # otherwise swallow into the ordinary retry-me bucket.
+                #
+                # The rollback is what actually releases the row lock, so it
+                # runs first and unconditionally. The sweep then STOPS rather
+                # than continuing: a timeout is a statement about the provider
+                # or the pipeline, not about this book, so pushing the next
+                # sixteen through the same wedged path would spend real LLM
+                # budget to collect sixteen more timeouts, each holding another
+                # row lock on another book a reviewer may be waiting on. It
+                # also avoids reusing a session whose connection was cancelled
+                # mid-statement.
+                # #VERIFY: tests/unit/test_remoderate_books.py::
+                # test_sweep_times_out_a_wedged_book_and_releases_its_lock and
+                # ::test_sweep_abandons_remaining_targets_after_a_timeout.
+                await session.rollback()
+                _logger.error(
+                    "remoderate_books.sweep_timed_out",
+                    storybook_id=storybook_id,
+                    version=version,
+                    timeout_seconds=per_book_timeout_seconds,
+                    abandoned=len(targets) - index - 1,
                 )
+                timed_out.append((storybook_id, version))
+                not_attempted = list(targets[index + 1 :])
+                break
             except Exception:
                 # #ASSUME: external-resources: a transient provider error on
                 # one book must not abort the sweep. The rollback discards
@@ -402,6 +687,16 @@ async def sweep(
                     blocked.append((storybook_id, version))
                 elif result.overall_verdict == "flag":
                     flagged.append((storybook_id, version))
+                if result.repaired:
+                    # #ASSUME: data-integrity: a repaired book has had its
+                    # stored text REWRITTEN by the repair pass, so the verdict
+                    # an operator reads describes prose that is no longer what
+                    # they last reviewed. Rolled up with plain successes it is
+                    # invisible; called out, it tells them which books need a
+                    # fresh read before approval.
+                    # #VERIFY: tests/unit/test_remoderate_books.py::
+                    # test_sweep_records_repaired_books.
+                    repaired.append((storybook_id, version))
         return SweepResult(
             targets=targets,
             executed=True,
@@ -409,6 +704,10 @@ async def sweep(
             failed=failed,
             blocked=blocked,
             flagged=flagged,
+            repaired=repaired,
+            excluded=excluded,
+            timed_out=timed_out,
+            not_attempted=not_attempted,
         )
 
 
@@ -420,7 +719,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
     Returns:
         The parsed namespace (``book_id`` list, ``mock_moderated`` bool,
-        ``execute`` bool).
+        ``in_review`` bool, ``execute`` bool).
     """
     parser = argparse.ArgumentParser(description=__doc__)
     selector = parser.add_mutually_exclusive_group(required=True)
@@ -429,15 +728,23 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="append",
         dest="book_id",
         metavar="STORYBOOK_ID",
-        help="Re-moderate this storybook id (repeatable). Mutually exclusive "
-        "with --mock-moderated.",
+        help="Re-moderate this storybook id (repeatable), at its current "
+        "published version or, for an in_review book, its latest version. "
+        "Mutually exclusive with the other selectors.",
     )
     selector.add_argument(
         "--mock-moderated",
         action="store_true",
         help="Target every published book whose current version looks "
         "mock-moderated (see module docstring's selection criteria). "
-        "Mutually exclusive with --book-id.",
+        "Mutually exclusive with the other selectors.",
+    )
+    selector.add_argument(
+        "--in-review",
+        action="store_true",
+        dest="in_review",
+        help="Target every in_review book, at its latest version, with no "
+        "report-content filter. Mutually exclusive with the other selectors.",
     )
     parser.add_argument(
         "--execute",
@@ -445,29 +752,69 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Actually call the re-moderation entry point for each target. "
         "Without this flag, only lists the targets; nothing is written.",
     )
+    parser.add_argument(
+        "--per-book-timeout",
+        type=float,
+        default=_PER_BOOK_TIMEOUT_SECONDS,
+        dest="per_book_timeout",
+        metavar="SECONDS",
+        help="Wall-clock bound on one book's re-moderation (default: "
+        f"{_PER_BOOK_TIMEOUT_SECONDS:.0f}). Exceeding it rolls that book back, "
+        "releasing the row lock that would otherwise block an admin's "
+        "approve or send-back on it, and abandons the remaining targets.",
+    )
     return parser.parse_args(argv)
+
+
+def _exit_on_excluded(result: SweepResult) -> None:
+    """Exit nonzero when the sweep could not see every eligible book.
+
+    Args:
+        result: The sweep outcome to inspect.
+    """
+    if result.excluded:
+        sys.exit(
+            f"remoderate_books: {len(result.excluded)} in_review book(s) "
+            "were excluded from this sweep and remain un-re-moderated."
+        )
 
 
 def main() -> None:
     """Entry point for the re-moderation sweep script.
 
-    Prints the target list always. In dry-run (default), that is the only
-    output. When ``--execute`` is given, also prints the succeeded/failed
-    counts, the fresh verdicts, and exits nonzero if anything failed OR if
-    any book came back hard-blocked, so neither a partial sweep nor a book
-    that just failed re-moderation is ever read as a clean success.
+    Prints the target list always, preceded by an exclusion warning whenever
+    the sweep covered fewer books than the review queue holds. In dry-run
+    (default), that is the only output. When ``--execute`` is given, also
+    prints the succeeded/failed counts, the fresh verdicts, which books the
+    repair pass rewrote, and exits nonzero if anything failed OR if any book
+    came back hard-blocked OR if any book was excluded, so neither a partial
+    sweep nor a book that just failed re-moderation is ever read as a clean
+    success.
     """
     args = _parse_args()
     result = asyncio.run(
         sweep(
             book_ids=args.book_id,
             mock_moderated=args.mock_moderated,
+            in_review=args.in_review,
             execute=args.execute,
+            per_book_timeout_seconds=args.per_book_timeout,
         )
     )
 
+    if result.excluded:
+        # Printed before the target count, because the target count is exactly
+        # the number this line corrects: without it, a sweep covering 15 of 17
+        # queued books reads as a complete pass over "15 target book(s)".
+        print(
+            f"remoderate_books: WARNING, {len(result.excluded)} in_review "
+            "book(s) were EXCLUDED from the target list because they have no "
+            "version row, and were NOT re-moderated: " + ", ".join(result.excluded)
+        )
+
     if not result.targets:
         print("remoderate_books: no target books found.")
+        _exit_on_excluded(result)
         return
 
     print(f"remoderate_books: {len(result.targets)} target book(s):")
@@ -476,6 +823,7 @@ def main() -> None:
 
     if not result.executed:
         print("remoderate_books: dry run, nothing executed. Pass --execute to run.")
+        _exit_on_excluded(result)
         return
 
     print(
@@ -485,27 +833,65 @@ def main() -> None:
     )
     if result.flagged:
         print(
-            "remoderate_books: soft-flagged (still published, review when "
-            "convenient): " + ", ".join(f"{sid} v{v}" for sid, v in result.flagged)
+            "remoderate_books: soft-flagged (status unchanged by this sweep, "
+            "review when convenient): "
+            + ", ".join(f"{sid} v{v}" for sid, v in result.flagged)
+        )
+    if result.repaired:
+        print(
+            "remoderate_books: REPAIRED, the stored text of these books was "
+            "rewritten by the repair pass and differs from what was last "
+            "reviewed; re-read before approving: "
+            + ", ".join(f"{sid} v{v}" for sid, v in result.repaired)
         )
     if result.blocked:
-        # A hard block on a published book is the one outcome that needs a
-        # human today: the book is STILL published and STILL readable, because
-        # ADR-005 reserves every status change for a human. Print it loudly
-        # and exit nonzero even though the re-moderation itself succeeded.
+        # A hard block is the one outcome that needs a human today, and this
+        # sweep does not provide one: ADR-005 reserves every status change for
+        # a person, so each blocked book is exactly where it was. What that
+        # means depends on which population was swept, and main() deliberately
+        # spells out both rather than naming the mode, because --book-id can
+        # mix them: a published book is still readable by a child RIGHT NOW,
+        # while an in_review book is merely still queued. Print it loudly and
+        # exit nonzero even though the re-moderation itself succeeded.
         print(
-            "remoderate_books: HARD BLOCK, still published and readable, "
-            "act on these: " + ", ".join(f"{sid} v{v}" for sid, v in result.blocked)
+            "remoderate_books: HARD BLOCK, status unchanged by this sweep. A "
+            "published book here is STILL published and STILL readable by a "
+            "child; an in_review book is still waiting in the review queue. "
+            "Act on these: " + ", ".join(f"{sid} v{v}" for sid, v in result.blocked)
         )
     if result.failed:
         print(
             "remoderate_books: failed (rolled back, retry by re-running): "
             + ", ".join(f"{sid} v{v}" for sid, v in result.failed)
         )
-    if result.failed or result.blocked:
+    if result.timed_out:
+        # Printed separately from `failed` because the operator's next action
+        # differs: a failure says re-run, a timeout says find out what is
+        # wedged before spending more.
+        print(
+            "remoderate_books: TIMED OUT (rolled back, row lock released): "
+            + ", ".join(f"{sid} v{v}" for sid, v in result.timed_out)
+            + ". The sweep stopped here rather than driving the rest through"
+            + " the same wedged path."
+        )
+    if result.not_attempted:
+        print(
+            "remoderate_books: not attempted after the timeout: "
+            + ", ".join(f"{sid} v{v}" for sid, v in result.not_attempted)
+        )
+    if (
+        result.failed
+        or result.blocked
+        or result.excluded
+        or result.timed_out
+        or result.not_attempted
+    ):
         sys.exit(
             f"remoderate_books: {len(result.failed)} book(s) failed "
-            f"re-moderation, {len(result.blocked)} book(s) hard-blocked."
+            f"re-moderation, {len(result.blocked)} book(s) hard-blocked, "
+            f"{len(result.excluded)} book(s) excluded, "
+            f"{len(result.timed_out)} book(s) timed out, "
+            f"{len(result.not_attempted)} book(s) not attempted."
         )
 
 

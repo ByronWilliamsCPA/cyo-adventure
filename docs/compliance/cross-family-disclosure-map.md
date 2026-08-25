@@ -346,19 +346,37 @@ egress guard in 3.6 addresses the LLM leg of that risk but not the human-review 
 
 ### 3.6 `POST /api/v1/admin/rescreen` and `POST /api/v1/admin/remoderate/{id}/{version}`
 
-`rescreen.py:121`, `remoderate.py:567`.
+`rescreen.py:121` (`trigger_rescreen`), `remoderate.py:892` (the route, `trigger_remoderate`)
+into `remoderate.py:539` (the work, `remoderate_storybook_version`).
 
-Cross-family content re-review. Both, along with `node_edit.py`, load **the subject family's**
-child display names rather than the caller's. Note that `_family_child_names` is not one shared
-helper: it is three independent module-private definitions of the same shape, duplicated
-deliberately rather than imported (`remoderate.py:241-245` explains why, citing this codebase's
-avoidance of cross-module underscore imports). Three copies of a PII guard is three places a fix
-has to land, which is worth knowing before relying on any one of them.
+Cross-family content re-review.
+
+`remoderate.py`, along with `node_edit.py`, loads **the subject family's** child display names
+rather than the caller's. `rescreen.py` does **not**, and an earlier revision of this document
+said it did. The difference is structural rather than an omission: the names exist to be redacted
+out of the review and repair PROMPTS, and a re-screen sweep builds neither. It runs the
+deterministic gate and the Stage-0 classifiers only, so it has no prompt to guard and loads no
+names; `grep -n ChildProfile src/cyo_adventure/api/rescreen.py src/cyo_adventure/moderation/rescreen.py`
+returns nothing. Read the rest of this section as being about `remoderate.py` and `node_edit.py`.
+
+Note that `_family_child_names` is not one shared helper: it is three independent module-private
+definitions of the same shape, duplicated deliberately rather than imported
+(`remoderate.py:397-401`, in `_family_child_names`'s docstring, explains why, citing this codebase's
+avoidance of cross-module underscore imports). Three copies of a PII guard is three places a fix has
+to land, which is worth knowing before relying on any one of them.
 
 - `node_edit.py:295-312` (docstring is explicit:
   "the story's family, not necessarily the caller's, for the admin cross-family case")
-- `remoderate.py:236-285`, the query at `remoderate.py:283`
+- `remoderate.py:392-441` (`_family_child_names`), the query at `remoderate.py:439`, called at
+  `remoderate.py:642` (inside `remoderate_storybook_version`)
 - `story_requests.py:112-125`
+
+**Scope, as of 2026-08-24**: `remoderate.py` admits `in_review` storybooks as well as `published`
+ones (`REMODERATABLE_STATUSES`). The cross-family read described here therefore now reaches books
+that are NOT published and that no guardian has approved. That does not change the disclosure
+shape, the same family-scoped names are read into the same in-process guard, but it does widen the
+population, and a reader who assumed "re-moderation implies a published book" would be wrong. The
+sibling `rescreen.py` remains published-only.
 
 `generation.py:227` runs the same PII egress guard but does **not** belong on that list: the
 endpoint is guardian-only (`if not ctx.principal.is_guardian: raise`, `generation.py:216-217`),

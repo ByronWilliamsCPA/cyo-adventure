@@ -3973,6 +3973,10 @@ export type RemoderateResultView = {
      * Prior Reviewer Independent
      */
     prior_reviewer_independent: boolean | null;
+    /**
+     * Repaired
+     */
+    repaired: boolean;
 };
 
 /**

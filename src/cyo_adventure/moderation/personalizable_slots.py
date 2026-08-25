@@ -34,12 +34,16 @@ from cyo_adventure.generation.binding import (
     personalizable_slot_ids,
 )
 from cyo_adventure.generation.skeleton import load_skeleton
-from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
+from cyo_adventure.generation.skeleton_match import (
+    find_skeleton_band,
+    resolve_skeleton_path,
+)
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
+    from cyo_adventure.db.models import StorybookVersion
     from cyo_adventure.storybook.theme_contract import ThemeContract
 
 _logger = get_logger(__name__)
@@ -404,3 +408,132 @@ async def personalizable_slot_fields_for_story(
     if contract is None:
         return {}
     return personalizable_slot_fields(contract)
+
+
+def _band_for_version(version_row: StorybookVersion, slug: str) -> str | None:
+    """Recover the band directory a version's skeleton slug lives under.
+
+    Args:
+        version_row: The version being resolved, for log attribution.
+        slug: The version's ``skeleton_slug``.
+
+    Returns:
+        The band directory name, or None if the slug does not resolve to
+        exactly one readable band. Every None is fail-closed: the caller must
+        not substitute an empty contract for one it could not read.
+    """
+    try:
+        band = find_skeleton_band(slug)
+    except CoreValidationError:
+        # A traversing or ambiguous slug. Fail closed rather than pick a band:
+        # the version claims provenance that cannot be resolved to one file.
+        # #VERIFY: tests/unit/test_personalizable_slots.py::
+        # test_version_with_a_traversing_slug_fails_closed.
+        _logger.warning(
+            "moderation.version_contract_slug_unresolvable",
+            story_id=version_row.storybook_id,
+            slug=slug,
+        )
+        return None
+    except OSError as exc:
+        # #CRITICAL: external-resources: find_skeleton_band SCANS the catalog
+        # (skeleton_match.py::_locate_skeleton walks _SKELETON_ROOT.iterdir()),
+        # so an unreadable or hung skeleton root raises a raw OSError here, NOT
+        # a CoreValidationError. Uncaught it escapes the caller entirely and
+        # takes down the whole re-moderation request, while the contract load
+        # already catches OSError on the very same catalog: the asymmetry was
+        # an oversight, not a decision. Fail closed like every other
+        # unrecoverable arm, under its OWN log event, because "the catalog is
+        # unreadable" and "this slug does not resolve" need different
+        # responses from whoever reads the line.
+        # #VERIFY: tests/unit/test_personalizable_slots.py::
+        # test_version_resolution_fails_closed_when_the_catalog_is_unreadable.
+        _logger.warning(
+            "moderation.version_contract_band_scan_failed",
+            story_id=version_row.storybook_id,
+            slug=slug,
+            error=str(exc)[:500],
+        )
+        return None
+    if band is None:
+        _logger.warning(
+            "moderation.version_contract_band_missing",
+            story_id=version_row.storybook_id,
+            slug=slug,
+        )
+    return band
+
+
+def personalizable_slot_ids_for_version(
+    version_row: StorybookVersion,
+) -> frozenset[str] | None:
+    """Resolve a ``StorybookVersion``'s declared personalizable slot ids.
+
+    The sibling of :func:`personalizable_slot_ids_for_job` for a caller that
+    holds a version but no job. Returns the SAME tri-state, resolved from the
+    version's own ``skeleton_slug`` instead of a ``GenerationJob``'s
+    ``authoring_metadata``.
+
+    ``StorybookVersion`` carries no band, which is the reason
+    :func:`personalizable_slot_ids_for_story` recovers one from a job row at
+    all. :func:`~cyo_adventure.generation.skeleton_match.find_skeleton_band`
+    recovers it from the catalog instead, so a book with no job row stops
+    being unresolvable.
+
+    Args:
+        version_row: The version whose theme contract to resolve.
+
+    Returns:
+        frozenset[str] | None: The declared personalizable slot ids. An EMPTY
+            frozenset whenever no personalizable slot could legitimately
+            exist: no ``skeleton_slug`` (not a skeleton-backed version), or a
+            legacy skeleton whose contract sidecar is absent
+            (:func:`~cyo_adventure.generation.binding.load_contract_for`
+            returns ``None``). ``None`` only when the version DOES carry a
+            slug but the contract cannot be recovered, so the caller must fail
+            closed rather than risk treating a real sentinel as forged.
+    """
+    # #CRITICAL: data-integrity: this exists because api/remoderate.py's
+    # population is imported books, which have NO generation_job row (verified
+    # against production 2026-08-24: 17 of 17 in_review books). Routed through
+    # personalizable_slot_ids_for_story they resolve None, and
+    # moderation/pipeline.py turns None into a sentinel_integrity_violation
+    # BLOCK, so every book's accurate report would be overwritten with a block
+    # describing absent provenance rather than its prose, and the repair branch
+    # (gated on `not report.has_hard_block`) would be suppressed with it. The
+    # tri-state itself is unchanged: only the "this book never had a job" case,
+    # which says nothing about safety, stops producing None.
+    # #VERIFY: tests/unit/test_personalizable_slots.py::
+    # test_version_resolution_needs_no_generation_job and
+    # ::test_version_with_an_unlocatable_slug_fails_closed pin both arms.
+    slug = version_row.skeleton_slug
+    if not slug:
+        return frozenset()
+    band = _band_for_version(version_row, slug)
+    if band is None:
+        return None
+    try:
+        skeleton_path = resolve_skeleton_path(band, slug)
+        contract = load_contract_for(skeleton_path, load_skeleton(skeleton_path))
+    except (CoreValidationError, OSError, ValueError) as exc:
+        # #EDGE: external-resources: load_skeleton does json.loads(read_text),
+        # which raises a raw OSError or JSONDecodeError (a ValueError subclass),
+        # NOT a CoreValidationError, when a catalog file has moved or been
+        # corrupted. Mirrors _contract_for_job's note on the identical chain.
+        # #VERIFY: tests/unit/test_personalizable_slots.py::
+        # test_version_with_an_unreadable_contract_fails_closed pins this
+        # fail-closed None, and
+        # test_version_on_a_legacy_skeleton_returns_the_empty_set pins that
+        # the no-sidecar arm below stays the EMPTY set rather than collapsing
+        # into it.
+        _logger.warning(
+            "moderation.version_contract_load_failed",
+            story_id=version_row.storybook_id,
+            slug=slug,
+            band=band,
+            error=str(exc)[:500],
+        )
+        return None
+    if contract is None:
+        return frozenset()
+    return personalizable_slot_ids(contract)

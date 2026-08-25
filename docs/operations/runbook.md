@@ -212,6 +212,186 @@ the creating statement, and do not leave it in place.
 psql "$DATABASE_URL" -c 'drop index concurrently if exists "public"."<index_name>";'
 ```
 
+### 2.5 Applying pending migrations to production (drift recovery)
+
+Production's schema deploy is decoupled from its app deploy, and nothing compares the two. The app
+image auto-deploys on merge; `supabase-production.yml` is `workflow_dispatch` only and gated behind
+the `production` GitHub Environment's required reviewer. A run of merged-but-unapplied migrations can
+therefore accumulate silently for weeks while the deployed app declares ORM columns and tables the
+live database does not have.
+
+**The readiness probe cannot tell you this.** `/api/v1/health/ready`'s `database` check opens a
+connection and returns `status: true`; it never inspects the schema. SQLAlchemy validates nothing at
+import or at startup either, so a mapped column that does not exist is a runtime error on the first
+query that touches it, not a boot failure. The observable symptom is a 500 on real traffic against a
+service whose health endpoint is green.
+
+**Detect drift before you need to.** Compare the applied head against the repo:
+
+```bash
+# The ref you are about to deploy. Measure everything against THIS, not against
+# origin/main: the dispatch below takes a ref, and a merge landing between the
+# check and the dispatch would otherwise change the migration set silently.
+REF="${REF:-origin/main}"
+
+# Applied on PRODUCTION. Do NOT use --linked here: this checkout is linked to
+# STAGING (Pre-flight step 1 records why), so --linked reports the wrong
+# database and the comparison below would come out clean against the wrong one.
+# SUPABASE_DB_URL is the production Supavisor session-mode pooler string on port
+# 5432, defined in [Section 6](#6-backup-and-restore); the direct host is
+# IPv6-only and is unreachable from most operator networks.
+supabase migration list --db-url "$SUPABASE_DB_URL"
+
+# What that ref carries. Anything listed here that the command above does not show is pending.
+git ls-tree --name-only "$REF" supabase/migrations/
+```
+
+#### Pre-flight
+
+1. **Take a dump first, and do not assume one exists.** `supabase-backup.yml` is scheduled nightly,
+   but a scheduled run that never produced a usable artifact is not a backup. Confirm the state of
+   the tiered R2 backups per [Section 6](#6-backup-and-restore) before you rely on one, and take a
+   fresh dump regardless. Migrations are forward-only (ADR-012): there is no downgrade script, and
+   the only recovery from a bad migration is a corrective roll-forward or a restore.
+
+   ```bash
+   # Roles, schema, and data as three files, so a partial restore is possible.
+   # --db-url, NOT --linked: this checkout is linked to STAGING, so --linked here
+   # would dump staging and leave you believing you held a production restore point.
+   # SUPABASE_DB_URL is the production session-mode pooler string (Section 6).
+   set -euo pipefail
+   ts="$(date -u +%Y%m%dT%H%M%SZ)"
+   out="$(mktemp -d)"
+   supabase db dump --db-url "$SUPABASE_DB_URL" --role-only > "$out/preflight-${ts}-roles.sql"
+   supabase db dump --db-url "$SUPABASE_DB_URL"             > "$out/preflight-${ts}-schema.sql"
+   supabase db dump --db-url "$SUPABASE_DB_URL" --data-only > "$out/preflight-${ts}-data.sql"
+
+   # A dump that failed can still leave a file. Refuse to proceed on an empty one.
+   for f in "$out/preflight-${ts}"-*.sql; do
+     [ -s "$f" ] || { echo "EMPTY DUMP, do not dispatch: $f" >&2; exit 1; }
+   done
+   echo "dumps in $out"
+   ```
+
+   **These are not a platform backup, and the distinction decides what they can restore.**
+   `supabase db dump` covers the application schema and cluster roles. It does NOT include the
+   Supabase-managed schemas (`auth`, `storage`) or Storage objects. `auth.users` is therefore
+   absent, and that table is the authoritative source for adult account emails (`public.user.email`
+   is NULL for the two oldest adults). Treat these files as an application-table restore point;
+   anything that needs auth or Storage back has to come from Supabase's own managed backups.
+
+   Store these off the runner and off the operator laptop's temp directory. They contain the full
+   production dataset, including children's profile data, so they are subject to the same handling
+   rules as any production extract (see [Section 8](#8-secrets-and-keys-inventory)).
+
+   **Check that you can actually run this before you need it.** On 2026-08-24 this step was not
+   executable: the local checkout is `supabase link`ed to staging, no operator held
+   `SUPABASE_DB_PASSWORD` for production, and `gh secret list --env backups` returned nothing, so
+   `supabase-backup.yml` could not have produced an artifact on any night it ran. Do not close that
+   gap by adding a dump-and-upload step to a workflow: this repository is **public**, GitHub
+   workflow artifacts are readable by anyone with repo read access, and a `supabase db dump` is the
+   entire production dataset. A restore point has to land somewhere access-controlled (the R2
+   backup bucket, or Supabase's own managed backups), never in CI artifact storage.
+
+   When no dump is possible, do not proceed blind and do not proceed unbounded: read the pending
+   set for destructive verbs and take a targeted snapshot of exactly what they touch. On the
+   2026-08-24 apply, all 18 pending migrations were scanned; every `DROP` was a
+   drop-then-recreate of a constraint, policy, or index, and the only data-touching statements were
+   two `UPDATE`s and one `DELETE FROM provider_model_allowlist`. Nothing touched child, family,
+   story, or reading data, so a five-row snapshot of that one table, rendered as a replayable
+   `INSERT`, was a proportionate restore point. That reasoning is the substitute for a dump, and it
+   only works because it was written down before the dispatch.
+
+2. **Confirm staging is green on the same migration set.** The workflow's own RUN POLICY requires it:
+   only dispatch production after the staging deploy of the same migrations and config has succeeded.
+   Check the most recent successful `Deploy Supabase Migrations (staging)` run and compare its
+   **migration set** against the ref you are dispatching, not merely its ancestry. An ancestor check
+   passes vacuously in the case that matters: if staging succeeded at commit A and you dispatch
+   descendant B, A is still an ancestor of B even when B adds migrations staging never ran.
+
+   ```bash
+   STAGING_SHA="$(gh run list --workflow=supabase-staging.yml --status=success --limit=1 \
+     --json headSha --jq '.[0].headSha')"
+   diff <(git ls-tree --name-only "$STAGING_SHA" supabase/migrations/) \
+        <(git ls-tree --name-only "$REF"         supabase/migrations/) \
+     && echo "same migration set" || echo "DIFFERENT: staging did not validate this set"
+   ```
+
+3. **Read the pending set, do not just count it.** Migrations that create indexes concurrently,
+   rewrite constraints, or backfill data have post-deploy checks of their own; several carry a
+   `#VERIFY` line naming the check. Collect those before dispatching, because the push reports success
+   whether or not they hold.
+
+#### Dispatch
+
+The push runs only through the workflow, never from an operator shell against production. The
+workflow asserts `SUPABASE_PROJECT_ID` is non-empty and matches `[remotes.production].project_id` in
+`supabase/config.toml` before it pushes anything, which is the guard that keeps a mistyped or
+inherited project reference from pointing the push at the wrong database.
+
+```bash
+# --ref pins the dispatch to the commit staging validated above. Without it the
+# workflow runs the DEFAULT BRANCH, so a merge landing in between silently
+# changes the migration set after the pre-flight checks passed.
+gh workflow run supabase-production.yml --ref "$REF"
+gh run watch "$(gh run list --workflow=supabase-production.yml --limit=1 --json databaseId   --jq '.[0].databaseId')"
+```
+
+The run pauses for the `production` environment's required reviewer. Note the two deliberate
+differences from staging: production runs `supabase db push` **without** `--include-all`, so an
+out-of-order migration file is skipped rather than applied, and the concurrency group
+`supabase-production-deploy` sets `cancel-in-progress: false`, so a second dispatch queues behind the
+first instead of interrupting a half-applied push.
+
+#### Post-deploy verification
+
+A green workflow run is not evidence the schema is correct. Run all four checks:
+
+1. **Applied head matches the repo.** Re-run the two commands under "Detect drift" above and confirm
+   the pending set is now empty.
+
+2. **Every concurrently-built index is valid.** Run the `indisvalid` query in
+   [Section 2.4](#24-schema-migrations). An empty result is the pass. This matters whenever the pushed
+   set contains a `CREATE INDEX CONCURRENTLY`, which succeeds and delivers nothing when it fails
+   partway.
+
+3. **Constraint-widening migrations actually widened the constraint.** A migration guarded by
+   `IF EXISTS(... NOT LIKE ...)` exits 0 having done nothing when the constraint is absent as well as
+   when it is already current, so "the migration ran" is not the same claim as "the constraint holds
+   the new member". Read the constraint rather than the migration history:
+
+   ```bash
+   psql "$DATABASE_URL" -c "
+     select conname, pg_get_constraintdef(oid)
+     from pg_constraint
+     where conrelid = 'public.pipeline_event'::regclass and contype = 'c';"
+   ```
+
+   Confirm every event type the deployed code emits appears in `ck_pipeline_event_event_type`. Note
+   that the corrective fixes to nine already-applied migrations are inert on any database that has
+   already recorded those versions: the CLI tracks migrations by version, not by content, so an edited
+   migration never re-runs. If a member is missing on a database whose history says the migration
+   applied, the fix is a new roll-forward migration, not an edit to the old one.
+
+4. **An authenticated request actually succeeds.** The schema checks above prove the columns exist;
+   only real traffic proves the deployed ORM and the live schema agree. Every authenticated adult
+   request resolves its principal through a `select` against `user`, so a single authenticated call is
+   a broad smoke test:
+
+   ```bash
+   # --connect-timeout/--max-time so a wedged origin fails instead of hanging, and an
+   # explicit status test so the command's own exit code carries the verdict: bare
+   # `curl -sS` exits 0 while printing 500, which reads as a pass in any script.
+   code="$(curl -sS --connect-timeout 5 --max-time 20 -o /dev/null -w '%{http_code}' \
+     -H "Authorization: Bearer $TOKEN" https://cyo.williamshome.family/api/v1/me)"
+   echo "$code"
+   [ "$code" = "200" ] || { echo "NOT 200, drift is not cleared" >&2; exit 1; }
+   ```
+
+   A 200 is the pass. A 500 here against a green `/health/ready` is the drift signature described at
+   the top of this section.
+
+
 ## 3. Health checks
 
 `api/health.py` exposes three Kubernetes-style probes plus a load-balancer alias. The router is

@@ -515,7 +515,7 @@ async def test_gate_failing_edit_rejected_with_unchanged_blob(
     )
     monkeypatch.setattr(
         node_edit,
-        "run_gate",
+        "run_fill_gate",
         lambda *_a, **_kw: GateResult(
             report=failing_report, blocked=True, safety_flagged=False
         ),
@@ -1289,3 +1289,34 @@ async def test_fresh_flag_lands_alongside_a_narrowed_merged_finding(
         if f["node_id"] == _NODE_ID and f["message"] == "freshly flagged prose"
     ]
     assert len(fresh) == 1
+
+
+@pytest.mark.asyncio
+async def test_edit_writing_a_fill_directive_is_rejected() -> None:
+    """An edit that writes a ``<<FILL ...>>`` directive into a body is refused.
+
+    ``edit_node`` re-gates the edited blob, but called ``run_gate`` without a
+    ``context``, so the edited FILLED book was judged under the catalog-time
+    ``"skeleton"`` posture, where a retained directive is expected input rather
+    than a defect. PL-27 is the only deterministic floor between an unwritten
+    node and a human reviewer (validator/policy.py::check_fill_directives), so
+    under the wrong posture an admin could replace real prose with a directive,
+    have it accepted, and have the stored ``validation_report`` record that as
+    clean.
+    """
+    story = _story("in_review")
+    version_row = _version_row()
+    original_blob = version_row.blob
+    session = AsyncMock(spec=AsyncSession)
+    _wire_session(session, story=story, version_row=version_row)
+    ctx = _ctx("admin", session)
+
+    body = NodeEditBody(body="<<FILL body: write the cavern scene here>>")
+
+    with pytest.raises(ValidationError) as exc_info:
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx=ctx)
+
+    findings = exc_info.value.details["findings"]
+    assert any(f["rule_id"] == "PL-27" for f in findings), findings
+    assert version_row.blob is original_blob
+    session.add.assert_not_called()

@@ -112,6 +112,51 @@ class GateResult:
     context: GateContext = "skeleton"
 
 
+def run_fill_gate(data: Mapping[str, object]) -> GateResult:
+    """Run the gate over a FILLED storybook blob, the way every producer must.
+
+    Every writer of ``storybook_version.validation_report`` must run the gate
+    the same way, or the admin review surface ranks reports that were produced
+    under different postures against each other and the comparison is
+    meaningless. The posture that matters here is ``context="fill_result"``:
+    under the default ``"skeleton"`` context a retained ``<<FILL ...>>``
+    directive is expected, and a filled book judged that way silently passes
+    PL-27.
+
+    This helper is the shared definition for the three request-path producers
+    that store a report over a whole blob at its default scale:
+    generation/import_story.py, api/node_edit.py, and api/remoderate.py. It is
+    NOT the only way a stored report is produced, and this docstring formerly
+    overclaimed that it was. generation/worker.py writes one from its own
+    ``run_gate(..., "standard", context="fill_result")``, and the generation
+    pipeline calls ``run_gate`` with the same context directly in several
+    in-flight places (orchestrator.py, reading_level_loop.py,
+    moderation/pipeline.py) because they must pass an explicit scale that this
+    signature does not accept. Those sites are correct; they simply are not
+    routed through here, so a change to this function does not reach them.
+
+    One asymmetry is deliberate and worth knowing before you widen it:
+    api/remoderate.py stamps ``gate_context`` onto the dict it stores, because
+    ``GateReport.to_dict()`` carries only ``{ok, findings}`` and drops the
+    posture the report was produced under. The other producers do not stamp
+    it yet. Extra keys are ignored by api/review_surface.py, so the two shapes
+    coexist safely, but a reader cannot yet assume the key is present.
+
+    ``enforce_grammar`` stays at its default. Turning it on surfaces CG-*
+    findings, which are WARNING-only and never set ``blocked``, but it must be
+    turned on for ALL producers in one change or the stored reports diverge
+    again; see the review-surface projection allowlist in
+    api/review_surface.py::_VALIDATOR_RULE_IDS.
+
+    Args:
+        data: The stored storybook blob (raw decoded JSON mapping).
+
+    Returns:
+        GateResult: The merged report, block status, safety flag, and context.
+    """
+    return run_gate(data, context="fill_result")
+
+
 def run_gate(
     data: Mapping[str, object],
     scale: Scale = "standard",

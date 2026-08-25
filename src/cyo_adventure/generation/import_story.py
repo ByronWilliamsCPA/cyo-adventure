@@ -47,7 +47,7 @@ from cyo_adventure.storybook.reinsertion import (
     verify_manifest,
 )
 from cyo_adventure.utils.logging import get_logger
-from cyo_adventure.validator.gate import run_gate
+from cyo_adventure.validator.gate import run_fill_gate
 from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity_at_rest
 
 if TYPE_CHECKING:
@@ -152,7 +152,21 @@ async def import_filled_story(
     # "<<FILL" directive means the blob was never written and PL-27 must
     # reject it. Every other checker abstains on a directive body rather
     # than failing, so without the posture an unwritten book imports clean.
-    result = run_gate(request.blob, context="fill_result")
+    # Called inline, NOT via run_sync(..., limiter=gate_limiter()) the way
+    # api/remoderate.py calls it. The gate is CPU-bound and measured at ~50s
+    # worst case, so on a request path that would stall the event loop; here
+    # there is no event loop to stall that anyone else shares. Every caller of
+    # import_filled_story is offline: import_cli, import_catalog,
+    # resume_manual_fill, and scripts/series_e2e_local.py. No router reaches
+    # it, so the shared capacity limiter would only serialize an operator
+    # against himself.
+    # #ASSUME: concurrency: no FastAPI route ever calls import_filled_story.
+    # #VERIFY: tests/unit/test_gate_capacity_limiter.py::
+    # test_both_gate_call_sites_share_one_limiter covers the api package and
+    # rejects exactly this inline shape there; the day a router does import
+    # this, that test must grow to reach it and this call has to move behind
+    # run_sync.
+    result = run_fill_gate(request.blob)
     if result.blocked:
         messages = (
             "; ".join(f.message for f in result.report.errors)

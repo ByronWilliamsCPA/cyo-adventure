@@ -123,11 +123,15 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     EventType.RING2_CONSENT_REVOKED: frozenset({"connected_family_id"}),
     # Moderation review redesign: the fresh report's overall gating verdict,
     # a PII-free per-verdict count mapping (mirrors MODERATION_COMPLETED's
-    # own "counts" key), and the prior stored report's reviewer_independent
+    # own "counts" key), the prior stored report's reviewer_independent
     # marker (whether the version being re-moderated was previously
-    # mock-moderated), never finding messages or story prose.
+    # mock-moderated), and a bare boolean for whether the repair pass rewrote
+    # the book's text, never finding messages or story prose. "repaired" is a
+    # bool by construction, so it cannot carry prose even by accident, and it
+    # is the one thing in this payload that says the stored text CHANGED,
+    # which an audit reader otherwise could not tell from a verdict alone.
     EventType.STORYBOOK_REMODERATED: frozenset(
-        {"overall_verdict", "counts", "prior_reviewer_independent"}
+        {"overall_verdict", "counts", "prior_reviewer_independent", "repaired"}
     ),
     # S9 digest job: a bare count of pending info-severity notifications this
     # family had waiting; never which notifications, never any child- or
