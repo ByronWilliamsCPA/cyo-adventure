@@ -30,6 +30,8 @@ test_moderation_pipeline.py's `_wire_personalizable_job` helper exactly.
 
 from __future__ import annotations
 
+import copy
+import pickle
 import uuid
 from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, MagicMock
@@ -45,6 +47,7 @@ from cyo_adventure.moderation.personalizable_slots import (
     PersonalizableSlotsUnrecoverable,
     PersonalizableSlotsUnset,
     personalizable_slot_fields_for_story,
+    personalizable_slot_ids_for_job,
     personalizable_slot_ids_for_version,
 )
 from cyo_adventure.storybook.models import AgeBand
@@ -528,3 +531,130 @@ async def test_the_marker_is_not_a_frozenset() -> None:
     slots: PersonalizableSlots = PERSONALIZABLE_SLOTS_UNRECOVERABLE
 
     assert not isinstance(slots, frozenset)
+
+
+async def test_unset_marker_refuses_a_truth_value() -> None:
+    """`bool()` on the no-override marker raises instead of answering.
+
+    The sibling of ::test_unrecoverable_marker_refuses_a_truth_value, and the
+    reason it is needed is that narrowing away the fail-closed arm leaves the
+    residual union `frozenset[str] | PersonalizableSlotsUnset`, which IS
+    truthiness-testable with no diagnostic. Truthy-by-default put this marker
+    in the "slots are declared" branch; falsy would put it in the "no slot is
+    declared" branch. It means neither, so it must answer neither.
+    """
+    with pytest.raises(TypeError) as excinfo:
+        bool(PERSONALIZABLE_SLOTS_UNSET)
+
+    message = str(excinfo.value)
+    assert "isinstance" in message, (
+        "the error must name the check that resolves the contract, not merely refuse"
+    )
+    assert "no slot is declared" in message, (
+        "the error must name the reading it is NOT, since this marker is "
+        "adjacent to the benign empty frozenset and easily confused with it"
+    )
+    assert "slots are declared" in message, (
+        "and the opposite reading too, which is the one a truthy-by-default "
+        "marker silently supplied"
+    )
+
+
+async def test_unset_marker_reprs_as_its_constant_name() -> None:
+    """A log line or failed assertion names the state, not an object id.
+
+    Mirrors ::test_unrecoverable_marker_reprs_as_its_constant_name. The two
+    markers travel through the same parameters and appear in the same
+    tracebacks, so one of them rendering as `<...object at 0x...>` is exactly
+    the case where telling them apart matters most.
+    """
+    assert repr(PERSONALIZABLE_SLOTS_UNSET) == "PERSONALIZABLE_SLOTS_UNSET"
+
+
+@pytest.mark.parametrize(
+    ("marker", "name"),
+    [
+        (PERSONALIZABLE_SLOTS_UNSET, "PERSONALIZABLE_SLOTS_UNSET"),
+        (PERSONALIZABLE_SLOTS_UNRECOVERABLE, "PERSONALIZABLE_SLOTS_UNRECOVERABLE"),
+    ],
+    ids=["unset", "unrecoverable"],
+)
+async def test_the_markers_survive_copy_deepcopy_and_a_serialization_round_trip(
+    marker: object, name: str
+) -> None:
+    """Copying or serializing a marker must yield the marker, not a twin.
+
+    Before `__copy__`/`__deepcopy__`/`__reduce__` existed, all three of these
+    produced a DISTINCT instance that still satisfied `isinstance`, so `is`
+    and `isinstance` disagreed about the same value. That is not academic:
+    these markers ride a frozen dataclass field and cross a `run_sync`
+    boundary, and this module's own tests assert arm membership with `is`. A
+    marker that fails an `is` check while passing `isinstance` is a
+    fail-closed arm that a caller can accidentally read as recovered.
+    """
+    assert copy.copy(marker) is marker
+    assert copy.deepcopy(marker) is marker
+    # pickle.loads over bytes this very expression produced; there is no
+    # untrusted input anywhere in this round trip, which is what S301 guards.
+    revived = pickle.loads(pickle.dumps(marker))  # noqa: S301
+    assert revived is marker
+    # Identity alone would also hold for a marker that pickling refused to
+    # handle at all, so pin the mechanism: `__reduce__` names the module
+    # global, which is what makes the round trip resolve the singleton.
+    assert getattr(pslots_mod, name) is marker
+
+
+# ---------------------------------------------------------------------------
+# The job and version resolvers must agree on absent provenance.
+# ---------------------------------------------------------------------------
+
+_BLANK_SLUGS = ["", "   "]
+
+
+@pytest.mark.parametrize("blank", _BLANK_SLUGS, ids=["empty", "whitespace"])
+async def test_a_blank_slug_resolves_the_benign_arm_from_a_job(blank: str) -> None:
+    """A job whose stored slug is blank declares nothing; it is not unrecoverable.
+
+    BEHAVIOR CHANGE. This used to reach the fail-closed marker, because the
+    guard was `not isinstance(slug, str)` and `""` IS a str: resolution
+    proceeded to `resolve_skeleton_path(band, "")`, which produced a path
+    ending in `/.json`, which failed to load. The version resolver, given the
+    identical corrupt provenance, returned the benign empty frozenset. Same
+    input, opposite verdicts, chosen by nothing but whether the caller held a
+    job or a version.
+
+    Both functions' documented contracts already called "no skeleton_slug"
+    the benign arm, so that is the arm both now take: a blank slug names no
+    file, so no contract could have declared a personalizable slot.
+    """
+    job = GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id="s_blank_slug",
+        authoring_metadata={"skeleton_slug": blank, "skeleton_band": "8-11"},
+    )
+
+    assert personalizable_slot_ids_for_job(job) == frozenset()
+
+
+@pytest.mark.parametrize("blank", _BLANK_SLUGS, ids=["empty", "whitespace"])
+async def test_a_blank_slug_resolves_the_same_arm_from_a_job_and_a_version(
+    blank: str,
+) -> None:
+    """The two resolvers return the SAME verdict for the same blank slug.
+
+    Asserting the two against each other, not merely each against a constant:
+    the defect was disagreement, so the test that pins it has to compare them.
+    """
+    job = GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id="s_blank_slug",
+        authoring_metadata={"skeleton_slug": blank, "skeleton_band": "8-11"},
+    )
+    version_row = StorybookVersion(
+        storybook_id="s_blank_slug", version=1, blob={}, skeleton_slug=blank
+    )
+
+    from_job = personalizable_slot_ids_for_job(job)
+    from_version = personalizable_slot_ids_for_version(version_row)
+
+    assert from_job == from_version == frozenset()
