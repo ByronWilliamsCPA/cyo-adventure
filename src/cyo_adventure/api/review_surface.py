@@ -181,9 +181,12 @@ def build_review_surface(
             # like a bug. The two routings are orthogonal: all_views feeds the
             # ranker, flagged/story_level feed the legacy fan-out.
             # #VERIFY: tests/unit/test_review_surface.py::
-            # test_structural_finding_with_node_ids_stays_story_level asserts
-            # both halves (story-level routing AND structural_findings
-            # membership) so either ordering mistake fails it.
+            # test_structural_finding_node_ids_survive_alongside_content_finding
+            # asserts both halves (story-level routing AND structural_findings
+            # membership) on a genuinely-structural finding, so either
+            # ordering mistake fails it; the fully-collapsed
+            # test_structural_finding_with_node_ids_stays_story_level no
+            # longer exercises this branch at all.
             all_views.append(view)
             # #CRITICAL: security: a structural finding describes the PIPELINE
             # ("the reviewer was unavailable on 12 nodes"), not the prose of any
@@ -199,7 +202,9 @@ def build_review_surface(
             # one cause. node_ids stays populated on the view for the admin
             # detail panel and the ranker; only the routing changes.
             # #VERIFY: tests/unit/test_review_surface.py::
-            # test_structural_finding_with_node_ids_stays_story_level.
+            # test_structural_finding_node_ids_survive_alongside_content_finding
+            # keeps node_ids populated on a genuinely-structural finding while
+            # routing it to story_level instead of the fan-out below.
             if view.structural:
                 story_level.append(view)
                 continue

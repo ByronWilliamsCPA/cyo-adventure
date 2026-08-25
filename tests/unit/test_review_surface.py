@@ -921,6 +921,88 @@ def test_structural_finding_with_node_ids_stays_story_level() -> None:
     assert surfaced.concern == "reviewer_unavailable"
 
 
+def _structural_with_content_report() -> dict[str, object]:
+    """One structural finding with ``node_ids`` plus one genuine content finding.
+
+    Unlike ``_reviewer_outage_report`` (whose lone finding makes the whole
+    report ``moderation_report_unusable``), the second finding here is a
+    genuine content judgment (not structural, not a fail-safe message, not a
+    ``MOCK_MODERATED_CONCERNS`` concern). ``moderation_report_unusable``
+    therefore stays False, the Task 4 read-time collapse never fires, and the
+    per-finding loop actually runs, which is what
+    ``test_structural_finding_with_node_ids_stays_story_level`` (now a
+    wholly-collapsed fixture) can no longer exercise.
+    """
+    return {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "pipeline",
+                "category": "pipeline",
+                "node_id": "n_start",
+                "verdict": "flag",
+                "score": None,
+                "message": "reviewer unavailable on 2 node(s)",
+                "severity": "high",
+                "structural": True,
+                "concern": "reviewer_unavailable",
+                "node_ids": ["n_start", "n_fork"],
+            },
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n_end",
+                "verdict": "flag",
+                "score": None,
+                "message": "ordinary content flag",
+                "severity": "medium",
+            },
+        ],
+        "summary": {
+            "count": 2,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+
+
+@pytest.mark.unit
+def test_structural_finding_node_ids_survive_alongside_content_finding() -> None:
+    """A genuinely-structural finding keeps its node_ids and skips the fan-out.
+
+    This report stays outside the Task 4 collapse path (it carries one
+    genuine content finding, so ``moderation_report_unusable`` is False),
+    which exercises two things the collapsed
+    ``test_structural_finding_with_node_ids_stays_story_level`` fixture no
+    longer can: the structural finding's ``node_ids`` survive onto the view,
+    and it appears in both ``structural_findings`` (derived from
+    ``all_views``) and ``story_level_findings`` (appended directly in the
+    loop), which together prove ``all_views.append(view)`` ran before the
+    structural ``continue`` (review_surface.py's append-before-continue
+    guard, ~line 183).
+    """
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_merged_blob(),
+        moderation_report=_structural_with_content_report(),
+    )
+    assert view.report_unusable is False
+    assert len(view.structural_findings) == 1
+    structural = view.structural_findings[0]
+    assert structural.structural is True
+    assert structural.node_ids == ["n_start", "n_fork"]
+    # Same FindingView instance in both buckets: proves the all_views append
+    # ran before the structural guard's `continue` routed it to story_level.
+    assert view.story_level_findings == [structural]
+    assert [p.node_id for p in view.flagged_passages] == ["n_end"]
+    assert view.flagged_passages[0].findings[0].message == "ordinary content flag"
+
+
 @pytest.mark.unit
 def test_structural_finding_reaches_the_guardian_content_summary() -> None:
     """A wholly-unusable report reaches the guardian as nothing, not a notice.
