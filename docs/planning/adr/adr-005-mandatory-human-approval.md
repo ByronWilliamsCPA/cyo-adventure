@@ -12,7 +12,7 @@ tags:
 
 # ADR-005: Mandatory human approval before any story reaches a child
 
-> **Status**: Accepted (2026-07-03; amended 2026-06-30, see Amendment below)
+> **Status**: Accepted (2026-07-03; amended 2026-06-30 and 2026-08-25, see Amendments below)
 > **Date**: 2026-06-20
 
 ## Amendment (2026-06-30): the approver is a global admin, not the child's parent

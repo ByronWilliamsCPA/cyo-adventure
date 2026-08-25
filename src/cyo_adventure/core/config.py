@@ -1742,9 +1742,10 @@ class Settings(BaseSettings):
         after which the key still parses and still passes any presence test
         while the API itself returns nothing. OpenAI Moderation is therefore
         the only classifier whose configuration is evidence of a working
-        pre-filter; Perspective remains supported as an optional second
-        opinion (see :mod:`cyo_adventure.moderation.classifiers`) but can no
-        longer be the sole one.
+        pre-filter. Perspective itself was retired as a Stage-0 signal source
+        on 2026-08-25 (ratified sunset): ``classifiers.py`` no longer calls
+        it at all, so a present ``PERSPECTIVE_API_KEY`` is inert configuration
+        rather than an optional second opinion.
 
         Raises:
             ConfigurationError: when review runs without ``OPENAI_API_KEY``.
