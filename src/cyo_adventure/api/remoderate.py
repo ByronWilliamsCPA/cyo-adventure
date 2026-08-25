@@ -690,8 +690,8 @@ async def remoderate_storybook_version(
     # Why the version at all: an in_review book here is an offline import with
     # no GenerationJob row (17 of 17 in production, 2026-08-24). The pipeline's
     # own fallback, personalizable_slot_ids_for_story, returns an EMPTY
-    # frozenset for a story with no job row (not the fail-closed None: see that
-    # function's docstring for why empty is the right answer there), and an
+    # frozenset for a story with no job row (not the fail-closed marker: see
+    # that function's docstring for why empty is the right answer there), and an
     # empty declared set makes check_sentinel_integrity_at_rest report every
     # well-formed sentinel in the blob as "unknown_slot". No book currently in
     # review carries a sentinel, so this is defensive rather than a live fault

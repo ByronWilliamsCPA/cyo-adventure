@@ -93,6 +93,7 @@ from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 from cyo_adventure.moderation.classifiers import run_classifiers
 from cyo_adventure.moderation.personalizable_slots import (
+    PersonalizableSlotsUnrecoverable,
     personalizable_slot_ids_for_story,
 )
 from cyo_adventure.moderation.report import Finding, Source, Verdict
@@ -588,8 +589,13 @@ async def edit_node(
     # persisted, and the mutation happened on a local copy (`new_blob`) that
     # is simply discarded.
     #
-    # An UNRECOVERABLE contract (`None`) degrades to an empty declared-slot
-    # set rather than a hard block. `check_sentinel_integrity_at_rest` with
+    # An UNRECOVERABLE contract (`PERSONALIZABLE_SLOTS_UNRECOVERABLE`)
+    # degrades to an empty declared-slot set rather than a hard block. That
+    # collapse is deliberate HERE and nowhere else: for an editor, "no slot is
+    # declared" and "we cannot prove which slots are declared" both mean
+    # "reject any sentinel this edit leaves behind", so the two arms genuinely
+    # coincide. The `isinstance` spells the collapse out rather than letting a
+    # truthiness test perform it silently. `check_sentinel_integrity_at_rest` with
     # no declared slots still fails closed on any sentinel actually present
     # in the edited blob (every well-formed sentinel becomes `unknown_slot`,
     # every near-miss `malformed`), so a forged or leftover sentinel is
@@ -608,7 +614,9 @@ async def edit_node(
         ctx.session, storybook_id
     )
     slots_for_check: frozenset[str] = (
-        personalizable_slots if personalizable_slots is not None else frozenset[str]()
+        frozenset[str]()
+        if isinstance(personalizable_slots, PersonalizableSlotsUnrecoverable)
+        else personalizable_slots
     )
     integrity_result = check_sentinel_integrity_at_rest(new_blob, slots_for_check)
     if not integrity_result.ok:

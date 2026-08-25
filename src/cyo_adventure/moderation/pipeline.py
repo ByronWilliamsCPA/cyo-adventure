@@ -24,6 +24,7 @@ from cyo_adventure.moderation.leaf_diversity import run_leaf_diversity_check
 from cyo_adventure.moderation.personalizable_slots import (
     PERSONALIZABLE_SLOTS_UNSET,
     PersonalizableSlotsArg,
+    PersonalizableSlotsUnrecoverable,
     PersonalizableSlotsUnset,
     personalizable_slot_ids_for_story,
 )
@@ -324,17 +325,18 @@ async def run_moderation_pipeline(
     # `PERSONALIZABLE_SLOTS_UNSET` for every caller except the cyo-author
     # resume path (see this parameter's own docstring above); only THAT
     # branch below re-resolves it from the story id, exactly as before. A
-    # caller-supplied value -- a real `frozenset` OR an explicit `None` --
-    # is never second-guessed or re-resolved here.
+    # caller-supplied value -- a real `frozenset` OR an explicit
+    # `PERSONALIZABLE_SLOTS_UNRECOVERABLE` -- is never second-guessed or
+    # re-resolved here.
     # #VERIFY: tests/unit/test_moderation_pipeline.py::
     # test_run_moderation_pipeline_honors_explicit_personalizable_slots,
-    # ::test_run_moderation_pipeline_explicit_none_fails_closed, and
+    # ::test_run_moderation_pipeline_explicit_unrecoverable_fails_closed, and
     # ::test_run_moderation_pipeline_default_resolves_from_story (dormancy).
     if isinstance(personalizable_slots, PersonalizableSlotsUnset):
         personalizable_slots = await personalizable_slot_ids_for_story(
             session, story_id
         )
-    if personalizable_slots is None:
+    if isinstance(personalizable_slots, PersonalizableSlotsUnrecoverable):
         # Distinct event name from the blob-integrity violation logged below:
         # this is a CONTRACT-recovery failure (the personalizable-slot set could
         # not be resolved), not a sentinel violation in the story blob. Sharing
@@ -423,16 +425,19 @@ async def run_moderation_pipeline(
     )
 
     # Soft gate: one bounded auto-repair, then re-moderate once.
-    # #ASSUME: data-integrity: `personalizable_slots is not None` is, in
-    # practice, always true here: a `None` resolution already added a
-    # BLOCK finding above, making `not report.has_hard_block` False. The
-    # explicit check is kept anyway as a second, independent fail-closed
+    # #ASSUME: data-integrity: the `PersonalizableSlotsUnrecoverable` check is,
+    # in practice, always satisfied here: a fail-closed resolution already
+    # added a BLOCK finding above, making `not report.has_hard_block` False.
+    # The explicit check is kept anyway as a second, independent fail-closed
     # guard (belt-and-suspenders) and to narrow the type for
     # `_attempt_and_adopt_repair` without a bare `assert` (Bandit B101 in
-    # `src/`).
+    # `src/`). It is an `isinstance`, never a truthiness test: an EMPTY
+    # frozenset is a legitimate, benign resolution that must still reach the
+    # repair path, and `if not personalizable_slots` would send it away with
+    # the unrecoverable one (see PersonalizableSlotsUnrecoverable's docstring).
     # #VERIFY: tests/unit/test_moderation_pipeline.py::
     # test_entry_contract_unrecoverable_routes_to_human_review confirms the
-    # repair path is never entered when personalizable_slots is None.
+    # repair path is never entered on an unrecoverable contract.
     # #CRITICAL: security: `allow_repair=False` is the guard that keeps this
     # pipeline from rewriting an ALREADY-PUBLISHED book's prose.
     # `_attempt_and_adopt_repair` assigns `version_row.blob = revised`, and
@@ -453,7 +458,7 @@ async def run_moderation_pipeline(
         allow_repair
         and report.has_soft_flag
         and not report.has_hard_block
-        and personalizable_slots is not None
+        and not isinstance(personalizable_slots, PersonalizableSlotsUnrecoverable)
     ):
         report = await _attempt_and_adopt_repair(
             session=session,

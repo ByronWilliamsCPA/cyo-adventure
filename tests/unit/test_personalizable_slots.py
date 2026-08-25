@@ -39,6 +39,11 @@ import pytest
 from cyo_adventure.db.models import GenerationJob, StorybookVersion
 from cyo_adventure.moderation import personalizable_slots as pslots_mod
 from cyo_adventure.moderation.personalizable_slots import (
+    PERSONALIZABLE_SLOTS_UNRECOVERABLE,
+    PERSONALIZABLE_SLOTS_UNSET,
+    PersonalizableSlots,
+    PersonalizableSlotsUnrecoverable,
+    PersonalizableSlotsUnset,
     personalizable_slot_fields_for_story,
     personalizable_slot_ids_for_version,
 )
@@ -170,12 +175,12 @@ async def test_slot_fields_for_story_returns_the_contract_map(
 async def test_slot_fields_for_story_is_empty_without_a_job(
     mock_async_session: AsyncMock,
 ) -> None:
-    """No GenerationJob means no reachable contract: empty, not fail-closed None.
+    """No GenerationJob means no reachable contract: empty, not fail-closed.
 
     Same reasoning as `personalizable_slot_ids_for_story`: seeded and
     directly-imported stories legitimately have no job row, and returning
-    None would make every such story look uncomputable to a caller that
-    treats None as "refuse".
+    `PERSONALIZABLE_SLOTS_UNRECOVERABLE` would make every such story look
+    uncomputable to a caller that treats that marker as "refuse".
     """
     story_id = _seed_story_without_job(mock_async_session)
 
@@ -254,7 +259,8 @@ async def test_version_resolution_needs_no_generation_job() -> None:
     This is the production shape of all seventeen in_review books: provider
     'import', skeleton_slug set, zero generation_job rows. Routed through
     :func:`personalizable_slot_ids_for_story` they resolve the fail-closed
-    ``None``, moderation/pipeline.py turns that into a
+    :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE`, moderation/pipeline.py turns
+    that into a
     sentinel_integrity_violation BLOCK, and a report describing absent
     provenance overwrites one that described the prose.
     """
@@ -262,19 +268,20 @@ async def test_version_resolution_needs_no_generation_job() -> None:
         storybook_id="s1", version=1, blob={}, skeleton_slug=_REAL_SLUG
     )
 
-    # Asserting the exact set, not merely `is not None`: an unresolvable
-    # contract returns the EMPTY set on the no-sidecar arm, so `is not None`
-    # would pass with the whole chain broken.
+    # Asserting the exact set, not merely "not the fail-closed marker": an
+    # unresolvable contract returns the EMPTY set on the no-sidecar arm, so a
+    # marker-identity check alone would pass with the whole chain broken.
     assert personalizable_slot_ids_for_version(version_row) == _REAL_SLUG_SLOTS
 
 
 async def test_version_without_a_slug_returns_the_empty_set() -> None:
-    """No slug means no personalizable slot could exist: an empty set, not None.
+    """No slug means no personalizable slot could exist: an empty set.
 
-    Distinct from the fail-closed ``None`` below, and the distinction is the
-    whole tri-state. A fresh-generation version has no skeleton, so there is
-    nothing a contract could declare; returning ``None`` here would manufacture
-    a block for a book that is simply not skeleton-backed.
+    Distinct from the fail-closed :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE`
+    below, and the distinction is the whole tri-state. A fresh-generation
+    version has no skeleton, so there is nothing a contract could declare;
+    returning the marker here would manufacture a block for a book that is
+    simply not skeleton-backed.
     """
     version_row = StorybookVersion(
         storybook_id="s1", version=1, blob={}, skeleton_slug=None
@@ -284,7 +291,7 @@ async def test_version_without_a_slug_returns_the_empty_set() -> None:
 
 
 async def test_version_with_an_unlocatable_slug_fails_closed() -> None:
-    """A slug naming no skeleton returns None, preserving the tri-state.
+    """A slug naming no skeleton returns the marker, preserving the tri-state.
 
     The version claims skeleton provenance, so a contract may genuinely declare
     personalizable slots. Not finding it means the contract could not be
@@ -295,7 +302,10 @@ async def test_version_with_an_unlocatable_slug_fails_closed() -> None:
         storybook_id="s1", version=1, blob={}, skeleton_slug="no-such-skeleton-anywhere"
     )
 
-    assert personalizable_slot_ids_for_version(version_row) is None
+    assert (
+        personalizable_slot_ids_for_version(version_row)
+        is PERSONALIZABLE_SLOTS_UNRECOVERABLE
+    )
 
 
 async def test_version_resolution_fails_closed_when_the_catalog_is_unreadable(
@@ -307,7 +317,7 @@ async def test_version_resolution_fails_closed_when_the_catalog_is_unreadable(
     hung mount raises a raw OSError rather than a ValidationError. Uncaught it
     escapes this function and takes down the whole re-moderation request, even
     though the contract load a few lines later already treats the identical
-    fault on the identical catalog as a fail-closed None.
+    fault on the identical catalog as fail-closed.
     """
 
     def _unreadable(_slug: str) -> str | None:
@@ -319,7 +329,10 @@ async def test_version_resolution_fails_closed_when_the_catalog_is_unreadable(
         storybook_id="s1", version=1, blob={}, skeleton_slug="any-slug"
     )
 
-    assert personalizable_slot_ids_for_version(version_row) is None
+    assert (
+        personalizable_slot_ids_for_version(version_row)
+        is PERSONALIZABLE_SLOTS_UNRECOVERABLE
+    )
 
 
 # A real catalog skeleton with NO ".contract.json" sidecar, so load_contract_for
@@ -333,28 +346,31 @@ _LEGACY_SLUG = "the-blackout-week"
 
 
 async def test_version_with_a_traversing_slug_fails_closed() -> None:
-    """A slug escaping the skeleton root returns None; it does not read a file.
+    """A traversing slug fails closed; it does not read a file.
 
     find_skeleton_band raises ValidationError rather than returning None for a
     traversing slug, so this lands on a DIFFERENT arm than
     ::test_version_with_an_unlocatable_slug_fails_closed above, which resolves
     through the band-is-None path. Both fail closed, and the separation matters:
     a merely-absent slug is a catalog gap, while a traversing one is a hostile
-    or corrupt ``skeleton_slug`` on a row that is about to be re-moderated. The
-    fail-closed None keeps it from being read as an empty contract, which would
-    let a forged sentinel pass as personalization.
+    or corrupt ``skeleton_slug`` on a row that is about to be re-moderated.
+    :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE` keeps it from being read as an
+    empty contract, which would let a forged sentinel pass as personalization.
     """
     version_row = StorybookVersion(
         storybook_id="s1", version=1, blob={}, skeleton_slug="../../etc/passwd"
     )
 
-    assert personalizable_slot_ids_for_version(version_row) is None
+    assert (
+        personalizable_slot_ids_for_version(version_row)
+        is PERSONALIZABLE_SLOTS_UNRECOVERABLE
+    )
 
 
 async def test_version_with_an_unreadable_contract_fails_closed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """A contract that cannot be loaded returns None, not an empty set.
+    """A contract that cannot be loaded fails closed, not to an empty set.
 
     Distinct from the band scan above: the band resolved, the path resolved, and
     the read itself failed. That is the arm a moved or corrupted catalog file
@@ -372,14 +388,17 @@ async def test_version_with_an_unreadable_contract_fails_closed(
         storybook_id="s1", version=1, blob={}, skeleton_slug=_REAL_SLUG
     )
 
-    assert personalizable_slot_ids_for_version(version_row) is None
+    assert (
+        personalizable_slot_ids_for_version(version_row)
+        is PERSONALIZABLE_SLOTS_UNRECOVERABLE
+    )
 
 
 async def test_version_on_a_legacy_skeleton_returns_the_empty_set() -> None:
-    """A skeleton with no contract sidecar declares no slots: empty, not None.
+    """A skeleton with no contract sidecar declares no slots: empty, not the marker.
 
     The third leg of the tri-state, and the one that carries the real risk of
-    being collapsed into the fail-closed None by a future edit. A legacy
+    being collapsed into the fail-closed arm by a future edit. A legacy
     skeleton genuinely declares nothing, so blocking it would manufacture a
     safety verdict for a book whose only fault is predating theme contracts.
     """
@@ -388,3 +407,124 @@ async def test_version_on_a_legacy_skeleton_returns_the_empty_set() -> None:
     )
 
     assert personalizable_slot_ids_for_version(version_row) == frozenset()
+
+
+# ---------------------------------------------------------------------------
+# The fail-closed marker type itself.
+#
+# The tests above assert WHICH arm each provenance failure lands on. These
+# assert that the fail-closed arm cannot be quietly turned into the benign
+# one, which is the property the marker type exists to hold and the one the
+# previous `None` spelling did not.
+# ---------------------------------------------------------------------------
+
+
+async def test_unrecoverable_marker_refuses_a_truth_value() -> None:
+    """`bool()` on the fail-closed marker raises instead of answering.
+
+    This is the whole point of the type. Strict-mode typing already caught a
+    caller who forgot to handle the fail-closed arm: passing it where a plain
+    `frozenset[str]` is wanted has always been an error. A truthiness test is
+    the one shape that type-checks perfectly and still routes a security
+    control the wrong way, because the previous `None` spelling and the
+    benign empty `frozenset` are both falsy while meaning opposite things.
+    """
+    with pytest.raises(TypeError) as excinfo:
+        bool(PERSONALIZABLE_SLOTS_UNRECOVERABLE)
+
+    message = str(excinfo.value)
+    assert "isinstance" in message, (
+        "the error must name the check that fails closed, not merely refuse"
+    )
+    assert "frozenset" in message, (
+        "the error must also name the other reading, since an author who "
+        "meant 'no slots are declared' has a different fix"
+    )
+
+
+def _declares_no_slots(slots: object) -> bool:
+    """The hazard shape, written out as a consumer would have written it.
+
+    A plausible reading of "this book declares no personalizable slot".
+    Correct for the empty `frozenset`; catastrophic for the fail-closed arm,
+    which means the opposite and, under the previous `None` spelling, was
+    falsy too.
+
+    The parameter is typed `object`, NOT `PersonalizableSlots`, and that is
+    the point rather than a shortcut: annotated with the real union this body
+    is a BasedPyright error ("Invalid conditional operand of type
+    PersonalizableSlots"), because `__bool__` returns `NoReturn`. So the
+    static gate already refuses this shape wherever the type is known.
+    Widening to `object` is what lets the test still reach the RUNTIME guard,
+    which is the layer that covers a value arriving through `Any`, a mock, or
+    deserialized data, where no annotation was ever checked.
+
+    Args:
+        slots: A resolved personalizable-slot tri-state, deliberately
+            un-narrowed.
+
+    Returns:
+        bool: True when the set is empty.
+
+    Raises:
+        TypeError: When `slots` is the fail-closed marker, which is the
+            behavior under test.
+    """
+    return not slots
+
+
+async def test_a_falsy_test_over_the_resolver_cannot_reach_the_benign_branch() -> None:
+    """The hazard shape refuses over a REAL resolution, not just the constant.
+
+    Exercised through `personalizable_slot_ids_for_version` so this fails if a
+    future edit reinstates a falsy value on any fail-closed arm, not only if
+    `__bool__` is deleted. The traversing slug is used because it fails closed
+    via ValidationError, the arm furthest from the benign empty set.
+    """
+    version_row = StorybookVersion(
+        storybook_id="s1", version=1, blob={}, skeleton_slug="../../etc/passwd"
+    )
+    slots = personalizable_slot_ids_for_version(version_row)
+
+    with pytest.raises(TypeError):
+        _declares_no_slots(slots)
+
+    # The same predicate over the benign arm must still answer, or the marker
+    # would have bought safety by breaking the legitimate reading.
+    assert _declares_no_slots(frozenset[str]())
+    assert not _declares_no_slots(frozenset({"HERO"}))
+
+
+async def test_unrecoverable_marker_reprs_as_its_constant_name() -> None:
+    """A log line or failed assertion names the state, not an object id.
+
+    A default `<...object at 0x...>` repr in a moderation log is unreadable
+    and, worse, is not greppable against the name used in code and runbooks.
+    """
+    assert repr(PERSONALIZABLE_SLOTS_UNRECOVERABLE) == (
+        "PERSONALIZABLE_SLOTS_UNRECOVERABLE"
+    )
+
+
+async def test_the_two_markers_are_distinct_types() -> None:
+    """ "Unset" and "unrecoverable" must not narrow to each other.
+
+    They are adjacent and easy to conflate: one means "the caller supplied
+    nothing, resolve it yourself", the other "the caller resolved it and the
+    answer was 'cannot be recovered'". Collapsing them would silently turn a
+    caller's deliberate fail-closed value back into a re-resolution.
+    """
+    assert not isinstance(PERSONALIZABLE_SLOTS_UNSET, PersonalizableSlotsUnrecoverable)
+    assert not isinstance(PERSONALIZABLE_SLOTS_UNRECOVERABLE, PersonalizableSlotsUnset)
+
+
+async def test_the_marker_is_not_a_frozenset() -> None:
+    """`isinstance(x, frozenset)` is a sound narrowing of the tri-state.
+
+    Several consumers narrow the union that way rather than by testing for
+    the marker (api/node_edit.py, generation/import_story.py). That is only
+    correct while the marker is not itself a frozenset subclass.
+    """
+    slots: PersonalizableSlots = PERSONALIZABLE_SLOTS_UNRECOVERABLE
+
+    assert not isinstance(slots, frozenset)

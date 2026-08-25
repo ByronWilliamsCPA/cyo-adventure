@@ -45,6 +45,10 @@ from cyo_adventure.moderation import pipeline as pipeline_mod
 from cyo_adventure.moderation.leaf_diversity import (
     run_leaf_diversity_check as _real_run_leaf_diversity_check,
 )
+from cyo_adventure.moderation.personalizable_slots import (
+    PERSONALIZABLE_SLOTS_UNRECOVERABLE,
+    PersonalizableSlots,
+)
 from cyo_adventure.moderation.prose_craft import findings_from_prose_craft
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.storybook.models import AgeBand
@@ -1001,7 +1005,7 @@ async def test_run_moderation_pipeline_honors_explicit_personalizable_slots(
 
     async def _spy_resolver(
         session: AsyncSession, story_id: str
-    ) -> frozenset[str] | None:
+    ) -> PersonalizableSlots:
         nonlocal resolver_called
         resolver_called = True
         return await real_resolver(session, story_id)
@@ -1041,17 +1045,18 @@ async def test_run_moderation_pipeline_honors_explicit_personalizable_slots(
 
 
 @pytest.mark.unit
-async def test_run_moderation_pipeline_explicit_none_fails_closed(
+async def test_run_moderation_pipeline_explicit_unrecoverable_fails_closed(
     mock_session: AsyncMock,
     monkeypatch: pytest.MonkeyPatch,
     review_seam: Callable[[MockProvider], dict[str, object]],
 ) -> None:
-    """(Task 6c, M1) An explicit ``personalizable_slots=None`` fails closed at
-    the entry backstop, even for an otherwise completely clean, sentinel-free
-    blob, and without ever consulting ``personalizable_slot_ids_for_story``.
+    """(Task 6c, M1) An explicit ``PERSONALIZABLE_SLOTS_UNRECOVERABLE`` fails
+    closed at the entry backstop, even for an otherwise completely clean,
+    sentinel-free blob, and without ever consulting
+    ``personalizable_slot_ids_for_story``.
 
     Mirrors ``test_entry_contract_unrecoverable_routes_to_human_review``'s
-    routing assertion, but for a CALLER-supplied ``None`` (the shape
+    routing assertion, but for a CALLER-supplied marker (the shape
     ``resume_manual_fill`` now threads when its own contract resolution is
     genuinely uncomputable) rather than one this function resolves itself.
     """
@@ -1064,7 +1069,7 @@ async def test_run_moderation_pipeline_explicit_none_fails_closed(
 
     async def _spy_resolver(
         session: AsyncSession, story_id: str
-    ) -> frozenset[str] | None:
+    ) -> PersonalizableSlots:
         nonlocal resolver_called
         resolver_called = True
         return await real_resolver(session, story_id)
@@ -1085,11 +1090,12 @@ async def test_run_moderation_pipeline_explicit_none_fails_closed(
         settings=_settings(),
         generation_provider=MockProvider(responses=[]),
         pii=_pii(),
-        personalizable_slots=None,
+        personalizable_slots=PERSONALIZABLE_SLOTS_UNRECOVERABLE,
     )
 
     assert not resolver_called, (
-        "an explicit personalizable_slots (even None) must skip the resolver"
+        "an explicit personalizable_slots (even the fail-closed marker) must "
+        "skip the resolver"
     )
     auto_reject.assert_awaited_once()
     submit.assert_not_awaited()
@@ -1122,7 +1128,7 @@ async def test_run_moderation_pipeline_default_resolves_from_story(
 
     async def _spy_resolver(
         session: AsyncSession, story_id: str
-    ) -> frozenset[str] | None:
+    ) -> PersonalizableSlots:
         nonlocal resolver_called
         resolver_called = True
         return await real_resolver(session, story_id)
@@ -1565,7 +1571,7 @@ async def testpersonalizable_slot_ids_for_job_band_override_recovers_missing_met
     brief band via ``_resolve_resume_band``, and that resolution -- not the
     (absent) raw metadata key -- must be what determines the contract. Before
     Task 6c, only ``personalizable_slot_ids_for_story`` existed, which reads
-    ONLY the raw metadata key and would resolve ``None`` (fail closed) for
+    ONLY the raw metadata key and would resolve the fail-closed marker for
     this exact job, even though the contract is perfectly recoverable via the
     caller's own better-informed band.
     """
@@ -1589,7 +1595,10 @@ async def testpersonalizable_slot_ids_for_job_band_override_recovers_missing_met
     )
 
     # Without the override, this is the pre-Task-6c fail-closed answer.
-    assert pslots_mod.personalizable_slot_ids_for_job(job) is None
+    assert (
+        pslots_mod.personalizable_slot_ids_for_job(job)
+        is PERSONALIZABLE_SLOTS_UNRECOVERABLE
+    )
 
     # With the caller's own resolved band, the SAME contract recovers cleanly.
     result = pslots_mod.personalizable_slot_ids_for_job(job, band="8-11")

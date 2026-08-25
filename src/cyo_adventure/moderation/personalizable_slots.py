@@ -13,12 +13,15 @@ The tri-state answer (see :func:`personalizable_slot_ids_for_job`):
 
 - a real ``frozenset[str]`` of declared personalizable slot ids,
 - an EMPTY ``frozenset`` when no personalizable slot could legitimately exist,
-- ``None`` when a contract may exist but cannot be recovered (fail closed).
+- :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE` when a contract may exist but
+  cannot be recovered (fail closed). This was spelled ``None`` until the
+  falsy-collapse hazard described on
+  :class:`PersonalizableSlotsUnrecoverable` retired it.
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, NoReturn
 
 from sqlalchemy import select
 
@@ -52,20 +55,27 @@ _logger = get_logger(__name__)
 class PersonalizableSlotsUnset:
     """Marker type for :data:`PERSONALIZABLE_SLOTS_UNSET` (Task 6c).
 
-    ``None`` is a MEANINGFUL, fail-closed return value in the
-    personalizable-slot tri-state contract (see
-    :func:`personalizable_slot_ids_for_job`'s docstring), so it cannot also
-    serve as "the caller passed nothing" for
-    :func:`~cyo_adventure.moderation.pipeline.run_moderation_pipeline`'s
-    ``personalizable_slots`` parameter, nor for
-    :func:`~cyo_adventure.generation.import_story.import_filled_story`'s
-    pass-through of the same parameter: a caller that legitimately resolved
-    ``None`` (personalization possible but the contract is uncomputable) must
-    be able to thread that exact value through and have it still fail
-    closed, not have it silently reinterpreted as "resolve it yourself,
-    caller forgot". A dedicated sentinel TYPE (not a shared ``object()``)
-    lets ``isinstance`` narrow the parameter cleanly under BasedPyright
-    strict mode.
+    "The caller passed nothing" is a distinct state from every arm of the
+    personalizable-slot tri-state (see
+    :func:`personalizable_slot_ids_for_job`'s docstring), so it needs its own
+    value in :data:`PersonalizableSlotsArg`, the override parameter shared by
+    :func:`~cyo_adventure.moderation.pipeline.run_moderation_pipeline` and
+    :func:`~cyo_adventure.generation.import_story.import_filled_story`. A
+    caller that legitimately resolved
+    :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE` (personalization possible, the
+    contract uncomputable) must be able to thread that exact value through
+    and have it still fail closed, never have it reinterpreted as "resolve it
+    yourself, the caller forgot".
+
+    Originally this existed because the fail-closed arm was spelled ``None``,
+    which could not also mean "unset". The fail-closed arm now has its own
+    type (:class:`PersonalizableSlotsUnrecoverable`), so the collision is
+    gone, but the state this marker names is still a real and separate one:
+    ``None`` would work again today and is not reinstated, because two
+    marker types that read alike are easier to keep straight than one type
+    and one ``None`` that do not. A dedicated sentinel TYPE (not a shared
+    ``object()``) lets ``isinstance`` narrow the parameter cleanly under
+    BasedPyright strict mode.
     """
 
     __slots__ = ()
@@ -78,11 +88,93 @@ When :func:`~cyo_adventure.moderation.pipeline.run_moderation_pipeline`
 receives this exact sentinel (its parameter's default), it resolves the slot
 set itself via :func:`personalizable_slot_ids_for_story`, exactly as it always
 has. Any other value passed for the parameter -- a real ``frozenset[str]`` OR
-an explicit ``None`` -- is used VERBATIM instead (Task 6c: threads the
-resume path's own, correctly-timed and correctly-banded, resolution).
+an explicit :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE` -- is used VERBATIM
+instead (Task 6c: threads the resume path's own, correctly-timed and
+correctly-banded, resolution).
 """
 
-PersonalizableSlotsArg = frozenset[str] | None | PersonalizableSlotsUnset
+
+class PersonalizableSlotsUnrecoverable:
+    """Marker type for :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE`.
+
+    The fail-closed arm of the personalizable-slot tri-state (see
+    :func:`personalizable_slot_ids_for_job`), which used to be spelled
+    ``None``. ``None`` carried the meaning correctly but not safely: it is
+    FALSY, and so is the benign empty ``frozenset`` that means "no
+    personalizable slot could legitimately exist". Those two states are
+    opposites, and a single ``if not slots:`` collapses the fail-closed one
+    into the benign one with nothing left to notice.
+
+    Strict-mode typing already caught the OTHER way to mishandle this arm:
+    passing ``frozenset[str] | None`` where a plain ``frozenset[str]`` was
+    wanted has always been an error, so "a caller forgot to handle it" was
+    caught at every typed boundary. A truthiness test was the one shape that
+    type-checked perfectly under the ``None`` spelling and still routed a
+    security control the wrong way. That is the hole this type closes, and
+    :meth:`__bool__` closes it twice over. Because the method returns
+    :data:`~typing.NoReturn`, BasedPyright rejects ``if not slots:`` over
+    :data:`PersonalizableSlots` outright ("Invalid conditional operand of
+    type PersonalizableSlots"), so the mistake now fails the type gate rather
+    than shipping; and a value that reaches such a test untyped -- through
+    ``object``, ``Any``, or a mock -- still raises at runtime. Narrowing to
+    the ``frozenset`` arm first both type-checks and runs, which is precisely
+    the reading that stays legitimate.
+
+    Deliberately NOT falsy-by-omission and NOT truthy either. Either choice
+    would silently pick one of the two readings below for a caller who never
+    stated which one they meant.
+    """
+
+    __slots__ = ()
+
+    def __bool__(self) -> NoReturn:
+        """Refuse to collapse an unrecoverable contract into a boolean.
+
+        Raises:
+            TypeError: Always. The message names both readings a truthiness
+                test could have intended, because the author meant exactly
+                one of them and the traceback points at the line to fix.
+        """
+        msg = (
+            "the personalizable-slot contract could not be recovered, so its "
+            "truth value is ambiguous: use isinstance(slots, "
+            "PersonalizableSlotsUnrecoverable) to fail closed, or narrow to "
+            "the frozenset arm first if you meant 'no slots are declared'"
+        )
+        raise TypeError(msg)
+
+    def __repr__(self) -> str:
+        """Return the module-level constant's name rather than a default repr.
+
+        Returns:
+            str: The dotted-free constant name, so a log line or a failed
+                assertion names the state instead of printing an object id.
+        """
+        return "PERSONALIZABLE_SLOTS_UNRECOVERABLE"
+
+
+PERSONALIZABLE_SLOTS_UNRECOVERABLE: Final = PersonalizableSlotsUnrecoverable()
+"""A contract may exist for this story, and it could not be recovered.
+
+Returned by every ``personalizable_slot_ids_for_*`` resolver in place of the
+``None`` they used to return. A caller holding this value must refuse to treat
+the story's sentinels as provably safe. It must NOT substitute an empty
+frozenset, which asserts the opposite: that no personalizable slot could
+legitimately exist, and therefore that every sentinel in the blob is forged.
+"""
+
+PersonalizableSlots = frozenset[str] | PersonalizableSlotsUnrecoverable
+"""The personalizable-slot tri-state every resolver returns.
+
+Three states across two union members: a populated ``frozenset[str]`` (these
+slot ids are declared), an EMPTY ``frozenset`` (no personalizable slot could
+legitimately exist), and :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE` (fail
+closed). Only the third is the marker; the first two are both the frozenset
+arm, which is why narrowing with ``isinstance`` rather than truthiness is the
+only way to tell the fail-closed state from the benign empty one.
+"""
+
+PersonalizableSlotsArg = PersonalizableSlots | PersonalizableSlotsUnset
 """Type of the ``personalizable_slots`` override parameter.
 
 Shared by
@@ -94,7 +186,7 @@ forwards its own same-named parameter through unchanged.
 
 async def personalizable_slot_ids_for_story(
     session: AsyncSession, story_id: str
-) -> frozenset[str] | None:
+) -> PersonalizableSlots:
     """Resolve a story's declared personalizable slot ids for the repair re-check.
 
     ``StorybookVersion`` carries ``skeleton_slug`` but no band, so the story's
@@ -119,11 +211,12 @@ async def personalizable_slot_ids_for_story(
         story_id: The persisted storybook id under moderation.
 
     Returns:
-        frozenset[str] | None: see :func:`personalizable_slot_ids_for_job` for
+        PersonalizableSlots: see :func:`personalizable_slot_ids_for_job` for
             the two cases that function decides. This function adds a third
             that the delegated contract does not cover: NO matching
             ``GenerationJob`` row at all, which returns an EMPTY frozenset.
-            See the comment on that branch for why empty and not ``None``.
+            See the comment on that branch for why empty and not the
+            fail-closed marker.
     """
     job = (
         await session.execute(
@@ -136,8 +229,9 @@ async def personalizable_slot_ids_for_story(
     if job is None:
         # #ASSUME: data-integrity: no job row means no reachable skeleton and
         # therefore no theme contract, so no personalizable slot can
-        # legitimately exist: an empty frozenset, not the fail-closed `None`.
-        # `None` would be the more paranoid answer, but it is the WRONG one
+        # legitimately exist: an empty frozenset, not
+        # PERSONALIZABLE_SLOTS_UNRECOVERABLE. Failing closed would be the more
+        # paranoid answer, but it is the WRONG one
         # here. Stories reach the catalog without a `GenerationJob` (seeded
         # and directly-imported ones do), and failing closed for them would
         # make the at-rest scan newly treat every brace-bearing legacy story
@@ -262,7 +356,7 @@ def _contract_for_job(
 
 def personalizable_slot_ids_for_job(
     job: GenerationJob, *, band: str | None = None
-) -> frozenset[str] | None:
+) -> PersonalizableSlots:
     """Resolve a ``GenerationJob``'s declared personalizable slot ids.
 
     Extracted from :func:`personalizable_slot_ids_for_story` (Task 6c) so a
@@ -294,19 +388,19 @@ def personalizable_slot_ids_for_job(
             resolved an override always passes a ``str``, never ``None``.
 
     Returns:
-        frozenset[str] | None: The declared personalizable slot ids. An EMPTY
+        PersonalizableSlots: The declared personalizable slot ids. An EMPTY
             frozenset is returned (not a guess) whenever no personalizable
             slot could legitimately exist for this job: no ``skeleton_slug``
             (a ``fresh_generation`` job), or a legacy skeleton with no
             theme-contract sidecar
             (:func:`~cyo_adventure.generation.binding.load_contract_for`
-            returns ``None``). ``None`` is returned only when the job DOES
-            carry a ``skeleton_slug`` (so a contract may genuinely declare
-            personalizable slots) but the contract cannot be recovered (no
-            band available from either source, or the skeleton/contract
-            sidecar failing to load): the caller must fail closed rather
-            than risk treating a real sentinel as forged with a guessed
-            empty set.
+            returns ``None``). :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE` is
+            returned only when the job DOES carry a ``skeleton_slug`` (so a
+            contract may genuinely declare personalizable slots) but the
+            contract cannot be recovered (no band available from either
+            source, or the skeleton/contract sidecar failing to load): the
+            caller must fail closed rather than risk treating a real sentinel
+            as forged with a guessed empty set.
     """
     try:
         contract = _contract_for_job(job, band=band)
@@ -317,11 +411,11 @@ def personalizable_slot_ids_for_job(
             story_id=job.storybook_id,
             slug=exc.slug,
         )
-        return None
+        return PERSONALIZABLE_SLOTS_UNRECOVERABLE
     except _ContractLoadError as exc:
         # The load failure itself is caught and wrapped inside
         # `_contract_for_job` (see its #CRITICAL note); this arm only turns
-        # the structured error into the fail-closed None plus a log line
+        # the structured error into the fail-closed marker plus a log line
         # that names the slug and band, not just the loader's message.
         _logger.warning(
             "moderation.repair_contract_load_failed",
@@ -331,7 +425,7 @@ def personalizable_slot_ids_for_job(
             band=exc.band,
             error=str(exc)[:500],
         )
-        return None
+        return PERSONALIZABLE_SLOTS_UNRECOVERABLE
     if contract is None:
         return frozenset()
     return personalizable_slot_ids(contract)
@@ -466,7 +560,7 @@ def _band_for_version(version_row: StorybookVersion, slug: str) -> str | None:
 
 def personalizable_slot_ids_for_version(
     version_row: StorybookVersion,
-) -> frozenset[str] | None:
+) -> PersonalizableSlots:
     """Resolve a ``StorybookVersion``'s declared personalizable slot ids.
 
     The sibling of :func:`personalizable_slot_ids_for_job` for a caller that
@@ -484,25 +578,26 @@ def personalizable_slot_ids_for_version(
         version_row: The version whose theme contract to resolve.
 
     Returns:
-        frozenset[str] | None: The declared personalizable slot ids. An EMPTY
+        PersonalizableSlots: The declared personalizable slot ids. An EMPTY
             frozenset whenever no personalizable slot could legitimately
             exist: no ``skeleton_slug`` (not a skeleton-backed version), or a
             legacy skeleton whose contract sidecar is absent
             (:func:`~cyo_adventure.generation.binding.load_contract_for`
-            returns ``None``). ``None`` only when the version DOES carry a
-            slug but the contract cannot be recovered, so the caller must fail
-            closed rather than risk treating a real sentinel as forged.
+            returns ``None``). :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE` only
+            when the version DOES carry a slug but the contract cannot be
+            recovered, so the caller must fail closed rather than risk
+            treating a real sentinel as forged.
     """
     # #CRITICAL: data-integrity: this exists because api/remoderate.py's
     # population is imported books, which have NO generation_job row (verified
     # against production 2026-08-24: 17 of 17 in_review books). Routed through
-    # personalizable_slot_ids_for_story they resolve None, and
-    # moderation/pipeline.py turns None into a sentinel_integrity_violation
+    # personalizable_slot_ids_for_story they resolve the fail-closed marker,
+    # and moderation/pipeline.py turns that into a sentinel_integrity_violation
     # BLOCK, so every book's accurate report would be overwritten with a block
     # describing absent provenance rather than its prose, and the repair branch
     # (gated on `not report.has_hard_block`) would be suppressed with it. The
     # tri-state itself is unchanged: only the "this book never had a job" case,
-    # which says nothing about safety, stops producing None.
+    # which says nothing about safety, stops failing closed.
     # #VERIFY: tests/unit/test_personalizable_slots.py::
     # test_version_resolution_needs_no_generation_job and
     # ::test_version_with_an_unlocatable_slug_fails_closed pin both arms.
@@ -511,7 +606,7 @@ def personalizable_slot_ids_for_version(
         return frozenset()
     band = _band_for_version(version_row, slug)
     if band is None:
-        return None
+        return PERSONALIZABLE_SLOTS_UNRECOVERABLE
     try:
         skeleton_path = resolve_skeleton_path(band, slug)
         contract = load_contract_for(skeleton_path, load_skeleton(skeleton_path))
@@ -522,7 +617,7 @@ def personalizable_slot_ids_for_version(
         # corrupted. Mirrors _contract_for_job's note on the identical chain.
         # #VERIFY: tests/unit/test_personalizable_slots.py::
         # test_version_with_an_unreadable_contract_fails_closed pins this
-        # fail-closed None, and
+        # fail-closed marker, and
         # test_version_on_a_legacy_skeleton_returns_the_empty_set pins that
         # the no-sidecar arm below stays the EMPTY set rather than collapsing
         # into it.
@@ -533,7 +628,7 @@ def personalizable_slot_ids_for_version(
             band=band,
             error=str(exc)[:500],
         )
-        return None
+        return PERSONALIZABLE_SLOTS_UNRECOVERABLE
     if contract is None:
         return frozenset()
     return personalizable_slot_ids(contract)

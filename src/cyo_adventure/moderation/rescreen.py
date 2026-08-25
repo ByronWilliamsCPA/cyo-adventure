@@ -67,6 +67,9 @@ from cyo_adventure.db.models import GenerationJob, Storybook, StorybookVersion
 from cyo_adventure.events import EventType, record_event
 from cyo_adventure.moderation.classifiers import run_classifiers
 from cyo_adventure.moderation.personalizable_slots import (
+    PERSONALIZABLE_SLOTS_UNRECOVERABLE,
+    PersonalizableSlots,
+    PersonalizableSlotsUnrecoverable,
     personalizable_slot_ids_for_job,
 )
 from cyo_adventure.moderation.report import Finding, Verdict
@@ -272,7 +275,7 @@ def _violation_reason(violation: IntegrityViolation) -> str:
 
 
 def _sentinel_corruption_reasons(
-    blob: Mapping[str, object], personalizable_slot_ids: frozenset[str] | None
+    blob: Mapping[str, object], personalizable_slot_ids: PersonalizableSlots
 ) -> list[str]:
     """Return reason strings for sentinel corruption-at-rest in a published blob.
 
@@ -282,18 +285,19 @@ def _sentinel_corruption_reasons(
             own surfaces from the mapping, with no pre-fill reference needed.
         personalizable_slot_ids: This story's declared personalizable slot
             ids (`personalizable_slot_ids_for_job`'s tri-state result).
-            `None` means the contract itself is unrecoverable for this book;
-            failing closed with a single explicit reason here, mirroring
+            `PERSONALIZABLE_SLOTS_UNRECOVERABLE` means the contract itself is
+            unrecoverable for this book; failing closed with a single explicit
+            reason here, mirroring
             `moderation/pipeline.py`'s own moderation-entry backstop (M1),
             rather than guessing an empty declared set that could let a real
             corruption through unflagged.
 
     Returns:
         list[str]: One reason string per violation found (or the single
-        fail-closed reason when `personalizable_slot_ids` is `None`); empty
-        if the blob carries no sentinel corruption.
+        fail-closed reason when the contract is unrecoverable); empty if the
+        blob carries no sentinel corruption.
     """
-    if personalizable_slot_ids is None:
+    if isinstance(personalizable_slot_ids, PersonalizableSlotsUnrecoverable):
         return ["personalizable-slot contract could not be recovered; failing closed"]
     result = check_sentinel_integrity_at_rest(blob, personalizable_slot_ids)
     return [_violation_reason(v) for v in result.violations]
@@ -301,7 +305,7 @@ def _sentinel_corruption_reasons(
 
 def _resolve_slot_contracts(
     story_ids: Sequence[str], jobs_by_story: Mapping[str, GenerationJob]
-) -> dict[str, frozenset[str] | None]:
+) -> dict[str, PersonalizableSlots]:
     """Resolve every story's slot contract from already-fetched job rows.
 
     Synchronous on purpose: `personalizable_slot_ids_for_job` touches only the
@@ -317,7 +321,7 @@ def _resolve_slot_contracts(
         jobs_by_story: The oldest `GenerationJob` per story id.
 
     Returns:
-        dict[str, frozenset[str] | None]: One tri-state entry per story id;
+        dict[str, PersonalizableSlots]: One tri-state entry per story id;
         every id in `story_ids` is present.
     """
     return {
@@ -332,7 +336,7 @@ def _resolve_slot_contracts(
 
 async def _prefetch_personalizable_slots(
     session: AsyncSession, books: Sequence[Storybook]
-) -> dict[str, frozenset[str] | None]:
+) -> dict[str, PersonalizableSlots]:
     """Resolve the whole sweep's personalizable-slot contracts in one query.
 
     # #CRITICAL: external-resources: this deliberately runs OUTSIDE
@@ -355,7 +359,7 @@ async def _prefetch_personalizable_slots(
         books: Every published storybook this sweep will screen.
 
     Returns:
-        dict[str, frozenset[str] | None]: One tri-state entry per book id.
+        dict[str, PersonalizableSlots]: One tri-state entry per book id.
     """
     story_ids = [book.id for book in books]
     if not story_ids:
@@ -399,7 +403,7 @@ class _SweepContext:
     actor: Actor
     threshold_policy: ThresholdPolicy
     client: httpx.AsyncClient
-    personalizable_slots: Mapping[str, frozenset[str] | None]
+    personalizable_slots: Mapping[str, PersonalizableSlots]
 
 
 async def _rescreen_one(
@@ -536,11 +540,20 @@ async def _rescreen_one(
         #
         # `_prefetch_personalizable_slots` builds an entry for every book this
         # sweep screens, so the `.get` default is unreachable; it fails CLOSED
-        # (`None`) rather than guessing an empty declared set, matching
+        # rather than guessing an empty declared set, matching
         # `_sentinel_corruption_reasons`' own uncomputable branch.
+        #
+        # The default is written out rather than left to `.get`'s implicit
+        # `None`. It used to ride on that implicit value back when `None` WAS
+        # the fail-closed state; the two coincided by luck of spelling, and a
+        # reader had no way to tell a deliberate fail-closed default from an
+        # author who simply did not think about the missing-key case.
         reasons.extend(
             _sentinel_corruption_reasons(
-                version_row.blob, ctx.personalizable_slots.get(book.id)
+                version_row.blob,
+                ctx.personalizable_slots.get(
+                    book.id, PERSONALIZABLE_SLOTS_UNRECOVERABLE
+                ),
             )
         )
 
