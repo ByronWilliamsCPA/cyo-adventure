@@ -173,6 +173,7 @@ export function ReviewDetailPage() {
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [dialog, setDialog] = useState<ActionDialog>(null)
   const [visibility, setVisibility] = useState<Visibility>('family')
+  const [overrideReason, setOverrideReason] = useState('')
   const [reason, setReason] = useState('')
   const [reasonCode, setReasonCode] = useState<SendBackReasonCode>('other')
   const [submitting, setSubmitting] = useState(false)
@@ -342,6 +343,7 @@ export function ReviewDetailPage() {
     setActionError(false)
     setReason('')
     setReasonCode('other')
+    setOverrideReason('')
     setRescreenState({ kind: 'idle' })
     setDialog(null)
   }
@@ -396,6 +398,22 @@ export function ReviewDetailPage() {
     ...surface.flagged_passages.flatMap((passage) => passage.findings),
     ...surface.story_level_findings,
   ]
+  // Mirrors the backend's severe_finding_counts exactly (approve_requires_
+  // override_reason, api/approval.py): a block verdict at any severity, or a
+  // flag verdict at high severity, requires the reviewer to record why they
+  // are approving over it. Advisories, and flags below high severity, never
+  // require one.
+  // #CRITICAL: security: this predicate must stay in lockstep with the
+  // backend's; drifting it looser would let the confirm button enable without
+  // the reason the backend actually demands (a 400 the reviewer cannot
+  // recover from except by retyping), and drifting it stricter would block a
+  // legitimate approval the backend would have allowed.
+  // #VERIFY: ReviewDetailPage.test.tsx "requires an override reason before
+  // approving over a block finding".
+  const needsOverride = allFindings.some(
+    (finding) =>
+      finding.verdict === 'block' || (finding.verdict === 'flag' && finding.severity === 'high')
+  )
   // Stage B3 additive fields (design doc 2.6): default to [] so an older
   // backend response or a pre-Stage-B stored report (which projects these as
   // empty, per test_build_review_surface_new_buckets_degrade_on_legacy_report)
@@ -528,6 +546,14 @@ export function ReviewDetailPage() {
           />
         </div>
       </details>
+
+      {surface.report_unusable && (
+        <div role="alert" className="cyo-card review-unusable-banner">
+          <strong>Moderation unavailable.</strong> This report contains only pipeline fail-safe
+          artifacts and no content judgment. Re-run moderation before reviewing (see the reviewer
+          SOP); this version cannot be approved until a genuine report exists.
+        </div>
+      )}
 
       {surface.flagged_passages.length > 0 ? (
         <div className="review-group">
@@ -877,8 +903,16 @@ export function ReviewDetailPage() {
                 anything unscreened (ReviewDetailPage.test.tsx approve + rejection).
               */}
               <Button
-                disabled={submitting}
-                onClick={() => void runAction(() => reviewApi.approve(storybookId, visibility))}
+                disabled={submitting || (needsOverride && overrideReason.trim().length < 10)}
+                onClick={() =>
+                  void runAction(() =>
+                    reviewApi.approve(
+                      storybookId,
+                      visibility,
+                      needsOverride ? overrideReason.trim() : undefined
+                    )
+                  )
+                }
               >
                 Confirm approve
               </Button>
@@ -891,6 +925,24 @@ export function ReviewDetailPage() {
             </p>
           ) : null}
           <p>Approving publishes this story to the assigned children.</p>
+          {needsOverride ? (
+            <label className="review-detail__override-reason">
+              Override reason
+              <textarea
+                aria-label="Override reason"
+                value={overrideReason}
+                onChange={(event) => setOverrideReason(event.target.value)}
+                minLength={10}
+                maxLength={2000}
+                rows={3}
+                required
+              />
+              <span className="cyo-text-muted">
+                This story has a severe finding. Explain why it is appropriate to approve anyway;
+                the reason is logged for audit, not stored on the story itself.
+              </span>
+            </label>
+          ) : null}
           <fieldset className="review-detail__visibility">
             <legend>Who can see this book?</legend>
             <label>

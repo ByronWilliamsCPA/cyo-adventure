@@ -1455,4 +1455,83 @@ describe('ReviewDetailPage', () => {
       }
     })
   })
+
+  describe('unusable-report banner, override reason, author-declared label', () => {
+    it('shows a moderation-unavailable banner instead of a passage wall', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          report_unusable: true,
+          flagged_passages: [],
+          structural_findings: [
+            {
+              stage: 1,
+              source: 'pipeline',
+              category: 'fail_safe',
+              node_id: null,
+              verdict: 'flag',
+              score: null,
+              message: 'moderation pipeline could not produce a report',
+              severity: 'medium',
+              node_ids: null,
+              structural: true,
+              concern: null,
+            },
+          ],
+        },
+      })
+      renderAt('s1')
+      expect(await screen.findByText(/re-run moderation before reviewing/i)).toBeInTheDocument()
+    })
+
+    it('requires an override reason before approving over a block finding', async () => {
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          flagged_passages: [],
+          story_level_findings: [
+            {
+              stage: 1,
+              source: 'llm_safety',
+              category: 'safety',
+              node_id: 'n1',
+              verdict: 'block',
+              score: null,
+              message: 'graphic violence',
+            },
+          ],
+        },
+      })
+      mockPost.mockResolvedValue({ data: { id: 's1', status: 'published' } })
+      renderAt('s1')
+      await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+      const confirm = await screen.findByRole('button', { name: /Confirm approve/i })
+      expect(confirm).toBeDisabled()
+      await user.type(
+        screen.getByLabelText(/override reason/i),
+        'Reviewed the flagged passage in full; appropriate for 13-16.'
+      )
+      expect(confirm).toBeEnabled()
+      await user.click(confirm)
+      expect(mockPost).toHaveBeenCalledWith('/v1/storybooks/s1/approve', {
+        visibility: 'family',
+        override_reason: 'Reviewed the flagged passage in full; appropriate for 13-16.',
+      })
+    })
+
+    it('labels content flags as author-declared', async () => {
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          blob: {
+            ...SURFACE.blob,
+            metadata: { content_flags: { violence: 'mild', scariness: 'none', peril: 'moderate' } },
+          },
+        },
+      })
+      renderAt('s1')
+      expect(await screen.findByText(/author-declared/i)).toBeInTheDocument()
+    })
+  })
 })
