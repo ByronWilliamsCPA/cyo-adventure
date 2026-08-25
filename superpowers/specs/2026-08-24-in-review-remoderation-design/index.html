@@ -3601,7 +3601,8 @@ slot provenance the pipeline cannot recover the way it does on the generation pa
 <code>run_moderation_pipeline</code> falls back to
 <code>personalizable_slot_ids_for_story(session, story_id)</code>, which recovers the contract
 from the story's <code>GenerationJob</code> row. With no such row it returns an <strong>empty
-frozenset</strong>, not the fail-closed <code>None</code>: that branch is deliberate, and its <code>#ASSUME</code>
+frozenset</strong>, not the fail-closed <code>PERSONALIZABLE_SLOTS_UNRECOVERABLE</code>: that branch is
+deliberate, and its <code>#ASSUME</code>
 records why. Failing closed there would make the at-rest scan newly treat every
 brace-bearing legacy story as sentinel-corrupt, a behaviour change well outside the
 slot contract's remit.</p>
@@ -3639,10 +3640,11 @@ to: a skeleton filed under one band while declaring another would otherwise reso
 a path that does not exist, and fail closed back to the same spurious block.</p>
 <p>The tri-state contract is preserved exactly as <code>personalizable_slot_ids_for_job</code>
 defines it. An empty frozenset means no personalizable slot could legitimately exist
-(no slug, or a legacy skeleton with no contract sidecar); <code>None</code> still means the
-contract genuinely could not be recovered and the pipeline must still fail closed.
-This change removes only the case where <code>None</code> meant "this book never had a
-generation job", which is true of every imported book and says nothing about safety.</p>
+(no slug, or a legacy skeleton with no contract sidecar);
+<code>PERSONALIZABLE_SLOTS_UNRECOVERABLE</code> still means the contract genuinely could not be
+recovered and the pipeline must still fail closed. This change removes only the case
+where that fail-closed arm meant "this book never had a generation job", which is true
+of every imported book and says nothing about safety.</p>
 <h3 id="6-tests">6. Tests<a class="headerlink" href="#6-tests" title="Permanent link">&para;</a></h3>
 <ul>
 <li>An <code>in_review</code> book refreshes its stored report and its status stays <code>in_review</code>.</li>
@@ -3657,7 +3659,8 @@ generation job", which is true of every imported book and says nothing about saf
   slot set and produces no <code>sentinel_integrity_violation</code> finding. This is the
   production shape of all seventeen books, and without the fix it is a hard block.</li>
 <li>A version whose <code>skeleton_slug</code> names a skeleton that cannot be located, or whose
-  slug traverses, still fails closed. The tri-state's <code>None</code> arm must survive. An
+  slug traverses, still fails closed. The tri-state's fail-closed arm
+  (<code>PERSONALIZABLE_SLOTS_UNRECOVERABLE</code>) must survive. An
   ABSENT slug is the other arm and returns the empty set: no slug means no reachable
   contract, which is the same "nothing is personalizable" the job-row branch reports,
   not "we could not find out".</li>
@@ -3791,7 +3794,7 @@ imported books, which under the D1 ruling is the restricted family lane. The dir
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 05:23:17 UTC">August 25, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 22:09:03 UTC">August 25, 2026</span>
   </span>
 
     

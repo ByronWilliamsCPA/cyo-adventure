@@ -6598,6 +6598,12 @@ substantially the same work under different headings. Do not triple-book.</p>
 <td>5</td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-C376</td>
+<td><code>AL-623</code>: <strong>a fail-closed union member can be made unrepresentable against <code>if not x</code>, but not against <code>bool(x)</code>, <code>x or y</code> or <code>x and y</code>, and no gate sees the difference.</strong> PR #760 gave the personalizable-slot tri-state's fail-closed arm its own marker type whose <code>__bool__</code> returns <code>NoReturn</code>, which makes BasedPyright reject <code>if</code>, <code>if not</code>, <code>while</code>, <code>assert</code>, ternary conditions and comprehension guards over the union. Probed and confirmed NOT rejected: <code>bool(x)</code>, <code>x or y</code>, <code>x and y</code>, <code>any([x])</code>; each type-checks clean and raises <code>TypeError</code> only at runtime. Python offers no hook to reject those statically without also breaking <code>__repr__</code> and <code>__eq__</code>, which are exactly what make the marker debuggable, so this is a documented limitation rather than a defect to fix in the type system. Two consequences to schedule. First, a lint or grep check over unions carrying a fail-closed member looking for the three escaping shapes, since that is the only place they can be caught before runtime; <code>generation/persistence.py</code> prescribed <code>bool(declared_personalizable_slots)</code> in prose as the house recipe until #760 corrected it, so the idiom has already propagated once and nothing would have caught the second copy. Second, an audit of this repo's other tri-states for the same falsy-collision shape: <code>AL-306</code> (<code>check_device_vocabulary.py</code>), <code>AL-582</code> (<code>FallbackProvider.resolved_provider</code>) and <code>AL-583</code> (the reviewer-independence check) are three prior occurrences, and nothing yet detects a fourth. Also recorded here rather than fixed: <code>moderation/rescreen.py</code>'s per-book <code>except Exception</code> converts the new runtime <code>TypeError</code> into one <code>outcome="error"</code> WARNING for that book, so on exactly one of the four containment paths the marker's promise of "raise loudly rather than answer wrongly" is muffled into a completed-looking sweep.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-d-untracked-github-issues">Cluster D: untracked GitHub issues<a class="headerlink" href="#cluster-d-untracked-github-issues" title="Permanent link">&para;</a></h2>
@@ -8324,7 +8330,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 20:34:36 UTC">August 25, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 22:09:03 UTC">August 25, 2026</span>
   </span>
 
     

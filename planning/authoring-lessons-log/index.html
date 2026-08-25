@@ -9649,6 +9649,16 @@ written, which is the error the row exists to correct.</p>
 <td>open</td>
 <td></td>
 </tr>
+<tr>
+<td>AL-623</td>
+<td>2026-08-25</td>
+<td>PR #760 review fixes (three independent reviews)</td>
+<td>validator</td>
+<td><strong>A tri-state whose fail-closed arm and whose benign arm are both falsy cannot be read with a truthiness test, and strict typing does not catch the one shape that gets it wrong.</strong> <code>personalizable_slot_ids_for_*</code> answers three things about a story's declared personalizable slots: a populated <code>frozenset</code> (these are declared), an EMPTY <code>frozenset</code> (none could legitimately exist, so any sentinel present is FORGED), and, spelled <code>None</code>, "the contract could not be recovered, fail closed". The last two are opposites and both falsy, so a single <code>if not slots:</code> collapsed the fail-closed arm into the benign one with nothing left to notice. BasedPyright strict already caught the OTHER way to mishandle it (passing <code>frozenset \| None</code> where a plain <code>frozenset</code> was wanted has always been an error), so a truthiness test was the single shape that type-checked perfectly and still routed a security control the wrong way. Giving the fail-closed arm its own marker type whose <code>__bool__</code> returns <code>NoReturn</code> closes it twice over: the type gate rejects <code>if</code>, <code>if not</code>, <code>while</code>, <code>assert</code>, ternary conditions and comprehension guards, and a value reaching an untyped path still raises. Two residues the fix does NOT close, and they are the reusable part. First, <code>bool(x)</code>, <code>x or y</code> and <code>x and y</code> type-check CLEAN and raise only at runtime, and <code>generation/persistence.py</code> prescribed <code>bool(...)</code> in prose as the house recipe until this PR corrected it. Second, the marker's SIBLING ("the caller passed no override") stayed truthy, so the residual union after narrowing the fail-closed arm away was truthiness-testable again, safe only by the order in which <code>pipeline.py</code> happened to narrow the two.</td>
+<td>When a union carries a fail-closed member, no arm may share falsiness with a benign arm: give the fail-closed arm a marker type whose <code>__bool__</code> returns <code>NoReturn</code>, and give EVERY marker in that union the same treatment, because narrowing one re-opens the hole on the next. Add a repo check that greps unions carrying a fail-closed member for <code>if not x</code>, <code>bool(x)</code>, <code>x or</code> and <code>x and</code>, since the type gate cannot see the last three. Fourth occurrence of this shape after <code>AL-306</code>, <code>AL-582</code> and <code>AL-583</code>.</td>
+<td>open</td>
+<td><code>UW-C376</code></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -9688,7 +9698,7 @@ written, which is the error the row exists to correct.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 06:21:39 UTC">August 25, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 22:09:03 UTC">August 25, 2026</span>
   </span>
 
     
