@@ -40,6 +40,10 @@ from cyo_adventure.db.models import (
 from cyo_adventure.events import Actor
 from cyo_adventure.generation.provider import _CANNED_STORY
 from cyo_adventure.moderation import rescreen as rescreen_mod
+from cyo_adventure.moderation.personalizable_slots import (
+    PERSONALIZABLE_SLOTS_UNRECOVERABLE,
+    PersonalizableSlots,
+)
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.moderation.thresholds import Threshold, ThresholdPolicy
 from cyo_adventure.storybook.sentinels import wrap
@@ -628,7 +632,9 @@ async def test_sentinel_corruption_scan_fails_closed_when_contract_unrecoverable
     guessing an empty declared set that could let a real corruption through
     unflagged.
     """
-    reasons = rescreen_mod._sentinel_corruption_reasons(_blob(), None)
+    reasons = rescreen_mod._sentinel_corruption_reasons(
+        _blob(), PERSONALIZABLE_SLOTS_UNRECOVERABLE
+    )
 
     assert reasons == [
         "personalizable-slot contract could not be recovered; failing closed"
@@ -704,7 +710,7 @@ async def test_prefetched_job_drives_the_per_book_slot_contract(
     """The prefetched job row, not a second lookup, resolves each book's contract.
 
     The resolver is handed the job the prefetch found and its tri-state answer
-    threads through to the per-book scan: an unrecoverable contract (`None`)
+    threads through to the per-book scan: an unrecoverable contract
     still fails that book closed, exactly as the per-book resolution did.
     """
     _patch_threshold_policy(monkeypatch)
@@ -712,9 +718,9 @@ async def test_prefetched_job_drives_the_per_book_slot_contract(
     job = GenerationJob(storybook_id="s1", authoring_metadata={"skeleton_slug": "x"})
     seen: list[GenerationJob] = []
 
-    def _unrecoverable(passed_job: GenerationJob) -> frozenset[str] | None:
+    def _unrecoverable(passed_job: GenerationJob) -> PersonalizableSlots:
         seen.append(passed_job)
-        return None
+        return PERSONALIZABLE_SLOTS_UNRECOVERABLE
 
     monkeypatch.setattr(rescreen_mod, "personalizable_slot_ids_for_job", _unrecoverable)
     book = _book()
@@ -754,7 +760,7 @@ async def test_at_rest_scan_runs_even_when_the_blob_fails_to_parse(
     monkeypatch.setattr(
         rescreen_mod,
         "personalizable_slot_ids_for_job",
-        lambda _job: None,
+        lambda _job: PERSONALIZABLE_SLOTS_UNRECOVERABLE,
     )
     _wire_session(
         mock_async_session,

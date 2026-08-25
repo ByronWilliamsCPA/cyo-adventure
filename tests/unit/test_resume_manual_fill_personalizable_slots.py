@@ -320,9 +320,13 @@ async def test_resume_uncomputable_contract_threads_none_and_fails_closed(
     ) -> str:
         captured.update(kwargs)
         # Mirrors the real import_filled_story -> run_moderation_pipeline ->
-        # entry-level backstop fail-closed behavior for a None slot set: the
-        # caller never sees a persisted, clean-looking story for this job.
-        assert kwargs["personalizable_slots"] is None
+        # entry-level backstop fail-closed behavior for an unrecoverable slot
+        # contract: the caller never sees a persisted, clean-looking story for
+        # this job.
+        assert (
+            kwargs["personalizable_slots"]
+            is pslots_mod.PERSONALIZABLE_SLOTS_UNRECOVERABLE
+        )
         return "s_x"
 
     monkeypatch.setattr(import_story, "import_filled_story", _fake_import_filled_story)
@@ -343,7 +347,10 @@ async def test_resume_uncomputable_contract_threads_none_and_fails_closed(
     )
 
     assert story_id == "s_x"
-    assert captured["personalizable_slots"] is None
+    assert (
+        captured["personalizable_slots"]
+        is pslots_mod.PERSONALIZABLE_SLOTS_UNRECOVERABLE
+    )
     # The skeleton-load failure ALSO downgrades the Stage 1 fidelity gate
     # outcome (pre-existing #128 behavior, unrelated to Task 6c); this test's
     # only concern is the personalizable_slots value threaded through, above.

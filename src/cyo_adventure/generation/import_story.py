@@ -38,7 +38,9 @@ from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
 from cyo_adventure.moderation import run_moderation_pipeline
 from cyo_adventure.moderation.personalizable_slots import (
     PERSONALIZABLE_SLOTS_UNSET,
+    PersonalizableSlots,
     PersonalizableSlotsArg,
+    PersonalizableSlotsUnrecoverable,
     personalizable_slot_ids_for_job,
 )
 from cyo_adventure.storybook.reinsertion import (
@@ -191,7 +193,8 @@ async def import_filled_story(
     # in db/models.py. `manifest_carries_tokens` is the shared predicate.
     # `personalizable_slots` is a tri-state (see
     # moderation/personalizable_slots.py): a genuine frozenset (possibly
-    # empty), an explicit `None` (contract uncomputable, fail closed), or the
+    # empty), `PERSONALIZABLE_SLOTS_UNRECOVERABLE` (contract uncomputable,
+    # fail closed), or the
     # `PERSONALIZABLE_SLOTS_UNSET` marker for callers (import_cli.py,
     # import_catalog.py) that never resolved it because they also never
     # populate `request.sentinel_manifest`; the `isinstance` check below
@@ -622,10 +625,11 @@ class _ResumeSentinelReinsertionContext:
             truth `reinsert_storybook` derives every reinsertable token from.
         blob: The filled Storybook JSON to transform.
         personalizable_slots: The story's declared personalizable-slot set,
-            or ``None`` when the contract itself is unrecoverable. The
-            at-rest corruption re-scan only runs when this is a real
-            ``frozenset`` (Task 6c, M1); a ``None`` here is left for the
-            moderation-entry backstop to fail closed on instead.
+            or :data:`~cyo_adventure.moderation.personalizable_slots.PERSONALIZABLE_SLOTS_UNRECOVERABLE`
+            when the contract itself is unrecoverable. The at-rest corruption
+            re-scan only runs when this is a real ``frozenset`` (Task 6c, M1);
+            an unrecoverable contract here is left for the moderation-entry
+            backstop to fail closed on instead.
     """
 
     job: GenerationJob
@@ -633,7 +637,7 @@ class _ResumeSentinelReinsertionContext:
     skeleton_slug: str
     reference_skeleton: dict[str, object]
     blob: dict[str, object]
-    personalizable_slots: frozenset[str] | None
+    personalizable_slots: PersonalizableSlots
 
 
 async def _reinsert_and_verify_resume_sentinels(
@@ -705,7 +709,7 @@ async def _reinsert_and_verify_resume_sentinels(
             details={"sentinel_integrity_violations": []},
         )
 
-    if personalizable_slots is not None:
+    if not isinstance(personalizable_slots, PersonalizableSlotsUnrecoverable):
         at_rest_result = check_sentinel_integrity_at_rest(
             document, personalizable_slots
         )
@@ -955,11 +959,10 @@ async def resume_manual_fill(
     # still downgrade the job's status, and `blob` is left byte-unchanged in
     # that case. The at-rest corruption re-scan
     # (`check_sentinel_integrity_at_rest`) only runs when `personalizable_slots`
-    # is a real `frozenset` (Task 6c, M1): when it resolves `None` (the
-    # contract itself is unrecoverable), this step is skipped and the
-    # moderation-entry backstop this function threads `personalizable_slots`
-    # into (below) fails closed on the same `None` instead, so this is a
-    # deferred check, not a new gap. Also dormant, like the worker's own
+    # is a real `frozenset` (Task 6c, M1): when the contract itself is
+    # unrecoverable, this step is skipped and the moderation-entry backstop
+    # this function threads `personalizable_slots` into (below) fails closed on
+    # that same marker instead, so this is a deferred check, not a new gap. Also dormant, like the worker's own
     # check, whenever `personalizable_slot_ids` resolves empty (every
     # contract on disk today): the transform has no expected tokens to
     # reinsert, so it is a byte-identical no-op, and
