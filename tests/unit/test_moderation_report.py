@@ -336,8 +336,41 @@ class TestModerationReportUnusable:
     def test_none_report_is_unusable(self) -> None:
         assert moderation_report_unusable(None) is True
 
+    def test_empty_dict_report_is_unusable(self) -> None:
+        """A report with no ``findings`` key at all fails closed, not open."""
+        assert moderation_report_unusable({}) is True
+
+    def test_none_findings_value_is_unusable(self) -> None:
+        """A ``findings`` key present but ``None`` fails closed."""
+        assert moderation_report_unusable({"findings": None}) is True
+
+    def test_non_list_findings_value_is_unusable(self) -> None:
+        """A corrupt, non-list ``findings`` value fails closed."""
+        assert moderation_report_unusable({"findings": "corrupt"}) is True
+
     def test_clean_report_is_usable(self) -> None:
+        """A well-formed empty findings list on an independent report is a
+        genuine all-clear, not the malformed shape the tests above cover.
+        """
         assert moderation_report_unusable(self._report([])) is False
+
+    def test_concern_only_mock_marker_without_structural_flag_is_unusable(
+        self,
+    ) -> None:
+        """A finding recognized solely by its concern is still a pipeline
+        artifact, in isolation from the ``structural`` and fail-safe-message
+        arms.
+
+        Neither ``structural`` nor the fail-safe message substring is present
+        on this finding; only ``concern`` is a MOCK_MODERATED_CONCERNS
+        member, so this exercises that OR-arm on its own.
+        """
+        finding = self._fail_safe_finding(
+            message="mock reviewer flagged this passage",
+            concern="mock_reviewer_active",
+        )
+        assert "structural" not in finding
+        assert moderation_report_unusable(self._report([finding])) is True
 
     def test_all_fail_safe_legacy_rows_are_unusable(self) -> None:
         # Legacy pre-Stage-A rows: no "structural" key, no "concern" key.

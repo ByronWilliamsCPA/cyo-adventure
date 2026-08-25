@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import StrEnum
+from typing import cast
 
 
 class Source(StrEnum):
@@ -252,28 +253,46 @@ def moderation_report_unusable(report: dict[str, object] | None) -> bool:
 
     Operates on the persisted JSONB shape (``to_dict()`` output), including
     legacy pre-Stage-A rows that lack ``structural``/``concern`` keys. A
-    report is unusable when it is absent, when the reviewer was not
-    independent (mock), or when every finding is a pipeline artifact
-    (structural, fail-safe message, or a MOCK_MODERATED_CONCERNS concern).
-    An empty findings list on an independent report is a genuine all-clear,
-    not an unusable report.
+    report is unusable when it is absent, when ``findings`` is missing, is
+    not a list, or is otherwise malformed (fail closed rather than treat a
+    corrupt row as a clean pass), when the reviewer was not independent
+    (mock), or when every finding is a pipeline artifact (structural,
+    fail-safe message, or a MOCK_MODERATED_CONCERNS concern). An empty
+    findings list on an independent report with a well-formed ``findings``
+    key is a genuine all-clear (PASS findings are aggregated rather than
+    persisted, see ``ModerationReport.to_dict``), not an unusable report.
     """
     if report is None:
         return True
     summary = report.get("summary")
-    if isinstance(summary, dict) and summary.get("reviewer_independent") is False:
+    if (
+        isinstance(summary, dict)
+        and cast("dict[str, object]", summary).get("reviewer_independent") is False
+    ):
         return True
     findings = report.get("findings")
-    if not isinstance(findings, list) or not findings:
+    # #CRITICAL: data-integrity: a missing or non-list ``findings`` key is a
+    # malformed report, not a clean pass. The prior behavior returned False
+    # (usable) here, which let a corrupt row slip past the approval gate as
+    # though it had been genuinely reviewed. Fail closed instead: only a
+    # well-formed empty list ([]) is a genuine all-clear.
+    # #VERIFY: tests/unit/test_moderation_report.py::
+    # TestModerationReportUnusable::test_empty_dict_report_is_unusable,
+    # ::test_none_findings_value_is_unusable,
+    # ::test_non_list_findings_value_is_unusable.
+    if not isinstance(findings, list):
+        return True
+    if not findings:
         return False
-    for finding in findings:
+    for finding in cast("list[object]", findings):
         if not isinstance(finding, dict):
             continue
-        if finding.get("structural") is True:
+        entry = cast("dict[str, object]", finding)
+        if entry.get("structural") is True:
             continue
-        if finding.get("concern") in MOCK_MODERATED_CONCERNS:
+        if entry.get("concern") in MOCK_MODERATED_CONCERNS:
             continue
-        message = finding.get("message")
+        message = entry.get("message")
         if isinstance(message, str) and FAIL_SAFE_MESSAGE_SUBSTRING in message:
             continue
         return False  # at least one genuine judgment
@@ -288,6 +307,13 @@ def severe_finding_counts(report: dict[str, object] | None) -> tuple[int, int]:
     second. Advisories NEVER count here regardless of severity: advisories
     must never gate, and this function feeds the approval override gate and
     its audit payload.
+
+    A missing or malformed ``findings`` key returns ``(0, 0)`` rather than
+    failing closed like ``moderation_report_unusable`` does: this function is
+    always called after that gate has already rejected a malformed or
+    unusable report (see ``publishing/service.py::approve``), so by the time
+    this runs ``findings`` is either absent because the report is otherwise
+    clean, or well-formed. It is not itself the fail-closed boundary.
     """
     if not report:
         return (0, 0)
@@ -296,11 +322,12 @@ def severe_finding_counts(report: dict[str, object] | None) -> tuple[int, int]:
         return (0, 0)
     blocks = 0
     highs = 0
-    for finding in findings:
+    for finding in cast("list[object]", findings):
         if not isinstance(finding, dict):
             continue
-        if finding.get("verdict") == "block":
+        entry = cast("dict[str, object]", finding)
+        if entry.get("verdict") == "block":
             blocks += 1
-        elif finding.get("verdict") == "flag" and finding.get("severity") == "high":
+        elif entry.get("verdict") == "flag" and entry.get("severity") == "high":
             highs += 1
     return (blocks, highs)
