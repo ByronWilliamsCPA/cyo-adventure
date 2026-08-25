@@ -9529,6 +9529,126 @@ written, which is the error the row exists to correct.</p>
 <td>open</td>
 <td><code>UW-C364</code></td>
 </tr>
+<tr>
+<td>AL-611</td>
+<td>2026-08-24</td>
+<td>ADR-023 catalog migration, <code>scripts/promote_personalizable_slots.py</code></td>
+<td>tooling</td>
+<td><strong>A three-field edit to every theme contract came out as 1,739 inserted lines, because <code>json.dumps(..., indent=2)</code> cannot preserve an author's inlined arrays.</strong> The catalog's sidecars inline short arrays (<code>"forbid": ["weapon"]</code>); Python's encoder always expands them. Ten contracts reformatted wholesale, worst case <code>the-tide-pool-rescue</code> at 389 insertions and 102 deletions for what is semantically three lines. Nothing in the repo formats <code>skeletons/</code> (prettier is scoped to <code>frontend/src</code>, <code>check-json</code> is syntax-only), so the churn would have been permanent and no later pass would normalize it away. A reviewer cannot see a semantic change through that.</td>
+<td>Any tool that edits a catalog JSON sidecar in place must edit the bytes around the target, not re-serialize the document. The pattern that worked: locate the target with a regex, find its enclosing object with a string-aware brace scan so a brace inside a quoted value cannot move the span, splice the new properties in at the object's existing indent, then round-trip the result against the intended document before returning. Diff shape confirms it: 4 insertions and 1 deletion per contract, the 1 deletion being a line that only gained a trailing comma.</td>
+<td>applied</td>
+<td><code>ce3d9d9c</code>, <code>insert_promotion_fields</code> plus <code>tests/unit/test_promote_personalizable_slots.py::test_insert_promotion_fields_inline_array_preserves_surrounding_bytes</code></td>
+</tr>
+<tr>
+<td>AL-612</td>
+<td>2026-08-24</td>
+<td>ADR-023 catalog migration, mutation check on the promotion gate's tests</td>
+<td>tooling</td>
+<td><strong>A test that reads its exclusion roster from the tool under test cannot notice the roster shrinking.</strong> <code>test_main_excluded_slug_is_never_promoted</code> iterated <code>NOT_PERSONALIZABLE</code> and asserted each entry was unpromoted on disk. Deleting an entry left the test GREEN, because the deleted slug simply stopped being iterated. The safety claim the test was cited for (a <code>#CRITICAL</code> tag: personalizing an animal protagonist renders a real child's name attached to a body they do not have) was therefore unguarded in the one direction that matters. Only <code>test_main_check_mode_over_catalog_exits_zero</code> caught the mutation, and only by luck of ordering: drop an exclusion AND re-run <code>--apply</code> and every gate goes green with the defect shipped.</td>
+<td>State the roster independently in the test rather than importing it, so adding or removing an entry is a deliberate two-file edit. More generally: when a test's subject is a policy LIST, iterating that list is a vacuity trap, and the test must pin the expected set. Prove it by mutation before believing it, which is how this was found.</td>
+<td>applied</td>
+<td><code>ce3d9d9c</code>, <code>_ANIMAL_PROTAGONIST_SLUGS</code> in <code>tests/unit/test_promote_personalizable_slots.py</code></td>
+</tr>
+<tr>
+<td>AL-613</td>
+<td>2026-08-24</td>
+<td>ADR-023 content retrofit, <code>scripts/retrofit_personalization.py</code></td>
+<td>metadata</td>
+<td><strong>No column records the theme binding a stored book was generated with, so any later transform that needs it has to guess from the contract and can be silently wrong.</strong> <code>storybook_version</code> carries <code>skeleton_slug</code> but nothing that says which binding was applied, and re-themed books exist: <code>the-cave-of-echoes</code> produced three books whose heroes are Theo and Priya rather than the contract's pinned name. Reinserting the contract's <code>default_binding</code> into such a book does not corrupt prose (it matches nothing), which is precisely the hazard: it would report 0% coverage and still stamp <code>personalization_eligible</code>, promising the reader a personalization that never resolves. The retrofit works around this by requiring the pinned value to be present in the stored blob, which is a precondition rather than a fix, and which permanently excludes those books from personalization because their real binding is unrecoverable.</td>
+<td>Persist the applied binding at generation time, alongside <code>skeleton_slug</code> and <code>sentinel_manifest</code>, so a later transform reads a fact instead of re-deriving an assumption. Until then, every consumer of <code>default_binding</code> against stored content must verify presence before acting, and no consumer may infer absence to mean "this book has no such slot".</td>
+<td>open</td>
+<td>Workaround at <code>72624fb1</code> (<code>plan_retrofit</code> precondition); tracked at <code>UW-C370</code></td>
+</tr>
+<tr>
+<td>AL-614</td>
+<td>2026-08-24</td>
+<td>ADR-023 content retrofit, dry run over all 31 tracked fills in <code>out/</code></td>
+<td>process</td>
+<td><strong>Personalization coverage is bimodal, so a mean describes no book in the corpus.</strong> Across 21 retrofittable fills the aggregate sits near half, which reads as "works moderately everywhere". It is nothing of the sort: twelve books reinsert every expected token (<code>the-clockwork-menagerie</code> 112 of 112, <code>the-vanishing-orchard</code> 106 of 106) and four sit near zero (<code>the-drowned-court</code> 1 of 289, <code>the-sunspire-ascent</code> 2 of 133, <code>the-thornwood-trial</code> 19 of 355). The cause is structural rather than a defect: those books are written in the second person and never name the hero, so there is nothing for a name-matching transform to find, and no amount of tuning changes that. Reporting the aggregate would have hidden which books actually gain a personalized surface.</td>
+<td>Report coverage per book and never as a catalog average; a personalization claim is a per-book fact. Where a book's prose does not name its hero, the dedication overlay is the only guaranteed personalized surface, which is why ADR-023 makes it mandatory rather than optional.</td>
+<td>applied</td>
+<td><code>72624fb1</code>; the sweep prints one line per book and the commit records the distribution rather than the mean</td>
+</tr>
+<tr>
+<td>AL-615</td>
+<td>2026-08-25</td>
+<td>ADR-023 catalog promotion, PR #759 CI (<code>test_skeleton_mutation_contract_gate_coverage.py</code>)</td>
+<td>tooling</td>
+<td><strong>A test that reaches into a catalog fixture by POSITION silently encodes an assumption about the catalog's shape, and a catalog-wide change invalidates it without touching the test.</strong> Promoting <code>HERO</code> to <code>kind=personalizable</code> across 35 contracts broke exactly one test out of 9,205: it built a deliberately-broken contract from <code>slots[0]</code>, which is <code>HERO</code> everywhere, so a guard that refuses to CONSTRUCT such a contract fired before the stage-4 acceptance gate the test exists to cover. The failure reads as a regression and is the opposite: a safety property switching on. Nothing warned at promotion time, because the promotion tool validates contracts and never runs the tests that consume them.</td>
+<td>Select catalog fixture elements by the property under test (<code>kind == "theme"</code>), never by index, so the test states its own precondition and fails loudly if the catalog stops satisfying it. Applied here; the same positional pattern survives at two other sites in the file that happen to be kind-agnostic.</td>
+<td>applied</td>
+<td><code>77213c74</code></td>
+</tr>
+<tr>
+<td>AL-616</td>
+<td>2026-08-25</td>
+<td>ADR-023 personalization, PR #759 review round</td>
+<td>tooling</td>
+<td><strong>An idempotence guard that normalizes only one side of the comparison asserts the opposite of what it means to.</strong> <code>_assert_only_wrappers_added</code> stripped sentinels from the retrofitted document but compared against the raw stored text, so re-running the sweep over an already-retrofitted book compared stripped text to wrapped text and raised. The sweep is a data migration over stored books, which is exactly the class of tool that gets re-run after a partial failure, so the guard forbade the operation its own error path requires.</td>
+<td>Strip both sides. Any guard phrased as "the transform only added X" must normalize X away from BOTH operands, and needs a test that runs the transform twice and asserts the second pass is a no-op. Applied.</td>
+<td>applied</td>
+<td><code>a705ece1</code></td>
+</tr>
+<tr>
+<td>AL-617</td>
+<td>2026-08-25</td>
+<td>ADR-023 personalization, PR #759 review round</td>
+<td>tooling</td>
+<td><strong>A <code>rollback()</code> inside a per-item loop poisons every later item, and the traceback names a greenlet, not the rollback.</strong> The sweep caught a per-book ValidationError and called <code>await session.rollback()</code>. That expires every non-expunged object in the session, so the next iteration's first attribute access issued a lazy refresh SELECT, which under <code>AsyncSession</code> raises <code>MissingGreenlet</code>. One bad book therefore aborted the whole run, and the error pointed at the innocent book.</td>
+<td>Do not roll back a session that outlives the failing item; a handler that only records an outcome has nothing to roll back. Make the constraint executable rather than documented: the test double's <code>rollback</code> now raises, so reintroducing the call fails at the call site instead of at a later victim. Applied.</td>
+<td>applied</td>
+<td><code>a705ece1</code></td>
+</tr>
+<tr>
+<td>AL-618</td>
+<td>2026-08-25</td>
+<td>ADR-023 personalization, PR #759 review round</td>
+<td>tooling</td>
+<td><strong>A changed-file filter that drops sidecars turns the gate green having proved nothing, and the skip is indistinguishable from a pass.</strong> <code>skeleton-promotion.yml</code> filtered <code>*.contract.json</code> out before counting changed files, then gated both downstream steps on that count. A contract-only change, which is precisely what a theme-contract migration is, produced <code>count=0</code> and skipped every step while the check reported success. Simulated against this PR's real diff: 34 contracts changed, 0 validated.</td>
+<td>Route each sidecar class to a step that can actually validate it rather than dropping it from the count, and prove the routing on the real diff plus a deliberately broken input, since a step that runs and always exits 0 is the same defect wearing a different costume. Applied for contracts; <code>*.lineage.json</code> and <code>*.narrative.json</code> remain unrouted and are tracked by <code>UW-C372</code>.</td>
+<td>applied</td>
+<td><code>a705ece1</code></td>
+</tr>
+<tr>
+<td>AL-619</td>
+<td>2026-08-25</td>
+<td>ADR-023 personalization, PR #759 review round</td>
+<td>validator</td>
+<td><strong>A pinned personalization default is the grammatical slot a child's name has to fit, and nothing checked its shape.</strong> 8 of 35 <code>protagonist_first_name</code> pins were role phrases (<code>a pilgrim</code>, <code>the pilot</code>, <code>auditor</code>) or full names (<code>Captain Mira Voss</code>, <code>Nell Marlow</code>); every one satisfied <code>max_words</code>, <code>forbid</code>, and <code>distinct_from</code>. The safety property held only because the author hand-fixed two of them when an unrelated precondition forced it. A separate shape existed in one contract: a personalizable <code>HERO</code> beside a non-personalizable <code>HERO_FULL</code> naming the same character, so a personalized book opens as <code>Rowan Ashby</code> and then uses the family's chosen name.</td>
+<td>Two <code>ThemeContract</code> validators: a pin must be a single given-name token, and a non-personalizable slot may not name the same character as a personalizable one. Calibrate the collision rule CASE-SENSITIVELY, verified against the live catalog: case-insensitive matching also rejects <code>Twinkle</code> beside <code>a twinkle song</code>, the nursery rhyme rather than the child. Applied.</td>
+<td>applied</td>
+<td><code>a705ece1</code></td>
+</tr>
+<tr>
+<td>AL-620</td>
+<td>2026-08-25</td>
+<td>ADR-023 personalization, PR #759 review round</td>
+<td>tooling</td>
+<td><strong><code>omit</code> cannot exclude what <code>--cov</code> never included, so a coverage exclusion can be inert config that reads as a deliberate policy.</strong> <code>[tool.coverage.run] omit</code> carried <code>"scripts/*"  # Utility scripts</code>, which looks like a decision to exempt them. <code>addopts</code> pins <code>--cov=src/cyo_adventure</code>, which sets coverage's source, so the omit had nothing to act on and this PR's 856 new script lines were unmeasured for a different reason than the file states.</td>
+<td>Measure before believing a config: running with the omit removed produced zero <code>scripts/</code> rows, proving it inert. State the real bound in the comment. Widening <code>--cov</code> is not a config edit, since <code>scripts/</code> measures 52.18% against a <code>--cov-fail-under=80</code> and would red the build; sequencing is tracked by <code>UW-C371</code>. Applied as declarative config only.</td>
+<td>applied</td>
+<td><code>a705ece1</code></td>
+</tr>
+<tr>
+<td>AL-621</td>
+<td>2026-08-25</td>
+<td>ADR-023 personalization, PR #759 review round</td>
+<td>tooling</td>
+<td><strong>A digest that mirrors the response serializer's strictness converts a tolerated input into an outage for the whole listing.</strong> A content hash added to <code>/v1/library</code> used <code>json.dumps(..., allow_nan=False)</code> to match Starlette's renderer byte for byte. Starlette's call runs once per response and failing there is correct; the digest's runs once per book inside a listing, so a single blob carrying NaN 500s every book on the shelf. <code>_library_item</code> is explicitly built to tolerate that input, defaulting the field and logging a warning.</td>
+<td>Match the tolerance of the code path you are embedded in, not the tolerance of the code you are imitating; identical flags are right or wrong by blast radius. Leniency is safe here because Starlette refuses such a blob on the read route, so no client can ever cache the book the digest describes. Applied.</td>
+<td>applied</td>
+<td><code>a705ece1</code></td>
+</tr>
+<tr>
+<td>AL-622</td>
+<td>2026-08-25</td>
+<td>ADR-023 personalization, PR #759 review round</td>
+<td>process</td>
+<td><strong>A gapless id sequence is a global invariant enforced per file, so two branches can each be internally valid and jointly invalid, and neither branch's CI can see it.</strong> <code>check_lessons_log.py</code> requires ids to be exactly consecutive from 001. PR #753 and PR #759 both branched from a main at <code>AL-601</code>; #753 claimed <code>AL-602</code> through <code>AL-610</code> and #759 claimed <code>AL-602</code> through <code>AL-613</code>, so they overlapped on nine rows while each file passed its own branch's gate. A union resolution would have produced duplicate ids that fail the same check. #753 merged first, so #759's twelve rows renumbered to <code>AL-611</code> through <code>AL-622</code> during the rebase. The register avoided this only because it tolerates gaps, so its ids can move before merge.</td>
+<td>Treat the collision as an id-set diff and renumber plus merge as one commit, never as a text conflict resolution. The shift cannot be applied blindly to every row: a row whose own subject is the contested ids reads as a true statement about the wrong range afterwards, so this row had to be rewritten by hand rather than shifted. Longer term, decide whether the audit value of gaplessness (a gap proves a deletion) is worth serializing every concurrent authoring merge, or whether a monotonic-but-gapped rule buys the same auditability. Tracked by <code>UW-C375</code>.</td>
+<td>open</td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -9568,7 +9688,7 @@ written, which is the error the row exists to correct.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 05:23:17 UTC">August 25, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 06:21:39 UTC">August 25, 2026</span>
   </span>
 
     

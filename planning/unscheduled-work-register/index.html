@@ -6562,6 +6562,42 @@ substantially the same work under different headings. Do not triple-book.</p>
 <td>CI hygiene</td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-C370</td>
+<td><code>AL-613</code>: <strong><code>storybook_version</code> records <code>skeleton_slug</code> but not the theme binding that was applied, so any transform needing the original binding must guess it from the contract's <code>default_binding</code> and can be silently wrong.</strong> Re-themed books exist: the <code>the-cave-of-echoes</code> skeleton produced three books whose heroes are Theo and Priya rather than the contract's pinned name, and nothing in the row says so. The ADR-023 personalization retrofit hit this directly. Reinserting the contract's pinned value into such a book matches nothing, which is the hazard rather than the safeguard: without a guard it would report zero coverage and still set <code>personalization_eligible</code>, promising a reader a personalization that never resolves. <code>scripts/retrofit_personalization.py</code> therefore requires the pinned value to be present in the stored blob before it will touch the book (<code>plan_retrofit</code>, <code>72624fb1</code>). That is a precondition, not a fix: it permanently excludes the re-themed books from personalization, because their real binding is unrecoverable from anything now stored. Proposed: persist the applied binding at generation time next to <code>skeleton_slug</code> and <code>sentinel_manifest</code> in <code>generation/persistence.py::persist_storybook</code>, so later transforms read a fact. Backfill is possible only where the contract's value happens to be present, which is exactly the set that needs no backfill, so the column starts empty for existing rows and must be nullable with NULL meaning "unknown", never "the contract's default". Do NOT close this by widening the retrofit to match any plausible hero name: guessing a child-facing substitution from prose is how a wrong name reaches a reader.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C371</td>
+<td><code>AL-620</code>: <strong>Widen coverage measurement to <code>scripts/</code>, which is currently unmeasured by construction rather than by decision.</strong> <code>[tool.pytest.ini_options] addopts</code> pins <code>--cov=src/cyo_adventure</code> and the five <code>noxfile.py</code> sessions pin <code>--cov=src</code>, so coverage never looks at <code>scripts/</code> and the <code>omit</code> entry naming it was inert. PR #759 replaced the blanket omit with a narrow research-harness list and armed a <code>scripts</code> component in <code>codecov.yml</code> (<code>target: auto</code>, <code>patch: 80%</code>, <code>if_not_found: success</code>), both declarative. The enabling change is one line, and it cannot be made alone: measured baseline is 52.18% line across 103 files with 46 at 0.00%, which lands the combined total near 72% against the <code>--cov-fail-under=80</code> in the same <code>addopts</code>. Proposed: a separate coverage source and threshold for <code>scripts/</code> so the existing backlog is gated against regression rather than against an absolute bar it cannot meet, then flip <code>--cov</code>. Do NOT close this by lowering <code>--cov-fail-under</code>.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C372</td>
+<td><code>AL-618</code>: <strong>A <code>*.lineage.json</code> or <code>*.narrative.json</code>-only change still skips every step of <code>skeleton-promotion.yml</code>.</strong> PR #759 routed <code>*.contract.json</code> to its own validation step, closing the case that let 34 changed contracts pass unvalidated, but the same defect shape survives one suffix over: simulated with only a lineage sidecar changed, <code>count=0</code> and <code>contract_count=0</code>, so the prover, the contract validator, and the derived-artifacts guard all skip and the check reports success. A tampered lineage sidecar is presently reachable only through a changed shell. Proposed: decide per sidecar class what can validate it standalone. Routing them to the full prover is the obvious move and is probably wrong, since it would run gate, cell, envelope, and anti-clone against an unchanged shell and could red on pre-existing drift unrelated to the sidecar.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C373</td>
+<td><strong>The <code>no-auto-merge</code> guard's population is selected by a label only the automation applies, while the hazard it defends against is human.</strong> ADR-020 decision 4 says skeleton promotion PRs do not auto-merge and humans merge them; the guard keys on the <code>skeleton-promotion</code> label, which <code>scripts/prepare_promotion_pr.py</code> is the sole applier of. <code>skeleton-promotion.yml</code>'s own header explicitly anticipates hand-authored originals with no mutation lineage, and such a PR promotes a shell, sits inside decision 4's stated scope, and escapes the guard entirely if someone enables auto-merge on it. Proposed: gate on the changed-file set, which is already what triggers the workflow, rather than on a label. Owner decision, not a silent edit: it widens which PRs are blocked from auto-merge.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C374</td>
+<td><strong>The offline staleness digest is computed per book per shelf fetch rather than persisted on the row.</strong> PR #759 closed the case where a retrofitted blob changed without a version bump and offline devices kept serving the stale copy: <code>/v1/library</code> advertises a sha256 over the served blob and <code>evictStaleOfflineBooks</code> evicts on mismatch. The digest is computed on read because persisting it needs a Supabase migration plus a backfill of the retrofitted rows, which was out of scope for a review-fix round. <code>list_library</code> already loads every published blob, so the added cost is one hash per book per listing, tagged <code>#EDGE: external resources</code> at the call site. Proposed: persist the digest beside <code>sentinel_manifest</code> and compute it at write time, once the retrofit itself has run in production so the backfill has a stable input.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C375</td>
+<td><code>AL-622</code>: <strong>Decide whether the authoring lessons log's gapless-id rule is worth serializing concurrent merges.</strong> <code>check_lessons_log.py</code> requires ids to be exactly consecutive from 001, which makes the sequence a global invariant enforced per file: PR #753 and PR #759 both branched from a main at <code>AL-601</code>; #753 claimed <code>AL-602</code> through <code>AL-610</code> and #759 claimed <code>AL-602</code> through <code>AL-613</code>, so each was internally valid, neither branch's CI could see the nine-row overlap, and #759 (merging second) had to renumber its twelve rows to <code>AL-611</code> through <code>AL-622</code> as an id-set diff rather than resolve a text conflict. The unscheduled-work register does not have this problem because it tolerates gaps. Proposed: weigh the audit property gaplessness buys (a gap proves a row was deleted) against the merge cost now that authoring runs are frequently concurrent, and if it is kept, add a pre-merge check that compares the branch's claimed id range against <code>origin/main</code> so the collision surfaces before the queue rather than inside it.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-d-untracked-github-issues">Cluster D: untracked GitHub issues<a class="headerlink" href="#cluster-d-untracked-github-issues" title="Permanent link">&para;</a></h2>
@@ -8282,7 +8318,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 05:23:17 UTC">August 25, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 06:21:39 UTC">August 25, 2026</span>
   </span>
 
     
