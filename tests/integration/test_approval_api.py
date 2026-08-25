@@ -7,7 +7,10 @@ from typing import TYPE_CHECKING
 import pytest
 
 from cyo_adventure.db.models import Family, Storybook, StorybookVersion, User
-from tests.conftest import make_clean_moderation_report
+from tests.conftest import (
+    make_clean_moderation_report,
+    make_fail_safe_moderation_report,
+)
 
 from .conftest import auth
 
@@ -262,6 +265,38 @@ async def test_approve_unscreened_story_returns_400(
         f"/api/v1/storybooks/{story_id}/approve", headers=auth("admin-a")
     )
     assert resp.status_code == 400
+    async with sessions() as session:
+        book = await session.get(Storybook, story_id)
+        assert book is not None
+        assert book.status == "in_review"
+
+
+async def test_approve_fail_safe_report_returns_400(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A report holding only fail-safe artifacts is unapprovable; re-run first."""
+    async with sessions() as session:
+        fam = Family(name="A")
+        session.add(fam)
+        await session.flush()
+        session.add(
+            User(family_id=fam.id, role="admin", authn_subject="admin-a", is_admin=True)
+        )
+        story_id = "fail-safe-me"
+        session.add(Storybook(id=story_id, family_id=fam.id, status="in_review"))
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id},
+                moderation_report=make_fail_safe_moderation_report(),
+            )
+        )
+        await session.commit()
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve", headers=auth("admin-a")
+    )
+    assert resp.status_code == 400, resp.text
     async with sessions() as session:
         book = await session.get(Storybook, story_id)
         assert book is not None

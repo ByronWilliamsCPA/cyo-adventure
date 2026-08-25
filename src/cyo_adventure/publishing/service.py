@@ -40,6 +40,7 @@ from cyo_adventure.db.models import (
     StoryRequest,
 )
 from cyo_adventure.events import Actor, EventType, record_event
+from cyo_adventure.moderation.report import moderation_report_unusable
 from cyo_adventure.publishing.reason_codes import validate_reason_code
 from cyo_adventure.publishing.state_machine import (
     Action,
@@ -377,7 +378,10 @@ async def approve(
         ResourceNotFoundError: If the version row does not exist.
         BusinessLogicError: With ``rule="approve_without_moderation"`` when
             the version has never been screened by the moderation pipeline
-            (``moderation_report is None``), or with
+            (``moderation_report is None``), with
+            ``rule="approve_with_unusable_moderation"`` when the stored
+            report carries no genuine content judgment (fail-safe or
+            mock-reviewer artifacts only), or with
             ``rule="series_validation"`` when chain-so-far series validation
             fails for a series book (legacy pre-WS-G chains are grandfathered
             and skip this check).
@@ -440,6 +444,19 @@ async def approve(
     if version_row.moderation_report is None:
         msg = "cannot approve a version that has never been screened by moderation"
         raise BusinessLogicError(msg, rule="approve_without_moderation")
+    # #CRITICAL: security: a stored report can exist yet carry no genuine
+    # content judgment: a mock-reviewer run (reviewer_independent=False) or a
+    # legacy report whose findings are all fail-safe/structural artifacts.
+    # moderation_report_unusable() (moderation/report.py, Task 1) is the
+    # shared predicate for that check; approve() is its first consumer.
+    # #VERIFY: test_approve_fail_safe_report_returns_400.
+    if moderation_report_unusable(version_row.moderation_report):
+        msg = (
+            "cannot approve: the stored moderation report contains no genuine "
+            "content judgment (fail-safe or mock-reviewer artifacts only); "
+            "re-run moderation for this version first"
+        )
+        raise BusinessLogicError(msg, rule="approve_with_unusable_moderation")
     # #ASSUME: data-integrity: the chain read and the approval write share the
     # session's transaction; siblings are selected by a non-null
     # current_published_version, so a chain member mid-approval in another
