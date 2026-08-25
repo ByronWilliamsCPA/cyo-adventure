@@ -11,6 +11,7 @@ from tests.conftest import (
     make_clean_moderation_report,
     make_fail_safe_moderation_report,
 )
+from tests.integration._event_assertions import assert_single_event
 
 from .conftest import auth
 
@@ -301,6 +302,105 @@ async def test_approve_fail_safe_report_returns_400(
         book = await session.get(Storybook, story_id)
         assert book is not None
         assert book.status == "in_review"
+
+
+def _severe_report() -> dict[str, object]:
+    """A moderation report with one hard-block finding on node n1."""
+    return {
+        "findings": [
+            {
+                "stage": "review",
+                "source": "llm_safety",
+                "category": "llm_safety",
+                "node_id": "n1",
+                "verdict": "block",
+                "score": None,
+                "severity": "high",
+                "message": "graphic peril: child trapped underwater",
+            }
+        ],
+        "aggregate": {"nodes_reviewed": 1, "pass_counts": {}},
+        "summary": {
+            "count": 1,
+            "hard_block": True,
+            "soft_flag": False,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+
+
+async def _seed_in_review_with_report(
+    sessions: async_sessionmaker[AsyncSession], report: dict[str, object]
+) -> str:
+    async with sessions() as session:
+        fam = Family(name="A")
+        session.add(fam)
+        await session.flush()
+        session.add(
+            User(family_id=fam.id, role="admin", authn_subject="admin-a", is_admin=True)
+        )
+        story_id = "severe-me"
+        session.add(Storybook(id=story_id, family_id=fam.id, status="in_review"))
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id},
+                moderation_report=report,
+            )
+        )
+        await session.commit()
+        return story_id
+
+
+async def test_approve_over_block_without_reason_returns_400(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Approving over a hard-block finding with no reason is rejected (400)."""
+    story_id = await _seed_in_review_with_report(sessions, _severe_report())
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve", headers=auth("admin-a")
+    )
+    assert resp.status_code == 400, resp.text
+    assert resp.json()["details"]["rule"] == "approve_requires_override_reason"
+    async with sessions() as session:
+        book = await session.get(Storybook, story_id)
+        assert book is not None
+        assert book.status == "in_review"
+
+
+async def test_approve_over_block_with_reason_publishes_and_audits(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A recorded override reason publishes and audits the override as counts.
+
+    D3 payload contract (events/writer.py): the pipeline_event payload is
+    PII-free by contract, so the free-text override_reason itself is never
+    persisted on the RELEASED event (it is logged instead, mirroring
+    send_back()'s own free-text reason staying log-only); only the
+    structured overridden-finding counts are audited here.
+    """
+    story_id = await _seed_in_review_with_report(sessions, _severe_report())
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve",
+        headers=auth("admin-a"),
+        json={"override_reason": "Reviewed n1 in full; peril is age-band appropriate."},
+    )
+    assert resp.status_code == 200, resp.text
+    event = await assert_single_event(
+        sessions,
+        event_type="released",
+        entity_type="storybook",
+        to_state="published",
+        actor_role="admin",
+    )
+    assert event.payload == {
+        "visibility": "family",
+        "overridden_block_count": 1,
+        "overridden_high_count": 0,
+    }
+    assert "override_reason" not in event.payload
 
 
 async def test_illegal_transition_returns_409(

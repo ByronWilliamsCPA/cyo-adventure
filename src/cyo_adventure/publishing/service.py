@@ -40,7 +40,10 @@ from cyo_adventure.db.models import (
     StoryRequest,
 )
 from cyo_adventure.events import Actor, EventType, record_event
-from cyo_adventure.moderation.report import moderation_report_unusable
+from cyo_adventure.moderation.report import (
+    moderation_report_unusable,
+    severe_finding_counts,
+)
 from cyo_adventure.publishing.reason_codes import validate_reason_code
 from cyo_adventure.publishing.state_machine import (
     Action,
@@ -355,6 +358,7 @@ async def approve(
     version: int,
     *,
     visibility: Visibility = Visibility.FAMILY,
+    override_reason: str | None = None,
 ) -> StorybookVersion:
     """Approve and publish a specific version, stamping approval provenance.
 
@@ -365,6 +369,14 @@ async def approve(
         version: The version number to publish.
         visibility: Who may browse/assign the published book (WS-E E2);
             defaults to family.
+        override_reason: Required when the stored report carries a block or
+            high-severity finding (``severe_finding_counts``); free text an
+            admin types to justify approving over it. Logged, never
+            persisted on the ``RELEASED`` audit event: ``events/writer.py``'s
+            payload allowlist is PII-free by contract (spec D3), so only the
+            structured overridden-finding counts are recorded there, mirroring
+            how ``send_back`` below keeps its own free-text ``reason``
+            log-only and persists only the closed-vocabulary ``reason_code``.
 
     Returns:
         StorybookVersion: The stamped version row.
@@ -381,10 +393,12 @@ async def approve(
             (``moderation_report is None``), with
             ``rule="approve_with_unusable_moderation"`` when the stored
             report carries no genuine content judgment (fail-safe or
-            mock-reviewer artifacts only), or with
-            ``rule="series_validation"`` when chain-so-far series validation
-            fails for a series book (legacy pre-WS-G chains are grandfathered
-            and skip this check).
+            mock-reviewer artifacts only), with
+            ``rule="approve_requires_override_reason"`` when the report
+            carries a block or high-severity finding and no
+            ``override_reason`` was given, or with ``rule="series_validation"``
+            when chain-so-far series validation fails for a series book
+            (legacy pre-WS-G chains are grandfathered and skip this check).
     """
     # #CRITICAL: security: within src/ this is the sole path that sets
     # status="published" (catalog_publish.py calls it rather than writing the
@@ -457,6 +471,22 @@ async def approve(
             "re-run moderation for this version first"
         )
         raise BusinessLogicError(msg, rule="approve_with_unusable_moderation")
+    # #CRITICAL: security: ADR-005 amendment (2026-08-25, gate D2): a human
+    # remains free to approve over an automated block or high-severity flag,
+    # but only with a recorded justification, so silent overrides end while
+    # the human stays the final authority. severe_finding_counts()
+    # (moderation/report.py, Task 1) never counts advisories, matching the
+    # SOP contract that advisories never gate.
+    # #VERIFY: test_approve_over_block_without_reason_returns_400 and
+    # test_approve_over_block_with_reason_publishes_and_audits in
+    # tests/integration/test_approval_api.py.
+    blocks, highs = severe_finding_counts(version_row.moderation_report)
+    if (blocks or highs) and not override_reason:
+        msg = (
+            "approving over a block or high-severity finding requires an "
+            "override reason; it is recorded in the audit log"
+        )
+        raise BusinessLogicError(msg, rule="approve_requires_override_reason")
     # #ASSUME: data-integrity: the chain read and the approval write share the
     # session's transaction; siblings are selected by a non-null
     # current_published_version, so a chain member mid-approval in another
@@ -528,6 +558,25 @@ async def approve(
     # the audit log distinguishes self-review from four-eyes review.
     # #VERIFY: test_dual_role_{same,foreign}_family_publish_stamps_* in
     # tests/integration/test_pipeline_event_instrumentation.py.
+    payload: dict[str, object] = {"visibility": visibility.value}
+    if blocks or highs:
+        # #CRITICAL: security: RELEASED's payload is PII-free by contract
+        # (events/writer.py's _PAYLOAD_ALLOWLIST, spec D3), so the free-text
+        # override_reason an admin typed is logged here, never persisted on
+        # the durable append-only event row; only the structured counts of
+        # what was overridden are audited, mirroring send_back()'s own
+        # free-text reason staying log-only below.
+        _logger.info(
+            "storybook_approved_over_severe_finding",
+            storybook_id=storybook.id,
+            version=version,
+            overridden_block_count=blocks,
+            overridden_high_count=highs,
+            override_reason=override_reason,
+            actor=str(principal.user_id),
+        )
+        payload["overridden_block_count"] = blocks
+        payload["overridden_high_count"] = highs
     await record_event(
         session,
         Actor.from_principal(
@@ -538,7 +587,7 @@ async def approve(
         event_type=EventType.RELEASED,
         from_state="in_review",
         to_state="published",
-        payload={"visibility": visibility.value},
+        payload=payload,
     )
     return version_row
 

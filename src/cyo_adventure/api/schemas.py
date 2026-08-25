@@ -1816,6 +1816,18 @@ class ApproveBody(BaseModel):
     """
 
     visibility: Literal["family", "catalog"] = "family"
+    override_reason: str | None = Field(
+        default=None,
+        min_length=10,
+        max_length=2000,
+        description=(
+            "Required when the moderation report contains a block or "
+            "high-severity finding. Logged for the reviewer of record, not "
+            "persisted verbatim on the audit event: the pipeline_event "
+            "payload is PII-free by contract (spec D3), so only the "
+            "structured overridden-finding counts are recorded there."
+        ),
+    )
 
 
 class ApprovedView(BaseModel):

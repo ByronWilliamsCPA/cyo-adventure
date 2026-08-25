@@ -47,7 +47,18 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     # text, so it fits the PII-free payload contract (D3) unchanged; the
     # free-text reason itself stays log-only, never persisted here.
     EventType.SENT_BACK: frozenset({"reason_code"}),
-    EventType.RELEASED: frozenset({"visibility"}),
+    # ADR-005 amendment (2026-08-25, gate D2): an admin may approve over a
+    # block or high-severity finding with a recorded justification. The
+    # justification itself is free text an admin typed, which the PII-free
+    # payload contract (D3, see _MAX_PAYLOAD_STR_LEN below) forbids; it is
+    # logged, not persisted, mirroring SENT_BACK's own free-text reason
+    # staying log-only above. Only the structured counts of what was
+    # overridden are audited here, present solely on the override path
+    # (publishing/service.py::approve); a normal approval's payload keeps its
+    # pre-existing shape.
+    EventType.RELEASED: frozenset(
+        {"visibility", "overridden_block_count", "overridden_high_count"}
+    ),
     # A5 incident/pull-everywhere path: no payload needed, the
     # storybook entity_id is the only durable reference this transition
     # requires. SENT_BACK above used to be the comparison here and no longer
