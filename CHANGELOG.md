@@ -7,6 +7,89 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.83.0] - 2026-08-25
+
+### Bug Fixes
+
+- **frontend**: Restore SAST coverage of the React tree and close the format-gate holes
+  ([#754](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/754),
+  [`36dad55`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/36dad55e45b6497ed5fb1cfe0a7a3adc895a3b47))
+
+- **generation**: Neutralize every dynamic prompt payload, and close the defects found reviewing
+  #731 ([#732](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/732),
+  [`49d17a6`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/49d17a64265b547681d8daf06d29d2e18ac94fcb))
+
+- **ops**: Route the backup through session-mode Supavisor and tolerate a least-privilege R2 token
+  ([#750](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/750),
+  [`9756f96`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/9756f969b0a89d7467cfec1fe74bd85f7c7b8847))
+
+- **ops**: Run the nightly backup unattended and alert on cancellation
+  ([#696](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/696),
+  [`2cb343d`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/2cb343d813a2ff54f385054674dda969291f4551))
+
+- **release**: Batch releases daily and fail fast on a version/tag desync
+  ([#752](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/752),
+  [`2e9e8c0`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/2e9e8c0c47ed9775a804b13fd49010185a22923e))
+
+- **scripts**: Gate the seeded series chain and stop it reusing prose
+  ([#745](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/745),
+  [`debe43d`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/debe43dca7bea4a74edfdc5f3d14052030e49931))
+
+- **scripts**: Make the catalog census and the W7 run lock work on Windows
+  ([#749](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/749),
+  [`5fcc8d7`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/5fcc8d7aa6d6e283014bac13fa9fe4514873cbd3))
+
+- **tooling**: Reject vendor labels that cannot become a filename
+  ([#733](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/733),
+  [`feb8a53`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/feb8a5375bf2a39fef269d5c370ff224aa1f6302))
+
+### Features
+
+- Retire the Ollama generation leg, Modal becomes cascade leg 3
+  ([#729](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/729),
+  [`167c29d`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/167c29da8fa8c685981496a879a4fc80b03f9706))
+
+- Skeleton sourcing test programme (S-0..S-5) with authoring harness and research brief v2026-08-22
+  ([#736](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/736),
+  [`5189514`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/5189514567098f723fb5eccf833eb2244db6cc44))
+
+- **catalog**: Cover all 18 offered cells at the strict bar, and fix the rules that let it drift
+  ([#730](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/730),
+  [`cc3d5f7`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/cc3d5f748f8a5964b8b38199bea8c963456af53b))
+
+- **generation**: Close the step-2 request-path gaps and date the catalog counts
+  ([#743](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/743),
+  [`9ea50b4`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/9ea50b40a4ff52c25cb612aedbef71e01d572fb2))
+
+- **generation**: Enforce the D1 family-lane ruling at every layer
+  ([#747](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/747),
+  [`3ad864a`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/3ad864a32d6bfff3a08d37b782f02124dfaa0d49))
+
+- **generation**: Journal the DeepSeek v4 Pro live fill run and fix the defects it found
+  ([#731](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/731),
+  [`cacd4cb`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/cacd4cb6bc0b219fdf58d3379fa325e732282885))
+
+- **generation**: Live structural rounds, eight owner rulings, and the ADR-011 amendment
+  ([#737](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/737),
+  [`41d3090`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/41d30909d0d4ff7279f383cccae59fb3c34fa983))
+
+- **generation**: Wire convergence reporting and gate series prose reuse
+  ([#742](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/742),
+  [`37a08a6`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/37a08a6086e81d7498be4183b35f7ee544430629))
+
+- **publishing**: Instrument the human gate and probe safety at the 13-16 and 16+ bands
+  ([#746](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/746),
+  [`8152730`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/815273049162066e246ff96d8563ff72e0d83506))
+
+- **safety**: Score the S-7 negative controls on a majority of k draws
+  ([#751](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/751),
+  [`b97c7cb`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/b97c7cbf2c9597977f37457b7183e5b934ffb908))
+
+- **tooling**: Emit the skeleton catalog census from a script
+  ([#740](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/740),
+  [`f6adbc6`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/f6adbc67ebd216397ca5ccb61932943ccee983e0))
+
+
 ## [0.82.0] - 2026-08-17
 
 ### Features
@@ -3496,6 +3579,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.83.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.82.0...v0.83.0
 [0.82.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.81.1...v0.82.0
 [0.81.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.81.0...v0.81.1
 [0.81.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.80.1...v0.81.0
