@@ -66,7 +66,7 @@ services:
       # homelab-infra backend-net there has no pinned subnet; see those files'
       # comments and issue #138. See core/config.py's forwarded_allow_ips
       # docstring for the full rationale; never set this to "*".
-      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-172.25.0.0/16}
+      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-172.26.0.0/16}
 
     # Overrides the Dockerfile's hardcoded CMD default so this env var actually
     # takes effect: the DHI hardened runtime image ships no shell, so the
@@ -82,7 +82,7 @@ services:
       - --port
       - "8000"
       - --proxy-headers
-      - --forwarded-allow-ips=${FORWARDED_ALLOW_IPS:-172.25.0.0/16}
+      - --forwarded-allow-ips=${FORWARDED_ALLOW_IPS:-172.26.0.0/16}
 
     volumes:
       # Development: Mount source code for hot reload
@@ -195,12 +195,40 @@ services:
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     environment:
-      - VITE_API_URL=http://localhost:${APP_PORT:-8000}
+      # #CRITICAL: external-resources: vite.config.ts proxies /api to
+      # `process.env.VITE_API_URL`, and that lookup runs INSIDE this container,
+      # where `localhost` is the container's own loopback rather than the host.
+      # Pointing it at localhost made every /api call 502, which the frontend
+      # reports as `backend-unreachable`: the guardian signs in successfully and
+      # is then dropped on "We can't reach CYO Adventure" instead of the console.
+      # host-gateway resolves to the host in both supported setups, since the
+      # `app` service publishes the same port on the host when it is running.
+      # #VERIFY: `curl -o /dev/null -w '%{http_code}' localhost:3000/api/v1/health/live`
+      # must return 200, not 502.
+      - VITE_API_URL=${VITE_API_URL:-http://host.docker.internal:${APP_PORT:-8000}}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       # Development: Mount source code for hot reload
       - ./frontend/src:/app/src:ro
       - ./frontend/public:/app/public:ro
       - ./frontend/index.html:/app/index.html:ro
+      # #CRITICAL: external-resources: src/index.css @imports
+      # '../design-system/src/*.css'. Without this mount the container serves
+      # whatever design-system snapshot was baked into the image, so any
+      # stylesheet added since the last `--build` makes Vite return HTTP 500
+      # for src/index.css and the app renders only an HMR error overlay.
+      # #VERIFY: `docker exec cyo_adventure-frontend ls /app/design-system/src`
+      # must list the same .css files as ./frontend/design-system/src.
+      - ./frontend/design-system:/app/design-system:ro
+      # #CRITICAL: external-resources: auth/supabaseClient.ts throws when
+      # VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is missing, which takes out
+      # the guardian lazy chunk (sign-in) while leaving the kid surface up.
+      # The values are mounted as Vite's own env file rather than passed
+      # through `environment:` so the anon key never enters compose config or
+      # `docker inspect` output.
+      # #VERIFY: `docker exec cyo_adventure-frontend ls /app/.env.local`.
+      - ./frontend/.env.local:/app/.env.local:ro
     depends_on:
       - app
     restart: unless-stopped
@@ -280,7 +308,7 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.25.0.0/16
+        - subnet: 172.26.0.0/16
 
 # =============================================================================
 # Usage Instructions
