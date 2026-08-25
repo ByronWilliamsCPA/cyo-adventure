@@ -29,9 +29,20 @@ type LoadState =
       updatedAt: Date
     }
 
-/** A story that was never screened, or screened with at least one finding. */
+/**
+ * A story that was never screened, screened with at least one finding, or
+ * whose moderation report was collapsed to an unusable structural row
+ * (Task 4: the report_unusable marker means the review pipeline could not
+ * produce trustworthy findings, so flagged_count is zeroed alongside it).
+ *
+ * #ASSUME: data integrity: report_unusable is only ever set on a report the
+ * collapse logic (review_surface.py) has also zeroed flagged_count for, so
+ * checking both here never double-counts a story into this bucket twice.
+ * #VERIFY: AdminConsolePage.test.tsx asserts a report_unusable item with
+ * flagged_count 0 still lands under Flagged, not Ready.
+ */
 function isFlagged(item: ReviewQueueItem): boolean {
-  return !item.screened || item.flagged_count > 0
+  return !item.screened || item.report_unusable === true || item.flagged_count > 0
 }
 
 /**
@@ -55,6 +66,13 @@ function bySeverity(a: ReviewQueueItem, b: ReviewQueueItem): number {
   const aBlock = a.summary?.hard_block === true
   const bBlock = b.summary?.hard_block === true
   if (aBlock !== bBlock) return aBlock ? -1 : 1
+
+  // A report_unusable book needs a re-run, not a read: rank it right after
+  // hard blocks so it is not lost among ordinary flagged-count sorting.
+  const aUnusable = a.report_unusable === true
+  const bUnusable = b.report_unusable === true
+  if (aUnusable !== bUnusable) return aUnusable ? -1 : 1
+
   return b.flagged_count - a.flagged_count
 }
 
@@ -66,16 +84,43 @@ function formatUpdatedAt(at: Date): string {
 }
 
 /**
+ * Badge label for a flagged row: tiered block/flag/advisory counts when the
+ * backend supplies them, falling back to the flat flagged_count for a report
+ * from before those fields existed.
+ *
+ * #ASSUME: data integrity: block_findings/flag_findings/advisory_findings are
+ * either all present (a Stage-B-or-later report) or all absent (an older
+ * cached queue payload); a partial set would silently under-report the
+ * missing tiers rather than fail, since each is defaulted to 0 independently.
+ * #VERIFY: AdminConsolePage.test.tsx asserts the tiered string replaces the
+ * flat count when the tiered fields are present.
+ */
+function tierLabel(item: ReviewQueueItem): string {
+  const blockFindings = item.block_findings ?? 0
+  const flagFindings = item.flag_findings ?? 0
+  const advisoryFindings = item.advisory_findings ?? 0
+  const parts: string[] = []
+  if (blockFindings > 0) parts.push(`${blockFindings} block`)
+  if (flagFindings > 0) parts.push(`${flagFindings} flags`)
+  if (advisoryFindings > 0) parts.push(`${advisoryFindings} advisories`)
+  if (parts.length > 0) return parts.join(' · ')
+  return item.flagged_count === 1 ? '1 flag' : `${item.flagged_count} flags`
+}
+
+/**
  * Severity cluster for one queue row, driven by the moderation summary.
  * Every badge pairs text with its tone; color is never the only signal.
  *
  * #ASSUME: data integrity: hard_block and soft_flag are mutually exclusive
  * (ModerationReport.has_soft_flag excludes blocked reports), so one primary
  * badge is exact, never lossy; "Repaired" stacks alongside because repair is
- * orthogonal to the gate verdict.
+ * orthogonal to the gate verdict. report_unusable (Task 4's collapsed-report
+ * marker) is checked ahead of flagged_count so a book whose report could not
+ * be scored still reads as needing action, not as clean.
  * #VERIFY: AdminConsolePage.test.tsx asserts a hard-block row shows
- * "Hard block" with no flag count, and a repaired soft-flag row shows both
- * "N flags" and "Repaired".
+ * "Hard block" with no flag count, a repaired soft-flag row shows both
+ * "N flags" and "Repaired", and a report_unusable row shows the
+ * moderation-unavailable label even when flagged_count is 0.
  */
 function SeverityBadges({ item }: { item: ReviewQueueItem }): ReactElement {
   if (!item.screened) return <FlagBadge tone="unscreened" />
@@ -83,11 +128,10 @@ function SeverityBadges({ item }: { item: ReviewQueueItem }): ReactElement {
     <span className="admin-severity">
       {item.summary?.hard_block ? (
         <span className="flag-badge admin-severity__hard-block">Hard block</span>
+      ) : item.report_unusable === true ? (
+        <FlagBadge tone="flag" label="Moderation unavailable · re-run required" />
       ) : item.flagged_count > 0 ? (
-        <FlagBadge
-          tone="flag"
-          label={item.flagged_count === 1 ? '1 flag' : `${item.flagged_count} flags`}
-        />
+        <FlagBadge tone="flag" label={tierLabel(item)} />
       ) : (
         <FlagBadge tone="clean" />
       )}
@@ -263,9 +307,12 @@ export function AdminConsolePage() {
       .filter(isFlagged)
       .sort(bySeverity)
       .filter((item) => !searching || matchesTitle(item.title))
+    // The complement of isFlagged, not an independently-written condition:
+    // a separately spelled-out negation drifted out of sync with isFlagged
+    // once report_unusable was added there, double-listing an unusable
+    // report under both Flagged and Ready.
     const ready = state.items.filter(
-      (item) =>
-        item.screened && item.flagged_count === 0 && (!searching || matchesTitle(item.title))
+      (item) => !isFlagged(item) && (!searching || matchesTitle(item.title))
     )
     const processing = state.processing.filter((job) => !searching || matchesTitle(job.title))
     const nothingPending = state.items.length === 0 && state.processing.length === 0

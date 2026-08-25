@@ -19,6 +19,10 @@ const FLAGGED = {
   version: 1,
   screened: true,
   flagged_count: 2,
+  report_unusable: false,
+  block_findings: 0,
+  flag_findings: 0,
+  advisory_findings: 0,
   summary: {
     count: 2,
     hard_block: false,
@@ -37,6 +41,10 @@ const READY = {
   version: 1,
   screened: true,
   flagged_count: 0,
+  report_unusable: false,
+  block_findings: 0,
+  flag_findings: 0,
+  advisory_findings: 0,
   summary: {
     count: 0,
     hard_block: false,
@@ -52,6 +60,10 @@ const HARD_BLOCKED = {
   version: 1,
   screened: true,
   flagged_count: 1,
+  report_unusable: false,
+  block_findings: 0,
+  flag_findings: 0,
+  advisory_findings: 0,
   summary: {
     count: 1,
     hard_block: true,
@@ -67,6 +79,10 @@ const REPAIRED = {
   version: 1,
   screened: true,
   flagged_count: 1,
+  report_unusable: false,
+  block_findings: 0,
+  flag_findings: 0,
+  advisory_findings: 0,
   summary: {
     count: 1,
     hard_block: false,
@@ -148,6 +164,28 @@ describe('AdminConsolePage', () => {
     expect(await screen.findByText('Patched Tale')).toBeInTheDocument()
     expect(screen.getByText('1 flag')).toBeInTheDocument()
     expect(screen.getByText('Repaired')).toBeInTheDocument()
+  })
+
+  it('shows a moderation-unavailable badge and keeps the book in the flagged bucket', async () => {
+    mockQueue([{ ...FLAGGED, flagged_count: 0, report_unusable: true }])
+    renderPage()
+    expect(await screen.findByText(/moderation unavailable/i)).toBeInTheDocument()
+    // No role="region" on the bucket; it is headed by an <h2>, so scope to
+    // that heading's own console-group container the way the page renders
+    // buckets, not a landmark role that does not exist here.
+    const flaggedHeading = screen.getByRole('heading', { name: /flagged \(review carefully\)/i })
+    const flaggedSection = flaggedHeading.closest('.console-group')
+    expect(flaggedSection).not.toBeNull()
+    expect(within(flaggedSection as HTMLElement).getByText(FLAGGED.title)).toBeInTheDocument()
+  })
+
+  it('renders tiered counts instead of a flat flag count', async () => {
+    mockQueue([
+      { ...FLAGGED, block_findings: 1, flag_findings: 3, advisory_findings: 47, flagged_count: 51 },
+    ])
+    renderPage()
+    expect(await screen.findByText('1 block · 3 flags · 47 advisories')).toBeInTheDocument()
+    expect(screen.queryByText('51 flags')).not.toBeInTheDocument()
   })
 
   it('sorts the flagged bucket hard blocks first, then flag count desc, stable within ties', async () => {
