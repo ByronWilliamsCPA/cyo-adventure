@@ -224,10 +224,11 @@ a path that does not exist, and fail closed back to the same spurious block.
 
 The tri-state contract is preserved exactly as `personalizable_slot_ids_for_job`
 defines it. An empty frozenset means no personalizable slot could legitimately exist
-(no slug, or a legacy skeleton with no contract sidecar); `None` still means the
-contract genuinely could not be recovered and the pipeline must still fail closed.
-This change removes only the case where `None` meant "this book never had a
-generation job", which is true of every imported book and says nothing about safety.
+(no slug, or a legacy skeleton with no contract sidecar);
+`PERSONALIZABLE_SLOTS_UNRECOVERABLE` still means the contract genuinely could not be
+recovered and the pipeline must still fail closed. This change removes only the case
+where that fail-closed arm meant "this book never had a generation job", which is true
+of every imported book and says nothing about safety.
 
 ### 6. Tests
 
@@ -243,7 +244,8 @@ generation job", which is true of every imported book and says nothing about saf
   slot set and produces no `sentinel_integrity_violation` finding. This is the
   production shape of all seventeen books, and without the fix it is a hard block.
 - A version whose `skeleton_slug` names a skeleton that cannot be located, or whose
-  slug traverses, still fails closed. The tri-state's `None` arm must survive. An
+  slug traverses, still fails closed. The tri-state's fail-closed arm
+  (`PERSONALIZABLE_SLOTS_UNRECOVERABLE`) must survive. An
   ABSENT slug is the other arm and returns the empty set: no slug means no reachable
   contract, which is the same "nothing is personalizable" the job-row branch reports,
   not "we could not find out".
