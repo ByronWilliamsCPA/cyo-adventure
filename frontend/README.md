@@ -132,12 +132,18 @@ cp frontend/.env.local.example frontend/.env.local
 ```
 
 This is a prerequisite, not an optional override. `docker-compose.yml` loads
-`frontend/.env.local` via `env_file:`, so compose refuses to start the frontend
-service until the file exists. Without the Supabase values,
-`src/auth/supabaseClient.ts` throws and the guardian sign-in chunk dies while
-the kid surface keeps working, which reads as a broken console rather than a
-missing setting. The same file also serves as local overrides for a bare
-`npm run dev`.
+`frontend/.env.local` via `env_file:`, and the frontend service refuses to start
+until `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are set, naming both in
+the error. Without them, `src/auth/supabaseClient.ts` throws and the guardian
+sign-in chunk dies while the kid surface keeps working, which reads as a broken
+console rather than a missing setting.
+
+The entry is marked `required: false` on purpose. Compose resolves `env_file`
+when it parses the project rather than when it starts a service, so a hard
+requirement would break every `docker compose` command in the repo, including
+backend-only ones on a machine that has no reason to own a frontend env file.
+The startup check, not the file's presence, is what fails loudly. The same file
+also serves as local overrides for a bare `npm run dev`.
 
 ## Testing
 

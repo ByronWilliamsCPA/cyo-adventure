@@ -242,20 +242,66 @@ services:
     # root-owned directory a non-root developer cannot remove and `git status`
     # never shows.
     #
-    # `env_file:` fails LOUDLY instead: with the file absent, compose refuses to
-    # start the service and names the missing path. The tradeoff accepted here
-    # is that the values now appear in `docker inspect` and in
-    # `docker compose config` output, which the bind mount avoided. That is
-    # acceptable because both are publishable-by-design: the Supabase anon key
-    # is shipped inside the browser bundle and is guarded by RLS, not by
-    # secrecy. Do not add the service-role key to this file.
+    # `env_file:` replaces it, but deliberately as `required: false` plus the
+    # startup guard below rather than as a hard requirement. A hard requirement
+    # does fail loudly, and it fails FAR too widely: compose resolves env_file
+    # when it PARSES the project, not when it starts this service, so an absent
+    # file breaks every `docker compose` command in the repo. CI caught it on a
+    # backend-only step that has no reason to own a frontend env file:
+    #   docker compose exec -T db psql ...
+    #   -> env file /.../frontend/.env.local not found
+    # The guard checks the VARIABLES at frontend startup instead, which is both
+    # narrower (nothing else in the project is affected) and more accurate (a
+    # developer who supplies them another way is correctly left alone). It
+    # rejects an empty value as well as an unset one, because compose's
+    # `${VAR:-}` idiom yields the empty string, and Vite would carry that
+    # straight through to a client that fails the same way a missing key does.
     #
-    # Required prerequisite before `docker compose up`:
+    # The tradeoff accepted here is that the values now appear in
+    # `docker inspect` and `docker compose config`, which the bind mount
+    # avoided. Acceptable: both are publishable-by-design, since the Supabase
+    # anon key ships inside the browser bundle and is guarded by RLS rather
+    # than by secrecy. Do not add the service-role key to this file.
+    #
+    # Required prerequisite before `docker compose up frontend`:
     #   cp frontend/.env.local.example frontend/.env.local
     # #VERIFY: with frontend/.env.local absent, `docker compose up frontend`
-    # must exit non-zero naming that file rather than starting a broken app.
+    # must exit non-zero naming the two variables, AND `docker compose config`
+    # and a backend-only `docker compose exec db true` must BOTH still succeed.
     env_file:
-      - ./frontend/.env.local
+      - path: ./frontend/.env.local
+        required: false
+    # #CRITICAL: external-resources: `command:` below is NOT redundant with the
+    # Dockerfile's CMD, and removing it breaks this service silently. Declaring
+    # `entrypoint:` in compose CLEARS the image's default command, so `exec
+    # "$$@"` would run with zero arguments: `exec` with no operands is a no-op,
+    # the script falls off its end, and the container EXITS 0 having started no
+    # dev server at all. That reads as success everywhere. The arg-count guard
+    # turns that failure mode back into a loud one, so a future edit that drops
+    # `command:` fails visibly instead of quietly serving nothing.
+    # `$$` escapes compose interpolation: these are evaluated in the container.
+    # #VERIFY: `docker compose run --rm --no-deps frontend` must keep running
+    # (Vite banner), never exit 0 with empty output.
+    entrypoint:
+      - sh
+      - -c
+      - |
+        if [ -z "$${VITE_SUPABASE_URL}" ] || [ -z "$${VITE_SUPABASE_ANON_KEY}" ]; then
+          echo "cyo_adventure-frontend: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are unset." >&2
+          echo "The guardian sign-in chunk throws without them. Create the file compose reads:" >&2
+          echo "  cp frontend/.env.local.example frontend/.env.local" >&2
+          exit 1
+        fi
+        if [ "$$#" -eq 0 ]; then
+          echo "cyo_adventure-frontend: no command to run. Declaring entrypoint in compose" >&2
+          echo "clears the image CMD, so this service must also declare command:." >&2
+          exit 1
+        fi
+        exec "$$@"
+      - --
+    # Mirrors frontend/Dockerfile's development CMD. Kept in step by the
+    # arg-count guard above, which fails loudly if this is ever removed.
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
