@@ -219,6 +219,35 @@ describe('AdminConsolePage', () => {
     ])
   })
 
+  it('sorts the flagged bucket hard blocks first, then report_unusable, then flag count desc', async () => {
+    const unusable = {
+      ...FLAGGED,
+      storybook_id: 'unusable-1',
+      title: 'Unusable Tale',
+      flagged_count: 0,
+      report_unusable: true,
+    }
+    const highCount = {
+      ...FLAGGED,
+      storybook_id: 'high-1',
+      title: 'High Flag Tale',
+      flagged_count: 9,
+      summary: { ...FLAGGED.summary, count: 9 },
+    }
+    const block = { ...HARD_BLOCKED, storybook_id: 'block-1', title: 'Block Tale' }
+    // Response order deliberately scrambled so the assertion proves the sort,
+    // not incidental backend ordering.
+    mockQueue([highCount, unusable, block])
+    renderPage()
+    await screen.findByText('Block Tale')
+    const titles = screen.getAllByRole('link').map((link) => link.textContent)
+    expect(titles).toEqual([
+      expect.stringContaining('Block Tale'),
+      expect.stringContaining('Unusable Tale'),
+      expect.stringContaining('High Flag Tale'),
+    ])
+  })
+
   it('orders the sections Flagged, then Ready, then Still processing', async () => {
     renderPage()
     await screen.findByText('Scary Tale')
