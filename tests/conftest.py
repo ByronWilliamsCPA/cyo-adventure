@@ -117,7 +117,7 @@ def make_fail_safe_moderation_report(node_count: int = 2) -> dict[str, object]:
     return {
         "findings": [
             {
-                "stage": "review",
+                "stage": 1,
                 "source": "llm_safety",
                 "category": "llm_safety",
                 "node_id": f"n{i}",

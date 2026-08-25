@@ -2179,9 +2179,19 @@ def _mixed_tier_report() -> dict[str, object]:
                 "score": None,
                 "message": "advisory two",
             },
+            {
+                "stage": 3,
+                "source": "llm_coherence",
+                "category": "coherence",
+                "node_id": None,
+                "verdict": "advisory",
+                "score": None,
+                "message": "advisory three (low severity)",
+                "severity": "low",
+            },
         ],
         "summary": {
-            "count": 4,
+            "count": 5,
             "hard_block": True,
             "soft_flag": True,
             "repaired": False,
@@ -2194,11 +2204,16 @@ def _mixed_tier_report() -> dict[str, object]:
 def test_tiered_counts_are_distinct_findings_not_occurrences() -> None:
     """block/flag/advisory counts distinct findings, not fanned-out occurrences.
 
-    One merged flag spanning 3 nodes + one block + two advisories must report
-    flag_findings == 1 (distinct), not 3 (occurrences). flagged_count keeps
+    One merged flag spanning 3 nodes + one block + two ordinary advisories +
+    one LOW-severity advisory must report flag_findings == 1 (distinct), not
+    3 (occurrences). advisory_findings == 3 proves the merged union feeding
+    the count (api/review_surface.py:717-721) folds in low_advisory_findings
+    as well as ranked_findings: the low-severity advisory lands in the
+    low_advisory bucket (``_rank_and_split``), not the ranked one, so without
+    that union it would silently drop from the count. flagged_count keeps
     counting occurrences: 3 passage cards from the merged flag's fan-out, plus
-    the 3 story-level findings (the block and both advisories carry no node
-    id).
+    the 4 story-level findings (the block and all three advisories carry no
+    node id).
     """
     item = build_review_queue_item(
         storybook_id="s1",
@@ -2210,6 +2225,6 @@ def test_tiered_counts_are_distinct_findings_not_occurrences() -> None:
     assert (item.block_findings, item.flag_findings, item.advisory_findings) == (
         1,
         1,
-        2,
+        3,
     )
-    assert item.flagged_count == 6
+    assert item.flagged_count == 7

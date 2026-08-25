@@ -309,7 +309,7 @@ def _severe_report() -> dict[str, object]:
     return {
         "findings": [
             {
-                "stage": "review",
+                "stage": 1,
                 "source": "llm_safety",
                 "category": "llm_safety",
                 "node_id": "n1",
@@ -399,6 +399,104 @@ async def test_approve_over_block_with_reason_publishes_and_audits(
         "visibility": "family",
         "overridden_block_count": 1,
         "overridden_high_count": 0,
+    }
+    assert "override_reason" not in event.payload
+
+
+async def test_approve_over_block_with_whitespace_only_reason_returns_400(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A whitespace-only override reason does not satisfy the override gate.
+
+    Truthiness alone accepts any non-empty string; the gate requires a
+    non-empty stripped value so an admin cannot rubber-stamp past it with
+    keystrokes that carry no actual justification.
+    """
+    story_id = await _seed_in_review_with_report(sessions, _severe_report())
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve",
+        headers=auth("admin-a"),
+        json={"override_reason": "          "},
+    )
+    assert resp.status_code == 400, resp.text
+    assert resp.json()["details"]["rule"] == "approve_requires_override_reason"
+    async with sessions() as session:
+        book = await session.get(Storybook, story_id)
+        assert book is not None
+        assert book.status == "in_review"
+
+
+def _high_flag_report() -> dict[str, object]:
+    """A moderation report with one high-severity FLAG finding, zero blocks."""
+    return {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "llm_safety",
+                "node_id": "n1",
+                "verdict": "flag",
+                "score": None,
+                "severity": "high",
+                "message": "borderline frightening imagery",
+            }
+        ],
+        "aggregate": {"nodes_reviewed": 1, "pass_counts": {}},
+        "summary": {
+            "count": 1,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+
+
+async def test_approve_over_high_flag_without_reason_returns_400(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A high-severity flag with zero blocks gates approval the same as a
+    block does: no override reason is a 400.
+    """
+    story_id = await _seed_in_review_with_report(sessions, _high_flag_report())
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve", headers=auth("admin-a")
+    )
+    assert resp.status_code == 400, resp.text
+    assert resp.json()["details"]["rule"] == "approve_requires_override_reason"
+    async with sessions() as session:
+        book = await session.get(Storybook, story_id)
+        assert book is not None
+        assert book.status == "in_review"
+
+
+async def test_approve_over_high_flag_with_reason_publishes_and_audits(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A recorded override reason publishes a high-flag-only report and
+    audits it with overridden_block_count=0, overridden_high_count=1: the two
+    counts must stay independently correct, not just jointly nonzero.
+    """
+    story_id = await _seed_in_review_with_report(sessions, _high_flag_report())
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve",
+        headers=auth("admin-a"),
+        json={
+            "override_reason": "Reviewed n1 in full; not too frightening for the band."
+        },
+    )
+    assert resp.status_code == 200, resp.text
+    event = await assert_single_event(
+        sessions,
+        event_type="released",
+        entity_type="storybook",
+        to_state="published",
+        actor_role="admin",
+    )
+    assert event.payload == {
+        "visibility": "family",
+        "overridden_block_count": 0,
+        "overridden_high_count": 1,
     }
     assert "override_reason" not in event.payload
 

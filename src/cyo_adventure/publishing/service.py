@@ -481,7 +481,13 @@ async def approve(
     # test_approve_over_block_with_reason_publishes_and_audits in
     # tests/integration/test_approval_api.py.
     blocks, highs = severe_finding_counts(version_row.moderation_report)
-    if (blocks or highs) and not override_reason:
+    # #ASSUME: data-integrity: a whitespace-only override_reason ("   ") must
+    # not satisfy this gate. Truthiness alone accepts any non-empty string,
+    # including one that carries no actual justification once stripped;
+    # requiring a non-empty stripped value keeps the audit log's free-text
+    # reason meaningful rather than a rubber stamp.
+    # #VERIFY: test_approve_over_block_with_whitespace_only_reason_returns_400.
+    if (blocks or highs) and not (override_reason and override_reason.strip()):
         msg = (
             "approving over a block or high-severity finding requires an "
             "override reason; it is recorded in the audit log"
@@ -572,7 +578,9 @@ async def approve(
             version=version,
             overridden_block_count=blocks,
             overridden_high_count=highs,
-            override_reason=override_reason,
+            override_reason=override_reason.strip()
+            if override_reason
+            else override_reason,
             actor=str(principal.user_id),
         )
         payload["overridden_block_count"] = blocks
