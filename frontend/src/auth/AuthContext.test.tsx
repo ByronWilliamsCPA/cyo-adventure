@@ -57,6 +57,18 @@ const mockUpdateUser = vi.fn()
 // factory; a getter re-reads it at each mount so tests can flip it before
 // render to simulate a password-recovery landing.
 let mockIsPasswordRecovery = false
+// Drives the OAuth-return arm of the adult-gate warm. In the real module this
+// is a single-use read of a sign-in captured by a module-scope subscriber, so
+// the queue below models exactly that: the first consume yields the head, and
+// every later consume yields null, which is what bounds the warm to one
+// resolution per page load.
+let mockEarlySignInQueue: string[] = []
+// A spy, not just a queue drain: AuthContext's contract is that it consumes on
+// EVERY resolution, warming or not, so the tests below assert the call itself
+// and not only its effect.
+const mockConsumeEarlySignInUserId = vi.fn(
+  (): string | null => mockEarlySignInQueue.shift() ?? null
+)
 // Drives AuthProvider's recoveryError (frozen from recoveryErrorFromUrl at
 // module load, same seeding pattern as mockIsPasswordRecovery above).
 let mockRecoveryErrorFromUrl: { code: string; description: string } | null = null
@@ -80,6 +92,7 @@ vi.mock('./supabaseClient', () => ({
   get isPasswordRecovery(): boolean {
     return mockIsPasswordRecovery
   },
+  consumeEarlySignInUserId: (): string | null => mockConsumeEarlySignInUserId(),
   get recoveryErrorFromUrl(): { code: string; description: string } | null {
     return mockRecoveryErrorFromUrl
   },
@@ -284,6 +297,8 @@ beforeEach(() => {
   mockClearReadingStates.mockReset()
   mockClearPersonalizationValues.mockReset()
   mockIsPasswordRecovery = false
+  mockEarlySignInQueue = []
+  mockConsumeEarlySignInUserId.mockClear()
   mockRecoveryErrorFromUrl = null
 })
 
@@ -1080,6 +1095,26 @@ describe('AuthProvider', () => {
     await waitFor(() => expect(mockSignOut).toHaveBeenCalled())
   })
 
+  it("signs out only this device, never the account's other sessions", async () => {
+    // #CRITICAL: security: supabase-js defaults signOut to scope 'global',
+    // revoking every refresh token the account holds. Every caller here is
+    // device-local by intent, and two of them (LoginPage's authorize-device,
+    // ConsolePage's handoff) run on a KID's device: under the default, handing
+    // the iPad to a child also signed the parent out on their own phone and
+    // laptop. Assert the argument, not just the call, because the defect is
+    // invisible in a mock that only records that signOut happened.
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockSignOut.mockResolvedValue({ error: null })
+    render(
+      <AuthProvider>
+        <ActionsProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+    fireEvent.click(screen.getByText('sign out'))
+    await waitFor(() => expect(mockSignOut).toHaveBeenCalledWith({ scope: 'local' }))
+  })
+
   it('sign-out purges the authenticated runtime caches (SEC-F5)', async () => {
     mockGetSession.mockResolvedValue({ data: { session: null } })
     mockSignOut.mockResolvedValue({ error: null })
@@ -1267,6 +1302,152 @@ describe('AuthProvider', () => {
       changeHandler?.('TOKEN_REFRESHED', { access_token: 'tok-2', user: { id: 'u1' } })
     })
     await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2))
+    expect(adultGateRemainingMs('u1')).toBe(0)
+  })
+
+  it('warms the adult gate on an OAuth return leg whose SIGNED_IN arrived before mount', async () => {
+    // The Google sign-in loop: supabase-js consumes the callback hash inside
+    // createClient's initialize(), so 'SIGNED_IN' can fire before AuthProvider
+    // subscribes and this provider never observes it. That is modelled here by
+    // an onAuthStateChange that registers but never calls back, leaving the
+    // early-sign-in capture as the only carrier of the fact. Without it the
+    // guardian landed on a COLD gate whose own "Continue with Google" button
+    // sent them back through Google into the identical state, forever.
+    mockEarlySignInQueue = ['u1']
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    mockOnAuthStateChange.mockImplementation(() => ({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    }))
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+    expect(adultGateRemainingMs('u1')).toBeGreaterThan(0)
+  })
+
+  it('does not warm when the captured sign-in names a different user', async () => {
+    // #CRITICAL: security: the capture is compared against the session being
+    // resolved, so a sign-in recorded for one principal can never warm the
+    // gate for another.
+    mockEarlySignInQueue = ['someone-else']
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    mockOnAuthStateChange.mockImplementation(() => ({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    }))
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+    expect(adultGateRemainingMs('u1')).toBe(0)
+  })
+
+  it('does not re-warm on a later refreshStatus in the same page load', async () => {
+    // #CRITICAL: security: this is the walked-away-console case. refreshStatus
+    // is the "check again" control on every guardian interstitial, and it
+    // re-runs syncPrincipal with no event, exactly like the OAuth landing did.
+    // If the capture were re-readable rather than consumed, each click would
+    // slide the gate's idle TTL forward with no adult present. Asserting the
+    // consume CALL on the second resolution is what makes this test detect a
+    // non-consuming read rather than merely a drained fixture.
+    mockEarlySignInQueue = ['u1']
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    mockOnAuthStateChange.mockImplementation(() => ({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    }))
+    render(
+      <AuthProvider>
+        <RefreshProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+    expect(adultGateRemainingMs('u1')).toBeGreaterThan(0)
+    expect(mockConsumeEarlySignInUserId).toHaveBeenCalledTimes(1)
+    // Drop the landing's warm entry, so the only thing that could re-warm the
+    // gate below is the re-resolution itself.
+    clearAdultGate()
+    fireEvent.click(screen.getByText('refresh'))
+    await waitFor(() => expect(mockConsumeEarlySignInUserId).toHaveBeenCalledTimes(2))
+    expect(adultGateRemainingMs('u1')).toBe(0)
+  })
+
+  it('does not warm a later resolution from a capture an interstitial return left pending', async () => {
+    // #CRITICAL: security: syncPrincipal returns early for needs-verification,
+    // awaiting-approval and needs-consent, all of them reached BEFORE the warm
+    // decision. The capture therefore has to be spent at the top of the
+    // function rather than at the point of use, or it survives the interstitial
+    // and warms the gate on whatever resolution comes next, which is a "check
+    // again" click that may arrive an unbounded time later with no adult
+    // present. Consuming only at the use site passes every other test in this
+    // file and still fails this one.
+    mockEarlySignInQueue = ['u1']
+    clearAdultGate()
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockPost.mockResolvedValue({
+      data: {
+        family_id: 'fam-1',
+        user_id: 'user-1',
+        role: 'guardian',
+        created: true,
+        status: 'awaiting_approval',
+        consent_recorded: false,
+        verification_required: true,
+        verification_status: 'none',
+      },
+    })
+    mockOnAuthStateChange.mockImplementation(() => ({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    }))
+    render(
+      <AuthProvider>
+        <RefreshProbe />
+      </AuthProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('status')).toHaveTextContent('needs-verification')
+    )
+    // The interstitial return still spent the capture.
+    expect(mockConsumeEarlySignInUserId).toHaveBeenCalledTimes(1)
+    expect(adultGateRemainingMs('u1')).toBe(0)
+
+    // The guardian verifies, walks away, and much later clicks "check again".
+    mockPost.mockResolvedValue({
+      data: {
+        family_id: 'fam-1',
+        user_id: 'user-1',
+        role: 'guardian',
+        created: false,
+        status: 'active',
+        consent_recorded: true,
+        verification_required: true,
+        verification_status: 'verified',
+      },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    fireEvent.click(screen.getByText('refresh'))
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
     expect(adultGateRemainingMs('u1')).toBe(0)
   })
 

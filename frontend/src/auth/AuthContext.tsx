@@ -19,6 +19,7 @@ import { CONSENT_POLICY_VERSION, makeOnboardingApi } from './onboardingApi'
 import { clearAdultGate, warmAdultGate } from './parentalGateState'
 import { clearResidenceDraft, rememberResidenceDraft } from './residenceDraft'
 import {
+  consumeEarlySignInUserId,
   isPasswordRecovery,
   RECOVERY_BROADCAST_CHANNEL_NAME,
   recoveryErrorFromUrl,
@@ -190,12 +191,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // 'TOKEN_REFRESHED' -- would let a stale/cached session, or a walked-away
   // auto-refreshing tab, look identical to a guardian who just typed a
   // password, defeating the step-up entirely.
-  // #CRITICAL: security: gate the warm call on event === 'SIGNED_IN', never
-  // on session presence alone.
+  // The one documented exception is an OAuth return leg, whose 'SIGNED_IN'
+  // can land before this provider subscribes and so is not always observable
+  // here; that arm reads supabaseClient's early-sign-in capture instead, which
+  // holds the same supabase-js event recorded by a module-scope subscriber.
+  // Consuming that capture is single-use, so it warms one resolution and no
+  // more. See the warm call below.
+  // #CRITICAL: security: gate the warm call on event === 'SIGNED_IN' or a
+  // consumed early sign-in, never on session presence alone.
   // #VERIFY: AuthContext.test.tsx "warms the adult gate on a SIGNED_IN
   // event, but not on session restore or token refresh".
   const syncPrincipal = useCallback(
     async (session: Session | null, event?: string) => {
+      // #CRITICAL: security: consume the early-sign-in capture BEFORE any early
+      // return below. Every exit from syncPrincipal has to spend it, or it
+      // outlives the resolution it belonged to: a guardian who lands on the
+      // needs-verification, awaiting-approval, or needs-consent interstitial
+      // leaves through one of those returns and comes back later through
+      // refreshStatus, recordConsent, or startVerification, and a capture still
+      // pending then warms the gate and slides its idle TTL forward long after
+      // the credential proof it stands for. Read it once here, hold it locally,
+      // and decide whether to warm further down.
+      // #VERIFY: AuthContext.test.tsx "does not warm a later resolution from a
+      // capture an interstitial return left pending".
+      const earlySignInUserId = consumeEarlySignInUserId()
       const seq = ++requestSeq.current
       // A later handler already superseded this one, or the provider unmounted.
       const isStale = () => cancelledRef.current || seq !== requestSeq.current
@@ -290,7 +309,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         })
         setStatus('signed-in')
         setAuthError(null)
-        if (event === 'SIGNED_IN') {
+        // #CRITICAL: security: an OAuth return is a genuine fresh sign-in whose
+        // 'SIGNED_IN' may never reach this provider: detectSessionInUrl fires
+        // it from inside createClient's initialize(), and whether this
+        // provider has subscribed by then is a race (see the module-scope
+        // subscriber in supabaseClient.ts). Warming on the observed event
+        // alone left Google guardians challenged on arrival by a gate whose
+        // own "Continue with Google" button returned them to the identical
+        // cold state: an endless bounce through Google with no way into the
+        // console. The capture below carries that same supabase-js event,
+        // recorded by a subscriber that cannot lose the race.
+        // The capture was already consumed at the top of syncPrincipal, above
+        // every early return, so it is spent exactly once per resolution
+        // whether or not this line is reached. Comparing it against this
+        // session's user is what stops a capture warming the gate for a
+        // different account.
+        // #VERIFY: AuthContext.test.tsx "warms the adult gate on an OAuth
+        // return leg whose SIGNED_IN arrived before mount", "does not warm when
+        // the captured sign-in names a different user", and "does not re-warm
+        // on a later refreshStatus in the same page load".
+        if (event === 'SIGNED_IN' || earlySignInUserId === session.user.id) {
           warmAdultGate(session.user.id)
         }
       } catch (err) {
@@ -473,7 +511,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // #VERIFY: AuthContext.test.tsx "sign-out purges cached data" and
         // "sign-out purges cached personalization values (ADR-023 P6)".
         void purgeAuthenticatedDataAtRest()
-        const { error } = await supabase.auth.signOut()
+        // #CRITICAL: security: 'local' is passed EXPLICITLY because supabase-js
+        // defaults to scope 'global', which revokes every refresh token the
+        // account holds, on every device. Every caller of this primitive is
+        // device-local by intent: the shell "Sign out" buttons, AdultGate's
+        // switch-account, the verification/approval/backend-down escape
+        // hatches, and above all the two kid-handover paths (LoginPage's
+        // authorize-device, ConsolePage's handoff), which sign the guardian out
+        // OF A KID'S DEVICE. Under the default, a parent handing the iPad to a
+        // child silently killed their own session on their phone and laptop,
+        // and a guardian signing out of one browser logged themselves out of
+        // all the others. There is no "sign out everywhere" surface in this app
+        // that would want the global behaviour; if one is ever added it must
+        // pass its own scope here rather than removing this argument.
+        // 'local' still clears local state on every path: auth-js runs
+        // removeCurrentSession() for any scope other than 'others', on both the
+        // success and the error branch, so the SIGNED_OUT event and the
+        // fail-closed clearing above are unaffected.
+        // #VERIFY: AuthContext.test.tsx "signs out only this device, never the
+        // account's other sessions".
+        const { error } = await supabase.auth.signOut({ scope: 'local' })
         if (error) throw error
       },
       // #ASSUME: security: resetPasswordForEmail resolves regardless of whether
