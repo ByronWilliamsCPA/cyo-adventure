@@ -71,9 +71,29 @@ production deployment or horizontal scaling:
   are `sessions_single_per_user`, which would also sign a legitimate guardian out
   of their phone whenever they use a laptop, or a server-side
   `auth.admin.signOut` with a scope, which needs a backend endpoint that does not
-  exist yet. Neither is wired up. Password policy itself is managed as code in
-  `supabase/config.toml` and pushed by the deploy workflows, so it is reviewable
-  in git; this gap is about session invalidation, not policy.
+  exist yet. Neither is wired up, and as of the sign-out scope change described in
+  the next bullet there is no de-facto third remedy either. Password policy itself
+  is managed as code in `supabase/config.toml` and pushed by the deploy workflows,
+  so it is reviewable in git; this gap is about session invalidation, not policy.
+
+- **App-initiated sign-out is device-local by design, so no remedy remains for a
+  lost or stolen device.** `auth/AuthContext.tsx: signOut` passes
+  `{ scope: 'local' }` to supabase-js explicitly. The library defaults to
+  `{ scope: 'global' }`, which revokes every refresh token the account holds, on
+  every device. The explicit scope is deliberate: every caller of that primitive is
+  device-local by intent, and the motivating case is a kid handover (LoginPage's
+  authorize-device, ConsolePage's handoff), where a guardian handing over a tablet
+  signs out of that device only. Under the default, doing so silently killed the
+  guardian's own session on their phone and laptop, and signing out of one browser
+  logged them out of all the others. The tradeoff recorded here is that signing out
+  from any device used to revoke every session account-wide, which was a de-facto
+  remedy for a lost or stolen device; it no longer is. Combined with the
+  password-reset gap above, there is currently no guardian-facing path to evict a
+  session on a device the guardian no longer controls. The two remedies named above
+  (`sessions_single_per_user`, a server-side `auth.admin.signOut`) remain the only
+  candidates, and neither is wired up. If a deliberate "sign out everywhere" surface
+  is ever added, it should pass its own scope at that call site rather than drop the
+  argument and change the behaviour of every existing caller.
 
 ## Organization Policy
 

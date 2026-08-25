@@ -128,7 +128,7 @@ newman run docs/api/postman-collection.json \
   --reporters cli,junit --reporter-junit-export newman-junit.xml --bail
 ```
 
-If another compose project already occupies the default ports or the pinned `172.25.0.0/16` subnet (for
+If another compose project already occupies the default ports or the pinned `172.26.0.0/16` subnet (for
 example a running dev stack), run the suite under an isolated project with remapped ports and point
 `base_url`/`DATABASE_URL` at them (`docker compose -p cyo-adventure-apitest ...`).
 
