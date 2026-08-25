@@ -897,16 +897,24 @@ export function ReviewDetailPage() {
         rejects approval unconditionally in this state
         (rule="approve_with_unusable_moderation", publishing/service.py); this
         disables Approve to match rather than letting the confirm dialog open
-        with no override field and round-trip to a guaranteed 400. Re-screen
-        stays visible (never hidden), matching the SOP's "re-run moderation"
-        guidance from the unusable-report banner above.
-        #VERIFY: ReviewDetailPage.test.tsx "disables Approve and points to
-        Re-screen when the report is unusable" test.
+        with no override field and round-trip to a guaranteed 400.
+        Deliberately does NOT name "Re-screen" as the remedy: that action
+        (api/rescreen.py) only ever runs against already-published stories
+        and, by design, never writes to moderation_report, so it would not
+        fix this even where it is enabled. The actual re-run-moderation path
+        for an in-review story is the admin-only remoderate endpoint
+        (POST /api/v1/admin/remoderate/{storybook_id}/{version},
+        api/remoderate.py), which has no UI on this page yet (flagged
+        follow-up, not built here). Re-screen itself stays visible and
+        untouched below; this hint is purely informational and does not
+        reference it.
+        #VERIFY: ReviewDetailPage.test.tsx "disables Approve and directs the
+        reviewer to re-run moderation when the report is unusable" test.
       */}
       {surface.report_unusable ? (
         <p id="review-approve-unusable-hint" className="review-actionbar__hint cyo-text-muted">
-          This report has no genuine content judgment; re-run moderation with Re-screen before
-          approving.
+          Approval is blocked until moderation is re-run for this story. Ask an operator to re-run
+          moderation (admin remoderate).
         </p>
       ) : null}
 

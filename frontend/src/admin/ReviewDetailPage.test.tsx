@@ -1484,7 +1484,7 @@ describe('ReviewDetailPage', () => {
       expect(await screen.findByText(/re-run moderation before reviewing/i)).toBeInTheDocument()
     })
 
-    it('disables Approve and points to Re-screen when the report is unusable, without disabling Re-screen for an unrelated reason', async () => {
+    it('disables Approve and directs the reviewer to re-run moderation when the report is unusable, without disabling Re-screen for an unrelated reason', async () => {
       mockGet.mockResolvedValue({
         data: {
           ...SURFACE,
@@ -1496,10 +1496,11 @@ describe('ReviewDetailPage', () => {
       const approve = await screen.findByRole('button', { name: /^Approve$/i })
       expect(approve).toBeDisabled()
       // Accessible reason: a screen-reader user hears why Approve is greyed
-      // out, not just that it is.
-      const hint = await screen.findByText(
-        /no genuine content judgment; re-run moderation with re-screen/i
-      )
+      // out, not just that it is. Deliberately does not name "Re-screen": that
+      // action is published-only and never rewrites moderation_report, so it
+      // would not fix this even where it is enabled (see the comment above
+      // this hint in ReviewDetailPage.tsx).
+      const hint = await screen.findByText(/approval is blocked until moderation is re-run/i)
       expect(approve).toHaveAttribute('aria-describedby', hint.id)
 
       // Defense in depth: clicking the (disabled) Approve control cannot open
