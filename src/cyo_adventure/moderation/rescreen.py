@@ -61,7 +61,7 @@ from typing import TYPE_CHECKING, Literal
 import httpx
 from anyio.to_thread import run_sync
 from pydantic import ValidationError as PydanticValidationError
-from sqlalchemy import select
+from sqlalchemy import select, tuple_
 
 from cyo_adventure.db.models import GenerationJob, Storybook, StorybookVersion
 from cyo_adventure.events import EventType, record_event
@@ -71,6 +71,7 @@ from cyo_adventure.moderation.personalizable_slots import (
     PersonalizableSlots,
     PersonalizableSlotsUnrecoverable,
     personalizable_slot_ids_for_job,
+    personalizable_slot_ids_for_version,
 )
 from cyo_adventure.moderation.report import Finding, Verdict
 from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
@@ -232,9 +233,10 @@ def _newly_surfaced_reasons(surfaced: list[Finding]) -> list[str]:
 # blob with no skeleton/contract reference on this code path, but the
 # personalizable-slot contract itself IS recoverable per book, the same way
 # `moderation/pipeline.py`'s own moderation-entry backstop resolves it: via
-# the story's `GenerationJob` row (`_prefetch_personalizable_slots`, which
-# resolves the same tri-state answer `personalizable_slot_ids_for_story`
-# would, for every book in the sweep, in ONE query). This
+# the story's `GenerationJob` row, or, for an imported book that has none, via
+# the version's own `skeleton_slug` (`_prefetch_personalizable_slots`, which
+# resolves both for every book in the sweep in a bounded number of
+# queries). This
 # was formerly a contract-free, hand-rolled subset of
 # `check_sentinel_integrity_at_rest` that could not check a well-formed
 # sentinel's slot id against the declared set (the `unknown_slot` check); now
@@ -284,7 +286,8 @@ def _sentinel_corruption_reasons(
             parsed model): `check_sentinel_integrity_at_rest` re-derives its
             own surfaces from the mapping, with no pre-fill reference needed.
         personalizable_slot_ids: This story's declared personalizable slot
-            ids (`personalizable_slot_ids_for_job`'s tri-state result).
+            ids, as resolved by `_resolve_one_slot_contract` (the job's
+            tri-state answer, or the version's for an imported book).
             `PERSONALIZABLE_SLOTS_UNRECOVERABLE` means the contract itself is
             unrecoverable for this book; failing closed with a single explicit
             reason here, mirroring
@@ -303,41 +306,131 @@ def _sentinel_corruption_reasons(
     return [_violation_reason(v) for v in result.violations]
 
 
-def _resolve_slot_contracts(
-    story_ids: Sequence[str], jobs_by_story: Mapping[str, GenerationJob]
-) -> dict[str, PersonalizableSlots]:
-    """Resolve every story's slot contract from already-fetched job rows.
+def _resolve_one_slot_contract(
+    story_id: str,
+    jobs_by_story: Mapping[str, GenerationJob],
+    versions_by_story: Mapping[str, StorybookVersion],
+) -> PersonalizableSlots:
+    """Resolve one story's slot contract from whichever provenance it has.
 
-    Synchronous on purpose: `personalizable_slot_ids_for_job` touches only the
-    filesystem (skeleton and theme-contract sidecars), never the database, so
-    the whole batch runs in ONE `run_sync` hop off the event loop instead of
-    one hop per book.
+    # #CRITICAL: data-integrity: the job row is preferred, but its ABSENCE is
+    # not evidence that no personalizable slot exists. An imported book has no
+    # `GenerationJob` at all (17 of 17 in_review books in production,
+    # 2026-08-24, per personalizable_slot_ids_for_version's own marker) and
+    # carries its provenance on `storybook_version.skeleton_slug` instead;
+    # such books enter this sweep's population the moment they are published.
+    # Resolving them as an EMPTY declared set would make
+    # `check_sentinel_integrity_at_rest` report every LEGITIMATE sentinel they
+    # carry as `unknown_slot`, so the first sentinel-bearing imported book to
+    # be published would be flagged as corrupt on every sweep. The version
+    # fallback is the same one api/remoderate.py already applies to the same
+    # population.
+    # #VERIFY: tests/unit/test_rescreen_unit.py::
+    # test_imported_book_resolves_its_contract_from_the_version and
+    # ::test_job_backed_book_still_resolves_from_the_job.
 
     Args:
-        story_ids: Every published story id in this sweep. Ids with no job row
-            resolve to an EMPTY frozenset, matching
-            `personalizable_slot_ids_for_story`'s own `job is None` branch:
-            no job means no skeleton means no slot could legitimately exist.
+        story_id: The published story id being resolved.
         jobs_by_story: The oldest `GenerationJob` per story id.
+        versions_by_story: The published `StorybookVersion` row per story id
+            for the books that have NO job row (see
+            :func:`_versions_for_jobless_books`).
+
+    Returns:
+        PersonalizableSlots: The job's tri-state answer when a job row exists,
+        the version's otherwise. An EMPTY frozenset only when NEITHER
+        provenance is available, which `_rescreen_one` never reads: a book
+        with no published version row is reported as an ``"error"`` verdict
+        before its contract is consulted.
+    """
+    job = jobs_by_story.get(story_id)
+    if job is not None:
+        return personalizable_slot_ids_for_job(job)
+    version_row = versions_by_story.get(story_id)
+    if version_row is not None:
+        return personalizable_slot_ids_for_version(version_row)
+    return frozenset()
+
+
+def _resolve_slot_contracts(
+    story_ids: Sequence[str],
+    jobs_by_story: Mapping[str, GenerationJob],
+    versions_by_story: Mapping[str, StorybookVersion],
+) -> dict[str, PersonalizableSlots]:
+    """Resolve every story's slot contract from already-fetched rows.
+
+    Synchronous on purpose: both `personalizable_slot_ids_for_job` and
+    `personalizable_slot_ids_for_version` touch only the filesystem (the
+    skeleton catalog and theme-contract sidecars), never the database, so the
+    whole batch runs in ONE `run_sync` hop off the event loop instead of one
+    hop per book.
+
+    Args:
+        story_ids: Every published story id in this sweep.
+        jobs_by_story: The oldest `GenerationJob` per story id.
+        versions_by_story: The published `StorybookVersion` row per story id
+            with no job row, which is how an IMPORTED book's contract is
+            recovered (see :func:`_resolve_one_slot_contract`).
 
     Returns:
         dict[str, PersonalizableSlots]: One tri-state entry per story id;
         every id in `story_ids` is present.
     """
     return {
-        story_id: (
-            personalizable_slot_ids_for_job(job)
-            if (job := jobs_by_story.get(story_id)) is not None
-            else frozenset()
-        )
+        story_id: _resolve_one_slot_contract(story_id, jobs_by_story, versions_by_story)
         for story_id in story_ids
     }
+
+
+async def _versions_for_jobless_books(
+    session: AsyncSession,
+    books: Sequence[Storybook],
+    jobs_by_story: Mapping[str, GenerationJob],
+) -> dict[str, StorybookVersion]:
+    """Load the published version row for every book with no `GenerationJob`.
+
+    One composite-key `IN` query for the whole no-job subset, issued from the
+    same hoisted position as the job prefetch so the sweep still resolves
+    every contract before it screens anything (see
+    :func:`_prefetch_personalizable_slots`'s `#CRITICAL` note). Books that DO
+    have a job row are excluded: their contract comes from the job, and
+    loading a version row for them would buy nothing.
+
+    Args:
+        session: The sweep's own open async session.
+        books: Every published storybook this sweep will screen.
+        jobs_by_story: The oldest `GenerationJob` per story id, already
+            fetched; membership here is what marks a book as job-backed.
+
+    Returns:
+        dict[str, StorybookVersion]: The published version row per story id,
+        for the no-job books only. A book whose `current_published_version` is
+        `None` is omitted; `_rescreen_one` reports it as an ``"error"``
+        verdict without consulting its contract.
+    """
+    keys = [
+        (book.id, book.current_published_version)
+        for book in books
+        if book.id not in jobs_by_story and book.current_published_version is not None
+    ]
+    if not keys:
+        return {}
+    rows = (
+        await session.scalars(
+            select(StorybookVersion).where(
+                tuple_(StorybookVersion.storybook_id, StorybookVersion.version).in_(
+                    keys
+                )
+            )
+        )
+    ).all()
+    return {row.storybook_id: row for row in rows}
 
 
 async def _prefetch_personalizable_slots(
     session: AsyncSession, books: Sequence[Storybook]
 ) -> dict[str, PersonalizableSlots]:
-    """Resolve the whole sweep's personalizable-slot contracts in one query.
+    """Resolve the whole sweep's personalizable-slot contracts up front.
 
     # #CRITICAL: external-resources: this deliberately runs OUTSIDE
     # `_rescreen_one`'s per-book `except Exception`. Resolving the contract
@@ -348,11 +441,19 @@ async def _prefetch_personalizable_slots(
     # raises out of `rescreen_published_books` before any book is screened,
     # exactly as the existing `_load_published_books` and
     # `load_threshold_policy` calls beside it already do: the sweep either
-    # has the contracts for every book or it does not run at all.
+    # has the contracts for every book or it does not run at all. The
+    # imported-book fallback (`_versions_for_jobless_books`) is issued from
+    # here, and not from `_rescreen_one`'s already-loaded `version_row`, for
+    # exactly that reason: inside the guard its own DB failure would be
+    # swallowed back into the per-book verdicts this hoist removed.
     # #VERIFY: tests/unit/test_rescreen_unit.py::
-    # test_slot_contracts_are_prefetched_in_one_query,
+    # test_slot_contracts_are_prefetched_in_bounded_queries,
     # ::test_prefetch_db_failure_aborts_the_sweep, and
     # ::test_prefetched_job_drives_the_per_book_slot_contract.
+
+    Two bounded queries, never N: one for the job rows, one for the published
+    version rows of the books that have none. Both are `IN` queries over the
+    whole sweep, so the count does not grow with the number of books.
 
     Args:
         session: The sweep's own open async session.
@@ -381,13 +482,19 @@ async def _prefetch_personalizable_slots(
     for job in rows:
         if job.storybook_id is not None and job.storybook_id not in jobs_by_story:
             jobs_by_story[job.storybook_id] = job
+    versions_by_story = await _versions_for_jobless_books(session, books, jobs_by_story)
     # #CRITICAL: timing: contract resolution reads skeleton and sidecar files
-    # from disk. The sweep already hoists `run_gate` off the loop for exactly
-    # this reason (AL-035); doing the same here keeps a multi-book sweep from
-    # reintroducing the stall that fix removed.
-    # #VERIFY: covered by the rescreen sweep tests; the resolver is pure
+    # from disk, and the version fallback additionally SCANS the skeleton
+    # catalog to recover a band (skeleton_match.find_skeleton_band). The sweep
+    # already hoists `run_gate` off the loop for exactly this reason (AL-035);
+    # doing the same here keeps a multi-book sweep from reintroducing the
+    # stall that fix removed, and keeps the whole batch to ONE hop rather than
+    # one per book.
+    # #VERIFY: covered by the rescreen sweep tests; both resolvers are pure
     # file I/O and session-free.
-    return await run_sync(_resolve_slot_contracts, story_ids, jobs_by_story)
+    return await run_sync(
+        _resolve_slot_contracts, story_ids, jobs_by_story, versions_by_story
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -543,11 +650,8 @@ async def _rescreen_one(
         # rather than guessing an empty declared set, matching
         # `_sentinel_corruption_reasons`' own uncomputable branch.
         #
-        # The default is written out rather than left to `.get`'s implicit
-        # `None`. It used to ride on that implicit value back when `None` WAS
-        # the fail-closed state; the two coincided by luck of spelling, and a
-        # reader had no way to tell a deliberate fail-closed default from an
-        # author who simply did not think about the missing-key case.
+        # The default is written out so a deliberate fail-closed default is
+        # distinguishable from an unconsidered missing-key case.
         reasons.extend(
             _sentinel_corruption_reasons(
                 version_row.blob,

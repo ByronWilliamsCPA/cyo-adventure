@@ -21,6 +21,7 @@ The tri-state answer (see :func:`personalizable_slot_ids_for_job`):
 
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING, Final, NoReturn
 
 from sqlalchemy import select
@@ -67,18 +68,89 @@ class PersonalizableSlotsUnset:
     and have it still fail closed, never have it reinterpreted as "resolve it
     yourself, the caller forgot".
 
-    Originally this existed because the fail-closed arm was spelled ``None``,
-    which could not also mean "unset". The fail-closed arm now has its own
-    type (:class:`PersonalizableSlotsUnrecoverable`), so the collision is
-    gone, but the state this marker names is still a real and separate one:
-    ``None`` would work again today and is not reinstated, because two
-    marker types that read alike are easier to keep straight than one type
-    and one ``None`` that do not. A dedicated sentinel TYPE (not a shared
-    ``object()``) lets ``isinstance`` narrow the parameter cleanly under
-    BasedPyright strict mode.
+    A dedicated sentinel TYPE (not a shared ``object()``) lets ``isinstance``
+    narrow the parameter cleanly under BasedPyright strict mode.
+
+    Deliberately NOT truthy-by-default and NOT falsy either, for the same
+    reason as :class:`PersonalizableSlotsUnrecoverable` and one arm further
+    over. Once a consumer narrows the fail-closed marker away, the residual
+    union is ``frozenset[str] | PersonalizableSlotsUnset``, and that union IS
+    truthiness-testable with no diagnostic: a default-truthy sentinel lands
+    in the "slots are declared" branch, a default-falsy one in the "no slot
+    is declared" branch, and this value means neither. The code that reads
+    this marker today is safe only because
+    :func:`~cyo_adventure.moderation.pipeline.run_moderation_pipeline`
+    narrows UNSET before UNRECOVERABLE, which is statement ordering rather
+    than anything the type expresses; :meth:`__bool__` is what expresses it.
     """
 
     __slots__ = ()
+
+    def __bool__(self) -> NoReturn:
+        """Refuse to collapse "the caller supplied nothing" into a boolean.
+
+        Raises:
+            TypeError: Always. The message names both readings a truthiness
+                test could have intended, because this marker means neither
+                one and the traceback points at the line to fix.
+        """
+        msg = (
+            "no personalizable_slots override was supplied, so this value has "
+            "no truth value: it never means 'slots are declared' and it never "
+            "means 'no slot is declared'. Use isinstance(slots, "
+            "PersonalizableSlotsUnset) to resolve the contract yourself, or "
+            "narrow to the frozenset arm first if you meant to read a declared "
+            "slot set"
+        )
+        raise TypeError(msg)
+
+    def __repr__(self) -> str:
+        """Return the module-level constant's name rather than a default repr.
+
+        Returns:
+            str: The constant name, so a log line or a failed assertion names
+                the state instead of printing an object id.
+        """
+        return "PERSONALIZABLE_SLOTS_UNSET"
+
+    # #CRITICAL: data-integrity: the three methods below make this marker a
+    # true singleton. Without them `copy.copy`, `copy.deepcopy`, and a
+    # serialize/deserialize round trip each return a DISTINCT instance that
+    # still satisfies `isinstance`, so an `is` comparison and an `isinstance`
+    # narrowing disagree about the same value. That matters because this
+    # marker travels through a frozen dataclass field and across
+    # `run_sync`, and because this module's own tests assert with `is`.
+    # #VERIFY: tests/unit/test_personalizable_slots.py::
+    # test_the_markers_survive_copy_deepcopy_and_a_serialization_round_trip.
+    def __copy__(self) -> PersonalizableSlotsUnset:
+        """Return the module constant, never a second instance.
+
+        Returns:
+            PersonalizableSlotsUnset: :data:`PERSONALIZABLE_SLOTS_UNSET`.
+        """
+        return PERSONALIZABLE_SLOTS_UNSET
+
+    def __deepcopy__(self, _memo: dict[int, object]) -> PersonalizableSlotsUnset:
+        """Return the module constant, never a second instance.
+
+        Args:
+            _memo: The ``copy.deepcopy`` memo dict, unused: this marker holds
+                no state to copy.
+
+        Returns:
+            PersonalizableSlotsUnset: :data:`PERSONALIZABLE_SLOTS_UNSET`.
+        """
+        return PERSONALIZABLE_SLOTS_UNSET
+
+    def __reduce__(self) -> str:
+        """Serialize by NAME, so a round trip resolves the module constant.
+
+        Returns:
+            str: The module-level constant's name, which is the stdlib
+                serialization protocol for "this object is a singleton
+                global".
+        """
+        return "PERSONALIZABLE_SLOTS_UNSET"
 
 
 PERSONALIZABLE_SLOTS_UNSET: Final = PersonalizableSlotsUnset()
@@ -110,15 +182,22 @@ class PersonalizableSlotsUnrecoverable:
     wanted has always been an error, so "a caller forgot to handle it" was
     caught at every typed boundary. A truthiness test was the one shape that
     type-checked perfectly under the ``None`` spelling and still routed a
-    security control the wrong way. That is the hole this type closes, and
-    :meth:`__bool__` closes it twice over. Because the method returns
-    :data:`~typing.NoReturn`, BasedPyright rejects ``if not slots:`` over
-    :data:`PersonalizableSlots` outright ("Invalid conditional operand of
-    type PersonalizableSlots"), so the mistake now fails the type gate rather
-    than shipping; and a value that reaches such a test untyped -- through
-    ``object``, ``Any``, or a mock -- still raises at runtime. Narrowing to
-    the ``frozenset`` arm first both type-checks and runs, which is precisely
-    the reading that stays legitimate.
+    security control the wrong way. That is the hole this type closes, with
+    two defences of UNEQUAL reach. Because :meth:`__bool__` returns
+    :data:`~typing.NoReturn`, BasedPyright rejects the shapes that take a
+    conditional operand directly -- ``if slots``, ``if not slots``, ``while
+    slots``, ``assert slots``, a ternary condition, and a comprehension
+    ``if`` -- with "Invalid conditional operand of type PersonalizableSlots",
+    so those fail the type gate rather than shipping. Other truthiness
+    shapes ESCAPE the type gate and type-check clean: ``bool(slots)``,
+    ``slots or x``, ``slots and x``, and ``any([slots])`` are caught only by
+    the runtime ``TypeError`` :meth:`__bool__` raises. So a ``bool(...)``
+    over a raw resolver result is a runtime crash the type gate will not
+    catch: :class:`~cyo_adventure.generation.persistence.StorybookParams`
+    documents the eligibility recipe with its ``isinstance`` narrowing step
+    FIRST for exactly that reason. Narrowing to the ``frozenset`` arm first
+    both type-checks and runs, which is precisely the reading that stays
+    legitimate.
 
     Deliberately NOT falsy-by-omission and NOT truthy either. Either choice
     would silently pick one of the two readings below for a caller who never
@@ -152,6 +231,47 @@ class PersonalizableSlotsUnrecoverable:
         """
         return "PERSONALIZABLE_SLOTS_UNRECOVERABLE"
 
+    # #CRITICAL: data-integrity: see the identical block on
+    # `PersonalizableSlotsUnset`. Without these three, an `is` comparison and
+    # an `isinstance` narrowing can disagree about the same value after a
+    # copy or a serialization round trip, and this is the arm where that
+    # disagreement fails OPEN.
+    # #VERIFY: tests/unit/test_personalizable_slots.py::
+    # test_the_markers_survive_copy_deepcopy_and_a_serialization_round_trip.
+    def __copy__(self) -> PersonalizableSlotsUnrecoverable:
+        """Return the module constant, never a second instance.
+
+        Returns:
+            PersonalizableSlotsUnrecoverable:
+                :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE`.
+        """
+        return PERSONALIZABLE_SLOTS_UNRECOVERABLE
+
+    def __deepcopy__(
+        self, _memo: dict[int, object]
+    ) -> PersonalizableSlotsUnrecoverable:
+        """Return the module constant, never a second instance.
+
+        Args:
+            _memo: The ``copy.deepcopy`` memo dict, unused: this marker holds
+                no state to copy.
+
+        Returns:
+            PersonalizableSlotsUnrecoverable:
+                :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE`.
+        """
+        return PERSONALIZABLE_SLOTS_UNRECOVERABLE
+
+    def __reduce__(self) -> str:
+        """Serialize by NAME, so a round trip resolves the module constant.
+
+        Returns:
+            str: The module-level constant's name, which is the stdlib
+                serialization protocol for "this object is a singleton
+                global".
+        """
+        return "PERSONALIZABLE_SLOTS_UNRECOVERABLE"
+
 
 PERSONALIZABLE_SLOTS_UNRECOVERABLE: Final = PersonalizableSlotsUnrecoverable()
 """A contract may exist for this story, and it could not be recovered.
@@ -182,6 +302,53 @@ Shared by
 :func:`~cyo_adventure.generation.import_story.import_filled_story`, which
 forwards its own same-named parameter through unchanged.
 """
+
+
+def _stored_slug(slug: object) -> str | None:
+    """Return a stored skeleton slug's usable form, or None when it names none.
+
+    The single definition of "this row names no skeleton", shared by
+    :func:`_contract_for_job` (reading ``authoring_metadata``) and
+    :func:`personalizable_slot_ids_for_version` (reading
+    ``StorybookVersion.skeleton_slug``). The two used to disagree: the job
+    path tested ``not isinstance(slug, str)``, so an EMPTY string passed the
+    check, resolved a path ending in ``/.json``, failed to load, and returned
+    the fail-closed marker; the version path tested ``not slug``, so the same
+    corrupt provenance returned the benign empty frozenset. Identical
+    provenance, opposite verdicts, decided only by whether the caller held a
+    job or a version.
+
+    Both functions' documented contracts already call "no ``skeleton_slug``"
+    the benign arm, so the shared answer is that arm: an empty or
+    whitespace-only slug is ABSENT provenance, not a contract that failed to
+    load. It names no file, so there is no contract that could have declared
+    a personalizable slot, which is exactly what the empty frozenset asserts.
+
+    Args:
+        slug: The raw stored value, deliberately un-narrowed: the job path
+            reads it out of an untyped JSON dict.
+
+    Returns:
+        str | None: ``slug`` unchanged when it is a string with some
+            non-whitespace content, else ``None``. Returned UNSTRIPPED, so a
+            slug that merely has stray whitespace keeps resolving exactly as
+            it does today; only the wholly-blank case changes arm.
+    """
+    # #ASSUME: data-integrity: a blank stored slug is ABSENT provenance, not a
+    # contract that failed to load, so it resolves the benign empty frozenset
+    # rather than PERSONALIZABLE_SLOTS_UNRECOVERABLE. This is the one arm this
+    # helper MOVES: the job path used to fail closed on an empty string and
+    # both paths used to fail closed on a whitespace-only one. It is the
+    # benign direction on a fail-closed control, so it is deliberately narrow:
+    # only a slug with NO non-whitespace content qualifies, and a slug with
+    # real content keeps resolving unstripped, exactly as before.
+    # #VERIFY: tests/unit/test_personalizable_slots.py::
+    # test_a_blank_slug_resolves_the_benign_arm_from_a_job and
+    # tests/unit/test_personalizable_slots.py::
+    # test_a_blank_slug_resolves_the_same_arm_from_a_job_and_a_version.
+    if not isinstance(slug, str) or not slug.strip():
+        return None
+    return slug
 
 
 async def personalizable_slot_ids_for_story(
@@ -237,12 +404,20 @@ async def personalizable_slot_ids_for_story(
         # make the at-rest scan newly treat every brace-bearing legacy story
         # as sentinel-corrupt, which is a behaviour change well outside this
         # slot contract's remit.
-        # #VERIFY: the anomaly is still worth a signal, because the moderation
-        # pipeline reaches this function FROM a job: a missing row on that
-        # path means the row was deleted mid-pipeline, not that the story is
-        # legacy. Logged rather than swallowed so that case is visible; the
-        # empty set is returned either way.
-        _logger.warning(
+        # #VERIFY: INFO, not WARNING, and deliberately so. This is the ROUTINE
+        # path for imported and seeded stories, which are the whole of the
+        # current in_review population (api/remoderate.py records 17 of 17
+        # production in_review books with no job row, verified 2026-08-24),
+        # and this resolver runs on every moderation-pipeline entry and every
+        # node edit. At WARNING it fired for the entire imported catalog on
+        # the happy path. It cannot claim more than INFO either: this function
+        # sees only "no row matched", which is byte-identical whether the row
+        # never existed (legacy) or was deleted mid-pipeline, so the anomaly
+        # it used to claim to surface was never distinguishable here. A caller
+        # that reached this function FROM a job it already holds knows the
+        # difference; moderation/pipeline.py is where that WARNING belongs if
+        # someone wants the signal, not here.
+        _logger.info(
             "moderation.personalizable_slots_no_job_row",
             story_id=story_id,
         )
@@ -275,8 +450,9 @@ class _NoResolvableBandError(_ContractForJobError):
 
     ``band`` is always ``None`` on this subclass. Kept distinct from
     `_ContractLoadError` so :func:`personalizable_slot_ids_for_job` preserves
-    its own, more specific ``moderation.repair_contract_band_missing`` log
-    event, while :func:`personalizable_slot_fields_for_story`, which only
+    its own, more specific ``moderation.contract_band_missing`` log event at
+    its own severity (WARNING, against `_ContractLoadError`'s ERROR), while
+    :func:`personalizable_slot_fields_for_story`, which only
     wants "no contract, no matter why", folds both subclasses into a single
     catch of the shared `_ContractForJobError` base.
     """
@@ -326,8 +502,8 @@ def _contract_for_job(
     authoring = (
         job.authoring_metadata if isinstance(job.authoring_metadata, dict) else {}
     )
-    slug = authoring.get(SKELETON_SLUG_KEY)
-    if not isinstance(slug, str):
+    slug = _stored_slug(authoring.get(SKELETON_SLUG_KEY))
+    if slug is None:
         return None
     resolved_band = band if band is not None else authoring.get(SKELETON_BAND_KEY)
     if not isinstance(resolved_band, str):
@@ -335,13 +511,22 @@ def _contract_for_job(
         raise _NoResolvableBandError(slug, None, no_band_msg)
     # #CRITICAL: external-resources: load_skeleton (generation/skeleton.py)
     # does json.loads(path.read_text(...)), which raises a raw
-    # FileNotFoundError/OSError/JSONDecodeError (a ValueError subclass), NOT
-    # a CoreValidationError, when the skeleton file a stale
-    # GenerationJob.authoring_metadata points at has since moved or been
-    # corrupted. Wrapped here (mirroring generation/import_story.py::
-    # _load_resume_skeleton's handling of this same resolve_skeleton_path ->
-    # load_skeleton chain) so every caller fails closed with the slug and
-    # band on its log line instead of crashing its whole pass.
+    # OSError/JSONDecodeError/UnicodeDecodeError, NOT a CoreValidationError,
+    # when the skeleton file a stale GenerationJob.authoring_metadata points
+    # at has since moved or been corrupted. Wrapped here (mirroring
+    # generation/import_story.py::_load_resume_skeleton's handling of this
+    # same resolve_skeleton_path -> load_skeleton chain) so every caller fails
+    # closed with the slug and band on its log line instead of crashing its
+    # whole pass.
+    #
+    # The catch is DELIBERATELY not `ValueError`, which is what it used to be.
+    # JSONDecodeError and UnicodeDecodeError are both ValueError subclasses,
+    # so catching the base swept in Pydantic's own ValidationError and every
+    # ordinary int()/str.index() bug inside the contract parser as well, and
+    # turned a genuine programming or schema fault into a routine
+    # "contract unrecoverable" plus one log line. FileNotFoundError is gone
+    # for the same reason in reverse: it is an OSError subclass, so listing it
+    # said nothing the next member did not already say.
     # #VERIFY: tests/unit/test_moderation_pipeline.py::
     # test_repair_contract_file_missing_is_discarded_and_routes_to_human_review
     # and tests/unit/test_personalizable_slots.py::
@@ -350,7 +535,12 @@ def _contract_for_job(
         skeleton_path = resolve_skeleton_path(resolved_band, slug)
         skeleton = load_skeleton(skeleton_path)
         return load_contract_for(skeleton_path, skeleton)
-    except (FileNotFoundError, OSError, ValueError, CoreValidationError) as exc:
+    except (
+        OSError,
+        json.JSONDecodeError,
+        UnicodeDecodeError,
+        CoreValidationError,
+    ) as exc:
         raise _ContractLoadError(slug, resolved_band, str(exc)) from exc
 
 
@@ -391,8 +581,11 @@ def personalizable_slot_ids_for_job(
         PersonalizableSlots: The declared personalizable slot ids. An EMPTY
             frozenset is returned (not a guess) whenever no personalizable
             slot could legitimately exist for this job: no ``skeleton_slug``
-            (a ``fresh_generation`` job), or a legacy skeleton with no
-            theme-contract sidecar
+            at all, or a blank one (a ``fresh_generation`` job, or a row whose
+            provenance is absent; see :func:`_stored_slug`, which is what
+            makes this agree with
+            :func:`personalizable_slot_ids_for_version`), or a legacy
+            skeleton with no theme-contract sidecar
             (:func:`~cyo_adventure.generation.binding.load_contract_for`
             returns ``None``). :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE` is
             returned only when the job DOES carry a ``skeleton_slug`` (so a
@@ -405,8 +598,13 @@ def personalizable_slot_ids_for_job(
     try:
         contract = _contract_for_job(job, band=band)
     except _NoResolvableBandError as exc:
+        # WARNING, not ERROR: a job with a slug but no recoverable band is a
+        # routine data-shape condition (an older job predating the
+        # skeleton_band metadata key, with no caller-supplied override), not
+        # a broken catalog. The fail-closed marker is the response; nobody
+        # needs to be paged.
         _logger.warning(
-            "moderation.repair_contract_band_missing",
+            "moderation.contract_band_missing",
             job_id=str(job.id),
             story_id=job.storybook_id,
             slug=exc.slug,
@@ -417,8 +615,16 @@ def personalizable_slot_ids_for_job(
         # `_contract_for_job` (see its #CRITICAL note); this arm only turns
         # the structured error into the fail-closed marker plus a log line
         # that names the slug and band, not just the loader's message.
-        _logger.warning(
-            "moderation.repair_contract_load_failed",
+        #
+        # ERROR, not WARNING, and the split from the band arm above is the
+        # point: reaching here means the on-disk catalog is broken, moved, or
+        # failing validation for a slug that resolved a band. That is an
+        # operational fault someone has to fix, and it is not self-healing.
+        # `.exception` is the house spelling for ERROR inside an except block
+        # (api/remoderate.py, covers/service.py, publishing/service.py): same
+        # severity, plus the chained loader traceback that `error=` truncates.
+        _logger.exception(
+            "moderation.contract_load_failed",
             job_id=str(job.id),
             story_id=job.storybook_id,
             slug=exc.slug,
@@ -580,8 +786,10 @@ def personalizable_slot_ids_for_version(
     Returns:
         PersonalizableSlots: The declared personalizable slot ids. An EMPTY
             frozenset whenever no personalizable slot could legitimately
-            exist: no ``skeleton_slug`` (not a skeleton-backed version), or a
-            legacy skeleton whose contract sidecar is absent
+            exist: no ``skeleton_slug``, or a blank one (not a
+            skeleton-backed version; see :func:`_stored_slug`, which is what
+            makes this agree with :func:`personalizable_slot_ids_for_job`),
+            or a legacy skeleton whose contract sidecar is absent
             (:func:`~cyo_adventure.generation.binding.load_contract_for`
             returns ``None``). :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE` only
             when the version DOES carry a slug but the contract cannot be
@@ -601,8 +809,8 @@ def personalizable_slot_ids_for_version(
     # #VERIFY: tests/unit/test_personalizable_slots.py::
     # test_version_resolution_needs_no_generation_job and
     # ::test_version_with_an_unlocatable_slug_fails_closed pin both arms.
-    slug = version_row.skeleton_slug
-    if not slug:
+    slug = _stored_slug(version_row.skeleton_slug)
+    if slug is None:
         return frozenset()
     band = _band_for_version(version_row, slug)
     if band is None:
@@ -610,18 +818,33 @@ def personalizable_slot_ids_for_version(
     try:
         skeleton_path = resolve_skeleton_path(band, slug)
         contract = load_contract_for(skeleton_path, load_skeleton(skeleton_path))
-    except (CoreValidationError, OSError, ValueError) as exc:
+    except (
+        CoreValidationError,
+        OSError,
+        json.JSONDecodeError,
+        UnicodeDecodeError,
+    ) as exc:
         # #EDGE: external-resources: load_skeleton does json.loads(read_text),
-        # which raises a raw OSError or JSONDecodeError (a ValueError subclass),
+        # which raises a raw OSError, JSONDecodeError or UnicodeDecodeError,
         # NOT a CoreValidationError, when a catalog file has moved or been
-        # corrupted. Mirrors _contract_for_job's note on the identical chain.
+        # corrupted. Mirrors _contract_for_job's note on the identical chain,
+        # including why the catch names those two ValueError subclasses rather
+        # than `ValueError` itself: the base swept in Pydantic validation
+        # failures and ordinary parser bugs, and dressed them up as a routine
+        # missing file.
+        #
+        # ERROR (via `.exception`, the house spelling inside an except
+        # block), not WARNING, for the same reason as `_ContractLoadError`'s
+        # arm in personalizable_slot_ids_for_job: the band resolved and the
+        # read still failed, so the on-disk catalog is broken rather than
+        # merely thin.
         # #VERIFY: tests/unit/test_personalizable_slots.py::
         # test_version_with_an_unreadable_contract_fails_closed pins this
         # fail-closed marker, and
         # test_version_on_a_legacy_skeleton_returns_the_empty_set pins that
         # the no-sidecar arm below stays the EMPTY set rather than collapsing
         # into it.
-        _logger.warning(
+        _logger.exception(
             "moderation.version_contract_load_failed",
             story_id=version_row.storybook_id,
             slug=slug,

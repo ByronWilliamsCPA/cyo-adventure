@@ -41,6 +41,10 @@ from cyo_adventure.db.models import (
 )
 from cyo_adventure.generation.provider import _CANNED_STORY, MockProvider
 from cyo_adventure.moderation import personalizable_slots as pslots_mod
+from cyo_adventure.moderation.personalizable_slots import (
+    PERSONALIZABLE_SLOTS_UNRECOVERABLE,
+    PersonalizableSlots,
+)
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.sentinels import wrap
@@ -781,6 +785,114 @@ async def test_edit_preserving_sentinel_keeps_personalization_eligible(
     )
 
     assert version_row.personalization_eligible is True
+
+
+@pytest.mark.asyncio
+async def test_unrecoverable_contract_drives_eligibility_from_the_tri_state(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The eligibility write reads the tri-state, not the integrity collapse.
+
+    ``edit_node`` collapses ``PERSONALIZABLE_SLOTS_UNRECOVERABLE`` to an empty
+    declared set for ONE decision: the at-rest integrity check, where "no slot
+    is declared" and "which slots are declared cannot be proven" genuinely
+    coincide. They do not coincide for ``personalization_eligible``, a
+    persisted claim ``api/library.py`` reads verbatim, and reusing the
+    collapsed value there made the column correct only by coincidence of the
+    other leg (a sentinel-bearing blob 422s first; a sentinel-free one has no
+    tokens anyway). No existing test sits at that intersection: both
+    eligibility tests wire a RECOVERABLE contract via
+    ``_wire_personalizable_job``. This pins the plumbing, so the coincidence
+    can never quietly become the reason the column is right.
+    """
+    story = _story("in_review")
+    version_row = _version_row()
+    job = GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id="s1",
+        authoring_metadata={"skeleton_slug": "themed-slug"},  # no skeleton_band
+    )
+    session = AsyncMock(spec=AsyncSession)
+    _wire_session(session, story=story, version_row=version_row, job=job)
+    ctx = _ctx("admin", session)
+    seen: list[object] = []
+    real = node_edit._personalization_eligible
+
+    def _spy(slots: object, blob: dict[str, object]) -> bool:
+        seen.append(slots)
+        return real(cast("PersonalizableSlots", slots), blob)
+
+    monkeypatch.setattr(node_edit, "_personalization_eligible", _spy)
+
+    await node_edit.edit_node(
+        "s1", 1, _NODE_ID, NodeEditBody(body="A perfectly ordinary edit."), ctx=ctx
+    )
+
+    # The RAW marker reached the eligibility decision. Under the old shape it
+    # was handed `frozenset()`, the value authorized only for the check above.
+    assert seen == [PERSONALIZABLE_SLOTS_UNRECOVERABLE]
+    assert version_row.personalization_eligible is False
+
+
+def test_personalization_eligible_is_false_for_an_unrecoverable_contract() -> None:
+    """An unrecoverable contract yields False even for a token-bearing blob.
+
+    The fail-closed choice for a column that GATES an affordance: withholding
+    personalization from a book whose declared-slot set cannot be proven costs
+    a reader plain prose, while asserting eligibility on an unprovable
+    contract advertises a personalization the story cannot be shown to
+    support. The paired frozenset case is the control that keeps this honest:
+    it proves the blob really does carry tokens, so the ``False`` above comes
+    from the tri-state arm and not from an empty manifest.
+    """
+    blob = copy.deepcopy(_CANNED_STORY)
+    node = _node(blob)
+    node["body"] = f"{node['body']} {wrap('HERO', 'Ada')}"
+
+    assert (
+        node_edit._personalization_eligible(PERSONALIZABLE_SLOTS_UNRECOVERABLE, blob)
+        is False
+    )
+    assert node_edit._personalization_eligible(frozenset({"HERO"}), blob) is True
+    # And a declared-but-empty contract is still False, so the two frozenset
+    # readings stay distinguishable from each other as well as from the marker.
+    assert node_edit._personalization_eligible(frozenset(), blob) is False
+
+
+@pytest.mark.asyncio
+async def test_unrecoverable_contract_is_logged_at_the_edit_site(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """The collapse emits its own trace, naming the story it applied to.
+
+    The resolver logs the contract FAILURE (which slug, which band); nothing
+    recorded the CONSEQUENCE, that this edit was integrity-checked against an
+    empty declared set. Without it, a 422-free edit under an unrecoverable
+    contract is indistinguishable in the logs from one under a recovered,
+    genuinely empty contract.
+    """
+    story = _story("in_review")
+    version_row = _version_row()
+    job = GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id="s1",
+        authoring_metadata={"skeleton_slug": "themed-slug"},  # no skeleton_band
+    )
+    session = AsyncMock(spec=AsyncSession)
+    _wire_session(session, story=story, version_row=version_row, job=job)
+    ctx = _ctx("admin", session)
+
+    with caplog.at_level("INFO"):
+        await node_edit.edit_node(
+            "s1", 1, _NODE_ID, NodeEditBody(body="A perfectly ordinary edit."), ctx=ctx
+        )
+
+    # structlog renders through stdlib logging here, so the structured kv
+    # pairs land in the rendered record text; ANSI color codes sit between key
+    # and value, so each token is asserted on its own.
+    assert "node_edit.slot_contract_unrecoverable_empty_declared_set" in caplog.text
+    assert "s1" in caplog.text
+    assert _NODE_ID in caplog.text
 
 
 @pytest.mark.asyncio

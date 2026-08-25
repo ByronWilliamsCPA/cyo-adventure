@@ -1110,6 +1110,57 @@ async def test_run_moderation_pipeline_explicit_unrecoverable_fails_closed(
 
 
 @pytest.mark.unit
+async def test_run_moderation_pipeline_none_slots_fails_closed(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A literal ``None`` fails closed exactly as the marker does.
+
+    ``None`` is the RETIRED spelling of the fail-closed arm and is no longer a
+    member of ``PersonalizableSlotsArg``, but ``tests/`` is type-checked by no
+    gate here (basedpyright's ``include = ["src"]``), so an untyped or stale
+    caller can still supply it. Between the two ``isinstance`` narrowings it
+    matched neither, fell through to ``check_sentinel_integrity_at_rest``,
+    and on this sentinel-free blob returned ok=True: the story submitted
+    clean with no entry-level check at all. Mirrors
+    ``test_run_moderation_pipeline_explicit_unrecoverable_fails_closed``,
+    which is the arm ``None`` must now share.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+        # Deliberately off-contract: the retired spelling an untyped caller
+        # can still reach this security control with.
+        personalizable_slots=None,
+    )
+
+    auto_reject.assert_awaited_once()
+    submit.assert_not_awaited()
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    categories = {
+        f["category"]
+        for f in cast("list[dict[str, object]]", moderation_report["findings"])
+    }
+    assert "sentinel_integrity_violation" in categories
+    assert version.blob == _BLOB
+
+
+@pytest.mark.unit
 async def test_run_moderation_pipeline_default_resolves_from_story(
     mock_session: AsyncMock,
     monkeypatch: pytest.MonkeyPatch,
