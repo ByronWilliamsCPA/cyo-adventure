@@ -38,6 +38,13 @@ Three independent ways to pick targets, mutually exclusive:
   its latest version. For a one-off re-run, a manually curated subset, or a
   single-book canary before a full sweep.
 
+Every executed book is bounded by ``--per-book-timeout`` (default 900s).
+Exceeding it rolls that book back, which is what releases the ``FOR UPDATE``
+row lock an admin's approve or send-back would otherwise queue behind, and
+abandons the remaining targets rather than driving them through the same
+wedged provider. Both the timed-out book and the abandoned ones are named in
+the summary and force a nonzero exit.
+
 Run against staging or production, dry-run (default, lists only)::
 
     ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
@@ -78,7 +85,7 @@ import argparse
 import asyncio
 import sys
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Final, cast
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -437,6 +444,27 @@ async def _resolve_book_id_targets(
     return targets
 
 
+# #CRITICAL: concurrency: an unbounded per-book call is an unbounded row-lock
+# hold. remoderate_storybook_version takes SELECT ... FOR UPDATE on the
+# storybook row (api/remoderate.py) and Postgres holds it until this loop's
+# COMMIT, so a wedged provider call does not merely stall the sweep: it blocks
+# api/approval.py::_load_admin_story, and therefore an admin's approve,
+# send-back, or archive on that exact book, for as long as it hangs. That
+# contention is new with the in_review widening, because in_review books are
+# precisely the ones a reviewer is working on.
+#
+# 900s is derived, not picked: core/config.py bounds a FULL multi-stage
+# generation at generation_job_timeout_seconds = 1800, and re-moderation is
+# strictly less work than generation (a review fan-out plus optional repair,
+# plus two run_fill_gate passes at ~50s worst case each). Half the generation
+# bound leaves ample headroom over any healthy run while still being an order
+# of magnitude below "forever".
+# #VERIFY: tests/unit/test_remoderate_books.py::
+# test_sweep_times_out_a_wedged_book_and_releases_its_lock and
+# ::test_sweep_abandons_remaining_targets_after_a_timeout.
+_PER_BOOK_TIMEOUT_SECONDS: Final = 900.0
+
+
 @dataclass(frozen=True, slots=True)
 class SweepResult:
     """Outcome of a (dry-run or executed) re-moderation sweep."""
@@ -470,6 +498,17 @@ class SweepResult:
     # test_sweep_reports_books_excluded_from_the_listing and
     # ::test_main_exits_nonzero_when_a_book_was_excluded.
     excluded: list[str] = field(default_factory=list)
+    # #CRITICAL: data-integrity: a timeout abandons the rest of the sweep, so
+    # without these two lists the abandoned books would produce no exit-code
+    # signal and no summary line, which is the same silent-gap failure the
+    # `excluded` field above exists to prevent. `timed_out` is kept out of
+    # `failed` on purpose: a provider error is worth re-running, a timeout is
+    # worth investigating first, and collapsing them hides which happened.
+    # #VERIFY: tests/unit/test_remoderate_books.py::
+    # test_sweep_abandons_remaining_targets_after_a_timeout and
+    # ::test_main_exits_nonzero_when_a_book_timed_out.
+    timed_out: list[tuple[str, int]] = field(default_factory=list)
+    not_attempted: list[tuple[str, int]] = field(default_factory=list)
 
 
 async def sweep(
@@ -481,6 +520,7 @@ async def sweep(
     mock_moderated: bool = False,
     in_review: bool = False,
     execute: bool = False,
+    per_book_timeout_seconds: float = _PER_BOOK_TIMEOUT_SECONDS,
 ) -> SweepResult:
     """Select and (optionally) re-moderate the target books.
 
@@ -494,6 +534,10 @@ async def sweep(
         session_factory: Callable returning a new ``AsyncSession``. Defaults
             to a sessionmaker bound to ``engine``; tests inject a mocked
             session factory here so no real database connection is required.
+        per_book_timeout_seconds: Wall-clock bound on ONE book's
+            re-moderation. Exceeding it rolls that book back (releasing its
+            row lock) and abandons the remaining targets; see
+            :data:`_PER_BOOK_TIMEOUT_SECONDS`.
         settings: Settings passed through to
             :func:`remoderate_storybook_version` (provider construction).
             Defaults to the app's shared settings.
@@ -564,7 +608,9 @@ async def sweep(
         blocked: list[tuple[str, int]] = []
         flagged: list[tuple[str, int]] = []
         repaired: list[tuple[str, int]] = []
-        for storybook_id, version in targets:
+        timed_out: list[tuple[str, int]] = []
+        not_attempted: list[tuple[str, int]] = []
+        for index, (storybook_id, version) in enumerate(targets):
             try:
                 # #CRITICAL: data-integrity: one COMMIT per book, not one
                 # savepoint inside a single sweep-wide transaction. A
@@ -582,9 +628,39 @@ async def sweep(
                 # #VERIFY: tests/unit/test_remoderate_books.py::
                 # test_sweep_commits_after_each_book and
                 # ::test_sweep_continues_after_one_failure.
-                result = await remoderate_storybook_version(
-                    session, storybook_id, version, ctx
+                async with asyncio.timeout(per_book_timeout_seconds):
+                    result = await remoderate_storybook_version(
+                        session, storybook_id, version, ctx
+                    )
+            except TimeoutError:
+                # #CRITICAL: concurrency: caught BEFORE the generic handler and
+                # handled differently on purpose. asyncio.timeout raises the
+                # builtin TimeoutError, which `except Exception` below would
+                # otherwise swallow into the ordinary retry-me bucket.
+                #
+                # The rollback is what actually releases the row lock, so it
+                # runs first and unconditionally. The sweep then STOPS rather
+                # than continuing: a timeout is a statement about the provider
+                # or the pipeline, not about this book, so pushing the next
+                # sixteen through the same wedged path would spend real LLM
+                # budget to collect sixteen more timeouts, each holding another
+                # row lock on another book a reviewer may be waiting on. It
+                # also avoids reusing a session whose connection was cancelled
+                # mid-statement.
+                # #VERIFY: tests/unit/test_remoderate_books.py::
+                # test_sweep_times_out_a_wedged_book_and_releases_its_lock and
+                # ::test_sweep_abandons_remaining_targets_after_a_timeout.
+                await session.rollback()
+                _logger.error(
+                    "remoderate_books.sweep_timed_out",
+                    storybook_id=storybook_id,
+                    version=version,
+                    timeout_seconds=per_book_timeout_seconds,
+                    abandoned=len(targets) - index - 1,
                 )
+                timed_out.append((storybook_id, version))
+                not_attempted = list(targets[index + 1 :])
+                break
             except Exception:
                 # #ASSUME: external-resources: a transient provider error on
                 # one book must not abort the sweep. The rollback discards
@@ -630,6 +706,8 @@ async def sweep(
             flagged=flagged,
             repaired=repaired,
             excluded=excluded,
+            timed_out=timed_out,
+            not_attempted=not_attempted,
         )
 
 
@@ -674,6 +752,17 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Actually call the re-moderation entry point for each target. "
         "Without this flag, only lists the targets; nothing is written.",
     )
+    parser.add_argument(
+        "--per-book-timeout",
+        type=float,
+        default=_PER_BOOK_TIMEOUT_SECONDS,
+        dest="per_book_timeout",
+        metavar="SECONDS",
+        help="Wall-clock bound on one book's re-moderation (default: "
+        f"{_PER_BOOK_TIMEOUT_SECONDS:.0f}). Exceeding it rolls that book back, "
+        "releasing the row lock that would otherwise block an admin's "
+        "approve or send-back on it, and abandons the remaining targets.",
+    )
     return parser.parse_args(argv)
 
 
@@ -709,6 +798,7 @@ def main() -> None:
             mock_moderated=args.mock_moderated,
             in_review=args.in_review,
             execute=args.execute,
+            per_book_timeout_seconds=args.per_book_timeout,
         )
     )
 
@@ -774,11 +864,34 @@ def main() -> None:
             "remoderate_books: failed (rolled back, retry by re-running): "
             + ", ".join(f"{sid} v{v}" for sid, v in result.failed)
         )
-    if result.failed or result.blocked or result.excluded:
+    if result.timed_out:
+        # Printed separately from `failed` because the operator's next action
+        # differs: a failure says re-run, a timeout says find out what is
+        # wedged before spending more.
+        print(
+            "remoderate_books: TIMED OUT (rolled back, row lock released): "
+            + ", ".join(f"{sid} v{v}" for sid, v in result.timed_out)
+            + ". The sweep stopped here rather than driving the rest through"
+            + " the same wedged path."
+        )
+    if result.not_attempted:
+        print(
+            "remoderate_books: not attempted after the timeout: "
+            + ", ".join(f"{sid} v{v}" for sid, v in result.not_attempted)
+        )
+    if (
+        result.failed
+        or result.blocked
+        or result.excluded
+        or result.timed_out
+        or result.not_attempted
+    ):
         sys.exit(
             f"remoderate_books: {len(result.failed)} book(s) failed "
             f"re-moderation, {len(result.blocked)} book(s) hard-blocked, "
-            f"{len(result.excluded)} book(s) excluded."
+            f"{len(result.excluded)} book(s) excluded, "
+            f"{len(result.timed_out)} book(s) timed out, "
+            f"{len(result.not_attempted)} book(s) not attempted."
         )
 
 

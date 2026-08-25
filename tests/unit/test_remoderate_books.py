@@ -8,6 +8,7 @@ tests/unit/test_seed_moderation_qa.py.
 
 from __future__ import annotations
 
+import asyncio
 import importlib.util
 import sys
 from pathlib import Path
@@ -979,3 +980,121 @@ def test_parse_args_rejects_in_review_with_mock_moderated(
     with pytest.raises(SystemExit):
         remoderate_books._parse_args(["--in-review", "--mock-moderated"])
     assert "not allowed with argument" in capsys.readouterr().err
+
+
+@pytest.mark.asyncio
+async def test_sweep_times_out_a_wedged_book_and_releases_its_lock() -> None:
+    """A wedged book is bounded, rolled back, and kept out of ``failed``.
+
+    The rollback is the assertion that matters, not the bucket. Postgres holds
+    ``remoderate_storybook_version``'s ``SELECT ... FOR UPDATE`` on the
+    storybook row until the transaction ends, so until this rollback runs, an
+    admin's approve or send-back on THIS book blocks behind a hung provider
+    call with no timeout of its own. ``log == ["rollback"]`` is the closest a
+    unit test gets to observing that release.
+    """
+    session, log = _execute_session(["s_wedged"])
+
+    async def _wedged(
+        _session: object, _storybook_id: str, _version: int, _ctx: object
+    ) -> object:
+        await asyncio.sleep(5)
+        msg = "unreachable: the timeout must fire first"
+        raise AssertionError(msg)
+
+    with patch.object(
+        remoderate_books,
+        "remoderate_storybook_version",
+        AsyncMock(side_effect=_wedged),
+    ):
+        result = await remoderate_books.sweep(
+            engine=_mock_engine(),
+            session_factory=_mock_session_factory(session),
+            book_ids=["s_wedged"],
+            execute=True,
+            per_book_timeout_seconds=0.01,
+        )
+
+    assert log == ["rollback"]
+    assert result.timed_out == [("s_wedged", 1)]
+    # Deliberately NOT in `failed`: a provider error says re-run, a timeout
+    # says find out what is wedged first, and collapsing them hides which
+    # happened.
+    assert result.failed == []
+    assert result.succeeded == []
+
+
+@pytest.mark.asyncio
+async def test_sweep_abandons_remaining_targets_after_a_timeout() -> None:
+    """A timeout stops the sweep, and the books it skipped are still reported.
+
+    Two properties, and the second is the one a summary-only assertion would
+    miss. The call count proves the sweep STOPPED rather than racing through
+    the rest; ``not_attempted`` proves the skipped books still produce an
+    operator-visible signal instead of vanishing between ``targets`` and
+    ``succeeded``.
+    """
+    session, _log = _execute_session(["s_a", "s_b", "s_c"])
+    calls: list[str] = []
+
+    async def _wedge_the_first(
+        _session: object, storybook_id: str, _version: int, _ctx: object
+    ) -> object:
+        calls.append(storybook_id)
+        await asyncio.sleep(5)
+        msg = "unreachable: the timeout must fire first"
+        raise AssertionError(msg)
+
+    with patch.object(
+        remoderate_books,
+        "remoderate_storybook_version",
+        AsyncMock(side_effect=_wedge_the_first),
+    ):
+        result = await remoderate_books.sweep(
+            engine=_mock_engine(),
+            session_factory=_mock_session_factory(session),
+            book_ids=["s_a", "s_b", "s_c"],
+            execute=True,
+            per_book_timeout_seconds=0.01,
+        )
+
+    assert calls == ["s_a"]
+    assert result.timed_out == [("s_a", 1)]
+    assert result.not_attempted == [("s_b", 1), ("s_c", 1)]
+
+
+def test_main_exits_nonzero_when_a_book_timed_out(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A timeout and its abandoned books are a summary line and a nonzero exit.
+
+    Same reasoning as the excluded-book case: a book that produced neither a
+    success nor a failure would otherwise leave a sweep printing a tidy count
+    and exiting 0 with most of its work undone.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[("s_a", 1), ("s_b", 1)],
+        executed=True,
+        timed_out=[("s_a", 1)],
+        not_attempted=[("s_b", 1)],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main(result)
+
+    assert excinfo.value.code is not None
+    assert "1 book(s) timed out" in str(excinfo.value.code)
+    assert "1 book(s) not attempted" in str(excinfo.value.code)
+    out = capsys.readouterr().out
+    assert "TIMED OUT" in out
+    # Both ids in the SUMMARY, not only in a structured log.
+    assert "s_a" in out
+    assert "s_b" in out
+
+
+def test_parse_args_defaults_the_per_book_timeout() -> None:
+    """The bound is on by default; an operator has to opt OUT, not opt in."""
+    args = remoderate_books._parse_args(["--in-review"])
+
+    assert args.per_book_timeout == remoderate_books._PER_BOOK_TIMEOUT_SECONDS
+    assert remoderate_books._PER_BOOK_TIMEOUT_SECONDS > 0
