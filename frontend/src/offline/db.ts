@@ -67,6 +67,17 @@ export interface QueuedWrite {
   state: ReadingState
   device_id?: string
   queued_at: number
+  // #CRITICAL: data-integrity: monotonic tie-break for queued_at, which is a
+  // Date.now() millisecond stamp. Two writes for one row can be enqueued inside
+  // the same millisecond (saveProgress appends without a network round trip once
+  // the row already has a queued write), and Array.prototype.sort is stable, so
+  // without this the tie keeps db.getAll's key order, which is random-UUID
+  // event_id order rather than insertion order. Replayed out of order the older
+  // node is written last and the child's server position rewinds.
+  // #VERIFY: sync.test.ts "replays same-millisecond writes in insertion order".
+  // Optional so records written before this field existed still load; they
+  // predate the multi-writer path and sort by queued_at alone.
+  seq?: number
 }
 
 /** A profile's last known authoritative shelf (offline-copy revocation). */
@@ -509,17 +520,24 @@ export async function clearReadingStates(): Promise<void> {
   await db.clear('reading_states')
 }
 
-/** Queue a reading-state write made while offline. */
+// Session-monotonic counter stamped onto every queued write, so writes made in
+// the same millisecond keep their insertion order. Resets on reload, which is
+// harmless: queued_at dominates the sort across sessions (a reload takes far
+// longer than a millisecond), and seq only ever breaks a within-session tie.
+let queueSeq = 0
+
+/** Queue a reading-state write. Stamps the insertion-order tie-break. */
 export async function enqueueWrite(item: QueuedWrite): Promise<void> {
   const db = await getDb()
-  await db.put('offline_queue', item)
+  queueSeq += 1
+  await db.put('offline_queue', { ...item, seq: item.seq ?? queueSeq })
 }
 
-/** List queued offline writes in insertion order (oldest first). */
+/** List queued writes in insertion order (oldest first). */
 export async function listQueue(): Promise<QueuedWrite[]> {
   const db = await getDb()
   const items = await db.getAll('offline_queue')
-  return items.sort((a, b) => a.queued_at - b.queued_at)
+  return items.sort((a, b) => a.queued_at - b.queued_at || (a.seq ?? 0) - (b.seq ?? 0))
 }
 
 /** Remove a queued write once the server has accepted it. */

@@ -4,8 +4,10 @@
  * The server is canonical (tech-spec "Multi-device sync rules"). A save carries
  * the base `state_revision` and an `event_id`. On success the local cache is
  * updated; on 409 the caller reconciles (see offline-conflict-ux.md); when the
- * network is unavailable the write is queued and replayed in order on reconnect,
- * with the `event_id` making replays idempotent server-side.
+ * network is unavailable, OR when writes for that row are already queued, the
+ * write is queued and replayed in order on reconnect, with the `event_id`
+ * making replays idempotent server-side. Any append schedules its own drain
+ * (QUEUE_APPENDED_EVENT) so a queue can never sit unsent on an online device.
  */
 
 import {
@@ -39,6 +41,28 @@ export class OfflineError extends Error {
     this.name = 'OfflineError'
   }
 }
+
+/**
+ * Dispatched on `window` after a write is appended to the offline queue while
+ * the device reports itself online.
+ *
+ * #CRITICAL: concurrency: an append is not self-draining. replayQueue runs only
+ * from useReplayOnReconnect, which listens for 'online' and this event. Every
+ * transport failure without an HTTP response raises OfflineError (a 10s axios
+ * timeout, DNS, a dropped socket, CORS), and none of those flip
+ * `navigator.onLine`, so none of them fire 'online'. Without this signal one
+ * such blip strands a write, every later saveProgress for that row appends
+ * behind it (see overtakesQueue), and the rest of the reading session is never
+ * sent while persist() reports each append as a success. It also closes the
+ * check-then-act window between the overtakesQueue read and enqueueWrite: the
+ * event fires AFTER the write is committed, so a drain that already saw an
+ * empty queue and returned is re-kicked rather than racing.
+ * #VERIFY: sync.test.ts "schedules a drain when a write is appended while
+ * online" and its discriminating negative "does not schedule a drain for a
+ * write queued while offline"; useReplayOnReconnect.test.ts "repeats the drain
+ * for a trigger that arrived while one was in flight" covers the residual.
+ */
+export const QUEUE_APPENDED_EVENT = 'cyo:queue-appended'
 
 /**
  * Raised when a local IndexedDB write inside saveProgress fails somewhere
@@ -186,8 +210,16 @@ function withCarriedCharacterSeed(
 
 /**
  * Save reading progress. Updates the local cache, then attempts the server save:
- * returns `saved` on success, `conflict` on a 409, or `queued` if the network is
- * unavailable (the write is enqueued for later replay).
+ * returns `saved` on success, `conflict` on a 409, or `queued`.
+ *
+ * `queued` does NOT imply the device is offline. A write is queued when the
+ * network is unavailable OR when writes for this row are already queued and a
+ * live write would overtake them (see overtakesQueue below). Callers must not
+ * read `queued` as "we are offline, the offline chrome explains it": on the
+ * second path `navigator.onLine` is true and nothing else signals to the user
+ * that this step has not reached the server yet. Every append schedules its own
+ * drain via QUEUE_APPENDED_EVENT, so `queued` means "sent shortly", not
+ * "sent whenever the device next reconnects".
  */
 // #CRITICAL: concurrency: saveProgress writes to IndexedDB then the server.
 // The server is canonical (tech-spec "Multi-device sync rules"). A 409 means
@@ -231,6 +263,66 @@ export async function saveProgress(
     device_id: opts.deviceId,
     event_id: eventId,
   })
+  const enqueueBehindTheQueue = async (): Promise<SaveResult> => {
+    const queued: QueuedWrite = {
+      event_id: eventId,
+      profile_id: profileId,
+      storybook_id: storybookId,
+      base_revision: state.state_revision,
+      state,
+      device_id: opts.deviceId,
+      queued_at: Date.now(),
+    }
+    try {
+      await enqueueWrite(queued)
+    } catch (cause) {
+      throw new LocalWriteError('failed to enqueue the offline write', cause)
+    }
+    // Schedule the drain. Only when the device reports itself online: a write
+    // queued while genuinely offline is already covered by the 'online' event,
+    // and kicking a drain that can only raise OfflineError would burn a round
+    // trip per choice through a long offline read. See QUEUE_APPENDED_EVENT for
+    // why an append that is NOT covered by 'online' would otherwise sit forever.
+    if (typeof window !== 'undefined' && navigator.onLine) {
+      window.dispatchEvent(new Event(QUEUE_APPENDED_EVENT))
+    }
+    return { kind: 'queued', eventId }
+  }
+  // #CRITICAL: concurrency: never overtake writes already queued for this row.
+  // The queue exists to keep one row's writes totally ordered. A live write
+  // that goes straight to the network while older writes for the same row are
+  // still queued races replayQueue on reconnect: neither writer can refresh
+  // `state_revision` while offline, so both carry the same base, exactly one is
+  // accepted and the other 409s. Whichever loses is discarded, and if the LIVE
+  // write is the loser the reader adopts the replayed older row and rewinds the
+  // child to a node they already left. Append instead and let replayQueue send
+  // the chain in order; it rebases each write onto the previous one's revision.
+  // #VERIFY: sync.test.ts "appends a live write behind an existing queued write
+  // for the same row" and "sends a live write when the queue holds another row
+  // only". offline-reconnect-real.spec.ts settles every offline choice BEFORE
+  // reconnecting, so it exercises the plain replay path, not this one.
+  //
+  // Failing closed: an unreadable queue is treated as non-empty. Overtaking a
+  // queue we cannot see risks the rewind this check exists to prevent, while
+  // appending costs at most one deferred round trip, and the append schedules
+  // its own drain. Every other local-storage touch in this function is
+  // deliberately classified (see the best-effort read above and the
+  // LocalWriteError wrap below); this one must be too, or a DOMException here
+  // escapes as neither and the caller counts a purely local fault as a remote
+  // save failure.
+  // #VERIFY: sync.test.ts "appends rather than sending when the queue cannot be
+  // read".
+  let overtakesQueue = true
+  try {
+    overtakesQueue = (await listQueue()).some(
+      (item) => item.profile_id === profileId && item.storybook_id === storybookId
+    )
+  } catch (cause) {
+    console.error('[reader] failed to inspect the offline queue; appending', { cause })
+  }
+  if (overtakesQueue) {
+    return enqueueBehindTheQueue()
+  }
   try {
     const res = await api.putReadingState(profileId, storybookId, body)
     if (res.status === 409) {
@@ -257,21 +349,7 @@ export async function saveProgress(
     if (!(error instanceof OfflineError)) {
       throw error
     }
-    const queued: QueuedWrite = {
-      event_id: eventId,
-      profile_id: profileId,
-      storybook_id: storybookId,
-      base_revision: state.state_revision,
-      state,
-      device_id: opts.deviceId,
-      queued_at: Date.now(),
-    }
-    try {
-      await enqueueWrite(queued)
-    } catch (cause) {
-      throw new LocalWriteError('failed to enqueue the offline write', cause)
-    }
-    return { kind: 'queued', eventId }
+    return enqueueBehindTheQueue()
   }
 }
 
@@ -333,6 +411,10 @@ function queueKey(item: QueuedWrite): string {
  * instead of being auto-rebased onto the server's revision, which would silently
  * overwrite the still-unreconciled row. A non-offline error (e.g. 422/5xx) drops
  * that write so it cannot wedge every later write.
+ *
+ * The drain repeats in passes rather than reading one snapshot, because
+ * saveProgress appends while a replay runs. It returns when a pass finds the
+ * queue empty, when a write is still offline, or when a pass dequeues nothing.
  */
 // #CRITICAL: concurrency: replayQueue replays writes in insertion order.
 // Writes for the same story share a base_revision; latestRevision rebases each
@@ -356,46 +438,91 @@ export async function replayQueue(api: SyncApi): Promise<ReplayOutcome> {
   // Stories that have already hit a genuine cross-device 409 in this replay.
   // Every remaining write for such a story is held, not sent.
   const conflicted = new Set<string>()
-  for (const item of await listQueue()) {
-    const key = queueKey(item)
-    if (conflicted.has(key)) {
-      // A prior write for this story hit a genuine cross-device conflict. Do
-      // not auto-rebase the tail onto the server revision (that would
-      // overwrite the still-unreconciled row); surface every held write to
-      // reconciliation instead.
-      outcome.conflicts.push(item)
-      await dequeue(item.event_id)
-      continue
-    }
-    const knownRevision = latestRevision.get(key)
-    const state =
-      knownRevision === undefined ? item.state : { ...item.state, state_revision: knownRevision }
-    let res: PutResponse
-    try {
-      res = await api.putReadingState(
-        item.profile_id,
-        item.storybook_id,
-        toPutPayload({ ...state, device_id: item.device_id, event_id: item.event_id })
-      )
-    } catch (error) {
-      if (error instanceof OfflineError) {
-        break // still offline; leave this and the rest queued
+  // #CRITICAL: concurrency: drain in passes, not over one snapshot. saveProgress
+  // appends to this queue while a replay is running (see its overtakesQueue
+  // branch), so a choice made during the drain would otherwise sit unsent until
+  // the next 'online' event, which on a device that never drops again is never.
+  // Each pass either dequeues at least one write or returns, so this cannot spin.
+  // #VERIFY: sync.test.ts "sends a write appended while the drain was already
+  // running". offline-reconnect-real.spec.ts settles every offline choice before
+  // reconnecting, so it never appends mid-drain and cannot cover this.
+  const drainStartedAt = Date.now()
+  for (;;) {
+    const pass = await listQueue()
+    if (pass.length === 0) return outcome
+    let dequeuedAny = false
+    let stillOffline = false
+    for (const item of pass) {
+      const key = queueKey(item)
+      // #CRITICAL: data-integrity: the latch holds the STALE tail of an offline
+      // chain, not fresh reading. A write enqueued after this drain began is a
+      // choice the child just made on a device that is online now; holding it
+      // would dequeue it without ever sending it, and nothing surfaces
+      // outcome.conflicts to the child. Before the queue could absorb live
+      // writes that choice went straight to the network, so exempting it
+      // restores the pre-existing behaviour rather than inventing one: it
+      // either lands (newest-write-wins, ADR-002) or 409s and is surfaced.
+      // The comparison is strict, so a write stamped in the same millisecond as
+      // the drain start is treated as part of the stale chain (fail-safe).
+      // #VERIFY: sync.test.ts "still sends a choice made after a drain latched
+      // the story", and "holds a write stamped in the drain-start millisecond as
+      // part of the stale chain" for the boundary.
+      const isFreshWrite = item.queued_at > drainStartedAt
+      if (conflicted.has(key) && !isFreshWrite) {
+        // A prior write for this story hit a genuine cross-device conflict. Do
+        // not auto-rebase the tail onto the server revision (that would
+        // overwrite the still-unreconciled row); surface every held write to
+        // reconciliation instead.
+        outcome.conflicts.push(item)
+        await dequeue(item.event_id)
+        dequeuedAny = true
+        continue
       }
-      // Non-offline failure (auth/validation/server): this write cannot replay.
-      // Drop it so it does not block every later write, and surface it.
-      outcome.failed.push(item)
+      const knownRevision = latestRevision.get(key)
+      const state =
+        knownRevision === undefined ? item.state : { ...item.state, state_revision: knownRevision }
+      let res: PutResponse
+      try {
+        res = await api.putReadingState(
+          item.profile_id,
+          item.storybook_id,
+          toPutPayload({ ...state, device_id: item.device_id, event_id: item.event_id })
+        )
+      } catch (error) {
+        if (error instanceof OfflineError) {
+          // Still offline; leave this and the rest queued for the next 'online'.
+          stillOffline = true
+          break
+        }
+        // Non-offline failure (auth/validation/server): this write cannot replay.
+        // Drop it so it does not block every later write, and surface it.
+        outcome.failed.push(item)
+        await dequeue(item.event_id)
+        dequeuedAny = true
+        continue
+      }
+      if (res.status === 409) {
+        outcome.conflicts.push(item)
+        conflicted.add(key) // latch: hold every later write for this story too
+      } else {
+        try {
+          await putReadingState(item.profile_id, item.storybook_id, res.row)
+        } catch (cause) {
+          // The server already accepted this write, so it is not lost, only its
+          // local mirror is stale. Same rationale as saveProgress's own refresh:
+          // throwing here would abort the whole drain, discarding every conflict
+          // and failure collected so far (the caller reports outcome only on a
+          // normal return) and leaving already-accepted writes queued.
+          // #VERIFY: sync.test.ts "keeps draining when mirroring an accepted
+          // row locally fails".
+          console.error('[reader] failed to mirror a replayed row locally', { cause })
+        }
+        outcome.replayed += 1
+        latestRevision.set(key, res.row.state_revision)
+      }
       await dequeue(item.event_id)
-      continue
+      dequeuedAny = true
     }
-    if (res.status === 409) {
-      outcome.conflicts.push(item)
-      conflicted.add(key) // latch: hold every later write for this story too
-    } else {
-      await putReadingState(item.profile_id, item.storybook_id, res.row)
-      outcome.replayed += 1
-      latestRevision.set(key, res.row.state_revision)
-    }
-    await dequeue(item.event_id)
+    if (stillOffline || !dequeuedAny) return outcome
   }
-  return outcome
 }

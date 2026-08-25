@@ -97,13 +97,24 @@ test('an admin builds a real automated-provider plan constrained to the real all
   // prep_model becomes free text only once mechanism is switched away from
   // 'skill' (it's a <select> until then); switch first, then fill.
   await page.getByRole('radio', { name: 'Automated provider' }).click()
-  await page.getByLabel('Prep model').fill('claude-sonnet-4-6')
-  // The dev seed's DEFAULT_ALLOWLIST includes an enabled anthropic entry
-  // (scripts/seed_dev_data.py / generation/allowlist.py); this proves the
-  // dialog's provider/model dropdowns are populated from the REAL allowlist
-  // table, not a hardcoded list.
-  await page.getByRole('combobox', { name: /^Provider/ }).selectOption('anthropic')
-  await page.getByRole('combobox', { name: /^Model/ }).selectOption('claude-sonnet-4-6')
+  await page.getByLabel('Prep model').fill('anthropic/claude-sonnet-4.6')
+  // The dev seed's DEFAULT_ALLOWLIST has an ENABLED openrouter entry for this
+  // model (scripts/seed_dev_data.py / generation/allowlist.py); selecting it
+  // proves the dialog's provider/model dropdowns are populated from the REAL
+  // allowlist table, not a hardcoded list, because the dialog offers only
+  // rows whose `enabled` is true.
+  //
+  // Deliberately NOT 'anthropic'. Migration
+  // 20260823140000_align_allowlist_with_d1_lane_ruling.sql disabled both
+  // direct-anthropic rows ("direct, withdrawn") under the D1 lane ruling: kid
+  // and guardian generation routes through OpenRouter or Modal only, never the
+  // owner's own Anthropic subscription. `FAMILY_LANE_PROVIDERS` in
+  // generation/provider.py is the authority and is {mock, openrouter, modal}.
+  // A disabled row renders no <option>, so the previous 'anthropic' selection
+  // simply waited until the 30s test timeout. Re-enabling those rows to satisfy
+  // this spec would reverse an owner decision; pick a permitted provider instead.
+  await page.getByRole('combobox', { name: /^Provider/ }).selectOption('openrouter')
+  await page.getByRole('combobox', { name: /^Model/ }).selectOption('anthropic/claude-sonnet-4.6')
   await page.getByRole('button', { name: 'Create plan' }).click()
 
   await expect(page.getByRole('dialog')).not.toBeVisible()

@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import type { ReplayOutcome, SyncApi } from '../offline/sync'
+import { QUEUE_APPENDED_EVENT, type ReplayOutcome, type SyncApi } from '../offline/sync'
 
 const mockReplayQueue = vi.fn<(api: SyncApi) => Promise<ReplayOutcome>>()
 
@@ -83,6 +83,54 @@ describe('useReplayOnReconnect', () => {
       window.dispatchEvent(new Event('online'))
       await Promise.resolve()
     })
+    await waitFor(() => expect(mockReplayQueue).toHaveBeenCalledTimes(2))
+  })
+
+  it('flushes again when a queued write announces itself', async () => {
+    // A transport failure with no HTTP response (a timeout, DNS, a dropped
+    // socket) queues a write without moving navigator.onLine, so no 'online'
+    // event follows and this is the only trigger that will ever come.
+    mockReplayQueue.mockResolvedValue(emptyOutcome)
+    renderHook(() => useReplayOnReconnect(fakeApi, vi.fn()))
+    await waitFor(() => expect(mockReplayQueue).toHaveBeenCalledTimes(1))
+
+    await act(async () => {
+      window.dispatchEvent(new Event(QUEUE_APPENDED_EVENT))
+      await Promise.resolve()
+    })
+
+    await waitFor(() => expect(mockReplayQueue).toHaveBeenCalledTimes(2))
+  })
+
+  it('repeats the drain for a trigger that arrived while one was in flight', async () => {
+    // Coalesced, not dropped. replayQueue re-lists the queue between passes, so
+    // a mid-drain append is usually caught by the drain itself; the gap is an
+    // append that commits after the last pass saw an empty queue but before the
+    // busy flag clears. No further trigger would ever come for it.
+    let resolveFlush: (outcome: ReplayOutcome) => void = () => {}
+    mockReplayQueue.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveFlush = resolve
+        })
+    )
+    renderHook(() => useReplayOnReconnect(fakeApi, vi.fn()))
+    await waitFor(() => expect(mockReplayQueue).toHaveBeenCalledTimes(1))
+
+    await act(async () => {
+      window.dispatchEvent(new Event(QUEUE_APPENDED_EVENT))
+      await Promise.resolve()
+    })
+    // Suppressed while busy, as before.
+    expect(mockReplayQueue).toHaveBeenCalledTimes(1)
+
+    // Releasing the in-flight drain must restart it on its own: no second
+    // event is dispatched here, so a second call can only come from the latch.
+    await act(async () => {
+      resolveFlush(emptyOutcome)
+      await Promise.resolve()
+    })
+
     await waitFor(() => expect(mockReplayQueue).toHaveBeenCalledTimes(2))
   })
 
