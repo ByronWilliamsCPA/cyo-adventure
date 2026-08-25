@@ -7130,7 +7130,7 @@ needs to become these named actions.</p>
 </tr>
 <tr>
 <td>UW-F25</td>
-<td><code>Settings.forwarded_allow_ips</code> is never read in Python. Found by the same 2026-07-31 sweep. The value that actually takes effect is uvicorn's <code>--forwarded-allow-ips</code> CLI flag: hardcoded to <code>172.16.0.0/12</code> in the Dockerfile CMD and overridden per stack in <code>docker-compose.yml</code> (<code>${FORWARDED_ALLOW_IPS:-172.25.0.0/16}</code>) and <code>docker-compose.prod.yml</code>. Setting <code>CYO_ADVENTURE_FORWARDED_ALLOW_IPS</code> in an environment therefore does nothing, while the field's docstring reads as though it governs the behaviour. Security-adjacent: this is the list of proxies trusted to set <code>X-Forwarded-*</code>, so the resolution is either to have the entrypoint derive the flag from the setting (one source of truth) or to delete the field and repoint its rationale at the Dockerfile and compose files. Do not simply drop it without recording where the real value lives; the docstring is currently the only prose explanation of the choice. Note that vulture no longer reports this: the UW-F23 baseline suppresses it (tagged <code>UW-F25</code> inline in <code>vulture_whitelist.py</code>), so this row is now the only signal keeping it visible. Delete that whitelist entry as part of the fix.</td>
+<td><code>Settings.forwarded_allow_ips</code> is never read in Python. Found by the same 2026-07-31 sweep. The value that actually takes effect is uvicorn's <code>--forwarded-allow-ips</code> CLI flag: hardcoded to <code>172.16.0.0/12</code> in the Dockerfile CMD and overridden per stack in <code>docker-compose.yml</code> (<code>${FORWARDED_ALLOW_IPS:-172.26.0.0/16}</code>) and <code>docker-compose.prod.yml</code>. Setting <code>CYO_ADVENTURE_FORWARDED_ALLOW_IPS</code> in an environment therefore does nothing, while the field's docstring reads as though it governs the behaviour. Security-adjacent: this is the list of proxies trusted to set <code>X-Forwarded-*</code>, so the resolution is either to have the entrypoint derive the flag from the setting (one source of truth) or to delete the field and repoint its rationale at the Dockerfile and compose files. Do not simply drop it without recording where the real value lives; the docstring is currently the only prose explanation of the choice. Note that vulture no longer reports this: the UW-F23 baseline suppresses it (tagged <code>UW-F25</code> inline in <code>vulture_whitelist.py</code>), so this row is now the only signal keeping it visible. Delete that whitelist entry as part of the fix.</td>
 <td>5</td>
 <td>unscheduled</td>
 </tr>
@@ -8324,7 +8324,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 15:24:59 UTC">August 25, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 20:34:36 UTC">August 25, 2026</span>
   </span>
 
     

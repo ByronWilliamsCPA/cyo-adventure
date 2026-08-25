@@ -3575,9 +3575,27 @@ in CI via <code>supabase/setup-cli</code>). From the repo root:</p>
 </span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">  </span>--delay-request<span class="w"> </span><span class="m">1100</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">  </span>--reporters<span class="w"> </span>cli,junit<span class="w"> </span>--reporter-junit-export<span class="w"> </span>newman-junit.xml<span class="w"> </span>--bail
 </span></code></pre></div>
-<p>If another compose project already occupies the default ports or the pinned <code>172.25.0.0/16</code> subnet (for
-example a running dev stack), run the suite under an isolated project with remapped ports and point
-<code>base_url</code>/<code>DATABASE_URL</code> at them (<code>docker compose -p cyo-adventure-apitest ...</code>).</p>
+<p>If another compose project already occupies the default ports or the pinned <code>172.26.0.0/16</code> subnet (for
+example a running dev stack), run the suite under an isolated project and point <code>base_url</code>/<code>DATABASE_URL</code>
+at the remapped endpoints. Note that <code>-p</code> alone is not sufficient: it changes the project name, but the
+subnet is pinned in <code>docker-compose.yml</code> (<code>networks.cyo_adventure-network.ipam.config</code>), so the isolated
+project requests the same range and Docker refuses it with "Pool overlaps with other one on this address
+space". Supply an override that moves both the subnet and the published ports:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>/tmp/apitest.yml<span class="w"> </span><span class="s">&lt;&lt;&#39;YAML&#39;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="s">services:</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="s">  app:</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="s">    ports: [&quot;18000:8000&quot;]</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="s">  db:</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="s">    ports: [&quot;15432:5432&quot;]</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="s">networks:</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="s">  cyo_adventure-network:</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="s">    ipam:</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="s">      config:</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="s">        - subnet: 172.31.0.0/16</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="s">YAML</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>docker<span class="w"> </span>compose<span class="w"> </span>-p<span class="w"> </span>cyo-adventure-apitest<span class="w"> </span>-f<span class="w"> </span>docker-compose.yml<span class="w"> </span>-f<span class="w"> </span>/tmp/apitest.yml<span class="w"> </span>up<span class="w"> </span>-d
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="c1"># then: base_url=http://localhost:18000, DATABASE_URL=...@localhost:15432/cyo_adventure</span>
+</span></code></pre></div>
 <h2 id="required-environment">Required environment<a class="headerlink" href="#required-environment" title="Permanent link">&para;</a></h2>
 <p>No real secrets are required to run the suite. The compose defaults are sufficient: <code>ENVIRONMENT=local</code>
 (dev auth), <code>DATABASE_URL</code> pointing at the compose <code>db</code> service, benign dev defaults for
@@ -3626,7 +3644,7 @@ pushing.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 8, 2026 23:28:25 UTC">August 8, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 20:34:36 UTC">August 25, 2026</span>
   </span>
 
     
