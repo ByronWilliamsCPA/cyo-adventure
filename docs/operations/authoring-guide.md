@@ -97,14 +97,16 @@ bottom:
   what changed since the last time it was reviewed.
 - **Story overview** (open by default): a quick, skimmable summary of the story's branches and
   themes, so an admin does not have to read every page before deciding whether to dig in.
-- **Flagged passages**: the specific passages the automated checks flagged, ranked so the most
-  serious findings come first, each with a **Show in story** link that jumps straight to that
-  passage further down. If nothing was flagged, this section says so plainly: "No flagged passages.
-  This story screened clean."
-- **Story-level notes**: findings about the story as a whole rather than one specific passage, such
-  as a structural problem the automated checks could not tie to one spot. A handful of low-priority
-  notes are rolled up into a single summary line here instead of being listed one by one, so a real
-  concern never gets buried under routine housekeeping.
+- **Flagged passages**: the specific passages the automated checks flagged, each with a
+  **Show in story** link that jumps straight to that passage further down. If nothing was flagged,
+  this section says so plainly: "No flagged passages. This story screened clean."
+- **Ranked findings**: the same findings as a triage-ordered list instead of joined to their
+  passage, sorted so the most serious verdict and severity come first. This is for scanning the
+  whole story's severity at a glance, not for reading a passage in context, so it deliberately
+  overlaps with Flagged passages above.
+- **Structural findings**: findings about the story as a whole rather than one specific passage,
+  such as a structural problem the automated checks could not tie to one spot, ranked the same way
+  as Ranked findings above.
 - **The full story**: every passage in reading order, with a **Start** marker on the opening
   passage. Passages the story's own choices can never actually reach are listed separately, under
   **Unreachable passages**, so nothing gets skipped just because a branch is dead.
