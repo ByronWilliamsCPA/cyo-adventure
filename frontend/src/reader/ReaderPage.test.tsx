@@ -1507,3 +1507,155 @@ describe('ReaderPage fresh-read character seeding (ADR-028 Task 9, I1)', () => {
     expect(screen.queryByTestId('reader-character-name')).toBeNull()
   })
 })
+
+/**
+ * ADR-026 flowed-stop mount (UW-F40).
+ *
+ * At bands 8-11 and up the reader walks the whole opening stop before the
+ * child touches anything, so Reader's progress effect reports MORE THAN ONE
+ * reading state inside a single save round-trip. `persist()` stamps
+ * `state_revision` from `revisionRef.current` synchronously, and that ref is
+ * only advanced by a save's RESPONSE, so the second emission carries a
+ * revision the first has already consumed and the real server rejects it.
+ * The 409 branch then remounts the Reader, which replays the same two
+ * emissions, so the conflict is self-sustaining rather than transient.
+ *
+ * These tests use a server double that enforces the same optimistic
+ * concurrency precondition the real `PUT /v1/reading-state` enforces. The
+ * suite's shared `okApi()` returns 200 for EVERY put whatever revision it
+ * carries, which is exactly why a revision-stamping defect stayed invisible
+ * to every other test in this file.
+ */
+describe('ReaderPage flowed-stop mount does not conflict with itself (UW-F40)', () => {
+  // PL-25 shape: the first decision lands at least two nodes in, so the
+  // opening node has exactly one choice and flows into the decision node.
+  // This is the same shape as the seeded s_tide_pools (n_open -> n_start).
+  const flowedStory: Storybook = {
+    schema_version: '2.0',
+    id: 's_flowed',
+    version: 1,
+    title: 'Flowed Opening',
+    metadata: {},
+    variables: [],
+    start_node: 'n_open',
+    nodes: [
+      {
+        id: 'n_open',
+        body: 'The trail begins.',
+        is_ending: false,
+        choices: [{ id: 'c_on', label: 'Walk on', target: 'n_start' }],
+      },
+      {
+        id: 'n_start',
+        body: 'Two paths wait.',
+        is_ending: false,
+        choices: [
+          { id: 'c_left', label: 'Left', target: 'n_end' },
+          { id: 'c_right', label: 'Right', target: 'n_end' },
+        ],
+      },
+      {
+        id: 'n_end',
+        body: 'The end.',
+        is_ending: true,
+        choices: [],
+        ending: { id: 'e_done', kind: 'completion', valence: 'neutral', title: 'Done' },
+      },
+    ],
+  }
+
+  interface RecordedPut {
+    current_node: string
+    sent_revision: number
+    status: number
+  }
+
+  /**
+   * A server double that rejects any put whose `state_revision` is not the
+   * one it currently holds, mirroring the real endpoint. `cap` exists only so
+   * a runaway save/conflict cycle terminates: past it every put is accepted,
+   * which turns a hang into a readable assertion failure.
+   */
+  function concurrencyCheckedApi(recorded: RecordedPut[], cap = 12): SyncApi {
+    let serverRow: ReadingState | null = null
+    let serverRevision = 0
+    const accept = (body: ReadingState): PutResponse => {
+      serverRevision += 1
+      serverRow = { ...body, state_revision: serverRevision }
+      return { status: 200, row: serverRow }
+    }
+    return {
+      putReadingState: (_p, _s, body) => {
+        if (recorded.length >= cap) {
+          return Promise.resolve<PutResponse>(accept(body))
+        }
+        if (body.state_revision !== serverRevision) {
+          recorded.push({
+            current_node: body.current_node,
+            sent_revision: body.state_revision,
+            status: 409,
+          })
+          return Promise.resolve<PutResponse>({
+            status: 409,
+            currentRow: serverRow ?? { ...body, state_revision: serverRevision },
+          })
+        }
+        recorded.push({
+          current_node: body.current_node,
+          sent_revision: body.state_revision,
+          status: 200,
+        })
+        return Promise.resolve<PutResponse>(accept(body))
+      },
+    }
+  }
+
+  /**
+   * Polls until the count stops moving, rather than sleeping a fixed span:
+   * the claim under test is that saving STOPS, so the test has to observe
+   * quiescence rather than assume a duration is long enough for it.
+   */
+  async function settle(read: () => number): Promise<number> {
+    let last = -1
+    let stableTicks = 0
+    while (stableTicks < 3) {
+      await new Promise((resolve) => setTimeout(resolve, 10))
+      const now = read()
+      if (now === last) {
+        stableTicks += 1
+      } else {
+        stableTicks = 0
+        last = now
+      }
+    }
+    return last
+  }
+
+  it('sends no self-conflicting save while flowing the opening stop', async () => {
+    const puts: RecordedPut[] = []
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={concurrencyCheckedApi(puts)}
+          fetchStory={() => Promise.resolve(flowedStory)}
+          profileId="p_flow"
+          storybookId="s_flowed"
+          version={1}
+          ageBand="8-11"
+        />
+      </MemoryRouter>
+    )
+    // The opening stop renders n_open and n_start as one screen.
+    await waitFor(() =>
+      expect(screen.getByTestId('passage-body').textContent).toContain('Two paths wait.')
+    )
+    const total = await settle(() => puts.length)
+
+    // No other device has written this row, so a conflict here can only be
+    // this reader colliding with its own in-flight save.
+    expect(puts.filter((put) => put.status === 409)).toEqual([])
+    // One save per emitted state (n_open, then n_start), and no more: a
+    // higher count means the save/conflict cycle re-entered.
+    expect(total).toBeLessThanOrEqual(2)
+  })
+})

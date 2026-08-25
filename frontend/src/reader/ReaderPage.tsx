@@ -364,6 +364,15 @@ export function ReaderPage({
   // Bumped to remount the Reader (and re-seed its machine) when we adopt the
   // server's state; the machine reads its input only at creation.
   const [readerKey, setReaderKey] = useState(0)
+  // Serializes saves against each other. persist() stamps `state_revision`
+  // from revisionRef, which only advances when a save RESPONSE lands, so two
+  // saves started inside one round-trip would stamp the SAME revision and the
+  // server would reject the second as a cross-device conflict. ADR-026 makes
+  // exactly that the normal mount at bands 8-11 and up: the reader walks the
+  // whole opening stop before the child touches anything, reporting one state
+  // per node walked. Distinct from pendingSaveRef, which exists so Leave can
+  // await a save; this one exists so saves cannot overlap in the first place.
+  const saveChainRef = useRef<Promise<void>>(Promise.resolve())
   const revisionRef = useRef(0)
   const failedSaveCountRef = useRef(0)
   // Content signature of the last save this instance issued. Guards against the
@@ -583,101 +592,123 @@ export function ReaderPage({
         return
       }
       lastSaveSignatureRef.current = signature
-      const stamped: ReadingState = {
-        ...reading,
-        state_revision: revisionRef.current,
-      }
+      // #CRITICAL: concurrency: wait for any save already in flight before
+      // reading revisionRef below. The chain slot is advanced SYNCHRONOUSLY,
+      // before the first await, so a second persist() started in the same tick
+      // queues behind this one instead of racing it and stamping a revision
+      // this save is about to consume. See saveChainRef for the mechanism.
+      // #VERIFY: ReaderPage.test.tsx "sends no self-conflicting save while
+      // flowing the opening stop" drives the real two-emission ADR-026 mount
+      // against a server double that enforces the revision precondition; the
+      // suite-wide okApi() accepts every revision and cannot see this.
+      const previousSave = saveChainRef.current
+      let markSaveDone: () => void = () => {}
+      saveChainRef.current = new Promise<void>((resolve) => {
+        markSaveDone = resolve
+      })
+      await previousSave
       try {
-        const result = await saveProgress(api, profileId, storybookId, stamped, {
-          deviceId,
-        })
-        failedSaveCountRef.current = 0
-        updateSaveWarning(null)
-        if (result.kind === 'saved') {
-          revisionRef.current = result.row.state_revision
-        } else if (result.kind === 'conflict') {
-          // #ASSUME: data-integrity: newest-write-wins. A 409 means another
-          // device advanced this story's row; we silently adopt the server's
-          // current row (the most recent write) and keep reading. This can
-          // discard THIS device's local position even when the other device is
-          // LESS far along, moving the child to wherever that device last was.
-          // That data loss is deliberate, per the product decision: a 5-10 year
-          // old cannot reason about a "which place do you want to keep?" prompt,
-          // so reading must never block on a conflict and no dialog is ever
-          // shown to the child. Reuses resolveConflict's use_newer_progress
-          // branch (mirror the server row locally, then remount the Reader).
-          // #VERIFY: ReaderPage.test.tsx "silently adopts the server position on
-          // a 409 without showing a dialog"; e2e reader-conflict.spec.ts asserts
-          // no conflict dialog ever appears.
-          const serverRow = result.currentRow
-          await resolveConflict(
-            api,
-            profileId,
-            storybookId,
-            stamped,
-            serverRow,
-            'use_newer_progress',
-            { deviceId }
-          )
-          revisionRef.current = serverRow.state_revision
-          // The adopted row is the server's own View, so it carries the
-          // binding this read was actually recorded against; re-derive from it
-          // rather than keeping the pre-conflict binding. (Before the binding
-          // moved into page state it was recomputed at every render, so
-          // omitting this here would be a silent regression: the chrome could
-          // name one character while the machine replayed another's seed.)
-          setPageState((prev) =>
-            prev.phase === 'reading'
-              ? { ...prev, initialReading: serverRow, character: deriveCharacterSeed(serverRow) }
-              : prev
-          )
-          // Remount the Reader so its machine re-initialises from the adopted
-          // server state; without this the reader keeps playing the local place.
-          setReaderKey((key) => key + 1)
+        const stamped: ReadingState = {
+          ...reading,
+          state_revision: revisionRef.current,
         }
-      } catch (error) {
-        if (error instanceof LocalWriteError) {
-          // #CRITICAL: data-integrity: this step is cached nowhere, not locally
-          // and not on the server, and nothing else will ever retry it.
-          // #VERIFY: surface it immediately (not only after repeats): unlike a
-          // remote hiccup, a single occurrence here already means real loss.
-          console.error('[reader] local progress write failed', {
+        try {
+          const result = await saveProgress(api, profileId, storybookId, stamped, {
+            deviceId,
+          })
+          failedSaveCountRef.current = 0
+          updateSaveWarning(null)
+          if (result.kind === 'saved') {
+            revisionRef.current = result.row.state_revision
+          } else if (result.kind === 'conflict') {
+            // #ASSUME: data-integrity: newest-write-wins. A 409 means another
+            // device advanced this story's row; we silently adopt the server's
+            // current row (the most recent write) and keep reading. This can
+            // discard THIS device's local position even when the other device is
+            // LESS far along, moving the child to wherever that device last was.
+            // That data loss is deliberate, per the product decision: a 5-10 year
+            // old cannot reason about a "which place do you want to keep?" prompt,
+            // so reading must never block on a conflict and no dialog is ever
+            // shown to the child. Reuses resolveConflict's use_newer_progress
+            // branch (mirror the server row locally, then remount the Reader).
+            // #VERIFY: ReaderPage.test.tsx "silently adopts the server position on
+            // a 409 without showing a dialog"; e2e reader-conflict.spec.ts asserts
+            // no conflict dialog ever appears.
+            const serverRow = result.currentRow
+            await resolveConflict(
+              api,
+              profileId,
+              storybookId,
+              stamped,
+              serverRow,
+              'use_newer_progress',
+              { deviceId }
+            )
+            revisionRef.current = serverRow.state_revision
+            // The adopted row is the server's own View, so it carries the
+            // binding this read was actually recorded against; re-derive from it
+            // rather than keeping the pre-conflict binding. (Before the binding
+            // moved into page state it was recomputed at every render, so
+            // omitting this here would be a silent regression: the chrome could
+            // name one character while the machine replayed another's seed.)
+            setPageState((prev) =>
+              prev.phase === 'reading'
+                ? { ...prev, initialReading: serverRow, character: deriveCharacterSeed(serverRow) }
+                : prev
+            )
+            // Remount the Reader so its machine re-initialises from the adopted
+            // server state; without this the reader keeps playing the local place.
+            setReaderKey((key) => key + 1)
+          }
+        } catch (error) {
+          if (error instanceof LocalWriteError) {
+            // #CRITICAL: data-integrity: this step is cached nowhere, not locally
+            // and not on the server, and nothing else will ever retry it.
+            // #VERIFY: surface it immediately (not only after repeats): unlike a
+            // remote hiccup, a single occurrence here already means real loss.
+            console.error('[reader] local progress write failed', {
+              profileId,
+              storybookId,
+              revision: revisionRef.current,
+              error,
+            })
+            updateSaveWarning('lost')
+            return
+          }
+          if (error instanceof UnauthenticatedError) {
+            // #CRITICAL: security: the child session token is dead (expired or
+            // revoked). Every subsequent save will 401 identically, so stop the
+            // fire-on-every-choice retry loop here and drop any stale save
+            // banner, then surface the ask-a-grown-up gate. Promising "we'll
+            // keep trying" would be a lie: nothing retries until a grown-up
+            // signs in again and a fresh session is minted.
+            // #VERIFY: ReaderPage.test.tsx "shows the ask-a-grown-up gate and
+            // stops saving when a save 401s".
+            updateSaveWarning(null)
+            setPageState({ phase: 'unauthenticated' })
+            return
+          }
+          failedSaveCountRef.current += 1
+          console.error('[reader] progress save failed', {
             profileId,
             storybookId,
             revision: revisionRef.current,
+            attempt: failedSaveCountRef.current,
             error,
           })
-          updateSaveWarning('lost')
-          return
+          // #ASSUME: external-resources: a single dropped remote save is often a
+          // transient network blip; only a repeated failure indicates a real,
+          // ongoing problem worth interrupting the reader for.
+          // #VERIFY: two consecutive failures is the threshold before surfacing.
+          if (failedSaveCountRef.current >= 2) {
+            updateSaveWarning('failing')
+          }
         }
-        if (error instanceof UnauthenticatedError) {
-          // #CRITICAL: security: the child session token is dead (expired or
-          // revoked). Every subsequent save will 401 identically, so stop the
-          // fire-on-every-choice retry loop here and drop any stale save
-          // banner, then surface the ask-a-grown-up gate. Promising "we'll
-          // keep trying" would be a lie: nothing retries until a grown-up
-          // signs in again and a fresh session is minted.
-          // #VERIFY: ReaderPage.test.tsx "shows the ask-a-grown-up gate and
-          // stops saving when a save 401s".
-          updateSaveWarning(null)
-          setPageState({ phase: 'unauthenticated' })
-          return
-        }
-        failedSaveCountRef.current += 1
-        console.error('[reader] progress save failed', {
-          profileId,
-          storybookId,
-          revision: revisionRef.current,
-          attempt: failedSaveCountRef.current,
-          error,
-        })
-        // #ASSUME: external-resources: a single dropped remote save is often a
-        // transient network blip; only a repeated failure indicates a real,
-        // ongoing problem worth interrupting the reader for.
-        // #VERIFY: two consecutive failures is the threshold before surfacing.
-        if (failedSaveCountRef.current >= 2) {
-          updateSaveWarning('failing')
-        }
+      } finally {
+        // Always release the chain: the branches above return early on a lost
+        // local write and on a dead session, and a slot never resolved would
+        // wedge every later save behind it.
+        markSaveDone()
       }
     },
     [api, profileId, storybookId, deviceId, updateSaveWarning]

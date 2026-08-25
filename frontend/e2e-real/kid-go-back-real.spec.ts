@@ -138,7 +138,12 @@ test('going back after two real choices reverts the current node and the persist
   expect(backResponse.status()).toBe(200)
   const savedRow = (await backResponse.json()) as ReadingStateRow
   expect(savedRow.current_node).toBe('n_pools')
-  expect(savedRow.path).toEqual(['n_start', 'n_pools'])
+  // The recorded path starts at n_open, not n_start: PL-25 requires the first
+  // decision to land at least two nodes in, so s_tide_pools opens on an
+  // establishing prelude (n_open) whose single choice flows into n_start. This
+  // assertion predates that prelude. Derive it from the story, never trim it to
+  // match: a genuinely truncated path would then read as a pass.
+  expect(savedRow.path).toEqual(['n_open', 'n_start', 'n_pools'])
 
   // The reader itself shows n_pools again, not n_crab.
   await expect(page.getByTestId('choice-c_rock')).toBeVisible()
@@ -162,5 +167,6 @@ test('going back after two real choices reverts the current node and the persist
   expect(serverRes.ok, `GET /reading-state failed (HTTP ${serverRes.status})`).toBe(true)
   const serverRow = (await serverRes.json()) as ReadingStateRow
   expect(serverRow.current_node).toBe('n_pools')
-  expect(serverRow.path).toEqual(['n_start', 'n_pools'])
+  // Same n_open prelude as the assertion above; see its comment.
+  expect(serverRow.path).toEqual(['n_open', 'n_start', 'n_pools'])
 })
