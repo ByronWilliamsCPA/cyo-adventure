@@ -598,9 +598,15 @@ async def test_the_markers_survive_copy_deepcopy_and_a_serialization_round_trip(
     # untrusted input anywhere in this round trip, which is what S301 guards.
     revived = pickle.loads(pickle.dumps(marker))  # noqa: S301
     assert revived is marker
-    # Identity alone would also hold for a marker that pickling refused to
-    # handle at all, so pin the mechanism: `__reduce__` names the module
-    # global, which is what makes the round trip resolve the singleton.
+    # `revived is marker` proves the round trip resolved the singleton, but not
+    # by what mechanism, so pin the mechanism itself. A BARE STRING return from
+    # `__reduce__` is the stdlib singleton protocol ("on unpickle, look this
+    # name up as a module global"); a tuple return would rebuild instead, and
+    # nothing but the identity assert above would stand between that and a
+    # silent `is`/`isinstance` split.
+    assert marker.__reduce__() == name
+    # That assert is only as good as `name`, which the reduction promises is
+    # resolvable on this module. Check that promise rather than assume it.
     assert getattr(pslots_mod, name) is marker
 
 
