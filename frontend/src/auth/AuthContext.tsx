@@ -203,6 +203,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // event, but not on session restore or token refresh".
   const syncPrincipal = useCallback(
     async (session: Session | null, event?: string) => {
+      // #CRITICAL: security: consume the early-sign-in capture BEFORE any early
+      // return below. Every exit from syncPrincipal has to spend it, or it
+      // outlives the resolution it belonged to: a guardian who lands on the
+      // needs-verification, awaiting-approval, or needs-consent interstitial
+      // leaves through one of those returns and comes back later through
+      // refreshStatus, recordConsent, or startVerification, and a capture still
+      // pending then warms the gate and slides its idle TTL forward long after
+      // the credential proof it stands for. Read it once here, hold it locally,
+      // and decide whether to warm further down.
+      // #VERIFY: AuthContext.test.tsx "does not warm a later resolution from a
+      // capture an interstitial return left pending".
+      const earlySignInUserId = consumeEarlySignInUserId()
       const seq = ++requestSeq.current
       // A later handler already superseded this one, or the provider unmounted.
       const isStale = () => cancelledRef.current || seq !== requestSeq.current
@@ -307,16 +319,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // cold state: an endless bounce through Google with no way into the
         // console. The capture below carries that same supabase-js event,
         // recorded by a subscriber that cannot lose the race.
-        // #CRITICAL: security: consume on EVERY resolution, warming or not, so
-        // the capture cannot outlive this page load. syncPrincipal runs again
-        // for recordConsent, startVerification, and the refreshStatus behind
-        // each guardian interstitial's "check again" control, and a capture
-        // left in place would re-warm the gate and slide its idle TTL forward
-        // for a guardian who has walked away.
+        // The capture was already consumed at the top of syncPrincipal, above
+        // every early return, so it is spent exactly once per resolution
+        // whether or not this line is reached. Comparing it against this
+        // session's user is what stops a capture warming the gate for a
+        // different account.
         // #VERIFY: AuthContext.test.tsx "warms the adult gate on an OAuth
-        // return leg whose SIGNED_IN arrived before mount" and "does not
-        // re-warm on a later refreshStatus in the same page load".
-        const earlySignInUserId = consumeEarlySignInUserId()
+        // return leg whose SIGNED_IN arrived before mount", "does not warm when
+        // the captured sign-in names a different user", and "does not re-warm
+        // on a later refreshStatus in the same page load".
         if (event === 'SIGNED_IN' || earlySignInUserId === session.user.id) {
           warmAdultGate(session.user.id)
         }

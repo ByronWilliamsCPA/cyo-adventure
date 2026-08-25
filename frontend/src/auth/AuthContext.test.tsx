@@ -1389,6 +1389,68 @@ describe('AuthProvider', () => {
     expect(adultGateRemainingMs('u1')).toBe(0)
   })
 
+  it('does not warm a later resolution from a capture an interstitial return left pending', async () => {
+    // #CRITICAL: security: syncPrincipal returns early for needs-verification,
+    // awaiting-approval and needs-consent, all of them reached BEFORE the warm
+    // decision. The capture therefore has to be spent at the top of the
+    // function rather than at the point of use, or it survives the interstitial
+    // and warms the gate on whatever resolution comes next, which is a "check
+    // again" click that may arrive an unbounded time later with no adult
+    // present. Consuming only at the use site passes every other test in this
+    // file and still fails this one.
+    mockEarlySignInQueue = ['u1']
+    clearAdultGate()
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockPost.mockResolvedValue({
+      data: {
+        family_id: 'fam-1',
+        user_id: 'user-1',
+        role: 'guardian',
+        created: true,
+        status: 'awaiting_approval',
+        consent_recorded: false,
+        verification_required: true,
+        verification_status: 'none',
+      },
+    })
+    mockOnAuthStateChange.mockImplementation(() => ({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    }))
+    render(
+      <AuthProvider>
+        <RefreshProbe />
+      </AuthProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('status')).toHaveTextContent('needs-verification')
+    )
+    // The interstitial return still spent the capture.
+    expect(mockConsumeEarlySignInUserId).toHaveBeenCalledTimes(1)
+    expect(adultGateRemainingMs('u1')).toBe(0)
+
+    // The guardian verifies, walks away, and much later clicks "check again".
+    mockPost.mockResolvedValue({
+      data: {
+        family_id: 'fam-1',
+        user_id: 'user-1',
+        role: 'guardian',
+        created: false,
+        status: 'active',
+        consent_recorded: true,
+        verification_required: true,
+        verification_status: 'verified',
+      },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    fireEvent.click(screen.getByText('refresh'))
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+    expect(adultGateRemainingMs('u1')).toBe(0)
+  })
+
   it('rejects signInWithOAuth when supabase reports an error', async () => {
     // supabase-js resolves with { error } instead of throwing; the context
     // must rethrow so a failed OAuth redirect is not silently swallowed.
