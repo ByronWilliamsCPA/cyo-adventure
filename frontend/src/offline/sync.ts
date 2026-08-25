@@ -231,6 +231,41 @@ export async function saveProgress(
     device_id: opts.deviceId,
     event_id: eventId,
   })
+  const enqueueBehindTheQueue = async (): Promise<SaveResult> => {
+    const queued: QueuedWrite = {
+      event_id: eventId,
+      profile_id: profileId,
+      storybook_id: storybookId,
+      base_revision: state.state_revision,
+      state,
+      device_id: opts.deviceId,
+      queued_at: Date.now(),
+    }
+    try {
+      await enqueueWrite(queued)
+    } catch (cause) {
+      throw new LocalWriteError('failed to enqueue the offline write', cause)
+    }
+    return { kind: 'queued', eventId }
+  }
+  // #CRITICAL: concurrency: never overtake writes already queued for this row.
+  // The queue exists to keep one row's writes totally ordered. A live write
+  // that goes straight to the network while older writes for the same row are
+  // still queued races replayQueue on reconnect: neither writer can refresh
+  // `state_revision` while offline, so both carry the same base, exactly one is
+  // accepted and the other 409s. Whichever loses is discarded, and if the LIVE
+  // write is the loser the reader adopts the replayed older row and rewinds the
+  // child to a node they already left. Append instead and let replayQueue send
+  // the chain in order; it rebases each write onto the previous one's revision.
+  // #VERIFY: offline-reconnect-real.spec.ts "clean reconnect: every queued
+  // offline choice replays and lands on the real backend", which reconnects
+  // while a choice is still being saved, which is exactly this window.
+  const overtakesQueue = (await listQueue()).some(
+    (item) => item.profile_id === profileId && item.storybook_id === storybookId
+  )
+  if (overtakesQueue) {
+    return enqueueBehindTheQueue()
+  }
   try {
     const res = await api.putReadingState(profileId, storybookId, body)
     if (res.status === 409) {
@@ -257,21 +292,7 @@ export async function saveProgress(
     if (!(error instanceof OfflineError)) {
       throw error
     }
-    const queued: QueuedWrite = {
-      event_id: eventId,
-      profile_id: profileId,
-      storybook_id: storybookId,
-      base_revision: state.state_revision,
-      state,
-      device_id: opts.deviceId,
-      queued_at: Date.now(),
-    }
-    try {
-      await enqueueWrite(queued)
-    } catch (cause) {
-      throw new LocalWriteError('failed to enqueue the offline write', cause)
-    }
-    return { kind: 'queued', eventId }
+    return enqueueBehindTheQueue()
   }
 }
 
@@ -356,46 +377,65 @@ export async function replayQueue(api: SyncApi): Promise<ReplayOutcome> {
   // Stories that have already hit a genuine cross-device 409 in this replay.
   // Every remaining write for such a story is held, not sent.
   const conflicted = new Set<string>()
-  for (const item of await listQueue()) {
-    const key = queueKey(item)
-    if (conflicted.has(key)) {
-      // A prior write for this story hit a genuine cross-device conflict. Do
-      // not auto-rebase the tail onto the server revision (that would
-      // overwrite the still-unreconciled row); surface every held write to
-      // reconciliation instead.
-      outcome.conflicts.push(item)
-      await dequeue(item.event_id)
-      continue
-    }
-    const knownRevision = latestRevision.get(key)
-    const state =
-      knownRevision === undefined ? item.state : { ...item.state, state_revision: knownRevision }
-    let res: PutResponse
-    try {
-      res = await api.putReadingState(
-        item.profile_id,
-        item.storybook_id,
-        toPutPayload({ ...state, device_id: item.device_id, event_id: item.event_id })
-      )
-    } catch (error) {
-      if (error instanceof OfflineError) {
-        break // still offline; leave this and the rest queued
+  // #CRITICAL: concurrency: drain in passes, not over one snapshot. saveProgress
+  // appends to this queue while a replay is running (see its overtakesQueue
+  // branch), so a choice made during the drain would otherwise sit unsent until
+  // the next 'online' event, which on a device that never drops again is never.
+  // Each pass either dequeues at least one write or returns, so this cannot spin.
+  // #VERIFY: offline-reconnect-real.spec.ts "clean reconnect: every queued
+  // offline choice replays and lands on the real backend" reconnects mid-save,
+  // so the last choice is appended after this drain has already begun.
+  for (;;) {
+    const pass = await listQueue()
+    if (pass.length === 0) return outcome
+    let dequeuedAny = false
+    let stillOffline = false
+    for (const item of pass) {
+      const key = queueKey(item)
+      if (conflicted.has(key)) {
+        // A prior write for this story hit a genuine cross-device conflict. Do
+        // not auto-rebase the tail onto the server revision (that would
+        // overwrite the still-unreconciled row); surface every held write to
+        // reconciliation instead.
+        outcome.conflicts.push(item)
+        await dequeue(item.event_id)
+        dequeuedAny = true
+        continue
       }
-      // Non-offline failure (auth/validation/server): this write cannot replay.
-      // Drop it so it does not block every later write, and surface it.
-      outcome.failed.push(item)
+      const knownRevision = latestRevision.get(key)
+      const state =
+        knownRevision === undefined ? item.state : { ...item.state, state_revision: knownRevision }
+      let res: PutResponse
+      try {
+        res = await api.putReadingState(
+          item.profile_id,
+          item.storybook_id,
+          toPutPayload({ ...state, device_id: item.device_id, event_id: item.event_id })
+        )
+      } catch (error) {
+        if (error instanceof OfflineError) {
+          // Still offline; leave this and the rest queued for the next 'online'.
+          stillOffline = true
+          break
+        }
+        // Non-offline failure (auth/validation/server): this write cannot replay.
+        // Drop it so it does not block every later write, and surface it.
+        outcome.failed.push(item)
+        await dequeue(item.event_id)
+        dequeuedAny = true
+        continue
+      }
+      if (res.status === 409) {
+        outcome.conflicts.push(item)
+        conflicted.add(key) // latch: hold every later write for this story too
+      } else {
+        await putReadingState(item.profile_id, item.storybook_id, res.row)
+        outcome.replayed += 1
+        latestRevision.set(key, res.row.state_revision)
+      }
       await dequeue(item.event_id)
-      continue
+      dequeuedAny = true
     }
-    if (res.status === 409) {
-      outcome.conflicts.push(item)
-      conflicted.add(key) // latch: hold every later write for this story too
-    } else {
-      await putReadingState(item.profile_id, item.storybook_id, res.row)
-      outcome.replayed += 1
-      latestRevision.set(key, res.row.state_revision)
-    }
-    await dequeue(item.event_id)
+    if (stillOffline || !dequeuedAny) return outcome
   }
-  return outcome
 }
