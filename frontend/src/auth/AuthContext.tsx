@@ -19,6 +19,7 @@ import { CONSENT_POLICY_VERSION, makeOnboardingApi } from './onboardingApi'
 import { clearAdultGate, warmAdultGate } from './parentalGateState'
 import { clearResidenceDraft, rememberResidenceDraft } from './residenceDraft'
 import {
+  isOAuthReturn,
   isPasswordRecovery,
   RECOVERY_BROADCAST_CHANNEL_NAME,
   recoveryErrorFromUrl,
@@ -190,8 +191,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // 'TOKEN_REFRESHED' -- would let a stale/cached session, or a walked-away
   // auto-refreshing tab, look identical to a guardian who just typed a
   // password, defeating the step-up entirely.
-  // #CRITICAL: security: gate the warm call on event === 'SIGNED_IN', never
-  // on session presence alone.
+  // The one documented exception is an OAuth return leg, whose 'SIGNED_IN'
+  // is emitted before this provider can subscribe and so is never observable;
+  // that arm keys off a frozen read of the callback hash instead, and is
+  // narrowed to this page load's first resolution. See the warm call below.
+  // #CRITICAL: security: gate the warm call on event === 'SIGNED_IN' or an
+  // OAuth-return landing, never on session presence alone.
   // #VERIFY: AuthContext.test.tsx "warms the adult gate on a SIGNED_IN
   // event, but not on session restore or token refresh".
   const syncPrincipal = useCallback(
@@ -290,7 +295,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         })
         setStatus('signed-in')
         setAuthError(null)
-        if (event === 'SIGNED_IN') {
+        // #CRITICAL: security: an OAuth return is a genuine fresh sign-in that
+        // emits NO observable 'SIGNED_IN' (see isOAuthReturn in
+        // supabaseClient.ts: detectSessionInUrl fires it from inside
+        // initialize(), before this provider subscribes, so a late subscriber
+        // is replayed 'INITIAL_SESSION' instead). Warming on the event alone
+        // left every Google guardian challenged on arrival by a gate whose own
+        // "Continue with Google" button returned them to the identical cold
+        // state: an endless bounce through Google with no way into the
+        // console. Restricting the URL-derived arm to this page load's FIRST
+        // resolution is what keeps the widening honest, since a later
+        // 'TOKEN_REFRESHED' in the same tab must never slide the TTL forward
+        // for a guardian who has walked away.
+        // #VERIFY: AuthContext.test.tsx "warms the adult gate on an OAuth
+        // return leg" and "does not re-warm on a token refresh during an
+        // OAuth-return page load".
+        const isFreshOAuthLanding =
+          isOAuthReturn && (event === undefined || event === 'INITIAL_SESSION')
+        if (event === 'SIGNED_IN' || isFreshOAuthLanding) {
           warmAdultGate(session.user.id)
         }
       } catch (err) {

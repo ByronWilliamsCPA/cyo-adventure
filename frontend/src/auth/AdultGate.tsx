@@ -145,8 +145,13 @@ function readProviders(meta: Record<string, unknown> | undefined): string[] {
  * Google button on the `locked` screen below: that button only ever renders
  * for a guardian who DOES have a password identity (hasGoogle is additional,
  * never a substitute), and it is a deliberate, user-initiated click rather
- * than something the gate runs automatically, so the "would drop in-flight
- * state and loop" concern above does not apply to it.
+ * than something the gate runs automatically. Being user-initiated does NOT
+ * by itself exempt it from the loop concern above, and an earlier version of
+ * this comment claiming it did was wrong: the button looped in production for
+ * every Google guardian, because the return leg emits no observable
+ * 'SIGNED_IN' and so left the gate cold, landing them back on this same
+ * challenge. What actually keeps it loop-free is AuthContext warming the gate
+ * on an OAuth-return landing (isOAuthReturn in supabaseClient.ts).
  * #VERIFY: AdultGate.test.tsx "lets an OAuth-only guardian through with a
  * console warning, and warms the gate".
  */
@@ -389,12 +394,16 @@ export function AdultGate({ children }: { children?: ReactNode }) {
   // one. Unlike submit()/switchAccount(), this never sets phase directly:
   // signInWithOAuth resolving only means the browser is about to navigate
   // away to Google's consent screen (a full-page redirect back to
-  // GUARDIAN_LOGIN_PATH), which unmounts this component. AuthContext's
-  // onAuthStateChange warms the gate on that later SIGNED_IN event (see
-  // AuthContext.tsx's syncPrincipal), so this handler must NOT call
-  // warmAdultGate itself, or a failed /me resolution after the redirect
-  // would leave a stale warm entry behind for a principal that never
-  // actually got signed in.
+  // GUARDIAN_LOGIN_PATH), which unmounts this component. AuthContext warms
+  // the gate once that redirect lands (see syncPrincipal's isFreshOAuthLanding
+  // arm), so this handler must NOT call warmAdultGate itself, or a failed /me
+  // resolution after the redirect would leave a stale warm entry behind for a
+  // principal that never actually got signed in.
+  // #CRITICAL: security: that warm is what makes this button terminate. It
+  // cannot key off supabase-js's 'SIGNED_IN' event, which the return leg
+  // fires from inside createClient's initialize() before AuthProvider can
+  // subscribe; relying on it is what made this button an endless bounce
+  // through Google. See isOAuthReturn in supabaseClient.ts.
   // #VERIFY: AdultGate.test.tsx "shows a Continue with Google option ...
   // starts the OAuth redirect on click", "shows a connection error ... when
   // the OAuth redirect fails to start".

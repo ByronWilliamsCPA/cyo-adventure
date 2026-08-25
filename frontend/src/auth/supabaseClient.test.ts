@@ -153,3 +153,53 @@ describe('supabaseClient', () => {
     )
   })
 })
+
+describe('hashIndicatesOAuthReturn', () => {
+  beforeEach(() => {
+    vi.stubEnv('VITE_SUPABASE_URL', 'https://test-project.supabase.co')
+    vi.stubEnv('VITE_SUPABASE_ANON_KEY', 'test-anon-key')
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+    vi.resetModules()
+  })
+
+  it('is true for the implicit-flow hash an OAuth callback redirects to', async () => {
+    // Supabase's /auth/v1/callback lands the guardian back on
+    // GUARDIAN_LOGIN_PATH with a freshly minted access token in the fragment.
+    const { hashIndicatesOAuthReturn } = await import('./supabaseClient')
+    expect(
+      hashIndicatesOAuthReturn(
+        '#access_token=abc.def.ghi&expires_in=3600&refresh_token=r1&token_type=bearer'
+      )
+    ).toBe(true)
+  })
+
+  it('is false for an ordinary page load with no fragment', async () => {
+    // A restored or silently refreshed session arrives with no hash and must
+    // stay cold, which is the property the adult gate depends on.
+    const { hashIndicatesOAuthReturn } = await import('./supabaseClient')
+    expect(hashIndicatesOAuthReturn('')).toBe(false)
+    expect(hashIndicatesOAuthReturn('#')).toBe(false)
+  })
+
+  it('is false for a password-recovery landing', async () => {
+    // #CRITICAL: security: a recovery link also carries an access_token. It
+    // must never warm the adult gate: that guardian is on their way to the
+    // set-new-password form, not into the console.
+    const { hashIndicatesOAuthReturn } = await import('./supabaseClient')
+    expect(
+      hashIndicatesOAuthReturn('#access_token=abc.def.ghi&expires_in=3600&type=recovery')
+    ).toBe(false)
+  })
+
+  it('is false for a cancelled or failed OAuth return', async () => {
+    // A guardian who declines Google's consent screen comes back with an
+    // error fragment and no token; that is not a completed sign-in.
+    const { hashIndicatesOAuthReturn } = await import('./supabaseClient')
+    expect(hashIndicatesOAuthReturn('#error=access_denied&error_description=User+denied')).toBe(
+      false
+    )
+  })
+})

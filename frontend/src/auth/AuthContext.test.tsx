@@ -57,6 +57,11 @@ const mockUpdateUser = vi.fn()
 // factory; a getter re-reads it at each mount so tests can flip it before
 // render to simulate a password-recovery landing.
 let mockIsPasswordRecovery = false
+// Drives the OAuth-return arm of the adult-gate warm (AuthContext's
+// isFreshOAuthLanding). Frozen from the callback hash at module load in the
+// real module, so it gets the same `mock`-prefixed let + getter treatment as
+// mockIsPasswordRecovery above.
+let mockIsOAuthReturn = false
 // Drives AuthProvider's recoveryError (frozen from recoveryErrorFromUrl at
 // module load, same seeding pattern as mockIsPasswordRecovery above).
 let mockRecoveryErrorFromUrl: { code: string; description: string } | null = null
@@ -79,6 +84,9 @@ vi.mock('./supabaseClient', () => ({
   },
   get isPasswordRecovery(): boolean {
     return mockIsPasswordRecovery
+  },
+  get isOAuthReturn(): boolean {
+    return mockIsOAuthReturn
   },
   get recoveryErrorFromUrl(): { code: string; description: string } | null {
     return mockRecoveryErrorFromUrl
@@ -284,6 +292,7 @@ beforeEach(() => {
   mockClearReadingStates.mockReset()
   mockClearPersonalizationValues.mockReset()
   mockIsPasswordRecovery = false
+  mockIsOAuthReturn = false
   mockRecoveryErrorFromUrl = null
 })
 
@@ -1263,6 +1272,67 @@ describe('AuthProvider', () => {
     // The session was restored via getSession(), not an explicit sign-in.
     expect(adultGateRemainingMs('u1')).toBe(0)
 
+    act(() => {
+      changeHandler?.('TOKEN_REFRESHED', { access_token: 'tok-2', user: { id: 'u1' } })
+    })
+    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2))
+    expect(adultGateRemainingMs('u1')).toBe(0)
+  })
+
+  it('warms the adult gate on an OAuth return leg', async () => {
+    // The Google sign-in loop: supabase-js consumes the callback hash inside
+    // createClient's initialize(), emitting 'SIGNED_IN' before AuthProvider
+    // subscribes, so this provider is replayed 'INITIAL_SESSION' and the
+    // SIGNED_IN-only warm above never fired. The guardian landed on a COLD
+    // gate whose own "Continue with Google" button sent them back through
+    // Google into the identical state, forever. isOAuthReturn carries the
+    // fact that vanished event was needed for.
+    mockIsOAuthReturn = true
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    mockOnAuthStateChange.mockImplementation(() => ({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    }))
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+    expect(adultGateRemainingMs('u1')).toBeGreaterThan(0)
+  })
+
+  it('does NOT re-warm on a token refresh during an OAuth-return page load', async () => {
+    // #CRITICAL: security: isOAuthReturn stays true for the WHOLE page load,
+    // so the URL-derived arm has to be narrowed to the first resolution. Were
+    // it keyed on the flag alone, every silent TOKEN_REFRESHED in this tab
+    // would slide the idle TTL forward and a walked-away console would never
+    // re-challenge.
+    mockIsOAuthReturn = true
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    let changeHandler: ((event: string, session: unknown) => void) | undefined
+    mockOnAuthStateChange.mockImplementation((cb: (event: string, session: unknown) => void) => {
+      changeHandler = cb
+      return { data: { subscription: { unsubscribe: vi.fn() } } }
+    })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+    // Drop the landing's warm entry, so the only thing that could re-warm the
+    // gate below is the refresh event itself.
+    clearAdultGate()
     act(() => {
       changeHandler?.('TOKEN_REFRESHED', { access_token: 'tok-2', user: { id: 'u1' } })
     })
