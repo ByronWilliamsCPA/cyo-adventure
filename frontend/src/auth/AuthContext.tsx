@@ -495,7 +495,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // #VERIFY: AuthContext.test.tsx "sign-out purges cached data" and
         // "sign-out purges cached personalization values (ADR-023 P6)".
         void purgeAuthenticatedDataAtRest()
-        const { error } = await supabase.auth.signOut()
+        // #CRITICAL: security: 'local' is passed EXPLICITLY because supabase-js
+        // defaults to scope 'global', which revokes every refresh token the
+        // account holds, on every device. Every caller of this primitive is
+        // device-local by intent: the shell "Sign out" buttons, AdultGate's
+        // switch-account, the verification/approval/backend-down escape
+        // hatches, and above all the two kid-handover paths (LoginPage's
+        // authorize-device, ConsolePage's handoff), which sign the guardian out
+        // OF A KID'S DEVICE. Under the default, a parent handing the iPad to a
+        // child silently killed their own session on their phone and laptop,
+        // and a guardian signing out of one browser logged themselves out of
+        // all the others. There is no "sign out everywhere" surface in this app
+        // that would want the global behaviour; if one is ever added it must
+        // pass its own scope here rather than removing this argument.
+        // 'local' still clears local state on every path: auth-js runs
+        // removeCurrentSession() for any scope other than 'others', on both the
+        // success and the error branch, so the SIGNED_OUT event and the
+        // fail-closed clearing above are unaffected.
+        // #VERIFY: AuthContext.test.tsx "signs out only this device, never the
+        // account's other sessions".
+        const { error } = await supabase.auth.signOut({ scope: 'local' })
         if (error) throw error
       },
       // #ASSUME: security: resetPasswordForEmail resolves regardless of whether

@@ -1089,6 +1089,26 @@ describe('AuthProvider', () => {
     await waitFor(() => expect(mockSignOut).toHaveBeenCalled())
   })
 
+  it("signs out only this device, never the account's other sessions", async () => {
+    // #CRITICAL: security: supabase-js defaults signOut to scope 'global',
+    // revoking every refresh token the account holds. Every caller here is
+    // device-local by intent, and two of them (LoginPage's authorize-device,
+    // ConsolePage's handoff) run on a KID's device: under the default, handing
+    // the iPad to a child also signed the parent out on their own phone and
+    // laptop. Assert the argument, not just the call, because the defect is
+    // invisible in a mock that only records that signOut happened.
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockSignOut.mockResolvedValue({ error: null })
+    render(
+      <AuthProvider>
+        <ActionsProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+    fireEvent.click(screen.getByText('sign out'))
+    await waitFor(() => expect(mockSignOut).toHaveBeenCalledWith({ scope: 'local' }))
+  })
+
   it('sign-out purges the authenticated runtime caches (SEC-F5)', async () => {
     mockGetSession.mockResolvedValue({ data: { session: null } })
     mockSignOut.mockResolvedValue({ error: null })
