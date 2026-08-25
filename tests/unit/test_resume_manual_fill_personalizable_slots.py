@@ -356,3 +356,82 @@ async def test_resume_uncomputable_contract_threads_unrecoverable_marker_fails_c
     # outcome (pre-existing #128 behavior, unrelated to Task 6c); this test's
     # only concern is the personalizable_slots value threaded through, above.
     assert status == "needs_review"
+
+
+async def test_unrecoverable_contract_logs_the_skipped_at_rest_rescan(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """The skipped at-rest re-scan leaves a trace instead of nothing at all.
+
+    ``_reinsert_and_verify_resume_sentinels`` runs
+    ``check_sentinel_integrity_at_rest`` only when the contract resolved to a
+    real ``frozenset``; an unrecoverable one defers to the moderation-entry
+    backstop that ``resume_manual_fill`` threads the same marker into. That
+    deferral is correct, but it used to be SILENT, so if the threading ever
+    broke, the hole would be invisible from the logs: a resume that skipped
+    the re-scan looked exactly like one that ran it and found nothing.
+
+    The reference skeleton must still resolve here (``import_story`` holds its
+    OWN bound names for the loaders), so only the personalizable-slot
+    resolver's loader is made to fail; that is what puts this resume on the
+    unrecoverable arm WITH the reinsertion step reached.
+    """
+    concept = Concept(id=uuid.uuid4(), family_id=uuid.uuid4(), brief={})
+    job = GenerationJob(
+        id=uuid.uuid4(),
+        concept_id=concept.id,
+        status="awaiting_manual_fill",
+        authoring_metadata={"skeleton_slug": "themed-slug", "skeleton_band": "8-11"},
+    )
+    session = _FakeSession(job=job, concept=concept)
+    captured: dict[str, object] = {}
+    monkeypatch.setattr(
+        import_story, "import_filled_story", _capturing_import_filled_story(captured)
+    )
+    monkeypatch.setattr(import_story, "load_skeleton", lambda _path: {"nodes": []})
+
+    async def _fake_run_stage1_gate(*_args: object, **_kwargs: object) -> list[str]:
+        return []
+
+    monkeypatch.setattr(import_story, "run_stage1_gate", _fake_run_stage1_gate)
+    monkeypatch.setattr(
+        import_story,
+        "load_contract_for",
+        lambda _path, _skeleton: _personalizable_contract(),
+    )
+    monkeypatch.setattr(
+        import_story,
+        "render_bound_skeleton",
+        lambda _skeleton, _bindings, _slots=frozenset(): {"nodes": [], "bound": True},
+    )
+    monkeypatch.setattr(
+        pslots_mod,
+        "resolve_skeleton_path",
+        lambda _band, _slug: Path("themed-slug.json"),
+    )
+
+    def _raise_not_found(_path: object) -> dict[str, object]:
+        raise FileNotFoundError("no such skeleton file")
+
+    # Only the slot resolver's loader fails, so the contract is unrecoverable
+    # while the reference skeleton (and thus the reinsertion step) still runs.
+    monkeypatch.setattr(pslots_mod, "load_skeleton", _raise_not_found)
+
+    with caplog.at_level("INFO"):
+        story_id, _status = await import_story.resume_manual_fill(
+            session, job.id, {"id": "s_x", "nodes": []}
+        )
+
+    assert story_id == "s_x"
+    assert (
+        captured["personalizable_slots"]
+        is pslots_mod.PERSONALIZABLE_SLOTS_UNRECOVERABLE
+    )
+    # structlog renders through stdlib logging here, so the structured kv
+    # pairs land in the rendered record text; ANSI color codes sit between key
+    # and value, so each token is asserted on its own.
+    assert (
+        "resume_manual_fill.at_rest_rescan_skipped_contract_unrecoverable"
+        in caplog.text
+    )
+    assert "themed-slug" in caplog.text

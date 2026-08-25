@@ -740,6 +740,24 @@ async def _reinsert_and_verify_resume_sentinels(
                 field="sentinel_integrity",
                 details={"sentinel_integrity_violations": violation_details},
             )
+    else:
+        # #ASSUME: security: the at-rest re-scan needs a declared-slot set to
+        # test each well-formed sentinel against, and this contract could not
+        # be recovered, so the check is DEFERRED to the moderation-entry
+        # backstop that `resume_manual_fill` threads this same marker into
+        # (`import_filled_story` -> `run_moderation_pipeline`), which fails
+        # closed on it. Skipping it silently is what made the deferral
+        # indistinguishable from a hole: if that threading ever broke, nothing
+        # on this path would say the scan had not run. This trace is the only
+        # record that it was skipped deliberately; INFO, because the contract
+        # failure itself is already logged at WARNING by the resolver.
+        # #VERIFY: tests/unit/test_resume_manual_fill_personalizable_slots.py::
+        # test_unrecoverable_contract_logs_the_skipped_at_rest_rescan.
+        logger.info(
+            "resume_manual_fill.at_rest_rescan_skipped_contract_unrecoverable",
+            job_id=str(job_id),
+            skeleton_slug=skeleton_slug,
+        )
 
     return document, reinsertion_outcome.manifest
 

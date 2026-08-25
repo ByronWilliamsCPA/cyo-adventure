@@ -118,7 +118,7 @@ def _patch_threshold_policy(
     )
 
 
-def _scalars_result(rows: list[GenerationJob]) -> MagicMock:
+def _scalars_result(rows: list[GenerationJob] | list[StorybookVersion]) -> MagicMock:
     """Fake a `ScalarResult` whose `.all()` returns ``rows`` (session.scalars)."""
     result = MagicMock()
     result.all.return_value = rows
@@ -134,13 +134,23 @@ def _wire_session(
 ) -> None:
     """Wire a mock session for the sweep's load, prefetch, per-book-get sequence.
 
-    `session.scalars` serves the ONE personalizable-slot prefetch the sweep
-    issues before screening anything; `session.execute` serves the published-
-    book load. They are deliberately different session methods so a test can
-    assert on either statement without disambiguating a shared call list.
+    `session.scalars` serves the personalizable-slot prefetch the sweep issues
+    before screening anything, in the order the prefetch issues them: the
+    `GenerationJob` query first, then the `StorybookVersion` query that
+    recovers an IMPORTED book's contract when it has no job row. The second is
+    served from the same `versions` mapping the per-book `session.get` reads,
+    so a test cannot accidentally have the prefetch and the screen disagree
+    about a book's version row. `session.execute` serves the published-book
+    load. They are deliberately different session methods so a test can assert
+    on either statement without disambiguating a shared call list.
     """
     session.execute = AsyncMock(return_value=_execute_books(books))
-    session.scalars = AsyncMock(return_value=_scalars_result(jobs or []))
+    session.scalars = AsyncMock(
+        side_effect=[
+            _scalars_result(jobs or []),
+            _scalars_result(list(versions.values())),
+        ]
+    )
 
     async def _get(
         _model: type[object], key: tuple[str, int]
@@ -641,14 +651,18 @@ async def test_sentinel_corruption_scan_fails_closed_when_contract_unrecoverable
     ]
 
 
-async def test_slot_contracts_are_prefetched_in_one_query(
+async def test_slot_contracts_are_prefetched_in_bounded_queries(
     mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """The whole sweep's slot contracts come from ONE GenerationJob query.
+    """The whole sweep's slot contracts come from a bounded set of queries.
 
     Resolving the contract per book was an N+1: three books meant three
-    `GenerationJob` SELECTs inside the per-book try/except. One prefetch,
-    scoped by an IN clause over every book id, replaces them.
+    `GenerationJob` SELECTs inside the per-book try/except. The prefetch
+    replaces them with TWO `IN` queries over the whole sweep, whichever way
+    each book's provenance falls: one for the job rows, one for the published
+    version rows of the books that have none (the imported-book fallback).
+    Three books produce two queries, which is the property that matters: the
+    count does not grow with the number of books.
     """
     _patch_threshold_policy(monkeypatch)
     monkeypatch.setattr(rescreen_mod, "run_classifiers", AsyncMock(return_value=[]))
@@ -664,13 +678,125 @@ async def test_slot_contracts_are_prefetched_in_one_query(
     )
 
     assert summary.checked == 3
-    mock_async_session.scalars.assert_awaited_once()
-    stmt = mock_async_session.scalars.await_args.args[0]
-    sql = str(stmt.compile(compile_kwargs={"literal_binds": True}))
-    assert "generation_job.storybook_id IN" in sql
-    assert "'s1'" in sql
-    assert "'s2'" in sql
-    assert "'s3'" in sql
+    assert mock_async_session.scalars.await_count == 2
+    job_sql = str(
+        mock_async_session.scalars.await_args_list[0]
+        .args[0]
+        .compile(compile_kwargs={"literal_binds": True})
+    )
+    assert "generation_job.storybook_id IN" in job_sql
+    for story_id in ("'s1'", "'s2'", "'s3'"):
+        assert story_id in job_sql
+    version_sql = str(
+        mock_async_session.scalars.await_args_list[1]
+        .args[0]
+        .compile(compile_kwargs={"literal_binds": True})
+    )
+    assert "storybook_version" in version_sql
+    for story_id in ("'s1'", "'s2'", "'s3'"):
+        assert story_id in version_sql
+
+
+async def test_imported_book_resolves_its_contract_from_the_version(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A book with no job row resolves its contract from its version row.
+
+    An imported book has no `GenerationJob` (17 of 17 in_review books in
+    production, 2026-08-24) and carries its provenance on the version's
+    `skeleton_slug` instead; publishing one puts it straight into this sweep's
+    population. Resolving "no job" as an EMPTY declared set made
+    `check_sentinel_integrity_at_rest` report every LEGITIMATE sentinel such a
+    book carries as `unknown_slot`, so the first sentinel-bearing imported
+    book to be published would be reported corrupt on every sweep and the
+    detector would be trained out of an admin's attention.
+    """
+    _patch_threshold_policy(monkeypatch)
+    monkeypatch.setattr(rescreen_mod, "run_classifiers", AsyncMock(return_value=[]))
+    version_row = _version_row(
+        "s1", 1, _with_sentinel_in_body(_blob(), wrap("HERO", "Ada"))
+    )
+    version_row.skeleton_slug = "themed-slug"
+    seen: list[StorybookVersion] = []
+
+    def _declares_hero(row: StorybookVersion) -> PersonalizableSlots:
+        seen.append(row)
+        return frozenset({"HERO"})
+
+    monkeypatch.setattr(
+        rescreen_mod, "personalizable_slot_ids_for_version", _declares_hero
+    )
+    _wire_session(
+        mock_async_session,
+        books=[_book()],
+        versions={("s1", 1): version_row},
+        # No job row: this is the imported-book population.
+        jobs=[],
+    )
+
+    summary = await rescreen_mod.rescreen_published_books(
+        mock_async_session, settings=_settings(), actor=_actor()
+    )
+
+    # The declared sentinel the book carries is NOT reported as corruption.
+    assert summary.results[0].reasons == []
+    assert summary.passed == 1
+    # And it was the version row itself that reached the resolver, not a
+    # second job lookup: the plumbing, pinned alongside the outcome.
+    assert seen == [version_row]
+
+
+async def test_job_backed_book_still_resolves_from_the_job(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The job row still wins when a book HAS one, version fallback or not.
+
+    The fallback is scoped to books with no job: a generated book's job row
+    carries the band its version does not, so it stays the better provenance.
+    Both resolvers are doubled with distinguishable answers, so the assertion
+    fails if the fallback ever starts overriding a job-backed book.
+    """
+    _patch_threshold_policy(monkeypatch)
+    monkeypatch.setattr(rescreen_mod, "run_classifiers", AsyncMock(return_value=[]))
+    job = GenerationJob(
+        storybook_id="s1",
+        authoring_metadata={"skeleton_slug": "x", "skeleton_band": "8-11"},
+    )
+    version_row = _version_row(
+        "s1", 1, _with_sentinel_in_body(_blob(), wrap("HERO", "Ada"))
+    )
+    version_row.skeleton_slug = "themed-slug"
+    from_version: list[StorybookVersion] = []
+
+    def _job_declares_hero(_job: GenerationJob) -> PersonalizableSlots:
+        return frozenset({"HERO"})
+
+    def _version_declares_nothing(row: StorybookVersion) -> PersonalizableSlots:
+        from_version.append(row)
+        return frozenset()
+
+    monkeypatch.setattr(
+        rescreen_mod, "personalizable_slot_ids_for_job", _job_declares_hero
+    )
+    monkeypatch.setattr(
+        rescreen_mod, "personalizable_slot_ids_for_version", _version_declares_nothing
+    )
+    _wire_session(
+        mock_async_session,
+        books=[_book()],
+        versions={("s1", 1): version_row},
+        jobs=[job],
+    )
+
+    summary = await rescreen_mod.rescreen_published_books(
+        mock_async_session, settings=_settings(), actor=_actor()
+    )
+
+    # The job's answer (HERO declared) is what the at-rest scan used, so the
+    # sentinel passes; the version resolver was never consulted at all.
+    assert from_version == []
+    assert summary.results[0].reasons == []
+    assert summary.passed == 1
 
 
 async def test_prefetch_db_failure_aborts_the_sweep(
