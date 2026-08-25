@@ -4,10 +4,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ReadingState } from '../player/types'
 import * as db from './db'
-import { _resetDbHandle, getReadingState, listQueue } from './db'
+import { type QueuedWrite, _resetDbHandle, enqueueWrite, getReadingState, listQueue } from './db'
 import {
   LocalWriteError,
   OfflineError,
+  QUEUE_APPENDED_EVENT,
   type PutResponse,
   type SaveBody,
   type SyncApi,
@@ -491,6 +492,209 @@ describe('replayQueue', () => {
     const outcome = await replayQueue(online)
     expect(outcome.failed.map((w) => w.event_id)).toEqual(['evt-1'])
     expect(outcome.replayed).toBe(1)
+    expect(await listQueue()).toHaveLength(0)
+  })
+})
+
+/** A queued write with everything but the fields a test cares about filled in. */
+function queuedWrite(overrides: Partial<QueuedWrite> & { event_id: string }): QueuedWrite {
+  return {
+    profile_id: 'p1',
+    storybook_id: 's1',
+    base_revision: 0,
+    state: makeState('n_mid', 0),
+    queued_at: Date.now(),
+    ...overrides,
+  }
+}
+
+describe('saveProgress does not overtake the queue', () => {
+  it('appends a live write behind an existing queued write for the same row', async () => {
+    await enqueueWrite(queuedWrite({ event_id: 'older' }))
+    // This API would happily accept the write. The point is that it is never
+    // asked: a reachable network is not permission to jump the row's queue.
+    const api = fakeApi(() => ({ status: 200, row: rowAt('n_mid', 1) }))
+
+    const result = await saveProgress(api, 'p1', 's1', makeState('n_new', 0), { newId: ids })
+
+    expect(result.kind).toBe('queued')
+    expect(api.calls).toHaveLength(0)
+    expect((await listQueue()).map((w) => w.event_id)).toEqual(['older', 'evt-1'])
+  })
+
+  it('sends a live write when the queue holds another row only', async () => {
+    // Discriminates the per-row predicate from a bare "is the queue empty".
+    // A backlog for a DIFFERENT book must not stall this one.
+    await enqueueWrite(queuedWrite({ event_id: 'other-book', storybook_id: 's2' }))
+    const api = fakeApi(() => ({ status: 200, row: rowAt('n_mid', 1) }))
+
+    const result = await saveProgress(api, 'p1', 's1', makeState('n_mid', 0), { newId: ids })
+
+    expect(result.kind).toBe('saved')
+    expect(api.calls).toHaveLength(1)
+    expect((await listQueue()).map((w) => w.event_id)).toEqual(['other-book'])
+  })
+
+  it('appends rather than sending when the queue cannot be read', async () => {
+    // Fail closed: an unreadable queue might hold writes for this row, and
+    // overtaking one causes the rewind the check exists to prevent.
+    vi.spyOn(db, 'listQueue').mockRejectedValueOnce(new Error('IDB unavailable'))
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const api = fakeApi(() => ({ status: 200, row: rowAt('n_mid', 1) }))
+
+    const result = await saveProgress(api, 'p1', 's1', makeState('n_mid', 0), { newId: ids })
+
+    expect(result.kind).toBe('queued')
+    expect(api.calls).toHaveLength(0)
+  })
+
+  it('schedules a drain when a write is appended while online', async () => {
+    // An append while online is NOT covered by the 'online' event (it already
+    // fired, or never will), so without this the write sits until the next
+    // disconnect. Every response-less transport failure raises OfflineError,
+    // and none of them flips navigator.onLine.
+    const drains: Event[] = []
+    const listener = (e: Event) => drains.push(e)
+    window.addEventListener(QUEUE_APPENDED_EVENT, listener)
+    try {
+      const api = fakeApi(() => {
+        throw new OfflineError()
+      })
+      await saveProgress(api, 'p1', 's1', makeState('n_mid', 0), { newId: ids })
+      expect(drains).toHaveLength(1)
+    } finally {
+      window.removeEventListener(QUEUE_APPENDED_EVENT, listener)
+    }
+  })
+
+  it('does not schedule a drain for a write queued while offline', async () => {
+    // The discriminating half of the pair above: while genuinely offline the
+    // 'online' event already covers the drain, and a kick per choice would
+    // burn a doomed round trip on every page of a long offline read.
+    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+    const drains: Event[] = []
+    const listener = (e: Event) => drains.push(e)
+    window.addEventListener(QUEUE_APPENDED_EVENT, listener)
+    try {
+      const api = fakeApi(() => {
+        throw new OfflineError()
+      })
+      await saveProgress(api, 'p1', 's1', makeState('n_mid', 0), { newId: ids })
+      expect(await listQueue()).toHaveLength(1)
+      expect(drains).toHaveLength(0)
+    } finally {
+      window.removeEventListener(QUEUE_APPENDED_EVENT, listener)
+    }
+  })
+})
+
+describe('queue ordering', () => {
+  it('replays same-millisecond writes in insertion order', async () => {
+    // queued_at is a millisecond stamp and appends need no round trip, so a
+    // tie is normal. The event_ids here descend deliberately: real ids are
+    // random UUIDs, and with getAll returning key order a tie would otherwise
+    // resolve to id order. Ascending ids would agree with insertion order by
+    // accident and the test could not tell the tie-break from its absence.
+    const at = Date.now()
+    for (const id of ['evt-c', 'evt-b', 'evt-a']) {
+      await enqueueWrite(queuedWrite({ event_id: id, queued_at: at }))
+    }
+
+    expect((await listQueue()).map((w) => w.event_id)).toEqual(['evt-c', 'evt-b', 'evt-a'])
+  })
+
+  it('orders by queued_at first, so an older session replays before this one', async () => {
+    // seq resets on reload; it must only ever break ties, never outrank the stamp.
+    await enqueueWrite(queuedWrite({ event_id: 'this-session', queued_at: 2_000 }))
+    await enqueueWrite(queuedWrite({ event_id: 'last-session', queued_at: 1_000, seq: 999 }))
+
+    expect((await listQueue()).map((w) => w.event_id)).toEqual(['last-session', 'this-session'])
+  })
+})
+
+describe('replayQueue drains in passes', () => {
+  it('sends a write appended while the drain was already running', async () => {
+    await enqueueWrite(queuedWrite({ event_id: 'first', queued_at: 1_000 }))
+    let appended = false
+    const api = capturingApi((body) => {
+      if (!appended) {
+        appended = true
+        // The child taps a choice mid-drain. saveProgress appends it (the queue
+        // is non-empty for this row), so only a second pass can send it.
+        void enqueueWrite(queuedWrite({ event_id: 'mid-drain', queued_at: 1_001 }))
+      }
+      return { status: 200, row: rowAt('n_mid', body.event_id === 'first' ? 1 : 2) }
+    })
+
+    const outcome = await replayQueue(api)
+
+    expect(outcome.replayed).toBe(2)
+    expect(api.bodies.map((b) => b.event_id)).toEqual(['first', 'mid-drain'])
+    expect(await listQueue()).toHaveLength(0)
+  })
+
+  it('still sends a choice made after a drain latched the story', async () => {
+    // The conflict latch exists to hold the STALE tail of an offline chain.
+    // A choice stamped after the drain began is fresh reading on a device that
+    // is online now; holding it would dequeue it without ever sending it, and
+    // nothing surfaces outcome.conflicts to the child.
+    vi.spyOn(Date, 'now').mockReturnValue(2_000)
+    await enqueueWrite(queuedWrite({ event_id: 'stale-1', queued_at: 1_000 }))
+    await enqueueWrite(queuedWrite({ event_id: 'stale-2', queued_at: 1_001 }))
+    await enqueueWrite(queuedWrite({ event_id: 'fresh', queued_at: 3_000 }))
+    const api = capturingApi((body) =>
+      body.event_id === 'stale-1'
+        ? { status: 409, currentRow: rowAt('n_elsewhere', 9) }
+        : { status: 200, row: rowAt('n_mid', 10) }
+    )
+
+    const outcome = await replayQueue(api)
+
+    // stale-1 conflicted and latched; stale-2 was held behind it unsent.
+    expect(outcome.conflicts.map((c) => c.event_id)).toEqual(['stale-1', 'stale-2'])
+    // The fresh choice was sent anyway, and is not reported as a conflict.
+    expect(api.bodies.map((b) => b.event_id)).toEqual(['stale-1', 'fresh'])
+    expect(outcome.replayed).toBe(1)
+    expect(await listQueue()).toHaveLength(0)
+  })
+
+  it('holds a write stamped in the drain-start millisecond as part of the stale chain', async () => {
+    // The exemption's boundary is strict, and deliberately so: queued_at and
+    // drainStartedAt are both millisecond stamps, so a tie is ambiguous about
+    // which came first. Holding is the fail-safe reading, because a held write
+    // is surfaced as a conflict while a wrongly-sent stale write silently
+    // rewinds the child's server position.
+    vi.spyOn(Date, 'now').mockReturnValue(2_000)
+    await enqueueWrite(queuedWrite({ event_id: 'stale', queued_at: 1_000 }))
+    await enqueueWrite(queuedWrite({ event_id: 'boundary', queued_at: 2_000 }))
+    const api = capturingApi((body) =>
+      body.event_id === 'stale'
+        ? { status: 409, currentRow: rowAt('n_elsewhere', 9) }
+        : { status: 200, row: rowAt('n_mid', 10) }
+    )
+
+    const outcome = await replayQueue(api)
+
+    expect(api.bodies.map((b) => b.event_id)).toEqual(['stale'])
+    expect(outcome.conflicts.map((c) => c.event_id)).toEqual(['stale', 'boundary'])
+  })
+
+  it('keeps draining when mirroring an accepted row locally fails', async () => {
+    // The server already took the write, so it is not lost, only its local
+    // mirror is stale. Throwing would abort the drain and discard every
+    // conflict and failure collected so far.
+    await enqueueWrite(queuedWrite({ event_id: 'first', queued_at: 1_000 }))
+    await enqueueWrite(queuedWrite({ event_id: 'second', queued_at: 1_001 }))
+    vi.spyOn(db, 'putReadingState').mockRejectedValueOnce(new Error('quota exceeded'))
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const api = capturingApi((body) => ({
+      status: 200,
+      row: rowAt('n_mid', body.event_id === 'first' ? 1 : 2),
+    }))
+
+    const outcome = await replayQueue(api)
+
+    expect(outcome.replayed).toBe(2)
     expect(await listQueue()).toHaveLength(0)
   })
 })

@@ -168,6 +168,21 @@ type SaveWarning = 'lost' | 'failing' | null
 // in the reader.
 const LEAVE_SAVE_WAIT_MS = 1500
 
+/**
+ * Reduce a save failure to a loggable summary.
+ *
+ * Never returns the error object itself: an AxiosError holds the request config,
+ * whose Authorization header is the live child session bearer on this route.
+ */
+function describeSaveError(error: unknown): string {
+  if (error !== null && typeof error === 'object' && 'response' in error) {
+    const response = (error as { response?: { status?: number } }).response
+    if (typeof response?.status === 'number') return `http ${String(response.status)}`
+  }
+  if (error instanceof Error) return `${error.name}: ${error.message}`
+  return 'unknown error'
+}
+
 // A discriminated union, not parallel phase/story/initialReading state: the
 // 'reading' variant is the only one carrying a story, so phase === 'reading'
 // guarantees story is present at the type level instead of relying on a
@@ -355,9 +370,6 @@ export function ReaderPage({
   // Mirror of saveWarning for handlers that need the freshest value across an
   // await (state reads inside an async closure are frozen at render time).
   const saveWarningRef = useRef<SaveWarning>(null)
-  // The latest in-flight persist() call. Leave awaits this (bounded) so a save
-  // that is about to fail can surface its warning before the page unmounts.
-  const pendingSaveRef = useRef<Promise<void> | null>(null)
   // Set once a Leave tap was blocked to show the lost-save warning; the next
   // tap then always navigates so a child can never be stuck in the reader.
   const leaveWarningShownRef = useRef(false)
@@ -365,14 +377,20 @@ export function ReaderPage({
   // server's state; the machine reads its input only at creation.
   const [readerKey, setReaderKey] = useState(0)
   // Serializes saves against each other. persist() stamps `state_revision`
-  // from revisionRef, which only advances when a save RESPONSE lands, so two
+  // from revisionRef, which advances when a save RESPONSE lands (load() also
+  // seeds it from the fetched row, and is NOT serialized against this chain), so two
   // saves started inside one round-trip would stamp the SAME revision and the
   // server would reject the second as a cross-device conflict. ADR-026 makes
   // exactly that the normal mount at bands 8-11 and up: the reader walks the
   // whole opening stop before the child touches anything, reporting one state
-  // per node walked. Distinct from pendingSaveRef, which exists so Leave can
-  // await a save; this one exists so saves cannot overlap in the first place.
+  // per node walked. This is also what handleLeave awaits: the tail settles
+  // only after every save queued ahead of it has, so one wait covers them all,
+  // and persist() maintains it directly rather than any single call site.
   const saveChainRef = useRef<Promise<void>>(Promise.resolve())
+  // Bumped every time the 409 branch adopts the server's row. A save waiting
+  // behind the chain captures this before it waits; if it moved while waiting,
+  // that save's content predates an adoption that already superseded it.
+  const adoptionGenerationRef = useRef(0)
   const revisionRef = useRef(0)
   const failedSaveCountRef = useRef(0)
   // Content signature of the last save this instance issued. Guards against the
@@ -602,12 +620,36 @@ export function ReaderPage({
       // against a server double that enforces the revision precondition; the
       // suite-wide okApi() accepts every revision and cannot see this.
       const previousSave = saveChainRef.current
+      const generationAtQueue = adoptionGenerationRef.current
+      // Assigned synchronously by the Promise executor below. If either skip
+      // above ever moved after this point without releasing, every later save
+      // would wait forever on a promise nobody resolves, and a wedged chain is
+      // indistinguishable from a quiet reader.
+      // #VERIFY: ReaderPage.test.tsx "keeps saving after an emission is skipped
+      // as a duplicate".
       let markSaveDone: () => void = () => {}
       saveChainRef.current = new Promise<void>((resolve) => {
         markSaveDone = resolve
       })
       await previousSave
       try {
+        // #CRITICAL: data-integrity: drop a save the conflict path superseded
+        // while it waited. Serialization alone converts a rejected save into an
+        // accepted one: if the save ahead of this one 409'd, the branch below
+        // adopted the server row and moved revisionRef, so this save would stamp
+        // the freshly adopted revision onto its own PRE-conflict content and the
+        // server would accept it, republishing the position adoption had just
+        // decided to discard. Unserialized, this save carried a stale revision
+        // and 409'd back into adoption. The remounted Reader re-emits from the
+        // adopted row, so skipping here loses nothing.
+        // #VERIFY: ReaderPage.test.tsx "does not resend the pre-conflict
+        // position after the save ahead of it adopted the server row".
+        if (adoptionGenerationRef.current !== generationAtQueue) {
+          // Clear the signature so the remount's emission is never mistaken for
+          // a duplicate of the save we just dropped.
+          lastSaveSignatureRef.current = null
+          return
+        }
         const stamped: ReadingState = {
           ...reading,
           state_revision: revisionRef.current,
@@ -645,6 +687,7 @@ export function ReaderPage({
               { deviceId }
             )
             revisionRef.current = serverRow.state_revision
+            adoptionGenerationRef.current += 1
             // The adopted row is the server's own View, so it carries the
             // binding this read was actually recorded against; re-derive from it
             // rather than keeping the pre-conflict binding. (Before the binding
@@ -689,12 +732,18 @@ export function ReaderPage({
             return
           }
           failedSaveCountRef.current += 1
+          // #CRITICAL: security: log a summary, never the error object. An
+          // AxiosError carries `config.headers.Authorization`, which on this
+          // route is the live child session bearer; console output is readable
+          // by anything with devtools access and is captured by error
+          // reporters. The status and message are what diagnosis needs.
+          // #VERIFY: no value logged here dereferences `config` or `request`.
           console.error('[reader] progress save failed', {
             profileId,
             storybookId,
             revision: revisionRef.current,
             attempt: failedSaveCountRef.current,
-            error,
+            reason: describeSaveError(error),
           })
           // #ASSUME: external-resources: a single dropped remote save is often a
           // transient network blip; only a repeated failure indicates a real,
@@ -715,12 +764,12 @@ export function ReaderPage({
   )
 
   // Stable handler so the Reader's progress effect does not re-fire (and re-save
-  // unchanged state) on every ReaderPage re-render. The in-flight promise is
-  // kept in pendingSaveRef so handleLeave can settle it before unmounting;
-  // persist() catches its own failures, so this promise never rejects.
+  // unchanged state) on every ReaderPage re-render. Fire-and-forget is safe
+  // here: persist() catches its own failures (so this promise never rejects)
+  // and appends itself to saveChainRef, which is what handleLeave waits on.
   const handleProgress = useCallback(
     (reading: ReadingState) => {
-      pendingSaveRef.current = persist(reading)
+      void persist(reading)
     },
     [persist]
   )
@@ -733,20 +782,32 @@ export function ReaderPage({
   // #VERIFY: covered by ReaderLeave.test.tsx: "surfaces a lost save and blocks
   // the first Leave tap; a second tap still leaves" and "navigates to the
   // library immediately when no save is pending or at risk".
+  //
+  // #EDGE: timing: the wait is bounded and the bound is NOT large enough to
+  // cover the worst case. Saves are serialized (saveChainRef), so waiting on
+  // the tail waits on everything queued ahead of it, but readerApi's axios
+  // timeout is 10s: one hung request holds the chain far past
+  // LEAVE_SAVE_WAIT_MS, and a later save's local write has not even been
+  // attempted when the race expires. Leave then navigates without the banner.
+  // Closing this residual means choosing between an unbounded wait (which
+  // traps a child in the reader behind a dead network) and dropping the
+  // guarantee; that is a product call, so this records it rather than
+  // deciding it. Tracked as a follow-up on #761.
+  // #VERIFY: keep LEAVE_SAVE_WAIT_MS below any change that would make Leave
+  // feel unresponsive, and re-read this if readerApi's timeout changes.
   const handleLeave = useCallback(() => {
     void (async () => {
       // Second tap after the warning was surfaced: always leave. The banner
       // was shown; holding the child hostage to a failing save helps nobody.
       if (!leaveWarningShownRef.current) {
-        const pending = pendingSaveRef.current
-        if (pending) {
-          // Bounded wait: give the in-flight save a chance to settle (and to
-          // set the warning) without letting a hung request trap the reader.
-          await Promise.race([
-            pending,
-            new Promise<void>((resolve) => setTimeout(resolve, LEAVE_SAVE_WAIT_MS)),
-          ])
-        }
+        // Bounded wait on the chain TAIL, not on one save: give the queued
+        // saves a chance to settle (and to set the warning) without letting a
+        // hung request trap the reader. Already-settled resolves immediately,
+        // so a Leave with nothing pending still navigates in one microtask.
+        await Promise.race([
+          saveChainRef.current,
+          new Promise<void>((resolve) => setTimeout(resolve, LEAVE_SAVE_WAIT_MS)),
+        ])
         if (saveWarningRef.current === 'lost') {
           // The step is stored nowhere (see persist's LocalWriteError branch).
           // Stay on the page this tap so the role="alert" banner is actually
