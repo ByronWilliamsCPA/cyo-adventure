@@ -176,3 +176,19 @@ ever shared beyond the family.
   taxonomy, the structural bypass findings, and the status of the adversarial-brief criterion
   above.
 - [Tech Spec: Publish state machine](../tech-spec.md#publish-state-machine)
+
+## Amendment (2026-08-25): overriding automated severe findings
+
+The original decision made human approval mandatory but left silent whether a
+human may approve OVER an automated block. Ruling: an admin may approve a
+version whose moderation report contains a block or high-severity finding,
+but only with a written override reason. The reason is recorded in the
+structured application logs (correlation-aware); the `released` audit event
+payload carries only the counts (`overridden_block_count`,
+`overridden_high_count`), because the pipeline-event payload contract forbids
+free text. An absent reason is a 400
+(`approve_requires_override_reason`). A report containing no genuine content
+judgment (fail-safe or mock-reviewer artifacts only) is not approvable at all
+(`approve_with_unusable_moderation`); re-running moderation is the only path
+forward. This preserves the human as the final authority while making every
+exercise of that authority auditable.
