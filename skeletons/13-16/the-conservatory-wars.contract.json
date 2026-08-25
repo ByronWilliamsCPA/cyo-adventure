@@ -45,7 +45,7 @@
     "Okafor"
   ],
   "default_binding": {
-    "HERO": "Noor Haddad",
+    "HERO": "Noor",
     "TEACHER_A": "Maestra Ilsa Varga",
     "TEACHER_B": "Professor Elias Thorn",
     "TEACHER_C": "Director Amara Osei",
@@ -96,7 +96,7 @@
       "id": "HERO",
       "scope": "global",
       "meaning": "The scholarship student protagonist.",
-      "guidance": "A single relatable teen protagonist (name or role); talented but still learning.",
+      "guidance": "A single relatable teen protagonist named by first name only, no surname; talented but still learning.",
       "constraints": {
         "max_words": 8,
         "forbid": [
@@ -120,7 +120,10 @@
           "TEACHER_B",
           "TEACHER_C"
         ]
-      }
+      },
+      "kind": "personalizable",
+      "personalization_field": "protagonist_first_name",
+      "role_safety": "protagonist"
     },
     {
       "id": "TEACHER_A",

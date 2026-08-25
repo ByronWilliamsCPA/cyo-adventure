@@ -1134,7 +1134,10 @@
         "distinct_from": [
           "KEEPER"
         ]
-      }
+      },
+      "kind": "personalizable",
+      "personalization_field": "protagonist_first_name",
+      "role_safety": "protagonist"
     },
     {
       "id": "HOARD_PRIZE",

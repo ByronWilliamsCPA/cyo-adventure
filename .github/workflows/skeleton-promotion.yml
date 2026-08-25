@@ -12,6 +12,13 @@
 # gate/cell/envelope and the theme contract; only the two parent-relative legs
 # are skipped for it, by the prover, which logs that it did.
 #
+# A changed *.contract.json is not a shell and cannot be re-proven from scratch,
+# so it is collected separately and validated by its own step. Without that leg,
+# a PR that rewrites only theme contracts filtered every changed file out of the
+# shell list, and both downstream steps skipped while the check reported green:
+# the one validation that would have exercised those contracts was reachable
+# only through a changed shell.
+#
 # The skeleton-promotion LABEL must never be auto-merged (ADR-020 decision 4; the
 # release workflow's auto-merge precedent makes this a real hazard). The
 # no-auto-merge job fails a labeled PR that has auto-merge enabled, so no
@@ -99,20 +106,40 @@ jobs:
           # did. Deciding it at THIS layer instead silently dropped three
           # checks rather than two, and because --diff-filter=AM includes added
           # files, a brand-new hand-authored skeleton was skipped by
-          # construction. Only sidecars are dropped, and only because the
-          # prover reaches them through their shell. Keep this list in sync
+          # construction. Sidecars are the only files dropped from the shell
+          # list; a .contract.json is not dropped from the job, it is routed to
+          # its own step below, because the prover reaches a contract only
+          # through a changed shell. Keep this list in sync
           # with SIDECAR_SUFFIXES in generation/skeleton.py: a sidecar suffix
           # missing here is handed to the prover as if it were a shell, which
           # is how .narrative.json first failed this job.
           : > changed-skeletons.txt
+          : > changed-contracts.txt
           while IFS= read -r f; do
             case "$f" in
-              *.contract.json|*.lineage.json|*.narrative.json) continue ;;
+              *.contract.json) echo "$f" >> changed-contracts.txt ;;
+              *.lineage.json|*.narrative.json) continue ;;
               *.json) echo "$f" >> changed-skeletons.txt ;;
             esac
           done < changed-all.txt
+          # check_theme_contract takes the SHELL path and derives the sidecar
+          # itself (generation.binding.contract_path_for), so each changed
+          # contract is mapped back to its shell. A shell already on the prove
+          # list runs check_theme_contract inside check_promotion_bundle, so it
+          # is dropped here rather than validated twice.
+          : > contract-shells.txt
+          while IFS= read -r c; do
+            shell="${c%.contract.json}.json"
+            if grep -qxF "$shell" changed-skeletons.txt; then
+              continue
+            fi
+            echo "$shell" >> contract-shells.txt
+          done < changed-contracts.txt
           echo "count=$(wc -l < changed-skeletons.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
+          echo "contract_count=$(wc -l < contract-shells.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
           echo "Changed skeleton shells to prove:"; cat changed-skeletons.txt
+          echo "Changed theme contracts to validate (listed by their shell):"
+          cat contract-shells.txt
 
       - name: Re-prove changed skeletons from scratch
         if: ${{ steps.changed.outputs.count != '0' }}
@@ -124,12 +151,41 @@ jobs:
           mapfile -t changed_skeletons < changed-skeletons.txt
           uv run python scripts/check_promotion_bundle.py "${changed_skeletons[@]}"
 
+      # The contract-only leg. A contract whose shell also changed is not
+      # listed here; check_promotion_bundle already ran this same check for it.
+      - name: Validate changed theme contracts
+        if: ${{ steps.changed.outputs.contract_count != '0' }}
+        run: |
+          set -uo pipefail
+          # Every contract is validated before the step exits, so one bad
+          # sidecar cannot hide the rest; a single failure still fails the step.
+          status=0
+          while IFS= read -r shell; do
+            if [ ! -f "$shell" ]; then
+              # #CRITICAL: data integrity: a contract sidecar whose shell is
+              # gone cannot be validated by anything, so fail rather than skip.
+              # #VERIFY: exercised by deleting a shell while editing its
+              # .contract.json in the same PR.
+              echo "::error::${shell} is missing but its theme contract changed;" \
+                "a contract without its shell cannot be validated."
+              status=1
+              continue
+            fi
+            echo "::group::check_theme_contract ${shell}"
+            uv run python scripts/check_theme_contract.py "$shell" || status=1
+            echo "::endgroup::"
+          done < contract-shells.txt
+          exit "$status"
+
       # Adding a skeleton invalidates two committed derived artifacts, and both
       # went stale unnoticed once already: the mutation-floor baseline (which
       # left a required check red on main) and the generated skeleton catalog
       # plus its diagrams (which is the index an author consults to ask what is
       # already in a cell). This is the natural home for the guards, since the
-      # workflow already triggers on paths: skeletons/**.
+      # workflow already triggers on paths: skeletons/**. This stays gated on
+      # the shell count: both generators skip sidecars outright (see the sidecar
+      # skips in render_skeleton_diagrams.py and calibrate_mutation_floors.py),
+      # so a contract-only change cannot stale either artifact.
       - name: Derived artifacts must be current
         if: ${{ steps.changed.outputs.count != '0' }}
         run: |

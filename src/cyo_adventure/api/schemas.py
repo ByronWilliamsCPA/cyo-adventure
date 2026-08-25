@@ -229,6 +229,20 @@ class LibraryItem(BaseModel):
     # matching the same "absent means no character" default the schema
     # itself enforces (storybook/models.py::Storybook.accepts_character).
     accepts_character: bool = False
+    # Content identity for the served blob of this (id, version), computed on
+    # read by ``library.py::storybook_content_hash``. ``StorybookVersion`` is
+    # documented as immutable, but a blob rewritten in place under an
+    # unchanged version (as scripts/retrofit_personalization.py did to 15
+    # published rows) leaves every device that already downloaded that book
+    # stuck on the old prose forever: the offline cache keys on ``id@version``
+    # alone and a cache hit is never re-fetched. This lets the client tell
+    # "same version, changed content" from "unchanged" and evict just the
+    # entries that actually drifted. Defaults to the empty string only for a
+    # hand-constructed item (see TestLibraryItemEnrichmentFields, which
+    # documents the same default-to-safe-empty convention for every other
+    # enrichment field); the listing route always populates it, and the client
+    # treats an empty value as "server said nothing, do not evict".
+    content_hash: str = ""
 
 
 class LibraryView(BaseModel):

@@ -25,7 +25,7 @@
     "Water Casks"
   ],
   "default_binding": {
-    "HERO": "Captain Mira Voss",
+    "HERO": "Mira",
     "PARTY_NAME": "the ashfall expedition",
     "THRESHOLD": "the wasteland",
     "ENTRANCE": "base camp",
@@ -62,7 +62,7 @@
       "id": "HERO",
       "scope": "global",
       "meaning": "The expedition's leader.",
-      "guidance": "A single named leader (rank plus name); competent and protective of the group.",
+      "guidance": "A single leader named by first name only, no rank and no surname; competent and protective of the group.",
       "constraints": {
         "max_words": 6,
         "forbid": [
@@ -71,7 +71,10 @@
         "distinct_from": [
           "PARTY_NAME"
         ]
-      }
+      },
+      "kind": "personalizable",
+      "personalization_field": "protagonist_first_name",
+      "role_safety": "protagonist"
     },
     {
       "id": "PARTY_NAME",

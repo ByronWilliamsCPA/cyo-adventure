@@ -28,16 +28,19 @@
 import type { ValuesPayload } from '../player/personalization'
 import {
   cachePersonalizationValues,
+  deleteCachedStorybookVersion,
   deletePersonalizationValues,
   deleteReadingState,
   deleteStorybooksById,
   dequeue,
   getAllProfileShelves,
   listCachedStorybookIds,
+  listCachedStorybookKeys,
   listPersonalizationValues,
   listQueue,
   listReadingStateStorybookIds,
   putProfileShelf,
+  storybookCacheKey,
 } from './db'
 
 // #CRITICAL: data-integrity: this function purges local cache state and must
@@ -228,4 +231,171 @@ export async function reconcilePersonalizationValues(
     return
   }
   await cachePersonalizationValues(storybookId, fresh)
+}
+
+/**
+ * Where this device records, per `id@version`, the content identity the
+ * server most recently advertised for that payload.
+ *
+ * `localStorage`, deliberately, not a new IndexedDB store: this is derived
+ * bookkeeping that is cheap to rebuild from scratch, and keeping it out of
+ * `db.ts` means the whole feature needs no `DB_VERSION` bump, no upgrade
+ * branch, and no downgrade story for a client running an older bundle. It is
+ * the same call `downloadBudget.ts` already makes for recency and the refusal
+ * flag ("this module carries no schema/version surface at all"). If the map
+ * is lost (private mode, a user clearing site data, a browser that throws on
+ * access), every cached entry simply reads as unverified again and is
+ * re-verified once; the failure mode is one extra re-download, never a wrong
+ * answer.
+ */
+const CONTENT_HASH_KEY = 'offline_story_content_hash'
+
+type ContentHashMap = Record<string, string>
+
+function readContentHashes(): ContentHashMap {
+  try {
+    const raw = localStorage.getItem(CONTENT_HASH_KEY)
+    if (!raw) return {}
+    const parsed: unknown = JSON.parse(raw)
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return {}
+    return parsed as ContentHashMap
+  } catch {
+    // #EDGE: browser-compat: storage unavailable or a corrupt blob. Treated as
+    // "nothing verified yet", which costs one re-verification pass and never
+    // asserts a match this device cannot actually vouch for.
+    return {}
+  }
+}
+
+function writeContentHashes(map: ContentHashMap): void {
+  try {
+    localStorage.setItem(CONTENT_HASH_KEY, JSON.stringify(map))
+  } catch {
+    // #EDGE: browser-compat: storage unavailable. The eviction that already
+    // happened still stands; only the memo of it is lost, so the next shelf
+    // load re-verifies. Degrades toward extra work, never toward staleness.
+  }
+}
+
+/** One shelf entry, as much of a `LibraryItemView` as the staleness check reads. */
+export interface StaleCheckItem {
+  id: string
+  version: number
+  /** The server's content identity for this exact payload (`LibraryItem.content_hash`). */
+  content_hash?: string
+}
+
+/** What one staleness pass did, for logging and for tests. */
+export interface StaleEvictionOutcome {
+  /** Entries evicted because their stored identity differed from the server's. */
+  changed: number
+  /** Entries evicted because this device had never recorded an identity for them. */
+  unverified: number
+  /** Cached entries whose stored identity already matched; left untouched. */
+  fresh: number
+}
+
+/**
+ * Evict cached blobs whose CONTENT changed while their `version` did not.
+ *
+ * `storybook_version` is documented as immutable and the offline cache was
+ * built on that promise: `storybooks` is keyed by `id@version` alone, and a
+ * cache hit is never re-fetched. `scripts/retrofit_personalization.py` broke
+ * the promise for 15 already-published production rows, rewriting `blob` in
+ * place without bumping `version`, so every device that downloaded one of
+ * those books beforehand keeps the pre-retrofit prose permanently: same id,
+ * same version, cache hit, no personalization, forever, with nothing to
+ * detect it. `LibraryItem.content_hash` (server side:
+ * `api/library.py::storybook_content_hash`) is the missing signal, and this
+ * is the client half.
+ *
+ * Three cases, and the third is the whole affected population:
+ *
+ * - stored identity === advertised identity: fresh. Nothing happens, which is
+ *   what keeps this from re-downloading the shelf on every load.
+ * - stored identity !== advertised identity: the payload changed underneath a
+ *   frozen version. Evict just that `id@version`.
+ * - no stored identity at all: UNKNOWN, not "matches". Every device that
+ *   cached anything before this shipped is in this state, including every
+ *   device holding one of the 15 retrofitted books. Verify it exactly once by
+ *   evicting, then record the advertised identity so the re-download settles
+ *   the question permanently. Recording is what makes it once rather than
+ *   forever: without it the entry would read as unverified on every shelf
+ *   load and re-download on every one of them.
+ *
+ * The advertised identity is recorded for every shelf item, cached or not, so
+ * a book downloaded AFTER this pass is already accounted for and does not pay
+ * a throwaway re-download the first time it appears here.
+ *
+ * Eviction only: nothing here downloads or rewrites a blob. The re-download is
+ * `ReaderPage.tsx::load()`'s existing cache-miss path, unchanged and already
+ * tested, so this adds no second download path to keep in sync.
+ *
+ * Scope note, and the reason this is NOT folded into `reconcileOfflineCache`:
+ * that function's purge is gated on "no profile on this device still lists
+ * this book". Staleness has no such gate and must not inherit one. A blob
+ * whose bytes changed is stale for every profile on the device at once,
+ * including profiles whose shelf is not the one being fetched, because
+ * `storybooks` is a single device-wide store.
+ *
+ * #CRITICAL: data-integrity: like `reconcileOfflineCache` above, this deletes
+ * local cache state and must ONLY run against a successful, authoritative
+ * `/v1/library` response. It must never be called from a catch branch, a
+ * timeout, or a cached/stale shelf: an item that reaches it with a missing or
+ * empty `content_hash` is skipped entirely rather than evicted, so a partial
+ * or older response can never be read as "everything changed" and wipe the
+ * device's offline library on a bad payload.
+ * #VERIFY: staleContent.test.ts "leaves a cached book alone when the server
+ * advertised no content hash"; the LibraryPage.tsx call site sits in
+ * fetchItems's success block beside reconcileOfflineCache, never in its catch.
+ *
+ * @param items - The freshly fetched, authoritative shelf for one profile.
+ * @returns What the pass did, for the caller to log.
+ */
+export async function evictStaleOfflineBooks(
+  items: readonly StaleCheckItem[]
+): Promise<StaleEvictionOutcome> {
+  const outcome: StaleEvictionOutcome = { changed: 0, unverified: 0, fresh: 0 }
+  const known = readContentHashes()
+  const cachedKeys = new Set(await listCachedStorybookKeys())
+  const next: ContentHashMap = {}
+
+  for (const item of items) {
+    const advertised = item.content_hash
+    // Absent or empty means the server told us nothing about this payload (a
+    // pre-field backend, a hand-built item). Not evidence of change, so it is
+    // not recorded and not acted on; the previous record, if any, is carried
+    // forward below so an earlier verification is not thrown away.
+    if (!advertised) continue
+    const key = storybookCacheKey(item.id, item.version)
+    next[key] = advertised
+    if (!cachedKeys.has(key)) continue
+    if (known[key] === advertised) {
+      outcome.fresh += 1
+      continue
+    }
+    await deleteCachedStorybookVersion(item.id, item.version)
+    if (known[key] === undefined) outcome.unverified += 1
+    else outcome.changed += 1
+  }
+
+  // Carry forward records for payloads this pass did not speak to but that are
+  // still cached on the device: a sibling profile's book, or one this shelf
+  // reported without a hash. Anything neither on this shelf nor still cached is
+  // dropped, which is what keeps the map bounded by what the device actually
+  // holds rather than by everything it has ever seen.
+  for (const [key, hash] of Object.entries(known)) {
+    if (next[key] === undefined && cachedKeys.has(key)) next[key] = hash
+  }
+  writeContentHashes(next)
+  return outcome
+}
+
+/** Forget every recorded content identity (test isolation helper). */
+export function _resetContentHashes(): void {
+  try {
+    localStorage.removeItem(CONTENT_HASH_KEY)
+  } catch {
+    // Nothing to clean up when storage is unavailable.
+  }
 }

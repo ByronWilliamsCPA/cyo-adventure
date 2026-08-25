@@ -20,7 +20,7 @@ import {
   OFFLINE_BUDGET_FULL_MESSAGE,
   OFFLINE_EVICTION_MESSAGE,
 } from '../offline/downloadBudget'
-import { reconcileOfflineCache } from '../offline/revocation'
+import { evictStaleOfflineBooks, reconcileOfflineCache } from '../offline/revocation'
 import { GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from '../routes'
 import { cacheLibraryList, getCachedLibraryList, getCachedStorybook } from '../offline/db'
 import { BookCard } from './BookCard'
@@ -343,6 +343,21 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
           { reportRemoval }
         ).catch((err: unknown) => {
           logApiError('offline cache reconcile failed', err)
+        })
+        // Content-staleness eviction, a sibling of the reconcile above and
+        // deliberately not folded into it: revocation asks "may any profile
+        // on this device still read this book", staleness asks "is the blob
+        // this device cached still the blob the server serves". A version is
+        // supposed to be immutable, but a blob rewritten in place under an
+        // unchanged version (scripts/retrofit_personalization.py did exactly
+        // that to 15 published rows) is invisible to a cache keyed on
+        // `id@version`. Same placement rule as the reconcile: ONLY in this
+        // success branch, never in the catch below, because both purge local
+        // state on the strength of this response being authoritative. Fire-
+        // and-forget for the same reason too: it evicts only, and the
+        // re-download is ReaderPage's existing cache-miss path.
+        evictStaleOfflineBooks(items).catch((err: unknown) => {
+          logApiError('offline stale-content eviction failed', err)
         })
         // K6 endings tracker: best-effort and deliberately NOT awaited above.
         // A failure (or a slow response) here must never delay or block the

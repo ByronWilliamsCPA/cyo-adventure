@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 import pytest
+from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.binding import load_contract_for
@@ -163,13 +164,46 @@ def test_contract_acceptance_rejects_a_default_binding_that_fails_itself() -> No
     cave = _load("8-11/the-cave-of-echoes.json")
     contract = _cave_contract()
     raw = contract.model_dump()
-    first_slot = cast("list[dict[str, object]]", raw["slots"])[0]["id"]
+    # Must be a `theme` slot. A `personalizable` slot's bad default is rejected
+    # by ThemeContract itself and so can never reach this gate; that stricter
+    # path has its own test below. Derived rather than indexed, because
+    # `slots[0]` is HERO and HERO is personalizable across the whole catalog.
+    slots = cast("list[dict[str, object]]", raw["slots"])
+    theme_slot = next(s["id"] for s in slots if s.get("kind", "theme") == "theme")
     binding = cast("dict[str, str]", raw["default_binding"])
-    binding[cast("str", first_slot)] = " ".join(f"w{i}" for i in range(20))
+    binding[cast("str", theme_slot)] = " ".join(f"w{i}" for i in range(20))
     broken = ThemeContract.model_validate(raw)
     reason = contract_acceptance_reason(cave, broken)
     assert reason is not None
     assert "default_binding fails its own contract" in reason
+
+
+@pytest.mark.unit
+@pytest.mark.security
+def test_a_personalizable_slot_never_reaches_the_acceptance_gate() -> None:
+    """A personalizable slot's bad default is refused at construction time.
+
+    The test above proves the stage-4 acceptance gate catches a `theme` slot
+    whose pinned default breaks its own constraints. A `personalizable` slot
+    cannot get that far, and must not: `theme_contract.py`'s `#CRITICAL` block
+    records why. Its value is never an LLM proposal, so a `SlotViolation` on it
+    would carry a slot id the model was never shown into the next retry's
+    violations block, a leak it can never act on that also exhausts
+    `max_attempts`. Refusing to construct the contract makes that impossible.
+    """
+    raw = _cave_contract().model_dump()
+    slots = cast("list[dict[str, object]]", raw["slots"])
+    personalizable = [s["id"] for s in slots if s.get("kind") == "personalizable"]
+    assert personalizable, "the cave contract must declare a personalizable slot"
+    binding = cast("dict[str, str]", raw["default_binding"])
+    binding[cast("str", personalizable[0])] = " ".join(f"w{i}" for i in range(20))
+
+    with pytest.raises(PydanticValidationError) as caught:
+        ThemeContract.model_validate(raw)
+
+    message = str(caught.value)
+    assert "kind='personalizable'" in message
+    assert "default_binding" in message
 
 
 @pytest.mark.unit

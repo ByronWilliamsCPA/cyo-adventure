@@ -210,6 +210,36 @@ component_management:
           threshold: 5%
           if_not_found: success
 
+    - component_id: scripts
+      name: Production-affecting scripts
+      # scripts/ is not "utility scripts" any more: backup_database.py writes
+      # the encrypted offsite backup, backfill_covers_r2.py rewrites shipped
+      # cover assets, and promote_personalizable_slots.py /
+      # retrofit_personalization.py write the production database and the
+      # shipped skeleton catalog. Nothing measured them, so their diffs
+      # reported "no coverage data for the files in this diff" and passed.
+      #
+      # This component matches no file in any report uploaded today, because
+      # pytest's addopts pin --cov=src/cyo_adventure; if_not_found: success
+      # keeps it from blocking until that source widens. It is declared now so
+      # the widening does not also require a Codecov change to be measured.
+      #
+      # target: auto gates a regression against the base commit rather than an
+      # absolute bar: the measured baseline (52.18% line over scripts/ on
+      # 2026-08-24) would fail any absolute project target worth setting, while
+      # the patch target still holds NEW script code to 80%.
+      paths:
+        - scripts/**
+      statuses:
+        - type: project
+          target: auto
+          threshold: 2%
+          if_not_found: success
+        - type: patch
+          target: 80%
+          threshold: 5%
+          if_not_found: success
+
     - component_id: frontend
       name: Frontend (React app)
       paths:

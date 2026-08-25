@@ -29,7 +29,7 @@
     "midway"
   ],
   "default_binding": {
-    "HERO": "Nell Marlow",
+    "HERO": "Nell",
     "ANCESTOR": "her grandmother Edith",
     "ANCESTOR_NAME": "E. Marlow",
     "ANCESTOR_TRADE": "carver",
@@ -82,7 +82,7 @@
       "id": "HERO",
       "scope": "global",
       "meaning": "The child protagonist.",
-      "guidance": "A single kid-relatable explorer (name or role); capable, curious, not reckless.",
+      "guidance": "A single kid-relatable explorer named by first name only, no surname; capable, curious, not reckless.",
       "constraints": {
         "max_words": 6,
         "forbid": [
@@ -93,7 +93,10 @@
           "GUARDIAN",
           "ICON_NAME"
         ]
-      }
+      },
+      "kind": "personalizable",
+      "personalization_field": "protagonist_first_name",
+      "role_safety": "protagonist"
     },
     {
       "id": "ANCESTOR",

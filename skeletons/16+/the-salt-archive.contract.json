@@ -15,7 +15,7 @@
     "tideline"
   ],
   "default_binding": {
-    "HERO": "Maren Coll",
+    "HERO": "Maren",
     "TOWN": "Saltmere",
     "FOUNDER": "Elias Verrin",
     "CONTRIBUTOR": "Nan Ostler",
@@ -91,7 +91,7 @@
       "id": "HERO",
       "scope": "global",
       "meaning": "The keeper protagonist.",
-      "guidance": "A single adult investigator-protagonist (name); capable, methodical, not reckless.",
+      "guidance": "A single adult investigator-protagonist named by first name only, no surname; capable, methodical, not reckless.",
       "constraints": {
         "max_words": 6,
         "forbid": [
@@ -101,7 +101,10 @@
           "CONTRIBUTOR",
           "FOUNDER"
         ]
-      }
+      },
+      "kind": "personalizable",
+      "personalization_field": "protagonist_first_name",
+      "role_safety": "protagonist"
     },
     {
       "id": "TOWN",

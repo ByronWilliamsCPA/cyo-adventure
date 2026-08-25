@@ -15,6 +15,8 @@ revealed) for any unpublished, unapproved, or non-current version.
 
 from __future__ import annotations
 
+import hashlib
+import json
 import math
 import uuid
 from typing import TYPE_CHECKING, TypeGuard
@@ -236,6 +238,78 @@ def _accepts_character(blob: Mapping[str, object]) -> bool:
     return blob.get("accepts_character") is not None
 
 
+def storybook_content_hash(blob: Mapping[str, object]) -> str:
+    """Return a stable content identity for a served Storybook blob.
+
+    ``StorybookVersion`` is documented as immutable (``db/models.py``) and the
+    offline cache in ``frontend/src/offline/db.ts`` was built on that promise:
+    it keys downloaded blobs by ``id@version`` alone and never re-fetches on a
+    hit. A blob rewritten in place under an unchanged ``version`` (as
+    ``scripts/retrofit_personalization.py`` did to 15 published rows) is
+    therefore invisible to every device that already downloaded it. This hash
+    is the missing signal: it changes whenever the served bytes change, so the
+    client can tell "same version, different content" from "same version, same
+    content".
+
+    The digest is taken over the exact response body
+    ``get_storybook_version`` emits for this blob, not over the ORM object,
+    a re-ordered dict, or the sanitized ``LibraryItem`` built from it. The
+    client caches the *blob* (``frontend/src/offline/db.ts`` stores the
+    ``Storybook`` payload from the read route under ``id@version``), and the
+    retrofit this exists to detect rewrote node bodies, ending titles, and
+    choice labels: none of which appear on a ``LibraryItem`` at all. A digest
+    over the listing item would therefore be blind to the very defect it is
+    meant to catch. Starlette's ``JSONResponse`` renders with
+    ``ensure_ascii=False``, no indent, and ``(",", ":")`` separators, and
+    preserves the dict's own key order, so those settings are mirrored here
+    verbatim. Any drift between the two serializations would make every book
+    read as permanently changed and turn the client's eviction check into a
+    whole-shelf re-download on every load.
+
+    Args:
+        blob: The stored Storybook content blob, as served.
+
+    Returns:
+        str: ``sha256:`` followed by the lowercase hex digest.
+    """
+    # #ASSUME: data-integrity: key order is NOT normalized here, because the
+    # digest must match the read route's bytes and Starlette emits the dict's
+    # own order. That is safe only because ``storybook_version.blob`` is a
+    # ``jsonb`` column: Postgres canonicalizes object key order on write and
+    # returns the same order on every read, so two reads of an unmoved row
+    # serialize identically. Sorting here would restore order-independence at
+    # the cost of the byte equality the client actually depends on. If the
+    # column ever becomes plain ``json`` (which preserves the input text
+    # verbatim) or the blob starts being assembled in Python, this assumption
+    # dies and the digest must be pinned some other way.
+    # #VERIFY: tests/integration/test_library_content_hash.py::
+    # test_library_content_hash_is_stable_across_repeat_listings.
+    #
+    # #CRITICAL: data-integrity: ``allow_nan`` is left at its default (True)
+    # and MUST NOT be set to False here. Starlette renders with
+    # ``allow_nan=False``, but mirroring that would make this raise
+    # ``ValueError`` on a blob carrying NaN/Infinity, and this helper runs
+    # once per book inside the library listing: one bad float would 500 the
+    # whole shelf, for every book on it. ``_library_item`` is explicitly
+    # built to tolerate exactly that input (it defaults the field and logs
+    # ``library_item_malformed_metadata``), so the digest must tolerate it
+    # too. The default never raises on a non-finite float, and for every blob
+    # Starlette CAN serialize the two settings emit identical bytes, so byte
+    # equality with the read route is preserved where it matters. A blob that
+    # does carry a non-finite float still gets a stable, non-empty digest; the
+    # read route would 500 on it, so no client can ever cache it, and there is
+    # nothing for the digest to be wrong about.
+    # #VERIFY: tests/unit/test_library_content_hash_unit.py::
+    # test_storybook_content_hash_with_nonfinite_float_returns_stable_digest.
+    rendered = json.dumps(
+        blob,
+        ensure_ascii=False,
+        indent=None,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return f"sha256:{hashlib.sha256(rendered).hexdigest()}"
+
+
 def _library_item(
     storybook_id: str,
     blob: Mapping[str, object],
@@ -285,7 +359,9 @@ def _library_item(
     Returns:
         LibraryItem: The listing item with safe, finite, correctly typed
             fields, with personalization sentinels stripped from the title
-            to their generic word (ADR-023 P3). The raw, sentinel-bearing
+            to their generic word (ADR-023 P3), plus ``content_hash``, the
+            offline cache's content identity for this exact (id, version)
+            payload (see ``storybook_content_hash``). The raw, sentinel-bearing
             blob is served verbatim by ``get_storybook_version`` (which the
             client resolves personalization against) and by the admin
             review surface (``build_review_surface`` in
@@ -360,6 +436,7 @@ def _library_item(
         published_at=published_at,
         personalization_eligible=personalization_eligible,
         accepts_character=_accepts_character(blob),
+        content_hash=storybook_content_hash(blob),
     )
 
 
@@ -504,6 +581,21 @@ async def list_library(
         )
     )
     ratings = {row.storybook_id: row.value for row in rating_rows}
+    # #EDGE: external resources: every item hashes its whole blob (see
+    # ``storybook_content_hash``), so this listing now does one sha256 per
+    # published, assigned book on every shelf fetch. The blobs are already
+    # fully loaded above for title/metadata extraction, so this adds CPU over
+    # bytes already in memory rather than any new I/O, and at the current
+    # catalog scale (tens of books per shelf, low hundreds of KB each) it is
+    # well inside the listing's existing cost. Persisting the digest on
+    # ``storybook_version`` instead would remove it entirely at the price of a
+    # Supabase migration plus a backfill of every existing row; that is the
+    # deliberate deferral, not an oversight, and it becomes the right trade
+    # once a shelf routinely carries hundreds of books.
+    # #VERIFY: tests/integration/test_library_content_hash.py::
+    # test_library_content_hash_matches_served_version_bytes pins the digest to
+    # the served bytes, so a future move to a stored column has an equality
+    # test to satisfy rather than a guess.
     items = [
         _library_item(
             storybook_id,

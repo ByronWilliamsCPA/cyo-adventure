@@ -40,9 +40,20 @@ type ReconcileOptions = { reportRemoval?: (storybookId: string) => void }
 const mockReconcile =
   vi.fn<(profileId: string, ids: string[], options?: ReconcileOptions) => Promise<void>>()
 mockReconcile.mockResolvedValue(undefined)
+// Content-staleness eviction rides in the same module and the same success
+// block. Mocked alongside the reconcile rather than left out: `vi.mock`
+// replaces the WHOLE module, so an omitted export is `undefined` at the call
+// site, not a harmless no-op.
+type StaleItem = { id: string; version: number; content_hash?: string }
+const mockEvictStale =
+  vi.fn<
+    (items: readonly StaleItem[]) => Promise<{ changed: number; unverified: number; fresh: number }>
+  >()
+mockEvictStale.mockResolvedValue({ changed: 0, unverified: 0, fresh: 0 })
 vi.mock('../offline/revocation', () => ({
   reconcileOfflineCache: (profileId: string, ids: string[], options?: ReconcileOptions) =>
     mockReconcile(profileId, ids, options),
+  evictStaleOfflineBooks: (items: readonly StaleItem[]) => mockEvictStale(items),
 }))
 
 function renderLibrary() {
@@ -108,6 +119,7 @@ beforeEach(() => {
   _resetDbHandle()
   mockDelete.mockReset().mockResolvedValue({ data: undefined })
   mockReconcile.mockReset().mockResolvedValue(undefined)
+  mockEvictStale.mockReset().mockResolvedValue({ changed: 0, unverified: 0, fresh: 0 })
   // W4.3: clear any pending download-refusal flag so one test's banner never
   // leaks into the next.
   localStorage.clear()
@@ -838,6 +850,41 @@ describe('LibraryPage', () => {
       })
 
       await waitFor(() => expect(mockReconcile).toHaveBeenCalledTimes(2))
+    })
+
+    it('evicts stale offline content with the full shelf items on a successful fetch', async () => {
+      // Passed the ITEMS, not the ids: the content identity the eviction
+      // compares against lives on the item, so an ids-only call would silently
+      // verify nothing while still looking wired.
+      mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS, NOT_STARTED] } })
+      renderLibrary()
+      await screen.findByRole('region', { name: /continue reading/i })
+      await waitFor(() => expect(mockEvictStale).toHaveBeenCalledTimes(1))
+      const [calledItems] = mockEvictStale.mock.calls[0]
+      expect(calledItems.map((item) => item.id)).toEqual(['s1', 's3'])
+      expect(calledItems[0]).toHaveProperty('version')
+    })
+
+    it('does not evict stale offline content when the fetch fails', async () => {
+      // Same call-site invariant as the reconcile above: both purge local
+      // state on the strength of this response being authoritative, so neither
+      // may ever run from the catch branch.
+      mockGet.mockRejectedValue(new Error('boom'))
+      renderLibrary()
+      await screen.findByText(/lost the bookshelf/i)
+      expect(mockEvictStale).not.toHaveBeenCalled()
+    })
+
+    it('a stale-eviction rejection is logged and never crashes the shelf', async () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS] } })
+      mockEvictStale.mockRejectedValueOnce(new Error('evict boom'))
+      renderLibrary()
+      expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+      await waitFor(() =>
+        expect(errorSpy).toHaveBeenCalledWith('offline stale-content eviction failed', 'evict boom')
+      )
+      errorSpy.mockRestore()
     })
 
     it('a reconcile rejection is logged and never crashes the shelf', async () => {
