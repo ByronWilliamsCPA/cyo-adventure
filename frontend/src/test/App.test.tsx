@@ -121,8 +121,9 @@ vi.mock('../auth/supabaseClient', () => ({
   isPasswordRecovery: false,
   // These router tests seed the adult gate explicitly (warm or cold) to
   // exercise ADR-014 Phase 5, so every case here is an ordinary in-app
-  // navigation, never an OAuth callback landing.
-  isOAuthReturn: false,
+  // navigation, never an OAuth callback landing: nothing was captured, so the
+  // consume always yields null.
+  consumeEarlySignInUserId: (): string | null => null,
   recoveryErrorFromUrl: null,
   RECOVERY_BROADCAST_CHANNEL_NAME: 'cyo-guardian-recovery',
 }))

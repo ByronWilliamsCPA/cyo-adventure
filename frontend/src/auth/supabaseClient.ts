@@ -19,12 +19,15 @@ export function hashIndicatesRecovery(hash: string): boolean {
  * True when THIS page load is a password-recovery landing.
  *
  * #CRITICAL: security: read the hash and freeze the answer BEFORE createClient
- * runs. createClient defaults to detectSessionInUrl=true, which consumes the
- * implicit-flow hash and strips it from the URL during construction; a later
- * read of window.location.hash would then see an empty fragment and miss the
- * recovery intent, silently sending the guardian into the console instead of
- * the set-new-password form. Computing it here, above createClient, captures
- * the fragment while it is still present.
+ * runs. createClient defaults to detectSessionInUrl=true, and the constructor
+ * starts a fire-and-forget initialize() that consumes the implicit-flow hash
+ * and then strips it from the URL. The strip lands asynchronously, after an
+ * auth-server round trip, so the fragment is still readable for a while after
+ * construction returns; the point is that it does NOT survive, and any read
+ * racing that strip would see an empty fragment, miss the recovery intent,
+ * and silently send the guardian into the console instead of the
+ * set-new-password form. Computing it here, above createClient, is what makes
+ * the read unconditional rather than a race.
  * #VERIFY: supabaseClient.test.ts hashIndicatesRecovery cases; keep this
  * assignment strictly above the createClient call below.
  */
@@ -52,56 +55,11 @@ export function hashIndicatesRecoveryError(
  * Set when THIS page load is the failed return leg of a recovery link.
  *
  * #CRITICAL: security: frozen BEFORE createClient for the same reason as
- * isPasswordRecovery above: detectSessionInUrl processes and strips the hash
- * during construction, so a later read would see nothing.
+ * isPasswordRecovery above: detectSessionInUrl processes the hash and then
+ * strips it asynchronously, so a later read can see nothing.
  * #VERIFY: supabaseClient.test.ts hashIndicatesRecoveryError cases.
  */
 export const recoveryErrorFromUrl = hashIndicatesRecoveryError(window.location.hash)
-
-/**
- * Whether a URL fragment is the return leg of a COMPLETED OAuth sign-in: the
- * implicit-flow hash Supabase's `/auth/v1/callback` redirects to, carrying a
- * freshly minted `access_token`. A recovery landing (`type=recovery`) and a
- * cancelled or failed return (`error=...`) are both excluded, because neither
- * is a completed sign-in. Kept pure, like the two predicates above, so the
- * module-level detection below is trivially testable.
- */
-export function hashIndicatesOAuthReturn(hash: string): boolean {
-  const params = new URLSearchParams(hash.replace(/^#/, ''))
-  if (params.get('type') === 'recovery') return false
-  if (params.get('error') !== null) return false
-  return params.get('access_token') !== null
-}
-
-/**
- * True when THIS page load is the return leg of an OAuth sign-in.
- *
- * #CRITICAL: security: AdultGate's warm entry may only be written when a
- * guardian has JUST proven credentials, which AuthContext detects via
- * supabase-js's 'SIGNED_IN' event. On an OAuth return that event is emitted
- * from INSIDE createClient's initialize() (detectSessionInUrl consumes the
- * hash there), which resolves before AuthProvider subscribes; a subscriber
- * registering afterwards is replayed 'INITIAL_SESSION', never 'SIGNED_IN'
- * (GoTrueClient.onAuthStateChange awaits initializePromise, then calls
- * _emitInitialSession). The event therefore reaches ZERO subscribers, the
- * gate stays cold, and the guardian is challenged the instant they arrive.
- * The challenge's own "Continue with Google" button returns them here in
- * exactly the same state, so the guardian bounces through Google forever and
- * never reaches the console. This flag carries, out of band, the one fact
- * that vanished event was needed for.
- * #CRITICAL: security: frozen BEFORE createClient for the same reason as
- * isPasswordRecovery above: detectSessionInUrl processes and strips the hash
- * during construction, so a later read would see nothing.
- * #ASSUME: security: this widens gate-warming from "supabase-js told us" to
- * "an access_token was in the URL on this page load". That is not a new trust
- * grant: anyone able to put a valid access_token in the address bar already
- * holds the session it names, so warming the gate concedes nothing they do
- * not already have. A restored or silently refreshed session still arrives
- * with no hash and stays cold, which is the property the gate depends on.
- * #VERIFY: supabaseClient.test.ts hashIndicatesOAuthReturn cases; keep this
- * assignment strictly above the createClient call below.
- */
-export const isOAuthReturn = hashIndicatesOAuthReturn(window.location.hash)
 
 /**
  * Same-origin channel a tab that lands on a recovery link broadcasts on, so a
@@ -144,3 +102,67 @@ if (!supabaseUrl || !supabaseAnonKey) {
  * only inside the guardian lazy chunk so the kid bundle omits it entirely.
  */
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+/**
+ * User id of a sign-in that supabase-js reported before AuthProvider could
+ * observe it, held until the first principal resolution consumes it. Null
+ * once consumed, and null when no such sign-in happened on this page load.
+ */
+let pendingEarlySignInUserId: string | null = null
+
+/**
+ * Captures a 'SIGNED_IN' that lands before AuthProvider subscribes.
+ *
+ * #CRITICAL: security: AdultGate's warm entry may only be written when a
+ * guardian has JUST proven credentials, which AuthContext detects via
+ * supabase-js's 'SIGNED_IN' event. On an OAuth return leg, detectSessionInUrl
+ * consumes the callback hash from inside createClient's initialize(), and the
+ * resulting 'SIGNED_IN' is dispatched from a setTimeout(..., 0) macrotask
+ * (GoTrueClient _initialize). Whether AuthProvider's own subscriber is
+ * registered by then depends on how fast the guardian lazy chunk mounts
+ * relative to the _getUser round trip that macrotask waits on, so the event
+ * is observable on some loads and lost on others. When it is lost the gate
+ * stays cold, the guardian is challenged the instant they arrive, and the
+ * challenge's own "Continue with Google" button returns them in exactly the
+ * same state: an endless bounce through Google with no way into the console.
+ * Subscribing HERE removes the race rather than guessing at its outcome.
+ * onAuthStateChange registers its callback into stateChangeEmitters
+ * synchronously, and this runs at module evaluation, strictly before any
+ * React mount, so this subscriber is always in place before that macrotask.
+ * #CRITICAL: security: the recorded id comes from supabase-js, which emits
+ * 'SIGNED_IN' from the URL path only AFTER _getUser validates the token
+ * against the auth server. A fragment someone types or replays cannot reach
+ * this callback, so the gate can no longer be warmed by an unvalidated URL.
+ * The predicate this replaces read the hash directly and accepted any string
+ * containing access_token, including the empty value that supabase-js itself
+ * rejects.
+ * #VERIFY: supabaseClient.test.ts "records a SIGNED_IN that lands before
+ * AuthProvider subscribes" and "ignores a restored session and a silent
+ * token refresh"; AuthContext.test.tsx "warms the adult gate on an OAuth
+ * return leg whose SIGNED_IN arrived before mount".
+ */
+const earlySignIn = supabase.auth.onAuthStateChange((event, session) => {
+  if (event !== 'SIGNED_IN' || session === null) return
+  pendingEarlySignInUserId = session.user.id
+  earlySignIn.data.subscription.unsubscribe()
+})
+
+/**
+ * Reads and clears the early-sign-in capture. Single-use by construction: the
+ * first caller receives the id and every later caller receives null.
+ *
+ * #CRITICAL: security: consuming is what bounds the warm to one resolution.
+ * `syncPrincipal` runs again on every later principal re-resolution in the
+ * same page load (recordConsent, startVerification, and the refreshStatus
+ * behind each guardian interstitial's "check again" control), so a capture
+ * left in place would re-warm the gate and slide its idle TTL forward for a
+ * guardian who has walked away. Call this exactly once per resolution, on
+ * every path, warming or not, so the fact cannot outlive its page load.
+ * #VERIFY: AuthContext.test.tsx "does not re-warm on a later refreshStatus in
+ * the same page load".
+ */
+export function consumeEarlySignInUserId(): string | null {
+  const userId = pendingEarlySignInUserId
+  pendingEarlySignInUserId = null
+  return userId
+}

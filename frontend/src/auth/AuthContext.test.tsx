@@ -57,11 +57,18 @@ const mockUpdateUser = vi.fn()
 // factory; a getter re-reads it at each mount so tests can flip it before
 // render to simulate a password-recovery landing.
 let mockIsPasswordRecovery = false
-// Drives the OAuth-return arm of the adult-gate warm (AuthContext's
-// isFreshOAuthLanding). Frozen from the callback hash at module load in the
-// real module, so it gets the same `mock`-prefixed let + getter treatment as
-// mockIsPasswordRecovery above.
-let mockIsOAuthReturn = false
+// Drives the OAuth-return arm of the adult-gate warm. In the real module this
+// is a single-use read of a sign-in captured by a module-scope subscriber, so
+// the queue below models exactly that: the first consume yields the head, and
+// every later consume yields null, which is what bounds the warm to one
+// resolution per page load.
+let mockEarlySignInQueue: string[] = []
+// A spy, not just a queue drain: AuthContext's contract is that it consumes on
+// EVERY resolution, warming or not, so the tests below assert the call itself
+// and not only its effect.
+const mockConsumeEarlySignInUserId = vi.fn(
+  (): string | null => mockEarlySignInQueue.shift() ?? null
+)
 // Drives AuthProvider's recoveryError (frozen from recoveryErrorFromUrl at
 // module load, same seeding pattern as mockIsPasswordRecovery above).
 let mockRecoveryErrorFromUrl: { code: string; description: string } | null = null
@@ -85,9 +92,7 @@ vi.mock('./supabaseClient', () => ({
   get isPasswordRecovery(): boolean {
     return mockIsPasswordRecovery
   },
-  get isOAuthReturn(): boolean {
-    return mockIsOAuthReturn
-  },
+  consumeEarlySignInUserId: (): string | null => mockConsumeEarlySignInUserId(),
   get recoveryErrorFromUrl(): { code: string; description: string } | null {
     return mockRecoveryErrorFromUrl
   },
@@ -292,7 +297,8 @@ beforeEach(() => {
   mockClearReadingStates.mockReset()
   mockClearPersonalizationValues.mockReset()
   mockIsPasswordRecovery = false
-  mockIsOAuthReturn = false
+  mockEarlySignInQueue = []
+  mockConsumeEarlySignInUserId.mockClear()
   mockRecoveryErrorFromUrl = null
 })
 
@@ -1299,15 +1305,15 @@ describe('AuthProvider', () => {
     expect(adultGateRemainingMs('u1')).toBe(0)
   })
 
-  it('warms the adult gate on an OAuth return leg', async () => {
+  it('warms the adult gate on an OAuth return leg whose SIGNED_IN arrived before mount', async () => {
     // The Google sign-in loop: supabase-js consumes the callback hash inside
-    // createClient's initialize(), emitting 'SIGNED_IN' before AuthProvider
-    // subscribes, so this provider is replayed 'INITIAL_SESSION' and the
-    // SIGNED_IN-only warm above never fired. The guardian landed on a COLD
-    // gate whose own "Continue with Google" button sent them back through
-    // Google into the identical state, forever. isOAuthReturn carries the
-    // fact that vanished event was needed for.
-    mockIsOAuthReturn = true
+    // createClient's initialize(), so 'SIGNED_IN' can fire before AuthProvider
+    // subscribes and this provider never observes it. That is modelled here by
+    // an onAuthStateChange that registers but never calls back, leaving the
+    // early-sign-in capture as the only carrier of the fact. Without it the
+    // guardian landed on a COLD gate whose own "Continue with Google" button
+    // sent them back through Google into the identical state, forever.
+    mockEarlySignInQueue = ['u1']
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
     })
@@ -1326,37 +1332,60 @@ describe('AuthProvider', () => {
     expect(adultGateRemainingMs('u1')).toBeGreaterThan(0)
   })
 
-  it('does NOT re-warm on a token refresh during an OAuth-return page load', async () => {
-    // #CRITICAL: security: isOAuthReturn stays true for the WHOLE page load,
-    // so the URL-derived arm has to be narrowed to the first resolution. Were
-    // it keyed on the flag alone, every silent TOKEN_REFRESHED in this tab
-    // would slide the idle TTL forward and a walked-away console would never
-    // re-challenge.
-    mockIsOAuthReturn = true
+  it('does not warm when the captured sign-in names a different user', async () => {
+    // #CRITICAL: security: the capture is compared against the session being
+    // resolved, so a sign-in recorded for one principal can never warm the
+    // gate for another.
+    mockEarlySignInQueue = ['someone-else']
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
     })
     mockGet.mockResolvedValue({
       data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
     })
-    let changeHandler: ((event: string, session: unknown) => void) | undefined
-    mockOnAuthStateChange.mockImplementation((cb: (event: string, session: unknown) => void) => {
-      changeHandler = cb
-      return { data: { subscription: { unsubscribe: vi.fn() } } }
-    })
+    mockOnAuthStateChange.mockImplementation(() => ({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    }))
     render(
       <AuthProvider>
         <Probe />
       </AuthProvider>
     )
     await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
-    // Drop the landing's warm entry, so the only thing that could re-warm the
-    // gate below is the refresh event itself.
-    clearAdultGate()
-    act(() => {
-      changeHandler?.('TOKEN_REFRESHED', { access_token: 'tok-2', user: { id: 'u1' } })
+    expect(adultGateRemainingMs('u1')).toBe(0)
+  })
+
+  it('does not re-warm on a later refreshStatus in the same page load', async () => {
+    // #CRITICAL: security: this is the walked-away-console case. refreshStatus
+    // is the "check again" control on every guardian interstitial, and it
+    // re-runs syncPrincipal with no event, exactly like the OAuth landing did.
+    // If the capture were re-readable rather than consumed, each click would
+    // slide the gate's idle TTL forward with no adult present. Asserting the
+    // consume CALL on the second resolution is what makes this test detect a
+    // non-consuming read rather than merely a drained fixture.
+    mockEarlySignInQueue = ['u1']
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
     })
-    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2))
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    mockOnAuthStateChange.mockImplementation(() => ({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    }))
+    render(
+      <AuthProvider>
+        <RefreshProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+    expect(adultGateRemainingMs('u1')).toBeGreaterThan(0)
+    expect(mockConsumeEarlySignInUserId).toHaveBeenCalledTimes(1)
+    // Drop the landing's warm entry, so the only thing that could re-warm the
+    // gate below is the re-resolution itself.
+    clearAdultGate()
+    fireEvent.click(screen.getByText('refresh'))
+    await waitFor(() => expect(mockConsumeEarlySignInUserId).toHaveBeenCalledTimes(2))
     expect(adultGateRemainingMs('u1')).toBe(0)
   })
 
