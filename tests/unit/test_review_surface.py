@@ -890,13 +890,20 @@ def _reviewer_outage_report() -> dict[str, object]:
 
 @pytest.mark.unit
 def test_structural_finding_with_node_ids_stays_story_level() -> None:
-    """A reviewer outage is one story-level notice, never N passage rows.
+    """A reviewer outage is one row, never N passage rows.
 
     Stage A (8ca8d1b3) collapsed N per-node fail-safe findings into a single
     structural finding to stop an outage flooding the approver's queue. Stage
-    B2 populated node_ids on that finding for ranking; routing it through the
-    per-node fan-out on the strength of those ids would undo Stage A and put
-    the identical notice back on every node.
+    B2 populated node_ids on that finding for ranking.
+
+    Task 4 supersedes this specific fixture's original assertions: this
+    report's ONE finding is structural and nothing else is present, so
+    ``moderation_report_unusable`` is True (no genuine content judgment
+    anywhere in the report) and ``build_review_surface`` replaces it with the
+    generic ``report_unusable`` synthetic row, routed to ``structural_findings``
+    only. The invariant this test still protects is unchanged: regardless of
+    which collapse produced the single row, it is never fanned across
+    n_start/n_fork/n_end.
     """
     view = build_review_surface(
         status="in_review",
@@ -905,29 +912,31 @@ def test_structural_finding_with_node_ids_stays_story_level() -> None:
         blob=_merged_blob(),
         moderation_report=_reviewer_outage_report(),
     )
+    assert view.report_unusable is True
     assert view.flagged_passages == []
-    assert len(view.story_level_findings) == 1
-    surfaced = view.story_level_findings[0]
+    assert view.story_level_findings == []
+    assert len(view.structural_findings) == 1
+    surfaced = view.structural_findings[0]
     assert surfaced.structural is True
-    # node_ids must SURVIVE on the view: the admin detail panel and the
-    # ranking stage both read it. Only the routing is guarded, not the data.
-    assert surfaced.node_ids == ["n_start", "n_fork", "n_end"]
-    # The structural guard and the ranker read the SAME view from two lists.
-    # Hoisting the guard above `all_views.append(view)` would silently empty
-    # structural_findings while every assertion above still passed, so pin the
-    # second half here: routed out of the fan-out AND still ranked.
-    assert view.structural_findings == [surfaced]
+    assert surfaced.concern == "reviewer_unavailable"
 
 
 @pytest.mark.unit
 def test_structural_finding_reaches_the_guardian_content_summary() -> None:
-    """The outage notice must appear in findings, not just inflate the count.
+    """A wholly-unusable report reaches the guardian as nothing, not a notice.
 
-    build_content_summary derives ``findings`` solely from
-    story_level_findings while ``flagged_count`` counts passages too. A
-    structural finding routed into the fan-out therefore lands in the worst
-    possible place: it raises the guardian's "N flagged" badge to 3 while the
-    sentence explaining WHY is absent from the list under it.
+    Historically (Stage A/B2) this test asserted that a collapsed
+    reviewer-outage finding surfaced in the guardian's content summary. Task 4
+    changes that contract for a report with no genuine content judgment
+    anywhere in it: ``build_review_surface`` routes the resulting
+    ``report_unusable`` synthetic row into ``structural_findings`` only, never
+    into ``story_level_findings``, and ``build_content_summary``'s
+    ``findings``/``flagged_count`` are derived solely from
+    ``story_level_findings``/``flagged_passages``. This is deliberate (Task 4's
+    guardian coordination note): after Task 2's approval gate, no book can
+    publish with an unusable report, so a guardian's content summary should
+    never need to explain a pipeline outage; it reads exactly as if this
+    version had raised nothing at all.
     """
     summary = build_content_summary(
         storybook_id="s1",
@@ -937,9 +946,8 @@ def test_structural_finding_reaches_the_guardian_content_summary() -> None:
         age_band="6-8",
         policy=_DEFAULT_POLICY,
     )
-    assert summary.flagged_count == 1
-    assert len(summary.findings) == 1
-    assert "reviewer unavailable" in summary.findings[0].message
+    assert summary.flagged_count == 0
+    assert summary.findings == []
 
 
 @pytest.mark.unit
@@ -1938,3 +1946,176 @@ def test_a_clean_check_is_not_counted_as_a_concern() -> None:
         ]
     }
     assert _measures(report=report).safety_concerns == []
+
+
+# ---------------------------------------------------------------------------
+# Task 4: read-time collapse of unusable reports + tiered distinct counts
+# ---------------------------------------------------------------------------
+
+
+def _fail_safe_report(node_ids: list[str]) -> dict[str, object]:
+    """A report whose findings are all fail-safe artifacts, none genuine.
+
+    Shaped like a legacy pre-Stage-A report: no ``structural``/``concern``
+    keys, detected purely by the fail-safe message substring (moderation/
+    report.py::moderation_report_unusable).
+    """
+    return {
+        "findings": [
+            {
+                "stage": "review",
+                "source": "llm_safety",
+                "category": "llm_safety",
+                "node_id": nid,
+                "verdict": "flag",
+                "score": None,
+                "message": "unknown verdict; defaulted to fail-safe",
+            }
+            for nid in node_ids
+        ],
+        "aggregate": {"nodes_reviewed": len(node_ids), "pass_counts": {}},
+        "summary": {
+            "count": len(node_ids),
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": False,
+        },
+    }
+
+
+@pytest.mark.unit
+def test_unusable_report_collapses_to_one_structural_finding() -> None:
+    """A report carrying only fail-safe artifacts renders as one clear notice.
+
+    Without this collapse, N fail-safe findings would flood the admin surface
+    as N separate flagged passages, each telling the approver nothing beyond
+    "the reviewer did not run here" -- noise that crowds out any genuine
+    signal and makes an unusable report look like a busy, reviewed one.
+    """
+    surface = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=_fail_safe_report(["n1", "n2", "n3"]),
+    )
+    assert surface.report_unusable is True
+    assert surface.flagged_passages == []
+    assert len(surface.structural_findings) == 1
+    only = surface.structural_findings[0]
+    assert only.structural is True
+    assert only.concern == "reviewer_unavailable"
+
+
+@pytest.mark.unit
+def test_unusable_report_queue_item_counts() -> None:
+    """The queue item mirrors the surface: unusable, zero flags, zero tiers."""
+    item = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob=_blob(),
+        moderation_report=_fail_safe_report(["n1", "n2", "n3"]),
+    )
+    assert item.report_unusable is True
+    assert item.flagged_count == 0
+    assert (item.block_findings, item.flag_findings, item.advisory_findings) == (
+        0,
+        0,
+        0,
+    )
+
+
+def _mixed_tier_blob() -> dict[str, object]:
+    return {
+        "title": "Three Nodes",
+        "nodes": [
+            {"id": "a", "body": "A prose."},
+            {"id": "b", "body": "B prose."},
+            {"id": "c", "body": "C prose."},
+        ],
+    }
+
+
+def _mixed_tier_report() -> dict[str, object]:
+    """One merged flag spanning three nodes, one block, two advisories.
+
+    A genuinely usable report (no fail-safe messages, independent reviewer),
+    so ``moderation_report_unusable`` stays False and the tiered-count logic
+    is exercised on its own.
+    """
+    return {
+        "findings": [
+            {
+                "stage": 2,
+                "source": "llm_readability",
+                "category": "reading_level",
+                "node_id": "a",
+                "verdict": "flag",
+                "score": None,
+                "message": "reading level above band (3 findings merged)",
+                "severity": "medium",
+                "node_ids": ["a", "b", "c"],
+            },
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": None,
+                "verdict": "block",
+                "score": None,
+                "message": "hard block",
+            },
+            {
+                "stage": 3,
+                "source": "llm_coherence",
+                "category": "coherence",
+                "node_id": None,
+                "verdict": "advisory",
+                "score": None,
+                "message": "advisory one",
+            },
+            {
+                "stage": 3,
+                "source": "llm_engagement",
+                "category": "engagement",
+                "node_id": None,
+                "verdict": "advisory",
+                "score": None,
+                "message": "advisory two",
+            },
+        ],
+        "summary": {
+            "count": 4,
+            "hard_block": True,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+
+
+@pytest.mark.unit
+def test_tiered_counts_are_distinct_findings_not_occurrences() -> None:
+    """block/flag/advisory counts distinct findings, not fanned-out occurrences.
+
+    One merged flag spanning 3 nodes + one block + two advisories must report
+    flag_findings == 1 (distinct), not 3 (occurrences). flagged_count keeps
+    counting occurrences: 3 passage cards from the merged flag's fan-out, plus
+    the 3 story-level findings (the block and both advisories carry no node
+    id).
+    """
+    item = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob=_mixed_tier_blob(),
+        moderation_report=_mixed_tier_report(),
+    )
+    assert (item.block_findings, item.flag_findings, item.advisory_findings) == (
+        1,
+        1,
+        2,
+    )
+    assert item.flagged_count == 6

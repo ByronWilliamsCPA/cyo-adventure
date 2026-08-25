@@ -28,7 +28,12 @@ from cyo_adventure.api.schemas import (
     ValidatorSeverity,
 )
 from cyo_adventure.core.exceptions import ValidationError
-from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
+from cyo_adventure.moderation.report import (
+    FindingSeverity,
+    Source,
+    Verdict,
+    moderation_report_unusable,
+)
 from cyo_adventure.moderation.thresholds import admin_surfaces
 from cyo_adventure.storybook.models import ContentFlags
 from cyo_adventure.utils.logging import get_logger
@@ -124,7 +129,38 @@ def build_review_surface(
         order: list[str] = []
         story_level: list[FindingView] = []
         all_views: list[FindingView] = []
-        for finding in _findings(moderation_report):
+        # #CRITICAL: security: a report with no genuine content judgment (every
+        # finding a fail-safe artifact, or a non-independent/mock reviewer)
+        # must never render as N separate flagged passages: that dresses up
+        # "nothing was actually reviewed" as a busy, reviewed-looking surface
+        # and buries the one fact an approver needs (re-run moderation) under
+        # noise. Short-circuit the whole per-finding loop below rather than
+        # post-filtering its output, so flagged/order/story_level stay empty
+        # and the queue's flagged_count (:663-665) reads 0, not the count of
+        # discarded fail-safe rows.
+        # #VERIFY: tests/unit/test_review_surface.py::
+        # test_unusable_report_collapses_to_one_structural_finding and
+        # ::test_unusable_report_queue_item_counts.
+        report_unusable = moderation_report_unusable(moderation_report)
+        if report_unusable:
+            all_views = [
+                FindingView(
+                    stage=1,
+                    source=Source.PIPELINE,
+                    category="llm_safety",
+                    node_id=None,
+                    verdict=Verdict.FLAG,
+                    score=None,
+                    message=(
+                        "moderation report is unusable (fail-safe or "
+                        "mock-reviewer artifacts only); re-run moderation "
+                        "before reviewing"
+                    ),
+                    structural=True,
+                    concern="reviewer_unavailable",
+                )
+            ]
+        for finding in [] if report_unusable else _findings(moderation_report):
             view = _finding_view(finding)
             if view.verdict is Verdict.PASS:
                 continue
@@ -201,6 +237,7 @@ def build_review_surface(
             # Finding 3: the only reliable "never screened" signal, since a
             # screened-clean report also yields empty passages/findings below.
             screened=moderation_report is not None,
+            report_unusable=report_unusable,
             summary=_summary(moderation_report),
             flagged_passages=passages,
             story_level_findings=story_level,
@@ -663,13 +700,36 @@ def build_review_queue_item(
     flagged_count = sum(
         len(passage.findings) for passage in surface.flagged_passages
     ) + len(surface.story_level_findings)
+    # Task 4: tiered DISTINCT-finding counts for the queue badge, as opposed to
+    # flagged_count above (which counts occurrences: a finding fanned across 3
+    # nodes via node_ids counts 3 times there). Each merged finding view here
+    # counts exactly once, regardless of its node coverage. Sourced from the
+    # three merged-finding buckets (ranked/structural/low_advisory), which
+    # together are every non-PASS finding the surface produced; advisories
+    # never gate and are counted separately, never folded into block/flag.
+    # #VERIFY: tests/unit/test_review_surface.py::
+    # test_tiered_counts_are_distinct_findings_not_occurrences.
+    merged = [
+        *surface.ranked_findings,
+        *surface.structural_findings,
+        *surface.low_advisory_findings,
+    ]
+    block_findings = sum(1 for f in merged if f.verdict == Verdict.BLOCK)
+    flag_findings = sum(
+        1 for f in merged if f.verdict == Verdict.FLAG and not f.structural
+    )
+    advisory_findings = sum(1 for f in merged if f.verdict == Verdict.ADVISORY)
     return ReviewQueueItem(
         storybook_id=storybook_id,
         title=_queue_title(blob, storybook_id),
         status=status,
         version=version,
         screened=surface.screened,
+        report_unusable=surface.report_unusable,
         flagged_count=flagged_count,
+        block_findings=block_findings,
+        flag_findings=flag_findings,
+        advisory_findings=advisory_findings,
         summary=surface.summary,
         age_band=_queue_age_band(blob),
         waiting_since=created_at,

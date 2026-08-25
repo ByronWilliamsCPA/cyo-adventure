@@ -2025,6 +2025,13 @@ class ReviewSurfaceView(BaseModel):
     status: str
     blob: dict[str, object]
     screened: bool
+    # Task 4: True when the stored report carries no genuine content judgment
+    # (fail-safe artifacts only, or a non-independent/mock reviewer). Set from
+    # moderation/report.py::moderation_report_unusable. Default False so a
+    # caller that predates this field (or a report projected before Task 4
+    # shipped) still reads as usable, matching the additive-field convention
+    # every other Stage B/B3 field on this view follows.
+    report_unusable: bool = False
     summary: ReviewSummary | None
     flagged_passages: list[FlaggedPassage]
     story_level_findings: list[FindingView]
@@ -2092,6 +2099,17 @@ class ReviewQueueItem(BaseModel):
     version: int
     screened: bool
     flagged_count: int = Field(ge=0)
+    # Task 4: mirrors ReviewSurfaceView.report_unusable, plus tiered distinct-
+    # finding counts (each merged finding counts once, regardless of how many
+    # nodes it fans out to via node_ids). Advisories never gate, so
+    # flag_findings excludes structural findings and advisory_findings is
+    # never added to block/flag; see review_surface.py::build_review_queue_item.
+    # All four default so a caller or fixture built before Task 4 still
+    # projects a valid queue item.
+    report_unusable: bool = False
+    block_findings: int = Field(default=0, ge=0)
+    flag_findings: int = Field(default=0, ge=0)
+    advisory_findings: int = Field(default=0, ge=0)
     summary: ReviewSummary | None
     # Triage metadata for the console (UX-A3): the story's target age band and
     # when this version was created (a "waiting since" proxy). Both optional so a
