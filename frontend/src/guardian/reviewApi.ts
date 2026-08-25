@@ -60,6 +60,10 @@ export interface ReviewQueueItem {
   version: number
   screened: boolean
   flagged_count: number
+  report_unusable?: boolean
+  block_findings?: number
+  flag_findings?: number
+  advisory_findings?: number
   summary: ReviewSummary | null
   /** Target age band, for at-a-glance triage (UX-A3). Optional if unknown. */
   age_band?: string | null
@@ -107,6 +111,7 @@ export interface ReviewSurface {
   status: string
   blob: Record<string, unknown>
   screened: boolean
+  report_unusable?: boolean
   summary: ReviewSummary | null
   flagged_passages: FlaggedPassage[]
   story_level_findings: FindingView[]
