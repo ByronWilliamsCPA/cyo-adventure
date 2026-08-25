@@ -1,0 +1,162 @@
+# Semgrep rules for the React/TypeScript frontend.
+#
+# Why these are written in-repo rather than pulled from the Semgrep registry:
+# the registry's React rules (p/react, p/xss, p/security-audit, p/owasp-top-ten)
+# are taint-mode rules whose sources only match untyped JavaScript parameter
+# shapes, `function C({ x })` and `function C(x)`. They do not match either of
+# the two shapes this codebase actually uses:
+#
+#     function C({ html }: Props)          <- TS-annotated destructuring: MISS
+#     const C = ({ html }: Props) => ...   <- arrow component:            MISS
+#
+# Measured 2026-08-24 against a fixture carrying eight planted defects, with all
+# six registry packs enabled: 1 of 8 caught (an http:// literal). Both
+# dangerouslySetInnerHTML sites, eval, new Function, document.write, an
+# innerHTML assignment and a hardcoded API key were all missed. The registry
+# packs stay enabled in CI as a cheap supplement, but they are not the gate.
+#
+# #CRITICAL: security: a SAST ruleset that matches no real code shape reports
+#   clean forever and reads exactly like a passing gate.
+# #VERIFY: tests/fixtures/semgrep-canary.tsx carries one instance of every rule
+#   below and the CI job fails if the scan does not flag all of them.
+rules:
+  - id: cyo-react-dangerously-set-inner-html
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      dangerouslySetInnerHTML with a non-literal value renders unsanitized HTML
+      into the page (CWE-79). Sanitize with DOMPurify, or render text instead.
+    metadata:
+      cwe: "CWE-79: Cross-site Scripting"
+      owasp: "A03:2021 - Injection"
+      category: security
+    patterns:
+      # One JSX alternative, not two: the `... />` form matches elements with
+      # children as well, verified by mutation (removing it drops all three JSX
+      # canary sites). The object form below is genuinely distinct.
+      - pattern-either:
+          - pattern: '<$EL ... dangerouslySetInnerHTML={{ __html: $X }} ... />'
+          - pattern: '{ ..., dangerouslySetInnerHTML: { __html: $X }, ... }'
+      - pattern-not: '<$EL ... dangerouslySetInnerHTML={{ __html: "..." }} ... />'
+      - pattern-not: '{ ..., dangerouslySetInnerHTML: { __html: "..." }, ... }'
+
+  - id: cyo-dynamic-code-execution
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      Dynamic code execution (CWE-95). eval, the Function constructor, and the
+      string forms of setTimeout/setInterval execute their argument as code.
+    metadata:
+      cwe: "CWE-95: Eval Injection"
+      owasp: "A03:2021 - Injection"
+      category: security
+    pattern-either:
+      - pattern: 'eval(...)'
+      - pattern: 'new Function(...)'
+      # The Function constructor is callable without `new` and compiles code
+      # either way. Semgrep parses the two as different nodes, so the bare call
+      # needs its own alternative; verified by reproduction on PR #754.
+      - pattern: 'Function(...)'
+      - pattern: 'window.eval(...)'
+      - pattern: 'window.Function(...)'
+      # Literal-string form only, deliberately. `setTimeout($X, ...)` where $X is
+      # a variable is the genuinely dangerous case, but it is not distinguishable
+      # from the overwhelmingly common `setTimeout(handler, ms)` without type
+      # information Semgrep does not have, so matching it would fire on every
+      # legitimate timer in the codebase and the rule would be turned off. The
+      # literal form is what this rule can honestly detect.
+      - pattern: 'setTimeout("...", ...)'
+      - pattern: 'setInterval("...", ...)'
+
+  - id: cyo-dom-html-sink
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      Writing to innerHTML/outerHTML or document.write parses the value as HTML
+      (CWE-79). Use textContent, or sanitize first.
+    metadata:
+      cwe: "CWE-79: Cross-site Scripting"
+      owasp: "A03:2021 - Injection"
+      category: security
+    patterns:
+      - pattern-either:
+          - pattern: '$EL.innerHTML = $X'
+          - pattern: '$EL.outerHTML = $X'
+          - pattern: '$EL.insertAdjacentHTML(...)'
+          - pattern: 'document.write(...)'
+          - pattern: 'document.writeln(...)'
+      - pattern-not: '$EL.innerHTML = ""'
+      - pattern-not: '$EL.outerHTML = ""'
+
+  - id: cyo-open-redirect
+    languages: [typescript, javascript]
+    # ERROR like every other rule here. It was WARNING, which read as "this one
+    # is advisory" and was not: the gate partitions findings by RULE ID PREFIX,
+    # not by severity, so any `cyo-*` hit fails the job whatever this field
+    # says. The `--error` flag on the scan step is likewise inert because that
+    # step carries `continue-on-error: true`. Leaving a decorative severity here
+    # invites someone to reason about blocking from the wrong field.
+    severity: ERROR
+    message: >-
+      Navigating to a non-literal URL is an open-redirect sink (CWE-601).
+      Validate against an allowlist, or use the router for in-app navigation.
+    metadata:
+      cwe: "CWE-601: Open Redirect"
+      owasp: "A01:2021 - Broken Access Control"
+      category: security
+    patterns:
+      - pattern-either:
+          - pattern: '$L.location.href = $X'
+          - pattern: 'location.href = $X'
+          - pattern: '$L.location.assign($X)'
+          - pattern: '$L.location.replace($X)'
+      - pattern-not: '$L.location.href = "..."'
+      - pattern-not: 'location.href = "..."'
+      - pattern-not: '$L.location.assign("...")'
+      - pattern-not: '$L.location.replace("...")'
+
+  - id: cyo-postmessage-wildcard-origin
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      postMessage with a "*" target origin delivers the payload to any document
+      that happens to occupy the frame (CWE-346). Name the origin explicitly.
+    metadata:
+      cwe: "CWE-346: Origin Validation Error"
+      category: security
+    pattern: '$W.postMessage($MSG, "*")'
+
+  - id: cyo-hardcoded-provider-credential
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      A provider credential appears to be hardcoded in frontend source
+      (CWE-798). Everything the browser downloads is public.
+    metadata:
+      cwe: "CWE-798: Hard-coded Credentials"
+      owasp: "A07:2021 - Identification and Authentication Failures"
+      category: security
+    patterns:
+      # An assignment is not the likely shape. An SDK credential in a frontend
+      # config object (`createClient({ apiKey: '...' })`) or passed positionally
+      # (`createClient('...')`) is, and the single assignment pattern matched
+      # neither: verified by reproduction on semgrep 1.157.0, where
+      # `{ apiKey: 'sk-ant-...' }`, `createClient('sk-ant-...')` and an array
+      # element all went unflagged. The metavariable-regex below is what keeps
+      # the wider shapes from firing on ordinary strings.
+      - pattern-either:
+          - pattern: '$NAME = "$SECRET"'
+          - pattern: '{ ..., $KEY: "$SECRET", ... }'
+          - pattern: '$FN(..., "$SECRET", ...)'
+      - metavariable-regex:
+          metavariable: $SECRET
+          # Extended mode: whitespace and newlines are ignored, so the
+          # alternation can wrap instead of running to 190 columns.
+          regex: |-
+            (?x)
+              sk-ant-[A-Za-z0-9_-]{16,}
+            | sk-[A-Za-z0-9]{32,}
+            | ghp_[A-Za-z0-9]{20,}
+            | github_pat_[A-Za-z0-9_]{30,}
+            | AKIA[0-9A-Z]{16}
+            | eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}

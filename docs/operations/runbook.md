@@ -878,6 +878,57 @@ the endpoint on a tier serving real families. The Gate 1 procedure in
 [the KWS test runbook](kws-test-runbook.md) does not need it: that script calls the service
 directly and never reaches the endpoint.
 
+### 7.2 Release pipeline deadlock (a green workflow that has stopped releasing)
+
+`release.yml` is two jobs with two triggers. `propose` runs on a daily schedule (01:00 UTC) and
+opens one auto-merging `release/vX.Y.Z` PR covering every commit since the last tag. `publish` runs
+on push and tags the `chore(release):` commit once that PR merges. Between them, release state lives
+in **two** places: the version in `pyproject.toml` and the git tag.
+
+If `publish` fails after its PR has merged, those two desynchronise and the pipeline **deadlocks**.
+python-semantic-release computes the next version from the last **tag**, so it keeps returning the
+version `pyproject.toml` already carries; `propose`'s `NEXT == CURRENT` gate reports
+`No release-worthy commits ...; nothing to do` and the run exits **success**. With
+`major_on_zero = false` no commit of any type can compute past that version, so the stall is
+permanent, and because the steady-state message is indistinguishable from a genuinely quiet day,
+nothing alerts.
+
+This has happened once: on 2026-08-17 `gh release create v0.82.0` hit a transient
+`HTTP 503: No server is currently available to service your request` and never created the tag.
+Seven days and twenty-three commits passed before anyone noticed the release PRs had stopped.
+
+**Detection.** `propose`'s "Check release state is in sync" step
+(`scripts/check_release_tag_sync.py`) now fails the run on exactly this condition, so a repeat
+surfaces on the next scheduled run rather than a week later. To check by hand:
+
+```bash
+VERSION="$(grep -m1 -Po '^version = "\K[^"]+' pyproject.toml)"
+git ls-remote --tags origin "v${VERSION}"   # empty output means DEADLOCKED
+```
+
+**Fix.** Create the missing release on the `chore(release):` commit; the next scheduled `propose`
+then computes the following version normally. Prefer re-running the job that failed, so the real
+code path (including the changelog extraction) is what executes:
+
+```bash
+gh run list --workflow=release.yml --limit 20   # find the failed run
+gh run rerun <run-id> --failed
+gh release view "v$(grep -m1 -Po '^version = "\K[^"]+' pyproject.toml)"   # confirm
+```
+
+Verify the unblock without side effects by dispatching a dry run, which computes the plan and skips
+only the PR-creation step:
+
+```bash
+gh workflow run release.yml --ref main -f dry_run=true
+# expect a version AHEAD of pyproject's, e.g. "Next version: v0.83.0 (current v0.82.0)".
+# A "nothing to do" here means the deadlock is NOT cleared.
+```
+
+**Note the deploy is not gated on any of this.** The homelab stack force-pulls `:latest` on its own
+timer (section 1), so production ships the code whether or not the release was cut. A deadlock costs
+you tags and changelog history, not delivery, which is part of why it stayed invisible.
+
 ## 8. Secrets and keys inventory
 
 Names only; never commit or log actual values. Source real values from a secret manager

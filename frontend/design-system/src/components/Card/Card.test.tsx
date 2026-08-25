@@ -22,7 +22,7 @@ describe('Card', () => {
     render(
       <Card className="console-row" data-testid="my-card">
         Row content
-      </Card>,
+      </Card>
     )
     const card = screen.getByTestId('my-card')
     expect(card.className).toContain('cyo-card')

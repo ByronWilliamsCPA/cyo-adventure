@@ -9,7 +9,8 @@ import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { useToast } from '../notifications/useToast'
 import { BUDGET_EXCEEDED_MESSAGE, isBudgetExceededError, makeBudgetApi } from './budgetApi'
-import { FlagBadge, verdictTone } from './FlagBadge'
+import { FlagBadge } from './FlagBadge'
+import { verdictTone } from './verdictTone'
 import { formatRelativeTime } from './intakeApi'
 import {
   AGE_BANDS,

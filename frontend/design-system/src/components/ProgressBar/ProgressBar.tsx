@@ -23,10 +23,7 @@ export function ProgressBar({ value, label, showLabel = false }: ProgressBarProp
         aria-valuemax={100}
         aria-label={ariaLabel}
       >
-        <div
-          className="cyo-progress__fill"
-          style={{ width: `${clamped}%` }}
-        />
+        <div className="cyo-progress__fill" style={{ width: `${clamped}%` }} />
       </div>
       {showLabel ? (
         <span className="cyo-progress__label" aria-hidden="true">

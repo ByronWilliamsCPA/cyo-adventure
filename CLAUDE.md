@@ -1045,20 +1045,38 @@ uv run pytest tests/unit/test_example.py::test_function_name -v
 - **Quality gate**: `ci.yml` (tests/lint/typecheck on Python 3.14, includes the
   frontend contract-drift check), `python-compatibility.yml` (3.11-3.14 Ubuntu
   plus 3.14 macOS/Windows), `pr-title.yml`, `pr-validation.yml`
-- **Security/supply chain**: `security-analysis.yml` (Bandit and OSV-Scanner
-  only). CodeQL previously ran via GitHub code scanning **default setup**, which
-  has no workflow file, so grepping `.github/workflows/` never showed it; it was
-  disabled on 2026-08-03, so no SAST covers the TypeScript tree today. Check the
-  live state with `gh api repos/{owner}/{repo}/code-scanning/default-setup`
-  rather than by grepping. Also: `container-security.yml`, `dependency-review.yml`,
+- **Security/supply chain**: `security-analysis.yml` (Bandit and OSV-Scanner for
+  Python, plus a `semgrep-frontend` job for the React tree). CodeQL previously ran
+  via GitHub code scanning **default setup**, which has no workflow file, so
+  grepping `.github/workflows/` never showed it; it was disabled on 2026-08-03.
+  Check the live state with
+  `gh api repos/{owner}/{repo}/code-scanning/default-setup` rather than by
+  grepping. TypeScript SAST is now the in-repo Semgrep ruleset
+  (`.semgrep/frontend-security.yml`) plus `eslint-plugin-security` and
+  `eslint-plugin-no-unsanitized`; the registry packs ride along as advisory
+  annotations only. The in-repo rules exist because the registry's React taint
+  sources match `function C({ x })` but not `function C({ x }: Props)` or
+  `const C = ({ x }: Props) => ...`, the only two shapes this codebase uses: they
+  caught 1 of 8 planted defects. A canary fixture
+  (`tests/fixtures/semgrep-canary.tsx`) is what keeps the ruleset honest, since a
+  drifted SAST ruleset and a clean tree are indistinguishable. Also: `container-security.yml`, `dependency-review.yml`,
   `dependency-provenance-weekly.yml`, `fips-compatibility.yml`,
   `slsa-provenance.yml`, `scorecard.yml` (OpenSSF), `sonarcloud.yml`
 - **Testing depth**: `cifuzzy.yml` (fuzzing), `mutation-testing.yml`
 - **Compliance/release**: `accessibility-compliance-weekly.yml` (ADR-029; weekly, non-blocking
   axe scan against `main`, WCAG 2.2 plus best-practice rules; the per-PR WCAG 2.1 AA gate lives
   in `ci.yml`'s `frontend-e2e` job instead), `sbom.yml`, `reuse.yml`, `validate-cruft.yml`,
-  `release.yml` (two-phase, ruleset-compatible flow, issues #183/#157/#158:
-  a `propose` job runs python-semantic-release's writer
+  `release.yml` (two-phase, ruleset-compatible flow, issues #183/#157/#158.
+  The two jobs take different triggers: `propose` runs on a **daily schedule**
+  (01:00 UTC) so a day's merges batch into ONE release PR, while `publish` stays
+  on `push` because its guard reads `head_commit.message`, which exists only on
+  a push event. `propose` also runs `scripts/check_release_tag_sync.py` first,
+  which fails the run when `pyproject.toml`'s version has no matching tag: that
+  is the signature of a `publish` failure, and it deadlocks the pipeline
+  permanently while every subsequent run still reports success (it happened on
+  2026-08-17 via a transient API 503 and went unnoticed for a week; runbook
+  section 7.2).
+  In detail: a `propose` job runs python-semantic-release's writer
   (`--no-commit/--no-tag/--no-push`) to bump `pyproject.toml` and GENERATE the
   CHANGELOG from Conventional Commits (PSR `mode="update"` splices each version
   in at the `<!-- version list -->` marker, preserving history), re-locks,

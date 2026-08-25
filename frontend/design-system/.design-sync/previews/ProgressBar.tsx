@@ -18,7 +18,15 @@ export function Complete() {
 
 export function AllStates() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '24px', maxWidth: '400px' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+        padding: '24px',
+        maxWidth: '400px',
+      }}
+    >
       <ProgressBar value={0} label="Not started" showLabel />
       <ProgressBar value={25} label="Just beginning" showLabel />
       <ProgressBar value={60} label="More than halfway" showLabel />

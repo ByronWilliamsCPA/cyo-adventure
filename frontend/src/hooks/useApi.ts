@@ -408,6 +408,13 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
               // Use replace(), not assign(): the expired guardian URL must not stay
               // in history, or Back would return to it, hit another 401, and bounce
               // to login again in a loop.
+              // GUARDIAN_LOGIN_PATH is a module constant holding an in-app path,
+              // not a value derived from any request, URL or user input, so there
+              // is no redirect target for an attacker to control. The rule matches
+              // non-literal arguments by design; this is the one site where the
+              // argument is a constant. The directive must be the line immediately
+              // above the match, so it goes last.
+              // nosemgrep: cyo-open-redirect
               window.location.replace(GUARDIAN_LOGIN_PATH)
             }
           }

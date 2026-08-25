@@ -94,8 +94,13 @@ export function PassageText({ text, className = '', highlightRange = null }: Pas
   return (
     <div className={`cyo-passage cyo-passage--multi ${className}`.trim()}>
       {paragraphs.map((para, i) => (
-        // Index key is stable here: paragraph content is static per render
-        // eslint-disable-next-line react/no-array-index-key
+        // Index key is stable here: paragraph content is static per render.
+        // This previously carried an `eslint-disable-next-line
+        // react/no-array-index-key`, which was dead: eslint-plugin-react is
+        // not a dependency of this repo, so the rule never ran and ESLint
+        // reported the directive itself as referencing an unknown rule once
+        // design-system entered lint scope. The reasoning is kept, the
+        // suppression dropped.
         <p key={i}>{renderParagraph(para, highlightRange)}</p>
       ))}
     </div>

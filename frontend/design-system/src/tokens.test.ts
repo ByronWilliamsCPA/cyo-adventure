@@ -21,9 +21,7 @@ describe('tokens.css dark mode', () => {
 
   it('overrides every color custom property :root defines', () => {
     const rootBlock = tokensCss.match(/^:root\s*\{([\s\S]*?)\n\}/m)?.[1]
-    const darkBlock = tokensCss.match(
-      /:root\[data-theme=['"]dark['"]\]\s*\{([\s\S]*?)\n\}/,
-    )?.[1]
+    const darkBlock = tokensCss.match(/:root\[data-theme=['"]dark['"]\]\s*\{([\s\S]*?)\n\}/)?.[1]
     expect(rootBlock, ':root block not found in tokens.css').toBeTruthy()
     expect(darkBlock, 'dark-mode :root[data-theme] block not found in tokens.css').toBeTruthy()
 
@@ -83,7 +81,7 @@ describe('tokens.css dark mode', () => {
     ])
 
     const missingFromDark = [...rootProps].filter(
-      (name) => !darkProps.has(name) && !intentionallyUnthemed.has(name),
+      (name) => !darkProps.has(name) && !intentionallyUnthemed.has(name)
     )
     expect(missingFromDark).toEqual([])
 

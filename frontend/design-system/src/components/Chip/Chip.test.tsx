@@ -52,7 +52,7 @@ describe('Chip', () => {
     render(
       <Chip disabled onClick={onClick}>
         Gentle
-      </Chip>,
+      </Chip>
     )
     const chip = screen.getByRole('button', { name: 'Gentle' })
     expect(chip).toBeDisabled()

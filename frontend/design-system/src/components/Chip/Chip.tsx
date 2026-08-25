@@ -1,8 +1,10 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import './Chip.css'
 
-export interface ChipProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'aria-pressed'> {
+export interface ChipProps extends Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  'type' | 'aria-pressed'
+> {
   /** Whether the chip is in its toggled-on state. */
   on?: boolean
   children: ReactNode

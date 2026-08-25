@@ -129,7 +129,10 @@ export async function paceNavigation(page: Page): Promise<void> {
  * actually caused it. Waiting for network idle first makes the check observe a
  * settled page.
  */
-export async function isRateLimited(page: Page, settleTimeout = SETTLE_TIMEOUT_MS): Promise<boolean> {
+export async function isRateLimited(
+  page: Page,
+  settleTimeout = SETTLE_TIMEOUT_MS
+): Promise<boolean> {
   await page.waitForLoadState('networkidle', { timeout: settleTimeout }).catch(rethrowUnlessTimeout)
   return page
     .getByRole('alert')

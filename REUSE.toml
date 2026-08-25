@@ -92,6 +92,7 @@ path = [
     ".gitignore",
     ".gitattributes",
     ".trivy/**",  # Trivy Rego ignore policy (package-scoped suppression)
+    ".semgrep/**",  # In-repo Semgrep SAST rules for the frontend
     ".pre-commit-config.yaml",
     ".readthedocs.yaml",
     "mkdocs.yml",

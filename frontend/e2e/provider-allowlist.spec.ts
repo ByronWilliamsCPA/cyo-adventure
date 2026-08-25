@@ -40,7 +40,10 @@ test('an admin adds, disables, and removes a provider allowlist entry', async ({
   await page.route('**/api/v1/admin/provider-allowlist/*', (route) => {
     const method = route.request().method()
     if (method === 'PUT') {
-      const body = route.request().postDataJSON() as { enabled: boolean; display_name: string | null }
+      const body = route.request().postDataJSON() as {
+        enabled: boolean
+        display_name: string | null
+      }
       const id = route.request().url().split('/provider-allowlist/')[1]
       rows = rows.map((r) => (r.id === id ? { ...r, ...body } : r))
       return route.fulfill({ json: rows.find((r) => r.id === id) })
@@ -64,7 +67,7 @@ test('an admin adds, disables, and removes a provider allowlist entry', async ({
   // exact: true, else this also matches the row's "Disable/Remove
   // google/gemma-4-26b-a4b-it" button cell (substring match on role name).
   await expect(
-    page.getByRole('cell', { name: 'google/gemma-4-26b-a4b-it', exact: true }),
+    page.getByRole('cell', { name: 'google/gemma-4-26b-a4b-it', exact: true })
   ).toBeVisible()
   await expect(page.getByRole('cell', { name: 'Enabled', exact: true })).toBeVisible()
 

@@ -4,12 +4,20 @@ import { EmptyState } from './EmptyState'
 
 describe('EmptyState', () => {
   it('omits the actions wrapper when actions is a falsy ReactNode', () => {
-    render(<EmptyState title="No stories yet" description="Start reading to see it here." actions={false} />)
+    render(
+      <EmptyState
+        title="No stories yet"
+        description="Start reading to see it here."
+        actions={false}
+      />
+    )
     expect(document.querySelector('.cyo-empty__actions')).not.toBeInTheDocument()
   })
 
   it('omits the icon wrapper when icon is a falsy ReactNode', () => {
-    render(<EmptyState title="No stories yet" description="Start reading to see it here." icon={0} />)
+    render(
+      <EmptyState title="No stories yet" description="Start reading to see it here." icon={0} />
+    )
     expect(document.querySelector('.cyo-empty__icon')).not.toBeInTheDocument()
   })
 
@@ -19,7 +27,7 @@ describe('EmptyState', () => {
         title="No stories yet"
         description="Start reading to see it here."
         actions={<button type="button">Browse library</button>}
-      />,
+      />
     )
     expect(document.querySelector('.cyo-empty__actions')).toBeInTheDocument()
   })
@@ -30,7 +38,7 @@ describe('EmptyState', () => {
         title="No stories yet"
         description="Start reading to see it here."
         icon={<svg aria-hidden="true" />}
-      />,
+      />
     )
     expect(document.querySelector('.cyo-empty__icon')).toBeInTheDocument()
   })
@@ -39,7 +47,7 @@ describe('EmptyState', () => {
     render(<EmptyState title="No stories yet" description="Start reading to see it here." />)
     expect(document.querySelector('.cyo-empty__title')?.textContent).toBe('No stories yet')
     expect(document.querySelector('.cyo-empty__description')?.textContent).toBe(
-      'Start reading to see it here.',
+      'Start reading to see it here.'
     )
   })
 })

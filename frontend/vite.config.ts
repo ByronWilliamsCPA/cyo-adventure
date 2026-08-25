@@ -5,6 +5,24 @@ import { defineConfig } from 'vitest/config'
 
 import { NAVIGATE_FALLBACK_DENYLIST } from './src/pwa/navigateFallbackDenylist'
 
+// #ASSUME: security: safe-regex flags this on STAR HEIGHT alone (the `.*`
+// inside an optional group), without checking whether any branch is ambiguous.
+// None is: `[^/]+` cannot consume the `/` that must follow it, and `(?:\?.*)?`
+// is anchored by `$` after a literal `?` that appears at most once, so the
+// engine never holds two live branches over the same input. Measured
+// 2026-08-24 on Node against `'a'.repeat(n)` in the host segment: n=1000
+// 0.035ms, n=4000 0.010ms, n=16000 0.034ms, n=32000 0.062ms, and a
+// 50k-character query tail 0.032ms. Linear, so a 32x input costs under 2x time.
+// #VERIFY: re-measure if a segment class stops being disjoint from the literal
+// that follows it (for example `[^/]+` widened to `.+`), which is what would
+// make a branch ambiguous.
+//
+// Hoisted out of the VitePWA options rather than written inline because
+// Prettier wraps a long literal onto its own line, which moves the regex off
+// the line an inline `eslint-disable-next-line` would target.
+const PERSONALIZATION_VALUES_URL_RE =
+  /^https?:\/\/[^/]+\/(?:api\/)?v1\/storybooks\/[^/]+\/personalization-values(?:\?.*)?$/ // eslint-disable-line security/detect-unsafe-regex -- measured linear above
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -96,8 +114,7 @@ export default defineConfig({
             // authoritative answer, and the revoked values would be re-written
             // into IndexedDB. NetworkOnly, registered AHEAD of the catch-all
             // /v1 rule below so it wins Workbox's first-match routing.
-            urlPattern:
-              /^https?:\/\/[^/]+\/(?:api\/)?v1\/storybooks\/[^/]+\/personalization-values(?:\?.*)?$/,
+            urlPattern: PERSONALIZATION_VALUES_URL_RE,
             handler: 'NetworkOnly',
           },
           {

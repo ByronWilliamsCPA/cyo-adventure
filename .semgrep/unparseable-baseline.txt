@@ -1,0 +1,18 @@
+# Files Semgrep's OSS TypeScript parser cannot fully parse, pinned by IDENTITY
+# rather than by count. A count alone is satisfied by any five files: fix five
+# tests, break five production modules, and the total is unchanged while the
+# coverage hole moves onto code that matters.
+#
+# Note these are NOT all "dropped from the scan". Semgrep reports two shapes:
+# a bare `Syntax error` (the file is unparsed) and `PartialParsing` with spans
+# (the file is parsed except for those ranges). Both leave code unanalysed, and
+# both appear in `paths.scanned`, which is why the scanned-file count cannot
+# detect either one.
+#
+# Shrinking this list is the goal; growing it fails the build. Tracked as
+# UW-C365. Do NOT close that row by adding entries here.
+frontend/src/kid/badgeCatalog.test.ts
+frontend/src/landing/LandingPage.test.tsx
+frontend/src/offline/db.test.ts
+frontend/src/offline/readingTimeSync.test.ts
+frontend/src/reader/Reader.test.tsx
