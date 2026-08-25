@@ -203,9 +203,59 @@ services:
       # is then dropped on "We can't reach CYO Adventure" instead of the console.
       # host-gateway resolves to the host in both supported setups, since the
       # `app` service publishes the same port on the host when it is running.
+      #
+      # The HOST-side knob is DEV_API_PROXY_TARGET, not VITE_API_URL, on
+      # purpose. docker-compose.prod.yml:160 already spends the name
+      # VITE_API_URL on a production BUILD ARG that is baked into the shipped
+      # bundle (`${VITE_API_URL:-/api}`). If this dev target reused that name,
+      # a developer who exported it (or uncommented it in the root .env, which
+      # compose auto-loads for interpolation) would silently bake
+      # `host.docker.internal` into a production build. The CONTAINER-side
+      # variable stays VITE_API_URL because that is the name vite.config.ts
+      # reads; only the interpolation source is renamed.
+      #
+      # Dev-target-only: this must never be aimed at a production backend. The
+      # value also reaches the dev bundle's `import.meta.env.VITE_API_URL`,
+      # because Vite's loadEnv merges every VITE_-prefixed process.env var into
+      # the client env. src/hooks/apiBaseUrl.ts:18 ignores it today (it gates on
+      # `import.meta.env.PROD`, and this service only ever runs an unbuilt dev
+      # server), so it is inert in the browser; it would stop being inert the
+      # moment this service were pointed at a production target.
+      #
+      # `environment:` takes precedence over `env_file:` below, so a developer
+      # whose frontend/.env.local carries `VITE_API_URL=http://localhost:8000`
+      # for bare `npm run dev` cannot re-break the in-container proxy.
       # #VERIFY: `curl -o /dev/null -w '%{http_code}' localhost:3000/api/v1/health/live`
       # must return 200, not 502.
-      - VITE_API_URL=${VITE_API_URL:-http://host.docker.internal:${APP_PORT:-8000}}
+      - VITE_API_URL=${DEV_API_PROXY_TARGET:-http://host.docker.internal:${APP_PORT:-8000}}
+    # #CRITICAL: external-resources: auth/supabaseClient.ts throws when
+    # VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is missing, which takes out
+    # the guardian lazy chunk (sign-in) while leaving the kid surface up.
+    #
+    # This used to be a `./frontend/.env.local:/app/.env.local:ro` bind mount,
+    # and that failed SILENTLY on a fresh clone. The source path is gitignored
+    # (frontend/.gitignore:41) and excluded by frontend/.dockerignore, so it
+    # does not exist; Docker then creates an empty ROOT-OWNED DIRECTORY at that
+    # host path, and Vite's loadEnv skips a non-file with no error at all
+    # (`if (!stat || !stat.isFile() && !stat.isFIFO()) return []`). The result
+    # was the exact dead-guardian-chunk symptom commit 409cf27a fixed, plus a
+    # root-owned directory a non-root developer cannot remove and `git status`
+    # never shows.
+    #
+    # `env_file:` fails LOUDLY instead: with the file absent, compose refuses to
+    # start the service and names the missing path. The tradeoff accepted here
+    # is that the values now appear in `docker inspect` and in
+    # `docker compose config` output, which the bind mount avoided. That is
+    # acceptable because both are publishable-by-design: the Supabase anon key
+    # is shipped inside the browser bundle and is guarded by RLS, not by
+    # secrecy. Do not add the service-role key to this file.
+    #
+    # Required prerequisite before `docker compose up`:
+    #   cp frontend/.env.local.example frontend/.env.local
+    # #VERIFY: with frontend/.env.local absent, `docker compose up frontend`
+    # must exit non-zero naming that file rather than starting a broken app.
+    env_file:
+      - ./frontend/.env.local
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -221,14 +271,6 @@ services:
       # #VERIFY: `docker exec cyo_adventure-frontend ls /app/design-system/src`
       # must list the same .css files as ./frontend/design-system/src.
       - ./frontend/design-system:/app/design-system:ro
-      # #CRITICAL: external-resources: auth/supabaseClient.ts throws when
-      # VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is missing, which takes out
-      # the guardian lazy chunk (sign-in) while leaving the kid surface up.
-      # The values are mounted as Vite's own env file rather than passed
-      # through `environment:` so the anon key never enters compose config or
-      # `docker inspect` output.
-      # #VERIFY: `docker exec cyo_adventure-frontend ls /app/.env.local`.
-      - ./frontend/.env.local:/app/.env.local:ro
     depends_on:
       - app
     restart: unless-stopped

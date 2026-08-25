@@ -111,12 +111,33 @@ docker run -p 80:80 \
 
 ## Environment Variables
 
-| Variable       | Description       | Default                 |
-| -------------- | ----------------- | ----------------------- |
-| `VITE_API_URL` | Backend API URL   | `http://localhost:8000` |
-| `VITE_DEBUG`   | Enable debug mode | `false`                 |
+| Variable                 | Description                              | Default                 |
+| ------------------------ | ---------------------------------------- | ----------------------- |
+| `VITE_SUPABASE_URL`      | Supabase project URL (required)          | none                    |
+| `VITE_SUPABASE_ANON_KEY` | Supabase publishable anon key (required) | none                    |
+| `VITE_API_URL`           | Backend API URL, production builds only  | `http://localhost:8000` |
+| `VITE_DEBUG`             | Enable debug mode                        | `false`                 |
 
-Create `.env.local` for local overrides (gitignored).
+`VITE_API_URL` is a production build arg: `src/hooks/apiBaseUrl.ts` reads it
+only when `import.meta.env.PROD` is true, and dev always goes through Vite's
+`/api` proxy. The proxy's own target is a separate compose-level variable,
+`DEV_API_PROXY_TARGET` (see the root `.env.example`); the two names are kept
+apart so a dev value can never be baked into a production bundle.
+
+**Required before `docker compose up`:** copy the tracked template to the
+gitignored real file and fill in the two Supabase values.
+
+```bash
+cp frontend/.env.local.example frontend/.env.local
+```
+
+This is a prerequisite, not an optional override. `docker-compose.yml` loads
+`frontend/.env.local` via `env_file:`, so compose refuses to start the frontend
+service until the file exists. Without the Supabase values,
+`src/auth/supabaseClient.ts` throws and the guardian sign-in chunk dies while
+the kid surface keeps working, which reads as a broken console rather than a
+missing setting. The same file also serves as local overrides for a bare
+`npm run dev`.
 
 ## Testing
 
