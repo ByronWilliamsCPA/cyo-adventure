@@ -1040,19 +1040,22 @@ async def _run_all_stages(
     # test in this module, which are all unmodified by this change.
     nodes = [(node.id, strip_sentinels(node.body)) for node in story.nodes]
 
-    # #CRITICAL: security: the classifier calls below are a distinct egress path
+    # #CRITICAL: security: the classifier call below is a distinct egress path
     # from the LLM review stages (which are protected structurally by
     # PiiGuardedProvider via review_provider). Screen every node body here so
-    # OpenAI Moderation and Google Perspective get the same guard every other
-    # external call in this pipeline already has, instead of receiving raw
-    # generated prose unconditionally.
+    # OpenAI Moderation gets the same guard every other external call in this
+    # pipeline already has, instead of receiving raw generated prose
+    # unconditionally.
     # #VERIFY: test_moderation_pipeline.py::test_classifier_call_blocked_on_pii_in_node_body
     # asserts run_classifiers is never reached when a node body matches.
     for _node_id, body in nodes:
         assert_prompt_pii_safe(body, forbidden=pii)
 
-    # #CRITICAL: external-resource: classifier APIs are network calls that can fail;
-    # the pipeline degrades gracefully if both keys are None (both classifiers skip).
+    # #CRITICAL: external-resource: the classifier API is a network call that can
+    # fail; the pipeline degrades gracefully if the key is None (the classifier
+    # skips). Google Perspective was retired as a Stage-0 signal source
+    # (ratified sunset); OpenAI Moderation is the only classifier run_classifiers
+    # calls now.
     # #VERIFY: run_classifiers documents per-call try/except that logs and continues.
     # The classifier calls set per-request timeouts (_CLASSIFIER_TIMEOUT = 20 s);
     # the client-level timeout is a belt-and-suspenders backstop for connect+pool.
@@ -1060,7 +1063,6 @@ async def _run_all_stages(
         for finding in await run_classifiers(
             nodes=nodes,
             openai_key=settings.openai_api_key,
-            perspective_key=settings.perspective_api_key,
             client=client,
             # Deployed tiers flag an unconfigured classifier as degraded so the
             # reviewer sees the net was off; local/dev skip silently.

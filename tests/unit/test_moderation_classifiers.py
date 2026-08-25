@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 from typing import TYPE_CHECKING
 
 import httpx
@@ -40,21 +41,44 @@ async def test_openai_brightline_category_yields_block() -> None:
     findings = await run_classifiers(
         nodes=[("n1", "some text")],
         openai_key="k",
-        perspective_key=None,
         client=_client(handler),
     )
     assert any(f.verdict is Verdict.BLOCK for f in findings)
 
 
 @pytest.mark.unit
-async def test_missing_both_keys_yields_no_findings() -> None:
+async def test_missing_key_yields_no_findings() -> None:
+    """The only classifier is OpenAI; an unset key means no findings at all."""
     findings = await run_classifiers(
         nodes=[("n1", "text")],
         openai_key=None,
-        perspective_key=None,
         client=_client(lambda _r: httpx.Response(500)),
     )
     assert findings == []
+
+
+@pytest.mark.unit
+async def test_run_classifiers_has_no_perspective_key_parameter() -> None:
+    """Perspective is retired: run_classifiers rejects a perspective_key kwarg.
+
+    (ratified sunset) so a caller cannot silently re-wire it back in.
+    """
+    assert "perspective_key" not in inspect.signature(run_classifiers).parameters
+
+
+@pytest.mark.unit
+async def test_run_classifiers_never_produces_perspective_findings() -> None:
+    """Even a require_classifiers run degrades OpenAI alone.
+
+    Perspective produces nothing because it is no longer called at all.
+    """
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key=None,
+        client=_client(lambda _r: httpx.Response(500)),
+        require_classifiers=True,
+    )
+    assert not any(f.source is Source.PERSPECTIVE for f in findings)
 
 
 @pytest.mark.unit
@@ -76,7 +100,6 @@ async def test_graded_category_is_not_a_block() -> None:
     findings = await run_classifiers(
         nodes=[("n1", "mild peril")],
         openai_key="k",
-        perspective_key=None,
         client=_client(handler),
     )
     assert all(f.verdict is not Verdict.BLOCK for f in findings)
@@ -112,7 +135,6 @@ async def test_openai_near_zero_score_yields_no_finding() -> None:
     findings = await run_classifiers(
         nodes=[("n1", "a friendly unicorn story")],
         openai_key="k",
-        perspective_key=None,
         client=_client(handler),
     )
     assert findings == []
@@ -139,7 +161,6 @@ async def test_openai_elevated_score_yields_advisory() -> None:
     findings = await run_classifiers(
         nodes=[("n1", "a duel at dawn")],
         openai_key="k",
-        perspective_key=None,
         client=_client(handler),
     )
     assert [f.verdict for f in findings] == [Verdict.ADVISORY]
@@ -170,7 +191,6 @@ async def test_openai_flagged_non_brightline_bypasses_floor() -> None:
     findings = await run_classifiers(
         nodes=[("n1", "text")],
         openai_key="k",
-        perspective_key=None,
         client=_client(handler),
     )
     assert [f.verdict for f in findings] == [Verdict.ADVISORY]
@@ -204,7 +224,6 @@ async def test_openai_brightline_below_floor_still_blocks() -> None:
     findings = await run_classifiers(
         nodes=[("n1", "text")],
         openai_key="k",
-        perspective_key=None,
         client=_client(handler),
     )
     assert [f.verdict for f in findings] == [Verdict.BLOCK]
@@ -231,7 +250,6 @@ async def test_openai_score_at_floor_yields_advisory() -> None:
     findings = await run_classifiers(
         nodes=[("n1", "a tense standoff")],
         openai_key="k",
-        perspective_key=None,
         client=_client(handler),
     )
     assert [f.verdict for f in findings] == [Verdict.ADVISORY]
@@ -258,158 +276,11 @@ async def test_openai_mixed_scores_filter_per_category() -> None:
     findings = await run_classifiers(
         nodes=[("n1", "a duel at dawn")],
         openai_key="k",
-        perspective_key=None,
         client=_client(handler),
     )
     assert [(f.category, f.verdict) for f in findings] == [
         ("violence", Verdict.ADVISORY)
     ]
-
-
-def _perspective_response(
-    scores: dict[str, float],
-) -> dict[str, object]:
-    """Build a well-formed Perspective API response body."""
-    return {
-        "attributeScores": {
-            attr: {"summaryScore": {"value": score, "type": "PROBABILITY"}}
-            for attr, score in scores.items()
-        }
-    }
-
-
-@pytest.mark.unit
-async def test_perspective_sexually_explicit_high_score_yields_block() -> None:
-    """A SEXUALLY_EXPLICIT summaryScore >= 0.8 must produce a BLOCK finding."""
-
-    def handler(_request: httpx.Request) -> httpx.Response:
-        return httpx.Response(
-            200,
-            json=_perspective_response({"SEXUALLY_EXPLICIT": 0.95}),
-        )
-
-    findings = await run_classifiers(
-        nodes=[("n1", "inappropriate content")],
-        openai_key=None,
-        perspective_key="pkey",
-        client=_client(handler),
-    )
-    assert any(
-        f.verdict is Verdict.BLOCK and f.category == "sexually_explicit"
-        for f in findings
-    )
-
-
-@pytest.mark.unit
-async def test_perspective_toxicity_graded_score_is_not_block() -> None:
-    """A graded TOXICITY score must produce a non-BLOCK (ADVISORY) finding."""
-
-    def handler(_request: httpx.Request) -> httpx.Response:
-        return httpx.Response(
-            200,
-            json=_perspective_response({"TOXICITY": 0.3}),
-        )
-
-    findings = await run_classifiers(
-        nodes=[("n1", "somewhat rude text")],
-        openai_key=None,
-        perspective_key="pkey",
-        client=_client(handler),
-    )
-    assert findings
-    assert all(f.verdict is not Verdict.BLOCK for f in findings)
-
-
-@pytest.mark.unit
-async def test_perspective_near_zero_score_yields_no_finding() -> None:
-    """Perspective attributes with noise-level scores must not emit findings."""
-
-    def handler(_request: httpx.Request) -> httpx.Response:
-        return httpx.Response(
-            200,
-            json=_perspective_response({"TOXICITY": 0.001, "INSULT": 0.004}),
-        )
-
-    findings = await run_classifiers(
-        nodes=[("n1", "a friendly unicorn story")],
-        openai_key=None,
-        perspective_key="pkey",
-        client=_client(handler),
-    )
-    assert findings == []
-
-
-@pytest.mark.unit
-async def test_perspective_score_at_floor_yields_advisory() -> None:
-    """A Perspective score exactly at the floor is kept (the drop is `< floor`)."""
-
-    def handler(_request: httpx.Request) -> httpx.Response:
-        return httpx.Response(
-            200,
-            json=_perspective_response({"TOXICITY": 0.01}),
-        )
-
-    findings = await run_classifiers(
-        nodes=[("n1", "somewhat rude text")],
-        openai_key=None,
-        perspective_key="pkey",
-        client=_client(handler),
-    )
-    assert [f.verdict for f in findings] == [Verdict.ADVISORY]
-
-
-@pytest.mark.unit
-async def test_perspective_sexually_explicit_midband_yields_advisory() -> None:
-    """SEXUALLY_EXPLICIT above the floor but below 0.8 advises, never blocks.
-
-    The bright-line threshold is 0.8; a mid-band score must still surface to
-    the guardian as an ADVISORY rather than being floored away or hard-blocked.
-    """
-
-    def handler(_request: httpx.Request) -> httpx.Response:
-        return httpx.Response(
-            200,
-            json=_perspective_response({"SEXUALLY_EXPLICIT": 0.5}),
-        )
-
-    findings = await run_classifiers(
-        nodes=[("n1", "borderline content")],
-        openai_key=None,
-        perspective_key="pkey",
-        client=_client(handler),
-    )
-    assert [(f.category, f.verdict) for f in findings] == [
-        ("sexually_explicit", Verdict.ADVISORY)
-    ]
-
-
-@pytest.mark.unit
-async def test_perspective_malformed_attribute_degrades_gracefully() -> None:
-    """A Perspective response with a missing summaryScore must not raise; it degrades."""
-
-    def handler(_request: httpx.Request) -> httpx.Response:
-        return httpx.Response(
-            200,
-            json={
-                "attributeScores": {
-                    # Well-formed attribute alongside the malformed one.
-                    "TOXICITY": {"summaryScore": {"value": 0.2, "type": "PROBABILITY"}},
-                    # Malformed: summaryScore key is absent entirely.
-                    "SEXUALLY_EXPLICIT": {"noSummaryHere": True},
-                }
-            },
-        )
-
-    # Must not raise; malformed attribute is skipped, well-formed one is kept.
-    findings = await run_classifiers(
-        nodes=[("n1", "text")],
-        openai_key=None,
-        perspective_key="pkey",
-        client=_client(handler),
-    )
-    categories = {f.category for f in findings}
-    assert "toxicity" in categories
-    assert "sexually_explicit" not in categories
 
 
 @pytest.mark.unit
@@ -431,7 +302,6 @@ async def test_openai_non_dict_top_level_response_raises_classifier_unavailable(
     findings = await run_classifiers(
         nodes=[("n1", "text")],
         openai_key="k",
-        perspective_key=None,
         client=_client(handler),
     )
     degraded = [f for f in findings if f.category == "classifier_degraded"]
@@ -455,7 +325,6 @@ async def test_openai_empty_results_list_raises_classifier_unavailable() -> None
     findings = await run_classifiers(
         nodes=[("n1", "text")],
         openai_key="k",
-        perspective_key=None,
         client=_client(handler),
     )
     degraded = [f for f in findings if f.category == "classifier_degraded"]
@@ -479,7 +348,6 @@ async def test_openai_result_zero_not_a_dict_raises_classifier_unavailable() -> 
     findings = await run_classifiers(
         nodes=[("n1", "text")],
         openai_key="k",
-        perspective_key=None,
         client=_client(handler),
     )
     degraded = [f for f in findings if f.category == "classifier_degraded"]
@@ -514,7 +382,6 @@ async def test_openai_non_dict_categories_raises_classifier_unavailable() -> Non
     findings = await run_classifiers(
         nodes=[("n1", "text")],
         openai_key="k",
-        perspective_key=None,
         client=_client(handler),
     )
     degraded = [f for f in findings if f.category == "classifier_degraded"]
@@ -524,8 +391,8 @@ async def test_openai_non_dict_categories_raises_classifier_unavailable() -> Non
 
 
 @pytest.mark.unit
-async def test_perspective_http_error_yields_degraded_advisory() -> None:
-    """A non-2xx Perspective response surfaces one degraded advisory, not silence.
+async def test_openai_http_error_yields_degraded_advisory() -> None:
+    """A non-2xx OpenAI response surfaces one degraded advisory, not silence.
 
     The failure must be visible to the reviewer: a silent [] on a down provider
     is indistinguishable from a genuinely clean report.
@@ -535,29 +402,8 @@ async def test_perspective_http_error_yields_degraded_advisory() -> None:
         return httpx.Response(500)
 
     findings = await run_classifiers(
-        nodes=[("n1", "text"), ("n2", "more text")],
-        openai_key=None,
-        perspective_key="pkey",
-        client=_client(handler),
-    )
-    degraded = [f for f in findings if f.category == "classifier_degraded"]
-    # Exactly one advisory for the whole run, not one per node, and non-gating.
-    assert len(degraded) == 1
-    assert degraded[0].verdict is Verdict.ADVISORY
-    assert degraded[0].source is Source.PERSPECTIVE
-
-
-@pytest.mark.unit
-async def test_openai_http_error_yields_degraded_advisory() -> None:
-    """A non-2xx OpenAI response likewise surfaces one degraded advisory."""
-
-    def handler(_request: httpx.Request) -> httpx.Response:
-        return httpx.Response(500)
-
-    findings = await run_classifiers(
         nodes=[("n1", "text")],
         openai_key="okey",
-        perspective_key=None,
         client=_client(handler),
     )
     degraded = [f for f in findings if f.category == "classifier_degraded"]
@@ -571,111 +417,11 @@ async def test_require_classifiers_flags_unset_keys() -> None:
     findings = await run_classifiers(
         nodes=[("n1", "text")],
         openai_key=None,
-        perspective_key=None,
         client=_client(lambda _r: httpx.Response(200, json={})),
         require_classifiers=True,
     )
     degraded = {f.source for f in findings if f.category == "classifier_degraded"}
-    assert degraded == {Source.OPENAI, Source.PERSPECTIVE}
-
-
-@pytest.mark.unit
-@pytest.mark.usefixtures("_no_backoff")
-async def test_perspective_non_dict_top_level_response_raises_classifier_unavailable() -> (
-    None
-):
-    """A top-level JSON body that is not a dict (for example a bare list).
-
-    Gap G11 regression: this shape change used to log a warning and silently
-    return ``[]``, indistinguishable from a genuinely clean node. It must now
-    surface as a structural degraded-classifier finding via the same
-    retry/circuit-breaker path as an HTTP failure, never vanish.
-    """
-
-    def handler(_request: httpx.Request) -> httpx.Response:
-        return httpx.Response(200, json=["unexpected", "shape"])
-
-    findings = await run_classifiers(
-        nodes=[("n1", "text")],
-        openai_key=None,
-        perspective_key="pkey",
-        client=_client(handler),
-    )
-    degraded = [f for f in findings if f.category == "classifier_degraded"]
-    assert len(degraded) == 1
-    assert degraded[0].source is Source.PERSPECTIVE
-    assert degraded[0].structural is True
-
-
-@pytest.mark.unit
-@pytest.mark.usefixtures("_no_backoff")
-async def test_perspective_missing_attribute_scores_raises_classifier_unavailable() -> (
-    None
-):
-    """A response body missing ``attributeScores`` entirely is malformed.
-
-    Gap G11 regression: see
-    test_perspective_non_dict_top_level_response_raises_classifier_unavailable
-    above.
-    """
-
-    def handler(_request: httpx.Request) -> httpx.Response:
-        return httpx.Response(200, json={"unrelated": "field"})
-
-    findings = await run_classifiers(
-        nodes=[("n1", "text")],
-        openai_key=None,
-        perspective_key="pkey",
-        client=_client(handler),
-    )
-    degraded = [f for f in findings if f.category == "classifier_degraded"]
-    assert len(degraded) == 1
-    assert degraded[0].source is Source.PERSPECTIVE
-    assert degraded[0].structural is True
-
-
-@pytest.mark.unit
-async def test_perspective_attribute_payload_not_a_dict_is_skipped() -> None:
-    """A per-attribute payload that is not a dict (for example a bare string) is skipped."""
-
-    def handler(_request: httpx.Request) -> httpx.Response:
-        return httpx.Response(
-            200,
-            json={"attributeScores": {"TOXICITY": "not-a-dict"}},
-        )
-
-    findings = await run_classifiers(
-        nodes=[("n1", "text")],
-        openai_key=None,
-        perspective_key="pkey",
-        client=_client(handler),
-    )
-    assert findings == []
-
-
-@pytest.mark.unit
-async def test_perspective_attribute_value_non_numeric_is_skipped() -> None:
-    """A ``summaryScore.value`` that is not numeric (for example a string) is skipped."""
-
-    def handler(_request: httpx.Request) -> httpx.Response:
-        return httpx.Response(
-            200,
-            json={
-                "attributeScores": {
-                    "TOXICITY": {
-                        "summaryScore": {"value": "high", "type": "PROBABILITY"}
-                    }
-                }
-            },
-        )
-
-    findings = await run_classifiers(
-        nodes=[("n1", "text")],
-        openai_key=None,
-        perspective_key="pkey",
-        client=_client(handler),
-    )
-    assert findings == []
+    assert degraded == {Source.OPENAI}
 
 
 # ---------------------------------------------------------------------------
@@ -684,8 +430,9 @@ async def test_perspective_attribute_value_non_numeric_is_skipped() -> None:
 # httpx's `.json()` uses json.loads with allow_nan=True, so a provider can
 # return the non-standard NaN/Infinity tokens for a category score. Such a
 # value survives the isinstance(_, (int, float)) guard (float("nan") is a
-# float) but would make Finding.__post_init__ raise ValueError. Both
-# classifiers must degrade gracefully instead of aborting the Stage-0 batch.
+# float) but would make Finding.__post_init__ raise ValueError. OpenAI, the
+# only classifier this module calls, must degrade gracefully instead of
+# aborting the Stage-0 batch.
 #
 # These use raw `content=` bodies (not the `json=` kwarg): httpx serializes
 # `json=` with allow_nan=False and would reject the value before it ever
@@ -714,7 +461,6 @@ async def test_openai_non_finite_unflagged_score_yields_no_finding() -> None:
     findings = await run_classifiers(
         nodes=[("n1", "a quiet afternoon")],
         openai_key="k",
-        perspective_key=None,
         client=_client(handler),
     )
     assert findings == []
@@ -742,40 +488,12 @@ async def test_openai_non_finite_flagged_brightline_still_blocks() -> None:
     findings = await run_classifiers(
         nodes=[("n1", "text")],
         openai_key="k",
-        perspective_key=None,
         client=_client(handler),
     )
     blocks = [f for f in findings if f.verdict is Verdict.BLOCK]
     assert len(blocks) == 1
     assert blocks[0].category == "sexual/minors"
     assert blocks[0].score is None
-
-
-@pytest.mark.unit
-async def test_perspective_non_finite_score_degrades_gracefully() -> None:
-    """A NaN Perspective summary score is skipped, not raised; siblings survive."""
-
-    def handler(_request: httpx.Request) -> httpx.Response:
-        return httpx.Response(
-            200,
-            headers=_JSON_HEADERS,
-            content=(
-                b'{"attributeScores":{'
-                b'"TOXICITY":{"summaryScore":{"value":0.2,"type":"PROBABILITY"}},'
-                b'"SEXUALLY_EXPLICIT":{"summaryScore":'
-                b'{"value":NaN,"type":"PROBABILITY"}}}}'
-            ),
-        )
-
-    findings = await run_classifiers(
-        nodes=[("n1", "text")],
-        openai_key=None,
-        perspective_key="pkey",
-        client=_client(handler),
-    )
-    categories = {f.category for f in findings}
-    assert "toxicity" in categories
-    assert "sexually_explicit" not in categories
 
 
 # ---------------------------------------------------------------------------
@@ -828,7 +546,6 @@ async def test_transient_failure_is_retried_and_does_not_lose_coverage() -> None
     findings = await run_classifiers(
         nodes=[("n1", "text")],
         openai_key="okey",
-        perspective_key=None,
         client=_client(handler),
     )
     assert calls["n"] == 2, "the failed call must be retried"
@@ -848,7 +565,6 @@ async def test_persistent_failure_flags_incomplete_coverage_as_a_soft_gate() -> 
     findings = await run_classifiers(
         nodes=[("n1", "text"), ("n2", "text"), ("n3", "text")],
         openai_key="okey",
-        perspective_key=None,
         client=_client(handler),
     )
     coverage = [f for f in findings if f.category == "classifier_coverage_incomplete"]
@@ -878,7 +594,6 @@ async def test_unscreened_nodes_are_named_and_counted() -> None:
     findings = await run_classifiers(
         nodes=nodes,
         openai_key="okey",
-        perspective_key=None,
         client=_client(handler),
     )
     coverage = next(
@@ -917,7 +632,6 @@ async def test_a_later_node_still_gets_screened_after_one_node_fails() -> None:
     findings = await run_classifiers(
         nodes=[("bad", "poison"), ("good", "clean text")],
         openai_key="okey",
-        perspective_key=None,
         client=_client(handler),
     )
     assert "ok" in seen, "the node after the failure must still be called"
@@ -944,7 +658,6 @@ async def test_circuit_opens_after_consecutive_failures_and_stops_calling() -> N
     findings = await run_classifiers(
         nodes=nodes,
         openai_key="okey",
-        perspective_key=None,
         client=_client(handler),
     )
     assert calls["n"] < len(nodes), (
@@ -964,7 +677,6 @@ async def test_unconfigured_key_does_not_flag_coverage() -> None:
     findings = await run_classifiers(
         nodes=[("n1", "text")],
         openai_key=None,
-        perspective_key=None,
         client=_client(lambda _r: httpx.Response(500)),
         require_classifiers=True,
     )
@@ -1024,7 +736,6 @@ async def test_openai_brightline_finding_has_severity() -> None:
     findings = await run_classifiers(
         nodes=[("n1", "some text")],
         openai_key="k",
-        perspective_key=None,
         client=_client(handler),
     )
     block = next(f for f in findings if f.verdict is Verdict.BLOCK)
@@ -1032,33 +743,10 @@ async def test_openai_brightline_finding_has_severity() -> None:
 
 
 @pytest.mark.unit
-async def test_perspective_graded_finding_has_severity_from_score() -> None:
-    def handler(_request: httpx.Request) -> httpx.Response:
-        return httpx.Response(
-            200,
-            json={
-                "attributeScores": {
-                    "TOXICITY": {"summaryScore": {"value": 0.6}},
-                }
-            },
-        )
-
-    findings = await run_classifiers(
-        nodes=[("n1", "text")],
-        openai_key=None,
-        perspective_key="k",
-        client=_client(handler),
-    )
-    toxicity = next(f for f in findings if f.category == "toxicity")
-    assert toxicity.severity is FindingSeverity.MEDIUM
-
-
-@pytest.mark.unit
 async def test_degraded_classifier_finding_has_fixed_medium_severity() -> None:
     findings = await run_classifiers(
         nodes=[("n1", "text")],
         openai_key="k",
-        perspective_key=None,
         client=_client(lambda _r: httpx.Response(500)),
     )
     degraded = next(f for f in findings if f.category == "classifier_degraded")
@@ -1071,7 +759,6 @@ async def test_incomplete_coverage_finding_has_fixed_high_severity() -> None:
     findings = await run_classifiers(
         nodes=[("n1", "text")],
         openai_key="k",
-        perspective_key=None,
         client=_client(lambda _r: httpx.Response(500)),
     )
     coverage = next(

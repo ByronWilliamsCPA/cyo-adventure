@@ -400,6 +400,18 @@ def test_as_source_valid_string_returns_source() -> None:
 
 
 @pytest.mark.unit
+def test_as_source_perspective_string_returns_source() -> None:
+    """A historical Perspective source string still parses.
+
+    Google Perspective was retired as a Stage-0 signal source (ratified
+    sunset) and run_classifiers no longer produces it, but old persisted
+    JSONB reports still carry source='perspective' findings and must keep
+    deserializing (Source.PERSPECTIVE stays in the enum for this reason).
+    """
+    assert review_surface._as_source("perspective") is Source.PERSPECTIVE
+
+
+@pytest.mark.unit
 def test_as_source_non_string_value_rejected() -> None:
     """A non-string source value (corrupt-at-rest JSON) is rejected outright,
     without ever reaching the Source(value) enum lookup."""

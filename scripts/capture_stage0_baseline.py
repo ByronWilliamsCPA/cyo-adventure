@@ -96,14 +96,15 @@ _OPENAI_URL = "https://api.openai.com/v1/moderations"
 _OPENAI_MODEL = "omni-moderation-latest"
 _TIMEOUT = 30.0
 
-# Mirrors the bright-line literal in
-# ``classifiers._perspective_attribute_finding``: SEXUALLY_EXPLICIT at or above
-# this score is a hard BLOCK, every other attribute is graded against
+# Historical literal: mirrored the bright-line threshold that
+# ``classifiers._perspective_attribute_finding`` used before Google Perspective
+# was retired as a Stage-0 signal source (ratified sunset). That function no
+# longer exists in classifiers.py, so this constant no longer tracks a live
+# classifier; it is kept only so this script's own pre-sunset scoring path
+# (used for historical baseline comparisons) still runs. SEXUALLY_EXPLICIT at
+# or above this score was a hard BLOCK, every other attribute graded against
 # ``_ADVISORY_SCORE_FLOOR``. Recorded in the artifact because raw scores are
 # meaningless without the boundary they were read against.
-# #ASSUME: data-integrity: this literal tracks the live classifier's own.
-# #VERIFY: tests/unit/test_capture_stage0_baseline.py::TestDecisionBoundary::
-# test_recorded_perspective_brightline_matches_the_live_classifier.
 _PERSPECTIVE_BRIGHTLINE_ATTRIBUTE = "SEXUALLY_EXPLICIT"
 _PERSPECTIVE_BRIGHTLINE_MIN_SCORE = 0.8
 
@@ -421,8 +422,10 @@ async def _score_perspective(
     # downstream as perspective_ok, because that dict is truthy: a 300-passage
     # run against a throttled or post-sunset Perspective wrote
     # "perspective_ok: 300" over 300 empty rows, printed no warning, and exited
-    # 0. The same defect class is live in classifiers._run_perspective; it is
-    # tracked separately and deliberately not changed here.
+    # 0. Google Perspective was later retired as a Stage-0 signal source
+    # (ratified sunset) and classifiers.py no longer has a live Perspective
+    # path at all; this script's own pre-sunset scoring path is unaffected and
+    # deliberately not changed here.
     # #VERIFY: tests/unit/test_capture_stage0_baseline.py::TestProviderPayloads
     # ::test_perspective_error_shaped_body_is_recorded_as_a_failure and
     # ::test_perspective_null_attribute_scores_is_recorded_as_a_failure.

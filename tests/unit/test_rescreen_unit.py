@@ -330,7 +330,7 @@ async def test_provider_error_on_one_book_does_not_abort_sweep(
     calls = {"n": 0}
 
     async def _flaky_classifiers(
-        *, nodes: object, openai_key: object, perspective_key: object, client: object
+        *, nodes: object, openai_key: object, client: object
     ) -> list[Finding]:
         calls["n"] += 1
         if calls["n"] == 1:

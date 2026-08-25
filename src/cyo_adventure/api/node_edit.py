@@ -136,7 +136,10 @@ _MAX_REVIEW_TOKENS = 1024
 # the whole story) must survive an edit untouched. Neither is the retired
 # Stage 2's Source.LLM_READABILITY, which no stage produces anymore but which
 # old persisted reports still carry and must keep carrying (stages.py's
-# additive-safe contract, design doc 2.1).
+# additive-safe contract, design doc 2.1). Source.PERSPECTIVE is a second
+# retired source (ratified sunset; run_classifiers no longer calls
+# Perspective), kept here so a stale historical Perspective finding on the
+# edited node is still superseded by this refresh rather than fossilized.
 _REFRESHED_SOURCES = frozenset({Source.OPENAI, Source.PERSPECTIVE, Source.LLM_SAFETY})
 
 
@@ -655,9 +658,9 @@ async def edit_node(
     # #CRITICAL: security: the classifier call below is a distinct egress path
     # from the LLM safety stage (which is protected structurally by
     # PiiGuardedProvider via guarded_review). Screen the edited node text here
-    # so OpenAI Moderation and Google Perspective get the same guard the
-    # generation-time moderation pipeline applies (moderation/pipeline.py),
-    # instead of receiving an admin/guardian's raw edited prose unconditionally.
+    # so OpenAI Moderation gets the same guard the generation-time moderation
+    # pipeline applies (moderation/pipeline.py), instead of receiving an
+    # admin/guardian's raw edited prose unconditionally.
     # #VERIFY: tests/unit/test_node_edit.py::test_classifier_call_blocked_on_pii_in_edited_text.
     assert_prompt_pii_safe(node_text, forbidden=pii)
     fresh_findings: list[Finding] = []
@@ -666,7 +669,6 @@ async def edit_node(
             await run_classifiers(
                 nodes=[(node_id, node_text)],
                 openai_key=settings.openai_api_key,
-                perspective_key=settings.perspective_api_key,
                 client=client,
             )
         )

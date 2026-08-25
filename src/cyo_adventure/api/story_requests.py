@@ -428,7 +428,6 @@ async def create_story_request(
         screen_input,
         child_names=child_names,
         openai_key=settings.openai_api_key,
-        perspective_key=settings.perspective_api_key,
     )
     status = "blocked" if result.blocked else "pending"
     flags_payload = {
@@ -694,7 +693,6 @@ async def create_authored_story_request(
         screen_input,
         child_names=child_names,
         openai_key=settings.openai_api_key,
-        perspective_key=settings.perspective_api_key,
     )
 
     if not result.blocked and body.series_title is not None:
@@ -1043,7 +1041,6 @@ async def approve_story_request_endpoint(
             body.series_title,
             child_names=child_names,
             openai_key=settings.openai_api_key,
-            perspective_key=settings.perspective_api_key,
         )
         if title_screen.blocked:
             # #CRITICAL: security: never echo blocked content back; the message

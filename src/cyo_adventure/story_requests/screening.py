@@ -60,7 +60,6 @@ async def screen_request_text(
     *,
     child_names: frozenset[str],
     openai_key: str | None,
-    perspective_key: str | None,
 ) -> ScreeningResult:
     """Screen a child's request text; return whether it is blocked plus flags.
 
@@ -68,7 +67,6 @@ async def screen_request_text(
         request_text: The child's raw free-text request.
         child_names: The family's real child display names (PII guard input).
         openai_key: OpenAI Moderation key, or None to skip.
-        perspective_key: Perspective key, or None to skip.
 
     Returns:
         ScreeningResult: blocked flag and redacted guardian flags.
@@ -108,7 +106,6 @@ async def screen_request_text(
         findings = await run_classifiers(
             nodes=[("request", request_text)],
             openai_key=openai_key,
-            perspective_key=perspective_key,
             client=client,
             # One item, and intake is documented fail-open with the guardian as
             # the human gate, so a coverage FLAG here would only restate the

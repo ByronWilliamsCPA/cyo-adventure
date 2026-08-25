@@ -21,15 +21,9 @@ from typing import TYPE_CHECKING, cast
 
 import pytest
 
-from cyo_adventure.moderation.classifiers import (
-    PERSPECTIVE_URL,
-    _perspective_attribute_finding,  # pyright: ignore[reportPrivateUsage]
-)
-from cyo_adventure.moderation.report import Verdict
+from cyo_adventure.moderation.classifiers import PERSPECTIVE_URL
 from scripts.capture_stage0_baseline import (
     _OPENAI_URL,  # pyright: ignore[reportPrivateUsage]
-    _PERSPECTIVE_BRIGHTLINE_ATTRIBUTE,  # pyright: ignore[reportPrivateUsage]
-    _PERSPECTIVE_BRIGHTLINE_MIN_SCORE,  # pyright: ignore[reportPrivateUsage]
     MalformedProviderResponseError,
     Passage,
     PassageScores,
@@ -462,25 +456,6 @@ class TestDecisionBoundary:
         assert isinstance(boundary, dict)
         assert boundary["advisory_score_floor"] == _ADVISORY_SCORE_FLOOR
         assert "sexual/minors" in boundary["openai_brightline_categories"]
-
-    @pytest.mark.unit
-    def test_recorded_perspective_brightline_matches_the_live_classifier(self) -> None:
-        """The recorded threshold is a literal copy; pin it to the real gate."""
-        attribute = _PERSPECTIVE_BRIGHTLINE_ATTRIBUTE
-        at_threshold = _perspective_attribute_finding(
-            "n1",
-            attribute,
-            {"summaryScore": {"value": _PERSPECTIVE_BRIGHTLINE_MIN_SCORE}},
-        )
-        just_below = _perspective_attribute_finding(
-            "n1",
-            attribute,
-            {"summaryScore": {"value": _PERSPECTIVE_BRIGHTLINE_MIN_SCORE - 0.01}},
-        )
-        assert at_threshold is not None
-        assert at_threshold.verdict is Verdict.BLOCK
-        assert just_below is not None
-        assert just_below.verdict is not Verdict.BLOCK
 
 
 class TestProviderPayloads:

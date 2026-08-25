@@ -500,19 +500,20 @@ async def _rescreen_one(
             # ::test_sentinel_free_body_is_unaffected_by_strip.
             nodes = [(node.id, strip_sentinels(node.body)) for node in story.nodes]
             # #CRITICAL: external-resources: run_classifiers is the same
-            # helper moderation/pipeline.py uses; a missing key skips that
-            # classifier entirely (both None -> []), and a per-call HTTP
-            # failure is caught INSIDE run_classifiers and logged, never
-            # raised. This mirrors "how moderation/pipeline.py handles
-            # provider absence" per the task brief; no separate
-            # provider-absence branch is needed here.
+            # helper moderation/pipeline.py uses; a missing key skips the
+            # classifier entirely (None -> []), and a per-call HTTP failure is
+            # caught INSIDE run_classifiers and logged, never raised. This
+            # mirrors "how moderation/pipeline.py handles provider absence"
+            # per the task brief; no separate provider-absence branch is
+            # needed here. OpenAI is the only classifier run_classifiers
+            # calls: Google Perspective was retired as a Stage-0 signal
+            # source (ratified sunset).
             # #VERIFY: tests/unit/test_moderation_classifiers.py covers the
             # per-call catch; test_rescreen_unit.py::
             # test_missing_classifier_keys_skips_classifiers_not_error.
             classifier_findings = await run_classifiers(
                 nodes=nodes,
                 openai_key=ctx.settings.openai_api_key,
-                perspective_key=ctx.settings.perspective_api_key,
                 client=ctx.client,
             )
             has_classifier_block = any(
