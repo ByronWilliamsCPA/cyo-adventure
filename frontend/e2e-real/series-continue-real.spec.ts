@@ -75,9 +75,22 @@ test('the seeded child continues a real series into book 2', async ({ page }) =>
   await expect(continueButton).toBeVisible()
   await continueButton.click()
 
-  // Book 2 opens at its declared series entry node.
+  // Book 2 opens at its declared series entry node (metadata.series
+  // .series_entry_node = n_e2_start), which is single-choice and therefore
+  // flows into n_e2_decision1 at this band, so the opening stop renders BOTH
+  // bodies concatenated.
+  //
+  // The expected prose is book 2's OWN, from _BOOK_PROSE[1] in
+  // scripts/seed_dev_data.py, which is the source of truth for these strings.
+  // Until 2026-08-23 every node body was shared between the two books and
+  // differed only by the "Ember Trail N: " title prefix; the SR-10 diversity
+  // fix gave book 2 its own leg of the journey (a river crossing rather than a
+  // ridge trail), and this assertion was left expecting book 1's
+  // "the trail begins." Keep these strings in step with _BOOK_PROSE.
   await expect(page).toHaveURL(/\/read\/[^/]+\/s_dev_ember_2\//)
-  await expect(page.getByTestId('passage-body')).toContainText('Ember Trail 2: the trail begins.')
+  await expect(page.getByTestId('passage-body')).toContainText(
+    'Ember Trail 2: the river crossing waits below.'
+  )
 
   // Walk book 2's PLAIN fork, never its brave one, to reach the shared hub
   // (n_e2_hub) where the gated choice lives. This is deliberate: book 2 has
@@ -117,7 +130,11 @@ test('book 2 played fresh, without a carried courage, hides the gated choice', a
   await page.getByRole('link', { name: 'Ember Trail 2' }).click()
   await expect(page).toHaveURL(/\/read\/[^/]+\/s_dev_ember_2\//)
   await expect(page.getByTestId('reader')).toBeVisible()
-  await expect(page.getByTestId('passage-body')).toContainText('Ember Trail 2: the trail begins.')
+  // Book 2's own entry prose, per _BOOK_PROSE[1]; see the note in the test
+  // above for why this is not book 1's "the trail begins."
+  await expect(page.getByTestId('passage-body')).toContainText(
+    'Ember Trail 2: the river crossing waits below.'
+  )
 
   // n_e2_start's single prelude choice is flowed, not tapped (band 10-13), so
   // the opening stop already reaches n_e2_decision1 and its choices are on
@@ -141,7 +158,7 @@ test('book 2 played fresh, without a carried courage, hides the gated choice', a
   // the node first makes a wrong-node walk fail loudly here instead of
   // letting the count-0 check pass vacuously.
   await expect(page.getByTestId('passage-body')).toContainText(
-    'Ember Trail 2: the trail opens onto a ridge.'
+    'Ember Trail 2: both bridges land on the same warm rock.'
   )
   await expect(page.getByTestId('choice-c_n_e2_explore')).toBeVisible()
   await expect(page.getByTestId('choice-c_n_e2_rush')).toBeVisible()
