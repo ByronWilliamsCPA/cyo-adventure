@@ -1,0 +1,164 @@
+# Weekly unusable-moderation-report detector: runs
+# scripts/check_moderation_report_health.py, which checks every current storybook
+# version (published: current_published_version; in_review: latest version) with
+# cyo_adventure.moderation.report.moderation_report_unusable and exits nonzero on any
+# hit. Defense-in-depth behind the approval gate in
+# publishing/service.py::approve(), which already refuses to approve a version whose
+# report is unusable: that gate stops a bad approval at the moment it would happen,
+# this catches a recurrence (a future mock-reviewer regression, or a book that reached
+# "published" before the gate existed) the week it happens instead of at the next
+# human review.
+#
+# -----------------------------------------------------------------------
+# Required secret on the `production` GitHub Environment (same secret
+# notification-digest.yml uses; this job also reads through the app's own ORM):
+# -----------------------------------------------------------------------
+#
+#   CYO_ADVENTURE_DATABASE_URL   The app's OWN runtime connection string (asyncpg DSN),
+#                                 authenticating as the least-privilege cyo_api role
+#                                 per ADR-021/ADR-022, i.e. the SAME connection the
+#                                 deployed app itself uses.
+#
+#   gh secret set CYO_ADVENTURE_DATABASE_URL --env production
+#
+# Failure alerting: mirrors notification-digest.yml's "file/comment on a labelled
+# ci-failure issue" pattern (docs/operations/runbook.md section 7 documents the
+# convention), with a distinct issue marker so the two never collide.
+#
+# Injection posture: this workflow reads no GitHub event input (no issue/PR title or
+# body, no commit message, no ref). The alert job's github-script interpolates only
+# context.serverUrl, context.repo, and context.runId (all runner-supplied, never
+# attacker-controlled) plus a locally-computed ISO date string, the same posture
+# supabase-backup.yml documents for its own alert job.
+name: Moderation report health
+
+on:
+  schedule:
+    # 06:00 UTC every Monday. Spread across the week from the other scheduled jobs
+    # (supabase-backup.yml 08:00 daily, notification-digest.yml 09:00 daily).
+    - cron: "0 6 * * 1"
+  workflow_dispatch: {}
+
+permissions: {}
+
+concurrency:
+  # A health-check pass is read-only and idempotent to re-run (it writes nothing), so
+  # like notification-digest.yml there is no destructive-interleaving risk; one group
+  # just avoids two overlapping runs.
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Run health check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+
+      - name: Install backend (api extra)
+        run: uv sync --extra api
+
+      - name: Run health check
+        env:
+          # Scoped to this single step: no other step in this job needs it.
+          CYO_ADVENTURE_DATABASE_URL: ${{ secrets.CYO_ADVENTURE_DATABASE_URL }}
+        run: uv run python scripts/check_moderation_report_health.py
+
+  alert:
+    name: Alert on failure
+    needs: check
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: File or comment on the pinned issue
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const marker = '[moderation-report-health]'
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure',
+              per_page: 100,
+            })
+            const existing = issues.find((issue) => issue.title.startsWith(marker))
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Scheduled moderation report health check failed again on ${today}. Run: ${runUrl}`,
+              })
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `${marker} scheduled moderation report health check failing`,
+                labels: ['ci-failure'],
+                body: [
+                  'The scheduled `Moderation report health` workflow',
+                  '(`.github/workflows/moderation-report-health.yml`) failed.',
+                  '',
+                  'This runs scripts/check_moderation_report_health.py, which checks every',
+                  'current storybook version (published: current_published_version; in_review:',
+                  'latest version) for a moderation report that carries no genuine content',
+                  'judgment (cyo_adventure.moderation.report.moderation_report_unusable). A',
+                  'failure here means one of:',
+                  '',
+                  '- the `CYO_ADVENTURE_DATABASE_URL` secret is missing or invalid;',
+                  '- the database is unreachable;',
+                  '- the run found at least one book with an unusable moderation report',
+                  '  (a mock-reviewer regression, or a book the backfill sweep has not',
+                  '  covered yet).',
+                  '',
+                  `First failing run: ${runUrl}`,
+                  `Date: ${today}`,
+                  '',
+                  'Triage: read the run log first. A finding prints one line per hit',
+                  '(storybook id, version, status, moderated_at) before the',
+                  '`unusable_reports={n}` summary; an exception instead of a summary line',
+                  'means the run itself failed rather than finding a genuine hit. Either way,',
+                  'no child reader is affected merely by this alert: the approval gate in',
+                  'publishing/service.py::approve() already blocks approving a version with an',
+                  'unusable report, so a hit here means a book reached its current state before',
+                  'that gate applied, or the gate itself needs attention.',
+                  '',
+                  'This issue stays open and accumulates one comment per failing run until',
+                  'someone resolves the underlying problem and closes it; the next failure',
+                  'after that opens a fresh issue.',
+                ].join('\n'),
+              })
+            }
