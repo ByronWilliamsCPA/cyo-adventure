@@ -512,6 +512,27 @@ exist in production. Design:
 Stage A is deliberately shippable alone: it prevents every future flood and
 makes the failure class visible, even if B's surface redesign takes longer.
 
+### 6.1 Delivery status as of 2026-08-25
+
+Read against live source at `bfd47f54` and live production data. This table
+records what has landed, not what was intended.
+
+| Stage | Status | Evidence |
+| --- | --- | --- |
+| **A** | Delivered | Per-node fail-safe collapse into one story-level structural finding (`moderation/stages.py`, the `reviewer_unavailable` concern in `CONCERN_TAXONOMY`); `reviewer_independent` written by the pipeline rather than assumed (`moderation/pipeline.py`) |
+| **B** | Delivered | `moderation/synthesis.py` (deterministic post-review merge), `api/review_surface.py` (PASS filtered before ranking, verdict-then-severity-then-node-count order, structural / low-advisory / ranked split, admin-only noise floor), `_VALIDATOR_RULE_IDS = {RL-13, PL-19}` per decision 1 |
+| **C** | Partly delivered | Stage-0 baseline captured 2026-08-01 (`safety/stage0-baseline-2026-08-01.json`). Perspective emission is NOT retired: `perspective` still appears in `core/config.py`, `moderation/pipeline.py`, `story_requests/screening.py`, `api/story_requests.py`, `api/reading_time.py`. The Modal guard-model eval was not verified in this pass |
+| **D** | Code half delivered, ops run pending | Entry point `api/remoderate.py` (#753, widened to `in_review`), sweep selection `scripts/remoderate_books.py` (`--in-review`, `--book-id`, dry-run default). **The sweep has never run:** production's newest `storybook_version` row is dated 2026-07-28 and all seventeen reports still date from 2026-07-21 |
+| **QA corpus** | Fixtures authored | `safety/moderation-qa-corpus.json`, `scripts/seed_moderation_qa.py`, `scripts/moderation_qa_scorecard.py`. Whether it has been seeded into staging was not verified here |
+
+**What the delivered stages do not yet buy.** A and B change what a reviewer is
+shown, and the seventeen stored reports predate both, so nothing a reviewer sees
+today reflects them. The census in
+[moderation-review-current-state-2026-08-25.md](./moderation-review-current-state-2026-08-25.md)
+also shows the backlog's dominant problem is not flood but absence: twelve books
+carry no real verdicts at all. Stage D's ops run, not further surface work, is
+what converts the delivered redesign into a reviewable backlog.
+
 ## 7. Decisions requested from the owner
 
 1. **Stage-2 disposition**: **DECIDED 2026-07-29: option (a).** Retire the
