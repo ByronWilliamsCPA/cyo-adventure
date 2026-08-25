@@ -75,12 +75,15 @@ PERSPECTIVE_ATTRIBUTES: tuple[str, ...] = (
 # baseline at docs/planning/safety/stage0-baseline-2026-08-01.json refutes that
 # figure for Perspective's own attributes, which is now moot for this module
 # but still informs scripts/capture_stage0_baseline.py's own calibration work.
-# #ASSUME: security: 0.01 was calibrated against a mix of both classifiers'
-# historical scores and has not been re-derived for OpenAI alone now that it is
-# the only signal this module produces, so the advisory surface may be noisier
-# or quieter than intended.
-# #VERIFY: recalibrate against an OpenAI-only slice of the Stage-0 baseline;
-# advisories never gate, so the gap is surface noise only.
+#
+# Recalibrated 2026-08-25 against the OpenAI-only slice of that same baseline:
+# no single scalar in {0.01, 0.02, 0.05, 0.10} satisfies both the clean-noise
+# target (<= 0.2 advisories/node; only 0.10 clears it) and zero adversarial-
+# signal loss (0.10 loses 10 of 14 pairs, and the clean noise it removes is
+# concentrated in violence/violence-graphic while the losses it causes hit
+# self-harm*/sexual*). The owner ruled to keep 0.01 and move to per-category
+# floors instead of a single scalar; tracked at UW-C377 in
+# docs/planning/unscheduled-work-register.md.
 _ADVISORY_SCORE_FLOOR = 0.01
 
 # Category slug for a "the automated net was down" advisory finding. It never
