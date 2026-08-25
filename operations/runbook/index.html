@@ -1074,6 +1074,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#25-applying-pending-migrations-to-production-drift-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Applying pending migrations to production (drift recovery)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3730,6 +3741,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#25-applying-pending-migrations-to-production-drift-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Applying pending migrations to production (drift recovery)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4182,6 +4204,166 @@ error anyone sees. <code>pg_indexes</code> is no help, since it has no validity 
 the creating statement, and do not leave it in place.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>psql<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DATABASE_URL</span><span class="s2">&quot;</span><span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;drop index concurrently if exists &quot;public&quot;.&quot;&lt;index_name&gt;&quot;;&#39;</span>
 </span></code></pre></div>
+<h3 id="25-applying-pending-migrations-to-production-drift-recovery">2.5 Applying pending migrations to production (drift recovery)<a class="headerlink" href="#25-applying-pending-migrations-to-production-drift-recovery" title="Permanent link">&para;</a></h3>
+<p>Production's schema deploy is decoupled from its app deploy, and nothing compares the two. The app
+image auto-deploys on merge; <code>supabase-production.yml</code> is <code>workflow_dispatch</code> only and gated behind
+the <code>production</code> GitHub Environment's required reviewer. A run of merged-but-unapplied migrations can
+therefore accumulate silently for weeks while the deployed app declares ORM columns and tables the
+live database does not have.</p>
+<p><strong>The readiness probe cannot tell you this.</strong> <code>/api/v1/health/ready</code>'s <code>database</code> check opens a
+connection and returns <code>status: true</code>; it never inspects the schema. SQLAlchemy validates nothing at
+import or at startup either, so a mapped column that does not exist is a runtime error on the first
+query that touches it, not a boot failure. The observable symptom is a 500 on real traffic against a
+service whose health endpoint is green.</p>
+<p><strong>Detect drift before you need to.</strong> Compare the applied head against the repo:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># The ref you are about to deploy. Measure everything against THIS, not against</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="c1"># origin/main: the dispatch below takes a ref, and a merge landing between the</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="c1"># check and the dispatch would otherwise change the migration set silently.</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nv">REF</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">REF</span><span class="k">:-</span><span class="nv">origin</span><span class="p">/main</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="c1"># Applied on PRODUCTION. Do NOT use --linked here: this checkout is linked to</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="c1"># STAGING (Pre-flight step 1 records why), so --linked reports the wrong</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="c1"># database and the comparison below would come out clean against the wrong one.</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="c1"># SUPABASE_DB_URL is the production Supavisor session-mode pooler string on port</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="c1"># 5432, defined in [Section 6](#6-backup-and-restore); the direct host is</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="c1"># IPv6-only and is unreachable from most operator networks.</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>supabase<span class="w"> </span>migration<span class="w"> </span>list<span class="w"> </span>--db-url<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SUPABASE_DB_URL</span><span class="s2">&quot;</span>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="c1"># What that ref carries. Anything listed here that the command above does not show is pending.</span>
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>git<span class="w"> </span>ls-tree<span class="w"> </span>--name-only<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REF</span><span class="s2">&quot;</span><span class="w"> </span>supabase/migrations/
+</span></code></pre></div>
+<h4 id="pre-flight">Pre-flight<a class="headerlink" href="#pre-flight" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Take a dump first, and do not assume one exists.</strong> <code>supabase-backup.yml</code> is scheduled nightly,
+   but a scheduled run that never produced a usable artifact is not a backup. Confirm the state of
+   the tiered R2 backups per <a href="#6-backup-and-restore">Section 6</a> before you rely on one, and take a
+   fresh dump regardless. Migrations are forward-only (ADR-012): there is no downgrade script, and
+   the only recovery from a bad migration is a corrective roll-forward or a restore.</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Roles, schema, and data as three files, so a partial restore is possible.</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="c1"># --db-url, NOT --linked: this checkout is linked to STAGING, so --linked here</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="c1"># would dump staging and leave you believing you held a production restore point.</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># SUPABASE_DB_URL is the production session-mode pooler string (Section 6).</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="nb">set</span><span class="w"> </span>-euo<span class="w"> </span>pipefail
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="nv">ts</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>date<span class="w"> </span>-u<span class="w"> </span>+%Y%m%dT%H%M%SZ<span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="nv">out</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>mktemp<span class="w"> </span>-d<span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>supabase<span class="w"> </span>db<span class="w"> </span>dump<span class="w"> </span>--db-url<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SUPABASE_DB_URL</span><span class="s2">&quot;</span><span class="w"> </span>--role-only<span class="w"> </span>&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$out</span><span class="s2">/preflight-</span><span class="si">${</span><span class="nv">ts</span><span class="si">}</span><span class="s2">-roles.sql&quot;</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>supabase<span class="w"> </span>db<span class="w"> </span>dump<span class="w"> </span>--db-url<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SUPABASE_DB_URL</span><span class="s2">&quot;</span><span class="w">             </span>&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$out</span><span class="s2">/preflight-</span><span class="si">${</span><span class="nv">ts</span><span class="si">}</span><span class="s2">-schema.sql&quot;</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>supabase<span class="w"> </span>db<span class="w"> </span>dump<span class="w"> </span>--db-url<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SUPABASE_DB_URL</span><span class="s2">&quot;</span><span class="w"> </span>--data-only<span class="w"> </span>&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$out</span><span class="s2">/preflight-</span><span class="si">${</span><span class="nv">ts</span><span class="si">}</span><span class="s2">-data.sql&quot;</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="c1"># A dump that failed can still leave a file. Refuse to proceed on an empty one.</span>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="k">for</span><span class="w"> </span>f<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$out</span><span class="s2">/preflight-</span><span class="si">${</span><span class="nv">ts</span><span class="si">}</span><span class="s2">&quot;</span>-*.sql<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">  </span><span class="o">[</span><span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;EMPTY DUMP, do not dispatch: </span><span class="nv">$f</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="p">&amp;</span><span class="m">2</span><span class="p">;</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span><span class="p">;</span><span class="w"> </span><span class="o">}</span>
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="k">done</span>
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;dumps in </span><span class="nv">$out</span><span class="s2">&quot;</span>
+</span></code></pre></div>
+<p><strong>These are not a platform backup, and the distinction decides what they can restore.</strong>
+   <code>supabase db dump</code> covers the application schema and cluster roles. It does NOT include the
+   Supabase-managed schemas (<code>auth</code>, <code>storage</code>) or Storage objects. <code>auth.users</code> is therefore
+   absent, and that table is the authoritative source for adult account emails (<code>public.user.email</code>
+   is NULL for the two oldest adults). Treat these files as an application-table restore point;
+   anything that needs auth or Storage back has to come from Supabase's own managed backups.</p>
+<p>Store these off the runner and off the operator laptop's temp directory. They contain the full
+   production dataset, including children's profile data, so they are subject to the same handling
+   rules as any production extract (see <a href="#8-secrets-and-keys-inventory">Section 8</a>).</p>
+<p><strong>Check that you can actually run this before you need it.</strong> On 2026-08-24 this step was not
+   executable: the local checkout is <code>supabase link</code>ed to staging, no operator held
+   <code>SUPABASE_DB_PASSWORD</code> for production, and <code>gh secret list --env backups</code> returned nothing, so
+   <code>supabase-backup.yml</code> could not have produced an artifact on any night it ran. Do not close that
+   gap by adding a dump-and-upload step to a workflow: this repository is <strong>public</strong>, GitHub
+   workflow artifacts are readable by anyone with repo read access, and a <code>supabase db dump</code> is the
+   entire production dataset. A restore point has to land somewhere access-controlled (the R2
+   backup bucket, or Supabase's own managed backups), never in CI artifact storage.</p>
+<p>When no dump is possible, do not proceed blind and do not proceed unbounded: read the pending
+   set for destructive verbs and take a targeted snapshot of exactly what they touch. On the
+   2026-08-24 apply, all 18 pending migrations were scanned; every <code>DROP</code> was a
+   drop-then-recreate of a constraint, policy, or index, and the only data-touching statements were
+   two <code>UPDATE</code>s and one <code>DELETE FROM provider_model_allowlist</code>. Nothing touched child, family,
+   story, or reading data, so a five-row snapshot of that one table, rendered as a replayable
+   <code>INSERT</code>, was a proportionate restore point. That reasoning is the substitute for a dump, and it
+   only works because it was written down before the dispatch.</p>
+<ol>
+<li><strong>Confirm staging is green on the same migration set.</strong> The workflow's own RUN POLICY requires it:
+   only dispatch production after the staging deploy of the same migrations and config has succeeded.
+   Check the most recent successful <code>Deploy Supabase Migrations (staging)</code> run and compare its
+   <strong>migration set</strong> against the ref you are dispatching, not merely its ancestry. An ancestor check
+   passes vacuously in the case that matters: if staging succeeded at commit A and you dispatch
+   descendant B, A is still an ancestor of B even when B adds migrations staging never ran.</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nv">STAGING_SHA</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>gh<span class="w"> </span>run<span class="w"> </span>list<span class="w"> </span>--workflow<span class="o">=</span>supabase-staging.yml<span class="w"> </span>--status<span class="o">=</span>success<span class="w"> </span>--limit<span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span>--json<span class="w"> </span>headSha<span class="w"> </span>--jq<span class="w"> </span><span class="s1">&#39;.[0].headSha&#39;</span><span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>diff<span class="w"> </span>&lt;<span class="o">(</span>git<span class="w"> </span>ls-tree<span class="w"> </span>--name-only<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$STAGING_SHA</span><span class="s2">&quot;</span><span class="w"> </span>supabase/migrations/<span class="o">)</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">     </span>&lt;<span class="o">(</span>git<span class="w"> </span>ls-tree<span class="w"> </span>--name-only<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REF</span><span class="s2">&quot;</span><span class="w">         </span>supabase/migrations/<span class="o">)</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">  </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;same migration set&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;DIFFERENT: staging did not validate this set&quot;</span>
+</span></code></pre></div>
+<ol>
+<li><strong>Read the pending set, do not just count it.</strong> Migrations that create indexes concurrently,
+   rewrite constraints, or backfill data have post-deploy checks of their own; several carry a
+   <code>#VERIFY</code> line naming the check. Collect those before dispatching, because the push reports success
+   whether or not they hold.</li>
+</ol>
+<h4 id="dispatch">Dispatch<a class="headerlink" href="#dispatch" title="Permanent link">&para;</a></h4>
+<p>The push runs only through the workflow, never from an operator shell against production. The
+workflow asserts <code>SUPABASE_PROJECT_ID</code> is non-empty and matches <code>[remotes.production].project_id</code> in
+<code>supabase/config.toml</code> before it pushes anything, which is the guard that keeps a mistyped or
+inherited project reference from pointing the push at the wrong database.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># --ref pins the dispatch to the commit staging validated above. Without it the</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="c1"># workflow runs the DEFAULT BRANCH, so a merge landing in between silently</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="c1"># changes the migration set after the pre-flight checks passed.</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>gh<span class="w"> </span>workflow<span class="w"> </span>run<span class="w"> </span>supabase-production.yml<span class="w"> </span>--ref<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REF</span><span class="s2">&quot;</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>gh<span class="w"> </span>run<span class="w"> </span>watch<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>gh<span class="w"> </span>run<span class="w"> </span>list<span class="w"> </span>--workflow<span class="o">=</span>supabase-production.yml<span class="w"> </span>--limit<span class="o">=</span><span class="m">1</span><span class="w"> </span>--json<span class="w"> </span>databaseId<span class="w">   </span>--jq<span class="w"> </span><span class="s1">&#39;.[0].databaseId&#39;</span><span class="k">)</span><span class="s2">&quot;</span>
+</span></code></pre></div>
+<p>The run pauses for the <code>production</code> environment's required reviewer. Note the two deliberate
+differences from staging: production runs <code>supabase db push</code> <strong>without</strong> <code>--include-all</code>, so an
+out-of-order migration file is skipped rather than applied, and the concurrency group
+<code>supabase-production-deploy</code> sets <code>cancel-in-progress: false</code>, so a second dispatch queues behind the
+first instead of interrupting a half-applied push.</p>
+<h4 id="post-deploy-verification">Post-deploy verification<a class="headerlink" href="#post-deploy-verification" title="Permanent link">&para;</a></h4>
+<p>A green workflow run is not evidence the schema is correct. Run all four checks:</p>
+<ol>
+<li>
+<p><strong>Applied head matches the repo.</strong> Re-run the two commands under "Detect drift" above and confirm
+   the pending set is now empty.</p>
+</li>
+<li>
+<p><strong>Every concurrently-built index is valid.</strong> Run the <code>indisvalid</code> query in
+   <a href="#24-schema-migrations">Section 2.4</a>. An empty result is the pass. This matters whenever the pushed
+   set contains a <code>CREATE INDEX CONCURRENTLY</code>, which succeeds and delivers nothing when it fails
+   partway.</p>
+</li>
+<li>
+<p><strong>Constraint-widening migrations actually widened the constraint.</strong> A migration guarded by
+   <code>IF EXISTS(... NOT LIKE ...)</code> exits 0 having done nothing when the constraint is absent as well as
+   when it is already current, so "the migration ran" is not the same claim as "the constraint holds
+   the new member". Read the constraint rather than the migration history:</p>
+</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>psql<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DATABASE_URL</span><span class="s2">&quot;</span><span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="s2">  select conname, pg_get_constraintdef(oid)</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="s2">  from pg_constraint</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="s2">  where conrelid = &#39;public.pipeline_event&#39;::regclass and contype = &#39;c&#39;;&quot;</span>
+</span></code></pre></div>
+<p>Confirm every event type the deployed code emits appears in <code>ck_pipeline_event_event_type</code>. Note
+   that the corrective fixes to nine already-applied migrations are inert on any database that has
+   already recorded those versions: the CLI tracks migrations by version, not by content, so an edited
+   migration never re-runs. If a member is missing on a database whose history says the migration
+   applied, the fix is a new roll-forward migration, not an edit to the old one.</p>
+<ol>
+<li><strong>An authenticated request actually succeeds.</strong> The schema checks above prove the columns exist;
+   only real traffic proves the deployed ORM and the live schema agree. Every authenticated adult
+   request resolves its principal through a <code>select</code> against <code>user</code>, so a single authenticated call is
+   a broad smoke test:</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># --connect-timeout/--max-time so a wedged origin fails instead of hanging, and an</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="c1"># explicit status test so the command&#39;s own exit code carries the verdict: bare</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="c1"># `curl -sS` exits 0 while printing 500, which reads as a pass in any script.</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="nv">code</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>curl<span class="w"> </span>-sS<span class="w"> </span>--connect-timeout<span class="w"> </span><span class="m">5</span><span class="w"> </span>--max-time<span class="w"> </span><span class="m">20</span><span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s1">&#39;%{http_code}&#39;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">&quot;</span><span class="w"> </span>https://cyo.williamshome.family/api/v1/me<span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$code</span><span class="s2">&quot;</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$code</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;200&quot;</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;NOT 200, drift is not cleared&quot;</span><span class="w"> </span>&gt;<span class="p">&amp;</span><span class="m">2</span><span class="p">;</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span><span class="p">;</span><span class="w"> </span><span class="o">}</span>
+</span></code></pre></div>
+<p>A 200 is the pass. A 500 here against a green <code>/health/ready</code> is the drift signature described at
+   the top of this section.</p>
 <h2 id="3-health-checks">3. Health checks<a class="headerlink" href="#3-health-checks" title="Permanent link">&para;</a></h2>
 <p><code>api/health.py</code> exposes three Kubernetes-style probes plus a load-balancer alias. The router is
 mounted twice (<code>app.py</code>), and <strong>which form you probe decides whether you learn anything</strong>:</p>
@@ -4736,21 +4918,21 @@ Seven days and twenty-three commits passed before anyone noticed the release PRs
 <p><strong>Detection.</strong> <code>propose</code>'s "Check release state is in sync" step
 (<code>scripts/check_release_tag_sync.py</code>) now fails the run on exactly this condition, so a repeat
 surfaces on the next scheduled run rather than a week later. To check by hand:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nv">VERSION</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>grep<span class="w"> </span>-m1<span class="w"> </span>-Po<span class="w"> </span><span class="s1">&#39;^version = &quot;\K[^&quot;]+&#39;</span><span class="w"> </span>pyproject.toml<span class="k">)</span><span class="s2">&quot;</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>git<span class="w"> </span>ls-remote<span class="w"> </span>--tags<span class="w"> </span>origin<span class="w"> </span><span class="s2">&quot;v</span><span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># empty output means DEADLOCKED</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nv">VERSION</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>grep<span class="w"> </span>-m1<span class="w"> </span>-Po<span class="w"> </span><span class="s1">&#39;^version = &quot;\K[^&quot;]+&#39;</span><span class="w"> </span>pyproject.toml<span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>git<span class="w"> </span>ls-remote<span class="w"> </span>--tags<span class="w"> </span>origin<span class="w"> </span><span class="s2">&quot;v</span><span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># empty output means DEADLOCKED</span>
 </span></code></pre></div>
 <p><strong>Fix.</strong> Create the missing release on the <code>chore(release):</code> commit; the next scheduled <code>propose</code>
 then computes the following version normally. Prefer re-running the job that failed, so the real
 code path (including the changelog extraction) is what executes:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>gh<span class="w"> </span>run<span class="w"> </span>list<span class="w"> </span>--workflow<span class="o">=</span>release.yml<span class="w"> </span>--limit<span class="w"> </span><span class="m">20</span><span class="w">   </span><span class="c1"># find the failed run</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>gh<span class="w"> </span>run<span class="w"> </span>rerun<span class="w"> </span>&lt;run-id&gt;<span class="w"> </span>--failed
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>gh<span class="w"> </span>release<span class="w"> </span>view<span class="w"> </span><span class="s2">&quot;v</span><span class="k">$(</span>grep<span class="w"> </span>-m1<span class="w"> </span>-Po<span class="w"> </span><span class="s1">&#39;^version = &quot;\K[^&quot;]+&#39;</span><span class="w"> </span>pyproject.toml<span class="k">)</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># confirm</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>gh<span class="w"> </span>run<span class="w"> </span>list<span class="w"> </span>--workflow<span class="o">=</span>release.yml<span class="w"> </span>--limit<span class="w"> </span><span class="m">20</span><span class="w">   </span><span class="c1"># find the failed run</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>gh<span class="w"> </span>run<span class="w"> </span>rerun<span class="w"> </span>&lt;run-id&gt;<span class="w"> </span>--failed
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>gh<span class="w"> </span>release<span class="w"> </span>view<span class="w"> </span><span class="s2">&quot;v</span><span class="k">$(</span>grep<span class="w"> </span>-m1<span class="w"> </span>-Po<span class="w"> </span><span class="s1">&#39;^version = &quot;\K[^&quot;]+&#39;</span><span class="w"> </span>pyproject.toml<span class="k">)</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># confirm</span>
 </span></code></pre></div>
 <p>Verify the unblock without side effects by dispatching a dry run, which computes the plan and skips
 only the PR-creation step:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>gh<span class="w"> </span>workflow<span class="w"> </span>run<span class="w"> </span>release.yml<span class="w"> </span>--ref<span class="w"> </span>main<span class="w"> </span>-f<span class="w"> </span><span class="nv">dry_run</span><span class="o">=</span><span class="nb">true</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="c1"># expect a version AHEAD of pyproject&#39;s, e.g. &quot;Next version: v0.83.0 (current v0.82.0)&quot;.</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="c1"># A &quot;nothing to do&quot; here means the deadlock is NOT cleared.</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>gh<span class="w"> </span>workflow<span class="w"> </span>run<span class="w"> </span>release.yml<span class="w"> </span>--ref<span class="w"> </span>main<span class="w"> </span>-f<span class="w"> </span><span class="nv">dry_run</span><span class="o">=</span><span class="nb">true</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="c1"># expect a version AHEAD of pyproject&#39;s, e.g. &quot;Next version: v0.83.0 (current v0.82.0)&quot;.</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="c1"># A &quot;nothing to do&quot; here means the deadlock is NOT cleared.</span>
 </span></code></pre></div>
 <p><strong>Note the deploy is not gated on any of this.</strong> The homelab stack force-pulls <code>:latest</code> on its own
 timer (section 1), so production ships the code whether or not the release was cut. A deadlock costs
@@ -4911,8 +5093,8 @@ cutover; this section is.</strong></p>
    repo. Via the Supabase dashboard SQL editor (or <code>psql</code> against the project's direct
    connection, not the pooler):</li>
 </ol>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">cyo_api</span><span class="w"> </span><span class="n">LOGIN</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;&lt;generated-secret&gt;&#39;</span><span class="p">;</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="n">LOGIN</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;&lt;generated-secret&gt;&#39;</span><span class="p">;</span>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">cyo_api</span><span class="w"> </span><span class="n">LOGIN</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;&lt;generated-secret&gt;&#39;</span><span class="p">;</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="n">LOGIN</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;&lt;generated-secret&gt;&#39;</span><span class="p">;</span>
 </span></code></pre></div>
 <p>Generate each password independently (do not reuse one password across roles or
    environments); store both in the environment's existing secrets mechanism (GitHub
@@ -5014,9 +5196,9 @@ posture line is filtered out before it is written. That is the same rule
 reason. Do not "quiet down" the affirmative line to INFO: doing so turns a successful cutover
 back into silence and makes it indistinguishable from a worker running an image with no probe.</p>
 <p><strong>Alert on either of these, not just the bypass event:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>event == &quot;generation_worker.role_bypasses_rls&quot;
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>  OR (event == &quot;generation_worker.role_least_privileged&quot;
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>      AND worker_dsn_explicitly_set == false)
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>event == &quot;generation_worker.role_bypasses_rls&quot;
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>  OR (event == &quot;generation_worker.role_least_privileged&quot;
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>      AND worker_dsn_explicitly_set == false)
 </span></code></pre></div>
 <p>The second clause is not redundant. When <code>CYO_ADVENTURE_WORKER_DATABASE_URL</code> is unset the worker
 falls back to the API DSN and connects as <code>cyo_api</code>, which has <code>rolbypassrls = false</code> and owns no
@@ -5076,9 +5258,9 @@ PR, also add:</p>
    migration following the same shape if that file has already shipped to production).</li>
 <li>A matching <code>service_rw</code> policy:</li>
 </ol>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">DROP</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span><span class="p">;</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span><span class="k">FOR</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">cyo_api</span><span class="p">,</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">)</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="k">DROP</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span><span class="p">;</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">  </span><span class="k">FOR</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">cyo_api</span><span class="p">,</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">)</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
 </span></code></pre></div>
 <ol>
 <li>No <code>anon</code>/<code>authenticated</code> grant or policy, matching the deny-by-default posture
@@ -5114,7 +5296,7 @@ because that test is currently the only thing that would notice.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 24, 2026 22:34:19 UTC">August 24, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 05:23:17 UTC">August 25, 2026</span>
   </span>
 
     

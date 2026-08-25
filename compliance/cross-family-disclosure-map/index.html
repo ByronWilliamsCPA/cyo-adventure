@@ -3971,19 +3971,34 @@ bakes values into stored prose fails loudly instead of quietly falsifying this p
 (3.1) can itself name the child, and generated prose derived from it can echo that name. The PII
 egress guard in 3.6 addresses the LLM leg of that risk but not the human-review leg.</p>
 <h3 id="36-post-apiv1adminrescreen-and-post-apiv1adminremoderateidversion">3.6 <code>POST /api/v1/admin/rescreen</code> and <code>POST /api/v1/admin/remoderate/{id}/{version}</code><a class="headerlink" href="#36-post-apiv1adminrescreen-and-post-apiv1adminremoderateidversion" title="Permanent link">&para;</a></h3>
-<p><code>rescreen.py:121</code>, <code>remoderate.py:567</code>.</p>
-<p>Cross-family content re-review. Both, along with <code>node_edit.py</code>, load <strong>the subject family's</strong>
-child display names rather than the caller's. Note that <code>_family_child_names</code> is not one shared
-helper: it is three independent module-private definitions of the same shape, duplicated
-deliberately rather than imported (<code>remoderate.py:241-245</code> explains why, citing this codebase's
-avoidance of cross-module underscore imports). Three copies of a PII guard is three places a fix
-has to land, which is worth knowing before relying on any one of them.</p>
+<p><code>rescreen.py:121</code> (<code>trigger_rescreen</code>), <code>remoderate.py:892</code> (the route, <code>trigger_remoderate</code>)
+into <code>remoderate.py:539</code> (the work, <code>remoderate_storybook_version</code>).</p>
+<p>Cross-family content re-review.</p>
+<p><code>remoderate.py</code>, along with <code>node_edit.py</code>, loads <strong>the subject family's</strong> child display names
+rather than the caller's. <code>rescreen.py</code> does <strong>not</strong>, and an earlier revision of this document
+said it did. The difference is structural rather than an omission: the names exist to be redacted
+out of the review and repair PROMPTS, and a re-screen sweep builds neither. It runs the
+deterministic gate and the Stage-0 classifiers only, so it has no prompt to guard and loads no
+names; <code>grep -n ChildProfile src/cyo_adventure/api/rescreen.py src/cyo_adventure/moderation/rescreen.py</code>
+returns nothing. Read the rest of this section as being about <code>remoderate.py</code> and <code>node_edit.py</code>.</p>
+<p>Note that <code>_family_child_names</code> is not one shared helper: it is three independent module-private
+definitions of the same shape, duplicated deliberately rather than imported
+(<code>remoderate.py:397-401</code>, in <code>_family_child_names</code>'s docstring, explains why, citing this codebase's
+avoidance of cross-module underscore imports). Three copies of a PII guard is three places a fix has
+to land, which is worth knowing before relying on any one of them.</p>
 <ul>
 <li><code>node_edit.py:295-312</code> (docstring is explicit:
   "the story's family, not necessarily the caller's, for the admin cross-family case")</li>
-<li><code>remoderate.py:236-285</code>, the query at <code>remoderate.py:283</code></li>
+<li><code>remoderate.py:392-441</code> (<code>_family_child_names</code>), the query at <code>remoderate.py:439</code>, called at
+  <code>remoderate.py:642</code> (inside <code>remoderate_storybook_version</code>)</li>
 <li><code>story_requests.py:112-125</code></li>
 </ul>
+<p><strong>Scope, as of 2026-08-24</strong>: <code>remoderate.py</code> admits <code>in_review</code> storybooks as well as <code>published</code>
+ones (<code>REMODERATABLE_STATUSES</code>). The cross-family read described here therefore now reaches books
+that are NOT published and that no guardian has approved. That does not change the disclosure
+shape, the same family-scoped names are read into the same in-process guard, but it does widen the
+population, and a reader who assumed "re-moderation implies a published book" would be wrong. The
+sibling <code>rescreen.py</code> remains published-only.</p>
 <p><code>generation.py:227</code> runs the same PII egress guard but does <strong>not</strong> belong on that list: the
 endpoint is guardian-only (<code>if not ctx.principal.is_guardian: raise</code>, <code>generation.py:216-217</code>),
 it queries <code>ChildProfile.display_name</code> inline rather than through the shared helper, and it scopes
@@ -4454,7 +4469,7 @@ in the security assurance register, with the <code>CFD-*</code> ID cited as the 
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 15, 2026 17:29:48 UTC">August 15, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 05:23:17 UTC">August 25, 2026</span>
   </span>
 
     
