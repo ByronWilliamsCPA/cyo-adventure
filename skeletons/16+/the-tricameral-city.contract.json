@@ -114,10 +114,7 @@
           "ROUTE_A_CLERK_SURNAME",
           "ROUTE_C_CLERK_SURNAME"
         ]
-      },
-      "kind": "personalizable",
-      "personalization_field": "protagonist_first_name",
-      "role_safety": "protagonist"
+      }
     },
     {
       "id": "THRESHOLD",

@@ -1562,8 +1562,9 @@ class StorybookVersion(CreatedAtMixin, Base):
     # or a resume whose reference skeleton could not be computed), not "the
     # transform found nothing".
     #
-    # WRITTEN by generation/persistence.py::persist_storybook, the single
-    # write path both fill routes share. NOT YET READ: rescreen
+    # WRITTEN by generation/persistence.py::persist_storybook, the write path
+    # both fill routes share, and by scripts/retrofit_personalization.py, the
+    # ADR-023 in-place content migration. NOT YET READ: rescreen
     # (moderation/rescreen.py) and the other at-rest checks still re-derive
     # their expectations from the contract, which is the prescriptive
     # semantics Stage R set out to replace; repointing them at this column,

@@ -1,11 +1,13 @@
 """Tests for the ``HERO`` slot promotion gate (ADR-023 catalog migration).
 
-Two of these are named directly by ``#VERIFY`` tags in
+Three of these are named directly by ``#VERIFY`` tags in
 ``scripts/promote_personalizable_slots.py``, so they are load-bearing rather
-than incidental: ``test_every_promotion_declares_protagonist_role_safety``
-and ``test_excluded_slugs_are_never_promoted``.
+than incidental:
+``test_catalog_promoted_hero_slot_declares_protagonist_role_safety``,
+``test_main_excluded_slug_is_never_promoted``, and
+``test_main_check_mode_excluded_slug_promoted_out_of_band_fails``.
 
-Both are written to *discriminate*. A test that only asserts the catalog's
+Each is written to *discriminate*. A test that only asserts the catalog's
 current state passes just as well when the tool has been gutted, so each
 pairs its catalog-wide assertion with an arm that proves the mechanism under
 test is what produced the result: the role-safety test also shows the
@@ -32,8 +34,10 @@ _CATALOG_ROOT = _REPO_ROOT / "skeletons"
 # imported, because a test that reads the roster from the tool cannot notice
 # the roster shrinking. Dropping a slug from ``NOT_PERSONALIZABLE`` and
 # re-running ``--apply`` leaves check mode green with a child's name attached
-# to an animal's body; only an independently stated set catches that. Adding
-# or removing an entry is therefore a two-file edit on purpose.
+# to an animal's body, or to a role phrase; only an independently stated set
+# catches that. Adding or removing an entry is therefore a two-file edit on
+# purpose. The three exclusion classes are spelled out separately so the
+# reason a slug is on the roster survives here as well as in the tool.
 _ANIMAL_PROTAGONIST_SLUGS = frozenset(
     {
         "baking-day-with-grandma-vole",
@@ -42,6 +46,25 @@ _ANIMAL_PROTAGONIST_SLUGS = frozenset(
         "the-lost-mitten",
         "the-teddy-bears-picnic",
     }
+)
+
+# Protagonists the narration never names: the pinned HERO value is a role
+# phrase or an office, so a family's first name cannot occupy it.
+_ROLE_PHRASE_SLUGS = frozenset(
+    {
+        "the-labyrinth-of-glass",
+        "the-pale-road",
+        "the-red-meridian-run",
+        "the-tricameral-city",
+    }
+)
+
+# A protagonist that a second, NON-personalizable slot also names, so only
+# half the book would follow the family's chosen name.
+_PAIRED_FULL_NAME_SLUGS = frozenset({"the-vanishing-orchard"})
+
+_EXCLUDED_SLUGS = (
+    _ANIMAL_PROTAGONIST_SLUGS | _ROLE_PHRASE_SLUGS | _PAIRED_FULL_NAME_SLUGS
 )
 
 
@@ -105,7 +128,7 @@ def _minimal_contract(*, role_safety: str | None) -> dict[str, object]:
     }
 
 
-def test_every_promotion_declares_protagonist_role_safety() -> None:
+def test_catalog_promoted_hero_slot_declares_protagonist_role_safety() -> None:
     """Every promoted ``HERO`` carries the protagonist safety pinning.
 
     #VERIFY for the ``#CRITICAL`` security tag on
@@ -132,15 +155,17 @@ def test_every_promotion_declares_protagonist_role_safety() -> None:
         ThemeContract.model_validate(unpinned)
 
 
-def test_excluded_slugs_are_never_promoted(tmp_path: Path) -> None:
+def test_main_excluded_slug_is_never_promoted(tmp_path: Path) -> None:
     """Excluded slugs stay unpromoted, and the slug is the only reason.
 
     #VERIFY for the ``#CRITICAL`` data-integrity tag on
-    ``NOT_PERSONALIZABLE``: each entry is a story with an animal
-    protagonist, where substituting a child's name renders that child
-    attached to a body they do not have.
+    ``NOT_PERSONALIZABLE``: each entry is a story where substituting a
+    child's first name for the pinned HERO value yields a book that is wrong
+    on the page, whether because the hero has an animal's body, because the
+    narration never names the hero at all, or because a second slot names the
+    same character and would not follow the family's choice.
     """
-    assert set(pps.NOT_PERSONALIZABLE) == _ANIMAL_PROTAGONIST_SLUGS
+    assert set(pps.NOT_PERSONALIZABLE) == _EXCLUDED_SLUGS
 
     on_disk = dict(_catalog_documents())
     for slug in pps.NOT_PERSONALIZABLE:
@@ -176,7 +201,7 @@ def test_excluded_slugs_are_never_promoted(tmp_path: Path) -> None:
     }
 
 
-def test_catalog_check_mode_is_clean() -> None:
+def test_main_check_mode_over_catalog_exits_zero() -> None:
     """The catalog satisfies the gate, so a new skeleton must opt in.
 
     This is the half of the tool that keeps working after the one-time
@@ -186,7 +211,7 @@ def test_catalog_check_mode_is_clean() -> None:
     assert pps.main(["--skeleton-root", str(_CATALOG_ROOT)]) == 0
 
 
-def test_every_promoted_contract_still_validates() -> None:
+def test_catalog_contract_after_promotion_still_validates() -> None:
     """Promotion left every catalog contract loadable as a ThemeContract."""
     for slug, document in _catalog_documents():
         try:
@@ -195,7 +220,7 @@ def test_every_promoted_contract_still_validates() -> None:
             pytest.fail(f"{slug}: {exc}")
 
 
-def test_insert_promotion_fields_preserves_surrounding_bytes() -> None:
+def test_insert_promotion_fields_inline_array_preserves_surrounding_bytes() -> None:
     """The surgical edit adds lines and changes nothing else.
 
     A whole-document ``json.dumps`` round-trip would reformat every sidecar
@@ -220,7 +245,7 @@ def test_insert_promotion_fields_preserves_surrounding_bytes() -> None:
     assert json.loads(edited) == pps.promote(json.loads(text))
 
 
-def test_insert_promotion_fields_ignores_braces_inside_strings() -> None:
+def test_insert_promotion_fields_brace_in_quoted_value_is_ignored() -> None:
     """A brace in a quoted value never moves the enclosing-object span."""
     text = (
         "{\n"
@@ -240,7 +265,7 @@ def test_insert_promotion_fields_ignores_braces_inside_strings() -> None:
     assert slot["guidance"] == "never write {HERO} or a stray } here"
 
 
-def test_promote_is_idempotent_and_slug_agnostic() -> None:
+def test_promote_already_promoted_document_returns_none() -> None:
     """``promote`` returns ``None`` when there is nothing left to do."""
     text = '{"slots": [{"id": "HERO"}]}'
     once = pps.promote(json.loads(text))
@@ -250,7 +275,120 @@ def test_promote_is_idempotent_and_slug_agnostic() -> None:
     assert pps.promote({"slots": "not-a-list"}) is None
 
 
-def test_insert_promotion_fields_rejects_a_missing_slot() -> None:
+def test_insert_promotion_fields_missing_slot_raises_value_error() -> None:
     """A contract with no ``HERO`` slot raises rather than editing blind."""
     with pytest.raises(ValueError, match="no slot with id"):
         pps.insert_promotion_fields('{"slots": [{"id": "ANCESTOR"}]}')
+
+
+def _fixture_contract_text(*, hero: str, personalizable: bool) -> str:
+    """Return a valid one-slot contract as text, ready to write to disk.
+
+    Built here rather than copied from the catalog so a test can choose the
+    pinned ``HERO`` value and the slot ``kind`` independently, which is what
+    lets the atomicity and out-of-band cases exist at all: every catalog
+    contract is already in exactly the state the tool wants.
+
+    Args:
+        hero: The pinned ``default_binding["HERO"]`` value.
+        personalizable: Whether the ``HERO`` slot already carries the three
+            promotion fields.
+
+    Returns:
+        str: The contract document, JSON-encoded with two-space indentation.
+    """
+    slot: dict[str, object] = {
+        "id": pps.IDENTITY_SLOT,
+        "scope": "global",
+        "meaning": "The child protagonist.",
+        "guidance": "A single kid-relatable explorer.",
+        "constraints": {"max_words": 6, "forbid": [], "distinct_from": []},
+    }
+    if personalizable:
+        slot["kind"] = "personalizable"
+        slot["personalization_field"] = pps.PERSONALIZATION_FIELD
+        slot["role_safety"] = pps.ROLE_SAFETY
+    document: dict[str, object] = {
+        "contract_version": 1,
+        "skeleton_slug": "fixture-shell",
+        "age_band": "8-11",
+        "slots": [slot],
+        "default_binding": {pps.IDENTITY_SLOT: hero},
+    }
+    return json.dumps(document, indent=2)
+
+
+def test_main_check_mode_excluded_slug_promoted_out_of_band_fails(
+    tmp_path: Path,
+) -> None:
+    """An excluded slug found personalizable is a violation, not "already".
+
+    #VERIFY for the ``#CRITICAL`` data-integrity tag on ``main``'s
+    exclusion-first ordering: ``promote`` returns ``None`` for an
+    already-personalizable slot, so a roster check placed after it is never
+    reached for exactly the contracts the roster is about. Before the
+    reordering this run exited 0.
+    """
+    excluded_slug = next(iter(pps.NOT_PERSONALIZABLE))
+    promoted = _fixture_contract_text(hero="Nina", personalizable=True)
+    (tmp_path / f"{excluded_slug}.contract.json").write_text(promoted, encoding="utf-8")
+
+    assert pps.main(["--skeleton-root", str(tmp_path)]) == 1
+
+    # Discrimination: byte-identical content under a slug the roster does not
+    # know is simply "already promoted", so only the slug explains the exit
+    # code.
+    other = tmp_path / "unlisted"
+    other.mkdir()
+    (other / "an-unlisted-slug.contract.json").write_text(promoted, encoding="utf-8")
+    assert pps.main(["--skeleton-root", str(other)]) == 0
+
+
+def test_main_apply_writes_nothing_when_one_contract_fails(tmp_path: Path) -> None:
+    """``--apply`` is all-or-nothing across the batch.
+
+    A partial write leaves a tree that is indistinguishable from an ordinary
+    mid-migration state, so the next check-mode run reports it as work still
+    to do rather than as a failed run.
+    """
+    good = tmp_path / "a-good-slug.contract.json"
+    bad = tmp_path / "z-bad-slug.contract.json"
+    good_text = _fixture_contract_text(hero="Nina", personalizable=False)
+    bad_text = _fixture_contract_text(hero="a pilgrim", personalizable=False)
+    good.write_text(good_text, encoding="utf-8")
+    bad.write_text(bad_text, encoding="utf-8")
+
+    assert pps.main(["--apply", "--skeleton-root", str(tmp_path)]) == 1
+    assert good.read_text(encoding="utf-8") == good_text
+    assert bad.read_text(encoding="utf-8") == bad_text
+
+    # Discrimination: the good contract is genuinely writable on its own, so
+    # the untouched bytes above are the batch failing, not the edit failing.
+    bad.unlink()
+    assert pps.main(["--apply", "--skeleton-root", str(tmp_path)]) == 0
+    assert pps.is_personalizable(json.loads(good.read_text(encoding="utf-8")))
+
+
+def test_insert_promotion_fields_hero_id_outside_slots_is_ignored() -> None:
+    """A matching id outside the ``slots`` array never steers the edit."""
+    text = (
+        "{\n"
+        '  "notes": "the example reads \\"id\\": \\"HERO\\" verbatim",\n'
+        '  "slots": [\n'
+        "    {\n"
+        '      "id": "HERO",\n'
+        '      "meaning": "the hero"\n'
+        "    }\n"
+        "  ]\n"
+        "}\n"
+    )
+    edited = pps.insert_promotion_fields(text)
+    assert json.loads(edited) == pps.promote(json.loads(text))
+    assert json.loads(edited)["notes"] == json.loads(text)["notes"]
+
+
+def test_insert_promotion_fields_duplicate_slot_id_raises_value_error() -> None:
+    """Two ``HERO`` slots are refused rather than edited arbitrarily."""
+    text = '{"slots": [{"id": "HERO"}, {"id": "HERO"}]}'
+    with pytest.raises(ValueError, match="occurs 2 times"):
+        pps.insert_promotion_fields(text)

@@ -85,7 +85,7 @@
       "id": "HERO",
       "scope": "global",
       "meaning": "The lone adult protagonist riding the train.",
-      "guidance": "A single traveler's full name; capable, observant, alone for the night.",
+      "guidance": "A single traveler's first name only, no surname; capable, observant, alone for the night.",
       "constraints": {
         "max_words": 6,
         "forbid": [

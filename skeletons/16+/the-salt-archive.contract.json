@@ -91,7 +91,7 @@
       "id": "HERO",
       "scope": "global",
       "meaning": "The keeper protagonist.",
-      "guidance": "A single adult investigator-protagonist (name); capable, methodical, not reckless.",
+      "guidance": "A single adult investigator-protagonist named by first name only, no surname; capable, methodical, not reckless.",
       "constraints": {
         "max_words": 6,
         "forbid": [

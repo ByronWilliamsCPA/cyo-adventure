@@ -50,6 +50,19 @@ export interface LibraryItemView {
    */
   published_at?: string | null
   /**
+   * Content identity for this exact `(id, version)` payload (backend:
+   * `LibraryItem.content_hash`, computed by
+   * `api/library.py::storybook_content_hash`). The offline cache keys
+   * downloaded blobs by `id@version` alone and never re-fetches on a hit, so
+   * a blob rewritten in place under an unchanged version is otherwise
+   * undetectable; `offline/revocation.ts::evictStaleOfflineBooks` compares
+   * this against what it recorded and evicts only the entries that actually
+   * drifted. Optional and possibly absent: a shelf cached offline before this
+   * field existed has no key at all, and that reads as "unknown, do not
+   * evict", never as "changed".
+   */
+  content_hash?: string
+  /**
    * ADR-023 Task D8: mirrors the backend's LibraryItem.personalization_eligible
    * (itself a verbatim read of StorybookVersion.personalization_eligible from
    * Stage B). Optional: an offline-cached item saved before this field existed

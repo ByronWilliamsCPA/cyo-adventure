@@ -16,6 +16,7 @@ from cyo_adventure.storybook.theme_contract import (
     SlotScope,
     SlotSpec,
     ThemeContract,
+    first_name_pin_error,
     slot_ids,
 )
 
@@ -464,3 +465,97 @@ def test_personalizable_default_check_does_not_affect_theme_slot_defaults():
     slot = _slot("HERO", constraints=SlotConstraints(max_words=1))
     contract = _contract([slot], {"HERO": "a name with several words in it"})
     assert contract.slots[0].kind == "theme"
+
+
+# ---------------------------------------------------------------------------
+# protagonist_first_name pin shape, and personalizable/theme value collisions
+# (PR #759 review fix, ADR-023)
+# ---------------------------------------------------------------------------
+
+# Every value the catalog actually pinned that is not a first name, with the
+# clause of the rule each one breaks. Stated as literals rather than read back
+# from `skeletons/`, so fixing the catalog cannot also silence the test.
+_BAD_FIRST_NAME_PINS = [
+    ("a child of the opera house crew", "determiner"),
+    ("a pilgrim", "determiner"),
+    ("the pilot", "determiner"),
+    ("auditor", "lowercase"),
+    ("Captain Mira Voss", "whitespace"),
+    ("Nell Marlow", "whitespace"),
+    ("Noor Haddad", "whitespace"),
+    ("Wren Ashby", "whitespace"),
+]
+
+
+def _first_name_slot(slot_id: str = "HERO") -> SlotSpec:
+    return SlotSpec(
+        id=slot_id,
+        scope=SlotScope.GLOBAL,
+        meaning="the protagonist",
+        kind="personalizable",
+        personalization_field="protagonist_first_name",
+        role_safety="protagonist",
+    )
+
+
+@pytest.mark.parametrize(("value", "clause"), _BAD_FIRST_NAME_PINS)
+def test_first_name_pin_rejects_every_shape_the_catalog_got_wrong(value, clause):
+    """Each of the eight real bad pins is rejected, by the expected clause."""
+    message = first_name_pin_error("HERO", value)
+    assert message is not None
+    assert clause in message
+
+    # The slot is built OUTSIDE the raises block (S5778): if construction
+    # itself raised, the block would pass without ever exercising the pin rule.
+    slot = _first_name_slot()
+    with pytest.raises(PydanticValidationError, match="protagonist_first_name"):
+        _contract([slot], {"HERO": value})
+
+
+@pytest.mark.parametrize(
+    "value", ["Mira", "Nell", "Noor", "Wren", "Mary-Kate", "O'Brien"]
+)
+def test_first_name_pin_accepts_a_plain_given_name(value):
+    """A single given-name token passes, hyphens and apostrophes included."""
+    assert first_name_pin_error("HERO", value) is None
+
+
+def test_first_name_pin_theme_slot_with_a_role_phrase_is_untouched():
+    """The rule is scoped to personalizable slots, so no theme pin can fail it.
+
+    This is what makes the four excluded role-phrase skeletons legal: their
+    ``HERO`` pin is unchanged, only its ``kind`` is.
+    """
+    contract = _contract([_slot("HERO")], {"HERO": "a child of the opera house crew"})
+    assert contract.slots[0].kind == "theme"
+
+
+def test_personalizable_value_inside_a_theme_slot_value_is_rejected():
+    """The vanishing-orchard shape: HERO 'Rowan' beside HERO_FULL 'Rowan Ashby'.
+
+    Only ``HERO`` is rewritten at read time, so a personalized book would open
+    with the authored full name and then use the family's chosen name for the
+    rest of the story.
+    """
+    slots = [_first_name_slot(), _slot("HERO_FULL", meaning="the full name")]
+    with pytest.raises(PydanticValidationError, match="HERO_FULL"):
+        _contract(slots, {"HERO": "Rowan", "HERO_FULL": "Rowan Ashby"})
+
+
+def test_personalizable_value_echoed_in_lowercase_is_accepted():
+    """A common-word echo is not a second naming surface.
+
+    The 3-5 band pins ``HERO`` to "Twinkle" beside a ``LULLABY_SONG`` of "a
+    twinkle song", which names the nursery rhyme rather than the child. A
+    case-insensitive rule would reject that real, correct contract.
+    """
+    slots = [_first_name_slot(), _slot("LULLABY_SONG", meaning="the lullaby")]
+    contract = _contract(slots, {"HERO": "Twinkle", "LULLABY_SONG": "a twinkle song"})
+    assert contract.default_binding["LULLABY_SONG"] == "a twinkle song"
+
+
+def test_personalizable_value_inside_a_possessive_theme_value_is_rejected():
+    """A possessive names the same character, so it must not survive the check."""
+    slots = [_first_name_slot(), _slot("KEEPSAKE", meaning="the keepsake")]
+    with pytest.raises(PydanticValidationError, match="KEEPSAKE"):
+        _contract(slots, {"HERO": "Rowan", "KEEPSAKE": "Rowan's viola"})

@@ -2620,6 +2620,10 @@ export type LibraryItem = {
      * Accepts Character
      */
     accepts_character?: boolean;
+    /**
+     * Content Hash
+     */
+    content_hash?: string;
 };
 
 /**

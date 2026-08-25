@@ -821,7 +821,37 @@ omit = [
     "validation/*",     # Validation/verification scripts
     "benchmarks/*",     # Benchmarking framework
     "data/*",           # Data processing scripts
-    "scripts/*",        # Utility scripts
+    # scripts/ is no longer a blanket exclusion. "Utility scripts" stopped
+    # describing this directory once it became the home for production-affecting
+    # one-shot admin tooling: backup_database.py writes the encrypted offsite
+    # backup, backfill_covers_r2.py rewrites shipped cover assets, and
+    # promote_personalizable_slots.py / retrofit_personalization.py write the
+    # production database and the shipped skeleton catalog. Only the
+    # measurement and research harnesses stay omitted: one-shot report
+    # generators with no production side effect.
+    #
+    # This list is INERT today. [tool.pytest.ini_options] addopts pins
+    # --cov=src/cyo_adventure, so no scripts/ file reaches any coverage report
+    # whatever is written here, and neither Codecov nor qlty ever sees one.
+    # Measured 2026-08-24 over the 50 tests/unit modules named after a script:
+    # scripts/ is 52.18% line, 62.11% line+branch across 103 measured files,
+    # with 75 of 101 files below 80% and 46 at 0.00%. Widening --cov to include
+    # scripts/ therefore drags the combined total to roughly 72%, which fails
+    # the --cov-fail-under=80 in the same addopts. Sequence that widening with a
+    # per-source threshold; do not do it on its own.
+    "scripts/w7_*.py",                     # W7 judge-panel research batteries
+    "scripts/*_harness.py",                # yield/adversarial measurement harnesses
+    "scripts/analyze_*.py",                # one-shot exposure analyses
+    "scripts/compare_*.py",                # cross-vendor comparison drivers
+    "scripts/measure_*.py",                # one-shot measurement drivers
+    "scripts/prototype_*.py",              # throwaway prototypes
+    "scripts/capture_stage0_baseline.py",  # one-shot pre-sunset snapshot
+    "scripts/gen_phase2b_briefs.py",       # one-shot brief sample generator
+    "scripts/modal_kimi_leg.py",           # S-1 blind-contract driver
+    "scripts/blind_books.py",              # blind-rating prep for judge runs
+    "scripts/judge_books.py",              # judge-panel scoring driver
+    "scripts/evaluate_books.py",           # book evaluation report driver
+    "scripts/_paid_output.py",             # paid-run output bookkeeping helper
     "notebooks/*",      # Jupyter notebooks
     "tmp_cleanup/*",    # Temporary files
 ]

@@ -147,8 +147,19 @@ const DB_VERSION = 5
 /** Singleton key: one device grant per device. */
 const DEVICE_GRANT_KEY = 'current'
 
-function storyKey(id: string, version: number): string {
+/**
+ * The `storybooks` store key for one exact payload.
+ *
+ * Exported because offline/revocation.ts's content-staleness check keys its
+ * own bookkeeping by the same identity; a second, hand-rolled copy of this
+ * template there would silently stop matching the day the format changed.
+ */
+export function storybookCacheKey(id: string, version: number): string {
   return `${id}@${version}`
+}
+
+function storyKey(id: string, version: number): string {
+  return storybookCacheKey(id, version)
 }
 
 function stateKey(profileId: string, storybookId: string): string {
@@ -567,10 +578,44 @@ export async function deleteStorybooksById(id: string): Promise<void> {
   forgetStoryRecency(id)
 }
 
+/**
+ * Remove exactly one cached `(id, version)` entry, leaving any other cached
+ * version of the same book alone.
+ *
+ * The narrow counterpart to {@link deleteStorybooksById}, for the content-
+ * staleness eviction in offline/revocation.ts. Two differences matter and
+ * neither is cosmetic:
+ *
+ * - Scope: staleness is a property of one exact payload, so a device holding
+ *   two versions of a book must not lose the one that is still current.
+ * - Recency: this deliberately does NOT call `forgetStoryRecency`.
+ *   `deleteStorybooksById` forgets it because that book is genuinely leaving
+ *   the device (revoked, or evicted for space). A stale blob is about to be
+ *   re-downloaded by the very reader who has been opening it, so discarding
+ *   its recency would make an actively-read book the first candidate the
+ *   budget evicts (`downloadBudget.ts::pickEvictionCandidate` sorts an
+ *   unknown recency as oldest-possible).
+ */
+export async function deleteCachedStorybookVersion(id: string, version: number): Promise<void> {
+  const db = await getDb()
+  await db.delete('storybooks', storyKey(id, version))
+}
+
+/**
+ * Every `id@version` key currently cached on this device.
+ *
+ * The version-preserving counterpart to {@link listCachedStorybookIds}, for
+ * the content-staleness check, which has to tell "this exact payload is
+ * cached" from "some version of this book is cached".
+ */
+export async function listCachedStorybookKeys(): Promise<string[]> {
+  const db = await getDb()
+  return [...(await db.getAllKeys('storybooks'))]
+}
+
 /** Distinct storybook ids currently cached on this device, across every version. */
 export async function listCachedStorybookIds(): Promise<string[]> {
-  const db = await getDb()
-  const keys = await db.getAllKeys('storybooks')
+  const keys = await listCachedStorybookKeys()
   return [...new Set(keys.map((key) => key.slice(0, key.lastIndexOf('@'))))]
 }
 
