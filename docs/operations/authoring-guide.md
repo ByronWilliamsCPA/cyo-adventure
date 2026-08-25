@@ -67,8 +67,19 @@ Once approved, the request moves out of your hands and into the writing pipeline
 ### The Review queue (admin, `/admin`)
 
 Every story waiting on a decision appears here, across every family, so an admin can work through
-them in one place. Each row shows whether the story screened clean or has something flagged, so an
-admin can prioritize.
+them in one place. Each row's badge tells an admin how urgent it is, not just whether something was
+flagged:
+
+- **Hard block**: the automated checks found something serious enough that no lesser badge applies.
+- **A tiered count**, such as "2 blocks · 3 flags", when nothing hit **Hard block**: how many
+  findings landed at each severity, so an admin can tell "one small note" from "several real
+  concerns" at a glance instead of reading a single flat number.
+- **Moderation unavailable · re-run required**: the automated report could not be produced (for
+  example a reviewer outage during generation). A story in this state is never shown as "ready", so
+  it cannot be mistaken for one that screened clean; it needs a fresh moderation run before anyone
+  can review it.
+- **Repaired** stacks alongside either badge above when the automated repair step already fixed
+  something before a human ever saw it.
 
 ### The Review detail screen (admin, `/admin/review/<story>`)
 
@@ -79,17 +90,28 @@ bottom:
   as **Hard block**, **Soft flags**, **Repaired**, and either **Independent review** or **Not
   independently reviewed**. The safety review is deliberately run by a different AI model than the
   one that wrote the story, so "Independent review" tells the admin that separation held.
+- **A moderation-unavailable notice**, in place of the sections below, when the report could not be
+  produced. **Approve** is disabled while this notice is showing; the page's hint tells the admin to
+  ask an operator to re-run moderation for this story rather than trying to work around it.
 - **A version comparison**, when this is not the story's first version, so an admin can see exactly
   what changed since the last time it was reviewed.
 - **Story overview** (open by default): a quick, skimmable summary of the story's branches and
   themes, so an admin does not have to read every page before deciding whether to dig in.
-- **Flagged passages**: the specific passages the automated checks flagged, each with a **Show in
-  story** link that jumps straight to that passage further down. If nothing was flagged, this
-  section says so plainly: "No flagged passages. This story screened clean."
-- **Story-level notes**: findings about the story as a whole rather than one specific passage.
+- **Flagged passages**: the specific passages the automated checks flagged, ranked so the most
+  serious findings come first, each with a **Show in story** link that jumps straight to that
+  passage further down. If nothing was flagged, this section says so plainly: "No flagged passages.
+  This story screened clean."
+- **Story-level notes**: findings about the story as a whole rather than one specific passage, such
+  as a structural problem the automated checks could not tie to one spot. A handful of low-priority
+  notes are rolled up into a single summary line here instead of being listed one by one, so a real
+  concern never gets buried under routine housekeeping.
 - **The full story**: every passage in reading order, with a **Start** marker on the opening
   passage. Passages the story's own choices can never actually reach are listed separately, under
   **Unreachable passages**, so nothing gets skipped just because a branch is dead.
+
+This section describes what each screen shows and why; for the step-by-step procedure an admin
+follows while actually working the queue, see the
+[reviewer standard operating procedure](reviewer-sop.md).
 
 ### Approving a story
 

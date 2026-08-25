@@ -15,8 +15,22 @@ source: "Gap report docs/planning/safety/moderation-review-current-state-2026-07
 # Moderation Review Redesign: Decisions, Not Flags
 
 > **Status**: APPROVED by the owner 2026-07-29; all open decisions in
-> section 7 are now recorded. Implementation has not started; section 6's
-> staged delivery (Stages A-D) is the execution plan.
+> section 7 are now recorded. Per-stage status against section 6's staged
+> delivery plan, verified against the code: **Stage A done** (2026-07-30,
+> commit `8ca8d1b3`, PR #496). **Stage B done** (schema/PASS aggregation
+> PR #521, structured verdicts plus chunking PR #527, admin surfaces
+> PR #528; all merged to `main` ahead of this branch, which layers the
+> unusable-report approval gate, override-reason audit trail, and tiered
+> queue/detail UI on top). **Stage C partial**: the baseline capture and
+> the QA-corpus containment layers are done (2026-08-01, section 3.2 item 2
+> and section 5), and the Perspective classifier's call leg is fully
+> retired ahead of the 2026-12-31 sunset (section 3.2 item 5); the Modal
+> guard-model eval and its calibration report (section 3.2 item 3) have
+> not started. **Stage D partial**: the re-moderate entry point and
+> `scripts/remoderate_books.py` sweep script are done and on `main`; the
+> 18-book sweep itself has not run (deferred, pending deploy). See the
+> reviewer SOP ([reviewer-sop.md](../../operations/reviewer-sop.md)) for
+> how a reviewer works the resulting surfaces day to day.
 > Companion gap report:
 > [moderation-review-current-state-2026-07-28.md](moderation-review-current-state-2026-07-28.md).
 > Acceptance bar (owner, verbatim intent): a reviewer approving a book reads
