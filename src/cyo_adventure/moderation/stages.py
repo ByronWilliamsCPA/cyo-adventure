@@ -33,6 +33,7 @@ from cyo_adventure.moderation.report import (
     Verdict,
 )
 from cyo_adventure.moderation.review_provider import (
+    completion_finish_reason,
     completion_text,
     completion_truncated,
 )
@@ -692,19 +693,33 @@ async def run_safety_stage(
         raw = completion_text(batch_returned)
         by_node_id = _parse_batch_verdicts(raw, [nid for nid, _ in batch])
         if by_node_id is None:
-            if completion_truncated(batch_returned):
-                # Name the cause. Without this the log says only "unparseable",
-                # which sends the next reader hunting a model formatting quirk
-                # when the fix is to buy more output budget.
+            # Name the cause. Without this the log says only "unparseable",
+            # which sends the next reader hunting a model formatting quirk
+            # when the fix is to buy more output budget.
+            #
+            # #CRITICAL: external-resources: finish_reason is logged on EVERY
+            # parse failure, not only on the truncation branch, because
+            # completion_truncated can answer only yes or no. If a provider
+            # omits the field, or spells truncation some other way, the
+            # discriminator under-reports and a starved call is logged as
+            # ordinary bad JSON with nothing in the record to reveal it. The
+            # value itself is the only thing that can distinguish "the backend
+            # said stop" from "the backend said nothing at all", and one of
+            # those is a defect in this discriminator rather than in the model.
+            # #VERIFY: test_finish_reason_is_logged_even_when_it_is_not_a_truncation.
+            truncated = completion_truncated(batch_returned)
+            if truncated:
                 truncated_node_ids.extend(nid for nid, _ in batch)
-                _logger.warning(
-                    "batch_verdict_truncated",
-                    nodes=len(batch),
-                    max_tokens=min(
-                        _REVIEW_REASONING_ALLOWANCE + max_tokens * len(batch),
-                        _MAX_BATCH_REVIEW_TOKENS,
-                    ),
-                )
+            _logger.warning(
+                "batch_verdict_truncated" if truncated else "batch_verdict_unparseable",
+                nodes=len(batch),
+                truncated=truncated,
+                finish_reason=completion_finish_reason(batch_returned),
+                max_tokens=min(
+                    _REVIEW_REASONING_ALLOWANCE + max_tokens * len(batch),
+                    _MAX_BATCH_REVIEW_TOKENS,
+                ),
+            )
             fail_safe_node_ids.extend(nid for nid, _ in batch)
             continue
         for node_id, _prose in batch:

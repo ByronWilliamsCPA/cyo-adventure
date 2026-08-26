@@ -96,10 +96,43 @@ def completion_truncated(returned: object) -> bool:
     # separates the two, and nothing in moderation read it before this.
     # #VERIFY: test_truncated_batch_is_reported_as_truncation_not_bad_json.
     """
+    return completion_finish_reason(returned) == "length"
+
+
+def completion_finish_reason(returned: object) -> str:
+    """Return the provider's reported finish reason, always as a string.
+
+    The observable half of :func:`completion_truncated`. That predicate can
+    only answer yes or no, so a provider that omits ``finish_reason``, or
+    spells truncation some other way, makes a genuinely starved call
+    indistinguishable from a model that merely emitted bad JSON, and the log
+    cannot show which one happened because the predicate discarded the value.
+    This returns the value itself so a parse failure records what the backend
+    actually said. Both observed OpenRouter runs (2026-08-26, at ceilings of
+    400 and 16000) populated the field, so this closes a confidence gap rather
+    than a known failure.
+
+    Args:
+        returned: Whatever the provider's ``complete`` actually returned.
+
+    Returns:
+        str: The reported reason. ``"<absent>"`` when the field is missing or
+            ``None``, and ``"<not-a-completion>"`` when the provider returned
+            a bare string, so an empty log field can never be mistaken for a
+            backend that reported nothing.
+
+    # #ASSUME: external-resources: a non-string finish_reason is coerced with
+    # repr rather than dropped. The field is free-form across backends and
+    # this value is diagnostic only, never a control-flow input beyond the
+    # equality test in completion_truncated.
+    # #VERIFY: test_finish_reason_is_logged_even_when_it_is_not_a_truncation.
+    """
     if not isinstance(returned, Completion):
-        return False
+        return "<not-a-completion>"
     reason = cast("object", getattr(returned, "finish_reason", None))
-    return reason == "length"
+    if reason is None:
+        return "<absent>"
+    return reason if isinstance(reason, str) else repr(reason)
 
 
 def build_review_provider(

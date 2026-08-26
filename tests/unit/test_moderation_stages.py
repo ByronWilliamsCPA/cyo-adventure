@@ -5,9 +5,12 @@ from __future__ import annotations
 import json
 
 import pytest
+import structlog
+from structlog.testing import LogCapture
 
 from cyo_adventure.generation.provider import MockProvider
 from cyo_adventure.generation.usage import Completion, TokenUsage
+from cyo_adventure.moderation import stages as stages_mod
 from cyo_adventure.moderation.report import (
     FindingSeverity,
     ModerationReport,
@@ -1089,3 +1092,68 @@ async def test_truncated_batch_is_reported_as_truncation_not_bad_json() -> None:
 
     assert "output-token budget" in starved_findings[0].message
     assert "output-token budget" not in malformed_findings[0].message
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_finish_reason_is_logged_even_when_it_is_not_a_truncation() -> None:
+    """Every batch parse failure records what the backend actually reported.
+
+    ``completion_truncated`` can answer only yes or no, so it cannot tell a
+    provider that reported ``finish_reason="stop"`` from one that reported
+    nothing at all. The first is a model formatting quirk; the second means
+    the discriminator itself is blind on that backend, and a starved call
+    there would be logged as ordinary bad JSON forever. Only the raw value
+    separates them, so it is logged unconditionally.
+
+    Three arms over the SAME unparseable prefix. If the log line were emitted
+    only on the truncation branch, the two non-truncated arms would record
+    nothing and this test would fail on the entry count alone.
+    """
+    prefix = '[\n  {"node_id": "n1", "verdict": "safe", "concern": "other"'
+    nodes = [("n1", "a"), ("n2", "b")]
+    arms = {
+        "length": Completion(text=prefix, usage=_STUB_USAGE, finish_reason="length"),
+        "stop": Completion(text=prefix, usage=_STUB_USAGE, finish_reason="stop"),
+        "<absent>": Completion(text=prefix, usage=_STUB_USAGE, finish_reason=None),
+    }
+
+    logged: dict[str, dict[str, object]] = {}
+    for expected_reason, completion in arms.items():
+        cap = LogCapture()
+        original = stages_mod._logger  # pyright: ignore[reportPrivateUsage]
+        stages_mod._logger = structlog.wrap_logger(  # pyright: ignore[reportPrivateUsage]
+            structlog.testing.ReturnLogger(), processors=[cap]
+        )
+        try:
+            findings = await run_safety_stage(
+                provider=_RecordingProvider(responses=[completion]),
+                nodes=nodes,
+                age_band="6-9",
+                max_tokens=512,
+                batch_size=2,
+            )
+        finally:
+            stages_mod._logger = original  # pyright: ignore[reportPrivateUsage]
+
+        # The verdict is unchanged across all three: only the diagnosis moves.
+        assert len(findings) == 1
+        assert findings[0].verdict is Verdict.FLAG
+        assert findings[0].node_ids == ("n1", "n2")
+
+        entries = [e for e in cap.entries if "finish_reason" in e]
+        assert len(entries) == 1, (
+            f"{expected_reason}: expected exactly one parse-failure log entry "
+            f"carrying finish_reason, got {cap.entries}"
+        )
+        logged[expected_reason] = entries[0]
+
+    for expected_reason, entry in logged.items():
+        assert entry["finish_reason"] == expected_reason
+
+    # A missing field must never look like a clean stop, which is the whole
+    # reason the accessor substitutes a marker instead of an empty string.
+    assert logged["<absent>"]["finish_reason"] != logged["stop"]["finish_reason"]
+    assert logged["length"]["truncated"] is True
+    assert logged["stop"]["truncated"] is False
+    assert logged["<absent>"]["truncated"] is False
