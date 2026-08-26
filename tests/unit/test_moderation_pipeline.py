@@ -609,6 +609,69 @@ async def test_mock_review_escape_hatch_stamps_report_as_not_independent(
 
 
 @pytest.mark.unit
+async def test_mock_review_stamps_report_as_not_independent_in_local(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """The mock stamp must NOT depend on ``environment``.
+
+    Regression for the twelve books stuck at the review gate since
+    2026-07-21 with 2,916 fail-safe nodes and
+    ``summary.reviewer_independent: true``
+    (docs/planning/safety/moderation-review-current-state-2026-08-25.md
+    section 6).
+
+    The stamp and ``config._require_real_reviewer_outside_local`` were BOTH
+    gated on ``environment != "local"``, and both read ``environment`` and
+    ``review_provider`` from the same env file. A process that fails to load
+    that file falls back to ``review_provider="mock"`` (config.py's default)
+    AND ``environment="local"``, which disables both defenses at once: the
+    guard does not raise, the stamp does not apply, and the persisted report
+    claims an independent reviewer while every node carries
+    "unknown verdict; defaulted to fail-safe" from the mock's fixed "{}" body.
+
+    A mock review is not an independent review in local either, and the stamp
+    is verdict-neutral (ADVISORY never gates), so it applies unconditionally.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    local_mock_settings = Settings(
+        review_provider="mock",
+        environment="local",
+        review_batch_size=1,
+        database_url="postgresql+asyncpg://user:pw@localhost:5432/cyo_adventure",
+        oidc_issuer="https://issuer.example.com",
+        oidc_jwks_url="https://issuer.example.com/jwks.json",
+        child_session_secret="a" * 32,
+        device_grant_secret="b" * 32,
+    )
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=local_mock_settings,
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    summary = cast("dict[str, object]", moderation_report["summary"])
+    assert summary["reviewer_independent"] is False
+    findings = cast("list[dict[str, object]]", moderation_report["findings"])
+    mock_reviewer_findings = [
+        f for f in findings if f.get("concern") == "mock_reviewer_active"
+    ]
+    assert len(mock_reviewer_findings) == 1
+
+
+@pytest.mark.unit
 async def test_soft_flag_triggers_repair_then_submits(
     mock_session: AsyncMock,
     monkeypatch: pytest.MonkeyPatch,
@@ -2520,7 +2583,16 @@ async def test_review_batch_size_from_settings_drives_chunked_safety_calls(
     assert len(safety_calls) == 1
     assert version.moderation_report is not None
     findings = cast("list[dict[str, object]]", version.moderation_report["findings"])
-    assert not any(f.get("category") == "pipeline" for f in findings)
+    # The assertion is that the BATCHED safety path emitted no fail-safe
+    # pipeline finding. The gap-G1 mock stamp is a separate, expected advisory:
+    # these settings declare review_provider="mock" (to satisfy config) while
+    # `review_seam` injects a real-verdict responder, so the stamp fires on the
+    # declared provider. Excluding it by concern keeps this test measuring the
+    # batch path rather than the stamp.
+    assert not any(
+        f.get("category") == "pipeline" and f.get("concern") != "mock_reviewer_active"
+        for f in findings
+    )
     assert _aggregate(version)["nodes_reviewed"] == _NODE_COUNT
 
 
