@@ -74,10 +74,11 @@ flagged:
 - **A tiered count**, such as "2 blocks · 3 flags", when nothing hit **Hard block**: how many
   findings landed at each severity, so an admin can tell "one small note" from "several real
   concerns" at a glance instead of reading a single flat number.
-- **Moderation unavailable · re-run required**: the automated report could not be produced (for
-  example a reviewer outage during generation). A story in this state is never shown as "ready", so
-  it cannot be mistaken for one that screened clean; it needs a fresh moderation run before anyone
-  can review it.
+- **Moderation unavailable · re-run required**: the automated report carries no genuine content
+  judgment, whether because it is absent, malformed, was produced by a non-independent (mock)
+  reviewer, or contains only pipeline artifacts such as a fail-safe default (for example a reviewer
+  outage during generation). A story in this state is never shown as "ready", so it cannot be
+  mistaken for one that screened clean; it needs a fresh moderation run before anyone can review it.
 - **Repaired** stacks alongside either badge above when the automated repair step already fixed
   something before a human ever saw it.
 
@@ -90,9 +91,11 @@ bottom:
   as **Hard block**, **Soft flags**, **Repaired**, and either **Independent review** or **Not
   independently reviewed**. The safety review is deliberately run by a different AI model than the
   one that wrote the story, so "Independent review" tells the admin that separation held.
-- **A moderation-unavailable notice**, in place of the sections below, when the report could not be
-  produced. **Approve** is disabled while this notice is showing; the page's hint tells the admin to
-  ask an operator to re-run moderation for this story rather than trying to work around it.
+- **A moderation-unavailable notice**, in place of the sections below, when the report carries no
+  genuine content judgment (absent, malformed, non-independent, or pipeline-artifacts-only, the same
+  definition the queue badge above uses). **Approve** is disabled while this notice is showing; the
+  page's hint tells the admin to ask an operator to re-run moderation for this story rather than
+  trying to work around it.
 - **A version comparison**, when this is not the story's first version, so an admin can see exactly
   what changed since the last time it was reviewed.
 - **Story overview** (open by default): a quick, skimmable summary of the story's branches and

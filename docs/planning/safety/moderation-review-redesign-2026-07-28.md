@@ -23,9 +23,19 @@ source: "Gap report docs/planning/safety/moderation-review-current-state-2026-07
 > unusable-report approval gate, override-reason audit trail, and tiered
 > queue/detail UI on top). **Stage C partial**: the baseline capture and
 > the QA-corpus containment layers are done (2026-08-01, section 3.2 item 2
-> and section 5), and the Perspective classifier's call leg is fully
-> retired ahead of the 2026-12-31 sunset (section 3.2 item 5); the Modal
-> guard-model eval and its calibration report (section 3.2 item 3) have
+> and section 5). The Perspective classifier's outbound call leg is fully
+> retired ahead of the 2026-12-31 sunset (section 3.2 item 5): `run_classifiers`
+> no longer calls Perspective's API, and the `perspective_key` parameter is
+> gone from every call site. Retirement stops at the call leg, by design: the
+> `Source.PERSPECTIVE` enum member (so a historical persisted finding still
+> deserializes), the `perspective_api_key` config field (retained only so an
+> existing deployment does not fail to boot; see the runbook's secrets
+> inventory, section 8), and explanatory comments across
+> `moderation/classifiers.py`, `moderation/pipeline.py`,
+> `moderation/rescreen.py`, `api/node_edit.py`, and `core/config.py` all
+> remain. "The call leg is retired" and "Perspective still appears in the
+> code" are therefore both true and not in tension. The Modal guard-model
+> eval and its calibration report (section 3.2 item 3) have
 > not started. **Stage D partial**: the re-moderate entry point and
 > `scripts/remoderate_books.py` sweep script are done and on `main`; the
 > 18-book sweep itself has not run (deferred, pending deploy). See the

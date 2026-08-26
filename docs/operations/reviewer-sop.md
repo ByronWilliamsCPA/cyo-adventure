@@ -33,7 +33,7 @@ reads this book.
 
 | You see | It means | Do this |
 | --- | --- | --- |
-| "Moderation unavailable · re-run required" | The pipeline failed (mock reviewer or fail-safe artifacts); there is NO content judgment | Do not review the wall. Re-run moderation (ops script `scripts/remoderate_books.py --book-id <id> --execute`, or `POST /admin/remoderate/{storybook_id}/{version}`), then review the fresh report. Approval is blocked until then |
+| "Moderation unavailable · re-run required" | The stored report carries no genuine content judgment: absent, malformed, non-independent (mock reviewer), or containing only pipeline artifacts (for example fail-safe defaults) | Do not review the wall. Re-run moderation (ops script `scripts/remoderate_books.py --book-id <id> --execute`, or `POST /api/v1/admin/remoderate/{storybook_id}/{version}`), then review the fresh report. Approval is blocked until then |
 | A structural finding (badge "pipeline") | A pipeline condition, not a content judgment | Same as above: re-run before reviewing |
 | BLOCK verdict | The automated reviewer judged a passage unsafe for the band | Read the passage in full. Default action: edit the node or send back. Approving over a block is exceptional, admin-only, and requires a written override reason that is logged for audit; the audit event records the override counts |
 | FLAG, severity high | Serious concern (e.g. self-harm, real-world danger) | Read the passage in full. Approving requires a written override reason. Prefer node-edit + rescreen, or send back |

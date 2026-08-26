@@ -30,6 +30,24 @@
 # context.serverUrl, context.repo, and context.runId (all runner-supplied, never
 # attacker-controlled) plus a locally-computed ISO date string, the same posture
 # supabase-backup.yml documents for its own alert job.
+#
+# -----------------------------------------------------------------------
+# Expected red Mondays until UW-L08 closes (owner-ratified 2026-08-25):
+# -----------------------------------------------------------------------
+#
+# DECISION: keep this cron running and accept a red run every Monday rather than
+# disabling or loosening the schedule. Known cause: 12 in-review production books
+# carry a 100 percent fail-safe report from the 2026-07-21 mock-reviewer incident
+# (AL-624, docs/planning/authoring-lessons-log.md), and the remediating backfill
+# sweep is deliberately held until feat/moderation-review-hardening deploys (see
+# docs/planning/unscheduled-work-register.md row UW-L08). Until that sweep runs,
+# this job WILL fail every Monday; that is the intended forcing function on
+# UW-L08, not a defect in this check or its schedule.
+# #ASSUME: process: a red run here, on any Monday before UW-L08 closes, is this
+# already-tracked known cause rather than a new regression.
+# #VERIFY: confirm the alert issue's book list matches the population UW-L08
+# names before treating a failure as novel; a hit outside that population is a
+# new incident and should be triaged as one.
 name: Moderation report health
 
 on:
