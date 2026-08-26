@@ -78,6 +78,30 @@ def completion_text(returned: object) -> str | None:
     return text if isinstance(text, str) else None
 
 
+def completion_truncated(returned: object) -> bool:
+    """Return ``True`` when the provider reported a budget truncation.
+
+    Args:
+        returned: Whatever the provider's ``complete`` actually returned.
+
+    Returns:
+        ``True`` only when the backend reported ``finish_reason="length"``.
+
+    # #CRITICAL: external-resources: the OpenRouter adapter raises only when a
+    # truncated completion comes back EMPTY. A truncation that produced some
+    # bytes first returns normally, so a starved review call reaches the stage
+    # parsers as a JSON prefix and fails safe as "unparseable". That reads like
+    # a model formatting quirk and hides the real cause, which is that we did
+    # not buy enough output budget. ``finish_reason`` is the only thing that
+    # separates the two, and nothing in moderation read it before this.
+    # #VERIFY: test_truncated_batch_is_reported_as_truncation_not_bad_json.
+    """
+    if not isinstance(returned, Completion):
+        return False
+    reason = cast("object", getattr(returned, "finish_reason", None))
+    return reason == "length"
+
+
 def build_review_provider(
     settings: Settings,
     *,

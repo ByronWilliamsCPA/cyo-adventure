@@ -32,7 +32,10 @@ from cyo_adventure.moderation.report import (
     Source,
     Verdict,
 )
-from cyo_adventure.moderation.review_provider import completion_text
+from cyo_adventure.moderation.review_provider import (
+    completion_text,
+    completion_truncated,
+)
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -126,9 +129,27 @@ _SAFETY_SYSTEM_BATCH = (
 
 # Output-token ceiling for a single batched safety call. The batch budget scales
 # with node count, but the product must stay inside what review models actually
-# accept; 8192 leaves room for a full per-node verdict object across a realistic
-# batch while staying under the common output cap.
-_MAX_BATCH_REVIEW_TOKENS = 8192
+# accept.
+#
+# #CRITICAL: external-resources: 8192 was sized for a review model that emits no
+# reasoning tokens. #747 repointed review at deepseek/deepseek-v4-flash, and the
+# OpenRouter ceiling counts reasoning against the SAME budget, so a batch can
+# spend its whole allowance thinking and return a JSON prefix. Note what the old
+# figure actually did at the configured default: review_batch_size is 8, so
+# min(1024 * 8, 8192) is EXACTLY the product and the clamp never bound at all.
+# Raising the clamp alone would therefore have changed nothing; the per-node
+# 1024 is what starved the call. 16000 matches the ceiling the whole-story
+# stages already run at against this provider, measured rather than guessed.
+# #VERIFY: test_batch_budget_carries_a_reasoning_allowance.
+_MAX_BATCH_REVIEW_TOKENS = 16000
+
+# Per-CALL output-token allowance for hidden reasoning, added on top of the
+# per-node product. Reasoning is largely a fixed cost of answering at all rather
+# than a per-node cost: a measured 8-node safety batch spent 193 reasoning
+# tokens on one sample and blew past 8192 on another, and the whole-story
+# coherence call on the same book spent 4443. A per-node budget alone cannot
+# absorb that variance, so the allowance is separate from it.
+_REVIEW_REASONING_ALLOWANCE = 8000
 
 _COHERENCE_SYSTEM = (
     "You are a story-consistency reviewer for a children's choose-your-own-adventure "
@@ -616,6 +637,7 @@ async def run_safety_stage(
     # batching tests added alongside review_batch_size.
     findings: list[Finding] = []
     fail_safe_node_ids: list[str] = []
+    truncated_node_ids: list[str] = []
     for batch in _chunks(nodes, max(1, batch_size)):
         if len(batch) == 1:
             node_id, prose = batch[0]
@@ -662,11 +684,27 @@ async def run_safety_stage(
             # outright instead of returning something the parser can fail safe
             # on. Clamping keeps an oversized batch on the fail-safe path.
             # #VERIFY: test_batch_max_tokens_is_clamped_for_large_batches.
-            max_tokens=min(max_tokens * len(batch), _MAX_BATCH_REVIEW_TOKENS),
+            max_tokens=min(
+                _REVIEW_REASONING_ALLOWANCE + max_tokens * len(batch),
+                _MAX_BATCH_REVIEW_TOKENS,
+            ),
         )
         raw = completion_text(batch_returned)
         by_node_id = _parse_batch_verdicts(raw, [nid for nid, _ in batch])
         if by_node_id is None:
+            if completion_truncated(batch_returned):
+                # Name the cause. Without this the log says only "unparseable",
+                # which sends the next reader hunting a model formatting quirk
+                # when the fix is to buy more output budget.
+                truncated_node_ids.extend(nid for nid, _ in batch)
+                _logger.warning(
+                    "batch_verdict_truncated",
+                    nodes=len(batch),
+                    max_tokens=min(
+                        _REVIEW_REASONING_ALLOWANCE + max_tokens * len(batch),
+                        _MAX_BATCH_REVIEW_TOKENS,
+                    ),
+                )
             fail_safe_node_ids.extend(nid for nid, _ in batch)
             continue
         for node_id, _prose in batch:
@@ -698,6 +736,12 @@ async def run_safety_stage(
                 message=(
                     f"reviewer unavailable or unparseable on "
                     f"{len(fail_safe_node_ids)} node(s); defaulted to fail-safe"
+                    + (
+                        f" ({len(truncated_node_ids)} of them because the "
+                        f"reviewer hit its output-token budget mid-response)"
+                        if truncated_node_ids
+                        else ""
+                    )
                 ),
                 structural=True,
                 concern="reviewer_unavailable",

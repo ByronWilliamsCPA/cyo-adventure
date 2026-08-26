@@ -17,6 +17,8 @@ from cyo_adventure.moderation.report import (
 from cyo_adventure.moderation.stages import (
     _COHERENCE_SYSTEM,  # pyright: ignore[reportPrivateUsage]
     _ENGAGEMENT_SYSTEM,  # pyright: ignore[reportPrivateUsage]
+    _MAX_BATCH_REVIEW_TOKENS,  # pyright: ignore[reportPrivateUsage]
+    _REVIEW_REASONING_ALLOWANCE,  # pyright: ignore[reportPrivateUsage]
     _SAFETY_SYSTEM,  # pyright: ignore[reportPrivateUsage]
     _SAFETY_SYSTEM_BATCH,  # pyright: ignore[reportPrivateUsage]
     run_coherence_stage,
@@ -683,7 +685,7 @@ async def test_batch_max_tokens_is_clamped_for_large_batches() -> None:
     )
     assert len(provider.calls) == 1
     _system, _prompt, requested = provider.calls[0]
-    assert requested == 8192
+    assert requested == 16000
     assert requested < 1024 * 50
 
 
@@ -1011,3 +1013,79 @@ async def test_engagement_stage_prompt_neutralizes_literal_closing_tag_in_prose(
     assert sent_prompt.count("<untrusted_passage>") == 2
     assert sent_prompt.count("</untrusted_passage>") == 2
     assert "&lt;/untrusted_passage>" in sent_prompt
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_batch_budget_carries_a_reasoning_allowance() -> None:
+    """A DEFAULT-sized batch must ask for more than the bare per-node product.
+
+    This is the regression that the old clamp could not have caught. At
+    review_batch_size=8 the previous budget was min(1024 * 8, 8192), and 8192 is
+    EXACTLY that product, so the clamp never bound and the call got a pure
+    per-node budget. A reasoning-native review model spends part of that budget
+    thinking, so the response came back as a JSON prefix and the whole batch
+    fell to the fail-safe. Asserting a bare ``== _MAX_BATCH_REVIEW_TOKENS``
+    would pass on the old code too; the discriminating claim is that the
+    request now EXCEEDS the per-node product.
+    """
+    provider = _RecordingProvider(responses=["[]"])
+    _ = await run_safety_stage(
+        provider=provider,
+        nodes=[(f"n{i}", "text") for i in range(8)],
+        age_band="6-9",
+        max_tokens=1024,
+        batch_size=8,
+    )
+    assert len(provider.calls) == 1
+    _system, _prompt, requested = provider.calls[0]
+    assert requested > 1024 * 8
+    assert requested == min(
+        1024 * 8 + _REVIEW_REASONING_ALLOWANCE, _MAX_BATCH_REVIEW_TOKENS
+    )
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_truncated_batch_is_reported_as_truncation_not_bad_json() -> None:
+    """A starved batch must name the budget; a malformed one must not.
+
+    Both arms hand the parser the SAME unparseable JSON prefix, so the only
+    difference is ``finish_reason``. That is what makes this test discriminate:
+    an implementation that ignores ``finish_reason`` (as every moderation stage
+    did before) produces identical messages for both arms and fails here.
+    """
+    prefix = '[\n  {"node_id": "n1", "verdict": "safe", "concern": "other"'
+    nodes = [("n1", "a"), ("n2", "b")]
+
+    starved = _RecordingProvider(
+        responses=[Completion(text=prefix, usage=_STUB_USAGE, finish_reason="length")]
+    )
+    starved_findings = await run_safety_stage(
+        provider=starved,
+        nodes=nodes,
+        age_band="6-9",
+        max_tokens=512,
+        batch_size=2,
+    )
+
+    malformed = _RecordingProvider(
+        responses=[Completion(text=prefix, usage=_STUB_USAGE, finish_reason="stop")]
+    )
+    malformed_findings = await run_safety_stage(
+        provider=malformed,
+        nodes=nodes,
+        age_band="6-9",
+        max_tokens=512,
+        batch_size=2,
+    )
+
+    # Both fail safe over the same nodes: the truncation must not change the
+    # verdict, only the diagnosis.
+    for findings in (starved_findings, malformed_findings):
+        assert len(findings) == 1
+        assert findings[0].verdict is Verdict.FLAG
+        assert findings[0].node_ids == ("n1", "n2")
+
+    assert "output-token budget" in starved_findings[0].message
+    assert "output-token budget" not in malformed_findings[0].message
