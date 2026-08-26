@@ -93,6 +93,7 @@ from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 from cyo_adventure.moderation.classifiers import run_classifiers
 from cyo_adventure.moderation.personalizable_slots import (
+    PersonalizableSlots,
     PersonalizableSlotsUnrecoverable,
     personalizable_slot_ids_for_story,
 )
@@ -454,6 +455,49 @@ def _merge_moderation_report(
     return result
 
 
+def _personalization_eligible(
+    personalizable_slots: PersonalizableSlots, blob: dict[str, object]
+) -> bool:
+    """Decide the persisted ``personalization_eligible`` flag for an edited blob.
+
+    # #CRITICAL: data integrity: this reads the UNCOLLAPSED tri-state, not the
+    # empty-set collapse `edit_node` performs for the at-rest integrity check.
+    # That collapse is authorized for exactly one decision ("reject any
+    # sentinel this edit leaves behind"), where "no slot is declared" and
+    # "which slots are declared cannot be proven" genuinely coincide. They do
+    # NOT coincide here: an unrecoverable contract is not evidence that the
+    # story declares no personalizable slot, and this column is a persisted
+    # claim that `api/library.py` reads verbatim. So the marker is answered on
+    # its own terms below rather than inherited from a value computed for a
+    # different question.
+    # #VERIFY: tests/unit/test_node_edit.py::
+    # test_unrecoverable_contract_drives_eligibility_from_the_tri_state and
+    # ::test_personalization_eligible_is_false_for_an_unrecoverable_contract.
+
+    Args:
+        personalizable_slots: The story's resolved personalizable-slot
+            tri-state (see ``moderation/personalizable_slots.py``).
+        blob: The blob about to be stored, i.e. the EDITED document, so the
+            flag describes what is being persisted rather than what was read.
+
+    Returns:
+        bool: ``True`` only when the story provably declares at least one
+        personalizable slot AND the blob still carries a sentinel token.
+        ``False`` for an unrecoverable contract: the column gates an
+        affordance, so the fail-closed answer is to withhold it. The cost of
+        being wrong that way is a genuinely personalizable book briefly
+        offered as plain prose; the cost the other way is advertising a
+        personalization the story's declared-slot set cannot be shown to
+        support.
+    """
+    if isinstance(personalizable_slots, PersonalizableSlotsUnrecoverable):
+        return False
+    # Narrowed to the frozenset arm first, which is what makes this truthiness
+    # test legitimate rather than the falsy-collapse the marker type exists to
+    # prevent.
+    return bool(personalizable_slots) and manifest_carries_tokens(build_manifest(blob))
+
+
 @router.patch("/storybooks/{storybook_id}/versions/{version}/nodes/{node_id}")
 async def edit_node(
     storybook_id: str,
@@ -594,10 +638,14 @@ async def edit_node(
     #
     # An UNRECOVERABLE contract (`PERSONALIZABLE_SLOTS_UNRECOVERABLE`)
     # degrades to an empty declared-slot set rather than a hard block. That
-    # collapse is deliberate HERE and nowhere else: for an editor, "no slot is
-    # declared" and "we cannot prove which slots are declared" both mean
-    # "reject any sentinel this edit leaves behind", so the two arms genuinely
-    # coincide. The `isinstance` spells the collapse out rather than letting a
+    # collapse is deliberate for THIS check and nowhere else, which is why the
+    # collapsed value is named for its single authorized use: for an editor,
+    # "no slot is declared" and "we cannot prove which slots are declared"
+    # both mean "reject any sentinel this edit leaves behind", so the two arms
+    # genuinely coincide. The persisted `personalization_eligible` flag below
+    # is a DIFFERENT decision, where they do not coincide, so it reads the
+    # uncollapsed tri-state instead (see `_personalization_eligible`).
+    # The `isinstance` spells the collapse out rather than letting a
     # truthiness test perform it silently. `check_sentinel_integrity_at_rest` with
     # no declared slots still fails closed on any sentinel actually present
     # in the edited blob (every well-formed sentinel becomes `unknown_slot`,
@@ -616,12 +664,29 @@ async def edit_node(
     personalizable_slots = await personalizable_slot_ids_for_story(
         ctx.session, storybook_id
     )
-    slots_for_check: frozenset[str] = (
-        frozenset[str]()
-        if isinstance(personalizable_slots, PersonalizableSlotsUnrecoverable)
-        else personalizable_slots
+    slots_for_integrity_check: frozenset[str]
+    if isinstance(personalizable_slots, PersonalizableSlotsUnrecoverable):
+        # The resolver logs its own event naming the slug and band that failed
+        # to load; this line records the CONSEQUENCE at the decision point:
+        # this edit is being integrity-checked against an empty declared set.
+        # INFO, not WARNING: the underlying fault is already on the log at
+        # WARNING from the resolver, and the collapse itself is a designed,
+        # still-fail-closed degrade (a sentinel-bearing edit is rejected
+        # below), so re-alarming here would double-count one fault.
+        # #VERIFY: tests/unit/test_node_edit.py::
+        # test_unrecoverable_contract_is_logged_at_the_edit_site.
+        _logger.info(
+            "node_edit.slot_contract_unrecoverable_empty_declared_set",
+            storybook_id=storybook_id,
+            version=version,
+            node_id=node_id,
+        )
+        slots_for_integrity_check = frozenset()
+    else:
+        slots_for_integrity_check = personalizable_slots
+    integrity_result = check_sentinel_integrity_at_rest(
+        new_blob, slots_for_integrity_check
     )
-    integrity_result = check_sentinel_integrity_at_rest(new_blob, slots_for_check)
     if not integrity_result.ok:
         msg = "edited passage introduced a sentinel-integrity violation"
         raise ValidationError(
@@ -713,11 +778,16 @@ async def edit_node(
     # one is a legitimate edit. Re-derive from the blob actually being stored.
     # `sentinel_manifest` is deliberately NOT refreshed here; that is the open
     # half of Task R3 recorded on the column itself in db/models.py.
+    # Derived from `personalizable_slots` (the tri-state), NOT from
+    # `slots_for_integrity_check` (the collapse authorized only for the at-rest
+    # check above); see `_personalization_eligible` for why the two decisions
+    # must not share one value.
     # #VERIFY: tests/unit/test_node_edit.py::
-    # test_edit_removing_last_sentinel_clears_personalization_eligible.
-    version_row.personalization_eligible = bool(
-        slots_for_check
-    ) and manifest_carries_tokens(build_manifest(new_blob))
+    # test_edit_removing_last_sentinel_clears_personalization_eligible and
+    # ::test_unrecoverable_contract_drives_eligibility_from_the_tri_state.
+    version_row.personalization_eligible = _personalization_eligible(
+        personalizable_slots, new_blob
+    )
 
     # #CRITICAL: data integrity: the append-only audit record of this edit;
     # payload is the node id ONLY, never the edited prose (spec D3). Flushed

@@ -862,7 +862,7 @@ class Settings(BaseSettings):
     # pool on each recreation, so no single narrower CIDR can be hardcoded
     # there yet; narrowing it once backend-net is pinned is tracked in issue
     # #138. This repo's own dev docker-compose.yml network IS pinned
-    # (172.25.0.0/16 as of this writing) and overrides FORWARDED_ALLOW_IPS to
+    # (172.26.0.0/16 as of this writing) and overrides FORWARDED_ALLOW_IPS to
     # that exact narrower subnet at the compose layer instead of trusting the
     # whole /12 umbrella, since anything broader would needlessly cover
     # addresses that can never be this backend's real dev reverse-proxy peer;

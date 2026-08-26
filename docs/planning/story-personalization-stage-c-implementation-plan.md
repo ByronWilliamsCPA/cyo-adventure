@@ -407,7 +407,8 @@ git commit -S -m "feat(generation): personalizable slot-id to field map (ADR-023
 This mirrors the existing `personalizable_slot_ids_for_story` provenance chain exactly:
 `GenerationJob` row by `storybook_id`, then `resolve_skeleton_path` plus `load_skeleton` plus
 `load_contract_for`. Read `personalizable_slot_ids_for_job`'s docstring before writing this; its
-tri-state contract (`frozenset` / empty `frozenset` / `None` for fail-closed) is the contract this
+tri-state contract (`frozenset` / empty `frozenset` / `PERSONALIZABLE_SLOTS_UNRECOVERABLE` for
+fail-closed) is the contract this
 function inherits, with `dict` substituted for `frozenset`.
 
 - [ ] **Step 1: write the failing tests.** Append to the test module:

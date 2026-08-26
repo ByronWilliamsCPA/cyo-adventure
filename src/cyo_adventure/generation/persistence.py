@@ -57,11 +57,25 @@ class StorybookParams:
         personalization_eligible: Whether this version's blob carries any
             sentinel-bound personalizable slots. Computed by the caller
             (``generation/worker.py`` and ``generation/import_story.py``,
-            ADR-023 Task D4) as ``bool(declared_personalizable_slots) and
-            sentinel_manifest is not None``, both legs required: a contract
-            that declares slots but produced no manifest (transform skipped)
-            must stay ``False``. Defaults to ``False``, matching the
-            column's own default.
+            ADR-023 Task D4) in two steps, in this order::
+
+                declared = slots if isinstance(slots, frozenset) else None
+                eligible = bool(declared) and manifest_carries_tokens(manifest)
+
+            The ``isinstance`` narrowing is not optional tidiness, it is the
+            first leg. ``slots`` is the personalizable-slot tri-state from
+            ``moderation/personalizable_slots.py``, whose two marker arms
+            raise ``TypeError`` from ``__bool__``; calling ``bool()`` on a raw
+            resolver result type-checks CLEAN and crashes at runtime, so the
+            narrowing is what turns "the contract is unset or unrecoverable"
+            into ``False`` rather than into an exception. The second leg is
+            ``manifest_carries_tokens(...)``, NOT ``sentinel_manifest is not
+            None``: ``build_manifest`` returns ``{"tokens": {}}`` rather than
+            ``None`` for a blob carrying no sentinel, so a presence test would
+            stamp ``True`` for a version with nothing to personalize. Both
+            legs are required: a contract that declares slots but produced no
+            manifest (transform skipped) must stay ``False``. Defaults to
+            ``False``, matching the column's own default.
         status: Storybook lifecycle status (default ``"draft"``).
         version: Version number (default 1).
     """

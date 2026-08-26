@@ -216,10 +216,10 @@ async def run_moderation_pipeline(
             When left at the default, this function resolves the slot set
             itself via :func:`personalizable_slot_ids_for_story`, exactly
             as it always has (dormant for every other caller). An explicit
-            ``None`` (as opposed to the default) is honored VERBATIM and
-            still fails closed below: it means the caller itself already
-            determined personalization was possible but the contract could
-            not be recovered (M1).
+            :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE` (as opposed to the
+            default) is honored VERBATIM and still fails closed below: it
+            means the caller itself already determined personalization was
+            possible but the contract could not be recovered (M1).
         allow_repair: When False, skip the bounded auto-repair entirely and
             report on the story exactly as it stands. Every generation-path
             caller leaves this True (a pre-publish draft is repairable by
@@ -304,7 +304,8 @@ async def run_moderation_pipeline(
     # here, against the ORIGINAL blob, before any staging/adoption decision;
     # REUSE this same resolution for the repair gate below rather than
     # re-resolving it (avoids a second DB/file lookup per moderation pass).
-    # Fail closed on either an unrecoverable contract (`None`) or a
+    # Fail closed on either an unrecoverable contract
+    # (`PERSONALIZABLE_SLOTS_UNRECOVERABLE`) or a
     # violation, using the SAME BLOCK-verdict Finding mechanism the
     # existing invalid-blob path (below) uses to force auto_reject: never
     # auto-adopt or auto-publish a blob whose sentinel content cannot be
@@ -336,7 +337,22 @@ async def run_moderation_pipeline(
         personalizable_slots = await personalizable_slot_ids_for_story(
             session, story_id
         )
-    if isinstance(personalizable_slots, PersonalizableSlotsUnrecoverable):
+    # #CRITICAL: security: `None` is deliberately caught here even though it is
+    # NOT a member of `PersonalizableSlotsArg`. It is the retired spelling of
+    # this exact fail-closed state; `tests/` is type-checked by no gate in this
+    # repo (pyproject's basedpyright `include = ["src"]`), so an untyped or
+    # stale caller can still supply it; and an unexpected value arriving at a
+    # security control must fail closed rather than be reinterpreted as a
+    # recovered contract. Without this arm `None` satisfies NEITHER isinstance,
+    # falls through to the `else` below, and is handed to
+    # `check_sentinel_integrity_at_rest` in place of a resolved `frozenset`,
+    # which reports ok=True on a sentinel-free blob: fail-OPEN, the story
+    # submits clean with no entry-level check at all.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_run_moderation_pipeline_none_slots_fails_closed.
+    if personalizable_slots is None or isinstance(
+        personalizable_slots, PersonalizableSlotsUnrecoverable
+    ):
         # Distinct event name from the blob-integrity violation logged below:
         # this is a CONTRACT-recovery failure (the personalizable-slot set could
         # not be resolved), not a sentinel violation in the story blob. Sharing
@@ -635,8 +651,9 @@ async def _attempt_and_adopt_repair(
             entry-level sentinel-integrity backstop; reused here rather than
             re-resolved, so a moderation pass never does the GenerationJob/
             contract lookup twice. The caller only enters this function when
-            that resolution was non-``None`` (see the caller's own fail-closed
-            guard), so this parameter is never a placeholder guess.
+            that resolution landed on the ``frozenset`` arm, never on
+            :data:`PERSONALIZABLE_SLOTS_UNRECOVERABLE` (see the caller's own
+            fail-closed guard), so this parameter is never a placeholder guess.
 
     Returns:
         ModerationReport: ``report`` unchanged when no repair was produced,

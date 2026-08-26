@@ -128,9 +128,29 @@ newman run docs/api/postman-collection.json \
   --reporters cli,junit --reporter-junit-export newman-junit.xml --bail
 ```
 
-If another compose project already occupies the default ports or the pinned `172.25.0.0/16` subnet (for
-example a running dev stack), run the suite under an isolated project with remapped ports and point
-`base_url`/`DATABASE_URL` at them (`docker compose -p cyo-adventure-apitest ...`).
+If another compose project already occupies the default ports or the pinned `172.26.0.0/16` subnet (for
+example a running dev stack), run the suite under an isolated project and point `base_url`/`DATABASE_URL`
+at the remapped endpoints. Note that `-p` alone is not sufficient: it changes the project name, but the
+subnet is pinned in `docker-compose.yml` (`networks.cyo_adventure-network.ipam.config`), so the isolated
+project requests the same range and Docker refuses it with "Pool overlaps with other one on this address
+space". Supply an override that moves both the subnet and the published ports:
+
+```bash
+cat > /tmp/apitest.yml <<'YAML'
+services:
+  app:
+    ports: ["18000:8000"]
+  db:
+    ports: ["15432:5432"]
+networks:
+  cyo_adventure-network:
+    ipam:
+      config:
+        - subnet: 172.31.0.0/16
+YAML
+docker compose -p cyo-adventure-apitest -f docker-compose.yml -f /tmp/apitest.yml up -d
+# then: base_url=http://localhost:18000, DATABASE_URL=...@localhost:15432/cyo_adventure
+```
 
 ## Required environment
 

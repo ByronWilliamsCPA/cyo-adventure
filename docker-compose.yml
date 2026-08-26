@@ -66,7 +66,7 @@ services:
       # homelab-infra backend-net there has no pinned subnet; see those files'
       # comments and issue #138. See core/config.py's forwarded_allow_ips
       # docstring for the full rationale; never set this to "*".
-      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-172.25.0.0/16}
+      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-172.26.0.0/16}
 
     # Overrides the Dockerfile's hardcoded CMD default so this env var actually
     # takes effect: the DHI hardened runtime image ships no shell, so the
@@ -82,7 +82,7 @@ services:
       - --port
       - "8000"
       - --proxy-headers
-      - --forwarded-allow-ips=${FORWARDED_ALLOW_IPS:-172.25.0.0/16}
+      - --forwarded-allow-ips=${FORWARDED_ALLOW_IPS:-172.26.0.0/16}
 
     volumes:
       # Development: Mount source code for hot reload
@@ -195,12 +195,128 @@ services:
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     environment:
-      - VITE_API_URL=http://localhost:${APP_PORT:-8000}
+      # #CRITICAL: external-resources: vite.config.ts proxies /api to
+      # `process.env.VITE_API_URL`, and that lookup runs INSIDE this container,
+      # where `localhost` is the container's own loopback rather than the host.
+      # Pointing it at localhost made every /api call 502, which the frontend
+      # reports as `backend-unreachable`: the guardian signs in successfully and
+      # is then dropped on "We can't reach CYO Adventure" instead of the console.
+      # host-gateway resolves to the host in both supported setups, since the
+      # `app` service publishes the same port on the host when it is running.
+      #
+      # The HOST-side knob is DEV_API_PROXY_TARGET, not VITE_API_URL, on
+      # purpose. docker-compose.prod.yml:160 already spends the name
+      # VITE_API_URL on a production BUILD ARG that is baked into the shipped
+      # bundle (`${VITE_API_URL:-/api}`). If this dev target reused that name,
+      # a developer who exported it (or uncommented it in the root .env, which
+      # compose auto-loads for interpolation) would silently bake
+      # `host.docker.internal` into a production build. The CONTAINER-side
+      # variable stays VITE_API_URL because that is the name vite.config.ts
+      # reads; only the interpolation source is renamed.
+      #
+      # Dev-target-only: this must never be aimed at a production backend. The
+      # value also reaches the dev bundle's `import.meta.env.VITE_API_URL`,
+      # because Vite's loadEnv merges every VITE_-prefixed process.env var into
+      # the client env. src/hooks/apiBaseUrl.ts:18 ignores it today (it gates on
+      # `import.meta.env.PROD`, and this service only ever runs an unbuilt dev
+      # server), so it is inert in the browser; it would stop being inert the
+      # moment this service were pointed at a production target.
+      #
+      # `environment:` takes precedence over `env_file:` below, so a developer
+      # whose frontend/.env.local carries `VITE_API_URL=http://localhost:8000`
+      # for bare `npm run dev` cannot re-break the in-container proxy.
+      # #VERIFY: `curl -o /dev/null -w '%{http_code}' localhost:3000/api/v1/health/live`
+      # must return 200, not 502.
+      - VITE_API_URL=${DEV_API_PROXY_TARGET:-http://host.docker.internal:${APP_PORT:-8000}}
+    # #CRITICAL: external-resources: auth/supabaseClient.ts throws when
+    # VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is missing, which takes out
+    # the guardian lazy chunk (sign-in) while leaving the kid surface up.
+    #
+    # This used to be a `./frontend/.env.local:/app/.env.local:ro` bind mount,
+    # and that failed SILENTLY on a fresh clone. The source path is gitignored
+    # (frontend/.gitignore:41) and excluded by frontend/.dockerignore, so it
+    # does not exist; Docker then creates an empty ROOT-OWNED DIRECTORY at that
+    # host path, and Vite's loadEnv skips a non-file with no error at all
+    # (`if (!stat || !stat.isFile() && !stat.isFIFO()) return []`). The result
+    # was the exact dead-guardian-chunk symptom commit 409cf27a fixed, plus a
+    # root-owned directory a non-root developer cannot remove and `git status`
+    # never shows.
+    #
+    # `env_file:` replaces it, but deliberately as `required: false` plus the
+    # startup guard below rather than as a hard requirement. A hard requirement
+    # does fail loudly, and it fails FAR too widely: compose resolves env_file
+    # when it PARSES the project, not when it starts this service, so an absent
+    # file breaks every `docker compose` command in the repo. CI caught it on a
+    # backend-only step that has no reason to own a frontend env file:
+    #   docker compose exec -T db psql ...
+    #   -> env file /.../frontend/.env.local not found
+    # The guard checks the VARIABLES at frontend startup instead, which is both
+    # narrower (nothing else in the project is affected) and more accurate (a
+    # developer who supplies them another way is correctly left alone). It
+    # rejects an empty value as well as an unset one, because compose's
+    # `${VAR:-}` idiom yields the empty string, and Vite would carry that
+    # straight through to a client that fails the same way a missing key does.
+    #
+    # The tradeoff accepted here is that the values now appear in
+    # `docker inspect` and `docker compose config`, which the bind mount
+    # avoided. Acceptable: both are publishable-by-design, since the Supabase
+    # anon key ships inside the browser bundle and is guarded by RLS rather
+    # than by secrecy. Do not add the service-role key to this file.
+    #
+    # Required prerequisite before `docker compose up frontend`:
+    #   cp frontend/.env.local.example frontend/.env.local
+    # #VERIFY: with frontend/.env.local absent, `docker compose up frontend`
+    # must exit non-zero naming the two variables, AND `docker compose config`
+    # and a backend-only `docker compose exec db true` must BOTH still succeed.
+    env_file:
+      - path: ./frontend/.env.local
+        required: false
+    # #CRITICAL: external-resources: `command:` below is NOT redundant with the
+    # Dockerfile's CMD, and removing it breaks this service silently. Declaring
+    # `entrypoint:` in compose CLEARS the image's default command, so `exec
+    # "$$@"` would run with zero arguments: `exec` with no operands is a no-op,
+    # the script falls off its end, and the container EXITS 0 having started no
+    # dev server at all. That reads as success everywhere. The arg-count guard
+    # turns that failure mode back into a loud one, so a future edit that drops
+    # `command:` fails visibly instead of quietly serving nothing.
+    # `$$` escapes compose interpolation: these are evaluated in the container.
+    # #VERIFY: `docker compose run --rm --no-deps frontend` must keep running
+    # (Vite banner), never exit 0 with empty output.
+    entrypoint:
+      - sh
+      - -c
+      - |
+        if [ -z "$${VITE_SUPABASE_URL}" ] || [ -z "$${VITE_SUPABASE_ANON_KEY}" ]; then
+          echo "cyo_adventure-frontend: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are unset." >&2
+          echo "The guardian sign-in chunk throws without them. Create the file compose reads:" >&2
+          echo "  cp frontend/.env.local.example frontend/.env.local" >&2
+          exit 1
+        fi
+        if [ "$$#" -eq 0 ]; then
+          echo "cyo_adventure-frontend: no command to run. Declaring entrypoint in compose" >&2
+          echo "clears the image CMD, so this service must also declare command:." >&2
+          exit 1
+        fi
+        exec "$$@"
+      - --
+    # Mirrors frontend/Dockerfile's development CMD. Kept in step by the
+    # arg-count guard above, which fails loudly if this is ever removed.
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       # Development: Mount source code for hot reload
       - ./frontend/src:/app/src:ro
       - ./frontend/public:/app/public:ro
       - ./frontend/index.html:/app/index.html:ro
+      # #CRITICAL: external-resources: src/index.css @imports
+      # '../design-system/src/*.css'. Without this mount the container serves
+      # whatever design-system snapshot was baked into the image, so any
+      # stylesheet added since the last `--build` makes Vite return HTTP 500
+      # for src/index.css and the app renders only an HMR error overlay.
+      # #VERIFY: `docker exec cyo_adventure-frontend ls /app/design-system/src`
+      # must list the same .css files as ./frontend/design-system/src.
+      - ./frontend/design-system:/app/design-system:ro
     depends_on:
       - app
     restart: unless-stopped
@@ -280,7 +396,7 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.25.0.0/16
+        - subnet: 172.26.0.0/16
 
 # =============================================================================
 # Usage Instructions

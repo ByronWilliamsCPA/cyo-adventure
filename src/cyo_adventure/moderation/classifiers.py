@@ -82,7 +82,7 @@ PERSPECTIVE_ATTRIBUTES: tuple[str, ...] = (
 # signal loss (0.10 loses 10 of 14 pairs, and the clean noise it removes is
 # concentrated in violence/violence-graphic while the losses it causes hit
 # self-harm*/sexual*). The owner ruled to keep 0.01 and move to per-category
-# floors instead of a single scalar; tracked at UW-C377 in
+# floors instead of a single scalar; tracked at UW-C378 in
 # docs/planning/unscheduled-work-register.md.
 _ADVISORY_SCORE_FLOOR = 0.01
 
