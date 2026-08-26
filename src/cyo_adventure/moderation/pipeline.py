@@ -67,6 +67,34 @@ if TYPE_CHECKING:
 
 _logger = get_logger(__name__)
 _MAX_REVIEW_TOKENS = 1024
+
+# Output-token ceiling for the two WHOLE-STORY review stages (coherence and
+# engagement), which send every node's prose in a single call.
+#
+# #CRITICAL: external-resources: _MAX_REVIEW_TOKENS is a PER-NODE budget. The
+# safety stage multiplies it by batch size and clamps at
+# _MAX_BATCH_REVIEW_TOKENS (8192), so it reaches a workable ceiling; the
+# whole-story stages passed it through flat and got 1024 for a call whose input
+# scales with the entire book. That figure was sized for
+# anthropic/claude-sonnet-4.6, which emits no reasoning tokens. #747 repointed
+# review at deepseek/deepseek-v4-flash, which is reasoning-native, and the
+# OpenRouter ceiling counts reasoning against the SAME budget, so the model
+# spent the whole allowance thinking and the call came back
+# finish_reason=length with empty content, raising ProviderError and aborting
+# the book. settings.llm_effort="off" does not help: it only stops the adapter
+# SENDING a reasoning parameter, it does not stop a reasoning-native model from
+# reasoning.
+#
+# 16000 is measured, not guessed. sk_clocktower_cipher (25 nodes) is the book
+# that exposed this; run at a 32000 ceiling its coherence call completed
+# (finish_reason=stop) reporting 4443 reasoning tokens plus 4252 output tokens.
+# The true requirement therefore approaches ~8700, which straddles the 8192
+# batch clamp, so reusing that constant here would have been a coin flip.
+# Reasoning need tracks CONTENT, not length: 550-node books pass at 1024 while
+# this 25-node book does not, so the headroom is deliberate.
+# #VERIFY: test_whole_story_stages_get_the_whole_story_token_budget.
+_MAX_WHOLE_STORY_REVIEW_TOKENS = 16000
+
 _MAX_REPAIR_TOKENS = 32000
 
 # The personalizable-slot tri-state contract (the ``PERSONALIZABLE_SLOTS_UNSET``
@@ -1141,13 +1169,13 @@ async def _run_all_stages(
     for finding in await run_coherence_stage(
         provider=review_provider,
         nodes=nodes,
-        max_tokens=_MAX_REVIEW_TOKENS,
+        max_tokens=_MAX_WHOLE_STORY_REVIEW_TOKENS,
     ):
         report.add(finding)
     for finding in await run_engagement_stage(
         provider=review_provider,
         nodes=nodes,
-        max_tokens=_MAX_REVIEW_TOKENS,
+        max_tokens=_MAX_WHOLE_STORY_REVIEW_TOKENS,
     ):
         report.add(finding)
 

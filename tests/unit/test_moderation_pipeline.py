@@ -3039,3 +3039,64 @@ async def test_prose_craft_measures_the_repaired_blob(
 
     assert version.blob["title"] == "The Forest Path (revised)"
     assert titles_measured == ["The Forest Path (revised)"]
+
+
+# Whole-story review budget (_MAX_WHOLE_STORY_REVIEW_TOKENS). The coherence and
+# engagement stages send EVERY node in one call, so sizing them with the
+# per-node _MAX_REVIEW_TOKENS starved a reasoning-native review model: the
+# model spent the whole 1024-token allowance on reasoning and the call returned
+# finish_reason=length with empty content, raising ProviderError and aborting
+# the book. The safety stage never showed the bug because it multiplies its
+# per-node budget by batch size and clamps at _MAX_BATCH_REVIEW_TOKENS.
+
+
+@pytest.mark.unit
+async def test_whole_story_stages_get_the_whole_story_token_budget(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """Coherence and engagement must not be sized with the PER-NODE budget.
+
+    Asserts the wiring rather than provider behaviour on purpose: the defect
+    was which constant the pipeline handed these two stages, so recording the
+    argument at the call site is what discriminates fixed from regressed. A
+    provider-level assertion would also pass if someone reverted the constant
+    but happened to test a book whose reasoning fit in 1024 tokens.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", AsyncMock())
+
+    budgets: dict[str, int] = {}
+
+    def _recording_stage(name: str) -> Callable[..., object]:
+        async def _stage(
+            *, provider: object, nodes: object, max_tokens: int
+        ) -> list[object]:
+            _ = provider, nodes
+            budgets[name] = max_tokens
+            return []
+
+        return _stage
+
+    monkeypatch.setattr(
+        pipeline_mod, "run_coherence_stage", _recording_stage("coherence")
+    )
+    monkeypatch.setattr(
+        pipeline_mod, "run_engagement_stage", _recording_stage("engagement")
+    )
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    assert budgets == {"coherence": 16000, "engagement": 16000}
+    # The regression this pins: both were previously handed the per-node budget.
+    assert all(b > pipeline_mod._MAX_REVIEW_TOKENS for b in budgets.values())
