@@ -875,6 +875,8 @@
       
         
       
+        
+      
     
     
     
@@ -1007,6 +1009,41 @@
     
   
     Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/reviewer-sop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer SOP
   
 
     
@@ -6604,6 +6641,66 @@ substantially the same work under different headings. Do not triple-book.</p>
 <td>4b</td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-C377</td>
+<td><code>AL-624</code>: <strong>The moderation report-health predicate is built and wired but the branch carrying it (<code>feat/moderation-review-hardening</code>) is not yet merged.</strong> <code>moderation_report_unusable()</code> now runs at every consumer that makes a decision or renders a count from a stored <code>moderation_report</code>: the approval gate (<code>publishing/service.py::approve</code>), the review surface's structural collapse and queue-item badge (<code>api/review_surface.py</code>), and the weekly unusable-report detector (<code>scripts/check_moderation_report_health.py</code>). The ops sweep script (<code>scripts/remoderate_books.py</code>) is deliberately not one of these consumers: its <code>_is_mock_moderated()</code> selection predicate is a separate ANY-match test over the same underlying <code>FAIL_SAFE_MESSAGE_SUBSTRING</code>/<code>MOCK_MODERATED_CONCERNS</code> constants, not a call to the shared predicate. No further design or implementation work is proposed; the row exists only because the lesson is not yet <code>applied</code> in the log's sense (merged to <code>main</code>). Proposed: once the branch merges, move <code>AL-624</code> to <code>applied</code> citing the merge commit, and close this row.</td>
+<td>4b</td>
+<td>verify</td>
+</tr>
+<tr>
+<td>UW-C378</td>
+<td><code>AL-625</code>: <strong>Gate D3's advisory-persistence floor recalibration has no floor value that satisfies both stated constraints, and needs an owner ruling on a design change rather than a number.</strong> Measuring candidate floors {0.01, 0.02, 0.05, 0.10} against the 2026-08-01 Stage-0 baseline found the clean-noise target (&lt;= 0.2 advisories/node) and the zero-adversarial-loss target move in opposite directions across the whole range; only 0.10 clears the clean target and it loses 10 of 14 adversarial pairs. The measurement's own recommendation is per-category floors (a low floor on <code>self-harm*</code>/<code>sexual*</code>/<code>harassment/threatening</code>/<code>illicit</code>, a higher one on <code>violence</code>/<code>violence/graphic</code>) rather than a single scalar. <strong>Ratified 2026-08-25</strong>: the project owner adopted per-category floors, keeping a low floor on <code>self-harm*</code>/<code>sexual*</code>/<code>harassment/threatening</code>/<code>illicit</code> and a higher floor (indicatively 0.10) on <code>violence</code>/<code>violence/graphic</code>; exact values are to be set when implemented, folding in the planned adversarial-corpus v1.1 growth. <code>_ADVISORY_SCORE_FLOOR</code> stays at 0.01 until that lands.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C379</td>
+<td><code>AL-626</code>: <strong>The override-reason persistence resolution (reason in structured logs, counts in the <code>RELEASED</code> event payload) is implemented on the same unmerged branch as <code>UW-C377</code>.</strong> The plan's original instruction to persist the freeform reason into the event payload conflicted with <code>events/writer.py</code>'s registered-writer contract (200-character cap, PII-free); a controller ruling resolved it in favor of the existing <code>send_back</code>-reason precedent (log-only) before any code was written against the conflicting instruction. No further work is proposed beyond the branch merging; verify then close alongside <code>UW-C377</code>.</td>
+<td>4b</td>
+<td>verify</td>
+</tr>
+<tr>
+<td>UW-C380</td>
+<td><code>AL-627</code>: <strong><code>_PERSPECTIVE_BRIGHTLINE_MIN_SCORE = 0.8</code> (<code>scripts/capture_stage0_baseline.py</code>) lost its only pinning test in the same commit that retired Perspective as a Stage-0 signal source.</strong> <code>a5abb2b4</code> deleted <code>_run_perspective</code>/<code>_perspective_attribute_finding</code> and unwired the pipeline call site; the test file's <code>test_recorded_perspective_brightline_matches_the_live_classifier</code>, which asserted the recorded constant matched the live classifier's own block threshold, imported <code>_perspective_attribute_finding</code> directly and had to be deleted alongside it to clear an <code>ImportError</code>, rather than rewritten against a replacement. The constant itself (and its sibling <code>_PERSPECTIVE_BRIGHTLINE_ATTRIBUTE</code>) is untouched and still recorded in the Stage-0 baseline's decision-boundary output (<code>"perspective_brightline_min_score"</code>), so a future baseline capture keeps citing a threshold with nothing left in the codebase to verify it against. Proposed: once Perspective's retirement is confirmed permanent (tracked by <code>UW-B03</code>, the GS3 Perspective sunset), either drop the recorded constant from the baseline's decision-boundary output as historical-only, or, if the baseline is meant to remain a literal snapshot of a since-removed classifier for audit purposes, say so explicitly in the docstring so the next reader does not treat the missing test as an oversight.</td>
+<td>5</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C381</td>
+<td><code>AL-628</code>: <strong>The frontend's approval-override gate re-derives the backend's severe-finding predicate in TypeScript instead of consuming a server-computed field, and the two can drift without either side's tests noticing.</strong> <code>frontend/src/admin/ReviewDetailPage.tsx</code>'s <code>needsOverride</code> computes, over <code>allFindings</code>, whether any finding has verdict <code>block</code> or has verdict <code>flag</code> with severity <code>high</code>, guarded only by a <code>#CRITICAL: security</code> comment warning it must stay in lockstep with the backend rather than by a shared contract or a cross-repo test. The backend's own equivalent, <code>severe_finding_counts()</code> (<code>src/cyo_adventure/moderation/report.py</code>), is a separate implementation over the same <code>Finding</code> shape. A future change to either side's severity rule (for example scoping <code>severe_finding_counts()</code> to exclude structural findings, see <code>UW-C382</code>) has no mechanism forcing the other to follow, so the override-reason prompt could show for a book the backend would not actually gate, or vice versa. Proposed: have the backend compute and serve a boolean (or the same counts <code>severe_finding_counts()</code> already produces) on the review-detail response, and have the frontend consume it rather than re-deriving the predicate; this is a contract change, so it needs the OpenAPI regeneration workflow, not a quiet edit.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C382</td>
+<td><code>AL-629</code>: <strong><code>severe_finding_counts()</code> counts a collapsed pipeline artifact toward the approval override gate, while its sibling tiered counters in the same codebase deliberately exclude structural findings.</strong> <code>moderation/stages.py</code> collapses a per-node moderation-reviewer outage into one story-level <code>Finding(verdict=Verdict.FLAG, severity=FindingSeverity.HIGH, structural=True, concern="reviewer_unavailable")</code> rather than flooding the queue with one finding per node (the fix <code>AL-624</code>/<code>UW-C377</code> describes for the write-once-report problem this same PR closes). <code>severe_finding_counts()</code>, which feeds the admin override-reason requirement, counts BLOCK/high-FLAG verdicts with no check of the <code>structural</code> field, so this collapsed artifact counts as a "high" and could require a written override reason for a book whose only severe signal is that moderation itself was unavailable, not a content judgment. Its sibling counters explicitly guard against exactly this: <code>api/review_surface.py:724</code> (<code>f.verdict == Verdict.FLAG and not f.structural</code>) and <code>moderation/repair.py:90</code> both exclude structural findings from their tiered counts. Untested either way today: no test exercises <code>severe_finding_counts()</code> against a structural HIGH-FLAG finding to pin the current (inclusive) behavior or to catch a change. Proposed: an owner ruling on whether the override gate should exclude structural findings to match its siblings, or whether requiring an override reason for "moderation was unavailable" is intentionally conservative; either way, add the missing test once the ruling lands.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C383</td>
+<td><code>AL-630</code>: <strong><code>moderation_report_unusable()</code> clears a report the moment ONE finding carries a genuine verdict, so a book can pass the approval gate with most of its nodes never actually judged, and the admin review surface renders those unjudged nodes as clean rather than as unreviewed.</strong> Two independent mechanisms compound. First, the predicate itself (<code>moderation/report.py</code>) is existence-of-one-genuine-finding, not coverage-of-nodes: the loop over <code>findings</code> returns <code>False</code> (usable) at the first entry whose <code>verdict</code> is a non-empty string, with no comparison of judged-node count against total nodes. Second, <code>moderation/stages.py</code>'s soft stages (lines ~746, ~796) call <code>_parse_verdict(..., fail_safe=Verdict.PASS)</code>, so a soft-stage fail-safe (the classifier could not be reached or its response could not be parsed for that node) is stored as an ordinary <code>Verdict.PASS</code>, indistinguishable in the persisted report from a node the reviewer actually read and passed; and <code>api/review_surface.py:165</code> (<code>if view.verdict is Verdict.PASS: continue</code>) filters PASS-verdict rows out of what the human reviewer sees, so those nodes are not merely unlabelled, they are invisible on the review screen. Reported (not independently re-measured here; attribute the counts to whoever ran the census): <code>sk_clocktower_cipher</code> with 22 of 25 nodes carrying no readability verdict, <code>sk_hollow_lighthouse</code> with 24 of 148, and one node each on two further books. Net effect: a book can clear the mandatory-human-approval gate this PR hardens while most of its content was never judged by anything, and the reviewer has no visual cue that coverage was incomplete. Proposed: make <code>moderation_report_unusable()</code> (or a sibling coverage check) compare judged-node count against total node count rather than testing for the existence of one genuine finding, and/or stop collapsing a soft-stage fail-safe into <code>Verdict.PASS</code> so it stays distinguishable from a real pass on the review surface. This is a design change beyond this PR's scope and needs an owner ruling.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C384</td>
+<td><code>AL-631</code>: <strong>Two of <code>moderation_report_unusable()</code>'s three detection arms are structurally dead against the 12-book legacy corpus the predicate exists to find, leaving one string-literal check as the sole detector for that population.</strong> The provider-level independence flag is hardcoded <code>True</code> for the mock reviewer (<code>moderation/review_provider.py:119</code>, <code>return MockProvider(...), True</code>); the arm that actually writes <code>reviewer_independent = False</code> plus the <code>mock_reviewer_active</code> structural finding is <code>moderation/pipeline.py::_stamp_mock_reviewer</code>, gated on <code>review_provider == "mock" and environment != "local"</code> and introduced in <code>8ca8d1b3</code> (2026-07-30, PR #496). The mock-reviewer incident that produced the 12 in-review production books referenced throughout this PR (<code>AL-624</code>) predates that stamp by nine days (2026-07-21), and <code>moderation_report</code> is write-once JSONB, so none of those 12 rows carry either the stamp or the concern; both the predicate's <code>reviewer_independent is False</code> arm and <code>scripts/remoderate_books.py --mock-moderated</code>'s corresponding stamp check cannot match them. Only the <code>FAIL_SAFE_MESSAGE_SUBSTRING</code> message-literal arm reaches this exact population, making a single string literal the sole detector for the population this work exists to find; <code>AL-624</code> already states the underlying principle (the signal must come from the report's own content, not from field presence or recency), so this row is the residual single-point-of-failure that principle leaves in place rather than a new discovery. Proposed: treat the message-literal arm as safety-critical and pin it with a regression test (tracked separately as part of this PR's test coverage), and record here that any future change to the fail-safe message text or constant silently un-detects the legacy books with no other arm to catch the regression.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C385</td>
+<td><code>AL-632</code>: <strong><code>check-rad-citations</code>'s pre-commit hook cannot see a test rename or deletion, by its own documented design, and the blast radius stays invisible until an unrelated later commit happens to touch the citing file.</strong> Verified against the script's own module docstring: the hook's <code>files:</code> filter covers only <code>src/</code>, <code>scripts/</code>, <code>frontend/src/</code>, and the baseline file, explicitly excluding <code>tests/</code>; the docstring itself already states "a commit that only deletes or renames a test file, touching nothing the hook is scoped to, is invisible to the hook and still caught by CI." <code>--all</code> mode (already run by the <code>rad-citations</code> CI job on every push, <code>pull_request</code>, and <code>merge_group</code>) already performs the tree-wide resolution this row might otherwise propose as new; the gap is purely local timing, not missing capability. Proposed: detect a staged rename or deletion of a <code>tests/**/test_*.py</code> file at pre-commit time (<code>git diff --cached --diff-filter=RD</code>) and escalate only that case to a full <code>--all</code> resolution, so the developer's own commit catches the orphaned citation instead of waiting for CI or an incidental later commit to the citing file. Scope note: this row covers only the shape the hook CANNOT catch (a rename orphaning a citation in a DIFFERENT file than the one being renamed). Two sibling shapes from the same branch and session, where the hook caught the problem as designed, are recorded separately in <code>UW-C386</code>/<code>AL-633</code> rather than folded in here, since the fix each shape argues for is different.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-C386</td>
+<td><code>AL-633</code>: <strong>Three of the four stale <code>#VERIFY</code> citations from this branch's session were caught by <code>check-rad-citations</code> exactly as designed, at commit time, in two distinct shapes distinct from the cross-file rename orphan <code>UW-C385</code> covers.</strong> Verbatim hook output from the coordinator's blocked first commit attempt: "<code>src/cyo_adventure/api/node_edit.py:741: tests/unit/test_node_edit.py::test_missing_openai_key_outside_local_is_recorded_as_degraded: tests/unit/test_node_edit.py defines no such test</code>" and "<code>src/cyo_adventure/moderation/rescreen.py:662: tests/unit/test_rescreen_unit.py::test_missing_openai_key_outside_local_does_not_pass_clean: tests/unit/test_rescreen_unit.py defines no such test</code>", ending "2 stale RAD #VERIFY citation(s)." Both citations named tests written forward of the test itself; FixBackend wrote both tests afterward, and commit <code>d7fb8b67</code> is the first commit in which the citation and its test both appear, consistent with an earlier, blocked commit attempt that never became a git object. A third shape, reported by the coordinator and not independently re-derivable from git history for the same reason (an uncommitted broken state leaves no trace): <code>schemas.py</code>'s own <code>..._returns_422</code> citation was briefly a same-file rename orphan after FixBackend's <code>..._returns_400</code> to <code>..._returns_422</code> rename, and was hand-fixed before the first commit attempt, so the hook never had occasion to report it. Both shapes are within the hook's existing <code>files:</code> scope (<code>src/</code>), unlike <code>UW-C385</code>'s cross-file case. Proposed: no gate change follows from this row. The frequency observation from the branch (four stale citations in one session) is not on its own an indictment of citation discipline: three of the four self-corrected under the existing hook's ordinary operation, and only the fourth needed the escalation <code>UW-C385</code> proposes. Where a forward-reference citation (naming a test before it exists) recurs enough to be worth a standing fix, treat it as an authoring-order habit, write the test before the citation, rather than a tooling gap; the same-file rename orphan has no proposed fix beyond <code>UW-C385</code>'s escalation, since the mechanism is identical, only the file happens to be the same one being renamed.</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-d-untracked-github-issues">Cluster D: untracked GitHub issues<a class="headerlink" href="#cluster-d-untracked-github-issues" title="Permanent link">&para;</a></h2>
@@ -7879,6 +7976,34 @@ not scheduled: that is its accurate state.</p>
 <td>2b</td>
 <td>unscheduled</td>
 </tr>
+<tr>
+<td>UW-J37</td>
+<td><strong>P2 dashboard overhaul, deferred by design (D1): finding-first detail-page inversion.</strong> The review detail page (<code>ReviewDetailPage.tsx</code>) groups review state by node and severity tier, so a reviewer working one finding cannot see its full context (declared vs. observed intensity, node text, prior disposition) in one place. The 2026-08-25 review-process-hardening plan scoped this out to a follow-on plan rather than building it inline, because today's findings carry no stable identity across a re-moderation run: each <code>moderation_report</code> write replaces the findings array wholesale, so nothing lets a reviewer track "this same finding, seen twice" across reports. The named prerequisite is a finding-identity spec that does not exist yet; write it, then invert the page.</td>
+<td>review-process-hardening plan 2026-08-25, D1</td>
+<td>4b</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-J38</td>
+<td><strong>P2 dashboard overhaul, deferred by design (D1): persistent per-finding triage dispositions.</strong> The queue has no per-finding triage state (acknowledged, dismissed, escalated) that survives a session or a re-moderation run; the queue's only metric today is the tiered block/flag/advisory counts from the structural collapse (Task 4 of the same plan), not a durable "N unreviewed" count a reviewer could work down across visits. Shares <code>UW-J37</code>'s prerequisite: neither can persist a disposition against a finding that has no stable identity across report rewrites, so this is blocked on the same missing finding-identity spec.</td>
+<td>review-process-hardening plan 2026-08-25, D1</td>
+<td>4b</td>
+<td>blocked</td>
+</tr>
+<tr>
+<td>UW-J39</td>
+<td><strong>P2 dashboard overhaul, deferred by design (D1): declared-vs-observed content-intensity bridging.</strong> Nothing in the review UI reconciles the author-declared content flags (violence, scariness, peril, captured at request intake) against what the moderation pipeline actually found in the filled prose. The 2026-08-25 review-process-hardening plan's Task 7 only relabeled the declared flags "Content flags (author-declared)" with a tooltip disclaiming that they are not a moderation verdict, so a reviewer would stop mistaking one for the other; it did not build the comparison. A book whose author declared "mild peril" and whose moderation report found a high-severity violence finding surfaces no mismatch anywhere today. Unlike <code>UW-J37</code>/<code>UW-J38</code>, this does not depend on the finding-identity spec; it is a separate reconciliation feature against existing data.</td>
+<td>review-process-hardening plan 2026-08-25, D1</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-J40</td>
+<td><strong>Owner-approved follow-up (ratified 2026-08-25): add an admin-only Remoderate action to the review detail page.</strong> <code>ReviewDetailPage.tsx</code> (<code>frontend/src/admin/ReviewDetailPage.tsx</code>) tells a reviewer to ask an operator to remoderate an unusable report, because the admin-only <code>POST /api/v1/admin/remoderate/{storybook_id}/{version}</code> endpoint has no frontend anywhere, discovered during Task 7 of the review-process-hardening plan 2026-08-25. Add the action, enabled when the surface reports <code>report_unusable</code>, calling the existing endpoint directly instead of routing through an operator. Auto-remoderation on an unusable report was considered and rejected: it spends LLM budget without a human decision, and a persistent failure would loop.</td>
+<td>review-process-hardening plan 2026-08-25</td>
+<td>4b</td>
+<td>unscheduled</td>
+</tr>
 </tbody>
 </table>
 <h2 id="cluster-k-documentation-accuracy-and-compliance">Cluster K: documentation accuracy and compliance<a class="headerlink" href="#cluster-k-documentation-accuracy-and-compliance" title="Permanent link">&para;</a></h2>
@@ -8070,6 +8195,12 @@ complete; each is filed as a GitHub issue.</p>
 <td><strong>Guardian profile resolution runs before the RLS context it depends on, so every guardian in production sees zero profiles.</strong> Found 2026-08-08 while executing <code>UW-F17</code> against revision <code>631c0d8a</code> (v0.68.0). <code>api/deps.py::require_principal</code> calls <code>_resolve_profiles</code> (line ~545) roughly 36 lines before <code>apply_family_rls_context</code> (line ~581). <code>_resolve_profiles</code> selects from <code>child_profile</code>, an ADR-022 Tier 1 <code>family_scoped</code> table whose policy is <code>family_id::text = current_setting('app.family_id', true) OR current_setting('app.is_admin', true) = 'true'</code>. With the GUC unset, <code>current_setting(..., true)</code> returns NULL, the predicate is unsatisfiable, and the read returns zero rows, so <code>principal.profile_ids</code> is empty for every guardian. <code>GET /v1/profiles</code> then short-circuits on it (<code>api/profiles.py</code> ~374) and the console renders "No profiles yet" over a family that has three children. <strong>This fails closed: it is an outage of the profiles surface, not a data leak</strong>, and the underlying rows are intact. Confirmed live: the 2026-08-07 <code>e2e-prod</code> run captured <code>GET /api/v1/me</code> returning <code>"profile_ids":[]</code> and <code>GET /api/v1/profiles</code> returning <code>{"profiles":[]}</code> while the database held the profiles. <strong>Why it stayed invisible until now:</strong> RLS never applies to a table's owner, so before the ADR-021 cutover the API connected as <code>postgres</code> and the policy was inert; cutting over to <code>cyo_api</code> (<code>rolbypassrls=false</code>) is what activated the ordering bug. Any bug of this shape is undetectable pre-cutover, which argues for testing as the non-owner role rather than for testing more. <strong>It is a recurrence, not a novel defect:</strong> <code>_device_principal</code> (defined at deps.py ~625) already applies the context before its Tier 1 reads and carries a <code>#CRITICAL</code> comment naming the identical staging outage of 2026-07-18 to 2026-08-02; that fix was applied to the device branch only. <strong>Sharper still, the file states the false invariant in its own words, one call site away from the bug.</strong> Two <code>#CRITICAL</code> blocks assert exactly what <code>_resolve_profiles</code> falsifies: the block above the <code>apply_family_rls_context</code> call (deps.py ~570) reasons that "two of the three branches resolve without needing the context this sets: guardian/admin read the <code>user</code> row just above under the Tier 2 blanket policy", and the block inside <code>_device_principal</code> (deps.py ~674) states that <code>device_grant</code> "is the ONLY pre-principal read of one". Both are false the moment <code>_resolve_profiles</code> reads <code>child_profile</code> at line ~545. The fix must correct these two comments as well, or the codebase keeps asserting a disproven invariant beside the corrected code, which is how the device-only half fix survived review the first time. <strong>Coverage gap that let it ship:</strong> <code>tests/integration/test_rls_tier1_enforcement.py</code> covers the device branch (<code>test_device_principal_resolves_under_tier1_rls</code>) with no guardian equivalent exercising the real <code>require_principal</code> path as <code>cyo_api</code>. <strong>Second-order finding, worth fixing with it:</strong> the cross-family isolation test (<code>frontend/e2e-prod/guardian-books-and-isolation.spec.ts</code> ~184) asserts the E2E family sees zero story requests; <code>story_request</code> is <code>family_scoped</code> too, so under this defect that assertion is satisfied <em>by the bug</em>, with its rendered-heading positive control fully intact. Only the profiles half, which expects a non-zero count, catches the failure. An emptiness assertion over a Tier 1 table needs a non-empty companion assertion under the same policy; a rendered-heading control proves the page loaded, never that scoping ran. <strong>Fix:</strong> apply the context before <code>_resolve_profiles</code>, keeping the existing later call, correct the two <code>#CRITICAL</code> comments above, and add the missing guardian regression test at the <code>require_principal</code> level rather than at the query level. <strong>Status caveat:</strong> PR <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/641">#641</a> is open and implements exactly this fix over the same two files, so if it merges before this row does, the <code>unscheduled</code> status and the Fix paragraph are already historical; the <em>deployed</em> claims above stay accurate either way, since they are conditioned on production serving the fix rather than on the fix merging.</td>
 <td><a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/639">#639</a></td>
 <td>unscheduled</td>
+</tr>
+<tr>
+<td>UW-L08</td>
+<td><strong>Two published books, <code>sk_vault_of_nine_iron</code> (block/high, drowning) and <code>sk_ninth_hand</code> (flag/high, suicidal intent), hold severe-finding moderation reports and must be re-moderated once <code>feat/moderation-review-hardening</code> deploys.</strong> The 2026-08-25 review-process-hardening plan's D4 gate named both from its ground-truth section, which recorded <code>sk_ninth_hand</code> specifically as untracked anywhere; this row is now the tracking item for both books. The plan's Task 13 was to re-moderate both under the current pipeline after Tasks 1-10 deploy and put the fresh reports in front of the owner via the reviewer SOP's escalation section. Task 13 never ran in this execution: it depends on a deploy that has not happened, and no Task 13 brief was written (only Task 12's ops-sweep brief exists in <code>.superpowers/sdd/</code>). Owner to rule: the project owner, on unpublish-or-keep for each book once its fresh report is in hand (an owner-only content call per D4); both books stay published until then. <strong>Sequencing ratified 2026-08-25</strong>: no precautionary unpublish; after the branch deploys, re-moderate these two books first as targeted <code>--book-id</code> runs, review the fresh reports per the reviewer SOP's escalation section and make the D4 call per book, then run the full backfill sweep (runbook section 8). <strong>Scheduled-check posture ratified 2026-08-25</strong>: <code>.github/workflows/moderation-report-health.yml</code>'s Monday cron stays running rather than being disabled or loosened; a red run every Monday until the 12 in-review books <code>AL-624</code> records are re-moderated is an accepted, expected forcing function, not a defect in the check or its schedule. (This row's own two published books carry genuine block/high findings, not fail-safe artifacts, so <code>moderation_report_unusable()</code> does not flag them; they stay tracked here rather than by that workflow.) The workflow now carries the same cron-posture decision in a comment at its own file.</td>
+<td>(no issue)</td>
+<td>decision</td>
 </tr>
 </tbody>
 </table>
@@ -8330,7 +8461,7 @@ have to re-derive them.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 22:09:03 UTC">August 25, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 26, 2026 02:22:48 UTC">August 26, 2026</span>
   </span>
 
     

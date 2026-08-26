@@ -883,6 +883,8 @@
       
         
       
+        
+      
     
     
     
@@ -1415,6 +1417,41 @@
     
   
     Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reviewer-sop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer SOP
   
 
     
@@ -4973,8 +5010,16 @@ it, not a replacement for it.</p>
   process: an API container that has this variable set holds the <code>cyo_worker</code> credential in memory
   without ever using it, which narrows the blast-radius separation the split exists to create.</li>
 <li><code>OPENAI_API_KEY</code>: Stage-0 moderation classifier (OpenAI Moderation API). Backend and worker.</li>
-<li><code>PERSPECTIVE_API_KEY</code>: Stage-0 moderation classifier (Google Perspective API). Backend and
-  worker.</li>
+<li><code>PERSPECTIVE_API_KEY</code>: <strong>inert once <code>feat/moderation-review-hardening</code> merges.</strong> Was the Stage-0
+  moderation classifier credential (Google Perspective API); Perspective's outbound call leg is
+  retired (<code>moderation/classifiers.py</code>, ahead of Google's 2026-12-31 sunset;
+  <a href="../../planning/safety/moderation-review-redesign-2026-07-28/">moderation-review-redesign-2026-07-28.md</a>
+  section 3.2 item 5), so no code path in the deployed app reads this value anymore.
+  <code>core/config.py::perspective_api_key</code> keeps the field solely so an existing deployment's
+  environment does not fail to parse at boot; nothing consumes it. This describes the CODE, not any
+  specific environment's current secrets: removing the key from a deployed environment is safe once
+  confirmed, but should be sequenced deliberately rather than assumed already done. Tracked:
+  <code>UW-B03</code> (<code>GS3</code>, Perspective's 2026-12-31 sunset).</li>
 <li><code>CYO_ADVENTURE_REVIEW_PROVIDER</code>: independent-review backend selector
   (<code>mock</code>/<code>openrouter</code>/<code>modal</code>, though <code>modal</code> is still deferred to slice 2b); must differ from
   the generation provider. Backend and worker.</li>
@@ -4992,13 +5037,74 @@ it, not a replacement for it.</p>
 </ul>
 <p>The generation, cover-art, and object-storage credentials above read "Backend and worker" rather
 than "Worker only" because the backend builds those clients in-request, not only in queued jobs.
-<code>POST /v1/admin/storybook-versions/{id}/remoderate</code> constructs a generation provider inside the
-request (<code>api/remoderate.py</code> via <code>generation/provider.py</code>), the node-edit rescreen path constructs
-a review provider the same way (<code>api/node_edit.py</code>), and three routers presign cover URLs through
-<code>covers/storage.py</code> (<code>api/covers.py</code>, <code>api/library.py</code>, <code>api/recommendations.py</code>). This matters
-when scoping which credentials are resident in which container: attributing them to the worker
-alone understates the API container's exposure. <code>docs/operations/runtime-config.md</code> records the
-same fact per setting, and traces each call site.</p>
+<code>POST /api/v1/admin/remoderate/{storybook_id}/{version}</code> constructs a generation provider inside
+the request (<code>api/remoderate.py</code> via <code>generation/provider.py</code>), the node-edit rescreen path
+constructs a review provider the same way (<code>api/node_edit.py</code>), and three routers presign cover
+URLs through <code>covers/storage.py</code> (<code>api/covers.py</code>, <code>api/library.py</code>, <code>api/recommendations.py</code>).
+This matters when scoping which credentials are resident in which container: attributing them to
+the worker alone understates the API container's exposure. <code>docs/operations/runtime-config.md</code>
+records the same fact per setting, and traces each call site.</p>
+<p><strong>Re-moderation sweep</strong> (<code>scripts/remoderate_books.py</code>): calls <code>remoderate_storybook_version()</code>
+(<code>api/remoderate.py</code>), the same function <code>POST /api/v1/admin/remoderate/{storybook_id}/{version}</code>
+above wraps, directly in-process over a batch of books instead of one. This is a direct service
+call, not an HTTP request to the endpoint: it runs under the invoking process's own database
+credentials rather than an admin bearer token, stamps <code>Actor.system()</code> instead of the calling
+admin's identity, and does not exercise the endpoint's own authentication or middleware layers. A
+clean sweep run is not evidence the HTTP endpoint itself is healthy, and vice versa. Dry-run is the
+default; it only lists targets and writes nothing. Pass <code>--execute</code> to actually run the sweep
+against each target. Three mutually exclusive selectors:</p>
+<ul>
+<li><code>--mock-moderated</code>: published books whose stored report carries the mock-reviewer stamp or a
+  fail-safe-degraded marker. Use this to backfill published legacy artifacts, for example the
+  catalog remediation sweep in
+  <a href="../../planning/safety/moderation-review-redesign-2026-07-28/">moderation-review-redesign-2026-07-28.md</a>
+  section 6, Stage D.</li>
+<li><code>--in-review</code>: every book sitting at the human review gate, at its latest version, with no
+  content filter. Use this to clear a stuck review queue, for example books left with a fail-safe
+  or mock-moderated report before this branch's approval gate started blocking them.</li>
+<li><code>--book-id STORYBOOK_ID</code> (repeatable): specific storybooks, for a one-off re-run, a curated
+  subset, or a single-book canary before a full sweep.</li>
+</ul>
+<p><strong>Never run a sweep before the floor or classifier change it exists to backfill has been deployed
+to that environment.</strong> <code>_persist_report()</code> (<code>moderation/pipeline.py</code>) is the single end-of-pipeline
+write per version and moderation reports are effectively write-once per run: sweeping ahead of the
+deploy re-derives the same stale verdicts under the old rules, burns the LLM budget, and leaves no
+cheap way to fix it besides sweeping the same books again after the deploy actually lands.</p>
+<p>Post-sweep verification: prefer running the shared health predicate itself rather than
+re-implementing it in SQL:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nv">CYO_ADVENTURE_DATABASE_URL</span><span class="o">=</span>...<span class="w"> </span>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/check_moderation_report_health.py
+</span></code></pre></div>
+<p>Exit 0 with no printed hits means no current published or in-review version anywhere in the catalog
+has a report <code>moderation/report.py::moderation_report_unusable</code> would flag (absent, malformed,
+non-independent/mock, or containing only pipeline artifacts): the same predicate
+<code>publishing/service.py::approve()</code> enforces at approval time. This checks the whole catalog, not
+only the books the sweep targeted, which is a stronger guarantee than scoping to the sweep would be.</p>
+<p>The narrower ad hoc SQL below (read-only, via the Supabase MCP or psql) checks ONLY for the literal
+<code>FAIL_SAFE_MESSAGE_SUBSTRING</code> string inside <code>findings</code>; it does not detect an absent report, a
+non-list <code>findings</code> value, a non-independent (mock) reviewer, or a structural/mock-moderated-concern
+artifact carrying a different message. Treat it as a quick, narrower diagnostic for the
+fail-safe-specific case only, never as proof that <code>report_unusable</code> is false: run the script above
+for that.</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="k">select</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="k">from</span><span class="w"> </span><span class="n">storybook</span><span class="w"> </span><span class="n">s</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="k">join</span><span class="w"> </span><span class="n">storybook_version</span><span class="w"> </span><span class="n">sv</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">  </span><span class="k">on</span><span class="w"> </span><span class="n">sv</span><span class="p">.</span><span class="n">storybook_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">storybook_id</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">sv</span><span class="p">.</span><span class="k">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="w">   </span><span class="k">select</span><span class="w"> </span><span class="k">max</span><span class="p">(</span><span class="n">v2</span><span class="p">.</span><span class="k">version</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">storybook_version</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">v2</span><span class="p">.</span><span class="n">storybook_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">storybook_id</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="w"> </span><span class="p">)</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="k">where</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;in_review&#39;</span>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="w">  </span><span class="k">and</span><span class="w"> </span><span class="k">exists</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="w">    </span><span class="k">select</span><span class="w"> </span><span class="mi">1</span>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="w">    </span><span class="k">from</span><span class="w"> </span><span class="n">jsonb_array_elements</span><span class="p">(</span><span class="n">sv</span><span class="p">.</span><span class="n">moderation_report</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s1">&#39;findings&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">f</span>
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="w">    </span><span class="k">where</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">-&gt;&gt;</span><span class="w"> </span><span class="s1">&#39;message&#39;</span><span class="w"> </span><span class="k">like</span><span class="w"> </span><span class="s1">&#39;%defaulted to fail-safe%&#39;</span>
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="w">  </span><span class="p">);</span>
+</span></code></pre></div>
+<p>Expected: <code>0</code>, understood only as "no remaining <code>FAIL_SAFE_MESSAGE_SUBSTRING</code> hits," not as full
+proof of health; run <code>scripts/check_moderation_report_health.py</code> above for that. If any remain,
+re-run the dry-run selector for the stragglers and diagnose per book (the count is the same
+substring <code>moderation/report.py::FAIL_SAFE_MESSAGE_SUBSTRING</code> checks at read time to set
+<code>report_unusable</code>, so a nonzero count here is the same condition the admin queue badge shows as
+"Moderation unavailable").</p>
 <p><strong>GitHub Actions secrets</strong> (CI/CD, not runtime):</p>
 <ul>
 <li><code>RELEASE_TOKEN</code>: fine-grained PAT (contents + pull-requests write) used by <code>release.yml</code> so an
@@ -5093,8 +5199,8 @@ cutover; this section is.</strong></p>
    repo. Via the Supabase dashboard SQL editor (or <code>psql</code> against the project's direct
    connection, not the pooler):</li>
 </ol>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">cyo_api</span><span class="w"> </span><span class="n">LOGIN</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;&lt;generated-secret&gt;&#39;</span><span class="p">;</span>
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="n">LOGIN</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;&lt;generated-secret&gt;&#39;</span><span class="p">;</span>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">cyo_api</span><span class="w"> </span><span class="n">LOGIN</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;&lt;generated-secret&gt;&#39;</span><span class="p">;</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="n">LOGIN</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;&lt;generated-secret&gt;&#39;</span><span class="p">;</span>
 </span></code></pre></div>
 <p>Generate each password independently (do not reuse one password across roles or
    environments); store both in the environment's existing secrets mechanism (GitHub
@@ -5196,9 +5302,9 @@ posture line is filtered out before it is written. That is the same rule
 reason. Do not "quiet down" the affirmative line to INFO: doing so turns a successful cutover
 back into silence and makes it indistinguishable from a worker running an image with no probe.</p>
 <p><strong>Alert on either of these, not just the bypass event:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>event == &quot;generation_worker.role_bypasses_rls&quot;
-</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>  OR (event == &quot;generation_worker.role_least_privileged&quot;
-</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>      AND worker_dsn_explicitly_set == false)
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>event == &quot;generation_worker.role_bypasses_rls&quot;
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>  OR (event == &quot;generation_worker.role_least_privileged&quot;
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>      AND worker_dsn_explicitly_set == false)
 </span></code></pre></div>
 <p>The second clause is not redundant. When <code>CYO_ADVENTURE_WORKER_DATABASE_URL</code> is unset the worker
 falls back to the API DSN and connects as <code>cyo_api</code>, which has <code>rolbypassrls = false</code> and owns no
@@ -5258,9 +5364,9 @@ PR, also add:</p>
    migration following the same shape if that file has already shipped to production).</li>
 <li>A matching <code>service_rw</code> policy:</li>
 </ol>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="k">DROP</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span><span class="p">;</span>
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span>
-</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">  </span><span class="k">FOR</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">cyo_api</span><span class="p">,</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">)</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="k">DROP</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span><span class="p">;</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">  </span><span class="k">FOR</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">cyo_api</span><span class="p">,</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">)</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
 </span></code></pre></div>
 <ol>
 <li>No <code>anon</code>/<code>authenticated</code> grant or policy, matching the deny-by-default posture
@@ -5296,7 +5402,7 @@ because that test is currently the only thing that would notice.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 25, 2026 05:23:17 UTC">August 25, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 26, 2026 02:22:48 UTC">August 26, 2026</span>
   </span>
 
     

@@ -18,7 +18,7 @@
         <link rel="prev" href="../kws-test-runbook/">
       
       
-        <link rel="next" href="../security-events/">
+        <link rel="next" href="../reviewer-sop/">
       
       
         
@@ -883,6 +883,8 @@
       
         
       
+        
+      
     
     
     
@@ -1214,6 +1216,41 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reviewer-sop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reviewer SOP
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
     </li>
   
 
@@ -3665,8 +3702,21 @@ cross-check it against the project's planning documents.</p>
 <h2 id="what-the-review-screens-show">What the review screens show<a class="headerlink" href="#what-the-review-screens-show" title="Permanent link">&para;</a></h2>
 <h3 id="the-review-queue-admin-admin">The Review queue (admin, <code>/admin</code>)<a class="headerlink" href="#the-review-queue-admin-admin" title="Permanent link">&para;</a></h3>
 <p>Every story waiting on a decision appears here, across every family, so an admin can work through
-them in one place. Each row shows whether the story screened clean or has something flagged, so an
-admin can prioritize.</p>
+them in one place. Each row's badge tells an admin how urgent it is, not just whether something was
+flagged:</p>
+<ul>
+<li><strong>Hard block</strong>: the automated checks found something serious enough that no lesser badge applies.</li>
+<li><strong>A tiered count</strong>, such as "2 blocks · 3 flags", when nothing hit <strong>Hard block</strong>: how many
+  findings landed at each severity, so an admin can tell "one small note" from "several real
+  concerns" at a glance instead of reading a single flat number.</li>
+<li><strong>Moderation unavailable · re-run required</strong>: the automated report carries no genuine content
+  judgment, whether because it is absent, malformed, was produced by a non-independent (mock)
+  reviewer, or contains only pipeline artifacts such as a fail-safe default (for example a reviewer
+  outage during generation). A story in this state is never shown as "ready", so it cannot be
+  mistaken for one that screened clean; it needs a fresh moderation run before anyone can review it.</li>
+<li><strong>Repaired</strong> stacks alongside either badge above when the automated repair step already fixed
+  something before a human ever saw it.</li>
+</ul>
 <h3 id="the-review-detail-screen-admin-adminreviewstory">The Review detail screen (admin, <code>/admin/review/&lt;story&gt;</code>)<a class="headerlink" href="#the-review-detail-screen-admin-adminreviewstory" title="Permanent link">&para;</a></h3>
 <p>This is the screen an admin uses to actually make the approve/send-back decision. From top to
 bottom:</p>
@@ -3675,18 +3725,32 @@ bottom:</p>
   as <strong>Hard block</strong>, <strong>Soft flags</strong>, <strong>Repaired</strong>, and either <strong>Independent review</strong> or <strong>Not
   independently reviewed</strong>. The safety review is deliberately run by a different AI model than the
   one that wrote the story, so "Independent review" tells the admin that separation held.</li>
+<li><strong>A moderation-unavailable notice</strong>, in place of the sections below, when the report carries no
+  genuine content judgment (absent, malformed, non-independent, or pipeline-artifacts-only, the same
+  definition the queue badge above uses). <strong>Approve</strong> is disabled while this notice is showing; the
+  page's hint tells the admin to ask an operator to re-run moderation for this story rather than
+  trying to work around it.</li>
 <li><strong>A version comparison</strong>, when this is not the story's first version, so an admin can see exactly
   what changed since the last time it was reviewed.</li>
 <li><strong>Story overview</strong> (open by default): a quick, skimmable summary of the story's branches and
   themes, so an admin does not have to read every page before deciding whether to dig in.</li>
-<li><strong>Flagged passages</strong>: the specific passages the automated checks flagged, each with a <strong>Show in
-  story</strong> link that jumps straight to that passage further down. If nothing was flagged, this
-  section says so plainly: "No flagged passages. This story screened clean."</li>
-<li><strong>Story-level notes</strong>: findings about the story as a whole rather than one specific passage.</li>
+<li><strong>Flagged passages</strong>: the specific passages the automated checks flagged, each with a
+  <strong>Show in story</strong> link that jumps straight to that passage further down. If nothing was flagged,
+  this section says so plainly: "No flagged passages. This story screened clean."</li>
+<li><strong>Ranked findings</strong>: the same findings as a triage-ordered list instead of joined to their
+  passage, sorted so the most serious verdict and severity come first. This is for scanning the
+  whole story's severity at a glance, not for reading a passage in context, so it deliberately
+  overlaps with Flagged passages above.</li>
+<li><strong>Structural findings</strong>: findings about the story as a whole rather than one specific passage,
+  such as a structural problem the automated checks could not tie to one spot, ranked the same way
+  as Ranked findings above.</li>
 <li><strong>The full story</strong>: every passage in reading order, with a <strong>Start</strong> marker on the opening
   passage. Passages the story's own choices can never actually reach are listed separately, under
   <strong>Unreachable passages</strong>, so nothing gets skipped just because a branch is dead.</li>
 </ul>
+<p>This section describes what each screen shows and why; for the step-by-step procedure an admin
+follows while actually working the queue, see the
+<a href="../reviewer-sop/">reviewer standard operating procedure</a>.</p>
 <h3 id="approving-a-story">Approving a story<a class="headerlink" href="#approving-a-story" title="Permanent link">&para;</a></h3>
 <p>Clicking <strong>Approve</strong> opens a confirmation with one important choice: <strong>Who can see this book?</strong></p>
 <ul>
@@ -3781,7 +3845,7 @@ trace and pull), A6 (mandatory human approval), and A13 (admin action audit trai
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 19:07:42 UTC">July 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 26, 2026 02:22:48 UTC">August 26, 2026</span>
   </span>
 
     
