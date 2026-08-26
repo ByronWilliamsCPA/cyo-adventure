@@ -172,7 +172,12 @@ from cyo_adventure.core.exceptions import (
     ResourceNotFoundError,
     StateTransitionError,
 )
-from cyo_adventure.db.models import ChildProfile, Storybook, StorybookVersion
+from cyo_adventure.db.models import (
+    ChildProfile,
+    GenerationJob,
+    Storybook,
+    StorybookVersion,
+)
 from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
 from cyo_adventure.generation.import_story import IMPORT_PROVIDER
 from cyo_adventure.generation.pii import PiiContext
@@ -536,6 +541,36 @@ def _summarize_report(
     return overall, counts, structural
 
 
+async def _has_generation_job(session: AsyncSession, story_id: str) -> bool:
+    """Report whether a story has a ``GenerationJob`` row to resolve from.
+
+    Mirrors the lookup
+    :func:`~cyo_adventure.moderation.personalizable_slots.personalizable_slot_ids_for_story`
+    performs, so this predicate and the pipeline's own resolution can never
+    disagree about which provenance a book has. It selects the id alone rather
+    than the row: the answer needed here is existence, and the pipeline
+    re-reads the full row itself when this returns ``True``.
+
+    ``GenerationJob.storybook_id`` is not a foreign key (see that model's
+    docstring), so "no row" is an ordinary, expected answer for every imported
+    or seeded book, not an integrity fault.
+
+    Args:
+        session: The endpoint's open async session.
+        story_id: The storybook id being re-moderated.
+
+    Returns:
+        bool: ``True`` when at least one generation job references the story.
+    """
+    return (
+        await session.execute(
+            select(GenerationJob.id)
+            .where(GenerationJob.storybook_id == story_id)
+            .limit(1)
+        )
+    ).scalar_one_or_none() is not None
+
+
 async def remoderate_storybook_version(
     session: AsyncSession,
     storybook_id: str,
@@ -684,8 +719,12 @@ async def remoderate_storybook_version(
 
     allow_repair = _allow_repair_for(storybook.status)
 
-    # #CRITICAL: data-integrity: resolved from the VERSION, and only for the
-    # in_review arm this endpoint newly admits.
+    # #CRITICAL: data-integrity: resolved from the VERSION whenever no
+    # GenerationJob row can carry the provenance instead. This is the same
+    # job-first, version-second resolution
+    # moderation/rescreen.py::_resolve_one_slot_contract already applies to the
+    # same books; this endpoint used to gate on STATUS instead of provenance,
+    # which is what made the two disagree.
     #
     # Why the version at all: an in_review book here is an offline import with
     # no GenerationJob row (17 of 17 in production, 2026-08-24). The pipeline's
@@ -698,18 +737,40 @@ async def remoderate_storybook_version(
     # today; it stops being defensive the first time a sentinel-bearing book
     # reaches the review gate.
     #
-    # Why NOT for published: passing an explicit value suppresses the job-row
-    # lookup entirely. A published, generated, job-backed book whose version
-    # predates the skeleton_slug column (the column is never backfilled)
-    # resolves a real contract from its job today and would resolve an empty
-    # set here, manufacturing exactly the block this argument exists to avoid,
-    # on the arm this change is meant to leave alone. Leaving published UNSET
-    # keeps its behaviour bit-identical to before this endpoint was widened.
-    # #VERIFY: tests/unit/test_remoderate_unit.py::
-    # test_slot_contract_resolved_from_the_version_not_a_job and
-    # ::test_published_arm_leaves_the_slot_contract_to_the_pipeline.
+    # Why NOT unconditionally for published: passing an explicit value
+    # suppresses the job-row lookup entirely. A published, generated,
+    # job-backed book whose version predates the skeleton_slug column (the
+    # column is never backfilled) resolves a real contract from its job today
+    # and would resolve an empty set here, manufacturing exactly the block this
+    # argument exists to avoid. So the published arm is widened by the ABSENCE
+    # of a job row, never by status: a job-backed published book still reaches
+    # the pipeline UNSET and behaves bit-identically to before.
+    #
+    # #CRITICAL: data-integrity: the published arm was left UNSET entirely
+    # until 2026-08-26, on personalizable_slot_ids_for_story's stated
+    # assumption that "no job row means no reachable skeleton and therefore no
+    # theme contract". Production falsified it: a version's skeleton_slug
+    # reaches the skeleton and its contract with no job row at all, which is
+    # the whole reason personalizable_slot_ids_for_version exists. The
+    # consequence was not theoretical. The full-catalog re-moderation sweep hit
+    # it on the first sentinel-bearing PUBLISHED book: sk_cave_of_echoes
+    # hard-blocked in 6 seconds on 78 <global> unknown_slot violations and no
+    # other violation kind, before any LLM stage ran, so a live book's report
+    # was overwritten with a block describing absent provenance rather than its
+    # prose. Five published books carry sentinels with no job row; zero books
+    # in the catalog have a job row at all, so the job-backed population this
+    # exception was protecting is currently empty.
+    # #VERIFY: the two published arms are pinned as a PAIR, because either one
+    # alone would let "published" be resolved wholesale the wrong way:
+    # tests/unit/test_remoderate_unit.py::
+    # test_published_book_without_a_job_row_resolves_from_the_version and
+    # ::test_job_backed_published_book_leaves_the_slot_contract_to_the_pipeline.
+    # The in_review arm keeps its own:
+    # ::test_slot_contract_resolved_from_the_version_not_a_job.
     slot_contract: PersonalizableSlotsArg = PERSONALIZABLE_SLOTS_UNSET
-    if storybook.status == Status.IN_REVIEW.value:
+    if storybook.status == Status.IN_REVIEW.value or not await _has_generation_job(
+        session, storybook_id
+    ):
         # #ASSUME: timing: offloaded because this walks the skeleton catalog
         # directory and reads two JSON files; inline it would block the event
         # loop on a cold cache or a network-backed catalog volume. No gate

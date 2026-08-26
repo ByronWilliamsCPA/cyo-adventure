@@ -156,21 +156,34 @@ def _wire_session(
     version_row: StorybookVersion | None,
     *,
     child_names: list[str] | None = None,
+    generation_job: object | None = None,
 ) -> None:
     """Wire a mock session for the load-lock-check pattern this module uses.
 
-    ``session.execute`` dispatches on the queried entity type (mirrors
+    ``session.execute`` dispatches on the queried entity (mirrors
     tests/unit/test_moderation_pipeline.py::_load): this module's own
     Storybook lock-load runs first, and a REAL ``run_moderation_pipeline``
     call (the real-pipeline test) re-executes its own Storybook select PLUS
     a GenerationJob select (the personalizable-slot resolution); returning
     the Storybook for both would make the pipeline treat a Storybook as a
     GenerationJob and crash on a missing attribute.
+
+    ``generation_job`` defaults to ``None``, which is the production shape:
+    no book in the catalog has a ``GenerationJob`` row (2026-08-26). Pass a
+    stand-in row to exercise the job-backed arm, which the endpoint keeps
+    resolving through the pipeline rather than from the version.
+
+    The dispatch reads ``entity`` rather than ``type`` because the endpoint's
+    existence probe selects ``GenerationJob.id``, not the whole row: on a
+    column select ``type`` is the COLUMN's type (``CHAR(32)``) and only
+    ``entity`` still names the model. Matching on ``type`` silently sent that
+    probe down the Storybook arm, which answers with a truthy row and makes
+    every book look job-backed.
     """
 
     def _execute_side_effect(stmt: Select[tuple[object]]) -> MagicMock:
-        if stmt.column_descriptions[0]["type"] is GenerationJob:
-            return _execute_result(None)
+        if stmt.column_descriptions[0]["entity"] is GenerationJob:
+            return _execute_result(generation_job)
         return _execute_result(story)
 
     session.execute = AsyncMock(side_effect=_execute_side_effect)
@@ -355,7 +368,19 @@ async def test_locks_storybook_row_for_update(
         mock_async_session, "s1", 1, _remod_ctx()
     )
 
-    stmt = cast("Select[tuple[object]]", mock_async_session.execute.await_args.args[0])
+    # The Storybook statement is selected BY ENTITY, not by taking whichever
+    # execute happened to be last. This assertion read `await_args` until
+    # 2026-08-26, which was the storybook lock-load only because nothing else
+    # in the mocked path issued a query; the moment the endpoint gained a
+    # GenerationJob existence probe, `await_args` became that probe and this
+    # test failed while the lock it exists to pin was entirely intact.
+    storybook_stmts = [
+        cast("Select[tuple[object]]", call.args[0])
+        for call in mock_async_session.execute.await_args_list
+        if call.args[0].column_descriptions[0]["entity"] is Storybook
+    ]
+    assert len(storybook_stmts) == 1, "expected exactly one Storybook load to lock"
+    stmt = storybook_stmts[0]
     where = str(stmt.whereclause)
     assert "storybook" in where.lower()
 
@@ -1382,21 +1407,33 @@ async def test_slot_contract_resolved_from_the_version_not_a_job(
     assert pipeline.await_args.kwargs["allow_repair"] is True
 
 
-async def test_published_arm_leaves_the_slot_contract_to_the_pipeline(
+async def test_job_backed_published_book_leaves_the_slot_contract_to_the_pipeline(
     mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A published book still resolves its slots the way it always has.
+    """A published book WITH a job row still resolves its slots as it always has.
 
     Passing an explicit value suppresses the pipeline's generation_job lookup
     entirely. A published, generated, job-backed book whose version predates
     the skeleton_slug column (never backfilled) resolves a real contract from
     its job today; resolving from the version instead would hand the pipeline
-    an empty set and manufacture the exact block the override exists to avoid,
-    on the arm this endpoint's widening is meant to leave untouched.
+    an empty set and manufacture the exact block the override exists to avoid.
+
+    This is the half of the published arm the 2026-08-26 widening deliberately
+    leaves untouched, which is why the widening keys on the ABSENCE of a job
+    row rather than on status. Its partner is
+    ::test_published_book_without_a_job_row_resolves_from_the_version, and the
+    two together are what pin the predicate to provenance: drop either and
+    "published" could be resolved wholesale one way or the other without a
+    test noticing.
     """
     version_row = _version_row()
     version_row.skeleton_slug = None
-    _wire_session(mock_async_session, _story(status="published"), version_row)
+    _wire_session(
+        mock_async_session,
+        _story(status="published"),
+        version_row,
+        generation_job=object(),
+    )
     monkeypatch.setattr(
         remoderate_api,
         "personalizable_slot_ids_for_version",
@@ -1418,6 +1455,61 @@ async def test_published_arm_leaves_the_slot_contract_to_the_pipeline(
         pipeline.await_args.kwargs["personalizable_slots"]
         is remoderate_api.PERSONALIZABLE_SLOTS_UNSET
     )
+    assert pipeline.await_args.kwargs["allow_repair"] is False
+
+
+async def test_published_book_without_a_job_row_resolves_from_the_version(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A published book with NO job row resolves its contract from the version.
+
+    The regression this exists for was live, not hypothetical. Until
+    2026-08-26 this endpoint keyed the version fallback on ``status ==
+    in_review``, so a published book fell through to the pipeline's own
+    ``personalizable_slot_ids_for_story``, which answers an EMPTY frozenset
+    for a story with no job row. An empty declared set makes
+    ``check_sentinel_integrity_at_rest`` report every well-formed sentinel in
+    the blob as ``unknown_slot``: the full-catalog re-moderation sweep
+    hard-blocked sk_cave_of_echoes in six seconds on 78 such violations and no
+    other violation kind, overwriting a live book's accurate report with a
+    block that described absent provenance rather than its prose.
+
+    The assertion is deliberately the resolved slot set and not merely "the
+    resolver was called". A test that only counted calls would pass against
+    the old code the moment anything else consulted the version, and the value
+    is the thing the sentinel check actually reads.
+    """
+    version_row = _version_row()
+    version_row.skeleton_slug = "any-slug"
+    _wire_session(
+        mock_async_session,
+        _story(status="published"),
+        version_row,
+        generation_job=None,
+    )
+    monkeypatch.setattr(
+        remoderate_api,
+        "personalizable_slot_ids_for_version",
+        lambda _row: frozenset({"companion"}),
+    )
+
+    async def _fake_pipeline(**_kwargs: object) -> None:
+        version_row.moderation_report = _PASSING_REPORT
+
+    pipeline = AsyncMock(side_effect=_fake_pipeline)
+    monkeypatch.setattr(remoderate_api, "run_moderation_pipeline", pipeline)
+
+    await remoderate_api.remoderate_storybook_version(
+        mock_async_session, "s1", 1, _remod_ctx()
+    )
+
+    assert pipeline.await_args is not None
+    assert pipeline.await_args.kwargs["personalizable_slots"] == frozenset(
+        {"companion"}
+    )
+    # Publication status still governs repair; only the contract's provenance
+    # changed. Asserted here so the widening cannot quietly hand a published
+    # book the repair fork as well.
     assert pipeline.await_args.kwargs["allow_repair"] is False
 
 
