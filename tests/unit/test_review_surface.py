@@ -117,6 +117,31 @@ def test_null_report_yields_empty_projections() -> None:
 
 
 @pytest.mark.unit
+def test_null_report_synthetic_finding_says_unscreened() -> None:
+    """A never-screened story's structural_findings row is worded distinctly.
+
+    ``moderation_report_unusable(None)`` is True, same as a genuinely
+    screened-but-artifacts-only report, but the two situations call for
+    different admin actions: "run moderation" versus "re-run moderation".
+    The synthetic FindingView must say which one applies, and must not use
+    the "llm_safety" category (implying an LLM safety stage actually ran)
+    for a story that was never screened at all.
+    """
+    view = build_review_surface(
+        status="draft",
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=None,
+    )
+    assert len(view.structural_findings) == 1
+    finding = view.structural_findings[0]
+    assert finding.category == "pipeline"
+    assert "has not been screened" in finding.message
+    assert "re-run" not in finding.message
+
+
+@pytest.mark.unit
 def test_null_report_is_reported_as_unscreened() -> None:
     """Finding 3: an unmoderated version must not look identical to a clean one.
 
@@ -2057,7 +2082,7 @@ def _fail_safe_report(node_ids: list[str]) -> dict[str, object]:
     return {
         "findings": [
             {
-                "stage": "review",
+                "stage": 1,
                 "source": "llm_safety",
                 "category": "llm_safety",
                 "node_id": nid,

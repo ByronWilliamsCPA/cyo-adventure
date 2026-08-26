@@ -6,11 +6,14 @@ from typing import cast
 
 import pytest
 
+from cyo_adventure.core.exceptions import BusinessLogicError
 from cyo_adventure.moderation.report import (
     CONCERN_TAXONOMY,
+    FAIL_SAFE_MESSAGE_SUBSTRING,
     Finding,
     FindingSeverity,
     ModerationReport,
+    SevereFindingCounts,
     Source,
     Verdict,
     moderation_report_unusable,
@@ -336,6 +339,13 @@ class TestModerationReportUnusable:
     def test_none_report_is_unusable(self) -> None:
         assert moderation_report_unusable(None) is True
 
+    def test_non_dict_report_is_unusable(self) -> None:
+        """A top-level JSONB value that isn't even a mapping fails closed."""
+        assert (
+            moderation_report_unusable(cast("dict[str, object]", ["not", "a", "dict"]))
+            is True
+        )
+
     def test_empty_dict_report_is_unusable(self) -> None:
         """A report with no ``findings`` key at all fails closed, not open."""
         assert moderation_report_unusable({}) is True
@@ -353,6 +363,48 @@ class TestModerationReportUnusable:
         genuine all-clear, not the malformed shape the tests above cover.
         """
         assert moderation_report_unusable(self._report([])) is False
+
+    def test_empty_findings_without_summary_is_unusable(self) -> None:
+        """An empty findings list with NO summary key is not a genuine
+        all-clear: nothing evidences an independent reviewer actually ran.
+        """
+        assert moderation_report_unusable({"findings": []}) is True
+
+    def test_empty_findings_with_non_mapping_summary_is_unusable(self) -> None:
+        """An empty findings list with a corrupt, non-mapping summary fails
+        closed rather than treating the report as clean.
+        """
+        assert (
+            moderation_report_unusable({"findings": [], "summary": "corrupt"}) is True
+        )
+
+    def test_empty_findings_missing_reviewer_independent_key_is_unusable(
+        self,
+    ) -> None:
+        """An empty findings list with a summary that omits
+        ``reviewer_independent`` entirely fails closed: absence of the key is
+        not evidence of independence.
+        """
+        report = {"findings": [], "summary": {"count": 0, "hard_block": False}}
+        assert moderation_report_unusable(report) is True
+
+    def test_empty_dict_finding_entry_is_unusable(self) -> None:
+        """A finding entry with no keys at all must not rescue the report.
+
+        Before the verdict-recognizer, an entry matching none of the three
+        artifact shapes (structural/concern/fail-safe-message) fell through
+        the loop's ``continue`` chain to the trailing ``return False``,
+        marking the whole report usable on the strength of a finding that
+        proves nothing.
+        """
+        assert moderation_report_unusable(self._report([{}])) is True
+
+    def test_finding_entry_with_no_recognizable_shape_is_unusable(self) -> None:
+        """A truncated finding entry (missing ``verdict``) does not rescue
+        the report even when it also fails to match any artifact shape.
+        """
+        entry = {"message": "something", "score": 0.5}
+        assert moderation_report_unusable(self._report([entry])) is True
 
     def test_concern_only_mock_marker_without_structural_flag_is_unusable(
         self,
@@ -413,6 +465,46 @@ class TestModerationReportUnusable:
         ]
         assert moderation_report_unusable(self._report(findings)) is False
 
+    def test_pre_stage_a_legacy_report_is_unusable_via_message_substring_only(
+        self,
+    ) -> None:
+        """AL-624: pin the message substring as the sole live detection arm
+        for a report shaped exactly like a pre-2026-07-30 mock run stored one.
+
+        Both the "structural" key and the "reviewer_independent: False"
+        stamp were introduced by ``_stamp_mock_reviewer`` (8ca8d1b3,
+        2026-07-30, PR #496); the 12 in-review books produced by the
+        2026-07-21 incident predate that commit and so carry NEITHER. The
+        distinguishing signal for that legacy corpus has to come from the
+        finding's own content (the fail-safe message literal), never from
+        field presence or recency (AL-624's own conclusion). This fixture
+        therefore omits ``structural``, omits ``concern``, and sets
+        ``reviewer_independent: True`` in the summary (a legacy row predates
+        the stamp; it was never marked False), so every OTHER arm of
+        ``moderation_report_unusable`` is inert and only the
+        ``FAIL_SAFE_MESSAGE_SUBSTRING`` match can catch it.
+
+        A future rename of ``FAIL_SAFE_MESSAGE_SUBSTRING`` or of the message
+        text ``moderation/stages.py`` actually emits
+        (``UNKNOWN_VERDICT_FAIL_SAFE_MESSAGE`` /
+        ``PARSE_FAILED_FAIL_SAFE_MESSAGE``) without updating the other in
+        lockstep breaks this test, not the legacy corpus silently.
+        """
+        legacy_finding: dict[str, object] = {
+            "stage": 1,
+            "source": "llm_safety",
+            "category": "llm_safety",
+            "node_id": "n1",
+            "verdict": "flag",
+            "score": None,
+            "message": "unknown verdict; defaulted to fail-safe",
+        }
+        assert "structural" not in legacy_finding
+        assert "concern" not in legacy_finding
+        assert FAIL_SAFE_MESSAGE_SUBSTRING in cast("str", legacy_finding["message"])
+        report = self._report([legacy_finding], independent=True)
+        assert moderation_report_unusable(report) is True
+
 
 class TestSevereFindingCounts:
     def test_counts_blocks_and_highs_separately(self) -> None:
@@ -426,9 +518,37 @@ class TestSevereFindingCounts:
         }
         assert severe_finding_counts(report) == (1, 1)
 
-    def test_none_and_empty(self) -> None:
-        assert severe_finding_counts(None) == (0, 0)
-        assert severe_finding_counts({"findings": []}) == (0, 0)
+    def test_empty_findings_returns_zero_counts(self) -> None:
+        """A well-formed empty findings list (an already-validated clean
+        report) legitimately returns SevereFindingCounts(0, 0).
+        """
+        assert severe_finding_counts({"findings": []}) == SevereFindingCounts(0, 0)
+
+    def test_none_report_raises(self) -> None:
+        """None is a shape moderation_report_unusable would have rejected;
+        reaching severe_finding_counts with it means the ordering invariant
+        (moderation_report_unusable must run first) was violated, and this
+        must fail loudly rather than silently return (0, 0).
+        """
+        with pytest.raises(BusinessLogicError):
+            severe_finding_counts(None)
+
+    def test_non_dict_report_raises(self) -> None:
+        # The cast is hoisted out of the raises block so the block invokes
+        # exactly one call (Sonar S5778): otherwise a BusinessLogicError from
+        # the cast itself would satisfy the assertion just as well as one from
+        # severe_finding_counts, which is the behaviour under test.
+        not_a_dict = cast("dict[str, object]", "also not a dict")
+        with pytest.raises(BusinessLogicError):
+            severe_finding_counts(not_a_dict)
+
+    def test_non_list_findings_raises(self) -> None:
+        with pytest.raises(BusinessLogicError):
+            severe_finding_counts({"findings": "corrupt"})
+
+    def test_missing_findings_key_raises(self) -> None:
+        with pytest.raises(BusinessLogicError):
+            severe_finding_counts({})
 
     def test_high_severity_advisory_does_not_gate(self) -> None:
         # Advisories never gate (SOP contract); a stray severity=high on an

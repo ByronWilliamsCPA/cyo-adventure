@@ -9,7 +9,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import cast
+from typing import NamedTuple, cast
+
+from cyo_adventure.core.exceptions import BusinessLogicError
 
 
 class Source(StrEnum):
@@ -60,6 +62,15 @@ class FindingSeverity(StrEnum):
 # (2.2 item 1); that degrade belongs at the parse boundary where a model
 # response is turned into a Finding, so by the time a Finding is constructed
 # the value must already be a member. Enforced in ``Finding.__post_init__``.
+#
+# "reviewer_unavailable" and "mock_reviewer_active" duplicate
+# MOCK_MODERATED_CONCERNS below by design, not by drift: this set is the
+# closed taxonomy every Finding.concern value must belong to (including
+# these two structural ones), while MOCK_MODERATED_CONCERNS is the narrower
+# subset moderation_report_unusable() treats as pipeline artifacts rather
+# than genuine judgments. A concern added here for a genuinely new
+# structural (pipeline-condition) reason belongs in MOCK_MODERATED_CONCERNS
+# too; a new genuine-content concern must NOT be added there.
 CONCERN_TAXONOMY: frozenset[str] = frozenset(
     {
         "real_world_danger",
@@ -70,6 +81,7 @@ CONCERN_TAXONOMY: frozenset[str] = frozenset(
         "self_harm",
         "profanity",
         # Structural concerns: pipeline conditions, not content judgments.
+        # Mirrored in MOCK_MODERATED_CONCERNS below.
         "reviewer_unavailable",
         "mock_reviewer_active",
         "other",
@@ -87,6 +99,14 @@ FAIL_SAFE_MESSAGE_SUBSTRING = "defaulted to fail-safe"
 LEGACY_FAIL_SAFE_MESSAGES = frozenset(
     {UNKNOWN_VERDICT_FAIL_SAFE_MESSAGE, PARSE_FAILED_FAIL_SAFE_MESSAGE}
 )
+# The structural (pipeline-condition, not genuine-content) subset of
+# CONCERN_TAXONOMY above; both members are also the two structural entries
+# called out in that set's own comment. Kept as a separate frozenset
+# (instead of, say, a "structural" flag on the taxonomy itself) because this
+# is the exact predicate moderation_report_unusable() needs, and the two
+# sets serve different questions: CONCERN_TAXONOMY answers "is this concern
+# value valid at all", MOCK_MODERATED_CONCERNS answers "does this concern
+# value alone fail to prove a genuine judgment happened".
 MOCK_MODERATED_CONCERNS = frozenset({"mock_reviewer_active", "reviewer_unavailable"})
 
 
@@ -253,17 +273,25 @@ def moderation_report_unusable(report: dict[str, object] | None) -> bool:
 
     Operates on the persisted JSONB shape (``to_dict()`` output), including
     legacy pre-Stage-A rows that lack ``structural``/``concern`` keys. A
-    report is unusable when it is absent, when ``findings`` is missing, is
-    not a list, or is otherwise malformed (fail closed rather than treat a
-    corrupt row as a clean pass), when the reviewer was not independent
-    (mock), or when every finding is a pipeline artifact (structural,
-    fail-safe message, or a MOCK_MODERATED_CONCERNS concern). An empty
-    findings list on an independent report with a well-formed ``findings``
-    key is a genuine all-clear (PASS findings are aggregated rather than
-    persisted, see ``ModerationReport.to_dict``), not an unusable report.
+    report is unusable when it is absent, is not a mapping, when ``findings``
+    is missing, is not a list, or is otherwise malformed (fail closed rather
+    than treat a corrupt row as a clean pass), when the reviewer was not
+    independent (mock), or when every finding is a pipeline artifact
+    (structural, fail-safe message, or a MOCK_MODERATED_CONCERNS concern). A
+    per-finding entry that matches none of those artifact shapes AND carries
+    no recognizable genuine-judgment shape of its own (a non-empty
+    ``verdict``, the one field every real ``Finding.to_dict()`` output
+    always sets) is treated the same way: an artifact-or-corrupt row, never a
+    rescuing judgment. An empty findings list is a genuine all-clear only
+    when the report also carries a well-formed ``summary`` mapping with
+    ``reviewer_independent`` exactly ``True`` (PASS findings are aggregated
+    rather than persisted, see ``ModerationReport.to_dict``); an empty list
+    on a report with no such evidence of an independent reviewer run is
+    itself a malformed shape, not an unusable-by-content report.
     """
-    if report is None:
+    if not isinstance(report, dict):
         return True
+    report = cast("dict[str, object]", report)
     summary = report.get("summary")
     if (
         isinstance(summary, dict)
@@ -283,24 +311,81 @@ def moderation_report_unusable(report: dict[str, object] | None) -> bool:
     if not isinstance(findings, list):
         return True
     if not findings:
+        # #CRITICAL: security: an empty findings list is a genuine all-clear
+        # only when it comes with evidence an independent reviewer actually
+        # ran. Without this check a corrupt or hand-crafted row carrying
+        # ``findings: []`` and no (or a malformed) ``summary`` would read as
+        # a clean, reviewed report and clear the approval gate with zero
+        # proof any review occurred.
+        # #VERIFY: tests/unit/test_moderation_report.py::
+        # TestModerationReportUnusable::
+        # test_empty_findings_without_summary_is_unusable,
+        # ::test_empty_findings_with_non_mapping_summary_is_unusable,
+        # ::test_empty_findings_missing_reviewer_independent_key_is_unusable.
+        return not (
+            isinstance(summary, dict)
+            and cast("dict[str, object]", summary).get("reviewer_independent") is True
+        )
+    return not any(
+        _is_genuine_judgment(finding) for finding in cast("list[object]", findings)
+    )
+
+
+def _is_genuine_judgment(finding: object) -> bool:
+    """True when one finding entry is evidence of an actual content judgment.
+
+    An entry that is a pipeline artifact (structural, a MOCK_MODERATED_CONCERNS
+    concern, or a fail-safe message) is never evidence, regardless of what
+    else it carries. An entry matching none of those artifact shapes still
+    needs its OWN recognizable genuine-judgment shape (a non-empty
+    ``verdict``, the one field every real ``Finding.to_dict()`` output always
+    sets) to count: an empty dict, or a truncated row missing the field, is
+    not evidence of a genuine judgment either, and must not silently mark the
+    whole report usable.
+
+    Args:
+        finding: One raw entry from the report's ``findings`` list.
+
+    Returns:
+        bool: True only for an entry that is both non-artifact-shaped and
+        carries a non-empty ``verdict``.
+    """
+    if not isinstance(finding, dict):
         return False
-    for finding in cast("list[object]", findings):
-        if not isinstance(finding, dict):
-            continue
-        entry = cast("dict[str, object]", finding)
-        if entry.get("structural") is True:
-            continue
-        if entry.get("concern") in MOCK_MODERATED_CONCERNS:
-            continue
-        message = entry.get("message")
-        if isinstance(message, str) and FAIL_SAFE_MESSAGE_SUBSTRING in message:
-            continue
-        return False  # at least one genuine judgment
-    return True
+    entry = cast("dict[str, object]", finding)
+    if entry.get("structural") is True:
+        return False
+    if entry.get("concern") in MOCK_MODERATED_CONCERNS:
+        return False
+    message = entry.get("message")
+    if isinstance(message, str) and FAIL_SAFE_MESSAGE_SUBSTRING in message:
+        return False
+    # #CRITICAL: data-integrity: an entry with none of the three artifact
+    # shapes above AND no verdict is still not evidence of a genuine
+    # judgment; it must not silently mark the whole report usable.
+    # #VERIFY: tests/unit/test_moderation_report.py::
+    # TestModerationReportUnusable::test_empty_dict_finding_entry_is_unusable,
+    # ::test_finding_entry_with_no_recognizable_shape_is_unusable.
+    verdict = entry.get("verdict")
+    return isinstance(verdict, str) and bool(verdict)
 
 
-def severe_finding_counts(report: dict[str, object] | None) -> tuple[int, int]:
-    """Return ``(block_count, high_severity_flag_count)`` for a stored report.
+class SevereFindingCounts(NamedTuple):
+    """``(block_count, high_severity_flag_count)`` for a stored report.
+
+    A named return type rather than a bare tuple so a transposed unpack at a
+    call site (``highs, blocks = severe_finding_counts(...)``) is at least
+    visible in review as two same-typed positions instead of an anonymous
+    ``tuple[int, int]``; callers should prefer attribute access
+    (``counts.block_count``) over positional unpacking entirely.
+    """
+
+    block_count: int
+    high_severity_flag_count: int
+
+
+def severe_finding_counts(report: dict[str, object] | None) -> SevereFindingCounts:
+    """Return block/high-severity-flag counts for an already-validated report.
 
     A ``block`` verdict counts once in the first slot regardless of its
     severity; a ``flag`` verdict with ``severity == "high"`` counts in the
@@ -308,21 +393,37 @@ def severe_finding_counts(report: dict[str, object] | None) -> tuple[int, int]:
     must never gate, and this function feeds the approval override gate and
     its audit payload.
 
-    A missing or malformed ``findings`` key returns ``(0, 0)`` rather than
-    failing closed like ``moderation_report_unusable`` does: this function is
-    always called after that gate has already rejected a malformed or
-    unusable report (see ``publishing/service.py::approve``), so by the time
-    this runs ``findings`` is either absent because the report is otherwise
-    clean, or well-formed. It is not itself the fail-closed boundary.
+    Args:
+        report: The stored ``moderation_report`` JSONB payload. Must already
+            have passed ``moderation_report_unusable`` (returning ``False``)
+            in the same call; see the ``Raises`` note below.
+
+    Returns:
+        SevereFindingCounts: The two counts.
+
+    Raises:
+        BusinessLogicError: If ``report`` is not a well-formed mapping with a
+            list ``findings`` key, that is, if it is any shape
+            ``moderation_report_unusable`` would have rejected. This
+            function is always called after that gate (see
+            ``publishing/service.py::approve``), so reaching this branch
+            means the ordering invariant itself was violated somewhere, not
+            that this particular report is malformed content. A loud failure
+            here is strictly better than the silent ``(0, 0)`` fail-open
+            this function used to return for exactly that case, on a gate
+            that exists to keep unreviewed content away from children.
     """
-    if not report:
-        return (0, 0)
-    findings = report.get("findings")
-    if not isinstance(findings, list):
-        return (0, 0)
+    if not isinstance(report, dict) or not isinstance(report.get("findings"), list):
+        msg = (
+            "severe_finding_counts requires an already-validated report "
+            "(moderation_report_unusable must have returned False first); "
+            "got a report shape that gate would have rejected"
+        )
+        raise BusinessLogicError(msg, rule="severe_finding_counts_precondition")
+    findings = cast("list[object]", report["findings"])
     blocks = 0
     highs = 0
-    for finding in cast("list[object]", findings):
+    for finding in findings:
         if not isinstance(finding, dict):
             continue
         entry = cast("dict[str, object]", finding)
@@ -330,4 +431,4 @@ def severe_finding_counts(report: dict[str, object] | None) -> tuple[int, int]:
             blocks += 1
         elif entry.get("verdict") == "flag" and entry.get("severity") == "high":
             highs += 1
-    return (blocks, highs)
+    return SevereFindingCounts(block_count=blocks, high_severity_flag_count=highs)

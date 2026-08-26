@@ -480,14 +480,16 @@ async def approve(
     # #VERIFY: test_approve_over_block_without_reason_returns_400 and
     # test_approve_over_block_with_reason_publishes_and_audits in
     # tests/integration/test_approval_api.py.
-    blocks, highs = severe_finding_counts(version_row.moderation_report)
+    severe_counts = severe_finding_counts(version_row.moderation_report)
     # #ASSUME: data-integrity: a whitespace-only override_reason ("   ") must
     # not satisfy this gate. Truthiness alone accepts any non-empty string,
     # including one that carries no actual justification once stripped;
     # requiring a non-empty stripped value keeps the audit log's free-text
     # reason meaningful rather than a rubber stamp.
     # #VERIFY: test_approve_over_block_with_whitespace_only_reason_returns_400.
-    if (blocks or highs) and not (override_reason and override_reason.strip()):
+    if (severe_counts.block_count or severe_counts.high_severity_flag_count) and not (
+        override_reason and override_reason.strip()
+    ):
         msg = (
             "approving over a block or high-severity finding requires an "
             "override reason; it is recorded in the audit log"
@@ -565,7 +567,7 @@ async def approve(
     # #VERIFY: test_dual_role_{same,foreign}_family_publish_stamps_* in
     # tests/integration/test_pipeline_event_instrumentation.py.
     payload: dict[str, object] = {"visibility": visibility.value}
-    if blocks or highs:
+    if severe_counts.block_count or severe_counts.high_severity_flag_count:
         # #CRITICAL: security: RELEASED's payload is PII-free by contract
         # (events/writer.py's _PAYLOAD_ALLOWLIST, spec D3), so the free-text
         # override_reason an admin typed is logged here, never persisted on
@@ -576,15 +578,15 @@ async def approve(
             "storybook_approved_over_severe_finding",
             storybook_id=storybook.id,
             version=version,
-            overridden_block_count=blocks,
-            overridden_high_count=highs,
+            overridden_block_count=severe_counts.block_count,
+            overridden_high_count=severe_counts.high_severity_flag_count,
             override_reason=override_reason.strip()
             if override_reason
             else override_reason,
             actor=str(principal.user_id),
         )
-        payload["overridden_block_count"] = blocks
-        payload["overridden_high_count"] = highs
+        payload["overridden_block_count"] = severe_counts.block_count
+        payload["overridden_high_count"] = severe_counts.high_severity_flag_count
     await record_event(
         session,
         Actor.from_principal(

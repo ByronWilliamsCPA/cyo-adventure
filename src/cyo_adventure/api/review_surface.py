@@ -73,6 +73,56 @@ _SEVERITY_RANK: dict[FindingSeverity | None, int] = {
 _VALIDATOR_RULE_IDS = frozenset({"RL-13", "PL-19"})
 
 
+# #ASSUME: data-integrity: a story that was NEVER screened (moderation_report
+# is None, e.g. a freshly-imported catalog draft ahead of its first
+# moderation run) and a story that WAS screened but whose stored report
+# carries no genuine judgment (fail-safe or mock-reviewer artifacts only) are
+# both "unusable" for moderation_report_unusable()'s purposes, but they read
+# as different admin actions: "run moderation" versus "re-run moderation".
+# Distinguishing the message (and using the neutral "pipeline" category
+# rather than "llm_safety" for the never-screened case, since no LLM safety
+# stage ran at all) keeps the synthetic finding accurate instead of implying
+# a screening attempt happened and produced nothing usable.
+# #VERIFY: tests/unit/test_review_surface.py::
+# test_null_report_synthetic_finding_says_unscreened.
+def _unusable_report_finding(
+    moderation_report: dict[str, object] | None,
+) -> FindingView:
+    """Build the synthetic structural finding for an unusable report.
+
+    Args:
+        moderation_report: The story's stored moderation report, already
+            known to be unusable (per moderation_report_unusable), or None
+            when the story has never been screened at all.
+
+    Returns:
+        FindingView: The one synthetic story-level finding to render.
+    """
+    if moderation_report is None:
+        category = "pipeline"
+        message = (
+            "this story has not been screened by moderation yet; run "
+            "moderation before reviewing"
+        )
+    else:
+        category = "llm_safety"
+        message = (
+            "moderation report is unusable (fail-safe or mock-reviewer "
+            "artifacts only); re-run moderation before reviewing"
+        )
+    return FindingView(
+        stage=1,
+        source=Source.PIPELINE,
+        category=category,
+        node_id=None,
+        verdict=Verdict.FLAG,
+        score=None,
+        message=message,
+        structural=True,
+        concern="reviewer_unavailable",
+    )
+
+
 def build_review_surface(
     *,
     status: str,
@@ -143,23 +193,7 @@ def build_review_surface(
         # ::test_unusable_report_queue_item_counts.
         report_unusable = moderation_report_unusable(moderation_report)
         if report_unusable:
-            all_views = [
-                FindingView(
-                    stage=1,
-                    source=Source.PIPELINE,
-                    category="llm_safety",
-                    node_id=None,
-                    verdict=Verdict.FLAG,
-                    score=None,
-                    message=(
-                        "moderation report is unusable (fail-safe or "
-                        "mock-reviewer artifacts only); re-run moderation "
-                        "before reviewing"
-                    ),
-                    structural=True,
-                    concern="reviewer_unavailable",
-                )
-            ]
+            all_views = [_unusable_report_finding(moderation_report)]
         for finding in [] if report_unusable else _findings(moderation_report):
             view = _finding_view(finding)
             if view.verdict is Verdict.PASS:

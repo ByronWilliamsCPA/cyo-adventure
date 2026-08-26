@@ -730,11 +730,22 @@ async def edit_node(
     assert_prompt_pii_safe(node_text, forbidden=pii)
     fresh_findings: list[Finding] = []
     async with httpx.AsyncClient(timeout=30.0) as client:
+        # #CRITICAL: security: require_classifiers=True outside "local"
+        # matches moderation/pipeline.py's deployed-tier posture. Unlike
+        # rescreen.py's ephemeral sweep outcome, this finding is merged into
+        # version_row.moderation_report (a PERSISTED JSONB column, see
+        # _merge_moderation_report below) and read back by
+        # moderation_report_unusable/severe_finding_counts at every future
+        # approve() call, so a missing OpenAI key here silently degrading a
+        # persisted report is a durable gap, not a one-off.
+        # #VERIFY: tests/unit/test_node_edit.py::
+        # test_missing_openai_key_outside_local_is_recorded_as_degraded.
         fresh_findings.extend(
             await run_classifiers(
                 nodes=[(node_id, node_text)],
                 openai_key=settings.openai_api_key,
                 client=client,
+                require_classifiers=settings.environment != "local",
             )
         )
     # Short-circuit exactly like moderation/pipeline.py: a Stage-0 bright-line
