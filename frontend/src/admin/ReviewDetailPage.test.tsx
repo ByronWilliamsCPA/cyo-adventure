@@ -1801,6 +1801,75 @@ describe('ReviewDetailPage', () => {
       )
     })
 
+    it('surfaces a rule-specific message when the backend rejects approval for an unusable report', async () => {
+      // Reachable despite the Approve button being disabled for a surface
+      // that already reads unusable: report_unusable is read once at
+      // page-open, so a re-moderation that lands between load and submit
+      // reaches this rule on the backend's own re-check.
+      const user = userEvent.setup()
+      mockPost.mockRejectedValue({
+        isAxiosError: true,
+        response: {
+          status: 400,
+          data: {
+            error: 'BusinessLogicError',
+            message: 'moderation report is unusable',
+            code: 'BUSINESS_RULE_VIOLATION',
+            details: { rule: 'approve_with_unusable_moderation' },
+          },
+        },
+      })
+      renderAt('s1')
+      await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+      await user.click(await screen.findByRole('button', { name: /Confirm approve/i }))
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        /Moderation for this story is unavailable/i
+      )
+    })
+
+    /*
+     * The three cases below drive the arms of businessRuleOf() that a
+     * well-formed backend rejection never reaches. Each one must degrade to
+     * the cause-neutral banner: naming a rule we did not actually read would
+     * tell a reviewer to fix the wrong thing, and is worse than saying
+     * nothing specific. The negative assertion is the point of each test,
+     * since the fallback string is what a crash or a misparse would also
+     * fail to produce.
+     */
+    it.each([
+      ['a non-axios rejection', new Error('network stack blew up')],
+      [
+        'a rejection whose details are null',
+        {
+          isAxiosError: true,
+          response: {
+            status: 400,
+            data: { error: 'BusinessLogicError', message: 'nope', details: null },
+          },
+        },
+      ],
+      [
+        'a rejection whose rule is not a string',
+        {
+          isAxiosError: true,
+          response: {
+            status: 400,
+            data: { error: 'BusinessLogicError', message: 'nope', details: { rule: 42 } },
+          },
+        },
+      ],
+    ])('falls back to the cause-neutral approve error for %s', async (_label, rejection) => {
+      const user = userEvent.setup()
+      mockPost.mockRejectedValue(rejection)
+      renderAt('s1')
+      await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+      await user.click(await screen.findByRole('button', { name: /Confirm approve/i }))
+      const alert = await screen.findByRole('alert')
+      expect(alert).toHaveTextContent(/We could not approve this story/i)
+      expect(alert).not.toHaveTextContent(/override reason/i)
+      expect(alert).not.toHaveTextContent(/Moderation for this story is unavailable/i)
+    })
+
     it('labels content flags as author-declared', async () => {
       mockGet.mockResolvedValue({
         data: {
