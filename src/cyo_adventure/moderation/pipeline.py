@@ -292,9 +292,12 @@ async def run_moderation_pipeline(
     # #CRITICAL: security: this must NOT be gated on `environment != "local"`.
     # It was, and `config._require_real_reviewer_outside_local` is gated on the
     # same predicate, so the two defenses shared one point of failure: both
-    # `review_provider` and `environment` come from the same env file, and a
-    # process that fails to load it falls back to `review_provider="mock"`
-    # (config.py's default) AND `environment="local"`. The guard then does not
+    # `review_provider` and `environment` are read from the process
+    # environment by the same Settings object, which declares no `env_file`
+    # (config.py:218) and therefore reads nothing but exported variables. A
+    # process started without them exported falls back to
+    # `review_provider="mock"` (config.py's default) AND `environment="local"`
+    # in the same instant, from the same absence. The guard then does not
     # raise, this stamp does not apply, and the persisted report claims an
     # independent reviewer over nodes the mock never judged. That is what put
     # twelve books at the review gate on 2026-07-21 with 2,916 fail-safe nodes

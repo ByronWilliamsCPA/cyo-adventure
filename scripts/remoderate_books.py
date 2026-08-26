@@ -83,9 +83,10 @@ the mock answers every call with the literal ``"{}"``, which parses cleanly
 and carries no verdict, so every node lands on its stage's fail-safe default.
 Such a run rewrites the exact fail-safe reports the sweep exists to clear and
 then exits 0 reporting success. ``main`` refuses it, and prints the resolved
-environment, database target, and provider before every executed run, because
-a process that fails to load its env file falls back to ``environment="local"``
-with a localhost database and the mock provider all at once.
+environment, database target, and provider before every executed run. ``Settings``
+declares no ``env_file`` (``core/config.py``), so it reads nothing but exported
+variables: a process started without them falls back to ``environment="local"``,
+a localhost database, and the mock provider all at once, from one absence.
 
 Audit provenance: every re-moderation this script drives stamps
 ``Actor.system()`` (no human request principal exists in this context),
@@ -830,11 +831,12 @@ def _database_target(database_url: str) -> str:
 # anything. config.py's _require_real_reviewer_outside_local and the
 # pipeline's mock-reviewer stamp were both once gated on
 # environment != "local", and both read review_provider and environment from
-# the same env file, so a process that failed to load that file got
-# review_provider="mock" and environment="local" together and disabled both
-# at once. Printing what THIS run resolved, rather than trusting what the
-# operator meant to set, is what makes that failure visible before a sweep
-# rather than after one that appeared to succeed.
+# the process environment via a Settings object that declares no env_file, so
+# a process started without those variables exported got
+# review_provider="mock" and environment="local" together, from one absence,
+# and disabled both at once. Printing what THIS run resolved, rather than
+# trusting what the operator meant to set, is what makes that failure visible
+# before a sweep rather than after one that appeared to succeed.
 # #VERIFY: tests/unit/test_remoderate_books.py::
 # test_main_refuses_to_execute_with_the_mock_reviewer,
 # ::test_main_refusal_happens_before_the_sweep_runs,
@@ -847,7 +849,7 @@ def _preflight(settings: Settings, *, execute: bool) -> None:
     caller passing explicit settings has already declared its provider, and
     the pipeline stamps any mock-produced report as non-independent in every
     environment regardless. This guards the human at a terminal, who is the
-    one who cannot see which env file actually loaded.
+    one who cannot see which variables the shell actually exported.
 
     Args:
         settings: The settings this run resolved, which are the same ones
