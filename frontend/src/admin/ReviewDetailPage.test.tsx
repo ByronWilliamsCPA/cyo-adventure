@@ -713,6 +713,98 @@ describe('ReviewDetailPage', () => {
     expect(screen.queryByText('CONSOLE HOME')).not.toBeInTheDocument()
   })
 
+  it('clears the approve dialog and its override reason when the queue advances to a new story', async () => {
+    // Regression test for the queue-auto-advance state leak: s1 needs an
+    // override reason (a block finding), s2 is clean and needs none. Before
+    // the fix, the same component instance carried the open dialog and s1's
+    // override text straight into s2's render.
+    const user = userEvent.setup()
+    const s1NeedsOverride = {
+      ...SURFACE,
+      storybook_id: 's1',
+      flagged_passages: [],
+      story_level_findings: [
+        {
+          stage: 1,
+          source: 'llm_safety',
+          category: 'safety',
+          node_id: 'n1',
+          verdict: 'block',
+          score: null,
+          message: 'graphic violence',
+        },
+      ],
+    }
+    const s2Clean = {
+      ...SURFACE,
+      storybook_id: 's2',
+      flagged_passages: [],
+      story_level_findings: [],
+    }
+    mockGet.mockImplementation((url: string) => {
+      if (typeof url === 'string' && url.startsWith('/v1/storybooks/s2/')) {
+        return Promise.resolve({ data: s2Clean })
+      }
+      return Promise.resolve({ data: s1NeedsOverride })
+    })
+    mockPost.mockResolvedValue({ data: { id: 's1', status: 'published' } })
+
+    render(
+      <MemoryRouter
+        initialEntries={[{ pathname: '/admin/review/s1', state: { reviewQueue: ['s1', 's2'] } }]}
+      >
+        <Routes>
+          <Route path="/admin/review/:storybookId" element={<ReviewDetailPage />} />
+          <Route path="/admin" element={<div>CONSOLE HOME</div>} />
+        </Routes>
+      </MemoryRouter>
+    )
+
+    await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+    await user.type(
+      screen.getByLabelText(/override reason/i),
+      'Reviewed the flagged passage in full; appropriate for this reader.'
+    )
+    const confirm = await screen.findByRole('button', { name: /Confirm approve/i })
+    expect(confirm).toBeEnabled()
+    await user.click(confirm)
+
+    // Auto-advanced to s2, a clean surface that needs no override.
+    await screen.findByText(/Reviewing 2 of 2 in the queue/i)
+
+    // The dialog and its override reason must not have carried over: no
+    // confirm button (and no override textarea) should render until the
+    // reviewer explicitly reopens Approve for this new, unrelated story.
+    expect(screen.queryByRole('button', { name: /Confirm approve/i })).not.toBeInTheDocument()
+    expect(screen.queryByLabelText(/override reason/i)).not.toBeInTheDocument()
+  })
+
+  it('re-enables the confirm button for a second action after the first succeeds', async () => {
+    // Regression test: `submitting` was previously reset to false only in
+    // runAction's catch block, never on the success path, so every Confirm
+    // button stayed permanently disabled after one successful action.
+    const user = userEvent.setup()
+    mockPost.mockResolvedValue({ data: { id: 's1', status: 'published' } })
+    render(
+      <MemoryRouter
+        initialEntries={[{ pathname: '/admin/review/s1', state: { reviewQueue: ['s1', 's2'] } }]}
+      >
+        <Routes>
+          <Route path="/admin/review/:storybookId" element={<ReviewDetailPage />} />
+          <Route path="/admin" element={<div>CONSOLE HOME</div>} />
+        </Routes>
+      </MemoryRouter>
+    )
+
+    await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+    await user.click(await screen.findByRole('button', { name: /Confirm approve/i }))
+
+    // Auto-advanced to s2 (same default SURFACE fixture, no override needed).
+    await screen.findByText(/Reviewing 2 of 2 in the queue/i)
+    await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+    expect(await screen.findByRole('button', { name: /Confirm approve/i })).toBeEnabled()
+  })
+
   it('approves to the catalog when the admin selects it', async () => {
     const user = userEvent.setup()
     mockPost.mockResolvedValue({ data: { id: 's1', status: 'published' } })
@@ -1484,6 +1576,30 @@ describe('ReviewDetailPage', () => {
       expect(await screen.findByText(/re-run moderation before reviewing/i)).toBeInTheDocument()
     })
 
+    it('shows a cause-neutral unusable-report banner regardless of which cause produced it', async () => {
+      // moderation_report_unusable() (moderation/report.py) already covers at
+      // least four distinct causes: an absent report, a malformed report or
+      // finding entry, a non-independent/mock reviewer, and artifact-only
+      // findings. The banner must tell the reviewer what to do, not assert
+      // which of those caused it, since naming one is wrong for the other
+      // three and this list has already grown once. This fixture uses the
+      // non-independent-reviewer cause specifically, one the banner used to
+      // misdescribe as "pipeline fail-safe artifacts".
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          report_unusable: true,
+          flagged_passages: [],
+          story_level_findings: [],
+        },
+      })
+      renderAt('s1')
+      const banner = await screen.findByRole('alert')
+      expect(banner).toHaveTextContent(/cannot be relied on for a content judgment/i)
+      expect(banner).toHaveTextContent(/re-run moderation before reviewing/i)
+      expect(banner).not.toHaveTextContent(/pipeline fail-safe artifacts/i)
+    })
+
     it('disables Approve and directs the reviewer to re-run moderation when the report is unusable, without disabling Re-screen for an unrelated reason', async () => {
       mockGet.mockResolvedValue({
         data: {
@@ -1550,6 +1666,139 @@ describe('ReviewDetailPage', () => {
         visibility: 'family',
         override_reason: 'Reviewed the flagged passage in full; appropriate for 13-16.',
       })
+    })
+
+    it('requires an override reason before approving over a high-severity flag finding', async () => {
+      // needsOverride's other arm (verdict flag + severity high). A block-only
+      // test cannot tell a correctly-scoped predicate from one that dropped
+      // this clause entirely; the backend pins both directions
+      // (test_approve_over_block_* and test_approve_over_high_flag_*).
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          flagged_passages: [],
+          story_level_findings: [
+            {
+              stage: 1,
+              source: 'llm_safety',
+              category: 'safety',
+              node_id: 'n1',
+              verdict: 'flag',
+              severity: 'high',
+              score: null,
+              message: 'intense peril',
+            },
+          ],
+        },
+      })
+      mockPost.mockResolvedValue({ data: { id: 's1', status: 'published' } })
+      renderAt('s1')
+      await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+      const confirm = await screen.findByRole('button', { name: /Confirm approve/i })
+      expect(confirm).toBeDisabled()
+      await user.type(
+        screen.getByLabelText(/override reason/i),
+        'Reviewed the flagged passage in full; peril is age-appropriate.'
+      )
+      expect(confirm).toBeEnabled()
+      await user.click(confirm)
+      expect(mockPost).toHaveBeenCalledWith('/v1/storybooks/s1/approve', {
+        visibility: 'family',
+        override_reason: 'Reviewed the flagged passage in full; peril is age-appropriate.',
+      })
+    })
+
+    it('does not require an override reason for a flag below high severity', async () => {
+      // Negative-direction pin: a regression that widened needsOverride to
+      // every flag (not just high-severity ones) would still pass every
+      // other test in this describe block, since they only exercise verdicts
+      // that DO require an override.
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          flagged_passages: [],
+          story_level_findings: [
+            {
+              stage: 1,
+              source: 'llm_safety',
+              category: 'safety',
+              node_id: 'n1',
+              verdict: 'flag',
+              severity: 'medium',
+              score: null,
+              message: 'mild tension',
+            },
+          ],
+        },
+      })
+      mockPost.mockResolvedValue({ data: { id: 's1', status: 'published' } })
+      renderAt('s1')
+      await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+      const confirm = await screen.findByRole('button', { name: /Confirm approve/i })
+      expect(confirm).toBeEnabled()
+      expect(screen.queryByLabelText(/override reason/i)).not.toBeInTheDocument()
+      await user.click(confirm)
+      expect(mockPost).toHaveBeenCalledWith('/v1/storybooks/s1/approve', { visibility: 'family' })
+    })
+
+    it('describes why Confirm approve is disabled for a too-short override reason', async () => {
+      const user = userEvent.setup()
+      mockGet.mockResolvedValue({
+        data: {
+          ...SURFACE,
+          flagged_passages: [],
+          story_level_findings: [
+            {
+              stage: 1,
+              source: 'llm_safety',
+              category: 'safety',
+              node_id: 'n1',
+              verdict: 'block',
+              score: null,
+              message: 'graphic violence',
+            },
+          ],
+        },
+      })
+      renderAt('s1')
+      await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+      const confirm = await screen.findByRole('button', { name: /Confirm approve/i })
+      const hint = await screen.findByText(/explain why it is appropriate to approve anyway/i)
+      expect(confirm).toHaveAttribute('aria-describedby', hint.id)
+      await user.type(
+        screen.getByLabelText(/override reason/i),
+        'Reviewed the flagged passage in full.'
+      )
+      expect(confirm).not.toHaveAttribute('aria-describedby')
+    })
+
+    it('surfaces a rule-specific message when the backend rejects approval for needing an override reason', async () => {
+      // The reason this rule is reachable at all even through a correct
+      // client: needsOverride is computed once from the surface loaded at
+      // page-open and never revalidated before submit, so a concurrent
+      // change to the finding's severity between load and submit can still
+      // reach this rule on the backend's own re-check.
+      const user = userEvent.setup()
+      mockPost.mockRejectedValue({
+        isAxiosError: true,
+        response: {
+          status: 400,
+          data: {
+            error: 'BusinessLogicError',
+            message: 'a severe finding requires an override reason',
+            code: 'BUSINESS_RULE_VIOLATION',
+            details: { rule: 'approve_requires_override_reason' },
+          },
+        },
+      })
+      renderAt('s1')
+      await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+      await user.click(await screen.findByRole('button', { name: /Confirm approve/i }))
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        /still needs a written override reason/i
+      )
     })
 
     it('labels content flags as author-declared', async () => {
