@@ -229,6 +229,38 @@ def _newly_surfaced_reasons(surfaced: list[Finding]) -> list[str]:
     return [f"classifier {f.source.value}/{f.category}: {reason}" for f in surfaced]
 
 
+def _classifier_coverage_reasons(findings: list[Finding]) -> list[str]:
+    """Return reason strings for structural classifier-coverage findings.
+
+    A pipeline-artifact finding (``structural is True``, see
+    ``moderation/report.py``) reports something about the classifier RUN
+    itself, not a content judgment; two shapes exist today:
+    ``classifier_degraded`` (an ADVISORY, emitted for a down or, with
+    ``require_classifiers=True``, an unconfigured classifier) and
+    ``classifier_coverage_incomplete`` (a FLAG, emitted when nodes went
+    unscreened). Neither is captured by ``_classifier_block_reasons``
+    (BLOCK-only) or ``_newly_surfaced_findings``/``_newly_surfaced_reasons``
+    (ADVISORY-only, and further gated by whether the current
+    ``ThresholdPolicy`` surfaces it): under ``DEFAULT_THRESHOLD``
+    (``min_verdict=Verdict.FLAG``), an ADVISORY never surfaces regardless of
+    this filter, and a FLAG-verdict structural finding was never routed to
+    either helper at all. Without this function a rescreen with a degraded
+    or unconfigured classifier could record a clean "passed" outcome despite
+    the automated net not having genuinely run.
+
+    Args:
+        findings: The fresh Stage-0 classifier findings for this book.
+
+    Returns:
+        list[str]: One reason string per structural coverage finding.
+    """
+    return [
+        f"classifier {f.source.value}/{f.category}: {f.message}"
+        for f in findings
+        if f.structural
+    ]
+
+
 # #CRITICAL: security: ADR-023 Stage R. Rescreen re-reads an already-PUBLISHED
 # blob with no skeleton/contract reference on this code path, but the
 # personalizable-slot contract itself IS recoverable per book, the same way
@@ -607,20 +639,33 @@ async def _rescreen_one(
             # ::test_sentinel_free_body_is_unaffected_by_strip.
             nodes = [(node.id, strip_sentinels(node.body)) for node in story.nodes]
             # #CRITICAL: external-resources: run_classifiers is the same
-            # helper moderation/pipeline.py uses; a missing key skips that
-            # classifier entirely (both None -> []), and a per-call HTTP
-            # failure is caught INSIDE run_classifiers and logged, never
-            # raised. This mirrors "how moderation/pipeline.py handles
-            # provider absence" per the task brief; no separate
-            # provider-absence branch is needed here.
+            # helper moderation/pipeline.py uses; a missing key skips the
+            # classifier entirely (None -> []), and a per-call HTTP failure is
+            # caught INSIDE run_classifiers and logged, never raised. This
+            # mirrors "how moderation/pipeline.py handles provider absence"
+            # per the task brief; no separate provider-absence branch is
+            # needed here. OpenAI is the only classifier run_classifiers
+            # calls: Google Perspective was retired as a Stage-0 signal
+            # source (ratified sunset).
             # #VERIFY: tests/unit/test_moderation_classifiers.py covers the
             # per-call catch; test_rescreen_unit.py::
             # test_missing_classifier_keys_skips_classifiers_not_error.
+            # #CRITICAL: security: require_classifiers=True outside "local"
+            # matches moderation/pipeline.py's deployed-tier posture (the
+            # live child-facing screen): a missing OpenAI key must surface as
+            # a degraded classifier, not silently skip Stage-0 coverage on a
+            # sweep whose whole purpose is re-checking already-published,
+            # child-readable content. core/config.py's own validators allow
+            # review_provider="mock" + allow_mock_review=True to leave
+            # openai_api_key unset in any non-local environment, so this
+            # cannot be inferred from openai_api_key being absent alone.
+            # #VERIFY: tests/unit/test_rescreen_unit.py::
+            # test_missing_openai_key_outside_local_does_not_pass_clean.
             classifier_findings = await run_classifiers(
                 nodes=nodes,
                 openai_key=ctx.settings.openai_api_key,
-                perspective_key=ctx.settings.perspective_api_key,
                 client=ctx.client,
+                require_classifiers=ctx.settings.environment != "local",
             )
             has_classifier_block = any(
                 f.verdict is Verdict.BLOCK for f in classifier_findings
@@ -632,6 +677,7 @@ async def _rescreen_one(
             )
             reasons.extend(_classifier_block_reasons(classifier_findings))
             reasons.extend(_newly_surfaced_reasons(surfaced))
+            reasons.extend(_classifier_coverage_reasons(classifier_findings))
 
         # Deliberately OUTSIDE the try/else above. The at-rest scan reads the
         # raw `version_row.blob` mapping, never the parsed `story`, so it has

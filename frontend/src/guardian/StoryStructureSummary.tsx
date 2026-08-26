@@ -328,8 +328,11 @@ export function StoryStructureSummary({
       ) : null}
 
       {!compact && structure.contentFlags ? (
-        <p className="story-structure__content-flags">
-          <span className="story-structure__label">Content flags:</span> violence{' '}
+        <p
+          className="story-structure__content-flags"
+          title="Declared by the author at intake; not derived from the moderation review"
+        >
+          <span className="story-structure__label">Content flags (author-declared):</span> violence{' '}
           {structure.contentFlags.violence}, scariness {structure.contentFlags.scariness}, peril{' '}
           {structure.contentFlags.peril}
         </p>

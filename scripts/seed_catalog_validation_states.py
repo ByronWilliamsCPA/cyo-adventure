@@ -55,6 +55,15 @@ refuses to run rather than risk assigning fixture content to a real family.
 
 Idempotent by design: books already in the target state are left untouched and
 reported as "already", so re-running is safe.
+
+Catalog drafts go through the same moderation pipeline as any other story at
+import time (see ``generation/import_catalog.py``) and can legitimately carry
+a block or high-severity finding; ``publishing/service.py::approve`` then
+refuses the promotion unless a non-blank override reason is supplied
+(``approve_requires_override_reason``). Set ``SEED_OVERRIDE_REASON`` to
+override the default justification text used for every promotion in this
+run; the default is broad enough for the fixture catalog this script targets
+and is not intended as a per-book audit trail.
 """
 
 from __future__ import annotations
@@ -109,6 +118,11 @@ _PENDING_GUARDIAN: tuple[str, ...] = (
 )
 _PUBLISHED = "published"
 _IN_REVIEW = "in_review"
+_DEFAULT_OVERRIDE_REASON = (
+    "seed_catalog_validation_states: fixture catalog promotion for workflow "
+    "validation; see script docstring for scope (SEED_OVERRIDE_REASON to "
+    "override)."
+)
 
 
 def require_env() -> None:
@@ -279,14 +293,21 @@ async def run(*, apply: bool) -> int:
         print("\nDRY RUN: no changes written. Re-run with --apply to execute.")
         return 0
 
+    override_reason = os.environ.get("SEED_OVERRIDE_REASON") or _DEFAULT_OVERRIDE_REASON
+
     print("\n--- applying ---")
     # Promote each target in its own transaction so one failure cannot half-apply
     # the batch; promote_catalog_story enforces in_review + moderation-report +
     # is_admin, then sets visibility=catalog (ADR-005 human approval per story).
+    # override_reason is passed unconditionally: approve() only requires (and
+    # records) it when the version actually carries a block/high-severity
+    # finding, so passing it for every book is harmless for the rest.
     for sid in to_promote:
         async with new_session() as session:
             try:
-                await promote_catalog_story(session, sid, admin.id)
+                await promote_catalog_story(
+                    session, sid, admin.id, override_reason=override_reason
+                )
                 await session.commit()
                 print(f"  promoted: {sid}")
             except (ProjectBaseError, SQLAlchemyError) as exc:

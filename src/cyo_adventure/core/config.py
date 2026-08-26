@@ -659,9 +659,18 @@ class Settings(BaseSettings):
     # mock-moderated report stays self-identifying forever.
     allow_mock_review: bool = False
 
-    # Stage-0 deterministic classifier credentials. Both optional individually; a
-    # missing key skips that classifier. Both unset is rejected below when review runs.
+    # Stage-0 deterministic classifier credentials. OpenAI is optional; a missing
+    # key skips that classifier, and an unset key is rejected below when review
+    # runs (see test_non_mock_review_with_only_perspective_key_raises).
     openai_api_key: str | None = Field(default=None, validation_alias="OPENAI_API_KEY")
+    # Deprecated: Google Perspective was retired as a Stage-0 signal source
+    # (ratified sunset); run_classifiers no longer calls it and no code path
+    # reads this field. The field is kept, not removed, because deployed env
+    # files still set PERSPECTIVE_API_KEY and this is a plain Optional[str]
+    # field with no constraint to trip on an empty-string override; removing it
+    # would only be a symbolic cleanup with real deploy-config risk for no
+    # runtime benefit. Safe to delete once PERSPECTIVE_API_KEY is scrubbed from
+    # every deployed env file.
     perspective_api_key: str | None = Field(
         default=None, validation_alias="PERSPECTIVE_API_KEY"
     )
@@ -1733,9 +1742,10 @@ class Settings(BaseSettings):
         after which the key still parses and still passes any presence test
         while the API itself returns nothing. OpenAI Moderation is therefore
         the only classifier whose configuration is evidence of a working
-        pre-filter; Perspective remains supported as an optional second
-        opinion (see :mod:`cyo_adventure.moderation.classifiers`) but can no
-        longer be the sole one.
+        pre-filter. Perspective itself was retired as a Stage-0 signal source
+        on 2026-08-25 (ratified sunset): ``classifiers.py`` no longer calls
+        it at all, so a present ``PERSPECTIVE_API_KEY`` is inert configuration
+        rather than an optional second opinion.
 
         Raises:
             ConfigurationError: when review runs without ``OPENAI_API_KEY``.

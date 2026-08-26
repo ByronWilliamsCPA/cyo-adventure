@@ -175,7 +175,12 @@ async def approve_storybook(
     # #VERIFY: test_approve_rejects_unknown_visibility.
     visibility = Visibility(body.visibility) if body is not None else Visibility.FAMILY
     version_row = await approval_service.approve(
-        ctx.session, ctx.principal, book, version, visibility=visibility
+        ctx.session,
+        ctx.principal,
+        book,
+        version,
+        visibility=visibility,
+        override_reason=body.override_reason if body else None,
     )
     # #CRITICAL: security: a successful approve is the SOLE published path and the
     # service stamps approved_by + published_at in the same operation, so both are

@@ -60,6 +60,10 @@ export interface ReviewQueueItem {
   version: number
   screened: boolean
   flagged_count: number
+  report_unusable?: boolean
+  block_findings?: number
+  flag_findings?: number
+  advisory_findings?: number
   summary: ReviewSummary | null
   /** Target age band, for at-a-glance triage (UX-A3). Optional if unknown. */
   age_band?: string | null
@@ -107,6 +111,7 @@ export interface ReviewSurface {
   status: string
   blob: Record<string, unknown>
   screened: boolean
+  report_unusable?: boolean
   summary: ReviewSummary | null
   flagged_passages: FlaggedPassage[]
   story_level_findings: FindingView[]
@@ -195,7 +200,11 @@ interface GenerationJobRow {
 export interface ReviewApi {
   queue(): Promise<ReviewQueueItem[]>
   surface(storybookId: string, version?: number): Promise<ReviewSurface>
-  approve(storybookId: string, visibility: Visibility): Promise<ApprovedResult>
+  approve(
+    storybookId: string,
+    visibility: Visibility,
+    overrideReason?: string
+  ): Promise<ApprovedResult>
   sendBack(
     storybookId: string,
     reason: string,
@@ -218,9 +227,19 @@ export function makeReviewApi(api: AxiosInstance): ReviewApi {
       )
       return res.data
     },
-    async approve(storybookId: string, visibility: Visibility): Promise<ApprovedResult> {
+    // `overrideReason` is only forwarded when the caller supplies one (a
+    // reviewer approving over a severe finding); omitting the key entirely
+    // for the common case keeps the request body identical to what a backend
+    // predating the override-reason gate expects, and matches the exact
+    // request-body assertions in reviewApi.test.ts.
+    async approve(
+      storybookId: string,
+      visibility: Visibility,
+      overrideReason?: string
+    ): Promise<ApprovedResult> {
       const res = await api.post<ApprovedResult>(`/v1/storybooks/${storybookId}/approve`, {
         visibility,
+        ...(overrideReason === undefined ? {} : { override_reason: overrideReason }),
       })
       return res.data
     },

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
+import { isAxiosError } from 'axios'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
@@ -148,7 +149,56 @@ function GenerationMeasuresBlock({ measures }: { measures: GenerationMeasuresVie
   )
 }
 
+/**
+ * Narrow an unknown thrown value to the `rule` a `BusinessLogicError`
+ * carries (`core/exceptions.py::to_dict`'s `details.rule`), or `null` when
+ * the response either has no body shaped that way or never arrived at all
+ * (a transient failure, a 404, an offline client).
+ *
+ * `approve_requires_override_reason` is genuinely reachable here even
+ * through a correct client: `needsOverride` is computed once from the
+ * surface loaded at page-open, and never revalidated before submit, so a
+ * concurrent re-screen or edit that raises a finding's severity between load
+ * and submit reaches this exact rule on the backend's re-check.
+ */
+function businessRuleOf(err: unknown): string | null {
+  if (!isAxiosError(err)) return null
+  const data: unknown = err.response?.data
+  if (typeof data !== 'object' || data === null) return null
+  const details = (data as Record<string, unknown>).details
+  if (typeof details !== 'object' || details === null) return null
+  const rule = (details as Record<string, unknown>).rule
+  return typeof rule === 'string' ? rule : null
+}
+
+/**
+ * Thin wrapper whose only job is the `key`: React Router reuses the same
+ * `ReviewDetailPageInner` instance across a `storybookId` param change (the
+ * route registers no key of its own), which is exactly what the review
+ * queue's auto-advance (UX-A1, `runAction` below) does after every decision.
+ * Without this, every piece of this page's local state, most importantly the
+ * approve dialog's open/closed flag and its override-reason textarea, rides
+ * from the story just decided into the next, unrelated one instead of
+ * starting fresh. Keying on `storybookId` forces a full unmount/remount on
+ * every navigation to a different story, which is the React-idiomatic reset
+ * here (an effect that calls several setState functions to mimic this was
+ * rejected by this repo's `react-hooks/set-state-in-effect` lint rule, and
+ * remounting also covers every other piece of local state this page owns or
+ * will ever come to own, not just the five fields this bug happened to be
+ * found through).
+ * #CRITICAL: security: a justification an admin typed to approve over one
+ * book's severe finding must never survive to gate, or worse silently
+ * satisfy, an unrelated next book's approval
+ * (publishing/service.py::approve, rule="approve_requires_override_reason").
+ * #VERIFY: ReviewDetailPage.test.tsx "clears the approve dialog and its
+ * override reason when the queue advances to a new story".
+ */
 export function ReviewDetailPage() {
+  const { storybookId = '' } = useParams()
+  return <ReviewDetailPageInner key={storybookId} />
+}
+
+function ReviewDetailPageInner() {
   usePageTitle('Review')
   const { storybookId = '' } = useParams()
   const api = useApi()
@@ -173,10 +223,19 @@ export function ReviewDetailPage() {
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [dialog, setDialog] = useState<ActionDialog>(null)
   const [visibility, setVisibility] = useState<Visibility>('family')
+  const [overrideReason, setOverrideReason] = useState('')
   const [reason, setReason] = useState('')
   const [reasonCode, setReasonCode] = useState<SendBackReasonCode>('other')
   const [submitting, setSubmitting] = useState(false)
   const [actionError, setActionError] = useState(false)
+  // Which backend rule (BusinessLogicError's details.rule) a failed approve
+  // was rejected for, or null when the failure was not that shape (a
+  // transient error, a 404, ...). Only the approve dialog renders a
+  // rule-specific message from this; sendBack/archive keep their own generic
+  // copy regardless of what this holds.
+  // #VERIFY: ReviewDetailPage.test.tsx "surfaces a rule-specific message when
+  // the backend rejects approval for needing an override reason".
+  const [actionErrorRule, setActionErrorRule] = useState<string | null>(null)
   const [rescreenState, setRescreenState] = useState<RescreenState>({ kind: 'idle' })
 
   // #ASSUME: timing dependencies: the cover-generation poll loop sleeps 2s up
@@ -305,6 +364,7 @@ export function ReviewDetailPage() {
   async function runAction(action: () => Promise<unknown>) {
     setSubmitting(true)
     setActionError(false)
+    setActionErrorRule(null)
     try {
       await action()
       // UX-A1: after a decision, advance to the next item in the handed-off
@@ -318,6 +378,18 @@ export function ReviewDetailPage() {
     } catch (err) {
       console.error('review action failed:', err instanceof Error ? err.message : err)
       setActionError(true)
+      setActionErrorRule(businessRuleOf(err))
+    } finally {
+      // #CRITICAL: security: this MUST run on the success path too, not only
+      // the catch above. It previously did not, so after one successful
+      // queue-advance action `submitting` stayed true for the rest of the
+      // session and every later Confirm button (approve/send-back/archive)
+      // was permanently disabled. That accidentally hid a related defect: a
+      // stale override reason (see the storybookId-reset effect above) could
+      // never actually be submitted while Confirm stayed disabled, so fixing
+      // this is what makes that other fix observable and exercisable at all.
+      // #VERIFY: ReviewDetailPage.test.tsx "re-enables the confirm button for
+      // a second action after the first succeeds".
       setSubmitting(false)
     }
   }
@@ -328,6 +400,7 @@ export function ReviewDetailPage() {
   // stale error alert for an action the reviewer never attempted.
   function openDialog(kind: Exclude<ActionDialog, null>) {
     setActionError(false)
+    setActionErrorRule(null)
     // Reset to the default visibility every time the approve dialog opens, so
     // a prior "catalog" choice on one story never silently carries over and
     // gets applied to the next approval.
@@ -340,8 +413,10 @@ export function ReviewDetailPage() {
 
   function closeDialog() {
     setActionError(false)
+    setActionErrorRule(null)
     setReason('')
     setReasonCode('other')
+    setOverrideReason('')
     setRescreenState({ kind: 'idle' })
     setDialog(null)
   }
@@ -396,6 +471,24 @@ export function ReviewDetailPage() {
     ...surface.flagged_passages.flatMap((passage) => passage.findings),
     ...surface.story_level_findings,
   ]
+  // Mirrors the backend's severe_finding_counts exactly (moderation/report.py,
+  // gated on by publishing/service.py::approve, rule="approve_requires_
+  // override_reason"; api/approval.py::approve_storybook only forwards
+  // override_reason to that call and holds none of the gating logic itself):
+  // a block verdict at any severity, or a flag verdict at high severity,
+  // requires the reviewer to record why they are approving over it.
+  // Advisories, and flags below high severity, never require one.
+  // #CRITICAL: security: this predicate must stay in lockstep with the
+  // backend's; drifting it looser would let the confirm button enable without
+  // the reason the backend actually demands (a 400 the reviewer cannot
+  // recover from except by retyping), and drifting it stricter would block a
+  // legitimate approval the backend would have allowed.
+  // #VERIFY: ReviewDetailPage.test.tsx "requires an override reason before
+  // approving over a block finding".
+  const needsOverride = allFindings.some(
+    (finding) =>
+      finding.verdict === 'block' || (finding.verdict === 'flag' && finding.severity === 'high')
+  )
   // Stage B3 additive fields (design doc 2.6): default to [] so an older
   // backend response or a pre-Stage-B stored report (which projects these as
   // empty, per test_build_review_surface_new_buckets_degrade_on_legacy_report)
@@ -528,6 +621,21 @@ export function ReviewDetailPage() {
           />
         </div>
       </details>
+
+      {surface.report_unusable && (
+        // Deliberately cause-neutral: moderation_report_unusable() (moderation/report.py)
+        // already covers, and is expected to keep growing, multiple distinct causes (an
+        // absent report, a malformed report or finding entry, a non-independent/mock
+        // reviewer, artifact-only findings). Naming one cause here (the old copy claimed
+        // "only pipeline fail-safe artifacts") misdiagnoses every other arm, so this tells
+        // the reviewer what to do instead of guessing why.
+        // #VERIFY: ReviewDetailPage.test.tsx "shows a cause-neutral unusable-report banner".
+        <div role="alert" className="cyo-card review-unusable-banner">
+          <strong>Moderation unavailable.</strong> This report cannot be relied on for a content
+          judgment. Re-run moderation before reviewing (see the reviewer SOP); this version cannot
+          be approved until a genuine report exists.
+        </div>
+      )}
 
       {surface.flagged_passages.length > 0 ? (
         <div className="review-group">
@@ -796,9 +904,14 @@ export function ReviewDetailPage() {
         </Button>
         <Button
           onClick={() => openDialog('approve')}
-          disabled={surface.status !== 'in_review'}
+          disabled={surface.status !== 'in_review' || surface.report_unusable}
           aria-describedby={
-            surface.status !== 'in_review' ? 'review-actions-disabled-hint' : undefined
+            [
+              surface.status !== 'in_review' ? 'review-actions-disabled-hint' : null,
+              surface.report_unusable ? 'review-approve-unusable-hint' : null,
+            ]
+              .filter((id): id is string => id !== null)
+              .join(' ') || undefined
           }
         >
           Approve
@@ -859,6 +972,33 @@ export function ReviewDetailPage() {
           Only published stories can be re-screened.
         </p>
       ) : null}
+      {/*
+        #CRITICAL: security: an unusable report carries no genuine content
+        judgment (fail-safe or mock-reviewer artifacts only), so there is
+        nothing an override reason could justify approving over. The backend
+        rejects approval unconditionally in this state
+        (rule="approve_with_unusable_moderation", publishing/service.py); this
+        disables Approve to match rather than letting the confirm dialog open
+        with no override field and round-trip to a guaranteed 400.
+        Deliberately does NOT name "Re-screen" as the remedy: that action
+        (api/rescreen.py) only ever runs against already-published stories
+        and, by design, never writes to moderation_report, so it would not
+        fix this even where it is enabled. The actual re-run-moderation path
+        for an in-review story is the admin-only remoderate endpoint
+        (POST /api/v1/admin/remoderate/{storybook_id}/{version},
+        api/remoderate.py), which has no UI on this page yet (flagged
+        follow-up, not built here). Re-screen itself stays visible and
+        untouched below; this hint is purely informational and does not
+        reference it.
+        #VERIFY: ReviewDetailPage.test.tsx "disables Approve and directs the
+        reviewer to re-run moderation when the report is unusable" test.
+      */}
+      {surface.report_unusable ? (
+        <p id="review-approve-unusable-hint" className="review-actionbar__hint cyo-text-muted">
+          Approval is blocked until moderation is re-run for this story. Ask an operator to re-run
+          moderation (admin remoderate).
+        </p>
+      ) : null}
 
       {dialog === 'approve' ? (
         <Dialog
@@ -875,10 +1015,44 @@ export function ReviewDetailPage() {
                 #VERIFY: this confirm dialog gates the action and the backend
                 re-checks the story is screened and still in review, rejecting
                 anything unscreened (ReviewDetailPage.test.tsx approve + rejection).
+                The `surface.report_unusable` clause is defense in depth: the
+                Approve button that opens this dialog is already disabled in
+                that state, so this branch should be unreachable in practice,
+                but the backend rejects unconditionally
+                (rule="approve_with_unusable_moderation") and this keeps the
+                confirm button from ever being the one live control in that
+                state.
               */}
               <Button
-                disabled={submitting}
-                onClick={() => void runAction(() => reviewApi.approve(storybookId, visibility))}
+                disabled={
+                  submitting ||
+                  surface.report_unusable ||
+                  (needsOverride && overrideReason.trim().length < 10)
+                }
+                // Mirrors the outer Approve button's pattern above: point at
+                // the helper text explaining WHY this control is disabled,
+                // rather than overwriting the button's own accessible name.
+                // Only wired for the override-reason-length reason (the other
+                // two disabling conditions, submitting and report_unusable,
+                // have no dedicated helper text inside this dialog to point
+                // at); needsOverride being true is exactly the condition
+                // under which the referenced hint span below is rendered.
+                // #VERIFY: ReviewDetailPage.test.tsx "describes why Confirm
+                // approve is disabled for a too-short override reason".
+                aria-describedby={
+                  needsOverride && overrideReason.trim().length < 10
+                    ? 'review-detail-override-hint'
+                    : undefined
+                }
+                onClick={() =>
+                  void runAction(() =>
+                    reviewApi.approve(
+                      storybookId,
+                      visibility,
+                      needsOverride ? overrideReason.trim() : undefined
+                    )
+                  )
+                }
               >
                 Confirm approve
               </Button>
@@ -887,10 +1061,41 @@ export function ReviewDetailPage() {
         >
           {actionError ? (
             <p role="alert" className="review-detail__action-error cyo-text-error">
-              We could not approve this story. It may be unscreened or no longer in review.
+              {actionErrorRule === 'approve_requires_override_reason'
+                ? 'This story has a severe finding that still needs a written override reason. Add or revise the reason below and try again.'
+                : actionErrorRule === 'approve_with_unusable_moderation'
+                  ? 'Moderation for this story is unavailable, so it cannot be approved. Ask an operator to re-run moderation, then reload this page.'
+                  : 'We could not approve this story. It may be unscreened or no longer in review.'}
             </p>
           ) : null}
           <p>Approving publishes this story to the assigned children.</p>
+          {needsOverride ? (
+            <label className="review-detail__override-reason">
+              Override reason
+              {/*
+                No `aria-label` here: the wrapping <label> already associates
+                this textarea with its "Override reason" text, and an
+                aria-label would win over that association, so if the two
+                text sources ever diverged a screen-reader user would hear a
+                different name than a sighted user sees (WCAG 2.5.3 Label in
+                Name). `required`/`minLength` are deliberately absent too:
+                this control is not inside a <form> with a submit button, so
+                native constraint validation never runs against them; the
+                real gate is the Confirm button's manually computed
+                `disabled` above.
+              */}
+              <textarea
+                value={overrideReason}
+                onChange={(event) => setOverrideReason(event.target.value)}
+                maxLength={2000}
+                rows={3}
+              />
+              <span id="review-detail-override-hint" className="cyo-text-muted">
+                This story has a severe finding. Explain why it is appropriate to approve anyway;
+                the reason is logged for audit, not stored on the story itself.
+              </span>
+            </label>
+          ) : null}
           <fieldset className="review-detail__visibility">
             <legend>Who can see this book?</legend>
             <label>

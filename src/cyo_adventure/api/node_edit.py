@@ -137,7 +137,10 @@ _MAX_REVIEW_TOKENS = 1024
 # the whole story) must survive an edit untouched. Neither is the retired
 # Stage 2's Source.LLM_READABILITY, which no stage produces anymore but which
 # old persisted reports still carry and must keep carrying (stages.py's
-# additive-safe contract, design doc 2.1).
+# additive-safe contract, design doc 2.1). Source.PERSPECTIVE is a second
+# retired source (ratified sunset; run_classifiers no longer calls
+# Perspective), kept here so a stale historical Perspective finding on the
+# edited node is still superseded by this refresh rather than fossilized.
 _REFRESHED_SOURCES = frozenset({Source.OPENAI, Source.PERSPECTIVE, Source.LLM_SAFETY})
 
 
@@ -720,19 +723,29 @@ async def edit_node(
     # #CRITICAL: security: the classifier call below is a distinct egress path
     # from the LLM safety stage (which is protected structurally by
     # PiiGuardedProvider via guarded_review). Screen the edited node text here
-    # so OpenAI Moderation and Google Perspective get the same guard the
-    # generation-time moderation pipeline applies (moderation/pipeline.py),
-    # instead of receiving an admin/guardian's raw edited prose unconditionally.
+    # so OpenAI Moderation gets the same guard the generation-time moderation
+    # pipeline applies (moderation/pipeline.py), instead of receiving an
+    # admin/guardian's raw edited prose unconditionally.
     # #VERIFY: tests/unit/test_node_edit.py::test_classifier_call_blocked_on_pii_in_edited_text.
     assert_prompt_pii_safe(node_text, forbidden=pii)
     fresh_findings: list[Finding] = []
     async with httpx.AsyncClient(timeout=30.0) as client:
+        # #CRITICAL: security: require_classifiers=True outside "local"
+        # matches moderation/pipeline.py's deployed-tier posture. Unlike
+        # rescreen.py's ephemeral sweep outcome, this finding is merged into
+        # version_row.moderation_report (a PERSISTED JSONB column, see
+        # _merge_moderation_report below) and read back by
+        # moderation_report_unusable/severe_finding_counts at every future
+        # approve() call, so a missing OpenAI key here silently degrading a
+        # persisted report is a durable gap, not a one-off.
+        # #VERIFY: tests/unit/test_node_edit.py::
+        # test_missing_openai_key_outside_local_is_recorded_as_degraded.
         fresh_findings.extend(
             await run_classifiers(
                 nodes=[(node_id, node_text)],
                 openai_key=settings.openai_api_key,
-                perspective_key=settings.perspective_api_key,
                 client=client,
+                require_classifiers=settings.environment != "local",
             )
         )
     # Short-circuit exactly like moderation/pipeline.py: a Stage-0 bright-line

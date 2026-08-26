@@ -192,7 +192,10 @@ async def _latest_version(session: AsyncSession, storybook_id: str) -> int:
 
 
 async def promote_catalog_story(
-    session: AsyncSession, storybook_id: str, approved_by: uuid.UUID
+    session: AsyncSession,
+    storybook_id: str,
+    approved_by: uuid.UUID,
+    override_reason: str | None = None,
 ) -> StorybookVersion:
     """Approve and publish a ``CATALOG_FAMILY_ID`` story with catalog visibility.
 
@@ -203,6 +206,13 @@ async def promote_catalog_story(
         storybook_id: The story to promote (must be owned by
             ``CATALOG_FAMILY_ID``).
         approved_by: A real, existing admin User id.
+        override_reason: Justification to record when the latest version
+            carries a block or high-severity finding. Catalog imports run
+            through the same moderation pipeline as any other story (see
+            ``generation/import_catalog.py``) and can carry such findings;
+            without a reason, ``publishing.service.approve`` refuses the
+            promotion (``approve_requires_override_reason``) exactly as it
+            would for any other family's story.
 
     Returns:
         The stamped StorybookVersion row.
@@ -216,14 +226,23 @@ async def promote_catalog_story(
             (propagated from ``publishing.service.approve``; a story import
             left at ``needs_revision`` cannot be promoted directly).
         BusinessLogicError: If the latest version has no moderation report,
-            or (series books only) series-chain validation fails
-            (propagated from ``publishing.service.approve``).
+            if its moderation report is unusable
+            (``approve_with_unusable_moderation``), if it carries a block or
+            high-severity finding and ``override_reason`` is missing or
+            blank (``approve_requires_override_reason``), or (series books
+            only) series-chain validation fails (all propagated from
+            ``publishing.service.approve``).
     """
     book = await _load_catalog_story_for_update(session, storybook_id)
     principal = await _load_admin_principal(session, approved_by)
     version = await _latest_version(session, storybook_id)
     return await approval_service.approve(
-        session, principal, book, version, visibility=Visibility.CATALOG
+        session,
+        principal,
+        book,
+        version,
+        visibility=Visibility.CATALOG,
+        override_reason=override_reason,
     )
 
 
@@ -245,21 +264,36 @@ def build_arg_parser() -> argparse.ArgumentParser:
         required=True,
         help="An existing admin User UUID to stamp as the approver.",
     )
+    parser.add_argument(
+        "--override-reason",
+        default=None,
+        help=(
+            "Justification to record if the latest version carries a block "
+            "or high-severity finding; required in that case, ignored "
+            "otherwise."
+        ),
+    )
     return parser
 
 
-async def _run(storybook_id: str, approved_by: uuid.UUID) -> StorybookVersion:
+async def _run(
+    storybook_id: str, approved_by: uuid.UUID, override_reason: str | None = None
+) -> StorybookVersion:
     """Open a session, promote the story, and commit.
 
     Args:
         storybook_id: The story to promote.
         approved_by: A real, existing admin User id.
+        override_reason: Justification for a block/high-severity override;
+            see ``promote_catalog_story``.
 
     Returns:
         The stamped StorybookVersion row.
     """
     async with get_session() as session:
-        version_row = await promote_catalog_story(session, storybook_id, approved_by)
+        version_row = await promote_catalog_story(
+            session, storybook_id, approved_by, override_reason=override_reason
+        )
         await session.commit()
         return version_row
 
@@ -281,8 +315,9 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError:
         sys.stderr.write(f"error: invalid --approved-by UUID: {raw_approved_by}\n")
         return 1
+    override_reason: str | None = args.override_reason
     try:
-        version_row = asyncio.run(_run(storybook_id, approved_by))
+        version_row = asyncio.run(_run(storybook_id, approved_by, override_reason))
     except ProjectBaseError as exc:
         sys.stderr.write(f"promotion failed: {exc}\n")
         return 1

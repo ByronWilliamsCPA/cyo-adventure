@@ -73,6 +73,31 @@ def _settings() -> Settings:
     return Settings()
 
 
+def _non_local_settings(environment: str) -> Settings:
+    """A booting non-"local" Settings with no OpenAI key configured.
+
+    Mirrors the minimal override set tests/unit/test_config.py uses to boot
+    Settings outside "local" (a non-dev database_url, OIDC config, and the
+    two session/grant secrets are required by other model_validators; none
+    of them interact with this file's classifier-coverage tests). Uses
+    ``allow_mock_review=True`` for the same reason
+    tests/unit/test_config.py's own non-local fixtures do:
+    ``_require_real_reviewer_outside_local`` refuses to boot
+    ``review_provider="mock"`` (the default) outside "local" without it.
+    Deliberately leaves ``openai_api_key`` unset: that absence is exactly
+    what F4's ``require_classifiers`` wiring must catch.
+    """
+    return Settings(
+        environment=environment,
+        database_url="postgresql+asyncpg://appuser:testpass@db.example.com/cyo_adventure",
+        oidc_issuer="https://project.supabase.co/auth/v1",
+        oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+        child_session_secret="test-child-session-secret-0123456789abcd",
+        device_grant_secret="test-device-grant-secret-0123456789abcdef",
+        allow_mock_review=True,
+    )
+
+
 def _blob() -> dict[str, object]:
     """A fresh copy of the canned, gate-passing story blob."""
     return copy.deepcopy(_CANNED_STORY)
@@ -340,8 +365,13 @@ async def test_provider_error_on_one_book_does_not_abort_sweep(
     calls = {"n": 0}
 
     async def _flaky_classifiers(
-        *, nodes: object, openai_key: object, perspective_key: object, client: object
+        *,
+        nodes: object,
+        openai_key: object,
+        client: object,
+        require_classifiers: bool = False,
     ) -> list[Finding]:
+        _ = require_classifiers
         calls["n"] += 1
         if calls["n"] == 1:
             msg = "classifier provider outage"
@@ -378,6 +408,61 @@ async def test_provider_error_on_one_book_does_not_abort_sweep(
     mock_async_session.add.assert_called_once()
     event = mock_async_session.add.call_args.args[0]
     assert event.entity_id == "s_good:1"
+
+
+async def test_missing_openai_key_outside_local_does_not_pass_clean(
+    mock_async_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """F4: outside "local", a sweep with no OpenAI key configured must not
+    come back "passed".
+
+    `_rescreen_one` passes ``require_classifiers=ctx.settings.environment !=
+    "local"`` to `run_classifiers`, matching moderation/pipeline.py's
+    deployed-tier posture (core/config.py's own validators allow
+    ``review_provider="mock"`` + ``allow_mock_review=True`` to leave
+    ``openai_api_key`` unset in any non-local environment, so a missing key
+    cannot be inferred as an intentional local skip). With no key and
+    ``require_classifiers=True``, ``run_classifiers`` appends a
+    ``classifier_degraded`` ADVISORY (structural=True); this test's
+    discriminating assertion is that ``_classifier_coverage_reasons``
+    (the F4 helper filtering on ``Finding.structural``) surfaces that
+    ADVISORY into the sweep's ``reasons`` list, which is what turns
+    ``outcome = "flagged" if reasons else "passed"`` away from "passed".
+
+    Mutation check performed by hand before landing this test: with
+    `_rescreen_one`'s `require_classifiers=ctx.settings.environment !=
+    "local"` argument hardcoded back to `require_classifiers=False`, this
+    test fails with `AssertionError: assert 'passed' == 'flagged'` (the sweep
+    reports "passed" with an empty `reasons` list, exactly the silent-pass
+    gap F4 closes). Restored afterward to the real
+    `ctx.settings.environment != "local"` expression, which is what ships.
+
+    `run_classifiers` is left real (undoubled) here, per this file's own
+    mocking policy: with `openai_key=None`, `_screen_all_nodes` never
+    attempts a network call, so no HTTP boundary needs mocking to exercise
+    the real "unconfigured classifier" branch in
+    moderation/classifiers.py::run_classifiers.
+    """
+    _patch_threshold_policy(monkeypatch)
+    settings = _non_local_settings("staging")
+    assert settings.openai_api_key is None
+    book = _book()
+    _wire_session(
+        mock_async_session, books=[book], versions={("s1", 1): _version_row("s1", 1)}
+    )
+
+    summary = await rescreen_mod.rescreen_published_books(
+        mock_async_session, settings=settings, actor=_actor()
+    )
+
+    assert summary.checked == 1
+    result = summary.results[0]
+    assert result.outcome == "flagged"
+    assert any(
+        "classifier_degraded" in reason and "not configured" in reason
+        for reason in result.reasons
+    )
 
 
 async def test_scoping_by_id_list_narrows_the_where_clause(

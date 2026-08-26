@@ -322,7 +322,6 @@ async def test_screen_blocks_on_pii_match() -> None:
         "a story about Emma and a dragon",
         child_names=frozenset({"Emma"}),
         openai_key=None,
-        perspective_key=None,
     )
     assert result.blocked is True
     assert any(f.category == "personal_information" for f in result.flags)
@@ -335,7 +334,6 @@ async def test_screen_clean_when_no_keys_and_no_pii() -> None:
         "a story about a brave fox",
         child_names=frozenset({"Emma"}),
         openai_key=None,
-        perspective_key=None,
     )
     assert result.blocked is False
     assert result.flags == []
@@ -366,7 +364,6 @@ async def test_screen_blocks_on_bright_line_classifier(monkeypatch) -> None:
         "some idea",
         child_names=frozenset(),
         openai_key="k",
-        perspective_key=None,
     )
     assert result.blocked is True
     # Redacted: no score/source leak into the flag payload.
@@ -403,7 +400,6 @@ async def test_screen_fails_open_on_classifier_network_error(
         "some idea",
         child_names=frozenset(),
         openai_key="k",
-        perspective_key=None,
     )
     assert result.blocked is False
     # Fail-open: not blocked, but the outage is now visible as a non-gating

@@ -949,6 +949,67 @@ async def test_classifier_call_blocked_on_pii_in_edited_text(
     session.add.assert_not_called()
 
 
+@pytest.mark.asyncio
+async def test_missing_openai_key_outside_local_is_recorded_as_degraded(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """F4: outside "local", editing a node with no OpenAI key configured must
+    persist a ``classifier_degraded`` finding, not silently skip Stage-0
+    coverage.
+
+    ``edit_node`` passes ``require_classifiers=settings.environment !=
+    "local"`` to ``run_classifiers`` (the module-level ``settings`` this
+    file's ``_settings_without_classifier_keys`` autouse fixture normally
+    pins to a bare, local ``Settings()``; this test overrides it for its own
+    body only), matching moderation/pipeline.py's deployed-tier posture.
+    Unlike rescreen.py's ephemeral sweep outcome, this finding is MERGED
+    into ``version_row.moderation_report`` (a persisted JSONB column, see
+    ``_merge_moderation_report``) and read back by
+    ``moderation_report_unusable``/``severe_finding_counts`` at every future
+    ``approve()`` call, so the assertion here is on what is PERSISTED, not
+    merely on what ``edit_node`` returns.
+
+    Mutation check performed by hand before landing this test: with
+    ``edit_node``'s ``require_classifiers=settings.environment != "local"``
+    argument hardcoded back to ``require_classifiers=False``, this test
+    fails with ``StopIteration`` (no ``classifier_degraded`` entry exists in
+    the persisted report at all, since the classifier leg silently skips
+    coverage on a missing key when not required). Restored afterward to the
+    real ``settings.environment != "local"`` expression, which is what
+    ships.
+    """
+    non_local_settings = Settings(
+        environment="staging",
+        database_url=(
+            "postgresql+asyncpg://appuser:testpass@db.example.com/cyo_adventure"
+        ),
+        oidc_issuer="https://project.supabase.co/auth/v1",
+        oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+        child_session_secret="test-child-session-secret-0123456789abcd",
+        device_grant_secret="test-device-grant-secret-0123456789abcdef",
+        allow_mock_review=True,
+    )
+    assert non_local_settings.openai_api_key is None
+    monkeypatch.setattr(node_edit, "settings", non_local_settings)
+
+    story = _story("in_review")
+    version_row = _version_row()
+    session = AsyncMock(spec=AsyncSession)
+    _wire_session(session, story=story, version_row=version_row)
+    ctx = _ctx("admin", session)
+
+    await node_edit.edit_node(
+        "s1", 1, _NODE_ID, NodeEditBody(body="An ordinary edit."), ctx=ctx
+    )
+
+    report = cast("dict[str, object]", version_row.moderation_report)
+    findings = cast("list[dict[str, object]]", report["findings"])
+    degraded = next(f for f in findings if f["category"] == "classifier_degraded")
+    assert degraded["verdict"] == "advisory"
+    assert degraded["structural"] is True
+    assert "not configured" in cast("str", degraded["message"])
+
+
 # ---------------------------------------------------------------------------
 # Moderation hard block: surfaced, never rejects the write (ADR-005)
 # ---------------------------------------------------------------------------

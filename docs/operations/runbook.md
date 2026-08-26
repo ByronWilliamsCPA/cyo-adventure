@@ -1012,8 +1012,16 @@ it, not a replacement for it.
   process: an API container that has this variable set holds the `cyo_worker` credential in memory
   without ever using it, which narrows the blast-radius separation the split exists to create.
 - `OPENAI_API_KEY`: Stage-0 moderation classifier (OpenAI Moderation API). Backend and worker.
-- `PERSPECTIVE_API_KEY`: Stage-0 moderation classifier (Google Perspective API). Backend and
-  worker.
+- `PERSPECTIVE_API_KEY`: **inert once `feat/moderation-review-hardening` merges.** Was the Stage-0
+  moderation classifier credential (Google Perspective API); Perspective's outbound call leg is
+  retired (`moderation/classifiers.py`, ahead of Google's 2026-12-31 sunset;
+  [moderation-review-redesign-2026-07-28.md](../planning/safety/moderation-review-redesign-2026-07-28.md)
+  section 3.2 item 5), so no code path in the deployed app reads this value anymore.
+  `core/config.py::perspective_api_key` keeps the field solely so an existing deployment's
+  environment does not fail to parse at boot; nothing consumes it. This describes the CODE, not any
+  specific environment's current secrets: removing the key from a deployed environment is safe once
+  confirmed, but should be sequenced deliberately rather than assumed already done. Tracked:
+  `UW-B03` (`GS3`, Perspective's 2026-12-31 sunset).
 - `CYO_ADVENTURE_REVIEW_PROVIDER`: independent-review backend selector
   (`mock`/`openrouter`/`modal`, though `modal` is still deferred to slice 2b); must differ from
   the generation provider. Backend and worker.
@@ -1031,13 +1039,83 @@ it, not a replacement for it.
 
 The generation, cover-art, and object-storage credentials above read "Backend and worker" rather
 than "Worker only" because the backend builds those clients in-request, not only in queued jobs.
-`POST /v1/admin/storybook-versions/{id}/remoderate` constructs a generation provider inside the
-request (`api/remoderate.py` via `generation/provider.py`), the node-edit rescreen path constructs
-a review provider the same way (`api/node_edit.py`), and three routers presign cover URLs through
-`covers/storage.py` (`api/covers.py`, `api/library.py`, `api/recommendations.py`). This matters
-when scoping which credentials are resident in which container: attributing them to the worker
-alone understates the API container's exposure. `docs/operations/runtime-config.md` records the
-same fact per setting, and traces each call site.
+`POST /api/v1/admin/remoderate/{storybook_id}/{version}` constructs a generation provider inside
+the request (`api/remoderate.py` via `generation/provider.py`), the node-edit rescreen path
+constructs a review provider the same way (`api/node_edit.py`), and three routers presign cover
+URLs through `covers/storage.py` (`api/covers.py`, `api/library.py`, `api/recommendations.py`).
+This matters when scoping which credentials are resident in which container: attributing them to
+the worker alone understates the API container's exposure. `docs/operations/runtime-config.md`
+records the same fact per setting, and traces each call site.
+
+**Re-moderation sweep** (`scripts/remoderate_books.py`): calls `remoderate_storybook_version()`
+(`api/remoderate.py`), the same function `POST /api/v1/admin/remoderate/{storybook_id}/{version}`
+above wraps, directly in-process over a batch of books instead of one. This is a direct service
+call, not an HTTP request to the endpoint: it runs under the invoking process's own database
+credentials rather than an admin bearer token, stamps `Actor.system()` instead of the calling
+admin's identity, and does not exercise the endpoint's own authentication or middleware layers. A
+clean sweep run is not evidence the HTTP endpoint itself is healthy, and vice versa. Dry-run is the
+default; it only lists targets and writes nothing. Pass `--execute` to actually run the sweep
+against each target. Three mutually exclusive selectors:
+
+- `--mock-moderated`: published books whose stored report carries the mock-reviewer stamp or a
+  fail-safe-degraded marker. Use this to backfill published legacy artifacts, for example the
+  catalog remediation sweep in
+  [moderation-review-redesign-2026-07-28.md](../planning/safety/moderation-review-redesign-2026-07-28.md)
+  section 6, Stage D.
+- `--in-review`: every book sitting at the human review gate, at its latest version, with no
+  content filter. Use this to clear a stuck review queue, for example books left with a fail-safe
+  or mock-moderated report before this branch's approval gate started blocking them.
+- `--book-id STORYBOOK_ID` (repeatable): specific storybooks, for a one-off re-run, a curated
+  subset, or a single-book canary before a full sweep.
+
+**Never run a sweep before the floor or classifier change it exists to backfill has been deployed
+to that environment.** `_persist_report()` (`moderation/pipeline.py`) is the single end-of-pipeline
+write per version and moderation reports are effectively write-once per run: sweeping ahead of the
+deploy re-derives the same stale verdicts under the old rules, burns the LLM budget, and leaves no
+cheap way to fix it besides sweeping the same books again after the deploy actually lands.
+
+Post-sweep verification: prefer running the shared health predicate itself rather than
+re-implementing it in SQL:
+
+```bash
+CYO_ADVENTURE_DATABASE_URL=... uv run python scripts/check_moderation_report_health.py
+```
+
+Exit 0 with no printed hits means no current published or in-review version anywhere in the catalog
+has a report `moderation/report.py::moderation_report_unusable` would flag (absent, malformed,
+non-independent/mock, or containing only pipeline artifacts): the same predicate
+`publishing/service.py::approve()` enforces at approval time. This checks the whole catalog, not
+only the books the sweep targeted, which is a stronger guarantee than scoping to the sweep would be.
+
+The narrower ad hoc SQL below (read-only, via the Supabase MCP or psql) checks ONLY for the literal
+`FAIL_SAFE_MESSAGE_SUBSTRING` string inside `findings`; it does not detect an absent report, a
+non-list `findings` value, a non-independent (mock) reviewer, or a structural/mock-moderated-concern
+artifact carrying a different message. Treat it as a quick, narrower diagnostic for the
+fail-safe-specific case only, never as proof that `report_unusable` is false: run the script above
+for that.
+
+```sql
+select count(*)
+from storybook s
+join storybook_version sv
+  on sv.storybook_id = s.storybook_id
+ and sv.version = (
+   select max(v2.version) from storybook_version v2 where v2.storybook_id = s.storybook_id
+ )
+where s.status = 'in_review'
+  and exists (
+    select 1
+    from jsonb_array_elements(sv.moderation_report -> 'findings') as f
+    where f ->> 'message' like '%defaulted to fail-safe%'
+  );
+```
+
+Expected: `0`, understood only as "no remaining `FAIL_SAFE_MESSAGE_SUBSTRING` hits," not as full
+proof of health; run `scripts/check_moderation_report_health.py` above for that. If any remain,
+re-run the dry-run selector for the stragglers and diagnose per book (the count is the same
+substring `moderation/report.py::FAIL_SAFE_MESSAGE_SUBSTRING` checks at read time to set
+`report_unusable`, so a nonzero count here is the same condition the admin queue badge shows as
+"Moderation unavailable").
 
 **GitHub Actions secrets** (CI/CD, not runtime):
 

@@ -321,6 +321,12 @@ export type ApproveBody = {
      * Visibility
      */
     visibility?: 'family' | 'catalog';
+    /**
+     * Override Reason
+     *
+     * Required when the moderation report contains a block or high-severity finding. Logged for the reviewer of record, not persisted verbatim on the audit event: the pipeline_event payload is PII-free by contract (spec D3), so only the structured overridden-finding counts are recorded there.
+     */
+    override_reason?: string | null;
 };
 
 /**
@@ -4144,6 +4150,22 @@ export type ReviewQueueItem = {
      * Flagged Count
      */
     flagged_count: number;
+    /**
+     * Report Unusable
+     */
+    report_unusable?: boolean;
+    /**
+     * Block Findings
+     */
+    block_findings?: number;
+    /**
+     * Flag Findings
+     */
+    flag_findings?: number;
+    /**
+     * Advisory Findings
+     */
+    advisory_findings?: number;
     summary: ReviewSummary | null;
     /**
      * Age Band
@@ -4228,6 +4250,10 @@ export type ReviewSurfaceView = {
      * Screened
      */
     screened: boolean;
+    /**
+     * Report Unusable
+     */
+    report_unusable?: boolean;
     summary: ReviewSummary | null;
     /**
      * Flagged Passages

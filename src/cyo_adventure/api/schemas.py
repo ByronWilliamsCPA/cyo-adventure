@@ -19,6 +19,7 @@ from pydantic import (
     ConfigDict,
     Field,
     StringConstraints,
+    field_validator,
     model_validator,
 )
 
@@ -1816,6 +1817,38 @@ class ApproveBody(BaseModel):
     """
 
     visibility: Literal["family", "catalog"] = "family"
+    override_reason: str | None = Field(
+        default=None,
+        min_length=10,
+        max_length=2000,
+        description=(
+            "Required when the moderation report contains a block or "
+            "high-severity finding. Logged for the reviewer of record, not "
+            "persisted verbatim on the audit event: the pipeline_event "
+            "payload is PII-free by contract (spec D3), so only the "
+            "structured overridden-finding counts are recorded there."
+        ),
+    )
+
+    # #ASSUME: data-integrity: without this, a value like
+    # "   whitespace-padded reason" (>= 10 raw characters, but shorter or
+    # blank once stripped) passes this schema's min_length check only for the
+    # service layer's own stripped-truthiness check
+    # (publishing/service.py::approve) to then reject it as though no reason
+    # had been given at all, a confusing two-stage rejection for one bad
+    # input. Stripping here (mode="before") makes the length check test the
+    # same content the service layer ultimately requires.
+    # #VERIFY: tests/integration/test_approval_api.py::
+    # test_approve_over_block_with_whitespace_only_reason_returns_422 (422, not
+    # 400, since 10 spaces strip to empty and fail this schema's min_length
+    # before the request ever reaches the service).
+    @field_validator("override_reason", mode="before")
+    @classmethod
+    def _strip_override_reason(cls, value: object) -> object:
+        """Strip surrounding whitespace before the ``min_length`` check runs."""
+        if isinstance(value, str):
+            return value.strip()
+        return value
 
 
 class ApprovedView(BaseModel):
@@ -2013,6 +2046,13 @@ class ReviewSurfaceView(BaseModel):
     status: str
     blob: dict[str, object]
     screened: bool
+    # Task 4: True when the stored report carries no genuine content judgment
+    # (fail-safe artifacts only, or a non-independent/mock reviewer). Set from
+    # moderation/report.py::moderation_report_unusable. Default False so a
+    # caller that predates this field (or a report projected before Task 4
+    # shipped) still reads as usable, matching the additive-field convention
+    # every other Stage B/B3 field on this view follows.
+    report_unusable: bool = False
     summary: ReviewSummary | None
     flagged_passages: list[FlaggedPassage]
     story_level_findings: list[FindingView]
@@ -2080,6 +2120,17 @@ class ReviewQueueItem(BaseModel):
     version: int
     screened: bool
     flagged_count: int = Field(ge=0)
+    # Task 4: mirrors ReviewSurfaceView.report_unusable, plus tiered distinct-
+    # finding counts (each merged finding counts once, regardless of how many
+    # nodes it fans out to via node_ids). Advisories never gate, so
+    # flag_findings excludes structural findings and advisory_findings is
+    # never added to block/flag; see review_surface.py::build_review_queue_item.
+    # All four default so a caller or fixture built before Task 4 still
+    # projects a valid queue item.
+    report_unusable: bool = False
+    block_findings: int = Field(default=0, ge=0)
+    flag_findings: int = Field(default=0, ge=0)
+    advisory_findings: int = Field(default=0, ge=0)
     summary: ReviewSummary | None
     # Triage metadata for the console (UX-A3): the story's target age band and
     # when this version was created (a "waiting since" proxy). Both optional so a

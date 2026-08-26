@@ -169,6 +169,7 @@ nav:
       - Operator Runbook: operations/runbook.md
       - KWS Test-Environment Runbook: operations/kws-test-runbook.md
       - Authoring Guide: operations/authoring-guide.md
+      - Reviewer SOP: operations/reviewer-sop.md
       - Security Event Catalog: operations/security-events.md
 
   - Architecture:

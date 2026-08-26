@@ -28,7 +28,12 @@ from cyo_adventure.api.schemas import (
     ValidatorSeverity,
 )
 from cyo_adventure.core.exceptions import ValidationError
-from cyo_adventure.moderation.report import FindingSeverity, Source, Verdict
+from cyo_adventure.moderation.report import (
+    FindingSeverity,
+    Source,
+    Verdict,
+    moderation_report_unusable,
+)
 from cyo_adventure.moderation.thresholds import admin_surfaces
 from cyo_adventure.storybook.models import ContentFlags
 from cyo_adventure.utils.logging import get_logger
@@ -66,6 +71,56 @@ _SEVERITY_RANK: dict[FindingSeverity | None, int] = {
 # reaches review, so projecting it here too would be a duplicate, confusing
 # signal.
 _VALIDATOR_RULE_IDS = frozenset({"RL-13", "PL-19"})
+
+
+# #ASSUME: data-integrity: a story that was NEVER screened (moderation_report
+# is None, e.g. a freshly-imported catalog draft ahead of its first
+# moderation run) and a story that WAS screened but whose stored report
+# carries no genuine judgment (fail-safe or mock-reviewer artifacts only) are
+# both "unusable" for moderation_report_unusable()'s purposes, but they read
+# as different admin actions: "run moderation" versus "re-run moderation".
+# Distinguishing the message (and using the neutral "pipeline" category
+# rather than "llm_safety" for the never-screened case, since no LLM safety
+# stage ran at all) keeps the synthetic finding accurate instead of implying
+# a screening attempt happened and produced nothing usable.
+# #VERIFY: tests/unit/test_review_surface.py::
+# test_null_report_synthetic_finding_says_unscreened.
+def _unusable_report_finding(
+    moderation_report: dict[str, object] | None,
+) -> FindingView:
+    """Build the synthetic structural finding for an unusable report.
+
+    Args:
+        moderation_report: The story's stored moderation report, already
+            known to be unusable (per moderation_report_unusable), or None
+            when the story has never been screened at all.
+
+    Returns:
+        FindingView: The one synthetic story-level finding to render.
+    """
+    if moderation_report is None:
+        category = "pipeline"
+        message = (
+            "this story has not been screened by moderation yet; run "
+            "moderation before reviewing"
+        )
+    else:
+        category = "llm_safety"
+        message = (
+            "moderation report is unusable (fail-safe or mock-reviewer "
+            "artifacts only); re-run moderation before reviewing"
+        )
+    return FindingView(
+        stage=1,
+        source=Source.PIPELINE,
+        category=category,
+        node_id=None,
+        verdict=Verdict.FLAG,
+        score=None,
+        message=message,
+        structural=True,
+        concern="reviewer_unavailable",
+    )
 
 
 def build_review_surface(
@@ -124,7 +179,22 @@ def build_review_surface(
         order: list[str] = []
         story_level: list[FindingView] = []
         all_views: list[FindingView] = []
-        for finding in _findings(moderation_report):
+        # #CRITICAL: security: a report with no genuine content judgment (every
+        # finding a fail-safe artifact, or a non-independent/mock reviewer)
+        # must never render as N separate flagged passages: that dresses up
+        # "nothing was actually reviewed" as a busy, reviewed-looking surface
+        # and buries the one fact an approver needs (re-run moderation) under
+        # noise. Short-circuit the whole per-finding loop below rather than
+        # post-filtering its output, so flagged/order/story_level stay empty
+        # and the queue's flagged_count (:663-665) reads 0, not the count of
+        # discarded fail-safe rows.
+        # #VERIFY: tests/unit/test_review_surface.py::
+        # test_unusable_report_collapses_to_one_structural_finding and
+        # ::test_unusable_report_queue_item_counts.
+        report_unusable = moderation_report_unusable(moderation_report)
+        if report_unusable:
+            all_views = [_unusable_report_finding(moderation_report)]
+        for finding in [] if report_unusable else _findings(moderation_report):
             view = _finding_view(finding)
             if view.verdict is Verdict.PASS:
                 continue
@@ -145,9 +215,12 @@ def build_review_surface(
             # like a bug. The two routings are orthogonal: all_views feeds the
             # ranker, flagged/story_level feed the legacy fan-out.
             # #VERIFY: tests/unit/test_review_surface.py::
-            # test_structural_finding_with_node_ids_stays_story_level asserts
-            # both halves (story-level routing AND structural_findings
-            # membership) so either ordering mistake fails it.
+            # test_structural_finding_node_ids_survive_alongside_content_finding
+            # asserts both halves (story-level routing AND structural_findings
+            # membership) on a genuinely-structural finding, so either
+            # ordering mistake fails it; the fully-collapsed
+            # test_structural_finding_with_node_ids_stays_story_level no
+            # longer exercises this branch at all.
             all_views.append(view)
             # #CRITICAL: security: a structural finding describes the PIPELINE
             # ("the reviewer was unavailable on 12 nodes"), not the prose of any
@@ -163,7 +236,9 @@ def build_review_surface(
             # one cause. node_ids stays populated on the view for the admin
             # detail panel and the ranker; only the routing changes.
             # #VERIFY: tests/unit/test_review_surface.py::
-            # test_structural_finding_with_node_ids_stays_story_level.
+            # test_structural_finding_node_ids_survive_alongside_content_finding
+            # keeps node_ids populated on a genuinely-structural finding while
+            # routing it to story_level instead of the fan-out below.
             if view.structural:
                 story_level.append(view)
                 continue
@@ -201,6 +276,7 @@ def build_review_surface(
             # Finding 3: the only reliable "never screened" signal, since a
             # screened-clean report also yields empty passages/findings below.
             screened=moderation_report is not None,
+            report_unusable=report_unusable,
             summary=_summary(moderation_report),
             flagged_passages=passages,
             story_level_findings=story_level,
@@ -663,13 +739,36 @@ def build_review_queue_item(
     flagged_count = sum(
         len(passage.findings) for passage in surface.flagged_passages
     ) + len(surface.story_level_findings)
+    # Task 4: tiered DISTINCT-finding counts for the queue badge, as opposed to
+    # flagged_count above (which counts occurrences: a finding fanned across 3
+    # nodes via node_ids counts 3 times there). Each merged finding view here
+    # counts exactly once, regardless of its node coverage. Sourced from the
+    # three merged-finding buckets (ranked/structural/low_advisory), which
+    # together are every non-PASS finding the surface produced; advisories
+    # never gate and are counted separately, never folded into block/flag.
+    # #VERIFY: tests/unit/test_review_surface.py::
+    # test_tiered_counts_are_distinct_findings_not_occurrences.
+    merged = [
+        *surface.ranked_findings,
+        *surface.structural_findings,
+        *surface.low_advisory_findings,
+    ]
+    block_findings = sum(1 for f in merged if f.verdict == Verdict.BLOCK)
+    flag_findings = sum(
+        1 for f in merged if f.verdict == Verdict.FLAG and not f.structural
+    )
+    advisory_findings = sum(1 for f in merged if f.verdict == Verdict.ADVISORY)
     return ReviewQueueItem(
         storybook_id=storybook_id,
         title=_queue_title(blob, storybook_id),
         status=status,
         version=version,
         screened=surface.screened,
+        report_unusable=surface.report_unusable,
         flagged_count=flagged_count,
+        block_findings=block_findings,
+        flag_findings=flag_findings,
+        advisory_findings=advisory_findings,
         summary=surface.summary,
         age_band=_queue_age_band(blob),
         waiting_since=created_at,

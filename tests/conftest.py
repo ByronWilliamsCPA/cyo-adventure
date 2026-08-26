@@ -112,6 +112,32 @@ def make_clean_moderation_report() -> dict[str, object]:
     }
 
 
+def make_fail_safe_moderation_report(node_count: int = 2) -> dict[str, object]:
+    """A legacy mock-reviewer report: one fail-safe FLAG per node, no judgment."""
+    return {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "llm_safety",
+                "node_id": f"n{i}",
+                "verdict": "flag",
+                "score": None,
+                "message": "unknown verdict; defaulted to fail-safe",
+            }
+            for i in range(node_count)
+        ],
+        "aggregate": {"nodes_reviewed": node_count, "pass_counts": {}},
+        "summary": {
+            "count": node_count,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": False,
+        },
+    }
+
+
 # ============================================================================
 # Process-Global Singleton Resets
 # ============================================================================

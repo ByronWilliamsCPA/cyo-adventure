@@ -252,7 +252,6 @@
 "src/cyo_adventure/moderation/classifiers.py" = [
     "test_classifiers",
     "test_classifiers",
-    "test_classifiers",
     "test_partial_failure_flags_incomplete_coverage",
     "test_unscreened_nodes_are_named_in_the_coverage_finding",
 ]
