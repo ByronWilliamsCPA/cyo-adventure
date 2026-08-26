@@ -538,11 +538,35 @@ def test_parse_args_requires_a_selector(capsys: pytest.CaptureFixture[str]) -> N
 # ---------------------------------------------------------------------------
 
 
+def _settings_stub(*, provider: str, environment: str = "production") -> MagicMock:
+    """A settings double carrying only what the preflight reads."""
+    return MagicMock(
+        review_provider=provider,
+        environment=environment,
+        database_url=(
+            "postgresql+asyncpg://cyo_user:must-not-print-this-value@db.example.net:5432/cyo"
+        ),
+    )
+
+
 def _run_main(result: Any) -> None:
-    """Drive main() with a canned SweepResult, bypassing argv and the DB."""
+    """Drive main() with a canned SweepResult, bypassing argv and the DB.
+
+    Declares a real review provider because these tests drive ``--execute``
+    and measure what main REPORTS. Under the shared app settings the resolved
+    provider is the mock, which main's preflight now refuses outright, so
+    without this every one of them would exit on the preflight and assert
+    nothing about the reporting they exist to pin. The preflight has its own
+    tests below.
+    """
     args = MagicMock(book_id=["s1"], mock_moderated=False, execute=True)
     with (
         patch.object(remoderate_books, "_parse_args", MagicMock(return_value=args)),
+        patch.object(
+            remoderate_books,
+            "_default_settings",
+            _settings_stub(provider="openrouter"),
+        ),
         patch.object(remoderate_books, "sweep", AsyncMock(return_value=result)),
     ):
         remoderate_books.main()
@@ -1098,3 +1122,125 @@ def test_parse_args_defaults_the_per_book_timeout() -> None:
 
     assert args.per_book_timeout == remoderate_books._PER_BOOK_TIMEOUT_SECONDS
     assert remoderate_books._PER_BOOK_TIMEOUT_SECONDS > 0
+
+
+# ---------------------------------------------------------------------------
+# main(): the reviewer preflight
+# ---------------------------------------------------------------------------
+
+
+def _run_main_with_settings(
+    settings: MagicMock, *, execute: bool, result: Any = None
+) -> MagicMock:
+    """Drive main() with a settings double; return the patched sweep mock."""
+    args = MagicMock(
+        book_id=["s1"],
+        mock_moderated=False,
+        in_review=False,
+        execute=execute,
+        per_book_timeout=900,
+    )
+    canned = result or remoderate_books.SweepResult(
+        targets=[("s1", 1)], executed=execute, succeeded=[("s1", 1)]
+    )
+    sweep_mock = AsyncMock(return_value=canned)
+    with (
+        patch.object(remoderate_books, "_parse_args", MagicMock(return_value=args)),
+        patch.object(remoderate_books, "_default_settings", settings),
+        patch.object(remoderate_books, "sweep", sweep_mock),
+    ):
+        remoderate_books.main()
+    return sweep_mock
+
+
+def test_main_refuses_to_execute_with_the_mock_reviewer(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """--execute with the mock backend must abort before touching anything.
+
+    The mock answers every review call with the literal "{}", which parses
+    cleanly and carries no verdict, so every node lands on the fail-safe
+    default. Running this sweep with it would rewrite the exact reports the
+    sweep exists to clear, and exit 0 reporting success. Twelve production
+    books, 2,916 nodes, are in that state now.
+    """
+    settings = _settings_stub(provider="mock")
+
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main_with_settings(settings, execute=True)
+
+    assert "mock" in str(excinfo.value.code)
+
+
+def test_main_refusal_happens_before_the_sweep_runs(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The refusal is a preflight, not a post-hoc complaint."""
+    settings = _settings_stub(provider="mock")
+    args = MagicMock(
+        book_id=["s1"],
+        mock_moderated=False,
+        in_review=False,
+        execute=True,
+        per_book_timeout=900,
+    )
+    sweep_mock = AsyncMock()
+    with (
+        patch.object(remoderate_books, "_parse_args", MagicMock(return_value=args)),
+        patch.object(remoderate_books, "_default_settings", settings),
+        patch.object(remoderate_books, "sweep", sweep_mock),
+        pytest.raises(SystemExit),
+    ):
+        remoderate_books.main()
+
+    sweep_mock.assert_not_awaited()
+
+
+def test_main_allows_a_dry_run_with_the_mock_reviewer(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A dry run makes no review calls, so the mock is irrelevant to it.
+
+    Refusing here would remove the one safe way to see what a sweep would
+    target from a workstation.
+    """
+    sweep_mock = _run_main_with_settings(
+        _settings_stub(provider="mock"),
+        execute=False,
+        result=remoderate_books.SweepResult(targets=[("s1", 1)], executed=False),
+    )
+    sweep_mock.assert_awaited_once()
+
+
+def test_main_prints_the_resolved_target_before_executing(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Print what this run actually resolved, not what the operator intended.
+
+    A process that fails to load its env file silently falls back to
+    environment="local" and a localhost database, and every guard keyed on
+    environment != "local" goes quiet at the same moment. Printing the
+    resolved values is what makes that visible before the run, rather than
+    after an apparently successful sweep that touched nothing.
+    """
+    _run_main_with_settings(
+        _settings_stub(provider="openrouter", environment="production"),
+        execute=True,
+    )
+    out = capsys.readouterr().out
+    assert "openrouter" in out
+    assert "production" in out
+    assert "db.example.net" in out
+
+
+def test_main_preflight_never_prints_database_credentials(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The banner names the target, never the password reaching it."""
+    _run_main_with_settings(
+        _settings_stub(provider="openrouter"),
+        execute=True,
+    )
+    captured = capsys.readouterr()
+    assert "must-not-print-this-value" not in captured.out
+    assert "must-not-print-this-value" not in captured.err

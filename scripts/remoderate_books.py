@@ -53,16 +53,20 @@ Run against staging or production, dry-run (default, lists only)::
 Actually execute the sweep::
 
     ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
+        CYO_ADVENTURE_REVIEW_PROVIDER=openrouter OPENROUTER_API_KEY=... \\
         uv run python scripts/remoderate_books.py --mock-moderated --execute
 
 Sweep the books waiting at the review gate::
 
     ENVIRONMENT=staging CYO_ADVENTURE_DATABASE_URL=... \\
+        CYO_ADVENTURE_REVIEW_PROVIDER=openrouter OPENROUTER_API_KEY=... \\
         uv run python scripts/remoderate_books.py --in-review --execute
 
 Re-moderate specific books::
 
-    uv run python scripts/remoderate_books.py --book-id sk_ninth_hand --execute
+    CYO_ADVENTURE_REVIEW_PROVIDER=openrouter OPENROUTER_API_KEY=... \\
+        uv run python scripts/remoderate_books.py --book-id sk_ninth_hand \\
+        --execute
 
 Unlike ``scripts/seed_moderation_qa.py``, this script carries no environment
 guard: it targets whatever ``DATABASE_URL`` its caller points it at,
@@ -70,6 +74,18 @@ deliberately, per plan decision 8 ("the script must hard-refuse nothing...
 BUT dry-run must be the default"). The safety rail is dry-run-by-default plus
 the explicit ``--execute`` flag, not an environment allowlist: production is
 this script's intended eventual target once B2/B3 are merged and deployed.
+
+It DOES carry a reviewer guard, which is a different axis and not a
+walk-back of decision 8. That decision is about which database a caller may
+point at; this one is about whether a real reviewer exists to point at it.
+``--execute`` with ``review_provider="mock"`` cannot produce a review at all:
+the mock answers every call with the literal ``"{}"``, which parses cleanly
+and carries no verdict, so every node lands on its stage's fail-safe default.
+Such a run rewrites the exact fail-safe reports the sweep exists to clear and
+then exits 0 reporting success. ``main`` refuses it, and prints the resolved
+environment, database target, and provider before every executed run, because
+a process that fails to load its env file falls back to ``environment="local"``
+with a localhost database and the mock provider all at once.
 
 Audit provenance: every re-moderation this script drives stamps
 ``Actor.system()`` (no human request principal exists in this context),
@@ -86,6 +102,7 @@ import asyncio
 import sys
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final, cast
+from urllib.parse import urlsplit
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -789,6 +806,77 @@ def _exit_on_excluded(result: SweepResult) -> None:
         )
 
 
+def _database_target(database_url: str) -> str:
+    """Render a connection URL as ``host:port/name``, dropping credentials.
+
+    Args:
+        database_url: The resolved async SQLAlchemy connection URL.
+
+    Returns:
+        str: A credential-free description of what this run will write to, or
+        ``"unparseable"`` when the URL does not parse. Never the password:
+        this string is printed to a terminal and scraped into CI logs.
+    """
+    try:
+        parts = urlsplit(database_url)
+    except ValueError:
+        return "unparseable"
+    host = parts.hostname or "unknown-host"
+    port = f":{parts.port}" if parts.port else ""
+    return f"{host}{port}{parts.path}"
+
+
+# #CRITICAL: security: this preflight is the reason a canary run is worth
+# anything. config.py's _require_real_reviewer_outside_local and the
+# pipeline's mock-reviewer stamp were both once gated on
+# environment != "local", and both read review_provider and environment from
+# the same env file, so a process that failed to load that file got
+# review_provider="mock" and environment="local" together and disabled both
+# at once. Printing what THIS run resolved, rather than trusting what the
+# operator meant to set, is what makes that failure visible before a sweep
+# rather than after one that appeared to succeed.
+# #VERIFY: tests/unit/test_remoderate_books.py::
+# test_main_refuses_to_execute_with_the_mock_reviewer,
+# ::test_main_refusal_happens_before_the_sweep_runs,
+# ::test_main_prints_the_resolved_target_before_executing,
+# ::test_main_preflight_never_prints_database_credentials.
+def _preflight(settings: Settings, *, execute: bool) -> None:
+    """Print the resolved run target and refuse an execute with no reviewer.
+
+    Scoped to ``main`` rather than ``sweep`` on purpose: a programmatic
+    caller passing explicit settings has already declared its provider, and
+    the pipeline stamps any mock-produced report as non-independent in every
+    environment regardless. This guards the human at a terminal, who is the
+    one who cannot see which env file actually loaded.
+
+    Args:
+        settings: The settings this run resolved, which are the same ones
+            ``sweep`` will use when ``main`` does not pass its own.
+        execute: Whether the run will write. A dry run makes no review calls,
+            so the provider is irrelevant to it and nothing is printed.
+
+    Raises:
+        SystemExit: When ``execute`` is set and the resolved provider is the
+            mock, which cannot produce a review.
+    """
+    if not execute:
+        return
+    print(
+        f"remoderate_books: environment={settings.environment} "
+        f"database={_database_target(settings.database_url)} "
+        f"review_provider={settings.review_provider}"
+    )
+    if settings.review_provider == "mock":
+        sys.exit(
+            "remoderate_books: REFUSING --execute, the resolved "
+            'review_provider is "mock", which returns no verdict and would '
+            "rewrite every targeted node as a fail-safe default. Set "
+            "CYO_ADVENTURE_REVIEW_PROVIDER to a real backend (and check the "
+            f"resolved environment above, {settings.environment}, is the one "
+            "you meant) before re-running."
+        )
+
+
 def main() -> None:
     """Entry point for the re-moderation sweep script.
 
@@ -802,6 +890,7 @@ def main() -> None:
     success.
     """
     args = _parse_args()
+    _preflight(_default_settings, execute=args.execute)
     result = asyncio.run(
         sweep(
             book_ids=args.book_id,
