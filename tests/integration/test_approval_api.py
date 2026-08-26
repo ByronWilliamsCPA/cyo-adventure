@@ -403,14 +403,21 @@ async def test_approve_over_block_with_reason_publishes_and_audits(
     assert "override_reason" not in event.payload
 
 
-async def test_approve_over_block_with_whitespace_only_reason_returns_400(
+async def test_approve_over_block_with_whitespace_only_reason_returns_422(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
     """A whitespace-only override reason does not satisfy the override gate.
 
-    Truthiness alone accepts any non-empty string; the gate requires a
-    non-empty stripped value so an admin cannot rubber-stamp past it with
-    keystrokes that carry no actual justification.
+    ``ApproveBody.override_reason`` strips its input before the
+    ``min_length=10`` check runs (mode="before" field_validator), so ten
+    spaces strip to an empty string and fail schema validation (422) before
+    the request ever reaches ``publishing/service.py::approve``'s own
+    stripped-truthiness check. Before that validator existed, this same
+    input reached the service layer and was rejected there with 400 and
+    ``rule == "approve_requires_override_reason"``; the change in status
+    code reflects where the input is now recognized as invalid, not a
+    weakening of the check itself: an admin still cannot rubber-stamp past
+    the gate with keystrokes that carry no actual justification.
     """
     story_id = await _seed_in_review_with_report(sessions, _severe_report())
     resp = await client.post(
@@ -418,8 +425,7 @@ async def test_approve_over_block_with_whitespace_only_reason_returns_400(
         headers=auth("admin-a"),
         json={"override_reason": "          "},
     )
-    assert resp.status_code == 400, resp.text
-    assert resp.json()["details"]["rule"] == "approve_requires_override_reason"
+    assert resp.status_code == 422, resp.text
     async with sessions() as session:
         book = await session.get(Storybook, story_id)
         assert book is not None
@@ -499,6 +505,59 @@ async def test_approve_over_high_flag_with_reason_publishes_and_audits(
         "overridden_high_count": 1,
     }
     assert "override_reason" not in event.payload
+
+
+def _medium_flag_report() -> dict[str, object]:
+    """A moderation report with one MEDIUM-severity flag: not a severe finding."""
+    return {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n1",
+                "verdict": "flag",
+                "score": None,
+                "severity": "medium",
+                "message": "mild tension in the chase scene",
+            }
+        ],
+        "aggregate": {"nodes_reviewed": 1, "pass_counts": {}},
+        "summary": {
+            "count": 1,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+
+
+async def test_approve_over_medium_flag_without_reason_publishes(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A medium-severity flag never gates: no override reason is required.
+
+    Pins the negative direction that the block/high-flag tests above do not:
+    ``severe_finding_counts`` counts only ``verdict == "block"`` and
+    ``verdict == "flag" and severity == "high"``. Without this test, a
+    regression that widened that predicate to every flag (or dropped the
+    severity comparison) would still pass this suite, since the only other
+    clean-report fixture in this file has an empty ``findings`` list.
+    """
+    story_id = await _seed_in_review_with_report(sessions, _medium_flag_report())
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve", headers=auth("admin-a")
+    )
+    assert resp.status_code == 200, resp.text
+    event = await assert_single_event(
+        sessions,
+        event_type="released",
+        entity_type="storybook",
+        to_state="published",
+        actor_role="admin",
+    )
+    assert event.payload == {"visibility": "family"}
 
 
 async def test_illegal_transition_returns_409(

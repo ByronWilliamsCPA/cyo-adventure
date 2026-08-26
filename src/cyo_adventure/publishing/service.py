@@ -486,7 +486,13 @@ async def approve(
     # including one that carries no actual justification once stripped;
     # requiring a non-empty stripped value keeps the audit log's free-text
     # reason meaningful rather than a rubber stamp.
-    # #VERIFY: test_approve_over_block_with_whitespace_only_reason_returns_400.
+    # For API callers this is now a backstop: ApproveBody strips before its
+    # own min_length check, so a whitespace-only reason fails validation with
+    # 422 before reaching here. It is still the ONLY such guard for callers
+    # that never build an ApproveBody, which now includes
+    # publishing/catalog_publish.py's CLI; do not remove it as redundant.
+    # #VERIFY: tests/integration/test_approval_api.py::
+    # test_approve_over_block_with_whitespace_only_reason_returns_422.
     if (severe_counts.block_count or severe_counts.high_severity_flag_count) and not (
         override_reason and override_reason.strip()
     ):

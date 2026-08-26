@@ -19,6 +19,7 @@ from pydantic import (
     ConfigDict,
     Field,
     StringConstraints,
+    field_validator,
     model_validator,
 )
 
@@ -1828,6 +1829,26 @@ class ApproveBody(BaseModel):
             "structured overridden-finding counts are recorded there."
         ),
     )
+
+    # #ASSUME: data-integrity: without this, a value like
+    # "   whitespace-padded reason" (>= 10 raw characters, but shorter or
+    # blank once stripped) passes this schema's min_length check only for the
+    # service layer's own stripped-truthiness check
+    # (publishing/service.py::approve) to then reject it as though no reason
+    # had been given at all, a confusing two-stage rejection for one bad
+    # input. Stripping here (mode="before") makes the length check test the
+    # same content the service layer ultimately requires.
+    # #VERIFY: tests/integration/test_approval_api.py::
+    # test_approve_over_block_with_whitespace_only_reason_returns_422 (422, not
+    # 400, since 10 spaces strip to empty and fail this schema's min_length
+    # before the request ever reaches the service).
+    @field_validator("override_reason", mode="before")
+    @classmethod
+    def _strip_override_reason(cls, value: object) -> object:
+        """Strip surrounding whitespace before the ``min_length`` check runs."""
+        if isinstance(value, str):
+            return value.strip()
+        return value
 
 
 class ApprovedView(BaseModel):

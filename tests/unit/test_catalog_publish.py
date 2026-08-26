@@ -173,9 +173,11 @@ class TestMain:
         """
 
         async def _raise_authorization_error(
-            storybook_id: str, approved_by: uuid.UUID
+            storybook_id: str,
+            approved_by: uuid.UUID,
+            override_reason: str | None = None,
         ) -> StorybookVersion:
-            _ = (storybook_id, approved_by)
+            _ = (storybook_id, approved_by, override_reason)
             msg = "admin role required to approve a catalog story"
             raise AuthorizationError(msg, required_permission="admin")
 
@@ -193,9 +195,11 @@ class TestMain:
         """A clean run prints the published-summary line and exits 0."""
 
         async def _fake_run(
-            storybook_id: str, approved_by: uuid.UUID
+            storybook_id: str,
+            approved_by: uuid.UUID,
+            override_reason: str | None = None,
         ) -> StorybookVersion:
-            _ = approved_by
+            _ = (approved_by, override_reason)
             return StorybookVersion(storybook_id=storybook_id, version=3, blob={})
 
         monkeypatch.setattr(f"{_MODULE}._run", _fake_run)
