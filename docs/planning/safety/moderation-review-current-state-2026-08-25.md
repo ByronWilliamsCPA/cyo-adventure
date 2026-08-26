@@ -237,3 +237,66 @@ configuration. The stored `summary` carries no provider or model field, so the
 July run's configuration is not recoverable from the data; the mechanism in 6.1
 is established, the specific job that triggered it is not, and further
 archaeology on it is not worth the cost.
+
+## 7. Remediation, 2026-08-26
+
+Three fixes follow from section 6. All three are on branch
+`fix/mock-reviewer-self-identification`, which is not merged; nothing below is
+live yet.
+
+### 7.1 The mock reviewer now identifies itself in every environment
+
+The gap-G1 stamp in `moderation/pipeline.py` and
+`core/config.py::_require_real_reviewer_outside_local` were both gated on
+`environment != "local"`, and both read `review_provider` and `environment`
+from the same env file. That made them one defense wearing two coats: a process
+that fails to load that file falls back to `review_provider="mock"` (the config
+default) and `environment="local"` together, so the config guard does not raise
+and the stamp does not apply. The result is a report claiming
+`reviewer_independent: true` over nodes no reviewer judged, which is the exact
+shape of all twelve.
+
+The stamp is now unconditional. A mock review is not an independent review in
+local either, and the stamp is verdict-neutral (`ADVISORY` never gates). This
+also revives two code paths that were dead against a real mock run: the
+`summary.reviewer_independent is False` arm of
+`moderation_report_unusable` (#764) and the stamp arm of
+`scripts/remoderate_books.py --mock-moderated`.
+
+### 7.2 A partly-unjudged report now says so
+
+`moderation_report_unusable` returns `False` at the first genuine finding, so
+the five books in section 2.2 read as usable and fully reviewed even though
+four of them carry a fail-safe `llm_readability` result on up to 88% of their
+nodes. Those rows persist with `verdict: "pass"`, because a soft stage fails
+safe to PASS, and `api/review_surface.py` drops PASS before rendering. They are
+invisible, not merely unlabelled.
+
+`moderation/report.py::hidden_fail_safe_node_counts` counts that hidden
+remainder per source and per distinct node; the surface renders one story-level
+structural finding from it, matching the shape #764 chose for a wholly unusable
+report. Stage 1 safety fail-safes are deliberately excluded: they fail safe to
+FLAG, so they gate and already render as flagged passages, and counting them
+would describe one outage twice.
+
+This changes rendering only. The approval gate reads the stored report through
+`moderation_report_unusable`, not through the surface, so whether a
+partly-unjudged story should also be *unapprovable* remains an open decision.
+
+### 7.3 The sweep refuses to run without a reviewer
+
+`scripts/remoderate_books.py` now refuses `--execute` when the resolved
+`review_provider` is the mock, as a preflight before the sweep is awaited, and
+prints the `environment`, database target, and provider it actually resolved
+before every executed run. Credentials in the database URL are never printed.
+
+This is why the `sk_sunken_signal` canary was not run on 2026-08-25. Resolved
+settings on the workstation were `environment=local`, `db host=localhost`,
+`review_provider=mock`, `openai key set=False`, despite a `.env` naming a real
+provider and a remote database. The canary would have re-moderated with the
+mock, against the wrong database, and exited successfully.
+
+**Still required to run the sweep:** a production `CYO_ADVENTURE_DATABASE_URL`,
+a real `CYO_ADVENTURE_REVIEW_PROVIDER` with its API key, and confirmation of
+which environment is being targeted. The preflight now prints all three before
+doing anything.
