@@ -2253,3 +2253,191 @@ def test_tiered_counts_are_distinct_findings_not_occurrences() -> None:
         3,
     )
     assert item.flagged_count == 7
+
+
+def _partially_fail_safe_report() -> dict[str, object]:
+    """The production shape: one stage judged, another defaulted to fail-safe.
+
+    Modelled on ``sk_clocktower_cipher``, where ``llm_safety`` returned real
+    verdicts for every node while ``llm_readability`` returned ``unknown
+    verdict; defaulted to fail-safe`` on 22 of 25. The soft-stage fail-safe
+    is PASS, so the readability rows persist with ``verdict: "pass"``.
+    """
+    return {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "frightening_content",
+                "node_id": "n_start",
+                "verdict": "flag",
+                "score": 0.7,
+                "message": "the clock tower scene is frightening",
+            },
+            {
+                "stage": 2,
+                "source": "llm_readability",
+                "category": "llm_readability",
+                "node_id": "n_start",
+                "verdict": "pass",
+                "score": None,
+                "message": "unknown verdict; defaulted to fail-safe",
+            },
+            {
+                "stage": 2,
+                "source": "llm_readability",
+                "category": "llm_readability",
+                "node_id": "n_end",
+                "verdict": "pass",
+                "score": None,
+                "message": "unknown verdict; defaulted to fail-safe",
+            },
+        ],
+        "aggregate": {"nodes_reviewed": 2, "pass_counts": {}},
+        "summary": {
+            "count": 3,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+
+
+@pytest.mark.unit
+def test_partially_fail_safe_report_is_usable_but_surfaces_the_gap() -> None:
+    """A usable report still says how much of itself went unjudged.
+
+    moderation_report_unusable stops at the first genuine finding, so this
+    report is correctly usable: the safety stage really did judge the story.
+    The readability stage did not, and because its fail-safe verdict is PASS
+    the surface's PASS filter drops those rows before rendering. Without a
+    synthetic finding the approver sees a fully-reviewed-looking surface over
+    prose no readability check ever read.
+    """
+    surface = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=_partially_fail_safe_report(),
+    )
+    assert surface.report_unusable is False
+    gaps = [
+        f for f in surface.structural_findings if f.concern == "reviewer_unavailable"
+    ]
+    assert len(gaps) == 1
+    assert "llm_readability" in gaps[0].message
+    assert "2" in gaps[0].message
+
+
+@pytest.mark.unit
+def test_partial_gap_finding_stays_story_level_and_off_the_passages() -> None:
+    """The gap describes the pipeline, so it never joins the per-node fan-out."""
+    surface = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=_partially_fail_safe_report(),
+    )
+    gaps = [
+        f for f in surface.story_level_findings if f.concern == "reviewer_unavailable"
+    ]
+    assert len(gaps) == 1
+    assert gaps[0].structural is True
+    for passage in surface.flagged_passages:
+        assert all(f.concern != "reviewer_unavailable" for f in passage.findings)
+
+
+@pytest.mark.unit
+def test_fully_reviewed_report_gets_no_gap_finding() -> None:
+    """No fail-safe rows means no synthetic notice; this is the control."""
+    surface = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=_report(),
+    )
+    assert all(f.concern != "reviewer_unavailable" for f in surface.structural_findings)
+
+
+@pytest.mark.unit
+def test_wholly_unusable_report_still_renders_exactly_one_notice() -> None:
+    """The partial notice must not double up on the wholly-unusable path.
+
+    Both paths emit a reviewer_unavailable structural finding. The unusable
+    short-circuit already emits one, so the partial count must not add a
+    second describing the same outage.
+    """
+    surface = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=_fail_safe_report(["n_start", "n_end"]),
+    )
+    assert surface.report_unusable is True
+    assert len(surface.structural_findings) == 1
+
+
+@pytest.mark.unit
+def test_gating_fail_safe_rows_are_not_also_counted_as_hidden() -> None:
+    """A Stage 1 fail-safe is a FLAG, so it already renders; do not restate it.
+
+    Caught by tests/unit/test_review_surface_compat.py against the
+    legacy_flood_report fixture, whose three fail-safe rows all carry a FLAG
+    verdict and therefore fan out as three flagged passages. An earlier
+    version of the gap notice counted every fail-safe row regardless of
+    verdict and told the approver the same outage twice.
+    """
+    report = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": nid,
+                "verdict": "flag",
+                "score": None,
+                "message": "verdict parse failed; defaulted to fail-safe",
+            }
+            for nid in ("n_start", "n_end")
+        ]
+        + [
+            # One genuine judgment, so the report is USABLE and the run
+            # reaches the partial-gap path rather than the wholly-unusable
+            # short-circuit.
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "frightening_content",
+                "node_id": "n_start",
+                "verdict": "flag",
+                "score": 0.7,
+                "message": "the storm scene is frightening",
+            }
+        ],
+        "summary": {
+            "count": 3,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+    surface = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=report,
+    )
+    assert surface.report_unusable is False
+    # The rows themselves still surface, one flagged passage per node.
+    assert len(surface.flagged_passages) == 2
+    # But no aggregate notice restates them.
+    assert all(
+        f.concern != "reviewer_unavailable" for f in surface.story_level_findings
+    )

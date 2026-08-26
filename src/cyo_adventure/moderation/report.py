@@ -370,6 +370,87 @@ def _is_genuine_judgment(finding: object) -> bool:
     return isinstance(verdict, str) and bool(verdict)
 
 
+def hidden_fail_safe_node_counts(report: dict[str, object] | None) -> dict[str, int]:
+    """Count nodes whose stage fell back to fail-safe INVISIBLY, per source.
+
+    ``moderation_report_unusable`` answers a whole-report question and
+    returns ``False`` as soon as ONE genuine finding exists anywhere. That is
+    the right shape for the approval gate, but it says nothing about how much
+    of the story went unjudged: a report whose ``llm_safety`` stage judged
+    every node while ``llm_readability`` defaulted to fail-safe on 88% of
+    them is "usable" by that predicate and looks fully reviewed.
+
+    Only the INVISIBLE half of that remainder is counted here, and the
+    distinction is the fail-safe verdict each stage chooses. Stage 1 safety
+    fails safe to FLAG, so its fail-safe rows gate, survive the review
+    surface's PASS filter, and already render as flagged passages the
+    approver reads. The soft stages fail safe to PASS, so their rows are
+    dropped before rendering and vanish. Counting the FLAG rows too would
+    describe the same outage twice, once per passage and once in aggregate.
+
+    Structural findings are excluded for the same reason: the pipeline
+    already collapses a stage-wide outage into one structural finding that
+    carries a gating verdict and surfaces on its own.
+
+    Args:
+        report: The stored ``moderation_report`` JSONB payload, or ``None``.
+
+    Returns:
+        dict[str, int]: Producing source (or ``"unknown"`` for a row naming
+        neither a source nor a category) mapped to the number of distinct
+        nodes whose fail-safe result that source recorded as a PASS. A
+        matching finding naming no node at all counts as one whole-story
+        scope. An empty dict means nothing fell back invisibly, including for
+        a malformed or absent report: failing closed on corruption is
+        ``moderation_report_unusable``'s job, and duplicating it here would
+        report a corrupt row as an unjudged-node problem it is not.
+    """
+    if not isinstance(report, dict):
+        return {}
+    findings = report.get("findings")
+    if not isinstance(findings, list):
+        return {}
+    scopes: dict[str, set[str | None]] = {}
+    for finding in cast("list[object]", findings):
+        if not isinstance(finding, dict):
+            continue
+        entry = cast("dict[str, object]", finding)
+        if entry.get("structural") is True:
+            continue
+        if entry.get("verdict") != Verdict.PASS.value:
+            continue
+        message = entry.get("message")
+        if not (isinstance(message, str) and FAIL_SAFE_MESSAGE_SUBSTRING in message):
+            continue
+        source = entry.get("source") or entry.get("category")
+        key = source if isinstance(source, str) and source else "unknown"
+        scopes.setdefault(key, set()).update(_covered_scopes(entry))
+    return {key: len(nodes) for key, nodes in scopes.items()}
+
+
+def _covered_scopes(entry: dict[str, object]) -> set[str | None]:
+    """Return every node one finding covers, or ``{None}`` for whole-story.
+
+    ``node_id`` names only the FIRST node of a merged finding (see
+    ``Finding.node_ids``), so counting it alone would under-report a merged
+    fail-safe finding by its entire group.
+
+    Args:
+        entry: One raw finding entry from a stored report.
+
+    Returns:
+        set[str | None]: The distinct node ids covered, or ``{None}`` when
+        the finding names no node and therefore covers the whole story.
+    """
+    node_ids = entry.get("node_ids")
+    if isinstance(node_ids, list):
+        named = {nid for nid in cast("list[object]", node_ids) if isinstance(nid, str)}
+        if named:
+            return cast("set[str | None]", named)
+    node_id = entry.get("node_id")
+    return {node_id if isinstance(node_id, str) else None}
+
+
 class SevereFindingCounts(NamedTuple):
     """``(block_count, high_severity_flag_count)`` for a stored report.
 

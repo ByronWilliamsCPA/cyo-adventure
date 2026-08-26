@@ -16,6 +16,7 @@ from cyo_adventure.moderation.report import (
     SevereFindingCounts,
     Source,
     Verdict,
+    hidden_fail_safe_node_counts,
     moderation_report_unusable,
     severe_finding_counts,
 )
@@ -557,3 +558,210 @@ class TestSevereFindingCounts:
             "findings": [{"verdict": "advisory", "severity": "high", "message": "a"}]
         }
         assert severe_finding_counts(report) == (0, 0)
+
+
+class TestHiddenFailSafeNodeCounts:
+    """Per-source coverage for reports that are only PARTIALLY fail-safe.
+
+    ``moderation_report_unusable`` answers a whole-report question and stops
+    at the first genuine finding, so a report where one stage judged every
+    node and another stage defaulted to fail-safe on most of them reads as
+    fully usable. Production carries exactly that shape: five books whose
+    ``llm_safety`` stage returned real verdicts throughout while
+    ``llm_readability`` fell back to ``unknown verdict; defaulted to
+    fail-safe`` on up to 88% of their nodes. These counts are what makes the
+    unreviewed remainder countable rather than invisible.
+    """
+
+    def test_fully_reviewed_report_counts_nothing(self) -> None:
+        report = {
+            "findings": [
+                {
+                    "source": "llm_safety",
+                    "node_id": "n1",
+                    "verdict": "flag",
+                    "message": "too scary",
+                }
+            ]
+        }
+        assert hidden_fail_safe_node_counts(report) == {}
+
+    def test_fail_safe_nodes_are_counted_per_source(self) -> None:
+        report = {
+            "findings": [
+                {
+                    "source": "llm_safety",
+                    "node_id": "n1",
+                    "verdict": "flag",
+                    "message": "too scary",
+                },
+                {
+                    "source": "llm_readability",
+                    "node_id": "n1",
+                    "verdict": "pass",
+                    "message": FAIL_SAFE_MESSAGE_SUBSTRING,
+                },
+                {
+                    "source": "llm_readability",
+                    "node_id": "n2",
+                    "verdict": "pass",
+                    "message": "unknown verdict; defaulted to fail-safe",
+                },
+            ]
+        }
+        assert hidden_fail_safe_node_counts(report) == {"llm_readability": 2}
+
+    def test_pass_verdict_does_not_hide_a_fail_safe_row(self) -> None:
+        # The production shape: the stored verdict is "pass", which the
+        # review surface filters out before rendering. If this predicate
+        # keyed off the verdict rather than the message it would agree with
+        # that filter and the row would stay invisible.
+        report = {
+            "findings": [
+                {
+                    "source": "llm_readability",
+                    "node_id": "n1",
+                    "verdict": "pass",
+                    "message": "verdict parse failed; defaulted to fail-safe",
+                }
+            ]
+        }
+        assert hidden_fail_safe_node_counts(report) == {"llm_readability": 1}
+
+    def test_same_node_twice_counts_once(self) -> None:
+        report = {
+            "findings": [
+                {
+                    "source": "llm_readability",
+                    "node_id": "n1",
+                    "verdict": "pass",
+                    "message": FAIL_SAFE_MESSAGE_SUBSTRING,
+                },
+                {
+                    "source": "llm_readability",
+                    "node_id": "n1",
+                    "verdict": "pass",
+                    "message": FAIL_SAFE_MESSAGE_SUBSTRING,
+                },
+            ]
+        }
+        assert hidden_fail_safe_node_counts(report) == {"llm_readability": 1}
+
+    def test_merged_finding_counts_every_node_it_covers(self) -> None:
+        # node_id names only the FIRST covered node; counting it alone would
+        # under-report a merged fail-safe finding by its whole group.
+        report = {
+            "findings": [
+                {
+                    "source": "llm_readability",
+                    "node_id": "n1",
+                    "node_ids": ["n1", "n2", "n3"],
+                    "verdict": "pass",
+                    "message": FAIL_SAFE_MESSAGE_SUBSTRING,
+                }
+            ]
+        }
+        assert hidden_fail_safe_node_counts(report) == {"llm_readability": 3}
+
+    def test_structural_finding_is_not_counted_again(self) -> None:
+        # A collapsed structural fail-safe finding already survives the
+        # surface's PASS filter and renders on its own; counting it here too
+        # would render the same outage twice.
+        report = {
+            "findings": [
+                {
+                    "source": "pipeline",
+                    "node_id": "n1",
+                    "node_ids": ["n1", "n2"],
+                    "verdict": "pass",
+                    "structural": True,
+                    "concern": "reviewer_unavailable",
+                    "message": FAIL_SAFE_MESSAGE_SUBSTRING,
+                }
+            ]
+        }
+        assert hidden_fail_safe_node_counts(report) == {}
+
+    def test_fail_safe_finding_with_no_node_counts_as_one_scope(self) -> None:
+        report = {
+            "findings": [
+                {
+                    "source": "llm_safety",
+                    "node_id": None,
+                    "verdict": "pass",
+                    "message": FAIL_SAFE_MESSAGE_SUBSTRING,
+                }
+            ]
+        }
+        assert hidden_fail_safe_node_counts(report) == {"llm_safety": 1}
+
+    def test_source_falls_back_to_category_then_unknown(self) -> None:
+        report = {
+            "findings": [
+                {
+                    "category": "llm_readability",
+                    "node_id": "n1",
+                    "verdict": "pass",
+                    "message": FAIL_SAFE_MESSAGE_SUBSTRING,
+                },
+                {
+                    "node_id": "n2",
+                    "verdict": "pass",
+                    "message": FAIL_SAFE_MESSAGE_SUBSTRING,
+                },
+            ]
+        }
+        assert hidden_fail_safe_node_counts(report) == {
+            "llm_readability": 1,
+            "unknown": 1,
+        }
+
+    @pytest.mark.parametrize(
+        "report",
+        [None, {}, {"findings": None}, {"findings": "nope"}, {"findings": []}],
+        ids=["none", "empty", "null-findings", "non-list", "empty-list"],
+    )
+    def test_malformed_or_empty_reports_count_nothing(self, report: object) -> None:
+        # These shapes are moderation_report_unusable's job to fail closed
+        # on; this predicate answers the narrower "which nodes did a stage
+        # skip" question and must not double as a second corruption gate.
+        assert (
+            hidden_fail_safe_node_counts(cast("dict[str, object] | None", report)) == {}
+        )
+
+    def test_non_mapping_finding_entry_is_skipped(self) -> None:
+        report = {"findings": ["nope", 7, None]}
+        assert hidden_fail_safe_node_counts(cast("dict[str, object]", report)) == {}
+
+    @pytest.mark.parametrize("verdict", ["flag", "block"], ids=["flag", "block"])
+    def test_gating_fail_safe_row_is_not_counted(self, verdict: str) -> None:
+        # Stage 1 safety fails safe to FLAG, so its fail-safe rows gate,
+        # clear the review surface's PASS filter, and already render as
+        # flagged passages. Counting them here would describe one outage
+        # twice: once per passage and once in aggregate.
+        report = {
+            "findings": [
+                {
+                    "source": "llm_safety",
+                    "node_id": "n1",
+                    "verdict": verdict,
+                    "message": "verdict parse failed; defaulted to fail-safe",
+                }
+            ]
+        }
+        assert hidden_fail_safe_node_counts(report) == {}
+
+    def test_row_with_no_verdict_is_not_counted(self) -> None:
+        # Absent is not PASS. A row with no verdict at all fails
+        # moderation_report_unusable's genuine-judgment shape check, so an
+        # all-artifact report of these is already caught as wholly unusable.
+        report = {
+            "findings": [
+                {
+                    "source": "llm_readability",
+                    "node_id": "n1",
+                    "message": FAIL_SAFE_MESSAGE_SUBSTRING,
+                }
+            ]
+        }
+        assert hidden_fail_safe_node_counts(report) == {}

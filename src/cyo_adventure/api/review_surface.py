@@ -32,6 +32,7 @@ from cyo_adventure.moderation.report import (
     FindingSeverity,
     Source,
     Verdict,
+    hidden_fail_safe_node_counts,
     moderation_report_unusable,
 )
 from cyo_adventure.moderation.thresholds import admin_surfaces
@@ -121,6 +122,77 @@ def _unusable_report_finding(
         structural=True,
         concern="reviewer_unavailable",
     )
+
+
+# #CRITICAL: security: a report can be usable AND largely unreviewed at the
+# same time. moderation_report_unusable answers a whole-report question and
+# returns False at the first genuine finding, so a story whose safety stage
+# judged every node while its readability stage defaulted to fail-safe on 88%
+# of them clears that predicate outright. The fail-safe verdict on a soft
+# stage is PASS, and the per-finding loop below drops PASS before rendering,
+# so those nodes are invisible rather than merely unlabelled: the approver
+# sees a clean, fully-reviewed-looking surface over prose no readability
+# check ever read, and ADR-005 makes that approver the final gate. This
+# notice is what makes the hidden remainder countable on the surface.
+# Deliberately NOT the whole unjudged remainder: a Stage 1 safety fail-safe
+# is a FLAG, which gates and renders as its own flagged passage already, so
+# hidden_fail_safe_node_counts excludes it and this notice never restates an
+# outage the approver can already read.
+# #VERIFY: tests/unit/test_review_surface.py::
+# test_partially_fail_safe_report_is_usable_but_surfaces_the_gap and
+# ::test_partial_gap_finding_stays_story_level_and_off_the_passages;
+# ::test_fully_reviewed_report_gets_no_gap_finding is the negative control.
+def _partial_gap_findings(
+    moderation_report: dict[str, object] | None, *, report_unusable: bool
+) -> list[FindingView]:
+    """Build the notice for a usable-but-partly-unjudged report, if any.
+
+    Returns a list rather than an optional single view so both call-site
+    sinks (``all_views`` and ``story_level``) can ``extend`` unconditionally.
+    That keeps the "is there a gap" decision inside this function instead of
+    adding two more branches to ``build_review_surface``, which is already at
+    the complexity ceiling.
+
+    Args:
+        moderation_report: The stored report, or ``None``.
+        report_unusable: Whether the caller already classified this report as
+            wholly unusable. When it did, the caller emits its own
+            reviewer_unavailable notice and this function returns nothing, so
+            one outage is never described twice.
+
+    Returns:
+        list[FindingView]: One story-level structural finding naming each
+        stage that fell back and how many nodes it left unjudged, or an empty
+        list when no stage fell back.
+    """
+    if report_unusable:
+        return []
+    counts = hidden_fail_safe_node_counts(moderation_report)
+    if not counts:
+        return []
+    parts = [
+        f"{source} left {count} node{'' if count == 1 else 's'} unjudged"
+        for source, count in sorted(counts.items())
+    ]
+    return [
+        FindingView(
+            # Stage 1 matches the wholly-unusable notice: the gap can span
+            # several stages, so no single stage index describes it, and the
+            # schema bounds the field to 0-4.
+            stage=1,
+            source=Source.PIPELINE,
+            category="pipeline",
+            node_id=None,
+            verdict=Verdict.FLAG,
+            score=None,
+            message=(
+                f"{', '.join(parts)} (the stage defaulted to fail-safe on them); "
+                f"re-run moderation before approving"
+            ),
+            structural=True,
+            concern="reviewer_unavailable",
+        )
+    ]
 
 
 def build_review_surface(
@@ -261,6 +333,11 @@ def build_review_surface(
                     flagged[nid] = []
                     order.append(nid)
                 flagged[nid].append(view)
+        gap_findings = _partial_gap_findings(
+            moderation_report, report_unusable=report_unusable
+        )
+        all_views.extend(gap_findings)
+        story_level.extend(gap_findings)
         passages = [
             FlaggedPassage(
                 node_id=nid, prose=prose_by_id.get(nid, ""), findings=flagged[nid]
