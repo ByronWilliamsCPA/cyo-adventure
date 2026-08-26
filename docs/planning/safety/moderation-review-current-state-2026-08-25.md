@@ -179,18 +179,25 @@ Two consequences the earlier analyses missed:
    mock run. Only the fail-safe-message substring arm reaches these books.
 2. **The mock guard cannot fire in the failure mode it exists for.**
    `core/config.py:1787` refuses mock only when `review_provider == "mock"` AND
-   `environment != "local"` AND not `allow_mock_review`. Both inputs come from
-   the same env file, so a failure to load it sets `review_provider` to `mock`
-   and `environment` to `local`, disabling the guard. Reproduced from the repo
-   root on 2026-08-26: resolved settings were `environment=local`,
-   `db host=localhost`, `review_provider=mock`, `openai key set=False`, despite
-   `.env` naming both `CYO_ADVENTURE_REVIEW_PROVIDER` and `OPENAI_API_KEY`.
+   `environment != "local"` AND not `allow_mock_review`. Both inputs are read
+   from the process environment by the same `Settings` object, which declares
+   no `env_file` (`core/config.py:218`) and therefore reads nothing but
+   exported variables. A process started without them exported takes both
+   defaults, `review_provider="mock"` and `environment="local"`, from one
+   absence, and the guard is off. Reproduced from the repo root on 2026-08-26:
+   resolved settings were `environment=local`, `db host=localhost`,
+   `review_provider=mock`, `openai key set=False`, even though `.env` names
+   both `CYO_ADVENTURE_REVIEW_PROVIDER` and `OPENAI_API_KEY`. The `.env` file
+   is not the mechanism; it is never read by the app at all, which is why
+   naming those keys in it changed nothing.
 
 **Operational consequence.** Any sweep must print the resolved `environment`,
-database host, and `review_provider` before executing. Run from an environment
-that has not loaded its env file, `scripts/remoderate_books.py --execute` would
+database host, and `review_provider` before executing. Run from a shell that
+has not exported them, `scripts/remoderate_books.py --execute` would
 re-moderate with the mock, write the same `{}`-derived findings, and exit
-successfully.
+successfully. Exporting the variables (for example by sourcing `.env` into the
+shell) is what makes a real reviewer available; the file's presence alone does
+nothing.
 
 ### 6.2 The twelve-versus-five split is not clean
 
@@ -249,10 +256,12 @@ live yet.
 The gap-G1 stamp in `moderation/pipeline.py` and
 `core/config.py::_require_real_reviewer_outside_local` were both gated on
 `environment != "local"`, and both read `review_provider` and `environment`
-from the same env file. That made them one defense wearing two coats: a process
-that fails to load that file falls back to `review_provider="mock"` (the config
-default) and `environment="local"` together, so the config guard does not raise
-and the stamp does not apply. The result is a report claiming
+from the process environment through the same `Settings` object, which
+declares no `env_file` and reads nothing but exported variables. That made
+them one defense wearing two coats: a process started without those variables
+exported takes `review_provider="mock"` (the config default) and
+`environment="local"` from one absence, so the config guard does not raise and
+the stamp does not apply. The result is a report claiming
 `reviewer_independent: true` over nodes no reviewer judged, which is the exact
 shape of all twelve.
 
