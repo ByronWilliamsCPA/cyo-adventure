@@ -1132,6 +1132,70 @@ def test_main_rejects_an_unset_variable_and_names_it(
     runner.assert_not_called()
 
 
+@pytest.mark.parametrize(
+    "bad_id",
+    [
+        "https://abc123.r2.cloudflarestorage.com",  # whole endpoint pasted into the id
+        "abc 123",  # an internal space, which strip() cannot reach
+        "abc_123",  # underscore: legal in a secret, illegal in a DNS label
+        "abc.123",  # two labels, so it points at some other host
+        "-abc123",  # a label may not start with a hyphen
+        "abc123-",  # nor end with one
+    ],
+)
+def test_main_rejects_an_account_id_that_is_not_a_hostname_label(
+    bad_id: str, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Fail at the read, not inside boto3 where GitHub's mask hides the defect.
+
+    Reaching boto3 produces `Invalid endpoint: https://***.r2.cloudflarestorage.com`,
+    which cannot tell an empty value from a stray space from a whole pasted URL.
+    """
+    env = _clean_env()
+    env["R2_ACCOUNT_ID"] = bad_id
+    runner = MagicMock()
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+        pytest.raises(SystemExit) as exit_info,
+    ):
+        backup_database.main()
+    assert exit_info.value.code == 1
+    assert "R2_ACCOUNT_ID is not a valid hostname label" in capsys.readouterr().out
+    runner.assert_not_called()
+
+
+def test_main_accepts_a_real_shaped_account_id() -> None:
+    """32 lowercase hex characters, which is what Cloudflare actually issues."""
+    env = _clean_env()
+    env["R2_ACCOUNT_ID"] = "0123456789abcdef0123456789abcdef"
+    runner = MagicMock(return_value="ok")
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+    ):
+        backup_database.main()
+    assert runner.call_args.kwargs["r2_account_id"] == (
+        "0123456789abcdef0123456789abcdef"
+    )
+
+
+def test_describe_bad_characters_names_only_non_alphanumerics() -> None:
+    """The message must locate the defect without reconstructing the value.
+
+    Every alphanumeric character is the secret; every other character is the bug. The
+    clause therefore reports the alphanumeric run as a length only and names the rest.
+    """
+    described = backup_database._describe_bad_characters("ab cd:ef")
+    assert "8 characters" in described
+    assert "' ' at index 2" in described
+    assert "':' at index 5" in described
+    for secret_char in "abcdef":
+        assert f"'{secret_char}'" not in described
+
+
 def test_retention_policy_rejects_non_positive_days() -> None:
     """Zero or negative days is not a retention policy, it is an immediate purge."""
     with pytest.raises(ValueError, match="at least 1"):

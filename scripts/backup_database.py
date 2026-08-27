@@ -459,6 +459,74 @@ def _require_env(name: str) -> str:
     return value
 
 
+# A Cloudflare account id becomes the leftmost label of the R2 endpoint hostname, so
+# it must be a legal DNS label. This mirrors the constraint botocore enforces in
+# `is_valid_endpoint_url` (its host regex admits only `[A-Za-z0-9-]` per label), but
+# deliberately forbids the dot botocore would accept: an account id spanning two labels
+# is a malformed value pointing at some other host, not a legal id. Real ids are 32
+# lowercase hex characters, so nothing legitimate is excluded.
+_ACCOUNT_ID_RE = re.compile(r"^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$")
+
+
+def _describe_bad_characters(value: str) -> str:
+    """Name the characters in ``value`` that are not alphanumeric, with their indexes.
+
+    # #CRITICAL: security: this appears in a failure message that lands in a public
+    # CI log, so it must never reconstruct the value. Only characters OUTSIDE
+    # ``[A-Za-z0-9]`` are named. Those are the ones that make an id malformed in the
+    # first place (a pasted space, a colon from a full URL, an underscore); the
+    # alphanumeric run is the actual value and is reported as a count only.
+    # #VERIFY: tests/unit/test_backup_database.py::test_describe_bad_characters_names_only_non_alphanumerics
+
+    Args:
+        value: The already-trimmed configuration value.
+
+    Returns:
+        A human-readable clause, or a bare length report when every character is
+        alphanumeric (which means the value failed for length, not content).
+    """
+    offenders = [
+        f"{char!r} at index {index}"
+        for index, char in enumerate(value)
+        if not char.isascii() or not char.isalnum()
+    ]
+    if not offenders:
+        return f"{len(value)} characters, all alphanumeric"
+    return f"{len(value)} characters, including {', '.join(offenders)}"
+
+
+def _require_account_id() -> str:
+    """Read ``R2_ACCOUNT_ID`` and reject a value that cannot be a hostname label.
+
+    # #CRITICAL: external resources: without this, a malformed id reaches boto3 and
+    # comes back as `Invalid endpoint: https://***.r2.cloudflarestorage.com`, where
+    # `***` is GitHub's mask. The mask makes the defect undiagnosable from the run
+    # log: the operator cannot see whether the value is empty, carries a stray space,
+    # or is a whole URL pasted into the id field. Both observed failures (2026-08-27)
+    # read exactly that way and cost a full dispatch each to distinguish.
+    # #VERIFY: reject here and describe the shape;
+    # tests/unit/test_backup_database.py::test_main_rejects_an_account_id_that_is_not_a_hostname_label
+
+    Returns:
+        The validated, trimmed account id.
+
+    Raises:
+        ValueError: If the value is unset, blank, or not a single DNS label.
+    """
+    account_id = _require_env("R2_ACCOUNT_ID")
+    if _ACCOUNT_ID_RE.match(account_id):
+        return account_id
+    msg = (
+        "R2_ACCOUNT_ID is not a valid hostname label, so no R2 endpoint can be built "
+        f"from it. It holds {_describe_bad_characters(account_id)}. A Cloudflare "
+        "account id is 32 lowercase hex characters: copy it from the R2 dashboard "
+        "sidebar, not the S3 API endpoint URL, and set it with "
+        "`printf %s '<id>' | gh secret set R2_ACCOUNT_ID --env backups` so no "
+        "trailing newline is stored."
+    )
+    raise ValueError(msg)
+
+
 def load_encryption_key(raw: str) -> bytes:
     """Decode and validate the base64 ``BACKUP_ENCRYPTION_KEY`` env value.
 
@@ -1422,7 +1490,7 @@ def main() -> None:
 
     try:
         db_url = _require_env("SUPABASE_DB_URL")
-        r2_account_id = _require_env("R2_ACCOUNT_ID")
+        r2_account_id = _require_account_id()
         r2_access_key_id = _require_env("R2_BACKUP_ACCESS_KEY_ID")
         r2_secret_access_key = _require_env("R2_BACKUP_SECRET_ACCESS_KEY")
         r2_bucket = _require_env("R2_BACKUP_BUCKET")
