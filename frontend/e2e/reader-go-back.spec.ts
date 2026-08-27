@@ -51,7 +51,16 @@ test.beforeEach(async ({ page, context }) => {
       return route.fulfill({ status: 404, json: { error: 'not found' } })
     }
     if (route.request().method() === 'PUT') {
-      putBodies.push(route.request().postDataJSON() as { current_node?: string })
+      // Guarded: an unparseable body must still reach route.fulfill below.
+      // Left unguarded, a throw here skips fulfill entirely and the request
+      // hangs to the navigation timeout instead of failing cleanly, same
+      // hazard class as the predicate defects #290 fixed elsewhere in this
+      // file's family.
+      try {
+        putBodies.push(route.request().postDataJSON() as { current_node?: string })
+      } catch {
+        putBodies.push({})
+      }
     }
     return route.fulfill({ status: 200, json: READING_ROW })
   })

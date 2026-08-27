@@ -139,13 +139,20 @@ test.describe('reading-state PUT contract', () => {
 
   const STORYBOOK_ID = 's_tide_pools'
 
-  // #ASSUME: timing-dependencies: matches by URL+method+STORYBOOK_ID+
-  // current_node, not queue position. "The Tide Pool Mystery" is seeded at
-  // age_band "8-11" (scripts/seed_dev_data.py), which is in FLOWED_BANDS
-  // (readerProgress.ts), so mount does NOT stop at start_node n_open: it
-  // auto-flows through n_open's single choice and persists TWICE (n_open,
-  // then n_start) before the reader ever shows a choice to click. A save
-  // that matched only on URL+method would have no way to tell "the leftover
+  // #ASSUME: timing-dependencies: matches by URL+method+STORYBOOK_ID+status+
+  // current_node, not queue position. Flowing is driven by the reading
+  // PROFILE's age_band, not the story's: ReaderRoute.tsx reads
+  // useKidProfile(profileId)?.profile?.age_band and that is the only value
+  // Reader.tsx's isFlowedBand(ageBand) sees. The seeded "Dev Reader" profile
+  // is age_band "10-13" (scripts/seed_dev_data.py:895), which is in
+  // FLOWED_BANDS (readerProgress.ts), so mount does NOT stop at start_node
+  // n_open: it auto-flows through n_open's single choice and persists TWICE
+  // (n_open, then n_start) before the reader ever shows a choice to click.
+  // (The story's own metadata.age_band, "8-11" in
+  // tests/fixtures/storybook/valid/06_tier1_tide_pools.json, plays no part
+  // in this: it is also a flowed band, which is why the behavior looks the
+  // same either way, but editing IT changes nothing here.) A save that
+  // matched only on URL+method would have no way to tell "the leftover
   // n_start mount save" apart from "the save the click below just
   // triggered": both are PUTs to the same URL, and page.waitForResponse
   // resolves on whichever the browser delivers first, not the one issued by
@@ -158,12 +165,19 @@ test.describe('reading-state PUT contract', () => {
   // nightly failures the order-blind version of this wait produced.
   // #VERIFY: if s_tide_pools's start_node or n_start's first choice target
   // ever changes, update the literals at this function's call sites below.
+  // Also depends on test.beforeAll(resetRealState) truncating reading_state
+  // for s_tide_pools before this test runs: firstSave below hard-requires a
+  // body of exactly 'n_start', so if that truncation ever stops covering
+  // this story, a stale resume position makes this a bare 10s timeout
+  // instead of a clear mismatch. Editing the "Dev Reader" profile's
+  // age_band away from a flowed band breaks this spec silently too.
   function waitForReadingStatePut(page: Page, expectedNode: string) {
     return page.waitForResponse(
       (res) => {
         if (!res.url().includes('/api/v1/reading-state/')) return false
         if (!res.url().includes(STORYBOOK_ID)) return false
         if (res.request().method() !== 'PUT') return false
+        if (res.status() !== 200) return false
         let body: { current_node?: string } | null
         try {
           body = res.request().postDataJSON() as { current_node?: string } | null
