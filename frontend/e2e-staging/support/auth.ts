@@ -28,10 +28,21 @@ const CONSENT_SIGNER_NAME = 'Staging E2E Test Guardian'
  * The rate-limit retry is adapted from the same source. Staging is not a
  * lighter-weight target in this respect: `app.py` enables the 60 rpm/IP limiter
  * for every `ENVIRONMENT != "local"` deployment, so the identical ceiling
- * applies here. Staging is in fact the worse case, because this tier signs in
- * five times per run (guardian smoke, admin smoke, kid library, and the
- * moderation-QA spec's admin + guardian sessions) against one runner IP,
- * where the prod tier signs in twice.
+ * applies here.
+ *
+ * Called exactly twice per staging job now, both from
+ * `e2e-staging/auth.setup.ts` (once per role), not from the specs
+ * themselves. Before that setup project existed, this ran once per spec file
+ * per role (five call sites across the tier's four spec files) plus once more
+ * in the separate device-grant sweep's own `npm run` invocation, six sign-ins
+ * total against one runner IP across two processes that could not coordinate
+ * their spend against the same server-side rate-limit window; that volume,
+ * not worker concurrency (`workers: 1` was already the config), was the cause
+ * of this tier's self-inflicted 429 streak. See
+ * `playwright.e2e-staging.config.ts`'s `staging-auth-setup` project and
+ * `playwright.e2e-staging-sweep.config.ts`'s `storageState` option, which
+ * between them are why every other caller now restores a session from disk
+ * instead of calling this function.
  *
  * A 429 on the post-login `/v1/me` renders AuthContext's "we couldn't load your
  * account" alert, which is indistinguishable at the UI from a real auth break,
@@ -146,9 +157,12 @@ export async function acceptGuardianConsentIfPresent(page: Page): Promise<void> 
   // this scheduled, unattended tier is no longer purely read-only. The write is
   // idempotent in effect (a consented guardian never reaches here, because the
   // `gated` probe above returns false) but it is not reversible from the test.
-  // #VERIFY: keep this the ONLY write in the staging tier. Before adding another,
-  // confirm it is safe to run unattended on a cron against shared staging data,
-  // and update guardian-admin-smoke.spec.ts's non-destructive claim to match.
+  // #VERIFY: keep this the ONLY write signInAsStagingTestUser performs. Before
+  // adding another, confirm it is safe to run unattended on a cron against
+  // shared staging data, and update the write's description in both
+  // e2e-staging/auth.setup.ts (where it now runs, once per role) and
+  // guardian-admin-smoke.spec.ts (which documents it happening upstream) to
+  // match.
   await page.getByLabel('Your full legal name').fill(CONSENT_SIGNER_NAME)
   await page
     .getByRole('checkbox', {

@@ -1,7 +1,8 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
-import { signInAsStagingTestUser, unlockParentalGateIfPresent } from './support/auth'
+import { unlockParentalGateIfPresent } from './support/auth'
+import { stagingStorageStatePath } from './support/auth-storage'
 import {
   createDeviceGrantMintState,
   readPersistedGrantId,
@@ -34,6 +35,11 @@ import { gotoResilient, paceNavigation } from '../e2e-support/rate-limit'
  * grant, revoked by the final test, backstopped in afterAll). It is safe to
  * run unattended on the daily cron: the only rows it touches are the seeded
  * test guardian's own device grant.
+ *
+ * Both `beforeAll` hooks below restore a pre-authenticated session
+ * (`stagingStorageStatePath`) rather than signing in through the login form;
+ * the tier's sign-ins now happen once each, up front, in
+ * `e2e-staging/auth.setup.ts`.
  */
 const DEVICE_GRANT_KEY = 'device_grant'
 const TEST_KID_NAME = 'Test Reader'
@@ -70,8 +76,7 @@ test.describe('moderation QA corpus is present on staging (admin view)', () => {
   let adminPage: Page
 
   test.beforeAll(async ({ browser }) => {
-    adminPage = await browser.newPage()
-    await signInAsStagingTestUser(adminPage, 'admin')
+    adminPage = await browser.newPage({ storageState: stagingStorageStatePath('admin') })
   })
 
   test.afterAll(async () => {
@@ -158,8 +163,7 @@ test.describe('mqa books are invisible to a kid profile on staging', () => {
   const grantState = createDeviceGrantMintState()
 
   test.beforeAll(async ({ browser }) => {
-    sharedPage = await browser.newPage()
-    await signInAsStagingTestUser(sharedPage, 'guardian')
+    sharedPage = await browser.newPage({ storageState: stagingStorageStatePath('guardian') })
   })
 
   test.afterAll(async () => {

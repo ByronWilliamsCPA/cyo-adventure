@@ -32,13 +32,16 @@ jobs:
     name: Playwright (e2e-staging tier)
     runs-on: ubuntu-latest
     # Sized against the tier's unit arithmetic in
-    # playwright.e2e-staging.config.ts: 26 timeout-bearing units x 30s = 780s
+    # playwright.e2e-staging.config.ts: 28 timeout-bearing units x 30s = 840s
     # fully-hung first pass, plus checkout/npm ci/playwright install and the
     # 60s device-grant sweep step below. Raised 20 -> 25 minutes when
     # kws-public-urls.spec.ts took the tier from 21 units to 26: at 20 minutes
     # that pathological pass left roughly 2 minutes of margin against a
     # ~13-minute run, where the original 21-unit sizing had closer to 6. This
-    # is a headroom restoration, not a fix for an observed timeout.
+    # is a headroom restoration, not a fix for an observed timeout. The
+    # `staging-auth-setup` project added 2 more units (26 -> 28) when it took
+    # over every sign-in from the specs' `beforeAll` hooks; no further budget
+    # raise was needed, 840s still leaves comfortable margin against 1500s.
     timeout-minutes: 25
     environment: staging
     defaults:

@@ -48,6 +48,14 @@ blob-report/
 # e2e-staging credentials (use .env.e2e-staging.example as template)
 .env.e2e-staging
 
+# e2e-staging Playwright storageState files (e2e-staging/auth.setup.ts writes
+# these; e2e-staging/support/auth-storage.ts resolves the path). Each one
+# holds a live staging bearer token for the seeded guardian or admin, and this
+# repo is public: never committed, and deliberately NOT under test-results/,
+# the one directory .github/workflows/e2e-staging.yml uploads wholesale as a
+# Playwright-failure artifact.
+e2e-staging/.auth/
+
 # Generated API client: TRACKED, not ignored. It is committed build output
 # (regenerate with `npm run generate-client`) so a CI drift check has a
 # baseline to diff against; see docs/template_feedback.md "Generated API

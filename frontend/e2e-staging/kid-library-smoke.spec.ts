@@ -1,7 +1,8 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
-import { signInAsStagingTestUser, unlockParentalGateIfPresent } from './support/auth'
+import { unlockParentalGateIfPresent } from './support/auth'
+import { stagingStorageStatePath } from './support/auth-storage'
 import {
   createDeviceGrantMintState,
   readPersistedGrantId,
@@ -20,6 +21,13 @@ import { gotoResilient, paceNavigation } from '../e2e-support/rate-limit'
  * inventing a new one; unlike prod's seeded kid (who has no assigned
  * stories), staging's "Test Reader" has two published stories, so this also
  * confirms the library renders populated content, not just an empty state.
+ *
+ * `beforeAll` restores a pre-authenticated guardian session
+ * (`stagingStorageStatePath('guardian')`) rather than signing in through the
+ * login form; the tier's sign-ins now happen once each, up front, in
+ * `e2e-staging/auth.setup.ts`. The device-grant mint and revoke below are
+ * unaffected: they are real writes this spec still performs against staging,
+ * only the guardian's own authentication is now reused rather than repeated.
  */
 const DEVICE_GRANT_KEY = 'device_grant'
 const TEST_KID_NAME = 'Test Reader'
@@ -39,8 +47,7 @@ test.describe('kid library via a real device grant on staging', () => {
   const grantState = createDeviceGrantMintState()
 
   test.beforeAll(async ({ browser }) => {
-    sharedPage = await browser.newPage()
-    await signInAsStagingTestUser(sharedPage, 'guardian')
+    sharedPage = await browser.newPage({ storageState: stagingStorageStatePath('guardian') })
   })
 
   test.afterAll(async () => {

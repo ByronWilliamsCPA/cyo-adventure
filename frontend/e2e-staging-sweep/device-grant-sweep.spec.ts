@@ -1,7 +1,5 @@
 import { expect, test } from '@playwright/test'
 
-import { signInAsStagingTestUser } from '../e2e-staging/support/auth'
-
 /**
  * Authoritative end-of-job device-grant sweep for the staging tier.
  *
@@ -55,11 +53,14 @@ import { signInAsStagingTestUser } from '../e2e-staging/support/auth'
  */
 test.describe('staging device-grant sweep', () => {
   test('the test guardian family holds no active device grant after the tier', async ({ page }) => {
-    // A sign-in failure (wrong password, sustained 429, staging down) throws
-    // out of this helper and fails the spec. That is correct and deliberate:
-    // an unlistable family is an unproven family.
-    await signInAsStagingTestUser(page, 'guardian')
-
+    // No sign-in here: `page` was created from `playwright.e2e-staging-sweep.config.ts`'s
+    // `storageState`, a guardian session `playwright.e2e-staging.config.ts`'s
+    // `staging-auth-setup` project authenticated earlier in the same job. If
+    // that setup never ran or failed (wrong password, sustained 429, staging
+    // down), the storageState file does not exist and Playwright fails this
+    // test's context creation before reaching this line. That is correct and
+    // deliberate: an unlistable family is an unproven family, whether the
+    // failure surfaces here or at context creation.
     const result = await page.evaluate(async () => {
       const token = window.localStorage.getItem('auth_token')
       if (token === null) {

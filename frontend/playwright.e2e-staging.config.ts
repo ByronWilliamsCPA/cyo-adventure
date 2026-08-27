@@ -16,20 +16,29 @@ import { requireStagingBaseUrl } from './e2e-staging/support/staging-env'
 export default defineConfig({
   testDir: './e2e-staging',
   // Left at 30s, unlike the prod tier's deliberately-sized 45s. The arithmetic
-  // is different, not overlooked: this tier has 26 timeout-bearing units (20
-  // tests plus 6 beforeAll hooks, 5 of which sign in), so a fully-hung first
-  // pass costs 780s against the workflow's 1500s budget, with room for
-  // checkout, npm ci, playwright install, and the separate 60s device-grant
-  // sweep the same job runs afterwards. The prod tier exceeded its
-  // (then-identical 900s) budget on the first pass, which is why only that one
-  // was resized.
+  // is different, not overlooked: this tier has 28 timeout-bearing units (20
+  // tests plus 6 beforeAll hooks, plus the 2 `staging-auth-setup` tests below),
+  // so a fully-hung first pass costs 840s against the workflow's 1500s budget,
+  // with room for checkout, npm ci, playwright install, and the separate 60s
+  // device-grant sweep the same job runs afterwards. The prod tier exceeded
+  // its (then-identical 900s) budget on the first pass, which is why only
+  // that one was resized.
+  //
+  // The 6 beforeAll hooks no longer sign in (they load a pre-authenticated
+  // `storageState` instead, see `staging-auth-setup` below); the tier's only
+  // two sign-ins now live in that setup project's own 2 tests, which is why
+  // this recount adds 2 units rather than replacing 5. See
+  // `e2e-staging/auth.setup.ts` for the full rationale: consolidating every
+  // sign-in into one setup project, run once per role, is what stops the
+  // main tier and the separate sweep step from competing for the same
+  // server-side per-IP rate-limit window across two `npm run` invocations.
   //
   // Per spec, so the next recount starts from a diff rather than a re-read:
-  // guardian-admin-smoke 9 tests + 2 hooks, kid-library-smoke 3 + 1,
-  // moderation-qa-invisibility 4 + 2, kws-public-urls 4 + 1. `afterAll`
-  // teardown hooks are deliberately outside this model (there are 6 of them
-  // today); they are bounded cleanup that runs after the units they follow,
-  // and the headroom above absorbs them.
+  // staging-auth-setup 2 tests (the tier's only two sign-ins), guardian-admin-smoke
+  // 9 tests + 2 hooks, kid-library-smoke 3 + 1, moderation-qa-invisibility 4 + 2,
+  // kws-public-urls 4 + 1. `afterAll` teardown hooks are deliberately outside
+  // this model (there are 6 of them today); they are bounded cleanup that runs
+  // after the units they follow, and the headroom above absorbs them.
   //
   // Adding a spec? Recount the units and redo this arithmetic plus the retry
   // note below; the workflow budget has now been raised twice, 15 -> 20
@@ -41,8 +50,8 @@ export default defineConfig({
   // that e2e-support/rate-limit.ts absorbs rate limits inside the helpers: a
   // 429 is retried in-test and never reaches Playwright, so this retry only
   // ever replays a genuine flake, not a limiter that a replay would feed.
-  // Worst case (every unit hanging on both attempts) is 1560s, which exceeds
-  // the 1500s job budget by two units; such a run is already reporting failure
+  // Worst case (every unit hanging on both attempts) is 1680s, which exceeds
+  // the 1500s job budget by six units; such a run is already reporting failure
   // on every test, so the job timeout truncating its tail costs nothing, and
   // sizing the budget for that pathology would only delay the red signal.
   retries: process.env.CI ? 1 : 0,
@@ -57,5 +66,23 @@ export default defineConfig({
     baseURL: requireStagingBaseUrl(),
     trace: 'retain-on-failure',
   },
-  projects: [{ name: 'e2e-staging', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    {
+      // Signs in as the seeded guardian, then the seeded admin, and writes
+      // each session's `storageState` to `e2e-staging/.auth/`
+      // (`e2e-staging/support/auth-storage.ts`). Matched by `testMatch`, not
+      // the default spec/test glob, so `e2e-staging` below never picks
+      // `auth.setup.ts` up as an ordinary test; mirrors the existing
+      // `real-backend-setup` pattern in `playwright.config.ts`.
+      name: 'staging-auth-setup',
+      testDir: './e2e-staging',
+      testMatch: /auth\.setup\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'e2e-staging',
+      dependencies: ['staging-auth-setup'],
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ],
 })
