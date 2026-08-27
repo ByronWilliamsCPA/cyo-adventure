@@ -205,16 +205,50 @@ jobs:
             // Search API is a genuinely different endpoint, not a re-inlined
             // copy of that pattern, and `is:issue` excludes pull requests
             // server-side rather than needing a client-side filter.
+            //
+            // #EDGE: external-resource: the search index lags the primary
+            // issue store, so a tracking issue filed moments before this
+            // lookup runs may not be returned yet. The error direction is
+            // safe: a stale index can only produce a false "no open issue"
+            // (over-reporting self-alerts-but-no-open-issue for an issue that
+            // does in fact exist), never a false "tracked" claim about an
+            // issue that does not exist. Do not "optimise" this into treating
+            // an empty result as proof the workflow filed nothing; it is only
+            // proof the index had not caught up yet.
+            // #VERIFY: file an issue matching a KNOWN_ALERTS marker/label
+            // combination and re-run this workflow immediately; a stale-index
+            // false negative here is an accepted, safe outcome, a false
+            // "tracked" is not and would indicate this reasoning is wrong.
             async function findTrackingIssue(file) {
               const known = KNOWN_ALERTS[file];
               if (!known) {
                 return { status: 'untracked' };
               }
               const query = `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open label:"${known.label}"`;
-              const results = await github.paginate(github.rest.search.issuesAndPullRequests, {
-                q: query,
-                per_page: 100,
-              });
+              // #CRITICAL: external-resource: the Search API's secondary rate
+              // limit (~30 requests/minute) is far tighter than the core
+              // API's, and one run of this workflow surveys ~23 workflows. An
+              // unguarded call here throws on throttling and would abort the
+              // whole script before `has_escalations` is ever set, silently
+              // discarding the correctly-computed escalation report over a
+              // purely cosmetic annotation. A failed lookup must degrade only
+              // THIS workflow's tracking status to an explicit unknown, never
+              // to "untracked" and never to "tracked", and must never stop
+              // the rest of the survey.
+              // #VERIFY: .github/workflows/test/health-rollup.test.mjs makes
+              // this call throw unconditionally and asserts the escalation
+              // report is still produced, with this workflow's line reading
+              // "tracking unknown (lookup failed)".
+              let results;
+              try {
+                results = await github.paginate(github.rest.search.issuesAndPullRequests, {
+                  q: query,
+                  per_page: 100,
+                });
+              } catch (error) {
+                core.warning(`tracking lookup for ${file} failed: ${error.message || error}`);
+                return { status: 'lookup-failed' };
+              }
               const match = results.find((issue) => issue.title.startsWith(known.titlePrefix));
               if (match) {
                 return { status: 'tracked', issue: match };
@@ -335,6 +369,9 @@ jobs:
               }
               if (tracking.status === 'self-alerts-but-no-open-issue') {
                 return 'this workflow files its own tracking issue on failure, but none is currently open; check whether the marker or title changed';
+              }
+              if (tracking.status === 'lookup-failed') {
+                return 'tracking unknown (lookup failed): the escalation above is still real, only the tracking-issue search could not be confirmed this run';
               }
               return `**NOT TRACKED**: no per-workflow failure-alert step is known for \`.github/workflows/${file}\``;
             }
