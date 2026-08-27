@@ -31,7 +31,7 @@ from scripts.retrofit_personalization import (
     RetrofitPlan,
     RetrofitSkippedError,
     SkeletonNotFoundError,
-    _assert_gate_neutral,
+    _assert_gate_no_worse,
     _assert_only_wrappers_added,
     document_surfaces,
     load_skeleton,
@@ -170,13 +170,18 @@ def test_altered_prose_is_rejected_even_when_it_looks_like_a_wrapper() -> None:
         _assert_only_wrappers_added(before, dropped)
 
 
-def test_gate_neutrality_guard_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
-    """A retrofit that changes the validation verdict is rejected.
+def test_gate_guard_fails_closed_on_an_introduced_finding(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A retrofit that ADDS a validation finding is rejected.
 
     Stubs the gate rather than hunting for a book that trips it: the guard's
-    job is to stop the write on any difference, and that behaviour is what
-    needs proving. A real difference has never been observed, which is
-    exactly why the guard cannot be left untested.
+    job is to stop the write when the transform makes validation worse, and
+    that behaviour is what needs proving. No book has ever been observed
+    introducing a finding, which is exactly why the guard cannot be left
+    untested. Removal is the opposite direction and is now permitted; see
+    ``test_a_finding_the_retrofit_retires_is_permitted`` for why, and for the
+    proof that the two directions really are treated differently.
 
     Args:
         monkeypatch: Pytest's patching fixture.
@@ -206,14 +211,14 @@ def test_gate_neutrality_guard_fails_closed(monkeypatch: pytest.MonkeyPatch) -> 
         return _Result(["L1-1"]) if len(calls) == 1 else _Result(["L1-1", "PL-17"])
 
     monkeypatch.setattr(module, "run_gate", _drifting_gate)
-    with pytest.raises(ValidationError, match="changed the validation gate"):
-        _assert_gate_neutral({}, {})
+    with pytest.raises(ValidationError, match="worsened the validation gate"):
+        _assert_gate_no_worse({}, {})
 
 
-def test_gate_neutrality_guard_returns_the_refreshed_report(
+def test_gate_guard_returns_the_refreshed_report(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """A neutral gate hands back the refreshed report instead of discarding it.
+    """An unchanged gate hands back the refreshed report instead of discarding it.
 
     The write path persists this as ``validation_report`` so the stored
     report describes the blob actually stored.
@@ -236,7 +241,100 @@ def test_gate_neutrality_guard_returns_the_refreshed_report(
             self.blocked = False
 
     monkeypatch.setattr(module, "run_gate", lambda *_a, **_k: _Result())
-    assert _assert_gate_neutral({}, {}) == {"ok": True, "findings": []}
+    assert _assert_gate_no_worse({}, {}) == {"ok": True, "findings": []}
+
+
+def test_a_finding_the_retrofit_retires_is_permitted(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A retrofit that REMOVES a finding proceeds, and stores the smaller report.
+
+    #VERIFY for the ``#CRITICAL`` data-integrity tag on
+    ``_assert_gate_no_worse``. This is not a hypothetical direction: PN-1
+    exempts the protagonist by reading the ``HERO`` sentinel, and installing
+    that sentinel is what this script does, so every book whose prose named
+    its hero flatly loses a PN-1 finding to the retrofit. Measured on
+    ``the-backyard-treasure-map``, PN-1 reports ``Nina``, ``Pepper`` and
+    ``Theo`` before and ``Pepper`` and ``Theo`` after, ``Nina`` being the
+    contract's pinned ``HERO`` binding; under the previous equality check
+    that book stopped with ``findings delta ['PN-1']``.
+
+    Paired with ``test_gate_guard_fails_closed_on_an_introduced_finding``,
+    which feeds the same guard the same rule ids in the opposite order, this
+    proves the guard discriminates by DIRECTION rather than having been
+    relaxed into accepting any difference.
+
+    Args:
+        monkeypatch: Pytest's patching fixture.
+    """
+    import scripts.retrofit_personalization as module
+
+    class _Finding:
+        def __init__(self, rule_id: str) -> None:
+            self.rule_id = rule_id
+
+    class _Report:
+        def __init__(self, rule_ids: list[str]) -> None:
+            self.findings = [_Finding(rule_id) for rule_id in rule_ids]
+
+        def to_dict(self) -> dict[str, object]:
+            return {"ok": True, "findings": [f.rule_id for f in self.findings]}
+
+    class _Result:
+        def __init__(self, rule_ids: list[str]) -> None:
+            self.report = _Report(rule_ids)
+            self.blocked = False
+
+    calls: list[int] = []
+
+    def _retiring_gate(_data: object, **_kwargs: object) -> _Result:
+        calls.append(1)
+        return _Result(["L1-1", "PN-1"]) if len(calls) == 1 else _Result(["L1-1"])
+
+    monkeypatch.setattr(module, "run_gate", _retiring_gate)
+
+    # The report handed back describes the AFTER document, so the retired
+    # finding must be absent from what the write path persists.
+    assert _assert_gate_no_worse({}, {}) == {"ok": True, "findings": ["L1-1"]}
+
+
+def test_a_retrofit_that_newly_blocks_is_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Blocking is refused in the bad direction even with no new finding.
+
+    The finding multiset and the blocked verdict are separate arms of the
+    guard. A stub that keeps the rule ids identical while flipping
+    ``blocked`` false to true isolates the second arm, so the direction
+    check on findings cannot be the only thing standing between a retrofit
+    and a newly unpublishable book.
+
+    Args:
+        monkeypatch: Pytest's patching fixture.
+    """
+    import scripts.retrofit_personalization as module
+
+    class _Report:
+        def __init__(self) -> None:
+            self.findings: list[object] = []
+
+        def to_dict(self) -> dict[str, object]:
+            return {"ok": True, "findings": []}
+
+    class _Result:
+        def __init__(self, *, blocked: bool) -> None:
+            self.report = _Report()
+            self.blocked = blocked
+
+    calls: list[int] = []
+
+    def _newly_blocking_gate(_data: object, **_kwargs: object) -> _Result:
+        calls.append(1)
+        return _Result(blocked=len(calls) != 1)
+
+    monkeypatch.setattr(module, "run_gate", _newly_blocking_gate)
+    with pytest.raises(ValidationError, match="worsened the validation gate"):
+        _assert_gate_no_worse({}, {})
 
 
 def test_a_manifest_that_does_not_describe_the_document_is_rejected(

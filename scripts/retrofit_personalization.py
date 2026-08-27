@@ -36,9 +36,20 @@ book without touching the rest of the sweep:
 4. The produced manifest must actually describe the produced document
    (``verify_manifest``), since the two are persisted together and
    ``personalization_eligible`` is derived from the manifest alone.
-5. The deterministic validation gate must return the same finding multiset
-   AND the same blocked verdict before and after, so a retrofit can never be
-   the reason a book starts failing validation.
+5. The deterministic validation gate must not report a finding the stored
+   blob did not already carry, and must not newly block, so a retrofit can
+   never be the reason a book starts failing validation. That comparison is
+   directional rather than an equality, deliberately: PN-1
+   (``validator/naming.py``) exempts the protagonist by reading the ``HERO``
+   sentinel, so installing that sentinel is precisely what retires PN-1's
+   finding on the hero's own name, and installing it is this transform's
+   entire purpose. Measured on ``the-backyard-treasure-map``, PN-1 reports
+   ``Nina``, ``Pepper`` and ``Theo`` against the stored blob and ``Pepper``
+   and ``Theo`` afterwards, where ``Nina`` is the contract's pinned ``HERO``
+   binding. An equality check read that improvement as a failure and stopped
+   the book. A removal cannot be prose loss wearing a weaker check, because
+   invariant 3 has already proven every surface byte-identical modulo
+   wrappers.
 
 Dry run is the default and writes nothing.
 """
@@ -130,7 +141,7 @@ class RetrofitPlan:
             wrapped in its canonical sentinel.
         manifest: The at-rest sentinel manifest derived from ``document``.
         validation_report: The refreshed deterministic gate report for
-            ``document``, computed by :func:`_assert_gate_neutral` and
+            ``document``, computed by :func:`_assert_gate_no_worse` and
             persisted alongside the blob rather than discarded.
         personalizable_slots: The contract's declared personalizable slot
             ids. Carried so the write path can ask the import path's exact
@@ -323,10 +334,32 @@ def _assert_only_wrappers_added(
             raise ValidationError(msg)
 
 
-def _assert_gate_neutral(
+def _assert_gate_no_worse(
     before: Mapping[str, object], after: Mapping[str, object]
 ) -> dict[str, object]:
-    """Fail closed unless the validation gate is indifferent to the retrofit.
+    """Fail closed unless the retrofit leaves the gate no worse than it found it.
+
+    #CRITICAL: data integrity: this comparison is DIRECTIONAL, and an
+    equality here would be wrong rather than merely strict. A rule whose
+    verdict reads the sentinel manifest instead of the prose alone is not
+    invariant under a sentinel-installing transform, and PN-1
+    (``validator/naming.py``) is the first such rule: its protagonist
+    exemption keys on the ``HERO`` sentinel, chosen over any frequency
+    heuristic because a share-based rule would have exempted the very defect
+    PN-1 exists to catch (`AL-639`). Installing that sentinel is what this
+    whole script does, so the retrofit RETIRES PN-1's finding on the hero's
+    own name on every book whose prose named the hero flatly. Under an
+    equality check that improvement stopped the book. Retaining the
+    guarantee that matters, "a retrofit can never be the reason a book
+    starts failing validation", means refusing an INTRODUCED finding and a
+    newly blocked verdict while permitting a retired one. What makes the
+    permission safe is not this function: ``_assert_only_wrappers_added``
+    has already proven every surface byte-identical once sentinels are
+    stripped, so a retired finding cannot be prose loss in disguise.
+    #VERIFY: tests/unit/test_retrofit_personalization.py::
+    #   test_a_finding_the_retrofit_retires_is_permitted proves the
+    #   direction, and ::test_gate_guard_fails_closed_on_an_introduced_finding
+    #   proves the refusal still fires.
 
     Args:
         before: The stored blob.
@@ -335,23 +368,25 @@ def _assert_gate_neutral(
     Returns:
         dict[str, object]: The refreshed report for ``after``. Returned
         rather than discarded so the write path can persist a
-        ``validation_report`` that describes the blob actually stored; the
-        two verdicts are proven identical above, so this is the same
-        verdict, freshly serialized against the new document.
+        ``validation_report`` that describes the blob actually stored, which
+        matters more now that the two reports may legitimately differ: the
+        stored report must name the findings the STORED document carries,
+        not the retired ones.
 
     Raises:
-        ValidationError: If the finding multiset or the blocked verdict
-            changed.
+        ValidationError: If the gate reports a finding the stored blob did
+            not carry, or blocks a document that previously passed.
     """
     old = run_gate(before, context="fill_result")
     new = run_gate(after, context="fill_result")
     old_rules = Counter(finding.rule_id for finding in old.report.findings)
     new_rules = Counter(finding.rule_id for finding in new.report.findings)
-    if old_rules != new_rules or old.blocked != new.blocked:
-        delta = sorted((new_rules - old_rules) + (old_rules - new_rules))
+    introduced = new_rules - old_rules
+    if introduced or (new.blocked and not old.blocked):
         msg = (
-            f"retrofit changed the validation gate: blocked "
-            f"{old.blocked} -> {new.blocked}, findings delta {delta}"
+            f"retrofit worsened the validation gate: blocked "
+            f"{old.blocked} -> {new.blocked}, findings introduced "
+            f"{sorted(introduced.elements())}"
         )
         raise ValidationError(msg)
     return new.report.to_dict()
@@ -432,7 +467,7 @@ def plan_retrofit(
             "account for; refusing to persist the pair"
         )
         raise ValidationError(msg)
-    validation_report = _assert_gate_neutral(blob, outcome.document)
+    validation_report = _assert_gate_no_worse(blob, outcome.document)
 
     statuses = Counter(token.status for token in outcome.token_outcomes)
     return RetrofitPlan(
