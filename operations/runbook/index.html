@@ -4823,16 +4823,49 @@ and any deviation found, and flip the roadmap's Phase 5 "backups and a tested re
 only after that drill succeeds.</p>
 </blockquote>
 <h2 id="7-how-you-find-out-something-broke">7. How you find out something broke<a class="headerlink" href="#7-how-you-find-out-something-broke" title="Permanent link">&para;</a></h2>
-<p>Every alerting scheduled job follows the same pattern: on failure, find-or-open a GitHub issue whose
-title starts with a workflow-specific marker, and comment on it with the failing run's URL and date,
-rather than leaving a red run nobody checks the Actions tab for. The issue stays open and accumulates
-one comment per failing run until someone resolves the underlying problem and closes it (a fresh
-issue opens after the next failure). There is no other outbound channel: no Slack, email, or pager
-integration is wired up, so <strong>watch (or filter Issues by) both labels</strong> below to be notified through
-GitHub's native issue notifications.</p>
+<p>Every alerting scheduled job now routes through ONE implementation,
+<code>.github/actions/ci-failure-issue</code>.
+On failure it finds-or-opens a GitHub issue whose title starts with a workflow-specific marker and
+comments on it; on a green scheduled run it CLOSES that issue. There is no other outbound channel:
+no Slack, email, or pager integration is wired up.</p>
+<p>Three things about that are worth knowing before you read either label:</p>
+<ul>
+<li><strong>Assignment is the notification, not the comment.</strong> A comment on an issue notifies subscribers and
+  participants only, and these issues are opened by a bot with no human participant. Every issue is
+  therefore assigned (<code>williaby</code> by default). GitHub silently ignores an assignee who lacks push
+  access and still returns success, so the action re-reads the assignees off its own response and
+  FAILS THE STEP when the login was dropped. A red alerting step means "nobody was told", and it is
+  the more urgent of the two failures.</li>
+<li><strong>An open issue means a CURRENTLY failing workflow.</strong> Since 2026-08-27 a green scheduled run closes
+  the issue automatically (<code>mode: resolve</code>). Before that, closing was a sentence in the issue body
+  asking a human to do it, nobody ever did, and the labels accumulated stale issues until a new alert
+  was indistinguishable from backlog. Reading either label as a live list is only valid because of
+  that change.</li>
+<li><strong>A resolve leg is gated on <code>github.event_name == 'schedule'</code>.</strong> A green manual run proves a human
+  can make the job pass, not that the cron is alive: a scheduled run cancelled at a
+  <code>cancel-in-progress: false</code> concurrency gate dispatches zero jobs and reports nothing at all. That
+  is not hypothetical, see <a href="#6-backup-and-restore">section 6</a> and issue #667.</li>
+</ul>
 <p>The label splits by what kind of job it is, which is deliberate rather than historical accident:
-<code>e2e-alert</code> for the E2E tiers, <code>ci-failure</code> for ops and quality jobs. <code>grep -rn "labels: '" .github/workflows/</code>
-lists the current producers of each; the two E2E tiers are:</p>
+<code>e2e-alert</code> for the browser-facing scans, <code>ci-failure</code> for ops and quality jobs. <strong>Watch (or filter
+Issues by) both.</strong></p>
+<p>To list the current producers:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Every workflow that files or resolves a tracking issue (14 as of 2026-08-27).</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="c1"># Match on `uses:`, not on the path alone: ci.yml names the same directory to run</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="c1"># the action&#39;s test harness and is not a producer.</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>grep<span class="w"> </span>-rln<span class="w"> </span><span class="s1">&#39;uses: ./.github/actions/ci-failure-issue&#39;</span><span class="w"> </span>.github/workflows/
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="c1"># Which label and marker each one uses. A call site with no `label:` line uses</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="c1"># the action&#39;s default, `ci-failure`.</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>grep<span class="w"> </span>-rn<span class="w"> </span>-A6<span class="w"> </span><span class="s1">&#39;uses: ./.github/actions/ci-failure-issue&#39;</span><span class="w"> </span>.github/workflows/<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="w">  </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;marker:|label:|mode:&#39;</span>
+</span></code></pre></div>
+<p>Do NOT grep for <code>labels: '</code> here, which is what this section used to say. The label is now an input
+to the composite action and eleven of the fourteen workflows do not pass it at all, so that grep
+returns a near-empty list that reads exactly like "almost nothing alerts". <code>tests/unit/test_ci_failure_action_contract.py</code>
+enforces the invariants the commands above only report on: markers stay unique and mutually
+non-prefixing, both labels stay in use, and no workflow re-inlines the lookup.</p>
+<p>Three workflows use <code>e2e-alert</code>. The two E2E tiers are:</p>
 <ul>
 <li><strong><code>.github/workflows/e2e-prod.yml</code></strong> ("E2E (production)"): runs the Playwright <code>e2e-prod</code> tier
   daily (<code>30 13 * * *</code> UTC) against the live production URL (<code>https://cyo.williamshome.family</code> by
@@ -4845,7 +4878,12 @@ lists the current producers of each; the two E2E tiers are:</p>
   devices racing a genuine 409 through the offline conflict dialog) that the mocked test suite
   cannot. Its alert marker is <code>[e2e-real-nightly]</code>.</li>
 </ul>
-<p><code>e2e-staging.yml</code> ("E2E (staging)", daily at 13:00 UTC) is a third tier but is <strong>not</strong> on this list,
+<p>The third <code>e2e-alert</code> producer is <strong><code>.github/workflows/accessibility-compliance-weekly.yml</code></strong>
+("Accessibility compliance (weekly)"): a weekly, non-blocking axe scan against <code>main</code> covering WCAG
+2.2 and best-practice rules, per <a href="../../planning/adr/adr-029-web-accessibility-conformance/">ADR-029</a>.
+The per-PR WCAG 2.1 AA gate is a required <code>ci.yml</code> job instead, so a failure here is a compliance
+finding to triage, never a merge blocker. Its alert marker is <code>[a11y-weekly]</code>.</p>
+<p><code>e2e-staging.yml</code> ("E2E (staging)", daily at 13:00 UTC) is a third E2E tier but is <strong>not</strong> on this list,
 because it has no alerting step of any kind: a staging failure leaves a red run and a Playwright
 trace artifact, and nothing opens an issue. Nobody is notified unless they look. For the wider test
 strategy see <a href="../../testing/"><code>docs/testing/</code></a>; for a manual, checklist-driven live
@@ -4955,21 +4993,21 @@ Seven days and twenty-three commits passed before anyone noticed the release PRs
 <p><strong>Detection.</strong> <code>propose</code>'s "Check release state is in sync" step
 (<code>scripts/check_release_tag_sync.py</code>) now fails the run on exactly this condition, so a repeat
 surfaces on the next scheduled run rather than a week later. To check by hand:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nv">VERSION</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>grep<span class="w"> </span>-m1<span class="w"> </span>-Po<span class="w"> </span><span class="s1">&#39;^version = &quot;\K[^&quot;]+&#39;</span><span class="w"> </span>pyproject.toml<span class="k">)</span><span class="s2">&quot;</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>git<span class="w"> </span>ls-remote<span class="w"> </span>--tags<span class="w"> </span>origin<span class="w"> </span><span class="s2">&quot;v</span><span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># empty output means DEADLOCKED</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nv">VERSION</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>grep<span class="w"> </span>-m1<span class="w"> </span>-Po<span class="w"> </span><span class="s1">&#39;^version = &quot;\K[^&quot;]+&#39;</span><span class="w"> </span>pyproject.toml<span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>git<span class="w"> </span>ls-remote<span class="w"> </span>--tags<span class="w"> </span>origin<span class="w"> </span><span class="s2">&quot;v</span><span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># empty output means DEADLOCKED</span>
 </span></code></pre></div>
 <p><strong>Fix.</strong> Create the missing release on the <code>chore(release):</code> commit; the next scheduled <code>propose</code>
 then computes the following version normally. Prefer re-running the job that failed, so the real
 code path (including the changelog extraction) is what executes:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>gh<span class="w"> </span>run<span class="w"> </span>list<span class="w"> </span>--workflow<span class="o">=</span>release.yml<span class="w"> </span>--limit<span class="w"> </span><span class="m">20</span><span class="w">   </span><span class="c1"># find the failed run</span>
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>gh<span class="w"> </span>run<span class="w"> </span>rerun<span class="w"> </span>&lt;run-id&gt;<span class="w"> </span>--failed
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>gh<span class="w"> </span>release<span class="w"> </span>view<span class="w"> </span><span class="s2">&quot;v</span><span class="k">$(</span>grep<span class="w"> </span>-m1<span class="w"> </span>-Po<span class="w"> </span><span class="s1">&#39;^version = &quot;\K[^&quot;]+&#39;</span><span class="w"> </span>pyproject.toml<span class="k">)</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># confirm</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>gh<span class="w"> </span>run<span class="w"> </span>list<span class="w"> </span>--workflow<span class="o">=</span>release.yml<span class="w"> </span>--limit<span class="w"> </span><span class="m">20</span><span class="w">   </span><span class="c1"># find the failed run</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>gh<span class="w"> </span>run<span class="w"> </span>rerun<span class="w"> </span>&lt;run-id&gt;<span class="w"> </span>--failed
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>gh<span class="w"> </span>release<span class="w"> </span>view<span class="w"> </span><span class="s2">&quot;v</span><span class="k">$(</span>grep<span class="w"> </span>-m1<span class="w"> </span>-Po<span class="w"> </span><span class="s1">&#39;^version = &quot;\K[^&quot;]+&#39;</span><span class="w"> </span>pyproject.toml<span class="k">)</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># confirm</span>
 </span></code></pre></div>
 <p>Verify the unblock without side effects by dispatching a dry run, which computes the plan and skips
 only the PR-creation step:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>gh<span class="w"> </span>workflow<span class="w"> </span>run<span class="w"> </span>release.yml<span class="w"> </span>--ref<span class="w"> </span>main<span class="w"> </span>-f<span class="w"> </span><span class="nv">dry_run</span><span class="o">=</span><span class="nb">true</span>
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="c1"># expect a version AHEAD of pyproject&#39;s, e.g. &quot;Next version: v0.83.0 (current v0.82.0)&quot;.</span>
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="c1"># A &quot;nothing to do&quot; here means the deadlock is NOT cleared.</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>gh<span class="w"> </span>workflow<span class="w"> </span>run<span class="w"> </span>release.yml<span class="w"> </span>--ref<span class="w"> </span>main<span class="w"> </span>-f<span class="w"> </span><span class="nv">dry_run</span><span class="o">=</span><span class="nb">true</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="c1"># expect a version AHEAD of pyproject&#39;s, e.g. &quot;Next version: v0.83.0 (current v0.82.0)&quot;.</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="c1"># A &quot;nothing to do&quot; here means the deadlock is NOT cleared.</span>
 </span></code></pre></div>
 <p><strong>Note the deploy is not gated on any of this.</strong> The homelab stack force-pulls <code>:latest</code> on its own
 timer (section 1), so production ships the code whether or not the release was cut. A deadlock costs
@@ -5072,7 +5110,7 @@ deploy re-derives the same stale verdicts under the old rules, burns the LLM bud
 cheap way to fix it besides sweeping the same books again after the deploy actually lands.</p>
 <p>Post-sweep verification: prefer running the shared health predicate itself rather than
 re-implementing it in SQL:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nv">CYO_ADVENTURE_DATABASE_URL</span><span class="o">=</span>...<span class="w"> </span>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/check_moderation_report_health.py
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nv">CYO_ADVENTURE_DATABASE_URL</span><span class="o">=</span>...<span class="w"> </span>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/check_moderation_report_health.py
 </span></code></pre></div>
 <p>Exit 0 with no printed hits means no current published or in-review version anywhere in the catalog
 has a report <code>moderation/report.py::moderation_report_unusable</code> would flag (absent, malformed,
@@ -5085,19 +5123,19 @@ non-list <code>findings</code> value, a non-independent (mock) reviewer, or a st
 artifact carrying a different message. Treat it as a quick, narrower diagnostic for the
 fail-safe-specific case only, never as proof that <code>report_unusable</code> is false: run the script above
 for that.</p>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="k">select</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
-</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="k">from</span><span class="w"> </span><span class="n">storybook</span><span class="w"> </span><span class="n">s</span>
-</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="k">join</span><span class="w"> </span><span class="n">storybook_version</span><span class="w"> </span><span class="n">sv</span>
-</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">  </span><span class="k">on</span><span class="w"> </span><span class="n">sv</span><span class="p">.</span><span class="n">storybook_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">storybook_id</span>
-</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">sv</span><span class="p">.</span><span class="k">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
-</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="w">   </span><span class="k">select</span><span class="w"> </span><span class="k">max</span><span class="p">(</span><span class="n">v2</span><span class="p">.</span><span class="k">version</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">storybook_version</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">v2</span><span class="p">.</span><span class="n">storybook_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">storybook_id</span>
-</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="w"> </span><span class="p">)</span>
-</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="k">where</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;in_review&#39;</span>
-</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="w">  </span><span class="k">and</span><span class="w"> </span><span class="k">exists</span><span class="w"> </span><span class="p">(</span>
-</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="w">    </span><span class="k">select</span><span class="w"> </span><span class="mi">1</span>
-</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="w">    </span><span class="k">from</span><span class="w"> </span><span class="n">jsonb_array_elements</span><span class="p">(</span><span class="n">sv</span><span class="p">.</span><span class="n">moderation_report</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s1">&#39;findings&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">f</span>
-</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="w">    </span><span class="k">where</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">-&gt;&gt;</span><span class="w"> </span><span class="s1">&#39;message&#39;</span><span class="w"> </span><span class="k">like</span><span class="w"> </span><span class="s1">&#39;%defaulted to fail-safe%&#39;</span>
-</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="w">  </span><span class="p">);</span>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="k">select</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="k">from</span><span class="w"> </span><span class="n">storybook</span><span class="w"> </span><span class="n">s</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="k">join</span><span class="w"> </span><span class="n">storybook_version</span><span class="w"> </span><span class="n">sv</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">  </span><span class="k">on</span><span class="w"> </span><span class="n">sv</span><span class="p">.</span><span class="n">storybook_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">storybook_id</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">sv</span><span class="p">.</span><span class="k">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">   </span><span class="k">select</span><span class="w"> </span><span class="k">max</span><span class="p">(</span><span class="n">v2</span><span class="p">.</span><span class="k">version</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">storybook_version</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">v2</span><span class="p">.</span><span class="n">storybook_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">storybook_id</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="w"> </span><span class="p">)</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="k">where</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;in_review&#39;</span>
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="w">  </span><span class="k">and</span><span class="w"> </span><span class="k">exists</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="w">    </span><span class="k">select</span><span class="w"> </span><span class="mi">1</span>
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="w">    </span><span class="k">from</span><span class="w"> </span><span class="n">jsonb_array_elements</span><span class="p">(</span><span class="n">sv</span><span class="p">.</span><span class="n">moderation_report</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s1">&#39;findings&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">f</span>
+</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a><span class="w">    </span><span class="k">where</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">-&gt;&gt;</span><span class="w"> </span><span class="s1">&#39;message&#39;</span><span class="w"> </span><span class="k">like</span><span class="w"> </span><span class="s1">&#39;%defaulted to fail-safe%&#39;</span>
+</span><span id="__span-18-13"><a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a><span class="w">  </span><span class="p">);</span>
 </span></code></pre></div>
 <p>Expected: <code>0</code>, understood only as "no remaining <code>FAIL_SAFE_MESSAGE_SUBSTRING</code> hits," not as full
 proof of health; run <code>scripts/check_moderation_report_health.py</code> above for that. If any remain,
@@ -5199,8 +5237,8 @@ cutover; this section is.</strong></p>
    repo. Via the Supabase dashboard SQL editor (or <code>psql</code> against the project's direct
    connection, not the pooler):</li>
 </ol>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">cyo_api</span><span class="w"> </span><span class="n">LOGIN</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;&lt;generated-secret&gt;&#39;</span><span class="p">;</span>
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="n">LOGIN</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;&lt;generated-secret&gt;&#39;</span><span class="p">;</span>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">cyo_api</span><span class="w"> </span><span class="n">LOGIN</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;&lt;generated-secret&gt;&#39;</span><span class="p">;</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="n">LOGIN</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;&lt;generated-secret&gt;&#39;</span><span class="p">;</span>
 </span></code></pre></div>
 <p>Generate each password independently (do not reuse one password across roles or
    environments); store both in the environment's existing secrets mechanism (GitHub
@@ -5302,9 +5340,9 @@ posture line is filtered out before it is written. That is the same rule
 reason. Do not "quiet down" the affirmative line to INFO: doing so turns a successful cutover
 back into silence and makes it indistinguishable from a worker running an image with no probe.</p>
 <p><strong>Alert on either of these, not just the bypass event:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>event == &quot;generation_worker.role_bypasses_rls&quot;
-</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>  OR (event == &quot;generation_worker.role_least_privileged&quot;
-</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>      AND worker_dsn_explicitly_set == false)
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>event == &quot;generation_worker.role_bypasses_rls&quot;
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>  OR (event == &quot;generation_worker.role_least_privileged&quot;
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>      AND worker_dsn_explicitly_set == false)
 </span></code></pre></div>
 <p>The second clause is not redundant. When <code>CYO_ADVENTURE_WORKER_DATABASE_URL</code> is unset the worker
 falls back to the API DSN and connects as <code>cyo_api</code>, which has <code>rolbypassrls = false</code> and owns no
@@ -5364,9 +5402,9 @@ PR, also add:</p>
    migration following the same shape if that file has already shipped to production).</li>
 <li>A matching <code>service_rw</code> policy:</li>
 </ol>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="k">DROP</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span><span class="p">;</span>
-</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span>
-</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">  </span><span class="k">FOR</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">cyo_api</span><span class="p">,</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">)</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="k">DROP</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span><span class="p">;</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">  </span><span class="k">FOR</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">cyo_api</span><span class="p">,</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">)</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
 </span></code></pre></div>
 <ol>
 <li>No <code>anon</code>/<code>authenticated</code> grant or policy, matching the deny-by-default posture
@@ -5402,7 +5440,7 @@ because that test is currently the only thing that would notice.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 26, 2026 02:22:48 UTC">August 26, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 27, 2026 20:47:46 UTC">August 27, 2026</span>
   </span>
 
     
