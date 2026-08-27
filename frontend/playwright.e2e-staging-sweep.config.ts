@@ -63,6 +63,11 @@ export default defineConfig({
     // #CRITICAL: security: the guardian bearer this project authenticates
     // with, restored from `stagingStorageStatePath('guardian')`'s
     // pre-authenticated storageState file rather than a fresh sign-in.
+    // #VERIFY: this path must stay inside the gitignored
+    // `frontend/e2e-staging/.auth/` directory (see `frontend/.gitignore`) and
+    // outside `frontend/test-results/`, which is the only directory the
+    // staging workflow uploads as an artifact. Re-check both if either the
+    // path helper or an `upload-artifact` glob changes.
     storageState: stagingStorageStatePath('guardian'),
     // #CRITICAL: security: traces off, unlike the tier's 'retain-on-failure'.
     // This repo is PUBLIC, so a workflow artifact is downloadable by anyone

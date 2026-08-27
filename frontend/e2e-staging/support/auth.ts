@@ -33,7 +33,9 @@ const CONSENT_SIGNER_NAME = 'Staging E2E Test Guardian'
  * Called exactly twice per staging job now, both from
  * `e2e-staging/auth.setup.ts` (once per role), not from the specs
  * themselves. Before that setup project existed, this ran once per spec file
- * per role (five call sites across the tier's four spec files) plus once more
+ * per role (five call sites across three of the tier's four spec files;
+ * `kws-public-urls.spec.ts` exercises unauthenticated URLs and never signed
+ * in) plus once more
  * in the separate device-grant sweep's own `npm run` invocation, six sign-ins
  * total against one runner IP across two processes that could not coordinate
  * their spend against the same server-side rate-limit window; that volume,
