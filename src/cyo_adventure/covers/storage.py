@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import re
 from typing import TYPE_CHECKING
 
 import boto3
@@ -32,6 +33,15 @@ _UPLOAD_TIMEOUT_SECONDS = 30.0
 # for a family paging through a library of covers.
 # #VERIFY: test_cover_storage.py::test_presigned_url_expires_in_one_hour.
 _PRESIGNED_URL_TTL_SECONDS = 3600
+
+
+# A Cloudflare account id becomes the leftmost label of the R2 endpoint hostname
+# below, so it must be a legal DNS label. Duplicated from
+# ``scripts/backup_database.py::_ACCOUNT_ID_RE`` rather than shared: that script must
+# run standalone in CI with only the ``api`` extra installed and cannot import from
+# this package (see the note on ``_r2_endpoint_url`` there). Keep the two in step.
+# ``fullmatch`` rather than ``match``: ``$`` also matches before a trailing newline.
+_ACCOUNT_ID_RE = re.compile(r"^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$")
 
 
 def _r2_endpoint_url(account_id: str) -> str:
@@ -93,7 +103,8 @@ def _require_r2_configured(
             does not, since it never constructs a public URL.
 
     Raises:
-        CoverGenerationError: If R2 is not fully configured.
+        CoverGenerationError: If R2 is not fully configured, or if
+            ``r2_account_id`` cannot be a hostname label.
     """
     if (
         not settings.r2_account_id
@@ -106,6 +117,24 @@ def _require_r2_configured(
         if require_public_base_url:
             fields += " / R2_PUBLIC_BASE_URL"
         msg = f"R2 cover storage is not configured ({fields})"
+        raise CoverGenerationError(msg)
+
+    # #CRITICAL: external resources: without this, a malformed account id is
+    # interpolated into the endpoint hostname and boto3 reports only
+    # `Invalid endpoint: https://***.r2.cloudflarestorage.com`, where `***` is the
+    # deployment's secret mask. That message cannot tell an operator whether the
+    # value carries a stray space or is a whole URL pasted into the id field, which
+    # is the exact failure that cost `scripts/backup_database.py` two dispatches to
+    # diagnose on 2026-08-27. Raising here rather than in a Settings validator keeps
+    # the blast radius on cover art: `settings = Settings()` runs at import.
+    # #VERIFY: tests/unit/test_cover_storage.py::test_upload_cover_rejects_a_malformed_account_id
+    if not _ACCOUNT_ID_RE.fullmatch(settings.r2_account_id):
+        msg = (
+            "R2_ACCOUNT_ID is not a valid hostname label, so no R2 endpoint can be "
+            f"built from it (it holds {len(settings.r2_account_id)} characters). A "
+            "Cloudflare account id is 32 lowercase hex characters: copy it from the "
+            "R2 dashboard sidebar, not the S3 API endpoint URL."
+        )
         raise CoverGenerationError(msg)
 
 

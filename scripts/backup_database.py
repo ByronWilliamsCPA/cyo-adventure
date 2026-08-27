@@ -412,6 +412,140 @@ def _build_client(
     )
 
 
+# Every value main() needs from the environment. Kept as a tuple so the read loop can
+# report all six, rather than failing on the first and hiding the rest.
+_REQUIRED_ENV_VARS = (
+    "SUPABASE_DB_URL",
+    "R2_ACCOUNT_ID",
+    "R2_BACKUP_ACCESS_KEY_ID",
+    "R2_BACKUP_SECRET_ACCESS_KEY",
+    "R2_BACKUP_BUCKET",
+    "BACKUP_ENCRYPTION_KEY",
+)
+
+
+def _require_env(name: str) -> str:
+    """Read a required configuration value from the environment, whitespace-trimmed.
+
+    # #CRITICAL: data integrity: every value this reads is pasted into a GitHub
+    # secret by hand, and a leading space or trailing newline survives that paste.
+    # GitHub masks the *trimmed* secret value in logs, so the stray character is
+    # invisible in the run output: a leading space in ``R2_ACCOUNT_ID`` surfaced only
+    # as ``Invalid endpoint: https:// ***.r2.cloudflarestorage.com`` on 2026-08-27,
+    # after the workflow had been unable to complete a single run for weeks. None of
+    # these values can legitimately carry leading or trailing whitespace.
+    # #VERIFY: strip before use, and treat an empty result as absent. Covered by
+    # tests/unit/test_backup_database.py::test_main_strips_whitespace_around_every_configuration_value
+    # and ::test_main_rejects_a_variable_that_is_present_but_blank.
+
+    The empty-string case is not hypothetical either. ``env: X: ${{ secrets.Y }}``
+    renders an *undefined* secret as the empty string rather than omitting the
+    variable, so from inside the job a missing repository or environment secret is
+    indistinguishable from a blank one, and ``os.environ[name]`` never raises. Both
+    arms have to be rejected here or the failure lands somewhere downstream that
+    cannot name the variable responsible.
+
+    Args:
+        name: The environment variable to read.
+
+    Returns:
+        The value with surrounding whitespace removed.
+
+    Raises:
+        ValueError: If the variable is unset, empty, or whitespace-only. The message
+            names the variable but never echoes its value: four of the six callers
+            pass authentication material (the database URL, both R2 keys, and the
+            encryption key), and the other two are identifiers that still should not
+            be echoed.
+    """
+    raw = os.environ.get(name)
+    if raw is None:
+        msg = f"{name} is not set"
+        raise ValueError(msg)
+    value = raw.strip()
+    if not value:
+        msg = (
+            f"{name} is set but empty. An undefined GitHub secret renders as an "
+            "empty string, so check that the secret exists in the scope the "
+            "workflow's `environment:` selects."
+        )
+        raise ValueError(msg)
+    return value
+
+
+# A Cloudflare account id becomes the leftmost label of the R2 endpoint hostname, so
+# it must be a legal DNS label. This mirrors the constraint botocore enforces in
+# `is_valid_endpoint_url` (its host regex admits only `[A-Za-z0-9-]` per label), but
+# deliberately forbids the dot botocore would accept: an account id spanning two labels
+# is a malformed value pointing at some other host, not a legal id. Real ids are 32
+# lowercase hex characters, so nothing legitimate is excluded.
+#
+# Matched with `fullmatch`, never `match`: in Python `$` also matches immediately
+# before a single trailing newline, so `match` accepts `"abc123\n"`. `_require_env`
+# strips before this runs, so today that is defence in depth rather than a live
+# defect, but a stored trailing newline is the exact input the error message below
+# tells the operator to avoid, and the predicate should not disagree with it.
+_ACCOUNT_ID_RE = re.compile(r"^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$")
+
+
+def _describe_bad_characters(value: str) -> str:
+    """Name the characters in ``value`` that are not alphanumeric, with their indexes.
+
+    # #CRITICAL: security: this appears in a failure message that lands in a public
+    # CI log, so it must never reconstruct the value. Only characters OUTSIDE
+    # ``[A-Za-z0-9]`` are named. Those are the ones that make an id malformed in the
+    # first place (a pasted space, a colon from a full URL, an underscore); the
+    # alphanumeric run is the actual value and is reported as a count only.
+    # #VERIFY: tests/unit/test_backup_database.py::test_describe_bad_characters_names_only_non_alphanumerics
+
+    Args:
+        value: The already-trimmed configuration value.
+
+    Returns:
+        A human-readable clause, or a bare length report when every character is
+        alphanumeric (which means the value failed for length, not content).
+    """
+    offenders = [
+        f"{char!r} at index {index}"
+        for index, char in enumerate(value)
+        if not char.isascii() or not char.isalnum()
+    ]
+    if not offenders:
+        return f"{len(value)} characters, all alphanumeric"
+    return f"{len(value)} characters, including {', '.join(offenders)}"
+
+
+def _assert_account_id_shape(account_id: str) -> None:
+    """Reject an ``R2_ACCOUNT_ID`` value that cannot be a hostname label.
+
+    # #CRITICAL: external resources: without this, a malformed id reaches boto3 and
+    # comes back as `Invalid endpoint: https://***.r2.cloudflarestorage.com`, where
+    # `***` is GitHub's mask. The mask makes the defect undiagnosable from the run
+    # log: the operator cannot see whether the value is empty, carries a stray space,
+    # or is a whole URL pasted into the id field. Both observed failures (2026-08-27)
+    # read exactly that way and cost a full dispatch each to distinguish.
+    # #VERIFY: reject here and describe the shape;
+    # tests/unit/test_backup_database.py::test_main_rejects_an_account_id_that_is_not_a_hostname_label
+
+    Args:
+        account_id: The already-trimmed value read from the environment.
+
+    Raises:
+        ValueError: If the value is not a single DNS label.
+    """
+    if _ACCOUNT_ID_RE.fullmatch(account_id):
+        return
+    msg = (
+        "R2_ACCOUNT_ID is not a valid hostname label, so no R2 endpoint can be built "
+        f"from it. It holds {_describe_bad_characters(account_id)}. A Cloudflare "
+        "account id is 32 lowercase hex characters: copy it from the R2 dashboard "
+        "sidebar, not the S3 API endpoint URL, and set it with "
+        "`printf %s '<id>' | gh secret set R2_ACCOUNT_ID --env backups` so no "
+        "trailing newline is stored."
+    )
+    raise ValueError(msg)
+
+
 def load_encryption_key(raw: str) -> bytes:
     """Decode and validate the base64 ``BACKUP_ENCRYPTION_KEY`` env value.
 
@@ -1373,19 +1507,51 @@ def main() -> None:
         print(f"[DRY RUN] would back up: {result}")
         return
 
-    try:
-        db_url = os.environ["SUPABASE_DB_URL"]
-        r2_account_id = os.environ["R2_ACCOUNT_ID"]
-        r2_access_key_id = os.environ["R2_BACKUP_ACCESS_KEY_ID"]
-        r2_secret_access_key = os.environ["R2_BACKUP_SECRET_ACCESS_KEY"]
-        r2_bucket = os.environ["R2_BACKUP_BUCKET"]
-        encryption_key = load_encryption_key(os.environ["BACKUP_ENCRYPTION_KEY"])
-    except KeyError as exc:
-        print(f"[ERROR] missing required environment variable: {exc}")
+    # #CRITICAL: external resources: report EVERY misconfigured value in one run, not
+    # the first. Five of these six names have no consumer outside this script, so a
+    # run is the only feedback an operator gets on them, and each one costs a
+    # scheduled window or a manual dispatch. (`R2_ACCOUNT_ID` is the exception: the
+    # deployed backend reads the same name for cover art, so a malformed value there
+    # surfaces through `covers/storage.py` instead. That path applies the same shape
+    # check; keep the two in step.)
+    # Failing on the first defect turns "the backup configuration is wrong"
+    # into a serial hunt: on 2026-08-27 two defects in this very block (a leading
+    # space in R2_ACCOUNT_ID, then a value that was not an account id at all) took one
+    # dispatch each to surface, and neither told us anything about the four values
+    # after it.
+    # #VERIFY: accumulate into `errors` and print them all;
+    # tests/unit/test_backup_database.py::test_main_reports_every_bad_value_in_one_run
+    values: dict[str, str] = {}
+    errors: list[str] = []
+    for name in _REQUIRED_ENV_VARS:
+        try:
+            values[name] = _require_env(name)
+        except ValueError as exc:
+            errors.append(str(exc))
+
+    if "R2_ACCOUNT_ID" in values:
+        try:
+            _assert_account_id_shape(values["R2_ACCOUNT_ID"])
+        except ValueError as exc:
+            errors.append(str(exc))
+
+    encryption_key = b""
+    if "BACKUP_ENCRYPTION_KEY" in values:
+        try:
+            encryption_key = load_encryption_key(values["BACKUP_ENCRYPTION_KEY"])
+        except ValueError as exc:
+            errors.append(str(exc))
+
+    if errors:
+        for error in errors:
+            print(f"[ERROR] {error}")
         sys.exit(1)
-    except ValueError as exc:
-        print(f"[ERROR] {exc}")
-        sys.exit(1)
+
+    db_url = values["SUPABASE_DB_URL"]
+    r2_account_id = values["R2_ACCOUNT_ID"]
+    r2_access_key_id = values["R2_BACKUP_ACCESS_KEY_ID"]
+    r2_secret_access_key = values["R2_BACKUP_SECRET_ACCESS_KEY"]
+    r2_bucket = values["R2_BACKUP_BUCKET"]
 
     try:
         result = run_backup(
