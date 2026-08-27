@@ -155,25 +155,26 @@ Verdicts per element of the response, verified against the actual modules rather
 | Layer 1: LLM picks the next action, harness executes (structured `{action, target, reason}`) | Not present | Adopt: this is exactly leg B's loop |
 | Layer 2: 12-20 fixed personas with behavioral constraints | 17 comprehension scenarios exist by role (kid/guardian/admin), none age-banded by reader profile | Adopt: persona-condition leg B |
 | Layer 3: coherence, character, world consistency | `validator/character.py` (CH-* envelope rules), `validator/continuity.py`, moderation stages 3-4 | Covered; see the continuity warning below |
-| Layer 3: choice agency ("did my choice matter") | `validator/consequence.py`: per-fork rejoin distance plus variable-state delta over the exhaustive configuration graph | Exceeded: deterministic and total beats a sampled 1-5 LLM score |
+| Layer 3: choice agency ("did my choice matter") | `validator/consequence.py`: per-fork rejoin distance plus variable-state delta over the configuration graph, to a default horizon of 12 (`_DEFAULT_HORIZON`) | Exceeded: deterministic and bounded-complete beats a sampled 1-5 LLM score |
 | Layer 3: choice distinctiveness, repetition | `moderation/leaf_diversity.py` (anti-template guard), `diversity/` gram/lexical/structural metrics | Covered |
 | Layer 3: reading level (formulas + LLM age fit) | RL-13 Flesch-Kincaid advisory (`validator/reading_level.py`) plus Stage 4's holistic note; a per-node LLM readability stage was built and retired for duplicating RL-13 | Covered: the repo already landed on the exact split the response recommends |
 | Layer 3: engagement | Moderation Stage 4, whole-story LLM engagement advisory | Covered (advisory, as it should be) |
 | Layer 3: safety, age appropriateness | Stage 1 hard gate, classifiers, `imitable.py`, `theme_leak.py`, `band_profile.py`, plus the weekly adversarial corpus in `safety-eval.yml` with majority-of-k scoring | Exceeded |
-| Layer 4: traverse the choice tree (random walks, BFS, coverage sampling) | `validator/walk.py`: exhaustive BFS over every reachable (node, variable-state, visit-set) configuration, with soundness handling for once-effects | Exceeded by architecture: enumeration, not sampling |
-| Multi-model judging (generator never grades itself) | Stage-0 classifier (OpenAI) + independent Stage-1/3/4 review model (OpenRouter-pinned) + optional Perspective + deterministic Python + a human on every story | Covered |
+| Layer 4: traverse the choice tree (random walks, BFS, coverage sampling) | `validator/walk.py`: BFS over every reachable (node, variable-state, visit-set) configuration, with soundness handling for once-effects. Bounded, not unbounded: `DEFAULT_CONFIG_CAP = 100_000` and `DEFAULT_PATH_BUDGET = 20_000_000`, and a capped walk sets `capped=True`, which every caller inspects | Exceeded by architecture: enumeration, not sampling, within a declared budget |
+| Multi-model judging (generator never grades itself) | Stage-0 classifier (OpenAI) + independent Stage-1/3/4 review model (OpenRouter-pinned) + deterministic Python + a human on every story. Google Perspective was retired as a Stage-0 signal source (ratified sunset), so it is not a live leg | Covered |
 | Deterministic checks do everything they can | The layer-1/layer-2 validator design law; the retired LLM readability stage is this principle applied retroactively | Covered |
 | Comprehension self-test (generate 3 questions, check answerability elsewhere) | Not present | Adopt as a measured pilot (conditions below) |
 | Adversarial "weird kid" agent | Deterministic misuse suites exist; unscripted chaos is exactly leg A | Covered by this proposal |
 | Evaluation DB + structured per-run result | Persisted moderation reports, append-only pipeline events, thresholds dashboard | Covered |
-| CI fails on quality thresholds | The validator gate blocks structurally; safety-eval gates weekly per class; `AL-337` sets a deliberately higher bar: a computable statistic becomes a gate only with reader-impact evidence | Covered, with a better-informed promotion rule |
+| CI fails on quality thresholds | The validator gate blocks structurally; the weekly safety eval hard-catches only classes A and B (`_HARD_CATCH_CLASSES`), so classes C through F run but do not gate; `AL-337` sets a deliberately higher bar by a different route: a gate composed of independent checkers must declare the dimensions on which *every* checker abstains rather than reporting their shared silence as a clean verdict | Covered for structure, partial for safety classes |
 | Cheap-to-strong judge cascade | Review batching exists; no confidence cascade | Note: adopt as leg B and pilot cost posture |
 | Calibrate synthetic predictions against real child behavior | `reading_history`, `reading_time`, ratings, and flags are collected; nothing joins them back to Stage-4 advisories or validator statistics | Adopt: the strongest new idea in the response |
 
 The response's own warnings (LLM judges miss subtle incoherence; an AI score is not proof of quality) are
-already institutional knowledge here, in stronger, measured form: `validator/continuity.py` built three LLM/
-lexical continuity formulations, measured 3.48 findings per node and a 1-in-6 true-positive rate, and shipped
-none as a rule; `AL-337` records the cost of promoting a computable number to a gate; `validator/
+already institutional knowledge here, in stronger, measured form: `validator/continuity.py` built three
+structural and lexical continuity formulations (no LLM leg; the shipped one is structural), measured 3.48
+findings per node and a 1-in-6 true-positive rate, and shipped none as a rule; `AL-337` records what a
+composition of independently-correct checkers fails to observe; `validator/
 blind_spots.py` makes the gate report what it did NOT check, with witness documents proving the declarations
 stay true. Any new LLM judge proposed below inherits that discipline: measured before believed, advisory
 before gating, never a silent pass.
@@ -246,8 +247,22 @@ visible, enabled interactive element (role-based locators only, same discipline 
   misuse suite checks specific back-button cases; the walk generalizes them).
 - **I7 accessibility of newly reached states**: an axe scan the first time a distinct state signature
   (route + main heading) is visited. This directly widens the known "one fixed state per surface" gap in
-  `coverage-matrix.md`. Scans run in this module's own workflow, never inside the required `frontend-e2e`
-  job, so ADR-029's scope constraint on the merge gate is untouched.
+  `coverage-matrix.md`. Scans never run inside the required `frontend-e2e` job, so ADR-029's scope constraint
+  on the merge gate is untouched either way.
+
+  **Open question, owner decision needed before I7 is built.** Which scheduled workflow hosts the scan is
+  not settled, and this document and the companion plan currently point at different answers. ADR-029's
+  Constraints text rules only that "new or expanded accessibility compliance scanning run on a scheduled,
+  non-blocking cadence against `main`, not inside the per-PR gate", which a standalone `usersim.yml`
+  satisfies as well as the existing weekly job does. `CLAUDE.md`'s operative summary of the same decision is
+  narrower and names one destination: "new or broader compliance scanning belongs in
+  `accessibility-compliance-weekly.yml` instead, gated behind `A11Y_EXTENDED=1`". The two options:
+
+  1. This module's own workflow, keeping usersim's findings in one place with the rest of leg A.
+  2. `accessibility-compliance-weekly.yml` behind `A11Y_EXTENDED=1`, which is the destination `CLAUDE.md`
+     names and which adds no new workflow.
+
+  Pick one before building I7; do not build against both.
 
 Determinism is the design center: the seed is printed on failure and settable via `USERSIM_SEED`, so any
 finding replays exactly. The route universe comes from a small checked-in manifest derived from
