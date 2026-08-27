@@ -235,6 +235,20 @@ class ModerationReport:
     repaired: bool = False
     reviewer_independent: bool = True
     nodes_reviewed: int = 0
+    # #CRITICAL: data-integrity: which reviewer produced this report, as
+    # ``moderation/review_provider.py::review_provenance`` describes it.
+    # ``None`` means the run did not record one, which is what every report
+    # written before 2026-08-27 looks like: the 2026-07-21 mock-reviewer sweep
+    # persisted no provenance at all, so 31 books' reports were
+    # indistinguishable from genuinely reviewed ones and had to be re-derived
+    # from a stamp that happened to exist for an unrelated reason. A report
+    # that names its own reviewer is auditable by construction; absent is
+    # therefore reported as absent rather than defaulted to the current
+    # configuration, which would retroactively attribute an old verdict to
+    # today's reviewer.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_the_pipeline_persists_the_reviewer_that_ran.
+    reviewer: dict[str, object] | None = None
 
     def add(self, finding: Finding) -> None:
         """Append a finding."""
@@ -311,6 +325,7 @@ class ModerationReport:
                 pass_counts[f.category] = pass_counts.get(f.category, 0) + 1
         return {
             "findings": [f.to_dict() for f in persisted],
+            "reviewer": self.reviewer,
             "aggregate": {
                 "nodes_reviewed": self.nodes_reviewed,
                 "pass_counts": pass_counts,

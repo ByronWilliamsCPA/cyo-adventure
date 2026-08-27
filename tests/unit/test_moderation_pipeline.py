@@ -2253,6 +2253,82 @@ async def test_review_model_override_reaches_build_review_provider(
     submit.assert_awaited_once()
 
 
+@pytest.mark.unit
+async def test_the_pipeline_persists_the_reviewer_that_ran(
+    mock_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The stored report must name its own reviewer, resolved override included.
+
+    The 2026-07-21 sweep persisted no reviewer provenance, so 31 books' reports
+    were indistinguishable from genuinely reviewed ones and the population had
+    to be re-derived from a stamp that existed for an unrelated reason
+    (UW-C397). Provenance is read from the RESOLVED settings, which is why this
+    test drives the same admin override as the test above it: recording the
+    process-wide default would attribute the verdict to a model that never saw
+    the prose, a quieter version of the same defect.
+
+    The seam is the same spy: with ``review_provider="openrouter"`` the real
+    builder would construct a live network-backed leg, which a unit test must
+    never call.
+    """
+    provider = _verdict_review_provider()
+
+    def _spy(_settings: Settings, **_kwargs: object) -> tuple[MockProvider, bool]:
+        return provider, True
+
+    monkeypatch.setattr("cyo_adventure.moderation.pipeline.build_review_provider", _spy)
+
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+
+    def _clean_handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "results": [
+                    {
+                        "flagged": False,
+                        "categories": {"violence": False},
+                        "category_scores": {"violence": 0.01},
+                    }
+                ]
+            },
+        )
+
+    _install_canned_classifier_http(monkeypatch, _clean_handler)
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", AsyncMock())
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=Settings(
+            review_provider="openrouter",
+            openai_api_key="k",
+            openrouter_api_key="key",
+            # Same size-1 pin, same reason as the test above: the fixture
+            # answers with a single verdict OBJECT, which the batched parser
+            # rejects.
+            review_batch_size=1,
+        ),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+        review_model_override="anthropic/claude-opus-4.8",
+    )
+
+    assert version.moderation_report is not None
+    assert version.moderation_report["reviewer"] == {
+        "provider": "openrouter",
+        "model": "anthropic/claude-opus-4.8",
+        # Empty because that slug carries no `ENDPOINT_PINS` entry. Asserted
+        # rather than skipped: an unpinned reviewer is a real reproducibility
+        # gap, and the stored report is where it stays visible.
+        "endpoint": [],
+        "temperature": 0.0,
+        "batch_size": 1,
+    }
+
+
 # ---------------------------------------------------------------------------
 # WS-1 D1: the advisory leaf-diversity (anti-template) guard wiring.
 #

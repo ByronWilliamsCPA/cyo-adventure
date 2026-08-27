@@ -10,9 +10,10 @@ its own output without that being recorded.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, cast
+from typing import TYPE_CHECKING, Final, Protocol, cast
 
 from cyo_adventure.core.exceptions import ConfigurationError
+from cyo_adventure.core.pricing import endpoint_pin_for
 from cyo_adventure.generation.provider import (
     MockProvider,
     build_openrouter_leg,
@@ -143,6 +144,87 @@ def completion_finish_reason(returned: object) -> str:
     return reason if isinstance(reason, str) else repr(reason)
 
 
+# #CRITICAL: data-integrity: a safety verdict is a judgment, and a judgment that
+# moves between two reads of the same passage is not one. Left at the vendor
+# default (typically 1.0) a re-moderation returns a different answer to
+# unchanged prose, which is indistinguishable from the prose having changed and
+# makes every before/after comparison in this subsystem unfalsifiable: the
+# 2026-07-21 mock-reviewer sweep was only detectable because its reports carried
+# a stamp, and sampling noise carries none. Generation deliberately keeps the
+# default (see generation/variation.py: variation is bought with an explicit
+# axis, not with noise), so this is set on the review leg only.
+#
+# No `seed` is sent alongside it. OpenRouter forwards `seed` only to backends
+# that implement it and this reviewer slug runs UNPINNED (its PRICES row is the
+# slug's default route, so `ENDPOINT_PINS` carries no entry, see
+# core/config.py::review_openrouter_model), which means the answering backend
+# is not known in advance and neither is whether it honours the field. Sending
+# one would buy an appearance of reproducibility without the property. Pinning
+# the endpoint first is the prerequisite, and it needs a reachability probe this
+# account has not run for this slug.
+# #VERIFY: tests/unit/test_review_provenance.py::
+# test_the_review_leg_is_built_at_temperature_zero.
+REVIEW_TEMPERATURE: Final = 0.0
+
+
+def _review_model_for(settings: Settings) -> str | None:
+    """Return the model the configured review backend will actually run.
+
+    The ONE resolver both :func:`build_review_provider` and
+    :func:`review_provenance` read, so a persisted report can never name a
+    model other than the one that was built. Two functions each reaching for
+    ``settings.review_openrouter_model`` would agree today and drift the moment
+    a second live backend lands, and the drift would surface as a report
+    attributing a verdict to a model that never saw the prose.
+
+    Args:
+        settings: Application settings.
+
+    Returns:
+        str | None: The model id, or ``None`` for a backend that runs no model
+        (the mock reviewer).
+    """
+    if settings.review_provider == "mock":
+        return None
+    return settings.review_openrouter_model
+
+
+def review_provenance(settings: Settings) -> dict[str, object]:
+    """Describe the reviewer a run used, for persistence on the report.
+
+    The 2026-07-21 mock-reviewer run persisted no reviewer provenance at all,
+    which is why 31 books' reports could not be told apart from genuinely
+    reviewed ones without re-deriving the whole population from a stamp that
+    happened to exist. A report that records its own reviewer is auditable
+    after the fact by construction.
+
+    Args:
+        settings: The settings the review provider was (or will be) built from,
+            AFTER any :func:`resolve_review_settings` override, so an
+            admin-chosen stage model is what gets recorded.
+
+    Returns:
+        dict[str, object]: A JSON-serializable provenance block. ``endpoint`` is
+        the OpenRouter backend pin, an empty list meaning the slug ran on
+        whichever backend won the routing auction; that is a real gap in
+        reproducibility and recording it as empty is how it stays visible.
+    """
+    model = _review_model_for(settings)
+    return {
+        "provider": settings.review_provider,
+        "model": model,
+        "endpoint": (
+            list(endpoint_pin_for("openrouter", model))
+            if settings.review_provider == "openrouter" and model is not None
+            else []
+        ),
+        "temperature": (
+            REVIEW_TEMPERATURE if settings.review_provider != "mock" else None
+        ),
+        "batch_size": settings.review_batch_size,
+    }
+
+
 def build_review_provider(
     settings: Settings,
     *,
@@ -188,8 +270,15 @@ def build_review_provider(
         msg = "review_provider 'modal' is deferred to slice 2b; use openrouter"
         raise ConfigurationError(msg)
 
-    provider = build_openrouter_leg(settings, settings.review_openrouter_model)
-    review_model: str | None = settings.review_openrouter_model
+    review_model = _review_model_for(settings)
+    # A non-mock, non-modal backend always resolves a model, so this narrowing
+    # cannot be reached; asserting it beats an ignore comment on the call below.
+    if review_model is None:  # pragma: no cover - unreachable for openrouter
+        msg = f"review_provider '{backend}' resolved no model"
+        raise ConfigurationError(msg)
+    provider = build_openrouter_leg(
+        settings, review_model, temperature=REVIEW_TEMPERATURE
+    )
 
     independent = backend != generator_provider or review_model != generator_model
     return provider, independent

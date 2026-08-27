@@ -202,6 +202,16 @@ class OpenRouterProvider:
             sets ``allow_fallbacks: false``, which is what makes a measurement
             attributable to one backend rather than to whichever backend
             happened to win the routing auction that minute.
+        temperature: Optional sampling temperature. ``None`` (the default, and
+            what every generation caller passes) sends no ``temperature`` field
+            at all, leaving the model's own default intact, so story generation
+            keeps the variation it is designed around
+            (``generation/variation.py`` explains why variation is bought with
+            an explicit axis rather than with noise). The moderation reviewer
+            passes ``0.0``: a safety verdict is a judgment that should not move
+            between two reads of the same passage, and a reviewer sampling at
+            the vendor default returns a different answer to the same prose on
+            a re-run, which is indistinguishable from the prose having changed.
     """
 
     def __init__(
@@ -216,6 +226,7 @@ class OpenRouterProvider:
         backoff_base_seconds: float = DEFAULT_BACKOFF_BASE_SECONDS,
         client: httpx.AsyncClient | None = None,
         provider_order: tuple[str, ...] = (),
+        temperature: float | None = None,
     ) -> None:
         self._api_key: Final[str] = api_key
         self._model: Final[str] = model
@@ -226,6 +237,22 @@ class OpenRouterProvider:
         self._backoff_base_seconds: Final[float] = backoff_base_seconds
         self._client: Final[httpx.AsyncClient | None] = client
         self._provider_order: Final[tuple[str, ...]] = provider_order
+        self._temperature: Final[float | None] = temperature
+
+    @property
+    def temperature(self) -> float | None:
+        """The sampling temperature this leg sends, or ``None`` for the default.
+
+        Read by ``moderation/review_provider.py::review_provenance`` so a
+        persisted report records the sampling the reviewer actually ran at
+        rather than what the caller believed it asked for.
+        """
+        return self._temperature
+
+    @property
+    def endpoint_order(self) -> tuple[str, ...]:
+        """The OpenRouter backend pin this leg sends, empty when unpinned."""
+        return self._provider_order
 
     @property
     def name(self) -> str:
@@ -337,6 +364,16 @@ class OpenRouterProvider:
                 "order": list(self._provider_order),
                 "allow_fallbacks": False,
             }
+        # #CRITICAL: data-integrity: omitted rather than defaulted when None, so
+        # a generation request stays byte-identical to what it was before this
+        # parameter existed. Same reasoning as the `provider` field above: an
+        # always-present field would silently repoint every existing
+        # measurement, including the vendor-comparison fixtures.
+        # #VERIFY: tests/unit/test_openrouter_provider_pin.py::
+        # test_no_temperature_field_is_sent_by_default and
+        # ::test_a_review_temperature_is_sent_when_set.
+        if self._temperature is not None:
+            body["temperature"] = self._temperature
         headers = {
             "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json",

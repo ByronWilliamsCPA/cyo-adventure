@@ -45,12 +45,19 @@ def _capture() -> tuple[list[dict[str, Any]], httpx.AsyncClient]:
     return bodies, httpx.AsyncClient(transport=httpx.MockTransport(handler))
 
 
-def _provider(client: httpx.AsyncClient, order: tuple[str, ...]) -> OpenRouterProvider:
+def _provider(
+    client: httpx.AsyncClient,
+    order: tuple[str, ...],
+    *,
+    temperature: float | None = None,
+) -> OpenRouterProvider:
     """Build an adapter over the capturing client with the given pin.
 
     Args:
         client: The MockTransport-backed client.
         order: The backend pin to apply (empty for the default path).
+        temperature: The sampling temperature to apply, ``None`` (the default,
+            and what every generation caller passes) for the model default.
 
     Returns:
         A configured adapter.
@@ -64,6 +71,7 @@ def _provider(client: httpx.AsyncClient, order: tuple[str, ...]) -> OpenRouterPr
         backoff_base_seconds=0.0,
         client=client,
         provider_order=order,
+        temperature=temperature,
     )
 
 
@@ -362,3 +370,64 @@ def test_every_pinned_price_row_names_its_endpoint_in_the_note() -> None:
         note = PRICES[key].note
         assert order, f"{key} has an empty pin"
         assert order[0] in note, f"{key} price note does not name {order[0]}"
+
+
+# ---------------------------------------------------------------------------
+# The sampling temperature on the REQUEST path (UW-C397)
+# ---------------------------------------------------------------------------
+# The moderation reviewer sampled at the vendor default because nothing in
+# `src/` sent a `temperature` at all, so two reads of the same passage could
+# return different safety verdicts and no before/after comparison in that
+# subsystem was falsifiable. The field is therefore per-leg and opt-in:
+# generation keeps the default deliberately (`generation/variation.py` buys
+# variation with an explicit axis, not with noise), and only the review leg
+# pins it. That split is what these two tests hold in place.
+
+
+@pytest.mark.asyncio
+async def test_no_temperature_field_is_sent_by_default() -> None:
+    """Absence has to stay absence on the generation path.
+
+    A `temperature` present but defaulted would repoint every existing
+    generation measurement, including the vendor-comparison fixtures, the same
+    way an always-emitted `provider` field would. The whole point of the
+    parameter is that adding it changed no request that existed before it.
+    """
+    bodies, client = _capture()
+    await _provider(client, ()).complete(system="s", prompt="p", max_tokens=16)
+
+    assert "temperature" not in bodies[0]
+
+
+@pytest.mark.asyncio
+async def test_a_review_temperature_is_sent_when_set() -> None:
+    """Zero must reach the wire as zero, not be dropped as falsy.
+
+    This is the failure mode worth a test of its own: the one value the
+    reviewer actually needs is the one an ``if self._temperature:`` guard would
+    silently discard, and a dropped field is indistinguishable on the wire from
+    the pre-fix behaviour it exists to correct.
+    """
+    bodies, client = _capture()
+    await _provider(client, (), temperature=0.0).complete(
+        system="s", prompt="p", max_tokens=16
+    )
+
+    assert bodies[0]["temperature"] == 0.0
+
+
+@pytest.mark.asyncio
+async def test_the_temperature_property_reports_what_the_leg_sends() -> None:
+    """The property and the wire body must not be able to disagree.
+
+    ``review_provenance`` persists a temperature into the durable moderation
+    report, and a report is only worth keeping if it records what ran. Reading
+    the property here against the recorded body is what stops the two becoming
+    independent claims about the same request.
+    """
+    bodies, client = _capture()
+    leg = _provider(client, ("Anthropic",), temperature=0.0)
+    await leg.complete(system="s", prompt="p", max_tokens=16)
+
+    assert leg.temperature == bodies[0]["temperature"]
+    assert list(leg.endpoint_order) == bodies[0]["provider"]["order"]

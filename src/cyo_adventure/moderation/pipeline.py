@@ -40,6 +40,7 @@ from cyo_adventure.moderation.review_provider import (
     ReviewProvider,
     build_review_provider,
     resolve_review_settings,
+    review_provenance,
 )
 from cyo_adventure.moderation.stages import (
     run_coherence_stage,
@@ -289,6 +290,10 @@ async def run_moderation_pipeline(
         generation_provider=generation_provider,
     )
     report.reviewer_independent = independent
+    # Recorded from the RESOLVED settings, so an admin's per-stage model
+    # override is what the report attributes the verdict to rather than the
+    # process-wide default.
+    report.reviewer = review_provenance(review_settings)
     if not independent:
         report.add(
             Finding(
@@ -647,6 +652,12 @@ def _persist_report(version_row: StorybookVersion, report: ModerationReport) -> 
         repaired=report.repaired,
         reviewer_independent=report.reviewer_independent,
         nodes_reviewed=report.nodes_reviewed,
+        # Carried explicitly: this is a fresh ModerationReport rather than a
+        # mutation of the accumulated one, so every field the persisted payload
+        # needs has to be named here. Omitting it would drop the provenance at
+        # the one step that writes it to the database, which is the only step
+        # where losing it matters.
+        reviewer=report.reviewer,
     )
     version_row.moderation_report = persisted_report.to_dict()
 
@@ -755,7 +766,9 @@ async def _attempt_and_adopt_repair(
     # revised blob) if the repair is schema-valid AND passes the deterministic
     # validation gate. A malformed or gate-failing repair is discarded so the
     # original soft-flagged report drives routing.
-    repaired_report = ModerationReport(reviewer_independent=independent)
+    repaired_report = ModerationReport(
+        reviewer_independent=independent, reviewer=review_provenance(settings)
+    )
     if mock_reviewer:
         _stamp_mock_reviewer(repaired_report)
     try:
