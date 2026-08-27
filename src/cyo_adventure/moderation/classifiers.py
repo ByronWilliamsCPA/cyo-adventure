@@ -109,6 +109,24 @@ _RETRY_BACKOFF_SECONDS: tuple[float, ...] = (0.5, 2.0)
 # both futile and hostile; the FLAG is what makes the shortfall visible.
 _MAX_CONSECUTIVE_FAILURES = 3
 
+# Which HTTP statuses are worth trying again. Mirrors the set the three
+# generation providers already share (generation/providers/{anthropic,
+# openrouter,modal}.py), so the whole codebase answers "is this retryable?"
+# the same way.
+#
+# Retrying a status that cannot change is not merely wasted: at ceiling scale
+# (746 nodes, 3 attempts each) an expired key costs 2,238 pointless calls and
+# 1,865 seconds of backoff to arrive at the coverage FLAG it could have
+# reported immediately.
+_TRANSIENT_STATUS: frozenset[int] = frozenset({408, 409, 425, 429})
+_SERVER_ERROR_STATUS = 500
+
+# Credential and permission failures are a property of the CLASSIFIER, not of
+# the node being screened: an expired key rejects node 1 and node 746
+# identically. These open the circuit on the first occurrence instead of
+# re-proving it once per node.
+_CREDENTIAL_STATUS: frozenset[int] = frozenset({401, 403})
+
 # Number of unscreened node ids named in the coverage finding's message. The
 # full count is always reported; the ids are a sample so the message stays
 # readable when hundreds of nodes are affected.
@@ -132,11 +150,36 @@ class ClassifierUnavailable(Exception):  # noqa: N818
     Raised by an individual classifier so :func:`run_classifiers` can record one
     degraded advisory per classifier rather than one per node, and stop hammering
     a down provider for the remaining nodes.
+
+    Carries the retry decision rather than leaving it to the caller, because the
+    caller cannot recover it: by the time :func:`_screen_one` sees this, the
+    HTTP status is gone. Both flags default to the safe answer. ``retryable``
+    defaults True so an unrecognised failure is still retried, which costs time
+    but never coverage; ``disables_classifier`` defaults False so one odd
+    failure cannot silence a working classifier for the rest of the book.
+
+    Attributes:
+        source: Which classifier failed.
+        reason: Human-readable failure text, surfaced in the degraded finding.
+        retryable: Whether re-issuing the identical call could succeed. False
+            for a permanent rejection (a bad key, a malformed request), where
+            the backoff only delays the coverage FLAG that is coming anyway.
+        disables_classifier: Whether the failure condemns every remaining node,
+            not just this one. True for credential and permission failures.
     """
 
-    def __init__(self, source: Source, reason: str) -> None:
+    def __init__(
+        self,
+        source: Source,
+        reason: str,
+        *,
+        retryable: bool = True,
+        disables_classifier: bool = False,
+    ) -> None:
         self.source = source
         self.reason = reason
+        self.retryable = retryable
+        self.disables_classifier = disables_classifier
         super().__init__(reason)
 
 
@@ -220,16 +263,21 @@ class _CoverageState:
             had already opened.
         consecutive_failures: Failure run length, reset by any success. The
             circuit opens at ``_MAX_CONSECUTIVE_FAILURES``.
+        disabled: Set when a failure condemned the classifier itself rather
+            than one node (a credential or permission rejection). Unlike
+            ``consecutive_failures`` this is never reset, because nothing in a
+            single run makes an expired key valid again.
     """
 
     reason: str | None = None
     unscreened: list[str] = field(default_factory=list)
     consecutive_failures: int = 0
+    disabled: bool = False
 
     @property
     def circuit_open(self) -> bool:
         """Whether this classifier is being treated as down."""
-        return self.consecutive_failures >= _MAX_CONSECUTIVE_FAILURES
+        return self.disabled or self.consecutive_failures >= _MAX_CONSECUTIVE_FAILURES
 
 
 async def _screen_one(
@@ -261,7 +309,18 @@ async def _screen_one(
         try:
             findings = await call()
         except ClassifierUnavailable as exc:
-            if attempt < len(_RETRY_BACKOFF_SECONDS):
+            # #CRITICAL: external-resources: this arm used to back off and retry
+            # every ClassifierUnavailable alike, because _run_openai raised one
+            # undifferentiated error for every httpx.HTTPError. A permanent 401
+            # from an expired key was therefore retried exactly like a transient
+            # 429, once per node, for the whole book. The retry decision now
+            # travels on the exception.
+            # #VERIFY: tests/unit/test_moderation_classifiers.py::
+            # test_permanent_status_is_not_retried and
+            # test_credential_failure_opens_the_circuit_on_first_node.
+            if exc.disables_classifier:
+                state.disabled = True
+            if exc.retryable and attempt < len(_RETRY_BACKOFF_SECONDS):
                 await asyncio.sleep(_RETRY_BACKOFF_SECONDS[attempt])
                 continue
             # Record the reason only when the node is actually abandoned, not on
@@ -374,7 +433,7 @@ async def run_classifiers(  # noqa: PLR0913
     # a 746-node book unscreened was indistinguishable from a clean one and both
     # submit() and approve() passed it.
     # #VERIFY: test_partial_failure_flags_incomplete_coverage and
-    # test_unscreened_nodes_are_named_in_the_coverage_finding.
+    # test_unscreened_nodes_are_named_and_counted.
     findings, openai = await _screen_all_nodes(
         nodes,
         openai_key=openai_key,
@@ -515,7 +574,36 @@ async def _run_openai(
         )
         response.raise_for_status()
         data: object = cast("object", response.json())
+    except httpx.HTTPStatusError as exc:
+        # Ordered before the httpx.HTTPError arm below, which it subclasses.
+        # #CRITICAL: security: a rejected credential must fail fast and loudly
+        # rather than degrade quietly. Failing fast does NOT weaken the gate:
+        # every node this abandons lands in state.unscreened, which
+        # _coverage_shortfall_finding turns into a structural HIGH-severity
+        # Verdict.FLAG naming the shortfall, so the book still cannot be read
+        # as cleanly screened.
+        # #VERIFY: tests/unit/test_moderation_classifiers.py::
+        # test_credential_failure_opens_the_circuit_on_first_node and
+        # test_unscreened_nodes_are_named_and_counted.
+        status = exc.response.status_code
+        retryable = status in _TRANSIENT_STATUS or status >= _SERVER_ERROR_STATUS
+        _logger.warning(
+            "openai_moderation_failed",
+            node_id=node_id,
+            error=str(exc),
+            status=status,
+            retryable=retryable,
+        )
+        raise ClassifierUnavailable(
+            Source.OPENAI,
+            str(exc),
+            retryable=retryable,
+            disables_classifier=status in _CREDENTIAL_STATUS,
+        ) from exc
     except (httpx.HTTPError, ValueError) as exc:
+        # Everything else stays retryable by default: a transport error or a
+        # truncated body carries no status to judge, and retrying costs time
+        # while refusing to retry would cost coverage.
         _logger.warning("openai_moderation_failed", node_id=node_id, error=str(exc))
         raise ClassifierUnavailable(Source.OPENAI, str(exc)) from exc
 

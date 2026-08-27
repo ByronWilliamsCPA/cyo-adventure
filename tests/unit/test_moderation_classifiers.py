@@ -644,6 +644,146 @@ async def test_a_later_node_still_gets_screened_after_one_node_fails() -> None:
     assert "1 node(s) were never bright-line screened" in coverage.message
 
 
+# ---------------------------------------------------------------------------
+# Retry discrimination (AL-647)
+#
+# _run_openai used to catch base httpx.HTTPError, which raise_for_status()
+# raises as HTTPStatusError, so a permanent 401 was retried exactly like a
+# transient 429: once per node, for the whole book. The oracle here is the
+# CALL COUNT, not the findings, because the findings are identical either way.
+# That is precisely why the defect survived: every coverage assertion in this
+# file still passes with the discrimination removed.
+# ---------------------------------------------------------------------------
+
+
+def _counting_handler(
+    status: int, calls: dict[str, int]
+) -> Callable[[httpx.Request], httpx.Response]:
+    """Always answer with `status`, tallying how many calls were made."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        return httpx.Response(status)
+
+    return handler
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_permanent_status_is_not_retried() -> None:
+    """A 400 cannot succeed on re-issue, so it must be attempted exactly once.
+
+    _no_backoff is applied deliberately: it keeps the retry BUDGET while zeroing
+    the sleeps, so a call count of 1 proves the retries were skipped rather than
+    merely being fast.
+    """
+    calls = {"n": 0}
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key="okey",
+        client=_client(_counting_handler(400, calls)),
+    )
+
+    assert calls["n"] == 1, (
+        "a permanent rejection must not be retried; retrying only delays the "
+        "coverage FLAG that is coming regardless"
+    )
+    # The safety property is unchanged: failing fast still gates.
+    coverage = [f for f in findings if f.category == "classifier_coverage_incomplete"]
+    assert len(coverage) == 1, "the abandoned node must still produce a coverage FLAG"
+    assert coverage[0].verdict is Verdict.FLAG
+    assert coverage[0].severity is FindingSeverity.HIGH
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_transient_status_is_still_retried() -> None:
+    """The contrast case: 429 must keep its full retry budget.
+
+    Without this, "stop retrying permanent failures" could be satisfied by
+    never retrying anything, which would trade wasted calls for lost coverage.
+    """
+    calls = {"n": 0}
+
+    await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key="okey",
+        client=_client(_counting_handler(429, calls)),
+    )
+
+    expected = len(classifiers._RETRY_BACKOFF_SECONDS) + 1
+    assert calls["n"] == expected, (
+        f"a rate limit is transient and must still get {expected} attempts"
+    )
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_credential_failure_opens_the_circuit_on_first_node() -> None:
+    """An expired key rejects every node identically, so prove it once.
+
+    A single node cannot show this: the saving is that nodes 2..N are never
+    called at all, so the test needs a book whose remaining nodes would
+    otherwise each be attempted.
+    """
+    calls = {"n": 0}
+    nodes = [(f"n{i}", "text") for i in range(1, 6)]
+
+    findings = await run_classifiers(
+        nodes=nodes,
+        openai_key="expired",
+        client=_client(_counting_handler(401, calls)),
+    )
+
+    assert calls["n"] == 1, (
+        "a rejected credential condemns the whole run; one call must be enough "
+        "to establish that, instead of re-proving it once per node"
+    )
+    coverage = [f for f in findings if f.category == "classifier_coverage_incomplete"]
+    assert len(coverage) == 1
+    for node_id, _ in nodes:
+        assert node_id in coverage[0].message or "more" in coverage[0].message, (
+            "every node the circuit skipped must still be counted as unscreened"
+        )
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_server_error_does_not_disable_the_classifier() -> None:
+    """A 500 is transient, so it must NOT latch the classifier off.
+
+    `disabled` is never reset within a run, so latching it on the wrong status
+    would silently drop coverage for the rest of a book over one blip.
+
+    The oracle is WHICH nodes were attempted, not how many calls were made. A
+    total count is not enough: three retries of node 1 and one attempt each at
+    nodes 1..3 both give three calls, so a count-based assertion passes even
+    when the classifier latched off after the first node. Each node therefore
+    carries distinct prose and the handler records what it actually saw.
+    """
+    seen: set[str] = set()
+    nodes = [(f"n{i}", f"prose-{i}") for i in range(1, 4)]
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        body = request.content.decode()
+        for _, prose in nodes:
+            if prose in body:
+                seen.add(prose)
+        return httpx.Response(500)
+
+    await run_classifiers(
+        nodes=nodes,
+        openai_key="okey",
+        client=_client(handler),
+    )
+
+    assert seen == {prose for _, prose in nodes}, (
+        "a 5xx must not latch the classifier off after the first node; every "
+        f"node should still be attempted, but only {sorted(seen)} were"
+    )
+
+
 @pytest.mark.unit
 @pytest.mark.usefixtures("_no_backoff")
 async def test_circuit_opens_after_consecutive_failures_and_stops_calling() -> None:
