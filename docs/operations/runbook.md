@@ -799,7 +799,7 @@ its own gap, distinct from `UW-D27`).
 ## 7. How you find out something broke
 
 Every alerting scheduled job now routes through ONE implementation,
-[`.github/actions/ci-failure-issue`](https://github.com/ByronWilliamsCPA/cyo-adventure/tree/main/.github/actions/ci-failure-issue).
+`.github/actions/ci-failure-issue`.
 On failure it finds-or-opens a GitHub issue whose title starts with a workflow-specific marker and
 comments on it; on a green scheduled run it CLOSES that issue. There is no other outbound channel:
 no Slack, email, or pager integration is wired up.
