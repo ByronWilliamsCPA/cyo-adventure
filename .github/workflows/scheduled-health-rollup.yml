@@ -103,7 +103,8 @@ jobs:
       # field passed through an `env:` var (never inlined into a shell
       # command), and the github-script body below reads only `context.*`
       # and API response data inside JavaScript, never inside a shell.
-      - name: Roll up scheduled-workflow health and file or update the tracking issue
+      - name: Compute the scheduled-workflow health rollup
+        id: rollup
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           HARD_CAP: ${{ inputs.hard_cap || '50' }}
@@ -192,19 +193,29 @@ jobs:
               'supabase-backup.yml': { label: 'ci-failure', titlePrefix: '[db-backup]' },
             };
 
+            // This is a read-only "does a tracking issue already exist"
+            // survey over OTHER workflows' alerts, not this workflow's own
+            // find-then-create sequence, so it is a different concern from
+            // what .github/actions/ci-failure-issue centralizes. It still
+            // must not be built on the bare "list issues for repo" REST call:
+            // that is the exact pagination-and-PR-filtering-prone call the
+            // action's header and
+            // this file's own contract test (test_no_workflow_re_inlines_the_lookup)
+            // exist to keep out of every workflow, this one included. The
+            // Search API is a genuinely different endpoint, not a re-inlined
+            // copy of that pattern, and `is:issue` excludes pull requests
+            // server-side rather than needing a client-side filter.
             async function findTrackingIssue(file) {
               const known = KNOWN_ALERTS[file];
               if (!known) {
                 return { status: 'untracked' };
               }
-              const issues = await github.paginate(github.rest.issues.listForRepo, {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                state: 'open',
-                labels: known.label,
+              const query = `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open label:"${known.label}"`;
+              const results = await github.paginate(github.rest.search.issuesAndPullRequests, {
+                q: query,
                 per_page: 100,
               });
-              const match = issues.find((issue) => issue.title.startsWith(known.titlePrefix));
+              const match = results.find((issue) => issue.title.startsWith(known.titlePrefix));
               if (match) {
                 return { status: 'tracked', issue: match };
               }
@@ -331,6 +342,25 @@ jobs:
             const generatedAt = new Date().toISOString();
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
 
+            // Only file or comment when there is something to report, matching
+            // the behaviour this replaced (which created an issue only when
+            // escalations existed). The shared ci-failure-issue action has no
+            // "nothing to say this week" mode, so the caller decides whether to
+            // invoke it at all via the `has_escalations` output below; a green
+            // week now leaves an already-open issue untouched rather than
+            // refreshing its body to say so.
+            core.setOutput('has_escalations', escalations.length > 0 ? 'true' : 'false');
+            if (escalations.length === 0) {
+              core.info('No scheduled workflow currently has a streak at or above the escalation bar.');
+              return;
+            }
+
+            // The action writes this text into the issue BODY only the first
+            // time it is filed; every later week appends it as a COMMENT
+            // instead of rewriting the body (see .github/actions/ci-failure-issue's
+            // header). Carrying the full current state here, rather than a diff
+            // against last week, means whichever one a reader lands on shows
+            // the complete current picture, not a "see above".
             const bodyLines = [
               `Weekly survey of all ${scheduled.length} scheduled workflow(s) in this repo, generated ${generatedAt}.`,
               '',
@@ -338,39 +368,23 @@ jobs:
               '',
               `Escalation bar: ${THRESHOLD} or more consecutive scheduled-run failures.`,
               '',
+              `${escalations.length} workflow(s) at or above the escalation bar:`,
+              '',
             ];
-
-            if (escalations.length === 0) {
+            for (const r of escalations) {
               bodyLines.push(
-                'No scheduled workflow currently has a streak at or above the escalation bar.',
+                `### \`${r.file}\` (${r.workflowName})`,
                 '',
-                'This issue is left open (scheduled reporting workflows never close issues',
-                'automatically); close it once the ladder has been quiet for a while, or leave',
-                'it for the next run to refresh.'
-              );
-            } else {
-              bodyLines.push(
-                `${escalations.length} workflow(s) at or above the escalation bar:`,
+                `- Streak: ${renderStreakLine(r)}`,
+                `- Last green: ${renderLastGreen(r)}`,
+                `- Tracking: ${renderTracking(r.file, r.tracking)}`,
                 ''
               );
-              for (const r of escalations) {
-                bodyLines.push(
-                  `### \`${r.file}\` (${r.workflowName})`,
-                  '',
-                  `- Streak: ${renderStreakLine(r)}`,
-                  `- Last green: ${renderLastGreen(r)}`,
-                  `- Tracking: ${renderTracking(r.file, r.tracking)}`,
-                  ''
-                );
-              }
-              bodyLines.push(
-                'A red workflow with no open tracking issue and no known per-workflow alert',
-                'step is the gap this rollup exists to close: nothing else in this repo will',
-                'ever surface it.'
-              );
             }
-
             bodyLines.push(
+              'A red workflow with no open tracking issue and no known per-workflow alert',
+              'step is the gap this rollup exists to close: nothing else in this repo will',
+              'ever surface it.',
               '',
               'This workflow only reads the GitHub Actions and Issues APIs; it does not',
               'authenticate against or mutate the shared staging Supabase project.',
@@ -379,36 +393,18 @@ jobs:
               'and is never closed automatically.'
             );
 
-            const body = bodyLines.join('\n');
-            const TITLE = 'Scheduled workflow health rollup';
-            const ROLLUP_LABEL = 'ci-failure';
+            core.setOutput('summary', 'scheduled workflows are on an escalating red streak');
+            return bodyLines.join('\n');
 
-            const rollupIssues = await github.paginate(github.rest.issues.listForRepo, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: ROLLUP_LABEL,
-              per_page: 100,
-            });
-            const existing = rollupIssues.find((issue) => issue.title === TITLE);
-
-            if (existing) {
-              await github.rest.issues.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                body,
-              });
-              core.info(`Updated existing rollup issue #${existing.number}`);
-            } else if (escalations.length > 0) {
-              const created = await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: TITLE,
-                body,
-                labels: [ROLLUP_LABEL],
-              });
-              core.info(`Filed new rollup issue #${created.data.number}`);
-            } else {
-              core.info('Nothing to report and no existing rollup issue; not creating one.');
-            }
+      - name: File or update the health-rollup tracking issue
+        if: steps.rollup.outputs.has_escalations == 'true'
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          # Never `resolve`: a green week is not a reason to close a
+          # fleet-health issue, and closing is not this workflow's job (see
+          # the "never closed automatically" line in the body above).
+          mode: open
+          marker: '[health-rollup]'
+          summary: ${{ steps.rollup.outputs.summary }}
+          body: ${{ steps.rollup.outputs.result }}
+          comment-body: ${{ steps.rollup.outputs.result }}
