@@ -1045,6 +1045,300 @@ def test_main_prints_redacted_stderr_on_dump_failure(
     assert "[redacted]@" in captured.out
 
 
+def _clean_env() -> dict[str, str]:
+    """The six configuration variables main() requires, all well-formed."""
+    return {
+        "SUPABASE_DB_URL": "postgresql://<user>:<password>@<host>/<db>",
+        "R2_ACCOUNT_ID": "acct",
+        "R2_BACKUP_ACCESS_KEY_ID": "<key>",
+        "R2_BACKUP_SECRET_ACCESS_KEY": "<secret>",
+        "R2_BACKUP_BUCKET": "bucket",
+        "BACKUP_ENCRYPTION_KEY": _VALID_KEY,
+    }
+
+
+def test_main_strips_whitespace_around_every_configuration_value() -> None:
+    """A pasted secret carries stray whitespace, and GitHub masks the trimmed value.
+
+    This is the 2026-08-27 production failure: a leading space in R2_ACCOUNT_ID
+    reached boto3 as `https:// ***.r2.cloudflarestorage.com`. The stray character is
+    invisible in the run log because GitHub only masks what it was given, so the
+    fixture below deliberately uses a different whitespace shape per variable.
+    """
+    env = {
+        "SUPABASE_DB_URL": " postgresql://<user>:<password>@<host>/<db>\n",
+        "R2_ACCOUNT_ID": " acct",
+        "R2_BACKUP_ACCESS_KEY_ID": "<key>\n",
+        "R2_BACKUP_SECRET_ACCESS_KEY": "\t<secret>",
+        "R2_BACKUP_BUCKET": "bucket \n",
+        "BACKUP_ENCRYPTION_KEY": f"\n{_VALID_KEY}\n",
+    }
+    runner = MagicMock(return_value="ok")
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+    ):
+        backup_database.main()
+    kwargs = runner.call_args.kwargs
+    assert kwargs["db_url"] == "postgresql://<user>:<password>@<host>/<db>"
+    assert kwargs["r2_account_id"] == "acct"
+    assert kwargs["r2_access_key_id"] == "<key>"
+    assert kwargs["r2_secret_access_key"] == "<secret>"
+    assert kwargs["r2_bucket"] == "bucket"
+    assert kwargs["encryption_key"] == b"0" * 32
+
+
+@pytest.mark.parametrize("blank", ["", "   ", "\n"])
+def test_main_rejects_a_variable_that_is_present_but_blank(
+    blank: str, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """`env: X: ${{ secrets.MISSING }}` sets X to "", it does not omit X.
+
+    So an undefined repository or environment secret arrives as an empty string and
+    os.environ[...] succeeds. Without this check the run proceeds with a bucket named
+    "" and fails somewhere that cannot say which secret was missing.
+    """
+    env = _clean_env()
+    env["R2_BACKUP_BUCKET"] = blank
+    runner = MagicMock()
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+        pytest.raises(SystemExit) as exit_info,
+    ):
+        backup_database.main()
+    assert exit_info.value.code == 1
+    # Assert the blank-specific message, not just the variable name: collapsing this
+    # branch into the unset branch would still print "R2_BACKUP_BUCKET" and pass.
+    assert "R2_BACKUP_BUCKET is set but empty" in capsys.readouterr().out
+    runner.assert_not_called()
+
+
+def test_main_rejects_an_unset_variable_and_names_it(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    env = _clean_env()
+    del env["R2_ACCOUNT_ID"]
+    runner = MagicMock()
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+        pytest.raises(SystemExit) as exit_info,
+    ):
+        backup_database.main()
+    assert exit_info.value.code == 1
+    assert "R2_ACCOUNT_ID is not set" in capsys.readouterr().out
+    runner.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "bad_id",
+    [
+        "https://abc123.r2.cloudflarestorage.com",  # whole endpoint pasted into the id
+        "abc 123",  # an internal space, which strip() cannot reach
+        "abc_123",  # underscore: legal in a secret, illegal in a DNS label
+        "abc.123",  # two labels, so it points at some other host
+        "-abc123",  # a label may not start with a hyphen
+        "abc123-",  # nor end with one
+    ],
+)
+def test_main_rejects_an_account_id_that_is_not_a_hostname_label(
+    bad_id: str, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Fail at the read, not inside boto3 where GitHub's mask hides the defect.
+
+    Reaching boto3 produces `Invalid endpoint: https://***.r2.cloudflarestorage.com`,
+    which cannot tell an empty value from a stray space from a whole pasted URL.
+    """
+    env = _clean_env()
+    env["R2_ACCOUNT_ID"] = bad_id
+    runner = MagicMock()
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+        pytest.raises(SystemExit) as exit_info,
+    ):
+        backup_database.main()
+    assert exit_info.value.code == 1
+    assert "R2_ACCOUNT_ID is not a valid hostname label" in capsys.readouterr().out
+    runner.assert_not_called()
+
+
+def test_main_reports_every_bad_value_in_one_run(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """One dispatch must surface all six verdicts, not just the first failure.
+
+    These secrets are exercised nowhere but a real run, so failing on the first
+    defect turns a misconfiguration into a serial hunt: one scheduled window or manual
+    dispatch per bad value, each blind to everything after it.
+    """
+    env = _clean_env()
+    env["R2_ACCOUNT_ID"] = "not an account id"
+    env["R2_BACKUP_BUCKET"] = "   "
+    env["BACKUP_ENCRYPTION_KEY"] = "not-base64!"
+    del env["SUPABASE_DB_URL"]
+    runner = MagicMock()
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+        pytest.raises(SystemExit) as exit_info,
+    ):
+        backup_database.main()
+    assert exit_info.value.code == 1
+    out = capsys.readouterr().out
+    assert "SUPABASE_DB_URL is not set" in out
+    assert "R2_ACCOUNT_ID is not a valid hostname label" in out
+    assert "R2_BACKUP_BUCKET is set but empty" in out
+    assert "BACKUP_ENCRYPTION_KEY is not valid base64" in out
+    runner.assert_not_called()
+
+
+def test_main_accepts_a_real_shaped_account_id() -> None:
+    """32 lowercase hex characters, which is what Cloudflare actually issues."""
+    env = _clean_env()
+    env["R2_ACCOUNT_ID"] = "0123456789abcdef0123456789abcdef"
+    runner = MagicMock(return_value="ok")
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+    ):
+        backup_database.main()
+    assert runner.call_args.kwargs["r2_account_id"] == (
+        "0123456789abcdef0123456789abcdef"
+    )
+
+
+@pytest.mark.parametrize(
+    "account_id",
+    [
+        "a",  # one label character is the shortest legal DNS label
+        "ab",  # two characters exercises the optional group with an empty middle
+        "0" * 63,  # 1 + 61 + 1 is the longest the regex can match
+    ],
+)
+def test_main_accepts_account_ids_at_the_length_boundaries(account_id: str) -> None:
+    """The regex caps the middle run at 61, so 63 is the last accepted length.
+
+    Real ids are 32 characters, so these bounds are never hit in practice. They are
+    where an off-by-one in the `{0,61}` quantifier would show up, and nothing else in
+    the suite would notice such an edit.
+    """
+    env = _clean_env()
+    env["R2_ACCOUNT_ID"] = account_id
+    runner = MagicMock(return_value="ok")
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+    ):
+        backup_database.main()
+    assert runner.call_args.kwargs["r2_account_id"] == account_id
+
+
+def test_main_rejects_an_all_alphanumeric_account_id_that_is_too_long(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """64 alphanumeric characters is the only way to reach the count-only message.
+
+    `_describe_bad_characters` reports a bare length when every character is legal,
+    which can only happen when the value failed on length alone. Every other
+    rejection names at least one offending character, so without this case that
+    branch is unreachable by the suite and its `#VERIFY` citation would pass while
+    the code path it names stays dark.
+    """
+    env = _clean_env()
+    env["R2_ACCOUNT_ID"] = "0" * 64
+    runner = MagicMock()
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+        pytest.raises(SystemExit) as exit_info,
+    ):
+        backup_database.main()
+    assert exit_info.value.code == 1
+    out = capsys.readouterr().out
+    assert "R2_ACCOUNT_ID is not a valid hostname label" in out
+    assert "64 characters, all alphanumeric" in out
+    assert "at index" not in out
+    runner.assert_not_called()
+
+
+def test_main_rejects_an_account_id_carrying_a_non_ascii_character(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """An accented character survives a paste and must still be named.
+
+    This case exists to discriminate the offender predicate's two arms. "\u00e9" is
+    Unicode-alphanumeric, so `str.isalnum()` returns True for it and ONLY the
+    `isascii()` arm rejects it. A non-breaking space would test nothing here,
+    because `isalnum()` already excludes it; deleting the `isascii()` arm has to
+    change this test's outcome or the test is not pulling its weight.
+    """
+    env = _clean_env()
+    env["R2_ACCOUNT_ID"] = "abc\u00e9123"
+    runner = MagicMock()
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+        pytest.raises(SystemExit) as exit_info,
+    ):
+        backup_database.main()
+    assert exit_info.value.code == 1
+    out = capsys.readouterr().out
+    assert "R2_ACCOUNT_ID is not a valid hostname label" in out
+    assert "at index 3" in out
+    runner.assert_not_called()
+
+
+def test_main_reports_an_unset_encryption_key_without_decoding_it(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The key guard's false arm: absent, so `load_encryption_key` never runs.
+
+    main() only decodes BACKUP_ENCRYPTION_KEY when the read succeeded. Removing that
+    guard would decode a value that is not there and report a base64 failure instead
+    of a missing variable, which points the operator at the wrong defect.
+    """
+    env = _clean_env()
+    del env["BACKUP_ENCRYPTION_KEY"]
+    runner = MagicMock()
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+        pytest.raises(SystemExit) as exit_info,
+    ):
+        backup_database.main()
+    assert exit_info.value.code == 1
+    out = capsys.readouterr().out
+    assert "BACKUP_ENCRYPTION_KEY is not set" in out
+    assert "base64" not in out
+    runner.assert_not_called()
+
+
+def test_describe_bad_characters_names_only_non_alphanumerics() -> None:
+    """The message must locate the defect without reconstructing the value.
+
+    Every alphanumeric character is the secret; every other character is the bug. The
+    clause therefore reports the alphanumeric run as a length only and names the rest.
+    """
+    described = backup_database._describe_bad_characters("ab cd:ef")
+    assert "8 characters" in described
+    assert "' ' at index 2" in described
+    assert "':' at index 5" in described
+    for secret_char in "abcdef":
+        assert f"'{secret_char}'" not in described
+
+
 def test_retention_policy_rejects_non_positive_days() -> None:
     """Zero or negative days is not a retention policy, it is an immediate purge."""
     with pytest.raises(ValueError, match="at least 1"):

@@ -127,11 +127,26 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: File a link-rot issue
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # A local `uses: ./...` requires a checkout, and this job had none.
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Compose the issue body
+        id: compose
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
+          result-encoding: string
           script: |
-            const title = 'Documentation links have rotted';
+            // Lowercase, short phrase for the ISSUE SUMMARY (house style, e.g.
+            // cifuzzy's "weekly fuzzing run is failing"), distinct from the
+            // capitalized `legacy-title` below: that string must stay byte-exact
+            // to match live issue #573, but the summary this action files under
+            // is free to change.
+            const summaryText = 'documentation links have rotted';
             const body = [
               'The weekly whole-corpus link check failed, which means at least',
               'one link in docs/, README.md, or CONTRIBUTING.md did not resolve.',
@@ -153,34 +168,51 @@ jobs:
               'request, because nothing is blocked while you wait.',
               '',
               'Filed automatically because scheduled workflows surface nowhere else.',
-              'Close it once a scheduled run succeeds again.',
+              'It closes itself once a scheduled run succeeds.',
             ].join('\n');
-            const issues = await github.paginate(github.rest.issues.listForRepo, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: 'ci-failure',
-              per_page: 100,
-            });
-            // listForRepo returns pull requests as well as issues. A PR that
-            // happened to carry this title would otherwise absorb the comment,
-            // and the real issue would never be found or created.
-            const existing = issues.find(
-              (issue) => !issue.pull_request && issue.title === title,
-            );
-            if (existing) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                body,
-              });
-            } else {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title,
-                body,
-                labels: ['ci-failure'],
-              });
-            }
+            // The issue plumbing lives in .github/actions/ci-failure-issue so all
+            // fourteen scheduled workflows share one implementation. Compose only.
+            core.setOutput('summary', summaryText);
+            return body;
+
+      - name: File or comment on the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[link-check]'
+          legacy-title: Documentation links have rotted
+          summary: ${{ steps.compose.outputs.summary }}
+          body: ${{ steps.compose.outputs.result }}
+          comment-body: The weekly whole-corpus link check failed again.
+
+  resolve-tracking-issue:
+    name: Resolve the tracking issue
+    needs: link-check-full
+    # Scheduled runs only, matching the filing job: a green pull_request run proves
+    # nothing about the weekly whole-corpus check and must not close its issue.
+    #
+    # Gated on the needed job's explicit result rather than `success()`, because a
+    # SKIPPED dependency does not fail `success()`.
+    if: needs.link-check-full.result == 'success' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Close the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[link-check]'
+          legacy-title: Documentation links have rotted
+          mode: resolve

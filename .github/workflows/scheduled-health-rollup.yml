@@ -35,7 +35,7 @@
 # the last N runs and reporting every-run-failed as "an N-run streak" has
 # already been committed as a real defect in this program's own history (a
 # `--limit 10` query returned ten failures and was reported as a "ten-night
-# streak" when the true streak was 31, see UW-F46 in
+# streak" when the true streak was 31, see UW-F48 in
 # docs/planning/unscheduled-work-register.md). This workflow pages workflow
 # runs newest-first until it observes a completed run with conclusion
 # `success`, or until HARD_CAP runs have been examined, and never reports a

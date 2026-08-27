@@ -839,6 +839,82 @@ jobs:
           fi
           python3 scripts/check_rad_citations.py --assert-no-growth "${BASE_REF}"
 
+  # Executes the alerting script that .github/actions/ci-failure-issue hands to
+  # actions/github-script. Fourteen scheduled workflows delegate their ONLY
+  # notification channel to that script, and a scheduled workflow fails
+  # invisibly by construction: no pull request turns red, so a defect there is
+  # not a broken build, it is nobody being told. That makes the script the one
+  # piece of CI whose own failure mode is silence, and it had no test at all.
+  #
+  # Unconditional (no job-level `if:`, no `needs:`) and therefore evaluated on
+  # release-automation commits too, via the release loop in ci-gate. That is
+  # deliberate: the job needs no services and no dependency resolution, so
+  # there is no cost argument for exempting it, and a release commit can touch
+  # the action like any other.
+  alert-action:
+    name: Scheduled-alert action harness
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # No `cache:` and no install step: the harness has no package.json and no
+      # lockfile, and runs on `node --test` alone. The gate that guards the
+      # alerting path therefore adds no npm supply-chain surface of its own,
+      # and cannot be masked by an unrelated dependency-resolution failure.
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+
+      # #CRITICAL: data-integrity: `node --test` exits 0 when it discovers no
+      # tests, so a moved or renamed file would turn this required leg into a
+      # green no-op indistinguishable from a passing suite. That is the same
+      # class of anti-oracle the harness itself exists to close, so the count
+      # is asserted rather than trusted: the floor is checked against the TAP
+      # summary and the step fails if the suite shrinks.
+      # #VERIFY: tests/unit/test_ci_gate_contract.py asserts this job is in
+      # ci-gate's needs: and is evaluated on release commits; deleting the
+      # floor check below is caught by
+      # tests/unit/test_ci_failure_action_contract.py::test_the_ci_job_asserts_a_test_count_floor
+      - name: Run the ci-failure-issue harness
+        env:
+          # Raise in step with the suite. A floor that never moves stops
+          # detecting a suite that quietly lost half its cases.
+          MIN_TESTS: '40'
+        run: |
+          set -euo pipefail
+
+          node --test --test-reporter=tap \
+            .github/actions/ci-failure-issue/test/reconcile.test.mjs | tee harness.tap
+
+          passed="$(sed -n 's/^# pass \([0-9]\+\)$/\1/p' harness.tap | tail -1)"
+          failed="$(sed -n 's/^# fail \([0-9]\+\)$/\1/p' harness.tap | tail -1)"
+
+          if [ -z "$passed" ] || [ -z "$failed" ]; then
+            echo "::error::the harness produced no TAP summary, so its result is unknown"
+            exit 1
+          fi
+          if [ "$failed" != "0" ]; then
+            echo "::error::${failed} harness assertions failed"
+            exit 1
+          fi
+          if [ "$passed" -lt "$MIN_TESTS" ]; then
+            echo "::error::the harness reported only ${passed} passing tests, below the floor of ${MIN_TESTS}. A shrinking suite here reads exactly like a passing one."
+            exit 1
+          fi
+          echo "${passed} harness assertions passed." >> "$GITHUB_STEP_SUMMARY"
+
+
   # Uploads the backend's per-test-type coverage + JUnit to Codecov, INLINE so
   # it runs on PRs (the old workflow_run codecov.yml only ran on main). The
   # reusable `ci` job publishes coverage-{unit,integration,security}.xml and
@@ -1174,6 +1250,7 @@ jobs:
         format-tree,
         rad-citations,
         docstrings,
+        alert-action,
       ]
     if: always()
     permissions:
@@ -1212,6 +1289,7 @@ jobs:
           FORMAT_TREE_RESULT: ${{ needs.format-tree.result }}
           RAD_CITATIONS_RESULT: ${{ needs.rad-citations.result }}
           DOCSTRINGS_RESULT: ${{ needs.docstrings.result }}
+          ALERT_ACTION_RESULT: ${{ needs.alert-action.result }}
         run: |
           set -euo pipefail
 
@@ -1267,10 +1345,10 @@ jobs:
             exit 1
           fi
 
-          # #CRITICAL: data-integrity: FOUR jobs in this gate carry no
+          # #CRITICAL: data-integrity: FIVE jobs in this gate carry no
           # job-level `if:` and no `needs:` (schema-docs, format-tree,
-          # rad-citations, docstrings), so unlike the rest of the suite they
-          # really run on a release-automation commit. Every one of their
+          # rad-citations, docstrings, alert-action), so unlike the rest of the
+          # suite they really run on a release-automation commit. Every one of their
           # results must be evaluated BEFORE the release-skip branch below
           # returns 0, or a genuine failure is discarded and reported as an
           # intentional skip.
@@ -1278,20 +1356,22 @@ jobs:
           # per job precisely so the next unconditional job added to the gate
           # joins it by name instead of silently inheriting the hole:
           # format-tree sat in this branch's blind spot for exactly that
-          # reason before rad-citations became the second member, and
-          # docstrings repeated the mistake as the fourth.
+          # reason before rad-citations became the second member, docstrings
+          # repeated the mistake as the fourth, and alert-action joined as the
+          # fifth by editing this loop rather than by being noticed later.
           # #VERIFY: test_ci_gate_contract.py::TestGateDecisions asserts a
           # release commit with each of these results set to failure fails the
           # gate, and TestEveryUnconditionalJobIsReleaseChecked derives the set
           # of no-`if:`/no-`needs:` jobs from the workflow and asserts this loop
-          # names every one of them, so a fifth such job cannot inherit the hole
+          # names every one of them, so a sixth such job cannot inherit the hole
           # by omission.
           if [ "$RELEASE_PR" = "true" ]; then
             for entry in \
               "ER Diagram Drift:$SCHEMA_DOCS_RESULT" \
               "Format (tree-wide):$FORMAT_TREE_RESULT" \
               "RAD Citation Gate:$RAD_CITATIONS_RESULT" \
-              "Docstring coverage (interrogate):$DOCSTRINGS_RESULT"; do
+              "Docstring coverage (interrogate):$DOCSTRINGS_RESULT" \
+              "Scheduled-alert action harness:$ALERT_ACTION_RESULT"; do
               unconditional_label="${entry%%:*}"
               unconditional_result="${entry#*:}"
               if [ "$unconditional_result" != "success" ]; then
@@ -1318,9 +1398,9 @@ jobs:
               echo "## CI Gate passed WITHOUT running the suite"
               echo ""
               echo "Release-automation commit: every quality job except \`ER Diagram Drift\`,"
-              echo "\`Format (tree-wide)\`, \`RAD Citation Gate\` and \`Docstring coverage (interrogate)\`"
-              echo "was intentionally skipped."
-              echo "Those four carry no job-level condition, so they really ran and really"
+              echo "\`Format (tree-wide)\`, \`RAD Citation Gate\`, \`Docstring coverage (interrogate)\`"
+              echo "and \`Scheduled-alert action harness\` was intentionally skipped."
+              echo "Those five carry no job-level condition, so they really ran and really"
               echo "passed. Beyond them this commit carries **no verification from this workflow**."
               echo "The tested content is the feature PR that produced it."
               echo ""
@@ -1359,6 +1439,7 @@ jobs:
           # Also no job-level `if:`, for the same reason as Format (tree-wide).
           check_job "RAD Citation Gate" "$RAD_CITATIONS_RESULT" false
           check_job "Docstring coverage (interrogate)" "$DOCSTRINGS_RESULT" false
+          check_job "Scheduled-alert action harness" "$ALERT_ACTION_RESULT" false
           check_job "Frontend (Node 22)" "$FRONTEND_RESULT" "$merge_queue_skip_ok"
           check_job "Frontend E2E (Playwright, mocked tier)" "$FRONTEND_E2E_RESULT" "$merge_queue_skip_ok"
           check_job "Design System (Node 22)" "$DESIGN_SYSTEM_RESULT" "$merge_queue_skip_ok"

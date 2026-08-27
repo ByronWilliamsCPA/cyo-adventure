@@ -122,6 +122,53 @@ async def test_upload_cover_blank_config_value_raises_generation_error() -> None
 
 @pytest.mark.unit
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "bad_id",
+    [
+        "acct 123",  # a space that survived a manual paste
+        "https://acct.r2.cloudflarestorage.com",  # the endpoint URL, not the id
+        "acct.123",  # two labels, so it points at some other host
+        "acct_123",  # legal in a secret, illegal in a DNS label
+        "-acct123",  # a label may not start with a hyphen
+        "0" * 64,  # one past the longest label the regex can match
+    ],
+)
+async def test_upload_cover_rejects_a_malformed_account_id(bad_id: str) -> None:
+    """Fail before boto3, where the deployment's secret mask hides the defect.
+
+    Reaching boto3 produces `Invalid endpoint: https://***.r2.cloudflarestorage.com`,
+    which cannot distinguish a stray space from a whole pasted URL. This is the same
+    failure that cost `scripts/backup_database.py` two dispatches on 2026-08-27; the
+    backend reads the same `R2_ACCOUNT_ID` name and had no equivalent check.
+    """
+    settings = _settings(r2_account_id=bad_id)
+    with pytest.raises(CoverGenerationError, match="not a valid hostname label"):
+        await upload_cover(b"x", "k.webp", settings)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_upload_cover_malformed_account_id_message_does_not_echo_the_value() -> (
+    None
+):
+    """The message reports a length, never the characters.
+
+    A deployment log is a less controlled surface than a CI log, so unlike the backup
+    script this path does not name individual offending characters. Length alone is
+    enough to separate "blank", "stray character", and "whole URL pasted in".
+    """
+    secret_ish = "0123456789abcdef0123456789abcdef.extra"
+    settings = _settings(r2_account_id=secret_ish)
+    with pytest.raises(CoverGenerationError) as exc_info:
+        await upload_cover(b"x", "k.webp", settings)
+    message = str(exc_info.value)
+    assert f"{len(secret_ish)} characters" in message
+    assert secret_ish not in message
+    assert "0123456789abcdef" not in message
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_upload_cover_client_construction_failure_propagates() -> None:
     """A boto3 client construction failure propagates instead of returning a URL."""
     settings = _settings()
