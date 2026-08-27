@@ -4661,20 +4661,30 @@ them in order:</p>
    assignment (IndexedDB offline cache, <code>frontend/src/offline/</code>).</li>
 </ol>
 <h2 id="6-backup-and-restore">6. Backup and restore<a class="headerlink" href="#6-backup-and-restore" title="Permanent link">&para;</a></h2>
-<p><strong>Partially closed on merge of the <code>feat/database-backups-r2</code> branch</strong> (issue #558 / <code>UW-D27</code>);
-replace this line with the merge date once it lands. A scheduled backup exists as of that merge;
-the restore side is documented below but <strong>not yet drilled against a live project</strong> -- see the
-<code>#VERIFY</code> note at the end of this section before relying on it in a real incident.</p>
+<p><strong>Partially closed</strong> (issue #558 / <code>UW-D27</code>). A scheduled backup exists and has been observed
+to complete (2026-08-27); the restore side is documented below but <strong>not yet drilled against a
+live project</strong> -- see the <code>#VERIFY</code> note at the end of this section before relying on it in a
+real incident.</p>
 <blockquote>
-<p><strong>No backup has ever completed successfully as of 2026-08-11.</strong> All six secrets the workflow
-needs are absent from every scope, so the one run that executed (2026-08-10) died on
-<code>BACKUP_ENCRYPTION_KEY must decode to 32 bytes for AES-256 (got 0)</code>. The runs before it never
-executed at all: the job named the <code>production</code> environment, whose required-reviewer rule parks
-a scheduled run in <code>waiting</code> until it expires as <code>cancelled</code>. That is the identical trap this
-runbook already documents for <code>e2e-prod.yml</code> in Section 7, and it is why <code>production-e2e</code> exists.
-The backup job now names a dedicated <strong><code>backups</code></strong> environment with no protection rules, holding
-only its six credentials. Populating those secrets is the remaining step; until one run reports
-success, treat this section as untested and assume there is nothing to restore from.</p>
+<p><strong>A backup completed successfully for the first time on 2026-08-27</strong> (run <code>33094165033</code>, a
+manual <code>workflow_dispatch</code>). All six secrets are present in the <strong><code>backups</code></strong> environment
+scope and the dump/encrypt/upload path works end to end, so there IS something to restore
+from. <strong>The restore side is still undrilled</strong>: see the <code>#VERIFY</code> note at the end of this
+section before relying on it in a real incident. That gap, not the backup side, is what
+keeps this section provisional.</p>
+<p>History, kept because both traps recur and neither is visible from a green dashboard. Until
+2026-08-27 no run had ever succeeded. Runs before 2026-08-11 never executed at all: the job
+named the <code>production</code> environment, whose required-reviewer rule parks a scheduled run in
+<code>waiting</code> until it expires as <code>cancelled</code>. That is the identical trap this runbook documents
+for <code>e2e-prod.yml</code> in Section 7, and it is why <code>production-e2e</code> exists. #696 moved the job to
+a dedicated <code>backups</code> environment with no protection rules on 2026-08-24. The run that then
+executed still failed, on a malformed <code>R2_ACCOUNT_ID</code> that GitHub's secret mask rendered as
+an undiagnosable <code>Invalid endpoint: https:// ***.r2.cloudflarestorage.com</code>. Because the mask
+hides the stray character, each defect cost one dispatch to identify; <code>scripts/backup_database.py</code>
+now validates all six values up front and reports every bad one in a single run.</p>
+<p>The concurrency shape that produced the 16-day wedge is unchanged: the workflow still declares
+<code>group: ${{ github.workflow }}</code> with <code>cancel-in-progress: false</code>, so a run parked in <code>waiting</code>
+still blocks every later run in the same group rather than being superseded by one.</p>
 </blockquote>
 <h3 id="what-runs-today">What runs today<a class="headerlink" href="#what-runs-today" title="Permanent link">&para;</a></h3>
 <p><code>.github/workflows/supabase-backup.yml</code> runs
@@ -4791,9 +4801,13 @@ not one fewer.</p>
 <p>A failed run opens or comments on a <code>ci-failure</code>-labelled issue titled <code>[db-backup] scheduled
 database backup failing</code>, per the "Alert on failure" step in the workflow (a separate job holding
 <code>issues: write</code>, so the job that handles the six production secrets never holds it): see Section 7
-for the general convention. Cover art in R2 is <strong>not</strong> covered by this workflow; it remains
-unbacked-up separately, since no export tooling for object storage exists in this repo (tracked as
-its own gap, distinct from <code>UW-D27</code>).</p>
+for the general convention. Since #771 a green <strong>scheduled</strong> run also closes that issue
+(<code>mode: resolve</code>), so an open one means a currently failing schedule rather than backlog. A
+green <code>workflow_dispatch</code> deliberately does not close it: a manual run proves a human can make
+the job pass, not that the cron fired at all.</p>
+<p>Cover art in R2 is <strong>not</strong> covered by this workflow; it remains unbacked-up separately, since no
+export tooling for object storage exists in this repo (tracked as its own gap, distinct from
+<code>UW-D27</code>).</p>
 <h3 id="restore-procedure">Restore procedure<a class="headerlink" href="#restore-procedure" title="Permanent link">&para;</a></h3>
 <ol>
 <li>Identify the backup to restore from: list objects under <code>daily/</code>, <code>weekly/</code>, or <code>monthly/</code>
@@ -5440,7 +5454,7 @@ because that test is currently the only thing that would notice.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 27, 2026 20:47:46 UTC">August 27, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 27, 2026 22:01:18 UTC">August 27, 2026</span>
   </span>
 
     
