@@ -18,10 +18,12 @@ This document does three things, in order:
 3. Designs a **user-side testing module**: a new tier whose job is to find the issues our current, script-first
    process structurally cannot, the ones real users hit.
 
-**Comparison caveat**: the external LLM response this document was asked to compare against did not arrive with the
-task (the paste was not delivered). The comparison in section 2 is therefore made against the canonical
-programmatic-review checklist such responses follow. Section 1's inventory is deliberately complete so that, when
-the original text is available, a line-by-line re-comparison is a fast diff rather than a new research pass.
+**Provenance note**: the external LLM response this document compares against did not arrive with the original
+task, so the first draft compared against the canonical programmatic-review checklist such responses follow
+(section 2). The full text (a four-layer "synthetic beta" recommendation: programmatic journey testing, synthetic
+child personas, per-story automated evaluation, and choice-tree traversal, plus multi-model judging, a
+deterministic-first rule, and a staged pre-human rollout) was delivered on review, and section 2b now holds the
+line-by-line comparison against what this repo actually runs.
 
 ## 1. Current process inventory (as of 2026-08-27)
 
@@ -130,6 +132,88 @@ dispositions:
 - **Frontend mutation testing**: rejected for now; runtime cost is high and the deterministic misuse +
   real-backend tiers already kill the survivor classes Stryker would target.
 
+## 2b. Line-by-line: the delivered recommendation vs this repo
+
+The delivered response proposes a four-layer "synthetic beta" (programmatic journey testing, synthetic child
+personas, automated per-story evaluation, choice-tree traversal) plus supporting practices. Two of its framing
+assumptions do not hold here, and both work in this repo's favor:
+
+- **It assumes runtime, per-choice story generation.** This app generates the complete Storybook graph up
+  front and gates it behind `validator/` + `moderation/` + mandatory human approval before any child can open
+  it. Consequences: path exploration does not need sampling ("run 500 synthetic playthroughs") because the
+  graph is finite and enumerable, and "which 5% should a human inspect" is moot pre-publish, since a human
+  already reviews 100% of stories. Triage value shifts to review-queue prioritization and post-publish
+  catalog analysis, not to replacing inspection.
+- **It assumes a native mobile app** (Appium / Maestro / Detox / XCTest / Espresso). This is a web PWA;
+  Playwright is the correct harness and already runs five tiers of it.
+
+Verdicts per element of the response, verified against the actual modules rather than assumed:
+
+| Response element | Repo reality | Verdict |
+| --- | --- | --- |
+| Layer 1: programmatic journeys (resume, back out, force-close, connectivity loss, odd tap orders) | `reader-reload-resume`, `reader-go-back`, `offline-reconnect/conflict`, `guardian-backend-unavailable`, the `naive-user/` misuse suite, all across five tiers | Covered; legs A/B below extend it |
+| Layer 1: LLM picks the next action, harness executes (structured `{action, target, reason}`) | Not present | Adopt: this is exactly leg B's loop |
+| Layer 2: 12-20 fixed personas with behavioral constraints | 17 comprehension scenarios exist by role (kid/guardian/admin), none age-banded by reader profile | Adopt: persona-condition leg B |
+| Layer 3: coherence, character, world consistency | `validator/character.py` (CH-* envelope rules), `validator/continuity.py`, moderation stages 3-4 | Covered; see the continuity warning below |
+| Layer 3: choice agency ("did my choice matter") | `validator/consequence.py`: per-fork rejoin distance plus variable-state delta over the exhaustive configuration graph | Exceeded: deterministic and total beats a sampled 1-5 LLM score |
+| Layer 3: choice distinctiveness, repetition | `moderation/leaf_diversity.py` (anti-template guard), `diversity/` gram/lexical/structural metrics | Covered |
+| Layer 3: reading level (formulas + LLM age fit) | RL-13 Flesch-Kincaid advisory (`validator/reading_level.py`) plus Stage 4's holistic note; a per-node LLM readability stage was built and retired for duplicating RL-13 | Covered: the repo already landed on the exact split the response recommends |
+| Layer 3: engagement | Moderation Stage 4, whole-story LLM engagement advisory | Covered (advisory, as it should be) |
+| Layer 3: safety, age appropriateness | Stage 1 hard gate, classifiers, `imitable.py`, `theme_leak.py`, `band_profile.py`, plus the weekly adversarial corpus in `safety-eval.yml` with majority-of-k scoring | Exceeded |
+| Layer 4: traverse the choice tree (random walks, BFS, coverage sampling) | `validator/walk.py`: exhaustive BFS over every reachable (node, variable-state, visit-set) configuration, with soundness handling for once-effects | Exceeded by architecture: enumeration, not sampling |
+| Multi-model judging (generator never grades itself) | Stage-0 classifier (OpenAI) + independent Stage-1/3/4 review model (OpenRouter-pinned) + optional Perspective + deterministic Python + a human on every story | Covered |
+| Deterministic checks do everything they can | The layer-1/layer-2 validator design law; the retired LLM readability stage is this principle applied retroactively | Covered |
+| Comprehension self-test (generate 3 questions, check answerability elsewhere) | Not present | Adopt as a measured pilot (conditions below) |
+| Adversarial "weird kid" agent | Deterministic misuse suites exist; unscripted chaos is exactly leg A | Covered by this proposal |
+| Evaluation DB + structured per-run result | Persisted moderation reports, append-only pipeline events, thresholds dashboard | Covered |
+| CI fails on quality thresholds | The validator gate blocks structurally; safety-eval gates weekly per class; `AL-337` sets a deliberately higher bar: a computable statistic becomes a gate only with reader-impact evidence | Covered, with a better-informed promotion rule |
+| Cheap-to-strong judge cascade | Review batching exists; no confidence cascade | Note: adopt as leg B and pilot cost posture |
+| Calibrate synthetic predictions against real child behavior | `reading_history`, `reading_time`, ratings, and flags are collected; nothing joins them back to Stage-4 advisories or validator statistics | Adopt: the strongest new idea in the response |
+
+The response's own warnings (LLM judges miss subtle incoherence; an AI score is not proof of quality) are
+already institutional knowledge here, in stronger, measured form: `validator/continuity.py` built three LLM/
+lexical continuity formulations, measured 3.48 findings per node and a 1-in-6 true-positive rate, and shipped
+none as a rule; `AL-337` records the cost of promoting a computable number to a gate; `validator/
+blind_spots.py` makes the gate report what it did NOT check, with witness documents proving the declarations
+stay true. Any new LLM judge proposed below inherits that discipline: measured before believed, advisory
+before gating, never a silent pass.
+
+### Genuinely new adoptions from the response
+
+1. **Persona-conditioned agents for leg B** (response layer 2): define roughly ten fixed, age-banded reader
+   personas (emerging/average/strong/reluctant readers across the app's age bands) with the response's
+   constraint style ("do not infer functionality that is not visible; prefer what this persona would
+   attempt"), and run leg B under them. The same personas drive kid-surface story-reading walks against
+   seeded staging stories, which turns leg B into a story-experience probe as well as a UI one.
+2. **Comprehension probe pilot** (response's self-testing idea): an offline script over the committed story
+   corpus in `skeletons/`: one model generates "what happened / why / what should the reader remember"
+   questions per passage, a different model answers from the story text alone, and unanswerable questions
+   flag ambiguity, missing causal links, or unclear referents. Pilot terms are non-negotiable given the
+   continuity.py precedent: run against human-reviewed stories first, measure precision, and only a result
+   materially better than continuity's 1-in-6 earns promotion to an advisory moderation stage.
+3. **Prediction-vs-behavior calibration loop** (the response's "defensible capability" point): a read-only
+   analysis job joining Stage-4 engagement advisories and validator statistics (consequence distance,
+   reconvergence, diversity scores) with aggregated real outcomes (completion rate, return reads, ratings,
+   flags) per storybook. Output feeds the flywheel's candidate strategy, which today triggers on
+   request-side saturation only, and over time calibrates which synthetic scores actually predict that a
+   band's readers finish and return. Hard precondition, same as leg C: an ADR-018 children's-privacy review;
+   aggregate-only, per-storybook not per-child, and no new collection, only analysis of what the reading
+   APIs already store.
+
+### Explicit do-not-build list (things the response suggests that would duplicate or regress what exists)
+
+- A standalone "Story QA Harness" service: `validator/` + `moderation/` + the events pipeline + the
+  thresholds dashboard already are that harness, wired into the request path and the human review surface.
+- Sampled path traversal (random walks / 500 playthroughs) for story QA: `walk.py` enumerates the space
+  exhaustively; sampling would be a strict downgrade. Random walks stay valuable only where the space is not
+  enumerable, which is the live UI, and that is leg A.
+- A per-node LLM readability judge: built once, retired once (duplicated RL-13); the holistic Stage-4 note is
+  the surviving channel.
+- LLM continuity gating: measured and rejected; continuity stays a reported statistic until a formulation
+  beats the recorded false-positive wall.
+- A commercial synthetic-user platform: the response itself concludes in-house is better given this stack,
+  and the module below is that in-house build.
+
 ## 3. The user-side testing module
 
 ### What "user-side" means here, concretely
@@ -181,7 +265,10 @@ The 17 naive-ux scenarios are the best user-side test asset this repo has and th
 human must paste each one into a browser extension. Leg B turns the skill's prompt set into a scheduled runner:
 a Playwright-driven loop in `tools/usersim-agent/` where an LLM plays the persona (observe accessibility-tree
 snapshot, decide, act), executes one scenario per invocation, and emits the same structured verdict the skill
-defines (`pass` / `friction-found` / `dead-end`, plus the four rubric answers).
+defines (`pass` / `friction-found` / `dead-end`, plus the four rubric answers). Runs are persona-conditioned
+per section 2b: the agent receives one fixed age-banded reader persona plus a constraint block (act only on
+what is visible, prefer what this persona would attempt, report where a child could misunderstand a control),
+and each step is a structured `{action, target, reason}` decision that the harness, not the model, executes.
 
 Postures inherited from the skill verbatim, not renegotiated:
 
