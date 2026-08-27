@@ -44,6 +44,12 @@ jobs:
     # raise was needed, 840s still leaves comfortable margin against 1500s.
     timeout-minutes: 25
     environment: staging
+    # Least-privilege at workflow level (contents: read); this job adds only
+    # the issues: write the failure-alerting steps below need. Composite
+    # actions cannot declare their own permissions, so the caller must.
+    permissions:
+      contents: read
+      issues: write
     defaults:
       run:
         working-directory: ./frontend
@@ -198,3 +204,139 @@ jobs:
           name: e2e-staging-traces
           path: frontend/test-results/
           retention-days: 7
+
+      - name: Compose the issue body
+        # Same composite-action pattern as e2e-prod.yml (see that workflow's
+        # own compose step for why: the prior inline issue-listing call paged
+        # at GitHub's default 30-per-page with no `!issue.pull_request`
+        # filter, so an open PR titled with this marker, or a 31st-oldest open
+        # issue, could hide the real tracking issue and file a duplicate).
+        #
+        # This job has THREE independent failure sources instead of one: the
+        # `playwright` step, the `leak_check` diagnostic, and the `grant_sweep`
+        # authoritative backstop (see their own long comments above for why
+        # both leak signals exist and why the sweep, not the ledger, is
+        # authoritative). A leaked device grant needs a human to revoke it by
+        # hand; a spec failure does not. An operator who only reads the issue
+        # title or top comment should not have to open the run to tell which
+        # fired, so the body names each one by its own step outcome rather
+        # than one generic message.
+        #
+        # #CRITICAL: security: THIS REPOSITORY IS PUBLIC, so this body is
+        # world-readable like every other issue and log line (see the
+        # #CRITICAL: security comment above the trace-upload step). It names
+        # which step failed and points at the run log and artifacts, the same
+        # parity already established by this job's own `::error::` lines
+        # (grant ids, spec labels); it never carries a bearer token, a
+        # device-grant token, or raw Playwright output.
+        # #VERIFY: any future edit to this script still sources its content
+        # only from step outcomes (an enum: success/failure/cancelled/
+        # skipped), never from `frontend/test-results/` or a secret.
+        if: ${{ failure() }}
+        id: compose
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          PLAYWRIGHT_OUTCOME: ${{ steps.playwright.outcome }}
+          LEAK_CHECK_OUTCOME: ${{ steps.leak_check.outcome }}
+          SWEEP_OUTCOME: ${{ steps.grant_sweep.outcome }}
+        with:
+          result-encoding: string
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const today = new Date().toISOString().slice(0, 10)
+
+            const sweepFailed = process.env.SWEEP_OUTCOME === 'failure'
+            const leakCheckFailed = process.env.LEAK_CHECK_OUTCOME === 'failure'
+            const playwrightFailed = process.env.PLAYWRIGHT_OUTCOME === 'failure'
+
+            const lines = [
+              'The scheduled `E2E (staging)` workflow (`.github/workflows/e2e-staging.yml`) failed.',
+              '',
+              'This tier runs daily against the shared staging Supabase project using',
+              'disposable seeded fixtures (scripts/seed_staging.py); a failure means the',
+              'seed drifted, the staging frontend build broke, a real regression landed, or a',
+              'staging device grant was not confirmed revoked.',
+              '',
+            ]
+
+            if (sweepFailed) {
+              lines.push(
+                '**A staging device grant may still be active.** The `grant_sweep` step, which',
+                'asks staging directly whether the test guardian family still holds a live',
+                'grant, failed. This is the authoritative signal (not the leak-ledger',
+                'diagnostic below): treat it as a security event and have a human confirm and',
+                'revoke any surviving grant by hand. See that step\'s log for which grant, and',
+                'frontend/e2e-staging-sweep/device-grant-sweep.spec.ts for how it checks.',
+                '',
+              )
+            }
+
+            if (leakCheckFailed) {
+              lines.push(
+                'The `leak_check` step recorded an unconfirmed teardown revoke (a diagnostic',
+                'only; see its log for which spec and grant id). Whether the grant is actually',
+                'still live is what `grant_sweep` above determines.',
+                '',
+              )
+            }
+
+            if (playwrightFailed) {
+              lines.push(
+                'The `playwright` step itself failed. See the uploaded `e2e-staging-traces`',
+                'artifact, if present, and the run log for which spec.',
+                '',
+              )
+            }
+
+            if (!sweepFailed && !leakCheckFailed && !playwrightFailed) {
+              lines.push(
+                'None of the three tracked steps (playwright, leak_check, grant_sweep)',
+                'reported failure; check the run log for a step outside those three.',
+                '',
+              )
+            }
+
+            lines.push(
+              `First failing run: ${runUrl}`,
+              `Date: ${today}`,
+              '',
+              'This issue accumulates one comment per failing run and closes itself',
+              'once a scheduled run succeeds; the next failure opens a fresh issue.',
+            )
+
+            return lines.join('\n')
+
+      - name: File or comment on the pinned issue
+        if: ${{ failure() }}
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[e2e-staging]'
+          label: e2e-alert
+          summary: scheduled staging E2E failing
+          body: ${{ steps.compose.outputs.result }}
+          comment-body: Scheduled staging E2E failed again.
+
+      - name: Resolve the tracking issue on a green scheduled run
+        # Mirrors e2e-prod.yml's resolve gate, including the
+        # `github.event_name == 'schedule'` guard (a manual workflow_dispatch
+        # proves only that a human-triggered run went green, not that the
+        # SCHEDULE is alive; see e2e-prod.yml's comment on this same step for
+        # the confirmed real-world failure shape, issue #667 on
+        # supabase-backup.yml).
+        #
+        # `success()` here already folds in the sweep's authoritative check: a
+        # surviving device grant fails the `grant_sweep` step (`if: always()`),
+        # which fails the job, which makes `success()` false. So this is not
+        # "close on one green run despite a possibly-leaked grant"; a leaked
+        # grant is exactly the case where this step does not run, and the
+        # tracking issue stays open until a human resolves the grant and a
+        # later scheduled run is clean end to end. No divergent local
+        # close-gate is introduced; if one green run ever proves too weak a
+        # bar for this workflow specifically, that is a decision for the
+        # shared action's owner, not a local workaround here.
+        if: success() && github.event_name == 'schedule'
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[e2e-staging]'
+          label: e2e-alert
+          mode: resolve

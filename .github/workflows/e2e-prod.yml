@@ -163,10 +163,11 @@ jobs:
         # or a 31st-oldest open issue, could hide the real tracking issue and
         # file a duplicate.
         #
-        # e2e-staging.yml should adopt this same composite-action pattern once
-        # PR #268 merges; today it only has the passive
-        # trace-artifact-on-failure signal (marker "[e2e-staging]" instead of
-        # "[e2e-prod]", everything else the same).
+        # e2e-staging.yml now adopts this same composite-action pattern too
+        # (marker "[e2e-staging]" instead of "[e2e-prod]"). Its own compose
+        # step additionally distinguishes which of its three failure sources
+        # fired (a Playwright failure vs. a leaked staging device grant), since
+        # that job has no single point of failure the way this one does.
         if: ${{ failure() }}
         id: compose
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
