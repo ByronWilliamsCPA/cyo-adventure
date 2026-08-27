@@ -1110,7 +1110,9 @@ def test_main_rejects_a_variable_that_is_present_but_blank(
     ):
         backup_database.main()
     assert exit_info.value.code == 1
-    assert "R2_BACKUP_BUCKET" in capsys.readouterr().out
+    # Assert the blank-specific message, not just the variable name: collapsing this
+    # branch into the unset branch would still print "R2_BACKUP_BUCKET" and pass.
+    assert "R2_BACKUP_BUCKET is set but empty" in capsys.readouterr().out
     runner.assert_not_called()
 
 
@@ -1211,6 +1213,116 @@ def test_main_accepts_a_real_shaped_account_id() -> None:
     assert runner.call_args.kwargs["r2_account_id"] == (
         "0123456789abcdef0123456789abcdef"
     )
+
+
+@pytest.mark.parametrize(
+    "account_id",
+    [
+        "a",  # one label character is the shortest legal DNS label
+        "ab",  # two characters exercises the optional group with an empty middle
+        "0" * 63,  # 1 + 61 + 1 is the longest the regex can match
+    ],
+)
+def test_main_accepts_account_ids_at_the_length_boundaries(account_id: str) -> None:
+    """The regex caps the middle run at 61, so 63 is the last accepted length.
+
+    Real ids are 32 characters, so these bounds are never hit in practice. They are
+    where an off-by-one in the `{0,61}` quantifier would show up, and nothing else in
+    the suite would notice such an edit.
+    """
+    env = _clean_env()
+    env["R2_ACCOUNT_ID"] = account_id
+    runner = MagicMock(return_value="ok")
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+    ):
+        backup_database.main()
+    assert runner.call_args.kwargs["r2_account_id"] == account_id
+
+
+def test_main_rejects_an_all_alphanumeric_account_id_that_is_too_long(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """64 alphanumeric characters is the only way to reach the count-only message.
+
+    `_describe_bad_characters` reports a bare length when every character is legal,
+    which can only happen when the value failed on length alone. Every other
+    rejection names at least one offending character, so without this case that
+    branch is unreachable by the suite and its `#VERIFY` citation would pass while
+    the code path it names stays dark.
+    """
+    env = _clean_env()
+    env["R2_ACCOUNT_ID"] = "0" * 64
+    runner = MagicMock()
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+        pytest.raises(SystemExit) as exit_info,
+    ):
+        backup_database.main()
+    assert exit_info.value.code == 1
+    out = capsys.readouterr().out
+    assert "R2_ACCOUNT_ID is not a valid hostname label" in out
+    assert "64 characters, all alphanumeric" in out
+    assert "at index" not in out
+    runner.assert_not_called()
+
+
+def test_main_rejects_an_account_id_carrying_a_non_ascii_character(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """An accented character survives a paste and must still be named.
+
+    This case exists to discriminate the offender predicate's two arms. "\u00e9" is
+    Unicode-alphanumeric, so `str.isalnum()` returns True for it and ONLY the
+    `isascii()` arm rejects it. A non-breaking space would test nothing here,
+    because `isalnum()` already excludes it; deleting the `isascii()` arm has to
+    change this test's outcome or the test is not pulling its weight.
+    """
+    env = _clean_env()
+    env["R2_ACCOUNT_ID"] = "abc\u00e9123"
+    runner = MagicMock()
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+        pytest.raises(SystemExit) as exit_info,
+    ):
+        backup_database.main()
+    assert exit_info.value.code == 1
+    out = capsys.readouterr().out
+    assert "R2_ACCOUNT_ID is not a valid hostname label" in out
+    assert "at index 3" in out
+    runner.assert_not_called()
+
+
+def test_main_reports_an_unset_encryption_key_without_decoding_it(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The key guard's false arm: absent, so `load_encryption_key` never runs.
+
+    main() only decodes BACKUP_ENCRYPTION_KEY when the read succeeded. Removing that
+    guard would decode a value that is not there and report a base64 failure instead
+    of a missing variable, which points the operator at the wrong defect.
+    """
+    env = _clean_env()
+    del env["BACKUP_ENCRYPTION_KEY"]
+    runner = MagicMock()
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+        pytest.raises(SystemExit) as exit_info,
+    ):
+        backup_database.main()
+    assert exit_info.value.code == 1
+    out = capsys.readouterr().out
+    assert "BACKUP_ENCRYPTION_KEY is not set" in out
+    assert "base64" not in out
+    runner.assert_not_called()
 
 
 def test_describe_bad_characters_names_only_non_alphanumerics() -> None:

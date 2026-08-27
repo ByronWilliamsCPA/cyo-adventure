@@ -656,20 +656,32 @@ them in order:
 
 ## 6. Backup and restore
 
-**Partially closed on merge of the `feat/database-backups-r2` branch** (issue #558 / `UW-D27`);
-replace this line with the merge date once it lands. A scheduled backup exists as of that merge;
-the restore side is documented below but **not yet drilled against a live project** -- see the
-`#VERIFY` note at the end of this section before relying on it in a real incident.
+**Partially closed** (issue #558 / `UW-D27`). A scheduled backup exists and has been observed
+to complete (2026-08-27); the restore side is documented below but **not yet drilled against a
+live project** -- see the `#VERIFY` note at the end of this section before relying on it in a
+real incident.
 
-> **No backup has ever completed successfully as of 2026-08-11.** All six secrets the workflow
-> needs are absent from every scope, so the one run that executed (2026-08-10) died on
-> `BACKUP_ENCRYPTION_KEY must decode to 32 bytes for AES-256 (got 0)`. The runs before it never
-> executed at all: the job named the `production` environment, whose required-reviewer rule parks
-> a scheduled run in `waiting` until it expires as `cancelled`. That is the identical trap this
-> runbook already documents for `e2e-prod.yml` in Section 7, and it is why `production-e2e` exists.
-> The backup job now names a dedicated **`backups`** environment with no protection rules, holding
-> only its six credentials. Populating those secrets is the remaining step; until one run reports
-> success, treat this section as untested and assume there is nothing to restore from.
+> **A backup completed successfully for the first time on 2026-08-27** (run `33094165033`, a
+> manual `workflow_dispatch`). All six secrets are present in the **`backups`** environment
+> scope and the dump/encrypt/upload path works end to end, so there IS something to restore
+> from. **The restore side is still undrilled**: see the `#VERIFY` note at the end of this
+> section before relying on it in a real incident. That gap, not the backup side, is what
+> keeps this section provisional.
+>
+> History, kept because both traps recur and neither is visible from a green dashboard. Until
+> 2026-08-27 no run had ever succeeded. Runs before 2026-08-11 never executed at all: the job
+> named the `production` environment, whose required-reviewer rule parks a scheduled run in
+> `waiting` until it expires as `cancelled`. That is the identical trap this runbook documents
+> for `e2e-prod.yml` in Section 7, and it is why `production-e2e` exists. #696 moved the job to
+> a dedicated `backups` environment with no protection rules on 2026-08-24. The run that then
+> executed still failed, on a malformed `R2_ACCOUNT_ID` that GitHub's secret mask rendered as
+> an undiagnosable `Invalid endpoint: https:// ***.r2.cloudflarestorage.com`. Because the mask
+> hides the stray character, each defect cost one dispatch to identify; `scripts/backup_database.py`
+> now validates all six values up front and reports every bad one in a single run.
+>
+> The concurrency shape that produced the 16-day wedge is unchanged: the workflow still declares
+> `group: ${{ github.workflow }}` with `cancel-in-progress: false`, so a run parked in `waiting`
+> still blocks every later run in the same group rather than being superseded by one.
 
 ### What runs today
 
@@ -765,9 +777,14 @@ not one fewer.
 A failed run opens or comments on a `ci-failure`-labelled issue titled `[db-backup] scheduled
 database backup failing`, per the "Alert on failure" step in the workflow (a separate job holding
 `issues: write`, so the job that handles the six production secrets never holds it): see Section 7
-for the general convention. Cover art in R2 is **not** covered by this workflow; it remains
-unbacked-up separately, since no export tooling for object storage exists in this repo (tracked as
-its own gap, distinct from `UW-D27`).
+for the general convention. Since #771 a green **scheduled** run also closes that issue
+(`mode: resolve`), so an open one means a currently failing schedule rather than backlog. A
+green `workflow_dispatch` deliberately does not close it: a manual run proves a human can make
+the job pass, not that the cron fired at all.
+
+Cover art in R2 is **not** covered by this workflow; it remains unbacked-up separately, since no
+export tooling for object storage exists in this repo (tracked as its own gap, distinct from
+`UW-D27`).
 
 ### Restore procedure
 

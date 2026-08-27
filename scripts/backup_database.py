@@ -453,8 +453,10 @@ def _require_env(name: str) -> str:
 
     Raises:
         ValueError: If the variable is unset, empty, or whitespace-only. The message
-            names the variable but never echoes its value: five of the six callers
-            pass a credential.
+            names the variable but never echoes its value: four of the six callers
+            pass authentication material (the database URL, both R2 keys, and the
+            encryption key), and the other two are identifiers that still should not
+            be echoed.
     """
     raw = os.environ.get(name)
     if raw is None:
@@ -477,6 +479,12 @@ def _require_env(name: str) -> str:
 # deliberately forbids the dot botocore would accept: an account id spanning two labels
 # is a malformed value pointing at some other host, not a legal id. Real ids are 32
 # lowercase hex characters, so nothing legitimate is excluded.
+#
+# Matched with `fullmatch`, never `match`: in Python `$` also matches immediately
+# before a single trailing newline, so `match` accepts `"abc123\n"`. `_require_env`
+# strips before this runs, so today that is defence in depth rather than a live
+# defect, but a stored trailing newline is the exact input the error message below
+# tells the operator to avoid, and the predicate should not disagree with it.
 _ACCOUNT_ID_RE = re.compile(r"^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$")
 
 
@@ -525,7 +533,7 @@ def _assert_account_id_shape(account_id: str) -> None:
     Raises:
         ValueError: If the value is not a single DNS label.
     """
-    if _ACCOUNT_ID_RE.match(account_id):
+    if _ACCOUNT_ID_RE.fullmatch(account_id):
         return
     msg = (
         "R2_ACCOUNT_ID is not a valid hostname label, so no R2 endpoint can be built "
@@ -1500,9 +1508,13 @@ def main() -> None:
         return
 
     # #CRITICAL: external resources: report EVERY misconfigured value in one run, not
-    # the first. These six secrets are only ever exercised here, so a run is the only
-    # feedback an operator gets, and each one costs a scheduled window or a manual
-    # dispatch. Failing on the first defect turns "the backup configuration is wrong"
+    # the first. Five of these six names have no consumer outside this script, so a
+    # run is the only feedback an operator gets on them, and each one costs a
+    # scheduled window or a manual dispatch. (`R2_ACCOUNT_ID` is the exception: the
+    # deployed backend reads the same name for cover art, so a malformed value there
+    # surfaces through `covers/storage.py` instead. That path applies the same shape
+    # check; keep the two in step.)
+    # Failing on the first defect turns "the backup configuration is wrong"
     # into a serial hunt: on 2026-08-27 two defects in this very block (a leading
     # space in R2_ACCOUNT_ID, then a value that was not an account id at all) took one
     # dispatch each to surface, and neither told us anything about the four values

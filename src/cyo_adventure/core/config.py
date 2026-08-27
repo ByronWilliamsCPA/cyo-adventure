@@ -888,6 +888,15 @@ class Settings(BaseSettings):
     gemini_api_key: str | None = Field(default=None, validation_alias="GEMINI_API_KEY")
     # R2 account id; the S3-compatible endpoint is derived as
     # f"https://{r2_account_id}.r2.cloudflarestorage.com" (covers/storage.py).
+    # #CRITICAL: external resources: this value is interpolated straight into a
+    # hostname, so a leading space or trailing newline that survived a manual paste
+    # produces `Invalid endpoint: https:// ***.r2.cloudflarestorage.com` with no
+    # indication of which character is at fault. `_normalize_r2_credential` strips it
+    # here; `covers/storage.py::_require_r2_configured` rejects a value that still
+    # cannot be a hostname label. The shape check deliberately lives there and not in
+    # a validator, because `settings = Settings()` runs at import: raising here would
+    # turn a cover-art misconfiguration into a whole-app startup failure.
+    # #VERIFY: tests/unit/test_cover_settings.py::test_r2_credentials_are_whitespace_trimmed
     r2_account_id: str | None = Field(default=None, validation_alias="R2_ACCOUNT_ID")
     r2_access_key_id: str | None = Field(
         default=None, validation_alias="R2_ACCESS_KEY_ID"
@@ -896,6 +905,42 @@ class Settings(BaseSettings):
         default=None, validation_alias="R2_SECRET_ACCESS_KEY"
     )
     r2_bucket: str = Field(default="covers", validation_alias="R2_BUCKET")
+
+    @field_validator(
+        "r2_account_id",
+        "r2_access_key_id",
+        "r2_secret_access_key",
+        mode="after",
+    )
+    @classmethod
+    def _normalize_r2_credential(cls, value: str | None) -> str | None:
+        """Trim a hand-pasted R2 value and treat a whitespace-only one as absent.
+
+        These three values are transcribed by hand from the Cloudflare dashboard
+        into a deployment secret, and a leading space or trailing newline survives
+        that paste. None of them can legitimately carry surrounding whitespace: the
+        account id becomes a hostname label and the two keys are signed material.
+
+        Collapsing a whitespace-only value to ``None`` is what makes the existing
+        falsy guard in ``covers/storage.py::_require_r2_configured`` honest. That
+        guard already rejects ``""`` and ``None``, but ``"   "`` is truthy and used
+        to sail past it into a malformed endpoint or an unsignable request.
+
+        This normalizes and never raises. ``settings = Settings()`` runs at import,
+        so a validator that rejected a bad value would take the whole application
+        down over an optional cover-art credential; the rejecting check belongs in
+        the cover-art path, where it raises a scoped ``CoverGenerationError``.
+
+        Args:
+            value: The raw field value, ``None`` when the variable is unset.
+
+        Returns:
+            str | None: The trimmed value, or ``None`` if it was blank once trimmed.
+        """
+        if value is None:
+            return None
+        return value.strip() or None
+
     # #CRITICAL: security: this is NOT an instruction to make the bucket
     # browser-reachable. Covers are served to clients exclusively as
     # short-lived presigned GET URLs minted per request
