@@ -112,7 +112,20 @@ jobs:
             const fs = require('fs');
             const path = require('path');
 
+            // #ASSUME: data integrity: `hard_cap` is an untyped
+            // workflow_dispatch string, so a mistyped value would make
+            // parseInt return NaN. Every `examined >= HARD_CAP` comparison
+            // against NaN is false, which would SILENTLY defeat the cap and
+            // page until history ran out or the job timed out. Validate
+            // rather than coerce, and fail loudly.
+            // #VERIFY: dispatch with hard_cap set to a non-numeric value and
+            // confirm the job fails with this message instead of running on.
             const HARD_CAP = parseInt(process.env.HARD_CAP || '50', 10);
+            if (!Number.isInteger(HARD_CAP) || HARD_CAP < 1) {
+              throw new Error(
+                `hard_cap must be a positive integer, got ${JSON.stringify(process.env.HARD_CAP)}`
+              );
+            }
             const THRESHOLD = 3;
             const SELF_FILE = 'scheduled-health-rollup.yml';
             const WORKFLOWS_DIR = '.github/workflows';
@@ -238,6 +251,22 @@ jobs:
                     continue;
                   }
                   workflowName = run.name || workflowName;
+                  // #CRITICAL: correctness: `success` is the ONLY conclusion
+                  // that ends a streak. `cancelled`, `timed_out`, `skipped`
+                  // and `failure` all count as red, deliberately, because a
+                  // workflow that stops producing green runs is unhealthy
+                  // whatever the reason. This is the case the per-workflow
+                  // alerts cannot see: their step is gated on `if: failure()`,
+                  // which is FALSE for a cancelled run, so a run that never
+                  // gets to fail never alerts. Verified live on
+                  // `notification-digest.yml`, whose last 18 scheduled runs
+                  // are 17 `cancelled` plus one in flight (its alert step is
+                  // at notification-digest.yml:88, gated on `if: failure()`),
+                  // so this rollup is the only thing that will surface it.
+                  // #VERIFY: do not "fix" this by narrowing the check to
+                  // `conclusion === 'failure'`; that reintroduces the blind
+                  // spot. Confirm with:
+                  // gh run list --workflow=notification-digest.yml --limit 25
                   if (run.conclusion === 'success') {
                     lastGreenAt = run.run_started_at || run.created_at;
                     break outer;
