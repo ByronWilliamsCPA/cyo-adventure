@@ -28,7 +28,17 @@ const READING_ROW = {
   save_slots: {},
 }
 
+// Captures every reading-state PUT body issued during a test, in send order.
+// #290 (kid-go-back-real.spec.ts) found the real-backend tier had no pinned
+// coverage for "the go-back PUT actually carries the reverted current_node",
+// only for the UI reflecting it; the fixture below returns the same static
+// READING_ROW regardless of what was sent, so without this capture the
+// mocked tier could not tell a correct go-back save from a stale or missing
+// one either. Reset in beforeEach so each test starts with an empty array.
+let putBodies: Array<{ current_node?: string; state_revision?: number }> = []
+
 test.beforeEach(async ({ page, context }) => {
+  putBodies = []
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'child-a')
   })
@@ -39,6 +49,9 @@ test.beforeEach(async ({ page, context }) => {
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
       return route.fulfill({ status: 404, json: { error: 'not found' } })
+    }
+    if (route.request().method() === 'PUT') {
+      putBodies.push(route.request().postDataJSON() as { current_node?: string })
     }
     return route.fulfill({ status: 200, json: READING_ROW })
   })
@@ -80,9 +93,30 @@ test('Go back undoes the last choice and replays state faithfully, not by corrup
 
   // Go back from the ending returns into the story, one step before it: the
   // prior node (n_cave_fork) text is shown again.
+  const putsBeforeGoBack = putBodies.length
   await page.getByTestId('go-back').click()
   await expect(page.getByTestId('reader')).toBeVisible()
   await expect(page.getByTestId('passage-body')).toContainText('The cave splits.')
+
+  // Pins the persisted contract #290 found unpinned at this tier: the
+  // go-back click's own PUT (not merely the UI reflecting the reverted
+  // state) must carry the reverted node, not the ending it undid.
+  // #ASSUME: timing-dependencies: ReaderPage's persist() is fire-and-forget
+  // (the UI updates from the optimistic local reducer, not the PUT
+  // response), so the request can still be in flight once the passage-body
+  // assertion above has already settled; poll for it instead of reading
+  // putBodies synchronously.
+  // #VERIFY: reading.py's PUT handler round-trips current_node verbatim;
+  // kid-go-back-real.spec.ts asserts the same property against the real
+  // backend.
+  await expect
+    .poll(
+      () => putBodies.length - putsBeforeGoBack,
+      'go-back click did not send a reading-state PUT'
+    )
+    .toBeGreaterThan(0)
+  const goBackPuts = putBodies.slice(putsBeforeGoBack)
+  expect(goBackPuts.at(-1)?.current_node).toBe('n_cave_fork')
 
   // The state-gated choice still behaves correctly after the undo: the
   // engine recomputed has_lantern=true by replaying the recorded path, it

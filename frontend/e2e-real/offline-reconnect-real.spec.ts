@@ -120,6 +120,20 @@ async function deleteProfile(profileId: string): Promise<void> {
   }
 }
 
+// #EDGE: timing-dependencies: matches by URL+method+status only, the same
+// shape #290 traced kid-go-back-real.spec.ts's flaky failure to (queue
+// position, not the response's own identity). Safe here for a narrower
+// reason than that fix required: every call site below awaits its own
+// waitForSavedPut()/waitForConflictPut() promise before the next one is
+// registered, so at most one 200 and one 409 candidate is ever pending at
+// once, and no assertion in this file reads a field off the captured
+// response body (the actual data checks all go through a fresh
+// fetchServerRow() GET, or a Playwright `.poll`/toast wait). The queued
+// three-choice replay on reconnect does still fire multiple sequential
+// PUTs, but this wait's only job is "some save landed", not "which one".
+// #VERIFY: if a future edit here starts asserting on this promise's own
+// `.json()`, that call site needs kid-go-back-real.spec.ts's node-matching
+// predicate instead, not this URL/status-only form.
 function waitForSavedPut(page: Page) {
   return page.waitForResponse(
     (res) =>

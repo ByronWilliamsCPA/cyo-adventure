@@ -183,6 +183,15 @@ async function deleteProfile(profileId: string): Promise<void> {
   }
 }
 
+// #EDGE: timing-dependencies: matches by URL+method only, the same shape
+// #290 traced kid-go-back-real.spec.ts's flaky failure to (queue position,
+// not the response's own identity). Safe here: every call site below is
+// awaited to completion before the next waitForReadingStatePut() is
+// registered (the c_climb flowed-stop double-transition is handled with an
+// explicit `.poll` against a fresh fetchServerRow, not by reading this
+// promise's body), so at most one matching PUT is ever pending at a time.
+// #VERIFY: a future edit that reads a field off this promise's own `.json()`
+// needs the node-matching predicate kid-go-back-real.spec.ts uses instead.
 function waitForReadingStatePut(page: Page) {
   return page.waitForResponse(
     (res) =>

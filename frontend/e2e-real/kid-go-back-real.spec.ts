@@ -48,12 +48,27 @@ interface ReadingStateRow {
   path: string[]
 }
 
-function waitForReadingStatePut(page: Page) {
+// Matches on the outgoing PUT body's own current_node, not queue position.
+// Two saves can be in flight at once (a choice click's persist() and the
+// go-back click's persist() that follows close behind it), and
+// page.waitForResponse resolves on whichever matching response the browser
+// delivers first, not the one issued by the action a caller just performed.
+// An unqualified URL+method predicate therefore has no way to tell "the
+// n_crab save from the earlier click" apart from "the n_pools save the
+// go-back click just triggered": both are PUTs to the same URL. Naming the
+// expected node at each call site removes that ambiguity; see #290 for the
+// nightly failures this produced (savedRow.current_node === 'n_crab' at what
+// should have been the go-back's own n_pools save, while the server's actual
+// persisted state was already correct).
+function waitForReadingStatePut(page: Page, expectedNode: string) {
   return page.waitForResponse(
-    (res) =>
-      res.url().includes('/api/v1/reading-state/') &&
-      res.url().includes(STORYBOOK_ID) &&
-      res.request().method() === 'PUT',
+    (res) => {
+      if (!res.url().includes('/api/v1/reading-state/')) return false
+      if (!res.url().includes(STORYBOOK_ID)) return false
+      if (res.request().method() !== 'PUT') return false
+      const body = res.request().postDataJSON() as { current_node?: string }
+      return body.current_node === expectedNode
+    },
     { timeout: 10_000 }
   )
 }
@@ -102,8 +117,10 @@ test('going back after two real choices reverts the current node and the persist
   // Registered before navigating so it reliably catches ReaderPage's
   // mount-time save (Reader's onProgress effect fires on the very first
   // render too, before any choice; see ReaderPage.tsx's persist() docstring),
-  // not a later one triggered by a choice click below.
-  const mountSave = waitForReadingStatePut(page)
+  // not a later one triggered by a choice click below. The mount save drains
+  // through the n_open prelude to n_start (PL-25's forced first-decision
+  // depth), so that is the node this wait names.
+  const mountSave = waitForReadingStatePut(page, 'n_start')
 
   await page.goto('/kids')
   await page.getByText('Dev Reader').click()
@@ -118,21 +135,24 @@ test('going back after two real choices reverts the current node and the persist
   // unique to n_pools among this story's nodes, so its visibility is how
   // later assertions confirm which node is current without reading
   // server-only state.
-  const firstSave = waitForReadingStatePut(page)
+  const firstSave = waitForReadingStatePut(page, 'n_pools')
   await page.locator('[data-testid^="choice-"]').first().click()
   await firstSave
   await expect(page.getByTestId('choice-c_rock')).toBeVisible()
 
   // n_pools -> n_crab.
-  const secondSave = waitForReadingStatePut(page)
+  const secondSave = waitForReadingStatePut(page, 'n_crab')
   await page.getByTestId('choice-c_rock').click()
   await secondSave
   await expect(page.getByTestId('choice-c_cave')).toBeVisible()
 
   // Go back: n_crab -> n_pools. The wait is registered before the click so
   // the real PUT this triggers is caught as it happens, matching
-  // naive-kid-misuse-real.spec.ts's wait-then-act ordering.
-  const backSave = waitForReadingStatePut(page)
+  // naive-kid-misuse-real.spec.ts's wait-then-act ordering. Named 'n_pools'
+  // (not just "the next PUT") so this wait cannot resolve on the second
+  // choice's still-in-flight n_crab save instead of the go-back's own save;
+  // see waitForReadingStatePut's docstring and #290.
+  const backSave = waitForReadingStatePut(page, 'n_pools')
   await page.getByTestId('go-back').click()
   const backResponse = await backSave
   expect(backResponse.status()).toBe(200)

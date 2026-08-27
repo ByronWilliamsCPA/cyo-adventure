@@ -137,6 +137,15 @@ test.describe('reading-state PUT contract', () => {
     }
   })
 
+  // #EDGE: timing-dependencies: matches by URL+method+status only, the same
+  // shape #290 traced kid-go-back-real.spec.ts's flaky failure to (queue
+  // position, not the response's own identity). This file's two call sites
+  // DO read this promise's own `.json()` (that is the point, this test pins
+  // the ReadingState wire contract), but each is fully awaited before the
+  // next waitForReadingStatePut() is registered, so exactly one matching PUT
+  // is ever pending at a time and there is no other save this could race.
+  // #VERIFY: if a third, overlapping save is ever added here, switch to
+  // kid-go-back-real.spec.ts's node-matching predicate instead.
   function waitForReadingStatePut(page: Page) {
     return page.waitForResponse(
       (res) =>

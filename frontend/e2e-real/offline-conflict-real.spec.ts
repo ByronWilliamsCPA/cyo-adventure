@@ -88,7 +88,21 @@ async function openClockworkGarden(page: Page): Promise<void> {
   await expect(page.getByTestId('reader')).toBeVisible()
 }
 
-/** Waits for the next SUCCESSFUL real reading-state save for this story. */
+/**
+ * Waits for the next SUCCESSFUL real reading-state save for this story.
+ *
+ * #EDGE: timing-dependencies: matches by URL+method+status only, the same
+ * shape #290 traced kid-go-back-real.spec.ts's flaky failure to (queue
+ * position, not the response's own identity). Safe here for a narrower
+ * reason: each test in this file's serial describe block registers at most
+ * one waitForSavedPut()/waitForConflictPut() pair per page before awaiting
+ * it, the two status codes are mutually exclusive on the same PUT, and no
+ * assertion below reads a field off the captured response body; the
+ * position/conflict checks all go through DOM assertions or a fresh
+ * fetchServerRow-style GET. #VERIFY: a future edit that starts asserting on
+ * this promise's own `.json()` needs the node-matching predicate
+ * kid-go-back-real.spec.ts uses instead.
+ */
 function waitForSavedPut(page: Page) {
   return page.waitForResponse(
     (res) =>
