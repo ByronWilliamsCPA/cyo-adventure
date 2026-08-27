@@ -1045,6 +1045,93 @@ def test_main_prints_redacted_stderr_on_dump_failure(
     assert "[redacted]@" in captured.out
 
 
+def _clean_env() -> dict[str, str]:
+    """The six configuration variables main() requires, all well-formed."""
+    return {
+        "SUPABASE_DB_URL": "postgresql://<user>:<password>@<host>/<db>",
+        "R2_ACCOUNT_ID": "acct",
+        "R2_BACKUP_ACCESS_KEY_ID": "<key>",
+        "R2_BACKUP_SECRET_ACCESS_KEY": "<secret>",
+        "R2_BACKUP_BUCKET": "bucket",
+        "BACKUP_ENCRYPTION_KEY": _VALID_KEY,
+    }
+
+
+def test_main_strips_whitespace_around_every_configuration_value() -> None:
+    """A pasted secret carries stray whitespace, and GitHub masks the trimmed value.
+
+    This is the 2026-08-27 production failure: a leading space in R2_ACCOUNT_ID
+    reached boto3 as `https:// ***.r2.cloudflarestorage.com`. The stray character is
+    invisible in the run log because GitHub only masks what it was given, so the
+    fixture below deliberately uses a different whitespace shape per variable.
+    """
+    env = {
+        "SUPABASE_DB_URL": " postgresql://<user>:<password>@<host>/<db>\n",
+        "R2_ACCOUNT_ID": " acct",
+        "R2_BACKUP_ACCESS_KEY_ID": "<key>\n",
+        "R2_BACKUP_SECRET_ACCESS_KEY": "\t<secret>",
+        "R2_BACKUP_BUCKET": "bucket \n",
+        "BACKUP_ENCRYPTION_KEY": f"\n{_VALID_KEY}\n",
+    }
+    runner = MagicMock(return_value="ok")
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+    ):
+        backup_database.main()
+    kwargs = runner.call_args.kwargs
+    assert kwargs["db_url"] == "postgresql://<user>:<password>@<host>/<db>"
+    assert kwargs["r2_account_id"] == "acct"
+    assert kwargs["r2_access_key_id"] == "<key>"
+    assert kwargs["r2_secret_access_key"] == "<secret>"
+    assert kwargs["r2_bucket"] == "bucket"
+    assert kwargs["encryption_key"] == b"0" * 32
+
+
+@pytest.mark.parametrize("blank", ["", "   ", "\n"])
+def test_main_rejects_a_variable_that_is_present_but_blank(
+    blank: str, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """`env: X: ${{ secrets.MISSING }}` sets X to "", it does not omit X.
+
+    So an undefined repository or environment secret arrives as an empty string and
+    os.environ[...] succeeds. Without this check the run proceeds with a bucket named
+    "" and fails somewhere that cannot say which secret was missing.
+    """
+    env = _clean_env()
+    env["R2_BACKUP_BUCKET"] = blank
+    runner = MagicMock()
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+        pytest.raises(SystemExit) as exit_info,
+    ):
+        backup_database.main()
+    assert exit_info.value.code == 1
+    assert "R2_BACKUP_BUCKET" in capsys.readouterr().out
+    runner.assert_not_called()
+
+
+def test_main_rejects_an_unset_variable_and_names_it(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    env = _clean_env()
+    del env["R2_ACCOUNT_ID"]
+    runner = MagicMock()
+    with (
+        patch.object(backup_database.sys, "argv", ["backup_database.py"]),
+        patch.dict(backup_database.os.environ, env, clear=True),
+        patch.object(backup_database, "run_backup", runner),
+        pytest.raises(SystemExit) as exit_info,
+    ):
+        backup_database.main()
+    assert exit_info.value.code == 1
+    assert "R2_ACCOUNT_ID is not set" in capsys.readouterr().out
+    runner.assert_not_called()
+
+
 def test_retention_policy_rejects_non_positive_days() -> None:
     """Zero or negative days is not a retention policy, it is an immediate purge."""
     with pytest.raises(ValueError, match="at least 1"):

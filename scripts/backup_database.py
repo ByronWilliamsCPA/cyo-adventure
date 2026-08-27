@@ -412,6 +412,53 @@ def _build_client(
     )
 
 
+def _require_env(name: str) -> str:
+    """Read a required configuration value from the environment, whitespace-trimmed.
+
+    # #CRITICAL: data integrity: every value this reads is pasted into a GitHub
+    # secret by hand, and a leading space or trailing newline survives that paste.
+    # GitHub masks the *trimmed* secret value in logs, so the stray character is
+    # invisible in the run output: a leading space in ``R2_ACCOUNT_ID`` surfaced only
+    # as ``Invalid endpoint: https:// ***.r2.cloudflarestorage.com`` on 2026-08-27,
+    # after the workflow had been unable to complete a single run for weeks. None of
+    # these values can legitimately carry leading or trailing whitespace.
+    # #VERIFY: strip before use, and treat an empty result as absent. Covered by
+    # tests/unit/test_backup_database.py::test_main_strips_whitespace_around_every_configuration_value
+    # and ::test_main_rejects_a_variable_that_is_present_but_blank.
+
+    The empty-string case is not hypothetical either. ``env: X: ${{ secrets.Y }}``
+    renders an *undefined* secret as the empty string rather than omitting the
+    variable, so from inside the job a missing repository or environment secret is
+    indistinguishable from a blank one, and ``os.environ[name]`` never raises. Both
+    arms have to be rejected here or the failure lands somewhere downstream that
+    cannot name the variable responsible.
+
+    Args:
+        name: The environment variable to read.
+
+    Returns:
+        The value with surrounding whitespace removed.
+
+    Raises:
+        ValueError: If the variable is unset, empty, or whitespace-only. The message
+            names the variable but never echoes its value: five of the six callers
+            pass a credential.
+    """
+    raw = os.environ.get(name)
+    if raw is None:
+        msg = f"{name} is not set"
+        raise ValueError(msg)
+    value = raw.strip()
+    if not value:
+        msg = (
+            f"{name} is set but empty. An undefined GitHub secret renders as an "
+            "empty string, so check that the secret exists in the scope the "
+            "workflow's `environment:` selects."
+        )
+        raise ValueError(msg)
+    return value
+
+
 def load_encryption_key(raw: str) -> bytes:
     """Decode and validate the base64 ``BACKUP_ENCRYPTION_KEY`` env value.
 
@@ -1374,15 +1421,12 @@ def main() -> None:
         return
 
     try:
-        db_url = os.environ["SUPABASE_DB_URL"]
-        r2_account_id = os.environ["R2_ACCOUNT_ID"]
-        r2_access_key_id = os.environ["R2_BACKUP_ACCESS_KEY_ID"]
-        r2_secret_access_key = os.environ["R2_BACKUP_SECRET_ACCESS_KEY"]
-        r2_bucket = os.environ["R2_BACKUP_BUCKET"]
-        encryption_key = load_encryption_key(os.environ["BACKUP_ENCRYPTION_KEY"])
-    except KeyError as exc:
-        print(f"[ERROR] missing required environment variable: {exc}")
-        sys.exit(1)
+        db_url = _require_env("SUPABASE_DB_URL")
+        r2_account_id = _require_env("R2_ACCOUNT_ID")
+        r2_access_key_id = _require_env("R2_BACKUP_ACCESS_KEY_ID")
+        r2_secret_access_key = _require_env("R2_BACKUP_SECRET_ACCESS_KEY")
+        r2_bucket = _require_env("R2_BACKUP_BUCKET")
+        encryption_key = load_encryption_key(_require_env("BACKUP_ENCRYPTION_KEY"))
     except ValueError as exc:
         print(f"[ERROR] {exc}")
         sys.exit(1)
