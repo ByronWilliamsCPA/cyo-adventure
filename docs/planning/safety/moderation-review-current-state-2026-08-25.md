@@ -9,7 +9,7 @@ tags:
   - safety
   - moderation
 component: Safety-Pipeline
-source: "Live production data queried via the read-only Supabase MCP 2026-08-25 and 2026-08-26; moderation pipeline at src/cyo_adventure/moderation/ as of bfd47f54. Section 6 (root cause and corrections) rests on the 2026-08-26 queries and on review_provider.py/config.py read at that commit."
+source: "Live production data queried via the read-only Supabase MCP 2026-08-25 and 2026-08-26; moderation pipeline at src/cyo_adventure/moderation/ as of bfd47f54, which predates the merge of #764. Section 6 (root cause and corrections) rests on the 2026-08-26 queries and on review_provider.py/config.py read at b2273a71 (post-#764), which is the state its unchanged-by-#764 claim compares against."
 ---
 
 # Moderation Review: Backlog Census, 2026-08-25
@@ -30,9 +30,10 @@ sweep starts from a canary rather than from seventeen books.
 
 ## 2. The backlog, as at 2026-08-25
 
-Nothing has moved since the 2026-07-21 import. The newest `storybook_version`
-row in production is dated 2026-07-28, so no code merged since then has touched
-stored review state.
+Nothing has moved since the 2026-07-21 import: all seventeen stored reports
+still carry that date. The newest `storybook_version` row in production is a
+week later, 2026-07-28, which bounds the claim from the other side, so no code
+merged after that date has touched stored review state either.
 
 | Class | Books | Nodes | Findings | Of which actionable |
 |---|---:|---:|---:|---:|
@@ -52,11 +53,18 @@ whatever the verdict. Stage A's structural collapse and the review surface's
 ### 2.1 The twelve
 
 Every finding in these books carries the message
-`unknown verdict; defaulted to fail-safe`, emitted at exactly one place
-(`moderation/stages.py::_parse_verdict`, the `verdict is None` branch). That
-branch is reached when the reviewer's response parsed as JSON but carried no
-recognisable `verdict` value; it is distinct from the two
-`verdict parse failed` exits above it, which no stored finding uses.
+`unknown verdict; defaulted to fail-safe`. Every *stored* finding comes from
+`moderation/stages.py::_parse_verdict`, the `verdict is None` branch, which is
+the only emitter that existed when these reports were written. That branch is
+reached when the reviewer's response parsed as JSON but carried no recognisable
+`verdict` value; it is distinct from the two `verdict parse failed` exits above
+it, which no stored finding uses.
+
+A sweep written today must match a second emitter as well: #708 added
+`_structured_verdict_from_payload` on 2026-08-14 for the Stage 1 structured
+path, and it returns the same message from its own `verdict is None` branch
+(`stages.py:354` and `:370` at `b2273a71`). The message is therefore a reliable
+fingerprint of the fail-safe path, but not of a single call site.
 
 The twelve are the twelve *largest* books in the backlog, with one
 exception in each direction (see section 6: the size reading does not
@@ -87,6 +95,9 @@ produced the unrecognisable verdicts is **not determinable from the stored
 report**: a mock or stub reviewer whose stamp was written differently, a
 misconfigured provider, and a prompt/vocabulary mismatch all land on the same
 branch. Determining which is step 1 of the sweep, not an afterthought to it.
+(See section 6.1: it was determinable, from the code rather than the report, and
+the answer is the mock reviewer. `UW-C364` in the unscheduled work register
+carries a copy of this paragraph; that copy is superseded by section 6.1 too.)
 
 `scripts/remoderate_books.py` still reaches them, via `--in-review` and via
 `--mock-moderated`'s fail-safe-substring arm, so no selector change is needed.
@@ -148,8 +159,18 @@ string, not sampled. Node counts come from `jsonb_array_length(blob->'nodes')`.
 ## 6. Correction and root cause, 2026-08-26
 
 Section 2.1 said the cause was "not determinable from the stored report". That
-remains true of the report. It was determinable from the code in about twenty
-minutes, and it did not need the canary.
+remains true of the report. It was determinable from the code, and it did not
+need the canary.
+
+It also did not need deriving. The 2026-07-28 gap report already had it:
+[moderation-review-current-state-2026-07-28.md](./moderation-review-current-state-2026-07-28.md)
+section 4 states the whole chain (the mock returns `"{}"`; `json.loads` succeeds;
+the verdict key is absent; `_parse_verdict` returns the stage fail-safe, FLAG for
+Stage 1 and PASS for stages 2 to 4), and `AL-631` records the same conclusion.
+What follows is a re-derivation that should have been a lookup, and the lesson in
+`AL-634` is the one worth keeping from it. What is genuinely new here is only the
+pair of consequences in 6.1: that the mock stamps itself independent, and that
+the guard meant to catch it cannot fire in this failure mode.
 
 ### 6.1 The mock reviewer is the cause
 
@@ -176,10 +197,15 @@ Two consequences the earlier analyses missed:
    `summary.reviewer_independent is False` arm of PR #764's
    `moderation_report_unusable`, and the stamp arm of
    `scripts/remoderate_books.py --mock-moderated`, are both dead against a real
-   mock run. Only the fail-safe-message substring arm reaches these books.
+   mock run. Of `_is_mock_moderated`'s three arms, the stamp arm and the
+   `MOCK_MODERATED_CONCERNS` arm both miss; only the fail-safe-message substring
+   arm reaches these books.
 2. **The mock guard cannot fire in the failure mode it exists for.**
-   `core/config.py:1787` refuses mock only when `review_provider == "mock"` AND
-   `environment != "local"` AND not `allow_mock_review`. Both inputs are read
+   `core/config.py::_require_real_reviewer_outside_local` (at `b2273a71`: the
+   function at 1771, the condition at 1797-1799; line 1787 is the `Raises:`
+   docstring clause stating the same rule, not the guard) refuses mock only when
+   `review_provider == "mock"` AND `environment != "local"` AND not
+   `allow_mock_review`. Both inputs are read
    from the process environment by the same `Settings` object, which declares
    no `env_file` (`core/config.py:218`) and therefore reads nothing but
    exported variables. A process started without them exported takes both
@@ -228,7 +254,8 @@ readability.
 
 ### 6.3 The time reading, and why it is wrong
 
-An intermediate hypothesis held that the split was a two-hour outage window
+An intermediate hypothesis, formed while drafting sections 2 to 4 and never
+written into them, held that the split was a two-hour outage window
 (everything from 19:54 on 2026-07-21 fail-safe, everything before it clean).
 Published catalog books refute it by interleaving at 8-second spacing:
 
@@ -248,8 +275,8 @@ archaeology on it is not worth the cost.
 ## 7. Remediation, 2026-08-26
 
 Three fixes follow from section 6. All three are on branch
-`fix/mock-reviewer-self-identification`, which is not merged; nothing below is
-live yet.
+`fix/mock-reviewer-self-identification` (PR #769), which is not merged; nothing
+below is live yet.
 
 ### 7.1 The mock reviewer now identifies itself in every environment
 
