@@ -35,13 +35,18 @@ the last two.
 |------|---------------|----------------|
 | e2e (mocked) | `ci.yml` frontend job, every PR/push/merge-group | ✅ red PR check blocks merge |
 | e2e-real | Nowhere; deliberately local-only pre-PR | ❌ none |
-| e2e-staging | Daily cron 13:00 UTC + manual, `e2e-staging.yml` | 🟡 passive only: a red run in the Actions tab, trace artifact, no notification |
+| e2e-staging | Daily cron 13:00 UTC + manual, `e2e-staging.yml` | ✅ pinned-issue alert on failure (names which of playwright/leak_check/grant_sweep fired), plus trace artifact |
 | e2e-prod | Daily cron 13:30 UTC + manual, `e2e-prod.yml` (a deliberate override of `requireProdCredentials()`'s CI guard, action #3 below) | ✅ pinned-issue alert on failure, plus trace artifact |
 
 **Consequence**: the gap this table was written to describe is closed. Both deployed tiers
-now run unattended, and a production breakage raises a pinned issue rather than waiting for
-a family member to hit it. Staging remains passive-only by choice: it fails on disposable
-seeded fixtures, so a red run in the Actions tab is proportionate.
+now run unattended, and a failure on either one raises a pinned issue rather than waiting
+for a family member to hit it or a human to check the Actions tab. Staging's alert names
+which of three independent failure sources fired (`playwright`, `leak_check`, or
+`grant_sweep`; see `.github/workflows/e2e-staging.yml`'s compose step) because a leaked
+device grant on the shared live staging Supabase project needs a human to revoke it by
+hand, which a mere "red run" was never enough to convey: the original passive-only
+rationale (disposable seeded fixtures) never actually covered the `leak_check` and
+`grant_sweep` paths, since a surviving device grant is not a disposable fixture.
 
 The tiers' shared exposure is now the backend's 60 rpm/IP rate limiter rather than the
 absence of a schedule. Both tiers walk their consoles from a single runner IP, so both pace

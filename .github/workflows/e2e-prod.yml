@@ -165,9 +165,13 @@ jobs:
         #
         # e2e-staging.yml now adopts this same composite-action pattern too
         # (marker "[e2e-staging]" instead of "[e2e-prod]"). Its own compose
-        # step additionally distinguishes which of its three failure sources
-        # fired (a Playwright failure vs. a leaked staging device grant), since
-        # that job has no single point of failure the way this one does.
+        # step additionally distinguishes which of its three tracked failure
+        # sources fired (a Playwright failure, an unconfirmed teardown revoke,
+        # or a live device grant caught by the sweep). This job's `npm ci` can
+        # fail it too, same as e2e-staging's; the real distinction is that
+        # this job tracks only one semantically distinct failure source
+        # (`playwright`) worth naming in the body, where e2e-staging tracks
+        # three, so this compose step can stay one fixed message.
         if: ${{ failure() }}
         id: compose
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0

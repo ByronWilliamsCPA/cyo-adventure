@@ -217,10 +217,12 @@ jobs:
         # authoritative backstop (see their own long comments above for why
         # both leak signals exist and why the sweep, not the ledger, is
         # authoritative). A leaked device grant needs a human to revoke it by
-        # hand; a spec failure does not. An operator who only reads the issue
-        # title or top comment should not have to open the run to tell which
-        # fired, so the body names each one by its own step outcome rather
-        # than one generic message.
+        # hand; a spec failure does not. The issue TITLE stays the fixed
+        # string in `summary:` below and never names which source fired.
+        # `body:` and `comment-body:` below are BOTH this step's output, so an
+        # operator reading either the first-failure body or any later
+        # recurrence comment gets the same per-step attribution without
+        # having to open the run; only the title itself stays generic.
         #
         # #CRITICAL: security: THIS REPOSITORY IS PUBLIC, so this body is
         # world-readable like every other issue and log line (see the
@@ -231,7 +233,9 @@ jobs:
         # device-grant token, or raw Playwright output.
         # #VERIFY: any future edit to this script still sources its content
         # only from step outcomes (an enum: success/failure/cancelled/
-        # skipped), never from `frontend/test-results/` or a secret.
+        # skipped) and static run metadata (context.serverUrl, context.repo,
+        # context.runId, the current date), never from
+        # `frontend/test-results/` or a secret.
         if: ${{ failure() }}
         id: compose
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -245,9 +249,21 @@ jobs:
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             const today = new Date().toISOString().slice(0, 10)
 
-            const sweepFailed = process.env.SWEEP_OUTCOME === 'failure'
-            const leakCheckFailed = process.env.LEAK_CHECK_OUTCOME === 'failure'
-            const playwrightFailed = process.env.PLAYWRIGHT_OUTCOME === 'failure'
+            const playwrightOutcome = process.env.PLAYWRIGHT_OUTCOME
+            const leakCheckOutcome = process.env.LEAK_CHECK_OUTCOME
+            const sweepOutcome = process.env.SWEEP_OUTCOME
+
+            const sweepFailed = sweepOutcome === 'failure'
+            const leakCheckFailed = leakCheckOutcome === 'failure'
+            const playwrightFailed = playwrightOutcome === 'failure'
+            // `npm ci` or `npx playwright install` failing first leaves this
+            // step SKIPPED (no `if:` on it), not failed: leak_check then
+            // exits 0 (no ledger file exists yet) and grant_sweep fails (it
+            // runs `npm run test:e2e:staging:sweep` through the same npm
+            // toolchain with no node_modules). Without surfacing `skipped`
+            // separately from `failure`, that infra failure reads as a
+            // confirmed live device grant below.
+            const playwrightSkipped = playwrightOutcome === 'skipped'
 
             const lines = [
               'The scheduled `E2E (staging)` workflow (`.github/workflows/e2e-staging.yml`) failed.',
@@ -257,9 +273,24 @@ jobs:
               'seed drifted, the staging frontend build broke, a real regression landed, or a',
               'staging device grant was not confirmed revoked.',
               '',
+              `Step outcomes: playwright: ${playwrightOutcome} / leak_check: ${leakCheckOutcome} / grant_sweep: ${sweepOutcome}`,
+              '',
             ]
 
-            if (sweepFailed) {
+            if (sweepFailed && playwrightSkipped) {
+              lines.push(
+                'The `grant_sweep` step failed, but `playwright` above was **skipped**, not',
+                'failed: an earlier step (most likely `npm ci` or `npx playwright install`)',
+                'did not complete, so no spec in this run ever signed in or minted a device',
+                'grant. `grant_sweep` runs through that same npm toolchain, so this failure is',
+                'at least as likely to be the same missing install as a genuine live grant.',
+                'It still could not confirm staging is clean either way, so do not close this',
+                'out on that assumption: check the run log for the actual install failure',
+                'first, and only escalate to a human revoke if `grant_sweep`\'s own log shows',
+                'it actually reached and queried staging.',
+                '',
+              )
+            } else if (sweepFailed) {
               lines.push(
                 '**A staging device grant may still be active.** The `grant_sweep` step, which',
                 'asks staging directly whether the test guardian family still holds a live',
@@ -269,13 +300,23 @@ jobs:
                 'frontend/e2e-staging-sweep/device-grant-sweep.spec.ts for how it checks.',
                 '',
               )
+            } else if (playwrightSkipped) {
+              lines.push(
+                'The `playwright` step was **skipped**, not failed: an earlier step (most',
+                'likely `npm ci` or `npx playwright install`) did not complete, so no spec in',
+                'this run ever signed in or minted a device grant. Check the run log for the',
+                'actual install failure.',
+                '',
+              )
             }
 
             if (leakCheckFailed) {
               lines.push(
-                'The `leak_check` step recorded an unconfirmed teardown revoke (a diagnostic',
-                'only; see its log for which spec and grant id). Whether the grant is actually',
-                'still live is what `grant_sweep` above determines.',
+                'The `leak_check` step failed. That usually means it recorded an unconfirmed',
+                'teardown revoke to the ledger (a diagnostic only; see its log for which spec',
+                'and grant id), but the step can also fail before ever reading the ledger, for',
+                'example if an earlier failure removed the checkout it `cd`s into. Whether a',
+                'grant is actually still live is what `grant_sweep` above determines either way.',
                 '',
               )
             }
@@ -288,7 +329,7 @@ jobs:
               )
             }
 
-            if (!sweepFailed && !leakCheckFailed && !playwrightFailed) {
+            if (!sweepFailed && !leakCheckFailed && !playwrightFailed && !playwrightSkipped) {
               lines.push(
                 'None of the three tracked steps (playwright, leak_check, grant_sweep)',
                 'reported failure; check the run log for a step outside those three.',
@@ -314,7 +355,7 @@ jobs:
           label: e2e-alert
           summary: scheduled staging E2E failing
           body: ${{ steps.compose.outputs.result }}
-          comment-body: Scheduled staging E2E failed again.
+          comment-body: ${{ steps.compose.outputs.result }}
 
       - name: Resolve the tracking issue on a green scheduled run
         # Mirrors e2e-prod.yml's resolve gate, including the
