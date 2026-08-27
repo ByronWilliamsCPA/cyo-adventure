@@ -111,6 +111,24 @@ LEGACY_FAIL_SAFE_MESSAGES = frozenset(
 # value valid at all", MOCK_MODERATED_CONCERNS answers "does this concern
 # value alone fail to prove a genuine judgment happened".
 MOCK_MODERATED_CONCERNS = frozenset({"mock_reviewer_active", "reviewer_unavailable"})
+# The strictly narrower question ModerationReport.has_coverage_gap asks of an
+# IN-FLIGHT run: did the reviewer actually see every node? Only the fail-safe
+# concern answers no. "mock_reviewer_active" is deliberately absent, and the
+# omission is load-bearing rather than an oversight:
+#
+#   * _stamp_mock_reviewer runs early in run_moderation_pipeline, before the
+#     repair gate. Including the stamp here would make blocks_release true from
+#     the first line of every escape-hatch run, so the repair branch could never
+#     be entered under a mock reviewer and _stamp_mock_reviewer(repaired_report)
+#     would become unreachable code.
+#   * Nothing is lost by the omission. The real mock backend returns a fixed
+#     unparseable body, so every node fail-safes and the run carries
+#     "reviewer_unavailable" anyway; and the STORED predicate
+#     moderation_coverage_incomplete() keeps the full MOCK_MODERATED_CONCERNS
+#     set, so a mock-stamped report still cannot clear the approval gate and
+#     still classifies as blocked in api/remoderate.py's verdict. The 2026-07-21
+#     mock-reviewer sweep is closed at those two gates, not at this one.
+COVERAGE_GAP_CONCERNS = frozenset({"reviewer_unavailable"})
 
 
 @dataclass(frozen=True, slots=True)
@@ -239,6 +257,42 @@ class ModerationReport:
         )
 
     @property
+    def has_coverage_gap(self) -> bool:
+        """True when a node in this run was never actually judged.
+
+        The Stage-1 safety pass batches nodes (``review_batch_size``, default
+        8) and records a single fail-safe ``FLAG`` per node when a batch
+        response is missing or unparseable. ``has_hard_block`` is
+        ``any(verdict is BLOCK)``, so those nodes can never contribute a
+        block, and the fail-safe FLAG reads downstream as an ordinary soft
+        flag: "review when convenient". Node-level fail-safe composed into
+        book-level fail-open, which is how four books in the live catalog
+        carried exactly eight unscreened nodes each while reporting
+        ``hard_block=False``.
+
+        Detected by ``concern``, not by message text, because the message
+        carries a node count and would drift. The concern set is
+        :data:`COVERAGE_GAP_CONCERNS`, which is narrower than
+        :data:`MOCK_MODERATED_CONCERNS`; see that constant's comment for why
+        the mock-reviewer stamp is excluded from this in-flight predicate but
+        not from the stored one.
+        """
+        return any(f.concern in COVERAGE_GAP_CONCERNS for f in self.findings)
+
+    @property
+    def blocks_release(self) -> bool:
+        """True when this report must not let the story move toward a reader.
+
+        Deliberately separate from :attr:`has_hard_block`, which does double
+        duty: it drives routing AND the cost short-circuits between pipeline
+        stages. Folding coverage into it would let a flaky stage-0 classifier
+        skip the entire LLM safety stage, turning a transient failure into a
+        wholly unreviewed story. Only the routing call sites take this
+        predicate.
+        """
+        return self.has_hard_block or self.has_coverage_gap
+
+    @property
     def is_clean(self) -> bool:
         """True when no finding gates (no block, no flag)."""
         return not (self.has_hard_block or self.has_soft_flag)
@@ -265,6 +319,19 @@ class ModerationReport:
                 "count": len(persisted),
                 "hard_block": self.has_hard_block,
                 "soft_flag": self.has_soft_flag,
+                # Persisted so a gate reading the stored row months later can
+                # tell a fully reviewed report from one whose reviewer never
+                # saw part of the story. The 2026-07-21 mock-reviewer run
+                # persisted no reviewer provenance at all, which is why those
+                # reports were undetectable after the fact.
+                # Literal, not a gate verdict: it answers "did the reviewer see
+                # every node", so a mock-reviewer run that returned a verdict
+                # for each node records True here. That is not a loophole,
+                # because the gates read moderation_coverage_incomplete(), which
+                # also refuses a mock-stamped report; a field that quietly
+                # meant something broader than its name would be the worse
+                # failure mode.
+                "coverage_complete": not self.has_coverage_gap,
                 "repaired": self.repaired,
                 "reviewer_independent": self.reviewer_independent,
             },
@@ -294,7 +361,6 @@ def moderation_report_unusable(report: dict[str, object] | None) -> bool:
     """
     if not isinstance(report, dict):
         return True
-    report = cast("dict[str, object]", report)
     summary = report.get("summary")
     if (
         isinstance(summary, dict)
@@ -332,6 +398,56 @@ def moderation_report_unusable(report: dict[str, object] | None) -> bool:
     return not any(
         _is_genuine_judgment(finding) for finding in cast("list[object]", findings)
     )
+
+
+def moderation_coverage_incomplete(report: dict[str, object] | None) -> bool:
+    """True when a stored report admits the reviewer did not see every node.
+
+    The ANY-match counterpart to :func:`moderation_report_unusable`'s
+    ALL-match, and the two must not be collapsed. That predicate asks "did any
+    genuine judgment happen at all", which is the right question for detecting
+    a wholly mock-reviewed report and the wrong one for coverage: a single real
+    finding beside a coverage gap satisfies it, so a report naming eight
+    unscreened nodes reads as usable. Four books in the live catalog held
+    exactly that shape.
+
+    Coverage is not a finding to be outvoted by other findings. A gap means no
+    judgment exists for those nodes, so there is nothing for a human to
+    override; an override reason can justify disagreeing with a verdict, never
+    substitute for one that was never produced.
+
+    Args:
+        report: The stored ``moderation_report`` JSONB payload, or ``None``.
+
+    Returns:
+        bool: True when the report is absent, unreadable, or carries any
+        finding whose ``concern`` is in :data:`MOCK_MODERATED_CONCERNS`
+        (``reviewer_unavailable`` from the Stage-1 batch fail-safe, or
+        ``mock_reviewer_active``). Fails closed on every malformed shape, for
+        the same reason the sibling predicate does: absent evidence of
+        coverage is not evidence of coverage.
+    """
+    # #CRITICAL: security: this gates the approval path, so every unreadable
+    # shape must answer "incomplete". Returning False for a malformed report
+    # would let a corrupt row clear the gate as fully reviewed.
+    # #VERIFY: tests/unit/test_moderation_report.py::
+    # TestModerationCoverageIncomplete::test_a_missing_report_is_incomplete and
+    # ::test_a_malformed_report_is_incomplete.
+    if not isinstance(report, dict):
+        return True
+    findings = report.get("findings")
+    if not isinstance(findings, list):
+        return True
+    for finding in cast("list[object]", findings):
+        if not isinstance(finding, dict):
+            # A junk entry is not itself a gap, but it must not end the scan:
+            # a real gap can sit behind it.
+            continue
+        if cast("dict[str, object]", finding).get("concern") in (
+            MOCK_MODERATED_CONCERNS
+        ):
+            return True
+    return False
 
 
 def _is_genuine_judgment(finding: object) -> bool:

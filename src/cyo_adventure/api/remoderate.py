@@ -188,6 +188,7 @@ from cyo_adventure.moderation.personalizable_slots import (
     personalizable_slot_ids_for_version,
 )
 from cyo_adventure.moderation.pipeline import run_moderation_pipeline
+from cyo_adventure.moderation.report import moderation_coverage_incomplete
 from cyo_adventure.publishing.state_machine import Status
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_fill_gate
@@ -515,6 +516,22 @@ def _summarize_report(
     # #VERIFY: tests/unit/test_remoderate_unit.py::
     # test_summarize_report_tolerates_malformed_shapes covers null summary,
     # non-dict findings, and a non-list findings value.
+    # #CRITICAL: security: coverage is checked FIRST and reads the findings,
+    # not ``summary``. Two reasons. (1) ``summary.coverage_complete`` is new,
+    # so every report stored before it existed omits the key, and a
+    # summary-flag read cannot tell "complete" from "written by an older
+    # build"; the ``reviewer_unavailable`` findings themselves are present in
+    # both eras. (2) It fails closed on a report that is absent or unreadable,
+    # which reaching this function means the pipeline persisted nothing
+    # legible; "pass" was the wrong answer for that, in the same direction as
+    # the bug this predicate closes. This verdict is what
+    # scripts/remoderate_books.py classifies as ``blocked``, which is what
+    # makes the sweep exit needs-human instead of "review when convenient".
+    # #VERIFY: tests/unit/test_remoderate_unit.py::
+    # test_summarize_report_tolerates_malformed_shapes, params
+    # ``coverage-gap-outranks-soft-flag`` and ``never-moderated``.
+    if moderation_coverage_incomplete(report):
+        return "block", _finding_counts(report), _structural_count(report)
     if report is None:
         return "pass", {}, 0
     raw_summary = report.get("summary")
@@ -525,20 +542,39 @@ def _summarize_report(
         overall = "flag"
     else:
         overall = "pass"
+    return overall, _finding_counts(report), _structural_count(report)
+
+
+def _persisted_findings(report: dict[str, object] | None) -> list[object]:
+    """Return the report's finding list, or empty for any shape that is not one."""
+    if report is None:
+        return []
     raw_findings = report.get("findings")
-    findings: list[object] = raw_findings if isinstance(raw_findings, list) else []
+    if not isinstance(raw_findings, list):
+        return []
+    return cast("list[object]", raw_findings)
+
+
+def _finding_counts(report: dict[str, object] | None) -> dict[str, int]:
+    """Tally persisted findings by verdict, bucketing unreadable ones as unknown."""
     counts: dict[str, int] = {}
-    structural = 0
-    for finding in findings:
+    for finding in _persisted_findings(report):
         if not isinstance(finding, dict):
             continue
-        entry = cast("dict[str, object]", finding)
-        raw_verdict = entry.get("verdict")
+        raw_verdict = cast("dict[str, object]", finding).get("verdict")
         verdict = raw_verdict if isinstance(raw_verdict, str) else "unknown"
         counts[verdict] = counts.get(verdict, 0) + 1
-        if entry.get("structural"):
-            structural += 1
-    return overall, counts, structural
+    return counts
+
+
+def _structural_count(report: dict[str, object] | None) -> int:
+    """Count persisted findings carrying the ``structural`` flag."""
+    return sum(
+        1
+        for finding in _persisted_findings(report)
+        if isinstance(finding, dict)
+        and cast("dict[str, object]", finding).get("structural")
+    )
 
 
 async def _has_generation_job(session: AsyncSession, story_id: str) -> bool:

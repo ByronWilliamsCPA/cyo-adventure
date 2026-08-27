@@ -530,10 +530,20 @@ async def run_moderation_pipeline(
     # #VERIFY: tests/unit/test_remoderate_unit.py::
     # test_published_blob_unchanged_when_repair_disallowed asserts the blob is
     # byte-identical after a soft-FLAG re-moderation through api/remoderate.py.
+    # #CRITICAL: security: the third clause is `blocks_release`, not
+    # `has_hard_block`. The Stage-1 batch fail-safe records FLAG for every node
+    # in an unusable batch, which satisfies `has_soft_flag`, so under the
+    # narrower predicate a coverage gap ROUTED INTO the auto-repair: the
+    # repairer would rewrite prose no reviewer had read, and the adopted
+    # revision would replace the report wholesale, erasing the evidence that
+    # anything went unreviewed. A gap is not a finding to repair; it is a run
+    # to redo.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_a_coverage_gap_does_not_route_into_the_auto_repair.
     if (
         allow_repair
         and report.has_soft_flag
-        and not report.has_hard_block
+        and not report.blocks_release
         and not isinstance(personalizable_slots, PersonalizableSlotsUnrecoverable)
     ):
         report = await _attempt_and_adopt_repair(
@@ -575,7 +585,13 @@ async def run_moderation_pipeline(
     # calls ONLY submit (clean/repaired) or auto_reject (hard block). It MUST NEVER
     # call approve or publish directly.
     # #VERIFY: no code path in this module sets status="published".
-    if report.has_hard_block:
+    # #CRITICAL: security: `blocks_release`, so a run whose reviewer never saw
+    # part of the story auto-rejects rather than submitting for approval. A
+    # `submit` here is what put four books in the review queue looking
+    # ordinarily soft-flagged while carrying eight unscreened nodes each.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_a_coverage_gap_auto_rejects_instead_of_submitting.
+    if report.blocks_release:
         await service.auto_reject(session, storybook)
     else:
         await service.submit(session, storybook, actor=Actor.system())
@@ -991,18 +1007,23 @@ def _repair_is_adoptable(
 def _overall_verdict(report: ModerationReport) -> str:
     """Return the report's single gating verdict for the event payload.
 
-    Derived from the report's own gating properties (``has_hard_block`` /
+    Derived from the report's own gating properties (``blocks_release`` /
     ``has_soft_flag``), not a stored field: ``ModerationReport`` has no
     ``overall_verdict`` attribute of its own, only per-finding verdicts.
+
+    ``blocks_release`` rather than ``has_hard_block``, matching the routing
+    decision immediately above it, so the durable event log and the status
+    transition can never disagree about the outcome of the same run.
 
     Args:
         report: The final report driving the submit/auto_reject routing.
 
     Returns:
-        ``"block"`` when any finding hard-blocks, ``"flag"`` when any finding
-        soft-flags (and none blocks), otherwise ``"pass"``.
+        ``"block"`` when any finding hard-blocks OR the reviewer did not see
+        every node, ``"flag"`` when any finding soft-flags (and neither of
+        those holds), otherwise ``"pass"``.
     """
-    if report.has_hard_block:
+    if report.blocks_release:
         return Verdict.BLOCK.value
     if report.has_soft_flag:
         return Verdict.FLAG.value

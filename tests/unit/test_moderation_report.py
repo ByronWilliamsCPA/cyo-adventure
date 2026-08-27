@@ -21,6 +21,7 @@ from cyo_adventure.moderation.report import (
     Source,
     Verdict,
     legacy_hidden_fail_safe_node_counts,
+    moderation_coverage_incomplete,
     moderation_report_unusable,
     report_drops_pass_findings,
     severe_finding_counts,
@@ -309,6 +310,242 @@ def test_absent_concern_is_still_allowed() -> None:
         message="m",
     )
     assert finding.concern is None
+
+
+class TestBlocksRelease:
+    """The in-memory counterpart to :func:`moderation_coverage_incomplete`.
+
+    ``has_hard_block`` is ``any(verdict is BLOCK)``, so a node the reviewer
+    never saw cannot contribute a BLOCK; the Stage-1 fail-safe records FLAG
+    instead. That makes an unreviewed batch read as a soft flag, which the
+    re-moderation sweep reports as "review when convenient" and exits 0 on.
+    ``blocks_release`` is the predicate that closes that fail-open, and it must
+    stay distinct from ``has_hard_block``, which also drives cost
+    short-circuits between stages.
+    """
+
+    @staticmethod
+    def _gap(concern: str = "reviewer_unavailable") -> Finding:
+        return Finding(
+            stage=1,
+            source=Source.PIPELINE,
+            category="pipeline",
+            node_id="n1",
+            verdict=Verdict.FLAG,
+            message="reviewer unavailable or unparseable on 8 node(s)",
+            structural=True,
+            concern=concern,
+            severity=FindingSeverity.HIGH,
+            node_ids=("n1", "n2"),
+        )
+
+    def test_a_coverage_gap_blocks_release_without_a_hard_block(self) -> None:
+        report = ModerationReport()
+        report.add(self._gap())
+        assert report.has_hard_block is False, (
+            "precondition: the fail-safe records FLAG, so the block predicate "
+            "cannot see an unreviewed node; that is the fail-open being closed"
+        )
+        assert report.has_coverage_gap is True
+        assert report.blocks_release is True
+
+    def test_a_mock_reviewer_stamp_is_left_to_the_stored_gate(self) -> None:
+        """The in-flight predicate asks only "did the reviewer see every node".
+
+        The mock stamp is applied early in the pipeline, before the repair
+        gate, so folding it in here would make the repair branch unreachable
+        under the escape hatch and strand
+        ``_stamp_mock_reviewer(repaired_report)`` as dead code. Nothing escapes:
+        the real mock backend fail-safes every node (so an actual mock run
+        carries ``reviewer_unavailable`` anyway), and the STORED predicate
+        keeps the broader concern set, which is what the approval gate and the
+        sweep's verdict both read.
+        """
+        report = ModerationReport()
+        report.add(self._gap("mock_reviewer_active"))
+        assert report.has_coverage_gap is False
+        assert report.blocks_release is False
+        assert moderation_coverage_incomplete(report.to_dict()) is True, (
+            "the stored gate must still refuse a mock-stamped report"
+        )
+
+    def test_a_hard_block_blocks_release_with_no_coverage_gap(self) -> None:
+        report = ModerationReport()
+        report.add(_finding(Verdict.BLOCK))
+        assert report.has_coverage_gap is False
+        assert report.blocks_release is True
+
+    def test_an_ordinary_flag_does_not_block_release(self) -> None:
+        report = ModerationReport()
+        report.add(_finding(Verdict.FLAG))
+        assert report.has_coverage_gap is False
+        assert report.blocks_release is False
+        assert report.has_soft_flag is True, (
+            "an ordinary flag must keep routing to the bounded repair path"
+        )
+
+    def test_a_clean_report_does_not_block_release(self) -> None:
+        report = ModerationReport()
+        report.add(_finding(Verdict.PASS))
+        assert report.has_coverage_gap is False
+        assert report.blocks_release is False
+        assert report.is_clean is True
+
+    def test_a_coverage_gap_beside_genuine_findings_still_blocks(self) -> None:
+        """Coverage is not a finding other findings can outvote.
+
+        The stored-report predicate had exactly this hole: one real judgment
+        beside a gap made the report read as usable.
+        """
+        report = ModerationReport()
+        report.add(_finding(Verdict.FLAG))
+        report.add(self._gap())
+        assert report.blocks_release is True
+
+    def test_coverage_complete_is_persisted_in_the_payload(self) -> None:
+        """The flag must survive to the stored row, or no gate downstream sees it.
+
+        The 2026-07-21 mock-reviewer run is the precedent: nothing about the
+        reviewer was persisted, so a report produced by a stub was
+        indistinguishable from a real one months later.
+        """
+        clean = ModerationReport()
+        clean.add(_finding(Verdict.PASS))
+        summary = cast("dict[str, object]", clean.to_dict()["summary"])
+        assert summary["coverage_complete"] is True
+
+        gapped = ModerationReport()
+        gapped.add(self._gap())
+        summary = cast("dict[str, object]", gapped.to_dict()["summary"])
+        assert summary["coverage_complete"] is False
+
+        # The field is literal about coverage, so a mock run that answered for
+        # every node records True. The stored GATE is broader, which is the
+        # assertion in test_a_mock_reviewer_stamp_is_left_to_the_stored_gate.
+        mocked = ModerationReport()
+        mocked.add(self._gap("mock_reviewer_active"))
+        summary = cast("dict[str, object]", mocked.to_dict()["summary"])
+        assert summary["coverage_complete"] is True
+
+    def test_the_persisted_payload_round_trips_to_the_stored_predicate(self) -> None:
+        """The two predicates must agree across the persistence boundary.
+
+        Otherwise the pipeline can block a release the approval gate would
+        happily clear, which is how a gap reaches a reader in the first place.
+        """
+        gapped = ModerationReport()
+        gapped.add(self._gap())
+        assert moderation_coverage_incomplete(gapped.to_dict()) is True
+
+        clean = ModerationReport()
+        clean.add(_finding(Verdict.FLAG))
+        assert moderation_coverage_incomplete(clean.to_dict()) is False
+
+
+class TestModerationCoverageIncomplete:
+    """moderation_coverage_incomplete() over the persisted JSONB shape.
+
+    Distinct from ``moderation_report_unusable`` on purpose, and the pair of
+    tests below is the whole reason a second predicate exists: the usable
+    predicate is an ALL-match (no genuine judgment anywhere), so one real
+    finding beside a coverage gap makes the report "usable" while eight nodes
+    went unscreened. Coverage is an ANY-match question.
+    """
+
+    def _gap_finding(self, nodes: int = 8, **overrides: object) -> dict[str, object]:
+        base: dict[str, object] = {
+            "stage": 1,
+            "source": "pipeline",
+            "category": "pipeline",
+            "node_id": "n1",
+            "verdict": "flag",
+            "severity": "high",
+            "structural": True,
+            "concern": "reviewer_unavailable",
+            "message": (
+                f"reviewer unavailable or unparseable on {nodes} node(s); "
+                "defaulted to fail-safe"
+            ),
+            "node_ids": [f"n{i}" for i in range(1, nodes + 1)],
+        }
+        base.update(overrides)
+        return base
+
+    def _genuine_finding(self, **overrides: object) -> dict[str, object]:
+        base: dict[str, object] = {
+            "stage": 1,
+            "source": "llm_safety",
+            "category": "llm_safety",
+            "node_id": "n9",
+            "verdict": "flag",
+            "severity": "medium",
+            "concern": "frightening_content",
+            "message": "a real judgment about real prose",
+        }
+        base.update(overrides)
+        return base
+
+    def test_a_coverage_gap_beside_genuine_findings_is_incomplete(self) -> None:
+        """The exact shape production produced on four books.
+
+        28 genuine findings plus one reviewer_unavailable made
+        ``moderation_report_unusable`` return False, so the approval gate saw
+        nothing wrong with a book whose reviewer never saw eight of its nodes.
+        """
+        report: dict[str, object] = {
+            "findings": [self._genuine_finding(), self._gap_finding(nodes=8)],
+            "summary": {"reviewer_independent": True},
+        }
+        assert moderation_report_unusable(report) is False, (
+            "precondition: the all-match predicate calls this report usable, "
+            "which is what makes a separate coverage predicate necessary"
+        )
+        assert moderation_coverage_incomplete(report) is True
+
+    def test_a_fully_reviewed_report_is_complete(self) -> None:
+        """A report with real findings and no gap must not be held back."""
+        report: dict[str, object] = {
+            "findings": [self._genuine_finding()],
+            "summary": {"reviewer_independent": True},
+        }
+        assert moderation_coverage_incomplete(report) is False
+
+    def test_a_clean_report_is_complete(self) -> None:
+        """An empty findings list from an independent reviewer is full coverage."""
+        report: dict[str, object] = {
+            "findings": [],
+            "summary": {"reviewer_independent": True},
+        }
+        assert moderation_coverage_incomplete(report) is False
+
+    def test_a_missing_report_is_incomplete(self) -> None:
+        """Absent evidence of coverage is not evidence of coverage."""
+        assert moderation_coverage_incomplete(None) is True
+
+    def test_a_malformed_report_is_incomplete(self) -> None:
+        """Fail closed on any shape we cannot read, as the sibling predicate does."""
+        assert moderation_coverage_incomplete({}) is True
+        assert moderation_coverage_incomplete({"findings": "not-a-list"}) is True
+        assert (
+            moderation_coverage_incomplete(cast("dict[str, object]", "not-a-mapping"))
+            is True
+        )
+
+    def test_a_mock_reviewer_concern_is_also_incomplete(self) -> None:
+        """mock_reviewer_active means nothing real was screened either."""
+        report: dict[str, object] = {
+            "findings": [self._gap_finding(concern="mock_reviewer_active")],
+            "summary": {"reviewer_independent": True},
+        }
+        assert moderation_coverage_incomplete(report) is True
+
+    def test_a_non_mapping_finding_entry_does_not_mask_a_gap(self) -> None:
+        """A junk entry beside a real gap must not make the report look covered."""
+        report: dict[str, object] = {
+            "findings": ["junk", self._gap_finding()],
+            "summary": {"reviewer_independent": True},
+        }
+        assert moderation_coverage_incomplete(report) is True
 
 
 class TestModerationReportUnusable:

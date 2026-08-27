@@ -23,6 +23,8 @@ from __future__ import annotations
 
 import asyncio
 import copy
+import json
+import re
 import uuid
 from typing import TYPE_CHECKING, cast
 from unittest.mock import AsyncMock, MagicMock
@@ -730,17 +732,28 @@ async def test_report_repaired_tolerates_a_malformed_stored_report() -> None:
 async def test_mock_reviewer_stamp_is_not_stripped_or_overridden(
     mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A fresh mock-reviewer-stamped report is surfaced verbatim, not bypassed.
+    """A fresh mock-reviewer-stamped report surfaces as ``block``, never ``pass``.
 
     Simulates the exact persisted shape run_moderation_pipeline's own
-    _stamp_mock_reviewer leaves behind (design doc 2.4, pipeline.py lines
-    ~166-189: reviewer_independent overridden to False plus a structural
-    advisory finding carrying concern="mock_reviewer_active") when the
-    CYO_ADVENTURE_ALLOW_MOCK_REVIEW escape hatch is active outside local.
-    This module adds no logic that reads or special-cases that stamp: it
-    only reads summary.hard_block/soft_flag and the findings list, so the
-    stamp rides through into the response and the audit event exactly as
-    the pipeline produced it, with no override of its own.
+    _stamp_mock_reviewer leaves behind (design doc 2.4: reviewer_independent
+    overridden to False plus a structural advisory finding carrying
+    concern="mock_reviewer_active") when the CYO_ADVENTURE_ALLOW_MOCK_REVIEW
+    escape hatch is active outside local.
+
+    This test previously asserted ``overall_verdict == "pass"``, on the
+    premise that this module is a pure pass-through reading only
+    summary.hard_block/soft_flag. That premise was the defect: on 2026-07-21 a
+    mock-reviewer run over the catalog reported success on every book, and the
+    reports it left behind carried no reviewer provenance at all, so the
+    substitution was undetectable for weeks. The stamp still rides through
+    verbatim into the response and the audit event, which is what the last two
+    assertions cover; what changed is that the derived VERDICT now refuses to
+    call an unreviewed story a pass.
+
+    Note the stamp's finding carries verdict "advisory", not "flag" or
+    "block". Coverage is matched on ``concern``, so it gates regardless of the
+    verdict the stamp happens to use; a stamp is not a judgment to be weighed
+    against other findings.
     """
     version_row = _version_row()
     _wire_session(mock_async_session, _story(), version_row)
@@ -775,7 +788,7 @@ async def test_mock_reviewer_stamp_is_not_stripped_or_overridden(
         mock_async_session, "s1", 1, _remod_ctx()
     )
 
-    assert result.overall_verdict == "pass"
+    assert result.overall_verdict == "block"
     assert result.verdict_counts == {"advisory": 1}
     assert result.structural_count == 1
     assert _report_summary(version_row)["reviewer_independent"] is False
@@ -855,22 +868,51 @@ async def test_published_state_unchanged_after_real_remoderation(
 
 
 def _flagging_review_provider() -> MockProvider:
-    """A review backend double whose safety verdict is a soft FLAG.
+    """A review backend double whose safety verdict is a GENUINE soft FLAG.
 
-    Same shape as ``_clean_review_provider``, but every safety prompt (single
-    or batched, both start with "Age band:", moderation/stages.py) returns a
-    structured ``flag`` verdict, so the resulting report satisfies exactly
-    the repair branch's precondition (``has_soft_flag and not
-    has_hard_block``, moderation/pipeline.py).
+    Answers a batched safety prompt in the batch format: a JSON ARRAY with one
+    entry per requested ``node_id``. Until 2026-08-27 this returned a single
+    object for every prompt, which the batch parser rejects
+    (``batch_verdict_not_array``, moderation/stages.py), so the whole batch
+    fail-safed and the ``frightening_content`` flag this fixture documents was
+    never actually produced. Tests built on it were exercising a DEGRADED
+    reviewer while claiming to exercise a real soft flag, and the two looked
+    identical because both set ``has_soft_flag``. Splitting the coverage
+    predicate out of ``has_hard_block`` is what made them distinguishable.
+
+    Node ids are read back out of the prompt (each batch line is
+    ``[node_id] <untrusted_passage>``) rather than hardcoded, because the
+    parser requires set equality with the ids it asked about, so a fixed list
+    would silently fail-safe again the moment the fixture blob changed.
     """
 
+    def _verdict_for(node_id: str) -> dict[str, object]:
+        return {
+            "node_id": node_id,
+            "verdict": "flag",
+            "concern": "frightening_content",
+            "severity": "low",
+            "reason": "test flag",
+        }
+
     def _respond(prompt: str) -> str:
-        if prompt.startswith("Age band:"):
-            return (
-                '{"verdict": "flag", "concern": "frightening_content", '
-                '"severity": "low", "reason": "test flag"}'
+        if not prompt.startswith("Age band:"):
+            return '{"verdict": "pass", "reason": "ok"}'
+        node_ids = re.findall(
+            r"^\[([^\]]+)\] <untrusted_passage>", prompt, re.MULTILINE
+        )
+        if not node_ids:
+            # A size-1 batch takes the single-node prompt shape, which carries
+            # no id line and expects a bare object.
+            return json.dumps(
+                {
+                    "verdict": "flag",
+                    "concern": "frightening_content",
+                    "severity": "low",
+                    "reason": "test flag",
+                }
             )
-        return '{"verdict": "pass", "reason": "ok"}'
+        return json.dumps([_verdict_for(nid) for nid in node_ids])
 
     return MockProvider(responses=[_respond] * _REVIEW_BUDGET)
 
@@ -926,9 +968,13 @@ async def test_published_blob_unchanged_when_repair_disallowed(
 @pytest.mark.parametrize(
     ("report", "expected"),
     [
-        pytest.param(None, ("pass", {}, 0), id="never-moderated"),
-        pytest.param({"summary": None}, ("pass", {}, 0), id="null-summary"),
-        pytest.param({"summary": "corrupt"}, ("pass", {}, 0), id="non-dict-summary"),
+        # An absent or unreadable report is now "block", not "pass". This
+        # function runs AFTER the pipeline has persisted its fresh report, so
+        # these shapes mean the run left nothing legible behind; calling that
+        # a pass is the same fail-open the coverage predicate exists to close.
+        pytest.param(None, ("block", {}, 0), id="never-moderated"),
+        pytest.param({"summary": None}, ("block", {}, 0), id="null-summary"),
+        pytest.param({"summary": "corrupt"}, ("block", {}, 0), id="non-dict-summary"),
         pytest.param(
             {"summary": {"hard_block": True}, "findings": "corrupt"},
             ("block", {}, 0),
@@ -938,6 +984,25 @@ async def test_published_blob_unchanged_when_repair_disallowed(
             {"summary": {}, "findings": ["not-a-dict", None, 7]},
             ("pass", {}, 0),
             id="non-dict-finding-elements",
+        ),
+        pytest.param(
+            {
+                "summary": {"soft_flag": True},
+                "findings": [
+                    {"verdict": "flag", "concern": "frightening_content"},
+                    {"verdict": "flag", "concern": "reviewer_unavailable"},
+                ],
+            },
+            ("block", {"flag": 2}, 0),
+            id="coverage-gap-outranks-soft-flag",
+        ),
+        pytest.param(
+            {
+                "summary": {"soft_flag": True},
+                "findings": [{"verdict": "flag", "concern": "mock_reviewer_active"}],
+            },
+            ("block", {"flag": 1}, 0),
+            id="mock-reviewer-outranks-soft-flag",
         ),
         pytest.param(
             {"summary": {"soft_flag": True}, "findings": [{"structural": True}]},

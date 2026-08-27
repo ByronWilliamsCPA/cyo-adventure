@@ -304,6 +304,88 @@ async def test_approve_fail_safe_report_returns_400(
         assert book.status == "in_review"
 
 
+def _coverage_gap_report() -> dict[str, object]:
+    """A report carrying one genuine judgment beside eight unreviewed nodes.
+
+    This is the exact shape four books in the live catalog held: the Stage-1
+    batch fail-safe recorded ``reviewer_unavailable`` for a whole batch of
+    eight, while the rest of the story was genuinely reviewed. Because
+    ``moderation_report_unusable`` is all-or-nothing, the single real finding
+    makes the report read as usable, so the approval gate cleared it.
+    """
+    return {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "llm_safety",
+                "node_id": "n1",
+                "verdict": "flag",
+                "score": None,
+                "severity": "medium",
+                "message": "mild peril, age-appropriate",
+            },
+            {
+                "stage": 1,
+                "source": "pipeline",
+                "category": "pipeline",
+                "node_id": "n9",
+                "verdict": "flag",
+                "score": None,
+                "structural": True,
+                "concern": "reviewer_unavailable",
+                "severity": "high",
+                "message": "reviewer unavailable or unparseable on 8 node(s)",
+                "node_ids": ["n9", "n10", "n11", "n12", "n13", "n14", "n15", "n16"],
+            },
+        ],
+        "summary": {"count": 2, "hard_block": False, "soft_flag": True},
+    }
+
+
+@pytest.mark.integration
+async def test_approve_with_unreviewed_nodes_returns_400_even_with_a_reason(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """An override reason cannot buy past nodes that were never judged.
+
+    ADR-005 D2 lets a human approve OVER an automated verdict with a recorded
+    justification. A coverage gap is not a verdict to disagree with: no
+    judgment exists for those nodes, so there is nothing to override. The
+    reason is supplied here precisely to prove the D2 gate is not what stops
+    the request.
+    """
+    async with sessions() as session:
+        fam = Family(name="A")
+        session.add(fam)
+        await session.flush()
+        session.add(
+            User(family_id=fam.id, role="admin", authn_subject="admin-a", is_admin=True)
+        )
+        story_id = "half-reviewed"
+        session.add(Storybook(id=story_id, family_id=fam.id, status="in_review"))
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id},
+                moderation_report=_coverage_gap_report(),
+            )
+        )
+        await session.commit()
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve",
+        headers=auth("admin-a"),
+        json={"override_reason": "reviewed the flagged node myself, it is fine"},
+    )
+    assert resp.status_code == 400, resp.text
+    assert "coverage" in resp.text.lower() or "never" in resp.text.lower(), resp.text
+    async with sessions() as session:
+        book = await session.get(Storybook, story_id)
+        assert book is not None
+        assert book.status == "in_review", "an unreviewed book must not reach published"
+
+
 def _severe_report() -> dict[str, object]:
     """A moderation report with one hard-block finding on node n1."""
     return {
