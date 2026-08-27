@@ -12,7 +12,7 @@ import asyncio
 import importlib.util
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -603,9 +603,11 @@ def test_main_exits_nonzero_when_a_book_is_blocked(
     with pytest.raises(SystemExit) as excinfo:
         _run_main(result)
 
-    assert excinfo.value.code is not None
-    assert "1 book(s) hard-blocked" in str(excinfo.value.code)
-    out = capsys.readouterr().out
+    assert excinfo.value.code == remoderate_books._EXIT_NEEDS_HUMAN
+    captured = capsys.readouterr()
+    assert "1 book(s) hard-blocked" in captured.err
+    assert "NEEDS A HUMAN" in captured.err
+    out = captured.out
     assert "HARD BLOCK, status unchanged by this sweep" in out
     # The published consequence must survive verbatim: it is the half that
     # means a child can read a blocked book right now.
@@ -632,9 +634,11 @@ def test_main_exits_nonzero_when_a_book_was_excluded(
     with pytest.raises(SystemExit) as excinfo:
         _run_main(result)
 
-    assert excinfo.value.code is not None
-    assert "1 book(s) excluded" in str(excinfo.value.code)
-    out = capsys.readouterr().out
+    assert excinfo.value.code == remoderate_books._EXIT_NEEDS_HUMAN
+    captured = capsys.readouterr()
+    assert "1 book(s) excluded" in captured.err
+    assert "NEEDS A HUMAN" in captured.err
+    out = captured.out
     assert "EXCLUDED from the target list" in out
     # The id has to be in the SUMMARY, not only in a structured log an
     # operator would have to be tailing separately to see.
@@ -657,9 +661,10 @@ def test_main_exits_nonzero_when_every_book_was_excluded(
     with pytest.raises(SystemExit) as excinfo:
         _run_main(result)
 
-    assert excinfo.value.code is not None
-    assert "2 in_review book(s)" in str(excinfo.value.code)
-    assert "s_a, s_b" in capsys.readouterr().out
+    assert excinfo.value.code == remoderate_books._EXIT_NEEDS_HUMAN
+    captured = capsys.readouterr()
+    assert "2 in_review book(s)" in captured.err
+    assert "s_a, s_b" in captured.out
 
 
 def test_main_reports_exclusions_on_the_dry_run_path(
@@ -748,8 +753,113 @@ def test_main_exits_nonzero_when_a_book_fails(
     with pytest.raises(SystemExit) as excinfo:
         _run_main(result)
 
-    assert "1 book(s) failed" in str(excinfo.value.code)
-    assert "failed (rolled back, retry by re-running)" in capsys.readouterr().out
+    assert excinfo.value.code == remoderate_books._EXIT_RETRYABLE
+    captured = capsys.readouterr()
+    assert "1 book(s) failed" in captured.err
+    assert "RETRYABLE" in captured.err
+    assert "failed (rolled back, retry by re-running)" in captured.out
+
+
+# ---------------------------------------------------------------------------
+# Exit-code discrimination
+#
+# The point of these is that a retry loop can act on the code alone. Before the
+# split every non-clean outcome exited 1, so `sweep.sh` retried a hard-blocked
+# book three times in fifteen seconds (2026-08-27), spending an LLM review pass
+# each time on a verdict that cannot move without a prose edit. Asserting the
+# codes are merely "nonzero" is what let that through, so each test below pins
+# the exact value and the pair test pins them as DIFFERENT.
+# ---------------------------------------------------------------------------
+
+
+def _exit_code_for(**outcome: object) -> int:
+    """Run main() with one canned outcome and return its exit code."""
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)], executed=True, **cast("Any", outcome)
+    )
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main(result)
+    assert isinstance(excinfo.value.code, int)
+    return excinfo.value.code
+
+
+def test_blocked_and_failed_exit_codes_differ() -> None:
+    """The two classes must not collide, or no caller can tell them apart.
+
+    This is the regression test for the defect itself. Every other assertion
+    here would still pass if both constants were 1; only comparing them catches
+    that, which is exactly the state the script shipped in.
+    """
+    assert _exit_code_for(succeeded=[("s1", 1)], blocked=[("s1", 1)]) != _exit_code_for(
+        failed=[("s1", 1)]
+    )
+
+
+def test_hard_block_exits_needs_human_not_retryable() -> None:
+    """A blocked book is a SUCCESSFUL call whose answer was "no"."""
+    code = _exit_code_for(succeeded=[("s1", 1)], blocked=[("s1", 1)])
+    assert code == remoderate_books._EXIT_NEEDS_HUMAN
+    assert code != remoderate_books._EXIT_RETRYABLE
+
+
+def test_timeout_and_not_attempted_exit_retryable() -> None:
+    """A timeout rolled back and left no durable state, so a retry is valid."""
+    assert (
+        _exit_code_for(timed_out=[("s1", 1)], not_attempted=[("s2", 1)])
+        == remoderate_books._EXIT_RETRYABLE
+    )
+
+
+def test_retryable_wins_when_a_sweep_produced_both() -> None:
+    """A mixed sweep exits retryable: there IS something a retry can fix.
+
+    The blocked book still needs a human, but it is named on stdout and comes
+    back in the next run's report, so nothing is lost by retrying first. The
+    reverse precedence would strand a genuinely transient failure.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1), ("s2", 1)],
+        executed=True,
+        succeeded=[("s1", 1)],
+        blocked=[("s1", 1)],
+        failed=[("s2", 1)],
+    )
+    with pytest.raises(SystemExit) as excinfo:
+        _run_main(result)
+    assert excinfo.value.code == remoderate_books._EXIT_RETRYABLE
+
+
+def test_soft_flag_alone_exits_clean(capsys: pytest.CaptureFixture[str]) -> None:
+    """`flagged` is informational and must stay OUT of both nonzero classes.
+
+    It is the one outcome where the status did not change AND no action is
+    required, so a retry loop should treat the sweep as done.
+    """
+    result = remoderate_books.SweepResult(
+        targets=[("s1", 1)],
+        executed=True,
+        succeeded=[("s1", 1)],
+        flagged=[("s1", 1)],
+    )
+
+    _run_main(result)
+
+    assert "soft-flagged" in capsys.readouterr().out
+
+
+def test_needs_human_code_does_not_collide_with_argparse_usage_error() -> None:
+    """argparse exits 2 on a usage error; reusing it would hide a mistyped flag.
+
+    A caller that treated 2 as "hard block" would silently swallow every typo in
+    an ops invocation, which is the failure this whole split exists to prevent.
+    """
+    argparse_usage_exit = 2
+    assert argparse_usage_exit != remoderate_books._EXIT_NEEDS_HUMAN
+    assert argparse_usage_exit != remoderate_books._EXIT_RETRYABLE
+
+    with pytest.raises(SystemExit) as excinfo:
+        remoderate_books._parse_args(["--not-a-real-flag"])
+    assert excinfo.value.code == argparse_usage_exit
 
 
 # ---------------------------------------------------------------------------
@@ -1117,10 +1227,13 @@ def test_main_exits_nonzero_when_a_book_timed_out(
     with pytest.raises(SystemExit) as excinfo:
         _run_main(result)
 
-    assert excinfo.value.code is not None
-    assert "1 book(s) timed out" in str(excinfo.value.code)
-    assert "1 book(s) not attempted" in str(excinfo.value.code)
-    out = capsys.readouterr().out
+    assert excinfo.value.code == remoderate_books._EXIT_RETRYABLE
+    captured = capsys.readouterr()
+    err = captured.err
+    assert "1 book(s) timed out" in err
+    assert "1 book(s) not attempted" in err
+    assert "RETRYABLE" in err
+    out = captured.out
     assert "TIMED OUT" in out
     # Both ids in the SUMMARY, not only in a structured log.
     assert "s_a" in out

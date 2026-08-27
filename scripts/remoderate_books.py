@@ -507,6 +507,24 @@ async def _resolve_book_id_targets(
 # ::test_sweep_abandons_remaining_targets_after_a_timeout.
 _PER_BOOK_TIMEOUT_SECONDS: Final = 900.0
 
+# Exit codes. A retry loop (`sweep.sh`, or any operator's `until` wrapper) reads
+# these to decide whether re-running can change the outcome, so the split is
+# part of this script's contract and not an implementation detail.
+#
+# The distinction that matters is NOT success versus failure, it is retryable
+# versus not. Before this split every non-clean outcome exited 1, because
+# `sys.exit(<str>)` prints its argument to stderr and exits 1 whatever the
+# string says. A caller could therefore see that a sweep was unhappy but never
+# why, and the only discriminator was prose on stdout. Measured cost, 2026-08-27:
+# `sweep.sh` retried a hard-blocked book three times in fifteen seconds, spending
+# an LLM review pass each time to re-derive a verdict that cannot move without a
+# prose edit.
+#
+# `NEEDS_HUMAN` is 3, not 2, because argparse already exits 2 on a usage error.
+# Reusing 2 would make a mistyped flag indistinguishable from a hard block.
+_EXIT_RETRYABLE: Final = 1
+_EXIT_NEEDS_HUMAN: Final = 3
+
 
 @dataclass(frozen=True, slots=True)
 class SweepResult:
@@ -812,14 +830,20 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def _exit_on_excluded(result: SweepResult) -> None:
     """Exit nonzero when the sweep could not see every eligible book.
 
+    Exits ``_EXIT_NEEDS_HUMAN``: an excluded book has no version row, and it
+    will not grow one because a caller asked a second time. Retrying is pure
+    waste, so the code says so.
+
     Args:
         result: The sweep outcome to inspect.
     """
     if result.excluded:
-        sys.exit(
+        print(
             f"remoderate_books: {len(result.excluded)} in_review book(s) "
-            "were excluded from this sweep and remain un-re-moderated."
+            "were excluded from this sweep and remain un-re-moderated.",
+            file=sys.stderr,
         )
+        sys.exit(_EXIT_NEEDS_HUMAN)
 
 
 # A database name and nothing else: one path segment, no separator that could
@@ -961,6 +985,10 @@ def main() -> None:
     came back hard-blocked OR if any book was excluded, so neither a partial
     sweep nor a book that just failed re-moderation is ever read as a clean
     success.
+
+    The nonzero code distinguishes the two cases a retry loop must tell apart:
+    ``1`` for a retryable failure and ``3`` for an outcome that needs a person.
+    See :func:`_exit_on_outcome`.
     """
     args = _parse_args()
     _preflight(_default_settings, execute=args.execute)
@@ -1051,20 +1079,61 @@ def main() -> None:
             "remoderate_books: not attempted after the timeout: "
             + ", ".join(f"{sid} v{v}" for sid, v in result.not_attempted)
         )
-    if (
-        result.failed
-        or result.blocked
-        or result.excluded
-        or result.timed_out
-        or result.not_attempted
-    ):
-        sys.exit(
-            f"remoderate_books: {len(result.failed)} book(s) failed "
-            f"re-moderation, {len(result.blocked)} book(s) hard-blocked, "
-            f"{len(result.excluded)} book(s) excluded, "
-            f"{len(result.timed_out)} book(s) timed out, "
-            f"{len(result.not_attempted)} book(s) not attempted."
+    _exit_on_outcome(result)
+
+
+def _exit_on_outcome(result: SweepResult) -> None:
+    """Exit with a code that says whether re-running could change the outcome.
+
+    Splits the five non-clean outcomes into two classes:
+
+    - Retryable (``_EXIT_RETRYABLE``): ``failed``, ``timed_out`` and
+      ``not_attempted``. Each rolled back cleanly and left no durable state, so
+      the same invocation may well succeed next time. A dropped pooler
+      connection or a statement timeout lands here.
+    - Needs a human (``_EXIT_NEEDS_HUMAN``): ``blocked`` and ``excluded``. The
+      call SUCCEEDED and the answer was "no". A hard block moves only when a
+      person edits prose or changes status, and an excluded book has no version
+      row to re-moderate. Re-running re-derives the identical answer at full
+      LLM cost.
+
+    Retryable wins when a sweep produced both, because then there really is
+    something a retry can fix; the blocked books are still named on stdout and
+    survive into the next run's report.
+
+    Note that soft ``flagged`` is deliberately absent from both classes and
+    exits clean. It is informational: the status did not change and no action
+    is required before the book can be read.
+
+    Args:
+        result: The sweep outcome to inspect.
+    """
+    retryable = result.failed or result.timed_out or result.not_attempted
+    needs_human = result.blocked or result.excluded
+    if not retryable and not needs_human:
+        return
+
+    print(
+        f"remoderate_books: {len(result.failed)} book(s) failed "
+        f"re-moderation, {len(result.blocked)} book(s) hard-blocked, "
+        f"{len(result.excluded)} book(s) excluded, "
+        f"{len(result.timed_out)} book(s) timed out, "
+        f"{len(result.not_attempted)} book(s) not attempted.",
+        file=sys.stderr,
+    )
+    if retryable:
+        print(
+            "remoderate_books: exit 1, RETRYABLE. Re-running may change this.",
+            file=sys.stderr,
         )
+        sys.exit(_EXIT_RETRYABLE)
+    # Three short lines rather than one wrapped string: ruff's ISC003 requires
+    # implicit concatenation and basedpyright's reportImplicitStringConcatenation
+    # forbids it, so any two-part message here trips one tool or the other.
+    print("remoderate_books: exit 3, NEEDS A HUMAN.", file=sys.stderr)
+    print("  Retrying re-derives the same answer at full LLM cost.", file=sys.stderr)
+    print("  Act on the books named above instead.", file=sys.stderr)
+    sys.exit(_EXIT_NEEDS_HUMAN)
 
 
 if __name__ == "__main__":
