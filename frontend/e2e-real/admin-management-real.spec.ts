@@ -172,6 +172,10 @@ test('#12a admin cross-family profile JSON carries no pin_hash and no authn_subj
   // GET /api/v1/admin/profiles, unfiltered = all families) cannot resolve
   // before the listener is attached.
   // #VERIFY: waitForResponse is created before page.goto below.
+  // Audited in the #290 sweep and found safe: UserManagementPage's mount
+  // issues exactly one GET /api/v1/admin/profiles, and this navigation is
+  // the only action before the wait resolves, so there is no second
+  // in-flight request of the same shape for queue position to disambiguate.
   const profilesResponse = page.waitForResponse(
     (res) =>
       res.url().includes('/api/v1/admin/profiles') &&

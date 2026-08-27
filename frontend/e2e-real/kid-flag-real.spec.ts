@@ -114,6 +114,13 @@ test('a kid tells a grown-up through the real flag path and it lands in the admi
   // matching naive-kid-misuse-real.spec.ts's wait-then-act ordering.
   // #VERIFY: the response body asserted below is the exact 201 the click
   // below triggers, not a later unrelated request.
+  // Audited in the #290 sweep and found safe, unlike the reading-state PUT
+  // wait: "Tell a grown-up" issues exactly one POST /v1/flags per test, and
+  // nothing else in this flow targets that endpoint, so there is no second
+  // in-flight request this predicate could resolve on instead. The mount-time
+  // reading-state PUT storm that motivated node-matching there (#290,
+  // kid-go-back-real.spec.ts) does not apply here: this file never advances a
+  // choice, so it never triggers a reading-state save at all.
   const flagResponsePromise = page.waitForResponse(
     (res) => res.url().includes('/api/v1/flags') && res.request().method() === 'POST',
     { timeout: 5_000 }

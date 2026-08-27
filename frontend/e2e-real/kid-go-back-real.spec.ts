@@ -48,27 +48,53 @@ interface ReadingStateRow {
   path: string[]
 }
 
-// Matches on the outgoing PUT body's own current_node, not queue position.
-// Two saves can be in flight at once (a choice click's persist() and the
-// go-back click's persist() that follows close behind it), and
-// page.waitForResponse resolves on whichever matching response the browser
-// delivers first, not the one issued by the action a caller just performed.
-// An unqualified URL+method predicate therefore has no way to tell "the
-// n_crab save from the earlier click" apart from "the n_pools save the
-// go-back click just triggered": both are PUTs to the same URL. Naming the
-// expected node at each call site removes that ambiguity; see #290 for the
-// nightly failures this produced (savedRow.current_node === 'n_crab' at what
-// should have been the go-back's own n_pools save, while the server's actual
-// persisted state was already correct).
+// #ASSUME: concurrency: matches on the outgoing PUT body's own current_node,
+// not queue position. Two saves can be in flight at once (a choice click's
+// persist() and the go-back click's persist() that follows close behind it),
+// and page.waitForResponse resolves on whichever matching response the
+// browser delivers first, not the one issued by the action a caller just
+// performed. An unqualified URL+method predicate therefore has no way to
+// tell "the n_crab save from the earlier click" apart from "the n_pools
+// save the go-back click just triggered": both are PUTs to the same URL.
+// Naming the expected node at each call site removes that ambiguity; see
+// #290 for the nightly failures this produced (savedRow.current_node ===
+// 'n_crab' at what should have been the go-back's own n_pools save, while
+// the server's actual persisted state was already correct).
+// #VERIFY: if a future save shape ever issues two in-flight requests that
+// legitimately carry the same current_node (e.g. a client-side retry of an
+// unresolved save), this predicate can no longer distinguish them; add a
+// request-id or timestamp discriminator if that scenario ever arises.
 function waitForReadingStatePut(page: Page, expectedNode: string) {
   return page.waitForResponse(
     (res) => {
       if (!res.url().includes('/api/v1/reading-state/')) return false
       if (!res.url().includes(STORYBOOK_ID)) return false
       if (res.request().method() !== 'PUT') return false
-      const body = res.request().postDataJSON() as { current_node?: string }
-      return body.current_node === expectedNode
+      let body: { current_node?: string } | null
+      try {
+        body = res.request().postDataJSON() as { current_node?: string } | null
+      } catch {
+        return false
+      }
+      return body?.current_node === expectedNode
     },
+    { timeout: 10_000 }
+  )
+}
+
+// Order-based counterpart to waitForReadingStatePut, for the one call site
+// (the go-back save below) that immediately follows an already-awaited
+// prior save, so no earlier save can still be in flight to race against.
+// Matching on order there and asserting the body's current_node separately
+// keeps a real regression diagnosable: it fails on the assertion below,
+// naming the node actually observed, instead of a bare
+// "Timeout 10000ms exceeded while waiting for response" that names nothing.
+function waitForNextReadingStatePut(page: Page) {
+  return page.waitForResponse(
+    (res) =>
+      res.url().includes('/api/v1/reading-state/') &&
+      res.url().includes(STORYBOOK_ID) &&
+      res.request().method() === 'PUT',
     { timeout: 10_000 }
   )
 }
@@ -146,18 +172,21 @@ test('going back after two real choices reverts the current node and the persist
   await secondSave
   await expect(page.getByTestId('choice-c_cave')).toBeVisible()
 
-  // Go back: n_crab -> n_pools. The wait is registered before the click so
-  // the real PUT this triggers is caught as it happens, matching
-  // naive-kid-misuse-real.spec.ts's wait-then-act ordering. Named 'n_pools'
-  // (not just "the next PUT") so this wait cannot resolve on the second
-  // choice's still-in-flight n_crab save instead of the go-back's own save;
-  // see waitForReadingStatePut's docstring and #290.
-  const backSave = waitForReadingStatePut(page, 'n_pools')
+  // Go back: n_crab -> n_pools. secondSave was already awaited above, so no
+  // earlier save can still be in flight here; an order-based wait is safe at
+  // this specific call site (see waitForNextReadingStatePut's docstring) and
+  // keeps a real regression diagnosable, since it fails on the node
+  // assertion below (naming the node actually observed) instead of timing
+  // out with no indication of what was sent. See #290.
+  const backSave = waitForNextReadingStatePut(page)
   await page.getByTestId('go-back').click()
   const backResponse = await backSave
   expect(backResponse.status()).toBe(200)
   const savedRow = (await backResponse.json()) as ReadingStateRow
-  expect(savedRow.current_node).toBe('n_pools')
+  expect(
+    savedRow.current_node,
+    `go-back click's PUT carried current_node ${JSON.stringify(savedRow.current_node)}, expected 'n_pools'`
+  ).toBe('n_pools')
   // The recorded path starts at n_open, not n_start: PL-25 requires the first
   // decision to land at least two nodes in, so s_tide_pools opens on an
   // establishing prelude (n_open) whose single choice flows into n_start. This

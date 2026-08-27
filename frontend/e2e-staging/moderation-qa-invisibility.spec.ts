@@ -210,6 +210,11 @@ test.describe('mqa books are invisible to a kid profile on staging', () => {
     // Arm the capture BEFORE the click: the library list request fires during
     // the route change. The `?` keeps this from matching the versioned
     // /api/v1/library/{...} blob route.
+    // Audited in the #290 sweep and found safe: the profile-picker link click
+    // is the only action here that requests the kid library, and the
+    // route-change fan-out this file paces around (recommendations, etc.)
+    // does not hit /api/v1/library itself, so there is no second in-flight
+    // GET of the same shape for queue position to disambiguate.
     const libraryResponse = sharedPage.waitForResponse(
       (res) => res.url().includes('/api/v1/library?') && res.request().method() === 'GET'
     )

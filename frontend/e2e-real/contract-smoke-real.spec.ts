@@ -137,21 +137,41 @@ test.describe('reading-state PUT contract', () => {
     }
   })
 
-  // #EDGE: timing-dependencies: matches by URL+method+status only, the same
-  // shape #290 traced kid-go-back-real.spec.ts's flaky failure to (queue
-  // position, not the response's own identity). This file's two call sites
-  // DO read this promise's own `.json()` (that is the point, this test pins
-  // the ReadingState wire contract), but each is fully awaited before the
-  // next waitForReadingStatePut() is registered, so exactly one matching PUT
-  // is ever pending at a time and there is no other save this could race.
-  // #VERIFY: if a third, overlapping save is ever added here, switch to
-  // kid-go-back-real.spec.ts's node-matching predicate instead.
-  function waitForReadingStatePut(page: Page) {
+  const STORYBOOK_ID = 's_tide_pools'
+
+  // #ASSUME: timing-dependencies: matches by URL+method+STORYBOOK_ID+
+  // current_node, not queue position. "The Tide Pool Mystery" is seeded at
+  // age_band "8-11" (scripts/seed_dev_data.py), which is in FLOWED_BANDS
+  // (readerProgress.ts), so mount does NOT stop at start_node n_open: it
+  // auto-flows through n_open's single choice and persists TWICE (n_open,
+  // then n_start) before the reader ever shows a choice to click. A save
+  // that matched only on URL+method would have no way to tell "the leftover
+  // n_start mount save" apart from "the save the click below just
+  // triggered": both are PUTs to the same URL, and page.waitForResponse
+  // resolves on whichever the browser delivers first, not the one issued by
+  // the action a caller just performed. Naming the expected node at each
+  // call site removes that ambiguity: firstSave names 'n_start' so it
+  // ignores the earlier n_open save, and secondSave (registered only after
+  // firstSave has resolved) names 'n_pools', the first choice's own target,
+  // so it cannot resolve on a still-in-flight n_start mount save instead.
+  // See #290 / kid-go-back-real.spec.ts's identical predicate for the
+  // nightly failures the order-blind version of this wait produced.
+  // #VERIFY: if s_tide_pools's start_node or n_start's first choice target
+  // ever changes, update the literals at this function's call sites below.
+  function waitForReadingStatePut(page: Page, expectedNode: string) {
     return page.waitForResponse(
-      (res) =>
-        res.url().includes('/api/v1/reading-state/') &&
-        res.request().method() === 'PUT' &&
-        res.status() === 200,
+      (res) => {
+        if (!res.url().includes('/api/v1/reading-state/')) return false
+        if (!res.url().includes(STORYBOOK_ID)) return false
+        if (res.request().method() !== 'PUT') return false
+        let body: { current_node?: string } | null
+        try {
+          body = res.request().postDataJSON() as { current_node?: string } | null
+        } catch {
+          return false
+        }
+        return body?.current_node === expectedNode
+      },
       { timeout: 10_000 }
     )
   }
@@ -181,7 +201,7 @@ test.describe('reading-state PUT contract', () => {
     // as long as THIS spec asserts revisions relatively (below) rather than
     // pinning an absolute starting value that a prior run in the same
     // invocation could have already advanced past.
-    const firstSave = waitForReadingStatePut(page)
+    const firstSave = waitForReadingStatePut(page, 'n_start')
     await page.goto('/kids')
     await page.getByText('Dev Reader').click()
     await expect(page).toHaveURL(/\/library\//)
@@ -194,7 +214,9 @@ test.describe('reading-state PUT contract', () => {
     assertReadingStateShape(firstBody)
     expect(firstBody.state_revision as number).toBeGreaterThanOrEqual(1)
 
-    const secondSave = waitForReadingStatePut(page)
+    // n_start -> n_pools (n_start's first choice target; see the fixture
+    // literals in waitForReadingStatePut's docstring above).
+    const secondSave = waitForReadingStatePut(page, 'n_pools')
     await page.locator('[data-testid^="choice-"]').first().click()
     const secondRes = await secondSave
     const secondBody = (await secondRes.json()) as Record<string, unknown>
