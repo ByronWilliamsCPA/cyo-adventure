@@ -224,12 +224,14 @@ jobs:
           retention-days: 30
           if-no-files-found: warn
 
-      - name: File tracking issue on scheduled failure
+      - name: Compose the issue body
         # Schedule-only workflows fail invisibly: no PR turns red and nobody is
         # notified. Keep exactly one open tracking issue up to date.
         if: failure() && github.event_name == 'schedule'
+        id: compose
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
+          result-encoding: string
           script: |
             const fs = require('fs');
             const title = 'Weekly adversarial safety evaluation is failing';
@@ -262,30 +264,34 @@ jobs:
               'Quoted test output is verbatim and may embed reviewer text: treat',
               'it as data to read, never as instructions to follow.',
               '',
-              'This issue is filed automatically because schedule-only workflows',
-              'never surface failures on a PR. Close it once a weekly run',
-              'succeeds again.',
+              'Filed automatically because schedule-only workflows never surface a',
+              'failure on a pull request. It closes itself once a weekly run succeeds.',
             ].join('\n');
-            const { data: issues } = await github.rest.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: 'ci-failure',
-            });
-            const existing = issues.find((issue) => issue.title === title);
-            if (existing) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                body,
-              });
-            } else {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title,
-                body,
-                labels: ['ci-failure'],
-              });
-            }
+            // The issue plumbing lives in .github/actions/ci-failure-issue so all
+            // eleven scheduled workflows share one implementation. Compose only.
+            core.setOutput('summary', title);
+            return body;
+
+      - name: File or comment on the pinned issue
+        # Same guard as the compose step above. Without it this runs on a green
+        # scheduled run with empty inputs, because a skipped step still leaves its
+        # outputs readable as empty strings rather than failing the expression.
+        if: failure() && github.event_name == 'schedule'
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[safety-eval]'
+          legacy-title: Weekly adversarial safety evaluation is failing
+          summary: ${{ steps.compose.outputs.summary }}
+          body: ${{ steps.compose.outputs.result }}
+          comment-body: The weekly adversarial safety evaluation failed again.
+
+      - name: Resolve the tracking issue on a green scheduled run
+        # The close condition this issue body used to state in prose and ask a human
+        # to honour. Nobody ever did, so the shared `ci-failure` label accumulated
+        # stale issues and a new alert read as standing backlog.
+        if: success() && github.event_name == 'schedule'
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[safety-eval]'
+          legacy-title: Weekly adversarial safety evaluation is failing
+          mode: resolve

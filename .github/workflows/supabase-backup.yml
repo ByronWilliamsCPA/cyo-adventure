@@ -207,7 +207,16 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: File or comment on the pinned issue
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Only the composite action is needed. A local `uses: ./...` requires a
+          # checkout, and this job previously had none.
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Compose the issue body
         # Reusable alerting pattern for scheduled workflows (e2e-prod.yml's "Alert on
         # failure" step, adapted): find an OPEN issue labelled `ci-failure` whose title
         # starts with this workflow's marker and comment on it, or open one if none
@@ -220,36 +229,15 @@ jobs:
         # report. That case is covered inside the script instead, by
         # assert_recent_backup_exists(), which fails the next run that does happen if
         # the newest pre-existing daily backup has gone stale.
+        id: compose
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
+          result-encoding: string
           script: |
-            const marker = '[db-backup]'
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             const today = new Date().toISOString().slice(0, 10)
 
-            const issues = await github.paginate(github.rest.issues.listForRepo, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: 'ci-failure',
-              per_page: 100,
-            })
-            const existing = issues.find((issue) => issue.title.startsWith(marker))
-
-            if (existing) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                body: `Scheduled database backup did not complete on ${today}. Run: ${runUrl}`,
-              })
-            } else {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: `${marker} scheduled database backup failing`,
-                labels: ['ci-failure'],
-                body: [
+            return [
                   'The scheduled `Database backup` workflow (`.github/workflows/supabase-backup.yml`) did not complete: it either failed or was cancelled.',
                   '',
                   'This is the nightly `supabase db dump` -> AES-256-GCM encrypt -> tiered R2',
@@ -277,9 +265,49 @@ jobs:
                   'environment secrets directly for that. See docs/operations/runbook.md section 6',
                   'for the required secrets and the restore procedure.',
                   '',
-                  'This issue stays open and accumulates one comment per failing run until',
-                  'someone resolves the underlying problem and closes it; the next failure',
-                  'after that opens a fresh issue.',
-                ].join('\n'),
-              })
-            }
+                  'This issue accumulates one comment per failing run and closes itself',
+                  'once a scheduled run succeeds; the next failure opens a fresh issue.',
+                ].join('\n')
+
+      - name: File or comment on the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[db-backup]'
+          summary: scheduled database backup failing
+          body: ${{ steps.compose.outputs.result }}
+          comment-body: The scheduled database backup did not complete again.
+
+  resolve:
+    name: Resolve the tracking issue
+    needs: backup
+    # Every one of these issue bodies used to end by asking a human to close the issue
+    # once a run went green. Nobody ever did, so five stale issues accumulated on one
+    # shared `ci-failure` label and a NEW alert became indistinguishable from standing
+    # backlog. Closing is now the workflow's job.
+    #
+    # Gated on the needed job's explicit result rather than `success()`, because a
+    # SKIPPED dependency does not fail `success()` and would close the issue on a run
+    # that proved nothing.
+    if: needs.backup.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Close the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[db-backup]'
+          mode: resolve

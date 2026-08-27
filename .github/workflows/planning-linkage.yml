@@ -157,7 +157,16 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: File a drift issue
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # A local `uses: ./...` requires a checkout, and this job had none.
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Compose the issue body
+        id: compose
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           # Space-separated ids from the linkage job. This workflow runs three
@@ -168,6 +177,7 @@ jobs:
           # gate.
           FAILED_CHECKS: ${{ needs.linkage.outputs.failed_checks }}
         with:
+          result-encoding: string
           script: |
             const failed = (process.env.FAILED_CHECKS || '').split(' ').filter(Boolean);
             const detail = {
@@ -231,31 +241,50 @@ jobs:
                 `Reproduce locally with \`${detail[id].command}\`.`,
                 '',
               ]),
-              'This issue is filed automatically because schedule-only workflows',
-              'never surface failures on a pull request. Close it once a scheduled',
-              'run succeeds again.',
+              'Filed automatically because schedule-only workflows never surface a',
+              'failure on a pull request. It closes itself once a scheduled run succeeds.',
             ].join('\n');
-            const issues = await github.paginate(github.rest.issues.listForRepo, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: 'ci-failure',
-              per_page: 100,
-            });
-            const existing = issues.find((issue) => issue.title === title);
-            if (existing) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                body,
-              });
-            } else {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title,
-                body,
-                labels: ['ci-failure'],
-              });
-            }
+            // The issue plumbing lives in .github/actions/ci-failure-issue so all
+            // eleven scheduled workflows share one implementation. Compose only.
+            core.setOutput('summary', title);
+            return body;
+
+      - name: File or comment on the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[planning-linkage]'
+          summary: ${{ steps.compose.outputs.summary }}
+          body: ${{ steps.compose.outputs.result }}
+          comment-body: The scheduled planning-linkage checks failed again.
+
+  resolve-tracking-issue:
+    name: Resolve the tracking issue
+    needs: linkage
+    # Scheduled runs only, matching the filing job: a green pull_request run proves
+    # nothing about the weekly whole-corpus check and must not close its issue.
+    #
+    # Gated on the needed job's explicit result rather than `success()`, because a
+    # SKIPPED dependency does not fail `success()`.
+    if: needs.linkage.result == 'success' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Check out the shared alerting action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/actions/ci-failure-issue
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - name: Close the pinned issue
+        uses: ./.github/actions/ci-failure-issue
+        with:
+          marker: '[planning-linkage]'
+          mode: resolve
