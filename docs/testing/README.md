@@ -16,7 +16,7 @@ strategy lives separately in `docs/development/testing.md`.
 ## Test layers
 
 | Layer | Tool | Location | Backend |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Unit / Component | Vitest + Testing Library | `frontend/src/**/*.test.{ts,tsx}` | none, mocked at the module boundary |
 | E2E (mocked) | Playwright, `chromium` project | `frontend/e2e/` | none, API responses mocked via route interception |
 | E2E (real-backend) | Playwright, `real-backend` project | `frontend/e2e-real/` | local Postgres + local uvicorn, via local Supabase CLI |
@@ -36,7 +36,7 @@ which lives outside this repo, see below); this section documents what
 exists today plus the shape a `dev` addition would take.
 
 | Environment | Frontend | Supabase backend | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | local | localhost | local Supabase CLI (Docker) | dev loop; unit/component, E2E-mocked, E2E-real |
 | dev (not yet built) | `dev.` subdomain (proposed) | staging project (shared) | integration smoke-testing before staging promotion |
 | staging | already-deployed staging URL | staging project | pre-production gate, migration validation, E2E-staging tier |
@@ -101,6 +101,31 @@ before being enabled, or it can race e2e-staging's device-grant mint/revoke
 and leave the shared fixtures in a bad state. #VERIFY: check
 .github/workflows/e2e-staging.yml's concurrency: block is included whenever
 a new staging-project-touching workflow is added.`
+
+## Failure-alert label convention
+
+Every scheduled workflow that files or updates a tracking issue on failure
+(the "pinned issue" pattern used throughout `.github/workflows/`) must label
+that issue with exactly one of the following two labels. Apply this without
+asking when adding the pattern to a new workflow:
+
+| Label | For |
+| --- | --- |
+| `e2e-alert` | Browser-journey failures: any Playwright e2e tier (`frontend/e2e-prod/`, `frontend/e2e-staging/`, `frontend/e2e-real/` when run on a schedule, and the weekly accessibility scan, which drives the same Playwright/axe stack against a real browser). |
+| `ci-failure` | Everything else: pytest tiers, fuzzing, mutation testing, link checking, performance regression, database backup, notification digest, KWS delivery health, moderation report health, planning linkage, and the semantic-release pipeline. |
+
+The dividing line is "does this failure mean a real browser journey broke",
+not "does this workflow touch the frontend". `security-analysis.yml`'s
+`semgrep-frontend` job lints the React tree but never drives a browser, so a
+failure there is `ci-failure`; `e2e-prod.yml` drives real Chromium through a
+real login form, so a failure there is `e2e-alert`.
+
+`.github/workflows/scheduled-health-rollup.yml`'s own rollup issue carries
+`ci-failure`, not `e2e-alert`: it is a meta-report over the whole scheduled
+test ladder (most of which is not browser-driven), not itself a browser
+journey, so it sorts with "everything else" under this convention even
+though several of the workflows it surveys are `e2e-alert` workflows in
+their own right.
 
 ## Maintaining coverage documentation
 

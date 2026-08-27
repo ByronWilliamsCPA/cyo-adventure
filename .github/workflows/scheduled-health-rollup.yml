@@ -1,0 +1,385 @@
+# Scheduled workflow health rollup.
+#
+# Every scheduled workflow in this repo alerts on its own failure (or, for
+# several, does not: see the KNOWN_ALERTS note below), but each one is a
+# separate signal that nobody reads as a whole. A workflow can go red for
+# weeks and never surface anywhere a human is already looking, because
+# per-workflow alerting only ever proves that ONE workflow is unwell, never
+# that the rest of the ladder is healthy too. This workflow is the other
+# half: it surveys every scheduled workflow's own run history and maintains
+# one standing issue naming every workflow currently on an escalating red
+# streak, so "the whole test ladder is green" becomes a claim a single
+# glance can check.
+#
+# Non-blocking by design: schedule + workflow_dispatch only, no pull_request
+# trigger, and it must never be added to branch protection as a required
+# check. It is a reporting job, not a gate.
+#
+# Cron slot: Thursdays at 07:00 UTC. Chosen against the full inventory of
+# `cron:` lines in this directory as of 2026-08-27 (23 scheduled jobs
+# surveyed): every weekly job lands on Sunday (mutation-testing 02:00,
+# safety-eval 04:00, python-compatibility 06:00, perf 06:00), Monday
+# (link-check-full 05:41, moderation-report-health 06:00,
+# dependency-provenance-weekly 06:23, planning-linkage 07:11, cifuzzy 07:13,
+# sbom 08:00, validate-cruft 09:00, fips-compatibility 10:00), Tuesday
+# (scorecard 21:21), or Wednesday (container-security 07:00,
+# accessibility-compliance-weekly 07:15); the daily jobs (release 01:00,
+# kws-delivery-health 05/11/17/23:00, supabase-backup 08:00,
+# notification-digest 09:00, security-analysis 09:07, e2e-real-nightly
+# 09:30, e2e-staging 13:00, e2e-prod 13:30) recur every day regardless of
+# day-of-week. Thursday carries no weekly job at all, and 07:00 UTC matches
+# none of the daily jobs' minutes, so this run never starts alongside
+# another scheduled job.
+#
+# #CRITICAL: correctness: a bounded query window is not a streak. Asking for
+# the last N runs and reporting every-run-failed as "an N-run streak" has
+# already been committed as a real defect in this program's own history (a
+# `--limit 10` query returned ten failures and was reported as a "ten-night
+# streak" when the true streak was 31, see UW-F46 in
+# docs/planning/unscheduled-work-register.md). This workflow pages workflow
+# runs newest-first until it observes a completed run with conclusion
+# `success`, or until HARD_CAP runs have been examined, and never reports a
+# capped count as if it were the true streak: the issue body says
+# ">= HARD_CAP consecutive failures, last green not found within HARD_CAP
+# runs" instead of a bare number in that case.
+# #VERIFY: with HARD_CAP set low (e.g. 3) via workflow_dispatch against a
+# workflow with more than 3 consecutive real failures, the rendered line
+# must read the "last green not found within N runs" form, never a bare
+# streak count; against a workflow whose entire recorded history is red but
+# shorter than HARD_CAP, the line must report the exact count (that IS the
+# true streak, because paging exhausted all history rather than hitting the
+# cap) with "never" as the last-green date.
+#
+# #CRITICAL: concurrency: this workflow only reads the Actions API
+# (`actions.listWorkflowRuns`) and the Issues API. It authenticates against
+# nothing else, mutates no database, and in particular never touches the
+# shared staging Supabase project, so it does not join the `e2e-staging`
+# concurrency group (see docs/testing/README.md's "Data isolation on the
+# shared staging project"). If this workflow is ever changed to read or
+# write anything on that project, it must join that concurrency group
+# before being enabled.
+# #VERIFY: grep this file for `supabase`, `staging`, or a database
+# connection string; there must be none.
+name: Scheduled workflow health rollup
+
+on:
+  schedule:
+    - cron: '0 7 * * 4'
+  workflow_dispatch:
+    inputs:
+      hard_cap:
+        description: 'Max runs to page per workflow before giving up on finding the last green run'
+        required: false
+        default: '50'
+
+concurrency:
+  group: scheduled-health-rollup-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  rollup:
+    name: Roll up scheduled-workflow health
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+      issues: write
+
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # No untrusted event text is interpolated anywhere in this step: the
+      # only external input is `inputs.hard_cap`, a workflow_dispatch number
+      # field passed through an `env:` var (never inlined into a shell
+      # command), and the github-script body below reads only `context.*`
+      # and API response data inside JavaScript, never inside a shell.
+      - name: Roll up scheduled-workflow health and file or update the tracking issue
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          HARD_CAP: ${{ inputs.hard_cap || '50' }}
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const HARD_CAP = parseInt(process.env.HARD_CAP || '50', 10);
+            const THRESHOLD = 3;
+            const SELF_FILE = 'scheduled-health-rollup.yml';
+            const WORKFLOWS_DIR = '.github/workflows';
+
+            // Discover scheduled workflows rather than hardcoding a list, so a
+            // newly added `schedule:` trigger is covered automatically. Every
+            // workflow in this repo writes its schedule trigger as a
+            // `schedule:` key indented two spaces directly under the
+            // top-level `on:` block, followed by one or more `cron:` lines
+            // (verified against all 23 pre-existing scheduled workflows in
+            // this repo on 2026-08-27). A workflow that used a different
+            // indentation or a YAML anchor would be missed by this regex;
+            // that is a real limitation of a text-based scan rather than a
+            // full YAML parse, and is why this comment exists instead of a
+            // silent assumption.
+            const files = fs
+              .readdirSync(WORKFLOWS_DIR)
+              .filter((f) => /\.ya?ml$/.test(f) && f !== SELF_FILE);
+            const scheduled = [];
+            for (const file of files) {
+              const text = fs.readFileSync(path.join(WORKFLOWS_DIR, file), 'utf8');
+              if (/^ {2}schedule:\s*$/m.test(text) && /cron:\s*['"][^'"]+['"]/.test(text)) {
+                scheduled.push(file);
+              }
+            }
+            core.info(`Discovered ${scheduled.length} scheduled workflow(s): ${scheduled.join(', ')}`);
+
+            // Hardcoded, and deliberately so: unlike workflow discovery above,
+            // "does this workflow already file its own tracking issue on
+            // failure, and under what marker" cannot be derived from a
+            // generic pattern. Fourteen scheduled workflows share this
+            // through one composite action, `.github/actions/ci-failure-issue/`
+            // (introduced by PR #771, merged to main 2026-08-27), which
+            // matches by a `marker` title-prefix and defaults to the
+            // `ci-failure` label unless a call site overrides it to
+            // `e2e-alert`. This map's markers and labels were read directly
+            // from each workflow's `uses: ./.github/actions/ci-failure-issue`
+            // call site on `origin/main` as of that merge, not from a
+            // generic pattern. A workflow not listed here is reported as
+            // UNTRACKED rather than guessed at; that is the loud-omission
+            // behaviour the design calls for, and it is real: nine of the
+            // twenty-three scheduled workflows in this repo (as of
+            // 2026-08-27) file no tracking issue of any kind on failure:
+            // container-security.yml, dependency-provenance-weekly.yml,
+            // e2e-staging.yml, fips-compatibility.yml,
+            // python-compatibility.yml, scorecard.yml, security-analysis.yml,
+            // sbom.yml, validate-cruft.yml. Keep this map in sync when a
+            // call site's marker or label changes, or when a workflow adopts
+            // or drops the shared action.
+            const KNOWN_ALERTS = {
+              'accessibility-compliance-weekly.yml': { label: 'e2e-alert', titlePrefix: '[a11y-weekly]' },
+              'cifuzzy.yml': { label: 'ci-failure', titlePrefix: '[fuzzing]' },
+              'e2e-prod.yml': { label: 'e2e-alert', titlePrefix: '[e2e-prod]' },
+              'e2e-real-nightly.yml': { label: 'e2e-alert', titlePrefix: '[e2e-real-nightly]' },
+              'kws-delivery-health.yml': { label: 'ci-failure', titlePrefix: '[kws-delivery-health]' },
+              'link-check-full.yml': { label: 'ci-failure', titlePrefix: '[link-check]' },
+              'moderation-report-health.yml': { label: 'ci-failure', titlePrefix: '[moderation-report-health]' },
+              'mutation-testing.yml': { label: 'ci-failure', titlePrefix: '[mutation-testing]' },
+              'notification-digest.yml': { label: 'ci-failure', titlePrefix: '[notification-digest]' },
+              'perf.yml': { label: 'ci-failure', titlePrefix: '[perf]' },
+              'planning-linkage.yml': { label: 'ci-failure', titlePrefix: '[planning-linkage]' },
+              'release.yml': { label: 'ci-failure', titlePrefix: '[release]' },
+              'safety-eval.yml': { label: 'ci-failure', titlePrefix: '[safety-eval]' },
+              'supabase-backup.yml': { label: 'ci-failure', titlePrefix: '[db-backup]' },
+            };
+
+            async function findTrackingIssue(file) {
+              const known = KNOWN_ALERTS[file];
+              if (!known) {
+                return { status: 'untracked' };
+              }
+              const issues = await github.paginate(github.rest.issues.listForRepo, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                labels: known.label,
+                per_page: 100,
+              });
+              const match = issues.find((issue) => issue.title.startsWith(known.titlePrefix));
+              if (match) {
+                return { status: 'tracked', issue: match };
+              }
+              return { status: 'self-alerts-but-no-open-issue' };
+            }
+
+            // #CRITICAL: correctness: see the file-level comment above. This
+            // loop pages newest-run-first and stops the instant it observes
+            // a completed `success`, recording that run's own timestamp as
+            // the last-green date. It only reports a bare streak count when
+            // paging exhausted the workflow's ENTIRE run history without
+            // ever finding a success (a real, exact streak); when it instead
+            // hits HARD_CAP first, `capped` is set and the caller must
+            // render the "not found within HARD_CAP runs" form, never a bare
+            // number.
+            // #VERIFY: force HARD_CAP=3 via workflow_dispatch against a
+            // workflow with a real streak longer than 3; the result for that
+            // workflow must come back with `capped: true`, and the rendered
+            // body must not print `3` as if it were the true streak length.
+            async function computeStreak(file) {
+              let examined = 0;
+              let redStreak = 0;
+              let lastGreenAt = null;
+              let capped = false;
+              let workflowName = file;
+
+              outer: for await (const { data: runs } of github.paginate.iterator(
+                github.rest.actions.listWorkflowRuns,
+                {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  workflow_id: file,
+                  event: 'schedule',
+                  per_page: 100,
+                }
+              )) {
+                if (runs.length === 0) {
+                  break outer;
+                }
+                for (const run of runs) {
+                  if (run.status !== 'completed') {
+                    // Still in progress or queued: not yet a verdict, does
+                    // not count toward the streak either way.
+                    continue;
+                  }
+                  workflowName = run.name || workflowName;
+                  if (run.conclusion === 'success') {
+                    lastGreenAt = run.run_started_at || run.created_at;
+                    break outer;
+                  }
+                  examined += 1;
+                  redStreak += 1;
+                  if (examined >= HARD_CAP) {
+                    capped = true;
+                    break outer;
+                  }
+                }
+              }
+
+              // Exhausted every page without a success and without hitting
+              // the cap: this IS the true streak, because there is no older
+              // run left to disprove it.
+              const neverGreenInHistory = !capped && lastGreenAt === null;
+
+              return { file, workflowName, redStreak, lastGreenAt, capped, neverGreenInHistory };
+            }
+
+            const escalations = [];
+            for (const file of scheduled) {
+              const result = await computeStreak(file);
+              if (result.redStreak < THRESHOLD) {
+                continue; // currently green, or red but below the escalation bar
+              }
+              const tracking = await findTrackingIssue(file);
+              escalations.push({ ...result, tracking });
+            }
+
+            function renderStreakLine(r) {
+              if (r.capped) {
+                return `>= ${HARD_CAP} consecutive failures, last green not found within ${HARD_CAP} runs`;
+              }
+              if (r.neverGreenInHistory) {
+                return `${r.redStreak} consecutive failures (this workflow's entire recorded run history; no green run exists)`;
+              }
+              return `${r.redStreak} consecutive failures`;
+            }
+
+            function renderLastGreen(r) {
+              if (r.capped) {
+                return `not found within ${HARD_CAP} runs`;
+              }
+              if (r.neverGreenInHistory) {
+                return 'never (no green run in recorded history)';
+              }
+              return r.lastGreenAt;
+            }
+
+            function renderTracking(file, tracking) {
+              if (tracking.status === 'tracked') {
+                return `tracked by #${tracking.issue.number} (${tracking.issue.html_url})`;
+              }
+              if (tracking.status === 'self-alerts-but-no-open-issue') {
+                return 'this workflow files its own tracking issue on failure, but none is currently open; check whether the marker or title changed';
+              }
+              return `**NOT TRACKED**: no per-workflow failure-alert step is known for \`.github/workflows/${file}\``;
+            }
+
+            const generatedAt = new Date().toISOString();
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            const bodyLines = [
+              `Weekly survey of all ${scheduled.length} scheduled workflow(s) in this repo, generated ${generatedAt}.`,
+              '',
+              `Run: ${runUrl}`,
+              '',
+              `Escalation bar: ${THRESHOLD} or more consecutive scheduled-run failures.`,
+              '',
+            ];
+
+            if (escalations.length === 0) {
+              bodyLines.push(
+                'No scheduled workflow currently has a streak at or above the escalation bar.',
+                '',
+                'This issue is left open (scheduled reporting workflows never close issues',
+                'automatically); close it once the ladder has been quiet for a while, or leave',
+                'it for the next run to refresh.'
+              );
+            } else {
+              bodyLines.push(
+                `${escalations.length} workflow(s) at or above the escalation bar:`,
+                ''
+              );
+              for (const r of escalations) {
+                bodyLines.push(
+                  `### \`${r.file}\` (${r.workflowName})`,
+                  '',
+                  `- Streak: ${renderStreakLine(r)}`,
+                  `- Last green: ${renderLastGreen(r)}`,
+                  `- Tracking: ${renderTracking(r.file, r.tracking)}`,
+                  ''
+                );
+              }
+              bodyLines.push(
+                'A red workflow with no open tracking issue and no known per-workflow alert',
+                'step is the gap this rollup exists to close: nothing else in this repo will',
+                'ever surface it.'
+              );
+            }
+
+            bodyLines.push(
+              '',
+              'This workflow only reads the GitHub Actions and Issues APIs; it does not',
+              'authenticate against or mutate the shared staging Supabase project.',
+              '',
+              'This issue is maintained by `.github/workflows/scheduled-health-rollup.yml`',
+              'and is never closed automatically.'
+            );
+
+            const body = bodyLines.join('\n');
+            const TITLE = 'Scheduled workflow health rollup';
+            const ROLLUP_LABEL = 'ci-failure';
+
+            const rollupIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: ROLLUP_LABEL,
+              per_page: 100,
+            });
+            const existing = rollupIssues.find((issue) => issue.title === TITLE);
+
+            if (existing) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body,
+              });
+              core.info(`Updated existing rollup issue #${existing.number}`);
+            } else if (escalations.length > 0) {
+              const created = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: TITLE,
+                body,
+                labels: [ROLLUP_LABEL],
+              });
+              core.info(`Filed new rollup issue #${created.data.number}`);
+            } else {
+              core.info('Nothing to report and no existing rollup issue; not creating one.');
+            }
