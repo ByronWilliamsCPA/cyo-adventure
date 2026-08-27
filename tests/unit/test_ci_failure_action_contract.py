@@ -46,6 +46,11 @@ WORKFLOWS_DIR = REPO_ROOT / ".github" / "workflows"
 ACTION_DIR = REPO_ROOT / ".github" / "actions" / "ci-failure-issue"
 ACTION_YML = ACTION_DIR / "action.yml"
 HARNESS = ACTION_DIR / "test" / "reconcile.test.mjs"
+# Added alongside the generalised `extractScript()` (fix/testing-ladder-trust):
+# covers `scheduled-health-rollup.yml`'s `findTrackingIssue` extraction. The
+# `alert-action` CI job runs this file in the same invocation as HARNESS, so
+# both must be counted together or the floor and the runtime count diverge.
+HEALTH_ROLLUP_HARNESS = WORKFLOWS_DIR / "test" / "health-rollup.test.mjs"
 CI_WORKFLOW = WORKFLOWS_DIR / "ci.yml"
 
 ACTION_REF = "./.github/actions/ci-failure-issue"
@@ -245,12 +250,16 @@ def _harness_floor() -> int:
 
 
 def _run_harness_and_count() -> int:
-    """Execute the Node harness and return how many tests passed.
+    """Execute the Node harness(es) and return how many tests passed.
 
     Shelling out rather than reasoning about the source, for the same reason
     ``test_ci_gate_contract.py`` executes the gate's shell script: a count
     derived by reading the file is a second implementation of the test runner,
     and it was wrong the first time it was tried here.
+
+    Runs both files the CI step runs, in one ``node --test`` invocation, so
+    the reported count matches what the gate actually measures rather than
+    just HARNESS's own total.
 
     Returns:
         The number of passing tests the harness reported.
@@ -259,7 +268,13 @@ def _run_harness_and_count() -> int:
     if node is None:
         pytest.skip("node is not on PATH; the CI leg asserts this floor there")
     completed = subprocess.run(
-        [node, "--test", "--test-reporter=tap", str(HARNESS)],
+        [
+            node,
+            "--test",
+            "--test-reporter=tap",
+            str(HARNESS),
+            str(HEALTH_ROLLUP_HARNESS),
+        ],
         capture_output=True,
         text=True,
         check=False,
@@ -634,6 +649,11 @@ class TestTheHarnessIsWiredIntoARealGate:
         )
         assert "node --test" in run_steps
         assert "reconcile.test.mjs" in run_steps
+        assert "health-rollup.test.mjs" in run_steps, (
+            "ci.yml no longer runs health-rollup.test.mjs, so a workflow's "
+            "generalised findTrackingIssue extraction is checked in but "
+            "never executed"
+        )
 
     def test_the_ci_job_asserts_a_test_count_floor(self) -> None:
         """``node --test`` exits 0 when it discovers no tests.
